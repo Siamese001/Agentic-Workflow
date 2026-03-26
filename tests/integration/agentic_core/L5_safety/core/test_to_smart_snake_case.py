@@ -25,17 +25,19 @@ class TestToSmartSnakeCase:
     """Test _to_smart_snake_case method - acronym-preserving snake_case conversion."""
 
     def test_to_smart_snake_case_simple_pascal(self):
-        from agentic_core.L5_safety.reasoning.FileClassificationAgent import (
-        from agentic_core.L5_safety.reasoning.FileClassificationAgent import (
-        from agentic_core.L5_safety.reasoning.FileClassificationAgent import (
-        from agentic_core.L5_safety.reasoning.FileClassificationAgent import (
-        from agentic_core.L5_safety.reasoning.FileClassificationAgent import (
-        from agentic_core.L5_safety.reasoning.FileClassificationAgent import (
-        from agentic_core.L5_safety.reasoning.FileClassificationAgent import (
-        from agentic_core.L5_safety.reasoning.FileClassificationAgent import (
-        from agentic_core.L5_safety.reasoning.FileClassificationAgent import (
-        from agentic_core.L5_safety.reasoning.FileClassificationAgent import (
         """Test simple PascalCase to snake_case conversion."""
+                from agentic_core.L5_safety.reasoning.FileClassificationAgent import (
+                from agentic_core.L5_safety.reasoning.FileClassificationAgent import (
+                from agentic_core.L5_safety.reasoning.FileClassificationAgent import (
+                from agentic_core.L5_safety.reasoning.FileClassificationAgent import (
+                from agentic_core.L5_safety.reasoning.FileClassificationAgent import (
+                from agentic_core.L5_safety.reasoning.FileClassificationAgent import (
+                from agentic_core.L5_safety.reasoning.FileClassificationAgent import (
+                from agentic_core.L5_safety.reasoning.FileClassificationAgent import (
+                from agentic_core.L5_safety.reasoning.FileClassificationAgent import (
+                from agentic_core.L5_safety.reasoning.FileClassificationAgent import (
+                """Test simple PascalCase to snake_case conversion."""
+
 #  # MOVED: from agentic_core.L5_safety.reasoning.FileClassificationAgent import (
             FileClassificationAgent,
         )

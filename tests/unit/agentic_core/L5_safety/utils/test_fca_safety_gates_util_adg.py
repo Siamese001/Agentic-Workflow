@@ -170,17 +170,19 @@ pytestmark = pytest.mark.unit
 
 class TestPlannedAction:
     def test_creates(self):
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.L5_safety.utils.fca_safety_gates_util import PlannedAction
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        action = PlannedAction(
-            action_type="DETECT_RENAME",
-            src="foo.py",
-            dst="bar.py",
-            reason_code="NAMING_VIOLATION",
-        )
-        assert action.action_type == "DETECT_RENAME"
-        assert action.src == "foo.py"
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L5_safety.utils.fca_safety_gates_util import PlannedAction
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                action = PlannedAction(
+                    action_type="DETECT_RENAME",
+                    src="foo.py",
+                    dst="bar.py",
+                    reason_code="NAMING_VIOLATION",
+                )
+                assert action.action_type == "DETECT_RENAME"
+                assert action.src == "foo.py"
+                assert action.dst == "bar.py"
+
         assert action.dst == "bar.py"
 
     def test_blocked_reason_default_none(self):

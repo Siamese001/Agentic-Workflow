@@ -197,28 +197,30 @@ class TestLocationHealingStrategy:
         return LocationHealingStrategy(config)
 
     def test_initialization(self, strategy, config):
-        from agentic_core.L3_orchestration.reasoning.UnifiedAgent import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.L5_safety.reasoning.LocationHealerAgent import (
-        from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
-        from agentic_core.L5_safety.reasoning.LocationHealerAgent import (
-        from agentic_core.L5_safety.reasoning.LocationHealerAgent import (
-        from agentic_core.L5_safety.reasoning.LocationHealerAgent import (
-        from agentic_core.L5_safety.reasoning.LocationHealerAgent import (
-        from agentic_core.L5_safety.reasoning.LocationHealerAgent import (
-        from agentic_core.L5_safety.reasoning.LocationHealerAgent import (
-        from agentic_core.L5_safety.reasoning.LocationHealerAgent import (
-        from agentic_core.L5_safety.reasoning.LocationHealerAgent import (
-        from agentic_core.L5_safety.reasoning.LocationHealerAgent import (
-        from agentic_core.L5_safety.reasoning.LocationHealerAgent import (
-        from agentic_core.L5_safety.reasoning.LocationHealerAgent import (
-        from agentic_core.L3_orchestration.reasoning.UnifiedAgent import LocationHealingStrategy
-        from agentic_core.L3_orchestration.reasoning.UnifiedAgent import __all__
-        from agentic_core.L3_orchestration.reasoning.UnifiedAgent import (
-        """Test strategy initialization."""
-        assert strategy.project_root == "/test/project"
-        assert strategy.backup_enabled is True
+                from agentic_core.L3_orchestration.reasoning.UnifiedAgent import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L5_safety.reasoning.LocationHealerAgent import (
+                from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
+                from agentic_core.L5_safety.reasoning.LocationHealerAgent import (
+                from agentic_core.L5_safety.reasoning.LocationHealerAgent import (
+                from agentic_core.L5_safety.reasoning.LocationHealerAgent import (
+                from agentic_core.L5_safety.reasoning.LocationHealerAgent import (
+                from agentic_core.L5_safety.reasoning.LocationHealerAgent import (
+                from agentic_core.L5_safety.reasoning.LocationHealerAgent import (
+                from agentic_core.L5_safety.reasoning.LocationHealerAgent import (
+                from agentic_core.L5_safety.reasoning.LocationHealerAgent import (
+                from agentic_core.L5_safety.reasoning.LocationHealerAgent import (
+                from agentic_core.L5_safety.reasoning.LocationHealerAgent import (
+                from agentic_core.L5_safety.reasoning.LocationHealerAgent import (
+                from agentic_core.L3_orchestration.reasoning.UnifiedAgent import LocationHealingStrategy
+                from agentic_core.L3_orchestration.reasoning.UnifiedAgent import __all__
+                from agentic_core.L3_orchestration.reasoning.UnifiedAgent import (
+                """Test strategy initialization."""
+                assert strategy.project_root == "/test/project"
+                assert strategy.backup_enabled is True
+                assert strategy.auto_fix_imports is True
+
         assert strategy.auto_fix_imports is True
 
     def test_initialization_with_disabled_features(self):

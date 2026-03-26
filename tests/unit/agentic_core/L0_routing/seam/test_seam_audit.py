@@ -27,8 +27,10 @@ pytestmark = pytest.mark.unit
 
 class TestSeamAuditRecordContract:
     def test_is_dataclass(self):
-        from agentic_core.L0_routing.seam.seam_audit import (  # noqa: F401
-        import dataclasses
+                from agentic_core.L0_routing.seam.seam_audit import (  # noqa: F401
+                import dataclasses
+                assert dataclasses.is_dataclass(SeamAuditRecord)
+
         assert dataclasses.is_dataclass(SeamAuditRecord)
 
     def test_is_frozen(self):

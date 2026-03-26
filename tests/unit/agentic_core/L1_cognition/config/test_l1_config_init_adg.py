@@ -7,9 +7,12 @@ pytestmark = pytest.mark.unit
 
 
 def test_module_importable():
-    import agentic_core.L1_cognition.config
-    import agentic_core.L1_cognition.config
-#  # MOVED: import agentic_core.L1_cognition.config
+        import agentic_core.L1_cognition.config
+        import agentic_core.L1_cognition.config
+        import agentic_core.L1_cognition.config
+    #  # MOVED: import agentic_core.L1_cognition.config
+        assert agentic_core.L1_cognition.config is not None
+
     assert agentic_core.L1_cognition.config is not None
 
 

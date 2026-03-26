@@ -198,17 +198,19 @@ sys.path.insert(0, str(Path(__file__).parent.parent))
 
 
 def test_unified_eviction():
-    from agentic_core.L0_routing.config.path_constants import (
-    from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-    from agentic_core.L0_routing.config.path_constants import (
-    from agentic_core.L5_safety.config.structure_blueprint import (
-    from agentic_core.L5_safety.config.structure_blueprint.ssot import (
-    from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-    """
-    Edge Case: Verify 'unified' is completely removed from all CORE_SUBFOLDER_MAP lists.
-    It is an anti-pattern that obscures domain responsibility.
-    """
-    l2 = CORE_SUBFOLDER_MAP["L2_execution"]
+        from agentic_core.L0_routing.config.path_constants import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L0_routing.config.path_constants import (
+        from agentic_core.L5_safety.config.structure_blueprint import (
+        from agentic_core.L5_safety.config.structure_blueprint.ssot import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        """
+        Edge Case: Verify 'unified' is completely removed from all CORE_SUBFOLDER_MAP lists.
+        It is an anti-pattern that obscures domain responsibility.
+        """
+        l2 = CORE_SUBFOLDER_MAP["L2_execution"]
+        assert "unified" not in l2, f"FAILED: 'unified' found in L2_execution: {l2}"
+
     assert "unified" not in l2, f"FAILED: 'unified' found in L2_execution: {l2}"
 
     l5 = CORE_SUBFOLDER_MAP["L5_safety"]

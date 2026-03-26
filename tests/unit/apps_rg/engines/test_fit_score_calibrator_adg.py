@@ -5,9 +5,10 @@ import pytest
 
 pytestmark = pytest.mark.unit
 
-import apps_rg.engines.fit_score_calibrator  # noqa: F401
 
 
 def test_module_importable():
     """Module fit_score_calibrator must be importable."""
+    import apps_rg.engines.fit_score_calibrator  # noqa: F401
+
     assert apps_rg.engines.fit_score_calibrator is not None

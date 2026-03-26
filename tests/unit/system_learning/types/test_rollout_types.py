@@ -5,9 +5,10 @@ import pytest
 
 pytestmark = pytest.mark.unit
 
-import system_learning.types.rollout_types  # noqa: F401
 
 
 def test_module_importable():
     """Module rollout_types must be importable."""
+    import system_learning.types.rollout_types  # noqa: F401
+
     assert system_learning.types.rollout_types is not None

@@ -9,6 +9,8 @@ pytestmark = pytest.mark.unit
 
 
 def test_module_importable():
-    import agentic_core.L1_cognition.utils.constants_util  # noqa: F401
-    """Module constants_util must be importable."""
+        import agentic_core.L1_cognition.utils.constants_util  # noqa: F401
+        """Module constants_util must be importable."""
+        assert agentic_core.L1_cognition.utils.constants_util is not None
+
     assert agentic_core.L1_cognition.utils.constants_util is not None

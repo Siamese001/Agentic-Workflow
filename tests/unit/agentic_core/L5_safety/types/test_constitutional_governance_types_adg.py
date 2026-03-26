@@ -172,11 +172,13 @@ pytestmark = pytest.mark.unit
 
 class TestConstitutionalPrinciple:
     def test_is_enum(self):
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.L5_safety.types.constitutional_governance_types import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        import enum; assert issubclass(ConstitutionalPrinciple, enum.Enum)
-    def test_has_harmlessness(self): assert ConstitutionalPrinciple.HARMLESSNESS.value == "harmlessness"
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L5_safety.types.constitutional_governance_types import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                import enum; assert issubclass(ConstitutionalPrinciple, enum.Enum)
+            def test_has_harmlessness(self): assert ConstitutionalPrinciple.HARMLESSNESS.value == "harmlessness"
+            def test_has_seven_principles(self): assert len(list(ConstitutionalPrinciple)) == 7
+
     def test_has_seven_principles(self): assert len(list(ConstitutionalPrinciple)) == 7
 
 class TestPrincipleViolation:

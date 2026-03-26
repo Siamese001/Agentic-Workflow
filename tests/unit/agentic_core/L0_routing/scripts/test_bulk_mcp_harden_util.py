@@ -25,18 +25,20 @@ pytestmark = pytest.mark.unit
 
 class TestLoadDiscoveryFunction:
     def test_is_callable(self):
-        from agentic_core.L0_routing.scripts.bulk_mcp_harden_util import (  # noqa: F401
-    """Test is_callable runtime behavior."""
-    # Arrange
-    # TODO: Set up execution parameters
-    input_data = {}  # Replace with actual test data
-    """Test is_callable runtime behavior."""
-    # Arrange
-    # TODO: Set up execution parameters
-    input_data = {}  # Replace with actual test data
-    """Test is_callable runtime behavior."""
-    # Arrange
-    # TODO: Set up execution parameters
+                from agentic_core.L0_routing.scripts.bulk_mcp_harden_util import (  # noqa: F401
+            """Test is_callable runtime behavior."""
+            # Arrange
+            # TODO: Set up execution parameters
+            input_data = {}  # Replace with actual test data
+            """Test is_callable runtime behavior."""
+            # Arrange
+            # TODO: Set up execution parameters
+            input_data = {}  # Replace with actual test data
+            """Test is_callable runtime behavior."""
+            # Arrange
+            # TODO: Set up execution parameters
+            input_data = {}  # Replace with actual test data
+
     input_data = {}  # Replace with actual test data
 
     # Act

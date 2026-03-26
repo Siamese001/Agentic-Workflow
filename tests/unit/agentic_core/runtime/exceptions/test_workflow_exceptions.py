@@ -26,13 +26,15 @@ pytestmark = pytest.mark.unit
 
 class TestAgenticWorkflowErrorContract:
     def test_is_class(self):
-        from agentic_core.runtime.exceptions.workflow_exceptions import (  # noqa: F401
-    """Test is_class runtime behavior."""
-    # Arrange
-    # TODO: Set up runtime environment
-    """Test instantiable_or_abstract runtime behavior."""
-    # Arrange
-    # TODO: Set up runtime environment
+                from agentic_core.runtime.exceptions.workflow_exceptions import (  # noqa: F401
+            """Test is_class runtime behavior."""
+            # Arrange
+            # TODO: Set up runtime environment
+            """Test instantiable_or_abstract runtime behavior."""
+            # Arrange
+            # TODO: Set up runtime environment
+            runtime_context = {}  # Replace with actual runtime context
+
     runtime_context = {}  # Replace with actual runtime context
 
     # Act

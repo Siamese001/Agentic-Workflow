@@ -183,19 +183,21 @@ DEFAULT_TIMEOUT = 300  # 5 minutes
 # Configuration constants
 
 def test_normalize_finding_id_deterministic():
-    from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-    from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-    from agentic_core.L0_routing.scripts.execute_ssot import _normalize_finding_id
-    from agentic_core.L0_routing.scripts.execute_ssot import _normalize_finding_id
-    from agentic_core.L0_routing.scripts.execute_ssot import _write_pre_validation_json
-    from agentic_core.L0_routing.scripts.execute_ssot import _write_pre_validation_json
-    from agentic_core.L0_routing.scripts.execute_ssot import _write_pre_validation_json
-    from agentic_core.L0_routing.scripts.execute_ssot import (
-    from agentic_core.L0_routing.scripts.execute_ssot import _write_post_validation_json
-    from agentic_core.L0_routing.scripts.execute_ssot import (
-    from agentic_core.L0_routing.scripts.execute_ssot import (
-    """
-    PASS: Same finding produces same ID on repeated calls.
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L0_routing.scripts.execute_ssot import _normalize_finding_id
+        from agentic_core.L0_routing.scripts.execute_ssot import _normalize_finding_id
+        from agentic_core.L0_routing.scripts.execute_ssot import _write_pre_validation_json
+        from agentic_core.L0_routing.scripts.execute_ssot import _write_pre_validation_json
+        from agentic_core.L0_routing.scripts.execute_ssot import _write_pre_validation_json
+        from agentic_core.L0_routing.scripts.execute_ssot import (
+        from agentic_core.L0_routing.scripts.execute_ssot import _write_post_validation_json
+        from agentic_core.L0_routing.scripts.execute_ssot import (
+        from agentic_core.L0_routing.scripts.execute_ssot import (
+        """
+        PASS: Same finding produces same ID on repeated calls.
+        FAIL: ID changes between calls despite identical input.
+
     FAIL: ID changes between calls despite identical input.
 
     Per .windsurfrules §1.7: Deterministic decision surfaces - replay must be stable.

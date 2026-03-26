@@ -5,9 +5,10 @@ import pytest
 
 pytestmark = pytest.mark.unit
 
-import apps_rg.tools.query_past_generations  # noqa: F401
 
 
 def test_module_importable():
     """Module query_past_generations must be importable."""
+    import apps_rg.tools.query_past_generations  # noqa: F401
+
     assert apps_rg.tools.query_past_generations is not None

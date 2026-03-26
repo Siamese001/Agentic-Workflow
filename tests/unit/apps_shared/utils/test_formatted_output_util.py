@@ -10,21 +10,22 @@ import pytest
 
 pytestmark = pytest.mark.unit
 
-from apps_shared.utils.formatted_output_util import (  # noqa: F401
-    BATCH_SIZE,
-    BUFFER_SIZE,
-    DEFAULT_SLEEP,
-    MAX_RETRIES,
-    THRESHOLD,
-    FormatData,
-    FormatScriptsContext,
-    FormattedOutput,
-    format,
-)
 
 
 class TestFormattedOutputContract:
     def test_is_dataclass(self):
+        from apps_shared.utils.formatted_output_util import (  # noqa: F401
+            BATCH_SIZE,
+            BUFFER_SIZE,
+            DEFAULT_SLEEP,
+            MAX_RETRIES,
+            THRESHOLD,
+            FormatData,
+            FormatScriptsContext,
+            FormattedOutput,
+            format,
+        )
+
         import dataclasses
         assert dataclasses.is_dataclass(FormattedOutput)
 

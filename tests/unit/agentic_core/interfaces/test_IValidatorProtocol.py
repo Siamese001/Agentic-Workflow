@@ -28,7 +28,9 @@ pytestmark = pytest.mark.unit
 
 class TestValidatorProtocolContract:
     def test_is_class(self):
-        from agentic_core.interfaces.IValidatorProtocol import (  # noqa: F401
+                from agentic_core.interfaces.IValidatorProtocol import (  # noqa: F401
+                assert isinstance(ValidatorProtocol, type)
+
         assert isinstance(ValidatorProtocol, type)
 
     def test_has_method_validate(self):

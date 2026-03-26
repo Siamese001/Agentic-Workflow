@@ -177,11 +177,13 @@ class TestQwenExceptionHandling:
     """Test that Qwen failures are properly caught and default to declined (not approved)."""
 
     def test_qwen_runtime_error_caught_and_defaults_to_declined(self):
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-    """Test qwen_runtime_error_caught_and_defaults_to_declined runtime behavior."""
-    # Arrange
-    # TODO: Set up execution parameters
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+            """Test qwen_runtime_error_caught_and_defaults_to_declined runtime behavior."""
+            # Arrange
+            # TODO: Set up execution parameters
+            input_data = {}  # Replace with actual test data
+
     input_data = {}  # Replace with actual test data
 
     # Act

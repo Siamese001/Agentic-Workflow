@@ -259,11 +259,13 @@ def _print_w1_digest_once() -> str:
 
 
 def test_canonical_bytes_stable():
-    from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-    from agentic_core.L2_execution.types.instruction_packet_types import (
-    from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-    b1 = _PACKET_V.canonical_bytes()
-    b2 = _PACKET_V.canonical_bytes()
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L2_execution.types.instruction_packet_types import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        b1 = _PACKET_V.canonical_bytes()
+        b2 = _PACKET_V.canonical_bytes()
+        assert b1 == b2
+
     assert b1 == b2
 
 

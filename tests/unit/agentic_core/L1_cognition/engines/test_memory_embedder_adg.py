@@ -9,6 +9,8 @@ pytestmark = pytest.mark.unit
 
 
 def test_module_importable():
-    import agentic_core.L1_cognition.engines.memory_embedder  # noqa: F401
-    """Module memory_embedder must be importable."""
+        import agentic_core.L1_cognition.engines.memory_embedder  # noqa: F401
+        """Module memory_embedder must be importable."""
+        assert agentic_core.L1_cognition.engines.memory_embedder is not None
+
     assert agentic_core.L1_cognition.engines.memory_embedder is not None

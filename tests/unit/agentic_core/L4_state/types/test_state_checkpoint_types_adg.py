@@ -168,12 +168,14 @@ pytestmark = pytest.mark.unit
 
 class TestStateCheckpoint:
     def test_is_dataclass(self):
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.L4_state.types.state_checkpoint_types import StateCheckpoint, StateValidationResult
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-    """Test is_dataclass contract compliance."""
-    # Arrange
-    # TODO: Set up contract test scenario
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L4_state.types.state_checkpoint_types import StateCheckpoint, StateValidationResult
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+            """Test is_dataclass contract compliance."""
+            # Arrange
+            # TODO: Set up contract test scenario
+            test_scenario = {}  # Replace with actual test scenario
+
     test_scenario = {}  # Replace with actual test scenario
 
     # Act

@@ -184,9 +184,11 @@ def reset_singleton():
 
 class TestSovereignConfigManagerImport:
     def test_class_importable(self):
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.config.core.sovereign_config import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.config.core.sovereign_config import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                assert callable(SovereignConfigManager)
+
         assert callable(SovereignConfigManager)
 
     def test_get_sovereign_config_callable(self):

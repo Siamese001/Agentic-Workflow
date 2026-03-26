@@ -25,10 +25,12 @@ pytestmark = pytest.mark.unit
 
 class TestSha256BytesFunction:
     def test_is_callable(self):
-        from agentic_core.prompt_governance.validation.validate_assembly import (  # noqa: F401
-    """Test is_callable runtime behavior."""
-    # Arrange
-    # TODO: Set up execution parameters
+                from agentic_core.prompt_governance.validation.validate_assembly import (  # noqa: F401
+            """Test is_callable runtime behavior."""
+            # Arrange
+            # TODO: Set up execution parameters
+            input_data = {}  # Replace with actual test data
+
     input_data = {}  # Replace with actual test data
 
     # Act

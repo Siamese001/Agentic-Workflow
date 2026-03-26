@@ -5,9 +5,10 @@ import pytest
 
 pytestmark = pytest.mark.unit
 
-import apps_shared.types.feedback_loop_orchestrator_types  # noqa: F401
 
 
 def test_module_importable():
     """Module feedback_loop_orchestrator_types must be importable."""
+    import apps_shared.types.feedback_loop_orchestrator_types  # noqa: F401
+
     assert apps_shared.types.feedback_loop_orchestrator_types is not None

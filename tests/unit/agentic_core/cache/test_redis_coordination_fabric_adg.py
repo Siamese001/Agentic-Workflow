@@ -22,8 +22,10 @@ except (ValueError, TypeError, RuntimeError) as e:  # guardian: allow-silent-swa
 
 class TestRedisCoordinationFabricImportability:
     def test_module_importable(self) -> None:
-        from agentic_core.cache.redis_coordination_fabric import (  # noqa: F401
         """ADG contract: agentic_core/cache/redis_coordination_fabric.py must be importable."""
+                from agentic_core.cache.redis_coordination_fabric import (  # noqa: F401
+                """ADG contract: agentic_core/cache/redis_coordination_fabric.py must be importable."""
+
 
         pass  # Import verified at module level
 

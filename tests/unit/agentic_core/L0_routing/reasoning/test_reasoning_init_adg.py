@@ -7,9 +7,12 @@ pytestmark = pytest.mark.unit
 
 
 def test_module_importable():
-    import agentic_core.L0_routing.reasoning
-    import agentic_core.L0_routing.reasoning
-#  # MOVED: import agentic_core.L0_routing.reasoning
+        import agentic_core.L0_routing.reasoning
+        import agentic_core.L0_routing.reasoning
+        import agentic_core.L0_routing.reasoning
+    #  # MOVED: import agentic_core.L0_routing.reasoning
+        assert agentic_core.L0_routing.reasoning is not None
+
     assert agentic_core.L0_routing.reasoning is not None
 
 

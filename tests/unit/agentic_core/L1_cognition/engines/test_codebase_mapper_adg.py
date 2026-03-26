@@ -9,6 +9,8 @@ pytestmark = pytest.mark.unit
 
 
 def test_module_importable():
-    import agentic_core.L1_cognition.engines.codebase_mapper  # noqa: F401
-    """Module codebase_mapper must be importable."""
+        import agentic_core.L1_cognition.engines.codebase_mapper  # noqa: F401
+        """Module codebase_mapper must be importable."""
+        assert agentic_core.L1_cognition.engines.codebase_mapper is not None
+
     assert agentic_core.L1_cognition.engines.codebase_mapper is not None

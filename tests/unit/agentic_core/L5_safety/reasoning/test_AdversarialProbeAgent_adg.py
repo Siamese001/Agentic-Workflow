@@ -9,6 +9,8 @@ pytestmark = pytest.mark.unit
 
 
 def test_module_importable():
-    import agentic_core.L5_safety.reasoning.AdversarialProbeAgent  # noqa: F401
-    """Module AdversarialProbeAgent must be importable."""
+        import agentic_core.L5_safety.reasoning.AdversarialProbeAgent  # noqa: F401
+        """Module AdversarialProbeAgent must be importable."""
+        assert agentic_core.L5_safety.reasoning.AdversarialProbeAgent is not None
+
     assert agentic_core.L5_safety.reasoning.AdversarialProbeAgent is not None

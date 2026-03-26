@@ -301,15 +301,17 @@ class TestOutcomeSinkWiring:
     """Verify emit-only wiring via injected outcome_sink."""
 
     def test_success_emits_exactly_one_event(self) -> None:
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.L2_execution.healers.healing_tier_config import (
-        from agentic_core.L2_execution.healers.healing_tier_dispatcher import (
-        from agentic_core.L2_execution.healers.healing_tier_types import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from system_learning.types.healing_outcome_types import HealingOutcomeEvent
-        """On successful invocation, exactly one event with success=True is emitted."""
-        sink = FakeOutcomeSink()
-        config = load_default_healing_tier_config()
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L2_execution.healers.healing_tier_config import (
+                from agentic_core.L2_execution.healers.healing_tier_dispatcher import (
+                from agentic_core.L2_execution.healers.healing_tier_types import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from system_learning.types.healing_outcome_types import HealingOutcomeEvent
+                """On successful invocation, exactly one event with success=True is emitted."""
+                sink = FakeOutcomeSink()
+                config = load_default_healing_tier_config()
+                inp = _make_input()
+
         inp = _make_input()
 
         decision, record = dispatch_healing(

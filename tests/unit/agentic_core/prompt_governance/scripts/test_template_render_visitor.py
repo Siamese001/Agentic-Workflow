@@ -26,7 +26,9 @@ pytestmark = pytest.mark.unit
 
 class TestTemplateRenderVisitorContract:
     def test_is_class(self):
-        from agentic_core.prompt_governance.scripts.template_render_visitor import (  # noqa: F401
+                from agentic_core.prompt_governance.scripts.template_render_visitor import (  # noqa: F401
+                assert isinstance(TemplateRenderVisitor, type)
+
         assert isinstance(TemplateRenderVisitor, type)
 
     def test_has_method_visit_FunctionDef(self):

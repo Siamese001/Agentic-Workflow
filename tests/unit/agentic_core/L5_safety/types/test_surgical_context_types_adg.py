@@ -5,6 +5,8 @@ from __future__ import annotations
 
 
 def test_module_importable():
-    import agentic_core.L5_safety.types.surgical_context_types  # noqa: F401
-    """Module surgical_context_types must be importable."""
+        import agentic_core.L5_safety.types.surgical_context_types  # noqa: F401
+        """Module surgical_context_types must be importable."""
+        assert agentic_core.L5_safety.types.surgical_context_types is not None
+
     assert agentic_core.L5_safety.types.surgical_context_types is not None

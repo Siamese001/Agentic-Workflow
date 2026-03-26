@@ -9,6 +9,8 @@ pytestmark = pytest.mark.unit
 
 
 def test_module_importable():
-    import agentic_core.L5_safety.enforcement.phase_acceptance_guardrail  # noqa: F401
-    """Module phase_acceptance_guardrail must be importable."""
+        import agentic_core.L5_safety.enforcement.phase_acceptance_guardrail  # noqa: F401
+        """Module phase_acceptance_guardrail must be importable."""
+        assert agentic_core.L5_safety.enforcement.phase_acceptance_guardrail is not None
+
     assert agentic_core.L5_safety.enforcement.phase_acceptance_guardrail is not None

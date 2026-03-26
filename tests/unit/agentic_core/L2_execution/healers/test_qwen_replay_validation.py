@@ -208,13 +208,15 @@ def invoke_qwen_via_healing_tier(healing_input: HealingInput) -> InvocationRecor
 
 
 def test_qwen_replay_determinism():
-    from agentic_core.L2_execution.healers.healing_tier_dispatcher import InvocationRecord
-    from agentic_core.L2_execution.healers.healing_tier_types import (
-    from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-    from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-    from agentic_core.L2_execution.healers.healing_tier_config import load_default_healing_tier_config
-    from agentic_core.L2_execution.healers.healing_tier_dispatcher import dispatch_healing
-    """Verify exact replay consistency across invocations."""
+        from agentic_core.L2_execution.healers.healing_tier_dispatcher import InvocationRecord
+        from agentic_core.L2_execution.healers.healing_tier_types import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L2_execution.healers.healing_tier_config import load_default_healing_tier_config
+        from agentic_core.L2_execution.healers.healing_tier_dispatcher import dispatch_healing
+        """Verify exact replay consistency across invocations."""
+        healing_input = create_deterministic_healing_input()
+
     healing_input = create_deterministic_healing_input()
 
     # Invoke Qwen twice with identical parameters

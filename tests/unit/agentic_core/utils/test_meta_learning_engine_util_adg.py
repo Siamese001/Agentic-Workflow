@@ -10,7 +10,9 @@ pytestmark = pytest.mark.unit
 
 class TestMetaLearningEngine:
     def test_importable(self):
-        from agentic_core.utils.meta_learning_engine_util import MetaLearningEngine
+                from agentic_core.utils.meta_learning_engine_util import MetaLearningEngine
+                assert callable(MetaLearningEngine)
+
         assert callable(MetaLearningEngine)
 
     def test_kg_bridge_default_none(self):

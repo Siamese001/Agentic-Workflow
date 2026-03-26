@@ -171,9 +171,11 @@ pytestmark = pytest.mark.unit
 
 class TestExecutionRelations:
     def test_is_frozenset(self):
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.adg.analysis.ImpactReport import _EXECUTION_RELATIONS, ImpactReport
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.adg.analysis.ImpactReport import _EXECUTION_RELATIONS, ImpactReport
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                assert isinstance(_EXECUTION_RELATIONS, frozenset)
+
         assert isinstance(_EXECUTION_RELATIONS, frozenset)
 
     def test_contains_imports(self):

@@ -170,20 +170,22 @@ pytestmark = pytest.mark.unit
 
 class TestActionNodeCore:
     def test_has_tool_map(self):
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.L2_execution.engines.action_node_core import ActionNodeCore
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-    """Test has_tool_map runtime behavior."""
-    # Arrange
-    # TODO: Set up test data for has_tool_map
-    test_data = {}  # Replace with actual test data
-    """Test creates runtime behavior."""
-    # Arrange
-    # TODO: Set up test data for creates
-    test_data = {}  # Replace with actual test data
-    """Test work_dir_resolved runtime behavior."""
-    # Arrange
-    # TODO: Set up test data for work_dir_resolved
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L2_execution.engines.action_node_core import ActionNodeCore
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+            """Test has_tool_map runtime behavior."""
+            # Arrange
+            # TODO: Set up test data for has_tool_map
+            test_data = {}  # Replace with actual test data
+            """Test creates runtime behavior."""
+            # Arrange
+            # TODO: Set up test data for creates
+            test_data = {}  # Replace with actual test data
+            """Test work_dir_resolved runtime behavior."""
+            # Arrange
+            # TODO: Set up test data for work_dir_resolved
+            test_data = {}  # Replace with actual test data
+
     test_data = {}  # Replace with actual test data
 
     # Act

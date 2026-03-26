@@ -11,14 +11,16 @@ from __future__ import annotations
 
 class TestToolsImportability:
     def test_module_importable(self) -> None:
-        import agentic_core.runtime.tools as _tools_mod  # noqa: F401
-    """Test module_importable runtime behavior."""
-    # Arrange
-    # TODO: Set up runtime environment
-    runtime_context = {}  # Replace with actual runtime context
-    """Test module_exposes_public_api runtime behavior."""
-    # Arrange
-    # TODO: Set up runtime environment
+                import agentic_core.runtime.tools as _tools_mod  # noqa: F401
+            """Test module_importable runtime behavior."""
+            # Arrange
+            # TODO: Set up runtime environment
+            runtime_context = {}  # Replace with actual runtime context
+            """Test module_exposes_public_api runtime behavior."""
+            # Arrange
+            # TODO: Set up runtime environment
+            runtime_context = {}  # Replace with actual runtime context
+
     runtime_context = {}  # Replace with actual runtime context
 
     # Act

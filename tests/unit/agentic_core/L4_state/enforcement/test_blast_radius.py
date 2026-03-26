@@ -28,8 +28,10 @@ pytestmark = pytest.mark.unit
 
 class TestBlastRadiusMetricsContract:
     def test_is_dataclass(self):
-        from agentic_core.L4_state.enforcement.blast_radius import (  # noqa: F401
-        import dataclasses
+                from agentic_core.L4_state.enforcement.blast_radius import (  # noqa: F401
+                import dataclasses
+                assert dataclasses.is_dataclass(BlastRadiusMetrics)
+
         assert dataclasses.is_dataclass(BlastRadiusMetrics)
 
     def test_is_frozen(self):

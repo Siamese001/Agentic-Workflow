@@ -173,17 +173,19 @@ pytestmark = pytest.mark.unit
 
 class TestExecutionMetrics:
     def test_creates(self):
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.L6_observability.types.monitor_types import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        m = ExecutionMetrics(
-            agent_name="TestAgent",
-            category="reasoning",
-            strategy_type="heal",
-            execution_time_ms=42.5,
-            success=True,
-        )
-        assert m.agent_name == "TestAgent"
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L6_observability.types.monitor_types import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                m = ExecutionMetrics(
+                    agent_name="TestAgent",
+                    category="reasoning",
+                    strategy_type="heal",
+                    execution_time_ms=42.5,
+                    success=True,
+                )
+                assert m.agent_name == "TestAgent"
+                assert m.success is True
+
         assert m.success is True
 
     def test_execution_time_stored(self):

@@ -9,6 +9,8 @@ pytestmark = pytest.mark.unit
 
 
 def test_module_importable():
-    import agentic_core.prompt_governance.scripts.synchronize_registry_hashes  # noqa: F401
-    """Module synchronize_registry_hashes must be importable."""
+        import agentic_core.prompt_governance.scripts.synchronize_registry_hashes  # noqa: F401
+        """Module synchronize_registry_hashes must be importable."""
+        assert agentic_core.prompt_governance.scripts.synchronize_registry_hashes is not None
+
     assert agentic_core.prompt_governance.scripts.synchronize_registry_hashes is not None

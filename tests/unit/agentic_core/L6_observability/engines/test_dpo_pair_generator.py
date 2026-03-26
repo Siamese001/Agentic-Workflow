@@ -26,7 +26,9 @@ pytestmark = pytest.mark.unit
 
 class TestBoundingViolationContract:
     def test_is_class(self):
-        from agentic_core.L6_observability.engines.dpo_pair_generator import (  # noqa: F401
+                from agentic_core.L6_observability.engines.dpo_pair_generator import (  # noqa: F401
+                assert isinstance(BoundingViolation, type)
+
         assert isinstance(BoundingViolation, type)
 
     def test_instantiable_or_abstract(self):

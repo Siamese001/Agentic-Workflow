@@ -14,17 +14,19 @@ pytestmark = pytest.mark.unit
 
 class TestExecutionContracts:
     def test_module_importable(self):
-        from agentic_core.interfaces.execution_contracts import (
-    """Test module_importable runtime behavior."""
-    # Arrange
-    # TODO: Set up test data for module_importable
-    test_data = {}  # Replace with actual test data
-    """Test available_is_bool runtime behavior."""
-    # Arrange
-    # TODO: Set up test data for available_is_bool
-    """Test agent_output_contract_present runtime behavior."""
-    # Arrange
-    # TODO: Set up test data for agent_output_contract_present
+                from agentic_core.interfaces.execution_contracts import (
+            """Test module_importable runtime behavior."""
+            # Arrange
+            # TODO: Set up test data for module_importable
+            test_data = {}  # Replace with actual test data
+            """Test available_is_bool runtime behavior."""
+            # Arrange
+            # TODO: Set up test data for available_is_bool
+            """Test agent_output_contract_present runtime behavior."""
+            # Arrange
+            # TODO: Set up test data for agent_output_contract_present
+            test_data = {}  # Replace with actual test data
+
     test_data = {}  # Replace with actual test data
 
     # Act

@@ -175,20 +175,23 @@ class TestMCPHardenedMixin:
     """mcp_hardened_mixin.py — backwards-compat shim over MCPOperationMixin."""
 
     def test_class_importable(self):
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.mixins.mcp_hardened_mixin import MCPHardenedMixin
-        from agentic_core.mixins.mcp_hardened_mixin import mcp_hardened_mixin
-        from agentic_core.mixins.mcp_hardened_mixin import MCPHardenedMixin
-        from agentic_core.mixins.mcp_operation_mixin import MCPOperationMixin
-        from agentic_core.mixins.mcp_hardened_mixin import MCPHardenedMixin
-        from agentic_core.mixins.mcp_hardened_mixin import MCPHardenedMixin, mcp_hardened_mixin
-        from agentic_core.mixins.mcp_hardened_mixin import MCPHardenedMixin
-        from agentic_core.mixins.subatomic_testing_mixin import SubatomicTestingMixin
-        from agentic_core.mixins.subatomic_testing_mixin import SubatomicTestingMixin
-        from agentic_core.mixins.subatomic_testing_mixin import SubatomicTestingMixin
-        from agentic_core.mixins.subatomic_testing_mixin import SubatomicTestingMixin
-#  # MOVED: from agentic_core.mixins.mcp_hardened_mixin import MCPHardenedMixin
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.mixins.mcp_hardened_mixin import MCPHardenedMixin
+                from agentic_core.mixins.mcp_hardened_mixin import mcp_hardened_mixin
+                from agentic_core.mixins.mcp_hardened_mixin import MCPHardenedMixin
+                from agentic_core.mixins.mcp_operation_mixin import MCPOperationMixin
+                from agentic_core.mixins.mcp_hardened_mixin import MCPHardenedMixin
+                from agentic_core.mixins.mcp_hardened_mixin import MCPHardenedMixin, mcp_hardened_mixin
+                from agentic_core.mixins.mcp_hardened_mixin import MCPHardenedMixin
+                from agentic_core.mixins.subatomic_testing_mixin import SubatomicTestingMixin
+                from agentic_core.mixins.subatomic_testing_mixin import SubatomicTestingMixin
+                from agentic_core.mixins.subatomic_testing_mixin import SubatomicTestingMixin
+                from agentic_core.mixins.subatomic_testing_mixin import SubatomicTestingMixin
+                from agentic_core.mixins.subatomic_testing_mixin import SubatomicTestingMixin
+        #  # MOVED: from agentic_core.mixins.mcp_hardened_mixin import MCPHardenedMixin
+                assert callable(MCPHardenedMixin)
+
         assert callable(MCPHardenedMixin)
 
     def test_snake_case_alias_importable(self):

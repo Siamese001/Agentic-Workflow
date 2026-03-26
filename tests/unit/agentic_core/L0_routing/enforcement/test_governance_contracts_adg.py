@@ -13,13 +13,15 @@ from __future__ import annotations
 
 class TestGovernanceContractsImportability:
     def test_module_importable(self) -> None:
-        from agentic_core.L0_routing.enforcement.governance_contracts import (
-    """Test module_importable contract compliance."""
-    # Arrange
-    # TODO: Set up contract parties and terms
     contract_terms = {}  # Replace with actual contract terms
 
 """Test evidencepackerror_defined contract compliance."""
+                from agentic_core.L0_routing.enforcement.governance_contracts import (
+            """Test module_importable contract compliance."""
+            # Arrange
+            # TODO: Set up contract parties and terms
+            contract_terms = {}  # Replace with actual contract terms
+
 # Arrange
 # TODO: Set up contract parties and terms
 """Test policyexceptionerror_defined contract compliance."""

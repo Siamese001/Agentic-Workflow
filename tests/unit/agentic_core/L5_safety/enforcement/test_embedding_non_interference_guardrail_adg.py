@@ -5,6 +5,8 @@ from __future__ import annotations
 
 
 def test_module_importable():
-    import agentic_core.L5_safety.enforcement.embedding_non_interference_guardrail  # noqa: F401
-    """Module embedding_non_interference_guardrail must be importable."""
+        import agentic_core.L5_safety.enforcement.embedding_non_interference_guardrail  # noqa: F401
+        """Module embedding_non_interference_guardrail must be importable."""
+        assert agentic_core.L5_safety.enforcement.embedding_non_interference_guardrail is not None
+
     assert agentic_core.L5_safety.enforcement.embedding_non_interference_guardrail is not None

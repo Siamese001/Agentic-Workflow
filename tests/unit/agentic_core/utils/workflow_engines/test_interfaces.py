@@ -26,14 +26,16 @@ pytestmark = pytest.mark.unit
 
 class TestDocumentContract:
     def test_is_dataclass(self):
-        from agentic_core.utils.workflow_engines.interfaces import (  # noqa: F401
-    """Test is_dataclass runtime behavior."""
-    # Arrange
-    # TODO: Set up test data for is_dataclass
-    test_data = {}  # Replace with actual test data
-    """Test field_names_present runtime behavior."""
-    # Arrange
-    # TODO: Set up test data for field_names_present
+                from agentic_core.utils.workflow_engines.interfaces import (  # noqa: F401
+            """Test is_dataclass runtime behavior."""
+            # Arrange
+            # TODO: Set up test data for is_dataclass
+            test_data = {}  # Replace with actual test data
+            """Test field_names_present runtime behavior."""
+            # Arrange
+            # TODO: Set up test data for field_names_present
+            test_data = {}  # Replace with actual test data
+
     test_data = {}  # Replace with actual test data
 
     # Act

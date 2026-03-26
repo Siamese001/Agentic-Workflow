@@ -191,12 +191,14 @@ pytestmark = pytest.mark.unit
 
 class TestWriteFileHardBlock:
     def test_blocked_extension_raises(self):
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.L2_execution.UniversalWriteGateway import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-    """Test blocked_extension_raises runtime behavior."""
-    # Arrange
-    # TODO: Set up test data for blocked_extension_raises
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L2_execution.UniversalWriteGateway import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+            """Test blocked_extension_raises runtime behavior."""
+            # Arrange
+            # TODO: Set up test data for blocked_extension_raises
+            test_data = {}  # Replace with actual test data
+
     test_data = {}  # Replace with actual test data
 
     # Act

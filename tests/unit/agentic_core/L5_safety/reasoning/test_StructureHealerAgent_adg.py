@@ -9,6 +9,8 @@ pytestmark = pytest.mark.unit
 
 
 def test_module_importable():
-    import agentic_core.L5_safety.reasoning.StructureHealerAgent  # noqa: F401
-    """Module StructureHealerAgent must be importable."""
+        import agentic_core.L5_safety.reasoning.StructureHealerAgent  # noqa: F401
+        """Module StructureHealerAgent must be importable."""
+        assert agentic_core.L5_safety.reasoning.StructureHealerAgent is not None
+
     assert agentic_core.L5_safety.reasoning.StructureHealerAgent is not None

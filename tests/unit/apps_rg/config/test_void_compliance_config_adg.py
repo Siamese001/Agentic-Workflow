@@ -5,9 +5,10 @@ import pytest
 
 pytestmark = pytest.mark.unit
 
-import apps_rg.config.void_compliance_config  # noqa: F401
 
 
 def test_module_importable():
     """Module void_compliance_config must be importable."""
+    import apps_rg.config.void_compliance_config  # noqa: F401
+
     assert apps_rg.config.void_compliance_config is not None

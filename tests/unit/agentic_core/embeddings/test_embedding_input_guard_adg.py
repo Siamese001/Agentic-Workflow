@@ -177,9 +177,11 @@ pytestmark = pytest.mark.unit
 
 class TestEmbeddingInputViolation:
     def test_is_value_error(self):
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.embeddings.embedding_input_guard import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.embeddings.embedding_input_guard import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                assert issubclass(EmbeddingInputViolation, ValueError)
+
         assert issubclass(EmbeddingInputViolation, ValueError)
 
     def test_raises_with_message(self):

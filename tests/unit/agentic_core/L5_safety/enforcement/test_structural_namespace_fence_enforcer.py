@@ -27,7 +27,9 @@ pytestmark = pytest.mark.unit
 
 class TestProvenanceTrackerContract:
     def test_is_class(self):
-        from agentic_core.L5_safety.enforcement.structural_namespace_fence_enforcer import (  # noqa: F401
+                from agentic_core.L5_safety.enforcement.structural_namespace_fence_enforcer import (  # noqa: F401
+                assert isinstance(ProvenanceTracker, type)
+
         assert isinstance(ProvenanceTracker, type)
 
     def test_has_method_register(self):

@@ -172,15 +172,17 @@ pytestmark = pytest.mark.unit
 
 class TestStaleSignatureViolation:
     def test_is_exception(self):
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.L2_execution.healers.signature_invalidator import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-    """Test is_exception runtime behavior."""
-    # Arrange
-    # TODO: Set up error condition
     error_input = {}  # Replace with actual error condition
 
 """Test is_named_tuple runtime behavior."""
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L2_execution.healers.signature_invalidator import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+            """Test is_exception runtime behavior."""
+            # Arrange
+            # TODO: Set up error condition
+            error_input = {}  # Replace with actual error condition
+
 # Arrange
 # TODO: Set up test data for is_named_tuple
 test_data = {}  # Replace with actual test data

@@ -5,9 +5,10 @@ import pytest
 
 pytestmark = pytest.mark.unit
 
-import apps_shared.validators.knowledge_result_validator  # noqa: F401
 
 
 def test_module_importable():
     """Module knowledge_result_validator must be importable."""
+    import apps_shared.validators.knowledge_result_validator  # noqa: F401
+
     assert apps_shared.validators.knowledge_result_validator is not None

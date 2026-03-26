@@ -173,11 +173,13 @@ pytestmark = pytest.mark.unit
 
 class TestGitHygieneAgentInit:
     def test_creates(self):
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.L5_safety.reasoning.GitHygieneAgent import GitHygieneAgent
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        ctx = MagicMock()
-        agent = GitHygieneAgent(project_root=Path("."), ctx=ctx)
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L5_safety.reasoning.GitHygieneAgent import GitHygieneAgent
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                ctx = MagicMock()
+                agent = GitHygieneAgent(project_root=Path("."), ctx=ctx)
+                assert agent is not None
+
         assert agent is not None
 
     def test_project_root_stored(self):

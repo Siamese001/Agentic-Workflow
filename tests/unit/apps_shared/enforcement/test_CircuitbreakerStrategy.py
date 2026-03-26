@@ -10,25 +10,26 @@ import pytest
 
 pytestmark = pytest.mark.unit
 
-from apps_shared.enforcement.CircuitbreakerStrategy import (  # noqa: F401
-    BATCH_SIZE,
-    BUFFER_SIZE,
-    DEFAULT_SLEEP,
-    MAX_RETRIES,
-    THRESHOLD,
-    CircuitBreaker,
-    CircuitBreakerConfig,
-    CircuitBreakerFactory,
-    CircuitOpenError,
-    CircuitState,
-    CriticalServiceFailure,
-    get_circuit_breaker,
-    with_circuit_breaker,
-)
 
 
 class TestCircuitStateContract:
     def test_is_enum(self):
+        from apps_shared.enforcement.CircuitbreakerStrategy import (  # noqa: F401
+            BATCH_SIZE,
+            BUFFER_SIZE,
+            DEFAULT_SLEEP,
+            MAX_RETRIES,
+            THRESHOLD,
+            CircuitBreaker,
+            CircuitBreakerConfig,
+            CircuitBreakerFactory,
+            CircuitOpenError,
+            CircuitState,
+            CriticalServiceFailure,
+            get_circuit_breaker,
+            with_circuit_breaker,
+        )
+
         import enum
         assert issubclass(CircuitState, enum.Enum)
 

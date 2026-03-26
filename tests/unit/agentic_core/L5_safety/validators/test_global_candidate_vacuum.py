@@ -230,11 +230,13 @@ class TestGlobalCandidateVacuum:
     """
 
     def test_generic_utility_is_vacuumed(self):
-        from agentic_core.L5_safety.config.structure_blueprint import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.L5_safety.config.structure_blueprint import (
-        """100% PASS: Ensures 'date_helper.py' in apps_lic is flagged for apps_shared."""
+                from agentic_core.L5_safety.config.structure_blueprint import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L5_safety.config.structure_blueprint import (
+                """100% PASS: Ensures 'date_helper.py' in apps_lic is flagged for apps_shared."""
+                rel_path = Path("apps_lic/engines/date_helper.py")
+
         rel_path = Path("apps_lic/engines/date_helper.py")
 
         # Simulate generic DNA (app_rg=0.1, app_lic=0.1)

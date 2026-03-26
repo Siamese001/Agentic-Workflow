@@ -170,19 +170,21 @@ pytestmark = pytest.mark.unit
 
 class TestPhaseSpec:
     def test_is_dataclass(self):
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.L2_execution.types.l2_phase_spec import PhaseSpec
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-    """Test is_dataclass runtime behavior."""
-    # Arrange
-    # TODO: Set up test data for is_dataclass
-    test_data = {}  # Replace with actual test data
-    """Test is_frozen runtime behavior."""
-    # Arrange
-    # TODO: Set up test data for is_frozen
     test_data = {}  # Replace with actual test data
 
 """Test creates_with_name runtime behavior."""
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L2_execution.types.l2_phase_spec import PhaseSpec
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+            """Test is_dataclass runtime behavior."""
+            # Arrange
+            # TODO: Set up test data for is_dataclass
+            test_data = {}  # Replace with actual test data
+            """Test is_frozen runtime behavior."""
+            # Arrange
+            # TODO: Set up test data for is_frozen
+            test_data = {}  # Replace with actual test data
+
 # Arrange
 # TODO: Set up test data for creates_with_name
 test_data = {}  # Replace with actual test data

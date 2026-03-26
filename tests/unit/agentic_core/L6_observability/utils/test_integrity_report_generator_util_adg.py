@@ -9,6 +9,8 @@ pytestmark = pytest.mark.unit
 
 
 def test_module_importable():
-    import agentic_core.L6_observability.utils.integrity_report_generator_util  # noqa: F401
-    """Module integrity_report_generator_util must be importable."""
+        import agentic_core.L6_observability.utils.integrity_report_generator_util  # noqa: F401
+        """Module integrity_report_generator_util must be importable."""
+        assert agentic_core.L6_observability.utils.integrity_report_generator_util is not None
+
     assert agentic_core.L6_observability.utils.integrity_report_generator_util is not None

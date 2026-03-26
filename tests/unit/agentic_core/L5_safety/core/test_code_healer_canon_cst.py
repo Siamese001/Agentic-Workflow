@@ -165,12 +165,14 @@ class TestCanonHealingCST:
     """Test CST-based canon healing operations."""
 
     def test_future_import_insertion(self):
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.L5_safety.types.cst_transformers_types import (
-        from agentic_core.L5_safety.types.surgical_context_types import (
-        from agentic_core.mixins.cst_healer_mixin import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        """Test that __future__ import is correctly inserted."""
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L5_safety.types.cst_transformers_types import (
+                from agentic_core.L5_safety.types.surgical_context_types import (
+                from agentic_core.mixins.cst_healer_mixin import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                """Test that __future__ import is correctly inserted."""
+                source_code = """# Module comment
+
         source_code = """# Module comment
 import os
 

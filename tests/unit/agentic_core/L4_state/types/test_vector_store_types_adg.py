@@ -172,9 +172,11 @@ pytestmark = pytest.mark.unit
 
 class TestBaseVectorStore:
     def test_is_abstract(self):
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.L4_state.types.vector_store_types import BaseVectorStore
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L4_state.types.vector_store_types import BaseVectorStore
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                assert inspect.isabstract(BaseVectorStore)
+
         assert inspect.isabstract(BaseVectorStore)
 
     def test_has_initialize(self):

@@ -10,10 +10,12 @@ import pytest
 
 
 def test_FilesystemSSOTReconcilerAgent_can_import():
-    import agentic_core.L5_safety.reasoning.filesystem_ssot_reconciler
-    import agentic_core.L5_safety.reasoning.filesystem_ssot_reconciler
-    """Test that the module can be imported successfully."""
-    # This is a basic smoke test to ensure the module is importable
+        import agentic_core.L5_safety.reasoning.filesystem_ssot_reconciler
+        import agentic_core.L5_safety.reasoning.filesystem_ssot_reconciler
+        """Test that the module can be imported successfully."""
+        # This is a basic smoke test to ensure the module is importable
+        assert agentic_core.L5_safety.reasoning.filesystem_ssot_reconciler is not None
+
     assert agentic_core.L5_safety.reasoning.filesystem_ssot_reconciler is not None
 
 

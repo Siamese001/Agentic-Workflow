@@ -17,13 +17,15 @@ except (ValueError, TypeError, RuntimeError) as e:
 class TestIsAgentFile:
 
     def test_is_callable(self):
-        from agentic_core.L0_routing.scripts.extract_agent_duplicates_util import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, MAX_DEPTH, MAX_RETRIES, THRESHOLD, infer_rationale, is_agent_file
-    """Test is_callable runtime behavior."""
-    # Arrange
-    # TODO: Set up execution parameters
     input_data = {}  # Replace with actual test data
 
 """Test is_callable runtime behavior."""
+                from agentic_core.L0_routing.scripts.extract_agent_duplicates_util import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, MAX_DEPTH, MAX_RETRIES, THRESHOLD, infer_rationale, is_agent_file
+            """Test is_callable runtime behavior."""
+            # Arrange
+            # TODO: Set up execution parameters
+            input_data = {}  # Replace with actual test data
+
 # Arrange
 # TODO: Set up execution parameters
 input_data = {}  # Replace with actual test data

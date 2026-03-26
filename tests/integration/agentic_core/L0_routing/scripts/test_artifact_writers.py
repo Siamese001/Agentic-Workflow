@@ -175,17 +175,20 @@ import pytest
 
 
 def test_write_run_manifest_json_structure(tmp_path):
-    from agentic_core.L0_routing.config.path_constants import APPS_SHARED_DIR
-    from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-    from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-    from agentic_core.L0_routing.scripts.execute_ssot import _write_decision_summary_json
-    from agentic_core.L0_routing.scripts.execute_ssot import _write_decision_summary_json
-    from agentic_core.L0_routing.scripts.execute_ssot import _write_artifact_integrity_json
-    from agentic_core.L0_routing.scripts.execute_ssot import _write_artifact_integrity_json
-    from agentic_core.L0_routing.scripts.execute_ssot import _write_artifact_integrity_json
-    from agentic_core.L0_routing.scripts.execute_ssot import (
-    from agentic_core.L0_routing.scripts.execute_ssot import (
 """Test write_run_manifest_json_structure runtime behavior."""
+        from agentic_core.L0_routing.config.path_constants import APPS_SHARED_DIR
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L0_routing.scripts.execute_ssot import _write_decision_summary_json
+        from agentic_core.L0_routing.scripts.execute_ssot import _write_decision_summary_json
+        from agentic_core.L0_routing.scripts.execute_ssot import _write_artifact_integrity_json
+        from agentic_core.L0_routing.scripts.execute_ssot import _write_artifact_integrity_json
+        from agentic_core.L0_routing.scripts.execute_ssot import _write_artifact_integrity_json
+        from agentic_core.L0_routing.scripts.execute_ssot import (
+        from agentic_core.L0_routing.scripts.execute_ssot import (
+        from agentic_core.L0_routing.scripts.execute_ssot import (
+    """Test write_run_manifest_json_structure runtime behavior."""
+
 # Arrange
 # TODO: Set up execution parameters
 input_data = {}  # Replace with actual test data

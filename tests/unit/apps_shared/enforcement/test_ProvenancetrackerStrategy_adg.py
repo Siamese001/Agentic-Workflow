@@ -5,9 +5,10 @@ import pytest
 
 pytestmark = pytest.mark.unit
 
-import apps_shared.enforcement.ProvenancetrackerStrategy  # noqa: F401
 
 
 def test_module_importable():
     """Module ProvenancetrackerStrategy must be importable."""
+    import apps_shared.enforcement.ProvenancetrackerStrategy  # noqa: F401
+
     assert apps_shared.enforcement.ProvenancetrackerStrategy is not None

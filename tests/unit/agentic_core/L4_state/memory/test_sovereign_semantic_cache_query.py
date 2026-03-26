@@ -205,15 +205,17 @@ class TestSovereignSemanticCacheQuery(unittest.TestCase):
             cache._vector_store._ordered_ids.append(key)
 
     def test_query_returns_empty_when_kill_switch_active(self):
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.L4_state.types.memory_item_types import MemoryItem
-        from agentic_core.L4_state.memory.sovereign_semantic_cache import (
-        """query() must return [] when EMBEDDING_ENABLED=false."""
-        with patch.dict(os.environ, {"EMBEDDING_ENABLED": "false"}):
-            cache = self._make_cache()
-            self._inject(cache, "key1", [0.1, 0.2, 0.3], {"path": "foo.py"}, "canon-files")
-            result = cache.query("some query text")
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L4_state.types.memory_item_types import MemoryItem
+                from agentic_core.L4_state.memory.sovereign_semantic_cache import (
+                """query() must return [] when EMBEDDING_ENABLED=false."""
+                with patch.dict(os.environ, {"EMBEDDING_ENABLED": "false"}):
+                    cache = self._make_cache()
+                    self._inject(cache, "key1", [0.1, 0.2, 0.3], {"path": "foo.py"}, "canon-files")
+                    result = cache.query("some query text")
+                    self.assertEqual(result, [])
+
             self.assertEqual(result, [])
 
     def test_query_returns_empty_when_store_empty(self):

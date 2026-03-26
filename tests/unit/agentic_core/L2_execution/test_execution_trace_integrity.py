@@ -164,10 +164,12 @@ def _complete_trace() -> ExecutionTrace:
 
 class TestValidateCompleteness:
     def test_complete_trace_passes(self):
-        from agentic_core.L2_execution.types.execution_trace_types import ExecutionTrace, ExecutionTraceBuilder
-        from agentic_core.L5_safety.types.hardening_errors import ExecutionTraceIntegrityError
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        trace = _complete_trace()
+                from agentic_core.L2_execution.types.execution_trace_types import ExecutionTrace, ExecutionTraceBuilder
+                from agentic_core.L5_safety.types.hardening_errors import ExecutionTraceIntegrityError
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                trace = _complete_trace()
+                trace.validate_completeness()
+
         trace.validate_completeness()
 
     def test_empty_governed_payload_raises(self):

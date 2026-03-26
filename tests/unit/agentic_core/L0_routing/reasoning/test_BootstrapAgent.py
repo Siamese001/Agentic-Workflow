@@ -10,10 +10,12 @@ import pytest
 
 
 def test_BootstrapAgent_can_import():
-    import agentic_core.L5_safety.reasoning.BootstrapAgent
-    import agentic_core.L5_safety.reasoning.BootstrapAgent
-    """Test that the module can be imported successfully."""
-    # This is a basic smoke test to ensure the module is importable
+        import agentic_core.L5_safety.reasoning.BootstrapAgent
+        import agentic_core.L5_safety.reasoning.BootstrapAgent
+        """Test that the module can be imported successfully."""
+        # This is a basic smoke test to ensure the module is importable
+        assert agentic_core.L5_safety.reasoning.BootstrapAgent is not None
+
     assert agentic_core.L5_safety.reasoning.BootstrapAgent is not None
 
 

@@ -9,6 +9,8 @@ pytestmark = pytest.mark.unit
 
 
 def test_module_importable():
-    import agentic_core.L2_execution.types.vm_status_types  # noqa: F401
-    """Module vm_status_types must be importable."""
+        import agentic_core.L2_execution.types.vm_status_types  # noqa: F401
+        """Module vm_status_types must be importable."""
+        assert agentic_core.L2_execution.types.vm_status_types is not None
+
     assert agentic_core.L2_execution.types.vm_status_types is not None

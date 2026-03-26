@@ -5,9 +5,10 @@ import pytest
 
 pytestmark = pytest.mark.unit
 
-import apps_shared.validators.talent_signal_enhancer_validator  # noqa: F401
 
 
 def test_module_importable():
     """Module talent_signal_enhancer_validator must be importable."""
+    import apps_shared.validators.talent_signal_enhancer_validator  # noqa: F401
+
     assert apps_shared.validators.talent_signal_enhancer_validator is not None

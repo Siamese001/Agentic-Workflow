@@ -173,10 +173,12 @@ pytestmark = pytest.mark.unit
 
 class TestGetPythonFilesFast:
     def test_returns_list(self, tmp_path):
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.L5_safety.validators.PascalSovereigntyAgent import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        result = get_python_files_fast(tmp_path)
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L5_safety.validators.PascalSovereigntyAgent import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                result = get_python_files_fast(tmp_path)
+                assert isinstance(result, list)
+
         assert isinstance(result, list)
 
     def test_finds_py_files(self, tmp_path):

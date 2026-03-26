@@ -9,6 +9,8 @@ pytestmark = pytest.mark.unit
 
 
 def test_module_importable():
-    import agentic_core.L4_state.engines.replay_bundle_emitter  # noqa: F401
-    """Module replay_bundle_emitter must be importable."""
+        import agentic_core.L4_state.engines.replay_bundle_emitter  # noqa: F401
+        """Module replay_bundle_emitter must be importable."""
+        assert agentic_core.L4_state.engines.replay_bundle_emitter is not None
+
     assert agentic_core.L4_state.engines.replay_bundle_emitter is not None

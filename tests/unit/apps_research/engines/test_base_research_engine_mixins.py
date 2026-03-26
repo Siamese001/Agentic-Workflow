@@ -13,24 +13,27 @@ class TestBaseResearchEngineMixins(unittest.TestCase):
     """Verify mixin wiring on BaseResearchEngine."""
 
     def _make_engine(self):
-        from apps_research.engines.base_research_engine import BaseResearchEngine
-
-        class ConcreteResearchEngine(BaseResearchEngine):
-            def execute(self, input_data):
                 return input_data
 
         return ConcreteResearchEngine()
 
     def test_inherits_semantic_cache_mixin(self):
-        from agentic_core.mixins.semantic_cache_mixin import SemanticCacheMixin
-        from apps_research.engines.base_research_engine import BaseResearchEngine
+                from apps_research.engines.base_research_engine import BaseResearchEngine
+                class ConcreteResearchEngine(BaseResearchEngine):
+                    def execute(self, input_data):
+                        return input_data
+                from agentic_core.mixins.semantic_cache_mixin import SemanticCacheMixin
+                from apps_research.engines.base_research_engine import BaseResearchEngine
+                from apps_research.engines.base_research_engine import BaseResearchEngine
+                self.assertTrue(issubclass(BaseResearchEngine, SemanticCacheMixin))
+                from agentic_core.mixins.embedding_mixin import EmbeddingMixin
+                from apps_research.engines.base_research_engine import BaseResearchEngine
+                from apps_research.engines.base_research_engine import BaseResearchEngine
+                self.assertTrue(issubclass(BaseResearchEngine, EmbeddingMixin))
 
         self.assertTrue(issubclass(BaseResearchEngine, SemanticCacheMixin))
 
     def test_inherits_embedding_mixin(self):
-        from agentic_core.mixins.embedding_mixin import EmbeddingMixin
-        from apps_research.engines.base_research_engine import BaseResearchEngine
-
         self.assertTrue(issubclass(BaseResearchEngine, EmbeddingMixin))
 
     def test_semantic_namespace_set(self):

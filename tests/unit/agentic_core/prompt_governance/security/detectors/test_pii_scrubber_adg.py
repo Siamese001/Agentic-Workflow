@@ -170,10 +170,12 @@ pytestmark = pytest.mark.unit
 
 class TestPIIScrubber:
     def test_scrub_empty_string(self):
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.prompt_governance.security.detectors.pii_scrubber import PIIScrubber
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        scrubber = PIIScrubber()
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.prompt_governance.security.detectors.pii_scrubber import PIIScrubber
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                scrubber = PIIScrubber()
+                assert scrubber.scrub("") == ""
+
         assert scrubber.scrub("") == ""
 
     def test_scrub_email(self):

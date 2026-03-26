@@ -10,26 +10,27 @@ import pytest
 
 pytestmark = pytest.mark.unit
 
-from apps_shared.utils.performance_monitor_types_util import (  # noqa: F401
-    BATCH_SIZE,
-    BUFFER_SIZE,
-    DEFAULT_SLEEP,
-    MAX_RETRIES,
-    THRESHOLD,
-    MetricsCollector,
-    MetricsSummary,
-    OperationTimer,
-    PerformanceMonitor,
-    PerformanceThresholds,
-    TimingMetric,
-    get_performance_monitor,
-    timed,
-)
 
 
 class TestTimingMetricContract:
     def test_is_dataclass(self):
     """Test is_dataclass runtime behavior."""
+        from apps_shared.utils.performance_monitor_types_util import (  # noqa: F401
+            BATCH_SIZE,
+            BUFFER_SIZE,
+            DEFAULT_SLEEP,
+            MAX_RETRIES,
+            THRESHOLD,
+            MetricsCollector,
+            MetricsSummary,
+            OperationTimer,
+            PerformanceMonitor,
+            PerformanceThresholds,
+            TimingMetric,
+            get_performance_monitor,
+            timed,
+        )
+
     # Arrange
     # TODO: Set up test data for is_dataclass
     test_data = {}  # Replace with actual test data

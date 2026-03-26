@@ -193,11 +193,14 @@ def _make_env(**kwargs) -> SandboxEnvelope:
 
 
 def test_default_budget_present():
-    from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-    from agentic_core.L2_execution.enforcement.key_source import (
-    from agentic_core.L2_execution.types.sandbox_envelope_types import (
-    from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 """Test default_budget_present runtime behavior."""
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L2_execution.enforcement.key_source import (
+        from agentic_core.L2_execution.types.sandbox_envelope_types import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+    """Test default_budget_present runtime behavior."""
+
 # Arrange
 # TODO: Set up test data for default_budget_present
 test_data = {}  # Replace with actual test data

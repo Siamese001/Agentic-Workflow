@@ -172,12 +172,14 @@ pytestmark = pytest.mark.unit
 
 class TestCheckDarkReasoning:
     def test_returns_list(self, tmp_path):
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.L1_cognition.validators.dark_reasoning_visitor_validator import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        dummy = tmp_path / "dummy.py"
-        dummy.write_text("x = 1\n")
-        result = check_dark_reasoning(dummy)
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L1_cognition.validators.dark_reasoning_visitor_validator import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                dummy = tmp_path / "dummy.py"
+                dummy.write_text("x = 1\n")
+                result = check_dark_reasoning(dummy)
+                assert isinstance(result, list)
+
         assert isinstance(result, list)
 
     def test_non_l1_l2_l3_returns_empty(self, tmp_path):

@@ -10,22 +10,23 @@ import pytest
 
 pytestmark = pytest.mark.unit
 
-from apps_shared.utils.signal_weighter_util import (  # noqa: F401
-    BATCH_SIZE,
-    BUFFER_SIZE,
-    DEFAULT_SLEEP,
-    MAX_RETRIES,
-    THRESHOLD,
-    SignalWeighter,
-    SignalWeights,
-    WeightingResult,
-    create_signal_weighter,
-    weight_results,
-)
 
 
 class TestSignalWeightsContract:
     def test_is_class(self):
+        from apps_shared.utils.signal_weighter_util import (  # noqa: F401
+            BATCH_SIZE,
+            BUFFER_SIZE,
+            DEFAULT_SLEEP,
+            MAX_RETRIES,
+            THRESHOLD,
+            SignalWeighter,
+            SignalWeights,
+            WeightingResult,
+            create_signal_weighter,
+            weight_results,
+        )
+
         assert isinstance(SignalWeights, type)
 
     def test_has_method_as_dict(self):

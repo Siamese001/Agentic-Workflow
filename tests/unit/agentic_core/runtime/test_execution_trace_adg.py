@@ -168,12 +168,14 @@ pytestmark = pytest.mark.unit
 
 class TestExecutionTrace:
     def test_creates(self):
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.runtime.execution_trace import ExecutionTrace, ExecutionTraceManager
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-    """Test creates runtime behavior."""
-    # Arrange
-    # TODO: Set up runtime environment
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.runtime.execution_trace import ExecutionTrace, ExecutionTraceManager
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+            """Test creates runtime behavior."""
+            # Arrange
+            # TODO: Set up runtime environment
+            runtime_context = {}  # Replace with actual runtime context
+
     runtime_context = {}  # Replace with actual runtime context
 
     # Act

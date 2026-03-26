@@ -10,22 +10,23 @@ import pytest
 
 pytestmark = pytest.mark.unit
 
-from apps_shared.scripts.fix_syntax_errors import (  # noqa: F401
-    BATCH_SIZE,
-    BUFFER_SIZE,
-    DEFAULT_SLEEP,
-    MAX_RETRIES,
-    THRESHOLD,
-    check_syntax,
-    fix_fstring_errors,
-    fix_indentation_errors,
-    fix_multiline_strings,
-)
 
 
 class TestFixMultilineStringsFunction:
     def test_is_callable(self):
     """Test is_callable runtime behavior."""
+        from apps_shared.scripts.fix_syntax_errors import (  # noqa: F401
+            BATCH_SIZE,
+            BUFFER_SIZE,
+            DEFAULT_SLEEP,
+            MAX_RETRIES,
+            THRESHOLD,
+            check_syntax,
+            fix_fstring_errors,
+            fix_indentation_errors,
+            fix_multiline_strings,
+        )
+
     # Arrange
     # TODO: Set up execution parameters
     input_data = {}  # Replace with actual test data

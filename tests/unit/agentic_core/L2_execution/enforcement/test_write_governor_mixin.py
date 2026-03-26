@@ -181,14 +181,16 @@ class _Agent(WriteGovernorMixin):
 
 class TestWriteGovernorMixinAllowedPaths:
     def test_governed_write_allowed_path_returns_mutation_record(self):
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.L2_execution.enforcement.write_governor_mixin import WriteGovernorMixin
-        from agentic_core.L2_execution.UniversalWriteGateway import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        agent = _Agent()
-        agent.set_write_gateway(UniversalWriteGateway(replay_mode=False))
-        result = agent.governed_write("artifacts/output.json", b"{}")
-        assert isinstance(result, MutationRecord)
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L2_execution.enforcement.write_governor_mixin import WriteGovernorMixin
+                from agentic_core.L2_execution.UniversalWriteGateway import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                agent = _Agent()
+                agent.set_write_gateway(UniversalWriteGateway(replay_mode=False))
+                result = agent.governed_write("artifacts/output.json", b"{}")
+                assert isinstance(result, MutationRecord)
+                assert result.permitted is True
+
         assert result.permitted is True
 
     def test_governed_write_str_data_encoded(self):

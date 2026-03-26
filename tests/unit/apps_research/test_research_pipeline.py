@@ -17,6 +17,115 @@ from pathlib import Path
 class TestResearchAgentSpecs:
     def test_default_specs_load(self):
     """Test default_specs_load runtime behavior."""
+                from apps_research.engines.research_assembly_engine import ResearchAssemblyEngine
+                from apps_research.types.research_types import ArtifactMode, ResearchRequest
+                from apps_research.types.research_types import ArtifactMode, ResearchRequest
+                engine = ResearchAssemblyEngine()
+                req = ResearchRequest(
+                    topic="agentic frameworks",
+                    mode=ArtifactMode.COMPARISON,
+                    comparison_subjects=["LangGraph", "AutoGen"],
+                )
+                result = engine.execute(req)
+                assert len(result.comparison_matrix) >= 2
+                subjects = [row.subject for row in result.comparison_matrix]
+                assert "LangGraph" in subjects
+                assert "AutoGen" in subjects
+                from apps_research.engines.research_assembly_engine import ResearchAssemblyEngine
+                from apps_research.types.research_types import ArtifactMode, ResearchRequest
+                from apps_research.types.research_types import ArtifactMode, ResearchRequest
+                engine = ResearchAssemblyEngine()
+                req = ResearchRequest(topic="governance patterns", mode=ArtifactMode.BRIEF)
+                result = engine.execute(req)
+                assert len(result.source_register) > 0
+                from apps_research.engines.research_assembly_engine import ResearchAssemblyEngine
+                from apps_research.types.research_types import ArtifactMode, ResearchRequest
+                from apps_research.validators.research_gate_validator import ResearchGateValidator
+                from apps_research.validators.research_gate_validator import ResearchGateValidator
+                engine = ResearchAssemblyEngine()
+                req = ResearchRequest(topic="governance", mode=ArtifactMode.BRIEF)
+                assembly = engine.execute(req)
+                validator = ResearchGateValidator()
+                result = validator.validate(
+                    assembly.sections,
+                    assembly.source_register,
+                    ["executive_summary", "key_findings", "strategic_implications"],
+                )
+                assert result.passed
+                from apps_research.engines.research_assembly_engine import ResearchAssemblyEngine
+                from apps_research.types.research_types import ArtifactMode, ResearchRequest
+                from apps_research.validators.research_gate_validator import ResearchGateValidator
+                from apps_research.validators.research_gate_validator import ResearchGateValidator
+                engine = ResearchAssemblyEngine()
+                req = ResearchRequest(topic="test", mode=ArtifactMode.BRIEF)
+                assembly = engine.execute(req)
+                validator = ResearchGateValidator()
+                result = validator.validate(assembly.sections, [], [])
+                assert not result.passed
+                from apps_research.types.research_types import ClaimType, ResearchSection
+                from apps_research.validators.research_gate_validator import ResearchGateValidator
+                from apps_research.validators.research_gate_validator import ResearchGateValidator
+                validator = ResearchGateValidator()
+                sections = [
+                    ResearchSection(
+                        section_id="executive_summary",
+                        heading="Summary",
+                        body="Content here.",
+                        claim_type=ClaimType.DIRECT_EVIDENCE,
+                    )
+                ]
+                from apps_research.engines.research_assembly_engine import ResearchAssemblyEngine
+                from apps_research.types.research_types import ArtifactMode, ResearchRequest
+                from apps_research.types.research_types import ArtifactMode, ResearchRequest
+                engine = ResearchAssemblyEngine()
+                assembly = engine.execute(ResearchRequest(topic="t", mode=ArtifactMode.BRIEF))
+                result = validator.validate(sections, assembly.source_register, ["executive_summary", "key_findings"])
+                assert not result.passed
+                from apps_research.reasoning.ResearchOrchestrator import ResearchOrchestrator
+                from apps_research.types.research_types import ArtifactMode, ResearchRequest, ResearchStatus
+                from apps_research.types.research_types import ArtifactMode, ResearchRequest, ResearchStatus
+                orch = ResearchOrchestrator(dry_run=True)
+                req = ResearchRequest(topic="governance", mode=ArtifactMode.BRIEF, dry_run=True)
+                result = orch.run(req)
+                assert result.status == ResearchStatus.DRY_RUN
+                assert len(result.artifact_paths) == 0
+                from apps_research.reasoning.ResearchOrchestrator import ResearchOrchestrator
+                from apps_research.types.research_types import ArtifactMode, ResearchRequest
+                from apps_research.types.research_types import ArtifactMode, ResearchRequest
+                orch = ResearchOrchestrator(dry_run=True)
+                req = ResearchRequest(topic="platform strategy", mode=ArtifactMode.BRIEF, dry_run=True)
+                result = orch.run(req)
+                assert len(result.sections) >= 3
+                from apps_research.reasoning.ResearchOrchestrator import ResearchOrchestrator
+                from apps_research.types.research_types import ArtifactMode, ResearchRequest
+                from apps_research.types.research_types import ArtifactMode, ResearchRequest
+                orch = ResearchOrchestrator(dry_run=True)
+                req = ResearchRequest(
+                    topic="framework comparison",
+                    mode=ArtifactMode.COMPARISON,
+                    comparison_subjects=["LangGraph", "CrewAI"],
+                    dry_run=True,
+                )
+                result = orch.run(req)
+                assert len(result.comparison_matrix) >= 2
+                from apps_research.reasoning.ResearchOrchestrator import ResearchOrchestrator
+                from apps_research.types.research_types import ArtifactMode, ResearchRequest, ResearchStatus
+                from apps_research.types.research_types import ArtifactMode, ResearchRequest, ResearchStatus
+                orch = ResearchOrchestrator(dry_run=False, output_dir=str(tmp_path))
+                req = ResearchRequest(topic="governance patterns", mode=ArtifactMode.BRIEF)
+                result = orch.run(req)
+                if result.status == ResearchStatus.COMPLETE:
+                    assert len(result.artifact_paths) > 0
+                    for path in result.artifact_paths:
+                        assert Path(path).exists()
+                from apps_research.reasoning.ResearchOrchestrator import ResearchOrchestrator
+                from apps_research.types.research_types import ArtifactMode, ResearchRequest
+                from apps_research.types.research_types import ArtifactMode, ResearchRequest
+                orch = ResearchOrchestrator(dry_run=True)
+                req = ResearchRequest(topic="determinism", mode=ArtifactMode.BRIEF, dry_run=True)
+                result = orch.run(req)
+                assert len(result.source_register) > 0
+
     # Arrange
     # TODO: Set up test data for default_specs_load
     test_data = {}  # Replace with actual test data
@@ -67,28 +176,9 @@ class TestResearchAgentSpecs:
         assert "strategic_implications" in section_ids
 
     def test_comparison_mode_builds_matrix(self):
-        from apps_research.engines.research_assembly_engine import ResearchAssemblyEngine
-        from apps_research.types.research_types import ArtifactMode, ResearchRequest
-
-        engine = ResearchAssemblyEngine()
-        req = ResearchRequest(
-            topic="agentic frameworks",
-            mode=ArtifactMode.COMPARISON,
-            comparison_subjects=["LangGraph", "AutoGen"],
-        )
-        result = engine.execute(req)
-        assert len(result.comparison_matrix) >= 2
-        subjects = [row.subject for row in result.comparison_matrix]
-        assert "LangGraph" in subjects
         assert "AutoGen" in subjects
 
     def test_source_register_non_empty(self):
-        from apps_research.engines.research_assembly_engine import ResearchAssemblyEngine
-        from apps_research.types.research_types import ArtifactMode, ResearchRequest
-
-        engine = ResearchAssemblyEngine()
-        req = ResearchRequest(topic="governance patterns", mode=ArtifactMode.BRIEF)
-        result = engine.execute(req)
         assert len(result.source_register) > 0
 
     def test_source_register_has_required_fields(self):
@@ -140,108 +230,29 @@ class TestResearchAgentSpecs:
     assert result is not None, f"{function_name} should return a result"
     assert isinstance(result, object), "Result should be an object"
     # TODO: Add specific runtime behavior assertions
-        from apps_research.engines.research_assembly_engine import ResearchAssemblyEngine
-        from apps_research.types.research_types import ArtifactMode, ResearchRequest
-        from apps_research.validators.research_gate_validator import ResearchGateValidator
-
-        engine = ResearchAssemblyEngine()
-        req = ResearchRequest(topic="governance", mode=ArtifactMode.BRIEF)
-        assembly = engine.execute(req)
-        validator = ResearchGateValidator()
-        result = validator.validate(
-            assembly.sections,
-            assembly.source_register,
-            ["executive_summary", "key_findings", "strategic_implications"],
-        )
         assert result.passed
 
     def test_empty_source_register_blocks(self):
-        from apps_research.engines.research_assembly_engine import ResearchAssemblyEngine
-        from apps_research.types.research_types import ArtifactMode, ResearchRequest
-        from apps_research.validators.research_gate_validator import ResearchGateValidator
-
-        engine = ResearchAssemblyEngine()
-        req = ResearchRequest(topic="test", mode=ArtifactMode.BRIEF)
-        assembly = engine.execute(req)
-        validator = ResearchGateValidator()
-        result = validator.validate(assembly.sections, [], [])
         assert not result.passed
 
     def test_missing_required_section_blocks(self):
-        from apps_research.types.research_types import ClaimType, ResearchSection
-        from apps_research.validators.research_gate_validator import ResearchGateValidator
-
-        validator = ResearchGateValidator()
-        sections = [
-            ResearchSection(
-                section_id="executive_summary",
-                heading="Summary",
-                body="Content here.",
-                claim_type=ClaimType.DIRECT_EVIDENCE,
-            )
-        ]
-        from apps_research.engines.research_assembly_engine import ResearchAssemblyEngine
-        from apps_research.types.research_types import ArtifactMode, ResearchRequest
-
-        engine = ResearchAssemblyEngine()
-        assembly = engine.execute(ResearchRequest(topic="t", mode=ArtifactMode.BRIEF))
-        result = validator.validate(sections, assembly.source_register, ["executive_summary", "key_findings"])
         assert not result.passed
 
 
 class TestResearchOrchestrator:
     def test_dry_run_no_artifacts(self):
-        from apps_research.reasoning.ResearchOrchestrator import ResearchOrchestrator
-        from apps_research.types.research_types import ArtifactMode, ResearchRequest, ResearchStatus
-
-        orch = ResearchOrchestrator(dry_run=True)
-        req = ResearchRequest(topic="governance", mode=ArtifactMode.BRIEF, dry_run=True)
-        result = orch.run(req)
-        assert result.status == ResearchStatus.DRY_RUN
         assert len(result.artifact_paths) == 0
 
     def test_result_has_sections(self):
-        from apps_research.reasoning.ResearchOrchestrator import ResearchOrchestrator
-        from apps_research.types.research_types import ArtifactMode, ResearchRequest
-
-        orch = ResearchOrchestrator(dry_run=True)
-        req = ResearchRequest(topic="platform strategy", mode=ArtifactMode.BRIEF, dry_run=True)
-        result = orch.run(req)
         assert len(result.sections) >= 3
 
     def test_comparison_mode_has_matrix(self):
-        from apps_research.reasoning.ResearchOrchestrator import ResearchOrchestrator
-        from apps_research.types.research_types import ArtifactMode, ResearchRequest
-
-        orch = ResearchOrchestrator(dry_run=True)
-        req = ResearchRequest(
-            topic="framework comparison",
-            mode=ArtifactMode.COMPARISON,
-            comparison_subjects=["LangGraph", "CrewAI"],
-            dry_run=True,
-        )
-        result = orch.run(req)
         assert len(result.comparison_matrix) >= 2
 
     def test_artifacts_written_in_non_dry_run(self, tmp_path):
-        from apps_research.reasoning.ResearchOrchestrator import ResearchOrchestrator
-        from apps_research.types.research_types import ArtifactMode, ResearchRequest, ResearchStatus
-
-        orch = ResearchOrchestrator(dry_run=False, output_dir=str(tmp_path))
-        req = ResearchRequest(topic="governance patterns", mode=ArtifactMode.BRIEF)
-        result = orch.run(req)
-        if result.status == ResearchStatus.COMPLETE:
-            assert len(result.artifact_paths) > 0
-            for path in result.artifact_paths:
                 assert Path(path).exists()
 
     def test_source_register_in_result(self):
-        from apps_research.reasoning.ResearchOrchestrator import ResearchOrchestrator
-        from apps_research.types.research_types import ArtifactMode, ResearchRequest
-
-        orch = ResearchOrchestrator(dry_run=True)
-        req = ResearchRequest(topic="determinism", mode=ArtifactMode.BRIEF, dry_run=True)
-        result = orch.run(req)
         assert len(result.source_register) > 0
 
 

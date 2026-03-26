@@ -176,9 +176,11 @@ pytestmark = pytest.mark.unit
 
 class TestHealingStrategyProtocol:
     def test_protocol_importable(self):
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.L5_safety.validators.chaos_healing_integration_types import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L5_safety.validators.chaos_healing_integration_types import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                assert callable(HealingStrategyProtocol)
+
         assert callable(HealingStrategyProtocol)
 
     def test_protocol_is_runtime_checkable_or_protocol(self):

@@ -170,11 +170,13 @@ pytestmark = pytest.mark.unit
 
 class TestTruthKeeper:
     def test_creates_with_defaults(self):
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.L1_cognition.validators.truth_keeper_validator import TruthKeeper
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        tk = TruthKeeper()
-        assert tk.llm_client is None
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L1_cognition.validators.truth_keeper_validator import TruthKeeper
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                tk = TruthKeeper()
+                assert tk.llm_client is None
+                assert tk.api_key is None
+
         assert tk.api_key is None
 
     def test_creates_with_llm_client(self):

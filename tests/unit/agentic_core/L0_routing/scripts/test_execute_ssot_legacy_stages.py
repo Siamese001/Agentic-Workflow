@@ -278,13 +278,15 @@ class TestPhase3Alignment:
         }
 
     def test_zero_violations_completes_no_violations(self, mod):
-        from agentic_core.L5_safety.enforcement.hitl_gate import HitlGate
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.L0_routing.config.path_constants import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        de = _make_de(mod)
-        sm = _make_state_mgr()
-        agents = {}
+                from agentic_core.L5_safety.enforcement.hitl_gate import HitlGate
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L0_routing.config.path_constants import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                de = _make_de(mod)
+                sm = _make_state_mgr()
+                agents = {}
+                hier_cls, _ = self._mock_hier_agent(0)
+
         hier_cls, _ = self._mock_hier_agent(0)
 
         with patch.dict("sys.modules", self._hier_agent_patch(hier_cls)):

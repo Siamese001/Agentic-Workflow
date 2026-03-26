@@ -26,8 +26,10 @@ pytestmark = pytest.mark.unit
 
 class TestHealingMetricsContract:
     def test_is_dataclass(self):
-        from agentic_core.L5_safety.reasoning.PredictiveCostAuditorAgent import (  # noqa: F401
-        import dataclasses
+                from agentic_core.L5_safety.reasoning.PredictiveCostAuditorAgent import (  # noqa: F401
+                import dataclasses
+                assert dataclasses.is_dataclass(HealingMetrics)
+
         assert dataclasses.is_dataclass(HealingMetrics)
 
     def test_field_names_present(self):

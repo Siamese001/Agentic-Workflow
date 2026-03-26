@@ -5,9 +5,10 @@ import pytest
 
 pytestmark = pytest.mark.unit
 
-import apps_shared.utils.model_visitor_util  # noqa: F401
 
 
 def test_module_importable():
     """Module model_visitor_util must be importable."""
+    import apps_shared.utils.model_visitor_util  # noqa: F401
+
     assert apps_shared.utils.model_visitor_util is not None

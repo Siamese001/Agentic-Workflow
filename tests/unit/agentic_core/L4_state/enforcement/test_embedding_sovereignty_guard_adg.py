@@ -9,6 +9,8 @@ pytestmark = pytest.mark.unit
 
 
 def test_module_importable():
-    import agentic_core.L4_state.enforcement.embedding_sovereignty_guard  # noqa: F401
-    """Module embedding_sovereignty_guard must be importable."""
+        import agentic_core.L4_state.enforcement.embedding_sovereignty_guard  # noqa: F401
+        """Module embedding_sovereignty_guard must be importable."""
+        assert agentic_core.L4_state.enforcement.embedding_sovereignty_guard is not None
+
     assert agentic_core.L4_state.enforcement.embedding_sovereignty_guard is not None

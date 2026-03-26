@@ -27,8 +27,10 @@ pytestmark = pytest.mark.unit
 
 class TestPromptEntryContract:
     def test_is_dataclass(self):
-        from agentic_core.prompt_governance.core.prompt_entry_types import (  # noqa: F401
-        import dataclasses
+                from agentic_core.prompt_governance.core.prompt_entry_types import (  # noqa: F401
+                import dataclasses
+                assert dataclasses.is_dataclass(PromptEntry)
+
         assert dataclasses.is_dataclass(PromptEntry)
 
     def test_is_frozen(self):

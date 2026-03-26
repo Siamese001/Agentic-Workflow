@@ -9,6 +9,8 @@ pytestmark = pytest.mark.unit
 
 
 def test_module_importable():
-    import agentic_core.L5_safety.enforcement.governance.agent_heal_audit  # noqa: F401
-    """Module agent_heal_audit must be importable."""
+        import agentic_core.L5_safety.enforcement.governance.agent_heal_audit  # noqa: F401
+        """Module agent_heal_audit must be importable."""
+        assert agentic_core.L5_safety.enforcement.governance.agent_heal_audit is not None
+
     assert agentic_core.L5_safety.enforcement.governance.agent_heal_audit is not None

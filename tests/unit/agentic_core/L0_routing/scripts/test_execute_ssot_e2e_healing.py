@@ -273,15 +273,17 @@ def _mock_bridge():
 
 class TestRecordHealingActionWiring:
     def test_module_is_ssot_validation_artifacts(self):
-        import system_learning.adapters.system_learning_memory_bridge as _sl_bridge_mod  # noqa: F401
-        from agentic_core.L0_routing.scripts._ssot_validation_artifacts import _record_healing_action
-        from agentic_core.L5_safety.enforcement.hitl_gate import HitlGate
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        import agentic_core.L0_routing.scripts.execute_ssot as mod
-        from agentic_core.L5_safety.enforcement.hitl_gate import HitlGate, HitlRequest, HitlRequiredError
-        from agentic_core.L5_safety.enforcement.hitl_gate import HitlGate, HitlRequest, HitlRequiredError
         """execute_ssot must use the wired version, not a stale local copy."""
+                import system_learning.adapters.system_learning_memory_bridge as _sl_bridge_mod  # noqa: F401
+                from agentic_core.L0_routing.scripts._ssot_validation_artifacts import _record_healing_action
+                from agentic_core.L5_safety.enforcement.hitl_gate import HitlGate
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                import agentic_core.L0_routing.scripts.execute_ssot as mod
+                from agentic_core.L5_safety.enforcement.hitl_gate import HitlGate, HitlRequest, HitlRequiredError
+                from agentic_core.L5_safety.enforcement.hitl_gate import HitlGate, HitlRequest, HitlRequiredError
+                """execute_ssot must use the wired version, not a stale local copy."""
+
 #  # MOVED: import agentic_core.L0_routing.scripts.execute_ssot as mod
 
         assert mod._record_healing_action.__module__ == (

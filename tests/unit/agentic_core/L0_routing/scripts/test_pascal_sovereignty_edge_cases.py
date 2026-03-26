@@ -195,13 +195,15 @@ class TestSovereigntyEdgeCases(unittest.TestCase):
         self.fixer = PascalSovereigntyFixer(dry_run=True)
 
     def test_mixin_renaming_pascalcase_to_snake(self):
-        from agentic_core.L0_routing.config.path_constants import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        """Edge Case: Ensure PascalCase Mixins are forced to snake_case."""
-        # Mock path with PascalCase mixin name
-        mock_path = Mock(spec=Path)
-        mock_path.stem = "AuthMixin"
+                from agentic_core.L0_routing.config.path_constants import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                """Edge Case: Ensure PascalCase Mixins are forced to snake_case."""
+                # Mock path with PascalCase mixin name
+                mock_path = Mock(spec=Path)
+                mock_path.stem = "AuthMixin"
+                mock_path.name = "AuthMixin.py"
+
         mock_path.name = "AuthMixin.py"
 
         compliant = self.fixer.get_compliant_name(mock_path, "MIXIN")

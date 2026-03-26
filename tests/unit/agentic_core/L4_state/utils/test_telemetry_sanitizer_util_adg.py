@@ -170,9 +170,11 @@ pytestmark = pytest.mark.unit
 
 class TestTelemetrySanitizerUtil:
     def test_importable(self):
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.L4_state.utils.telemetry_sanitizer_util import sanitize_tool_output
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L4_state.utils.telemetry_sanitizer_util import sanitize_tool_output
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                assert callable(sanitize_tool_output)
+
         assert callable(sanitize_tool_output)
 
     def test_returns_string(self):

@@ -10,16 +10,18 @@ pytestmark = pytest.mark.unit
 
 class TestRoutingTypesInterface:
     def test_importable(self):
-        import agentic_core.interfaces.routing_types as m
-    """Test importable contract compliance."""
-    # Arrange
-    # TODO: Set up contract test scenario
-    """Test reasoning_intensity_profile_present contract compliance."""
-    # Arrange
-    # TODO: Set up contract test scenario
-    """Test all_exports contract compliance."""
-    # Arrange
-    # TODO: Set up contract test scenario
+                import agentic_core.interfaces.routing_types as m
+            """Test importable contract compliance."""
+            # Arrange
+            # TODO: Set up contract test scenario
+            """Test reasoning_intensity_profile_present contract compliance."""
+            # Arrange
+            # TODO: Set up contract test scenario
+            """Test all_exports contract compliance."""
+            # Arrange
+            # TODO: Set up contract test scenario
+            test_scenario = {}  # Replace with actual test scenario
+
     test_scenario = {}  # Replace with actual test scenario
 
     # Act

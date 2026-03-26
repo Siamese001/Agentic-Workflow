@@ -27,7 +27,9 @@ pytestmark = pytest.mark.unit
 
 class TestDomainPlannerOutputContract:
     def test_is_class(self):
-        from agentic_core.L3_orchestration.reasoning.DomainPlannerAgent import (  # noqa: F401
+                from agentic_core.L3_orchestration.reasoning.DomainPlannerAgent import (  # noqa: F401
+                assert isinstance(DomainPlannerOutput, type)
+
         assert isinstance(DomainPlannerOutput, type)
 
     def test_has_method_model_dump(self):

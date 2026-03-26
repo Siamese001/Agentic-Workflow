@@ -11,8 +11,6 @@ import pytest
 
 pytestmark = pytest.mark.unit
 try:
-    import apps_rg.config.reasoning_toggles_config as _mod  # noqa: F401  # ADG covers
-except (ValueError, TypeError, RuntimeError) as e:
     _mod = None
 
 
@@ -41,6 +39,10 @@ def _src_text():
 
 class TestReasoningTogglesSource:
     def test_source_exists(self):
+            import apps_rg.config.reasoning_toggles_config as _mod  # noqa: F401  # ADG covers
+        except (ValueError, TypeError, RuntimeError) as e:
+            _mod = None
+
         assert _SRC.exists()
 
     def test_parses_without_error(self):

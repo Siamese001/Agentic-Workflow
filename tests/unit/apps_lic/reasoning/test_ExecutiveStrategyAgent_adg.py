@@ -5,9 +5,10 @@ import pytest
 
 pytestmark = pytest.mark.unit
 
-import apps_lic.reasoning.ExecutiveStrategyAgent  # noqa: F401
 
 
 def test_module_importable():
     """Module ExecutiveStrategyAgent must be importable."""
+    import apps_lic.reasoning.ExecutiveStrategyAgent  # noqa: F401
+
     assert apps_lic.reasoning.ExecutiveStrategyAgent is not None

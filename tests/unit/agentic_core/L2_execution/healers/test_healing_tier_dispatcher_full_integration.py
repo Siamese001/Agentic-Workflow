@@ -220,20 +220,22 @@ class MockHealingProviderInvoker:
 
 
 def test_full_integration_all_phases() -> None:
-    from agentic_core.L2_execution.healers.healing_tier_config import HealingTierConfig
-    from agentic_core.L2_execution.healers.healing_tier_dispatcher import (
-    from agentic_core.L2_execution.healers.healing_tier_types import (
-    from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-    from system_learning.engines.default_healing_pattern_advisor import (
-    from system_learning.engines.healing_success_rate_store import HealingSuccessRateStore
-    from system_learning.ports.healing_pattern_advisor import (
-    from system_learning.ports.meta_outcome_bus_hook import (
-    from system_learning.ports.meta_prior_provider import (
-    from system_learning.ports.outcome_write_back_hook import (
-    from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-    from agentic_core.L2_execution.healers.healing_tier_dispatcher import InvocationRecord
-    """Full integration of all meta-learning phases."""
-    # Phase 1: Meta prior provider
+        from agentic_core.L2_execution.healers.healing_tier_config import HealingTierConfig
+        from agentic_core.L2_execution.healers.healing_tier_dispatcher import (
+        from agentic_core.L2_execution.healers.healing_tier_types import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from system_learning.engines.default_healing_pattern_advisor import (
+        from system_learning.engines.healing_success_rate_store import HealingSuccessRateStore
+        from system_learning.ports.healing_pattern_advisor import (
+        from system_learning.ports.meta_outcome_bus_hook import (
+        from system_learning.ports.meta_prior_provider import (
+        from system_learning.ports.outcome_write_back_hook import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L2_execution.healers.healing_tier_dispatcher import InvocationRecord
+        """Full integration of all meta-learning phases."""
+        # Phase 1: Meta prior provider
+        meta_prior_provider = MockMetaPriorProvider({"test_sig": 0.90})
+
     meta_prior_provider = MockMetaPriorProvider({"test_sig": 0.90})
 
     # Phase 2: Outcome write-back hook

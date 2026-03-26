@@ -174,10 +174,12 @@ pytestmark = pytest.mark.unit
 
 class TestIdentityType:
     def test_is_enum(self):
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.L1_cognition.types.identity_type_types import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        import enum
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L1_cognition.types.identity_type_types import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                import enum
+                assert issubclass(IdentityType, enum.Enum)
+
         assert issubclass(IdentityType, enum.Enum)
 
     def test_orchestrator_value(self):

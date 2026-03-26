@@ -229,15 +229,17 @@ def _score(C=0, B=0, A=0, N=0, F=0, playbook_match=False) -> int:
 
 class TestGate0Replay:
     def test_replay_always_deterministic(self):
-        from agentic_core.L0_routing.config.path_constants import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.L0_routing.scripts.execute_ssot import (  # noqa: E402
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        ri = _ri(
-            failure_type=FailureType.LAYER_VIOLATION, replay_mode=True, C=3, B=3, A=3, F=3, retry_count=5
-        )
-        d = compute_routing_decision(ri)
-        assert d.tier == RoutingTier.DETERMINISTIC
+                from agentic_core.L0_routing.config.path_constants import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L0_routing.scripts.execute_ssot import (  # noqa: E402
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                ri = _ri(
+                    failure_type=FailureType.LAYER_VIOLATION, replay_mode=True, C=3, B=3, A=3, F=3, retry_count=5
+                )
+                d = compute_routing_decision(ri)
+                assert d.tier == RoutingTier.DETERMINISTIC
+                assert d.gate_applied == "GATE_0_REPLAY"
+
         assert d.gate_applied == "GATE_0_REPLAY"
 
     def test_replay_beats_structural_class(self):

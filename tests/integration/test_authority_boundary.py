@@ -181,20 +181,22 @@ def _classify(tmp_path: Path, file_path: Path):
 
 class TestEnforcerBoundary:
     def test_enforcer_suffix_not_orchestrator(self, tmp_path):
-        from agentic_core.L0_routing.config.path_constants import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.L5_safety.reasoning.FileClassificationAgent import (
-        from agentic_core.L3_orchestration.reasoning import AgentA
-        from agentic_core.L5_safety.enforcement import GuardB
-        code = """\
-        class PolicyEnforcer:
-            GATE_POLICY = True
-            def enforce(self, ctx):
-                if not ctx.allowed:
-                    raise PermissionError("blocked")
-        """
-        p = _make_file(tmp_path, "policy_enforcer.py", code)
-        result = _classify(tmp_path, p)
+                from agentic_core.L0_routing.config.path_constants import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L5_safety.reasoning.FileClassificationAgent import (
+                from agentic_core.L3_orchestration.reasoning import AgentA
+                from agentic_core.L5_safety.enforcement import GuardB
+                code = """\
+                class PolicyEnforcer:
+                    GATE_POLICY = True
+                    def enforce(self, ctx):
+                        if not ctx.allowed:
+                            raise PermissionError("blocked")
+                """
+                p = _make_file(tmp_path, "policy_enforcer.py", code)
+                result = _classify(tmp_path, p)
+                assert result != "ORCHESTRATOR", f"ENFORCER file misclassified as {result}"
+
         assert result != "ORCHESTRATOR", f"ENFORCER file misclassified as {result}"
 
     def test_guard_suffix_not_orchestrator(self, tmp_path):

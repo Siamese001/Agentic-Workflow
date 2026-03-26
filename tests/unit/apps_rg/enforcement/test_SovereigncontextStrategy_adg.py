@@ -5,9 +5,10 @@ import pytest
 
 pytestmark = pytest.mark.unit
 
-import apps_rg.enforcement.SovereigncontextStrategy  # noqa: F401
 
 
 def test_module_importable():
     """Module SovereigncontextStrategy must be importable."""
+    import apps_rg.enforcement.SovereigncontextStrategy  # noqa: F401
+
     assert apps_rg.enforcement.SovereigncontextStrategy is not None

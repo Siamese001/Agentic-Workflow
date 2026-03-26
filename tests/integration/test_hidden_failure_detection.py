@@ -27,20 +27,22 @@ class TestSilentDegradation(unittest.TestCase):
     """Test cases for silent failure modes that don't raise errors."""
 
     def test_kubernetes_import_silency_degrades(self):
-        from agentic_core.cloud_native.cloud_native_manager import CloudNativeManager
-        from system_learning.ml_integration.anomaly_detection import MLAnomalyDetector
-        from agentic_core.gateway.api_gateway_integration import APIGatewayIntegration, GatewayType, GatewayConfig
-        from system_learning.ml_integration.anomaly_detection import MLAnomalyDetector
-        from agentic_core.visualization.trace_3d_visualizer import Trace3DVisualizer
-        from system_learning.ml_integration.anomaly_detection import MLAnomalyDetector, get_global_ml_detector
-        import system_learning.ml_integration.anomaly_detection as ml_module
-        from agentic_core.visualization.trace_3d_visualizer import get_global_3d_visualizer
-        from system_learning.ml_integration.anomaly_detection import MLAnomalyDetector
-        from agentic_core.visualization.trace_3d_visualizer import Trace3DVisualizer
-        from agentic_core.gateway.api_gateway_integration import APIGatewayIntegration, GatewayType, GatewayConfig
-        from agentic_core.cloud_native.cloud_native_manager import CloudNativeManager, AutoScalingConfig
-        from agentic_core.cloud_native.cloud_native_manager import ResourceMetrics, ResourceType, HealthStatus
-        """CRITICAL: Test that Kubernetes features disappear silently when package missing."""
+                from agentic_core.cloud_native.cloud_native_manager import CloudNativeManager
+                from system_learning.ml_integration.anomaly_detection import MLAnomalyDetector
+                from agentic_core.gateway.api_gateway_integration import APIGatewayIntegration, GatewayType, GatewayConfig
+                from system_learning.ml_integration.anomaly_detection import MLAnomalyDetector
+                from agentic_core.visualization.trace_3d_visualizer import Trace3DVisualizer
+                from system_learning.ml_integration.anomaly_detection import MLAnomalyDetector, get_global_ml_detector
+                import system_learning.ml_integration.anomaly_detection as ml_module
+                from agentic_core.visualization.trace_3d_visualizer import get_global_3d_visualizer
+                from system_learning.ml_integration.anomaly_detection import MLAnomalyDetector
+                from agentic_core.visualization.trace_3d_visualizer import Trace3DVisualizer
+                from agentic_core.gateway.api_gateway_integration import APIGatewayIntegration, GatewayType, GatewayConfig
+                from agentic_core.cloud_native.cloud_native_manager import CloudNativeManager, AutoScalingConfig
+                from agentic_core.cloud_native.cloud_native_manager import ResourceMetrics, ResourceType, HealthStatus
+                """CRITICAL: Test that Kubernetes features disappear silently when package missing."""
+                Logger.info("Testing Kubernetes silent degradation...")
+
         Logger.info("Testing Kubernetes silent degradation...")
 
         # Simulate missing kubernetes package

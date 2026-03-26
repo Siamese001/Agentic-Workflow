@@ -8,23 +8,24 @@ import pytest
 
 pytestmark = pytest.mark.unit
 
-import apps_shared.config as mod
-from apps_shared.config import (
-    OPERATIONAL_ALLOWED_DUPLICATES,
-    OPERATIONAL_EXCLUDED_DIRS,
-    OPERATIONAL_SCAN_TARGETS,
-    ConfigLoader,
-    ConfigLoadResult,
-    get_config_loader,
-    is_allowed_duplicate,
-    is_excluded_path,
-    load_agent_config,
-    should_scan_directory,
-)
 
 
 class TestAppsSharedConfigInit:
     def test_module_importable(self):
+        import apps_shared.config as mod
+        from apps_shared.config import (
+            OPERATIONAL_ALLOWED_DUPLICATES,
+            OPERATIONAL_EXCLUDED_DIRS,
+            OPERATIONAL_SCAN_TARGETS,
+            ConfigLoader,
+            ConfigLoadResult,
+            get_config_loader,
+            is_allowed_duplicate,
+            is_excluded_path,
+            load_agent_config,
+            should_scan_directory,
+        )
+
         assert mod is not None
 
     def test_operational_excluded_dirs_exported(self):

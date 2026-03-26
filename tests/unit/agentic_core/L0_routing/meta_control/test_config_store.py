@@ -197,15 +197,17 @@ _CLOCK = SemanticClockSnapshot(tick=1, vector_clock=(("L0", 1),))
 
 class TestCanonicalJsonDeterminism:
     def test_same_dict_different_key_order(self) -> None:
-        from agentic_core.L0_routing.config.path_constants import (
-        from agentic_core.L0_routing.meta_control.config_store import (
-        from agentic_core.L0_routing.meta_control.config_store_types import (
-        from agentic_core.L0_routing.types.determinism_types import SemanticClockSnapshot
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from system_learning.types.meta_learning_types import (
-        d1 = {"z": 1, "a": 2, "m": {"b": 3, "a": 4}}
-        d2 = {"a": 2, "m": {"a": 4, "b": 3}, "z": 1}
+                from agentic_core.L0_routing.config.path_constants import (
+                from agentic_core.L0_routing.meta_control.config_store import (
+                from agentic_core.L0_routing.meta_control.config_store_types import (
+                from agentic_core.L0_routing.types.determinism_types import SemanticClockSnapshot
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from system_learning.types.meta_learning_types import (
+                d1 = {"z": 1, "a": 2, "m": {"b": 3, "a": 4}}
+                d2 = {"a": 2, "m": {"a": 4, "b": 3}, "z": 1}
+                assert canonical_json(d1) == canonical_json(d2)
+
         assert canonical_json(d1) == canonical_json(d2)
 
     def test_stable_sha256_matches(self) -> None:

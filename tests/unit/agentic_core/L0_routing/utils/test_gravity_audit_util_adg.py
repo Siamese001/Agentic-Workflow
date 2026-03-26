@@ -9,6 +9,8 @@ pytestmark = pytest.mark.unit
 
 
 def test_module_importable():
-    import agentic_core.L0_routing.utils.gravity_audit_util  # noqa: F401
-    """Module gravity_audit_util must be importable."""
+        import agentic_core.L0_routing.utils.gravity_audit_util  # noqa: F401
+        """Module gravity_audit_util must be importable."""
+        assert agentic_core.L0_routing.utils.gravity_audit_util is not None
+
     assert agentic_core.L0_routing.utils.gravity_audit_util is not None

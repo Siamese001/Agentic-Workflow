@@ -9,6 +9,8 @@ pytestmark = pytest.mark.unit
 
 
 def test_module_importable():
-    import agentic_core.prompt_governance.scripts.detect_template_drift  # noqa: F401
-    """Module detect_template_drift must be importable."""
+        import agentic_core.prompt_governance.scripts.detect_template_drift  # noqa: F401
+        """Module detect_template_drift must be importable."""
+        assert agentic_core.prompt_governance.scripts.detect_template_drift is not None
+
     assert agentic_core.prompt_governance.scripts.detect_template_drift is not None

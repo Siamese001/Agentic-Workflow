@@ -173,11 +173,13 @@ pytestmark = pytest.mark.unit
 
 class TestHealthStatus:
     def test_is_str_enum(self):
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.L3_orchestration.types.recursion_monitor_types import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        import enum; assert issubclass(HealthStatus, str); assert issubclass(HealthStatus, enum.Enum)
-    def test_has_healthy(self): assert HealthStatus.HEALTHY == "healthy"
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L3_orchestration.types.recursion_monitor_types import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                import enum; assert issubclass(HealthStatus, str); assert issubclass(HealthStatus, enum.Enum)
+            def test_has_healthy(self): assert HealthStatus.HEALTHY == "healthy"
+            def test_has_critical(self): assert HealthStatus.CRITICAL == "critical"
+
     def test_has_critical(self): assert HealthStatus.CRITICAL == "critical"
 
 class TestAlertSeverity:

@@ -175,10 +175,12 @@ pytestmark = pytest.mark.unit
 
 class TestCacheEntry:
     def test_creates_with_value(self):
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.mixins.caching_mixin import CacheConfig, CacheEntry, CachingMixin
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        entry = CacheEntry(value=42)
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.mixins.caching_mixin import CacheConfig, CacheEntry, CachingMixin
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                entry = CacheEntry(value=42)
+                assert entry.value == 42
+
         assert entry.value == 42
 
     def test_default_ttl(self):

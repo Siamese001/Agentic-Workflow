@@ -175,11 +175,13 @@ class TestAgentPermissionIntegration:
     """Tests for AgentPermission surgical healing."""
 
     def test_adapter_with_restore_checkpoint(self):
-        from agentic_core.L5_safety.enforcement.SurgicalHealingAdapter import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-    """Test adapter_with_restore_checkpoint contract compliance."""
-    # Arrange
-    # TODO: Set up test data
+                from agentic_core.L5_safety.enforcement.SurgicalHealingAdapter import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+            """Test adapter_with_restore_checkpoint contract compliance."""
+            # Arrange
+            # TODO: Set up test data
+            test_data = {}  # Replace with actual test data
+
     test_data = {}  # Replace with actual test data
 
     # Act

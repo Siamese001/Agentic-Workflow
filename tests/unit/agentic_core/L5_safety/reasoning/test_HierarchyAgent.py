@@ -154,10 +154,12 @@ from __future__ import annotations
 
 class TestHierarchyAgentSmoke:
     def test_instantiates_with_project_root(self, tmp_path):
-        from agentic_core.L5_safety.reasoning.hierarchy_healer import HierarchyAgent
-        from agentic_core.L5_safety.reasoning.hierarchy_validator import HierarchyValidatorAgent
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        agent = HierarchyAgent(project_root=tmp_path, healing_enabled=False)
+                from agentic_core.L5_safety.reasoning.hierarchy_healer import HierarchyAgent
+                from agentic_core.L5_safety.reasoning.hierarchy_validator import HierarchyValidatorAgent
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                agent = HierarchyAgent(project_root=tmp_path, healing_enabled=False)
+                assert agent is not None
+
         assert agent is not None
 
     def test_project_root_stored(self, tmp_path):

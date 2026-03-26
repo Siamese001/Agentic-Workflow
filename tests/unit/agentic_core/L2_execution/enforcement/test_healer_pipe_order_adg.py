@@ -172,18 +172,20 @@ VALID_10_STEPS = ("s1", "s2", "s3", "s4", "s5", "s6", "s7", "s8", "s9", "s10")
 
 class TestEnforceHealerPipeOrder:
     def test_callable(self):
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.L2_execution.enforcement.healer_pipe_order import enforce_healer_pipe_order
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-    """Test callable runtime behavior."""
-    # Arrange
-    # TODO: Set up execution parameters
-    """Test passes_when_matching runtime behavior."""
-    # Arrange
-    # TODO: Set up test data for passes_when_matching
-    """Test raises_permission_error_on_wrong_order runtime behavior."""
-    # Arrange
-    # TODO: Set up error condition
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L2_execution.enforcement.healer_pipe_order import enforce_healer_pipe_order
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+            """Test callable runtime behavior."""
+            # Arrange
+            # TODO: Set up execution parameters
+            """Test passes_when_matching runtime behavior."""
+            # Arrange
+            # TODO: Set up test data for passes_when_matching
+            """Test raises_permission_error_on_wrong_order runtime behavior."""
+            # Arrange
+            # TODO: Set up error condition
+            error_input = {}  # Replace with actual error condition
+
     error_input = {}  # Replace with actual error condition
 
     # Act & Assert

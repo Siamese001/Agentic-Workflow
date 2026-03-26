@@ -67,10 +67,12 @@ class TestExecutionPlanIntrospection:
     """--plan flag produces stable, deterministic output with no side effects."""
 
     def test_execution_plan_exists_and_ordered(self):
-        from agentic_core.L0_routing.config.path_constants import (
-    """Test execution_plan_exists_and_ordered runtime behavior."""
-    # Arrange
-    # TODO: Set up test data for execution_plan_exists_and_ordered
+                from agentic_core.L0_routing.config.path_constants import (
+            """Test execution_plan_exists_and_ordered runtime behavior."""
+            # Arrange
+            # TODO: Set up test data for execution_plan_exists_and_ordered
+            test_data = {}  # Replace with actual test data
+
     test_data = {}  # Replace with actual test data
 
     # Act

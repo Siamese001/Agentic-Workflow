@@ -178,21 +178,23 @@ def _new_fca(tmp_path: Path):
 
 class TestClassificationDeterminism:
     def test_repeated_classification_is_stable(self, tmp_path):
-        from agentic_core.L0_routing.config.path_constants import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.L5_safety.reasoning.FileClassificationAgent import (
-        from agentic_core.L3_orchestration.reasoning import AgentA
-        from agentic_core.L5_safety.enforcement import GuardB
-        from agentic_core.L3_orchestration.reasoning import AgentA
-        from agentic_core.L5_safety.enforcement import GuardB
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        code = """\
-        from engines import handler_engine
-        class RequestRouter:
-            def route_to(self, target):
-                return target.handle()
-        """
-        p = _make_file(tmp_path, "request_router.py", code)
+                from agentic_core.L0_routing.config.path_constants import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L5_safety.reasoning.FileClassificationAgent import (
+                from agentic_core.L3_orchestration.reasoning import AgentA
+                from agentic_core.L5_safety.enforcement import GuardB
+                from agentic_core.L3_orchestration.reasoning import AgentA
+                from agentic_core.L5_safety.enforcement import GuardB
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                code = """\
+                from engines import handler_engine
+                class RequestRouter:
+                    def route_to(self, target):
+                        return target.handle()
+                """
+                p = _make_file(tmp_path, "request_router.py", code)
+                fca = _new_fca(tmp_path)
+
         fca = _new_fca(tmp_path)
 
         results = [fca.classify_file(p) for _ in range(10)]

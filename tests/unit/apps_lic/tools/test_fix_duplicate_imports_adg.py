@@ -5,9 +5,10 @@ import pytest
 
 pytestmark = pytest.mark.unit
 
-import apps_lic.tools.fix_duplicate_imports  # noqa: F401
 
 
 def test_module_importable():
     """Module fix_duplicate_imports must be importable."""
+    import apps_lic.tools.fix_duplicate_imports  # noqa: F401
+
     assert apps_lic.tools.fix_duplicate_imports is not None

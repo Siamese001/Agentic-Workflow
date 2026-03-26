@@ -170,10 +170,12 @@ pytestmark = pytest.mark.unit
 
 class TestCognitiveResult:
     def test_is_dataclass(self):
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.L1_cognition.engines.CognitiveNode import CognitiveResult
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        import dataclasses
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L1_cognition.engines.CognitiveNode import CognitiveResult
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                import dataclasses
+                assert dataclasses.is_dataclass(CognitiveResult)
+
         assert dataclasses.is_dataclass(CognitiveResult)
 
     def test_creates_with_required_fields(self):

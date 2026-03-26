@@ -10,22 +10,23 @@ import pytest
 
 pytestmark = pytest.mark.unit
 
-from apps_rg.scripts.test_run_grand_unification_tests import (  # noqa: F401
-    BATCH_SIZE,
-    BUFFER_SIZE,
-    DEFAULT_SLEEP,
-    MAX_RETRIES,
-    THRESHOLD,
-    test_buffer_cryptography_and_lineage,
-    test_full_system_lifecycle_happy_path,
-    test_resilience_to_garbage_input,
-    test_telemetry_fidelity_check,
-)
 
 
 class TestTestFullSystemLifecycleHappyPathFunction:
     def test_is_callable(self):
     """Test is_callable runtime behavior."""
+        from apps_rg.scripts.test_run_grand_unification_tests import (  # noqa: F401
+            BATCH_SIZE,
+            BUFFER_SIZE,
+            DEFAULT_SLEEP,
+            MAX_RETRIES,
+            THRESHOLD,
+            test_buffer_cryptography_and_lineage,
+            test_full_system_lifecycle_happy_path,
+            test_resilience_to_garbage_input,
+            test_telemetry_fidelity_check,
+        )
+
     # Arrange
     # TODO: Set up execution parameters
     input_data = {}  # Replace with actual test data

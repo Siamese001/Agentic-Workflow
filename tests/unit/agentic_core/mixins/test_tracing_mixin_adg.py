@@ -5,6 +5,8 @@ from __future__ import annotations
 
 
 def test_module_importable():
-    import agentic_core.mixins.tracing_mixin  # noqa: F401
-    """Module tracing_mixin must be importable."""
+        import agentic_core.mixins.tracing_mixin  # noqa: F401
+        """Module tracing_mixin must be importable."""
+        assert agentic_core.mixins.tracing_mixin is not None
+
     assert agentic_core.mixins.tracing_mixin is not None

@@ -92,13 +92,15 @@ pytestmark = pytest.mark.unit
 
 class TestContextPriority:
     def test_all_levels_present(self):
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.mixins.context_management_mixin import (
-        from agentic_core.mixins.cost_mixin import (
-        from agentic_core.mixins.metrics_mixin import MetricsMixin, PerformanceMetrics
-        from agentic_core.mixins.tracing_mixin import SpanContext, TracingMixin
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        names = {e.name for e in ContextPriority}
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.mixins.context_management_mixin import (
+                from agentic_core.mixins.cost_mixin import (
+                from agentic_core.mixins.metrics_mixin import MetricsMixin, PerformanceMetrics
+                from agentic_core.mixins.tracing_mixin import SpanContext, TracingMixin
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                names = {e.name for e in ContextPriority}
+                assert {"CRITICAL", "HIGH", "MEDIUM", "LOW"} == names
+
         assert {"CRITICAL", "HIGH", "MEDIUM", "LOW"} == names
 
     def test_critical_lowest_value(self):

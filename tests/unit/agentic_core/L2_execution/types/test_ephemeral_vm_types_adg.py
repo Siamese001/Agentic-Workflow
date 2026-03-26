@@ -33,7 +33,9 @@ def _func_names():
 
 class TestEphemeralVmTypesSource:
     def test_source_exists(self):
-        import agentic_core.L2_execution.types.ephemeral_vm_types as _mod  # noqa: F401  # ADG covers
+                import agentic_core.L2_execution.types.ephemeral_vm_types as _mod  # noqa: F401  # ADG covers
+                assert _SRC.exists(), f"Source not found: {_SRC}"
+
         assert _SRC.exists(), f"Source not found: {_SRC}"
 
     def test_parses_without_error(self):

@@ -7,10 +7,13 @@ pytestmark = pytest.mark.unit
 
 
 def test_module_importable():
-    import system_learning.types
+        import system_learning.types
+        assert system_learning.types is not None
+        import system_learning.types
+        assert hasattr(system_learning.types, "__path__")
+
     assert system_learning.types is not None
 
 
 def test_module_is_package():
-    import system_learning.types
     assert hasattr(system_learning.types, "__path__")

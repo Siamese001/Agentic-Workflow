@@ -173,9 +173,11 @@ pytestmark = pytest.mark.unit
 
 class TestCanonicalJSONImport:
     def test_class_importable(self):
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.utils.canonical_json_util import CanonicalJSON
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.utils.canonical_json_util import CanonicalJSON
+                assert callable(CanonicalJSON)
+
         assert callable(CanonicalJSON)
 
 

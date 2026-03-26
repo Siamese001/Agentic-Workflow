@@ -9,6 +9,8 @@ pytestmark = pytest.mark.unit
 
 
 def test_module_importable():
-    import agentic_core.L3_orchestration.types.telepathy_interface_types  # noqa: F401
-    """Module telepathy_interface_types must be importable."""
+        import agentic_core.L3_orchestration.types.telepathy_interface_types  # noqa: F401
+        """Module telepathy_interface_types must be importable."""
+        assert agentic_core.L3_orchestration.types.telepathy_interface_types is not None
+
     assert agentic_core.L3_orchestration.types.telepathy_interface_types is not None

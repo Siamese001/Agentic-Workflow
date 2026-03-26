@@ -96,13 +96,15 @@ pytestmark = pytest.mark.unit
 
 class TestDetectionProtocolShim:
     def test_all_list_complete(self):
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.utils.detection_protocol_util import (
-        from agentic_core.runtime.config.detection_config import DetectionRequest as canon
-        from agentic_core.utils.project_root_util import get_project_root, get_project_root_safe
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.utils.meta_learning_storage_util import MetaLearningStorage
-        for name in ("DetectionRequest", "DetectionResult", "Severity"):
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.utils.detection_protocol_util import (
+                from agentic_core.runtime.config.detection_config import DetectionRequest as canon
+                from agentic_core.utils.project_root_util import get_project_root, get_project_root_safe
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.utils.meta_learning_storage_util import MetaLearningStorage
+                for name in ("DetectionRequest", "DetectionResult", "Severity"):
+                    assert name in __all__
+
             assert name in __all__
 
     def test_detection_request_importable(self):

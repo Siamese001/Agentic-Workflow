@@ -175,10 +175,12 @@ pytestmark = pytest.mark.unit
 
 class TestRagQuery:
     def test_creates_with_query(self):
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.L3_orchestration.types.rag_provider_types import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        q = RagQuery(query="test query")
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L3_orchestration.types.rag_provider_types import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                q = RagQuery(query="test query")
+                assert q.query == "test query"
+
         assert q.query == "test query"
 
     def test_top_k_default_10(self):

@@ -174,9 +174,11 @@ pytestmark = pytest.mark.unit
 
 class TestSafetyThreatType:
     def test_bias_member(self):
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.L5_safety.reasoning.SafetyDetectorAgent import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L5_safety.reasoning.SafetyDetectorAgent import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                assert hasattr(SafetyThreatType, "BIAS")
+
         assert hasattr(SafetyThreatType, "BIAS")
 
     def test_hallucination_member(self):

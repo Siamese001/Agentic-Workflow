@@ -28,7 +28,9 @@ pytestmark = pytest.mark.unit
 
 class TestRLCoordinatorOrchestratorContract:
     def test_is_class(self):
-        from agentic_core.L3_orchestration.engines.rl_coordinator_orchestrator import (  # noqa: F401
+                from agentic_core.L3_orchestration.engines.rl_coordinator_orchestrator import (  # noqa: F401
+                assert isinstance(RLCoordinatorOrchestrator, type)
+
         assert isinstance(RLCoordinatorOrchestrator, type)
 
     def test_has_method_coordinate(self):

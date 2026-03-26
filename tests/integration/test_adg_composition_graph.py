@@ -163,10 +163,12 @@ def _visit_dyn(source: str, source_file: str = "test.py") -> list[Edge]:
 
 class TestCompositionVisitor:
     def test_self_assignment_in_init(self):
-        from agentic_core.adg.extraction.static_scanner import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
         src = """
+                from agentic_core.adg.extraction.static_scanner import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                src = """
+
 class MyAgent:
     def __init__(self):
         self.provider = SomeProvider()

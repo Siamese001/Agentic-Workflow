@@ -10,22 +10,23 @@ import pytest
 
 pytestmark = pytest.mark.unit
 
-from apps_shared.utils.golden_state_datasets_util import (  # noqa: F401
-    BATCH_SIZE,
-    BUFFER_SIZE,
-    DEFAULT_SLEEP,
-    MAX_RETRIES,
-    THRESHOLD,
-    load_baseline_scores,
-    load_exemplar_prompts,
-    load_golden_cases,
-    load_golden_inputs,
-)
 
 
 class TestLoadGoldenInputsFunction:
     def test_is_callable(self):
     """Test is_callable runtime behavior."""
+        from apps_shared.utils.golden_state_datasets_util import (  # noqa: F401
+            BATCH_SIZE,
+            BUFFER_SIZE,
+            DEFAULT_SLEEP,
+            MAX_RETRIES,
+            THRESHOLD,
+            load_baseline_scores,
+            load_exemplar_prompts,
+            load_golden_cases,
+            load_golden_inputs,
+        )
+
     # Arrange
     # TODO: Set up execution parameters
     input_data = {}  # Replace with actual test data

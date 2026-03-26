@@ -173,10 +173,12 @@ pytestmark = pytest.mark.unit
 
 class TestCacheEntry:
     def test_creates(self):
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.mixins.performance_mixin import CacheEntry, PerformanceMixin
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        entry = CacheEntry(value={"result": True})
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.mixins.performance_mixin import CacheEntry, PerformanceMixin
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                entry = CacheEntry(value={"result": True})
+                assert entry.value == {"result": True}
+
         assert entry.value == {"result": True}
 
     def test_not_expired_fresh(self):

@@ -214,12 +214,14 @@ def _components(**overrides) -> ReplayKeyComponents:
 class TestDetectionSignal:
     @pytest.mark.governance
     def test_build_returns_detection_signal(self):
-        from agentic_core.L6_observability.engines.detection_signal_emitter import (
-        from agentic_core.L6_observability.engines.drift_detector import (
-        from agentic_core.L6_observability.engines.replay_key_computer import (
-        from agentic_core.L6_observability.types.detection_signal_types import DetectionSignal
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        s = _signal()
+                from agentic_core.L6_observability.engines.detection_signal_emitter import (
+                from agentic_core.L6_observability.engines.drift_detector import (
+                from agentic_core.L6_observability.engines.replay_key_computer import (
+                from agentic_core.L6_observability.types.detection_signal_types import DetectionSignal
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                s = _signal()
+                assert isinstance(s, DetectionSignal)
+
         assert isinstance(s, DetectionSignal)
 
     @pytest.mark.governance

@@ -182,11 +182,13 @@ class TestYamlOnlyEnforcement:
     """Test YAML-only enforcement for instructional injections."""
 
     def test_yaml_only_no_markdown_fallback(self):
-        from agentic_core.runtime.config.instructional_injections import get_instructional_injections
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        """Test that YAML-only path is enforced (no markdown fallback)."""
-        # This should load from YAML only
+                from agentic_core.runtime.config.instructional_injections import get_instructional_injections
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                """Test that YAML-only path is enforced (no markdown fallback)."""
+                # This should load from YAML only
+                patterns = get_instructional_injections()
+
         patterns = get_instructional_injections()
 
         # Verify we got patterns

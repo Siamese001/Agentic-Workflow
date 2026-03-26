@@ -8,8 +8,10 @@ except (ValueError, TypeError, RuntimeError) as e:
     _mod = None
 
 def test_module_importable():
-    import agentic_core.L0_routing.scripts.verify_base_agent_names_util as _mod
 """Test module_importable contract compliance."""
+        import agentic_core.L0_routing.scripts.verify_base_agent_names_util as _mod
+    """Test module_importable contract compliance."""
+
 # Arrange
 # TODO: Set up contract test scenario
 test_scenario = {}  # Replace with actual test scenario

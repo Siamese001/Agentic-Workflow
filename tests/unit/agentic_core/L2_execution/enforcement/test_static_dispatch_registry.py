@@ -172,15 +172,17 @@ pytestmark = pytest.mark.unit
 
 class TestStaticDispatchRegistryRegistration:
     def test_register_and_is_registered(self):
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.L2_execution.enforcement.static_dispatch_registry import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-    """Test register_and_is_registered runtime behavior."""
-    # Arrange
-    # TODO: Set up test data for register_and_is_registered
     test_data = {}  # Replace with actual test data
 
 """Test unregistered_key_not_present runtime behavior."""
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L2_execution.enforcement.static_dispatch_registry import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+            """Test register_and_is_registered runtime behavior."""
+            # Arrange
+            # TODO: Set up test data for register_and_is_registered
+            test_data = {}  # Replace with actual test data
+
 # Arrange
 # TODO: Set up test data for unregistered_key_not_present
 test_data = {}  # Replace with actual test data

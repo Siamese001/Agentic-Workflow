@@ -96,11 +96,13 @@ class TestL1NamingStructure:
 
     @pytest.mark.parametrize("agent_file", AGENT_FILES, ids=lambda p: os.path.basename(p))
     def test_single_agent_classdef(self, agent_file: str) -> None:
-        from agentic_core.L0_routing.config.path_constants import TESTS_DIR
-        from agentic_core.L5_safety.config.structure_blueprint.ssot import SOVEREIGN_EXCLUDED_FOLDERS
-    """Test single_agent_classdef contract compliance."""
-    # Arrange
-    # TODO: Set up contract parties and terms
+                from agentic_core.L0_routing.config.path_constants import TESTS_DIR
+                from agentic_core.L5_safety.config.structure_blueprint.ssot import SOVEREIGN_EXCLUDED_FOLDERS
+            """Test single_agent_classdef contract compliance."""
+            # Arrange
+            # TODO: Set up contract parties and terms
+            contract_terms = {}  # Replace with actual contract terms
+
     contract_terms = {}  # Replace with actual contract terms
 
     # Act

@@ -218,13 +218,15 @@ def _fresh_data(content: object = "data", age_seconds: float = 0) -> VersionedDa
 class TestViolationEventConstruction:
     @pytest.mark.governance
     def test_valid_event_constructs_without_error(self):
-        from agentic_core.L4_state.enforcement.violation_event_store import ViolationEventStore
-        from agentic_core.L4_state.engines.fresh_data_validator import (
-        from agentic_core.L4_state.engines.ghost_mutation_detector import (
-        from agentic_core.L4_state.engines.memory_collision_detector import (
-        from agentic_core.L4_state.types.violation_event_types import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        e = _event()
+                from agentic_core.L4_state.enforcement.violation_event_store import ViolationEventStore
+                from agentic_core.L4_state.engines.fresh_data_validator import (
+                from agentic_core.L4_state.engines.ghost_mutation_detector import (
+                from agentic_core.L4_state.engines.memory_collision_detector import (
+                from agentic_core.L4_state.types.violation_event_types import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                e = _event()
+                assert e.mission_id == "mission-1"
+
         assert e.mission_id == "mission-1"
 
     @pytest.mark.governance

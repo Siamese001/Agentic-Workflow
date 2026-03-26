@@ -33,14 +33,6 @@ import pytest
 # REMOVED: _emit_stores_embedding("p4", "test_environment", "embedding_store")
 # REMOVED: _emit_updates_meta_learning_state("p4", "test_environment", "meta_learning")
 # REMOVED: _emit_links_execution_to_snapshot("p4", "test_environment", "exec_snapshot_link")
-from apps_shared.config.environment_config import (
-    EnvironmentConfig,
-)
-from apps_shared.utils.environment_util import (
-    EnvironmentValidator,
-    get_environment_config,
-    validate_environment,
-)
 
 # REMOVED: _emit_emits_metric_event("test_environment", "p4obs", "metric_1")
 # REMOVED: _emit_emits_metric_event("test_environment", "p4obs", "metric_2")
@@ -119,6 +111,17 @@ class TestEnvironmentConfig:
 
     def test_environment_config_with_all_required(self):
         """Test EnvironmentConfig with all required variables via kwargs."""
+        from apps_shared.config.environment_config import (
+            EnvironmentConfig,
+        )
+        from apps_shared.utils.environment_util import (
+            EnvironmentValidator,
+            get_environment_config,
+            validate_environment,
+        )
+                    import apps_shared.utils.environment_util as env_module
+                    env_module._config_instance = None
+
         config = EnvironmentConfig(
             OPENAI_API_KEY="test-openai-key",
             ANTHROPIC_API_KEY="test-anthropic-key",
@@ -273,8 +276,6 @@ class TestEnvironmentHelpers:
         """Test get_environment_config returns singleton instance."""
         with patch.dict(os.environ, REQUIRED_ENV_VARS, clear=False):
             # Reset singleton
-            import apps_shared.utils.environment_util as env_module
-
             env_module._config_instance = None
 
             config1 = get_environment_config()

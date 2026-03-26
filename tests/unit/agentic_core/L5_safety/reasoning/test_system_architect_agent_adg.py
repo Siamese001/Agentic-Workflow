@@ -175,10 +175,12 @@ pytestmark = pytest.mark.unit
 
 class TestSystemArchitectAgentInit:
     def test_creates_with_defaults(self):
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.L5_safety.reasoning.SystemArchitectAgent import SystemArchitectAgent
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        agent = SystemArchitectAgent()
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L5_safety.reasoning.SystemArchitectAgent import SystemArchitectAgent
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                agent = SystemArchitectAgent()
+                assert agent is not None
+
         assert agent is not None
 
     def test_cached_scan_root_starts_none(self):

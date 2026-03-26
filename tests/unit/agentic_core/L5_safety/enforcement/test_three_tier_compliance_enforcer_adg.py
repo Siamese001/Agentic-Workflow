@@ -177,11 +177,13 @@ pytestmark = pytest.mark.unit
 
 class TestConstants:
     def test_guardian_test_patterns_list(self):
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.L5_safety.enforcement.registry_verification_enforcer import AgentInfo
-        from agentic_core.L5_safety.enforcement.three_tier_compliance_enforcer import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        assert isinstance(GUARDIAN_TEST_PATTERNS, list)
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L5_safety.enforcement.registry_verification_enforcer import AgentInfo
+                from agentic_core.L5_safety.enforcement.three_tier_compliance_enforcer import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                assert isinstance(GUARDIAN_TEST_PATTERNS, list)
+                assert len(GUARDIAN_TEST_PATTERNS) > 0
+
         assert len(GUARDIAN_TEST_PATTERNS) > 0
 
     def test_contract_hooks_dict(self):

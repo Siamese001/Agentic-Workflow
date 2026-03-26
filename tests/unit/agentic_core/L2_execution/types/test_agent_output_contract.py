@@ -191,15 +191,17 @@ class _FakeOutput(BaseModel):
 
 
 def test_wrap_output_produces_signed_contract():
-    from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-    from agentic_core.L2_execution.types.agent_output_contract_types import (
-    from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-    out = _FakeOutput(result="ok", score=0.9)
-    contract = wrap_output("MyAgent", "trace-1", out, SECRET)
-    assert contract.agent_id == "MyAgent"
-    assert contract.trace_id == "trace-1"
-    assert "FakeOutput" in contract.schema_tag
-    assert len(contract.output_contract_hash) == 64
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L2_execution.types.agent_output_contract_types import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        out = _FakeOutput(result="ok", score=0.9)
+        contract = wrap_output("MyAgent", "trace-1", out, SECRET)
+        assert contract.agent_id == "MyAgent"
+        assert contract.trace_id == "trace-1"
+        assert "FakeOutput" in contract.schema_tag
+        assert len(contract.output_contract_hash) == 64
+        assert len(contract.signature) == 64
+
     assert len(contract.signature) == 64
 
 

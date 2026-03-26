@@ -10,26 +10,27 @@ import pytest
 
 pytestmark = pytest.mark.unit
 
-from apps_shared.utils.bulkhead_manager_util import (  # noqa: F401
-    BATCH_SIZE,
-    BUFFER_SIZE,
-    DEFAULT_SLEEP,
-    MAX_RETRIES,
-    THRESHOLD,
-    Bulkhead,
-    BulkheadConfig,
-    BulkheadManager,
-    BulkheadMetrics,
-    ResourceExhaustedError,
-    TaskPriority,
-    get_bulkhead_manager,
-    with_bulkhead,
-    with_engine_bulkhead,
-)
 
 
 class TestTaskPriorityContract:
     def test_is_enum(self):
+        from apps_shared.utils.bulkhead_manager_util import (  # noqa: F401
+            BATCH_SIZE,
+            BUFFER_SIZE,
+            DEFAULT_SLEEP,
+            MAX_RETRIES,
+            THRESHOLD,
+            Bulkhead,
+            BulkheadConfig,
+            BulkheadManager,
+            BulkheadMetrics,
+            ResourceExhaustedError,
+            TaskPriority,
+            get_bulkhead_manager,
+            with_bulkhead,
+            with_engine_bulkhead,
+        )
+
         import enum
         assert issubclass(TaskPriority, enum.Enum)
 

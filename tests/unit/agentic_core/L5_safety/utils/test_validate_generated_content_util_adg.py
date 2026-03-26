@@ -9,6 +9,8 @@ pytestmark = pytest.mark.unit
 
 
 def test_module_importable():
-    import agentic_core.L5_safety.utils.validate_generated_content_util  # noqa: F401
-    """Module validate_generated_content_util must be importable."""
+        import agentic_core.L5_safety.utils.validate_generated_content_util  # noqa: F401
+        """Module validate_generated_content_util must be importable."""
+        assert agentic_core.L5_safety.utils.validate_generated_content_util is not None
+
     assert agentic_core.L5_safety.utils.validate_generated_content_util is not None

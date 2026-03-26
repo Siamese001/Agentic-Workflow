@@ -174,9 +174,11 @@ pytestmark = pytest.mark.unit
 
 class TestSeverity:
     def test_critical_highest(self):
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.L5_safety.config.detection_signal_config import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L5_safety.config.detection_signal_config import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                assert Severity.CRITICAL.value > Severity.HIGH.value
+
         assert Severity.CRITICAL.value > Severity.HIGH.value
 
     def test_info_lowest(self):

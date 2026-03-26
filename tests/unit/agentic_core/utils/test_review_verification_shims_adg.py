@@ -14,13 +14,16 @@ pytestmark = pytest.mark.unit
 # ---------------------------------------------------------------------------
 class TestReviewProtocolShim:
     def test_importable(self):
-        import agentic_core.utils.review_protocol_util as mod
-        from agentic_core.utils.review_protocol_util import __all__
-        from agentic_core.runtime.config.review_config import ReviewRequest as canon
-        from agentic_core.utils.review_protocol_util import ReviewRequest as shim
-        import agentic_core.utils.verification_types_util as mod
-        from agentic_core.utils.review_protocol_util import __all__
-#  # MOVED: import agentic_core.utils.review_protocol_util as mod
+                import agentic_core.utils.review_protocol_util as mod
+                from agentic_core.utils.review_protocol_util import __all__
+                from agentic_core.runtime.config.review_config import ReviewRequest as canon
+                from agentic_core.utils.review_protocol_util import ReviewRequest as shim
+                import agentic_core.utils.verification_types_util as mod
+                from agentic_core.utils.review_protocol_util import __all__
+                from agentic_core.utils.review_protocol_util import __all__
+        #  # MOVED: import agentic_core.utils.review_protocol_util as mod
+                assert mod is not None
+
         assert mod is not None
 
     def test_human_review_protocol_exported(self):

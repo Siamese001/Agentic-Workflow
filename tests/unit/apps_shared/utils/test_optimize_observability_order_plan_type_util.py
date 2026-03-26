@@ -10,24 +10,25 @@ import pytest
 
 pytestmark = pytest.mark.unit
 
-from apps_shared.utils.optimize_observability_order_plan_type_util import (  # noqa: F401
-    BATCH_SIZE,
-    BUFFER_SIZE,
-    DEFAULT_SLEEP,
-    MAX_RETRIES,
-    THRESHOLD,
-    OptimizeObservabilityOrderPlanConstraints,
-    OptimizeObservabilityOrderPlanImpl,
-    OptimizeObservabilityOrderPlanProcessor,
-    OptimizeObservabilityOrderPlanResult,
-    OptimizeObservabilityOrderPlanType,
-    SecurityError,
-    optimize_observability_order,
-)
 
 
 class TestOptimizeObservabilityOrderPlanTypeContract:
     def test_is_enum(self):
+        from apps_shared.utils.optimize_observability_order_plan_type_util import (  # noqa: F401
+            BATCH_SIZE,
+            BUFFER_SIZE,
+            DEFAULT_SLEEP,
+            MAX_RETRIES,
+            THRESHOLD,
+            OptimizeObservabilityOrderPlanConstraints,
+            OptimizeObservabilityOrderPlanImpl,
+            OptimizeObservabilityOrderPlanProcessor,
+            OptimizeObservabilityOrderPlanResult,
+            OptimizeObservabilityOrderPlanType,
+            SecurityError,
+            optimize_observability_order,
+        )
+
         import enum
         assert issubclass(OptimizeObservabilityOrderPlanType, enum.Enum)
 

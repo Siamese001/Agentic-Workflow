@@ -189,15 +189,17 @@ pytestmark = pytest.mark.unit
 
 class TestToolCall:
     def test_valid_tool_call(self):
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.L2_execution.types.ptc_tool_contracts_types import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-    """Test valid_tool_call runtime behavior."""
-    # Arrange
-    # TODO: Set up execution parameters
     input_data = {}  # Replace with actual test data
 
 """Test empty_id_raises runtime behavior."""
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L2_execution.types.ptc_tool_contracts_types import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+            """Test valid_tool_call runtime behavior."""
+            # Arrange
+            # TODO: Set up execution parameters
+            input_data = {}  # Replace with actual test data
+
 # Arrange
 # TODO: Set up test data for empty_id_raises
 test_data = {}  # Replace with actual test data

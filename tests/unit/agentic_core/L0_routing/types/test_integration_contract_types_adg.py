@@ -179,15 +179,17 @@ pytestmark = pytest.mark.unit
 
 class TestSchemaVersion:
     def test_is_string(self):
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.L0_routing.types.integration_contract_types import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-    """Test is_string contract compliance."""
-    # Arrange
-    # TODO: Set up contract parties and terms
-    """Test semver_format contract compliance."""
-    # Arrange
-    # TODO: Set up contract parties and terms
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L0_routing.types.integration_contract_types import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+            """Test is_string contract compliance."""
+            # Arrange
+            # TODO: Set up contract parties and terms
+            """Test semver_format contract compliance."""
+            # Arrange
+            # TODO: Set up contract parties and terms
+            contract_terms = {}  # Replace with actual contract terms
+
     contract_terms = {}  # Replace with actual contract terms
 
     # Act

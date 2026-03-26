@@ -10,24 +10,25 @@ import pytest
 
 pytestmark = pytest.mark.unit
 
-from apps_shared.utils.feedback_category_util import (  # noqa: F401
-    BATCH_SIZE,
-    BUFFER_SIZE,
-    DEFAULT_SLEEP,
-    MAX_RETRIES,
-    THRESHOLD,
-    CrossEngineFeedback,
-    FeedbackAggregator,
-    FeedbackCategory,
-    UnifiedFeedbackSystem,
-    get_improvement_plan,
-    get_unified_feedback_system,
-    submit_cross_engine_feedback,
-)
 
 
 class TestFeedbackCategoryContract:
     def test_is_enum(self):
+        from apps_shared.utils.feedback_category_util import (  # noqa: F401
+            BATCH_SIZE,
+            BUFFER_SIZE,
+            DEFAULT_SLEEP,
+            MAX_RETRIES,
+            THRESHOLD,
+            CrossEngineFeedback,
+            FeedbackAggregator,
+            FeedbackCategory,
+            UnifiedFeedbackSystem,
+            get_improvement_plan,
+            get_unified_feedback_system,
+            submit_cross_engine_feedback,
+        )
+
         import enum
         assert issubclass(FeedbackCategory, enum.Enum)
 

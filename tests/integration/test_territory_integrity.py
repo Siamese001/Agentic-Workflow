@@ -209,12 +209,14 @@ class TestTerritoryIntegrity(unittest.TestCase):
             shutil.rmtree(self.tmp)
 
     def test_detection_of_root_files(self):
-        from agentic_core.L0_routing.config.path_constants import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.L5_safety.reasoning.hierarchy_healer import HierarchyAgent
-        """Test 1: Verify all files in territory root are flagged as STRUCTURE violations."""
-        agent = HierarchyAgent(project_root=self.tmp)
+                from agentic_core.L0_routing.config.path_constants import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L5_safety.reasoning.hierarchy_healer import HierarchyAgent
+                """Test 1: Verify all files in territory root are flagged as STRUCTURE violations."""
+                agent = HierarchyAgent(project_root=self.tmp)
+                report = agent.scan_root_violations(target_territory="prompt_governance")
+
         report = agent.scan_root_violations(target_territory="prompt_governance")
 
         # Should detect 3 squatter files (.py, .md, .json) but not __init__.py or .gitkeep

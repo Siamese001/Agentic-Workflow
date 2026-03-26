@@ -225,13 +225,15 @@ def make_requests(profile, task_class: str, n: int) -> list[VLLMStressRequest]:
 
 
 def test_7b_worst_case_prompt_passes_preflight():
-    from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-    from agentic_core.L2_execution.types.vllm_concurrency_types import (
-    from agentic_core.L2_execution.types.vllm_serving_profile_types import (
-    from agentic_core.L2_execution.types.vllm_token_budget_types import (
-    from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-    requests = make_requests(PROFILE_LOCAL_FAST_7B, TaskClass.PATCH_SUGGESTION.value, 1)
-    result = validate_concurrency_headroom(PROFILE_LOCAL_FAST_7B, requests)
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L2_execution.types.vllm_concurrency_types import (
+        from agentic_core.L2_execution.types.vllm_serving_profile_types import (
+        from agentic_core.L2_execution.types.vllm_token_budget_types import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        requests = make_requests(PROFILE_LOCAL_FAST_7B, TaskClass.PATCH_SUGGESTION.value, 1)
+        result = validate_concurrency_headroom(PROFILE_LOCAL_FAST_7B, requests)
+        assert result.all_within_budget, "Worst-case prompt should pass preflight on 7B"
+
     assert result.all_within_budget, "Worst-case prompt should pass preflight on 7B"
 
 

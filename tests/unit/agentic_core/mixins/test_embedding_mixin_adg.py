@@ -10,7 +10,9 @@ pytestmark = pytest.mark.unit
 
 class TestEmbeddingMixin:
     def test_importable(self):
-        from agentic_core.mixins.embedding_mixin import EmbeddingMixin, EmbeddingProvider
+                from agentic_core.mixins.embedding_mixin import EmbeddingMixin, EmbeddingProvider
+                assert callable(EmbeddingMixin)
+
         assert callable(EmbeddingMixin)
 
     def test_embedding_gateway_default_none(self):

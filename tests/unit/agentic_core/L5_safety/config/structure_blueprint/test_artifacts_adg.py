@@ -15,9 +15,11 @@ pytestmark = pytest.mark.unit
 
 class TestArtifactConstants:
     def test_app_specific_prefixes_mapping(self):
-        from agentic_core.L5_safety.config.structure_blueprint.artifacts import (
-        assert isinstance(APP_SPECIFIC_PREFIXES, dict | type(APP_SPECIFIC_PREFIXES))
-        assert "rg_" in APP_SPECIFIC_PREFIXES
+                from agentic_core.L5_safety.config.structure_blueprint.artifacts import (
+                assert isinstance(APP_SPECIFIC_PREFIXES, dict | type(APP_SPECIFIC_PREFIXES))
+                assert "rg_" in APP_SPECIFIC_PREFIXES
+                assert "lic_" in APP_SPECIFIC_PREFIXES
+
         assert "lic_" in APP_SPECIFIC_PREFIXES
 
     def test_rg_prefix_maps_to_apps_rg(self):

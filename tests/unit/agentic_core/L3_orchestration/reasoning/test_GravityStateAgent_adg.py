@@ -9,6 +9,8 @@ pytestmark = pytest.mark.unit
 
 
 def test_module_importable():
-    import agentic_core.L3_orchestration.reasoning.GravityStateAgent  # noqa: F401
-    """Module GravityStateAgent must be importable."""
+        import agentic_core.L3_orchestration.reasoning.GravityStateAgent  # noqa: F401
+        """Module GravityStateAgent must be importable."""
+        assert agentic_core.L3_orchestration.reasoning.GravityStateAgent is not None
+
     assert agentic_core.L3_orchestration.reasoning.GravityStateAgent is not None

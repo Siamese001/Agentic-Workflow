@@ -152,11 +152,13 @@ class TestCSTCanaryNamingAgent:
     """Canary test for CST-based healing using NamingAgent scenario."""
 
     def test_preserves_comments_and_formatting(self):
-        from agentic_core.L5_safety.enforcement.SurgicalHealingAdapter import (
-        from agentic_core.mixins.cst_healer_mixin import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        """
+                from agentic_core.L5_safety.enforcement.SurgicalHealingAdapter import (
+                from agentic_core.mixins.cst_healer_mixin import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                """
+                Critical test: Verify CST preserves comments and weird formatting.
+
         Critical test: Verify CST preserves comments and weird formatting.
 
         This is the "Canary Test" mentioned in the CST Pivot plan.

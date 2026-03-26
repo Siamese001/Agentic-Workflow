@@ -10,23 +10,24 @@ import pytest
 
 pytestmark = pytest.mark.unit
 
-from apps_shared.utils.sdk_category_util import (  # noqa: F401
-    BATCH_SIZE,
-    BUFFER_SIZE,
-    DEFAULT_SLEEP,
-    MAX_RETRIES,
-    THRESHOLD,
-    SDKCategory,
-    SDKEntry,
-    get_available_sdks,
-    get_sdk_by_category,
-    validate_all_sdks,
-    validate_sdk,
-)
 
 
 class TestSDKCategoryContract:
     def test_is_enum(self):
+        from apps_shared.utils.sdk_category_util import (  # noqa: F401
+            BATCH_SIZE,
+            BUFFER_SIZE,
+            DEFAULT_SLEEP,
+            MAX_RETRIES,
+            THRESHOLD,
+            SDKCategory,
+            SDKEntry,
+            get_available_sdks,
+            get_sdk_by_category,
+            validate_all_sdks,
+            validate_sdk,
+        )
+
         import enum
         assert issubclass(SDKCategory, enum.Enum)
 

@@ -10,22 +10,23 @@ import pytest
 
 pytestmark = pytest.mark.unit
 
-from apps_shared.scripts.refactor_agents_to_subatomic import (  # noqa: F401
-    BATCH_SIZE,
-    BUFFER_SIZE,
-    DEFAULT_SLEEP,
-    MAX_RETRIES,
-    THRESHOLD,
-    add_engine_initialization,
-    add_subatomic_imports,
-    process_agent_file,
-    remove_thinking_budget_over_limit,
-)
 
 
 class TestAddSubatomicImportsFunction:
     def test_is_callable(self):
     """Test is_callable runtime behavior."""
+        from apps_shared.scripts.refactor_agents_to_subatomic import (  # noqa: F401
+            BATCH_SIZE,
+            BUFFER_SIZE,
+            DEFAULT_SLEEP,
+            MAX_RETRIES,
+            THRESHOLD,
+            add_engine_initialization,
+            add_subatomic_imports,
+            process_agent_file,
+            remove_thinking_budget_over_limit,
+        )
+
     # Arrange
     # TODO: Set up execution parameters
     input_data = {}  # Replace with actual test data

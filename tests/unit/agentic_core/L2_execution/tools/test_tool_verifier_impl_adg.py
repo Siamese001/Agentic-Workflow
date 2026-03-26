@@ -13,23 +13,25 @@ pytestmark = pytest.mark.unit
 
 class TestVerificationResult:
     def test_is_enum(self):
-        from agentic_core.L2_execution.tools.tool_verifier_impl import (
-    """Test is_enum runtime behavior."""
-    # Arrange
-    # TODO: Set up test data for is_enum
-    test_data = {}  # Replace with actual test data
-    """Test passed_value runtime behavior."""
-    # Arrange
-    # TODO: Set up test data for passed_value
-    """Test failed_value runtime behavior."""
-    # Arrange
-    # TODO: Set up test data for failed_value
-    """Test warning_value runtime behavior."""
-    # Arrange
-    # TODO: Set up test data for warning_value
     test_data = {}  # Replace with actual test data
 
 """Test is_dataclass runtime behavior."""
+                from agentic_core.L2_execution.tools.tool_verifier_impl import (
+            """Test is_enum runtime behavior."""
+            # Arrange
+            # TODO: Set up test data for is_enum
+            test_data = {}  # Replace with actual test data
+            """Test passed_value runtime behavior."""
+            # Arrange
+            # TODO: Set up test data for passed_value
+            """Test failed_value runtime behavior."""
+            # Arrange
+            # TODO: Set up test data for failed_value
+            """Test warning_value runtime behavior."""
+            # Arrange
+            # TODO: Set up test data for warning_value
+            test_data = {}  # Replace with actual test data
+
 # Arrange
 # TODO: Set up test data for is_dataclass
 test_data = {}  # Replace with actual test data

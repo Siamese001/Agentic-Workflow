@@ -5,6 +5,8 @@ from __future__ import annotations
 
 
 def test_module_importable():
-    import agentic_core.prompt_governance.scripts.template_render_visitor  # noqa: F401
-    """Module template_render_visitor must be importable."""
+        import agentic_core.prompt_governance.scripts.template_render_visitor  # noqa: F401
+        """Module template_render_visitor must be importable."""
+        assert agentic_core.prompt_governance.scripts.template_render_visitor is not None
+
     assert agentic_core.prompt_governance.scripts.template_render_visitor is not None

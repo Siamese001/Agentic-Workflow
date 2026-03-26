@@ -5,9 +5,10 @@ import pytest
 
 pytestmark = pytest.mark.unit
 
-import apps_lic.config.loader_config  # noqa: F401
 
 
 def test_module_importable():
     """Module loader_config must be importable."""
+    import apps_lic.config.loader_config  # noqa: F401
+
     assert apps_lic.config.loader_config is not None

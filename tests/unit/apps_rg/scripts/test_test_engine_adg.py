@@ -5,9 +5,10 @@ import pytest
 
 pytestmark = pytest.mark.unit
 
-import apps_rg.scripts.test_engine  # noqa: F401
 
 
 def test_module_importable():
     """Module test_engine must be importable."""
+    import apps_rg.scripts.test_engine  # noqa: F401
+
     assert apps_rg.scripts.test_engine is not None

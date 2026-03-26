@@ -185,19 +185,21 @@ def _make_completed(returncode: int = 0, stdout: str = "", stderr: str = "") -> 
 
 class TestSafeRunImport:
     def test_callable(self):
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.L5_safety.enforcement.process_guardrail import SecurityViolation
-        from agentic_core.L5_safety.enforcement.safe_subprocess_handler_enforcer import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-    """Test callable runtime behavior."""
-    # Arrange
-    # TODO: Set up execution parameters
-    """Test safe_popen_callable runtime behavior."""
-    # Arrange
-    # TODO: Set up execution parameters
-    """Test safe_communicate_callable runtime behavior."""
-    # Arrange
-    # TODO: Set up execution parameters
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L5_safety.enforcement.process_guardrail import SecurityViolation
+                from agentic_core.L5_safety.enforcement.safe_subprocess_handler_enforcer import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+            """Test callable runtime behavior."""
+            # Arrange
+            # TODO: Set up execution parameters
+            """Test safe_popen_callable runtime behavior."""
+            # Arrange
+            # TODO: Set up execution parameters
+            """Test safe_communicate_callable runtime behavior."""
+            # Arrange
+            # TODO: Set up execution parameters
+            input_data = {}  # Replace with actual test data
+
     input_data = {}  # Replace with actual test data
 
     # Act

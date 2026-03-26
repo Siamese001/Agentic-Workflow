@@ -5,9 +5,10 @@ import pytest
 
 pytestmark = pytest.mark.unit
 
-import system_learning.ports.l4_meta_prior_provider  # noqa: F401
 
 
 def test_module_importable():
     """Module l4_meta_prior_provider must be importable."""
+    import system_learning.ports.l4_meta_prior_provider  # noqa: F401
+
     assert system_learning.ports.l4_meta_prior_provider is not None

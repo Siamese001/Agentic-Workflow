@@ -9,6 +9,8 @@ pytestmark = pytest.mark.unit
 
 
 def test_module_importable():
-    import agentic_core.L0_routing.utils.trim_remaining_airlocks_util  # noqa: F401
-    """Module trim_remaining_airlocks_util must be importable."""
+        import agentic_core.L0_routing.utils.trim_remaining_airlocks_util  # noqa: F401
+        """Module trim_remaining_airlocks_util must be importable."""
+        assert agentic_core.L0_routing.utils.trim_remaining_airlocks_util is not None
+
     assert agentic_core.L0_routing.utils.trim_remaining_airlocks_util is not None

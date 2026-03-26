@@ -10,23 +10,24 @@ import pytest
 
 pytestmark = pytest.mark.unit
 
-from apps_shared.utils.graph_rag_fusion_util import (  # noqa: F401
-    BATCH_SIZE,
-    BUFFER_SIZE,
-    DEFAULT_SLEEP,
-    MAX_RETRIES,
-    THRESHOLD,
-    CypherQueryGenerator,
-    FusionResult,
-    GraphRAGFusion,
-    QueryType,
-    get_graphrag_fusion,
-    graphrag_query,
-)
 
 
 class TestQueryTypeContract:
     def test_is_enum(self):
+        from apps_shared.utils.graph_rag_fusion_util import (  # noqa: F401
+            BATCH_SIZE,
+            BUFFER_SIZE,
+            DEFAULT_SLEEP,
+            MAX_RETRIES,
+            THRESHOLD,
+            CypherQueryGenerator,
+            FusionResult,
+            GraphRAGFusion,
+            QueryType,
+            get_graphrag_fusion,
+            graphrag_query,
+        )
+
         import enum
         assert issubclass(QueryType, enum.Enum)
 

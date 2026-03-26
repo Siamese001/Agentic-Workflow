@@ -9,6 +9,8 @@ pytestmark = pytest.mark.unit
 
 
 def test_module_importable():
-    import agentic_core.L3_orchestration.engines.recursive_orchestrator  # noqa: F401
-    """Module recursive_orchestrator must be importable."""
+        import agentic_core.L3_orchestration.engines.recursive_orchestrator  # noqa: F401
+        """Module recursive_orchestrator must be importable."""
+        assert agentic_core.L3_orchestration.engines.recursive_orchestrator is not None
+
     assert agentic_core.L3_orchestration.engines.recursive_orchestrator is not None

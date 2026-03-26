@@ -74,10 +74,12 @@ class TestT1ModuleDefinitionVisitorIntegration:
 
     @pytest.mark.skipif(not _SCANNER_AVAILABLE, reason="Scanner unavailable")
     def test_defs_inside_if_name_main(self):
-        from agentic_core.adg.extraction.static_scanner import (
-        """Functions inside `if __name__ == '__main__':` ARE emitted."""
-        source = textwrap.dedent("""\
-        def public_api():
+                from agentic_core.adg.extraction.static_scanner import (
+                """Functions inside `if __name__ == '__main__':` ARE emitted."""
+                source = textwrap.dedent("""\
+                def public_api():
+                    pass
+
             pass
 
         if __name__ == "__main__":

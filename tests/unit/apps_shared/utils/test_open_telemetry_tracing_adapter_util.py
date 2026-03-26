@@ -11,24 +11,29 @@ import pytest
 
 pytestmark = pytest.mark.unit
 
-from apps_shared.utils.open_telemetry_tracing_adapter_util import (  # noqa: F401
-    BATCH_SIZE,
-    BUFFER_SIZE,
-    DEFAULT_SLEEP,
-    MAX_RETRIES,
-    THRESHOLD,
-    CostMetrics,
-    OpenTelemetryTracingAdapter,
-    ResilienceMetrics,
-    SpanMetadata,
-    SpanType,
-    get_tracer,
-    reset_tracer,
-)
 
 
 class TestSpanTypeContract:
     def test_is_enum(self):
+        from apps_shared.utils.open_telemetry_tracing_adapter_util import (  # noqa: F401
+            BATCH_SIZE,
+            BUFFER_SIZE,
+            DEFAULT_SLEEP,
+            MAX_RETRIES,
+            THRESHOLD,
+            CostMetrics,
+            OpenTelemetryTracingAdapter,
+            ResilienceMetrics,
+            SpanMetadata,
+            SpanType,
+            get_tracer,
+            reset_tracer,
+        )
+                import apps_shared.utils.open_telemetry_tracing_adapter_util as otel_module
+                class _StatusCode:
+                    OK = "OK"
+                    ERROR = "ERROR"
+
         import enum
 
         assert issubclass(SpanType, enum.Enum)
@@ -193,10 +198,6 @@ class TestOpenTelemetryTracingAdapterContract:
         assert tool["attributes"]["tool.name"] == "search"
 
     def test_drain_completed_spans_clears_buffer(self):
-        import apps_shared.utils.open_telemetry_tracing_adapter_util as otel_module
-
-        class _StatusCode:
-            OK = "OK"
             ERROR = "ERROR"
 
         class _Status:

@@ -231,12 +231,14 @@ class TestRoutingTierStateTransitions:
     """Every tier transition path must be reachable and produce a distinct, deterministic result."""
 
     def test_deterministic_tier_returns_true(self):
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.L0_routing.scripts.execute_ssot import AutonomousDecisionEngine
-    """Test deterministic_tier_returns_true runtime behavior."""
-    # Arrange
-    # TODO: Set up test data for deterministic_tier_returns_true
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L0_routing.scripts.execute_ssot import AutonomousDecisionEngine
+            """Test deterministic_tier_returns_true runtime behavior."""
+            # Arrange
+            # TODO: Set up test data for deterministic_tier_returns_true
+            test_data = {}  # Replace with actual test data
+
     test_data = {}  # Replace with actual test data
 
     # Act

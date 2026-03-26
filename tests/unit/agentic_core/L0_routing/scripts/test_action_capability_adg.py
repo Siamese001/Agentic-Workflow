@@ -173,22 +173,24 @@ pytestmark = pytest.mark.unit
 
 class TestActionCapability:
     def test_is_enum(self):
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.L0_routing.scripts.action_capability import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-    """Test is_enum runtime behavior."""
-    # Arrange
-    # TODO: Set up test data for is_enum
-    test_data = {}  # Replace with actual test data
-    """Test has_tool_execution runtime behavior."""
-    # Arrange
-    # TODO: Set up test data for has_tool_execution
-    """Test has_file_operations runtime behavior."""
-    # Arrange
-    # TODO: Set up test data for has_file_operations
-    """Test all_values_are_strings runtime behavior."""
-    # Arrange
-    # TODO: Set up test data for all_values_are_strings
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L0_routing.scripts.action_capability import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+            """Test is_enum runtime behavior."""
+            # Arrange
+            # TODO: Set up test data for is_enum
+            test_data = {}  # Replace with actual test data
+            """Test has_tool_execution runtime behavior."""
+            # Arrange
+            # TODO: Set up test data for has_tool_execution
+            """Test has_file_operations runtime behavior."""
+            # Arrange
+            # TODO: Set up test data for has_file_operations
+            """Test all_values_are_strings runtime behavior."""
+            # Arrange
+            # TODO: Set up test data for all_values_are_strings
+            test_data = {}  # Replace with actual test data
+
     test_data = {}  # Replace with actual test data
 
     # Act

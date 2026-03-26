@@ -222,11 +222,13 @@ def _interactive_gate(repo_root: Path, user_input: str) -> HitlGate:
 
 class TestHitlProtectedPaths:
     def test_key_paths_present(self):
-        from agentic_core.L5_safety.enforcement.hitl_gate import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.L5_safety.enforcement.hitl_gate import HitlRequiredError as HRE
-        for path in ("agentic_core", "scripts", "mixins", "runtime", "tests"):
+                from agentic_core.L5_safety.enforcement.hitl_gate import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L5_safety.enforcement.hitl_gate import HitlRequiredError as HRE
+                for path in ("agentic_core", "scripts", "mixins", "runtime", "tests"):
+                    assert path in HITL_PROTECTED_PATHS, f"{path!r} must be in HITL_PROTECTED_PATHS"
+
             assert path in HITL_PROTECTED_PATHS, f"{path!r} must be in HITL_PROTECTED_PATHS"
 
     def test_is_frozenset(self):

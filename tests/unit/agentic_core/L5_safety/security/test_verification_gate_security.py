@@ -182,14 +182,16 @@ class TestVerificationGateBasic:
     """Basic verification gate functionality tests."""
 
     def test_verify_existing_import(self, tmp_path):
-        from agentic_core.L5_safety.enforcement.verification_gate import VerificationGate
-        from agentic_core.L5_safety.types.surgical_context_types import (
-        from agentic_core.L5_safety.utils.unified_cst_healer_util import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-    """Test verify_existing_import contract compliance."""
-    # Arrange
-    # TODO: Set up contract test scenario
+                from agentic_core.L5_safety.enforcement.verification_gate import VerificationGate
+                from agentic_core.L5_safety.types.surgical_context_types import (
+                from agentic_core.L5_safety.utils.unified_cst_healer_util import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+            """Test verify_existing_import contract compliance."""
+            # Arrange
+            # TODO: Set up contract test scenario
+            test_scenario = {}  # Replace with actual test scenario
+
     test_scenario = {}  # Replace with actual test scenario
 
     # Act

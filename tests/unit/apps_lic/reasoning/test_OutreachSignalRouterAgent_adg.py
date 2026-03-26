@@ -5,9 +5,10 @@ import pytest
 
 pytestmark = pytest.mark.unit
 
-import apps_lic.reasoning.OutreachSignalRouterAgent  # noqa: F401
 
 
 def test_module_importable():
     """Module OutreachSignalRouterAgent must be importable."""
+    import apps_lic.reasoning.OutreachSignalRouterAgent  # noqa: F401
+
     assert apps_lic.reasoning.OutreachSignalRouterAgent is not None

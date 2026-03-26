@@ -26,8 +26,10 @@ pytestmark = pytest.mark.unit
 
 class TestForensicAgentRecordContract:
     def test_is_dataclass(self):
-        from agentic_core.L0_routing.scripts.forensic_discovery_prep import (  # noqa: F401
-        import dataclasses
+                from agentic_core.L0_routing.scripts.forensic_discovery_prep import (  # noqa: F401
+                import dataclasses
+                assert dataclasses.is_dataclass(ForensicAgentRecord)
+
         assert dataclasses.is_dataclass(ForensicAgentRecord)
 
     def test_field_names_present(self):

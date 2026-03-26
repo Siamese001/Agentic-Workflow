@@ -9,6 +9,8 @@ pytestmark = pytest.mark.unit
 
 
 def test_module_importable():
-    import agentic_core.L3_orchestration.engines.sub_atomic_engine_impl  # noqa: F401
-    """Module sub_atomic_engine_impl must be importable."""
+        import agentic_core.L3_orchestration.engines.sub_atomic_engine_impl  # noqa: F401
+        """Module sub_atomic_engine_impl must be importable."""
+        assert agentic_core.L3_orchestration.engines.sub_atomic_engine_impl is not None
+
     assert agentic_core.L3_orchestration.engines.sub_atomic_engine_impl is not None

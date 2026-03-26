@@ -173,20 +173,22 @@ pytestmark = pytest.mark.unit
 
 class TestExpansionStrategy:
     def test_is_enum(self):
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.runtime.types.expansion_strategy_types import (
-    """Test is_enum runtime behavior."""
-    # Arrange
-    """Test has_hybrid runtime behavior."""
-    """Test four_strategies runtime behavior."""
-    # Arrange
-    # TODO: Set up runtime environment
-    """Test is_dataclass runtime behavior."""
-    # Arrange
-    """Test creates runtime behavior."""
-    # Arrange
-    # TODO: Set up runtime environment
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.runtime.types.expansion_strategy_types import (
+            """Test is_enum runtime behavior."""
+            # Arrange
+            """Test has_hybrid runtime behavior."""
+            """Test four_strategies runtime behavior."""
+            # Arrange
+            # TODO: Set up runtime environment
+            """Test is_dataclass runtime behavior."""
+            # Arrange
+            """Test creates runtime behavior."""
+            # Arrange
+            # TODO: Set up runtime environment
+            runtime_context = {}  # Replace with actual runtime context
+
     runtime_context = {}  # Replace with actual runtime context
 
     # Act

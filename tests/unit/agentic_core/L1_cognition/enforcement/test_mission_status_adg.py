@@ -173,10 +173,12 @@ pytestmark = pytest.mark.unit
 
 class TestMissionStatus:
     def test_is_enum(self):
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.L1_cognition.enforcement.mission_status import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        import enum
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L1_cognition.enforcement.mission_status import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                import enum
+                assert issubclass(MissionStatus, enum.Enum)
+
         assert issubclass(MissionStatus, enum.Enum)
 
     def test_pending_value(self):

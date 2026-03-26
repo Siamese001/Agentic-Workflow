@@ -9,6 +9,8 @@ pytestmark = pytest.mark.unit
 
 
 def test_module_importable():
-    import agentic_core.L3_orchestration.types.route_type_types  # noqa: F401
-    """Module route_type_types must be importable."""
+        import agentic_core.L3_orchestration.types.route_type_types  # noqa: F401
+        """Module route_type_types must be importable."""
+        assert agentic_core.L3_orchestration.types.route_type_types is not None
+
     assert agentic_core.L3_orchestration.types.route_type_types is not None

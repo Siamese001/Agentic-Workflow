@@ -173,22 +173,24 @@ pytestmark = pytest.mark.unit
 
 class TestExecutionPhase:
     def test_is_enum(self):
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.L1_cognition.types.execution_phase_types import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-    """Test is_enum runtime behavior."""
-    # Arrange
-    # TODO: Set up test data for is_enum
-    test_data = {}  # Replace with actual test data
-    """Test think_value runtime behavior."""
-    # Arrange
-    # TODO: Set up test data for think_value
-    """Test act_value runtime behavior."""
-    # Arrange
-    # TODO: Set up test data for act_value
-    """Test all_values_are_strings runtime behavior."""
-    # Arrange
-    # TODO: Set up test data for all_values_are_strings
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L1_cognition.types.execution_phase_types import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+            """Test is_enum runtime behavior."""
+            # Arrange
+            # TODO: Set up test data for is_enum
+            test_data = {}  # Replace with actual test data
+            """Test think_value runtime behavior."""
+            # Arrange
+            # TODO: Set up test data for think_value
+            """Test act_value runtime behavior."""
+            # Arrange
+            # TODO: Set up test data for act_value
+            """Test all_values_are_strings runtime behavior."""
+            # Arrange
+            # TODO: Set up test data for all_values_are_strings
+            test_data = {}  # Replace with actual test data
+
     test_data = {}  # Replace with actual test data
 
     # Act

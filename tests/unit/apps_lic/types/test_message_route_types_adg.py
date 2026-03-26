@@ -5,9 +5,10 @@ import pytest
 
 pytestmark = pytest.mark.unit
 
-import apps_lic.types.message_route_types  # noqa: F401
 
 
 def test_module_importable():
     """Module message_route_types must be importable."""
+    import apps_lic.types.message_route_types  # noqa: F401
+
     assert apps_lic.types.message_route_types is not None

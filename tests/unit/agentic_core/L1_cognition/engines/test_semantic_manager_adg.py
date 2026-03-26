@@ -173,10 +173,12 @@ pytestmark = pytest.mark.unit
 
 class TestEmbeddingProvider:
     def test_creates_with_default(self):
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.L1_cognition.engines.semantic_manager import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        ep = EmbeddingProvider()
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L1_cognition.engines.semantic_manager import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                ep = EmbeddingProvider()
+                assert ep.model == "BAAI/bge-m3"
+
         assert ep.model == "BAAI/bge-m3"
 
     def test_embed_returns_list(self):

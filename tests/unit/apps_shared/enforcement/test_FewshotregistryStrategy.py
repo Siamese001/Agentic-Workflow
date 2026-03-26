@@ -10,24 +10,25 @@ import pytest
 
 pytestmark = pytest.mark.unit
 
-from apps_shared.enforcement.FewshotregistryStrategy import (  # noqa: F401
-    BATCH_SIZE,
-    BUFFER_SIZE,
-    DEFAULT_SLEEP,
-    MAX_RETRIES,
-    THRESHOLD,
-    ContextType,
-    FewShotExample,
-    FewShotRegistry,
-    create_custom_example,
-    enhance_with_examples,
-    get_examples_for_injection,
-    get_few_shot_registry,
-)
 
 
 class TestContextTypeContract:
     def test_is_enum(self):
+        from apps_shared.enforcement.FewshotregistryStrategy import (  # noqa: F401
+            BATCH_SIZE,
+            BUFFER_SIZE,
+            DEFAULT_SLEEP,
+            MAX_RETRIES,
+            THRESHOLD,
+            ContextType,
+            FewShotExample,
+            FewShotRegistry,
+            create_custom_example,
+            enhance_with_examples,
+            get_examples_for_injection,
+            get_few_shot_registry,
+        )
+
         import enum
         assert issubclass(ContextType, enum.Enum)
 

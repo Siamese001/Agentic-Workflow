@@ -187,19 +187,21 @@ pytestmark = pytest.mark.unit
 
 class TestAgentRuntimeErrorContract:
     def test_is_exception_subclass(self):
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.runtime.exceptions.runtime_exceptions import (  # noqa: F401
-    """Test is_exception_subclass runtime behavior."""
-    # Arrange
-    # TODO: Set up error condition
-    """Test raises_and_catchable runtime behavior."""
-    # Arrange
-    # TODO: Set up runtime environment
-    runtime_context = {}  # Replace with actual runtime context
-    """Test message_preserved runtime behavior."""
-    # Arrange
-    # TODO: Set up runtime environment
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.runtime.exceptions.runtime_exceptions import (  # noqa: F401
+            """Test is_exception_subclass runtime behavior."""
+            # Arrange
+            # TODO: Set up error condition
+            """Test raises_and_catchable runtime behavior."""
+            # Arrange
+            # TODO: Set up runtime environment
+            runtime_context = {}  # Replace with actual runtime context
+            """Test message_preserved runtime behavior."""
+            # Arrange
+            # TODO: Set up runtime environment
+            runtime_context = {}  # Replace with actual runtime context
+
     runtime_context = {}  # Replace with actual runtime context
 
     # Act

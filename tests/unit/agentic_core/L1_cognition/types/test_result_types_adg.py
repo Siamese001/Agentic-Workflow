@@ -174,10 +174,12 @@ pytestmark = pytest.mark.unit
 
 class TestStrategyResultStrategy:
     def test_is_dataclass(self):
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.L1_cognition.types.result_types import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        import dataclasses
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L1_cognition.types.result_types import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                import dataclasses
+                assert dataclasses.is_dataclass(StrategyResultStrategy)
+
         assert dataclasses.is_dataclass(StrategyResultStrategy)
 
     def test_creates(self):

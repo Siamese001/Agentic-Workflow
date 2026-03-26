@@ -5,9 +5,10 @@ import pytest
 
 pytestmark = pytest.mark.unit
 
-import apps_lic.utils.manifest_manager_util  # noqa: F401
 
 
 def test_module_importable():
     """Module manifest_manager_util must be importable."""
+    import apps_lic.utils.manifest_manager_util  # noqa: F401
+
     assert apps_lic.utils.manifest_manager_util is not None

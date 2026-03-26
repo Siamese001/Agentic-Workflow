@@ -9,48 +9,6 @@ from unittest.mock import Mock, patch
 
 import pytest
 
-from agentic_core.L4_state.memory.in_memory_vector_store import InMemoryVectorStore
-from agentic_core.L4_state.memory.semantic_cache_manager import SemanticCacheManager
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-    _emit_agent_executes_agent,
-    _emit_applies_guardrail,  # noqa: E402
-    _emit_authorize_and_execute,
-    _emit_blocks_direct_write,
-    _emit_captures_evaluation_metric,
-    _emit_captures_execution_output,
-    _emit_checks_agent_registry,
-    _emit_coordinates_agents,
-    _emit_dispatches_agent,
-    _emit_dispatches_execution_plan,
-    _emit_dispatches_healing_run,
-    _emit_escalates_failure,
-    _emit_escalates_to_human,
-    _emit_gated_by_confidence,
-    _emit_hard_fails_untranscripted,
-    _emit_invokes_evaluation,
-    _emit_links_execution_to_snapshot,
-    _emit_observes_runtime_state,
-    _emit_orchestrates_workflow,
-    _emit_reads_policy_state,  # noqa: E402
-    _emit_records_execution_trace,  # noqa: E402
-    _emit_records_healing_outcome,
-    _emit_records_telemetry_event,
-    _emit_records_tool_invocation,
-    _emit_records_workflow_lineage,
-    _emit_routes_through,
-    _emit_routes_to_agent,
-    _emit_routes_to_capability,
-    _emit_signs_execution_trace,  # noqa: E402
-    _emit_snapshots_state,  # noqa: E402
-    _emit_stores_embedding,
-    _emit_transcripts_response,
-    _emit_updates_meta_learning_state,
-    _emit_validates_agent_capability,
-    _emit_validates_capability,
-    _emit_verifies_boundary,
-    _emit_verifies_policy,
-    _emit_writes_via_uwg,
-    emit_determinism_digest,  # noqa: E402
     emit_replay_key,  # noqa: E402
 )
 
@@ -58,42 +16,6 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 # REMOVED: _emit_applies_guardrail("p0", "test_semantic_cache_redis_hardening", "p0_governance")
 # REMOVED: _emit_reads_policy_state("p0", "test_semantic_cache_redis_hardening", "policy_binding")
 # REMOVED: _emit_snapshots_state("p0", "test_semantic_cache_redis_hardening", "state_snapshot")
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-    _emit_agent_executes_agent,
-    _emit_captures_pattern,
-    _emit_captures_runtime_anomaly,
-    _emit_checks_agent_registry,
-    _emit_dispatches_execution_plan,
-    _emit_emits_metric_event,
-    _emit_escalates_to_human,
-    _emit_execution_terminates_at_uwg,
-    _emit_feeds_meta_learning,
-    _emit_gated_by_confidence,
-    _emit_hard_fails_untranscripted,
-    _emit_improves_agent_policy,
-    _emit_invokes_eval,
-    _emit_links_incident_trace,  # noqa: E402
-    _emit_observes_runtime_state,
-    _emit_proposal_commits_routing,
-    _emit_pulls_context,
-    _emit_reads_environ,
-    _emit_reads_runtime_state,
-    _emit_records_execution_trace,
-    _emit_records_incident_event,
-    _emit_records_learning_event,
-    _emit_routes_through,
-    _emit_routes_to_agent,
-    _emit_stores_learning_state,
-    _emit_transcripts_response,
-    _emit_triggers_alert,
-    _emit_updates_monitoring_state,
-    _emit_updates_routing_strategy,
-    _emit_validated_by_safety_plane,
-    _emit_validates_agent_capability,
-    _emit_verifies_boundary,
-    _emit_verifies_policy,
-    _emit_writes_learning_snapshot,
-    _emit_writes_observability_log,
     _emit_writes_through,  # noqa: E402
 )
 
@@ -194,6 +116,125 @@ class TestSemanticCacheRedisHardening:
 
     def test_c1_learn_async_no_await_on_sync_redis(self, cache_manager):
         """C1: learn_async() must not crash with 'await' on sync Redis client."""
+        from agentic_core.L4_state.memory.in_memory_vector_store import InMemoryVectorStore
+        from agentic_core.L4_state.memory.semantic_cache_manager import SemanticCacheManager
+        from agentic_core.L4_state.memory.semantic_cache_manager import SemanticCacheManager
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+            _emit_agent_executes_agent,
+            _emit_applies_guardrail,  # noqa: E402
+            _emit_authorize_and_execute,
+            _emit_blocks_direct_write,
+            _emit_captures_evaluation_metric,
+            _emit_captures_execution_output,
+            _emit_checks_agent_registry,
+            _emit_coordinates_agents,
+            _emit_dispatches_agent,
+            _emit_dispatches_execution_plan,
+            _emit_dispatches_healing_run,
+            _emit_escalates_failure,
+            _emit_escalates_to_human,
+            _emit_gated_by_confidence,
+            _emit_hard_fails_untranscripted,
+            _emit_invokes_evaluation,
+            _emit_links_execution_to_snapshot,
+            _emit_observes_runtime_state,
+            _emit_orchestrates_workflow,
+            _emit_reads_policy_state,  # noqa: E402
+            _emit_records_execution_trace,  # noqa: E402
+            _emit_records_healing_outcome,
+            _emit_records_telemetry_event,
+            _emit_records_tool_invocation,
+            _emit_records_workflow_lineage,
+            _emit_routes_through,
+            _emit_routes_to_agent,
+            _emit_routes_to_capability,
+            _emit_signs_execution_trace,  # noqa: E402
+            _emit_snapshots_state,  # noqa: E402
+            _emit_stores_embedding,
+            _emit_transcripts_response,
+            _emit_updates_meta_learning_state,
+            _emit_validates_agent_capability,
+            _emit_validates_capability,
+            _emit_verifies_boundary,
+            _emit_verifies_policy,
+            _emit_writes_via_uwg,
+            emit_determinism_digest,  # noqa: E402
+            emit_replay_key,  # noqa: E402
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+            _emit_agent_executes_agent,
+            _emit_captures_pattern,
+            _emit_captures_runtime_anomaly,
+            _emit_checks_agent_registry,
+            _emit_dispatches_execution_plan,
+            _emit_emits_metric_event,
+            _emit_escalates_to_human,
+            _emit_execution_terminates_at_uwg,
+            _emit_feeds_meta_learning,
+            _emit_gated_by_confidence,
+            _emit_hard_fails_untranscripted,
+            _emit_improves_agent_policy,
+            _emit_invokes_eval,
+            _emit_links_incident_trace,  # noqa: E402
+            _emit_observes_runtime_state,
+            _emit_proposal_commits_routing,
+            _emit_pulls_context,
+            _emit_reads_environ,
+            _emit_reads_runtime_state,
+            _emit_records_execution_trace,
+            _emit_records_incident_event,
+            _emit_records_learning_event,
+            _emit_routes_through,
+            _emit_routes_to_agent,
+            _emit_stores_learning_state,
+            _emit_transcripts_response,
+            _emit_triggers_alert,
+            _emit_updates_monitoring_state,
+            _emit_updates_routing_strategy,
+            _emit_validated_by_safety_plane,
+            _emit_validates_agent_capability,
+            _emit_verifies_boundary,
+            _emit_verifies_policy,
+            _emit_writes_learning_snapshot,
+            _emit_writes_observability_log,
+            _emit_writes_through,  # noqa: E402
+                from agentic_core.L2_execution.reasoning.RedisSovereignAgent import RedisSovereignAgent
+                try:
+                    # This should not raise NameError about undefined function
+                    agent = RedisSovereignAgent(Path.cwd())
+                    assert agent is not None
+                except NameError as e:
+                    if "get_redis_sovereign" in str(e):
+                        pytest.fail("C2 NOT FIXED: RedisSovereignAgent still calls undefined function")
+                    raise
+                from agentic_core.L4_state.memory.sovereign_semantic_cache import SovereignSemanticCache
+                # Mock dependencies
+                with patch("agentic_core.L4_state.memory.sovereign_semantic_cache.get_redis_client") as mock_redis:
+                    mock_redis.return_value = Mock()
+                    mock_redis.return_value.get.return_value = None
+                    mock_redis.return_value.set = Mock()
+                    mock_redis.return_value.delete = Mock()
+                from agentic_core.config.core.constants_config import USE_REDIS_CACHE as DEFAULT_USE_REDIS
+                if not DEFAULT_USE_REDIS:
+                    pytest.fail("C4 NOT FIXED: USE_REDIS_CACHE still defaults to False")
+                from agentic_core.mixins.redis_cache_mixin import RedisCacheMixin
+                class TestAgent(RedisCacheMixin):
+                    _cache_prefix = "test"
+                    _default_ttl = 3600
+                from agentic_core.L3_orchestration.engines.sovereign_redis_orchestrator import (
+                    get_sovereign_redis_orchestrator,
+                )
+                from agentic_core.mixins.redis_cache_mixin import RedisCacheMixin
+                src = inspect.getsource(RedisCacheMixin)
+                tree = ast.parse(src)
+                # Ensure no import of RedisSovereignAgent in source
+                for node in ast.walk(tree):
+                    if isinstance(node, (ast.Import, ast.ImportFrom)):
+                        names = [alias.name for alias in node.names]
+                        module = getattr(node, "module", "") or ""
+                        assert "RedisSovereignAgent" not in module and all(
+                            "RedisSovereignAgent" not in n for n in names
+                        ), "H4 NOT FIXED: RedisCacheMixin still imports RedisSovereignAgent"
+
         context = "test context for C1"
         namespace = "TestAgent"
         result = {"output": "test result"}
@@ -213,26 +254,10 @@ class TestSemanticCacheRedisHardening:
         """C2: RedisSovereignAgent must instantiate without NameError."""
         from pathlib import Path
 
-        from agentic_core.L2_execution.reasoning.RedisSovereignAgent import RedisSovereignAgent
-
-        try:
-            # This should not raise NameError about undefined function
-            agent = RedisSovereignAgent(Path.cwd())
-            assert agent is not None
-        except NameError as e:
-            if "get_redis_sovereign" in str(e):
-                pytest.fail("C2 NOT FIXED: RedisSovereignAgent still calls undefined function")
             raise
 
     def test_c3_sovereign_semantic_cache_sync_methods(self):
         """C3: SovereignSemanticCache methods must be sync (no await on sync client)."""
-        from agentic_core.L4_state.memory.sovereign_semantic_cache import SovereignSemanticCache
-
-        # Mock dependencies
-        with patch("agentic_core.L4_state.memory.sovereign_semantic_cache.get_redis_client") as mock_redis:
-            mock_redis.return_value = Mock()
-            mock_redis.return_value.get.return_value = None
-            mock_redis.return_value.set = Mock()
             mock_redis.return_value.delete = Mock()
 
             cache = SovereignSemanticCache("test-mission")
@@ -251,16 +276,9 @@ class TestSemanticCacheRedisHardening:
     def test_c4_redis_enabled_by_default(self):
         """C4: USE_REDIS_CACHE must default to True (enabled)."""
         # Check the default value in constants
-        from agentic_core.config.core.constants_config import USE_REDIS_CACHE as DEFAULT_USE_REDIS
-
-        if not DEFAULT_USE_REDIS:
             pytest.fail("C4 NOT FIXED: USE_REDIS_CACHE still defaults to False")
 
         # Verify RedisCacheMixin respects the flag
-        from agentic_core.mixins.redis_cache_mixin import RedisCacheMixin
-
-        class TestAgent(RedisCacheMixin):
-            _cache_prefix = "test"
             _default_ttl = 3600
 
         agent = TestAgent()
@@ -269,9 +287,6 @@ class TestSemanticCacheRedisHardening:
 
     def test_c5_sovereign_redis_orchestrator_factory(self):
         """C5: SovereignRedisOrchestrator factory must not call super()."""
-        from agentic_core.L3_orchestration.engines.sovereign_redis_orchestrator import (
-            get_sovereign_redis_orchestrator,
-        )
 
         try:
             # This should not raise RuntimeError about super() in free function
@@ -349,17 +364,6 @@ class TestSemanticCacheRedisHardening:
         import ast
         import inspect
 
-        from agentic_core.mixins.redis_cache_mixin import RedisCacheMixin
-
-        src = inspect.getsource(RedisCacheMixin)
-        tree = ast.parse(src)
-        # Ensure no import of RedisSovereignAgent in source
-        for node in ast.walk(tree):
-            if isinstance(node, (ast.Import, ast.ImportFrom)):
-                names = [alias.name for alias in node.names]
-                module = getattr(node, "module", "") or ""
-                assert "RedisSovereignAgent" not in module and all(
-                    "RedisSovereignAgent" not in n for n in names
                 ), "H4 NOT FIXED: RedisCacheMixin still imports RedisSovereignAgent"
 
     def test_m1_no_pinecone_references(self, cache_manager):

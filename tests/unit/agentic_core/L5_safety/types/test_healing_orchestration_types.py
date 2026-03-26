@@ -26,8 +26,10 @@ pytestmark = pytest.mark.unit
 
 class TestHealingResultContract:
     def test_is_dataclass(self):
-        from agentic_core.L5_safety.types.healing_orchestration_types import (  # noqa: F401
-        import dataclasses
+                from agentic_core.L5_safety.types.healing_orchestration_types import (  # noqa: F401
+                import dataclasses
+                assert dataclasses.is_dataclass(HealingResult)
+
         assert dataclasses.is_dataclass(HealingResult)
 
     def test_field_names_present(self):

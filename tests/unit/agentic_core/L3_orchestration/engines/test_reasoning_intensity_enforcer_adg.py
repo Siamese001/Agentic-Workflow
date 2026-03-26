@@ -5,6 +5,8 @@ from __future__ import annotations
 
 
 def test_module_importable():
-    import agentic_core.L3_orchestration.engines.reasoning_intensity_enforcer  # noqa: F401
-    """Module reasoning_intensity_enforcer must be importable."""
+        import agentic_core.L3_orchestration.engines.reasoning_intensity_enforcer  # noqa: F401
+        """Module reasoning_intensity_enforcer must be importable."""
+        assert agentic_core.L3_orchestration.engines.reasoning_intensity_enforcer is not None
+
     assert agentic_core.L3_orchestration.engines.reasoning_intensity_enforcer is not None

@@ -17,13 +17,15 @@ from __future__ import annotations
 
 class TestSovereignerrorImportability:
     def test_module_importable(self) -> None:
-        from agentic_core.runtime.exceptions.SovereignError import (
-    """Test module_importable runtime behavior."""
-    # Arrange
-    # TODO: Set up runtime environment
     runtime_context = {}  # Replace with actual runtime context
 
 """Test sovereignerror_defined runtime behavior."""
+                from agentic_core.runtime.exceptions.SovereignError import (
+            """Test module_importable runtime behavior."""
+            # Arrange
+            # TODO: Set up runtime environment
+            runtime_context = {}  # Replace with actual runtime context
+
 # Arrange
 # TODO: Set up error condition
 """Test healererror_defined runtime behavior."""

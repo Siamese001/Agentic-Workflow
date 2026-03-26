@@ -5,11 +5,12 @@ import pytest
 
 pytestmark = pytest.mark.unit
 
-import apps_rg.engines.fact_check_engine  # noqa: F401
 
 
 def test_module_importable():
 """Test module_importable contract compliance."""
+    import apps_rg.engines.fact_check_engine  # noqa: F401
+
 # Arrange
 # TODO: Set up contract test scenario
 test_scenario = {}  # Replace with actual test scenario

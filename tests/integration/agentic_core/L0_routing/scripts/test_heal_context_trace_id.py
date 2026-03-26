@@ -184,15 +184,17 @@ DEFAULT_TIMEOUT = 300  # 5 minutes
 # Configuration constants
 
 def test_heal_context_trace_id_format():
-    from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-    from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-    from agentic_core.L0_routing.scripts.execute_ssot import HealContext
-    from agentic_core.L0_routing.scripts.execute_ssot import HealContext
-    from agentic_core.L0_routing.scripts.execute_ssot import HealContext
-    from agentic_core.L0_routing.scripts.execute_ssot import HealContext
-    from agentic_core.L0_routing.scripts.execute_ssot import HealContext
-    """
-    PASS: trace_id follows format SSOT-YYYYMMDD-HHMMSS-{8hex}.
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L0_routing.scripts.execute_ssot import HealContext
+        from agentic_core.L0_routing.scripts.execute_ssot import HealContext
+        from agentic_core.L0_routing.scripts.execute_ssot import HealContext
+        from agentic_core.L0_routing.scripts.execute_ssot import HealContext
+        from agentic_core.L0_routing.scripts.execute_ssot import HealContext
+        """
+        PASS: trace_id follows format SSOT-YYYYMMDD-HHMMSS-{8hex}.
+        FAIL: trace_id has wrong format or missing components.
+
     FAIL: trace_id has wrong format or missing components.
 
     Per .windsurfrules §1.7: Deterministic decision surfaces.

@@ -16,46 +16,6 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-    _emit_agent_executes_agent,
-    _emit_applies_guardrail,  # noqa: E402
-    _emit_authorize_and_execute,
-    _emit_blocks_direct_write,
-    _emit_captures_evaluation_metric,
-    _emit_captures_execution_output,
-    _emit_checks_agent_registry,
-    _emit_coordinates_agents,
-    _emit_dispatches_agent,
-    _emit_dispatches_execution_plan,
-    _emit_dispatches_healing_run,
-    _emit_escalates_failure,
-    _emit_escalates_to_human,
-    _emit_gated_by_confidence,
-    _emit_hard_fails_untranscripted,
-    _emit_invokes_evaluation,
-    _emit_links_execution_to_snapshot,
-    _emit_observes_runtime_state,
-    _emit_orchestrates_workflow,
-    _emit_reads_policy_state,  # noqa: E402
-    _emit_records_execution_trace,  # noqa: E402
-    _emit_records_healing_outcome,
-    _emit_records_telemetry_event,
-    _emit_records_tool_invocation,
-    _emit_records_workflow_lineage,
-    _emit_routes_through,
-    _emit_routes_to_agent,
-    _emit_routes_to_capability,
-    _emit_signs_execution_trace,  # noqa: E402
-    _emit_snapshots_state,  # noqa: E402
-    _emit_stores_embedding,
-    _emit_transcripts_response,
-    _emit_updates_meta_learning_state,
-    _emit_validates_agent_capability,
-    _emit_validates_capability,
-    _emit_verifies_boundary,
-    _emit_verifies_policy,
-    _emit_writes_via_uwg,
-    emit_determinism_digest,  # noqa: E402
     emit_replay_key,  # noqa: E402
 )
 
@@ -63,42 +23,6 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 # REMOVED: _emit_applies_guardrail("p0", "test_resume_generator_gateway", "p0_governance")
 # REMOVED: _emit_reads_policy_state("p0", "test_resume_generator_gateway", "policy_binding")
 # REMOVED: _emit_snapshots_state("p0", "test_resume_generator_gateway", "state_snapshot")
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-    _emit_agent_executes_agent,
-    _emit_captures_pattern,
-    _emit_captures_runtime_anomaly,
-    _emit_checks_agent_registry,
-    _emit_dispatches_execution_plan,
-    _emit_emits_metric_event,
-    _emit_escalates_to_human,
-    _emit_execution_terminates_at_uwg,
-    _emit_feeds_meta_learning,
-    _emit_gated_by_confidence,
-    _emit_hard_fails_untranscripted,
-    _emit_improves_agent_policy,
-    _emit_invokes_eval,
-    _emit_links_incident_trace,  # noqa: E402
-    _emit_observes_runtime_state,
-    _emit_proposal_commits_routing,
-    _emit_pulls_context,
-    _emit_reads_environ,
-    _emit_reads_runtime_state,
-    _emit_records_execution_trace,
-    _emit_records_incident_event,
-    _emit_records_learning_event,
-    _emit_routes_through,
-    _emit_routes_to_agent,
-    _emit_stores_learning_state,
-    _emit_transcripts_response,
-    _emit_triggers_alert,
-    _emit_updates_monitoring_state,
-    _emit_updates_routing_strategy,
-    _emit_validated_by_safety_plane,
-    _emit_validates_agent_capability,
-    _emit_verifies_boundary,
-    _emit_verifies_policy,
-    _emit_writes_learning_snapshot,
-    _emit_writes_observability_log,
     _emit_writes_through,  # noqa: E402
 )
 
@@ -213,10 +137,109 @@ def _stub_resume_generator_imports():
 class TestResumeGeneratorGatewayRouting:
     def test_generate_with_gemini_uses_sovereign_gateway(self):
         """RG-GAP-01 positive: _generate_with_gemini routes through SovereignLLMGateway."""
-        _stub_resume_generator_imports()
-        from apps_rg.tools.ResumeGenerator import ResumeGenerator
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+            _emit_agent_executes_agent,
+            _emit_applies_guardrail,  # noqa: E402
+            _emit_authorize_and_execute,
+            _emit_blocks_direct_write,
+            _emit_captures_evaluation_metric,
+            _emit_captures_execution_output,
+            _emit_checks_agent_registry,
+            _emit_coordinates_agents,
+            _emit_dispatches_agent,
+            _emit_dispatches_execution_plan,
+            _emit_dispatches_healing_run,
+            _emit_escalates_failure,
+            _emit_escalates_to_human,
+            _emit_gated_by_confidence,
+            _emit_hard_fails_untranscripted,
+            _emit_invokes_evaluation,
+            _emit_links_execution_to_snapshot,
+            _emit_observes_runtime_state,
+            _emit_orchestrates_workflow,
+            _emit_reads_policy_state,  # noqa: E402
+            _emit_records_execution_trace,  # noqa: E402
+            _emit_records_healing_outcome,
+            _emit_records_telemetry_event,
+            _emit_records_tool_invocation,
+            _emit_records_workflow_lineage,
+            _emit_routes_through,
+            _emit_routes_to_agent,
+            _emit_routes_to_capability,
+            _emit_signs_execution_trace,  # noqa: E402
+            _emit_snapshots_state,  # noqa: E402
+            _emit_stores_embedding,
+            _emit_transcripts_response,
+            _emit_updates_meta_learning_state,
+            _emit_validates_agent_capability,
+            _emit_validates_capability,
+            _emit_verifies_boundary,
+            _emit_verifies_policy,
+            _emit_writes_via_uwg,
+            emit_determinism_digest,  # noqa: E402
+            emit_replay_key,  # noqa: E402
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+            _emit_agent_executes_agent,
+            _emit_captures_pattern,
+            _emit_captures_runtime_anomaly,
+            _emit_checks_agent_registry,
+            _emit_dispatches_execution_plan,
+            _emit_emits_metric_event,
+            _emit_escalates_to_human,
+            _emit_execution_terminates_at_uwg,
+            _emit_feeds_meta_learning,
+            _emit_gated_by_confidence,
+            _emit_hard_fails_untranscripted,
+            _emit_improves_agent_policy,
+            _emit_invokes_eval,
+            _emit_links_incident_trace,  # noqa: E402
+            _emit_observes_runtime_state,
+            _emit_proposal_commits_routing,
+            _emit_pulls_context,
+            _emit_reads_environ,
+            _emit_reads_runtime_state,
+            _emit_records_execution_trace,
+            _emit_records_incident_event,
+            _emit_records_learning_event,
+            _emit_routes_through,
+            _emit_routes_to_agent,
+            _emit_stores_learning_state,
+            _emit_transcripts_response,
+            _emit_triggers_alert,
+            _emit_updates_monitoring_state,
+            _emit_updates_routing_strategy,
+            _emit_validated_by_safety_plane,
+            _emit_validates_agent_capability,
+            _emit_verifies_boundary,
+            _emit_verifies_policy,
+            _emit_writes_learning_snapshot,
+            _emit_writes_observability_log,
+            _emit_writes_through,  # noqa: E402
+                from apps_rg.tools.ResumeGenerator import ResumeGenerator
+                mock_response = MagicMock()
+                mock_response.text = "Generated resume content"
+                from apps_rg.tools.ResumeGenerator import ResumeGenerator
+                source = inspect.getsource(ResumeGenerator._generate_with_gemini)
+                assert "google.generativeai" not in source, (
+                    "RG-GAP-01 violated: _generate_with_gemini still imports google.generativeai directly"
+                )
+                from apps_rg.tools.ResumeGenerator import ResumeGenerator
+                with patch.dict(
+                    "sys.modules",
+                    {
+                        "agentic_core.interfaces.gateway": MagicMock(
+                            SovereignLLMGateway=MagicMock(side_effect=ImportError("gateway missing")),
+                            GenerationRequest=MagicMock(),
+                        )
+                    },
+                ):
+                    gen = ResumeGenerator(llm_client=MagicMock())
+                    with pytest.raises(RuntimeError, match="gateway unavailable"):
+                        gen._generate_with_gemini("test prompt")
+                from apps_rg.tools.ResumeGenerator import ResumeGenerator
+                captured_request = {}
 
-        mock_response = MagicMock()
+        _stub_resume_generator_imports()
         mock_response.text = "Generated resume content"
 
         mock_gateway_instance = MagicMock()
@@ -246,36 +269,15 @@ class TestResumeGeneratorGatewayRouting:
         import inspect
 
         _stub_resume_generator_imports()
-        from apps_rg.tools.ResumeGenerator import ResumeGenerator
-
-        source = inspect.getsource(ResumeGenerator._generate_with_gemini)
-        assert "google.generativeai" not in source, (
-            "RG-GAP-01 violated: _generate_with_gemini still imports google.generativeai directly"
-        )
 
     def test_generate_with_gemini_raises_when_gateway_unavailable(self):
         """RG-GAP-01: Gateway unavailable → RuntimeError, not silent fallback to SDK."""
         _stub_resume_generator_imports()
-        from apps_rg.tools.ResumeGenerator import ResumeGenerator
-
-        with patch.dict(
-            "sys.modules",
-            {
-                "agentic_core.interfaces.gateway": MagicMock(
-                    SovereignLLMGateway=MagicMock(side_effect=ImportError("gateway missing")),
-                    GenerationRequest=MagicMock(),
-                )
-            },
-        ):
-            gen = ResumeGenerator(llm_client=MagicMock())
-            with pytest.raises(RuntimeError, match="gateway unavailable"):
                 gen._generate_with_gemini("test prompt")
 
     def test_generate_with_gemini_uses_gemini_2_5_pro_model(self):
         """RG-GAP-01: model must be gemini-2.5-pro, not stale gemini-1.5-flash."""
         _stub_resume_generator_imports()
-        from apps_rg.tools.ResumeGenerator import ResumeGenerator
-
         captured_request = {}
 
         def capture_request(request):

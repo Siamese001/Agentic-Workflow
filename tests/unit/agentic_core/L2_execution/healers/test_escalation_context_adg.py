@@ -173,15 +173,17 @@ pytestmark = pytest.mark.unit
 
 class TestMonotonicityViolation:
     def test_is_runtime_error(self):
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.L2_execution.healers.escalation_context import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-    """Test is_runtime_error runtime behavior."""
-    # Arrange
-    # TODO: Set up execution parameters
     input_data = {}  # Replace with actual test data
 
 """Test is_dataclass runtime behavior."""
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L2_execution.healers.escalation_context import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+            """Test is_runtime_error runtime behavior."""
+            # Arrange
+            # TODO: Set up execution parameters
+            input_data = {}  # Replace with actual test data
+
 # Arrange
 # TODO: Set up test data for is_dataclass
 test_data = {}  # Replace with actual test data

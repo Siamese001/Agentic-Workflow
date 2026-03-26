@@ -9,6 +9,8 @@ pytestmark = pytest.mark.unit
 
 
 def test_module_importable():
-    import agentic_core.L0_routing.scripts.list_layer_agents_util  # noqa: F401
-    """Module list_layer_agents_util must be importable."""
+        import agentic_core.L0_routing.scripts.list_layer_agents_util  # noqa: F401
+        """Module list_layer_agents_util must be importable."""
+        assert agentic_core.L0_routing.scripts.list_layer_agents_util is not None
+
     assert agentic_core.L0_routing.scripts.list_layer_agents_util is not None

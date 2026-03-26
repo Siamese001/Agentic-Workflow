@@ -309,17 +309,19 @@ class TestE2EDispatchLocalAgent:
     """confidence >= X -> LOCAL_AGENT -> invoke_local only."""
 
     def test_local_agent_dispatch(self, default_config, fake_invoker):
-        from agentic_core.L0_routing.config.path_constants import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.L2_execution.healers.healing_tier_config import (
-        from agentic_core.L2_execution.healers.healing_tier_dispatcher import (
-        from agentic_core.L2_execution.healers.healing_tier_router import (
-        from agentic_core.L2_execution.healers.healing_tier_types import (
-        from agentic_core.L2_execution.healers.tiering_allowlist import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-    """Test local_agent_dispatch runtime behavior."""
-    # Arrange
-    # TODO: Set up test data for local_agent_dispatch
+                from agentic_core.L0_routing.config.path_constants import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L2_execution.healers.healing_tier_config import (
+                from agentic_core.L2_execution.healers.healing_tier_dispatcher import (
+                from agentic_core.L2_execution.healers.healing_tier_router import (
+                from agentic_core.L2_execution.healers.healing_tier_types import (
+                from agentic_core.L2_execution.healers.tiering_allowlist import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+            """Test local_agent_dispatch runtime behavior."""
+            # Arrange
+            # TODO: Set up test data for local_agent_dispatch
+            test_data = {}  # Replace with actual test data
+
     test_data = {}  # Replace with actual test data
 
     # Act

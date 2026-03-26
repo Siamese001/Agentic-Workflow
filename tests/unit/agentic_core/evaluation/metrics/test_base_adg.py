@@ -170,10 +170,12 @@ pytestmark = pytest.mark.unit
 
 class TestEvaluationMetric:
     def test_is_abstract(self):
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.evaluation.metrics.base import EvaluationMetric, RetrievalMetric
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        import inspect
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.evaluation.metrics.base import EvaluationMetric, RetrievalMetric
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                import inspect
+                assert inspect.isabstract(EvaluationMetric)
+
         assert inspect.isabstract(EvaluationMetric)
 
     def test_cannot_instantiate(self):

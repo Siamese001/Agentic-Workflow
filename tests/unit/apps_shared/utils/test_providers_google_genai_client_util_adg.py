@@ -5,9 +5,10 @@ import pytest
 
 pytestmark = pytest.mark.unit
 
-import apps_shared.utils.providers_google_genai_client_util  # noqa: F401
 
 
 def test_module_importable():
     """Module providers_google_genai_client_util must be importable."""
+    import apps_shared.utils.providers_google_genai_client_util  # noqa: F401
+
     assert apps_shared.utils.providers_google_genai_client_util is not None

@@ -44,7 +44,9 @@ def _methods_of(cls_name: str) -> set[str]:
 
 class TestValidationResultTypesSource:
     def test_source_exists(self):
-        import agentic_core.L5_safety.types.validation_result_types as _mod  # noqa: F401  # ADG covers
+                import agentic_core.L5_safety.types.validation_result_types as _mod  # noqa: F401  # ADG covers
+                assert _SRC.exists()
+
         assert _SRC.exists()
 
     def test_parses_without_error(self):

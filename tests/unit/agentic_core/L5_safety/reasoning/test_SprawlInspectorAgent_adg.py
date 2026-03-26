@@ -9,6 +9,8 @@ pytestmark = pytest.mark.unit
 
 
 def test_module_importable():
-    import agentic_core.L5_safety.reasoning.SprawlInspectorAgent  # noqa: F401
-    """Module SprawlInspectorAgent must be importable."""
+        import agentic_core.L5_safety.reasoning.SprawlInspectorAgent  # noqa: F401
+        """Module SprawlInspectorAgent must be importable."""
+        assert agentic_core.L5_safety.reasoning.SprawlInspectorAgent is not None
+
     assert agentic_core.L5_safety.reasoning.SprawlInspectorAgent is not None

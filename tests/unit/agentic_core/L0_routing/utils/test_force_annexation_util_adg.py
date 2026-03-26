@@ -29,10 +29,12 @@ except (ValueError, TypeError, RuntimeError) as e:  # guardian: allow-silent-swa
 
 class TestForceAnnexation:
     def test_is_callable(self):
-        from agentic_core.L0_routing.utils.force_annexation_util import (  # noqa: F401
-    """Test is_callable runtime behavior."""
-    # Arrange
-    # TODO: Set up execution parameters
+                from agentic_core.L0_routing.utils.force_annexation_util import (  # noqa: F401
+            """Test is_callable runtime behavior."""
+            # Arrange
+            # TODO: Set up execution parameters
+            input_data = {}  # Replace with actual test data
+
     input_data = {}  # Replace with actual test data
 
     # Act

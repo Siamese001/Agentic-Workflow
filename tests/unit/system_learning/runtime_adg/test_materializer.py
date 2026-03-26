@@ -17,8 +17,6 @@ import pytest
 
 pytestmark = pytest.mark.unit
 
-from system_learning.runtime_adg.materializer import _ROOT_SENTINEL, RuntimeADGMaterializer
-from system_learning.runtime_adg.snapshot import RuntimeADGSnapshot
 
 
 def _make_span(
@@ -52,6 +50,10 @@ def _make_span(
 class TestMaterializeEmpty:
     def test_empty_spans_produces_valid_snapshot(self):
     """Test empty_spans_produces_valid_snapshot runtime behavior."""
+        from system_learning.runtime_adg.materializer import _ROOT_SENTINEL, RuntimeADGMaterializer
+        from system_learning.runtime_adg.snapshot import RuntimeADGSnapshot
+        from system_learning.runtime_adg.snapshot import RuntimeADGSnapshot
+
     # Arrange
     # TODO: Set up runtime environment
     runtime_context = {}  # Replace with actual runtime context

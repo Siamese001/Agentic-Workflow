@@ -10,24 +10,25 @@ import pytest
 
 pytestmark = pytest.mark.unit
 
-from apps_shared.utils.format_observability_context_plan_type_util import (  # noqa: F401
-    BATCH_SIZE,
-    BUFFER_SIZE,
-    DEFAULT_SLEEP,
-    MAX_RETRIES,
-    THRESHOLD,
-    FormatObservabilityContextPlanConstraints,
-    FormatObservabilityContextPlanImpl,
-    FormatObservabilityContextPlanProcessor,
-    FormatObservabilityContextPlanResult,
-    FormatObservabilityContextPlanType,
-    SecurityError,
-    format_observability_context,
-)
 
 
 class TestFormatObservabilityContextPlanTypeContract:
     def test_is_enum(self):
+        from apps_shared.utils.format_observability_context_plan_type_util import (  # noqa: F401
+            BATCH_SIZE,
+            BUFFER_SIZE,
+            DEFAULT_SLEEP,
+            MAX_RETRIES,
+            THRESHOLD,
+            FormatObservabilityContextPlanConstraints,
+            FormatObservabilityContextPlanImpl,
+            FormatObservabilityContextPlanProcessor,
+            FormatObservabilityContextPlanResult,
+            FormatObservabilityContextPlanType,
+            SecurityError,
+            format_observability_context,
+        )
+
         import enum
         assert issubclass(FormatObservabilityContextPlanType, enum.Enum)
 

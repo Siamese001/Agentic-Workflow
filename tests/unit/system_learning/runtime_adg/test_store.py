@@ -16,16 +16,6 @@ import pytest
 
 pytestmark = pytest.mark.unit
 
-from system_learning.runtime_adg.snapshot import (
-    RuntimeADGEdge,
-    RuntimeADGNode,
-    attributes_to_json,
-    create_runtime_adg_snapshot,
-)
-from system_learning.runtime_adg.store import (
-    FileBackedRuntimeADGStore,
-    InMemoryRuntimeADGStore,
-)
 
 
 def _make_snapshot(trace_id: str = "tr-001", mission: str = "test"):
@@ -54,6 +44,17 @@ def _make_snapshot(trace_id: str = "tr-001", mission: str = "test"):
 class TestInMemoryRuntimeADGStore:
     def test_persist_returns_version_id(self):
     """Test persist_returns_version_id runtime behavior."""
+        from system_learning.runtime_adg.snapshot import (
+            RuntimeADGEdge,
+            RuntimeADGNode,
+            attributes_to_json,
+            create_runtime_adg_snapshot,
+        )
+        from system_learning.runtime_adg.store import (
+            FileBackedRuntimeADGStore,
+            InMemoryRuntimeADGStore,
+        )
+
     # Arrange
     # TODO: Set up runtime environment
     runtime_context = {}  # Replace with actual runtime context

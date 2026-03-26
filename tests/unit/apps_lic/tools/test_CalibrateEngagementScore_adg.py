@@ -5,9 +5,10 @@ import pytest
 
 pytestmark = pytest.mark.unit
 
-import apps_lic.tools.CalibrateEngagementScore  # noqa: F401
 
 
 def test_module_importable():
     """Module CalibrateEngagementScore must be importable."""
+    import apps_lic.tools.CalibrateEngagementScore  # noqa: F401
+
     assert apps_lic.tools.CalibrateEngagementScore is not None

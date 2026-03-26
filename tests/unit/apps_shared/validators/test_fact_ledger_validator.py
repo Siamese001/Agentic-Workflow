@@ -10,25 +10,26 @@ import pytest
 
 pytestmark = pytest.mark.unit
 
-from apps_shared.validators.fact_ledger_validator import (  # noqa: F401
-    BATCH_SIZE,
-    BUFFER_SIZE,
-    DEFAULT_SLEEP,
-    MAX_RETRIES,
-    THRESHOLD,
-    ClaimExtractor,
-    Fact,
-    FactLedger,
-    FactStatus,
-    VerificationResult,
-    get_fact_ledger,
-    load_profile_facts,
-    verify_claim,
-)
 
 
 class TestFactStatusContract:
     def test_is_enum(self):
+        from apps_shared.validators.fact_ledger_validator import (  # noqa: F401
+            BATCH_SIZE,
+            BUFFER_SIZE,
+            DEFAULT_SLEEP,
+            MAX_RETRIES,
+            THRESHOLD,
+            ClaimExtractor,
+            Fact,
+            FactLedger,
+            FactStatus,
+            VerificationResult,
+            get_fact_ledger,
+            load_profile_facts,
+            verify_claim,
+        )
+
         import enum
         assert issubclass(FactStatus, enum.Enum)
 

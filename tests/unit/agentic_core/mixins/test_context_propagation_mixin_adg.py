@@ -174,9 +174,11 @@ pytestmark = pytest.mark.unit
 
 class TestContextVars:
     def test_trace_id_var_default_none(self):
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.mixins.context_propagation_mixin import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.mixins.context_propagation_mixin import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                assert trace_id_var.get() is None or trace_id_var.get() is not None
+
         assert trace_id_var.get() is None or trace_id_var.get() is not None
 
     def test_span_id_var_exists(self):

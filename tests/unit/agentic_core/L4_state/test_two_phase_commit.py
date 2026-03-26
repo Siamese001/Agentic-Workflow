@@ -164,18 +164,20 @@ DEFAULT_TIMEOUT = 300  # 5 minutes
 
 class TestTwoPhaseCoordinator:
     def test_both_acks_succeed(self):
-        from agentic_core.L4_state.commit.two_phase_coordinator import TwoPhaseCoordinator
-        from agentic_core.L5_safety.types.hardening_errors import MutationCommitFailure
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        coordinator = TwoPhaseCoordinator()
-        r_calls, l_calls = [], []
-        r, l = coordinator.execute_commit(
-            resource_write=lambda: r_calls.append(1) or "resource_ok",
-            ledger_write=lambda: l_calls.append(1) or "ledger_ok",
-        )
-        assert r == "resource_ok"
-        assert l == "ledger_ok"
-        assert len(r_calls) == 1
+                from agentic_core.L4_state.commit.two_phase_coordinator import TwoPhaseCoordinator
+                from agentic_core.L5_safety.types.hardening_errors import MutationCommitFailure
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                coordinator = TwoPhaseCoordinator()
+                r_calls, l_calls = [], []
+                r, l = coordinator.execute_commit(
+                    resource_write=lambda: r_calls.append(1) or "resource_ok",
+                    ledger_write=lambda: l_calls.append(1) or "ledger_ok",
+                )
+                assert r == "resource_ok"
+                assert l == "ledger_ok"
+                assert len(r_calls) == 1
+                assert len(l_calls) == 1
+
         assert len(l_calls) == 1
 
     def test_resource_failure_raises_phase1(self):

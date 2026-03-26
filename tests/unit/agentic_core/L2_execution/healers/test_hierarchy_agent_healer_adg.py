@@ -174,16 +174,18 @@ pytestmark = pytest.mark.unit
 
 class TestHierarchyAgentHealer:
     def test_check_id_string(self):
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.L2_execution.healers.hierarchy_agent_healer import (
-        from agentic_core.L2_execution.types.heal_contract_types import HealCheckResult, HealStatus
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-    """Test check_id_string runtime behavior."""
-    # Arrange
-    # TODO: Set up test data for check_id_string
-    """Test heal_callable runtime behavior."""
-    # Arrange
-    # TODO: Set up execution parameters
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L2_execution.healers.hierarchy_agent_healer import (
+                from agentic_core.L2_execution.types.heal_contract_types import HealCheckResult, HealStatus
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+            """Test check_id_string runtime behavior."""
+            # Arrange
+            # TODO: Set up test data for check_id_string
+            """Test heal_callable runtime behavior."""
+            # Arrange
+            # TODO: Set up execution parameters
+            input_data = {}  # Replace with actual test data
+
     input_data = {}  # Replace with actual test data
 
     # Act

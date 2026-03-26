@@ -25,8 +25,10 @@ pytestmark = pytest.mark.unit
 
 class TestVulnerabilityTestContract:
     def test_is_dataclass(self):
-        from agentic_core.L5_safety.reasoning.AdversarialRedTeamerAgent import (  # noqa: F401
-        import dataclasses
+                from agentic_core.L5_safety.reasoning.AdversarialRedTeamerAgent import (  # noqa: F401
+                import dataclasses
+                assert dataclasses.is_dataclass(VulnerabilityTest)
+
         assert dataclasses.is_dataclass(VulnerabilityTest)
 
     def test_field_names_present(self):

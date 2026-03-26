@@ -40,7 +40,9 @@ def _src_text():
 
 class TestEmbeddingFactorySource:
     def test_source_exists(self):
-        import agentic_core.embeddings.embedding_factory as _mod  # noqa: F401  # ADG covers
+                import agentic_core.embeddings.embedding_factory as _mod  # noqa: F401  # ADG covers
+                assert _SRC.exists()
+
         assert _SRC.exists()
 
     def test_parses_without_error(self):

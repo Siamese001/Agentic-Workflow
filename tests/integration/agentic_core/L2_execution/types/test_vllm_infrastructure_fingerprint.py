@@ -191,10 +191,13 @@ pytestmark = pytest.mark.unit_min_deps
 
 
 def test_fingerprint_canonical_serialization_stable():
-    from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-    from agentic_core.L2_execution.types.vllm_infrastructure_fingerprint_types import (
-    from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 """Test fingerprint_canonical_serialization_stable runtime behavior."""
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L2_execution.types.vllm_infrastructure_fingerprint_types import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+    """Test fingerprint_canonical_serialization_stable runtime behavior."""
+
 # Arrange
 # TODO: Set up test data for fingerprint_canonical_serialization_stable
 test_data = {}  # Replace with actual test data

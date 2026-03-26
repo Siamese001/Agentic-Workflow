@@ -13,8 +13,10 @@ pytestmark = pytest.mark.unit
 
 class TestAgentCapability:
     def test_is_enum(self):
-        from agentic_core.L1_cognition.types.capability_types import (
-        import enum
+                from agentic_core.L1_cognition.types.capability_types import (
+                import enum
+                assert issubclass(AgentCapability, enum.Enum)
+
         assert issubclass(AgentCapability, enum.Enum)
 
     def test_reasoning_value(self):

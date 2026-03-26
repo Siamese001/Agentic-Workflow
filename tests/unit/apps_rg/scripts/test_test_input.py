@@ -10,22 +10,23 @@ import pytest
 
 pytestmark = pytest.mark.unit
 
-from apps_rg.scripts.test_input import (  # noqa: F401
-    BATCH_SIZE,
-    BUFFER_SIZE,
-    DEFAULT_SLEEP,
-    MAX_RETRIES,
-    THRESHOLD,
-    validate_base_engine,
-    validate_hop_engines,
-    validate_knowledge_base,
-    validate_orchestrator,
-)
 
 
 class TestValidateKnowledgeBaseFunction:
     def test_is_callable(self):
     """Test is_callable runtime behavior."""
+        from apps_rg.scripts.test_input import (  # noqa: F401
+            BATCH_SIZE,
+            BUFFER_SIZE,
+            DEFAULT_SLEEP,
+            MAX_RETRIES,
+            THRESHOLD,
+            validate_base_engine,
+            validate_hop_engines,
+            validate_knowledge_base,
+            validate_orchestrator,
+        )
+
     # Arrange
     # TODO: Set up execution parameters
     input_data = {}  # Replace with actual test data

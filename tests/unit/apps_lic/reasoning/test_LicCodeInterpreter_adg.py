@@ -5,9 +5,10 @@ import pytest
 
 pytestmark = pytest.mark.unit
 
-import apps_lic.reasoning.LicCodeInterpreter  # noqa: F401
 
 
 def test_module_importable():
     """Module LicCodeInterpreter must be importable."""
+    import apps_lic.reasoning.LicCodeInterpreter  # noqa: F401
+
     assert apps_lic.reasoning.LicCodeInterpreter is not None

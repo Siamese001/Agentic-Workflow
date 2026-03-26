@@ -24,7 +24,9 @@ pytestmark = pytest.mark.unit
 
 class TestADGMCPClientContract:
     def test_is_class(self):
-        from agentic_core.adg.client.mcp_client import (  # noqa: F401
+                from agentic_core.adg.client.mcp_client import (  # noqa: F401
+                assert isinstance(ADGMCPClient, type)
+
         assert isinstance(ADGMCPClient, type)
 
     def test_has_method_upsert_entity(self):

@@ -26,7 +26,9 @@ pytestmark = pytest.mark.unit
 
 class TestColorsContract:
     def test_is_class(self):
-        from agentic_core.config.core.colors_config import (  # noqa: F401
+                from agentic_core.config.core.colors_config import (  # noqa: F401
+                assert isinstance(Colors, type)
+
         assert isinstance(Colors, type)
 
     def test_instantiable_or_abstract(self):

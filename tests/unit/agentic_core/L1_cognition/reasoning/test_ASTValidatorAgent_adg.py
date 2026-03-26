@@ -17,8 +17,10 @@ from __future__ import annotations
 
 class TestAstvalidatoragentImportability:
     def test_module_importable(self) -> None:
-        from agentic_core.L1_cognition.reasoning.ASTValidatorAgent import (
         """ADG contract: ASTValidatorAgent.py must be importable."""
+                from agentic_core.L1_cognition.reasoning.ASTValidatorAgent import (
+                """ADG contract: ASTValidatorAgent.py must be importable."""
+
 
         pass  # Import verified at module level
 

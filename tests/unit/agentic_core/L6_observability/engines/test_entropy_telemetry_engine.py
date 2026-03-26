@@ -27,8 +27,10 @@ pytestmark = pytest.mark.unit
 
 class TestTierMetricsContract:
     def test_is_dataclass(self):
-        from agentic_core.L6_observability.engines.entropy_telemetry_engine import (  # noqa: F401
-        import dataclasses
+                from agentic_core.L6_observability.engines.entropy_telemetry_engine import (  # noqa: F401
+                import dataclasses
+                assert dataclasses.is_dataclass(TierMetrics)
+
         assert dataclasses.is_dataclass(TierMetrics)
 
     def test_is_frozen(self):

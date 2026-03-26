@@ -218,15 +218,17 @@ def policy_snap() -> PolicySnapshot:
 
 class TestSemanticClockSnapshot:
     def test_from_clock_captures_state(self):
-        from agentic_core.L0_routing.enforcement.governance_contracts import (
-        from agentic_core.L0_routing.types.determinism_types import (
-        from agentic_core.L0_routing.types.governance_types import (
-        from agentic_core.L0_routing.types.routing_artifact_types import (
-        from agentic_core.L3_orchestration.types.route_decision_artifact_types import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        clock = SemanticClock(step_id=5, vector_clock={"L0": 2, "L3": 3})
-        snap = SemanticClockSnapshot.from_clock(clock)
-        assert snap.tick == 5
+                from agentic_core.L0_routing.enforcement.governance_contracts import (
+                from agentic_core.L0_routing.types.determinism_types import (
+                from agentic_core.L0_routing.types.governance_types import (
+                from agentic_core.L0_routing.types.routing_artifact_types import (
+                from agentic_core.L3_orchestration.types.route_decision_artifact_types import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                clock = SemanticClock(step_id=5, vector_clock={"L0": 2, "L3": 3})
+                snap = SemanticClockSnapshot.from_clock(clock)
+                assert snap.tick == 5
+                assert dict(snap.vector_clock) == {"L0": 2, "L3": 3}
+
         assert dict(snap.vector_clock) == {"L0": 2, "L3": 3}
 
     def test_to_dict_deterministic(self):

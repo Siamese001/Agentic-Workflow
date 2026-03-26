@@ -10,21 +10,22 @@ import pytest
 
 pytestmark = pytest.mark.unit
 
-from system_learning.enforcement.determinism import (  # noqa: F401
-    BATCH_SIZE,
-    BUFFER_SIZE,
-    DEFAULT_SLEEP,
-    MAX_RETRIES,
-    THRESHOLD,
-    assert_no_nondeterminism,
-    deterministic_json,
-    stable_sha256_json,
-)
 
 
 class TestDeterministicJsonFunction:
     def test_is_callable(self):
     """Test is_callable runtime behavior."""
+        from system_learning.enforcement.determinism import (  # noqa: F401
+            BATCH_SIZE,
+            BUFFER_SIZE,
+            DEFAULT_SLEEP,
+            MAX_RETRIES,
+            THRESHOLD,
+            assert_no_nondeterminism,
+            deterministic_json,
+            stable_sha256_json,
+        )
+
     # Arrange
     # TODO: Set up execution parameters
     input_data = {}  # Replace with actual test data

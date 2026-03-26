@@ -174,15 +174,17 @@ pytestmark = pytest.mark.unit
 
 class TestTokenRevocationError:
     def test_is_runtime_error(self):
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.L2_execution.enforcement.capability_revoker import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-    """Test is_runtime_error runtime behavior."""
-    # Arrange
-    # TODO: Set up execution parameters
     input_data = {}  # Replace with actual test data
 
 """Test is_runtime_error runtime behavior."""
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L2_execution.enforcement.capability_revoker import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+            """Test is_runtime_error runtime behavior."""
+            # Arrange
+            # TODO: Set up execution parameters
+            input_data = {}  # Replace with actual test data
+
 # Arrange
 # TODO: Set up execution parameters
 input_data = {}  # Replace with actual test data

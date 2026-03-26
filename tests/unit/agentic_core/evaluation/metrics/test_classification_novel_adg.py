@@ -251,20 +251,22 @@ class TestGoldenDataset:
         return _load_golden()
 
     def test_golden_file_exists(self):
-        from agentic_core.evaluation.metrics.classification import (
-        from agentic_core.evaluation.metrics.f1_score import F1Score
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.utils.workflow_engines.completeness_metrics import EvaluationReport
-        from agentic_core.utils.workflow_engines.completeness_metrics import EvaluationDeltaReport
-        from agentic_core.utils.workflow_engines.completeness_metrics import EvaluationDeltaReport
-        from agentic_core.utils.workflow_engines.completeness_metrics import EvaluationDeltaReport
-        from agentic_core.utils.workflow_engines.completeness_metrics import EvaluationDeltaReport
-        from agentic_core.utils.workflow_engines.completeness_metrics import EvaluationDeltaReport
-        import agentic_core.evaluation.metrics as pkg
-        import agentic_core.evaluation.metrics as pkg
-        from agentic_core.evaluation.metrics import F1Score as _F1Score
-        from agentic_core.evaluation.metrics import ConfusionMatrix as _CM
+                from agentic_core.evaluation.metrics.classification import (
+                from agentic_core.evaluation.metrics.f1_score import F1Score
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.utils.workflow_engines.completeness_metrics import EvaluationReport
+                from agentic_core.utils.workflow_engines.completeness_metrics import EvaluationDeltaReport
+                from agentic_core.utils.workflow_engines.completeness_metrics import EvaluationDeltaReport
+                from agentic_core.utils.workflow_engines.completeness_metrics import EvaluationDeltaReport
+                from agentic_core.utils.workflow_engines.completeness_metrics import EvaluationDeltaReport
+                from agentic_core.utils.workflow_engines.completeness_metrics import EvaluationDeltaReport
+                import agentic_core.evaluation.metrics as pkg
+                import agentic_core.evaluation.metrics as pkg
+                from agentic_core.evaluation.metrics import F1Score as _F1Score
+                from agentic_core.evaluation.metrics import ConfusionMatrix as _CM
+                assert _GOLDEN_PATH.exists(), f"Golden dataset not found: {_GOLDEN_PATH}"
+
         assert _GOLDEN_PATH.exists(), f"Golden dataset not found: {_GOLDEN_PATH}"
 
     def test_golden_has_examples(self, examples):

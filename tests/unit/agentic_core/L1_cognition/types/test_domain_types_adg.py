@@ -9,6 +9,8 @@ pytestmark = pytest.mark.unit
 
 
 def test_module_importable():
-    import agentic_core.L1_cognition.types.domain_types  # noqa: F401
-    """Module domain_types must be importable."""
+        import agentic_core.L1_cognition.types.domain_types  # noqa: F401
+        """Module domain_types must be importable."""
+        assert agentic_core.L1_cognition.types.domain_types is not None
+
     assert agentic_core.L1_cognition.types.domain_types is not None

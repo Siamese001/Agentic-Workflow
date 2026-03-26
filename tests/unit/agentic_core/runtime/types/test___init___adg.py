@@ -5,8 +5,10 @@ from __future__ import annotations
 
 
 def test_module_importable():
-    import agentic_core.runtime.types.__init__ as _mod  # noqa: F401
 """Test module_importable runtime behavior."""
+        import agentic_core.runtime.types.__init__ as _mod  # noqa: F401
+    """Test module_importable runtime behavior."""
+
 # Arrange
 # TODO: Set up runtime environment
 runtime_context = {}  # Replace with actual runtime context

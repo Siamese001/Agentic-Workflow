@@ -164,12 +164,14 @@ class TestHierarchyAgentUpdates:
         return HierarchyAgent(project_root=tmp_path)
 
     def test_scripts_allowed_at_root(self, mock_agent):
-        from agentic_core.L5_safety.reasoning.hierarchy_healer import HierarchyAgent
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        """
-        CRITICAL: scripts/ should NOT be in FORBIDDEN_ROOT_FOLDERS anymore.
-        """
-        assert "scripts" not in mock_agent.FORBIDDEN_ROOT_FOLDERS
+                from agentic_core.L5_safety.reasoning.hierarchy_healer import HierarchyAgent
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                """
+                CRITICAL: scripts/ should NOT be in FORBIDDEN_ROOT_FOLDERS anymore.
+                """
+                assert "scripts" not in mock_agent.FORBIDDEN_ROOT_FOLDERS
+                assert "logs" not in mock_agent.FORBIDDEN_ROOT_FOLDERS
+
         assert "logs" not in mock_agent.FORBIDDEN_ROOT_FOLDERS
 
         # Ensure actual forbidden stuff remains

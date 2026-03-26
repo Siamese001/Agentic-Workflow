@@ -5,9 +5,10 @@ import pytest
 
 pytestmark = pytest.mark.unit
 
-import apps_rg.tools.skill_similarity_tool  # noqa: F401
 
 
 def test_module_importable():
     """Module skill_similarity_tool must be importable."""
+    import apps_rg.tools.skill_similarity_tool  # noqa: F401
+
     assert apps_rg.tools.skill_similarity_tool is not None

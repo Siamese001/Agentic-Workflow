@@ -5,9 +5,10 @@ import pytest
 
 pytestmark = pytest.mark.unit
 
-import system_learning.engines.seed_pack_build_cli  # noqa: F401
 
 
 def test_module_importable():
     """Module seed_pack_build_cli must be importable."""
+    import system_learning.engines.seed_pack_build_cli  # noqa: F401
+
     assert system_learning.engines.seed_pack_build_cli is not None

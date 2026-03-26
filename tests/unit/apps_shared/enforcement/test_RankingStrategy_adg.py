@@ -5,9 +5,10 @@ import pytest
 
 pytestmark = pytest.mark.unit
 
-import apps_shared.enforcement.RankingStrategy  # noqa: F401
 
 
 def test_module_importable():
     """Module RankingStrategy must be importable."""
+    import apps_shared.enforcement.RankingStrategy  # noqa: F401
+
     assert apps_shared.enforcement.RankingStrategy is not None

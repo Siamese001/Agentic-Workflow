@@ -176,12 +176,14 @@ pytestmark = pytest.mark.unit
 
 class TestQwenGPUCapabilityError:
     def test_creates(self):
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.L2_execution.healers.qwen_gpu_validator import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-    """Test creates runtime behavior."""
-    # Arrange
-    # TODO: Set up test data for creates
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L2_execution.healers.qwen_gpu_validator import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+            """Test creates runtime behavior."""
+            # Arrange
+            # TODO: Set up test data for creates
+            test_data = {}  # Replace with actual test data
+
     test_data = {}  # Replace with actual test data
 
     # Act

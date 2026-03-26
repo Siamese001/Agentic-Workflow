@@ -24,10 +24,6 @@ from pathlib import Path
 
 import pytest
 
-from agentic_core.L0_routing.config.path_constants import (
-    L6_OBSERVABILITY_DIR,
-)
-from agentic_core.L5_safety.config.structure_blueprint.ssot import SOVEREIGN_EXCLUDED_FOLDERS
 
 ROOT = Path(__file__).resolve().parents[3]
 L6_ROOT = ROOT / L6_OBSERVABILITY_DIR
@@ -115,6 +111,11 @@ class TestL6AgentNamingStructure:
 
     def test_agent_files_have_single_agent_classdef(self) -> None:
     """Test agent_files_have_single_agent_classdef contract compliance."""
+        from agentic_core.L0_routing.config.path_constants import (
+            L6_OBSERVABILITY_DIR,
+        )
+        from agentic_core.L5_safety.config.structure_blueprint.ssot import SOVEREIGN_EXCLUDED_FOLDERS
+
     # Arrange
     # TODO: Set up contract parties and terms
     contract_terms = {}  # Replace with actual contract terms

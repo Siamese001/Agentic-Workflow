@@ -11,8 +11,6 @@ import pytest
 
 pytestmark = pytest.mark.unit
 try:
-    import apps_lic.tools.run_workflow_lic as _mod  # noqa: F401  # ADG covers
-except (ValueError, TypeError, RuntimeError) as e:
     _mod = None
 
 
@@ -34,6 +32,10 @@ def _src_text():
 class TestRunWorkflowLicSource:
     def test_source_exists(self):
     """Test source_exists runtime behavior."""
+            import apps_lic.tools.run_workflow_lic as _mod  # noqa: F401  # ADG covers
+        except (ValueError, TypeError, RuntimeError) as e:
+            _mod = None
+
     # Arrange
     # TODO: Set up test data for source_exists
     """Test parses_without_error runtime behavior."""

@@ -5,16 +5,6 @@ from pathlib import Path
 
 import pytest
 
-from agentic_core.prompt_governance.core.template_catalog import (
-    TEMPLATE_BY_NAME,
-    TEMPLATE_CATALOG,
-    TemplateCategory,
-    TemplateStatus,
-    get_active_templates,
-    get_deprecated_templates,
-    get_orphan_templates,
-    get_templates_for_agent,
-)
 
 PG_ROOT = Path(__file__).resolve().parents[3] / "agentic_core" / "prompt_governance"
 
@@ -30,6 +20,23 @@ class TestAllTemplatesInCatalog:
         return md_files
 
     def test_every_disk_template_has_catalog_entry(self):
+        from agentic_core.prompt_governance.core.template_catalog import (
+            TEMPLATE_BY_NAME,
+            TEMPLATE_CATALOG,
+            TemplateCategory,
+            TemplateStatus,
+            get_active_templates,
+            get_deprecated_templates,
+            get_orphan_templates,
+            get_templates_for_agent,
+        )
+                from agentic_core.prompt_governance.core.sovereign_prompt_renderer import (
+                    SovereignPromptRenderer,
+                )
+                from agentic_core.prompt_governance.core.sovereign_prompt_renderer import (
+                    SovereignPromptRenderer,
+                )
+
         disk = self._discover_disk_templates()
         catalog_names = set(TEMPLATE_BY_NAME.keys())
         missing = disk - catalog_names
@@ -155,9 +162,6 @@ class TestRendererDefaultPath:
     """SovereignPromptRenderer default path must point to actual templates."""
 
     def test_default_template_root_exists(self):
-        from agentic_core.prompt_governance.core.sovereign_prompt_renderer import (
-            SovereignPromptRenderer,
-        )
 
         renderer = SovereignPromptRenderer()
         assert renderer.template_root.exists(), (
@@ -165,9 +169,6 @@ class TestRendererDefaultPath:
         )
 
     def test_default_template_root_has_templates(self):
-        from agentic_core.prompt_governance.core.sovereign_prompt_renderer import (
-            SovereignPromptRenderer,
-        )
 
         renderer = SovereignPromptRenderer()
         jinja_files = list(renderer.template_root.glob("*.jinja"))

@@ -28,13 +28,15 @@ pytestmark = pytest.mark.unit
 
 class TestTraitContract:
     def test_is_class(self):
-        from agentic_core.runtime.utils.trait_system_util import (  # noqa: F401
-    """Test is_class runtime behavior."""
-    # Arrange
-    # TODO: Set up runtime environment
-    """Test has_method_apply runtime behavior."""
-    # Arrange
-    # TODO: Set up runtime environment
+                from agentic_core.runtime.utils.trait_system_util import (  # noqa: F401
+            """Test is_class runtime behavior."""
+            # Arrange
+            # TODO: Set up runtime environment
+            """Test has_method_apply runtime behavior."""
+            # Arrange
+            # TODO: Set up runtime environment
+            runtime_context = {}  # Replace with actual runtime context
+
     runtime_context = {}  # Replace with actual runtime context
 
     # Act

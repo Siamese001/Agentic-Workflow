@@ -5,6 +5,8 @@ from __future__ import annotations
 
 
 def test_module_importable():
-    import agentic_core.L5_safety.reasoning.NamingAgent  # noqa: F401
-    """Module NamingAgent must be importable."""
+        import agentic_core.L5_safety.reasoning.NamingAgent  # noqa: F401
+        """Module NamingAgent must be importable."""
+        assert agentic_core.L5_safety.reasoning.NamingAgent is not None
+
     assert agentic_core.L5_safety.reasoning.NamingAgent is not None

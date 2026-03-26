@@ -5,11 +5,12 @@ import pytest
 
 pytestmark = pytest.mark.unit
 
-import apps_shared.utils.open_telemetry_tracing_adapter_util  # noqa: F401
 
 
 def test_module_importable():
 """Test module_importable runtime behavior."""
+    import apps_shared.utils.open_telemetry_tracing_adapter_util  # noqa: F401
+
 # Arrange
 # TODO: Set up runtime environment
 runtime_context = {}  # Replace with actual runtime context

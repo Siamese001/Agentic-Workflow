@@ -21,26 +21,28 @@ pytestmark = pytest.mark.unit
 
 class TestMaxRetriesConstant:
     def test_is_not_none(self):
-        from agentic_core.interfaces.spine import (  # noqa: F401
-    """Test is_not_none contract compliance."""
-    # Arrange
-    # TODO: Set up contract test scenario
-    test_scenario = {}  # Replace with actual test scenario
-    """Test is_not_none contract compliance."""
-    # Arrange
-    # TODO: Set up contract test scenario
-    test_scenario = {}  # Replace with actual test scenario
-    """Test is_not_none contract compliance."""
-    # Arrange
-    # TODO: Set up contract test scenario
-    test_scenario = {}  # Replace with actual test scenario
-    """Test is_not_none contract compliance."""
-    # Arrange
-    # TODO: Set up contract test scenario
-    test_scenario = {}  # Replace with actual test scenario
-    """Test is_not_none contract compliance."""
-    # Arrange
-    # TODO: Set up contract test scenario
+                from agentic_core.interfaces.spine import (  # noqa: F401
+            """Test is_not_none contract compliance."""
+            # Arrange
+            # TODO: Set up contract test scenario
+            test_scenario = {}  # Replace with actual test scenario
+            """Test is_not_none contract compliance."""
+            # Arrange
+            # TODO: Set up contract test scenario
+            test_scenario = {}  # Replace with actual test scenario
+            """Test is_not_none contract compliance."""
+            # Arrange
+            # TODO: Set up contract test scenario
+            test_scenario = {}  # Replace with actual test scenario
+            """Test is_not_none contract compliance."""
+            # Arrange
+            # TODO: Set up contract test scenario
+            test_scenario = {}  # Replace with actual test scenario
+            """Test is_not_none contract compliance."""
+            # Arrange
+            # TODO: Set up contract test scenario
+            test_scenario = {}  # Replace with actual test scenario
+
     test_scenario = {}  # Replace with actual test scenario
 
     # Act

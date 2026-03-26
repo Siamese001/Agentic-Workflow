@@ -189,15 +189,17 @@ class TestConfusionMatrix:
         return ConfusionMatrix(tp=tp, fp=fp, tn=tn, fn=fn)
 
     def test_precision_all_correct(self):
-        from agentic_core.evaluation.metrics.classification import (
-        from agentic_core.evaluation.metrics.f1_score import F1Score
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.evaluation.metrics.base import ClassificationMetric
-        from agentic_core.evaluation.metrics.base import ClassificationMetric
-        from agentic_core.evaluation.metrics.base import ClassificationMetric
-        from agentic_core.evaluation.metrics.base import EvaluationMetric
-        cm = self._cm(tp=5, fp=0, tn=3, fn=2)
+                from agentic_core.evaluation.metrics.classification import (
+                from agentic_core.evaluation.metrics.f1_score import F1Score
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.evaluation.metrics.base import ClassificationMetric
+                from agentic_core.evaluation.metrics.base import ClassificationMetric
+                from agentic_core.evaluation.metrics.base import ClassificationMetric
+                from agentic_core.evaluation.metrics.base import EvaluationMetric
+                cm = self._cm(tp=5, fp=0, tn=3, fn=2)
+                assert cm.precision() == 1.0
+
         assert cm.precision() == 1.0
 
     def test_precision_all_wrong(self):

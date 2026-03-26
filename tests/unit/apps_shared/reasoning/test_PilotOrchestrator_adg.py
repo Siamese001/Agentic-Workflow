@@ -5,9 +5,10 @@ import pytest
 
 pytestmark = pytest.mark.unit
 
-import apps_shared.reasoning.PilotOrchestrator  # noqa: F401
 
 
 def test_module_importable():
     """Module PilotOrchestrator must be importable."""
+    import apps_shared.reasoning.PilotOrchestrator  # noqa: F401
+
     assert apps_shared.reasoning.PilotOrchestrator is not None

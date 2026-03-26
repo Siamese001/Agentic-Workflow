@@ -5,22 +5,24 @@ import pytest
 
 pytestmark = pytest.mark.unit
 
-from apps_shared.utils.observability_clients_util import (
-BATCH_SIZE,
-BUFFER_SIZE,
-DEFAULT_SLEEP,
-MAX_DEPTH,
-MAX_RETRIES,
-THRESHOLD,
-create_span,
-record_exception,
-set_span_attribute,
 )  # noqa: F401
 
 
 class TestCreateSpan:
     def test_is_callable(self):
     """Test is_callable runtime behavior."""
+        from apps_shared.utils.observability_clients_util import (
+        BATCH_SIZE,
+        BUFFER_SIZE,
+        DEFAULT_SLEEP,
+        MAX_DEPTH,
+        MAX_RETRIES,
+        THRESHOLD,
+        create_span,
+        record_exception,
+        set_span_attribute,
+        )  # noqa: F401
+
     # Arrange
     # TODO: Set up execution parameters
     input_data = {}  # Replace with actual test data

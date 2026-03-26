@@ -10,24 +10,25 @@ import pytest
 
 pytestmark = pytest.mark.unit
 
-from apps_shared.utils.input_validator_util import (  # noqa: F401
-    BATCH_SIZE,
-    BUFFER_SIZE,
-    DEFAULT_SLEEP,
-    MAX_RETRIES,
-    THRESHOLD,
-    InputValidationError,
-    InputValidator,
-    ValidatedInput,
-    ValidationRule,
-    ValidationType,
-    create_default_validator,
-    validate_with_pydantic,
-)
 
 
 class TestValidationTypeContract:
     def test_is_enum(self):
+        from apps_shared.utils.input_validator_util import (  # noqa: F401
+            BATCH_SIZE,
+            BUFFER_SIZE,
+            DEFAULT_SLEEP,
+            MAX_RETRIES,
+            THRESHOLD,
+            InputValidationError,
+            InputValidator,
+            ValidatedInput,
+            ValidationRule,
+            ValidationType,
+            create_default_validator,
+            validate_with_pydantic,
+        )
+
         import enum
         assert issubclass(ValidationType, enum.Enum)
 

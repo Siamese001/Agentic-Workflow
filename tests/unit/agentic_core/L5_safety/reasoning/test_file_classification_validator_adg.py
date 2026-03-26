@@ -173,12 +173,14 @@ pytestmark = pytest.mark.unit
 
 class TestFileClassificationValidatorAgent:
     def test_check_id_string(self):
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.L5_safety.reasoning.file_classification_validator import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-    """Test check_id_string contract compliance."""
-    # Arrange
-    # TODO: Set up test data
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L5_safety.reasoning.file_classification_validator import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+            """Test check_id_string contract compliance."""
+            # Arrange
+            # TODO: Set up test data
+            test_data = {}  # Replace with actual test data
+
     test_data = {}  # Replace with actual test data
 
     # Act

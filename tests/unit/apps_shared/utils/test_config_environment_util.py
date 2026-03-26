@@ -10,25 +10,26 @@ import pytest
 
 pytestmark = pytest.mark.unit
 
-from apps_shared.utils.config_environment_util import (  # noqa: F401
-    BATCH_SIZE,
-    BUFFER_SIZE,
-    DEFAULT_SLEEP,
-    MAX_RETRIES,
-    THRESHOLD,
-    ConfigDefinition,
-    ConfigEnvironment,
-    ConfigFormat,
-    ConfigValidationRule,
-    DeploymentPlan,
-    DeploymentStrategy,
-    create_config_planning_orchestrator,
-    plan_config_deployment,
-)
 
 
 class TestConfigEnvironmentContract:
     def test_is_enum(self):
+        from apps_shared.utils.config_environment_util import (  # noqa: F401
+            BATCH_SIZE,
+            BUFFER_SIZE,
+            DEFAULT_SLEEP,
+            MAX_RETRIES,
+            THRESHOLD,
+            ConfigDefinition,
+            ConfigEnvironment,
+            ConfigFormat,
+            ConfigValidationRule,
+            DeploymentPlan,
+            DeploymentStrategy,
+            create_config_planning_orchestrator,
+            plan_config_deployment,
+        )
+
         import enum
         assert issubclass(ConfigEnvironment, enum.Enum)
 

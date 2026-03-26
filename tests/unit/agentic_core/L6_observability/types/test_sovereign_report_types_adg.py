@@ -168,11 +168,13 @@ pytestmark = pytest.mark.unit
 
 class TestSovereignReport:
     def test_creates(self): r = SovereignReport(); assert r.scores == {}
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.L6_observability.types.sovereign_report_types import SovereignReport
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-    def test_overall_score_empty(self): r = SovereignReport(); assert r.get_overall_score() == 0.0
-    def test_has_builder(self): assert hasattr(SovereignReport, "Builder")
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L6_observability.types.sovereign_report_types import SovereignReport
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+            def test_overall_score_empty(self): r = SovereignReport(); assert r.get_overall_score() == 0.0
+            def test_has_builder(self): assert hasattr(SovereignReport, "Builder")
+            def test_get_all_issues_empty(self): r = SovereignReport(); assert r.get_all_issues() == []
+
     def test_get_all_issues_empty(self): r = SovereignReport(); assert r.get_all_issues() == []
 
 class TestSovereignReportBuilder:

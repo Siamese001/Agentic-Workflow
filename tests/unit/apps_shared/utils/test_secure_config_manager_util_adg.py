@@ -5,9 +5,10 @@ import pytest
 
 pytestmark = pytest.mark.unit
 
-import apps_shared.utils.secure_config_manager_util  # noqa: F401
 
 
 def test_module_importable():
     """Module secure_config_manager_util must be importable."""
+    import apps_shared.utils.secure_config_manager_util  # noqa: F401
+
     assert apps_shared.utils.secure_config_manager_util is not None

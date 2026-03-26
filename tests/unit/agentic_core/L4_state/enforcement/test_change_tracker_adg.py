@@ -9,6 +9,8 @@ pytestmark = pytest.mark.unit
 
 
 def test_module_importable():
-    import agentic_core.L4_state.enforcement.change_tracker  # noqa: F401
-    """Module change_tracker must be importable."""
+        import agentic_core.L4_state.enforcement.change_tracker  # noqa: F401
+        """Module change_tracker must be importable."""
+        assert agentic_core.L4_state.enforcement.change_tracker is not None
+
     assert agentic_core.L4_state.enforcement.change_tracker is not None

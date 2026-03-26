@@ -5,9 +5,10 @@ import pytest
 
 pytestmark = pytest.mark.unit
 
-import apps_shared.utils.orchestration_mixin_util  # noqa: F401
 
 
 def test_module_importable():
     """Module orchestration_mixin_util must be importable."""
+    import apps_shared.utils.orchestration_mixin_util  # noqa: F401
+
     assert apps_shared.utils.orchestration_mixin_util is not None

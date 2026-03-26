@@ -9,6 +9,8 @@ pytestmark = pytest.mark.unit
 
 
 def test_module_importable():
-    import agentic_core.runtime.utils.sovereign_dependency_error_util  # noqa: F401
-    """Module sovereign_dependency_error_util must be importable."""
+        import agentic_core.runtime.utils.sovereign_dependency_error_util  # noqa: F401
+        """Module sovereign_dependency_error_util must be importable."""
+        assert agentic_core.runtime.utils.sovereign_dependency_error_util is not None
+
     assert agentic_core.runtime.utils.sovereign_dependency_error_util is not None

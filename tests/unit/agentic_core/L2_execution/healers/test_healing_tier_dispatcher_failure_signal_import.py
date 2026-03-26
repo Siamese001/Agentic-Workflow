@@ -174,11 +174,13 @@ class TestFailureSignalImport:
     """Test that FailureSignal is properly imported in healing_tier_dispatcher."""
 
     def test_failure_signal_imported_in_module(self):
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-    """Test failure_signal_imported_in_module runtime behavior."""
-    # Arrange
-    # TODO: Set up error condition
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+            """Test failure_signal_imported_in_module runtime behavior."""
+            # Arrange
+            # TODO: Set up error condition
+            error_input = {}  # Replace with actual error condition
+
     error_input = {}  # Replace with actual error condition
 
     # Act & Assert

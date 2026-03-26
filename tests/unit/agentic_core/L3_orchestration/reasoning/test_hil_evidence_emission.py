@@ -191,36 +191,38 @@ class TestEvidencePackConstruction:
     """Unit: build_hil_evidence_pack produces valid, typed EvidencePack."""
 
     def test_hil_pack_has_required_fields(self):
-        from agentic_core.L0_routing.enforcement.governance_contracts import (
-        from agentic_core.L0_routing.types.governance_types import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        import agentic_core.L3_orchestration.reasoning.OrchestrationHandshakeAgent as mod
-        ref = RouteDecisionRef(
-            trace_id="t1",
-            decision="human_escalation",
-            agent_name="A",
-            reason="policy",
-        )
-        snap = PolicySnapshot(
-            security_level="enforced",
-            risk_tier="HIGH",
-            laws_applied=(),
-            policy_hash="abc",
-        )
-        pack = build_hil_evidence_pack(
-            trace_id="t1",
-            escalation_reason="policy requires human review",
-            route_decision_ref=ref,
-            policy_snapshot_data=snap,
-        )
-        assert isinstance(pack, EvidencePack)
-        assert pack.trace_id == "t1"
-        assert pack.evidence_id  # non-empty uuid4
-        assert pack.timestamp_utc  # non-empty ISO8601
-        assert pack.escalation_reason == "policy requires human review"
-        assert pack.route_decision_ref is ref
-        assert pack.policy_snapshot_data is snap
+                from agentic_core.L0_routing.enforcement.governance_contracts import (
+                from agentic_core.L0_routing.types.governance_types import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                import agentic_core.L3_orchestration.reasoning.OrchestrationHandshakeAgent as mod
+                ref = RouteDecisionRef(
+                    trace_id="t1",
+                    decision="human_escalation",
+                    agent_name="A",
+                    reason="policy",
+                )
+                snap = PolicySnapshot(
+                    security_level="enforced",
+                    risk_tier="HIGH",
+                    laws_applied=(),
+                    policy_hash="abc",
+                )
+                pack = build_hil_evidence_pack(
+                    trace_id="t1",
+                    escalation_reason="policy requires human review",
+                    route_decision_ref=ref,
+                    policy_snapshot_data=snap,
+                )
+                assert isinstance(pack, EvidencePack)
+                assert pack.trace_id == "t1"
+                assert pack.evidence_id  # non-empty uuid4
+                assert pack.timestamp_utc  # non-empty ISO8601
+                assert pack.escalation_reason == "policy requires human review"
+                assert pack.route_decision_ref is ref
+                assert pack.policy_snapshot_data is snap
+                assert pack.risk_score == 0.8
+
         assert pack.risk_score == 0.8
 
     def test_hil_pack_is_frozen(self):

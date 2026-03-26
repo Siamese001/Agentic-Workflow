@@ -5,9 +5,10 @@ import pytest
 
 pytestmark = pytest.mark.unit
 
-import apps_rg.tools.PrioritizeAchievements  # noqa: F401
 
 
 def test_module_importable():
     """Module PrioritizeAchievements must be importable."""
+    import apps_rg.tools.PrioritizeAchievements  # noqa: F401
+
     assert apps_rg.tools.PrioritizeAchievements is not None

@@ -21,6 +21,131 @@ import pytest
 class TestExecAgentSpecs:
     def test_default_specs_load(self):
     """Test default_specs_load runtime behavior."""
+                from apps_exec.types.exec_types import AudiencePersona, ExecBriefRequest
+                req = ExecBriefRequest(audience=AudiencePersona.RECRUITER, source_dirs=["/nonexistent/path/xyz"])
+                result = engine.execute(req)
+                assert len(result.documents) == 0
+                assert any(Path(p) == Path("/nonexistent/path/xyz") for p in result.skipped_paths)
+                from apps_exec.engines.ingestion_engine import IngestionEngine
+                from apps_exec.types.exec_types import AudiencePersona, ExecBriefRequest
+                from apps_exec.types.exec_types import AudiencePersona, ExecBriefRequest
+                engine = IngestionEngine()
+                req = ExecBriefRequest(audience=AudiencePersona.CTO, source_dirs=[str(tmp_path)])
+                result = engine.execute(req)
+                assert len(result.documents) == 1
+                assert result.documents[0].extension == ".md"
+                from apps_exec.engines.ingestion_engine import IngestionEngine
+                from apps_exec.types.exec_types import AudiencePersona, ExecBriefRequest
+                from apps_exec.types.exec_types import AudiencePersona, ExecBriefRequest
+                engine = IngestionEngine()
+                req = ExecBriefRequest(audience=AudiencePersona.CTO, source_dirs=[str(tmp_path)])
+                result = engine.execute(req)
+                assert len(result.documents) == 0
+                assert len(result.skipped_paths) == 1
+                from apps_exec.engines.ingestion_engine import IngestionEngine
+                from apps_exec.types.exec_types import AudiencePersona, ExecBriefRequest
+                from apps_exec.types.exec_types import AudiencePersona, ExecBriefRequest
+                engine = IngestionEngine()
+                req = ExecBriefRequest(audience=AudiencePersona.SVP_ENG, source_dirs=[str(tmp_path)])
+                result = engine.execute(req)
+                assert result.total_chars == 11
+                from apps_exec.engines.capability_extraction_engine import CapabilityExtractionEngine
+                from apps_exec.engines.ingestion_engine import IngestionEngine
+                from apps_exec.types.exec_types import AudiencePersona, ExecBriefRequest
+                from apps_exec.types.exec_types import AudiencePersona, ExecBriefRequest
+                ingestion_engine = IngestionEngine()
+                req = ExecBriefRequest(audience=AudiencePersona.CTO, source_dirs=[str(tmp_path)])
+                ingestion_result = ingestion_engine.execute(req)
+                extraction_engine = CapabilityExtractionEngine()
+                extraction_result = extraction_engine.execute(ingestion_result)
+                assert len(extraction_result.capabilities) > 0
+                from apps_exec.engines.capability_extraction_engine import CapabilityExtractionEngine
+                from apps_exec.engines.ingestion_engine import IngestionResult
+                from apps_exec.engines.ingestion_engine import IngestionResult
+                engine = CapabilityExtractionEngine()
+                result = engine.execute(IngestionResult())
+                assert result.capabilities == []
+                from apps_exec.engines.capability_extraction_engine import ExtractionResult
+                from apps_exec.types.exec_types import CapabilityEvidence
+                from apps_exec.types.exec_types import CapabilityEvidence
+                return ExtractionResult(
+                    capabilities=[
+                        CapabilityEvidence("CAP_GOV", "Governance", "Governance enforcement", ("L0 routing",), "L0"),
+                    ],
+                    evidence_anchors=["module execution_gateway", "validator policy_hash_enforcer"],
+                    source_coverage={},
+                )
+                from apps_exec.types.exec_types import BriefSection
+                from apps_exec.validators.style_gate_validator import StyleGateValidator
+                from apps_exec.validators.style_gate_validator import StyleGateValidator
+                validator = StyleGateValidator()
+                sections = [
+                    BriefSection(
+                        section_id="test",
+                        heading="Test",
+                        body="This is a game-changer and a revolutionary synergy platform with holistic ecosystem",
+                        evidence_anchors=("anchor",),
+                        why_this_matters="Why it matters.",
+                        word_count=12,
+                    )
+                ]
+                result = validator.validate_sections(sections)
+                assert any(v.rule_id == "STYLE_BUZZWORD_DENSITY" for v in result.violations)
+                from apps_exec.types.exec_types import BriefSection
+                from apps_exec.validators.style_gate_validator import StyleGateValidator
+                from apps_exec.validators.style_gate_validator import StyleGateValidator
+                validator = StyleGateValidator()
+                sections = [
+                    BriefSection(
+                        section_id="sec1",
+                        heading="Section 1",
+                        body="Clean professional content about platform governance.",
+                        evidence_anchors=("anchor1",),
+                        why_this_matters="This matters because governance is critical.",
+                    )
+                ]
+                result = validator.validate_sections(sections)
+                assert result.quality_score > 0.0
+                from apps_exec.reasoning.ExecOrchestrator import ExecOrchestrator
+                from apps_exec.types.exec_types import AudiencePersona, BriefStatus, ExecBriefRequest
+                from apps_exec.types.exec_types import AudiencePersona, BriefStatus, ExecBriefRequest
+                orch = ExecOrchestrator(dry_run=True)
+                req = ExecBriefRequest(audience=AudiencePersona.RECRUITER, source_dirs=[], dry_run=True)
+                result = orch.run(req)
+                assert result.status == BriefStatus.DRY_RUN
+                assert len(result.artifact_paths) == 0
+                from apps_exec.reasoning.ExecOrchestrator import ExecOrchestrator
+                from apps_exec.types.exec_types import AudiencePersona, ExecBriefRequest
+                from apps_exec.types.exec_types import AudiencePersona, ExecBriefRequest
+                orch = ExecOrchestrator(dry_run=True)
+                req = ExecBriefRequest(audience=AudiencePersona.RECRUITER, source_dirs=[], dry_run=True)
+                result = orch.run(req)
+                assert len(result.sections) > 0
+                from apps_exec.reasoning.ExecOrchestrator import ExecOrchestrator
+                from apps_exec.types.exec_types import AudiencePersona, ExecBriefRequest
+                from apps_exec.types.exec_types import AudiencePersona, ExecBriefRequest
+                orch = ExecOrchestrator(dry_run=True)
+                req = ExecBriefRequest(audience=AudiencePersona.CTO, source_dirs=[], trace_id="test-trace-001")
+                result = orch.run(req)
+                assert result.trace_id == "test-trace-001"
+                from apps_exec.reasoning.ExecOrchestrator import ExecOrchestrator
+                from apps_exec.types.exec_types import AudiencePersona, ExecBriefRequest
+                from apps_exec.types.exec_types import AudiencePersona, ExecBriefRequest
+                orch = ExecOrchestrator(dry_run=True)
+                req = ExecBriefRequest(audience=AudiencePersona.SVP_ENG, source_dirs=[], trace_id="prov-trace")
+                result = orch.run(req)
+                assert result.provenance.get("trace_id") == "prov-trace"
+                from apps_exec.reasoning.ExecOrchestrator import ExecOrchestrator
+                from apps_exec.types.exec_types import AudiencePersona, BriefStatus, ExecBriefRequest
+                from apps_exec.types.exec_types import AudiencePersona, BriefStatus, ExecBriefRequest
+                orch = ExecOrchestrator(dry_run=False, output_dir=str(tmp_path))
+                req = ExecBriefRequest(audience=AudiencePersona.RECRUITER, source_dirs=[], dry_run=False)
+                result = orch.run(req)
+                if result.status == BriefStatus.COMPLETE:
+                    assert len(result.artifact_paths) > 0
+                    for path in result.artifact_paths:
+                        assert Path(path).exists()
+
     # Arrange
     # TODO: Set up test data for default_specs_load
     test_data = {}  # Replace with actual test data
@@ -59,11 +184,6 @@ result = None  # Replace with actual function call
 assert result is not None, f"{function_name} should return a result"
 assert isinstance(result, object), "Result should be an object"
 # TODO: Add specific runtime behavior assertions
-        from apps_exec.types.exec_types import AudiencePersona, ExecBriefRequest
-
-        req = ExecBriefRequest(audience=AudiencePersona.RECRUITER, source_dirs=["/nonexistent/path/xyz"])
-        result = engine.execute(req)
-        assert len(result.documents) == 0
         assert any(Path(p) == Path("/nonexistent/path/xyz") for p in result.skipped_paths)
 
     def test_ingests_markdown_files(self, tmp_path):
@@ -72,36 +192,16 @@ assert isinstance(result, object), "Result should be an object"
         )
         (tmp_path / "skip.csv").write_text("col1,col2", encoding="utf-8")
 
-        from apps_exec.engines.ingestion_engine import IngestionEngine
-        from apps_exec.types.exec_types import AudiencePersona, ExecBriefRequest
-
-        engine = IngestionEngine()
-        req = ExecBriefRequest(audience=AudiencePersona.CTO, source_dirs=[str(tmp_path)])
-        result = engine.execute(req)
-        assert len(result.documents) == 1
         assert result.documents[0].extension == ".md"
 
     def test_oversized_file_skipped(self, tmp_path):
         big_file = tmp_path / "huge.md"
         big_file.write_bytes(b"x" * (600 * 1024))
 
-        from apps_exec.engines.ingestion_engine import IngestionEngine
-        from apps_exec.types.exec_types import AudiencePersona, ExecBriefRequest
-
-        engine = IngestionEngine()
-        req = ExecBriefRequest(audience=AudiencePersona.CTO, source_dirs=[str(tmp_path)])
-        result = engine.execute(req)
-        assert len(result.documents) == 0
         assert len(result.skipped_paths) == 1
 
     def test_total_chars_property(self, tmp_path):
         (tmp_path / "a.md").write_text("hello world", encoding="utf-8")
-        from apps_exec.engines.ingestion_engine import IngestionEngine
-        from apps_exec.types.exec_types import AudiencePersona, ExecBriefRequest
-
-        engine = IngestionEngine()
-        req = ExecBriefRequest(audience=AudiencePersona.SVP_ENG, source_dirs=[str(tmp_path)])
-        result = engine.execute(req)
         assert result.total_chars == 11
 
 
@@ -113,15 +213,6 @@ class TestCapabilityExtractionEngine:
             "It enforces safety via module L0_routing.enforcement.execution_gateway.",
             encoding="utf-8",
         )
-        from apps_exec.engines.capability_extraction_engine import CapabilityExtractionEngine
-        from apps_exec.engines.ingestion_engine import IngestionEngine
-        from apps_exec.types.exec_types import AudiencePersona, ExecBriefRequest
-
-        ingestion_engine = IngestionEngine()
-        req = ExecBriefRequest(audience=AudiencePersona.CTO, source_dirs=[str(tmp_path)])
-        ingestion_result = ingestion_engine.execute(req)
-        extraction_engine = CapabilityExtractionEngine()
-        extraction_result = extraction_engine.execute(ingestion_result)
         assert len(extraction_result.capabilities) > 0
 
     def test_no_duplicate_capabilities(self, tmp_path):
@@ -140,26 +231,11 @@ class TestCapabilityExtractionEngine:
     # TODO: Add specific runtime behavior assertions
 
     def test_empty_corpus_returns_empty(self):
-        from apps_exec.engines.capability_extraction_engine import CapabilityExtractionEngine
-        from apps_exec.engines.ingestion_engine import IngestionResult
-
-        engine = CapabilityExtractionEngine()
-        result = engine.execute(IngestionResult())
         assert result.capabilities == []
 
 
 class TestBriefAssemblyEngine:
     def _make_extraction_result(self):
-        from apps_exec.engines.capability_extraction_engine import ExtractionResult
-        from apps_exec.types.exec_types import CapabilityEvidence
-
-        return ExtractionResult(
-            capabilities=[
-                CapabilityEvidence("CAP_GOV", "Governance", "Governance enforcement", ("L0 routing",), "L0"),
-            ],
-            evidence_anchors=["module execution_gateway", "validator policy_hash_enforcer"],
-            source_coverage={},
-        )
 
     def test_recruiter_sections_present(self):
     """Test recruiter_sections_present runtime behavior."""
@@ -229,21 +305,6 @@ class TestBriefAssemblyEngine:
         assert len(block_violations) == 0
 
     def test_buzzword_in_body_flagged(self):
-        from apps_exec.types.exec_types import BriefSection
-        from apps_exec.validators.style_gate_validator import StyleGateValidator
-
-        validator = StyleGateValidator()
-        sections = [
-            BriefSection(
-                section_id="test",
-                heading="Test",
-                body="This is a game-changer and a revolutionary synergy platform with holistic ecosystem",
-                evidence_anchors=("anchor",),
-                why_this_matters="Why it matters.",
-                word_count=12,
-            )
-        ]
-        result = validator.validate_sections(sections)
         assert any(v.rule_id == "STYLE_BUZZWORD_DENSITY" for v in result.violations)
 
     def test_empty_body_blocked(self):
@@ -267,71 +328,23 @@ class TestBriefAssemblyEngine:
         assert len(block_violations) == 1
 
     def test_quality_score_perfect_for_clean(self):
-        from apps_exec.types.exec_types import BriefSection
-        from apps_exec.validators.style_gate_validator import StyleGateValidator
-
-        validator = StyleGateValidator()
-        sections = [
-            BriefSection(
-                section_id="sec1",
-                heading="Section 1",
-                body="Clean professional content about platform governance.",
-                evidence_anchors=("anchor1",),
-                why_this_matters="This matters because governance is critical.",
-            )
-        ]
-        result = validator.validate_sections(sections)
         assert result.quality_score > 0.0
 
 
 class TestExecOrchestrator:
     def test_dry_run_returns_no_artifacts(self):
-        from apps_exec.reasoning.ExecOrchestrator import ExecOrchestrator
-        from apps_exec.types.exec_types import AudiencePersona, BriefStatus, ExecBriefRequest
-
-        orch = ExecOrchestrator(dry_run=True)
-        req = ExecBriefRequest(audience=AudiencePersona.RECRUITER, source_dirs=[], dry_run=True)
-        result = orch.run(req)
-        assert result.status == BriefStatus.DRY_RUN
         assert len(result.artifact_paths) == 0
 
     def test_dry_run_still_produces_sections(self):
-        from apps_exec.reasoning.ExecOrchestrator import ExecOrchestrator
-        from apps_exec.types.exec_types import AudiencePersona, ExecBriefRequest
-
-        orch = ExecOrchestrator(dry_run=True)
-        req = ExecBriefRequest(audience=AudiencePersona.RECRUITER, source_dirs=[], dry_run=True)
-        result = orch.run(req)
         assert len(result.sections) > 0
 
     def test_trace_id_present_in_result(self):
-        from apps_exec.reasoning.ExecOrchestrator import ExecOrchestrator
-        from apps_exec.types.exec_types import AudiencePersona, ExecBriefRequest
-
-        orch = ExecOrchestrator(dry_run=True)
-        req = ExecBriefRequest(audience=AudiencePersona.CTO, source_dirs=[], trace_id="test-trace-001")
-        result = orch.run(req)
         assert result.trace_id == "test-trace-001"
 
     def test_provenance_contains_trace_id(self):
-        from apps_exec.reasoning.ExecOrchestrator import ExecOrchestrator
-        from apps_exec.types.exec_types import AudiencePersona, ExecBriefRequest
-
-        orch = ExecOrchestrator(dry_run=True)
-        req = ExecBriefRequest(audience=AudiencePersona.SVP_ENG, source_dirs=[], trace_id="prov-trace")
-        result = orch.run(req)
         assert result.provenance.get("trace_id") == "prov-trace"
 
     def test_artifacts_written_in_non_dry_run(self, tmp_path):
-        from apps_exec.reasoning.ExecOrchestrator import ExecOrchestrator
-        from apps_exec.types.exec_types import AudiencePersona, BriefStatus, ExecBriefRequest
-
-        orch = ExecOrchestrator(dry_run=False, output_dir=str(tmp_path))
-        req = ExecBriefRequest(audience=AudiencePersona.RECRUITER, source_dirs=[], dry_run=False)
-        result = orch.run(req)
-        if result.status == BriefStatus.COMPLETE:
-            assert len(result.artifact_paths) > 0
-            for path in result.artifact_paths:
                 assert Path(path).exists()
 
 

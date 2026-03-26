@@ -14,8 +14,10 @@ pytestmark = pytest.mark.unit
 
 
 def test_module_importable():
-    import agentic_core.utils.security_util as _mod  # noqa: F401
-    """Module security_util must be importable or skip gracefully."""
+        import agentic_core.utils.security_util as _mod  # noqa: F401
+        """Module security_util must be importable or skip gracefully."""
+        assert _mod.__name__ == "agentic_core.utils.security_util"
+
     assert _mod.__name__ == "agentic_core.utils.security_util"
 
 

@@ -193,18 +193,19 @@ def reset_adapter_state():
 
 
 def test_adapter_local_success_with_zero_violations():
-    from agentic_core.L2_execution.types.vllm_gateway_adapter_types import (
-    from agentic_core.L2_execution.types.vllm_gateway_integration_types import (
-    from agentic_core.L2_execution.types.vllm_infrastructure_fingerprint_types import (
-    from agentic_core.L2_execution.types.vllm_invariant_contract_types import (
-    from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-    from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-    from agentic_core.L2_execution.types.vllm_invariant_contract_types import (
-    """Test that valid local request produces zero violations."""
-    adapter = VLLMGatewayAdapter(
-        queue=VLLMQueueController(),
-        registry=VLLMCircuitBreakerRegistry(),
-    )
+        from agentic_core.L2_execution.types.vllm_gateway_adapter_types import (
+        from agentic_core.L2_execution.types.vllm_gateway_integration_types import (
+        from agentic_core.L2_execution.types.vllm_infrastructure_fingerprint_types import (
+        from agentic_core.L2_execution.types.vllm_invariant_contract_types import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L2_execution.types.vllm_invariant_contract_types import (
+        """Test that valid local request produces zero violations."""
+        adapter = VLLMGatewayAdapter(
+            queue=VLLMQueueController(),
+            registry=VLLMCircuitBreakerRegistry(),
+        )
+
 
     fp = VLLMInfrastructureFingerprint.deterministic_test_instance()
 

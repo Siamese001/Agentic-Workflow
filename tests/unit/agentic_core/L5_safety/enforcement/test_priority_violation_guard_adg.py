@@ -5,6 +5,8 @@ from __future__ import annotations
 
 
 def test_module_importable():
-    import agentic_core.L5_safety.enforcement.priority_violation_guard  # noqa: F401
-    """Module priority_violation_guard must be importable."""
+        import agentic_core.L5_safety.enforcement.priority_violation_guard  # noqa: F401
+        """Module priority_violation_guard must be importable."""
+        assert agentic_core.L5_safety.enforcement.priority_violation_guard is not None
+
     assert agentic_core.L5_safety.enforcement.priority_violation_guard is not None

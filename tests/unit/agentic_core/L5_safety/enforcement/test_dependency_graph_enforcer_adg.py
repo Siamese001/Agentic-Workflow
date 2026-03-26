@@ -170,10 +170,12 @@ pytestmark = pytest.mark.unit
 
 class TestDependencyGraph:
     def test_creates(self):
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.L5_safety.enforcement.dependency_graph_enforcer import DependencyGraph
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        g = DependencyGraph()
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L5_safety.enforcement.dependency_graph_enforcer import DependencyGraph
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                g = DependencyGraph()
+                assert g is not None
+
         assert g is not None
 
     def test_graph_starts_empty(self):

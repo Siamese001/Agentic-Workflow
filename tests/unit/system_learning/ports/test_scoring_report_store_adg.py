@@ -5,11 +5,12 @@ import pytest
 
 pytestmark = pytest.mark.unit
 
-from system_learning.ports.scoring_report_store import ScoringReportStore
 
 
 class TestScoringReportStore:
     def test_importable(self):
+        from system_learning.ports.scoring_report_store import ScoringReportStore
+
         assert ScoringReportStore is not None
 
     def test_has_write(self):

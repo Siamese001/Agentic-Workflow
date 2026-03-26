@@ -170,9 +170,11 @@ pytestmark = pytest.mark.unit
 
 class TestLegacyAgentNameAllowlist:
     def test_is_dict(self):
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.L0_routing.legacy_agent_name_allowlist import LEGACY_AGENT_NAME_ALLOWLIST
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L0_routing.legacy_agent_name_allowlist import LEGACY_AGENT_NAME_ALLOWLIST
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                assert isinstance(LEGACY_AGENT_NAME_ALLOWLIST, dict)
+
         assert isinstance(LEGACY_AGENT_NAME_ALLOWLIST, dict)
 
     def test_non_empty(self):

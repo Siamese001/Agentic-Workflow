@@ -5,9 +5,10 @@ import pytest
 
 pytestmark = pytest.mark.unit
 
-import apps_shared.scripts.fix_cognitive_density  # noqa: F401
 
 
 def test_module_importable():
     """Module fix_cognitive_density must be importable."""
+    import apps_shared.scripts.fix_cognitive_density  # noqa: F401
+
     assert apps_shared.scripts.fix_cognitive_density is not None

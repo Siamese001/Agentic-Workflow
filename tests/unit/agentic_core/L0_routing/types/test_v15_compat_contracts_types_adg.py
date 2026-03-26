@@ -176,12 +176,14 @@ pytestmark = pytest.mark.unit
 
 class TestCompatExceptions:
     def test_forbidden_input_error_importable(self): assert ForbiddenInputError is not None
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.L0_routing.types.v15_p2_contracts_types import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-    """Test forbidden_input_error_importable contract compliance."""
-    # Arrange
-    # TODO: Set up contract parties and terms
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L0_routing.types.v15_p2_contracts_types import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+            """Test forbidden_input_error_importable contract compliance."""
+            # Arrange
+            # TODO: Set up contract parties and terms
+            contract_terms = {}  # Replace with actual contract terms
+
     contract_terms = {}  # Replace with actual contract terms
 
     # Act

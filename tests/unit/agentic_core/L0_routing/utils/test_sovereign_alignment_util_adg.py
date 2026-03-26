@@ -9,6 +9,8 @@ pytestmark = pytest.mark.unit
 
 
 def test_module_importable():
-    import agentic_core.L0_routing.utils.sovereign_alignment_v2_util  # noqa: F401
-    """Module sovereign_alignment_v2_util must be importable."""
+        import agentic_core.L0_routing.utils.sovereign_alignment_v2_util  # noqa: F401
+        """Module sovereign_alignment_v2_util must be importable."""
+        assert agentic_core.L0_routing.utils.sovereign_alignment_v2_util is not None
+
     assert agentic_core.L0_routing.utils.sovereign_alignment_v2_util is not None

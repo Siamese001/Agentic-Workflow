@@ -95,13 +95,15 @@ pytestmark = pytest.mark.unit
 
 class TestCacheTypes:
     def test_default_ttl_positive(self):
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.L1_cognition.types.cache_types import (
-        from agentic_core.L1_cognition.types.domain_types import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        import agentic_core.L1_cognition.types.memory_types as mod
-        import agentic_core.L1_cognition.types.observability_types as mod
-        import agentic_core.L1_cognition.types.validation_types as mod
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L1_cognition.types.cache_types import (
+                from agentic_core.L1_cognition.types.domain_types import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                import agentic_core.L1_cognition.types.memory_types as mod
+                import agentic_core.L1_cognition.types.observability_types as mod
+                import agentic_core.L1_cognition.types.validation_types as mod
+                assert DEFAULT_TTL_SECONDS > 0
+
         assert DEFAULT_TTL_SECONDS > 0
 
     def test_min_ttl_less_than_default(self):

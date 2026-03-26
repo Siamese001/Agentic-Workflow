@@ -173,15 +173,17 @@ pytestmark = pytest.mark.unit
 
 class TestBlastRadiusExceeded:
     def test_is_runtime_error(self):
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.L2_execution.types.blast_radius_controls_types import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-    """Test is_runtime_error runtime behavior."""
-    # Arrange
-    # TODO: Set up execution parameters
-    """Test raises runtime behavior."""
-    # Arrange
-    # TODO: Set up test data for raises
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L2_execution.types.blast_radius_controls_types import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+            """Test is_runtime_error runtime behavior."""
+            # Arrange
+            # TODO: Set up execution parameters
+            """Test raises runtime behavior."""
+            # Arrange
+            # TODO: Set up test data for raises
+            test_data = {}  # Replace with actual test data
+
     test_data = {}  # Replace with actual test data
 
     # Act

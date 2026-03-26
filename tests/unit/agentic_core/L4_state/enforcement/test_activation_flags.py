@@ -29,8 +29,10 @@ pytestmark = pytest.mark.unit
 
 class TestActivationFlagsContract:
     def test_is_dataclass(self):
-        from agentic_core.L4_state.enforcement.activation_flags import (  # noqa: F401
-        import dataclasses
+                from agentic_core.L4_state.enforcement.activation_flags import (  # noqa: F401
+                import dataclasses
+                assert dataclasses.is_dataclass(ActivationFlags)
+
         assert dataclasses.is_dataclass(ActivationFlags)
 
     def test_is_frozen(self):

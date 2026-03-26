@@ -25,10 +25,12 @@ pytestmark = pytest.mark.unit
 
 class TestBuildRoutingRuleSurfaceKeyFunction:
     def test_is_callable(self):
-        from agentic_core.L4_state.workflow_engines.cache_key_builders import (  # noqa: F401
-    """Test is_callable runtime behavior."""
-    # Arrange
-    # TODO: Set up execution parameters
+                from agentic_core.L4_state.workflow_engines.cache_key_builders import (  # noqa: F401
+            """Test is_callable runtime behavior."""
+            # Arrange
+            # TODO: Set up execution parameters
+            input_data = {}  # Replace with actual test data
+
     input_data = {}  # Replace with actual test data
 
     # Act

@@ -9,6 +9,8 @@ pytestmark = pytest.mark.unit
 
 
 def test_module_importable():
-    import agentic_core.mixins.subatomic_testing_mixin  # noqa: F401
-    """Module subatomic_testing_mixin must be importable."""
+        import agentic_core.mixins.subatomic_testing_mixin  # noqa: F401
+        """Module subatomic_testing_mixin must be importable."""
+        assert agentic_core.mixins.subatomic_testing_mixin is not None
+
     assert agentic_core.mixins.subatomic_testing_mixin is not None

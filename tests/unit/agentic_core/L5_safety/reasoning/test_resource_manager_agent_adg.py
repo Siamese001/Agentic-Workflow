@@ -181,10 +181,12 @@ pytestmark = pytest.mark.unit
 
 class TestResourceType:
     def test_all_members_present(self):
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.L5_safety.reasoning.ResourceManagerAgent import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        names = {e.name for e in ResourceType}
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L5_safety.reasoning.ResourceManagerAgent import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                names = {e.name for e in ResourceType}
+                assert {"BUDGET", "MEMORY", "CPU", "API_CALLS", "TOKENS"} == names
+
         assert {"BUDGET", "MEMORY", "CPU", "API_CALLS", "TOKENS"} == names
 
 

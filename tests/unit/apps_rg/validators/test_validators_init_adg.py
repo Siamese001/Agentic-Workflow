@@ -11,5 +11,7 @@ pytestmark = pytest.mark.unit
 
 class TestAppsRgValidatorsInit:
     def test_namespace_importable(self):
-        import apps_rg.validators
+                import apps_rg.validators
+                assert apps_rg.validators is not None
+
         assert apps_rg.validators is not None

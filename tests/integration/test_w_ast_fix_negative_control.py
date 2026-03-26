@@ -198,11 +198,13 @@ _TAMPER = os.environ.get("W_AST_FIX_NEGCTRL_TAMPER", "0") == "1"
     strict=True,
 )
 def test_negctrl_pt011_slot_order():
-    from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-    from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-    from agentic_core.prompt_governance.contracts.slot_contracts import (
-    from agentic_core.L5_safety.enforcement.rag_guardrail import (
     """Normal mode: canonical order passes.  Tamper mode: reversed order must fail."""
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.prompt_governance.contracts.slot_contracts import (
+        from agentic_core.L5_safety.enforcement.rag_guardrail import (
+        """Normal mode: canonical order passes.  Tamper mode: reversed order must fail."""
+
 #  # MOVED: from agentic_core.prompt_governance.contracts.slot_contracts import (
         validate_slot_order,
     )

@@ -177,10 +177,12 @@ _REPO_ROOT = Path(__file__).parents[5]
 
 class TestSSOTFolderCleanupAgentInit:
     def test_creates_with_defaults(self):
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.L0_routing.reasoning.SSOTFolderCleanupAgent import SSOTFolderCleanupAgent
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        agent = SSOTFolderCleanupAgent()
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L0_routing.reasoning.SSOTFolderCleanupAgent import SSOTFolderCleanupAgent
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                agent = SSOTFolderCleanupAgent()
+                assert agent is not None
+
         assert agent is not None
 
     def test_dry_run_default_true(self):

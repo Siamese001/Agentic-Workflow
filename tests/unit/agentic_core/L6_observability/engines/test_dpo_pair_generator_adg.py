@@ -5,6 +5,8 @@ from __future__ import annotations
 
 
 def test_module_importable():
-    import agentic_core.L6_observability.engines.dpo_pair_generator  # noqa: F401
-    """Module dpo_pair_generator must be importable."""
+        import agentic_core.L6_observability.engines.dpo_pair_generator  # noqa: F401
+        """Module dpo_pair_generator must be importable."""
+        assert agentic_core.L6_observability.engines.dpo_pair_generator is not None
+
     assert agentic_core.L6_observability.engines.dpo_pair_generator is not None

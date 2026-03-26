@@ -208,13 +208,15 @@ def _write(tmp_path: Path, name: str, content: str) -> Path:
 
 class TestExecutionModeType:
     def test_valid_values_are_reasoning_and_deterministic(self):
-        from agentic_core.L5_safety.core_kernel.classification_kernel import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.L5_safety.reasoning.FileClassificationAgent import (
-    """Test valid_values_are_reasoning_and_deterministic runtime behavior."""
-    # Arrange
-    # TODO: Set up test data for valid_values_are_reasoning_and_deterministic
+                from agentic_core.L5_safety.core_kernel.classification_kernel import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L5_safety.reasoning.FileClassificationAgent import (
+            """Test valid_values_are_reasoning_and_deterministic runtime behavior."""
+            # Arrange
+            # TODO: Set up test data for valid_values_are_reasoning_and_deterministic
+            test_data = {}  # Replace with actual test data
+
     test_data = {}  # Replace with actual test data
 
     # Act

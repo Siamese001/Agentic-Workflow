@@ -26,8 +26,10 @@ pytestmark = pytest.mark.unit
 
 class TestErrorCategoryContract:
     def test_is_enum(self):
-        from agentic_core.L5_safety.enforcement.error_recovery_guardrail import (  # noqa: F401
-        import enum
+                from agentic_core.L5_safety.enforcement.error_recovery_guardrail import (  # noqa: F401
+                import enum
+                assert issubclass(ErrorCategory, enum.Enum)
+
         assert issubclass(ErrorCategory, enum.Enum)
 
     def test_has_members(self):

@@ -27,7 +27,9 @@ pytestmark = pytest.mark.unit
 
 class TestContractStageContract:
     def test_is_class(self):
-        from agentic_core.L5_safety.config.contract_stage_config import (  # noqa: F401
+                from agentic_core.L5_safety.config.contract_stage_config import (  # noqa: F401
+                assert isinstance(ContractStage, type)
+
         assert isinstance(ContractStage, type)
 
     def test_instantiable_or_abstract(self):

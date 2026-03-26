@@ -10,24 +10,25 @@ import pytest
 
 pytestmark = pytest.mark.unit
 
-from apps_shared.enforcement.ProvenancetrackerStrategy import (  # noqa: F401
-    BATCH_SIZE,
-    BUFFER_SIZE,
-    DEFAULT_SLEEP,
-    MAX_RETRIES,
-    THRESHOLD,
-    ArtifactLineage,
-    ProvenanceContext,
-    ProvenanceTracker,
-    SourceCitation,
-    get_provenance_tracker,
-    provenance_tracked,
-    track_provenance,
-)
 
 
 class TestSourceCitationContract:
     def test_is_dataclass(self):
+        from apps_shared.enforcement.ProvenancetrackerStrategy import (  # noqa: F401
+            BATCH_SIZE,
+            BUFFER_SIZE,
+            DEFAULT_SLEEP,
+            MAX_RETRIES,
+            THRESHOLD,
+            ArtifactLineage,
+            ProvenanceContext,
+            ProvenanceTracker,
+            SourceCitation,
+            get_provenance_tracker,
+            provenance_tracked,
+            track_provenance,
+        )
+
         import dataclasses
         assert dataclasses.is_dataclass(SourceCitation)
 

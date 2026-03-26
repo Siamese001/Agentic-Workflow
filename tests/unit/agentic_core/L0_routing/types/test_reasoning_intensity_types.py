@@ -272,19 +272,21 @@ def _make_profile(
 
 @pytest.mark.governance
 def test_all_tiers_have_parameters():
-    from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-    from agentic_core.L0_routing.engines.reasoning_policy_engine import (
-    from agentic_core.L0_routing.types.reasoning_intensity_types import (
-    from agentic_core.L0_routing.types.routing_artifact_types import (
-    from agentic_core.L3_orchestration.engines.reasoning_intensity_enforcer import (
-    from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-    for tier in ReasoningTier:
-        assert tier in TIER_PARAMETER_TABLE, f"Missing tier: {tier}"
-        params = TIER_PARAMETER_TABLE[tier]
-        assert "max_branches" in params
-        assert "max_depth" in params
-        assert "enable_reflection" in params
-        assert "allowed_modes" in params
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L0_routing.engines.reasoning_policy_engine import (
+        from agentic_core.L0_routing.types.reasoning_intensity_types import (
+        from agentic_core.L0_routing.types.routing_artifact_types import (
+        from agentic_core.L3_orchestration.engines.reasoning_intensity_enforcer import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        for tier in ReasoningTier:
+            assert tier in TIER_PARAMETER_TABLE, f"Missing tier: {tier}"
+            params = TIER_PARAMETER_TABLE[tier]
+            assert "max_branches" in params
+            assert "max_depth" in params
+            assert "enable_reflection" in params
+            assert "allowed_modes" in params
+            assert "token_budget_multiplier" in params
+
         assert "token_budget_multiplier" in params
 
 

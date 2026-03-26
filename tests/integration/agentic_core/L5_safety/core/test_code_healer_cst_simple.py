@@ -185,11 +185,13 @@ class TestCodeHealerCSTSimple:
     """Simple test for CST-based healing functionality."""
 
     def test_cst_import_removal_preserves_comments(self):
-        from agentic_core.L5_safety.types.surgical_context_types import (
-        from agentic_core.mixins.cst_healer_mixin import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        """
+                from agentic_core.L5_safety.types.surgical_context_types import (
+                from agentic_core.mixins.cst_healer_mixin import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                """
+                Test that CST-based import removal preserves comments and formatting.
+
         Test that CST-based import removal preserves comments and formatting.
 
         This simulates what the CodeHealerAgent would do when removing unused imports.

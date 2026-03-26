@@ -176,13 +176,15 @@ class TestHealerExceptionHandling:
     """Test that healer exceptions are properly caught and converted to FAILED results."""
 
     def test_healer_exception_caught_and_converted_to_failed_result(self):
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.L2_execution.scripts.remediation_dispatcher import (
-        from agentic_core.L2_execution.scripts.remediation_dispatcher import (
-        from agentic_core.L2_execution.scripts.remediation_dispatcher import (
-        from agentic_core.L2_execution.scripts.remediation_dispatcher import _invoke_healer
         """When healer raises exception, should catch it and return HealCheckResult with FAILED status."""
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L2_execution.scripts.remediation_dispatcher import (
+                from agentic_core.L2_execution.scripts.remediation_dispatcher import (
+                from agentic_core.L2_execution.scripts.remediation_dispatcher import (
+                from agentic_core.L2_execution.scripts.remediation_dispatcher import _invoke_healer
+                """When healer raises exception, should catch it and return HealCheckResult with FAILED status."""
+
 #  # MOVED: from agentic_core.L2_execution.scripts.remediation_dispatcher import (
             HealCheckResult,
             HealStatus,

@@ -27,8 +27,10 @@ pytestmark = pytest.mark.unit
 
 class TestChunkTypeContract:
     def test_is_enum(self):
-        from agentic_core.L0_routing.scripts.chunk_type import (  # noqa: F401
-        import enum
+                from agentic_core.L0_routing.scripts.chunk_type import (  # noqa: F401
+                import enum
+                assert issubclass(ChunkType, enum.Enum)
+
         assert issubclass(ChunkType, enum.Enum)
 
     def test_has_members(self):

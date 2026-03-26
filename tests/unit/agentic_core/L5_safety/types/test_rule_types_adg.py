@@ -174,10 +174,12 @@ pytestmark = pytest.mark.unit
 
 class TestRuleType:
     def test_is_enum(self):
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.L5_safety.types.rule_types import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        import enum; assert issubclass(RuleType, enum.Enum)
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L5_safety.types.rule_types import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                import enum; assert issubclass(RuleType, enum.Enum)
+            def test_has_safety(self): assert RuleType.SAFETY.value == "safety"
+
     def test_has_safety(self): assert RuleType.SAFETY.value == "safety"
 
 class TestRuleSeverity:

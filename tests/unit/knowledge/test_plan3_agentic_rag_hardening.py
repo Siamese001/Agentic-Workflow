@@ -9,46 +9,6 @@ from __future__ import annotations
 
 import pytest
 
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-    _emit_agent_executes_agent,
-    _emit_applies_guardrail,  # noqa: E402
-    _emit_authorize_and_execute,
-    _emit_blocks_direct_write,
-    _emit_captures_evaluation_metric,
-    _emit_captures_execution_output,
-    _emit_checks_agent_registry,
-    _emit_coordinates_agents,
-    _emit_dispatches_agent,
-    _emit_dispatches_execution_plan,
-    _emit_dispatches_healing_run,
-    _emit_escalates_failure,
-    _emit_escalates_to_human,
-    _emit_gated_by_confidence,
-    _emit_hard_fails_untranscripted,
-    _emit_invokes_evaluation,
-    _emit_links_execution_to_snapshot,
-    _emit_observes_runtime_state,
-    _emit_orchestrates_workflow,
-    _emit_reads_policy_state,  # noqa: E402
-    _emit_records_execution_trace,  # noqa: E402
-    _emit_records_healing_outcome,
-    _emit_records_telemetry_event,
-    _emit_records_tool_invocation,
-    _emit_records_workflow_lineage,
-    _emit_routes_through,
-    _emit_routes_to_agent,
-    _emit_routes_to_capability,
-    _emit_signs_execution_trace,  # noqa: E402
-    _emit_snapshots_state,  # noqa: E402
-    _emit_stores_embedding,
-    _emit_transcripts_response,
-    _emit_updates_meta_learning_state,
-    _emit_validates_agent_capability,
-    _emit_validates_capability,
-    _emit_verifies_boundary,
-    _emit_verifies_policy,
-    _emit_writes_via_uwg,
-    emit_determinism_digest,  # noqa: E402
     emit_replay_key,  # noqa: E402
 )
 
@@ -56,42 +16,6 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 # REMOVED: _emit_applies_guardrail("p0", "test_plan3_agentic_rag_hardening", "p0_governance")
 # REMOVED: _emit_reads_policy_state("p0", "test_plan3_agentic_rag_hardening", "policy_binding")
 # REMOVED: _emit_snapshots_state("p0", "test_plan3_agentic_rag_hardening", "state_snapshot")
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-    _emit_agent_executes_agent,
-    _emit_captures_pattern,
-    _emit_captures_runtime_anomaly,
-    _emit_checks_agent_registry,
-    _emit_dispatches_execution_plan,
-    _emit_emits_metric_event,
-    _emit_escalates_to_human,
-    _emit_execution_terminates_at_uwg,
-    _emit_feeds_meta_learning,
-    _emit_gated_by_confidence,
-    _emit_hard_fails_untranscripted,
-    _emit_improves_agent_policy,
-    _emit_invokes_eval,
-    _emit_links_incident_trace,  # noqa: E402
-    _emit_observes_runtime_state,
-    _emit_proposal_commits_routing,
-    _emit_pulls_context,
-    _emit_reads_environ,
-    _emit_reads_runtime_state,
-    _emit_records_execution_trace,
-    _emit_records_incident_event,
-    _emit_records_learning_event,
-    _emit_routes_through,
-    _emit_routes_to_agent,
-    _emit_stores_learning_state,
-    _emit_transcripts_response,
-    _emit_triggers_alert,
-    _emit_updates_monitoring_state,
-    _emit_updates_routing_strategy,
-    _emit_validated_by_safety_plane,
-    _emit_validates_agent_capability,
-    _emit_verifies_boundary,
-    _emit_verifies_policy,
-    _emit_writes_learning_snapshot,
-    _emit_writes_observability_log,
     _emit_writes_through,  # noqa: E402
 )
 
@@ -191,42 +115,124 @@ class TestQueryPlannerImports:
     """query_planner must be constructable without NameError."""
 
     def test_query_planner_imports_without_error(self):
-        from agentic_core.L1_cognition.engines.query_planner import query_planner
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+            _emit_agent_executes_agent,
+            _emit_applies_guardrail,  # noqa: E402
+            _emit_authorize_and_execute,
+            _emit_blocks_direct_write,
+            _emit_captures_evaluation_metric,
+            _emit_captures_execution_output,
+            _emit_checks_agent_registry,
+            _emit_coordinates_agents,
+            _emit_dispatches_agent,
+            _emit_dispatches_execution_plan,
+            _emit_dispatches_healing_run,
+            _emit_escalates_failure,
+            _emit_escalates_to_human,
+            _emit_gated_by_confidence,
+            _emit_hard_fails_untranscripted,
+            _emit_invokes_evaluation,
+            _emit_links_execution_to_snapshot,
+            _emit_observes_runtime_state,
+            _emit_orchestrates_workflow,
+            _emit_reads_policy_state,  # noqa: E402
+            _emit_records_execution_trace,  # noqa: E402
+            _emit_records_healing_outcome,
+            _emit_records_telemetry_event,
+            _emit_records_tool_invocation,
+            _emit_records_workflow_lineage,
+            _emit_routes_through,
+            _emit_routes_to_agent,
+            _emit_routes_to_capability,
+            _emit_signs_execution_trace,  # noqa: E402
+            _emit_snapshots_state,  # noqa: E402
+            _emit_stores_embedding,
+            _emit_transcripts_response,
+            _emit_updates_meta_learning_state,
+            _emit_validates_agent_capability,
+            _emit_validates_capability,
+            _emit_verifies_boundary,
+            _emit_verifies_policy,
+            _emit_writes_via_uwg,
+            emit_determinism_digest,  # noqa: E402
+            emit_replay_key,  # noqa: E402
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+            _emit_agent_executes_agent,
+            _emit_captures_pattern,
+            _emit_captures_runtime_anomaly,
+            _emit_checks_agent_registry,
+            _emit_dispatches_execution_plan,
+            _emit_emits_metric_event,
+            _emit_escalates_to_human,
+            _emit_execution_terminates_at_uwg,
+            _emit_feeds_meta_learning,
+            _emit_gated_by_confidence,
+            _emit_hard_fails_untranscripted,
+            _emit_improves_agent_policy,
+            _emit_invokes_eval,
+            _emit_links_incident_trace,  # noqa: E402
+            _emit_observes_runtime_state,
+            _emit_proposal_commits_routing,
+            _emit_pulls_context,
+            _emit_reads_environ,
+            _emit_reads_runtime_state,
+            _emit_records_execution_trace,
+            _emit_records_incident_event,
+            _emit_records_learning_event,
+            _emit_routes_through,
+            _emit_routes_to_agent,
+            _emit_stores_learning_state,
+            _emit_transcripts_response,
+            _emit_triggers_alert,
+            _emit_updates_monitoring_state,
+            _emit_updates_routing_strategy,
+            _emit_validated_by_safety_plane,
+            _emit_validates_agent_capability,
+            _emit_verifies_boundary,
+            _emit_verifies_policy,
+            _emit_writes_learning_snapshot,
+            _emit_writes_observability_log,
+            _emit_writes_through,  # noqa: E402
+                from agentic_core.L1_cognition.engines.query_planner import query_planner
+                assert query_planner is not None
+                from agentic_core.L1_cognition.engines.query_planner import query_planner
+                planner = query_planner()
+                assert planner is not None
+                assert planner.engine is not None
+                assert planner.cache is not None
+                from agentic_core.L1_cognition.engines.query_planner import query_planner
+                planner = query_planner(engine=None, cache=None)
+                assert planner.engine is not None
+                from agentic_core.L1_cognition.engines.query_planner import query_planner
+                planner = query_planner()
+                planner.cache.set("key1", {"value": 42})
+                result = planner.cache.get("key1")
+                assert result == {"value": 42}
+                from agentic_core.L1_cognition.engines.query_planner import query_planner
+                planner = query_planner()
+                assert planner.cache.get("nonexistent") is None
+                import agentic_core.L1_cognition.engines.query_planner as mod
+                assert hasattr(mod, "__all__")
+                assert "query_planner" in mod.__all__
+                    from agentic_core.knowledge.reasoning.SovereignRAGManagerAgent import (
+                        SovereignRAGManager,
+                    )
 
         assert query_planner is not None
 
     def test_query_planner_instantiates_without_error(self):
-        from agentic_core.L1_cognition.engines.query_planner import query_planner
-
-        planner = query_planner()
-        assert planner is not None
-        assert planner.engine is not None
         assert planner.cache is not None
 
     def test_query_planner_accepts_none_engine(self):
-        from agentic_core.L1_cognition.engines.query_planner import query_planner
-
-        planner = query_planner(engine=None, cache=None)
         assert planner.engine is not None
 
     def test_query_planner_cache_get_set_roundtrip(self):
-        from agentic_core.L1_cognition.engines.query_planner import query_planner
-
-        planner = query_planner()
-        planner.cache.set("key1", {"value": 42})
-        result = planner.cache.get("key1")
         assert result == {"value": 42}
 
     def test_query_planner_cache_get_missing_returns_none(self):
-        from agentic_core.L1_cognition.engines.query_planner import query_planner
-
-        planner = query_planner()
         assert planner.cache.get("nonexistent") is None
 
     def test_query_planner_all_exported(self):
-        import agentic_core.L1_cognition.engines.query_planner as mod
-
-        assert hasattr(mod, "__all__")
         assert "query_planner" in mod.__all__
 
 
@@ -242,9 +248,6 @@ class TestRRFFusion:
         from unittest.mock import patch
 
         with patch("agentic_core.knowledge.reasoning.SovereignRAGManagerAgent.SovereignBaseAgent.__init__"):
-            from agentic_core.knowledge.reasoning.SovereignRAGManagerAgent import (
-                SovereignRAGManager,
-            )
 
             mgr = object.__new__(SovereignRAGManager)
             mgr.logger = __import__("logging").getLogger("test")

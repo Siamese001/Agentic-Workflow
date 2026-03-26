@@ -13,13 +13,15 @@ class TestToolRegistryAgent:
     """Tests for tool registry functionality."""
 
     def test_tool_registry_exists(self):
-        from agentic_core.L0_routing.config.path_constants import (
-    """Test tool_registry_exists runtime behavior."""
-    # Arrange
-    # TODO: Set up test data for tool_registry_exists
     test_data = {}  # Replace with actual test data
 
 """Test tool_registry_has_registry_class runtime behavior."""
+                from agentic_core.L0_routing.config.path_constants import (
+            """Test tool_registry_exists runtime behavior."""
+            # Arrange
+            # TODO: Set up test data for tool_registry_exists
+            test_data = {}  # Replace with actual test data
+
 # Arrange
 # TODO: Set up test data for tool_registry_has_registry_class
 test_data = {}  # Replace with actual test data

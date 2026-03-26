@@ -168,12 +168,14 @@ pytestmark = pytest.mark.unit
 
 class TestIntegrityViolation:
     def test_is_dataclass(self):
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.L5_safety.types.integrity_validation_types import IntegrityResult, IntegrityViolation
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        import dataclasses; assert dataclasses.is_dataclass(IntegrityViolation)
-    def test_creates(self):
-        v = IntegrityViolation(rule="r1", severity="error", description="bad")
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L5_safety.types.integrity_validation_types import IntegrityResult, IntegrityViolation
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                import dataclasses; assert dataclasses.is_dataclass(IntegrityViolation)
+            def test_creates(self):
+                v = IntegrityViolation(rule="r1", severity="error", description="bad")
+                assert v.rule == "r1"; assert v.severity == "error"
+
         assert v.rule == "r1"; assert v.severity == "error"
 
 class TestIntegrityResult:

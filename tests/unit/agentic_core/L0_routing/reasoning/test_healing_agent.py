@@ -13,9 +13,11 @@ class TestHealingAgent:
     """Tests for healing agent functionality."""
 
     def test_healing_agent_exists(self):
-        from agentic_core.L0_routing.config.path_constants import (
-        """Healing agent module should exist."""
-        path = Path("agentic_core/L0_routing/reasoning")
+                from agentic_core.L0_routing.config.path_constants import (
+                """Healing agent module should exist."""
+                path = Path("agentic_core/L0_routing/reasoning")
+                assert path.exists(), "L0_routing/reasoning/ should exist"
+
         assert path.exists(), "L0_routing/reasoning/ should exist"
 
     def test_maintenance_has_healing_classes(self):

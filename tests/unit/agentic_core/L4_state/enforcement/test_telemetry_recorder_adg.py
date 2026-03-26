@@ -5,6 +5,8 @@ from __future__ import annotations
 
 
 def test_module_importable():
-    import agentic_core.L4_state.enforcement.telemetry_recorder  # noqa: F401
-    """Module telemetry_recorder must be importable."""
+        import agentic_core.L4_state.enforcement.telemetry_recorder  # noqa: F401
+        """Module telemetry_recorder must be importable."""
+        assert agentic_core.L4_state.enforcement.telemetry_recorder is not None
+
     assert agentic_core.L4_state.enforcement.telemetry_recorder is not None

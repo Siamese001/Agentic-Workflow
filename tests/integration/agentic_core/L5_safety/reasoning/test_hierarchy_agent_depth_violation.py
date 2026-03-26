@@ -57,11 +57,13 @@ def _call(agent, file_path, rel, depth, expected):
 
 class TestHierarchyDeepViolation:
     def test_deep_calls_gatekeeper_safe_move(self, tmp_path):
-        from agentic_core.L0_routing.config.path_constants import (
-        from agentic_core.L5_safety.reasoning.hierarchy_healer import HierarchyAgent
-    """Test deep_calls_gatekeeper_safe_move runtime behavior."""
-    # Arrange
-    # TODO: Set up execution parameters
+                from agentic_core.L0_routing.config.path_constants import (
+                from agentic_core.L5_safety.reasoning.hierarchy_healer import HierarchyAgent
+            """Test deep_calls_gatekeeper_safe_move runtime behavior."""
+            # Arrange
+            # TODO: Set up execution parameters
+            input_data = {}  # Replace with actual test data
+
     input_data = {}  # Replace with actual test data
 
     # Act

@@ -5,9 +5,10 @@ import pytest
 
 pytestmark = pytest.mark.unit
 
-import apps_lic.reasoning.Hop1ProfileAnalysisAgent  # noqa: F401
 
 
 def test_module_importable():
     """Module Hop1ProfileAnalysisAgent must be importable."""
+    import apps_lic.reasoning.Hop1ProfileAnalysisAgent  # noqa: F401
+
     assert apps_lic.reasoning.Hop1ProfileAnalysisAgent is not None

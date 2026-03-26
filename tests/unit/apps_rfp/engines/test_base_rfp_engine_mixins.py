@@ -13,24 +13,27 @@ class TestBaseRfpEngineMixins(unittest.TestCase):
     """Verify mixin wiring on BaseRfpEngine."""
 
     def _make_engine(self):
-        from apps_rfp.engines.base_rfp_engine import BaseRfpEngine
-
-        class ConcreteRfpEngine(BaseRfpEngine):
-            def execute(self, input_data):
                 return input_data
 
         return ConcreteRfpEngine()
 
     def test_inherits_semantic_cache_mixin(self):
-        from agentic_core.mixins.semantic_cache_mixin import SemanticCacheMixin
-        from apps_rfp.engines.base_rfp_engine import BaseRfpEngine
+                from apps_rfp.engines.base_rfp_engine import BaseRfpEngine
+                class ConcreteRfpEngine(BaseRfpEngine):
+                    def execute(self, input_data):
+                        return input_data
+                from agentic_core.mixins.semantic_cache_mixin import SemanticCacheMixin
+                from apps_rfp.engines.base_rfp_engine import BaseRfpEngine
+                from apps_rfp.engines.base_rfp_engine import BaseRfpEngine
+                self.assertTrue(issubclass(BaseRfpEngine, SemanticCacheMixin))
+                from agentic_core.mixins.embedding_mixin import EmbeddingMixin
+                from apps_rfp.engines.base_rfp_engine import BaseRfpEngine
+                from apps_rfp.engines.base_rfp_engine import BaseRfpEngine
+                self.assertTrue(issubclass(BaseRfpEngine, EmbeddingMixin))
 
         self.assertTrue(issubclass(BaseRfpEngine, SemanticCacheMixin))
 
     def test_inherits_embedding_mixin(self):
-        from agentic_core.mixins.embedding_mixin import EmbeddingMixin
-        from apps_rfp.engines.base_rfp_engine import BaseRfpEngine
-
         self.assertTrue(issubclass(BaseRfpEngine, EmbeddingMixin))
 
     def test_semantic_namespace_set(self):

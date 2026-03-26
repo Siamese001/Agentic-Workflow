@@ -10,22 +10,23 @@ import pytest
 
 pytestmark = pytest.mark.unit
 
-from apps_rg.utils.sovereign_config_loader_util import (  # noqa: F401
-    BATCH_SIZE,
-    BUFFER_SIZE,
-    DEFAULT_SLEEP,
-    MAX_RETRIES,
-    THRESHOLD,
-    SovereignConfigLoader,
-    get_config_path,
-    load_rg_specs,
-    reload_config,
-    save_rg_specs,
-)
 
 
 class TestSovereignConfigLoaderContract:
     def test_is_class(self):
+        from apps_rg.utils.sovereign_config_loader_util import (  # noqa: F401
+            BATCH_SIZE,
+            BUFFER_SIZE,
+            DEFAULT_SLEEP,
+            MAX_RETRIES,
+            THRESHOLD,
+            SovereignConfigLoader,
+            get_config_path,
+            load_rg_specs,
+            reload_config,
+            save_rg_specs,
+        )
+
         assert isinstance(SovereignConfigLoader, type)
 
     def test_has_method_load_topology(self):

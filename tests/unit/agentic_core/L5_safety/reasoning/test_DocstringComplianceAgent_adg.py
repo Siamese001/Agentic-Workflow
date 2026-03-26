@@ -9,6 +9,8 @@ pytestmark = pytest.mark.unit
 
 
 def test_module_importable():
-    import agentic_core.L5_safety.reasoning.DocstringComplianceAgent  # noqa: F401
-    """Module DocstringComplianceAgent must be importable."""
+        import agentic_core.L5_safety.reasoning.DocstringComplianceAgent  # noqa: F401
+        """Module DocstringComplianceAgent must be importable."""
+        assert agentic_core.L5_safety.reasoning.DocstringComplianceAgent is not None
+
     assert agentic_core.L5_safety.reasoning.DocstringComplianceAgent is not None

@@ -170,11 +170,13 @@ pytestmark = pytest.mark.unit
 
 class TestToolCallBudget:
     def test_creates_with_defaults(self):
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.L1_cognition.types.budget_types import ToolCallBudget
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        budget = ToolCallBudget()
-        assert budget._minimum == 0
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L1_cognition.types.budget_types import ToolCallBudget
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                budget = ToolCallBudget()
+                assert budget._minimum == 0
+                assert budget._maximum == 20
+
         assert budget._maximum == 20
 
     def test_is_dataclass(self):

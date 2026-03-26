@@ -27,7 +27,9 @@ pytestmark = pytest.mark.unit
 
 class TestUnverifiedSideEffectErrorContract:
     def test_is_class(self):
-        from agentic_core.L5_safety.security.side_effect_guard import (  # noqa: F401
+                from agentic_core.L5_safety.security.side_effect_guard import (  # noqa: F401
+                assert isinstance(UnverifiedSideEffectError, type)
+
         assert isinstance(UnverifiedSideEffectError, type)
 
     def test_instantiable_or_abstract(self):

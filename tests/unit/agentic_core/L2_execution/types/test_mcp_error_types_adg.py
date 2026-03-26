@@ -174,15 +174,17 @@ pytestmark = pytest.mark.unit
 
 class TestMCPError:
     def test_is_exception(self):
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.L2_execution.types.mcp_error_types import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-    """Test is_exception runtime behavior."""
-    # Arrange
-    # TODO: Set up error condition
     error_input = {}  # Replace with actual error condition
 
 """Test is_mcp_error runtime behavior."""
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L2_execution.types.mcp_error_types import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+            """Test is_exception runtime behavior."""
+            # Arrange
+            # TODO: Set up error condition
+            error_input = {}  # Replace with actual error condition
+
 # Arrange
 # TODO: Set up error condition
 """Test creates runtime behavior."""

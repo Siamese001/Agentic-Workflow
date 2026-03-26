@@ -26,7 +26,9 @@ pytestmark = pytest.mark.unit
 
 class TestL5StreamerContract:
     def test_is_class(self):
-        from agentic_core.L6_observability.enforcement.reasoning_streamer import (  # noqa: F401
+                from agentic_core.L6_observability.enforcement.reasoning_streamer import (  # noqa: F401
+                assert isinstance(L5Streamer, type)
+
         assert isinstance(L5Streamer, type)
 
     def test_has_method_start_streamer(self):

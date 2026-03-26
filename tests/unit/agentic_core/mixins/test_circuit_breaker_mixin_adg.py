@@ -174,9 +174,11 @@ pytestmark = pytest.mark.unit
 
 class TestCircuitState:
     def test_closed_value(self):
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.mixins.circuit_breaker_mixin import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.mixins.circuit_breaker_mixin import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                assert CircuitState.CLOSED.value == "closed"
+
         assert CircuitState.CLOSED.value == "closed"
 
     def test_open_value(self):

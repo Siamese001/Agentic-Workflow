@@ -104,16 +104,18 @@ def _write(tmp_path, rel_str, content=""):
 
 class TestDeepCollisionDelegation:
     def test_deep_collision_legacy_returns_one_propagated(self, tmp_path):
-        from agentic_core.L0_routing.config.path_constants import (
-        from agentic_core.L5_safety.reasoning.hierarchy_healer import HierarchyAgent
-        """Collision + legacy archive succeeds → _heal_depth_violation returns 1."""
-        agent = _make_agent(tmp_path)
-        agent._legacy_archive_depth_violation.return_value = 1
-        rel = Path("agentic_core/L0_routing/scripts/extra/agent.py")
-        file_path = _write(tmp_path, rel)
-        # Pre-create collision target
-        target = tmp_path / AGENTIC_CORE_DIR / "L0_routing" / "scripts" / "agent.py"
-        target.parent.mkdir(parents=True, exist_ok=True)
+                from agentic_core.L0_routing.config.path_constants import (
+                from agentic_core.L5_safety.reasoning.hierarchy_healer import HierarchyAgent
+                """Collision + legacy archive succeeds → _heal_depth_violation returns 1."""
+                agent = _make_agent(tmp_path)
+                agent._legacy_archive_depth_violation.return_value = 1
+                rel = Path("agentic_core/L0_routing/scripts/extra/agent.py")
+                file_path = _write(tmp_path, rel)
+                # Pre-create collision target
+                target = tmp_path / AGENTIC_CORE_DIR / "L0_routing" / "scripts" / "agent.py"
+                target.parent.mkdir(parents=True, exist_ok=True)
+                target.write_text("existing")
+
         target.write_text("existing")
 
         result = _call_clean(agent, file_path, rel, depth=4, expected=3)

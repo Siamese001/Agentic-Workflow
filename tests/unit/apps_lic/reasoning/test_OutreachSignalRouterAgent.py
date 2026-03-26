@@ -10,24 +10,25 @@ import pytest
 
 pytestmark = pytest.mark.unit
 
-from apps_lic.reasoning.OutreachSignalRouterAgent import (  # noqa: F401
-    BATCH_SIZE,
-    BUFFER_SIZE,
-    DEFAULT_SLEEP,
-    MAX_RETRIES,
-    THRESHOLD,
-    HealerMixin,
-    MCPHardenedMixin,
-    OutreachCycleResult,
-    OutreachHealingResult,
-    OutreachHealingStrategy,
-    OutreachSignalRouterAgent,
-    run_outreach_healing_mission,
-)
 
 
 class TestMCPHardenedMixinContract:
     def test_is_class(self):
+        from apps_lic.reasoning.OutreachSignalRouterAgent import (  # noqa: F401
+            BATCH_SIZE,
+            BUFFER_SIZE,
+            DEFAULT_SLEEP,
+            MAX_RETRIES,
+            THRESHOLD,
+            HealerMixin,
+            MCPHardenedMixin,
+            OutreachCycleResult,
+            OutreachHealingResult,
+            OutreachHealingStrategy,
+            OutreachSignalRouterAgent,
+            run_outreach_healing_mission,
+        )
+
         assert isinstance(MCPHardenedMixin, type)
 
     def test_instantiable_or_abstract(self):

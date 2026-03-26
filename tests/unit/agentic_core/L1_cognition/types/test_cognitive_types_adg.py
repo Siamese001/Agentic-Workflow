@@ -173,10 +173,12 @@ pytestmark = pytest.mark.unit
 
 class TestCognitiveCapability:
     def test_is_enum(self):
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.L1_cognition.types.cognitive_types import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        import enum
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L1_cognition.types.cognitive_types import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                import enum
+                assert issubclass(CognitiveCapability, enum.Enum)
+
         assert issubclass(CognitiveCapability, enum.Enum)
 
     def test_planning_value(self):

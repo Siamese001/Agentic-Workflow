@@ -27,8 +27,10 @@ pytestmark = pytest.mark.unit
 
 class TestTaskStatusContract:
     def test_is_enum(self):
-        from agentic_core.L3_orchestration.reasoning.DagEngineAgent import (  # noqa: F401
-        import enum
+                from agentic_core.L3_orchestration.reasoning.DagEngineAgent import (  # noqa: F401
+                import enum
+                assert issubclass(TaskStatus, enum.Enum)
+
         assert issubclass(TaskStatus, enum.Enum)
 
     def test_has_members(self):

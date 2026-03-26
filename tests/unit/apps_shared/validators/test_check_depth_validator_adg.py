@@ -5,11 +5,12 @@ import pytest
 
 pytestmark = pytest.mark.unit
 
-import apps_shared.validators.check_depth_validator  # noqa: F401
 
 
 def test_module_importable():
 """Test module_importable contract compliance."""
+    import apps_shared.validators.check_depth_validator  # noqa: F401
+
 # Arrange
 # TODO: Set up contract test scenario
 test_scenario = {}  # Replace with actual test scenario

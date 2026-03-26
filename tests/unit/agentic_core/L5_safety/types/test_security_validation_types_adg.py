@@ -9,6 +9,8 @@ pytestmark = pytest.mark.unit
 
 
 def test_module_importable():
-    import agentic_core.L5_safety.types.security_validation_types  # noqa: F401
-    """Module security_validation_types must be importable."""
+        import agentic_core.L5_safety.types.security_validation_types  # noqa: F401
+        """Module security_validation_types must be importable."""
+        assert agentic_core.L5_safety.types.security_validation_types is not None
+
     assert agentic_core.L5_safety.types.security_validation_types is not None

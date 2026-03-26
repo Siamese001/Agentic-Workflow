@@ -10,22 +10,23 @@ import pytest
 
 pytestmark = pytest.mark.unit
 
-from apps_shared.reasoning.InfrastructureUpgradesOrchestrator import (  # noqa: F401
-    BATCH_SIZE,
-    BUFFER_SIZE,
-    DEFAULT_SLEEP,
-    MAX_RETRIES,
-    THRESHOLD,
-    InfrastructureUpgradesOrchestrator,
-    audit_tone,
-    generate_with_consistency,
-    get_infrastructure_upgrades_orchestrator,
-    verify_claims,
-)
 
 
 class TestInfrastructureUpgradesOrchestratorContract:
     def test_is_class(self):
+        from apps_shared.reasoning.InfrastructureUpgradesOrchestrator import (  # noqa: F401
+            BATCH_SIZE,
+            BUFFER_SIZE,
+            DEFAULT_SLEEP,
+            MAX_RETRIES,
+            THRESHOLD,
+            InfrastructureUpgradesOrchestrator,
+            audit_tone,
+            generate_with_consistency,
+            get_infrastructure_upgrades_orchestrator,
+            verify_claims,
+        )
+
         assert isinstance(InfrastructureUpgradesOrchestrator, type)
 
     def test_has_method_initialize(self):

@@ -5,11 +5,12 @@ import pytest
 
 pytestmark = pytest.mark.unit
 
-import apps_rg.tools.execute_message_generation  # noqa: F401
 
 
 def test_module_importable():
 """Test module_importable runtime behavior."""
+    import apps_rg.tools.execute_message_generation  # noqa: F401
+
 # Arrange
 # TODO: Set up test data for module_importable
 test_data = {}  # Replace with actual test data

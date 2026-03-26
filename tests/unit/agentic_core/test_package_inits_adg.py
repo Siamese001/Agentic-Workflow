@@ -179,63 +179,66 @@ class TestBaseAgentsPackage:
     """agentic_core/base_agents/__init__.py — fan_in=11."""
 
     def test_package_importable(self):
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        import agentic_core.base_agents  # noqa: F401
-        import agentic_core.base_agents as pkg
-        import agentic_core.base_agents as pkg
-        import agentic_core.runtime  # noqa: F401
-        import agentic_core.runtime.exceptions  # noqa: F401
-        from agentic_core.runtime.exceptions.SovereignError import SovereignError
-        import agentic_core.runtime as pkg
-        import agentic_core.runtime as pkg
-        import agentic_core.L1_cognition.reasoning  # noqa: F401
-        import agentic_core.L1_cognition.reasoning as pkg
-        import agentic_core.L1_cognition.reasoning as pkg
-        import agentic_core.L2_execution.enforcement  # noqa: F401
-        import agentic_core.L2_execution.enforcement as pkg
-        import agentic_core.L2_execution.enforcement as pkg
-        import agentic_core.L5_safety.reasoning  # noqa: F401
-        import agentic_core.L5_safety.reasoning as pkg
-        import agentic_core.L5_safety.reasoning as pkg
-        import agentic_core.L5_safety.reasoning as pkg
-        import agentic_core.config  # noqa: F401
-        import agentic_core.config as pkg
-        import agentic_core.config as pkg
-        import agentic_core.config as pkg
-        import agentic_core.L0_routing  # noqa: F401
-        import agentic_core.L0_routing as pkg
-        import agentic_core.L0_routing as pkg
-        import agentic_core.L0_routing.scripts  # noqa: F401
-        import agentic_core.L0_routing.scripts as pkg
-        import agentic_core.base_agents
-        import agentic_core.L3_orchestration.types  # noqa: F401
-        import agentic_core.L3_orchestration.types as pkg
-        import agentic_core.L3_orchestration.types as pkg
-        import agentic_core.base_agents
-        import agentic_core.L0_routing.enforcement  # noqa: F401
-        import agentic_core.L0_routing.enforcement as pkg
-        import agentic_core.L0_routing.enforcement as pkg
-        import agentic_core.base_agents
-        import agentic_core.runtime
-        import agentic_core.runtime.exceptions
-        import agentic_core.L2_execution.types as pkg
-        import agentic_core.base_agents
-        import agentic_core.L6_observability.reasoning  # noqa: F401
-        import agentic_core.runtime
-        import agentic_core.L6_observability.reasoning as pkg
-        import agentic_core.L6_observability.reasoning as pkg
-        import agentic_core.base_agents
-        import agentic_core.runtime
-        import agentic_core.L1_cognition.reasoning
-        import agentic_core.L4_state as pkg
-        import agentic_core.L4_state as pkg
-        import agentic_core.base_agents
-        import agentic_core.L3_orchestration.reasoning  # noqa: F401
-        import agentic_core.L3_orchestration.reasoning as pkg
-        import agentic_core.L3_orchestration.reasoning as pkg
-        import agentic_core.base_agents
-        import agentic_core.runtime
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                import agentic_core.base_agents  # noqa: F401
+                import agentic_core.base_agents as pkg
+                import agentic_core.base_agents as pkg
+                import agentic_core.runtime  # noqa: F401
+                import agentic_core.runtime.exceptions  # noqa: F401
+                from agentic_core.runtime.exceptions.SovereignError import SovereignError
+                import agentic_core.runtime as pkg
+                import agentic_core.runtime as pkg
+                import agentic_core.L1_cognition.reasoning  # noqa: F401
+                import agentic_core.L1_cognition.reasoning as pkg
+                import agentic_core.L1_cognition.reasoning as pkg
+                import agentic_core.L2_execution.enforcement  # noqa: F401
+                import agentic_core.L2_execution.enforcement as pkg
+                import agentic_core.L2_execution.enforcement as pkg
+                import agentic_core.L5_safety.reasoning  # noqa: F401
+                import agentic_core.L5_safety.reasoning as pkg
+                import agentic_core.L5_safety.reasoning as pkg
+                import agentic_core.L5_safety.reasoning as pkg
+                import agentic_core.config  # noqa: F401
+                import agentic_core.config as pkg
+                import agentic_core.config as pkg
+                import agentic_core.config as pkg
+                import agentic_core.L0_routing  # noqa: F401
+                import agentic_core.L0_routing as pkg
+                import agentic_core.L0_routing as pkg
+                import agentic_core.L0_routing.scripts  # noqa: F401
+                import agentic_core.L0_routing.scripts as pkg
+                import agentic_core.base_agents
+                import agentic_core.L3_orchestration.types  # noqa: F401
+                import agentic_core.L3_orchestration.types as pkg
+                import agentic_core.L3_orchestration.types as pkg
+                import agentic_core.base_agents
+                import agentic_core.L0_routing.enforcement  # noqa: F401
+                import agentic_core.L0_routing.enforcement as pkg
+                import agentic_core.L0_routing.enforcement as pkg
+                import agentic_core.base_agents
+                import agentic_core.runtime
+                import agentic_core.runtime.exceptions
+                import agentic_core.L2_execution.types as pkg
+                import agentic_core.base_agents
+                import agentic_core.L6_observability.reasoning  # noqa: F401
+                import agentic_core.runtime
+                import agentic_core.L6_observability.reasoning as pkg
+                import agentic_core.L6_observability.reasoning as pkg
+                import agentic_core.base_agents
+                import agentic_core.runtime
+                import agentic_core.L1_cognition.reasoning
+                import agentic_core.L4_state as pkg
+                import agentic_core.L4_state as pkg
+                import agentic_core.base_agents
+                import agentic_core.L3_orchestration.reasoning  # noqa: F401
+                import agentic_core.L3_orchestration.reasoning as pkg
+                import agentic_core.L3_orchestration.reasoning as pkg
+                import agentic_core.base_agents
+                import agentic_core.runtime
+                import agentic_core.runtime
+        #  # MOVED: import agentic_core.base_agents  # noqa: F401
+
 #  # MOVED: import agentic_core.base_agents  # noqa: F401
 
     def test_package_is_package(self):

@@ -5,9 +5,10 @@ import pytest
 
 pytestmark = pytest.mark.unit
 
-import apps_lic.tools.BuildPersonalizationQuery  # noqa: F401
 
 
 def test_module_importable():
     """Module BuildPersonalizationQuery must be importable."""
+    import apps_lic.tools.BuildPersonalizationQuery  # noqa: F401
+
     assert apps_lic.tools.BuildPersonalizationQuery is not None

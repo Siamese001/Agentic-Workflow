@@ -180,9 +180,11 @@ pytestmark = pytest.mark.unit
 
 class TestBypassViolation:
     def test_importable(self):
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.L5_safety.static_checks.system_invariant_scanner import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L5_safety.static_checks.system_invariant_scanner import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                assert callable(BypassViolation)
+
         assert callable(BypassViolation)
 
     def test_attributes_stored(self):

@@ -27,8 +27,10 @@ pytestmark = pytest.mark.unit
 
 class TestEmbeddingConfigContract:
     def test_is_dataclass(self):
-        from agentic_core.config.core.rag_config import (  # noqa: F401
-        import dataclasses
+                from agentic_core.config.core.rag_config import (  # noqa: F401
+                import dataclasses
+                assert dataclasses.is_dataclass(EmbeddingConfig)
+
         assert dataclasses.is_dataclass(EmbeddingConfig)
 
     def test_field_names_present(self):

@@ -172,9 +172,11 @@ pytestmark = pytest.mark.unit
 
 class TestBaseMetaLearner:
     def test_is_abstract(self):
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.mixins.meta_learning_contract_mixin import BaseMetaLearner
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.mixins.meta_learning_contract_mixin import BaseMetaLearner
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                assert inspect.isabstract(BaseMetaLearner)
+
         assert inspect.isabstract(BaseMetaLearner)
 
     def test_cannot_instantiate(self):

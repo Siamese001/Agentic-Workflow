@@ -170,30 +170,32 @@ pytestmark = pytest.mark.unit
 
 class TestActionVerbs:
     def test_is_dict(self):
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.knowledge.static_index.action_verbs_types import ACTION_VERBS
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-    """Test is_dict runtime behavior."""
-    # Arrange
-    # TODO: Set up test data for is_dict
-    """Test has_engineering_category runtime behavior."""
-    # Arrange
-    # TODO: Set up test data for has_engineering_category
-    """Test has_leadership_category runtime behavior."""
-    # Arrange
-    # TODO: Set up test data for has_leadership_category
-    """Test has_analysis_category runtime behavior."""
-    # Arrange
-    # TODO: Set up test data for has_analysis_category
-    """Test engineering_is_list runtime behavior."""
-    # Arrange
-    # TODO: Set up test data for engineering_is_list
-    """Test engineering_nonempty runtime behavior."""
-    # Arrange
-    # TODO: Set up test data for engineering_nonempty
-    """Test all_values_are_lists_of_strings runtime behavior."""
-    # Arrange
-    # TODO: Set up test data for all_values_are_lists_of_strings
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.knowledge.static_index.action_verbs_types import ACTION_VERBS
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+            """Test is_dict runtime behavior."""
+            # Arrange
+            # TODO: Set up test data for is_dict
+            """Test has_engineering_category runtime behavior."""
+            # Arrange
+            # TODO: Set up test data for has_engineering_category
+            """Test has_leadership_category runtime behavior."""
+            # Arrange
+            # TODO: Set up test data for has_leadership_category
+            """Test has_analysis_category runtime behavior."""
+            # Arrange
+            # TODO: Set up test data for has_analysis_category
+            """Test engineering_is_list runtime behavior."""
+            # Arrange
+            # TODO: Set up test data for engineering_is_list
+            """Test engineering_nonempty runtime behavior."""
+            # Arrange
+            # TODO: Set up test data for engineering_nonempty
+            """Test all_values_are_lists_of_strings runtime behavior."""
+            # Arrange
+            # TODO: Set up test data for all_values_are_lists_of_strings
+            test_data = {}  # Replace with actual test data
+
     test_data = {}  # Replace with actual test data
 
     # Act

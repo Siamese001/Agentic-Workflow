@@ -181,9 +181,11 @@ _ROOT = _make_root(_POLICY_CONFIG)
 
 
 def test_construction_rejects_empty_root() -> None:
-    from agentic_core.L0_routing.enforcement.policy_hash_enforcer import (
-    from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-    with pytest.raises(ValueError, match="non-empty active_merkle_root"):
+        from agentic_core.L0_routing.enforcement.policy_hash_enforcer import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        with pytest.raises(ValueError, match="non-empty active_merkle_root"):
+            PolicyHashEnforcer("")
+
         PolicyHashEnforcer("")
 
 

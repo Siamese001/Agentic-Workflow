@@ -227,12 +227,14 @@ def _make_classifier_with_stub(mapping: dict[str, list[float]]) -> IntentEmbeddi
 
 class TestL2Normalize:
     def test_unit_vector_unchanged(self):
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.L0_routing.engines.intent_embedding_classifier import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.L0_routing.engines.intent_embedding_classifier import _PrototypeEntry
-        v = [1.0, 0.0, 0.0]
-        n = _l2_normalize(v)
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L0_routing.engines.intent_embedding_classifier import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L0_routing.engines.intent_embedding_classifier import _PrototypeEntry
+                v = [1.0, 0.0, 0.0]
+                n = _l2_normalize(v)
+                assert abs(math.sqrt(sum(x * x for x in n)) - 1.0) < 1e-6
+
         assert abs(math.sqrt(sum(x * x for x in n)) - 1.0) < 1e-6
 
     def test_zero_vector_returned_unchanged(self):

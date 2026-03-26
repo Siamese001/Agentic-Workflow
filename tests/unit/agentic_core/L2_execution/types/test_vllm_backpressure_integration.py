@@ -223,12 +223,15 @@ TASK = TaskClass.PATCH_SUGGESTION.value
 
 
 def test_queue_controller_starts_empty():
-    from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-    from agentic_core.L2_execution.types.vllm_backpressure_types import (
-    from agentic_core.L2_execution.types.vllm_gateway_integration_types import (
-    from agentic_core.L2_execution.types.vllm_token_budget_types import (
-    from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 """Test queue_controller_starts_empty runtime behavior."""
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L2_execution.types.vllm_backpressure_types import (
+        from agentic_core.L2_execution.types.vllm_gateway_integration_types import (
+        from agentic_core.L2_execution.types.vllm_token_budget_types import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+    """Test queue_controller_starts_empty runtime behavior."""
+
 # Arrange
 # TODO: Set up test data for queue_controller_starts_empty
 test_data = {}  # Replace with actual test data

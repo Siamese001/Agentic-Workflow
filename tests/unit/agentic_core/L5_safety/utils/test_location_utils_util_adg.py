@@ -173,10 +173,12 @@ pytestmark = pytest.mark.unit
 
 class TestNormalizeLocationPath:
     def test_forward_slashes(self):
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.L5_safety.utils.location_utils_util import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        result = normalize_location_path("foo/bar/baz.py")
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L5_safety.utils.location_utils_util import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                result = normalize_location_path("foo/bar/baz.py")
+                assert "\\" not in result
+
         assert "\\" not in result
 
     def test_handles_backslashes(self):

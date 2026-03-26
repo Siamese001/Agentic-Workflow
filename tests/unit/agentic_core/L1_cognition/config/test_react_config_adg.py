@@ -173,10 +173,12 @@ pytestmark = pytest.mark.unit
 
 class TestReasoningMode:
     def test_is_enum(self):
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.L1_cognition.config.react_config import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        import enum
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L1_cognition.config.react_config import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                import enum
+                assert issubclass(ReasoningMode, enum.Enum)
+
         assert issubclass(ReasoningMode, enum.Enum)
 
     def test_react_value(self):

@@ -215,12 +215,14 @@ def make_empty_queue() -> VLLMQueueState:
 
 
 def test_breaker_starts_closed():
-    from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-    from agentic_core.L2_execution.types.vllm_backpressure_types import (
-    from agentic_core.L2_execution.types.vllm_token_budget_types import (
-    from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-    cb = VLLMCircuitBreaker(tier="local_fast")
-    assert cb.state == CircuitBreakerState.CLOSED
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L2_execution.types.vllm_backpressure_types import (
+        from agentic_core.L2_execution.types.vllm_token_budget_types import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        cb = VLLMCircuitBreaker(tier="local_fast")
+        assert cb.state == CircuitBreakerState.CLOSED
+        assert not cb.is_open
+
     assert not cb.is_open
 
 

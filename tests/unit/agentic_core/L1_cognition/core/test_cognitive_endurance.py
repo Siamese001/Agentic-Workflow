@@ -31,11 +31,13 @@ class TestTelemetrySanitizer:
     """Test the telemetry pruner (anti-token overload)."""
 
     def test_short_output_unchanged(self):
-        from agentic_core.L4_state.utils.sanitize_telemetry_util import sanitize_tool_output
-        from agentic_core.mixins.golden_context_mixin import (
-        """Short outputs should pass through unchanged."""
-        short_output = "This is a short output."
-        result = sanitize_tool_output(short_output)
+                from agentic_core.L4_state.utils.sanitize_telemetry_util import sanitize_tool_output
+                from agentic_core.mixins.golden_context_mixin import (
+                """Short outputs should pass through unchanged."""
+                short_output = "This is a short output."
+                result = sanitize_tool_output(short_output)
+                assert result == short_output
+
         assert result == short_output
 
     def test_long_output_pruned(self):

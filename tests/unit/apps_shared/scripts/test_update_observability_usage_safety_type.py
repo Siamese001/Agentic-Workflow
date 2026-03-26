@@ -10,24 +10,25 @@ import pytest
 
 pytestmark = pytest.mark.unit
 
-from apps_shared.scripts.update_observability_usage_safety_type import (  # noqa: F401
-    BATCH_SIZE,
-    BUFFER_SIZE,
-    DEFAULT_SLEEP,
-    MAX_RETRIES,
-    THRESHOLD,
-    SecurityError,
-    UpdateObservabilityUsageSafetyConstraints,
-    UpdateObservabilityUsageSafetyImpl,
-    UpdateObservabilityUsageSafetyResult,
-    UpdateObservabilityUsageSafetySafety,
-    UpdateObservabilityUsageSafetyType,
-    update_observability_usage,
-)
 
 
 class TestUpdateObservabilityUsageSafetyTypeContract:
     def test_is_enum(self):
+        from apps_shared.scripts.update_observability_usage_safety_type import (  # noqa: F401
+            BATCH_SIZE,
+            BUFFER_SIZE,
+            DEFAULT_SLEEP,
+            MAX_RETRIES,
+            THRESHOLD,
+            SecurityError,
+            UpdateObservabilityUsageSafetyConstraints,
+            UpdateObservabilityUsageSafetyImpl,
+            UpdateObservabilityUsageSafetyResult,
+            UpdateObservabilityUsageSafetySafety,
+            UpdateObservabilityUsageSafetyType,
+            update_observability_usage,
+        )
+
         import enum
         assert issubclass(UpdateObservabilityUsageSafetyType, enum.Enum)
 

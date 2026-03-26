@@ -5,6 +5,8 @@ from __future__ import annotations
 
 
 def test_module_importable():
-    import agentic_core.mixins.mcp_operation_mixin  # noqa: F401
-    """Module mcp_operation_mixin must be importable."""
+        import agentic_core.mixins.mcp_operation_mixin  # noqa: F401
+        """Module mcp_operation_mixin must be importable."""
+        assert agentic_core.mixins.mcp_operation_mixin is not None
+
     assert agentic_core.mixins.mcp_operation_mixin is not None

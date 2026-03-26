@@ -26,28 +26,30 @@ pytestmark = pytest.mark.unit
 
 class TestModelProviderContract:
     def test_is_enum(self):
-        from agentic_core.runtime.config.reasoning_types import (  # noqa: F401
-    """Test is_enum runtime behavior."""
-    # Arrange
-    # TODO: Set up runtime environment
-    runtime_context = {}  # Replace with actual runtime context
-    """Test has_members runtime behavior."""
-    # Arrange
-    # TODO: Set up runtime environment
-    """Test member_values_are_strings_or_ints runtime behavior."""
-    # Arrange
-    # TODO: Set up runtime environment
-    runtime_context = {}  # Replace with actual runtime context
-    """Test known_member_openai_exists runtime behavior."""
-    # Arrange
-    # TODO: Set up runtime environment
-    runtime_context = {}  # Replace with actual runtime context
-    """Test is_class runtime behavior."""
-    # Arrange
-    # TODO: Set up runtime environment
-    """Test has_method_validate_invariants runtime behavior."""
-    # Arrange
-    # TODO: Set up runtime environment
+                from agentic_core.runtime.config.reasoning_types import (  # noqa: F401
+            """Test is_enum runtime behavior."""
+            # Arrange
+            # TODO: Set up runtime environment
+            runtime_context = {}  # Replace with actual runtime context
+            """Test has_members runtime behavior."""
+            # Arrange
+            # TODO: Set up runtime environment
+            """Test member_values_are_strings_or_ints runtime behavior."""
+            # Arrange
+            # TODO: Set up runtime environment
+            runtime_context = {}  # Replace with actual runtime context
+            """Test known_member_openai_exists runtime behavior."""
+            # Arrange
+            # TODO: Set up runtime environment
+            runtime_context = {}  # Replace with actual runtime context
+            """Test is_class runtime behavior."""
+            # Arrange
+            # TODO: Set up runtime environment
+            """Test has_method_validate_invariants runtime behavior."""
+            # Arrange
+            # TODO: Set up runtime environment
+            runtime_context = {}  # Replace with actual runtime context
+
     runtime_context = {}  # Replace with actual runtime context
 
     # Act

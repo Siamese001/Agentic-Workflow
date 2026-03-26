@@ -5,9 +5,10 @@ import pytest
 
 pytestmark = pytest.mark.unit
 
-import apps_rg.types.thematic_analysis_node_types  # noqa: F401
 
 
 def test_module_importable():
     """Module thematic_analysis_node_types must be importable."""
+    import apps_rg.types.thematic_analysis_node_types  # noqa: F401
+
     assert apps_rg.types.thematic_analysis_node_types is not None

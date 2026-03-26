@@ -211,16 +211,19 @@ class MockHealingProviderInvoker:
 
 
 def test_dispatch_healing_phase2_integration() -> None:
-    from agentic_core.L2_execution.healers.healing_tier_config import HealingTierConfig
-    from agentic_core.L2_execution.healers.healing_tier_dispatcher import (
-    from agentic_core.L2_execution.healers.healing_tier_types import (
-    from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-    from system_learning.engines.healing_success_rate_store import HealingSuccessRateStore
-    from system_learning.ports.meta_prior_provider import (
-    from system_learning.ports.outcome_write_back_hook import (
-    from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-    from agentic_core.L2_execution.healers.healing_tier_dispatcher import InvocationRecord
 """Test dispatch_healing_phase2_integration runtime behavior."""
+        from agentic_core.L2_execution.healers.healing_tier_config import HealingTierConfig
+        from agentic_core.L2_execution.healers.healing_tier_dispatcher import (
+        from agentic_core.L2_execution.healers.healing_tier_types import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from system_learning.engines.healing_success_rate_store import HealingSuccessRateStore
+        from system_learning.ports.meta_prior_provider import (
+        from system_learning.ports.outcome_write_back_hook import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L2_execution.healers.healing_tier_dispatcher import InvocationRecord
+        from agentic_core.L2_execution.healers.healing_tier_dispatcher import InvocationRecord
+    """Test dispatch_healing_phase2_integration runtime behavior."""
+
 # Arrange
 # TODO: Set up test data for dispatch_healing_phase2_integration
 test_data = {}  # Replace with actual test data

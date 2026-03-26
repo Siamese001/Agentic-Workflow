@@ -173,9 +173,11 @@ pytestmark = pytest.mark.unit
 
 class TestInternalRoots:
     def test_is_frozenset(self):
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.L5_safety.config.structure_blueprint.enforcement.import_graph import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L5_safety.config.structure_blueprint.enforcement.import_graph import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                assert isinstance(INTERNAL_ROOTS, frozenset)
+
         assert isinstance(INTERNAL_ROOTS, frozenset)
 
     def test_contains_agentic_core(self):

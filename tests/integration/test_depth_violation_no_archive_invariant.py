@@ -209,17 +209,19 @@ def healer(tmp_path):
 @pytest.mark.parametrize("violation_msg", DEPTH_VIOLATION_MESSAGES)
 @pytest.mark.parametrize("sovereign_root", SOVEREIGN_ROOTS)
 def test_depth_violation_never_archived(healer, sovereign_root, violation_msg):
-    from agentic_core.L0_routing.config.path_constants import (
-    from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-    from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-    from agentic_core.L5_safety.reasoning.LocationHealerAgent import LocationHealerAgent
-    from agentic_core.L5_safety.utils.location_constants_util import HEALING_STRATEGY_MAP
-    from agentic_core.L5_safety.utils.location_constants_util import HEALING_STRATEGY_MAP
-    from agentic_core.L5_safety.config.structure_blueprint import (
-    """
-    Invariant: _apply_healing_strategy must never return ARCHIVED for any
-    DEEP VIOLATION or SHALLOW VIOLATION message under a sovereign root.
-    """
+        from agentic_core.L0_routing.config.path_constants import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L5_safety.reasoning.LocationHealerAgent import LocationHealerAgent
+        from agentic_core.L5_safety.utils.location_constants_util import HEALING_STRATEGY_MAP
+        from agentic_core.L5_safety.utils.location_constants_util import HEALING_STRATEGY_MAP
+        from agentic_core.L5_safety.config.structure_blueprint import (
+        """
+        Invariant: _apply_healing_strategy must never return ARCHIVED for any
+        DEEP VIOLATION or SHALLOW VIOLATION message under a sovereign root.
+        """
+        agent, tmp_path = healer
+
     agent, tmp_path = healer
 
     # Create a fake file under the sovereign root

@@ -5,9 +5,10 @@ import pytest
 
 pytestmark = pytest.mark.unit
 
-import apps_shared.scripts.fix_all_indentation  # noqa: F401
 
 
 def test_module_importable():
     """Module fix_all_indentation must be importable."""
+    import apps_shared.scripts.fix_all_indentation  # noqa: F401
+
     assert apps_shared.scripts.fix_all_indentation is not None

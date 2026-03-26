@@ -5,9 +5,10 @@ import pytest
 
 pytestmark = pytest.mark.unit
 
-import apps_rg.reasoning.ResumeAssemblyAgent  # noqa: F401
 
 
 def test_module_importable():
     """Module ResumeAssemblyAgent must be importable."""
+    import apps_rg.reasoning.ResumeAssemblyAgent  # noqa: F401
+
     assert apps_rg.reasoning.ResumeAssemblyAgent is not None

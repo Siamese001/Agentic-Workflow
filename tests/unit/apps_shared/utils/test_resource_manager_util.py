@@ -10,23 +10,24 @@ import pytest
 
 pytestmark = pytest.mark.unit
 
-from apps_shared.utils.resource_manager_util import (  # noqa: F401
-    BATCH_SIZE,
-    BUFFER_SIZE,
-    DEFAULT_SLEEP,
-    MAX_RETRIES,
-    THRESHOLD,
-    ConnectionPool,
-    ResourceInfo,
-    ResourceManager,
-    ResourceType,
-    get_resource_manager,
-    shutdown_all_managers,
-)
 
 
 class TestResourceTypeContract:
     def test_is_enum(self):
+        from apps_shared.utils.resource_manager_util import (  # noqa: F401
+            BATCH_SIZE,
+            BUFFER_SIZE,
+            DEFAULT_SLEEP,
+            MAX_RETRIES,
+            THRESHOLD,
+            ConnectionPool,
+            ResourceInfo,
+            ResourceManager,
+            ResourceType,
+            get_resource_manager,
+            shutdown_all_managers,
+        )
+
         import enum
         assert issubclass(ResourceType, enum.Enum)
 

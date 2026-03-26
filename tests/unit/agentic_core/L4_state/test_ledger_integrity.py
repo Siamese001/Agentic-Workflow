@@ -174,13 +174,15 @@ import pytest
 
 class TestAppendWithHash:
     def test_appended_entry_has_hash(self):
-        from agentic_core.L4_state.ledger.integrity_validator import (
-        from agentic_core.L5_safety.types.hardening_errors import LedgerIntegrityViolation
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        entries: list = []
-        entry = append_with_hash(entries, {"op": "write", "file": "foo.py"})
-        assert "_hash" in entry
+                from agentic_core.L4_state.ledger.integrity_validator import (
+                from agentic_core.L5_safety.types.hardening_errors import LedgerIntegrityViolation
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                entries: list = []
+                entry = append_with_hash(entries, {"op": "write", "file": "foo.py"})
+                assert "_hash" in entry
+                assert len(entry["_hash"]) == 64
+
         assert len(entry["_hash"]) == 64
 
     def test_chain_grows(self):

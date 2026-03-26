@@ -16,10 +16,6 @@ DEFAULT_TIMEOUT = 300  # 5 minutes
 import ast
 from pathlib import Path
 
-from agentic_core.L0_routing.config.path_constants import (
-    AGENTIC_CORE_DIR,
-    OPS_SCRIPTS_DIR,
-)
 
 GRAVITY_PATH = (
     Path(__file__).parent.parent.parent
@@ -43,6 +39,11 @@ def _parse(path: Path) -> ast.Module:
 
 def test_structure_config_has_excluded_paths():
     """Wave 2: StructureConfig must have excluded_paths field."""
+    from agentic_core.L0_routing.config.path_constants import (
+        AGENTIC_CORE_DIR,
+        OPS_SCRIPTS_DIR,
+    )
+
     tree = _parse(STRUCTURE_PATH)
     for node in ast.walk(tree):
         if isinstance(node, ast.ClassDef) and node.name == "StructureConfig":

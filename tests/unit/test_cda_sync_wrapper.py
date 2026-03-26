@@ -6,9 +6,6 @@ and async analyze_violations() so execute_ssot.py callers don't use asyncio.run 
 import ast
 from pathlib import Path
 
-from agentic_core.L0_routing.config.path_constants import (
-    AGENTIC_CORE_DIR,
-)
 
 CDA_PATH = (
     Path(__file__).parent.parent.parent
@@ -31,6 +28,10 @@ def _ast_method_names() -> list[str]:
 
 def test_analyze_violation_sync_exists():
     """Wave 1: sync analyze_violation() must be defined (not async)."""
+    from agentic_core.L0_routing.config.path_constants import (
+        AGENTIC_CORE_DIR,
+    )
+
     src = CDA_PATH.read_text(encoding="utf-8", errors="replace")
     tree = ast.parse(src)
     sync_defs = [n.name for n in ast.walk(tree) if isinstance(n, ast.FunctionDef)]

@@ -198,13 +198,15 @@ class TestManifestAnalysis:
         }
 
     def test_analysis_passes_safe_run(self, safe_report):
-        from agentic_core.L0_routing.scripts.verify_manifest_util import analyze_impact
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        """Scenario: Normal operation should pass analysis."""
-        with patch("logging.info") as mock_info:
-            result = analyze_impact(safe_report)
-            assert result is True
-            # Verify that impact analysis was logged
+                from agentic_core.L0_routing.scripts.verify_manifest_util import analyze_impact
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                """Scenario: Normal operation should pass analysis."""
+                with patch("logging.info") as mock_info:
+                    result = analyze_impact(safe_report)
+                    assert result is True
+                    # Verify that impact analysis was logged
+                    mock_info.assert_any_call("--- IMPACT ANALYSIS: tests ---")
+
             mock_info.assert_any_call("--- IMPACT ANALYSIS: tests ---")
 
     def test_analysis_flags_mass_deletion(self, dangerous_report):

@@ -10,23 +10,24 @@ import pytest
 
 pytestmark = pytest.mark.unit
 
-from apps_lic.config.archetype_indicator_config import (  # noqa: F401
-    BATCH_SIZE,
-    BUFFER_SIZE,
-    DEFAULT_SLEEP,
-    MAX_RETRIES,
-    THRESHOLD,
-    ArchetypeIndicators,
-    FallbackRAGParams,
-    ProfileAnalysisAgent,
-    ResearchAgent,
-    SenderGroundingAgent,
-    VectorStoreQueryParams,
-)
 
 
 class TestArchetypeIndicatorsContract:
     def test_is_class(self):
+        from apps_lic.config.archetype_indicator_config import (  # noqa: F401
+            BATCH_SIZE,
+            BUFFER_SIZE,
+            DEFAULT_SLEEP,
+            MAX_RETRIES,
+            THRESHOLD,
+            ArchetypeIndicators,
+            FallbackRAGParams,
+            ProfileAnalysisAgent,
+            ResearchAgent,
+            SenderGroundingAgent,
+            VectorStoreQueryParams,
+        )
+
         assert isinstance(ArchetypeIndicators, type)
 
     def test_instantiable_or_abstract(self):

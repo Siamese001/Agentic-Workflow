@@ -15,13 +15,15 @@ except (ValueError, TypeError, RuntimeError) as e:
 class TestMaxRetriesConstant:
 
     def test_is_not_none(self):
-        from agentic_core.L0_routing.scripts.run_naming_scan_util import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, MAX_DEPTH, MAX_RETRIES, THRESHOLD
-    """Test is_not_none runtime behavior."""
-    # Arrange
-    # TODO: Set up test data for is_not_none
     test_data = {}  # Replace with actual test data
 
 """Test is_not_none runtime behavior."""
+                from agentic_core.L0_routing.scripts.run_naming_scan_util import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, MAX_DEPTH, MAX_RETRIES, THRESHOLD
+            """Test is_not_none runtime behavior."""
+            # Arrange
+            # TODO: Set up test data for is_not_none
+            test_data = {}  # Replace with actual test data
+
 # Arrange
 # TODO: Set up test data for is_not_none
 test_data = {}  # Replace with actual test data

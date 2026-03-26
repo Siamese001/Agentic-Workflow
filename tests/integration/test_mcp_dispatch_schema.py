@@ -205,10 +205,12 @@ MCP_FUNCTION_PATTERN = re.compile(r"^mcp\d+_[a-z]")
 
 class TestToolDispatch:
     def test_all_required_logical_tools_present(self):
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.L3_orchestration.reasoning.mcp_manager import _TOOL_DISPATCH, _resolve_tool  # noqa: E402
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        missing = REQUIRED_LOGICAL_TOOLS - set(_TOOL_DISPATCH.keys())
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L3_orchestration.reasoning.mcp_manager import _TOOL_DISPATCH, _resolve_tool  # noqa: E402
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                missing = REQUIRED_LOGICAL_TOOLS - set(_TOOL_DISPATCH.keys())
+                assert not missing, f"Missing logical tool keys: {missing}"
+
         assert not missing, f"Missing logical tool keys: {missing}"
 
     def test_all_dispatch_targets_follow_mcp_naming(self):

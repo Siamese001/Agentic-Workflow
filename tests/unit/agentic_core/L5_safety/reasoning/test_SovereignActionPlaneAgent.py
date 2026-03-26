@@ -26,10 +26,12 @@ pytestmark = pytest.mark.unit
 
 class TestSovereignToolsmithContract:
     def test_is_class(self):
-        from agentic_core.L5_safety.reasoning.SovereignActionPlaneAgent import (  # noqa: F401
-    """Test is_class runtime behavior."""
-    # Arrange
-    # TODO: Set up test data for is_class
+                from agentic_core.L5_safety.reasoning.SovereignActionPlaneAgent import (  # noqa: F401
+            """Test is_class runtime behavior."""
+            # Arrange
+            # TODO: Set up test data for is_class
+            test_data = {}  # Replace with actual test data
+
     test_data = {}  # Replace with actual test data
 
     # Act

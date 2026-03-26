@@ -5,9 +5,10 @@ import pytest
 
 pytestmark = pytest.mark.unit
 
-import apps_rg.reasoning.RGStrategyExecutor  # noqa: F401
 
 
 def test_module_importable():
     """Module RGStrategyExecutor must be importable."""
+    import apps_rg.reasoning.RGStrategyExecutor  # noqa: F401
+
     assert apps_rg.reasoning.RGStrategyExecutor is not None

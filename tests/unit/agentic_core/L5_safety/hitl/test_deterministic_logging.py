@@ -178,21 +178,23 @@ DEFAULT_TIMEOUT = 300  # 5 minutes
 
 class TestHITLDecisionLogger:
     def test_log_returns_decision(self, tmp_path):
-        from agentic_core.L5_safety.hitl.decision_logger import HITLDecision, HITLDecisionLogger
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        logger = HITLDecisionLogger(log_path=tmp_path / "decisions.jsonl")
-        decision = logger.log(
-            agent="TestAgent",
-            file="foo.py",
-            violation="missing_field",
-            proposed="add field",
-            decision="APPROVE",
-            reviewer_signature="reviewer@test.com",
-        )
-        assert isinstance(decision, HITLDecision)
-        assert decision.agent == "TestAgent"
-        assert decision.decision == "APPROVE"
+                from agentic_core.L5_safety.hitl.decision_logger import HITLDecision, HITLDecisionLogger
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                logger = HITLDecisionLogger(log_path=tmp_path / "decisions.jsonl")
+                decision = logger.log(
+                    agent="TestAgent",
+                    file="foo.py",
+                    violation="missing_field",
+                    proposed="add field",
+                    decision="APPROVE",
+                    reviewer_signature="reviewer@test.com",
+                )
+                assert isinstance(decision, HITLDecision)
+                assert decision.agent == "TestAgent"
+                assert decision.decision == "APPROVE"
+                assert decision.decision_number == 1
+
         assert decision.decision_number == 1
 
     def test_counter_increments(self, tmp_path):

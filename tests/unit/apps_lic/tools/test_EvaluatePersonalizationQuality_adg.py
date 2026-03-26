@@ -5,9 +5,10 @@ import pytest
 
 pytestmark = pytest.mark.unit
 
-import apps_lic.tools.EvaluatePersonalizationQuality  # noqa: F401
 
 
 def test_module_importable():
     """Module EvaluatePersonalizationQuality must be importable."""
+    import apps_lic.tools.EvaluatePersonalizationQuality  # noqa: F401
+
     assert apps_lic.tools.EvaluatePersonalizationQuality is not None

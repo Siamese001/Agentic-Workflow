@@ -10,24 +10,25 @@ import pytest
 
 pytestmark = pytest.mark.unit
 
-from apps_shared.utils.async_coordinator_util import (  # noqa: F401
-    BATCH_SIZE,
-    BUFFER_SIZE,
-    DEFAULT_SLEEP,
-    MAX_RETRIES,
-    THRESHOLD,
-    AsyncCoordinator,
-    TaskInfo,
-    TaskState,
-    get_coordinator,
-    managed,
-    safe_wait_for,
-    shutdown_all_coordinators,
-)
 
 
 class TestTaskStateContract:
     def test_is_enum(self):
+        from apps_shared.utils.async_coordinator_util import (  # noqa: F401
+            BATCH_SIZE,
+            BUFFER_SIZE,
+            DEFAULT_SLEEP,
+            MAX_RETRIES,
+            THRESHOLD,
+            AsyncCoordinator,
+            TaskInfo,
+            TaskState,
+            get_coordinator,
+            managed,
+            safe_wait_for,
+            shutdown_all_coordinators,
+        )
+
         import enum
         assert issubclass(TaskState, enum.Enum)
 

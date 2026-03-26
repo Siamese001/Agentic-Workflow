@@ -5,9 +5,10 @@ import pytest
 
 pytestmark = pytest.mark.unit
 
-import apps_lic.tools.generate_subject_line  # noqa: F401
 
 
 def test_module_importable():
     """Module generate_subject_line must be importable."""
+    import apps_lic.tools.generate_subject_line  # noqa: F401
+
     assert apps_lic.tools.generate_subject_line is not None

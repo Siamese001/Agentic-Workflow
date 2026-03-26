@@ -174,12 +174,14 @@ class TestStructuralHealingCST:
     """Test CST-based structural healing operations."""
 
     def test_trailing_whitespace_removal(self):
-        from agentic_core.L5_safety.types.cst_transformers_types import (
-        from agentic_core.L5_safety.types.surgical_context_types import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.mixins.cst_healer_mixin import (
-        """Test that trailing whitespace is correctly removed."""
-        # Note: Using explicit trailing spaces
+                from agentic_core.L5_safety.types.cst_transformers_types import (
+                from agentic_core.L5_safety.types.surgical_context_types import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.mixins.cst_healer_mixin import (
+                """Test that trailing whitespace is correctly removed."""
+                # Note: Using explicit trailing spaces
+                source_code = "# Comment   \ndef test():   \n    return 42   \n"
+
         source_code = "# Comment   \ndef test():   \n    return 42   \n"
 
         with tempfile.NamedTemporaryFile(mode="w", suffix=".py", delete=False, encoding="utf-8") as f:

@@ -10,7 +10,9 @@ pytestmark = pytest.mark.unit
 
 class TestOrchestrationInterface:
     def test_importable(self):
-        import agentic_core.interfaces.orchestration as m
+                import agentic_core.interfaces.orchestration as m
+                assert m is not None
+
         assert m is not None
 
     def test_action_router_present(self):

@@ -166,26 +166,27 @@ class TestDriftDetectionHealer:
     """Proves healer produces correct plan-only output."""
 
     def test_planned_actions_sorted(self) -> None:
-        from agentic_core.L2_execution.healers.drift_detection_healer import (
-        from agentic_core.L2_execution.types.heal_contract_types import HealStatus
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        check = {
-            "check_id": "guardian_drift_detection",
-            "status": "FAIL",
-            "details": "drift found",
-            "evidence": {
-                "forbidden_folders": ["z_folder", "a_folder"],
-                "archived_files_at_root": ["old_readme.bak"],
-                "duplicate_folders": ["utils_copy"],
-            },
-        }
-        result = heal_guardian_drift_detection(check)
-        assert result.changes_made == (
-            "would_remove_archived_file:old_readme.bak",
-            "would_remove_root_folder:a_folder",
-            "would_remove_root_folder:z_folder",
-            "would_resolve_duplicate_folder:utils_copy",
-        )
+                from agentic_core.L2_execution.healers.drift_detection_healer import (
+                from agentic_core.L2_execution.types.heal_contract_types import HealStatus
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                check = {
+                    "check_id": "guardian_drift_detection",
+                    "status": "FAIL",
+                    "details": "drift found",
+                    "evidence": {
+                        "forbidden_folders": ["z_folder", "a_folder"],
+                        "archived_files_at_root": ["old_readme.bak"],
+                        "duplicate_folders": ["utils_copy"],
+                    },
+                }
+                result = heal_guardian_drift_detection(check)
+                assert result.changes_made == (
+                    "would_remove_archived_file:old_readme.bak",
+                    "would_remove_root_folder:a_folder",
+                    "would_remove_root_folder:z_folder",
+                    "would_resolve_duplicate_folder:utils_copy",
+                )
+
 
     def test_status_skipped(self) -> None:
         check = {

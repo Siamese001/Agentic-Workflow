@@ -11,5 +11,7 @@ pytestmark = pytest.mark.unit
 
 class TestSystemLearningPortsInit:
     def test_namespace_importable(self):
-        import system_learning.ports
+                import system_learning.ports
+                assert system_learning.ports is not None
+
         assert system_learning.ports is not None

@@ -208,12 +208,15 @@ pytestmark = pytest.mark.unit_min_deps
 
 
 def test_low_severity_selects_fast_7b():
-    from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-    from agentic_core.L2_execution.types.vllm_gateway_integration_types import (
-    from agentic_core.L2_execution.types.vllm_serving_profile_types import (
-    from agentic_core.L2_execution.types.vllm_token_budget_types import (
-    from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 """Test low_severity_selects_fast_7b runtime behavior."""
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L2_execution.types.vllm_gateway_integration_types import (
+        from agentic_core.L2_execution.types.vllm_serving_profile_types import (
+        from agentic_core.L2_execution.types.vllm_token_budget_types import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+    """Test low_severity_selects_fast_7b runtime behavior."""
+
 # Arrange
 # TODO: Set up test data for low_severity_selects_fast_7b
 test_data = {}  # Replace with actual test data

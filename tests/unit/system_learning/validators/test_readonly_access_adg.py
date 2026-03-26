@@ -5,9 +5,10 @@ import pytest
 
 pytestmark = pytest.mark.unit
 
-import system_learning.validators.readonly_access  # noqa: F401
 
 
 def test_module_importable():
     """Module readonly_access must be importable."""
+    import system_learning.validators.readonly_access  # noqa: F401
+
     assert system_learning.validators.readonly_access is not None

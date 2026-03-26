@@ -170,12 +170,14 @@ pytestmark = pytest.mark.unit
 
 class TestReasoningCache:
     def test_creates_with_defaults(self):
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.L1_cognition.engines.reasoning_cache import ReasoningCache
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        cache = ReasoningCache()
-        assert cache.maxsize == 10000
-        assert cache.hits == 0
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L1_cognition.engines.reasoning_cache import ReasoningCache
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                cache = ReasoningCache()
+                assert cache.maxsize == 10000
+                assert cache.hits == 0
+                assert cache.misses == 0
+
         assert cache.misses == 0
 
     def test_creates_with_custom_maxsize(self):

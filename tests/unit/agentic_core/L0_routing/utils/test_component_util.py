@@ -27,8 +27,10 @@ pytestmark = pytest.mark.unit
 
 class TestComponentFactoryContract:
     def test_is_class(self):
-        from agentic_core.L0_routing.utils.component_util import (  # noqa: F401
-        import agentic_core.L0_routing.utils.component_util as mod
+                from agentic_core.L0_routing.utils.component_util import (  # noqa: F401
+                import agentic_core.L0_routing.utils.component_util as mod
+                assert isinstance(ComponentFactory, type)
+
         assert isinstance(ComponentFactory, type)
 
     def test_has_method_get_verification_gate(self):

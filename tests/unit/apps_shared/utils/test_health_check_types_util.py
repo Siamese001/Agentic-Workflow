@@ -10,25 +10,26 @@ import pytest
 
 pytestmark = pytest.mark.unit
 
-from apps_shared.utils.health_check_types_util import (  # noqa: F401
-    BATCH_SIZE,
-    BUFFER_SIZE,
-    DEFAULT_SLEEP,
-    MAX_RETRIES,
-    THRESHOLD,
-    CheckResult,
-    CommonChecks,
-    HealthChecker,
-    HealthReport,
-    HealthStatus,
-    ReadinessGate,
-    get_health_checker,
-    get_readiness_gate,
-)
 
 
 class TestHealthStatusContract:
     def test_is_enum(self):
+        from apps_shared.utils.health_check_types_util import (  # noqa: F401
+            BATCH_SIZE,
+            BUFFER_SIZE,
+            DEFAULT_SLEEP,
+            MAX_RETRIES,
+            THRESHOLD,
+            CheckResult,
+            CommonChecks,
+            HealthChecker,
+            HealthReport,
+            HealthStatus,
+            ReadinessGate,
+            get_health_checker,
+            get_readiness_gate,
+        )
+
         import enum
         assert issubclass(HealthStatus, enum.Enum)
 

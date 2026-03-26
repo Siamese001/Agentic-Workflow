@@ -10,7 +10,9 @@ pytestmark = pytest.mark.unit
 
 class TestHealingPolicyMixin:
     def test_importable(self):
-        from agentic_core.mixins.healing_policy_mixin import HealingPolicyMixin
+                from agentic_core.mixins.healing_policy_mixin import HealingPolicyMixin
+                assert callable(HealingPolicyMixin)
+
         assert callable(HealingPolicyMixin)
 
     def test_max_healing_operations_default(self):

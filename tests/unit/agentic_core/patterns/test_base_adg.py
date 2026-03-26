@@ -5,6 +5,8 @@ from __future__ import annotations
 
 
 def test_module_importable():
-    import agentic_core.patterns.base  # noqa: F401
-    """Module base must be importable."""
+        import agentic_core.patterns.base  # noqa: F401
+        """Module base must be importable."""
+        assert agentic_core.patterns.base is not None
+
     assert agentic_core.patterns.base is not None

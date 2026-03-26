@@ -30,7 +30,9 @@ pytestmark = pytest.mark.unit
 
 class TestBenchmarkResultContract:
     def test_is_class(self):
-        from agentic_core.L5_safety.reasoning.BenchmarkingAgent import (  # noqa: F401
+                from agentic_core.L5_safety.reasoning.BenchmarkingAgent import (  # noqa: F401
+                assert isinstance(BenchmarkResult, type)
+
         assert isinstance(BenchmarkResult, type)
 
     def test_instantiable_or_abstract(self):

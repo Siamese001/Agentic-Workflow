@@ -6,46 +6,6 @@ from unittest.mock import patch
 
 import pytest
 
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-    _emit_agent_executes_agent,
-    _emit_applies_guardrail,  # noqa: E402
-    _emit_authorize_and_execute,
-    _emit_blocks_direct_write,
-    _emit_captures_evaluation_metric,
-    _emit_captures_execution_output,
-    _emit_checks_agent_registry,
-    _emit_coordinates_agents,
-    _emit_dispatches_agent,
-    _emit_dispatches_execution_plan,
-    _emit_dispatches_healing_run,
-    _emit_escalates_failure,
-    _emit_escalates_to_human,
-    _emit_gated_by_confidence,
-    _emit_hard_fails_untranscripted,
-    _emit_invokes_evaluation,
-    _emit_links_execution_to_snapshot,
-    _emit_observes_runtime_state,
-    _emit_orchestrates_workflow,
-    _emit_reads_policy_state,  # noqa: E402
-    _emit_records_execution_trace,  # noqa: E402
-    _emit_records_healing_outcome,
-    _emit_records_telemetry_event,
-    _emit_records_tool_invocation,
-    _emit_records_workflow_lineage,
-    _emit_routes_through,
-    _emit_routes_to_agent,
-    _emit_routes_to_capability,
-    _emit_signs_execution_trace,  # noqa: E402
-    _emit_snapshots_state,  # noqa: E402
-    _emit_stores_embedding,
-    _emit_transcripts_response,
-    _emit_updates_meta_learning_state,
-    _emit_validates_agent_capability,
-    _emit_validates_capability,
-    _emit_verifies_boundary,
-    _emit_verifies_policy,
-    _emit_writes_via_uwg,
-    emit_determinism_digest,  # noqa: E402
     emit_replay_key,  # noqa: E402
 )
 
@@ -53,42 +13,6 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 # REMOVED: _emit_applies_guardrail("p0", "test_healer_gate", "p0_governance")
 # REMOVED: _emit_reads_policy_state("p0", "test_healer_gate", "policy_binding")
 # REMOVED: _emit_snapshots_state("p0", "test_healer_gate", "state_snapshot")
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-    _emit_agent_executes_agent,
-    _emit_captures_pattern,
-    _emit_captures_runtime_anomaly,
-    _emit_checks_agent_registry,
-    _emit_dispatches_execution_plan,
-    _emit_emits_metric_event,
-    _emit_escalates_to_human,
-    _emit_execution_terminates_at_uwg,
-    _emit_feeds_meta_learning,
-    _emit_gated_by_confidence,
-    _emit_hard_fails_untranscripted,
-    _emit_improves_agent_policy,
-    _emit_invokes_eval,
-    _emit_links_incident_trace,  # noqa: E402
-    _emit_observes_runtime_state,
-    _emit_proposal_commits_routing,
-    _emit_pulls_context,
-    _emit_reads_environ,
-    _emit_reads_runtime_state,
-    _emit_records_execution_trace,
-    _emit_records_incident_event,
-    _emit_records_learning_event,
-    _emit_routes_through,
-    _emit_routes_to_agent,
-    _emit_stores_learning_state,
-    _emit_transcripts_response,
-    _emit_triggers_alert,
-    _emit_updates_monitoring_state,
-    _emit_updates_routing_strategy,
-    _emit_validated_by_safety_plane,
-    _emit_validates_agent_capability,
-    _emit_verifies_boundary,
-    _emit_verifies_policy,
-    _emit_writes_learning_snapshot,
-    _emit_writes_observability_log,
     _emit_writes_through,  # noqa: E402
 )
 
@@ -182,12 +106,6 @@ _VALID_CONTEXT = {"namespace": "ns1", "max_k": 5, "version": "v1"}
 
 
 def _make_assembler():
-    from agentic_core.prompt_governance.core.prompt_assembler import PromptAssembler
-
-    with patch(
-        "agentic_core.prompt_governance.core.prompt_assembler.PromptAssembler._load_templates",
-        return_value=None,
-    ):
         return PromptAssembler()
 
 
@@ -197,9 +115,140 @@ def _make_assembler():
 
 
 def test_healer_reentry_valid_passes():
-    from agentic_core.prompt_governance.security.validators.output_schema_validator import (
-        validate_healer_reentry,
-    )
+    from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        _emit_agent_executes_agent,
+        _emit_applies_guardrail,  # noqa: E402
+        _emit_authorize_and_execute,
+        _emit_blocks_direct_write,
+        _emit_captures_evaluation_metric,
+        _emit_captures_execution_output,
+        _emit_checks_agent_registry,
+        _emit_coordinates_agents,
+        _emit_dispatches_agent,
+        _emit_dispatches_execution_plan,
+        _emit_dispatches_healing_run,
+        _emit_escalates_failure,
+        _emit_escalates_to_human,
+        _emit_gated_by_confidence,
+        _emit_hard_fails_untranscripted,
+        _emit_invokes_evaluation,
+        _emit_links_execution_to_snapshot,
+        _emit_observes_runtime_state,
+        _emit_orchestrates_workflow,
+        _emit_reads_policy_state,  # noqa: E402
+        _emit_records_execution_trace,  # noqa: E402
+        _emit_records_healing_outcome,
+        _emit_records_telemetry_event,
+        _emit_records_tool_invocation,
+        _emit_records_workflow_lineage,
+        _emit_routes_through,
+        _emit_routes_to_agent,
+        _emit_routes_to_capability,
+        _emit_signs_execution_trace,  # noqa: E402
+        _emit_snapshots_state,  # noqa: E402
+        _emit_stores_embedding,
+        _emit_transcripts_response,
+        _emit_updates_meta_learning_state,
+        _emit_validates_agent_capability,
+        _emit_validates_capability,
+        _emit_verifies_boundary,
+        _emit_verifies_policy,
+        _emit_writes_via_uwg,
+        emit_determinism_digest,  # noqa: E402
+        emit_replay_key,  # noqa: E402
+    from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        _emit_agent_executes_agent,
+        _emit_captures_pattern,
+        _emit_captures_runtime_anomaly,
+        _emit_checks_agent_registry,
+        _emit_dispatches_execution_plan,
+        _emit_emits_metric_event,
+        _emit_escalates_to_human,
+        _emit_execution_terminates_at_uwg,
+        _emit_feeds_meta_learning,
+        _emit_gated_by_confidence,
+        _emit_hard_fails_untranscripted,
+        _emit_improves_agent_policy,
+        _emit_invokes_eval,
+        _emit_links_incident_trace,  # noqa: E402
+        _emit_observes_runtime_state,
+        _emit_proposal_commits_routing,
+        _emit_pulls_context,
+        _emit_reads_environ,
+        _emit_reads_runtime_state,
+        _emit_records_execution_trace,
+        _emit_records_incident_event,
+        _emit_records_learning_event,
+        _emit_routes_through,
+        _emit_routes_to_agent,
+        _emit_stores_learning_state,
+        _emit_transcripts_response,
+        _emit_triggers_alert,
+        _emit_updates_monitoring_state,
+        _emit_updates_routing_strategy,
+        _emit_validated_by_safety_plane,
+        _emit_validates_agent_capability,
+        _emit_verifies_boundary,
+        _emit_verifies_policy,
+        _emit_writes_learning_snapshot,
+        _emit_writes_observability_log,
+        _emit_writes_through,  # noqa: E402
+        from agentic_core.prompt_governance.core.prompt_assembler import PromptAssembler
+        with patch(
+            "agentic_core.prompt_governance.core.prompt_assembler.PromptAssembler._load_templates",
+            return_value=None,
+        ):
+            return PromptAssembler()
+        from agentic_core.prompt_governance.security.validators.output_schema_validator import (
+            validate_healer_reentry,
+        )
+        from agentic_core.prompt_governance.security.validators.output_schema_validator import (
+            validate_healer_reentry,
+        )
+        from agentic_core.prompt_governance.security.validators.output_schema_validator import (
+            validate_healer_reentry,
+        )
+        from agentic_core.prompt_governance.security.validators.output_schema_validator import (
+            validate_healer_reentry,
+        )
+        from agentic_core.prompt_governance.security.validators.output_schema_validator import (
+            validate_healer_reentry,
+        )
+        from agentic_core.prompt_governance.security.validators import output_schema_validator as osv
+        assert osv.HEALER_REENTRY_VIOLATION == osv.HEALER_REENTRY_VIOLATION.upper()
+        from agentic_core.prompt_governance.security.validators.output_schema_validator import (
+            validate_healer_reentry,
+        )
+        from agentic_core.prompt_governance.contracts.slot_contracts import AirlockViolationError
+        a = _make_assembler()
+        with pytest.raises(AirlockViolationError, match="AIRLOCK_VIOLATION"):
+            a.assemble(
+                role="Agent",
+                objective="Test",
+                context_data=_VALID_CONTEXT,
+                injections=[],
+                metadata={"_u0_bypass": True},
+            )
+        from agentic_core.prompt_governance.core.invariant_registry import ITERATIVE_FEEDBACK_DIRECTIVE
+        a = _make_assembler()
+        text = a.assemble(
+            role="Agent",
+            objective="Test",
+            context_data=_VALID_CONTEXT,
+            injections=[],
+        )
+        assert ITERATIVE_FEEDBACK_DIRECTIVE not in text
+        from agentic_core.prompt_governance.core.prompt_assembler import SecurityIntegrityError
+        a = _make_assembler()
+        with pytest.raises(SecurityIntegrityError, match="HEALER_REENTRY_VIOLATION"):
+            a.assemble(
+                role="Agent",
+                objective="Test",
+                context_data=_VALID_CONTEXT,
+                injections=[],
+                metadata={"healing_proposal": True},
+            )
+
 
     ok, code = validate_healer_reentry({"healing_proposal": True, "reentry_gate": True})
     assert ok is True
@@ -207,9 +256,6 @@ def test_healer_reentry_valid_passes():
 
 
 def test_healer_reentry_missing_gate_fails():
-    from agentic_core.prompt_governance.security.validators.output_schema_validator import (
-        validate_healer_reentry,
-    )
 
     ok, code = validate_healer_reentry({"healing_proposal": True})
     assert ok is False
@@ -217,9 +263,6 @@ def test_healer_reentry_missing_gate_fails():
 
 
 def test_healer_reentry_gate_false_fails():
-    from agentic_core.prompt_governance.security.validators.output_schema_validator import (
-        validate_healer_reentry,
-    )
 
     ok, code = validate_healer_reentry({"healing_proposal": True, "reentry_gate": False})
     assert ok is False
@@ -227,9 +270,6 @@ def test_healer_reentry_gate_false_fails():
 
 
 def test_healer_reentry_no_healing_proposal_passes():
-    from agentic_core.prompt_governance.security.validators.output_schema_validator import (
-        validate_healer_reentry,
-    )
 
     ok, code = validate_healer_reentry({"other": "data"})
     assert ok is True
@@ -237,9 +277,6 @@ def test_healer_reentry_no_healing_proposal_passes():
 
 
 def test_healer_reentry_mutation_marker_fails():
-    from agentic_core.prompt_governance.security.validators.output_schema_validator import (
-        validate_healer_reentry,
-    )
 
     ok, code = validate_healer_reentry(
         {"healing_proposal": True, "reentry_gate": True, "action": "durable_write"}
@@ -249,15 +286,10 @@ def test_healer_reentry_mutation_marker_fails():
 
 
 def test_healer_reentry_error_code_is_uppercase():
-    from agentic_core.prompt_governance.security.validators import output_schema_validator as osv
-
     assert osv.HEALER_REENTRY_VIOLATION == osv.HEALER_REENTRY_VIOLATION.upper()
 
 
 def test_healer_reentry_non_dict_fails():
-    from agentic_core.prompt_governance.security.validators.output_schema_validator import (
-        validate_healer_reentry,
-    )
 
     ok, code = validate_healer_reentry("not a dict")  # type: ignore[arg-type]
     assert ok is False
@@ -270,17 +302,6 @@ def test_healer_reentry_non_dict_fails():
 
 
 def test_airlock_violation_raised_on_u0_bypass_flag():
-    from agentic_core.prompt_governance.contracts.slot_contracts import AirlockViolationError
-
-    a = _make_assembler()
-    with pytest.raises(AirlockViolationError, match="AIRLOCK_VIOLATION"):
-        a.assemble(
-            role="Agent",
-            objective="Test",
-            context_data=_VALID_CONTEXT,
-            injections=[],
-            metadata={"_u0_bypass": True},
-        )
 
 
 def test_airlock_not_raised_without_bypass_flag():
@@ -313,27 +334,7 @@ def test_healer_directive_injected_in_d0_when_healing_proposal():
 
 
 def test_healer_directive_not_injected_without_healing_flag():
-    from agentic_core.prompt_governance.core.invariant_registry import ITERATIVE_FEEDBACK_DIRECTIVE
-
-    a = _make_assembler()
-    text = a.assemble(
-        role="Agent",
-        objective="Test",
-        context_data=_VALID_CONTEXT,
-        injections=[],
-    )
     assert ITERATIVE_FEEDBACK_DIRECTIVE not in text
 
 
 def test_assembler_rejects_healing_proposal_without_reentry_gate():
-    from agentic_core.prompt_governance.core.prompt_assembler import SecurityIntegrityError
-
-    a = _make_assembler()
-    with pytest.raises(SecurityIntegrityError, match="HEALER_REENTRY_VIOLATION"):
-        a.assemble(
-            role="Agent",
-            objective="Test",
-            context_data=_VALID_CONTEXT,
-            injections=[],
-            metadata={"healing_proposal": True},
-        )

@@ -194,15 +194,17 @@ pytestmark = pytest.mark.unit
 
 class TestCanonicalDigest:
     def test_returns_64_hex_chars(self):
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.L2_execution.types.commit_proof_invariant_types import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-    """Test returns_64_hex_chars runtime behavior."""
-    # Arrange
-    # TODO: Set up test data for returns_64_hex_chars
     test_data = {}  # Replace with actual test data
 
 """Test same_inputs_produce_same_digest runtime behavior."""
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L2_execution.types.commit_proof_invariant_types import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+            """Test returns_64_hex_chars runtime behavior."""
+            # Arrange
+            # TODO: Set up test data for returns_64_hex_chars
+            test_data = {}  # Replace with actual test data
+
 # Arrange
 # TODO: Set up test data for same_inputs_produce_same_digest
 test_data = {}  # Replace with actual test data

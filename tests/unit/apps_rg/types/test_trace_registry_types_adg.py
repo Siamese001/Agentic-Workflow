@@ -11,8 +11,6 @@ import pytest
 
 pytestmark = pytest.mark.unit
 try:
-    import apps_rg.types.trace_registry_types as _mod  # noqa: F401  # ADG covers
-except (ValueError, TypeError, RuntimeError) as e:
     _mod = None
 
 
@@ -37,6 +35,10 @@ def _methods_of(cls_name: str) -> set[str]:
 
 class TestTraceRegistryTypesSource:
     def test_source_exists(self):
+            import apps_rg.types.trace_registry_types as _mod  # noqa: F401  # ADG covers
+        except (ValueError, TypeError, RuntimeError) as e:
+            _mod = None
+
         assert _SRC.exists()
 
     def test_parses_without_error(self):

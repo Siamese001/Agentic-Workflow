@@ -142,16 +142,17 @@ class OrphanAgent:
 # ---------------------------------------------------------------------------
 
 def test_init_gate_compliant():
-    from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
-    from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
-    from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
-    """DNA-01: Compliant Agent must produce 0 violations."""
-    tree = ast.parse(COMPLIANT_AGENT)
-    visitor = InitializationIntegrityVisitor("test_compliant.py")
-    visitor.visit(tree)
-    assert visitor.violations == [], (
-        f"Compliant agent incorrectly flagged: {[v.message for v in visitor.violations]}"
-    )
+        from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
+        from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
+        from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
+        """DNA-01: Compliant Agent must produce 0 violations."""
+        tree = ast.parse(COMPLIANT_AGENT)
+        visitor = InitializationIntegrityVisitor("test_compliant.py")
+        visitor.visit(tree)
+        assert visitor.violations == [], (
+            f"Compliant agent incorrectly flagged: {[v.message for v in visitor.violations]}"
+        )
+
 
 
 def test_init_gate_hijacking():

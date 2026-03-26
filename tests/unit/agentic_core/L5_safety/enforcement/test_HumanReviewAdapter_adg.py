@@ -9,6 +9,8 @@ pytestmark = pytest.mark.unit
 
 
 def test_module_importable():
-    import agentic_core.L5_safety.enforcement.HumanReviewAdapter  # noqa: F401
-    """Module HumanReviewAdapter must be importable."""
+        import agentic_core.L5_safety.enforcement.HumanReviewAdapter  # noqa: F401
+        """Module HumanReviewAdapter must be importable."""
+        assert agentic_core.L5_safety.enforcement.HumanReviewAdapter is not None
+
     assert agentic_core.L5_safety.enforcement.HumanReviewAdapter is not None

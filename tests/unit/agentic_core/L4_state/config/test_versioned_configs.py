@@ -9,6 +9,8 @@ pytestmark = pytest.mark.unit
 
 
 def test_module_importable():
-    import agentic_core.L4_state.config.versioned_configs  # noqa: F401
-    """Module versioned_configs must be importable."""
+        import agentic_core.L4_state.config.versioned_configs  # noqa: F401
+        """Module versioned_configs must be importable."""
+        assert agentic_core.L4_state.config.versioned_configs is not None
+
     assert agentic_core.L4_state.config.versioned_configs is not None

@@ -178,12 +178,14 @@ pytestmark = pytest.mark.unit
 
 class TestHealingStrategyProtocol:
     def test_protocol_importable(self):
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.L5_safety.validators.dependency_healing_integration_types import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-    """Test protocol_importable contract compliance."""
-    # Arrange
-    # TODO: Set up interface implementation
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L5_safety.validators.dependency_healing_integration_types import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+            """Test protocol_importable contract compliance."""
+            # Arrange
+            # TODO: Set up interface implementation
+            implementation = None  # Replace with actual implementation
+
     implementation = None  # Replace with actual implementation
 
     # Act

@@ -189,11 +189,13 @@ class TestCommitWithRetrySuccess:
     re-add occurs, retry succeeds."""
 
     def test_hook_failure_retry_succeeds(self, monkeypatch):
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-    """Test hook_failure_retry_succeeds runtime behavior."""
-    # Arrange
-    # TODO: Set up error condition
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+            """Test hook_failure_retry_succeeds runtime behavior."""
+            # Arrange
+            # TODO: Set up error condition
+            error_input = {}  # Replace with actual error condition
+
     error_input = {}  # Replace with actual error condition
 
     # Act & Assert

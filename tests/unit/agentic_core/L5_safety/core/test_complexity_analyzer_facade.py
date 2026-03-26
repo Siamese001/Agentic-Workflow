@@ -209,21 +209,23 @@ class TestComplexityAnalyzerStrategy:
         return ComplexityAnalyzerStrategy(config)
 
     def test_initialization(self, strategy, config):
-        from agentic_core.L3_orchestration.reasoning.UnifiedAgent import ValidationResult
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.L5_safety.reasoning.ComplexityAnalyzerAgent import (
-        from agentic_core.L5_safety.reasoning.ComplexityAnalyzerAgent import (
-        from agentic_core.L5_safety.reasoning.ComplexityAnalyzerAgent import (
-        from agentic_core.L5_safety.reasoning.ComplexityAnalyzerAgent import (
-        from agentic_core.L5_safety.reasoning.ComplexityAnalyzerAgent import (
-        from agentic_core.L5_safety.reasoning.ComplexityAnalyzerAgent import (
-        from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
-        from agentic_core.L5_safety.reasoning.ComplexityAnalyzerAgent import (
-        from agentic_core.L5_safety.reasoning.ComplexityAnalyzerAgent import (
-        """Test strategy initialization."""
-        assert strategy.max_cyclomatic_complexity == 10
-        assert strategy.max_function_length == 50
+                from agentic_core.L3_orchestration.reasoning.UnifiedAgent import ValidationResult
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L5_safety.reasoning.ComplexityAnalyzerAgent import (
+                from agentic_core.L5_safety.reasoning.ComplexityAnalyzerAgent import (
+                from agentic_core.L5_safety.reasoning.ComplexityAnalyzerAgent import (
+                from agentic_core.L5_safety.reasoning.ComplexityAnalyzerAgent import (
+                from agentic_core.L5_safety.reasoning.ComplexityAnalyzerAgent import (
+                from agentic_core.L5_safety.reasoning.ComplexityAnalyzerAgent import (
+                from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
+                from agentic_core.L5_safety.reasoning.ComplexityAnalyzerAgent import (
+                from agentic_core.L5_safety.reasoning.ComplexityAnalyzerAgent import (
+                """Test strategy initialization."""
+                assert strategy.max_cyclomatic_complexity == 10
+                assert strategy.max_function_length == 50
+                assert strategy.max_arguments == 6
+
         assert strategy.max_arguments == 6
 
     @pytest.mark.asyncio

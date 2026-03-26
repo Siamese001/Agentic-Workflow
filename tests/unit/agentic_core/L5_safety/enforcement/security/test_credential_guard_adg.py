@@ -9,6 +9,8 @@ pytestmark = pytest.mark.unit
 
 
 def test_module_importable():
-    import agentic_core.L5_safety.enforcement.security.credential_guard  # noqa: F401
-    """Module credential_guard must be importable."""
+        import agentic_core.L5_safety.enforcement.security.credential_guard  # noqa: F401
+        """Module credential_guard must be importable."""
+        assert agentic_core.L5_safety.enforcement.security.credential_guard is not None
+
     assert agentic_core.L5_safety.enforcement.security.credential_guard is not None

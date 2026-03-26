@@ -5,9 +5,10 @@ import pytest
 
 pytestmark = pytest.mark.unit
 
-import apps_lic.reasoning.ArchetypeIndicatorsAgent  # noqa: F401
 
 
 def test_module_importable():
     """Module ArchetypeIndicatorsAgent must be importable."""
+    import apps_lic.reasoning.ArchetypeIndicatorsAgent  # noqa: F401
+
     assert apps_lic.reasoning.ArchetypeIndicatorsAgent is not None

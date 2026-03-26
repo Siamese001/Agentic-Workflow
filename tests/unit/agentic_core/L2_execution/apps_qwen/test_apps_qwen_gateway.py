@@ -9,8 +9,10 @@ import asyncio
 
 
 def test_apps_qwen_gateway_health_check() -> None:
-    from agentic_core.L2_execution.apps_qwen.apps_qwen_gateway import (
 """Test apps_qwen_gateway_health_check contract compliance."""
+        from agentic_core.L2_execution.apps_qwen.apps_qwen_gateway import (
+    """Test apps_qwen_gateway_health_check contract compliance."""
+
 # Arrange
 # TODO: Set up test data
 test_data = {}  # Replace with actual test data

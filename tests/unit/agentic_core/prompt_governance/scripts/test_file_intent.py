@@ -26,8 +26,10 @@ pytestmark = pytest.mark.unit
 
 class TestFileIntentContract:
     def test_is_enum(self):
-        from agentic_core.prompt_governance.scripts.file_intent import (  # noqa: F401
-        import enum
+                from agentic_core.prompt_governance.scripts.file_intent import (  # noqa: F401
+                import enum
+                assert issubclass(FileIntent, enum.Enum)
+
         assert issubclass(FileIntent, enum.Enum)
 
     def test_has_members(self):

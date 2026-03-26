@@ -172,19 +172,21 @@ pytestmark = pytest.mark.unit
 
 class TestExecutionPhaseSignal:
     def test_is_enum(self):
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.L3_orchestration.types.execution_phase_signal_types import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-    """Test is_enum runtime behavior."""
-    # Arrange
-    """Test has_four_phases runtime behavior."""
-    # Arrange
-    # TODO: Set up test data for has_four_phases
-    """Test is_dataclass runtime behavior."""
-    # Arrange
-    """Test creates runtime behavior."""
-    # Arrange
-    # TODO: Set up test data for creates
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L3_orchestration.types.execution_phase_signal_types import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+            """Test is_enum runtime behavior."""
+            # Arrange
+            """Test has_four_phases runtime behavior."""
+            # Arrange
+            # TODO: Set up test data for has_four_phases
+            """Test is_dataclass runtime behavior."""
+            # Arrange
+            """Test creates runtime behavior."""
+            # Arrange
+            # TODO: Set up test data for creates
+            test_data = {}  # Replace with actual test data
+
     test_data = {}  # Replace with actual test data
 
     # Act

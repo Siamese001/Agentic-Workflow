@@ -175,10 +175,12 @@ pytestmark = pytest.mark.unit
 
 class TestObservabilityProbeExecutorAgentInit:
     def test_creates_with_defaults(self):
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.L6_observability.reasoning.observability_probe_executor import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        agent = ObservabilityProbeExecutorAgent()
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L6_observability.reasoning.observability_probe_executor import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                agent = ObservabilityProbeExecutorAgent()
+                assert agent is not None
+
         assert agent is not None
 
     def test_probe_type_default_generic(self):

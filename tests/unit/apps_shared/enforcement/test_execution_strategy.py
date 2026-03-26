@@ -10,26 +10,27 @@ import pytest
 
 pytestmark = pytest.mark.unit
 
-from apps_shared.enforcement.execution_strategy import (  # noqa: F401
-    BATCH_SIZE,
-    BUFFER_SIZE,
-    DEFAULT_SLEEP,
-    MAX_RETRIES,
-    THRESHOLD,
-    ExecutionConfig,
-    ExecutionEnvironment,
-    ExecutionPriority,
-    ExecutionRequest,
-    ExecutionResult,
-    ExecutionStrategy,
-    create_observability_execution_engine,
-    use_observability_execution,
-)
 
 
 class TestExecutionStrategyContract:
     def test_is_enum(self):
     """Test is_enum runtime behavior."""
+        from apps_shared.enforcement.execution_strategy import (  # noqa: F401
+            BATCH_SIZE,
+            BUFFER_SIZE,
+            DEFAULT_SLEEP,
+            MAX_RETRIES,
+            THRESHOLD,
+            ExecutionConfig,
+            ExecutionEnvironment,
+            ExecutionPriority,
+            ExecutionRequest,
+            ExecutionResult,
+            ExecutionStrategy,
+            create_observability_execution_engine,
+            use_observability_execution,
+        )
+
     # Arrange
     # TODO: Set up test data for is_enum
     test_data = {}  # Replace with actual test data

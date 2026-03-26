@@ -173,19 +173,21 @@ pytestmark = pytest.mark.unit
 
 class TestFileIoInit:
     def test_creates(self):
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.L2_execution.tools.file_io_impl import FileIo
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-    """Test creates runtime behavior."""
-    # Arrange
-    # TODO: Set up test data for creates
-    test_data = {}  # Replace with actual test data
-    """Test has_read_file runtime behavior."""
-    # Arrange
-    # TODO: Set up test data for has_read_file
-    """Test has_save_file runtime behavior."""
-    # Arrange
-    # TODO: Set up test data for has_save_file
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L2_execution.tools.file_io_impl import FileIo
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+            """Test creates runtime behavior."""
+            # Arrange
+            # TODO: Set up test data for creates
+            test_data = {}  # Replace with actual test data
+            """Test has_read_file runtime behavior."""
+            # Arrange
+            # TODO: Set up test data for has_read_file
+            """Test has_save_file runtime behavior."""
+            # Arrange
+            # TODO: Set up test data for has_save_file
+            test_data = {}  # Replace with actual test data
+
     test_data = {}  # Replace with actual test data
 
     # Act

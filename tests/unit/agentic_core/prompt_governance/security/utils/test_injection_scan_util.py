@@ -9,6 +9,8 @@ pytestmark = pytest.mark.unit
 
 
 def test_module_importable():
-    import agentic_core.prompt_governance.security.utils.injection_scan_util  # noqa: F401
-    """Module injection_scan_util must be importable."""
+        import agentic_core.prompt_governance.security.utils.injection_scan_util  # noqa: F401
+        """Module injection_scan_util must be importable."""
+        assert agentic_core.prompt_governance.security.utils.injection_scan_util is not None
+
     assert agentic_core.prompt_governance.security.utils.injection_scan_util is not None

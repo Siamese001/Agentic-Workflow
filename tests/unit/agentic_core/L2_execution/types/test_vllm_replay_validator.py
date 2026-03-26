@@ -210,15 +210,18 @@ def make_clean():
 
 
 def test_replay_hash_deterministic_two_runs():
-    from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-    from agentic_core.L2_execution.types.vllm_gateway_integration_types import (
-    from agentic_core.L2_execution.types.vllm_infrastructure_fingerprint_types import (
-    from agentic_core.L2_execution.types.vllm_replay_validator_types import (
-    from agentic_core.L2_execution.types.vllm_token_budget_types import TaskClass
-    from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-    from agentic_core.L2_execution.types.vllm_serving_profile_types import LOCAL_FAST_7B_MAX_MODEL_LEN
-    from agentic_core.L2_execution.types.vllm_token_budget_types import (
 """Test replay_hash_deterministic_two_runs runtime behavior."""
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L2_execution.types.vllm_gateway_integration_types import (
+        from agentic_core.L2_execution.types.vllm_infrastructure_fingerprint_types import (
+        from agentic_core.L2_execution.types.vllm_replay_validator_types import (
+        from agentic_core.L2_execution.types.vllm_token_budget_types import TaskClass
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L2_execution.types.vllm_serving_profile_types import LOCAL_FAST_7B_MAX_MODEL_LEN
+        from agentic_core.L2_execution.types.vllm_token_budget_types import (
+        from agentic_core.L2_execution.types.vllm_token_budget_types import (
+    """Test replay_hash_deterministic_two_runs runtime behavior."""
+
 # Arrange
 # TODO: Set up execution parameters
 input_data = {}  # Replace with actual test data

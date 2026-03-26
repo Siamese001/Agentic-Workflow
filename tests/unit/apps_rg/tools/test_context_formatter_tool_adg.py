@@ -5,9 +5,10 @@ import pytest
 
 pytestmark = pytest.mark.unit
 
-import apps_rg.tools.context_formatter_tool  # noqa: F401
 
 
 def test_module_importable():
     """Module context_formatter_tool must be importable."""
+    import apps_rg.tools.context_formatter_tool  # noqa: F401
+
     assert apps_rg.tools.context_formatter_tool is not None

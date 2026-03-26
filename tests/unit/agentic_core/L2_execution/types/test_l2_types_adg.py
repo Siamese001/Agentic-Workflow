@@ -92,16 +92,18 @@ pytestmark = pytest.mark.unit
 
 class TestPhaseSpec:
     def test_creates_with_name_only(self):
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.L2_execution.types.l2_phase_spec import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-    """Test creates_with_name_only runtime behavior."""
-    # Arrange
-    # TODO: Set up test data for creates_with_name_only
-    test_data = {}  # Replace with actual test data
-    """Test frozen_dataclass runtime behavior."""
-    # Arrange
-    # TODO: Set up test data for frozen_dataclass
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L2_execution.types.l2_phase_spec import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+            """Test creates_with_name_only runtime behavior."""
+            # Arrange
+            # TODO: Set up test data for creates_with_name_only
+            test_data = {}  # Replace with actual test data
+            """Test frozen_dataclass runtime behavior."""
+            # Arrange
+            # TODO: Set up test data for frozen_dataclass
+            test_data = {}  # Replace with actual test data
+
     test_data = {}  # Replace with actual test data
 
     # Act

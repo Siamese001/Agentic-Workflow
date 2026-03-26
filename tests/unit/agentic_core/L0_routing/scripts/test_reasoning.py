@@ -27,7 +27,9 @@ pytestmark = pytest.mark.unit
 
 class TestReasoningStrategyContract:
     def test_is_class(self):
-        from agentic_core.L0_routing.scripts.reasoning import (  # noqa: F401
+                from agentic_core.L0_routing.scripts.reasoning import (  # noqa: F401
+                assert isinstance(ReasoningStrategy, type)
+
         assert isinstance(ReasoningStrategy, type)
 
     def test_has_method_execute(self):

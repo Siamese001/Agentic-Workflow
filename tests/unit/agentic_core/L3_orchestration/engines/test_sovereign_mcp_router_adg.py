@@ -9,6 +9,8 @@ pytestmark = pytest.mark.unit
 
 
 def test_module_importable():
-    import agentic_core.L3_orchestration.engines.sovereign_mcp_router  # noqa: F401
-    """Module sovereign_mcp_router must be importable."""
+        import agentic_core.L3_orchestration.engines.sovereign_mcp_router  # noqa: F401
+        """Module sovereign_mcp_router must be importable."""
+        assert agentic_core.L3_orchestration.engines.sovereign_mcp_router is not None
+
     assert agentic_core.L3_orchestration.engines.sovereign_mcp_router is not None

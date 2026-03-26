@@ -210,21 +210,23 @@ class TestCodeHealingStrategy:
         return CodeHealingStrategy(config)
 
     def test_initialization(self, strategy, config):
-        from agentic_core.L3_orchestration.reasoning.UnifiedAgent import HealingResult
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.L5_safety.reasoning.CodeHealerAgent import (
-        from agentic_core.L5_safety.reasoning.CodeHealerAgent import (
-        from agentic_core.L5_safety.reasoning.CodeHealerAgent import (
-        from agentic_core.L5_safety.reasoning.CodeHealerAgent import HealingType
-        from agentic_core.L5_safety.reasoning.CodeHealerAgent import HealerConfig
-        from agentic_core.L5_safety.reasoning.CodeHealerAgent import CodeHealerAgent
-        from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
-        from agentic_core.L5_safety.reasoning.CodeHealerAgent import CodeHealerAgent
-        from agentic_core.L5_safety.reasoning.CodeHealerAgent import CodeHealerAgent
-        """Test strategy initialization."""
-        assert strategy.enable_canon is True
-        assert strategy.enable_import is True
+                from agentic_core.L3_orchestration.reasoning.UnifiedAgent import HealingResult
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L5_safety.reasoning.CodeHealerAgent import (
+                from agentic_core.L5_safety.reasoning.CodeHealerAgent import (
+                from agentic_core.L5_safety.reasoning.CodeHealerAgent import (
+                from agentic_core.L5_safety.reasoning.CodeHealerAgent import HealingType
+                from agentic_core.L5_safety.reasoning.CodeHealerAgent import HealerConfig
+                from agentic_core.L5_safety.reasoning.CodeHealerAgent import CodeHealerAgent
+                from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
+                from agentic_core.L5_safety.reasoning.CodeHealerAgent import CodeHealerAgent
+                from agentic_core.L5_safety.reasoning.CodeHealerAgent import CodeHealerAgent
+                """Test strategy initialization."""
+                assert strategy.enable_canon is True
+                assert strategy.enable_import is True
+                assert strategy.enable_structural is True
+
         assert strategy.enable_structural is True
 
     @pytest.mark.asyncio

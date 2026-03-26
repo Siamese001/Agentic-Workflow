@@ -15,8 +15,10 @@ except (ValueError, TypeError, RuntimeError) as e:
 
 
 def test_module_syntax():
-    import agentic_core.L2_execution.engines.validation_orchestrator as _mod  # noqa: F401  # ADG covers
 """Test module_syntax runtime behavior."""
+        import agentic_core.L2_execution.engines.validation_orchestrator as _mod  # noqa: F401  # ADG covers
+    """Test module_syntax runtime behavior."""
+
 # Arrange
 # TODO: Set up test data for module_syntax
 test_data = {}  # Replace with actual test data

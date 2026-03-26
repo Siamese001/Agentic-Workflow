@@ -254,11 +254,13 @@ def coord():
 
 class TestRedisConnection:
     def test_health_check_reports_healthy(self):
-        from agentic_core.cache.redis_cache_client import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-    """Test health_check_reports_healthy contract compliance."""
-    # Arrange
-    # TODO: Set up test data
+                from agentic_core.cache.redis_cache_client import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+            """Test health_check_reports_healthy contract compliance."""
+            # Arrange
+            # TODO: Set up test data
+            test_data = {}  # Replace with actual test data
+
     test_data = {}  # Replace with actual test data
 
     # Act

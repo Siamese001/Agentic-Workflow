@@ -164,8 +164,10 @@ class TestFlatDirectories:
     """FLAT_DIRECTORIES constant is correctly defined."""
 
     def test_mixins_is_flat(self):
-        from agentic_core.L5_safety.config.structure_blueprint import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L5_safety.config.structure_blueprint import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                assert "mixins" in FLAT_DIRECTORIES
+
         assert "mixins" in FLAT_DIRECTORIES
 
     def test_base_agents_is_flat(self):

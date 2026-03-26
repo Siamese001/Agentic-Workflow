@@ -9,10 +9,6 @@ Validates:
 import ast
 from pathlib import Path
 
-from agentic_core.L0_routing.config.path_constants import (
-    AGENTIC_CORE_DIR,
-    L3_ORCHESTRATION_DIR,
-)
 
 
 def detect_agent_in_wrong_subfolder(file_path: Path) -> dict | None:
@@ -66,6 +62,11 @@ class TestAgentInTypesViolation:
 
     def test_agent_in_types_detected(self, tmp_path):
         """Agent class in types/ should be detected as violation."""
+        from agentic_core.L0_routing.config.path_constants import (
+            AGENTIC_CORE_DIR,
+            L3_ORCHESTRATION_DIR,
+        )
+
         types_dir = tmp_path / AGENTIC_CORE_DIR / "L5_safety" / "types"
         types_dir.mkdir(parents=True)
 

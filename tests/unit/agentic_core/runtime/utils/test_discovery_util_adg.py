@@ -44,34 +44,36 @@ def _src_text():
 
 class TestDiscoveryUtilSource:
     def test_source_exists(self):
-        import agentic_core.runtime.utils.discovery_util as _mod  # noqa: F401  # ADG covers
-    """Test source_exists runtime behavior."""
-    # Arrange
-    # TODO: Set up runtime environment
-    """Test parses_without_error runtime behavior."""
-    # Arrange
-    # TODO: Set up error condition
-    """Test has_discovered_agent_record_class runtime behavior."""
-    # Arrange
-    # TODO: Set up runtime environment
-    """Test has_agent_registry_class runtime behavior."""
-    # Arrange
-    # TODO: Set up runtime environment
-    """Test has_name_field runtime behavior."""
-    # Arrange
-    # TODO: Set up runtime environment
-    """Test has_layer_field runtime behavior."""
-    # Arrange
-    # TODO: Set up runtime environment
-    """Test has_file_path_field runtime behavior."""
-    # Arrange
-    # TODO: Set up runtime environment
-    """Test has_discover_all_method runtime behavior."""
-    # Arrange
-    # TODO: Set up runtime environment
-    """Test agent_registry_has_discovered_agents runtime behavior."""
-    # Arrange
-    # TODO: Set up runtime environment
+                import agentic_core.runtime.utils.discovery_util as _mod  # noqa: F401  # ADG covers
+            """Test source_exists runtime behavior."""
+            # Arrange
+            # TODO: Set up runtime environment
+            """Test parses_without_error runtime behavior."""
+            # Arrange
+            # TODO: Set up error condition
+            """Test has_discovered_agent_record_class runtime behavior."""
+            # Arrange
+            # TODO: Set up runtime environment
+            """Test has_agent_registry_class runtime behavior."""
+            # Arrange
+            # TODO: Set up runtime environment
+            """Test has_name_field runtime behavior."""
+            # Arrange
+            # TODO: Set up runtime environment
+            """Test has_layer_field runtime behavior."""
+            # Arrange
+            # TODO: Set up runtime environment
+            """Test has_file_path_field runtime behavior."""
+            # Arrange
+            # TODO: Set up runtime environment
+            """Test has_discover_all_method runtime behavior."""
+            # Arrange
+            # TODO: Set up runtime environment
+            """Test agent_registry_has_discovered_agents runtime behavior."""
+            # Arrange
+            # TODO: Set up runtime environment
+            runtime_context = {}  # Replace with actual runtime context
+
     runtime_context = {}  # Replace with actual runtime context
 
     # Act

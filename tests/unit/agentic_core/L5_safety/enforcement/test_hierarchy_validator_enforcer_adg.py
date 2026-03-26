@@ -190,10 +190,12 @@ def config_file(tmp_path):
 
 class TestHierarchyValidator:
     def test_creates_from_valid_config(self, config_file):
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.L5_safety.enforcement.hierarchy_validator_enforcer import HierarchyValidator
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        v = HierarchyValidator(config_file)
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L5_safety.enforcement.hierarchy_validator_enforcer import HierarchyValidator
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                v = HierarchyValidator(config_file)
+                assert v is not None
+
         assert v is not None
 
     def test_config_hash_is_string(self, config_file):

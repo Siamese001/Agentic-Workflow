@@ -9,8 +9,10 @@ pytestmark = pytest.mark.unit
 
 
 def test_module_importable():
-    import agentic_core.seams.contracts.__init__ as _mod  # noqa: F401
 """Test module_importable contract compliance."""
+        import agentic_core.seams.contracts.__init__ as _mod  # noqa: F401
+    """Test module_importable contract compliance."""
+
 # Arrange
 # TODO: Set up contract parties and terms
 contract_terms = {}  # Replace with actual contract terms

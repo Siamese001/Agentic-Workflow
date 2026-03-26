@@ -40,7 +40,9 @@ def _mixin_class_names():
 
 class TestStateValidationTypesSource:
     def test_shim_source_exists(self):
-        import agentic_core.L4_state.types.state_validation_types as _mod  # noqa: F401  # ADG covers
+                import agentic_core.L4_state.types.state_validation_types as _mod  # noqa: F401  # ADG covers
+                assert _SHIM.exists(), f"Shim not found: {_SHIM}"
+
         assert _SHIM.exists(), f"Shim not found: {_SHIM}"
 
     def test_mixin_source_exists(self):

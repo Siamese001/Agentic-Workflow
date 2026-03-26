@@ -26,17 +26,19 @@ pytestmark = pytest.mark.unit
 
 class TestSecurityViolationErrorContract:
     def test_is_class(self):
-        from agentic_core.L5_safety.utils.subprocess_security_util import (  # noqa: F401
-    """Test is_class runtime behavior."""
-    # Arrange
-    # TODO: Set up test data for is_class
-    """Test instantiable_or_abstract runtime behavior."""
-    # Arrange
-    # TODO: Set up test data for instantiable_or_abstract
-    test_data = {}  # Replace with actual test data
-    """Test is_callable runtime behavior."""
-    # Arrange
-    # TODO: Set up execution parameters
+                from agentic_core.L5_safety.utils.subprocess_security_util import (  # noqa: F401
+            """Test is_class runtime behavior."""
+            # Arrange
+            # TODO: Set up test data for is_class
+            """Test instantiable_or_abstract runtime behavior."""
+            # Arrange
+            # TODO: Set up test data for instantiable_or_abstract
+            test_data = {}  # Replace with actual test data
+            """Test is_callable runtime behavior."""
+            # Arrange
+            # TODO: Set up execution parameters
+            input_data = {}  # Replace with actual test data
+
     input_data = {}  # Replace with actual test data
 
     # Act

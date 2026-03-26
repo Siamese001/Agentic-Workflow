@@ -10,7 +10,9 @@ pytestmark = pytest.mark.unit
 
 class TestApprovalStatus:
     def test_pending_value(self):
-        from agentic_core.mixins.hitl_mixin import ApprovalStatus, HITLMixin, RiskLevel
+                from agentic_core.mixins.hitl_mixin import ApprovalStatus, HITLMixin, RiskLevel
+                assert ApprovalStatus.PENDING.value == "pending"
+
         assert ApprovalStatus.PENDING.value == "pending"
 
     def test_approved_value(self):

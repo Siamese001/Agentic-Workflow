@@ -23,8 +23,10 @@ pytestmark = pytest.mark.unit
 
 class TestHealingPatternContract:
     def test_is_dataclass(self):
-        from agentic_core.L1_cognition.types.client_types import (  # noqa: F401
-        import dataclasses
+                from agentic_core.L1_cognition.types.client_types import (  # noqa: F401
+                import dataclasses
+                assert dataclasses.is_dataclass(HealingPattern)
+
         assert dataclasses.is_dataclass(HealingPattern)
 
     def test_field_names_present(self):

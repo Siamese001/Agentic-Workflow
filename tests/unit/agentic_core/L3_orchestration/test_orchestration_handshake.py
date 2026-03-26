@@ -218,11 +218,13 @@ def _input_with(*proposals: AdvisorProposal) -> ArbitrationInput:
 class TestHandshakeSuccessPaths:
     @pytest.mark.governance
     def test_initial_state_is_init(self):
-        from agentic_core.L3_orchestration.arbitration.arbitration_contract import (
-        from agentic_core.L3_orchestration.arbitration.arbitrator import Arbitrator
-        from agentic_core.L3_orchestration.engines.handshake_state_machine import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        m = HandshakeStateMachine()
+                from agentic_core.L3_orchestration.arbitration.arbitration_contract import (
+                from agentic_core.L3_orchestration.arbitration.arbitrator import Arbitrator
+                from agentic_core.L3_orchestration.engines.handshake_state_machine import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                m = HandshakeStateMachine()
+                assert m.current_state == HandshakeState.INIT
+
         assert m.current_state == HandshakeState.INIT
 
     @pytest.mark.governance

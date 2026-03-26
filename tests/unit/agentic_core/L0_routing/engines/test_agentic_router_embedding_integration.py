@@ -244,11 +244,13 @@ _MAPPING = {
 
 class TestAgenticRouterInit:
     def test_no_classifier_by_default(self):
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.L0_routing.engines.agentic_router import AgenticRouter, RoutingDecision
-        from agentic_core.L0_routing.engines.intent_embedding_classifier import IntentEmbeddingClassifier
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        router = AgenticRouter()
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L0_routing.engines.agentic_router import AgenticRouter, RoutingDecision
+                from agentic_core.L0_routing.engines.intent_embedding_classifier import IntentEmbeddingClassifier
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                router = AgenticRouter()
+                assert router._classifier is None
+
         assert router._classifier is None
 
     def test_accepts_none_classifier_explicitly(self):

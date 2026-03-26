@@ -5,9 +5,10 @@ import pytest
 
 pytestmark = pytest.mark.unit
 
-import apps_lic.tools.enforce_tone_guidelines  # noqa: F401
 
 
 def test_module_importable():
     """Module enforce_tone_guidelines must be importable."""
+    import apps_lic.tools.enforce_tone_guidelines  # noqa: F401
+
     assert apps_lic.tools.enforce_tone_guidelines is not None

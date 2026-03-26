@@ -289,19 +289,21 @@ class TestBlueprintInvariants:
     """SOVEREIGN_TERRITORIES must not declare any subfolders for tests/support/."""
 
     def test_support_has_no_declared_subfolders_in_blueprint(self):
-        from agentic_core.L0_routing.config.path_constants import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.L5_safety.reasoning.hierarchy_healer import HierarchyAgent
-        from agentic_core.L5_safety.config.structure_blueprint import (
-        from agentic_core.L5_safety.config.structure_blueprint import (
-        from agentic_core.L5_safety.config.structure_blueprint import (
-        from agentic_core.L5_safety.config.structure_blueprint import (
-        from agentic_core.L5_safety.config.structure_blueprint import (
-        from agentic_core.L5_safety.config.structure_blueprint import (
-        from agentic_core.L5_safety.reasoning.hierarchy_healer import HierarchyAgent
-        """
-        HARD INVARIANT: get_all_territories()[TESTS_DIR]['subfolders']['support']
+                from agentic_core.L0_routing.config.path_constants import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L5_safety.reasoning.hierarchy_healer import HierarchyAgent
+                from agentic_core.L5_safety.config.structure_blueprint import (
+                from agentic_core.L5_safety.config.structure_blueprint import (
+                from agentic_core.L5_safety.config.structure_blueprint import (
+                from agentic_core.L5_safety.config.structure_blueprint import (
+                from agentic_core.L5_safety.config.structure_blueprint import (
+                from agentic_core.L5_safety.config.structure_blueprint import (
+                from agentic_core.L5_safety.reasoning.hierarchy_healer import HierarchyAgent
+                """
+                HARD INVARIANT: get_all_territories()[TESTS_DIR]['subfolders']['support']
+                must have no 'subfolders' key (or an empty one).
+
         must have no 'subfolders' key (or an empty one).
 
         Any declared subfolders would give healing agents permission to create

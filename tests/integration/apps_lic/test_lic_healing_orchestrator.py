@@ -240,12 +240,14 @@ class TestLicHealingOrchestratorExecuteHealing:
         return orch
 
     def test_unknown_incident_returns_resolved(self):
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from apps_lic.reasoning.LicHealingOrchestrator import LicHealingOrchestrator
-        orch = self._get_orchestrator()
-        result = orch._execute_healing({"type": "unknown_xyz"})
-        assert result["status"] in ("resolved", "error")
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from apps_lic.reasoning.LicHealingOrchestrator import LicHealingOrchestrator
+                orch = self._get_orchestrator()
+                result = orch._execute_healing({"type": "unknown_xyz"})
+                assert result["status"] in ("resolved", "error")
+                assert result["incident_type"] == "unknown_xyz"
+
         assert result["incident_type"] == "unknown_xyz"
 
     def test_structural_incident_dispatches(self):

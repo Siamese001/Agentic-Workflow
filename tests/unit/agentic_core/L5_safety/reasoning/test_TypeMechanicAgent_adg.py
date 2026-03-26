@@ -9,6 +9,8 @@ pytestmark = pytest.mark.unit
 
 
 def test_module_importable():
-    import agentic_core.L5_safety.reasoning.TypeMechanicAgent  # noqa: F401
-    """Module TypeMechanicAgent must be importable."""
+        import agentic_core.L5_safety.reasoning.TypeMechanicAgent  # noqa: F401
+        """Module TypeMechanicAgent must be importable."""
+        assert agentic_core.L5_safety.reasoning.TypeMechanicAgent is not None
+
     assert agentic_core.L5_safety.reasoning.TypeMechanicAgent is not None

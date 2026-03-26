@@ -5,9 +5,10 @@ import pytest
 
 pytestmark = pytest.mark.unit
 
-import apps_rg.utils.rg_core_mixins_util  # noqa: F401
 
 
 def test_module_importable():
     """Module rg_core_mixins_util must be importable."""
+    import apps_rg.utils.rg_core_mixins_util  # noqa: F401
+
     assert apps_rg.utils.rg_core_mixins_util is not None

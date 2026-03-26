@@ -66,19 +66,21 @@ class TestDagRuntimeInspectorStructuralContract:
     """AST structural contract: agent shape, inheritance, method presence."""
 
     def test_correct_import_path(self) -> None:
-        from agentic_core.L0_routing.config.path_constants import (
-        from agentic_core.mixins.inspection_capability_mixin import InspectionCapability, InspectionResult
-    """Test correct_import_path runtime behavior."""
-    # Arrange
-    # TODO: Set up runtime environment
-    runtime_context = {}  # Replace with actual runtime context
-    """Test shim_exists runtime behavior."""
-    # Arrange
-    # TODO: Set up runtime environment
-    runtime_context = {}  # Replace with actual runtime context
-    """Test inherits_inspection_capability runtime behavior."""
-    # Arrange
-    # TODO: Set up runtime environment
+                from agentic_core.L0_routing.config.path_constants import (
+                from agentic_core.mixins.inspection_capability_mixin import InspectionCapability, InspectionResult
+            """Test correct_import_path runtime behavior."""
+            # Arrange
+            # TODO: Set up runtime environment
+            runtime_context = {}  # Replace with actual runtime context
+            """Test shim_exists runtime behavior."""
+            # Arrange
+            # TODO: Set up runtime environment
+            runtime_context = {}  # Replace with actual runtime context
+            """Test inherits_inspection_capability runtime behavior."""
+            # Arrange
+            # TODO: Set up runtime environment
+            runtime_context = {}  # Replace with actual runtime context
+
     runtime_context = {}  # Replace with actual runtime context
 
     # Act

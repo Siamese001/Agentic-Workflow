@@ -9,6 +9,8 @@ pytestmark = pytest.mark.unit
 
 
 def test_module_importable():
-    import agentic_core.L4_state.utils.get_existing_file_hashes_util  # noqa: F401
-    """Module get_existing_file_hashes_util must be importable."""
+        import agentic_core.L4_state.utils.get_existing_file_hashes_util  # noqa: F401
+        """Module get_existing_file_hashes_util must be importable."""
+        assert agentic_core.L4_state.utils.get_existing_file_hashes_util is not None
+
     assert agentic_core.L4_state.utils.get_existing_file_hashes_util is not None

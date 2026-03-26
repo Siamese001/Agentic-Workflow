@@ -73,13 +73,15 @@ def _call(agent, file_path, dry_run=False, affected=None, import_touched=None):
 
 class TestDepthAlreadyCorrect:
     def test_depth_already_correct_returns_skipped(self, tmp_path):
-        from agentic_core.L0_routing.config.path_constants import (
-        from agentic_core.L5_safety.reasoning.LocationHealerAgent import LocationHealerAgent
-        """Success path: depth == expected → SKIPPED, no I/O."""
-        agent = _make_agent(tmp_path)
-        # agentic_core/L0_routing/scripts/file.py → depth 3, expected 3
-        f = tmp_path / AGENTIC_CORE_DIR / "L0_routing" / "scripts" / "agent.py"
-        f.parent.mkdir(parents=True)
+                from agentic_core.L0_routing.config.path_constants import (
+                from agentic_core.L5_safety.reasoning.LocationHealerAgent import LocationHealerAgent
+                """Success path: depth == expected → SKIPPED, no I/O."""
+                agent = _make_agent(tmp_path)
+                # agentic_core/L0_routing/scripts/file.py → depth 3, expected 3
+                f = tmp_path / AGENTIC_CORE_DIR / "L0_routing" / "scripts" / "agent.py"
+                f.parent.mkdir(parents=True)
+                f.write_text("")
+
         f.write_text("")
 
         result = _call(agent, f)

@@ -1,11 +1,12 @@
 """ADG importability contract for apps_rg/reasoning/FactCheckAgent.py."""
 from __future__ import annotations
 
-import apps_rg.reasoning.FactCheckAgent  # noqa: F401
 
 
 def test_module_importable():
 """Test module_importable contract compliance."""
+    import apps_rg.reasoning.FactCheckAgent  # noqa: F401
+
 # Arrange
 # TODO: Set up contract test scenario
 test_scenario = {}  # Replace with actual test scenario

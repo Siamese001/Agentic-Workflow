@@ -266,16 +266,18 @@ def _make_input(
 
 class TestConfidenceBands:
     def test_above_x_routes_local_agent(self, default_config):
-        from agentic_core.L0_routing.config.path_constants import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.L2_execution.healers.healing_tier_config import (
-        from agentic_core.L2_execution.healers.healing_tier_router import (
-        from agentic_core.L2_execution.healers.healing_tier_types import (
-        from agentic_core.L2_execution.healers.tiering_allowlist import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-    """Test above_x_routes_local_agent runtime behavior."""
-    # Arrange
-    # TODO: Set up test data for above_x_routes_local_agent
+                from agentic_core.L0_routing.config.path_constants import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L2_execution.healers.healing_tier_config import (
+                from agentic_core.L2_execution.healers.healing_tier_router import (
+                from agentic_core.L2_execution.healers.healing_tier_types import (
+                from agentic_core.L2_execution.healers.tiering_allowlist import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+            """Test above_x_routes_local_agent runtime behavior."""
+            # Arrange
+            # TODO: Set up test data for above_x_routes_local_agent
+            test_data = {}  # Replace with actual test data
+
     test_data = {}  # Replace with actual test data
 
     # Act

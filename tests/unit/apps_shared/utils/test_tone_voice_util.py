@@ -10,25 +10,26 @@ import pytest
 
 pytestmark = pytest.mark.unit
 
-from apps_shared.utils.tone_voice_util import (  # noqa: F401
-    BATCH_SIZE,
-    BUFFER_SIZE,
-    DEFAULT_SLEEP,
-    MAX_RETRIES,
-    THRESHOLD,
-    ToneAnalysisResult,
-    ToneEnforcer,
-    ToneSettings,
-    ToneViolation,
-    ToneVoice,
-    analyze_tone,
-    audit_text,
-    get_tone_enforcer,
-)
 
 
 class TestToneVoiceContract:
     def test_is_enum(self):
+        from apps_shared.utils.tone_voice_util import (  # noqa: F401
+            BATCH_SIZE,
+            BUFFER_SIZE,
+            DEFAULT_SLEEP,
+            MAX_RETRIES,
+            THRESHOLD,
+            ToneAnalysisResult,
+            ToneEnforcer,
+            ToneSettings,
+            ToneViolation,
+            ToneVoice,
+            analyze_tone,
+            audit_text,
+            get_tone_enforcer,
+        )
+
         import enum
         assert issubclass(ToneVoice, enum.Enum)
 

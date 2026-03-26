@@ -187,63 +187,65 @@ class TestW1MutationRecordCreative:
         return UniversalWriteGateway(actor_id=actor, run_id=run_id)
 
     def test_mutation_hash_is_collision_resistant(self):
-        from agentic_core.L5_safety.enforcement.import_guard import get_import_guard
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.L2_execution.UniversalWriteGateway import UniversalWriteGateway
-        from agentic_core.L2_execution.UniversalWriteGateway import MutationRecord
-        from agentic_core.L2_execution.UniversalWriteGateway import MutationRecord, UniversalWriteGateway
-        from agentic_core.L2_execution.UniversalWriteGateway import SimulationResult, UniversalWriteGateway
-        from agentic_core.L2_execution.UniversalWriteGateway import UniversalWriteGateway
-        from agentic_core.L2_execution.enforcement.guardrail_gate import GuardrailGate
-        from agentic_core.L3_orchestration.registry.agent_dispatch_registry import AgentDispatchRegistry
-        from agentic_core.L3_orchestration.registry.agent_dispatch_registry import _extract_token_id
-        from agentic_core.L2_execution.enforcement.guardrail_gate import GuardrailGate
-        from agentic_core.L3_orchestration.registry.agent_capability_registry import (
-        from agentic_core.L3_orchestration.registry.agent_dispatch_registry import (
-        from agentic_core.L2_execution.enforcement.guardrail_gate import GuardrailGate
-        from agentic_core.L3_orchestration.registry.agent_dispatch_registry import AgentDispatchRegistry
-        from agentic_core.L2_execution.enforcement.guardrail_gate import GuardrailGate
-        from agentic_core.L3_orchestration.registry.agent_dispatch_registry import AgentDispatchRegistry
-        from agentic_core.L2_execution.enforcement.guardrail_gate import (
-        from agentic_core.L2_execution.enforcement.guardrail_gate import GuardrailGate
-        from agentic_core.L2_execution.enforcement.guardrail_gate import GuardrailGate
-        from agentic_core.L3_orchestration.registry.agent_dispatch_registry import AgentDispatchRegistry
-        from agentic_core.L2_execution.enforcement.guardrail_gate import (
-        from agentic_core.L2_execution.enforcement.guardrail_gate import GuardrailGate
-        from agentic_core.L2_execution.enforcement.guardrail_gate import GuardrailGate
-        from agentic_core.L2_execution.providers import reset_providers
-        from agentic_core.L2_execution.providers import reset_providers
-        from agentic_core.L2_execution.providers import SeededRandom
-        from agentic_core.L2_execution.providers import FrozenClock
-        from agentic_core.L2_execution.providers import FrozenClock, get_clock, set_clock
-        from agentic_core.L2_execution.providers import MonotonicSequenceClock
-        from agentic_core.L2_execution.providers import OsRandom
-        from agentic_core.L2_execution.providers import FrozenClock
-        from agentic_core.L2_execution.trace_context import TraceContext
-        from agentic_core.L2_execution.trace_context import TraceContext
-        from agentic_core.L2_execution.trace_context import TraceContext
-        from agentic_core.L2_execution.trace_context import TraceContext
-        from agentic_core.L2_execution.enforcement.guardrail_gate import GuardrailGate
-        from agentic_core.L2_execution.trace_context import TraceContext
-        from agentic_core.L3_orchestration.registry.agent_dispatch_registry import AgentDispatchRegistry
-        from agentic_core.L4_state.authority.run_state_authority import RunStateAuthority
-        from agentic_core.L4_state.authority.run_state_authority import RunStateAuthority
-        from agentic_core.L4_state.authority.run_state_authority import RunStateAuthority
-        from agentic_core.L4_state.authority.run_state_authority import RunStateAuthority
-        from agentic_core.L2_execution.enforcement.guardrail_gate import GuardrailGate
-        from agentic_core.L2_execution.providers import FrozenClock, SeededRandom, set_clock, set_random
-        from agentic_core.L2_execution.trace_context import TraceContext
-        from agentic_core.L2_execution.UniversalWriteGateway import UniversalWriteGateway
-        from agentic_core.L3_orchestration.registry.agent_dispatch_registry import AgentDispatchRegistry
-        from agentic_core.L4_state.authority.run_state_authority import RunStateAuthority
-        from agentic_core.L2_execution.providers import get_clock, reset_providers
-        from agentic_core.L3_orchestration.registry.agent_dispatch_registry import AgentDispatchRegistry
-        from agentic_core.L2_execution.providers import FrozenClock
-        from agentic_core.L2_execution.UniversalWriteGateway import MutationRecord, UniversalWriteGateway
-        from agentic_core.L2_execution.UniversalWriteGateway import UniversalWriteGateway
-        from agentic_core.L4_state.authority.run_state_authority import RunStateAuthority
         """Two records that differ in only one field must have different hashes."""
+                from agentic_core.L5_safety.enforcement.import_guard import get_import_guard
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L2_execution.UniversalWriteGateway import UniversalWriteGateway
+                from agentic_core.L2_execution.UniversalWriteGateway import MutationRecord
+                from agentic_core.L2_execution.UniversalWriteGateway import MutationRecord, UniversalWriteGateway
+                from agentic_core.L2_execution.UniversalWriteGateway import SimulationResult, UniversalWriteGateway
+                from agentic_core.L2_execution.UniversalWriteGateway import UniversalWriteGateway
+                from agentic_core.L2_execution.enforcement.guardrail_gate import GuardrailGate
+                from agentic_core.L3_orchestration.registry.agent_dispatch_registry import AgentDispatchRegistry
+                from agentic_core.L3_orchestration.registry.agent_dispatch_registry import _extract_token_id
+                from agentic_core.L2_execution.enforcement.guardrail_gate import GuardrailGate
+                from agentic_core.L3_orchestration.registry.agent_capability_registry import (
+                from agentic_core.L3_orchestration.registry.agent_dispatch_registry import (
+                from agentic_core.L2_execution.enforcement.guardrail_gate import GuardrailGate
+                from agentic_core.L3_orchestration.registry.agent_dispatch_registry import AgentDispatchRegistry
+                from agentic_core.L2_execution.enforcement.guardrail_gate import GuardrailGate
+                from agentic_core.L3_orchestration.registry.agent_dispatch_registry import AgentDispatchRegistry
+                from agentic_core.L2_execution.enforcement.guardrail_gate import (
+                from agentic_core.L2_execution.enforcement.guardrail_gate import GuardrailGate
+                from agentic_core.L2_execution.enforcement.guardrail_gate import GuardrailGate
+                from agentic_core.L3_orchestration.registry.agent_dispatch_registry import AgentDispatchRegistry
+                from agentic_core.L2_execution.enforcement.guardrail_gate import (
+                from agentic_core.L2_execution.enforcement.guardrail_gate import GuardrailGate
+                from agentic_core.L2_execution.enforcement.guardrail_gate import GuardrailGate
+                from agentic_core.L2_execution.providers import reset_providers
+                from agentic_core.L2_execution.providers import reset_providers
+                from agentic_core.L2_execution.providers import SeededRandom
+                from agentic_core.L2_execution.providers import FrozenClock
+                from agentic_core.L2_execution.providers import FrozenClock, get_clock, set_clock
+                from agentic_core.L2_execution.providers import MonotonicSequenceClock
+                from agentic_core.L2_execution.providers import OsRandom
+                from agentic_core.L2_execution.providers import FrozenClock
+                from agentic_core.L2_execution.trace_context import TraceContext
+                from agentic_core.L2_execution.trace_context import TraceContext
+                from agentic_core.L2_execution.trace_context import TraceContext
+                from agentic_core.L2_execution.trace_context import TraceContext
+                from agentic_core.L2_execution.enforcement.guardrail_gate import GuardrailGate
+                from agentic_core.L2_execution.trace_context import TraceContext
+                from agentic_core.L3_orchestration.registry.agent_dispatch_registry import AgentDispatchRegistry
+                from agentic_core.L4_state.authority.run_state_authority import RunStateAuthority
+                from agentic_core.L4_state.authority.run_state_authority import RunStateAuthority
+                from agentic_core.L4_state.authority.run_state_authority import RunStateAuthority
+                from agentic_core.L4_state.authority.run_state_authority import RunStateAuthority
+                from agentic_core.L2_execution.enforcement.guardrail_gate import GuardrailGate
+                from agentic_core.L2_execution.providers import FrozenClock, SeededRandom, set_clock, set_random
+                from agentic_core.L2_execution.trace_context import TraceContext
+                from agentic_core.L2_execution.UniversalWriteGateway import UniversalWriteGateway
+                from agentic_core.L3_orchestration.registry.agent_dispatch_registry import AgentDispatchRegistry
+                from agentic_core.L4_state.authority.run_state_authority import RunStateAuthority
+                from agentic_core.L2_execution.providers import get_clock, reset_providers
+                from agentic_core.L3_orchestration.registry.agent_dispatch_registry import AgentDispatchRegistry
+                from agentic_core.L2_execution.providers import FrozenClock
+                from agentic_core.L2_execution.UniversalWriteGateway import MutationRecord, UniversalWriteGateway
+                from agentic_core.L2_execution.UniversalWriteGateway import UniversalWriteGateway
+                from agentic_core.L4_state.authority.run_state_authority import RunStateAuthority
+                """Two records that differ in only one field must have different hashes."""
+
 #  # MOVED: from agentic_core.L2_execution.UniversalWriteGateway import MutationRecord
         base_kwargs = dict(actor_id='a', run_id='r', operation='write', path='artifacts/x.json', data='hello', replay_key='k1')
         r1 = MutationRecord.build(**base_kwargs)

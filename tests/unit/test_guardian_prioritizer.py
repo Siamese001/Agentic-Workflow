@@ -16,53 +16,6 @@ from pathlib import Path
 
 import pytest
 
-from agentic_core.adg.applications.guardian_prioritizer import (
-    _GUARDIAN_ADG_SIGNALS,
-    GuardianPrioritizer,
-    PrioritizationResult,
-)
-from agentic_core.adg.extraction.static_scanner import Edge, ScanResult
-from agentic_core.adg.schema_util import canonical_name
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-    _emit_agent_executes_agent,
-    _emit_applies_guardrail,  # noqa: E402
-    _emit_authorize_and_execute,
-    _emit_blocks_direct_write,
-    _emit_captures_evaluation_metric,
-    _emit_captures_execution_output,
-    _emit_checks_agent_registry,
-    _emit_coordinates_agents,
-    _emit_dispatches_agent,
-    _emit_dispatches_execution_plan,
-    _emit_dispatches_healing_run,
-    _emit_escalates_failure,
-    _emit_escalates_to_human,
-    _emit_gated_by_confidence,
-    _emit_hard_fails_untranscripted,
-    _emit_invokes_evaluation,
-    _emit_links_execution_to_snapshot,
-    _emit_observes_runtime_state,
-    _emit_orchestrates_workflow,
-    _emit_reads_policy_state,  # noqa: E402
-    _emit_records_execution_trace,  # noqa: E402
-    _emit_records_healing_outcome,
-    _emit_records_telemetry_event,
-    _emit_records_tool_invocation,
-    _emit_records_workflow_lineage,
-    _emit_routes_through,
-    _emit_routes_to_agent,
-    _emit_routes_to_capability,
-    _emit_signs_execution_trace,  # noqa: E402
-    _emit_snapshots_state,  # noqa: E402
-    _emit_stores_embedding,
-    _emit_transcripts_response,
-    _emit_updates_meta_learning_state,
-    _emit_validates_agent_capability,
-    _emit_validates_capability,
-    _emit_verifies_boundary,
-    _emit_verifies_policy,
-    _emit_writes_via_uwg,
-    emit_determinism_digest,  # noqa: E402
     emit_replay_key,  # noqa: E402
 )
 
@@ -70,42 +23,6 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 # REMOVED: _emit_applies_guardrail("p0", "test_guardian_prioritizer", "p0_governance")
 # REMOVED: _emit_reads_policy_state("p0", "test_guardian_prioritizer", "policy_binding")
 # REMOVED: _emit_snapshots_state("p0", "test_guardian_prioritizer", "state_snapshot")
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-    _emit_agent_executes_agent,
-    _emit_captures_pattern,
-    _emit_captures_runtime_anomaly,
-    _emit_checks_agent_registry,
-    _emit_dispatches_execution_plan,
-    _emit_emits_metric_event,
-    _emit_escalates_to_human,
-    _emit_execution_terminates_at_uwg,
-    _emit_feeds_meta_learning,
-    _emit_gated_by_confidence,
-    _emit_hard_fails_untranscripted,
-    _emit_improves_agent_policy,
-    _emit_invokes_eval,
-    _emit_links_incident_trace,  # noqa: E402
-    _emit_observes_runtime_state,
-    _emit_proposal_commits_routing,
-    _emit_pulls_context,
-    _emit_reads_environ,
-    _emit_reads_runtime_state,
-    _emit_records_execution_trace,
-    _emit_records_incident_event,
-    _emit_records_learning_event,
-    _emit_routes_through,
-    _emit_routes_to_agent,
-    _emit_stores_learning_state,
-    _emit_transcripts_response,
-    _emit_triggers_alert,
-    _emit_updates_monitoring_state,
-    _emit_updates_routing_strategy,
-    _emit_validated_by_safety_plane,
-    _emit_validates_agent_capability,
-    _emit_verifies_boundary,
-    _emit_verifies_policy,
-    _emit_writes_learning_snapshot,
-    _emit_writes_observability_log,
     _emit_writes_through,  # noqa: E402
 )
 
@@ -237,6 +154,176 @@ class TestPrioritizeBasicContract:
 
     @pytest.mark.unit
     def test_returns_prioritization_result(self) -> None:
+        from agentic_core.adg.applications.guardian_prioritizer import (
+            _GUARDIAN_ADG_SIGNALS,
+            GuardianPrioritizer,
+            PrioritizationResult,
+        )
+        from agentic_core.adg.extraction.static_scanner import Edge, ScanResult
+        from agentic_core.adg.schema_util import canonical_name
+        from agentic_core.adg.schema_util import canonical_name
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+            _emit_agent_executes_agent,
+            _emit_applies_guardrail,  # noqa: E402
+            _emit_authorize_and_execute,
+            _emit_blocks_direct_write,
+            _emit_captures_evaluation_metric,
+            _emit_captures_execution_output,
+            _emit_checks_agent_registry,
+            _emit_coordinates_agents,
+            _emit_dispatches_agent,
+            _emit_dispatches_execution_plan,
+            _emit_dispatches_healing_run,
+            _emit_escalates_failure,
+            _emit_escalates_to_human,
+            _emit_gated_by_confidence,
+            _emit_hard_fails_untranscripted,
+            _emit_invokes_evaluation,
+            _emit_links_execution_to_snapshot,
+            _emit_observes_runtime_state,
+            _emit_orchestrates_workflow,
+            _emit_reads_policy_state,  # noqa: E402
+            _emit_records_execution_trace,  # noqa: E402
+            _emit_records_healing_outcome,
+            _emit_records_telemetry_event,
+            _emit_records_tool_invocation,
+            _emit_records_workflow_lineage,
+            _emit_routes_through,
+            _emit_routes_to_agent,
+            _emit_routes_to_capability,
+            _emit_signs_execution_trace,  # noqa: E402
+            _emit_snapshots_state,  # noqa: E402
+            _emit_stores_embedding,
+            _emit_transcripts_response,
+            _emit_updates_meta_learning_state,
+            _emit_validates_agent_capability,
+            _emit_validates_capability,
+            _emit_verifies_boundary,
+            _emit_verifies_policy,
+            _emit_writes_via_uwg,
+            emit_determinism_digest,  # noqa: E402
+            emit_replay_key,  # noqa: E402
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+            _emit_agent_executes_agent,
+            _emit_captures_pattern,
+            _emit_captures_runtime_anomaly,
+            _emit_checks_agent_registry,
+            _emit_dispatches_execution_plan,
+            _emit_emits_metric_event,
+            _emit_escalates_to_human,
+            _emit_execution_terminates_at_uwg,
+            _emit_feeds_meta_learning,
+            _emit_gated_by_confidence,
+            _emit_hard_fails_untranscripted,
+            _emit_improves_agent_policy,
+            _emit_invokes_eval,
+            _emit_links_incident_trace,  # noqa: E402
+            _emit_observes_runtime_state,
+            _emit_proposal_commits_routing,
+            _emit_pulls_context,
+            _emit_reads_environ,
+            _emit_reads_runtime_state,
+            _emit_records_execution_trace,
+            _emit_records_incident_event,
+            _emit_records_learning_event,
+            _emit_routes_through,
+            _emit_routes_to_agent,
+            _emit_stores_learning_state,
+            _emit_transcripts_response,
+            _emit_triggers_alert,
+            _emit_updates_monitoring_state,
+            _emit_updates_routing_strategy,
+            _emit_validated_by_safety_plane,
+            _emit_validates_agent_capability,
+            _emit_verifies_boundary,
+            _emit_verifies_policy,
+            _emit_writes_learning_snapshot,
+            _emit_writes_observability_log,
+            _emit_writes_through,  # noqa: E402
+                from agentic_core.adg.applications.guardian_prioritizer import _LAYER_RANK
+                assert _LAYER_RANK["L0"] < _LAYER_RANK["L1"]
+                assert _LAYER_RANK["L0"] < _LAYER_RANK["L5"]
+                assert _LAYER_RANK["L_APP"] > _LAYER_RANK["L6"]
+                from agentic_core.adg.applications.guardian_prioritizer import _LAYER_RANK
+                fl_rank = _LAYER_RANK.get("L0", -1)
+                tl_rank = _LAYER_RANK.get("L5", -1)
+                assert tl_rank > fl_rank >= 0, "L5 must have higher rank than L0"
+                from agentic_core.adg.applications.guardian_prioritizer import _LAYER_RANK
+                # L_UNKNOWN has rank -1 (should NOT be treated as higher than any real layer)
+                from agentic_core.adg.applications.guardian_prioritizer import GuardianPrioritizer
+                from agentic_core.adg.extraction.static_scanner import Edge, ScanResult
+                from agentic_core.adg.schema_util import canonical_name
+                from agentic_core.adg.schema_util import canonical_name
+                result = ScanResult(commit_sha="emb")
+                result.modules = ["apps_rg/engines/SomeAgent.py"]
+                result.edges = [
+                    Edge(
+                        from_name=canonical_name("Module", "apps_rg/engines/SomeAgent.py"),
+                        relation_type="instantiates",
+                        to_name=canonical_name("Symbol", "OpenAIEmbeddings"),
+                        edge_kind="embedding",
+                        source_file="apps_rg/engines/SomeAgent.py",
+                        line_no=10,
+                        symbol="OpenAIEmbeddings",
+                    )
+                ]
+                result.compute_digest()
+                p = GuardianPrioritizer(result)
+                signals = p.get_signals()
+                assert len(signals["embedding_violations"]) == 1
+                from agentic_core.adg.applications.guardian_prioritizer import GuardianPrioritizer
+                from agentic_core.adg.extraction.static_scanner import Edge, ScanResult
+                from agentic_core.adg.schema_util import canonical_name
+                from agentic_core.adg.schema_util import canonical_name
+                result = ScanResult(commit_sha="emb2")
+                result.modules = ["apps_rg/engines/X.py"]
+                result.edges = [
+                    Edge(
+                        from_name=canonical_name("Module", "apps_rg/engines/X.py"),
+                        relation_type="instantiates",
+                        to_name=canonical_name("Symbol", "SomeUnknownThing"),
+                        edge_kind="embedding",
+                        source_file="apps_rg/engines/X.py",
+                        line_no=5,
+                        symbol="",
+                    )
+                ]
+                result.compute_digest()
+                p = GuardianPrioritizer(result)
+                signals = p.get_signals()
+                assert len(signals["embedding_violations"]) == 1
+                from agentic_core.adg.applications.guardian_prioritizer import GuardianPrioritizer
+                from agentic_core.adg.extraction.static_scanner import Edge, ScanResult
+                from agentic_core.adg.schema_util import EMBEDDING_SYMBOLS, canonical_name
+                from agentic_core.adg.schema_util import EMBEDDING_SYMBOLS, canonical_name
+                # Pick a symbol definitively NOT in EMBEDDING_SYMBOLS
+                non_emb_sym = "SomeRandomFactory"
+                assert non_emb_sym not in EMBEDDING_SYMBOLS
+                from agentic_core.adg.applications.guardian_prioritizer import GuardianPrioritizer
+                from agentic_core.adg.extraction.static_scanner import Edge, ScanResult
+                from agentic_core.adg.schema_util import canonical_name
+                from agentic_core.adg.schema_util import canonical_name
+                result = ScanResult(commit_sha="mut")
+                result.modules = [
+                    "agentic_core/L0_routing/config/path_constants.py",
+                    "agentic_core/L5_safety/config/structure_blueprint_config.py",
+                ]
+                result.edges = [
+                    Edge(
+                        from_name=canonical_name("Module", "agentic_core/L0_routing/config/path_constants.py"),
+                        relation_type="writes_to",
+                        to_name=canonical_name("Module", "agentic_core/L5_safety/config/structure_blueprint_config.py"),
+                        edge_kind="write",
+                        source_file="agentic_core/L0_routing/config/path_constants.py",
+                        line_no=1,
+                        symbol="open",
+                    )
+                ]
+                result.compute_digest()
+                p = GuardianPrioritizer(result)
+                signals = p.get_signals()
+                assert len(signals["upward_mutations"]) == 1
+
         result = _make_empty_result()
         prio = GuardianPrioritizer(result).prioritize()
         assert isinstance(prio, PrioritizationResult)
@@ -342,19 +429,11 @@ class TestLayerRankUpwardMutations:
 
     @pytest.mark.unit
     def test_layer_rank_imported(self) -> None:
-        from agentic_core.adg.applications.guardian_prioritizer import _LAYER_RANK
-
-        assert _LAYER_RANK["L0"] < _LAYER_RANK["L1"]
-        assert _LAYER_RANK["L0"] < _LAYER_RANK["L5"]
         assert _LAYER_RANK["L_APP"] > _LAYER_RANK["L6"]
 
     @pytest.mark.unit
     def test_upward_mutation_writes_to_higher_rank_detected(self) -> None:
         """L0 writing to L5 is an upward mutation; must be detected by rank not string."""
-        from agentic_core.adg.applications.guardian_prioritizer import _LAYER_RANK
-
-        fl_rank = _LAYER_RANK.get("L0", -1)
-        tl_rank = _LAYER_RANK.get("L5", -1)
         assert tl_rank > fl_rank >= 0, "L5 must have higher rank than L0"
 
     @pytest.mark.unit
@@ -366,8 +445,6 @@ class TestLayerRankUpwardMutations:
         However 'L_UNKNOWN' > 'L6' is True even though L_UNKNOWN has rank -1.
         The rank map is the authoritative ordering.
         """
-        from agentic_core.adg.applications.guardian_prioritizer import _LAYER_RANK
-
         # L_UNKNOWN has rank -1 (should NOT be treated as higher than any real layer)
 # REVIEW: Potential hidden failure - # REVIEW: Potential hidden failure - # but string 'L_UNKNOWN' > 'L6' -> True (broken: treats unknown as high layer)
         assert "L_UNKNOWN" > "L6"  # string compare is wrong for this case
@@ -379,62 +456,16 @@ class TestEmbeddingViolationsFilterBySymbol:
 
     @pytest.mark.unit
     def test_known_embedding_symbol_triggers_violation(self) -> None:
-        from agentic_core.adg.applications.guardian_prioritizer import GuardianPrioritizer
-        from agentic_core.adg.extraction.static_scanner import Edge, ScanResult
-        from agentic_core.adg.schema_util import canonical_name
-
-        result = ScanResult(commit_sha="emb")
-        result.modules = ["apps_rg/engines/SomeAgent.py"]
-        result.edges = [
-            Edge(
-                from_name=canonical_name("Module", "apps_rg/engines/SomeAgent.py"),
-                relation_type="instantiates",
-                to_name=canonical_name("Symbol", "OpenAIEmbeddings"),
-                edge_kind="embedding",
-                source_file="apps_rg/engines/SomeAgent.py",
-                line_no=10,
-                symbol="OpenAIEmbeddings",
-            )
-        ]
-        result.compute_digest()
-        p = GuardianPrioritizer(result)
-        signals = p.get_signals()
         assert len(signals["embedding_violations"]) == 1
 
     @pytest.mark.unit
     def test_unknown_symbol_on_instantiates_embedding_also_recorded(self) -> None:
         """Edges with no symbol (empty string) are still recorded (scanner may omit symbol)."""
-        from agentic_core.adg.applications.guardian_prioritizer import GuardianPrioritizer
-        from agentic_core.adg.extraction.static_scanner import Edge, ScanResult
-        from agentic_core.adg.schema_util import canonical_name
-
-        result = ScanResult(commit_sha="emb2")
-        result.modules = ["apps_rg/engines/X.py"]
-        result.edges = [
-            Edge(
-                from_name=canonical_name("Module", "apps_rg/engines/X.py"),
-                relation_type="instantiates",
-                to_name=canonical_name("Symbol", "SomeUnknownThing"),
-                edge_kind="embedding",
-                source_file="apps_rg/engines/X.py",
-                line_no=5,
-                symbol="",
-            )
-        ]
-        result.compute_digest()
-        p = GuardianPrioritizer(result)
-        signals = p.get_signals()
         assert len(signals["embedding_violations"]) == 1
 
     @pytest.mark.unit
     def test_non_embedding_symbol_on_instantiates_not_recorded(self) -> None:
         """A non-EMBEDDING_SYMBOLS symbol with edge_kind=embedding should NOT be in violations (bug was: no filter)."""
-        from agentic_core.adg.applications.guardian_prioritizer import GuardianPrioritizer
-        from agentic_core.adg.extraction.static_scanner import Edge, ScanResult
-        from agentic_core.adg.schema_util import EMBEDDING_SYMBOLS, canonical_name
-
-        # Pick a symbol definitively NOT in EMBEDDING_SYMBOLS
-        non_emb_sym = "SomeRandomFactory"
         assert non_emb_sym not in EMBEDDING_SYMBOLS
 
         result = ScanResult(commit_sha="emb3")
@@ -458,29 +489,6 @@ class TestEmbeddingViolationsFilterBySymbol:
     @pytest.mark.unit
     def test_writes_to_relation_type_detected_not_mutates(self) -> None:
         """'mutates' relation type was dead code — only 'writes_to' is ever emitted by scanner."""
-        from agentic_core.adg.applications.guardian_prioritizer import GuardianPrioritizer
-        from agentic_core.adg.extraction.static_scanner import Edge, ScanResult
-        from agentic_core.adg.schema_util import canonical_name
-
-        result = ScanResult(commit_sha="mut")
-        result.modules = [
-            "agentic_core/L0_routing/config/path_constants.py",
-            "agentic_core/L5_safety/config/structure_blueprint_config.py",
-        ]
-        result.edges = [
-            Edge(
-                from_name=canonical_name("Module", "agentic_core/L0_routing/config/path_constants.py"),
-                relation_type="writes_to",
-                to_name=canonical_name("Module", "agentic_core/L5_safety/config/structure_blueprint_config.py"),
-                edge_kind="write",
-                source_file="agentic_core/L0_routing/config/path_constants.py",
-                line_no=1,
-                symbol="open",
-            )
-        ]
-        result.compute_digest()
-        p = GuardianPrioritizer(result)
-        signals = p.get_signals()
         assert len(signals["upward_mutations"]) == 1
 
 

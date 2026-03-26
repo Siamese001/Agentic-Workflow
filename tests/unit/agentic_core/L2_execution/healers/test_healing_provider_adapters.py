@@ -203,46 +203,48 @@ class TestQwenAdapterContract:
     """Contract tests for QwenInvokerAdapter with faked OpenAI SDK."""
 
     def test_qwen_adapter_invokes_sdk_with_correct_args(self) -> None:
-        from agentic_core.L0_routing.config.path_constants import (
-        from agentic_core.L2_execution.healers.healing_provider_adapters import (
-        from agentic_core.L2_execution.healers.healing_tier_config import (
-        from agentic_core.L2_execution.healers.healing_tier_router import route_healing_tier
-        from agentic_core.L2_execution.healers.healing_tier_types import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.L2_execution.healers.healing_provider_adapters import GeminiInvokerAdapter
-        from agentic_core.L2_execution.healers.healing_provider_adapters import GeminiInvokerAdapter
-        from agentic_core.L2_execution.healers.healing_tier_dispatcher import dispatch_healing
-        from agentic_core.L2_execution.healers.healing_provider_adapters import GeminiInvokerAdapter
-        from agentic_core.L2_execution.healers.healing_tier_dispatcher import dispatch_healing
-        from agentic_core.L2_execution.healers.healing_tier_dispatcher import dispatch_healing
-        from agentic_core.L2_execution.healers.healing_provider_adapters import (
-        from agentic_core.L2_execution.healers.healing_provider_adapters import (
-        from agentic_core.L2_execution.healers.healing_tier_config import (
-        from agentic_core.L2_execution.healers.healing_tier_types import (
-        from agentic_core.L2_execution.healers.healing_provider_adapters import (
-        from agentic_core.L2_execution.healers.healing_tier_config import (
-        from agentic_core.L2_execution.healers.healing_tier_types import (
-        from agentic_core.L2_execution.healers.healing_tier_config import (
-        from agentic_core.L2_execution.healers.healing_tier_config import (
-        from agentic_core.L2_execution.healers.qwen_meta_learning import (
-        from agentic_core.L2_execution.healers.qwen_meta_learning import (
-        from agentic_core.L2_execution.healers.qwen_meta_learning import (
-        from apps_shared.types.hardened_gemini_executor_types import HardenedGeminiConfig
-        from apps_shared.types.hardened_gemini_executor_types import HardenedGeminiConfig
-        from agentic_core.L2_execution.healers.healing_tier_config import (
-        from apps_shared.types.hardened_gemini_executor_types import HardenedGeminiConfig
-        """Qwen adapter should call OpenAI SDK with expected parameters."""
-        # Setup fake OpenAI module
-        fake_openai = Mock()
-        fake_client = Mock()
-        fake_response = Mock()
-        fake_response.choices = [Mock()]
-        fake_response.choices[0].message.content = "Fix: import missing module"
-        fake_response.usage = Mock()
-        fake_response.usage.prompt_tokens = 150
-        fake_response.usage.completion_tokens = 75
-        fake_client.chat.completions.create.return_value = fake_response
+                from agentic_core.L0_routing.config.path_constants import (
+                from agentic_core.L2_execution.healers.healing_provider_adapters import (
+                from agentic_core.L2_execution.healers.healing_tier_config import (
+                from agentic_core.L2_execution.healers.healing_tier_router import route_healing_tier
+                from agentic_core.L2_execution.healers.healing_tier_types import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L2_execution.healers.healing_provider_adapters import GeminiInvokerAdapter
+                from agentic_core.L2_execution.healers.healing_provider_adapters import GeminiInvokerAdapter
+                from agentic_core.L2_execution.healers.healing_tier_dispatcher import dispatch_healing
+                from agentic_core.L2_execution.healers.healing_provider_adapters import GeminiInvokerAdapter
+                from agentic_core.L2_execution.healers.healing_tier_dispatcher import dispatch_healing
+                from agentic_core.L2_execution.healers.healing_tier_dispatcher import dispatch_healing
+                from agentic_core.L2_execution.healers.healing_provider_adapters import (
+                from agentic_core.L2_execution.healers.healing_provider_adapters import (
+                from agentic_core.L2_execution.healers.healing_tier_config import (
+                from agentic_core.L2_execution.healers.healing_tier_types import (
+                from agentic_core.L2_execution.healers.healing_provider_adapters import (
+                from agentic_core.L2_execution.healers.healing_tier_config import (
+                from agentic_core.L2_execution.healers.healing_tier_types import (
+                from agentic_core.L2_execution.healers.healing_tier_config import (
+                from agentic_core.L2_execution.healers.healing_tier_config import (
+                from agentic_core.L2_execution.healers.qwen_meta_learning import (
+                from agentic_core.L2_execution.healers.qwen_meta_learning import (
+                from agentic_core.L2_execution.healers.qwen_meta_learning import (
+                from apps_shared.types.hardened_gemini_executor_types import HardenedGeminiConfig
+                from apps_shared.types.hardened_gemini_executor_types import HardenedGeminiConfig
+                from agentic_core.L2_execution.healers.healing_tier_config import (
+                from apps_shared.types.hardened_gemini_executor_types import HardenedGeminiConfig
+                """Qwen adapter should call OpenAI SDK with expected parameters."""
+                # Setup fake OpenAI module
+                fake_openai = Mock()
+                fake_client = Mock()
+                fake_response = Mock()
+                fake_response.choices = [Mock()]
+                fake_response.choices[0].message.content = "Fix: import missing module"
+                fake_response.usage = Mock()
+                fake_response.usage.prompt_tokens = 150
+                fake_response.usage.completion_tokens = 75
+                fake_client.chat.completions.create.return_value = fake_response
+                fake_openai.OpenAI.return_value = fake_client
+
         fake_openai.OpenAI.return_value = fake_client
 
         # Inject fake module into sys.modules before adapter method is called

@@ -184,25 +184,27 @@ class TestSovereigntyExemptions(unittest.TestCase):
         self.fixer = PascalSovereigntyFixer(dry_run=True)
 
     def test_ignores_standard_test_file(self):
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        """Scenario: 'test_auth.py' should be ignored even if it contains classes."""
-        path = Path("test_auth.py")
-        with (
-            patch(
-                "pathlib.Path.stat",
-                side_effect=AssertionError("stat() should not be called for test_*.py"),
-            ),
-            patch(
-                "pathlib.Path.read_text",
-                side_effect=AssertionError("read_text() should not be called for test_*.py"),
-            ),
-            patch(
-                "ast.parse",
-                side_effect=AssertionError("ast.parse() should not be called for test_*.py"),
-            ),
-        ):
-            ftype = self.fixer.classify_file(path)
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                """Scenario: 'test_auth.py' should be ignored even if it contains classes."""
+                path = Path("test_auth.py")
+                with (
+                    patch(
+                        "pathlib.Path.stat",
+                        side_effect=AssertionError("stat() should not be called for test_*.py"),
+                    ),
+                    patch(
+                        "pathlib.Path.read_text",
+                        side_effect=AssertionError("read_text() should not be called for test_*.py"),
+                    ),
+                    patch(
+                        "ast.parse",
+                        side_effect=AssertionError("ast.parse() should not be called for test_*.py"),
+                    ),
+                ):
+                    ftype = self.fixer.classify_file(path)
+                    self.assertEqual(ftype, "IGNORE")
+
             self.assertEqual(ftype, "IGNORE")
 
     def test_ignores_suffix_test_file(self):

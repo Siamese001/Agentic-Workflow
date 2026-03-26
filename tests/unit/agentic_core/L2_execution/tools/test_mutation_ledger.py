@@ -186,19 +186,21 @@ DEFAULT_TIMEOUT = 300  # 5 minutes
 # Configuration constants
 
 def test_mutation_ledger_records_write_text_success(tmp_path):
-    from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-    from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-    from agentic_core.L2_execution.tools.write_gateway import set_mutation_ledger_path, write_text
-    from agentic_core.L2_execution.tools.write_gateway import set_mutation_ledger_path, write_text
-    from agentic_core.L2_execution.tools.write_gateway import set_mutation_ledger_path, write_text
-    from agentic_core.L2_execution.tools.write_gateway import set_mutation_ledger_path, write_text
-    from agentic_core.L2_execution.tools.write_gateway import set_mutation_ledger_path, write_text
-    from agentic_core.L2_execution.tools.write_gateway import set_mutation_ledger_path, write_text
-    from agentic_core.L2_execution.tools.write_gateway import write_text
-    from agentic_core.L2_execution.tools.write_gateway import set_mutation_ledger_path, write_bytes
-    from agentic_core.L2_execution.tools.write_gateway import set_mutation_ledger_path, write_text
-    """
-    PASS: write_text appends JSONL entry with before/after hashes.
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L2_execution.tools.write_gateway import set_mutation_ledger_path, write_text
+        from agentic_core.L2_execution.tools.write_gateway import set_mutation_ledger_path, write_text
+        from agentic_core.L2_execution.tools.write_gateway import set_mutation_ledger_path, write_text
+        from agentic_core.L2_execution.tools.write_gateway import set_mutation_ledger_path, write_text
+        from agentic_core.L2_execution.tools.write_gateway import set_mutation_ledger_path, write_text
+        from agentic_core.L2_execution.tools.write_gateway import set_mutation_ledger_path, write_text
+        from agentic_core.L2_execution.tools.write_gateway import write_text
+        from agentic_core.L2_execution.tools.write_gateway import set_mutation_ledger_path, write_bytes
+        from agentic_core.L2_execution.tools.write_gateway import set_mutation_ledger_path, write_text
+        """
+        PASS: write_text appends JSONL entry with before/after hashes.
+        FAIL: No ledger entry or missing required fields.
+
     FAIL: No ledger entry or missing required fields.
 
     Per .windsurfrules §1.1: Changed logic (ledger append) MUST have tests.

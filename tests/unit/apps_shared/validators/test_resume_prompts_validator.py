@@ -10,22 +10,23 @@ import pytest
 
 pytestmark = pytest.mark.unit
 
-from apps_shared.validators.resume_prompts_validator import (  # noqa: F401
-    BATCH_SIZE,
-    BUFFER_SIZE,
-    DEFAULT_SLEEP,
-    MAX_RETRIES,
-    THRESHOLD,
-    build_librarian_memory_query_prompt,
-    build_librarian_mission_extraction_prompt,
-    build_librarian_strategic_analysis_prompt,
-    build_phase1_prompt,
-)
 
 
 class TestBuildLibrarianMissionExtractionPromptFunction:
     def test_is_callable(self):
     """Test is_callable runtime behavior."""
+        from apps_shared.validators.resume_prompts_validator import (  # noqa: F401
+            BATCH_SIZE,
+            BUFFER_SIZE,
+            DEFAULT_SLEEP,
+            MAX_RETRIES,
+            THRESHOLD,
+            build_librarian_memory_query_prompt,
+            build_librarian_mission_extraction_prompt,
+            build_librarian_strategic_analysis_prompt,
+            build_phase1_prompt,
+        )
+
     # Arrange
     # TODO: Set up execution parameters
     input_data = {}  # Replace with actual test data

@@ -174,12 +174,14 @@ pytestmark = pytest.mark.unit
 
 class TestCompatReExports:
     def test_validate_result_artifact_callable(self): assert callable(validate_result_artifact)
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.L0_routing.types.artifact_validate_compat_types import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-    """Test validate_result_artifact_callable contract compliance."""
-    # Arrange
-    # TODO: Set up test data
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L0_routing.types.artifact_validate_compat_types import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+            """Test validate_result_artifact_callable contract compliance."""
+            # Arrange
+            # TODO: Set up test data
+            test_data = {}  # Replace with actual test data
+
     test_data = {}  # Replace with actual test data
 
     # Act

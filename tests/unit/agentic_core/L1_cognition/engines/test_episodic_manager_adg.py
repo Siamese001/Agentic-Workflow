@@ -170,10 +170,12 @@ pytestmark = pytest.mark.unit
 
 class TestEpisode:
     def test_is_dataclass(self):
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.L1_cognition.engines.episodic_manager import Episode, EpisodicMemory
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        import dataclasses
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L1_cognition.engines.episodic_manager import Episode, EpisodicMemory
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                import dataclasses
+                assert dataclasses.is_dataclass(Episode)
+
         assert dataclasses.is_dataclass(Episode)
 
     def test_creates(self):

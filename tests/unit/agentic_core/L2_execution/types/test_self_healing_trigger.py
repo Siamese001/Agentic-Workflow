@@ -182,12 +182,14 @@ def clock() -> SemanticClockSnapshot:
 
 class TestContractDeterminism:
     def test_to_dict_stable_json(self, clock):
-        from agentic_core.L0_routing.types.determinism_types import SemanticClockSnapshot
-        from agentic_core.L2_execution.types.self_healing_trigger_types import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-    """Test to_dict_stable_json runtime behavior."""
-    # Arrange
-    # TODO: Set up test data for to_dict_stable_json
+                from agentic_core.L0_routing.types.determinism_types import SemanticClockSnapshot
+                from agentic_core.L2_execution.types.self_healing_trigger_types import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+            """Test to_dict_stable_json runtime behavior."""
+            # Arrange
+            # TODO: Set up test data for to_dict_stable_json
+            test_data = {}  # Replace with actual test data
+
     test_data = {}  # Replace with actual test data
 
     # Act

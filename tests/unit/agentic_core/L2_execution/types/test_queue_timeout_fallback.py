@@ -225,11 +225,14 @@ def make_within_timeout_queue() -> VLLMQueueState:
 
 
 def test_timed_out_queue_escalates_to_gemini():
-    from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-    from agentic_core.L2_execution.types.vllm_backpressure_types import (
-    from agentic_core.L2_execution.types.vllm_token_budget_types import (
-    from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 """Test timed_out_queue_escalates_to_gemini runtime behavior."""
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L2_execution.types.vllm_backpressure_types import (
+        from agentic_core.L2_execution.types.vllm_token_budget_types import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+    """Test timed_out_queue_escalates_to_gemini runtime behavior."""
+
 # Arrange
 # TODO: Set up test data for timed_out_queue_escalates_to_gemini
 test_data = {}  # Replace with actual test data

@@ -5,9 +5,10 @@ import pytest
 
 pytestmark = pytest.mark.unit
 
-import apps_rg.enforcement.HardenedanthropicexecutorStrategy  # noqa: F401
 
 
 def test_module_importable():
     """Module HardenedanthropicexecutorStrategy must be importable."""
+    import apps_rg.enforcement.HardenedanthropicexecutorStrategy  # noqa: F401
+
     assert apps_rg.enforcement.HardenedanthropicexecutorStrategy is not None

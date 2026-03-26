@@ -11,25 +11,28 @@ pytestmark = pytest.mark.unit
 
 class TestRuntimeTypesPublicAPI:
     def test_all_exports_present(self):
-        import agentic_core.runtime.types as m
-        from agentic_core.runtime.types import CacheEntry
-        from agentic_core.runtime.types import CacheMiss
-        import agentic_core.runtime.types
-        from agentic_core.runtime.types import ClaimType
-        from agentic_core.runtime.types import BudgetExceededError
-        from agentic_core.runtime.types import ExpansionStrategy
-        from agentic_core.runtime.types import HyDeDocument
-        from agentic_core.runtime.types import CostGovernor
-        from agentic_core.runtime.types import get_global_cost_governor
-        from agentic_core.runtime.types import track_api_call
-        from agentic_core.runtime.types import CacheEntry as shim
-        from agentic_core.runtime.types.cache_entry_types import CacheEntry as canon
-        from agentic_core.runtime.types import Claim as shim
-        from agentic_core.runtime.types.claim_type_types import Claim as canon
-        from agentic_core.runtime.types import BudgetExceededError as shim
-        from agentic_core.runtime.types.cost_governor_types import BudgetExceededError as canon
-#  # MOVED: import agentic_core.runtime.types as m
-        for name in m.__all__:
+                import agentic_core.runtime.types as m
+                from agentic_core.runtime.types import CacheEntry
+                from agentic_core.runtime.types import CacheMiss
+                import agentic_core.runtime.types
+                from agentic_core.runtime.types import ClaimType
+                from agentic_core.runtime.types import BudgetExceededError
+                from agentic_core.runtime.types import ExpansionStrategy
+                from agentic_core.runtime.types import HyDeDocument
+                from agentic_core.runtime.types import CostGovernor
+                from agentic_core.runtime.types import get_global_cost_governor
+                from agentic_core.runtime.types import track_api_call
+                from agentic_core.runtime.types import CacheEntry as shim
+                from agentic_core.runtime.types.cache_entry_types import CacheEntry as canon
+                from agentic_core.runtime.types import Claim as shim
+                from agentic_core.runtime.types.claim_type_types import Claim as canon
+                from agentic_core.runtime.types import BudgetExceededError as shim
+                from agentic_core.runtime.types.cost_governor_types import BudgetExceededError as canon
+                from agentic_core.runtime.types.cost_governor_types import BudgetExceededError as canon
+        #  # MOVED: import agentic_core.runtime.types as m
+                for name in m.__all__:
+                    assert hasattr(m, name), f"Missing __all__ member: {name}"
+
             assert hasattr(m, name), f"Missing __all__ member: {name}"
 
     def test_cache_entry_importable(self):

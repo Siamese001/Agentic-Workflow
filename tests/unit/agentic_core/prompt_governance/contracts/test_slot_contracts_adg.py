@@ -5,6 +5,8 @@ from __future__ import annotations
 
 
 def test_module_importable():
-    import agentic_core.prompt_governance.contracts.slot_contracts  # noqa: F401
-    """Module slot_contracts must be importable."""
+        import agentic_core.prompt_governance.contracts.slot_contracts  # noqa: F401
+        """Module slot_contracts must be importable."""
+        assert agentic_core.prompt_governance.contracts.slot_contracts is not None
+
     assert agentic_core.prompt_governance.contracts.slot_contracts is not None

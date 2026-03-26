@@ -5,9 +5,10 @@ import pytest
 
 pytestmark = pytest.mark.unit
 
-import apps_rg.engines.resume_generation_task  # noqa: F401
 
 
 def test_module_importable():
     """Module resume_generation_task must be importable."""
+    import apps_rg.engines.resume_generation_task  # noqa: F401
+
     assert apps_rg.engines.resume_generation_task is not None

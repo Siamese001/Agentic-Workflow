@@ -109,20 +109,22 @@ _SENTINEL = object()
 
 class TestLocationHealerEviction:
     def test_evict_removes_all_blueprint_prefixes(self):
-        from agentic_core.L5_safety.reasoning.LocationHealerAgent import (
-        from agentic_core.L5_safety.reasoning.filesystem_ssot_reconciler import (
-        import agentic_core.L5_safety.config.structure_blueprint._constants  # noqa: F401
-        import agentic_core.L5_safety.config.structure_blueprint._constants as fresh  # noqa: F401
-        """All structure_blueprint* keys are removed from sys.modules."""
-        _evict, _prefixes = _import_location_evict()
-        cleanup = _inject_fake_modules(_FAKE_BLUEPRINT_KEYS)
-        try:
-            for k in _FAKE_BLUEPRINT_KEYS:
-                assert k in sys.modules, f"setup: {k} should be present"
-            _evict()
-            for k in _FAKE_BLUEPRINT_KEYS:
-                assert k not in sys.modules, f"{k} should have been evicted"
-        finally:
+                from agentic_core.L5_safety.reasoning.LocationHealerAgent import (
+                from agentic_core.L5_safety.reasoning.filesystem_ssot_reconciler import (
+                import agentic_core.L5_safety.config.structure_blueprint._constants  # noqa: F401
+                import agentic_core.L5_safety.config.structure_blueprint._constants as fresh  # noqa: F401
+                """All structure_blueprint* keys are removed from sys.modules."""
+                _evict, _prefixes = _import_location_evict()
+                cleanup = _inject_fake_modules(_FAKE_BLUEPRINT_KEYS)
+                try:
+                    for k in _FAKE_BLUEPRINT_KEYS:
+                        assert k in sys.modules, f"setup: {k} should be present"
+                    _evict()
+                    for k in _FAKE_BLUEPRINT_KEYS:
+                        assert k not in sys.modules, f"{k} should have been evicted"
+                finally:
+                    cleanup()
+
             cleanup()
 
     def test_evict_does_not_touch_unrelated_modules(self):

@@ -9,6 +9,8 @@ pytestmark = pytest.mark.unit
 
 
 def test_module_importable():
-    import agentic_core.L5_safety.utils.register_all_validators_util  # noqa: F401
-    """Module register_all_validators_util must be importable."""
+        import agentic_core.L5_safety.utils.register_all_validators_util  # noqa: F401
+        """Module register_all_validators_util must be importable."""
+        assert agentic_core.L5_safety.utils.register_all_validators_util is not None
+
     assert agentic_core.L5_safety.utils.register_all_validators_util is not None

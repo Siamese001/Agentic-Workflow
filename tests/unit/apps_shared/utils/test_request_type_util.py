@@ -10,26 +10,27 @@ import pytest
 
 pytestmark = pytest.mark.unit
 
-from apps_shared.utils.request_type_util import (  # noqa: F401
-    BATCH_SIZE,
-    BUFFER_SIZE,
-    DEFAULT_SLEEP,
-    MAX_RETRIES,
-    THRESHOLD,
-    AggregationType,
-    DataSource,
-    LogQuery,
-    MetricDefinition,
-    RequestType,
-    TraceQuery,
-    create_observability_load_planner,
-    load_data_planning,
-    plan_observability_load,
-)
 
 
 class TestRequestTypeContract:
     def test_is_enum(self):
+        from apps_shared.utils.request_type_util import (  # noqa: F401
+            BATCH_SIZE,
+            BUFFER_SIZE,
+            DEFAULT_SLEEP,
+            MAX_RETRIES,
+            THRESHOLD,
+            AggregationType,
+            DataSource,
+            LogQuery,
+            MetricDefinition,
+            RequestType,
+            TraceQuery,
+            create_observability_load_planner,
+            load_data_planning,
+            plan_observability_load,
+        )
+
         import enum
         assert issubclass(RequestType, enum.Enum)
 

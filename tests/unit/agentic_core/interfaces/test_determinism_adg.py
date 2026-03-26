@@ -170,24 +170,26 @@ pytestmark = pytest.mark.unit
 
 class TestDeterminismExcludedFields:
     def test_is_frozenset(self):
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.interfaces.determinism import DETERMINISM_EXCLUDED_FIELDS
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-    """Test is_frozenset contract compliance."""
-    # Arrange
-    # TODO: Set up contract test scenario
-    """Test contains_timestamp contract compliance."""
-    # Arrange
-    # TODO: Set up contract test scenario
-    """Test contains_duration_ms contract compliance."""
-    # Arrange
-    # TODO: Set up contract test scenario
-    """Test contains_trace_id contract compliance."""
-    # Arrange
-    # TODO: Set up contract test scenario
     test_scenario = {}  # Replace with actual test scenario
 
 """Test importable contract compliance."""
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.interfaces.determinism import DETERMINISM_EXCLUDED_FIELDS
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+            """Test is_frozenset contract compliance."""
+            # Arrange
+            # TODO: Set up contract test scenario
+            """Test contains_timestamp contract compliance."""
+            # Arrange
+            # TODO: Set up contract test scenario
+            """Test contains_duration_ms contract compliance."""
+            # Arrange
+            # TODO: Set up contract test scenario
+            """Test contains_trace_id contract compliance."""
+            # Arrange
+            # TODO: Set up contract test scenario
+            test_scenario = {}  # Replace with actual test scenario
+
 # Arrange
 # TODO: Set up contract test scenario
 test_scenario = {}  # Replace with actual test scenario

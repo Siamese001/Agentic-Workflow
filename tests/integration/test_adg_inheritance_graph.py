@@ -165,9 +165,11 @@ def _parse_and_visit(
 
 class TestInheritanceVisitor:
     def test_single_base_class(self):
-        from agentic_core.adg.extraction.static_scanner import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
         src = """
+                from agentic_core.adg.extraction.static_scanner import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                src = """
+
 class Concrete(BaseAgent):
     pass
 """

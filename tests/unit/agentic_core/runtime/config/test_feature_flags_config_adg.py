@@ -9,8 +9,10 @@ pytestmark = pytest.mark.unit
 
 
 def test_module_importable():
-    import agentic_core.runtime.config.feature_flags_config  # noqa: F401
 """Test module_importable runtime behavior."""
+        import agentic_core.runtime.config.feature_flags_config  # noqa: F401
+    """Test module_importable runtime behavior."""
+
 # Arrange
 # TODO: Set up runtime environment
 runtime_context = {}  # Replace with actual runtime context

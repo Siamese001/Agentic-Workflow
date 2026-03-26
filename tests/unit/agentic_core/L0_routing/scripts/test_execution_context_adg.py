@@ -175,12 +175,14 @@ pytestmark = pytest.mark.unit
 
 class TestConfigSurface:
     def test_creates_valid(self):
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.L0_routing.scripts.execution_context import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-    """Test creates_valid runtime behavior."""
-    # Arrange
-    # TODO: Set up test data for creates_valid
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L0_routing.scripts.execution_context import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+            """Test creates_valid runtime behavior."""
+            # Arrange
+            # TODO: Set up test data for creates_valid
+            test_data = {}  # Replace with actual test data
+
     test_data = {}  # Replace with actual test data
 
     # Act

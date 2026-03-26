@@ -277,72 +277,74 @@ class TestEmitADGPreRunArtifactGuardianPrioritizer:
 
     @pytest.mark.unit
     def test_guardian_scope_populated_when_adg_available(self) -> None:
-        import system_learning.adapters.system_learning_memory_bridge as _sl_bridge_mod  # noqa: F401
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.adg.extraction.static_scanner import ScanResult
-        from agentic_core.adg.extraction.static_scanner import Edge, ScanResult
-        from agentic_core.adg.schema_util import canonical_name
-        from agentic_core.adg.applications.guardian_prioritizer_types import (
-        from agentic_core.L0_routing.scripts._ssot_pipeline import (
-        from agentic_core.L0_routing.scripts._ssot_pipeline import _emit_adg_pre_run_artifact
-        from agentic_core.L0_routing.scripts._ssot_pipeline import _emit_adg_pre_run_artifact
-        from agentic_core.L0_routing.scripts._ssot_pipeline import _emit_adg_pre_run_artifact
-        import agentic_core.adg.runtime.behavioral_index as _bi_mod
-        from agentic_core.L0_routing.scripts.execute_ssot import execute_phase4_validation_impl
-        import agentic_core.adg.runtime.behavioral_index as _bi_mod
-        from agentic_core.L0_routing.scripts.execute_ssot import execute_phase4_validation_impl
-        import agentic_core.adg.runtime.behavioral_index as _bi_mod
-        from agentic_core.L0_routing.scripts.execute_ssot import execute_phase4_validation_impl
-        import agentic_core.adg.runtime.behavioral_index as _bi_mod
-        from agentic_core.L0_routing.scripts.execute_ssot import execute_phase4_validation_impl
-        from agentic_core.cache.redis_cache_client import get_hot_cache
-        from agentic_core.cache.redis_cache_client import get_hot_cache
-        from agentic_core.cache.redis_cache_client import canonical_json_bytes
-        from agentic_core.cache.redis_cache_client import canonical_json_bytes
-        from agentic_core.cache.redis_cache_client import canonical_json_bytes
-        from agentic_core.cache.redis_cache_client import content_hash
-        from agentic_core.cache.redis_cache_client import get_hot_cache
-        from agentic_core.cache.redis_cache_client import get_hot_cache
-        import agentic_core.embeddings.embedding_factory as _ef
-        import agentic_core.embeddings.embedding_factory as _ef
-        import agentic_core.embeddings.embedding_factory as _ef
-        import agentic_core.embeddings.embedding_factory as _ef
-        import agentic_core.embeddings.embedding_factory as _ef
-        import agentic_core.embeddings.embedding_factory as _ef
-        from apps_shared.utils.prompt_registry_util import (
-        from apps_shared.utils.prompt_registry_util import PromptCategory, PromptTemplate
-        from apps_shared.utils.prompt_registry_util import (
-        from apps_shared.utils.prompt_registry_util import (
-        from apps_shared.utils.prompt_registry_util import (
-        from apps_shared.utils.prompt_registry_util import (
-        from apps_shared.utils.prompt_registry_util import (
-        from agentic_core.L0_routing.scripts._ssot_validation_artifacts import _record_healing_action
-        from agentic_core.L0_routing.scripts._ssot_validation_artifacts import _record_healing_action
-        from agentic_core.L0_routing.scripts._ssot_validation_artifacts import _record_healing_action
-        from agentic_core.L0_routing.scripts._ssot_validation_artifacts import _record_healing_action
-        from agentic_core.L0_routing.scripts._ssot_validation_artifacts import _record_healing_action
-        from agentic_core.L0_routing.scripts._ssot_pipeline import EXECUTION_PLAN
-        from agentic_core.L0_routing.scripts._ssot_pipeline import AGENT_PIPELINE
-        from agentic_core.L0_routing.scripts._ssot_pipeline import CANONICAL_ROSTER_KEYS
-        from agentic_core.L0_routing.scripts._ssot_pipeline import PIPELINE_SUBPHASES
-        from agentic_core.L0_routing.scripts._ssot_pipeline import AGENT_DEPENDENCIES
-        from agentic_core.L0_routing.scripts._ssot_pipeline import resolve_agent_subset
-        from agentic_core.L0_routing.scripts._ssot_pipeline import resolve_agent_subset
-        from agentic_core.L0_routing.scripts._ssot_pipeline import EXECUTION_PLAN
-        import agentic_core.adg.runtime.cache_loader as _cl_mod
-        from agentic_core.adg.applications.PreRunADGReport import build_pre_run_report
-        from agentic_core.adg.applications.PreRunADGReport import PreRunADGReport
-        from agentic_core.adg.applications.PreRunADGReport import PreRunADGReport
-        from agentic_core.adg.applications.PreRunADGReport import (
-        from agentic_core.adg.applications.guardian_prioritizer_types import GuardianPrioritizer
-        from agentic_core.L0_routing.scripts._ssot_pipeline import CANONICAL_ROSTER_KEYS
-        from agentic_core.adg.applications.guardian_prioritizer_types import GuardianPrioritizer
-        from agentic_core.L0_routing.scripts._ssot_pipeline import CANONICAL_ROSTER_KEYS
-        from agentic_core.adg.applications.guardian_prioritizer_types import GuardianPrioritizer
-        from agentic_core.L0_routing.scripts._ssot_pipeline import CANONICAL_ROSTER_KEYS
-        from agentic_core.adg.applications.guardian_prioritizer_types import GuardianPrioritizer
         """When ADG is available and GuardianPrioritizer runs, guardian_scope is populated."""
+                import system_learning.adapters.system_learning_memory_bridge as _sl_bridge_mod  # noqa: F401
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.adg.extraction.static_scanner import ScanResult
+                from agentic_core.adg.extraction.static_scanner import Edge, ScanResult
+                from agentic_core.adg.schema_util import canonical_name
+                from agentic_core.adg.applications.guardian_prioritizer_types import (
+                from agentic_core.L0_routing.scripts._ssot_pipeline import (
+                from agentic_core.L0_routing.scripts._ssot_pipeline import _emit_adg_pre_run_artifact
+                from agentic_core.L0_routing.scripts._ssot_pipeline import _emit_adg_pre_run_artifact
+                from agentic_core.L0_routing.scripts._ssot_pipeline import _emit_adg_pre_run_artifact
+                import agentic_core.adg.runtime.behavioral_index as _bi_mod
+                from agentic_core.L0_routing.scripts.execute_ssot import execute_phase4_validation_impl
+                import agentic_core.adg.runtime.behavioral_index as _bi_mod
+                from agentic_core.L0_routing.scripts.execute_ssot import execute_phase4_validation_impl
+                import agentic_core.adg.runtime.behavioral_index as _bi_mod
+                from agentic_core.L0_routing.scripts.execute_ssot import execute_phase4_validation_impl
+                import agentic_core.adg.runtime.behavioral_index as _bi_mod
+                from agentic_core.L0_routing.scripts.execute_ssot import execute_phase4_validation_impl
+                from agentic_core.cache.redis_cache_client import get_hot_cache
+                from agentic_core.cache.redis_cache_client import get_hot_cache
+                from agentic_core.cache.redis_cache_client import canonical_json_bytes
+                from agentic_core.cache.redis_cache_client import canonical_json_bytes
+                from agentic_core.cache.redis_cache_client import canonical_json_bytes
+                from agentic_core.cache.redis_cache_client import content_hash
+                from agentic_core.cache.redis_cache_client import get_hot_cache
+                from agentic_core.cache.redis_cache_client import get_hot_cache
+                import agentic_core.embeddings.embedding_factory as _ef
+                import agentic_core.embeddings.embedding_factory as _ef
+                import agentic_core.embeddings.embedding_factory as _ef
+                import agentic_core.embeddings.embedding_factory as _ef
+                import agentic_core.embeddings.embedding_factory as _ef
+                import agentic_core.embeddings.embedding_factory as _ef
+                from apps_shared.utils.prompt_registry_util import (
+                from apps_shared.utils.prompt_registry_util import PromptCategory, PromptTemplate
+                from apps_shared.utils.prompt_registry_util import (
+                from apps_shared.utils.prompt_registry_util import (
+                from apps_shared.utils.prompt_registry_util import (
+                from apps_shared.utils.prompt_registry_util import (
+                from apps_shared.utils.prompt_registry_util import (
+                from agentic_core.L0_routing.scripts._ssot_validation_artifacts import _record_healing_action
+                from agentic_core.L0_routing.scripts._ssot_validation_artifacts import _record_healing_action
+                from agentic_core.L0_routing.scripts._ssot_validation_artifacts import _record_healing_action
+                from agentic_core.L0_routing.scripts._ssot_validation_artifacts import _record_healing_action
+                from agentic_core.L0_routing.scripts._ssot_validation_artifacts import _record_healing_action
+                from agentic_core.L0_routing.scripts._ssot_pipeline import EXECUTION_PLAN
+                from agentic_core.L0_routing.scripts._ssot_pipeline import AGENT_PIPELINE
+                from agentic_core.L0_routing.scripts._ssot_pipeline import CANONICAL_ROSTER_KEYS
+                from agentic_core.L0_routing.scripts._ssot_pipeline import PIPELINE_SUBPHASES
+                from agentic_core.L0_routing.scripts._ssot_pipeline import AGENT_DEPENDENCIES
+                from agentic_core.L0_routing.scripts._ssot_pipeline import resolve_agent_subset
+                from agentic_core.L0_routing.scripts._ssot_pipeline import resolve_agent_subset
+                from agentic_core.L0_routing.scripts._ssot_pipeline import EXECUTION_PLAN
+                import agentic_core.adg.runtime.cache_loader as _cl_mod
+                from agentic_core.adg.applications.PreRunADGReport import build_pre_run_report
+                from agentic_core.adg.applications.PreRunADGReport import PreRunADGReport
+                from agentic_core.adg.applications.PreRunADGReport import PreRunADGReport
+                from agentic_core.adg.applications.PreRunADGReport import (
+                from agentic_core.adg.applications.guardian_prioritizer_types import GuardianPrioritizer
+                from agentic_core.L0_routing.scripts._ssot_pipeline import CANONICAL_ROSTER_KEYS
+                from agentic_core.adg.applications.guardian_prioritizer_types import GuardianPrioritizer
+                from agentic_core.L0_routing.scripts._ssot_pipeline import CANONICAL_ROSTER_KEYS
+                from agentic_core.adg.applications.guardian_prioritizer_types import GuardianPrioritizer
+                from agentic_core.L0_routing.scripts._ssot_pipeline import CANONICAL_ROSTER_KEYS
+                from agentic_core.adg.applications.guardian_prioritizer_types import GuardianPrioritizer
+                """When ADG is available and GuardianPrioritizer runs, guardian_scope is populated."""
+
 #  # MOVED: from agentic_core.adg.applications.guardian_prioritizer_types import (
             GuardianPriorityScore,
             PrioritizationResult,

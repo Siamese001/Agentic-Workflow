@@ -5,9 +5,10 @@ import pytest
 
 pytestmark = pytest.mark.unit
 
-import apps_lic.utils.archetype_indicator_util  # noqa: F401
 
 
 def test_module_importable():
     """Module archetype_indicator_util must be importable."""
+    import apps_lic.utils.archetype_indicator_util  # noqa: F401
+
     assert apps_lic.utils.archetype_indicator_util is not None

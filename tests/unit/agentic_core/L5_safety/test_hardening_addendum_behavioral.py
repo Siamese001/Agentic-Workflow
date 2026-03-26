@@ -32,117 +32,119 @@ pytestmark = pytest.mark.unit
 
 class TestHardeningErrorTypes:
     def test_all_error_types_are_runtime_errors(self):
-        from agentic_core.L5_safety.types.hardening_errors import (
-        from agentic_core.L5_safety.types.hardening_errors import (
-        from agentic_core.L5_safety.types.hardening_errors import C0AuthorityLeakError
-        from agentic_core.L5_safety.types.hardening_errors import C0MutationViolation
-        from agentic_core.L5_safety.types.hardening_errors import ExecutionTraceIntegrityError
-        from agentic_core.L5_safety.types.hardening_errors import HumanPatchL5ClearanceError
-        from agentic_core.L5_safety.types.hardening_errors import HumanPatchValidationError
-        from agentic_core.L5_safety.types.hardening_errors import LedgerIntegrityViolation
-        from agentic_core.L5_safety.types.hardening_errors import MutationCommitFailure
-        from agentic_core.L5_safety.types.hardening_errors import MutationReplayIntegrityViolation
-        from agentic_core.L5_safety.types.hardening_errors import RuntimePolicyMutationViolation
-        from agentic_core.L2_execution.types.execution_trace_types import ExecutionTrace
-        from agentic_core.L5_safety.types.hardening_errors import C0AuthorityLeakError
-        from agentic_core.L5_safety.types.hardening_errors import ExecutionTraceIntegrityError
-        from agentic_core.L5_safety.types.hardening_errors import LedgerIntegrityViolation
-        from agentic_core.L5_safety.types.hardening_errors import MutationCommitFailure
-        from agentic_core.L5_safety.types.hardening_errors import ExecutionTraceIntegrityError
-        from agentic_core.L5_safety.types.hardening_errors import ExecutionTraceIntegrityError
-        from agentic_core.L2_execution.types.execution_trace_types import ExecutionTraceBuilder
-        from agentic_core.L2_execution.types.execution_trace_types import ExecutionTraceBuilder
-        from agentic_core.L2_execution.sandbox.boundary_validator import (
-        from agentic_core.L2_execution.sandbox.boundary_validator import verify_mutation_replay_integrity
-        from agentic_core.L5_safety.types.hardening_errors import MutationReplayIntegrityViolation
-        from agentic_core.L2_execution.sandbox.boundary_validator import compute_boundary_diff
-        from agentic_core.L2_execution.sandbox.boundary_validator import compute_boundary_diff
-        from agentic_core.L2_execution.sandbox.boundary_validator import compute_boundary_diff
-        from agentic_core.L2_execution.sandbox.boundary_validator import verify_mutation_replay_integrity
-        from agentic_core.L2_execution.healers.healing_event_emitter import (
-        from agentic_core.L2_execution.healers.healing_event_emitter import HealingEventEmitter
-        from agentic_core.L2_execution.healers.healing_event_emitter import HealingAttemptEvent
-        from agentic_core.L2_execution.healers.healing_event_emitter import HealingAttemptEvent
-        from agentic_core.L2_execution.healers.healing_event_emitter import HealingEventEmitter
-        from agentic_core.interfaces.write_gateway import compute_replay_key
-        from agentic_core.interfaces.write_gateway import compute_replay_key
-        from agentic_core.interfaces.write_gateway import compute_replay_key
-        from agentic_core.interfaces.write_gateway import compute_replay_key
-        from agentic_core.L4_state.ledger.integrity_validator import (
-        from agentic_core.L4_state.ledger.integrity_validator import (
-        from agentic_core.L5_safety.types.hardening_errors import LedgerIntegrityViolation
-        from agentic_core.L4_state.ledger.integrity_validator import validate_ledger_chain
-        from agentic_core.L5_safety.types.hardening_errors import LedgerIntegrityViolation
-        from agentic_core.L4_state.ledger.integrity_validator import compute_entry_hash
-        from agentic_core.L4_state.ledger.integrity_validator import append_with_hash
-        from agentic_core.L4_state.ledger.integrity_validator import validate_ledger_chain
-        from agentic_core.L4_state.ledger.integrity_validator import (
-        from agentic_core.L4_state.ledger.integrity_validator import validate_ledger_file
-        from agentic_core.L0_routing.context.c0_guard import guard_c0_payload
-        from agentic_core.L0_routing.context.c0_guard import guard_c0_payload
-        from agentic_core.L5_safety.types.hardening_errors import C0AuthorityLeakError
-        from agentic_core.L0_routing.context.c0_guard import guard_c0_payload
-        from agentic_core.L5_safety.types.hardening_errors import C0AuthorityLeakError
-        from agentic_core.L0_routing.context.c0_guard import guard_c0_payload
-        from agentic_core.L5_safety.types.hardening_errors import C0AuthorityLeakError
-        from agentic_core.L0_routing.context.c0_guard import guard_c0_payload
-        from agentic_core.L0_routing.context.c0_guard import verify_c0_immutability
-        from agentic_core.L0_routing.context.c0_guard import verify_c0_immutability
-        from agentic_core.L5_safety.types.hardening_errors import C0MutationViolation
-        from agentic_core.L0_routing.context.c0_guard import verify_c0_immutability
-        from agentic_core.L5_safety.types.hardening_errors import C0MutationViolation
-        from agentic_core.L0_routing.context.c0_guard import verify_c0_immutability
-        from agentic_core.L5_safety.hitl.patch_validator import ValidatedPatch, validate_patch
-        from agentic_core.L5_safety.hitl.patch_validator import validate_patch
-        from agentic_core.L5_safety.types.hardening_errors import HumanPatchValidationError
-        from agentic_core.L5_safety.hitl.patch_validator import validate_patch
-        from agentic_core.L5_safety.types.hardening_errors import HumanPatchValidationError
-        from agentic_core.L5_safety.hitl.patch_validator import validate_patch
-        from agentic_core.L5_safety.hitl.patch_validator import validate_patch
-        from agentic_core.L5_safety.hitl.patch_validator import validate_patch
-        from agentic_core.L5_safety.hitl.decision_logger import HITLDecision, HITLDecisionLogger
-        from agentic_core.L5_safety.hitl.decision_logger import HITLDecisionLogger
-        from agentic_core.L5_safety.hitl.decision_logger import HITLDecisionLogger
-        from agentic_core.L5_safety.hitl.decision_logger import HITLDecision
-        from agentic_core.L5_safety.hitl.decision_logger import HITLDecision
-        from agentic_core.L5_safety.hitl.decision_logger import HITLDecision
-        from agentic_core.L5_safety.hitl.decision_logger import HITLDecisionLogger
-        from agentic_core.L5_safety.invariants.runtime_invariant_checker import assert_mutation_source_is_l2
-        from agentic_core.L5_safety.invariants.runtime_invariant_checker import assert_mutation_source_is_l2
-        from agentic_core.L5_safety.types.hardening_errors import MutationReplayIntegrityViolation
-        from agentic_core.L5_safety.invariants.runtime_invariant_checker import assert_mutation_in_ledger
-        from agentic_core.L5_safety.invariants.runtime_invariant_checker import assert_mutation_in_ledger
-        from agentic_core.L5_safety.types.hardening_errors import MutationReplayIntegrityViolation
-        from agentic_core.L5_safety.invariants.runtime_invariant_checker import assert_state_read_source_is_l4
-        from agentic_core.L5_safety.invariants.runtime_invariant_checker import assert_state_read_source_is_l4
-        from agentic_core.L5_safety.types.hardening_errors import MutationReplayIntegrityViolation
-        from agentic_core.L5_safety.invariants.runtime_invariant_checker import assert_c0_no_authority_fields
-        from agentic_core.L5_safety.invariants.runtime_invariant_checker import assert_c0_no_authority_fields
-        from agentic_core.L5_safety.types.hardening_errors import C0AuthorityLeakError
-        from agentic_core.L5_safety.invariants.runtime_invariant_checker import (
-        from agentic_core.L5_safety.invariants.runtime_invariant_checker import (
-        from agentic_core.L5_safety.types.hardening_errors import RuntimePolicyMutationViolation
-        from agentic_core.L5_safety.invariants.runtime_invariant_checker import (
-        from agentic_core.L5_safety.invariants.runtime_invariant_checker import (
-        from agentic_core.L5_safety.invariants.runtime_invariant_checker import (
-        from agentic_core.L5_safety.types.hardening_errors import HumanPatchL5ClearanceError
-        from agentic_core.L5_safety.invariants.runtime_invariant_checker import (
-        from agentic_core.L5_safety.types.hardening_errors import HumanPatchL5ClearanceError
-        from agentic_core.L5_safety.invariants.runtime_invariant_checker import run_all_invariants
-        from agentic_core.L5_safety.invariants.runtime_invariant_checker import run_all_invariants
-        from agentic_core.L5_safety.invariants.runtime_invariant_checker import run_all_invariants
-        from agentic_core.L5_safety.invariants.runtime_invariant_checker import run_all_invariants
-#  # MOVED: from agentic_core.L5_safety.types.hardening_errors import (
-            C0AuthorityLeakError,
-            C0MutationViolation,
-            ExecutionTraceIntegrityError,
-            HumanPatchL5ClearanceError,
-            HumanPatchValidationError,
-            LedgerIntegrityViolation,
-            MutationCommitFailure,
-            MutationReplayIntegrityViolation,
-            RuntimePolicyMutationViolation,
-        )
+                from agentic_core.L5_safety.types.hardening_errors import (
+                from agentic_core.L5_safety.types.hardening_errors import (
+                from agentic_core.L5_safety.types.hardening_errors import C0AuthorityLeakError
+                from agentic_core.L5_safety.types.hardening_errors import C0MutationViolation
+                from agentic_core.L5_safety.types.hardening_errors import ExecutionTraceIntegrityError
+                from agentic_core.L5_safety.types.hardening_errors import HumanPatchL5ClearanceError
+                from agentic_core.L5_safety.types.hardening_errors import HumanPatchValidationError
+                from agentic_core.L5_safety.types.hardening_errors import LedgerIntegrityViolation
+                from agentic_core.L5_safety.types.hardening_errors import MutationCommitFailure
+                from agentic_core.L5_safety.types.hardening_errors import MutationReplayIntegrityViolation
+                from agentic_core.L5_safety.types.hardening_errors import RuntimePolicyMutationViolation
+                from agentic_core.L2_execution.types.execution_trace_types import ExecutionTrace
+                from agentic_core.L5_safety.types.hardening_errors import C0AuthorityLeakError
+                from agentic_core.L5_safety.types.hardening_errors import ExecutionTraceIntegrityError
+                from agentic_core.L5_safety.types.hardening_errors import LedgerIntegrityViolation
+                from agentic_core.L5_safety.types.hardening_errors import MutationCommitFailure
+                from agentic_core.L5_safety.types.hardening_errors import ExecutionTraceIntegrityError
+                from agentic_core.L5_safety.types.hardening_errors import ExecutionTraceIntegrityError
+                from agentic_core.L2_execution.types.execution_trace_types import ExecutionTraceBuilder
+                from agentic_core.L2_execution.types.execution_trace_types import ExecutionTraceBuilder
+                from agentic_core.L2_execution.sandbox.boundary_validator import (
+                from agentic_core.L2_execution.sandbox.boundary_validator import verify_mutation_replay_integrity
+                from agentic_core.L5_safety.types.hardening_errors import MutationReplayIntegrityViolation
+                from agentic_core.L2_execution.sandbox.boundary_validator import compute_boundary_diff
+                from agentic_core.L2_execution.sandbox.boundary_validator import compute_boundary_diff
+                from agentic_core.L2_execution.sandbox.boundary_validator import compute_boundary_diff
+                from agentic_core.L2_execution.sandbox.boundary_validator import verify_mutation_replay_integrity
+                from agentic_core.L2_execution.healers.healing_event_emitter import (
+                from agentic_core.L2_execution.healers.healing_event_emitter import HealingEventEmitter
+                from agentic_core.L2_execution.healers.healing_event_emitter import HealingAttemptEvent
+                from agentic_core.L2_execution.healers.healing_event_emitter import HealingAttemptEvent
+                from agentic_core.L2_execution.healers.healing_event_emitter import HealingEventEmitter
+                from agentic_core.interfaces.write_gateway import compute_replay_key
+                from agentic_core.interfaces.write_gateway import compute_replay_key
+                from agentic_core.interfaces.write_gateway import compute_replay_key
+                from agentic_core.interfaces.write_gateway import compute_replay_key
+                from agentic_core.L4_state.ledger.integrity_validator import (
+                from agentic_core.L4_state.ledger.integrity_validator import (
+                from agentic_core.L5_safety.types.hardening_errors import LedgerIntegrityViolation
+                from agentic_core.L4_state.ledger.integrity_validator import validate_ledger_chain
+                from agentic_core.L5_safety.types.hardening_errors import LedgerIntegrityViolation
+                from agentic_core.L4_state.ledger.integrity_validator import compute_entry_hash
+                from agentic_core.L4_state.ledger.integrity_validator import append_with_hash
+                from agentic_core.L4_state.ledger.integrity_validator import validate_ledger_chain
+                from agentic_core.L4_state.ledger.integrity_validator import (
+                from agentic_core.L4_state.ledger.integrity_validator import validate_ledger_file
+                from agentic_core.L0_routing.context.c0_guard import guard_c0_payload
+                from agentic_core.L0_routing.context.c0_guard import guard_c0_payload
+                from agentic_core.L5_safety.types.hardening_errors import C0AuthorityLeakError
+                from agentic_core.L0_routing.context.c0_guard import guard_c0_payload
+                from agentic_core.L5_safety.types.hardening_errors import C0AuthorityLeakError
+                from agentic_core.L0_routing.context.c0_guard import guard_c0_payload
+                from agentic_core.L5_safety.types.hardening_errors import C0AuthorityLeakError
+                from agentic_core.L0_routing.context.c0_guard import guard_c0_payload
+                from agentic_core.L0_routing.context.c0_guard import verify_c0_immutability
+                from agentic_core.L0_routing.context.c0_guard import verify_c0_immutability
+                from agentic_core.L5_safety.types.hardening_errors import C0MutationViolation
+                from agentic_core.L0_routing.context.c0_guard import verify_c0_immutability
+                from agentic_core.L5_safety.types.hardening_errors import C0MutationViolation
+                from agentic_core.L0_routing.context.c0_guard import verify_c0_immutability
+                from agentic_core.L5_safety.hitl.patch_validator import ValidatedPatch, validate_patch
+                from agentic_core.L5_safety.hitl.patch_validator import validate_patch
+                from agentic_core.L5_safety.types.hardening_errors import HumanPatchValidationError
+                from agentic_core.L5_safety.hitl.patch_validator import validate_patch
+                from agentic_core.L5_safety.types.hardening_errors import HumanPatchValidationError
+                from agentic_core.L5_safety.hitl.patch_validator import validate_patch
+                from agentic_core.L5_safety.hitl.patch_validator import validate_patch
+                from agentic_core.L5_safety.hitl.patch_validator import validate_patch
+                from agentic_core.L5_safety.hitl.decision_logger import HITLDecision, HITLDecisionLogger
+                from agentic_core.L5_safety.hitl.decision_logger import HITLDecisionLogger
+                from agentic_core.L5_safety.hitl.decision_logger import HITLDecisionLogger
+                from agentic_core.L5_safety.hitl.decision_logger import HITLDecision
+                from agentic_core.L5_safety.hitl.decision_logger import HITLDecision
+                from agentic_core.L5_safety.hitl.decision_logger import HITLDecision
+                from agentic_core.L5_safety.hitl.decision_logger import HITLDecisionLogger
+                from agentic_core.L5_safety.invariants.runtime_invariant_checker import assert_mutation_source_is_l2
+                from agentic_core.L5_safety.invariants.runtime_invariant_checker import assert_mutation_source_is_l2
+                from agentic_core.L5_safety.types.hardening_errors import MutationReplayIntegrityViolation
+                from agentic_core.L5_safety.invariants.runtime_invariant_checker import assert_mutation_in_ledger
+                from agentic_core.L5_safety.invariants.runtime_invariant_checker import assert_mutation_in_ledger
+                from agentic_core.L5_safety.types.hardening_errors import MutationReplayIntegrityViolation
+                from agentic_core.L5_safety.invariants.runtime_invariant_checker import assert_state_read_source_is_l4
+                from agentic_core.L5_safety.invariants.runtime_invariant_checker import assert_state_read_source_is_l4
+                from agentic_core.L5_safety.types.hardening_errors import MutationReplayIntegrityViolation
+                from agentic_core.L5_safety.invariants.runtime_invariant_checker import assert_c0_no_authority_fields
+                from agentic_core.L5_safety.invariants.runtime_invariant_checker import assert_c0_no_authority_fields
+                from agentic_core.L5_safety.types.hardening_errors import C0AuthorityLeakError
+                from agentic_core.L5_safety.invariants.runtime_invariant_checker import (
+                from agentic_core.L5_safety.invariants.runtime_invariant_checker import (
+                from agentic_core.L5_safety.types.hardening_errors import RuntimePolicyMutationViolation
+                from agentic_core.L5_safety.invariants.runtime_invariant_checker import (
+                from agentic_core.L5_safety.invariants.runtime_invariant_checker import (
+                from agentic_core.L5_safety.invariants.runtime_invariant_checker import (
+                from agentic_core.L5_safety.types.hardening_errors import HumanPatchL5ClearanceError
+                from agentic_core.L5_safety.invariants.runtime_invariant_checker import (
+                from agentic_core.L5_safety.types.hardening_errors import HumanPatchL5ClearanceError
+                from agentic_core.L5_safety.invariants.runtime_invariant_checker import run_all_invariants
+                from agentic_core.L5_safety.invariants.runtime_invariant_checker import run_all_invariants
+                from agentic_core.L5_safety.invariants.runtime_invariant_checker import run_all_invariants
+                from agentic_core.L5_safety.invariants.runtime_invariant_checker import run_all_invariants
+                from agentic_core.L5_safety.invariants.runtime_invariant_checker import run_all_invariants
+        #  # MOVED: from agentic_core.L5_safety.types.hardening_errors import (
+                    C0AuthorityLeakError,
+                    C0MutationViolation,
+                    ExecutionTraceIntegrityError,
+                    HumanPatchL5ClearanceError,
+                    HumanPatchValidationError,
+                    LedgerIntegrityViolation,
+                    MutationCommitFailure,
+                    MutationReplayIntegrityViolation,
+                    RuntimePolicyMutationViolation,
+                )
+
 
         for cls in (
             ExecutionTraceIntegrityError,

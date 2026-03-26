@@ -216,13 +216,15 @@ def _skill_normalizer() -> SkillScoreNormalizer:
 class TestContactSafetySSNDetection:
     @pytest.mark.governance
     def test_detects_standard_ssn_format(self):
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from apps_lic.engines.hop_stage_registry import (
-        from apps_rg.engines.contact_safety_engine import ContactSafetyEngine
-        from apps_rg.engines.hallucination_detector import HallucinationDetector
-        from apps_rg.engines.skill_score_normalizer import SkillScoreNormalizer
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        engine = _contact_safety()
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from apps_lic.engines.hop_stage_registry import (
+                from apps_rg.engines.contact_safety_engine import ContactSafetyEngine
+                from apps_rg.engines.hallucination_detector import HallucinationDetector
+                from apps_rg.engines.skill_score_normalizer import SkillScoreNormalizer
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                engine = _contact_safety()
+                assert engine._contains_ssn("SSN: 123-45-6789") is True
+
         assert engine._contains_ssn("SSN: 123-45-6789") is True
 
     @pytest.mark.governance

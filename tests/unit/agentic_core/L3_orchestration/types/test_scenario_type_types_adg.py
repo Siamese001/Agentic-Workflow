@@ -172,11 +172,13 @@ pytestmark = pytest.mark.unit
 
 class TestScenarioType:
     def test_is_enum(self):
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.L3_orchestration.types.scenario_type_types import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        import enum; assert issubclass(ScenarioType, enum.Enum)
-    def test_has_golden_dataset(self):
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L3_orchestration.types.scenario_type_types import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                import enum; assert issubclass(ScenarioType, enum.Enum)
+            def test_has_golden_dataset(self):
+                assert ScenarioType.GOLDEN_DATASET.value == "golden_dataset"
+
         assert ScenarioType.GOLDEN_DATASET.value == "golden_dataset"
 
 class TestPerformanceLevel:

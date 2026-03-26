@@ -10,27 +10,28 @@ import pytest
 
 pytestmark = pytest.mark.unit
 
-from apps_lic.config.retry_policy_config import (  # noqa: F401
-    BATCH_SIZE,
-    BUFFER_SIZE,
-    DEFAULT_SLEEP,
-    MAX_RETRIES,
-    THRESHOLD,
-    NonRetryableError,
-    RetryableError,
-    RetryAttempt,
-    RetryConfig,
-    RetryResult,
-    RetryStrategy,
-    get_retry_executor,
-    init_default_policies,
-    retry,
-    retry_with_policy,
-)
 
 
 class TestRetryStrategyContract:
     def test_is_enum(self):
+        from apps_lic.config.retry_policy_config import (  # noqa: F401
+            BATCH_SIZE,
+            BUFFER_SIZE,
+            DEFAULT_SLEEP,
+            MAX_RETRIES,
+            THRESHOLD,
+            NonRetryableError,
+            RetryableError,
+            RetryAttempt,
+            RetryConfig,
+            RetryResult,
+            RetryStrategy,
+            get_retry_executor,
+            init_default_policies,
+            retry,
+            retry_with_policy,
+        )
+
         import enum
         assert issubclass(RetryStrategy, enum.Enum)
 

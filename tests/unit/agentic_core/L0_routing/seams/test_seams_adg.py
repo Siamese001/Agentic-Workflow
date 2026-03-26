@@ -94,9 +94,11 @@ pytestmark = pytest.mark.unit
 
 class TestCanonicalTruthSeam:
     def test_canonical_truth_provider_is_protocol(self):
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.L0_routing.seams.canonical_truth_seam import (
-        from agentic_core.L0_routing.seams.layer_emission_seam import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L0_routing.seams.canonical_truth_seam import (
+                from agentic_core.L0_routing.seams.layer_emission_seam import (
+                assert callable(CanonicalTruthProvider)
+
         assert callable(CanonicalTruthProvider)
 
     def test_has_get_layer(self):

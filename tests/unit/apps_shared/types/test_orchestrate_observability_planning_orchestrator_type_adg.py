@@ -5,9 +5,10 @@ import pytest
 
 pytestmark = pytest.mark.unit
 
-import apps_shared.types.orchestrate_observability_planning_orchestrator_type  # noqa: F401
 
 
 def test_module_importable():
     """Module orchestrate_observability_planning_orchestrator_type must be importable."""
+    import apps_shared.types.orchestrate_observability_planning_orchestrator_type  # noqa: F401
+
     assert apps_shared.types.orchestrate_observability_planning_orchestrator_type is not None

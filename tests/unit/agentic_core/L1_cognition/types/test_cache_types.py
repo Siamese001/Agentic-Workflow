@@ -23,8 +23,10 @@ pytestmark = pytest.mark.unit
 
 class TestEvictionPolicyContract:
     def test_is_enum(self):
-        from agentic_core.L1_cognition.types.cache_types import (  # noqa: F401
-        import enum
+                from agentic_core.L1_cognition.types.cache_types import (  # noqa: F401
+                import enum
+                assert issubclass(EvictionPolicy, enum.Enum)
+
         assert issubclass(EvictionPolicy, enum.Enum)
 
     def test_has_members(self):

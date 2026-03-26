@@ -10,20 +10,21 @@ import pytest
 
 pytestmark = pytest.mark.unit
 
-from system_learning.constraints.config_surfaces import (  # noqa: F401
-    BATCH_SIZE,
-    BUFFER_SIZE,
-    DEFAULT_SLEEP,
-    MAX_RETRIES,
-    THRESHOLD,
-    FloatConstraint,
-    IntConstraint,
-    PointerConstraint,
-)
 
 
 class TestFloatConstraintContract:
     def test_is_dataclass(self):
+        from system_learning.constraints.config_surfaces import (  # noqa: F401
+            BATCH_SIZE,
+            BUFFER_SIZE,
+            DEFAULT_SLEEP,
+            MAX_RETRIES,
+            THRESHOLD,
+            FloatConstraint,
+            IntConstraint,
+            PointerConstraint,
+        )
+
         import dataclasses
         assert dataclasses.is_dataclass(FloatConstraint)
 

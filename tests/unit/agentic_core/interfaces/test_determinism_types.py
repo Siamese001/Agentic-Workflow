@@ -14,8 +14,10 @@ pytestmark = pytest.mark.unit
 
 
 def test_module_importable():
-    import agentic_core.interfaces.determinism_types as _mod  # noqa: F401
-    """Module determinism_types must be importable or skip gracefully."""
+        import agentic_core.interfaces.determinism_types as _mod  # noqa: F401
+        """Module determinism_types must be importable or skip gracefully."""
+        assert _mod.__name__ == "agentic_core.interfaces.determinism_types"
+
     assert _mod.__name__ == "agentic_core.interfaces.determinism_types"
 
 

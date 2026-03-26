@@ -5,9 +5,10 @@ import pytest
 
 pytestmark = pytest.mark.unit
 
-import system_learning.stores.__init__ as _mod  # noqa: F401
 
 
 def test_module_importable():
     """Module stores must be importable."""
+    import system_learning.stores.__init__ as _mod  # noqa: F401
+
     assert _mod is not None

@@ -174,15 +174,17 @@ pytestmark = pytest.mark.unit
 
 class TestReplayNondeterminismViolation:
     def test_is_exception(self):
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.L2_execution.enforcement.sovereign_sandbox_isolation import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-    """Test is_exception runtime behavior."""
-    # Arrange
-    # TODO: Set up error condition
-    """Test creates runtime behavior."""
-    # Arrange
-    # TODO: Set up test data for creates
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L2_execution.enforcement.sovereign_sandbox_isolation import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+            """Test is_exception runtime behavior."""
+            # Arrange
+            # TODO: Set up error condition
+            """Test creates runtime behavior."""
+            # Arrange
+            # TODO: Set up test data for creates
+            test_data = {}  # Replace with actual test data
+
     test_data = {}  # Replace with actual test data
 
     # Act

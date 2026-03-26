@@ -28,8 +28,10 @@ pytestmark = pytest.mark.unit
 
 class TestThreatLevelContract:
     def test_is_enum(self):
-        from agentic_core.L5_safety.reasoning.SelfUpdatingSafetyEngineAgent import (  # noqa: F401
-        import enum
+                from agentic_core.L5_safety.reasoning.SelfUpdatingSafetyEngineAgent import (  # noqa: F401
+                import enum
+                assert issubclass(ThreatLevel, enum.Enum)
+
         assert issubclass(ThreatLevel, enum.Enum)
 
     def test_has_members(self):

@@ -26,8 +26,10 @@ pytestmark = pytest.mark.unit
 
 class TestLateChunkingProfileContract:
     def test_is_dataclass(self):
-        from agentic_core.utils.workflow_engines.late_chunking import (  # noqa: F401
-        import dataclasses
+                from agentic_core.utils.workflow_engines.late_chunking import (  # noqa: F401
+                import dataclasses
+                assert dataclasses.is_dataclass(LateChunkingProfile)
+
         assert dataclasses.is_dataclass(LateChunkingProfile)
 
     def test_is_frozen(self):

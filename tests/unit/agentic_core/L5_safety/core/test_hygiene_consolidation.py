@@ -198,12 +198,14 @@ class TestLegacyHygieneFunctionality:
     """Test Case 1: Verify legacy HygieneGuardian functionality."""
 
     def test_detects_empty_files(self, hygiene_agent, temp_project):
-        from agentic_core.L5_safety.enforcement.archival_gatekeeper_gate import (
-        from agentic_core.L5_safety.reasoning.HygieneGuardianAgent import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        """Verify HygieneGuardian detects empty Python files."""
-        # Create empty Python file
-        empty_file = temp_project / "empty_module.py"
+                from agentic_core.L5_safety.enforcement.archival_gatekeeper_gate import (
+                from agentic_core.L5_safety.reasoning.HygieneGuardianAgent import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                """Verify HygieneGuardian detects empty Python files."""
+                # Create empty Python file
+                empty_file = temp_project / "empty_module.py"
+                empty_file.write_text("")
+
         empty_file.write_text("")
 
         # Also create a whitespace-only file

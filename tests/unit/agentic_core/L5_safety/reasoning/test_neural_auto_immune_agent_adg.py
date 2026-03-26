@@ -170,10 +170,12 @@ pytestmark = pytest.mark.unit
 
 class TestNeuralAutoImmuneAgent:
     def test_creates(self):
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.L5_safety.reasoning.NeuralAutoImmuneAgent import NeuralAutoImmuneAgent
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        agent = NeuralAutoImmuneAgent()
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L5_safety.reasoning.NeuralAutoImmuneAgent import NeuralAutoImmuneAgent
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                agent = NeuralAutoImmuneAgent()
+                assert agent is not None
+
         assert agent is not None
 
     

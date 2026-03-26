@@ -173,11 +173,13 @@ pytestmark = pytest.mark.unit
 
 class TestConstants:
     def test_ssot_reports_dir_value(self):
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.L5_safety.validators.report_location_validator import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.L5_safety.validators.report_location_validator import (
-        from agentic_core.L5_safety.validators.report_location_validator import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L5_safety.validators.report_location_validator import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L5_safety.validators.report_location_validator import (
+                from agentic_core.L5_safety.validators.report_location_validator import (
+                assert SSOT_REPORTS_DIR == "docs/reports"
+
         assert SSOT_REPORTS_DIR == "docs/reports"
 
     def test_report_file_patterns_tuple(self):

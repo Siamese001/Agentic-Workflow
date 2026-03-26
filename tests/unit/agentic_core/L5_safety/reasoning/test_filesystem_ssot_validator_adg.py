@@ -173,9 +173,11 @@ pytestmark = pytest.mark.unit
 
 class TestFilesystemSSOTValidatorAgent:
     def test_check_id_value(self):
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.L5_safety.reasoning.filesystem_ssot_validator import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L5_safety.reasoning.filesystem_ssot_validator import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                assert CHECK_ID == "filesystem_ssot_drift"
+
         assert CHECK_ID == "filesystem_ssot_drift"
 
     def test_creates(self, tmp_path):

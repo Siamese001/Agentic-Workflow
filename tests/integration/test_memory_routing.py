@@ -192,21 +192,24 @@ DEFAULT_TIMEOUT = 300  # 5 minutes
 
 @pytest.mark.unit
 def test_null_retriever_returns_empty_list():
-    from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-    from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-    from agentic_core.L1_cognition.memory.healing_memory_retriever import NullHealingMemoryRetriever
-    from agentic_core.L1_cognition.memory.healing_memory_retriever import NullHealingMemoryRetriever
-    from agentic_core.L1_cognition.memory.healing_memory_retriever import HealingMemoryRetriever
-    from system_learning.engines.local_faiss_store import LocalFAISSStore
-    from agentic_core.L1_cognition.memory.healing_memory_retriever import HealingMemoryRetriever
-    from system_learning.engines.local_faiss_store import LocalFAISSStore
-    from agentic_core.L1_cognition.memory.healing_memory_retriever import (
-    from agentic_core.L1_cognition.memory.healing_memory_retriever import (
-    from agentic_core.L1_cognition.memory.healing_memory_retriever import (
-    from agentic_core.L1_cognition.memory.healing_memory_retriever import HealingMemoryRetriever
-    from agentic_core.L1_cognition.memory.healing_memory_retriever import HealingMemoryRetriever
-    from agentic_core.L1_cognition.memory.healing_memory_retriever import (
-    from agentic_core.L1_cognition.memory.healing_memory_retriever import HealingMemoryRetriever
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L1_cognition.memory.healing_memory_retriever import NullHealingMemoryRetriever
+        from agentic_core.L1_cognition.memory.healing_memory_retriever import NullHealingMemoryRetriever
+        from agentic_core.L1_cognition.memory.healing_memory_retriever import HealingMemoryRetriever
+        from system_learning.engines.local_faiss_store import LocalFAISSStore
+        from agentic_core.L1_cognition.memory.healing_memory_retriever import HealingMemoryRetriever
+        from system_learning.engines.local_faiss_store import LocalFAISSStore
+        from agentic_core.L1_cognition.memory.healing_memory_retriever import (
+        from agentic_core.L1_cognition.memory.healing_memory_retriever import (
+        from agentic_core.L1_cognition.memory.healing_memory_retriever import (
+        from agentic_core.L1_cognition.memory.healing_memory_retriever import HealingMemoryRetriever
+        from agentic_core.L1_cognition.memory.healing_memory_retriever import HealingMemoryRetriever
+        from agentic_core.L1_cognition.memory.healing_memory_retriever import (
+        from agentic_core.L1_cognition.memory.healing_memory_retriever import HealingMemoryRetriever
+        from agentic_core.L1_cognition.memory.healing_memory_retriever import HealingMemoryRetriever
+    #  # MOVED: from agentic_core.L1_cognition.memory.healing_memory_retriever import NullHealingMemoryRetriever
+
 #  # MOVED: from agentic_core.L1_cognition.memory.healing_memory_retriever import NullHealingMemoryRetriever
 
     r = NullHealingMemoryRetriever()

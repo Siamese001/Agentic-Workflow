@@ -192,12 +192,14 @@ class TestSovereigntyGoldMaster(unittest.TestCase):
         self.fixer = PascalSovereigntyFixer(dry_run=True)
 
     def test_relative_import_integrity(self):
-        from agentic_core.L0_routing.config.path_constants import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        """Edge Case: Ensure 'from .llm_mixin import' is refactored correctly."""
-        old_mod = "llm_mixin"
-        new_mod = "LLMMixin"  # Testing the mechanism
+                from agentic_core.L0_routing.config.path_constants import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                """Edge Case: Ensure 'from .llm_mixin import' is refactored correctly."""
+                old_mod = "llm_mixin"
+                new_mod = "LLMMixin"  # Testing the mechanism
+                content = "from .llm_mixin import BaseLLM\nfrom ..llm_mixin import Helper"
+
         content = "from .llm_mixin import BaseLLM\nfrom ..llm_mixin import Helper"
 
         # Simulating internal logic with the actual pattern

@@ -170,9 +170,11 @@ pytestmark = pytest.mark.unit
 
 class TestSelfDiagnosisMixin:
     def test_importable(self):
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.mixins.self_diagnosis_mixin import SelfDiagnosisMixin
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.mixins.self_diagnosis_mixin import SelfDiagnosisMixin
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                assert callable(SelfDiagnosisMixin)
+
         assert callable(SelfDiagnosisMixin)
 
     def test_mandatory_components_default_empty(self):

@@ -11,50 +11,6 @@ from __future__ import annotations
 
 import pytest
 
-from agentic_core.L0_routing.meta_control.meta_learning_bus import (
-    MetaLearningBus,
-    MetaLearningChangePackage,
-)
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-    _emit_agent_executes_agent,
-    _emit_applies_guardrail,  # noqa: E402
-    _emit_authorize_and_execute,
-    _emit_blocks_direct_write,
-    _emit_captures_evaluation_metric,
-    _emit_captures_execution_output,
-    _emit_checks_agent_registry,
-    _emit_coordinates_agents,
-    _emit_dispatches_agent,
-    _emit_dispatches_execution_plan,
-    _emit_dispatches_healing_run,
-    _emit_escalates_failure,
-    _emit_escalates_to_human,
-    _emit_gated_by_confidence,
-    _emit_hard_fails_untranscripted,
-    _emit_invokes_evaluation,
-    _emit_links_execution_to_snapshot,
-    _emit_observes_runtime_state,
-    _emit_orchestrates_workflow,
-    _emit_reads_policy_state,  # noqa: E402
-    _emit_records_execution_trace,  # noqa: E402
-    _emit_records_healing_outcome,
-    _emit_records_telemetry_event,
-    _emit_records_tool_invocation,
-    _emit_records_workflow_lineage,
-    _emit_routes_through,
-    _emit_routes_to_agent,
-    _emit_routes_to_capability,
-    _emit_signs_execution_trace,  # noqa: E402
-    _emit_snapshots_state,  # noqa: E402
-    _emit_stores_embedding,
-    _emit_transcripts_response,
-    _emit_updates_meta_learning_state,
-    _emit_validates_agent_capability,
-    _emit_validates_capability,
-    _emit_verifies_boundary,
-    _emit_verifies_policy,
-    _emit_writes_via_uwg,
-    emit_determinism_digest,  # noqa: E402
     emit_replay_key,  # noqa: E402
 )
 
@@ -78,53 +34,11 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 # REMOVED: _emit_stores_embedding("p4", "test_plan2_meta_learning_bus_hardening", "embedding_store")
 # REMOVED: _emit_updates_meta_learning_state("p4", "test_plan2_meta_learning_bus_hardening", "meta_learning")
 # REMOVED: _emit_links_execution_to_snapshot("p4", "test_plan2_meta_learning_bus_hardening", "exec_snapshot_link")
-from system_learning.engines.bus_consumer import drain_and_apply
-from system_learning.engines.healing_success_rate_store import (
-    _MIN_SAMPLE_SIZE,
-    _NEUTRAL_PRIOR,
-    HealingSuccessRateStore,
-)
 
 # REMOVED: _emit_records_execution_trace("p0", "evidence", "test_plan2_meta_learning_bus_hardening")
 # REMOVED: _emit_applies_guardrail("p0", "test_plan2_meta_learning_bus_hardening", "p0_governance")
 # REMOVED: _emit_reads_policy_state("p0", "test_plan2_meta_learning_bus_hardening", "policy_binding")
 # REMOVED: _emit_snapshots_state("p0", "test_plan2_meta_learning_bus_hardening", "state_snapshot")
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-    _emit_agent_executes_agent,
-    _emit_captures_pattern,
-    _emit_captures_runtime_anomaly,
-    _emit_checks_agent_registry,
-    _emit_dispatches_execution_plan,
-    _emit_emits_metric_event,
-    _emit_escalates_to_human,
-    _emit_execution_terminates_at_uwg,
-    _emit_feeds_meta_learning,
-    _emit_gated_by_confidence,
-    _emit_hard_fails_untranscripted,
-    _emit_improves_agent_policy,
-    _emit_invokes_eval,
-    _emit_links_incident_trace,  # noqa: E402
-    _emit_observes_runtime_state,
-    _emit_proposal_commits_routing,
-    _emit_pulls_context,
-    _emit_reads_environ,
-    _emit_reads_runtime_state,
-    _emit_records_execution_trace,
-    _emit_records_incident_event,
-    _emit_records_learning_event,
-    _emit_routes_through,
-    _emit_routes_to_agent,
-    _emit_stores_learning_state,
-    _emit_transcripts_response,
-    _emit_triggers_alert,
-    _emit_updates_monitoring_state,
-    _emit_updates_routing_strategy,
-    _emit_validated_by_safety_plane,
-    _emit_validates_agent_capability,
-    _emit_verifies_boundary,
-    _emit_verifies_policy,
-    _emit_writes_learning_snapshot,
-    _emit_writes_observability_log,
     _emit_writes_through,  # noqa: E402
 )
 
@@ -194,21 +108,8 @@ class TestDefaultMetaOutcomeBusHookSchema:
     """DefaultMetaOutcomeBusHook must use MetaLearningChangePackage.create()."""
 
     def _make_healing_input(self, error_signature="syntax_error", trace_id="t-001"):
-        from agentic_core.L2_execution.healers.healing_tier_types import HealingInput
-
-        return HealingInput(
-            failure_type="syntax_error",
-            error_signature=error_signature,
-            trace_id=trace_id,
-            retry_count=0,
-            blast_radius_estimate=0.3,
-        )
 
     def _make_decision(self):
-        from agentic_core.L2_execution.healers.healing_tier_types import (
-            HealingDecision,
-            HealingTier,
-        )
 
         return HealingDecision(
             tier=HealingTier.LOCAL_AGENT,
@@ -218,9 +119,178 @@ class TestDefaultMetaOutcomeBusHookSchema:
 
     def test_publish_outcome_enqueues_one_package(self):
         """publish_outcome must enqueue exactly one package on the bus."""
-        from system_learning.ports.meta_outcome_bus_hook import DefaultMetaOutcomeBusHook
+        from agentic_core.L0_routing.meta_control.meta_learning_bus import (
+            MetaLearningBus,
+            MetaLearningChangePackage,
+        )
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+            _emit_agent_executes_agent,
+            _emit_applies_guardrail,  # noqa: E402
+            _emit_authorize_and_execute,
+            _emit_blocks_direct_write,
+            _emit_captures_evaluation_metric,
+            _emit_captures_execution_output,
+            _emit_checks_agent_registry,
+            _emit_coordinates_agents,
+            _emit_dispatches_agent,
+            _emit_dispatches_execution_plan,
+            _emit_dispatches_healing_run,
+            _emit_escalates_failure,
+            _emit_escalates_to_human,
+            _emit_gated_by_confidence,
+            _emit_hard_fails_untranscripted,
+            _emit_invokes_evaluation,
+            _emit_links_execution_to_snapshot,
+            _emit_observes_runtime_state,
+            _emit_orchestrates_workflow,
+            _emit_reads_policy_state,  # noqa: E402
+            _emit_records_execution_trace,  # noqa: E402
+            _emit_records_healing_outcome,
+            _emit_records_telemetry_event,
+            _emit_records_tool_invocation,
+            _emit_records_workflow_lineage,
+            _emit_routes_through,
+            _emit_routes_to_agent,
+            _emit_routes_to_capability,
+            _emit_signs_execution_trace,  # noqa: E402
+            _emit_snapshots_state,  # noqa: E402
+            _emit_stores_embedding,
+            _emit_transcripts_response,
+            _emit_updates_meta_learning_state,
+            _emit_validates_agent_capability,
+            _emit_validates_capability,
+            _emit_verifies_boundary,
+            _emit_verifies_policy,
+            _emit_writes_via_uwg,
+            emit_determinism_digest,  # noqa: E402
+            emit_replay_key,  # noqa: E402
+        from system_learning.engines.bus_consumer import drain_and_apply
+        from system_learning.engines.healing_success_rate_store import (
+            _MIN_SAMPLE_SIZE,
+            _NEUTRAL_PRIOR,
+            HealingSuccessRateStore,
+        )
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+            _emit_agent_executes_agent,
+            _emit_captures_pattern,
+            _emit_captures_runtime_anomaly,
+            _emit_checks_agent_registry,
+            _emit_dispatches_execution_plan,
+            _emit_emits_metric_event,
+            _emit_escalates_to_human,
+            _emit_execution_terminates_at_uwg,
+            _emit_feeds_meta_learning,
+            _emit_gated_by_confidence,
+            _emit_hard_fails_untranscripted,
+            _emit_improves_agent_policy,
+            _emit_invokes_eval,
+            _emit_links_incident_trace,  # noqa: E402
+            _emit_observes_runtime_state,
+            _emit_proposal_commits_routing,
+            _emit_pulls_context,
+            _emit_reads_environ,
+            _emit_reads_runtime_state,
+            _emit_records_execution_trace,
+            _emit_records_incident_event,
+            _emit_records_learning_event,
+            _emit_routes_through,
+            _emit_routes_to_agent,
+            _emit_stores_learning_state,
+            _emit_transcripts_response,
+            _emit_triggers_alert,
+            _emit_updates_monitoring_state,
+            _emit_updates_routing_strategy,
+            _emit_validated_by_safety_plane,
+            _emit_validates_agent_capability,
+            _emit_verifies_boundary,
+            _emit_verifies_policy,
+            _emit_writes_learning_snapshot,
+            _emit_writes_observability_log,
+            _emit_writes_through,  # noqa: E402
+                from agentic_core.L2_execution.healers.healing_tier_types import HealingInput
+                return HealingInput(
+                    failure_type="syntax_error",
+                    error_signature=error_signature,
+                    trace_id=trace_id,
+                    retry_count=0,
+                    blast_radius_estimate=0.3,
+                )
+                from agentic_core.L2_execution.healers.healing_tier_types import (
+                    HealingDecision,
+                    HealingTier,
+                )
+                from system_learning.ports.meta_outcome_bus_hook import DefaultMetaOutcomeBusHook
+                bus = MetaLearningBus()
+                hook = DefaultMetaOutcomeBusHook(bus=bus)
+                from system_learning.ports.meta_outcome_bus_hook import DefaultMetaOutcomeBusHook
+                bus = MetaLearningBus()
+                hook = DefaultMetaOutcomeBusHook(bus=bus)
+                from system_learning.ports.meta_outcome_bus_hook import DefaultMetaOutcomeBusHook
+                bus = MetaLearningBus()
+                hook = DefaultMetaOutcomeBusHook(bus=bus)
+                from system_learning.ports.meta_outcome_bus_hook import DefaultMetaOutcomeBusHook
+                bus = MetaLearningBus()
+                hook = DefaultMetaOutcomeBusHook(bus=bus)
+                from system_learning.ports.meta_outcome_bus_hook import NullMetaOutcomeBusHook
+                hook = NullMetaOutcomeBusHook()
+                hook.publish_outcome(
+                    healing_input=self._make_healing_input(),
+                    decision=self._make_decision(),
+                    record=None,
+                    success=True,
+                )
+                from system_learning.ports.meta_outcome_bus_hook import DefaultMetaOutcomeBusHook
+                hook = DefaultMetaOutcomeBusHook(bus=None)
+                hook.publish_outcome(
+                    healing_input=self._make_healing_input(),
+                    decision=self._make_decision(),
+                    record=None,
+                    success=True,
+                )
+                from system_learning.adapters.l4_meta_prior_provider import L4MetaPriorProvider
+                provider = L4MetaPriorProvider(store=None)
+                assert provider.get_prior("syntax_error") == _NEUTRAL_PRIOR
+                from system_learning.adapters.l4_meta_prior_provider import L4MetaPriorProvider
+                store = HealingSuccessRateStore()
+                provider = L4MetaPriorProvider(store=store)
+                assert provider.get_prior("unknown_sig") == _NEUTRAL_PRIOR
+                from system_learning.adapters.l4_meta_prior_provider import L4MetaPriorProvider
+                store = HealingSuccessRateStore()
+                # Record fewer than _MIN_SAMPLE_SIZE outcomes
+                for _ in range(_MIN_SAMPLE_SIZE - 1):
+                    store.record_outcome("import_error", True)
+                from system_learning.adapters.l4_meta_prior_provider import L4MetaPriorProvider
+                store = HealingSuccessRateStore()
+                for _ in range(_MIN_SAMPLE_SIZE):
+                    store.record_outcome("import_error", True)
+                from system_learning.adapters.l4_meta_prior_provider import L4MetaPriorProvider
+                bad_store = Mock()
+                bad_store.get_prior.side_effect = RuntimeError("store unavailable")
+                from agentic_core.L2_execution.healers.healing_tier_types import (
+                    HealingDecision,
+                    HealingInput,
+                    HealingTier,
+                )
+                from system_learning.adapters.l4_meta_prior_provider import L4MetaPriorProvider
+                from system_learning.ports.meta_outcome_bus_hook import DefaultMetaOutcomeBusHook
+                from system_learning.ports.meta_outcome_bus_hook import DefaultMetaOutcomeBusHook
+                bus = MetaLearningBus()
+                store = HealingSuccessRateStore()
+                hook = DefaultMetaOutcomeBusHook(bus=bus)
+                provider = L4MetaPriorProvider(store=store)
+                from agentic_core.L2_execution.healers.healing_tier_types import (
+                    HealingDecision,
+                    HealingInput,
+                    HealingTier,
+                )
+                from system_learning.adapters.l4_meta_prior_provider import L4MetaPriorProvider
+                from system_learning.ports.meta_outcome_bus_hook import DefaultMetaOutcomeBusHook
+                from system_learning.ports.meta_outcome_bus_hook import DefaultMetaOutcomeBusHook
+                bus = MetaLearningBus()
+                store = HealingSuccessRateStore()
+                hook = DefaultMetaOutcomeBusHook(bus=bus)
+                provider = L4MetaPriorProvider(store=store)
 
-        bus = MetaLearningBus()
         hook = DefaultMetaOutcomeBusHook(bus=bus)
 
         hook.publish_outcome(
@@ -234,9 +304,6 @@ class TestDefaultMetaOutcomeBusHookSchema:
 
     def test_published_package_has_correct_kind(self):
         """Published package must have kind == 'healing_outcome'."""
-        from system_learning.ports.meta_outcome_bus_hook import DefaultMetaOutcomeBusHook
-
-        bus = MetaLearningBus()
         hook = DefaultMetaOutcomeBusHook(bus=bus)
 
         hook.publish_outcome(
@@ -252,9 +319,6 @@ class TestDefaultMetaOutcomeBusHookSchema:
 
     def test_published_package_carries_error_signature(self):
         """Payload must include error_signature from HealingInput."""
-        from system_learning.ports.meta_outcome_bus_hook import DefaultMetaOutcomeBusHook
-
-        bus = MetaLearningBus()
         hook = DefaultMetaOutcomeBusHook(bus=bus)
 
         hook.publish_outcome(
@@ -270,9 +334,6 @@ class TestDefaultMetaOutcomeBusHookSchema:
         assert pkg.payload["proposal_only"] is True
 
     def test_published_package_carries_trace_id(self):
-        from system_learning.ports.meta_outcome_bus_hook import DefaultMetaOutcomeBusHook
-
-        bus = MetaLearningBus()
         hook = DefaultMetaOutcomeBusHook(bus=bus)
 
         hook.publish_outcome(
@@ -287,27 +348,9 @@ class TestDefaultMetaOutcomeBusHookSchema:
 
     def test_null_bus_publish_outcome_is_no_op(self):
         """NullMetaOutcomeBusHook must silently do nothing."""
-        from system_learning.ports.meta_outcome_bus_hook import NullMetaOutcomeBusHook
-
-        hook = NullMetaOutcomeBusHook()
-        hook.publish_outcome(
-            healing_input=self._make_healing_input(),
-            decision=self._make_decision(),
-            record=None,
-            success=True,
-        )
 
     def test_none_bus_publish_outcome_is_no_op(self):
         """DefaultMetaOutcomeBusHook with bus=None must silently do nothing."""
-        from system_learning.ports.meta_outcome_bus_hook import DefaultMetaOutcomeBusHook
-
-        hook = DefaultMetaOutcomeBusHook(bus=None)
-        hook.publish_outcome(
-            healing_input=self._make_healing_input(),
-            decision=self._make_decision(),
-            record=None,
-            success=True,
-        )
 
 
 # ---------------------------------------------------------------------------
@@ -434,34 +477,18 @@ class TestL4MetaPriorProvider:
     """L4MetaPriorProvider must delegate to store and fall back on cold start."""
 
     def test_returns_neutral_when_store_is_none(self):
-        from system_learning.adapters.l4_meta_prior_provider import L4MetaPriorProvider
-
-        provider = L4MetaPriorProvider(store=None)
         assert provider.get_prior("syntax_error") == _NEUTRAL_PRIOR
 
     def test_returns_neutral_for_unknown_signature(self):
-        from system_learning.adapters.l4_meta_prior_provider import L4MetaPriorProvider
-
-        store = HealingSuccessRateStore()
-        provider = L4MetaPriorProvider(store=store)
         assert provider.get_prior("unknown_sig") == _NEUTRAL_PRIOR
 
     def test_returns_neutral_before_min_sample_size(self):
-        from system_learning.adapters.l4_meta_prior_provider import L4MetaPriorProvider
-
-        store = HealingSuccessRateStore()
-        # Record fewer than _MIN_SAMPLE_SIZE outcomes
-        for _ in range(_MIN_SAMPLE_SIZE - 1):
             store.record_outcome("import_error", True)
 
         provider = L4MetaPriorProvider(store=store)
         assert provider.get_prior("import_error") == _NEUTRAL_PRIOR
 
     def test_returns_live_rate_after_min_sample_size(self):
-        from system_learning.adapters.l4_meta_prior_provider import L4MetaPriorProvider
-
-        store = HealingSuccessRateStore()
-        for _ in range(_MIN_SAMPLE_SIZE):
             store.record_outcome("import_error", True)
 
         provider = L4MetaPriorProvider(store=store)
@@ -471,9 +498,6 @@ class TestL4MetaPriorProvider:
     def test_falls_back_to_neutral_when_store_raises(self):
         from unittest.mock import Mock
 
-        from system_learning.adapters.l4_meta_prior_provider import L4MetaPriorProvider
-
-        bad_store = Mock()
         bad_store.get_prior.side_effect = RuntimeError("store unavailable")
 
         provider = L4MetaPriorProvider(store=bad_store)
@@ -500,17 +524,6 @@ class TestEndToEndBusFlow:
     """Full loop: hook publishes → drain_and_apply updates store → prior reflects outcome."""
 
     def test_end_to_end_success_raises_prior_above_neutral(self):
-        from agentic_core.L2_execution.healers.healing_tier_types import (
-            HealingDecision,
-            HealingInput,
-            HealingTier,
-        )
-        from system_learning.adapters.l4_meta_prior_provider import L4MetaPriorProvider
-        from system_learning.ports.meta_outcome_bus_hook import DefaultMetaOutcomeBusHook
-
-        bus = MetaLearningBus()
-        store = HealingSuccessRateStore()
-        hook = DefaultMetaOutcomeBusHook(bus=bus)
         provider = L4MetaPriorProvider(store=store)
 
         healing_input = HealingInput(
@@ -543,17 +556,6 @@ class TestEndToEndBusFlow:
         assert prior > _NEUTRAL_PRIOR, f"Expected prior > {_NEUTRAL_PRIOR}, got {prior}"
 
     def test_end_to_end_failure_lowers_prior_below_neutral(self):
-        from agentic_core.L2_execution.healers.healing_tier_types import (
-            HealingDecision,
-            HealingInput,
-            HealingTier,
-        )
-        from system_learning.adapters.l4_meta_prior_provider import L4MetaPriorProvider
-        from system_learning.ports.meta_outcome_bus_hook import DefaultMetaOutcomeBusHook
-
-        bus = MetaLearningBus()
-        store = HealingSuccessRateStore()
-        hook = DefaultMetaOutcomeBusHook(bus=bus)
         provider = L4MetaPriorProvider(store=store)
 
         decision = HealingDecision(

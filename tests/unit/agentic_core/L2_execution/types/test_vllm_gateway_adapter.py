@@ -237,14 +237,17 @@ def fresh_adapter() -> VLLMGatewayAdapter:
 
 
 def test_seam_proof_marker_present():
-    from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-    from agentic_core.L2_execution.types.vllm_backpressure_types import (
-    from agentic_core.L2_execution.types.vllm_gateway_adapter_types import (
-    from agentic_core.L2_execution.types.vllm_gateway_integration_types import (
-    from agentic_core.L2_execution.types.vllm_serving_profile_types import (
-    from agentic_core.L2_execution.types.vllm_token_budget_types import (
-    from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 """Test seam_proof_marker_present runtime behavior."""
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L2_execution.types.vllm_backpressure_types import (
+        from agentic_core.L2_execution.types.vllm_gateway_adapter_types import (
+        from agentic_core.L2_execution.types.vllm_gateway_integration_types import (
+        from agentic_core.L2_execution.types.vllm_serving_profile_types import (
+        from agentic_core.L2_execution.types.vllm_token_budget_types import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+    """Test seam_proof_marker_present runtime behavior."""
+
 # Arrange
 # TODO: Set up test data for seam_proof_marker_present
 test_data = {}  # Replace with actual test data

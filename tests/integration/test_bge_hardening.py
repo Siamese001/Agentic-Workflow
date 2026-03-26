@@ -228,25 +228,27 @@ def _collect_env_get_calls(tree: ast.Module, var_name: str) -> list[str]:
 
 @pytest.mark.unit
 def test_preflight_check_raises_on_missing_bge(monkeypatch):
-    from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-    from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-    import agentic_core.L0_routing.scripts.execute_ssot as _mod
-    import agentic_core.L0_routing.scripts.execute_ssot as _mod
-    import agentic_core.L0_routing.scripts.execute_ssot as _mod
-    import agentic_core.L0_routing.scripts.execute_ssot as _mod
-    import agentic_core.L0_routing.scripts.execute_ssot as _mod
-    from agentic_core.L0_routing.scripts.execute_ssot import SovereignDecisionEngine
-    from agentic_core.L1_cognition.memory.healing_memory_retriever import VectorSourceMismatchError
-    import agentic_core.L0_routing.scripts.execute_ssot as _mod
-    from agentic_core.L0_routing.scripts.execute_ssot import SovereignDecisionEngine
-    from system_learning.engines.retrieval_profile import RetrievalProfile
-    from system_learning.engines.retrieval_profile import RetrievalProfile
-    import system_learning.pipelines.meta_learning_pipeline as _pipeline
-    import system_learning.pipelines.meta_learning_pipeline as _pipeline
-    import system_learning.pipelines.meta_learning_pipeline as _pipeline
-    import system_learning.pipelines.meta_learning_pipeline as _pipeline
-    import agentic_core.L0_routing.scripts.execute_ssot as _mod
-    from agentic_core.L0_routing.scripts.execute_ssot import ConfidenceScore
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        import agentic_core.L0_routing.scripts.execute_ssot as _mod
+        import agentic_core.L0_routing.scripts.execute_ssot as _mod
+        import agentic_core.L0_routing.scripts.execute_ssot as _mod
+        import agentic_core.L0_routing.scripts.execute_ssot as _mod
+        import agentic_core.L0_routing.scripts.execute_ssot as _mod
+        from agentic_core.L0_routing.scripts.execute_ssot import SovereignDecisionEngine
+        from agentic_core.L1_cognition.memory.healing_memory_retriever import VectorSourceMismatchError
+        import agentic_core.L0_routing.scripts.execute_ssot as _mod
+        from agentic_core.L0_routing.scripts.execute_ssot import SovereignDecisionEngine
+        from system_learning.engines.retrieval_profile import RetrievalProfile
+        from system_learning.engines.retrieval_profile import RetrievalProfile
+        import system_learning.pipelines.meta_learning_pipeline as _pipeline
+        import system_learning.pipelines.meta_learning_pipeline as _pipeline
+        import system_learning.pipelines.meta_learning_pipeline as _pipeline
+        import system_learning.pipelines.meta_learning_pipeline as _pipeline
+        import agentic_core.L0_routing.scripts.execute_ssot as _mod
+        from agentic_core.L0_routing.scripts.execute_ssot import ConfidenceScore
+        """_preflight_import_check must raise RuntimeError with install instructions on missing BGE.
+
     """_preflight_import_check must raise RuntimeError with install instructions on missing BGE.
 
     §1.8 fail-closed: missing BGE dependency → RuntimeError before any execution.

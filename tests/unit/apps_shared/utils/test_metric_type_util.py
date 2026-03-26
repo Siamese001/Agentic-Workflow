@@ -10,26 +10,27 @@ import pytest
 
 pytestmark = pytest.mark.unit
 
-from apps_shared.utils.metric_type_util import (  # noqa: F401
-    BATCH_SIZE,
-    BUFFER_SIZE,
-    DEFAULT_SLEEP,
-    MAX_RETRIES,
-    THRESHOLD,
-    AlertSeverity,
-    LogConfiguration,
-    LogLevel,
-    MetricDefinition,
-    MetricType,
-    TraceConfiguration,
-    create_observability_planning_orchestrator,
-    orchestrate_observability_planning,
-    plan_observability,
-)
 
 
 class TestMetricTypeContract:
     def test_is_enum(self):
+        from apps_shared.utils.metric_type_util import (  # noqa: F401
+            BATCH_SIZE,
+            BUFFER_SIZE,
+            DEFAULT_SLEEP,
+            MAX_RETRIES,
+            THRESHOLD,
+            AlertSeverity,
+            LogConfiguration,
+            LogLevel,
+            MetricDefinition,
+            MetricType,
+            TraceConfiguration,
+            create_observability_planning_orchestrator,
+            orchestrate_observability_planning,
+            plan_observability,
+        )
+
         import enum
         assert issubclass(MetricType, enum.Enum)
 

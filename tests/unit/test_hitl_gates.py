@@ -14,11 +14,6 @@ from pathlib import Path
 
 import pytest
 
-from agentic_core.L0_routing.config.path_constants import (
-    AGENTIC_CORE_DIR,
-    L0_ROUTING_DIR,
-    SYSTEM_LEARNING_DIR,
-)
 
 ROOT = Path(__file__).parent.parent.parent
 
@@ -61,6 +56,12 @@ def _ast_func_args(path: Path, func_name: str, class_name: str | None = None) ->
 @pytest.mark.unit_min_deps
 def test_hitl_decision_logger_exists():
     """Wave 6: system_learning/engines/hitl_decision_logger.py must exist."""
+    from agentic_core.L0_routing.config.path_constants import (
+        AGENTIC_CORE_DIR,
+        L0_ROUTING_DIR,
+        SYSTEM_LEARNING_DIR,
+    )
+
     assert LOGGER_PATH.exists(), (
         f"hitl_decision_logger.py not found at {LOGGER_PATH} — HITL decisions cannot be recorded"
     )

@@ -170,9 +170,11 @@ pytestmark = pytest.mark.unit
 
 class TestEnforceBudgetLimits:
     def test_importable(self):
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.L1_cognition.enforcement.budget_enforcer import EnforceBudgetLimits
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L1_cognition.enforcement.budget_enforcer import EnforceBudgetLimits
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                assert callable(EnforceBudgetLimits)
+
         assert callable(EnforceBudgetLimits)
 
     def test_creates(self):

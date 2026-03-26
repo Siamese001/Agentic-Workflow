@@ -5,6 +5,8 @@ from __future__ import annotations
 
 
 def test_module_importable():
-    import agentic_core.L5_safety.config.structure_blueprint.enforcement.types  # noqa: F401
-    """Module types must be importable."""
+        import agentic_core.L5_safety.config.structure_blueprint.enforcement.types  # noqa: F401
+        """Module types must be importable."""
+        assert agentic_core.L5_safety.config.structure_blueprint.enforcement.types is not None
+
     assert agentic_core.L5_safety.config.structure_blueprint.enforcement.types is not None

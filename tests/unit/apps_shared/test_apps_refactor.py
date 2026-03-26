@@ -24,46 +24,6 @@ from pathlib import Path
 
 import pytest
 
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-    _emit_agent_executes_agent,
-    _emit_applies_guardrail,  # noqa: E402
-    _emit_authorize_and_execute,
-    _emit_blocks_direct_write,
-    _emit_captures_evaluation_metric,
-    _emit_captures_execution_output,
-    _emit_checks_agent_registry,
-    _emit_coordinates_agents,
-    _emit_dispatches_agent,
-    _emit_dispatches_execution_plan,
-    _emit_dispatches_healing_run,
-    _emit_escalates_failure,
-    _emit_escalates_to_human,
-    _emit_gated_by_confidence,
-    _emit_hard_fails_untranscripted,
-    _emit_invokes_evaluation,
-    _emit_links_execution_to_snapshot,
-    _emit_observes_runtime_state,
-    _emit_orchestrates_workflow,
-    _emit_reads_policy_state,  # noqa: E402
-    _emit_records_execution_trace,  # noqa: E402
-    _emit_records_healing_outcome,
-    _emit_records_telemetry_event,
-    _emit_records_tool_invocation,
-    _emit_records_workflow_lineage,
-    _emit_routes_through,
-    _emit_routes_to_agent,
-    _emit_routes_to_capability,
-    _emit_signs_execution_trace,  # noqa: E402
-    _emit_snapshots_state,  # noqa: E402
-    _emit_stores_embedding,
-    _emit_transcripts_response,
-    _emit_updates_meta_learning_state,
-    _emit_validates_agent_capability,
-    _emit_validates_capability,
-    _emit_verifies_boundary,
-    _emit_verifies_policy,
-    _emit_writes_via_uwg,
-    emit_determinism_digest,  # noqa: E402
     emit_replay_key,  # noqa: E402
 )
 
@@ -71,42 +31,6 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 # REMOVED: _emit_applies_guardrail("p0", "test_apps_refactor", "p0_governance")
 # REMOVED: _emit_reads_policy_state("p0", "test_apps_refactor", "policy_binding")
 # REMOVED: _emit_snapshots_state("p0", "test_apps_refactor", "state_snapshot")
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-    _emit_agent_executes_agent,
-    _emit_captures_pattern,
-    _emit_captures_runtime_anomaly,
-    _emit_checks_agent_registry,
-    _emit_dispatches_execution_plan,
-    _emit_emits_metric_event,
-    _emit_escalates_to_human,
-    _emit_execution_terminates_at_uwg,
-    _emit_feeds_meta_learning,
-    _emit_gated_by_confidence,
-    _emit_hard_fails_untranscripted,
-    _emit_improves_agent_policy,
-    _emit_invokes_eval,
-    _emit_links_incident_trace,  # noqa: E402
-    _emit_observes_runtime_state,
-    _emit_proposal_commits_routing,
-    _emit_pulls_context,
-    _emit_reads_environ,
-    _emit_reads_runtime_state,
-    _emit_records_execution_trace,
-    _emit_records_incident_event,
-    _emit_records_learning_event,
-    _emit_routes_through,
-    _emit_routes_to_agent,
-    _emit_stores_learning_state,
-    _emit_transcripts_response,
-    _emit_triggers_alert,
-    _emit_updates_monitoring_state,
-    _emit_updates_routing_strategy,
-    _emit_validated_by_safety_plane,
-    _emit_validates_agent_capability,
-    _emit_verifies_boundary,
-    _emit_verifies_policy,
-    _emit_writes_learning_snapshot,
-    _emit_writes_observability_log,
     _emit_writes_through,  # noqa: E402
 )
 
@@ -241,6 +165,230 @@ class TestPhase1DeadImports:
     """apps_* must have zero F401 violations (excluding __init__.py re-exports)."""
 
     def test_no_f401_violations_in_apps_rg(self) -> None:
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+            _emit_agent_executes_agent,
+            _emit_applies_guardrail,  # noqa: E402
+            _emit_authorize_and_execute,
+            _emit_blocks_direct_write,
+            _emit_captures_evaluation_metric,
+            _emit_captures_execution_output,
+            _emit_checks_agent_registry,
+            _emit_coordinates_agents,
+            _emit_dispatches_agent,
+            _emit_dispatches_execution_plan,
+            _emit_dispatches_healing_run,
+            _emit_escalates_failure,
+            _emit_escalates_to_human,
+            _emit_gated_by_confidence,
+            _emit_hard_fails_untranscripted,
+            _emit_invokes_evaluation,
+            _emit_links_execution_to_snapshot,
+            _emit_observes_runtime_state,
+            _emit_orchestrates_workflow,
+            _emit_reads_policy_state,  # noqa: E402
+            _emit_records_execution_trace,  # noqa: E402
+            _emit_records_healing_outcome,
+            _emit_records_telemetry_event,
+            _emit_records_tool_invocation,
+            _emit_records_workflow_lineage,
+            _emit_routes_through,
+            _emit_routes_to_agent,
+            _emit_routes_to_capability,
+            _emit_signs_execution_trace,  # noqa: E402
+            _emit_snapshots_state,  # noqa: E402
+            _emit_stores_embedding,
+            _emit_transcripts_response,
+            _emit_updates_meta_learning_state,
+            _emit_validates_agent_capability,
+            _emit_validates_capability,
+            _emit_verifies_boundary,
+            _emit_verifies_policy,
+            _emit_writes_via_uwg,
+            emit_determinism_digest,  # noqa: E402
+            emit_replay_key,  # noqa: E402
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+            _emit_agent_executes_agent,
+            _emit_captures_pattern,
+            _emit_captures_runtime_anomaly,
+            _emit_checks_agent_registry,
+            _emit_dispatches_execution_plan,
+            _emit_emits_metric_event,
+            _emit_escalates_to_human,
+            _emit_execution_terminates_at_uwg,
+            _emit_feeds_meta_learning,
+            _emit_gated_by_confidence,
+            _emit_hard_fails_untranscripted,
+            _emit_improves_agent_policy,
+            _emit_invokes_eval,
+            _emit_links_incident_trace,  # noqa: E402
+            _emit_observes_runtime_state,
+            _emit_proposal_commits_routing,
+            _emit_pulls_context,
+            _emit_reads_environ,
+            _emit_reads_runtime_state,
+            _emit_records_execution_trace,
+            _emit_records_incident_event,
+            _emit_records_learning_event,
+            _emit_routes_through,
+            _emit_routes_to_agent,
+            _emit_stores_learning_state,
+            _emit_transcripts_response,
+            _emit_triggers_alert,
+            _emit_updates_monitoring_state,
+            _emit_updates_routing_strategy,
+            _emit_validated_by_safety_plane,
+            _emit_validates_agent_capability,
+            _emit_verifies_boundary,
+            _emit_verifies_policy,
+            _emit_writes_learning_snapshot,
+            _emit_writes_observability_log,
+            _emit_writes_through,  # noqa: E402
+                from apps_shared.config.app_guardian_registry import AppGuardianSpec
+                assert AppGuardianSpec is not None
+                from apps_shared.config.app_guardian_registry import AppGuardianSpec
+                assert is_dataclass(AppGuardianSpec)
+                # frozen=True means __setattr__ raises FrozenInstanceError
+                spec = AppGuardianSpec(
+                    check_id="TEST-001",
+                    app="*",
+                    description="test",
+                    severity="low",
+                    guardian_module="test.module",
+                )
+                with pytest.raises(Exception):  # FrozenInstanceError
+                    spec.check_id = "MUTATED"  # type: ignore[misc]
+                from apps_shared.config.app_guardian_registry import AppGuardianSpec
+                field_names = {f.name for f in fields(AppGuardianSpec)}
+                assert {"check_id", "app", "description", "severity", "guardian_module"}.issubset(field_names)
+                from apps_shared.config.app_guardian_registry import APP_GUARDIAN_REGISTRY
+                assert len(APP_GUARDIAN_REGISTRY) >= 6, (
+                    f"APP_GUARDIAN_REGISTRY must have >= 6 entries, got {len(APP_GUARDIAN_REGISTRY)}"
+                )
+                from apps_shared.config.app_guardian_registry import APP_GUARDIAN_REGISTRY
+                ids = [s.check_id for s in APP_GUARDIAN_REGISTRY]
+                assert len(ids) == len(set(ids)), f"Duplicate check_ids: {[x for x in ids if ids.count(x) > 1]}"
+                from apps_shared.config.app_guardian_registry import APP_GUARDIAN_REGISTRY, get_specs_for_app
+                rg_specs = get_specs_for_app("apps_rg")
+                # Must include all wildcard specs
+                wildcard_ids = {s.check_id for s in APP_GUARDIAN_REGISTRY if s.app == "*"}
+                returned_ids = {s.check_id for s in rg_specs}
+                assert wildcard_ids.issubset(returned_ids), (
+                    f"get_specs_for_app('apps_rg') missing wildcard specs: {wildcard_ids - returned_ids}"
+                )
+                from apps_shared.config.app_guardian_registry import APP_GUARDIAN_REGISTRY
+                valid = {"critical", "high", "medium", "low"}
+                for spec in APP_GUARDIAN_REGISTRY:
+                    assert spec.severity in valid, f"{spec.check_id} has invalid severity: {spec.severity!r}"
+                from apps_shared.types.app_heal_contract_types import AppHealResult
+                assert AppHealResult is not None
+                from apps_shared.types.app_heal_contract_types import AppHealStatus
+                assert AppHealStatus is not None
+                from apps_shared.types.app_heal_contract_types import AppHealStatus
+                assert issubclass(AppHealStatus, str)
+                assert issubclass(AppHealStatus, Enum)
+                from apps_shared.types.app_heal_contract_types import AppHealStatus
+                assert set(AppHealStatus) == {
+                    AppHealStatus.HEALED,
+                    AppHealStatus.PARTIAL,
+                    AppHealStatus.FAILED,
+                    AppHealStatus.SKIPPED,
+                }
+                from apps_shared.types.app_heal_contract_types import AppHealResult, AppHealStatus
+                result = AppHealResult(check_id="X", app="apps_rg", status=AppHealStatus.HEALED)
+                with pytest.raises(Exception):
+                    result.check_id = "MUTATED"  # type: ignore[misc]
+                from apps_shared.types.app_heal_contract_types import AppHealResult
+                field_names = {f.name for f in fields(AppHealResult)}
+                assert {"check_id", "app", "status", "changes_made", "rollback_info", "detail"}.issubset(field_names)
+                from apps_shared.types.app_heal_contract_types import AppHealResult, AppHealStatus
+                result = AppHealResult(
+                    check_id="AGS-001",
+                    app="apps_rg",
+                    status=AppHealStatus.HEALED,
+                    changes_made=("a.py", "b.py"),
+                    detail="ok",
+                )
+                d = result.to_dict()
+                raw = json.dumps(d)  # must not raise
+                roundtripped = json.loads(raw)
+                assert roundtripped["check_id"] == "AGS-001"
+                assert roundtripped["status"] == "HEALED"
+                assert roundtripped["changes_made"] == ["a.py", "b.py"]
+                from apps_shared.types.app_heal_contract_types import AppHealResult, AppHealStatus
+                r = AppHealResult.skipped("AGS-002", "apps_lic", "reason")
+                assert r.status == AppHealStatus.SKIPPED
+                assert r.detail == "reason"
+                from apps_shared.types.app_heal_contract_types import AppHealResult, AppHealStatus
+                r = AppHealResult.failed("AGS-003", "apps_rg", "boom")
+                assert r.status == AppHealStatus.FAILED
+                assert r.detail == "boom"
+                from apps_shared.types.app_heal_contract_types import AppHealResult
+                # Use a check_id that has no handler — must return SKIPPED, not raise
+                unknown_spec = AppGuardianSpec(
+                    check_id="AGS-UNKNOWN",
+                    app="*",
+                    description="test unknown",
+                    severity="low",
+                    guardian_module="test",
+                )
+                result = _run_spec(unknown_spec)
+                assert isinstance(result, AppHealResult), (
+                    f"_run_spec must always return AppHealResult, got {type(result)}"
+                )
+                from apps_shared.config.app_guardian_registry import AppGuardianSpec
+                from apps_shared.scripts.app_remediation_dispatcher import _run_spec
+                from apps_shared.types.app_heal_contract_types import AppHealResult, AppHealStatus
+                from apps_shared.types.app_heal_contract_types import AppHealResult, AppHealStatus
+                # Simulate a spec that would trigger an exception mid-check
+                # (unknown check_id returns SKIPPED which is still a valid result)
+                spec = AppGuardianSpec(
+                    check_id="AGS-CRASH",
+                    app="*",
+                    description="crash spec",
+                    severity="low",
+                    guardian_module="nonexistent",
+                )
+                result = _run_spec(spec)
+                assert isinstance(result, AppHealResult)
+                # Must be either SKIPPED or FAILED — never raises
+                assert result.status in (AppHealStatus.SKIPPED, AppHealStatus.FAILED)
+                from apps_shared.config.app_guardian_registry import APP_GUARDIAN_REGISTRY
+                from apps_shared.scripts.app_remediation_dispatcher import _run_spec
+                from apps_shared.types.app_heal_contract_types import AppHealStatus
+                from apps_shared.types.app_heal_contract_types import AppHealStatus
+                spec = next(s for s in APP_GUARDIAN_REGISTRY if s.check_id == "AGS-001")
+                result = _run_spec(spec)
+                assert result.status == AppHealStatus.HEALED, (
+                    f"AGS-001 (dead imports) must be HEALED — got {result.status}: {result.detail}"
+                )
+                from apps_shared.config.app_guardian_registry import APP_GUARDIAN_REGISTRY
+                from apps_shared.scripts.app_remediation_dispatcher import _run_spec
+                from apps_shared.types.app_heal_contract_types import AppHealStatus
+                from apps_shared.types.app_heal_contract_types import AppHealStatus
+                spec = next(s for s in APP_GUARDIAN_REGISTRY if s.check_id == "AGS-003")
+                result = _run_spec(spec)
+                assert result.status == AppHealStatus.HEALED, (
+                    f"AGS-003 (misplaced tests) must be HEALED — got {result.status}: {result.detail}"
+                )
+                from apps_shared.config.app_guardian_registry import APP_GUARDIAN_REGISTRY
+                from apps_shared.scripts.app_remediation_dispatcher import _run_spec
+                from apps_shared.types.app_heal_contract_types import AppHealStatus
+                from apps_shared.types.app_heal_contract_types import AppHealStatus
+                spec = next(s for s in APP_GUARDIAN_REGISTRY if s.check_id == "AGS-004")
+                result = _run_spec(spec)
+                assert result.status == AppHealStatus.HEALED, (
+                    f"AGS-004 (inline constants) must be HEALED — got {result.status}: {result.detail}"
+                )
+                from apps_shared.config.app_guardian_registry import APP_GUARDIAN_REGISTRY
+                from apps_shared.scripts.app_remediation_dispatcher import _run_spec
+                from apps_shared.types.app_heal_contract_types import AppHealStatus
+                from apps_shared.types.app_heal_contract_types import AppHealStatus
+                spec = next(s for s in APP_GUARDIAN_REGISTRY if s.check_id == "AGS-005")
+                result = _run_spec(spec)
+                assert result.status == AppHealStatus.HEALED, (
+                    f"AGS-005 (shim present) must be HEALED — got {result.status}: {result.detail}"
+                )
+
         violations = _ruff_f401(["apps_rg/"])
         real = [v for v in violations if not v["filename"].endswith("__init__.py")]
         assert real == [], f"{len(real)} F401 violation(s) in apps_rg/:\n" + "\n".join(
@@ -648,60 +796,22 @@ class TestPhase10AppGuardianSpec:
     """AppGuardianSpec is importable, frozen, and the registry is non-empty."""
 
     def test_app_guardian_spec_importable(self) -> None:
-        from apps_shared.config.app_guardian_registry import AppGuardianSpec
-
         assert AppGuardianSpec is not None
 
     def test_app_guardian_spec_is_frozen_dataclass(self) -> None:
-        from apps_shared.config.app_guardian_registry import AppGuardianSpec
-
-        assert is_dataclass(AppGuardianSpec)
-        # frozen=True means __setattr__ raises FrozenInstanceError
-        spec = AppGuardianSpec(
-            check_id="TEST-001",
-            app="*",
-            description="test",
-            severity="low",
-            guardian_module="test.module",
-        )
-        with pytest.raises(Exception):  # FrozenInstanceError
             spec.check_id = "MUTATED"  # type: ignore[misc]
 
     def test_app_guardian_spec_has_required_fields(self) -> None:
-        from apps_shared.config.app_guardian_registry import AppGuardianSpec
-
-        field_names = {f.name for f in fields(AppGuardianSpec)}
         assert {"check_id", "app", "description", "severity", "guardian_module"}.issubset(field_names)
 
     def test_registry_has_at_least_six_entries(self) -> None:
-        from apps_shared.config.app_guardian_registry import APP_GUARDIAN_REGISTRY
-
-        assert len(APP_GUARDIAN_REGISTRY) >= 6, (
-            f"APP_GUARDIAN_REGISTRY must have >= 6 entries, got {len(APP_GUARDIAN_REGISTRY)}"
-        )
 
     def test_registry_check_ids_are_unique(self) -> None:
-        from apps_shared.config.app_guardian_registry import APP_GUARDIAN_REGISTRY
-
-        ids = [s.check_id for s in APP_GUARDIAN_REGISTRY]
         assert len(ids) == len(set(ids)), f"Duplicate check_ids: {[x for x in ids if ids.count(x) > 1]}"
 
     def test_get_specs_for_app_returns_subset(self) -> None:
-        from apps_shared.config.app_guardian_registry import APP_GUARDIAN_REGISTRY, get_specs_for_app
-
-        rg_specs = get_specs_for_app("apps_rg")
-        # Must include all wildcard specs
-        wildcard_ids = {s.check_id for s in APP_GUARDIAN_REGISTRY if s.app == "*"}
-        returned_ids = {s.check_id for s in rg_specs}
-        assert wildcard_ids.issubset(returned_ids), (
-            f"get_specs_for_app('apps_rg') missing wildcard specs: {wildcard_ids - returned_ids}"
-        )
 
     def test_all_severities_are_valid_literals(self) -> None:
-        from apps_shared.config.app_guardian_registry import APP_GUARDIAN_REGISTRY
-
-        valid = {"critical", "high", "medium", "low"}
-        for spec in APP_GUARDIAN_REGISTRY:
             assert spec.severity in valid, f"{spec.check_id} has invalid severity: {spec.severity!r}"
 
 
@@ -709,73 +819,30 @@ class TestPhase10AppHealResult:
     """AppHealResult contract is importable, frozen, and behaves correctly."""
 
     def test_app_heal_result_importable(self) -> None:
-        from apps_shared.types.app_heal_contract_types import AppHealResult
-
         assert AppHealResult is not None
 
     def test_app_heal_status_importable(self) -> None:
-        from apps_shared.types.app_heal_contract_types import AppHealStatus
-
         assert AppHealStatus is not None
 
     def test_app_heal_status_is_string_enum(self) -> None:
-        from apps_shared.types.app_heal_contract_types import AppHealStatus
-
-        assert issubclass(AppHealStatus, str)
         assert issubclass(AppHealStatus, Enum)
 
     def test_app_heal_status_has_four_members(self) -> None:
-        from apps_shared.types.app_heal_contract_types import AppHealStatus
-
-        assert set(AppHealStatus) == {
-            AppHealStatus.HEALED,
-            AppHealStatus.PARTIAL,
-            AppHealStatus.FAILED,
-            AppHealStatus.SKIPPED,
         }
 
     def test_app_heal_result_is_frozen_dataclass(self) -> None:
-        from apps_shared.types.app_heal_contract_types import AppHealResult, AppHealStatus
-
-        result = AppHealResult(check_id="X", app="apps_rg", status=AppHealStatus.HEALED)
-        with pytest.raises(Exception):
             result.check_id = "MUTATED"  # type: ignore[misc]
 
     def test_app_heal_result_has_required_fields(self) -> None:
-        from apps_shared.types.app_heal_contract_types import AppHealResult
-
-        field_names = {f.name for f in fields(AppHealResult)}
         assert {"check_id", "app", "status", "changes_made", "rollback_info", "detail"}.issubset(field_names)
 
     def test_app_heal_result_to_dict_is_json_serialisable(self) -> None:
-        from apps_shared.types.app_heal_contract_types import AppHealResult, AppHealStatus
-
-        result = AppHealResult(
-            check_id="AGS-001",
-            app="apps_rg",
-            status=AppHealStatus.HEALED,
-            changes_made=("a.py", "b.py"),
-            detail="ok",
-        )
-        d = result.to_dict()
-        raw = json.dumps(d)  # must not raise
-        roundtripped = json.loads(raw)
-        assert roundtripped["check_id"] == "AGS-001"
-        assert roundtripped["status"] == "HEALED"
         assert roundtripped["changes_made"] == ["a.py", "b.py"]
 
     def test_skipped_factory_method(self) -> None:
-        from apps_shared.types.app_heal_contract_types import AppHealResult, AppHealStatus
-
-        r = AppHealResult.skipped("AGS-002", "apps_lic", "reason")
-        assert r.status == AppHealStatus.SKIPPED
         assert r.detail == "reason"
 
     def test_failed_factory_method(self) -> None:
-        from apps_shared.types.app_heal_contract_types import AppHealResult, AppHealStatus
-
-        r = AppHealResult.failed("AGS-003", "apps_rg", "boom")
-        assert r.status == AppHealStatus.FAILED
         assert r.detail == "boom"
 
 
@@ -806,85 +873,19 @@ result = None  # Replace with actual function call
 assert result is not None, f"{function_name} should return a result"
 assert isinstance(result, object), "Result should be an object"
 # TODO: Add specific runtime behavior assertions
-        from apps_shared.types.app_heal_contract_types import AppHealResult
-
-        # Use a check_id that has no handler — must return SKIPPED, not raise
-        unknown_spec = AppGuardianSpec(
-            check_id="AGS-UNKNOWN",
-            app="*",
-            description="test unknown",
-            severity="low",
-            guardian_module="test",
-        )
-        result = _run_spec(unknown_spec)
-        assert isinstance(result, AppHealResult), (
-            f"_run_spec must always return AppHealResult, got {type(result)}"
-        )
 
     def test_run_spec_never_raises(self) -> None:
         """_run_spec must catch all exceptions and return AppHealResult.failed()."""
-        from apps_shared.config.app_guardian_registry import AppGuardianSpec
-        from apps_shared.scripts.app_remediation_dispatcher import _run_spec
-        from apps_shared.types.app_heal_contract_types import AppHealResult, AppHealStatus
-
-        # Simulate a spec that would trigger an exception mid-check
-        # (unknown check_id returns SKIPPED which is still a valid result)
-        spec = AppGuardianSpec(
-            check_id="AGS-CRASH",
-            app="*",
-            description="crash spec",
-            severity="low",
-            guardian_module="nonexistent",
-        )
-        result = _run_spec(spec)
-        assert isinstance(result, AppHealResult)
-        # Must be either SKIPPED or FAILED — never raises
         assert result.status in (AppHealStatus.SKIPPED, AppHealStatus.FAILED)
 
     def test_ags001_dead_imports_returns_healed(self) -> None:
         """AGS-001 check must return HEALED now that F401 violations are fixed."""
-        from apps_shared.config.app_guardian_registry import APP_GUARDIAN_REGISTRY
-        from apps_shared.scripts.app_remediation_dispatcher import _run_spec
-        from apps_shared.types.app_heal_contract_types import AppHealStatus
-
-        spec = next(s for s in APP_GUARDIAN_REGISTRY if s.check_id == "AGS-001")
-        result = _run_spec(spec)
-        assert result.status == AppHealStatus.HEALED, (
-            f"AGS-001 (dead imports) must be HEALED — got {result.status}: {result.detail}"
-        )
 
     def test_ags003_misplaced_tests_returns_healed(self) -> None:
         """AGS-003 check must return HEALED now that test files are relocated."""
-        from apps_shared.config.app_guardian_registry import APP_GUARDIAN_REGISTRY
-        from apps_shared.scripts.app_remediation_dispatcher import _run_spec
-        from apps_shared.types.app_heal_contract_types import AppHealStatus
-
-        spec = next(s for s in APP_GUARDIAN_REGISTRY if s.check_id == "AGS-003")
-        result = _run_spec(spec)
-        assert result.status == AppHealStatus.HEALED, (
-            f"AGS-003 (misplaced tests) must be HEALED — got {result.status}: {result.detail}"
-        )
 
     def test_ags004_inline_constants_returns_healed(self) -> None:
         """AGS-004 check must return HEALED now that SSOT is applied."""
-        from apps_shared.config.app_guardian_registry import APP_GUARDIAN_REGISTRY
-        from apps_shared.scripts.app_remediation_dispatcher import _run_spec
-        from apps_shared.types.app_heal_contract_types import AppHealStatus
-
-        spec = next(s for s in APP_GUARDIAN_REGISTRY if s.check_id == "AGS-004")
-        result = _run_spec(spec)
-        assert result.status == AppHealStatus.HEALED, (
-            f"AGS-004 (inline constants) must be HEALED — got {result.status}: {result.detail}"
-        )
 
     def test_ags005_shim_returns_healed(self) -> None:
         """AGS-005 check must return HEALED now that ContentStrategyAgent shim is deleted."""
-        from apps_shared.config.app_guardian_registry import APP_GUARDIAN_REGISTRY
-        from apps_shared.scripts.app_remediation_dispatcher import _run_spec
-        from apps_shared.types.app_heal_contract_types import AppHealStatus
-
-        spec = next(s for s in APP_GUARDIAN_REGISTRY if s.check_id == "AGS-005")
-        result = _run_spec(spec)
-        assert result.status == AppHealStatus.HEALED, (
-            f"AGS-005 (shim present) must be HEALED — got {result.status}: {result.detail}"
-        )

@@ -170,9 +170,11 @@ pytestmark = pytest.mark.unit
 
 class TestGravityLeakHealerAgent:
     def test_importable(self):
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.L5_safety.reasoning.GravityLeakHealerAgent import GravityLeakHealerAgent
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L5_safety.reasoning.GravityLeakHealerAgent import GravityLeakHealerAgent
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                assert callable(GravityLeakHealerAgent)
+
         assert callable(GravityLeakHealerAgent)
 
     def test_is_class(self):

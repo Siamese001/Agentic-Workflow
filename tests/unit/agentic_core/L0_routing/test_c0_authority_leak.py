@@ -154,9 +154,11 @@ import pytest
 
 class TestGuardC0Payload:
     def test_safe_payload_passes(self):
-        from agentic_core.L0_routing.context.c0_guard import guard_c0_payload
-        from agentic_core.L5_safety.types.hardening_errors import C0AuthorityLeakError
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L0_routing.context.c0_guard import guard_c0_payload
+                from agentic_core.L5_safety.types.hardening_errors import C0AuthorityLeakError
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                guard_c0_payload({"query": "find me a job", "context": "software engineering"})
+
         guard_c0_payload({"query": "find me a job", "context": "software engineering"})
 
     def test_empty_payload_passes(self):

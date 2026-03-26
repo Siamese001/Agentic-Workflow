@@ -190,23 +190,25 @@ pytestmark = pytest.mark.unit_min_deps
 
 
 def test_no_context_passes_without_citations():
-    from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-    from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-    from agentic_core.L5_safety.enforcement.rag_guardrail import (
-    from agentic_core.L5_safety.enforcement.rag_guardrail import (
-    from agentic_core.L5_safety.enforcement.rag_guardrail import (
-    from agentic_core.L5_safety.enforcement.rag_guardrail import (
-    from agentic_core.L5_safety.enforcement.rag_guardrail import (
-    from agentic_core.L5_safety.enforcement.rag_guardrail import (
-    from agentic_core.L5_safety.enforcement.rag_guardrail import (
-    from agentic_core.L5_safety.enforcement.rag_guardrail import (
-    from agentic_core.L5_safety.enforcement.rag_guardrail import CitationBundle
-    from agentic_core.L5_safety.enforcement.rag_guardrail import CitationBundle
-    from agentic_core.L5_safety.enforcement.rag_guardrail import (
-    from agentic_core.L5_safety.enforcement.rag_guardrail import (
-#  # MOVED: from agentic_core.L5_safety.enforcement.rag_guardrail import (
-        validate_citation_custody,
-    )
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L5_safety.enforcement.rag_guardrail import (
+        from agentic_core.L5_safety.enforcement.rag_guardrail import (
+        from agentic_core.L5_safety.enforcement.rag_guardrail import (
+        from agentic_core.L5_safety.enforcement.rag_guardrail import (
+        from agentic_core.L5_safety.enforcement.rag_guardrail import (
+        from agentic_core.L5_safety.enforcement.rag_guardrail import (
+        from agentic_core.L5_safety.enforcement.rag_guardrail import (
+        from agentic_core.L5_safety.enforcement.rag_guardrail import (
+        from agentic_core.L5_safety.enforcement.rag_guardrail import CitationBundle
+        from agentic_core.L5_safety.enforcement.rag_guardrail import CitationBundle
+        from agentic_core.L5_safety.enforcement.rag_guardrail import (
+        from agentic_core.L5_safety.enforcement.rag_guardrail import (
+        from agentic_core.L5_safety.enforcement.rag_guardrail import (
+    #  # MOVED: from agentic_core.L5_safety.enforcement.rag_guardrail import (
+            validate_citation_custody,
+        )
+
 
     validate_citation_custody([], None)  # no context -> no enforcement needed
 

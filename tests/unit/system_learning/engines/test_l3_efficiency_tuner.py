@@ -10,21 +10,22 @@ import pytest
 
 pytestmark = pytest.mark.unit
 
-from system_learning.engines.l3_efficiency_tuner import (  # noqa: F401
-    BATCH_SIZE,
-    BUFFER_SIZE,
-    DEFAULT_SLEEP,
-    MAX_RETRIES,
-    THRESHOLD,
-    EfficiencyBottleneck,
-    EfficiencyReport,
-    L3EfficiencyTuner,
-    extract_timings_from_runtime_state,
-)
 
 
 class TestEfficiencyBottleneckContract:
     def test_is_dataclass(self):
+        from system_learning.engines.l3_efficiency_tuner import (  # noqa: F401
+            BATCH_SIZE,
+            BUFFER_SIZE,
+            DEFAULT_SLEEP,
+            MAX_RETRIES,
+            THRESHOLD,
+            EfficiencyBottleneck,
+            EfficiencyReport,
+            L3EfficiencyTuner,
+            extract_timings_from_runtime_state,
+        )
+
         import dataclasses
         assert dataclasses.is_dataclass(EfficiencyBottleneck)
 

@@ -181,10 +181,12 @@ pytestmark = pytest.mark.unit
 
 class TestClientTypeConstants:
     def test_cache_key_prefix_is_string(self):
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.L1_cognition.engines.meta_client import MetaLearningClient
-        from agentic_core.L1_cognition.types.client_types import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L1_cognition.engines.meta_client import MetaLearningClient
+                from agentic_core.L1_cognition.types.client_types import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                assert isinstance(CACHE_KEY_PREFIX, str)
+
         assert isinstance(CACHE_KEY_PREFIX, str)
 
     def test_default_similarity_threshold_is_float(self):

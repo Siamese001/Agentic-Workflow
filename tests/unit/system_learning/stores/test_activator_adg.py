@@ -5,9 +5,10 @@ import pytest
 
 pytestmark = pytest.mark.unit
 
-import system_learning.stores.activator  # noqa: F401
 
 
 def test_module_importable():
     """Module activator must be importable."""
+    import system_learning.stores.activator  # noqa: F401
+
     assert system_learning.stores.activator is not None

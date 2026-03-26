@@ -265,14 +265,16 @@ def _counts(db):
 
 class TestFullPersistencePipeline:
     def test_ingest_populates_sqlite(self, memory_env):
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.L4_state.enforcement.graph_memory_bridge import GraphMemoryBridge
-        from agentic_core.adg.adapters.ADGMemoryAdapter import ADGMemoryAdapter
-        from agentic_core.adg.adapters.ADGMemoryAdapter import ADGMemoryAdapter
-        from agentic_core.L4_state.enforcement.graph_memory_bridge import GraphMemoryBridge
-        """Full pipeline: ingest_snapshot must produce non-zero entity count in SQLite."""
-        adapter, db = memory_env
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L4_state.enforcement.graph_memory_bridge import GraphMemoryBridge
+                from agentic_core.adg.adapters.ADGMemoryAdapter import ADGMemoryAdapter
+                from agentic_core.adg.adapters.ADGMemoryAdapter import ADGMemoryAdapter
+                from agentic_core.L4_state.enforcement.graph_memory_bridge import GraphMemoryBridge
+                """Full pipeline: ingest_snapshot must produce non-zero entity count in SQLite."""
+                adapter, db = memory_env
+                scan = _make_scan_result(n_modules=10, n_edges=5)
+
         scan = _make_scan_result(n_modules=10, n_edges=5)
 
         adapter.ingest_snapshot(scan, ts="20991231T000000Z")

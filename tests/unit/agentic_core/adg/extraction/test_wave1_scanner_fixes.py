@@ -53,10 +53,12 @@ class TestW1aViolationConfidenceFloor:
     """Verify violation_propagates_through edges have confidence >= 0.5."""
 
     def test_propagated_edges_confidence_minimum(self):
-        from agentic_core.adg.extraction.static_scanner import (
-    """Test propagated_edges_confidence_minimum runtime behavior."""
-    # Arrange
-    # TODO: Set up test data for propagated_edges_confidence_minimum
+                from agentic_core.adg.extraction.static_scanner import (
+            """Test propagated_edges_confidence_minimum runtime behavior."""
+            # Arrange
+            # TODO: Set up test data for propagated_edges_confidence_minimum
+            test_data = {}  # Replace with actual test data
+
     test_data = {}  # Replace with actual test data
 
     # Act

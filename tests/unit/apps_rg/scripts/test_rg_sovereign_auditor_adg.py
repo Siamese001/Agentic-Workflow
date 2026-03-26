@@ -5,9 +5,10 @@ import pytest
 
 pytestmark = pytest.mark.unit
 
-import apps_rg.scripts.rg_sovereign_auditor  # noqa: F401
 
 
 def test_module_importable():
     """Module rg_sovereign_auditor must be importable."""
+    import apps_rg.scripts.rg_sovereign_auditor  # noqa: F401
+
     assert apps_rg.scripts.rg_sovereign_auditor is not None

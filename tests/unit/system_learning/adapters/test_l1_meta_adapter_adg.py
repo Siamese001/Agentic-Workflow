@@ -5,9 +5,10 @@ import pytest
 
 pytestmark = pytest.mark.unit
 
-import system_learning.adapters.l1_meta_adapter  # noqa: F401
 
 
 def test_module_importable():
     """Module l1_meta_adapter must be importable."""
+    import system_learning.adapters.l1_meta_adapter  # noqa: F401
+
     assert system_learning.adapters.l1_meta_adapter is not None

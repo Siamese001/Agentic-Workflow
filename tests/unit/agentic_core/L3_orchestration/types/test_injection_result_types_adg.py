@@ -172,12 +172,14 @@ pytestmark = pytest.mark.unit
 
 class TestInjectionResult:
     def test_is_dataclass(self):
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.L3_orchestration.types.injection_result_types import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        import dataclasses; assert dataclasses.is_dataclass(InjectionResult)
-    def test_creates(self):
-        r = InjectionResult(is_injection=False, Severity="low", confidence=0.1, detected_patterns=[])
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L3_orchestration.types.injection_result_types import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                import dataclasses; assert dataclasses.is_dataclass(InjectionResult)
+            def test_creates(self):
+                r = InjectionResult(is_injection=False, Severity="low", confidence=0.1, detected_patterns=[])
+                assert r.is_injection is False
+
         assert r.is_injection is False
 
 class TestDetectInjection:

@@ -28,8 +28,10 @@ pytestmark = pytest.mark.unit
 
 class TestValidationRejectionReasonContract:
     def test_is_enum(self):
-        from agentic_core.L5_safety.reasoning.IntegrityGateExecutorAgent import (  # noqa: F401
-        import enum
+                from agentic_core.L5_safety.reasoning.IntegrityGateExecutorAgent import (  # noqa: F401
+                import enum
+                assert issubclass(ValidationRejectionReason, enum.Enum)
+
         assert issubclass(ValidationRejectionReason, enum.Enum)
 
     def test_has_members(self):

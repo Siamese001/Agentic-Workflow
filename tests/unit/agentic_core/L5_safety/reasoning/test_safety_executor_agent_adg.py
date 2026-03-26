@@ -174,9 +174,11 @@ pytestmark = pytest.mark.unit
 
 class TestExecutionStatus:
     def test_allowed_member(self):
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.L5_safety.reasoning.SafetyExecutorAgent import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L5_safety.reasoning.SafetyExecutorAgent import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                assert hasattr(ExecutionStatus, "ALLOWED")
+
         assert hasattr(ExecutionStatus, "ALLOWED")
 
     def test_blocked_member(self):

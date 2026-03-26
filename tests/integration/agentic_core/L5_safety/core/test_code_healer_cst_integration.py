@@ -184,11 +184,13 @@ class TestCodeHealerCSTIntegration:
     """Test CST integration with CodeHealerAgent pattern."""
 
     def test_surgical_context_creation(self):
-        from agentic_core.L5_safety.types.surgical_context_types import (
-        from agentic_core.mixins.cst_healer_mixin import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        """Test that surgical contexts are created correctly for import healing."""
+                from agentic_core.L5_safety.types.surgical_context_types import (
+                from agentic_core.mixins.cst_healer_mixin import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                """Test that surgical contexts are created correctly for import healing."""
+                source_code = """# Module comment
+
         source_code = """# Module comment
 import os  # Used import
 import unused_module  # Should be removed

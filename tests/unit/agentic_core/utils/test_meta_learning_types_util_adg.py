@@ -11,10 +11,13 @@ pytestmark = pytest.mark.unit
 
 class TestMetaLearningTypesShim:
     def test_importable(self):
-        import agentic_core.utils.meta_learning_types_util as mod
-        from agentic_core.utils.meta_learning_types_util import LearningContext
-        from agentic_core.utils.meta_learning_types_util import LearningResult
-#  # MOVED: import agentic_core.utils.meta_learning_types_util as mod
+                import agentic_core.utils.meta_learning_types_util as mod
+                from agentic_core.utils.meta_learning_types_util import LearningContext
+                from agentic_core.utils.meta_learning_types_util import LearningResult
+                from agentic_core.utils.meta_learning_types_util import LearningResult
+        #  # MOVED: import agentic_core.utils.meta_learning_types_util as mod
+                assert mod is not None
+
         assert mod is not None
 
     def test_learning_context_exported(self):

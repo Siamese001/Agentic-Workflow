@@ -5,9 +5,10 @@ import pytest
 
 pytestmark = pytest.mark.unit
 
-import system_learning.scripts.meta_learning_operator  # noqa: F401
 
 
 def test_module_importable():
     """Module meta_learning_operator must be importable."""
+    import system_learning.scripts.meta_learning_operator  # noqa: F401
+
     assert system_learning.scripts.meta_learning_operator is not None

@@ -5,9 +5,10 @@ import pytest
 
 pytestmark = pytest.mark.unit
 
-import apps_shared.types.model_router_types  # noqa: F401
 
 
 def test_module_importable():
     """Module model_router_types must be importable."""
+    import apps_shared.types.model_router_types  # noqa: F401
+
     assert apps_shared.types.model_router_types is not None

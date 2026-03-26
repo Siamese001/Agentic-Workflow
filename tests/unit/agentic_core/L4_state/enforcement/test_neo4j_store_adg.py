@@ -9,6 +9,8 @@ pytestmark = pytest.mark.unit
 
 
 def test_module_importable():
-    import agentic_core.L4_state.enforcement.neo4j_store  # noqa: F401
-    """Module neo4j_store must be importable."""
+        import agentic_core.L4_state.enforcement.neo4j_store  # noqa: F401
+        """Module neo4j_store must be importable."""
+        assert agentic_core.L4_state.enforcement.neo4j_store is not None
+
     assert agentic_core.L4_state.enforcement.neo4j_store is not None

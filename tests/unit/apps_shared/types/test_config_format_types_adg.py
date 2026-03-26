@@ -5,9 +5,10 @@ import pytest
 
 pytestmark = pytest.mark.unit
 
-import apps_shared.types.config_format_types  # noqa: F401
 
 
 def test_module_importable():
     """Module config_format_types must be importable."""
+    import apps_shared.types.config_format_types  # noqa: F401
+
     assert apps_shared.types.config_format_types is not None

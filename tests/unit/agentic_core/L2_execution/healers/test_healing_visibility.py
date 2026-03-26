@@ -169,12 +169,14 @@ from __future__ import annotations
 
 class TestHealingEventEmitter:
     def test_emit_returns_event(self, tmp_path):
-        from agentic_core.L2_execution.healers.healing_event_emitter import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-    """Test emit_returns_event runtime behavior."""
-    # Arrange
-    # TODO: Set up test data for emit_returns_event
+                from agentic_core.L2_execution.healers.healing_event_emitter import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+            """Test emit_returns_event runtime behavior."""
+            # Arrange
+            # TODO: Set up test data for emit_returns_event
+            test_data = {}  # Replace with actual test data
+
     test_data = {}  # Replace with actual test data
 
     # Act

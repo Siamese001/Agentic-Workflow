@@ -5,11 +5,12 @@ import pytest
 
 pytestmark = pytest.mark.unit
 
-import system_learning.runtime.isolation_monitor  # noqa: F401
 
 
 def test_module_importable():
 """Test module_importable runtime behavior."""
+    import system_learning.runtime.isolation_monitor  # noqa: F401
+
 # Arrange
 # TODO: Set up runtime environment
 runtime_context = {}  # Replace with actual runtime context

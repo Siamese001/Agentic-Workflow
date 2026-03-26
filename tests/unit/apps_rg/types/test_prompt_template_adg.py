@@ -5,9 +5,10 @@ import pytest
 
 pytestmark = pytest.mark.unit
 
-import apps_rg.types.PromptTemplate  # noqa: F401
 
 
 def test_module_importable():
     """Module PromptTemplate must be importable."""
+    import apps_rg.types.PromptTemplate  # noqa: F401
+
     assert apps_rg.types.PromptTemplate is not None

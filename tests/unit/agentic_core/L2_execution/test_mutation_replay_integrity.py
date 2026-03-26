@@ -157,12 +157,14 @@ import pytest
 
 class TestComputeBoundaryDiff:
     def test_no_changes_returns_empty_diff(self):
-        from agentic_core.L2_execution.sandbox.boundary_validator import (
-        from agentic_core.L5_safety.types.hardening_errors import MutationReplayIntegrityViolation
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        pre = {"file_a": "v1", "file_b": "v2"}
-        post = {"file_a": "v1", "file_b": "v2"}
-        diff = compute_boundary_diff(pre, post)
+                from agentic_core.L2_execution.sandbox.boundary_validator import (
+                from agentic_core.L5_safety.types.hardening_errors import MutationReplayIntegrityViolation
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                pre = {"file_a": "v1", "file_b": "v2"}
+                post = {"file_a": "v1", "file_b": "v2"}
+                diff = compute_boundary_diff(pre, post)
+                assert diff == {}
+
         assert diff == {}
 
     def test_changed_key_captured(self):

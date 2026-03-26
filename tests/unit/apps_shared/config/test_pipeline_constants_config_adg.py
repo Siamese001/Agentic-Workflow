@@ -1,11 +1,12 @@
 """ADG importability contract for apps_shared/config/pipeline_constants_config.py."""
 from __future__ import annotations
 
-import apps_shared.config.pipeline_constants_config as _mod  # noqa: F401
 
 
 def test_module_importable():
 """Test module_importable runtime behavior."""
+    import apps_shared.config.pipeline_constants_config as _mod  # noqa: F401
+
 # Arrange
 # TODO: Set up test data for module_importable
 test_data = {}  # Replace with actual test data

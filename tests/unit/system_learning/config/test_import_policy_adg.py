@@ -5,9 +5,10 @@ import pytest
 
 pytestmark = pytest.mark.unit
 
-import system_learning.config.import_policy  # noqa: F401
 
 
 def test_module_importable():
     """Module import_policy must be importable."""
+    import system_learning.config.import_policy  # noqa: F401
+
     assert system_learning.config.import_policy is not None

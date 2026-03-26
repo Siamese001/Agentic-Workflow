@@ -27,8 +27,10 @@ pytestmark = pytest.mark.unit
 
 class TestEvaluationMetricResultContract:
     def test_is_dataclass(self):
-        from agentic_core.utils.workflow_engines.completeness_metrics import (  # noqa: F401
-        import dataclasses
+                from agentic_core.utils.workflow_engines.completeness_metrics import (  # noqa: F401
+                import dataclasses
+                assert dataclasses.is_dataclass(EvaluationMetricResult)
+
         assert dataclasses.is_dataclass(EvaluationMetricResult)
 
     def test_is_frozen(self):

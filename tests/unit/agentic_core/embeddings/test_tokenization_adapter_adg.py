@@ -170,10 +170,12 @@ pytestmark = pytest.mark.unit
 
 class TestTokenCountAdapter:
     def test_count_tokens_returns_int(self):
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.embeddings.tokenization_adapter import TokenCountAdapter
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        result = TokenCountAdapter.count_tokens("hello world foo", "gpt-4")
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.embeddings.tokenization_adapter import TokenCountAdapter
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                result = TokenCountAdapter.count_tokens("hello world foo", "gpt-4")
+                assert isinstance(result, int)
+
         assert isinstance(result, int)
 
     def test_count_tokens_empty_string(self):

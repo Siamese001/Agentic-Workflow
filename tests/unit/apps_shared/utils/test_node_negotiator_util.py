@@ -10,26 +10,27 @@ import pytest
 
 pytestmark = pytest.mark.unit
 
-from apps_shared.utils.node_negotiator_util import (  # noqa: F401
-    BATCH_SIZE,
-    BUFFER_SIZE,
-    DEFAULT_SLEEP,
-    MAX_RETRIES,
-    THRESHOLD,
-    NegotiatingHop,
-    NegotiationConfig,
-    NegotiationMessage,
-    NegotiationResult,
-    NegotiationRound,
-    NodeNegotiator,
-    get_node_negotiator,
-    request_upstream_change,
-    send_clarification,
-)
 
 
 class TestNegotiationMessageContract:
     def test_is_class(self):
+        from apps_shared.utils.node_negotiator_util import (  # noqa: F401
+            BATCH_SIZE,
+            BUFFER_SIZE,
+            DEFAULT_SLEEP,
+            MAX_RETRIES,
+            THRESHOLD,
+            NegotiatingHop,
+            NegotiationConfig,
+            NegotiationMessage,
+            NegotiationResult,
+            NegotiationRound,
+            NodeNegotiator,
+            get_node_negotiator,
+            request_upstream_change,
+            send_clarification,
+        )
+
         assert isinstance(NegotiationMessage, type)
 
     def test_has_method_validate_message_type(self):

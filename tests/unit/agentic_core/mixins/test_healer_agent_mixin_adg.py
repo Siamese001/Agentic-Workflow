@@ -170,9 +170,11 @@ pytestmark = pytest.mark.unit
 
 class TestHealerAgentMixin:
     def test_importable(self):
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.mixins.healer_agent_mixin import HealerAgentMixin
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.mixins.healer_agent_mixin import HealerAgentMixin
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                assert callable(HealerAgentMixin)
+
         assert callable(HealerAgentMixin)
 
     def test_heal_requires_dict(self):

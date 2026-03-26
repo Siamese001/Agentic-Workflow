@@ -29,10 +29,12 @@ class TestToolRegistryMigration:
             yield root
 
     def test_migration_logic(self, mock_env):
-        from agentic_core.L0_routing.config.path_constants import (
-    """Test migration_logic runtime behavior."""
-    # Arrange
-    # TODO: Set up test data for migration_logic
+                from agentic_core.L0_routing.config.path_constants import (
+            """Test migration_logic runtime behavior."""
+            # Arrange
+            # TODO: Set up test data for migration_logic
+            test_data = {}  # Replace with actual test data
+
     test_data = {}  # Replace with actual test data
 
     # Act

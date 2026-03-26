@@ -173,12 +173,14 @@ pytestmark = pytest.mark.unit
 
 class TestCodeToolRunnerCapabilityImport:
     def test_class_importable(self):
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.L5_safety.utils.code_tool_runner_core_util import CodeToolRunnerCapability
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-    """Test class_importable runtime behavior."""
-    # Arrange
-    # TODO: Set up test data for class_importable
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L5_safety.utils.code_tool_runner_core_util import CodeToolRunnerCapability
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+            """Test class_importable runtime behavior."""
+            # Arrange
+            # TODO: Set up test data for class_importable
+            test_data = {}  # Replace with actual test data
+
     test_data = {}  # Replace with actual test data
 
     # Act

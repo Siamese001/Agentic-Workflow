@@ -9,6 +9,8 @@ pytestmark = pytest.mark.unit
 
 
 def test_module_importable():
-    import agentic_core.L4_state.workflow_engines.policy_registry_cache  # noqa: F401
-    """Module policy_registry_cache must be importable."""
+        import agentic_core.L4_state.workflow_engines.policy_registry_cache  # noqa: F401
+        """Module policy_registry_cache must be importable."""
+        assert agentic_core.L4_state.workflow_engines.policy_registry_cache is not None
+
     assert agentic_core.L4_state.workflow_engines.policy_registry_cache is not None

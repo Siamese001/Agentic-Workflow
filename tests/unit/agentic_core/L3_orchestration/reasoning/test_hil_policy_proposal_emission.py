@@ -190,28 +190,30 @@ class TestPolicyProposalConstruction:
     """Unit: build_hil_policy_proposal produces valid, typed PolicyUpdateProposal."""
 
     def test_approved_proposal_has_required_fields(self):
-        from agentic_core.L0_routing.enforcement.governance_contracts import (
-        from agentic_core.L0_routing.types.governance_types import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.L5_safety.enforcement.human_review_queue_enforcer import (
-        from agentic_core.L5_safety.enforcement.human_review_queue_enforcer import (
-        proposal = build_hil_policy_proposal(
-            trace_id="t1",
-            evidence_pack_id="ep-001",
-            hil_outcome=HILOutcome.APPROVED,
-            reviewer_id="alice",
-            review_notes="Looks good",
-            request_id="req-1",
-        )
-        assert isinstance(proposal, PolicyUpdateProposal)
-        assert proposal.trace_id == "t1"
-        assert proposal.evidence_pack_id == "ep-001"
-        assert proposal.hil_outcome == HILOutcome.APPROVED
-        assert proposal.proposal_id  # non-empty uuid4
-        assert proposal.timestamp_utc  # non-empty ISO8601
-        assert proposal.rationale == "Looks good"
-        assert proposal.proposer == "SYSTEM"
+                from agentic_core.L0_routing.enforcement.governance_contracts import (
+                from agentic_core.L0_routing.types.governance_types import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L5_safety.enforcement.human_review_queue_enforcer import (
+                from agentic_core.L5_safety.enforcement.human_review_queue_enforcer import (
+                proposal = build_hil_policy_proposal(
+                    trace_id="t1",
+                    evidence_pack_id="ep-001",
+                    hil_outcome=HILOutcome.APPROVED,
+                    reviewer_id="alice",
+                    review_notes="Looks good",
+                    request_id="req-1",
+                )
+                assert isinstance(proposal, PolicyUpdateProposal)
+                assert proposal.trace_id == "t1"
+                assert proposal.evidence_pack_id == "ep-001"
+                assert proposal.hil_outcome == HILOutcome.APPROVED
+                assert proposal.proposal_id  # non-empty uuid4
+                assert proposal.timestamp_utc  # non-empty ISO8601
+                assert proposal.rationale == "Looks good"
+                assert proposal.proposer == "SYSTEM"
+                assert 0.0 <= proposal.confidence <= 1.0
+
         assert 0.0 <= proposal.confidence <= 1.0
 
     def test_rejected_proposal_has_correct_outcome(self):

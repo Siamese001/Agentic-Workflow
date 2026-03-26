@@ -174,9 +174,11 @@ pytestmark = pytest.mark.unit
 
 class TestPermissionLevel:
     def test_none_value_0(self):
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.L5_safety.reasoning.SecurityManagerAgent import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L5_safety.reasoning.SecurityManagerAgent import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                assert PermissionLevel.NONE.value == 0
+
         assert PermissionLevel.NONE.value == 0
 
     def test_admin_highest(self):

@@ -5,6 +5,8 @@ from __future__ import annotations
 
 
 def test_module_importable():
-    import agentic_core.L4_state.memory.in_memory_vector_store  # noqa: F401
-    """Module in_memory_vector_store must be importable."""
+        import agentic_core.L4_state.memory.in_memory_vector_store  # noqa: F401
+        """Module in_memory_vector_store must be importable."""
+        assert agentic_core.L4_state.memory.in_memory_vector_store is not None
+
     assert agentic_core.L4_state.memory.in_memory_vector_store is not None

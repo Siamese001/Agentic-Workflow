@@ -249,15 +249,17 @@ class TestHealingTierConfig:
     """Config validation tests."""
 
     def test_valid_config(self):
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.L2_execution.healers.healing_tier_config import (
-        from agentic_core.L2_execution.healers.healing_tier_router import (
-        from agentic_core.L2_execution.healers.healing_tier_types import (
-        from agentic_core.L2_execution.healers.tiering_allowlist import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-    """Test valid_config runtime behavior."""
-    # Arrange
-    # TODO: Set up test data for valid_config
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L2_execution.healers.healing_tier_config import (
+                from agentic_core.L2_execution.healers.healing_tier_router import (
+                from agentic_core.L2_execution.healers.healing_tier_types import (
+                from agentic_core.L2_execution.healers.tiering_allowlist import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+            """Test valid_config runtime behavior."""
+            # Arrange
+            # TODO: Set up test data for valid_config
+            test_data = {}  # Replace with actual test data
+
     test_data = {}  # Replace with actual test data
 
     # Act

@@ -170,10 +170,12 @@ pytestmark = pytest.mark.unit
 
 class TestAdapterContext:
     def test_creates_with_request_id(self):
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.L5_safety.enforcement.AdapterBase import AdapterContext, AdapterResult
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        ctx = AdapterContext(request_id="req-001")
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L5_safety.enforcement.AdapterBase import AdapterContext, AdapterResult
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                ctx = AdapterContext(request_id="req-001")
+                assert ctx.request_id == "req-001"
+
         assert ctx.request_id == "req-001"
 
     def test_risk_level_default_medium(self):

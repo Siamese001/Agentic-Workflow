@@ -5,9 +5,10 @@ import pytest
 
 pytestmark = pytest.mark.unit
 
-import apps_shared.utils.format_metadata_util  # noqa: F401
 
 
 def test_module_importable():
     """Module format_metadata_util must be importable."""
+    import apps_shared.utils.format_metadata_util  # noqa: F401
+
     assert apps_shared.utils.format_metadata_util is not None

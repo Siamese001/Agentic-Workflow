@@ -182,10 +182,12 @@ class TestAgentMetadata:
         )
 
     def test_creates(self):
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.L5_safety.enforcement.ssot_scanner_enforcer import AgentMetadata
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        m = self._make()
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L5_safety.enforcement.ssot_scanner_enforcer import AgentMetadata
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                m = self._make()
+                assert m.class_name == "FooAgent"
+
         assert m.class_name == "FooAgent"
 
     def test_compliant_when_layers_match(self):

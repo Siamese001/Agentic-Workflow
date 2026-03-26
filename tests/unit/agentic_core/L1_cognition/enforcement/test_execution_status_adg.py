@@ -173,25 +173,27 @@ pytestmark = pytest.mark.unit
 
 class TestExecutionStatus:
     def test_is_enum(self):
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.L1_cognition.enforcement.execution_status import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-    """Test is_enum runtime behavior."""
-    # Arrange
-    # TODO: Set up test data for is_enum
-    test_data = {}  # Replace with actual test data
-    """Test pending_value runtime behavior."""
-    # Arrange
-    # TODO: Set up test data for pending_value
-    """Test success_value runtime behavior."""
-    # Arrange
-    # TODO: Set up test data for success_value
-    """Test failed_value runtime behavior."""
-    # Arrange
-    # TODO: Set up test data for failed_value
     test_data = {}  # Replace with actual test data
 
 """Test is_dataclass runtime behavior."""
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L1_cognition.enforcement.execution_status import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+            """Test is_enum runtime behavior."""
+            # Arrange
+            # TODO: Set up test data for is_enum
+            test_data = {}  # Replace with actual test data
+            """Test pending_value runtime behavior."""
+            # Arrange
+            # TODO: Set up test data for pending_value
+            """Test success_value runtime behavior."""
+            # Arrange
+            # TODO: Set up test data for success_value
+            """Test failed_value runtime behavior."""
+            # Arrange
+            # TODO: Set up test data for failed_value
+            test_data = {}  # Replace with actual test data
+
 # Arrange
 # TODO: Set up test data for is_dataclass
 test_data = {}  # Replace with actual test data

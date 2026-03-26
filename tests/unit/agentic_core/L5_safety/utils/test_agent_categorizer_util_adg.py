@@ -9,6 +9,8 @@ pytestmark = pytest.mark.unit
 
 
 def test_module_importable():
-    import agentic_core.L5_safety.utils.agent_categorizer_util  # noqa: F401
-    """Module agent_categorizer_util must be importable."""
+        import agentic_core.L5_safety.utils.agent_categorizer_util  # noqa: F401
+        """Module agent_categorizer_util must be importable."""
+        assert agentic_core.L5_safety.utils.agent_categorizer_util is not None
+
     assert agentic_core.L5_safety.utils.agent_categorizer_util is not None

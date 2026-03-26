@@ -170,10 +170,12 @@ pytestmark = pytest.mark.unit
 
 class TestErrorRecoveryStrategy:
     def test_creates(self):
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.L5_safety.enforcement.error_recovery_strategy import ErrorRecoveryStrategy
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        s = ErrorRecoveryStrategy()
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L5_safety.enforcement.error_recovery_strategy import ErrorRecoveryStrategy
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                s = ErrorRecoveryStrategy()
+                assert s is not None
+
         assert s is not None
 
     def test_creates_with_kwargs(self):

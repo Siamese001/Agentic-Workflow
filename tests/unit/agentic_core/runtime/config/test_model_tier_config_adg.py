@@ -34,15 +34,17 @@ except (ValueError, TypeError, RuntimeError) as e:  # guardian: allow-silent-swa
 
 class TestModelTier:
     def test_is_enum(self):
-        from agentic_core.runtime.config.model_tier_config import (  # noqa: F401
-    """Test is_enum runtime behavior."""
-    # Arrange
-    # TODO: Set up runtime environment
-    """Test has_members runtime behavior."""
-    # Arrange
-    """Test importable runtime behavior."""
-    # Arrange
-    # TODO: Set up runtime environment
+                from agentic_core.runtime.config.model_tier_config import (  # noqa: F401
+            """Test is_enum runtime behavior."""
+            # Arrange
+            # TODO: Set up runtime environment
+            """Test has_members runtime behavior."""
+            # Arrange
+            """Test importable runtime behavior."""
+            # Arrange
+            # TODO: Set up runtime environment
+            runtime_context = {}  # Replace with actual runtime context
+
     runtime_context = {}  # Replace with actual runtime context
 
     # Act

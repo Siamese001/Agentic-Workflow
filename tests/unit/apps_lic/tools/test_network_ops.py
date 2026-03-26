@@ -10,22 +10,23 @@ import pytest
 
 pytestmark = pytest.mark.unit
 
-from apps_lic.tools.network_ops import (  # noqa: F401
-    BATCH_SIZE,
-    BUFFER_SIZE,
-    DEFAULT_SLEEP,
-    MAX_RETRIES,
-    THRESHOLD,
-    incr,
-    start_transaction,
-    string_get,
-    string_set,
-)
 
 
 class TestStringGetFunction:
     def test_is_callable(self):
     """Test is_callable runtime behavior."""
+        from apps_lic.tools.network_ops import (  # noqa: F401
+            BATCH_SIZE,
+            BUFFER_SIZE,
+            DEFAULT_SLEEP,
+            MAX_RETRIES,
+            THRESHOLD,
+            incr,
+            start_transaction,
+            string_get,
+            string_set,
+        )
+
     # Arrange
     # TODO: Set up execution parameters
     input_data = {}  # Replace with actual test data

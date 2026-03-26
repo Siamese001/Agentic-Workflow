@@ -13,9 +13,11 @@ class TestStateLedgerAgent:
     """Tests for state ledger functionality."""
 
     def test_state_ledger_exists(self):
-        from agentic_core.L0_routing.config.path_constants import (
-        """State ledger module should exist."""
-        path = Path("agentic_core/L4_state/reasoning")
+                from agentic_core.L0_routing.config.path_constants import (
+                """State ledger module should exist."""
+                path = Path("agentic_core/L4_state/reasoning")
+                assert path.exists(), "L4_state/reasoning/ should exist"
+
         assert path.exists(), "L4_state/reasoning/ should exist"
 
     def test_state_has_ledger_classes(self):

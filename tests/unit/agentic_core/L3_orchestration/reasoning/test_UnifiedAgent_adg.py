@@ -5,6 +5,8 @@ from __future__ import annotations
 
 
 def test_module_importable():
-    import agentic_core.L3_orchestration.reasoning.UnifiedAgent  # noqa: F401
-    """Module UnifiedAgent must be importable."""
+        import agentic_core.L3_orchestration.reasoning.UnifiedAgent  # noqa: F401
+        """Module UnifiedAgent must be importable."""
+        assert agentic_core.L3_orchestration.reasoning.UnifiedAgent is not None
+
     assert agentic_core.L3_orchestration.reasoning.UnifiedAgent is not None

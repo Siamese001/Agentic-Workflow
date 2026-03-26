@@ -10,27 +10,28 @@ import pytest
 
 pytestmark = pytest.mark.unit
 
-from apps_shared.utils.unified_signal_pipeline_util import (  # noqa: F401
-    BATCH_SIZE,
-    BUFFER_SIZE,
-    DEFAULT_SLEEP,
-    MAX_RETRIES,
-    THRESHOLD,
-    ContextEnrichmentStage,
-    InputProcessingStage,
-    PipelineContext,
-    PipelineStage,
-    PipelineStageType,
-    SignalAugmentationStage,
-    get_unified_pipeline,
-    process_outreach_signal,
-    process_resume_signal,
-)
 
 
 class TestPipelineStageTypeContract:
     def test_is_enum(self):
     """Test is_enum runtime behavior."""
+        from apps_shared.utils.unified_signal_pipeline_util import (  # noqa: F401
+            BATCH_SIZE,
+            BUFFER_SIZE,
+            DEFAULT_SLEEP,
+            MAX_RETRIES,
+            THRESHOLD,
+            ContextEnrichmentStage,
+            InputProcessingStage,
+            PipelineContext,
+            PipelineStage,
+            PipelineStageType,
+            SignalAugmentationStage,
+            get_unified_pipeline,
+            process_outreach_signal,
+            process_resume_signal,
+        )
+
     # Arrange
     # TODO: Set up test data for is_enum
     test_data = {}  # Replace with actual test data

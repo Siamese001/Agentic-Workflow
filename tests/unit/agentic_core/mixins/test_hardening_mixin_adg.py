@@ -180,9 +180,11 @@ except (ValueError, TypeError, RuntimeError) as e:
 
 class TestTokenLimitError:
     def test_is_exception(self):
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.mixins.hardening_mixin import HardeningMixin, TokenLimitError
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.mixins.hardening_mixin import HardeningMixin, TokenLimitError
+                assert issubclass(TokenLimitError, Exception)
+
         assert issubclass(TokenLimitError, Exception)
 
     def test_can_be_raised(self):

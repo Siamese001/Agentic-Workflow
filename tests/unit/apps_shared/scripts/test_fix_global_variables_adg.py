@@ -5,9 +5,10 @@ import pytest
 
 pytestmark = pytest.mark.unit
 
-import apps_shared.scripts.fix_global_variables  # noqa: F401
 
 
 def test_module_importable():
     """Module fix_global_variables must be importable."""
+    import apps_shared.scripts.fix_global_variables  # noqa: F401
+
     assert apps_shared.scripts.fix_global_variables is not None

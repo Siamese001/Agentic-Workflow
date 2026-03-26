@@ -10,22 +10,23 @@ import pytest
 
 pytestmark = pytest.mark.unit
 
-from apps_shared.config.titanium_search_tool_config import (  # noqa: F401
-    BATCH_SIZE,
-    BUFFER_SIZE,
-    DEFAULT_SLEEP,
-    MAX_RETRIES,
-    THRESHOLD,
-    clear_cache,
-    get_pipeline_stats,
-    get_titanium_search_tool,
-    get_titanium_search_with_sources,
-)
 
 
 class TestGetTitaniumSearchToolFunction:
     def test_is_callable(self):
     """Test is_callable runtime behavior."""
+        from apps_shared.config.titanium_search_tool_config import (  # noqa: F401
+            BATCH_SIZE,
+            BUFFER_SIZE,
+            DEFAULT_SLEEP,
+            MAX_RETRIES,
+            THRESHOLD,
+            clear_cache,
+            get_pipeline_stats,
+            get_titanium_search_tool,
+            get_titanium_search_with_sources,
+        )
+
     # Arrange
     # TODO: Set up execution parameters
     input_data = {}  # Replace with actual test data

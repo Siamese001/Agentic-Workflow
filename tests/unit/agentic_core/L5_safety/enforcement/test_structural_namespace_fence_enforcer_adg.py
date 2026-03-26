@@ -5,6 +5,8 @@ from __future__ import annotations
 
 
 def test_module_importable():
-    import agentic_core.L5_safety.enforcement.structural_namespace_fence_enforcer  # noqa: F401
-    """Module structural_namespace_fence_enforcer must be importable."""
+        import agentic_core.L5_safety.enforcement.structural_namespace_fence_enforcer  # noqa: F401
+        """Module structural_namespace_fence_enforcer must be importable."""
+        assert agentic_core.L5_safety.enforcement.structural_namespace_fence_enforcer is not None
+
     assert agentic_core.L5_safety.enforcement.structural_namespace_fence_enforcer is not None

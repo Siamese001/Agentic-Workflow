@@ -9,6 +9,8 @@ pytestmark = pytest.mark.unit
 
 
 def test_module_importable():
-    import agentic_core.prompt_governance.meta_prompts.__init__ as _mod  # noqa: F401
-    """Module meta_prompts must be importable."""
+        import agentic_core.prompt_governance.meta_prompts.__init__ as _mod  # noqa: F401
+        """Module meta_prompts must be importable."""
+        assert _mod is not None
+
     assert _mod is not None

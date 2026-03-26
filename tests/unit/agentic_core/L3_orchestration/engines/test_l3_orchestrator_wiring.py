@@ -55,15 +55,18 @@ def _src_text():
 
 class TestIOrchestratorProtocol:
     def test_protocol_is_importable(self):
-        from agentic_core.seams.orchestration_protocols import IOrchestrator
-        from agentic_core.seams.orchestration_protocols import IOrchestrator
-        from agentic_core.interfaces.IOrchestratorProtocol import IOrchestratorProtocol
-        from agentic_core.interfaces.IOrchestratorProtocol import IOrchestratorProtocol
-        from agentic_core.interfaces.IOrchestratorProtocol import IOrchestratorProtocol
-        from agentic_core.seams.orchestration_protocols import IOrchestrator
-        from agentic_core.seams.orchestration_protocols import GovernedPayload
-        from agentic_core.seams.orchestration_protocols import OrchestrationResult
-#  # MOVED: from agentic_core.seams.orchestration_protocols import IOrchestrator
+                from agentic_core.seams.orchestration_protocols import IOrchestrator
+                from agentic_core.seams.orchestration_protocols import IOrchestrator
+                from agentic_core.interfaces.IOrchestratorProtocol import IOrchestratorProtocol
+                from agentic_core.interfaces.IOrchestratorProtocol import IOrchestratorProtocol
+                from agentic_core.interfaces.IOrchestratorProtocol import IOrchestratorProtocol
+                from agentic_core.seams.orchestration_protocols import IOrchestrator
+                from agentic_core.seams.orchestration_protocols import GovernedPayload
+                from agentic_core.seams.orchestration_protocols import OrchestrationResult
+                from agentic_core.seams.orchestration_protocols import OrchestrationResult
+        #  # MOVED: from agentic_core.seams.orchestration_protocols import IOrchestrator
+                assert IOrchestrator is not None
+
         assert IOrchestrator is not None
 
     def test_orchestrate_method_in_protocol(self):

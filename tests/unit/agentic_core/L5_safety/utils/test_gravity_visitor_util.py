@@ -26,7 +26,9 @@ pytestmark = pytest.mark.unit
 
 class TestGravityVisitorContract:
     def test_is_class(self):
-        from agentic_core.L5_safety.utils.gravity_visitor_util import (  # noqa: F401
+                from agentic_core.L5_safety.utils.gravity_visitor_util import (  # noqa: F401
+                assert isinstance(GravityVisitor, type)
+
         assert isinstance(GravityVisitor, type)
 
     def test_has_method_visit_Import(self):

@@ -225,13 +225,16 @@ def compute_w2_determinism_digest() -> str:
 
 
 def test_end_to_end_construct_verify_execute():
-    from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-    from agentic_core.L2_execution.enforcement.boundary_verifier import L2BoundaryVerifier
-    from agentic_core.L2_execution.enforcement.key_source import (
-    from agentic_core.L2_execution.types.instruction_packet_types import (
-    from agentic_core.L2_execution.types.sandbox_envelope_types import SandboxEnvelope
-    from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 """Test end_to_end_construct_verify_execute runtime behavior."""
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L2_execution.enforcement.boundary_verifier import L2BoundaryVerifier
+        from agentic_core.L2_execution.enforcement.key_source import (
+        from agentic_core.L2_execution.types.instruction_packet_types import (
+        from agentic_core.L2_execution.types.sandbox_envelope_types import SandboxEnvelope
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+    """Test end_to_end_construct_verify_execute runtime behavior."""
+
 # Arrange
 # TODO: Set up execution parameters
 input_data = {}  # Replace with actual test data

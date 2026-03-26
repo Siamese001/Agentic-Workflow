@@ -15,7 +15,9 @@ pytestmark = pytest.mark.unit
 
 class TestScriptsForbiddenPatterns:
     def test_is_sequence(self):
-        from agentic_core.L0_routing.config.structure_blueprint_data import (
+                from agentic_core.L0_routing.config.structure_blueprint_data import (
+                assert hasattr(SCRIPTS_FORBIDDEN_PATTERNS, "__len__")
+
         assert hasattr(SCRIPTS_FORBIDDEN_PATTERNS, "__len__")
 
     def test_contains_patterns(self):

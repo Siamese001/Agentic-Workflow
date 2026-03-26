@@ -196,20 +196,22 @@ class TestAgentInfo:
     """Tests for AgentInfo dataclass."""
 
     def test_agent_info_creation(self):
-        from agentic_core.L0_routing.config.path_constants import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.L5_safety.enforcement.registry_verification_enforcer import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        """Test basic AgentInfo creation."""
-        info = AgentInfo(
-            class_name="TestAgent",
-            file_path=Path("/test/TestAgent.py"),
-            relative_path="test/TestAgent.py",
-            layer="L5",
-            has_agent_class=True,
-        )
-        assert info.class_name == "TestAgent"
-        assert info.layer == "L5"
+                from agentic_core.L0_routing.config.path_constants import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L5_safety.enforcement.registry_verification_enforcer import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                """Test basic AgentInfo creation."""
+                info = AgentInfo(
+                    class_name="TestAgent",
+                    file_path=Path("/test/TestAgent.py"),
+                    relative_path="test/TestAgent.py",
+                    layer="L5",
+                    has_agent_class=True,
+                )
+                assert info.class_name == "TestAgent"
+                assert info.layer == "L5"
+                assert info.has_agent_class is True
+
         assert info.has_agent_class is True
 
     def test_agent_info_defaults(self):

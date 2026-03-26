@@ -194,15 +194,17 @@ pytestmark = pytest.mark.unit
 
 class TestReClearTicketConstruction:
     def test_valid_ticket(self):
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.L5_safety.enforcement.re_clear_loop_enforcer import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        t = ReClearTicket(
-            ticket_id="T-001",
-            constraint_id="G-15-1",
-            violation_summary="L5 mutation detected in L0 layer",
-        )
-        assert t.ticket_id == "T-001"
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L5_safety.enforcement.re_clear_loop_enforcer import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                t = ReClearTicket(
+                    ticket_id="T-001",
+                    constraint_id="G-15-1",
+                    violation_summary="L5 mutation detected in L0 layer",
+                )
+                assert t.ticket_id == "T-001"
+                assert t.status == ReClearStatus.PENDING
+
         assert t.status == ReClearStatus.PENDING
 
     def test_empty_ticket_id_raises(self):

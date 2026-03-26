@@ -211,10 +211,13 @@ pytestmark = pytest.mark.unit_min_deps
 
 
 def test_local_fast_7b_model_id():
-    from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-    from agentic_core.L2_execution.types.vllm_serving_profile_types import (
-    from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 """Test local_fast_7b_model_id runtime behavior."""
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L2_execution.types.vllm_serving_profile_types import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+    """Test local_fast_7b_model_id runtime behavior."""
+
 # Arrange
 # TODO: Set up test data for local_fast_7b_model_id
 test_data = {}  # Replace with actual test data

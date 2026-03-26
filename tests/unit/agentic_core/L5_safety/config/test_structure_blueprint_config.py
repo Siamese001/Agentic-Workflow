@@ -7,10 +7,12 @@ class TestStructureBlueprintConfig:
     """Tests for structure blueprint configuration."""
 
     def test_structure_blueprint_exists(self):
-        from agentic_core.L5_safety.config.structure_blueprint import PROJECT_ROOT_WHITELIST
-        from agentic_core.L5_safety.config.structure_blueprint import (
-        """Structure blueprint config should exist."""
-        path = Path("agentic_core/L5_safety/config/structure_blueprint_config.py")
+                from agentic_core.L5_safety.config.structure_blueprint import PROJECT_ROOT_WHITELIST
+                from agentic_core.L5_safety.config.structure_blueprint import (
+                """Structure blueprint config should exist."""
+                path = Path("agentic_core/L5_safety/config/structure_blueprint_config.py")
+                assert path.exists(), "structure_blueprint_config.py should exist"
+
         assert path.exists(), "structure_blueprint_config.py should exist"
 
     def test_sovereign_territories_defined(self):

@@ -206,14 +206,16 @@ def create_test_manifest():
 
 @pytest.mark.unit
 def test_execution_gateway_healing_error_specific_exceptions():
-    from agentic_core.L0_routing.enforcement.execution_gateway import (
-    from agentic_core.L0_routing.engines.execution_orchestrator import ExecutionOrchestrator
-    from agentic_core.L0_routing.types.determinism_types import (
-    from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-    from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-    from agentic_core.L2_execution.engines.tool_registry import ast_analysis
-    from apps_rg.engines.base_rg_engine import _OUTPUT_CONTRACT_AVAILABLE, MIXINS_AVAILABLE
-    """Test that healing errors are properly categorized and logged."""
+        from agentic_core.L0_routing.enforcement.execution_gateway import (
+        from agentic_core.L0_routing.engines.execution_orchestrator import ExecutionOrchestrator
+        from agentic_core.L0_routing.types.determinism_types import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L2_execution.engines.tool_registry import ast_analysis
+        from apps_rg.engines.base_rg_engine import _OUTPUT_CONTRACT_AVAILABLE, MIXINS_AVAILABLE
+        """Test that healing errors are properly categorized and logged."""
+        gateway = V15ExecutionGateway()
+
     gateway = V15ExecutionGateway()
 
     # Test ValueError (expected error)

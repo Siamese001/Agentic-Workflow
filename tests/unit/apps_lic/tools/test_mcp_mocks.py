@@ -10,22 +10,23 @@ import pytest
 
 pytestmark = pytest.mark.unit
 
-from apps_lic.tools.mcp_mocks import (  # noqa: F401
-    BATCH_SIZE,
-    BUFFER_SIZE,
-    DEFAULT_SLEEP,
-    MAX_RETRIES,
-    THRESHOLD,
-    browser_navigate,
-    convert_time,
-    get_current_time,
-    issues_get_detail,
-)
 
 
 class TestGetCurrentTimeFunction:
     def test_is_callable(self):
     """Test is_callable runtime behavior."""
+        from apps_lic.tools.mcp_mocks import (  # noqa: F401
+            BATCH_SIZE,
+            BUFFER_SIZE,
+            DEFAULT_SLEEP,
+            MAX_RETRIES,
+            THRESHOLD,
+            browser_navigate,
+            convert_time,
+            get_current_time,
+            issues_get_detail,
+        )
+
     # Arrange
     # TODO: Set up execution parameters
     input_data = {}  # Replace with actual test data

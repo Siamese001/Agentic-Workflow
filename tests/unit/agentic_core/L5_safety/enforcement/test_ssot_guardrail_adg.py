@@ -9,6 +9,8 @@ pytestmark = pytest.mark.unit
 
 
 def test_module_importable():
-    import agentic_core.L5_safety.enforcement.ssot_guardrail  # noqa: F401
-    """Module ssot_guardrail must be importable."""
+        import agentic_core.L5_safety.enforcement.ssot_guardrail  # noqa: F401
+        """Module ssot_guardrail must be importable."""
+        assert agentic_core.L5_safety.enforcement.ssot_guardrail is not None
+
     assert agentic_core.L5_safety.enforcement.ssot_guardrail is not None

@@ -24,8 +24,10 @@ pytestmark = pytest.mark.unit
 
 class TestCapabilityTokenSubjectContract:
     def test_is_dataclass(self):
-        from agentic_core.L2_execution.types.capability_token_types import (  # noqa: F401
-        import dataclasses
+                from agentic_core.L2_execution.types.capability_token_types import (  # noqa: F401
+                import dataclasses
+                assert dataclasses.is_dataclass(CapabilityTokenSubject)
+
         assert dataclasses.is_dataclass(CapabilityTokenSubject)
 
     def test_is_frozen(self):

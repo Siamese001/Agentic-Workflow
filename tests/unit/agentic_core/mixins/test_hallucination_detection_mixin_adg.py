@@ -170,9 +170,11 @@ pytestmark = pytest.mark.unit
 
 class TestHallucinationDetectionMixin:
     def test_importable(self):
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.mixins.hallucination_detection_mixin import HallucinationDetectionMixin
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.mixins.hallucination_detection_mixin import HallucinationDetectionMixin
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                assert callable(HallucinationDetectionMixin)
+
         assert callable(HallucinationDetectionMixin)
 
     def test_hallucination_cache_default_empty(self):

@@ -13,8 +13,10 @@ pytestmark = pytest.mark.unit
 
 class TestResearchHopPhase:
     def test_is_enum(self):
-        from agentic_core.L1_cognition.types.research_hop_phase_types import (
-        import enum
+                from agentic_core.L1_cognition.types.research_hop_phase_types import (
+                import enum
+                assert issubclass(ResearchHopPhase, enum.Enum)
+
         assert issubclass(ResearchHopPhase, enum.Enum)
 
     def test_is_str_enum(self):

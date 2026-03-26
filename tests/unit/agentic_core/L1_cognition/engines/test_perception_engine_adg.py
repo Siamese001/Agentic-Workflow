@@ -170,11 +170,13 @@ pytestmark = pytest.mark.unit
 
 class TestPerceptionNode:
     def test_creates(self):
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.L1_cognition.engines.perception_engine import PerceptionNode
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        node = PerceptionNode()
-        assert node.inputs_processed == 0
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L1_cognition.engines.perception_engine import PerceptionNode
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                node = PerceptionNode()
+                assert node.inputs_processed == 0
+                assert node.cache == {}
+
         assert node.cache == {}
 
     def test_has_process(self):

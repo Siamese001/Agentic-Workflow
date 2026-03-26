@@ -27,13 +27,15 @@ pytestmark = pytest.mark.unit
 
 class TestReadFileArgsContract:
     def test_is_class(self):
-        from agentic_core.L2_execution.types.tool_args_types import (  # noqa: F401
-    """Test is_class runtime behavior."""
-    # Arrange
-    # TODO: Set up test data for is_class
-    """Test instantiable_or_abstract runtime behavior."""
-    # Arrange
-    # TODO: Set up test data for instantiable_or_abstract
+                from agentic_core.L2_execution.types.tool_args_types import (  # noqa: F401
+            """Test is_class runtime behavior."""
+            # Arrange
+            # TODO: Set up test data for is_class
+            """Test instantiable_or_abstract runtime behavior."""
+            # Arrange
+            # TODO: Set up test data for instantiable_or_abstract
+            test_data = {}  # Replace with actual test data
+
     test_data = {}  # Replace with actual test data
 
     # Act

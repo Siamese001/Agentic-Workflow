@@ -10,23 +10,24 @@ import pytest
 
 pytestmark = pytest.mark.unit
 
-from apps_shared.utils.metric_augmenter_util import (  # noqa: F401
-    BATCH_SIZE,
-    BUFFER_SIZE,
-    DEFAULT_SLEEP,
-    MAX_RETRIES,
-    THRESHOLD,
-    AugmentedBullet,
-    BusinessImpact,
-    ImpactCategory,
-    MetricAugmenter,
-    augment_metrics,
-    create_metric_augmenter,
-)
 
 
 class TestImpactCategoryContract:
     def test_is_enum(self):
+        from apps_shared.utils.metric_augmenter_util import (  # noqa: F401
+            BATCH_SIZE,
+            BUFFER_SIZE,
+            DEFAULT_SLEEP,
+            MAX_RETRIES,
+            THRESHOLD,
+            AugmentedBullet,
+            BusinessImpact,
+            ImpactCategory,
+            MetricAugmenter,
+            augment_metrics,
+            create_metric_augmenter,
+        )
+
         import enum
         assert issubclass(ImpactCategory, enum.Enum)
 

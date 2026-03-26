@@ -197,25 +197,27 @@ class TestCodeValidatorStrategy:
         return CodeValidatorStrategy(config)
 
     def test_initialization(self, strategy, config):
-        from agentic_core.L3_orchestration.reasoning.UnifiedAgent import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.L5_safety.reasoning.CodeValidatorAgent import (
-        from agentic_core.L5_safety.reasoning.CodeValidatorAgent import (
-        from agentic_core.L5_safety.reasoning.CodeValidatorAgent import (
-        from agentic_core.L5_safety.reasoning.CodeValidatorAgent import RuleSet
-        from agentic_core.L5_safety.reasoning.CodeValidatorAgent import (
-        from agentic_core.L5_safety.reasoning.CodeValidatorAgent import (
-        from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
-        from agentic_core.L5_safety.reasoning.CodeValidatorAgent import (
-        from agentic_core.L5_safety.reasoning.CodeValidatorAgent import (
-        from agentic_core.L5_safety.reasoning.CodeValidatorAgent import (
-        from agentic_core.L5_safety.reasoning.CodeValidatorAgent import __all__
-        """Test strategy initialization."""
-        assert strategy.check_syntax is True
-        assert strategy.check_canon is True
-        assert strategy.check_async is True
-        assert strategy.check_prints is True
+                from agentic_core.L3_orchestration.reasoning.UnifiedAgent import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L5_safety.reasoning.CodeValidatorAgent import (
+                from agentic_core.L5_safety.reasoning.CodeValidatorAgent import (
+                from agentic_core.L5_safety.reasoning.CodeValidatorAgent import (
+                from agentic_core.L5_safety.reasoning.CodeValidatorAgent import RuleSet
+                from agentic_core.L5_safety.reasoning.CodeValidatorAgent import (
+                from agentic_core.L5_safety.reasoning.CodeValidatorAgent import (
+                from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
+                from agentic_core.L5_safety.reasoning.CodeValidatorAgent import (
+                from agentic_core.L5_safety.reasoning.CodeValidatorAgent import (
+                from agentic_core.L5_safety.reasoning.CodeValidatorAgent import (
+                from agentic_core.L5_safety.reasoning.CodeValidatorAgent import __all__
+                """Test strategy initialization."""
+                assert strategy.check_syntax is True
+                assert strategy.check_canon is True
+                assert strategy.check_async is True
+                assert strategy.check_prints is True
+                assert strategy.print_policy == "warn"
+
         assert strategy.print_policy == "warn"
 
     def test_initialization_with_disabled_features(self):

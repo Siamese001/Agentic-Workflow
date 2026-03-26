@@ -10,25 +10,26 @@ import pytest
 
 pytestmark = pytest.mark.unit
 
-from apps_rg.utils.authenticity_patterns_util import (  # noqa: F401
-    BATCH_SIZE,
-    BUFFER_SIZE,
-    DEFAULT_SLEEP,
-    MAX_RETRIES,
-    THRESHOLD,
-    AuthenticityPatterns,
-    BulletGenerationOutput,
-    CompetitiveIntelligence,
-    OverviewSynthesisOutput,
-    ThematicAnalysisNode,
-    ThematicAnalysisOutput,
-    example_two_phase_generation,
-    example_validation_gates,
-)
 
 
 class TestAuthenticityPatternsContract:
     def test_is_dataclass(self):
+        from apps_rg.utils.authenticity_patterns_util import (  # noqa: F401
+            BATCH_SIZE,
+            BUFFER_SIZE,
+            DEFAULT_SLEEP,
+            MAX_RETRIES,
+            THRESHOLD,
+            AuthenticityPatterns,
+            BulletGenerationOutput,
+            CompetitiveIntelligence,
+            OverviewSynthesisOutput,
+            ThematicAnalysisNode,
+            ThematicAnalysisOutput,
+            example_two_phase_generation,
+            example_validation_gates,
+        )
+
         import dataclasses
         assert dataclasses.is_dataclass(AuthenticityPatterns)
 

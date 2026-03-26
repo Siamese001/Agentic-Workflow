@@ -26,10 +26,12 @@ pytestmark = pytest.mark.unit
 
 class TestEgressResultContract:
     def test_is_dataclass(self):
-        from agentic_core.L2_execution.utils.egress_util import (  # noqa: F401
-    """Test is_dataclass runtime behavior."""
-    # Arrange
-    # TODO: Set up test data for is_dataclass
+                from agentic_core.L2_execution.utils.egress_util import (  # noqa: F401
+            """Test is_dataclass runtime behavior."""
+            # Arrange
+            # TODO: Set up test data for is_dataclass
+            test_data = {}  # Replace with actual test data
+
     test_data = {}  # Replace with actual test data
 
     # Act

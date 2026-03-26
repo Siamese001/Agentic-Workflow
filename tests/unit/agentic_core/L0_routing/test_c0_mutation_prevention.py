@@ -154,10 +154,12 @@ import pytest
 
 class TestVerifyC0Immutability:
     def test_identical_payloads_pass(self):
-        from agentic_core.L0_routing.context.c0_guard import verify_c0_immutability
-        from agentic_core.L5_safety.types.hardening_errors import C0MutationViolation
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        payload = {"query": "hello", "context": "ctx"}
+                from agentic_core.L0_routing.context.c0_guard import verify_c0_immutability
+                from agentic_core.L5_safety.types.hardening_errors import C0MutationViolation
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                payload = {"query": "hello", "context": "ctx"}
+                verify_c0_immutability(payload, {"query": "hello", "context": "ctx"})
+
         verify_c0_immutability(payload, {"query": "hello", "context": "ctx"})
 
     def test_empty_payloads_pass(self):

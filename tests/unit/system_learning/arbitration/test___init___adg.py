@@ -5,9 +5,10 @@ import pytest
 
 pytestmark = pytest.mark.unit
 
-import system_learning.arbitration.__init__ as _mod  # noqa: F401
 
 
 def test_module_importable():
     """Module arbitration must be importable."""
+    import system_learning.arbitration.__init__ as _mod  # noqa: F401
+
     assert _mod is not None

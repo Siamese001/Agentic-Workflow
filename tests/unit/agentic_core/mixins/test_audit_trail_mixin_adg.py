@@ -172,15 +172,17 @@ pytestmark = pytest.mark.unit
 
 class TestAuditProof:
     def test_creates(self):
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.mixins.audit_trail_mixin import AuditProof, AuditTrailMixin
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        proof = AuditProof(
-            action_id="act-1",
-            prev_hash="abc123",
-            curr_hash="def456",
-            timestamp=_FIXED_TS,
-        )
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.mixins.audit_trail_mixin import AuditProof, AuditTrailMixin
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                proof = AuditProof(
+                    action_id="act-1",
+                    prev_hash="abc123",
+                    curr_hash="def456",
+                    timestamp=_FIXED_TS,
+                )
+                assert proof.action_id == "act-1"
+
         assert proof.action_id == "act-1"
 
     def test_to_dict_has_required_keys(self):

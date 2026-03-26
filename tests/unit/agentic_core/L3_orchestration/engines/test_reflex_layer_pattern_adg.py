@@ -170,11 +170,13 @@ pytestmark = pytest.mark.unit
 
 class TestReflexLayer:
     def test_creates(self):
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.L3_orchestration.engines.reflex_layer_pattern import ReflexLayer
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        rl = ReflexLayer()
-        assert rl.status == "healthy"
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L3_orchestration.engines.reflex_layer_pattern import ReflexLayer
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                rl = ReflexLayer()
+                assert rl.status == "healthy"
+                assert rl.reflexes == []
+
         assert rl.reflexes == []
 
     def test_register_reflex(self):

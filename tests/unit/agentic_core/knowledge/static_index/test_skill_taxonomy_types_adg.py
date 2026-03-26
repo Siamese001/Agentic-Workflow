@@ -170,9 +170,11 @@ pytestmark = pytest.mark.unit
 
 class TestSkillTaxonomy:
     def test_is_dict(self):
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.knowledge.static_index.skill_taxonomy_types import SKILL_TAXONOMY
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.knowledge.static_index.skill_taxonomy_types import SKILL_TAXONOMY
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                assert isinstance(SKILL_TAXONOMY, dict)
+
         assert isinstance(SKILL_TAXONOMY, dict)
 
     def test_has_ai_ml_category(self):

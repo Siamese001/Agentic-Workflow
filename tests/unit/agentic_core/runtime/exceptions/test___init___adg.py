@@ -11,8 +11,10 @@ from __future__ import annotations
 
 class TestInitImportability:
     def test_module_importable(self) -> None:
-        import agentic_core.runtime.exceptions.__init__ as _mod  # noqa: F401
-        """ADG contract: __init__.py must be importable."""
+                import agentic_core.runtime.exceptions.__init__ as _mod  # noqa: F401
+                """ADG contract: __init__.py must be importable."""
+                assert _mod.__name__ == "agentic_core.runtime.exceptions.__init__"
+
         assert _mod.__name__ == "agentic_core.runtime.exceptions.__init__"
 
     def test_module_exposes_public_api(self) -> None:

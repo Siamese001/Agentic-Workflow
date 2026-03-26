@@ -9,6 +9,8 @@ pytestmark = pytest.mark.unit
 
 
 def test_module_importable():
-    import agentic_core.prompt_governance.optimization.__init__ as _mod  # noqa: F401
-    """Module optimization must be importable."""
+        import agentic_core.prompt_governance.optimization.__init__ as _mod  # noqa: F401
+        """Module optimization must be importable."""
+        assert _mod is not None
+
     assert _mod is not None

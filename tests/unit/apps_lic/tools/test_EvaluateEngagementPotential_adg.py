@@ -5,9 +5,10 @@ import pytest
 
 pytestmark = pytest.mark.unit
 
-import apps_lic.tools.EvaluateEngagementPotential  # noqa: F401
 
 
 def test_module_importable():
     """Module EvaluateEngagementPotential must be importable."""
+    import apps_lic.tools.EvaluateEngagementPotential  # noqa: F401
+
     assert apps_lic.tools.EvaluateEngagementPotential is not None

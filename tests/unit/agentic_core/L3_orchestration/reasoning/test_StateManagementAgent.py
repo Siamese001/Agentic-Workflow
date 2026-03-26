@@ -28,8 +28,10 @@ pytestmark = pytest.mark.unit
 
 class TestStateEntryContract:
     def test_is_dataclass(self):
-        from agentic_core.L3_orchestration.reasoning.StateManagementAgent import (  # noqa: F401
-        import dataclasses
+                from agentic_core.L3_orchestration.reasoning.StateManagementAgent import (  # noqa: F401
+                import dataclasses
+                assert dataclasses.is_dataclass(StateEntry)
+
         assert dataclasses.is_dataclass(StateEntry)
 
     def test_field_names_present(self):

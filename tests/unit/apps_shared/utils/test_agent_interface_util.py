@@ -10,24 +10,25 @@ import pytest
 
 pytestmark = pytest.mark.unit
 
-from apps_shared.utils.agent_interface_util import (  # noqa: F401
-    BATCH_SIZE,
-    BUFFER_SIZE,
-    DEFAULT_SLEEP,
-    MAX_RETRIES,
-    THRESHOLD,
-    AgentContext,
-    AgentRegistry,
-    AgentResult,
-    AgentStatus,
-    BaseAgent,
-    IAgent,
-    get_agent_registry,
-)
 
 
 class TestAgentStatusContract:
     def test_is_enum(self):
+        from apps_shared.utils.agent_interface_util import (  # noqa: F401
+            BATCH_SIZE,
+            BUFFER_SIZE,
+            DEFAULT_SLEEP,
+            MAX_RETRIES,
+            THRESHOLD,
+            AgentContext,
+            AgentRegistry,
+            AgentResult,
+            AgentStatus,
+            BaseAgent,
+            IAgent,
+            get_agent_registry,
+        )
+
         import enum
         assert issubclass(AgentStatus, enum.Enum)
 

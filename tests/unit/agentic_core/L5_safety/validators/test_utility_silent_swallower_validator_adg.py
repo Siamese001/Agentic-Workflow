@@ -175,9 +175,11 @@ pytestmark = pytest.mark.unit
 
 class TestUtilityScriptClassifierImport:
     def test_class_importable(self):
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.L5_safety.validators.utility_silent_swallower_validator import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L5_safety.validators.utility_silent_swallower_validator import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                assert callable(UtilityScriptClassifier)
+
         assert callable(UtilityScriptClassifier)
 
 

@@ -189,24 +189,26 @@ pytestmark = pytest.mark.unit
 
 class TestToolRequest:
     def test_valid_tool_request(self):
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.L2_execution.types.structured_agent_output_types import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-    """Test valid_tool_request runtime behavior."""
-    # Arrange
-    # TODO: Set up test data for valid_tool_request
-    test_data = {}  # Replace with actual test data
-    """Test empty_tool_name_raises runtime behavior."""
-    # Arrange
-    # TODO: Set up test data for empty_tool_name_raises
-    test_data = {}  # Replace with actual test data
-    """Test whitespace_tool_name_raises runtime behavior."""
-    # Arrange
-    # TODO: Set up test data for whitespace_tool_name_raises
-    test_data = {}  # Replace with actual test data
-    """Test no_args_defaults_to_empty_dict runtime behavior."""
-    # Arrange
-    # TODO: Set up test data for no_args_defaults_to_empty_dict
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L2_execution.types.structured_agent_output_types import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+            """Test valid_tool_request runtime behavior."""
+            # Arrange
+            # TODO: Set up test data for valid_tool_request
+            test_data = {}  # Replace with actual test data
+            """Test empty_tool_name_raises runtime behavior."""
+            # Arrange
+            # TODO: Set up test data for empty_tool_name_raises
+            test_data = {}  # Replace with actual test data
+            """Test whitespace_tool_name_raises runtime behavior."""
+            # Arrange
+            # TODO: Set up test data for whitespace_tool_name_raises
+            test_data = {}  # Replace with actual test data
+            """Test no_args_defaults_to_empty_dict runtime behavior."""
+            # Arrange
+            # TODO: Set up test data for no_args_defaults_to_empty_dict
+            test_data = {}  # Replace with actual test data
+
     test_data = {}  # Replace with actual test data
 
     # Act

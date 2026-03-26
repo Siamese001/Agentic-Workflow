@@ -9,6 +9,8 @@ pytestmark = pytest.mark.unit
 
 
 def test_module_importable():
-    import agentic_core.L4_state.reasoning.CachedStateLedger  # noqa: F401
-    """Module CachedStateLedger must be importable."""
+        import agentic_core.L4_state.reasoning.CachedStateLedger  # noqa: F401
+        """Module CachedStateLedger must be importable."""
+        assert agentic_core.L4_state.reasoning.CachedStateLedger is not None
+
     assert agentic_core.L4_state.reasoning.CachedStateLedger is not None

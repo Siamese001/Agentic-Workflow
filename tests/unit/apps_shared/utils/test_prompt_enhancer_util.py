@@ -10,22 +10,23 @@ import pytest
 
 pytestmark = pytest.mark.unit
 
-from apps_shared.utils.prompt_enhancer_util import (  # noqa: F401
-    BATCH_SIZE,
-    BUFFER_SIZE,
-    DEFAULT_SLEEP,
-    MAX_RETRIES,
-    THRESHOLD,
-    EnhancementConfig,
-    PromptEnhancer,
-    enhance_prompt,
-    enhance_prompt_advanced,
-    get_prompt_enhancer,
-)
 
 
 class TestEnhancementConfigContract:
     def test_is_dataclass(self):
+        from apps_shared.utils.prompt_enhancer_util import (  # noqa: F401
+            BATCH_SIZE,
+            BUFFER_SIZE,
+            DEFAULT_SLEEP,
+            MAX_RETRIES,
+            THRESHOLD,
+            EnhancementConfig,
+            PromptEnhancer,
+            enhance_prompt,
+            enhance_prompt_advanced,
+            get_prompt_enhancer,
+        )
+
         import dataclasses
         assert dataclasses.is_dataclass(EnhancementConfig)
 

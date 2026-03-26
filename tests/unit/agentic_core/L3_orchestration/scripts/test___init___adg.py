@@ -9,6 +9,8 @@ pytestmark = pytest.mark.unit
 
 
 def test_module_importable():
-    import agentic_core.L3_orchestration.scripts.__init__ as _mod  # noqa: F401
-    """Module scripts must be importable."""
+        import agentic_core.L3_orchestration.scripts.__init__ as _mod  # noqa: F401
+        """Module scripts must be importable."""
+        assert _mod is not None
+
     assert _mod is not None

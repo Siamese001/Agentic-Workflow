@@ -28,8 +28,10 @@ pytestmark = pytest.mark.unit
 
 class TestCheckpointContract:
     def test_is_dataclass(self):
-        from agentic_core.L4_state.reasoning.CheckpointManager import (  # noqa: F401
-        import dataclasses
+                from agentic_core.L4_state.reasoning.CheckpointManager import (  # noqa: F401
+                import dataclasses
+                assert dataclasses.is_dataclass(Checkpoint)
+
         assert dataclasses.is_dataclass(Checkpoint)
 
     def test_field_names_present(self):

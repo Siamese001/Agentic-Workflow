@@ -222,11 +222,13 @@ def _mock_bus() -> MagicMock:
 
 class TestBuildRoutingOutcomePackage:
     def test_kind_is_routing_outcome(self):
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.L0_routing.engines.agentic_router import RoutingDecision
-        from agentic_core.L0_routing.engines.routing_outcome_adapter import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        pkg = build_routing_outcome_package(_decision(), timestamp_utc=1000)
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L0_routing.engines.agentic_router import RoutingDecision
+                from agentic_core.L0_routing.engines.routing_outcome_adapter import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                pkg = build_routing_outcome_package(_decision(), timestamp_utc=1000)
+                assert pkg.kind == "routing_outcome"
+
         assert pkg.kind == "routing_outcome"
 
     def test_payload_has_all_required_keys(self):

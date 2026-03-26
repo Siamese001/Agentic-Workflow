@@ -191,24 +191,26 @@ def _make_artifact(**kw) -> ToolEnforcementArtifact:
 
 class TestLawSlotOutcome:
     def test_pass_value(self):
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.L2_execution.types.tool_enforcement_types import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-    """Test pass_value runtime behavior."""
-    # Arrange
-    # TODO: Set up test data for pass_value
-    """Test block_value runtime behavior."""
-    # Arrange
-    # TODO: Set up test data for block_value
-    """Test modify_value runtime behavior."""
-    # Arrange
-    # TODO: Set up test data for modify_value
-    """Test all_three_members runtime behavior."""
-    # Arrange
-    # TODO: Set up test data for all_three_members
     test_data = {}  # Replace with actual test data
 
 """Test valid_pass_artifact runtime behavior."""
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L2_execution.types.tool_enforcement_types import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+            """Test pass_value runtime behavior."""
+            # Arrange
+            # TODO: Set up test data for pass_value
+            """Test block_value runtime behavior."""
+            # Arrange
+            # TODO: Set up test data for block_value
+            """Test modify_value runtime behavior."""
+            # Arrange
+            # TODO: Set up test data for modify_value
+            """Test all_three_members runtime behavior."""
+            # Arrange
+            # TODO: Set up test data for all_three_members
+            test_data = {}  # Replace with actual test data
+
 # Arrange
 # TODO: Set up test data for valid_pass_artifact
 test_data = {}  # Replace with actual test data

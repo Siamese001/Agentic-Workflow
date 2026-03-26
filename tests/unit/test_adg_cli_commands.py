@@ -15,46 +15,6 @@ import json
 from pathlib import Path
 from unittest.mock import MagicMock, patch
 
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-    _emit_agent_executes_agent,
-    _emit_applies_guardrail,  # noqa: E402
-    _emit_authorize_and_execute,
-    _emit_blocks_direct_write,
-    _emit_captures_evaluation_metric,
-    _emit_captures_execution_output,
-    _emit_checks_agent_registry,
-    _emit_coordinates_agents,
-    _emit_dispatches_agent,
-    _emit_dispatches_execution_plan,
-    _emit_dispatches_healing_run,
-    _emit_escalates_failure,
-    _emit_escalates_to_human,
-    _emit_gated_by_confidence,
-    _emit_hard_fails_untranscripted,
-    _emit_invokes_evaluation,
-    _emit_links_execution_to_snapshot,
-    _emit_observes_runtime_state,
-    _emit_orchestrates_workflow,
-    _emit_reads_policy_state,  # noqa: E402
-    _emit_records_execution_trace,  # noqa: E402
-    _emit_records_healing_outcome,
-    _emit_records_telemetry_event,
-    _emit_records_tool_invocation,
-    _emit_records_workflow_lineage,
-    _emit_routes_through,
-    _emit_routes_to_agent,
-    _emit_routes_to_capability,
-    _emit_signs_execution_trace,  # noqa: E402
-    _emit_snapshots_state,  # noqa: E402
-    _emit_stores_embedding,
-    _emit_transcripts_response,
-    _emit_updates_meta_learning_state,
-    _emit_validates_agent_capability,
-    _emit_validates_capability,
-    _emit_verifies_boundary,
-    _emit_verifies_policy,
-    _emit_writes_via_uwg,
-    emit_determinism_digest,  # noqa: E402
     emit_replay_key,  # noqa: E402
 )
 
@@ -62,42 +22,6 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 # REMOVED: _emit_applies_guardrail("p0", "test_adg_cli_commands", "p0_governance")
 # REMOVED: _emit_reads_policy_state("p0", "test_adg_cli_commands", "policy_binding")
 # REMOVED: _emit_snapshots_state("p0", "test_adg_cli_commands", "state_snapshot")
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-    _emit_agent_executes_agent,
-    _emit_captures_pattern,
-    _emit_captures_runtime_anomaly,
-    _emit_checks_agent_registry,
-    _emit_dispatches_execution_plan,
-    _emit_emits_metric_event,
-    _emit_escalates_to_human,
-    _emit_execution_terminates_at_uwg,
-    _emit_feeds_meta_learning,
-    _emit_gated_by_confidence,
-    _emit_hard_fails_untranscripted,
-    _emit_improves_agent_policy,
-    _emit_invokes_eval,
-    _emit_links_incident_trace,  # noqa: E402
-    _emit_observes_runtime_state,
-    _emit_proposal_commits_routing,
-    _emit_pulls_context,
-    _emit_reads_environ,
-    _emit_reads_runtime_state,
-    _emit_records_execution_trace,
-    _emit_records_incident_event,
-    _emit_records_learning_event,
-    _emit_routes_through,
-    _emit_routes_to_agent,
-    _emit_stores_learning_state,
-    _emit_transcripts_response,
-    _emit_triggers_alert,
-    _emit_updates_monitoring_state,
-    _emit_updates_routing_strategy,
-    _emit_validated_by_safety_plane,
-    _emit_validates_agent_capability,
-    _emit_verifies_boundary,
-    _emit_verifies_policy,
-    _emit_writes_learning_snapshot,
-    _emit_writes_observability_log,
     _emit_writes_through,  # noqa: E402
 )
 
@@ -182,22 +106,6 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 
 def _make_scan_result(modules=None, edges=None):
     """Build a minimal ScanResult-like object for testing."""
-    from agentic_core.adg.extraction.static_scanner import ScanResult
-
-    result = MagicMock(spec=ScanResult)
-    result.modules = list(
-        modules
-        or [
-            "agentic_core/adg/schema.py",
-            "agentic_core/adg/cli.py",
-            "tools/adg_cli.py",
-            "tests/unit/test_adg_cli_commands.py",
-        ]
-    )
-    result.edges = list(edges or [])
-    result.digest = "abc123"
-    result.commit_sha = "deadbeef"
-    result.print_digest = lambda: None
     return result
 
 
@@ -215,12 +123,6 @@ def _make_edge(from_name, relation_type, to_name, edge_kind="import", symbol="",
 
 def _make_artifact():
     """Build a minimal ADGArtifact for health report tests."""
-    from agentic_core.adg.artifact.builder_types import (
-        ADGArtifact,
-        BlindSpotReport,
-        EntityRecord,
-        StructuralMetrics,
-    )
 
     entities = [
         EntityRecord(
@@ -304,9 +206,149 @@ def _make_artifact():
 
 class TestHealthReporter:
     def test_build_health_report_basic(self):
-        from agentic_core.adg.applications.health_reporter_types import build_health_report
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+            _emit_agent_executes_agent,
+            _emit_applies_guardrail,  # noqa: E402
+            _emit_authorize_and_execute,
+            _emit_blocks_direct_write,
+            _emit_captures_evaluation_metric,
+            _emit_captures_execution_output,
+            _emit_checks_agent_registry,
+            _emit_coordinates_agents,
+            _emit_dispatches_agent,
+            _emit_dispatches_execution_plan,
+            _emit_dispatches_healing_run,
+            _emit_escalates_failure,
+            _emit_escalates_to_human,
+            _emit_gated_by_confidence,
+            _emit_hard_fails_untranscripted,
+            _emit_invokes_evaluation,
+            _emit_links_execution_to_snapshot,
+            _emit_observes_runtime_state,
+            _emit_orchestrates_workflow,
+            _emit_reads_policy_state,  # noqa: E402
+            _emit_records_execution_trace,  # noqa: E402
+            _emit_records_healing_outcome,
+            _emit_records_telemetry_event,
+            _emit_records_tool_invocation,
+            _emit_records_workflow_lineage,
+            _emit_routes_through,
+            _emit_routes_to_agent,
+            _emit_routes_to_capability,
+            _emit_signs_execution_trace,  # noqa: E402
+            _emit_snapshots_state,  # noqa: E402
+            _emit_stores_embedding,
+            _emit_transcripts_response,
+            _emit_updates_meta_learning_state,
+            _emit_validates_agent_capability,
+            _emit_validates_capability,
+            _emit_verifies_boundary,
+            _emit_verifies_policy,
+            _emit_writes_via_uwg,
+            emit_determinism_digest,  # noqa: E402
+            emit_replay_key,  # noqa: E402
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+            _emit_agent_executes_agent,
+            _emit_captures_pattern,
+            _emit_captures_runtime_anomaly,
+            _emit_checks_agent_registry,
+            _emit_dispatches_execution_plan,
+            _emit_emits_metric_event,
+            _emit_escalates_to_human,
+            _emit_execution_terminates_at_uwg,
+            _emit_feeds_meta_learning,
+            _emit_gated_by_confidence,
+            _emit_hard_fails_untranscripted,
+            _emit_improves_agent_policy,
+            _emit_invokes_eval,
+            _emit_links_incident_trace,  # noqa: E402
+            _emit_observes_runtime_state,
+            _emit_proposal_commits_routing,
+            _emit_pulls_context,
+            _emit_reads_environ,
+            _emit_reads_runtime_state,
+            _emit_records_execution_trace,
+            _emit_records_incident_event,
+            _emit_records_learning_event,
+            _emit_routes_through,
+            _emit_routes_to_agent,
+            _emit_stores_learning_state,
+            _emit_transcripts_response,
+            _emit_triggers_alert,
+            _emit_updates_monitoring_state,
+            _emit_updates_routing_strategy,
+            _emit_validated_by_safety_plane,
+            _emit_validates_agent_capability,
+            _emit_verifies_boundary,
+            _emit_verifies_policy,
+            _emit_writes_learning_snapshot,
+            _emit_writes_observability_log,
+            _emit_writes_through,  # noqa: E402
+            from agentic_core.adg.extraction.static_scanner import ScanResult
+            result = MagicMock(spec=ScanResult)
+            result.modules = list(
+                modules
+                or [
+                    "agentic_core/adg/schema.py",
+                    "agentic_core/adg/cli.py",
+                    "tools/adg_cli.py",
+                    "tests/unit/test_adg_cli_commands.py",
+                ]
+            )
+            result.edges = list(edges or [])
+            result.digest = "abc123"
+            result.commit_sha = "deadbeef"
+            result.print_digest = lambda: None
+            return result
+            from agentic_core.adg.artifact.builder_types import (
+                ADGArtifact,
+                BlindSpotReport,
+                EntityRecord,
+                StructuralMetrics,
+            )
+                from agentic_core.adg.applications.health_reporter_types import build_health_report
+                artifact = _make_artifact()
+                report = build_health_report(artifact, strict=False)
+                from agentic_core.adg.applications.health_reporter_types import build_health_report
+                artifact = _make_artifact()
+                report = build_health_report(artifact, strict=True)
+                assert report.trust_passed is True
+                assert len(report.trust_violations) == 0
+                from agentic_core.adg.applications.health_reporter_types import (
+                    _STRICT_THRESHOLDS,
+                    build_health_report,
+                )
+                from agentic_core.adg.applications.health_reporter_types import build_health_report
+                artifact = _make_artifact()
+                report = build_health_report(artifact, strict=False)
+                d = report.to_dict()
+                from agentic_core.adg.applications.health_reporter_types import build_health_report
+                artifact = _make_artifact()
+                report = build_health_report(artifact, strict=False)
+                summary = report.summary
+                assert "PASS" in summary or "FAIL" in summary
+                assert "entities=" in summary
+                from agentic_core.adg.applications.health_reporter_types import TrustViolation
+                v = TrustViolation(rule="test_rule", threshold=100, actual=200, description="too high")
+                d = v.to_dict()
+                assert d["rule"] == "test_rule"
+                assert d["threshold"] == 100
+                assert d["actual"] == 200
+                from agentic_core.adg.applications.health_reporter_types import (
+                    _STRICT_THRESHOLDS,
+                    build_health_report,
+                )
+                from agentic_core.adg.applications.placement_advisor_types import PlacementAdvisor
+                result = _make_scan_result(modules=modules, edges=edges)
+                return PlacementAdvisor(result, repo_root=Path("."))
+                from agentic_core.adg.applications.placement_advisor_types import _KIND_PLACEMENT_MAP
+                advisor = self._make_advisor()
+                for kind in _KIND_PLACEMENT_MAP:
+                    suggestion = advisor.suggest_placement(kind=kind, name="TestSymbol")
+                    assert suggestion.confidence != "LOW", f"Kind {kind} returned LOW confidence"
+                from agentic_core.adg.applications.execute_ssot_integration import PreRunADGReport
+                from tools import adg_cli
 
-        artifact = _make_artifact()
         report = build_health_report(artifact, strict=False)
 
         assert report.total_entities == 3
@@ -319,18 +361,9 @@ class TestHealthReporter:
         assert report.schema_version == "3.0.0"
 
     def test_health_report_trust_pass_under_thresholds(self):
-        from agentic_core.adg.applications.health_reporter_types import build_health_report
-
-        artifact = _make_artifact()
-        report = build_health_report(artifact, strict=True)
-        assert report.trust_passed is True
         assert len(report.trust_violations) == 0
 
     def test_health_report_trust_fail_on_violation(self):
-        from agentic_core.adg.applications.health_reporter_types import (
-            _STRICT_THRESHOLDS,
-            build_health_report,
-        )
 
         artifact = _make_artifact()
         # Force unresolved_imports above threshold
@@ -343,10 +376,6 @@ class TestHealthReporter:
         assert "unresolved_import_count" in rules
 
     def test_health_report_to_dict_keys(self):
-        from agentic_core.adg.applications.health_reporter_types import build_health_report
-
-        artifact = _make_artifact()
-        report = build_health_report(artifact, strict=False)
         d = report.to_dict()
 
         assert "counts" in d
@@ -357,28 +386,12 @@ class TestHealthReporter:
         assert "summary" in d
 
     def test_health_report_summary_string(self):
-        from agentic_core.adg.applications.health_reporter_types import build_health_report
-
-        artifact = _make_artifact()
-        report = build_health_report(artifact, strict=False)
-        summary = report.summary
-        assert "PASS" in summary or "FAIL" in summary
         assert "entities=" in summary
 
     def test_trust_violation_to_dict(self):
-        from agentic_core.adg.applications.health_reporter_types import TrustViolation
-
-        v = TrustViolation(rule="test_rule", threshold=100, actual=200, description="too high")
-        d = v.to_dict()
-        assert d["rule"] == "test_rule"
-        assert d["threshold"] == 100
         assert d["actual"] == 200
 
     def test_health_layer_violation_threshold(self):
-        from agentic_core.adg.applications.health_reporter_types import (
-            _STRICT_THRESHOLDS,
-            build_health_report,
-        )
 
         artifact = _make_artifact()
         artifact.structural_metrics.layer_violation_count = _STRICT_THRESHOLDS["layer_violation_count"] + 1
@@ -395,9 +408,6 @@ class TestHealthReporter:
 
 class TestPlacementAdvisor:
     def _make_advisor(self, modules=None, edges=None):
-        from agentic_core.adg.applications.placement_advisor_types import PlacementAdvisor
-
-        result = _make_scan_result(modules=modules, edges=edges)
         return PlacementAdvisor(result, repo_root=Path("."))
 
     def test_suggest_placement_agent(self):
@@ -443,11 +453,6 @@ class TestPlacementAdvisor:
             assert k in d, f"Missing key: {k}"
 
     def test_suggest_placement_all_known_kinds(self):
-        from agentic_core.adg.applications.placement_advisor_types import _KIND_PLACEMENT_MAP
-
-        advisor = self._make_advisor()
-        for kind in _KIND_PLACEMENT_MAP:
-            suggestion = advisor.suggest_placement(kind=kind, name="TestSymbol")
             assert suggestion.confidence != "LOW", f"Kind {kind} returned LOW confidence"
 
     def test_get_file_context_known_file(self):
@@ -1059,7 +1064,6 @@ class TestAdgCliExecutionImpact:
 
     def test_execution_impact_partial_labeling_for_unavailable(self, tmp_path):
         """Evidence output must explicitly mark when ADG is unavailable."""
-        from agentic_core.adg.applications.execute_ssot_integration import PreRunADGReport
         from tools import adg_cli
 
         mock_report = PreRunADGReport.unavailable(

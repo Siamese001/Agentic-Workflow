@@ -9,6 +9,8 @@ pytestmark = pytest.mark.unit
 
 
 def test_module_importable():
-    import agentic_core.L0_routing.utils.json_formatter_util  # noqa: F401
-    """Module json_formatter_util must be importable."""
+        import agentic_core.L0_routing.utils.json_formatter_util  # noqa: F401
+        """Module json_formatter_util must be importable."""
+        assert agentic_core.L0_routing.utils.json_formatter_util is not None
+
     assert agentic_core.L0_routing.utils.json_formatter_util is not None

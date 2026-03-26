@@ -187,43 +187,45 @@ class TestL3RouteDecisionArtifactConstruction:
     """Unit: artifact factory produces valid, serializable artifacts."""
 
     def test_required_fields_present(self):
-        from agentic_core.L3_orchestration.types.route_decision_artifact_types import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        import agentic_core.L3_orchestration.reasoning.OrchestrationHandshakeAgent as mod
-        artifact = build_l3_route_decision_artifact(
-            trace_id="abc123",
-            chosen={
-                "agent_class": "AnalysisAgent",
-                "method": "analyze",
-                "module": "app.agents",
-            },
-            candidates=[
-                {
-                    "agent_class": "AnalysisAgent",
-                    "method": "analyze",
-                    "confidence": 0.95,
-                    "docstring": "runs analysis",
-                },
-                {
-                    "agent_class": "FallbackAgent",
-                    "method": "run",
-                    "confidence": 0.80,
-                    "docstring": "fallback path",
-                },
-            ],
-        )
-        assert artifact.decision_id  # uuid4, non-empty
-        assert artifact.timestamp_utc  # ISO8601 Z, non-empty
-        assert artifact.layer == "L3"
-        assert artifact.trace_id == "abc123"
-        assert artifact.chosen_route.agent_class == "AnalysisAgent"
-        assert artifact.chosen_route.agent_name == "analyze"
-        assert artifact.chosen_route.module == "app.agents"
-        assert len(artifact.candidates) == 2
-        assert artifact.candidates[0].score == 0.95
-        assert artifact.candidates[1].agent_class == "FallbackAgent"
-        assert artifact.policy_context.security_level == "standard"
+                from agentic_core.L3_orchestration.types.route_decision_artifact_types import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                import agentic_core.L3_orchestration.reasoning.OrchestrationHandshakeAgent as mod
+                artifact = build_l3_route_decision_artifact(
+                    trace_id="abc123",
+                    chosen={
+                        "agent_class": "AnalysisAgent",
+                        "method": "analyze",
+                        "module": "app.agents",
+                    },
+                    candidates=[
+                        {
+                            "agent_class": "AnalysisAgent",
+                            "method": "analyze",
+                            "confidence": 0.95,
+                            "docstring": "runs analysis",
+                        },
+                        {
+                            "agent_class": "FallbackAgent",
+                            "method": "run",
+                            "confidence": 0.80,
+                            "docstring": "fallback path",
+                        },
+                    ],
+                )
+                assert artifact.decision_id  # uuid4, non-empty
+                assert artifact.timestamp_utc  # ISO8601 Z, non-empty
+                assert artifact.layer == "L3"
+                assert artifact.trace_id == "abc123"
+                assert artifact.chosen_route.agent_class == "AnalysisAgent"
+                assert artifact.chosen_route.agent_name == "analyze"
+                assert artifact.chosen_route.module == "app.agents"
+                assert len(artifact.candidates) == 2
+                assert artifact.candidates[0].score == 0.95
+                assert artifact.candidates[1].agent_class == "FallbackAgent"
+                assert artifact.policy_context.security_level == "standard"
+                assert artifact.determinism.model == "deterministic"
+
         assert artifact.determinism.model == "deterministic"
 
     def test_candidates_length_gte_1(self):

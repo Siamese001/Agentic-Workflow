@@ -233,28 +233,30 @@ class TestOrchestratorInheritance:
     """Phase 2A: Inheritance-based orchestrator detection."""
 
     def test_inherits_workflow_coordinator(self, tmp_path):
-        from agentic_core.L0_routing.config.path_constants import AGENTIC_CORE_DIR
-        from agentic_core.L5_safety.reasoning.FileClassificationAgent import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.L3_orchestration.reasoning import SomeAgent
-        from agentic_core.L5_safety.enforcement import SomeEnforcer
-        from agentic_core.L3_orchestration.reasoning import R
-        from agentic_core.L5_safety.enforcement import G
-        from agentic_core.L3_orchestration.reasoning import A
-        from agentic_core.L5_safety.enforcement import G
-        from agentic_core.L3_orchestration.reasoning import A
-        from agentic_core.L5_safety.enforcement import G
-        from agentic_core.L3_orchestration.reasoning import R
-        from agentic_core.L5_safety.enforcement import G
-        from agentic_core.L3_orchestration.reasoning import A
-        from agentic_core.L5_safety.enforcement import G
-        """Inherits WorkflowCoordinator => ORCHESTRATOR."""
-        result, _fca = _classify_fca(
-            tmp_path,
-            (AGENTIC_CORE_DIR, "L3_orchestration", "reasoning"),
-            "validation_orchestrator",
-            VALID_ORCHESTRATOR_CODE,
-        )
+                from agentic_core.L0_routing.config.path_constants import AGENTIC_CORE_DIR
+                from agentic_core.L5_safety.reasoning.FileClassificationAgent import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L3_orchestration.reasoning import SomeAgent
+                from agentic_core.L5_safety.enforcement import SomeEnforcer
+                from agentic_core.L3_orchestration.reasoning import R
+                from agentic_core.L5_safety.enforcement import G
+                from agentic_core.L3_orchestration.reasoning import A
+                from agentic_core.L5_safety.enforcement import G
+                from agentic_core.L3_orchestration.reasoning import A
+                from agentic_core.L5_safety.enforcement import G
+                from agentic_core.L3_orchestration.reasoning import R
+                from agentic_core.L5_safety.enforcement import G
+                from agentic_core.L3_orchestration.reasoning import A
+                from agentic_core.L5_safety.enforcement import G
+                """Inherits WorkflowCoordinator => ORCHESTRATOR."""
+                result, _fca = _classify_fca(
+                    tmp_path,
+                    (AGENTIC_CORE_DIR, "L3_orchestration", "reasoning"),
+                    "validation_orchestrator",
+                    VALID_ORCHESTRATOR_CODE,
+                )
+                assert result == "ORCHESTRATOR", f"Expected ORCHESTRATOR, got {result}"
+
         assert result == "ORCHESTRATOR", f"Expected ORCHESTRATOR, got {result}"
 
 

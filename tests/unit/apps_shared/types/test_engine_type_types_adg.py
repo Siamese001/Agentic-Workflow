@@ -5,9 +5,10 @@ import pytest
 
 pytestmark = pytest.mark.unit
 
-import apps_shared.types.engine_type_types  # noqa: F401
 
 
 def test_module_importable():
     """Module engine_type_types must be importable."""
+    import apps_shared.types.engine_type_types  # noqa: F401
+
     assert apps_shared.types.engine_type_types is not None

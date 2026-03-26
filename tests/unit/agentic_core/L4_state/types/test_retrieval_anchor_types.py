@@ -9,6 +9,8 @@ pytestmark = pytest.mark.unit
 
 
 def test_module_importable():
-    import agentic_core.L4_state.types.retrieval_anchor_types  # noqa: F401
-    """Module retrieval_anchor_types must be importable."""
+        import agentic_core.L4_state.types.retrieval_anchor_types  # noqa: F401
+        """Module retrieval_anchor_types must be importable."""
+        assert agentic_core.L4_state.types.retrieval_anchor_types is not None
+
     assert agentic_core.L4_state.types.retrieval_anchor_types is not None

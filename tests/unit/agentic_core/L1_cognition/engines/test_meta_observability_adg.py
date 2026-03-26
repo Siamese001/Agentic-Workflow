@@ -9,6 +9,8 @@ pytestmark = pytest.mark.unit
 
 
 def test_module_importable():
-    import agentic_core.L1_cognition.engines.meta_observability  # noqa: F401
-    """Module meta_observability must be importable."""
+        import agentic_core.L1_cognition.engines.meta_observability  # noqa: F401
+        """Module meta_observability must be importable."""
+        assert agentic_core.L1_cognition.engines.meta_observability is not None
+
     assert agentic_core.L1_cognition.engines.meta_observability is not None

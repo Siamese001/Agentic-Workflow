@@ -159,17 +159,19 @@ DEFAULT_TIMEOUT = 300  # 5 minutes
 # Configuration constants
 
 def test_html_loader_extracts_visible_text(tmp_path: Path):
-    from agentic_core.knowledge.document_loaders.html_loader import HTMLDocumentLoader
-    from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-    """Visible text is extracted and HTML tags are stripped."""
-    html_file = tmp_path / "sample.html"
-    html_file.write_text(
-        "<html><head><title>T</title></head><body><h1>Hello</h1><p>World</p></body></html>",
-        encoding="utf-8",
-    )
-    result = HTMLDocumentLoader.load_file(html_file)
-    assert "Hello" in result
-    assert "World" in result
+        from agentic_core.knowledge.document_loaders.html_loader import HTMLDocumentLoader
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        """Visible text is extracted and HTML tags are stripped."""
+        html_file = tmp_path / "sample.html"
+        html_file.write_text(
+            "<html><head><title>T</title></head><body><h1>Hello</h1><p>World</p></body></html>",
+            encoding="utf-8",
+        )
+        result = HTMLDocumentLoader.load_file(html_file)
+        assert "Hello" in result
+        assert "World" in result
+        assert "<" not in result
+
     assert "<" not in result
 
 

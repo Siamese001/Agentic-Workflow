@@ -29,7 +29,9 @@ pytestmark = pytest.mark.unit
 
 class TestSignatureVerificationErrorContract:
     def test_is_class(self):
-        from agentic_core.L5_safety.security.signature_verifier import (  # noqa: F401
+                from agentic_core.L5_safety.security.signature_verifier import (  # noqa: F401
+                assert isinstance(SignatureVerificationError, type)
+
         assert isinstance(SignatureVerificationError, type)
 
     def test_instantiable_or_abstract(self):

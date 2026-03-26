@@ -9,6 +9,8 @@ pytestmark = pytest.mark.unit
 
 
 def test_module_importable():
-    import agentic_core.L5_safety.reasoning.BoundaryTestingAgent  # noqa: F401
-    """Module BoundaryTestingAgent must be importable."""
+        import agentic_core.L5_safety.reasoning.BoundaryTestingAgent  # noqa: F401
+        """Module BoundaryTestingAgent must be importable."""
+        assert agentic_core.L5_safety.reasoning.BoundaryTestingAgent is not None
+
     assert agentic_core.L5_safety.reasoning.BoundaryTestingAgent is not None

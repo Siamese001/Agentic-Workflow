@@ -9,6 +9,8 @@ pytestmark = pytest.mark.unit
 
 
 def test_module_importable():
-    import agentic_core.L0_routing.scripts.identify_agents_without_tests_util  # noqa: F401
-    """Module identify_agents_without_tests_util must be importable."""
+        import agentic_core.L0_routing.scripts.identify_agents_without_tests_util  # noqa: F401
+        """Module identify_agents_without_tests_util must be importable."""
+        assert agentic_core.L0_routing.scripts.identify_agents_without_tests_util is not None
+
     assert agentic_core.L0_routing.scripts.identify_agents_without_tests_util is not None

@@ -24,14 +24,6 @@ import ast
 import os
 from pathlib import Path
 
-from agentic_core.L0_routing.config.path_constants import (
-    AGENTIC_CORE_DIR,
-    L0_ROUTING_DIR,
-    L2_EXECUTION_DIR,
-    L3_ORCHESTRATION_DIR,
-    L4_STATE_DIR,
-)
-from agentic_core.L5_safety.config.structure_blueprint.ssot import SOVEREIGN_EXCLUDED_FOLDERS
 
 # ---------------------------------------------------------------------------
 
@@ -195,6 +187,15 @@ class TestL4AgentNamingContract:
 
     def test_agent_files_have_exactly_one_classdef(self):
     """Test agent_files_have_exactly_one_classdef contract compliance."""
+        from agentic_core.L0_routing.config.path_constants import (
+            AGENTIC_CORE_DIR,
+            L0_ROUTING_DIR,
+            L2_EXECUTION_DIR,
+            L3_ORCHESTRATION_DIR,
+            L4_STATE_DIR,
+        )
+        from agentic_core.L5_safety.config.structure_blueprint.ssot import SOVEREIGN_EXCLUDED_FOLDERS
+
     # Arrange
     # TODO: Set up contract parties and terms
     contract_terms = {}  # Replace with actual contract terms

@@ -213,10 +213,12 @@ class TestBug1NoRecursionFromEmitter:
     """
 
     def test_emit_records_does_not_call_aggregate_simple_dashboard(self):
-        from agentic_core.L6_observability.dashboard.dashboard_aggregate import (
-        from agentic_core.L6_observability.dashboard.dashboard_orchestrator import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        """aggregate_simple_dashboard must NOT be called from within _emit_records_execution_trace."""
+                from agentic_core.L6_observability.dashboard.dashboard_aggregate import (
+                from agentic_core.L6_observability.dashboard.dashboard_orchestrator import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                """aggregate_simple_dashboard must NOT be called from within _emit_records_execution_trace."""
+                call_count = []
+
         call_count = []
 
         original = aggregate_simple_dashboard

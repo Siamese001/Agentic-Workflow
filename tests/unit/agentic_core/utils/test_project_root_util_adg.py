@@ -5,6 +5,8 @@ from __future__ import annotations
 
 
 def test_module_importable():
-    import agentic_core.utils.project_root_util  # noqa: F401
-    """Module project_root_util must be importable."""
+        import agentic_core.utils.project_root_util  # noqa: F401
+        """Module project_root_util must be importable."""
+        assert agentic_core.utils.project_root_util is not None
+
     assert agentic_core.utils.project_root_util is not None

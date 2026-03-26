@@ -230,9 +230,11 @@ def isolated_bridge(tmp_path, monkeypatch):
 
 class TestEntityDefinitionContract:
     def test_is_dataclass(self):
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.L4_state.enforcement.graph_memory_bridge import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L4_state.enforcement.graph_memory_bridge import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                assert dataclasses.is_dataclass(EntityDefinition)
+
         assert dataclasses.is_dataclass(EntityDefinition)
 
     def test_field_names(self):

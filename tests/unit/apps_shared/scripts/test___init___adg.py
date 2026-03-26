@@ -5,9 +5,10 @@ import pytest
 
 pytestmark = pytest.mark.unit
 
-import apps_shared.scripts.__init__ as _mod  # noqa: F401
 
 
 def test_module_importable():
     """Module scripts must be importable."""
+    import apps_shared.scripts.__init__ as _mod  # noqa: F401
+
     assert _mod is not None

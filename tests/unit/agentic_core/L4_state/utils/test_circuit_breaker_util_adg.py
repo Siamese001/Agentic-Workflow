@@ -172,9 +172,11 @@ pytestmark = pytest.mark.unit
 
 class TestCircuitBreakerState:
     def test_closed_state(self):
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.L4_state.utils.circuit_breaker_util import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L4_state.utils.circuit_breaker_util import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                assert CircuitBreakerState.CLOSED.value == "CLOSED"
+
         assert CircuitBreakerState.CLOSED.value == "CLOSED"
 
     def test_open_state(self):

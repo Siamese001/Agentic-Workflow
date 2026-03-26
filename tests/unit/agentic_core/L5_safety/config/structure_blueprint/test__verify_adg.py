@@ -9,8 +9,10 @@ pytestmark = pytest.mark.unit
 
 
 def test_module_importable():
-    import agentic_core.L5_safety.config.structure_blueprint._verify  # noqa: F401
 """Test module_importable contract compliance."""
+        import agentic_core.L5_safety.config.structure_blueprint._verify  # noqa: F401
+    """Test module_importable contract compliance."""
+
 # Arrange
 # TODO: Set up contract test scenario
 test_scenario = {}  # Replace with actual test scenario

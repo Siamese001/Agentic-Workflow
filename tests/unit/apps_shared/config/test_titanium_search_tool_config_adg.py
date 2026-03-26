@@ -5,9 +5,10 @@ import pytest
 
 pytestmark = pytest.mark.unit
 
-import apps_shared.config.titanium_search_tool_config  # noqa: F401
 
 
 def test_module_importable():
     """Module titanium_search_tool_config must be importable."""
+    import apps_shared.config.titanium_search_tool_config  # noqa: F401
+
     assert apps_shared.config.titanium_search_tool_config is not None

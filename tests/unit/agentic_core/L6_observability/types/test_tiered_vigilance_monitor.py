@@ -188,14 +188,16 @@ def clock() -> SemanticClockSnapshot:
 
 class TestTierMappingDeterminism:
     def test_same_signals_different_order_same_tier(self):
-        from agentic_core.L0_routing.enforcement.vigilance_routing import (
-        from agentic_core.L0_routing.types.determinism_types import SemanticClockSnapshot
-        from agentic_core.L0_routing.types.routing_artifact_types import RoutePath
-        from agentic_core.L6_observability.engines.TieredVigilanceEmitter import (
-        from agentic_core.L6_observability.types.vigilance_event_types import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        a = classify_signals(["budget_overflow", "guardian_fail", "info_metric"])
-        b = classify_signals(["info_metric", "budget_overflow", "guardian_fail"])
+                from agentic_core.L0_routing.enforcement.vigilance_routing import (
+                from agentic_core.L0_routing.types.determinism_types import SemanticClockSnapshot
+                from agentic_core.L0_routing.types.routing_artifact_types import RoutePath
+                from agentic_core.L6_observability.engines.TieredVigilanceEmitter import (
+                from agentic_core.L6_observability.types.vigilance_event_types import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                a = classify_signals(["budget_overflow", "guardian_fail", "info_metric"])
+                b = classify_signals(["info_metric", "budget_overflow", "guardian_fail"])
+                assert a == b
+
         assert a == b
 
     def test_highest_severity_wins(self):

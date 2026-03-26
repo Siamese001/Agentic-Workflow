@@ -9,7 +9,9 @@ pytestmark = pytest.mark.unit
 
 class TestHopStatus:
     def test_is_enum(self):
-        from agentic_core.L3_orchestration.types.hop_status_types import GateDecision, HopStatus
+                from agentic_core.L3_orchestration.types.hop_status_types import GateDecision, HopStatus
+                import enum; assert issubclass(HopStatus, enum.Enum)
+
         import enum; assert issubclass(HopStatus, enum.Enum)
 
 class TestGateDecision:

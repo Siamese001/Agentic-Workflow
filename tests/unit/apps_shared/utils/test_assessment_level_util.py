@@ -10,21 +10,22 @@ import pytest
 
 pytestmark = pytest.mark.unit
 
-from apps_shared.utils.assessment_level_util import (  # noqa: F401
-    BATCH_SIZE,
-    BUFFER_SIZE,
-    DEFAULT_SLEEP,
-    MAX_RETRIES,
-    THRESHOLD,
-    AssessmentLevel,
-    AssessmentResult,
-    AssessScriptsRisk,
-    assess,
-)
 
 
 class TestAssessmentLevelContract:
     def test_is_enum(self):
+        from apps_shared.utils.assessment_level_util import (  # noqa: F401
+            BATCH_SIZE,
+            BUFFER_SIZE,
+            DEFAULT_SLEEP,
+            MAX_RETRIES,
+            THRESHOLD,
+            AssessmentLevel,
+            AssessmentResult,
+            AssessScriptsRisk,
+            assess,
+        )
+
         import enum
         assert issubclass(AssessmentLevel, enum.Enum)
 

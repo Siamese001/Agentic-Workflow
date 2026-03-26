@@ -13,49 +13,6 @@ from unittest.mock import patch
 
 import pytest
 
-from agentic_core.L0_routing.config.path_constants import (
-    AGENTIC_CORE_DIR,
-)
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-    _emit_agent_executes_agent,
-    _emit_applies_guardrail,  # noqa: E402
-    _emit_authorize_and_execute,
-    _emit_blocks_direct_write,
-    _emit_captures_evaluation_metric,
-    _emit_captures_execution_output,
-    _emit_checks_agent_registry,
-    _emit_coordinates_agents,
-    _emit_dispatches_agent,
-    _emit_dispatches_execution_plan,
-    _emit_dispatches_healing_run,
-    _emit_escalates_failure,
-    _emit_escalates_to_human,
-    _emit_gated_by_confidence,
-    _emit_hard_fails_untranscripted,
-    _emit_invokes_evaluation,
-    _emit_links_execution_to_snapshot,
-    _emit_observes_runtime_state,
-    _emit_orchestrates_workflow,
-    _emit_reads_policy_state,  # noqa: E402
-    _emit_records_execution_trace,  # noqa: E402
-    _emit_records_healing_outcome,
-    _emit_records_telemetry_event,
-    _emit_records_tool_invocation,
-    _emit_records_workflow_lineage,
-    _emit_routes_through,
-    _emit_routes_to_agent,
-    _emit_routes_to_capability,
-    _emit_signs_execution_trace,  # noqa: E402
-    _emit_snapshots_state,  # noqa: E402
-    _emit_stores_embedding,
-    _emit_transcripts_response,
-    _emit_updates_meta_learning_state,
-    _emit_validates_agent_capability,
-    _emit_validates_capability,
-    _emit_verifies_boundary,
-    _emit_verifies_policy,
-    _emit_writes_via_uwg,
-    emit_determinism_digest,  # noqa: E402
     emit_replay_key,  # noqa: E402
 )
 
@@ -63,42 +20,6 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 # REMOVED: _emit_applies_guardrail("p0", "test_capability_contracts", "p0_governance")
 # REMOVED: _emit_reads_policy_state("p0", "test_capability_contracts", "policy_binding")
 # REMOVED: _emit_snapshots_state("p0", "test_capability_contracts", "state_snapshot")
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-    _emit_agent_executes_agent,
-    _emit_captures_pattern,
-    _emit_captures_runtime_anomaly,
-    _emit_checks_agent_registry,
-    _emit_dispatches_execution_plan,
-    _emit_emits_metric_event,
-    _emit_escalates_to_human,
-    _emit_execution_terminates_at_uwg,
-    _emit_feeds_meta_learning,
-    _emit_gated_by_confidence,
-    _emit_hard_fails_untranscripted,
-    _emit_improves_agent_policy,
-    _emit_invokes_eval,
-    _emit_links_incident_trace,  # noqa: E402
-    _emit_observes_runtime_state,
-    _emit_proposal_commits_routing,
-    _emit_pulls_context,
-    _emit_reads_environ,
-    _emit_reads_runtime_state,
-    _emit_records_execution_trace,
-    _emit_records_incident_event,
-    _emit_records_learning_event,
-    _emit_routes_through,
-    _emit_routes_to_agent,
-    _emit_stores_learning_state,
-    _emit_transcripts_response,
-    _emit_triggers_alert,
-    _emit_updates_monitoring_state,
-    _emit_updates_routing_strategy,
-    _emit_validated_by_safety_plane,
-    _emit_validates_agent_capability,
-    _emit_verifies_boundary,
-    _emit_verifies_policy,
-    _emit_writes_learning_snapshot,
-    _emit_writes_observability_log,
     _emit_writes_through,  # noqa: E402
 )
 
@@ -205,9 +126,6 @@ _VALID_CITATION = {
 
 def _vcc(payload):
     """Import fresh each call to avoid _invariant_validated caching issues."""
-    from agentic_core.prompt_governance.security.validators.output_schema_validator import (
-        validate_context_contract,
-    )
 
     return validate_context_contract(payload)
 
@@ -218,6 +136,120 @@ def _vcc(payload):
 
 
 def test_citations_missing_required_fields_returns_false_and_empty_normalized():
+    from agentic_core.L0_routing.config.path_constants import (
+        AGENTIC_CORE_DIR,
+    )
+    from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        _emit_agent_executes_agent,
+        _emit_applies_guardrail,  # noqa: E402
+        _emit_authorize_and_execute,
+        _emit_blocks_direct_write,
+        _emit_captures_evaluation_metric,
+        _emit_captures_execution_output,
+        _emit_checks_agent_registry,
+        _emit_coordinates_agents,
+        _emit_dispatches_agent,
+        _emit_dispatches_execution_plan,
+        _emit_dispatches_healing_run,
+        _emit_escalates_failure,
+        _emit_escalates_to_human,
+        _emit_gated_by_confidence,
+        _emit_hard_fails_untranscripted,
+        _emit_invokes_evaluation,
+        _emit_links_execution_to_snapshot,
+        _emit_observes_runtime_state,
+        _emit_orchestrates_workflow,
+        _emit_reads_policy_state,  # noqa: E402
+        _emit_records_execution_trace,  # noqa: E402
+        _emit_records_healing_outcome,
+        _emit_records_telemetry_event,
+        _emit_records_tool_invocation,
+        _emit_records_workflow_lineage,
+        _emit_routes_through,
+        _emit_routes_to_agent,
+        _emit_routes_to_capability,
+        _emit_signs_execution_trace,  # noqa: E402
+        _emit_snapshots_state,  # noqa: E402
+        _emit_stores_embedding,
+        _emit_transcripts_response,
+        _emit_updates_meta_learning_state,
+        _emit_validates_agent_capability,
+        _emit_validates_capability,
+        _emit_verifies_boundary,
+        _emit_verifies_policy,
+        _emit_writes_via_uwg,
+        emit_determinism_digest,  # noqa: E402
+        emit_replay_key,  # noqa: E402
+    from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        _emit_agent_executes_agent,
+        _emit_captures_pattern,
+        _emit_captures_runtime_anomaly,
+        _emit_checks_agent_registry,
+        _emit_dispatches_execution_plan,
+        _emit_emits_metric_event,
+        _emit_escalates_to_human,
+        _emit_execution_terminates_at_uwg,
+        _emit_feeds_meta_learning,
+        _emit_gated_by_confidence,
+        _emit_hard_fails_untranscripted,
+        _emit_improves_agent_policy,
+        _emit_invokes_eval,
+        _emit_links_incident_trace,  # noqa: E402
+        _emit_observes_runtime_state,
+        _emit_proposal_commits_routing,
+        _emit_pulls_context,
+        _emit_reads_environ,
+        _emit_reads_runtime_state,
+        _emit_records_execution_trace,
+        _emit_records_incident_event,
+        _emit_records_learning_event,
+        _emit_routes_through,
+        _emit_routes_to_agent,
+        _emit_stores_learning_state,
+        _emit_transcripts_response,
+        _emit_triggers_alert,
+        _emit_updates_monitoring_state,
+        _emit_updates_routing_strategy,
+        _emit_validated_by_safety_plane,
+        _emit_validates_agent_capability,
+        _emit_verifies_boundary,
+        _emit_verifies_policy,
+        _emit_writes_learning_snapshot,
+        _emit_writes_observability_log,
+        _emit_writes_through,  # noqa: E402
+        from agentic_core.prompt_governance.security.validators.output_schema_validator import (
+            validate_context_contract,
+        )
+        from agentic_core.prompt_governance.security.validators import output_schema_validator as osv
+        codes = [
+            osv.MISSING_CITATION_FIELDS,
+            osv.INCOMPLETE_RETRIEVAL_METADATA,
+            osv.MUTATION_VERB_IN_RETRIEVAL,
+            osv.INVALID_RETRIEVAL_FIELD_CONSTRAINT,
+        ]
+        for code in codes:
+            assert isinstance(code, str)
+            assert code == code.upper()
+        from agentic_core.prompt_governance.core.invariant_registry import validate_invariant_registry
+        validate_invariant_registry()  # must not raise
+        from agentic_core.prompt_governance.core.prompt_assembler import (
+            PromptAssembler,
+            SecurityIntegrityError,
+        )
+        from agentic_core.prompt_governance.core import prompt_assembler as pa
+        from agentic_core.prompt_governance.core.prompt_assembler import (
+            PromptAssembler,
+            SecurityIntegrityError,
+        )
+        from agentic_core.prompt_governance.security.validators import output_schema_validator as osv
+        assert osv.INVALID_TELEMETRY_ENVELOPE == osv.INVALID_TELEMETRY_ENVELOPE.upper()
+        from agentic_core.prompt_governance.core.invariant_registry import ITERATIVE_FEEDBACK_DIRECTIVE
+        assert isinstance(ITERATIVE_FEEDBACK_DIRECTIVE, str)
+        assert len(ITERATIVE_FEEDBACK_DIRECTIVE) > 0
+        from agentic_core.prompt_governance.core.invariant_registry import ITERATIVE_FEEDBACK_DIRECTIVE
+        lower = ITERATIVE_FEEDBACK_DIRECTIVE.lower()
+        assert "no mutation" in lower or "read-only" in lower or "no authority" in lower
+
     ok, code, normalized = _vcc({"citations": [{"source_doc_id": "x"}]})
     assert ok is False
     assert code == "MISSING_CITATION_FIELDS"
@@ -334,16 +366,6 @@ def test_does_not_mutate_input_payload():
 
 
 def test_error_codes_are_uppercase_strings():
-    from agentic_core.prompt_governance.security.validators import output_schema_validator as osv
-
-    codes = [
-        osv.MISSING_CITATION_FIELDS,
-        osv.INCOMPLETE_RETRIEVAL_METADATA,
-        osv.MUTATION_VERB_IN_RETRIEVAL,
-        osv.INVALID_RETRIEVAL_FIELD_CONSTRAINT,
-    ]
-    for code in codes:
-        assert isinstance(code, str)
         assert code == code.upper()
 
 
@@ -374,8 +396,6 @@ def test_context_contracts_has_no_pydantic_import():
 
 
 def test_validate_invariant_registry_succeeds():
-    from agentic_core.prompt_governance.core.invariant_registry import validate_invariant_registry
-
     validate_invariant_registry()  # must not raise
 
 
@@ -410,10 +430,6 @@ assert isinstance(result, (dict, list, str, int, float, bool)), "Result should b
 
 
 def test_assembler_rejects_non_dict_context_data_with_invalid_context_type():
-    from agentic_core.prompt_governance.core.prompt_assembler import (
-        PromptAssembler,
-        SecurityIntegrityError,
-    )
 
     with patch(
         "agentic_core.prompt_governance.core.prompt_assembler.PromptAssembler._load_templates",
@@ -431,11 +447,6 @@ def test_assembler_rejects_non_dict_context_data_with_invalid_context_type():
 
 def test_assembler_cannot_bypass_validator_monkeypatch():
     """Meta-test: if validate_context_contract raises, assembler must propagate it."""
-    from agentic_core.prompt_governance.core import prompt_assembler as pa
-    from agentic_core.prompt_governance.core.prompt_assembler import (
-        PromptAssembler,
-        SecurityIntegrityError,
-    )
 
     def _always_fail(payload):
         return (False, "MUTATION_VERB_IN_RETRIEVAL", {})
@@ -488,23 +499,15 @@ def test_telemetry_envelope_wrong_type_for_empty_result_signal_fails():
 
 
 def test_telemetry_envelope_error_code_is_uppercase():
-    from agentic_core.prompt_governance.security.validators import output_schema_validator as osv
-
     assert osv.INVALID_TELEMETRY_ENVELOPE == osv.INVALID_TELEMETRY_ENVELOPE.upper()
 
 
 # iterative feedback directive
 def test_iterative_feedback_directive_exists_and_is_non_empty():
-    from agentic_core.prompt_governance.core.invariant_registry import ITERATIVE_FEEDBACK_DIRECTIVE
-
-    assert isinstance(ITERATIVE_FEEDBACK_DIRECTIVE, str)
     assert len(ITERATIVE_FEEDBACK_DIRECTIVE) > 0
 
 
 def test_iterative_feedback_directive_contains_no_mutation_authority():
-    from agentic_core.prompt_governance.core.invariant_registry import ITERATIVE_FEEDBACK_DIRECTIVE
-
-    lower = ITERATIVE_FEEDBACK_DIRECTIVE.lower()
     assert "no mutation" in lower or "read-only" in lower or "no authority" in lower
 
 

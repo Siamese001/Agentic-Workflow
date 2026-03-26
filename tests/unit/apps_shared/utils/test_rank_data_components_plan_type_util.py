@@ -10,24 +10,25 @@ import pytest
 
 pytestmark = pytest.mark.unit
 
-from apps_shared.utils.rank_data_components_plan_type_util import (  # noqa: F401
-    BATCH_SIZE,
-    BUFFER_SIZE,
-    DEFAULT_SLEEP,
-    MAX_RETRIES,
-    THRESHOLD,
-    RankDataComponentsPlanConstraints,
-    RankDataComponentsPlanImpl,
-    RankDataComponentsPlanProcessor,
-    RankDataComponentsPlanResult,
-    RankDataComponentsPlanType,
-    SecurityError,
-    rank_data_components,
-)
 
 
 class TestRankDataComponentsPlanTypeContract:
     def test_is_enum(self):
+        from apps_shared.utils.rank_data_components_plan_type_util import (  # noqa: F401
+            BATCH_SIZE,
+            BUFFER_SIZE,
+            DEFAULT_SLEEP,
+            MAX_RETRIES,
+            THRESHOLD,
+            RankDataComponentsPlanConstraints,
+            RankDataComponentsPlanImpl,
+            RankDataComponentsPlanProcessor,
+            RankDataComponentsPlanResult,
+            RankDataComponentsPlanType,
+            SecurityError,
+            rank_data_components,
+        )
+
         import enum
         assert issubclass(RankDataComponentsPlanType, enum.Enum)
 

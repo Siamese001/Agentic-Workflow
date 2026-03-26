@@ -170,10 +170,12 @@ pytestmark = pytest.mark.unit
 
 class TestOrchestratorConfigDefaults:
     def test_creates_with_defaults(self):
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.L3_orchestration.config.orchestrator_config import OrchestratorConfig
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        cfg = OrchestratorConfig()
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L3_orchestration.config.orchestrator_config import OrchestratorConfig
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                cfg = OrchestratorConfig()
+                assert cfg is not None
+
         assert cfg is not None
 
     def test_mission_id_default(self):

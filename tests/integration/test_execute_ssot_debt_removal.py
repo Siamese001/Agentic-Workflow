@@ -214,11 +214,14 @@ def _dummy_confidence(value=0.8, reasoning=""):
 
 @pytest.mark.unit
 def test_novelty_score_no_vectors_returns_1():
-    from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-    from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-    from agentic_core.L0_routing.scripts.execute_ssot import SovereignDecisionEngine
-    from agentic_core.L0_routing.scripts.execute_ssot import ConfidenceScore
 """Test novelty_score_no_vectors_returns_1 runtime behavior."""
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L0_routing.scripts.execute_ssot import SovereignDecisionEngine
+        from agentic_core.L0_routing.scripts.execute_ssot import ConfidenceScore
+        from agentic_core.L0_routing.scripts.execute_ssot import ConfidenceScore
+    """Test novelty_score_no_vectors_returns_1 runtime behavior."""
+
 # Arrange
 # TODO: Set up test data for novelty_score_no_vectors_returns_1
 test_data = {}  # Replace with actual test data

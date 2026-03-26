@@ -10,22 +10,23 @@ import pytest
 
 pytestmark = pytest.mark.unit
 
-from apps_shared.utils.input_guardrail_util import (  # noqa: F401
-    BATCH_SIZE,
-    BUFFER_SIZE,
-    DEFAULT_SLEEP,
-    MAX_RETRIES,
-    THRESHOLD,
-    GuardAction,
-    GuardResult,
-    InputGuardrail,
-    get_input_guardrail,
-    scan_input,
-)
 
 
 class TestGuardActionContract:
     def test_is_enum(self):
+        from apps_shared.utils.input_guardrail_util import (  # noqa: F401
+            BATCH_SIZE,
+            BUFFER_SIZE,
+            DEFAULT_SLEEP,
+            MAX_RETRIES,
+            THRESHOLD,
+            GuardAction,
+            GuardResult,
+            InputGuardrail,
+            get_input_guardrail,
+            scan_input,
+        )
+
         import enum
         assert issubclass(GuardAction, enum.Enum)
 

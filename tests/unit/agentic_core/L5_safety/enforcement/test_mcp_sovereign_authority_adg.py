@@ -176,9 +176,11 @@ pytestmark = pytest.mark.unit
 
 class TestMCPSovereignAuthorityImport:
     def test_class_importable(self):
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.L5_safety.enforcement.mcp_sovereign_authority_enforcer import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L5_safety.enforcement.mcp_sovereign_authority_enforcer import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                assert callable(MCPSovereignAuthority)
+
         assert callable(MCPSovereignAuthority)
 
     def test_module_level_instance_exists(self):

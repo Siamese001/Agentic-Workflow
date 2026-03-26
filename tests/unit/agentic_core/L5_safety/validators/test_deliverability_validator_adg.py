@@ -5,6 +5,8 @@ from __future__ import annotations
 
 
 def test_module_importable():
-    import agentic_core.L5_safety.validators.deliverability_validator  # noqa: F401
-    """Module deliverability_validator must be importable."""
+        import agentic_core.L5_safety.validators.deliverability_validator  # noqa: F401
+        """Module deliverability_validator must be importable."""
+        assert agentic_core.L5_safety.validators.deliverability_validator is not None
+
     assert agentic_core.L5_safety.validators.deliverability_validator is not None

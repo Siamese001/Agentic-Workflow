@@ -26,7 +26,9 @@ pytestmark = pytest.mark.unit
 
 class TestIHealingStrategyProtocolContract:
     def test_is_class(self):
-        from agentic_core.interfaces.IHealingStrategyProtocol import (  # noqa: F401
+                from agentic_core.interfaces.IHealingStrategyProtocol import (  # noqa: F401
+                assert isinstance(IHealingStrategyProtocol, type)
+
         assert isinstance(IHealingStrategyProtocol, type)
 
     def test_has_method_can_heal(self):

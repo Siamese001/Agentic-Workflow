@@ -13,9 +13,11 @@ class TestThoughtEngineAgent:
     """Tests for ThoughtEngineAgent core functionality."""
 
     def test_thought_engine_exists(self):
-        from agentic_core.L0_routing.config.path_constants import (
-        """ThoughtEngineAgent module should exist."""
-        path = Path("agentic_core/L1_cognition/reasoning")
+                from agentic_core.L0_routing.config.path_constants import (
+                """ThoughtEngineAgent module should exist."""
+                path = Path("agentic_core/L1_cognition/reasoning")
+                assert path.exists(), "L1_cognition/reasoning/ should exist"
+
         assert path.exists(), "L1_cognition/reasoning/ should exist"
 
     def test_thought_engine_has_agent_class(self):

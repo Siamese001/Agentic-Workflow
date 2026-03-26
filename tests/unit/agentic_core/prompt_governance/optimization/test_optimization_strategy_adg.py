@@ -5,6 +5,8 @@ from __future__ import annotations
 
 
 def test_module_importable():
-    import agentic_core.prompt_governance.optimization.optimization_strategy  # noqa: F401
-    """Module optimization_strategy must be importable."""
+        import agentic_core.prompt_governance.optimization.optimization_strategy  # noqa: F401
+        """Module optimization_strategy must be importable."""
+        assert agentic_core.prompt_governance.optimization.optimization_strategy is not None
+
     assert agentic_core.prompt_governance.optimization.optimization_strategy is not None

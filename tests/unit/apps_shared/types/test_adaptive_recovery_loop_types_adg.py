@@ -5,9 +5,10 @@ import pytest
 
 pytestmark = pytest.mark.unit
 
-import apps_shared.types.adaptive_recovery_loop_types  # noqa: F401
 
 
 def test_module_importable():
     """Module adaptive_recovery_loop_types must be importable."""
+    import apps_shared.types.adaptive_recovery_loop_types  # noqa: F401
+
     assert apps_shared.types.adaptive_recovery_loop_types is not None

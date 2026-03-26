@@ -15,6 +15,82 @@ from __future__ import annotations
 class TestRfpAgentSpecs:
     def test_default_specs_load(self):
     """Test default_specs_load runtime behavior."""
+                from apps_rfp.engines.proposal_assembly_engine import ProposalAssemblyEngine
+                engine = ProposalAssemblyEngine()
+                result = engine.execute(self._make_request())
+                assert len(result.roadmap) == 5
+                from apps_rfp.engines.proposal_assembly_engine import ProposalAssemblyEngine
+                engine = ProposalAssemblyEngine()
+                result = engine.execute(self._make_request())
+                assert len(result.assumptions) >= 3
+                for asm in result.assumptions:
+                    assert asm.assumption_id.startswith("ASM-")
+                from apps_rfp.engines.proposal_assembly_engine import ProposalAssemblyEngine
+                from apps_rfp.types.rfp_types import ArchitecturePosture, RfpRequest
+                from apps_rfp.types.rfp_types import ArchitecturePosture, RfpRequest
+                engine = ProposalAssemblyEngine()
+                req = RfpRequest(
+                    problem_statement="test",
+                    industry="technology",
+                    architecture_posture=ArchitecturePosture.CLOUD_FIRST,
+                )
+                return engine.execute(req)
+                from apps_rfp.validators.proposal_gate_validator import ProposalGateValidator
+                validator = ProposalGateValidator()
+                assembly = self._make_sections()
+                result = validator.validate(assembly.sections, assembly.roadmap, assembly.risks)
+                assert result.passed
+                from apps_rfp.types.rfp_types import ProposalSection
+                from apps_rfp.validators.proposal_gate_validator import ProposalGateValidator
+                from apps_rfp.validators.proposal_gate_validator import ProposalGateValidator
+                validator = ProposalGateValidator()
+                incomplete_sections = [
+                    ProposalSection(section_id="executive_summary", heading="Exec", body="Summary text."),
+                ]
+                assembly = self._make_sections()
+                result = validator.validate(incomplete_sections, assembly.roadmap, assembly.risks)
+                assert not result.passed
+                from apps_rfp.validators.proposal_gate_validator import ProposalGateValidator
+                validator = ProposalGateValidator()
+                assembly = self._make_sections()
+                result = validator.validate(assembly.sections, assembly.roadmap, [])
+                assert not result.passed
+                from apps_rfp.validators.proposal_gate_validator import ProposalGateValidator
+                validator = ProposalGateValidator()
+                assembly = self._make_sections()
+                result = validator.validate(assembly.sections, assembly.roadmap, assembly.risks)
+                assert result.quality_score >= 0.70
+                from apps_rfp.reasoning.RfpOrchestrator import RfpOrchestrator
+                from apps_rfp.types.rfp_types import ProposalStatus, RfpRequest
+                from apps_rfp.types.rfp_types import ProposalStatus, RfpRequest
+                orch = RfpOrchestrator(dry_run=True)
+                req = RfpRequest(problem_statement="Test problem", industry="technology", dry_run=True)
+                result = orch.run(req)
+                assert result.status == ProposalStatus.DRY_RUN
+                assert len(result.artifact_paths) == 0
+                from apps_rfp.reasoning.RfpOrchestrator import RfpOrchestrator
+                from apps_rfp.types.rfp_types import RfpRequest
+                from apps_rfp.types.rfp_types import RfpRequest
+                orch = RfpOrchestrator(dry_run=True)
+                req = RfpRequest(problem_statement="Test problem", dry_run=True)
+                result = orch.run(req)
+                assert len(result.sections) > 0
+                from apps_rfp.reasoning.RfpOrchestrator import RfpOrchestrator
+                from apps_rfp.types.rfp_types import RfpRequest
+                from apps_rfp.types.rfp_types import RfpRequest
+                orch = RfpOrchestrator(dry_run=True)
+                req = RfpRequest(problem_statement="Test", trace_id="rfp-trace-001", dry_run=True)
+                result = orch.run(req)
+                assert result.trace_id == "rfp-trace-001"
+                from apps_rfp.reasoning.RfpOrchestrator import RfpOrchestrator
+                from apps_rfp.types.rfp_types import ProposalStatus, RfpRequest
+                from apps_rfp.types.rfp_types import ProposalStatus, RfpRequest
+                orch = RfpOrchestrator(dry_run=False, output_dir=str(tmp_path))
+                req = RfpRequest(problem_statement="Need AI governance platform", industry="technology")
+                result = orch.run(req)
+                if result.status == ProposalStatus.COMPLETE:
+                    assert len(result.artifact_paths) > 0
+
     # Arrange
     # TODO: Set up test data for default_specs_load
     test_data = {}  # Replace with actual test data
@@ -73,10 +149,6 @@ assert isinstance(result, object), "Result should be an object"
             assert req_id in section_ids, f"Missing required section: {req_id}"
 
     def test_roadmap_has_five_phases(self):
-        from apps_rfp.engines.proposal_assembly_engine import ProposalAssemblyEngine
-
-        engine = ProposalAssemblyEngine()
-        result = engine.execute(self._make_request())
         assert len(result.roadmap) == 5
 
     def test_roadmap_has_govern_phase(self):
@@ -95,12 +167,6 @@ assert isinstance(result, object), "Result should be an object"
     # TODO: Add specific runtime behavior assertions
 
     def test_assumptions_labeled(self):
-        from apps_rfp.engines.proposal_assembly_engine import ProposalAssemblyEngine
-
-        engine = ProposalAssemblyEngine()
-        result = engine.execute(self._make_request())
-        assert len(result.assumptions) >= 3
-        for asm in result.assumptions:
             assert asm.assumption_id.startswith("ASM-")
 
     def test_sections_non_empty_bodies(self):
@@ -129,91 +195,32 @@ assert isinstance(result, object), "Result should be an object"
 
 class TestProposalGateValidator:
     def _make_sections(self):
-        from apps_rfp.engines.proposal_assembly_engine import ProposalAssemblyEngine
-        from apps_rfp.types.rfp_types import ArchitecturePosture, RfpRequest
-
-        engine = ProposalAssemblyEngine()
-        req = RfpRequest(
-            problem_statement="test",
-            industry="technology",
-            architecture_posture=ArchitecturePosture.CLOUD_FIRST,
-        )
         return engine.execute(req)
 
     def test_valid_proposal_passes(self):
-        from apps_rfp.validators.proposal_gate_validator import ProposalGateValidator
-
-        validator = ProposalGateValidator()
-        assembly = self._make_sections()
-        result = validator.validate(assembly.sections, assembly.roadmap, assembly.risks)
         assert result.passed
 
     def test_missing_section_blocks(self):
-        from apps_rfp.types.rfp_types import ProposalSection
-        from apps_rfp.validators.proposal_gate_validator import ProposalGateValidator
-
-        validator = ProposalGateValidator()
-        incomplete_sections = [
-            ProposalSection(section_id="executive_summary", heading="Exec", body="Summary text."),
-        ]
-        assembly = self._make_sections()
-        result = validator.validate(incomplete_sections, assembly.roadmap, assembly.risks)
         assert not result.passed
 
     def test_empty_risks_blocks(self):
-        from apps_rfp.validators.proposal_gate_validator import ProposalGateValidator
-
-        validator = ProposalGateValidator()
-        assembly = self._make_sections()
-        result = validator.validate(assembly.sections, assembly.roadmap, [])
         assert not result.passed
 
     def test_quality_score_high_for_valid(self):
-        from apps_rfp.validators.proposal_gate_validator import ProposalGateValidator
-
-        validator = ProposalGateValidator()
-        assembly = self._make_sections()
-        result = validator.validate(assembly.sections, assembly.roadmap, assembly.risks)
         assert result.quality_score >= 0.70
 
 
 class TestRfpOrchestrator:
     def test_dry_run_no_artifacts(self):
-        from apps_rfp.reasoning.RfpOrchestrator import RfpOrchestrator
-        from apps_rfp.types.rfp_types import ProposalStatus, RfpRequest
-
-        orch = RfpOrchestrator(dry_run=True)
-        req = RfpRequest(problem_statement="Test problem", industry="technology", dry_run=True)
-        result = orch.run(req)
-        assert result.status == ProposalStatus.DRY_RUN
         assert len(result.artifact_paths) == 0
 
     def test_result_has_sections(self):
-        from apps_rfp.reasoning.RfpOrchestrator import RfpOrchestrator
-        from apps_rfp.types.rfp_types import RfpRequest
-
-        orch = RfpOrchestrator(dry_run=True)
-        req = RfpRequest(problem_statement="Test problem", dry_run=True)
-        result = orch.run(req)
         assert len(result.sections) > 0
 
     def test_trace_id_propagated(self):
-        from apps_rfp.reasoning.RfpOrchestrator import RfpOrchestrator
-        from apps_rfp.types.rfp_types import RfpRequest
-
-        orch = RfpOrchestrator(dry_run=True)
-        req = RfpRequest(problem_statement="Test", trace_id="rfp-trace-001", dry_run=True)
-        result = orch.run(req)
         assert result.trace_id == "rfp-trace-001"
 
     def test_artifacts_written_in_non_dry_run(self, tmp_path):
-        from apps_rfp.reasoning.RfpOrchestrator import RfpOrchestrator
-        from apps_rfp.types.rfp_types import ProposalStatus, RfpRequest
-
-        orch = RfpOrchestrator(dry_run=False, output_dir=str(tmp_path))
-        req = RfpRequest(problem_statement="Need AI governance platform", industry="technology")
-        result = orch.run(req)
-        if result.status == ProposalStatus.COMPLETE:
             assert len(result.artifact_paths) > 0
 
 

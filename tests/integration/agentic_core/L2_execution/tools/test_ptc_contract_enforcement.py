@@ -257,12 +257,14 @@ def _tamper_envelope(env: SandboxEnvelope, **kwargs) -> SandboxEnvelope:
 
 
 def test_ptc_stdout_byte_cap_positive():
-    from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-    from agentic_core.L2_execution.enforcement.key_source import TestKeySource, inject_key_source
-    from agentic_core.L2_execution.tools.ptc_contract import (
-    from agentic_core.L2_execution.types.sandbox_envelope_types import SandboxEnvelope
-    from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-    from agentic_core.L2_execution.types.sandbox_envelope_types import ToolBudget
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L2_execution.enforcement.key_source import TestKeySource, inject_key_source
+        from agentic_core.L2_execution.tools.ptc_contract import (
+        from agentic_core.L2_execution.types.sandbox_envelope_types import SandboxEnvelope
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L2_execution.types.sandbox_envelope_types import ToolBudget
+        assert PTC_STDOUT_BYTE_CAP > 0
+
     assert PTC_STDOUT_BYTE_CAP > 0
 
 

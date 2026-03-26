@@ -241,16 +241,18 @@ def _run_enforce(agent, tmp_path, files: list[tuple[str, str]]) -> dict:
 
 class TestGetApprovedTestsSubfolders:
     def test_derives_from_sovereign_territories(self):
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.L5_safety.reasoning.hierarchy_healer import HierarchyAgent
-        from agentic_core.L5_safety.reasoning.hierarchy_healer import HierarchyAgent
-        from agentic_core.L5_safety.reasoning.hierarchy_healer import HierarchyAgent
-        from agentic_core.L5_safety.reasoning.hierarchy_healer import HierarchyAgent
-        from agentic_core.L5_safety.reasoning.hierarchy_healer import HierarchyAgent
-        from agentic_core.L5_safety.reasoning.hierarchy_healer import HierarchyAgent
-        from agentic_core.L5_safety.reasoning.hierarchy_healer import HierarchyAgent
         """Success path: returns frozenset of subfolders declared in SOVEREIGN_TERRITORIES."""
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L5_safety.reasoning.hierarchy_healer import HierarchyAgent
+                from agentic_core.L5_safety.reasoning.hierarchy_healer import HierarchyAgent
+                from agentic_core.L5_safety.reasoning.hierarchy_healer import HierarchyAgent
+                from agentic_core.L5_safety.reasoning.hierarchy_healer import HierarchyAgent
+                from agentic_core.L5_safety.reasoning.hierarchy_healer import HierarchyAgent
+                from agentic_core.L5_safety.reasoning.hierarchy_healer import HierarchyAgent
+                from agentic_core.L5_safety.reasoning.hierarchy_healer import HierarchyAgent
+                """Success path: returns frozenset of subfolders declared in SOVEREIGN_TERRITORIES."""
+
 #  # MOVED: from agentic_core.L5_safety.reasoning.hierarchy_healer import HierarchyAgent
 
         fake_map = {"unit": {}, "support": {}, "integration": {}}

@@ -192,21 +192,23 @@ class TestSovereigntyAcronyms(unittest.TestCase):
         self.fixer = PascalSovereigntyFixer(dry_run=True)
 
     def test_acronym_snake_case_conversion(self):
-        from agentic_core.L0_routing.config.path_constants import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        """
-        Verify that complex acronyms in Mixins are converted to clean snake_case.
-        Expected: LLMProviderMixin -> llm_provider_mixin.py (NOT l_l_m_provider...)
-        """
-        test_cases = {
-            "LLMProviderMixin": "llm_provider_mixin.py",
-            "ASTEnforcementMixin": "ast_enforcement_mixin.py",
-            "MCPOperationMixin": "mcp_operation_mixin.py",
-            "MCPHardenedMixin": "mcp_hardened_mixin.py",
-            "AuditTrailMixin": "audit_trail_mixin.py",
-            "PineconeVectorMixin": "pinecone_vector_mixin.py",
-            "RedisCacheMixin": "redis_cache_mixin.py",
+                from agentic_core.L0_routing.config.path_constants import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                """
+                Verify that complex acronyms in Mixins are converted to clean snake_case.
+                Expected: LLMProviderMixin -> llm_provider_mixin.py (NOT l_l_m_provider...)
+                """
+                test_cases = {
+                    "LLMProviderMixin": "llm_provider_mixin.py",
+                    "ASTEnforcementMixin": "ast_enforcement_mixin.py",
+                    "MCPOperationMixin": "mcp_operation_mixin.py",
+                    "MCPHardenedMixin": "mcp_hardened_mixin.py",
+                    "AuditTrailMixin": "audit_trail_mixin.py",
+                    "PineconeVectorMixin": "pinecone_vector_mixin.py",
+                    "RedisCacheMixin": "redis_cache_mixin.py",
+                }
+
         }
 
         for stem, expected in test_cases.items():

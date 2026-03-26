@@ -14,20 +14,22 @@ pytestmark = pytest.mark.unit
 
 class TestProviderType:
     def test_is_enum(self):
-        from agentic_core.L2_execution.config.provider_type_config import (
-    """Test is_enum runtime behavior."""
-    # Arrange
-    # TODO: Set up test data for is_enum
-    test_data = {}  # Replace with actual test data
-    """Test stub_value runtime behavior."""
-    # Arrange
-    # TODO: Set up test data for stub_value
-    """Test redis_value runtime behavior."""
-    # Arrange
-    # TODO: Set up test data for redis_value
-    """Test all_values_are_strings runtime behavior."""
-    # Arrange
-    # TODO: Set up test data for all_values_are_strings
+                from agentic_core.L2_execution.config.provider_type_config import (
+            """Test is_enum runtime behavior."""
+            # Arrange
+            # TODO: Set up test data for is_enum
+            test_data = {}  # Replace with actual test data
+            """Test stub_value runtime behavior."""
+            # Arrange
+            # TODO: Set up test data for stub_value
+            """Test redis_value runtime behavior."""
+            # Arrange
+            # TODO: Set up test data for redis_value
+            """Test all_values_are_strings runtime behavior."""
+            # Arrange
+            # TODO: Set up test data for all_values_are_strings
+            test_data = {}  # Replace with actual test data
+
     test_data = {}  # Replace with actual test data
 
     # Act

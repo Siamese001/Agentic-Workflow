@@ -9,6 +9,8 @@ pytestmark = pytest.mark.unit
 
 
 def test_module_importable():
-    import agentic_core.prompt_governance.scripts.audit_registry_linkages  # noqa: F401
-    """Module audit_registry_linkages must be importable."""
+        import agentic_core.prompt_governance.scripts.audit_registry_linkages  # noqa: F401
+        """Module audit_registry_linkages must be importable."""
+        assert agentic_core.prompt_governance.scripts.audit_registry_linkages is not None
+
     assert agentic_core.prompt_governance.scripts.audit_registry_linkages is not None

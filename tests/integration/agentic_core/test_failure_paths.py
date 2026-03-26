@@ -187,16 +187,18 @@ DEFAULT_TIMEOUT = 300  # 5 minutes
 
 class TestRedisFailurePath:
     def test_redis_unavailable_raises_or_logs_error(self):
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.interfaces.gateway import SovereignLLMGateway  # noqa: F401
-        from agentic_core.L4_state.commit.two_phase_coordinator import TwoPhaseCoordinator
-        from agentic_core.L5_safety.types.hardening_errors import MutationCommitFailure
-        from agentic_core.L4_state.commit.two_phase_coordinator import TwoPhaseCoordinator
-        from agentic_core.L5_safety.types.hardening_errors import MutationCommitFailure
-        from agentic_core.L4_state.commit.two_phase_coordinator import TwoPhaseCoordinator
-        from agentic_core.L5_safety.types.hardening_errors import MutationCommitFailure
-        """When Redis is unavailable, degraded-mode must be explicit and observable."""
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.interfaces.gateway import SovereignLLMGateway  # noqa: F401
+                from agentic_core.L4_state.commit.two_phase_coordinator import TwoPhaseCoordinator
+                from agentic_core.L5_safety.types.hardening_errors import MutationCommitFailure
+                from agentic_core.L4_state.commit.two_phase_coordinator import TwoPhaseCoordinator
+                from agentic_core.L5_safety.types.hardening_errors import MutationCommitFailure
+                from agentic_core.L4_state.commit.two_phase_coordinator import TwoPhaseCoordinator
+                from agentic_core.L5_safety.types.hardening_errors import MutationCommitFailure
+                """When Redis is unavailable, degraded-mode must be explicit and observable."""
+                from unittest.mock import patch
+
         from unittest.mock import patch
 
         # Simulate Redis connection failure

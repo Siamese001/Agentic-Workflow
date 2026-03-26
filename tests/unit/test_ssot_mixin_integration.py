@@ -17,122 +17,13 @@ from datetime import datetime
 from typing import Any
 
 import pytest
-from agentic_core.mixins.ssot_adaptive_execution_mixin import SSOTAdaptiveExecutionMixin
 
-from agentic_core.L2_execution.deterministic_providers import (
-    unpatch_deterministic,
-)
-from agentic_core.mixins.replay_guard_mixin import ReplayGuardMixin
-from agentic_core.mixins.ssot_caching_mixin import SSOTCachingMixin
-from agentic_core.mixins.ssot_circuit_breaker_mixin import (
-    CircuitOpenError,
-    PolicyHashMismatch,
-    SovereignTokenDenied,
-    SSOTCircuitBreakerMixin,
-    StateValidationError,
-)
-from agentic_core.mixins.ssot_cognitive_recovery_mixin import SSOTCognitiveRecoveryMixin
-from agentic_core.mixins.ssot_context_propagation_mixin import (
-    SSOTContextPropagationMixin,
-    get_propagated_policy_hash,
-    get_propagated_replay_mode,
-    get_propagated_trace_id,
-)
-from agentic_core.mixins.ssot_feature_flag_mixin import SSOTFeatureFlagMixin
-from agentic_core.mixins.ssot_hallucination_detection_mixin import SSOTHallucinationDetectionMixin
-from agentic_core.mixins.ssot_meta_learning_mixin import (
-    MetaLearningWriteRejected,
-    SSOTMetaLearningMixin,
-)
-from agentic_core.mixins.ssot_metrics_mixin import SSOTMetricsMixin
-from agentic_core.mixins.ssot_rate_limit_mixin import RateLimitExceeded, SSOTRateLimitMixin
-from agentic_core.mixins.ssot_self_diagnosis_mixin import SSOTSelfDiagnosisMixin
-from agentic_core.mixins.ssot_state_validation_mixin import (
-    SSOTStateValidationError,
-    SSOTStateValidationMixin,
-)
-from agentic_core.mixins.ssot_tracing_mixin import SSOTTracingMixin
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-    _emit_agent_executes_agent,
-    _emit_applies_guardrail,  # noqa: E402
-    _emit_authorize_and_execute,
-    _emit_blocks_direct_write,
-    _emit_captures_evaluation_metric,
-    _emit_captures_execution_output,
-    _emit_checks_agent_registry,
-    _emit_coordinates_agents,
-    _emit_dispatches_agent,
-    _emit_dispatches_execution_plan,
-    _emit_dispatches_healing_run,
-    _emit_escalates_failure,
-    _emit_escalates_to_human,
-    _emit_gated_by_confidence,
-    _emit_hard_fails_untranscripted,
-    _emit_invokes_evaluation,
-    _emit_links_execution_to_snapshot,
-    _emit_observes_runtime_state,
-    _emit_orchestrates_workflow,
-    _emit_records_execution_trace,  # noqa: E402
-    _emit_records_healing_outcome,
-    _emit_records_telemetry_event,
-    _emit_records_tool_invocation,
-    _emit_records_workflow_lineage,
-    _emit_routes_through,
-    _emit_routes_to_agent,
-    _emit_routes_to_capability,
-    _emit_signs_execution_trace,  # noqa: E402
-    _emit_snapshots_state,  # noqa: E402
-    _emit_stores_embedding,
-    _emit_transcripts_response,
-    _emit_updates_meta_learning_state,
-    _emit_validates_agent_capability,
-    _emit_validates_capability,
-    _emit_verifies_boundary,
-    _emit_verifies_policy,
-    _emit_writes_via_uwg,
-    emit_determinism_digest,  # noqa: E402
     emit_replay_key,  # noqa: E402
 )
 
 # REMOVED: _emit_records_execution_trace("p0", "evidence", "test_ssot_mixin_integration")
 # REMOVED: _emit_applies_guardrail("p0", "test_ssot_mixin_integration", "p0_governance")
 # REMOVED: _emit_snapshots_state("p0", "test_ssot_mixin_integration", "state_snapshot")
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-    _emit_agent_executes_agent,
-    _emit_captures_pattern,
-    _emit_captures_runtime_anomaly,
-    _emit_checks_agent_registry,
-    _emit_dispatches_execution_plan,
-    _emit_emits_metric_event,
-    _emit_escalates_to_human,
-    _emit_execution_terminates_at_uwg,
-    _emit_feeds_meta_learning,
-    _emit_gated_by_confidence,
-    _emit_hard_fails_untranscripted,
-    _emit_improves_agent_policy,
-    _emit_invokes_eval,
-    _emit_links_incident_trace,  # noqa: E402
-    _emit_observes_runtime_state,
-    _emit_proposal_commits_routing,
-    _emit_pulls_context,
-    _emit_reads_environ,
-    _emit_reads_runtime_state,
-    _emit_records_execution_trace,
-    _emit_records_incident_event,
-    _emit_records_learning_event,
-    _emit_routes_through,
-    _emit_routes_to_agent,
-    _emit_stores_learning_state,
-    _emit_transcripts_response,
-    _emit_triggers_alert,
-    _emit_updates_monitoring_state,
-    _emit_updates_routing_strategy,
-    _emit_validated_by_safety_plane,
-    _emit_validates_agent_capability,
-    _emit_verifies_boundary,
-    _emit_verifies_policy,
-    _emit_writes_learning_snapshot,
-    _emit_writes_observability_log,
     _emit_writes_through,  # noqa: E402
 )
 
@@ -320,6 +211,122 @@ def _cleanup():
 class TestSSOTMetrics:
     @pytest.mark.unit_min_deps
     def test_metric_scoped_by_policy_hash(self):
+        from agentic_core.mixins.ssot_adaptive_execution_mixin import SSOTAdaptiveExecutionMixin
+        from agentic_core.L2_execution.deterministic_providers import (
+            unpatch_deterministic,
+        )
+        from agentic_core.mixins.replay_guard_mixin import ReplayGuardMixin
+        from agentic_core.mixins.ssot_caching_mixin import SSOTCachingMixin
+        from agentic_core.mixins.ssot_caching_mixin import SSOTCachingMixin
+        from agentic_core.mixins.ssot_circuit_breaker_mixin import (
+            CircuitOpenError,
+            PolicyHashMismatch,
+            SovereignTokenDenied,
+            SSOTCircuitBreakerMixin,
+            StateValidationError,
+        )
+        from agentic_core.mixins.ssot_cognitive_recovery_mixin import SSOTCognitiveRecoveryMixin
+        from agentic_core.mixins.ssot_context_propagation_mixin import (
+            SSOTContextPropagationMixin,
+            get_propagated_policy_hash,
+            get_propagated_replay_mode,
+            get_propagated_trace_id,
+        )
+        from agentic_core.mixins.ssot_feature_flag_mixin import SSOTFeatureFlagMixin
+        from agentic_core.mixins.ssot_hallucination_detection_mixin import SSOTHallucinationDetectionMixin
+        from agentic_core.mixins.ssot_hallucination_detection_mixin import SSOTHallucinationDetectionMixin
+        from agentic_core.mixins.ssot_meta_learning_mixin import (
+            MetaLearningWriteRejected,
+            SSOTMetaLearningMixin,
+        )
+        from agentic_core.mixins.ssot_metrics_mixin import SSOTMetricsMixin
+        from agentic_core.mixins.ssot_rate_limit_mixin import RateLimitExceeded, SSOTRateLimitMixin
+        from agentic_core.mixins.ssot_rate_limit_mixin import RateLimitExceeded, SSOTRateLimitMixin
+        from agentic_core.mixins.ssot_self_diagnosis_mixin import SSOTSelfDiagnosisMixin
+        from agentic_core.mixins.ssot_self_diagnosis_mixin import SSOTSelfDiagnosisMixin
+        from agentic_core.mixins.ssot_state_validation_mixin import (
+            SSOTStateValidationError,
+            SSOTStateValidationMixin,
+        )
+        from agentic_core.mixins.ssot_tracing_mixin import SSOTTracingMixin
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+            _emit_agent_executes_agent,
+            _emit_applies_guardrail,  # noqa: E402
+            _emit_authorize_and_execute,
+            _emit_blocks_direct_write,
+            _emit_captures_evaluation_metric,
+            _emit_captures_execution_output,
+            _emit_checks_agent_registry,
+            _emit_coordinates_agents,
+            _emit_dispatches_agent,
+            _emit_dispatches_execution_plan,
+            _emit_dispatches_healing_run,
+            _emit_escalates_failure,
+            _emit_escalates_to_human,
+            _emit_gated_by_confidence,
+            _emit_hard_fails_untranscripted,
+            _emit_invokes_evaluation,
+            _emit_links_execution_to_snapshot,
+            _emit_observes_runtime_state,
+            _emit_orchestrates_workflow,
+            _emit_records_execution_trace,  # noqa: E402
+            _emit_records_healing_outcome,
+            _emit_records_telemetry_event,
+            _emit_records_tool_invocation,
+            _emit_records_workflow_lineage,
+            _emit_routes_through,
+            _emit_routes_to_agent,
+            _emit_routes_to_capability,
+            _emit_signs_execution_trace,  # noqa: E402
+            _emit_snapshots_state,  # noqa: E402
+            _emit_stores_embedding,
+            _emit_transcripts_response,
+            _emit_updates_meta_learning_state,
+            _emit_validates_agent_capability,
+            _emit_validates_capability,
+            _emit_verifies_boundary,
+            _emit_verifies_policy,
+            _emit_writes_via_uwg,
+            emit_determinism_digest,  # noqa: E402
+            emit_replay_key,  # noqa: E402
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+            _emit_agent_executes_agent,
+            _emit_captures_pattern,
+            _emit_captures_runtime_anomaly,
+            _emit_checks_agent_registry,
+            _emit_dispatches_execution_plan,
+            _emit_emits_metric_event,
+            _emit_escalates_to_human,
+            _emit_execution_terminates_at_uwg,
+            _emit_feeds_meta_learning,
+            _emit_gated_by_confidence,
+            _emit_hard_fails_untranscripted,
+            _emit_improves_agent_policy,
+            _emit_invokes_eval,
+            _emit_links_incident_trace,  # noqa: E402
+            _emit_observes_runtime_state,
+            _emit_proposal_commits_routing,
+            _emit_pulls_context,
+            _emit_reads_environ,
+            _emit_reads_runtime_state,
+            _emit_records_execution_trace,
+            _emit_records_incident_event,
+            _emit_records_learning_event,
+            _emit_routes_through,
+            _emit_routes_to_agent,
+            _emit_stores_learning_state,
+            _emit_transcripts_response,
+            _emit_triggers_alert,
+            _emit_updates_monitoring_state,
+            _emit_updates_routing_strategy,
+            _emit_validated_by_safety_plane,
+            _emit_validates_agent_capability,
+            _emit_verifies_boundary,
+            _emit_verifies_policy,
+            _emit_writes_learning_snapshot,
+            _emit_writes_observability_log,
+            _emit_writes_through,  # noqa: E402
+
         ctx = _Ctx(trace_id="t1", active_policy_hash="ph-m1")
         obj = _MetricsObj(ctx)
         entry = obj.record_metric("heal_count", 5.0)

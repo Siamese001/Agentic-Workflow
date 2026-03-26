@@ -5,9 +5,10 @@ import pytest
 
 pytestmark = pytest.mark.unit
 
-import system_learning.enforcement.dual_injection_proposal_gate  # noqa: F401
 
 
 def test_module_importable():
     """Module dual_injection_proposal_gate must be importable."""
+    import system_learning.enforcement.dual_injection_proposal_gate  # noqa: F401
+
     assert system_learning.enforcement.dual_injection_proposal_gate is not None

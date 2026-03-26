@@ -26,8 +26,10 @@ pytestmark = pytest.mark.unit
 
 class TestComplianceResultContract:
     def test_is_dataclass(self):
-        from agentic_core.L5_safety.validators.migration_helper_validator import (  # noqa: F401
-        import dataclasses
+                from agentic_core.L5_safety.validators.migration_helper_validator import (  # noqa: F401
+                import dataclasses
+                assert dataclasses.is_dataclass(ComplianceResult)
+
         assert dataclasses.is_dataclass(ComplianceResult)
 
     def test_field_names_present(self):

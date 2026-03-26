@@ -173,10 +173,12 @@ pytestmark = pytest.mark.unit
 
 class TestASTValidatorBase:
     def test_creates(self):
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.L1_cognition.reasoning.ASTValidatorAgent import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        base = ASTValidatorBase()
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L1_cognition.reasoning.ASTValidatorAgent import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                base = ASTValidatorBase()
+                assert base is not None
+
         assert base is not None
 
     def test_violations_start_empty(self):

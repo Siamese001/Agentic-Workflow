@@ -5,9 +5,10 @@ import pytest
 
 pytestmark = pytest.mark.unit
 
-import apps_rg.tools.EvaluateWritingQuality  # noqa: F401
 
 
 def test_module_importable():
     """Module EvaluateWritingQuality must be importable."""
+    import apps_rg.tools.EvaluateWritingQuality  # noqa: F401
+
     assert apps_rg.tools.EvaluateWritingQuality is not None

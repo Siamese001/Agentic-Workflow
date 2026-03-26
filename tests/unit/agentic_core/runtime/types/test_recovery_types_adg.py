@@ -173,18 +173,20 @@ pytestmark = pytest.mark.unit
 
 class TestRecoveryStrategy:
     def test_is_enum(self):
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.runtime.types.recovery_types import (
-    """Test is_enum runtime behavior."""
-    # Arrange
-    # TODO: Set up runtime environment
-    runtime_context = {}  # Replace with actual runtime context
-    """Test is_dataclass runtime behavior."""
-    # Arrange
-    """Test creates runtime behavior."""
-    # Arrange
-    # TODO: Set up runtime environment
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.runtime.types.recovery_types import (
+            """Test is_enum runtime behavior."""
+            # Arrange
+            # TODO: Set up runtime environment
+            runtime_context = {}  # Replace with actual runtime context
+            """Test is_dataclass runtime behavior."""
+            # Arrange
+            """Test creates runtime behavior."""
+            # Arrange
+            # TODO: Set up runtime environment
+            runtime_context = {}  # Replace with actual runtime context
+
     runtime_context = {}  # Replace with actual runtime context
 
     # Act

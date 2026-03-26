@@ -10,22 +10,23 @@ import pytest
 
 pytestmark = pytest.mark.unit
 
-from apps_lic.reasoning.OutreachValidationExecutorAgent import (  # noqa: F401
-    BATCH_SIZE,
-    BUFFER_SIZE,
-    DEFAULT_SLEEP,
-    MAX_RETRIES,
-    THRESHOLD,
-    HealerMixin,
-    MCPHardenedMixin,
-    OutreachValidationExecutorAgent,
-    RuleFailure,
-    ValidationGateExecutor,
-)
 
 
 class TestValidationGateExecutorContract:
     def test_is_class(self):
+        from apps_lic.reasoning.OutreachValidationExecutorAgent import (  # noqa: F401
+            BATCH_SIZE,
+            BUFFER_SIZE,
+            DEFAULT_SLEEP,
+            MAX_RETRIES,
+            THRESHOLD,
+            HealerMixin,
+            MCPHardenedMixin,
+            OutreachValidationExecutorAgent,
+            RuleFailure,
+            ValidationGateExecutor,
+        )
+
         assert isinstance(ValidationGateExecutor, type)
 
     def test_instantiable_or_abstract(self):

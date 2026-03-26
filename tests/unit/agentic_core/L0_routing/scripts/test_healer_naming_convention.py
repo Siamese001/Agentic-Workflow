@@ -144,12 +144,13 @@ class TestRosterUsesDirectImports:
     Shims deleted in Phase 1 of agent-script refactor."""
 
     def test_roster_imports_direct_class_names(self, roster_func_node):
-        from agentic_core.L0_routing.config.path_constants import (
-        imported = _import_names_in_function(roster_func_node)
-        for name in CANONICAL_ROSTER_IMPORTS:
-            assert name in imported, (
-                f"_get_l5_agent_roster() must import direct class '{name}'. Found imports: {imported}"
-            )
+                from agentic_core.L0_routing.config.path_constants import (
+                imported = _import_names_in_function(roster_func_node)
+                for name in CANONICAL_ROSTER_IMPORTS:
+                    assert name in imported, (
+                        f"_get_l5_agent_roster() must import direct class '{name}'. Found imports: {imported}"
+                    )
+
 
     def test_roster_does_not_import_deleted_shim_names(self, roster_func_node):
         imported = _import_names_in_function(roster_func_node)

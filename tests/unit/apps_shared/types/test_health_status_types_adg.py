@@ -5,9 +5,10 @@ import pytest
 
 pytestmark = pytest.mark.unit
 
-import apps_shared.types.health_status_types  # noqa: F401
 
 
 def test_module_importable():
     """Module health_status_types must be importable."""
+    import apps_shared.types.health_status_types  # noqa: F401
+
     assert apps_shared.types.health_status_types is not None

@@ -97,11 +97,13 @@ def _write(tmp_path: Path, rel_str: str, content: str = "") -> Path:
 
 class TestLegacyArchiveDepthViolation:
     def test_legacy_archive_success_returns_one(self, tmp_path):
-        from agentic_core.L0_routing.config.path_constants import (
-        from agentic_core.L5_safety.reasoning.hierarchy_healer import HierarchyAgent
-        """safe_archive success → returns 1."""
-        agent = _make_agent(tmp_path)
-        file_path = _write(tmp_path, "agentic_core/L0_routing/scripts/extra/f.py")
+                from agentic_core.L0_routing.config.path_constants import (
+                from agentic_core.L5_safety.reasoning.hierarchy_healer import HierarchyAgent
+                """safe_archive success → returns 1."""
+                agent = _make_agent(tmp_path)
+                file_path = _write(tmp_path, "agentic_core/L0_routing/scripts/extra/f.py")
+                rel = file_path.relative_to(tmp_path)
+
         rel = file_path.relative_to(tmp_path)
 
         result = agent._legacy_archive_depth_violation(file_path, rel, 4, 3, "collision", "COLLISION")

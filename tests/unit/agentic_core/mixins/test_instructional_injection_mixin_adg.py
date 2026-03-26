@@ -181,11 +181,13 @@ class ConcreteAgent(InstructionalInjectionMixin):
 
 class TestInstructionalInjectionMixinImport:
     def test_class_importable(self):
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.mixins.instructional_injection_mixin import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.config.core.injection_layer_config import InjectionLayer
-        from agentic_core.config.core.injection_layer_config import InjectionLayer
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.mixins.instructional_injection_mixin import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.config.core.injection_layer_config import InjectionLayer
+                from agentic_core.config.core.injection_layer_config import InjectionLayer
+                assert callable(InstructionalInjectionMixin)
+
         assert callable(InstructionalInjectionMixin)
 
     def test_alias_same_as_class(self):

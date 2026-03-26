@@ -175,12 +175,14 @@ pytestmark = pytest.mark.unit
 
 class TestConstants:
     def test_max_input_chars(self):
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.prompt_governance.security.utils.normalization_util import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.prompt_governance.security.utils.normalization_util import normalize_and_decode
-        from agentic_core.prompt_governance.security.utils.normalization_util import normalize_and_decode
-        from agentic_core.prompt_governance.security.utils.normalization_util import normalize_and_decode
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.prompt_governance.security.utils.normalization_util import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.prompt_governance.security.utils.normalization_util import normalize_and_decode
+                from agentic_core.prompt_governance.security.utils.normalization_util import normalize_and_decode
+                from agentic_core.prompt_governance.security.utils.normalization_util import normalize_and_decode
+                assert MAX_INPUT_CHARS == 100_000
+
         assert MAX_INPUT_CHARS == 100_000
 
     def test_max_decoded_chars(self):

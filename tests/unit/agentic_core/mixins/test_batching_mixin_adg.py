@@ -9,6 +9,8 @@ pytestmark = pytest.mark.unit
 
 
 def test_module_importable():
-    import agentic_core.mixins.batching_mixin  # noqa: F401
-    """Module batching_mixin must be importable."""
+        import agentic_core.mixins.batching_mixin  # noqa: F401
+        """Module batching_mixin must be importable."""
+        assert agentic_core.mixins.batching_mixin is not None
+
     assert agentic_core.mixins.batching_mixin is not None

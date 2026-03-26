@@ -190,15 +190,17 @@ def _make_guard(tmp_path: Path) -> RuntimeStateGuard:
 
 class TestRuntimeStateGuardImport:
     def test_class_importable(self):
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.L4_state.memory.runtime_state_guard import RuntimeStateGuard
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-    """Test class_importable runtime behavior."""
-    # Arrange
-    # TODO: Set up runtime environment
     runtime_context = {}  # Replace with actual runtime context
 
 """Test missing_key_returns_default runtime behavior."""
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L4_state.memory.runtime_state_guard import RuntimeStateGuard
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+            """Test class_importable runtime behavior."""
+            # Arrange
+            # TODO: Set up runtime environment
+            runtime_context = {}  # Replace with actual runtime context
+
 # Arrange
 # TODO: Set up runtime environment
 runtime_context = {}  # Replace with actual runtime context

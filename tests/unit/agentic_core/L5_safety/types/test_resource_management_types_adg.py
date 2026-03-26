@@ -32,7 +32,9 @@ def _class_names():
 
 class TestResourceManagementTypesSource:
     def test_source_exists(self):
-        import agentic_core.L5_safety.types.resource_management_types as _mod  # noqa: F401  # ADG covers
+                import agentic_core.L5_safety.types.resource_management_types as _mod  # noqa: F401  # ADG covers
+                assert _SRC.exists()
+
         assert _SRC.exists()
 
     def test_has_resource_type(self):

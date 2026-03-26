@@ -170,10 +170,12 @@ pytestmark = pytest.mark.unit
 
 class TestPiiVault:
     def test_creates(self):
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.L5_safety.enforcement.pii_vault_enforcer import PiiVault
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        vault = PiiVault(config={})
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L5_safety.enforcement.pii_vault_enforcer import PiiVault
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                vault = PiiVault(config={})
+                assert vault is not None
+
         assert vault is not None
 
     def test_tokenize_replaces_pii(self):

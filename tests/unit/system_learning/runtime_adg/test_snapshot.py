@@ -17,12 +17,6 @@ import pytest
 
 pytestmark = pytest.mark.unit
 
-from system_learning.runtime_adg.snapshot import (
-    RuntimeADGEdge,
-    RuntimeADGNode,
-    attributes_to_json,
-    create_runtime_adg_snapshot,
-)
 
 
 def _make_node(
@@ -48,6 +42,13 @@ def _make_edge(src: str = "span-0", dst: str = "span-1") -> RuntimeADGEdge:
 class TestRuntimeADGNodeFrozen:
     def test_is_frozen(self):
     """Test is_frozen runtime behavior."""
+        from system_learning.runtime_adg.snapshot import (
+            RuntimeADGEdge,
+            RuntimeADGNode,
+            attributes_to_json,
+            create_runtime_adg_snapshot,
+        )
+
     # Arrange
     # TODO: Set up runtime environment
     runtime_context = {}  # Replace with actual runtime context

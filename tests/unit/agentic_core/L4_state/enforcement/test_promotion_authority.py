@@ -26,8 +26,10 @@ pytestmark = pytest.mark.unit
 
 class TestPromotionPointerUpdateContract:
     def test_is_dataclass(self):
-        from agentic_core.L4_state.enforcement.promotion_authority import (  # noqa: F401
-        import dataclasses
+                from agentic_core.L4_state.enforcement.promotion_authority import (  # noqa: F401
+                import dataclasses
+                assert dataclasses.is_dataclass(PromotionPointerUpdate)
+
         assert dataclasses.is_dataclass(PromotionPointerUpdate)
 
     def test_is_frozen(self):

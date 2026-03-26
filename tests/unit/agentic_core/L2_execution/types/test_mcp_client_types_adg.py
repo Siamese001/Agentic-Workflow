@@ -33,28 +33,30 @@ def _func_names():
 
 class TestMCPClientTypesSource:
     def test_source_exists(self):
-        import agentic_core.L2_execution.types.mcp_client_types as _mod  # noqa: F401  # ADG covers
-    """Test source_exists runtime behavior."""
-    # Arrange
-    # TODO: Set up test data for source_exists
-    """Test parses_without_error runtime behavior."""
-    # Arrange
-    # TODO: Set up error condition
-    """Test has_mcp_client_spec_class runtime behavior."""
-    # Arrange
-    # TODO: Set up test data for has_mcp_client_spec_class
-    """Test has_mcp_client_stub_class runtime behavior."""
-    # Arrange
-    # TODO: Set up test data for has_mcp_client_stub_class
-    """Test has_mcp_client_registry_class runtime behavior."""
-    # Arrange
-    # TODO: Set up test data for has_mcp_client_registry_class
-    """Test has_mcp_client_class runtime behavior."""
-    # Arrange
-    # TODO: Set up test data for has_mcp_client_class
-    """Test mcp_client_spec_has_validate_method runtime behavior."""
-    # Arrange
-    # TODO: Set up test data for mcp_client_spec_has_validate_method
+                import agentic_core.L2_execution.types.mcp_client_types as _mod  # noqa: F401  # ADG covers
+            """Test source_exists runtime behavior."""
+            # Arrange
+            # TODO: Set up test data for source_exists
+            """Test parses_without_error runtime behavior."""
+            # Arrange
+            # TODO: Set up error condition
+            """Test has_mcp_client_spec_class runtime behavior."""
+            # Arrange
+            # TODO: Set up test data for has_mcp_client_spec_class
+            """Test has_mcp_client_stub_class runtime behavior."""
+            # Arrange
+            # TODO: Set up test data for has_mcp_client_stub_class
+            """Test has_mcp_client_registry_class runtime behavior."""
+            # Arrange
+            # TODO: Set up test data for has_mcp_client_registry_class
+            """Test has_mcp_client_class runtime behavior."""
+            # Arrange
+            # TODO: Set up test data for has_mcp_client_class
+            """Test mcp_client_spec_has_validate_method runtime behavior."""
+            # Arrange
+            # TODO: Set up test data for mcp_client_spec_has_validate_method
+            test_data = {}  # Replace with actual test data
+
     test_data = {}  # Replace with actual test data
 
     # Act

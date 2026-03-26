@@ -5,9 +5,10 @@ import pytest
 
 pytestmark = pytest.mark.unit
 
-import system_learning.types.index_build_metadata_types  # noqa: F401
 
 
 def test_module_importable():
     """Module index_build_metadata_types must be importable."""
+    import system_learning.types.index_build_metadata_types  # noqa: F401
+
     assert system_learning.types.index_build_metadata_types is not None

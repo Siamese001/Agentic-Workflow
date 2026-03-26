@@ -19,20 +19,22 @@ sys.path.insert(0, str(project_root))
 
 
 def test_mro_integrity_and_initialization_order():
-    from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
-    from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
-    from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
-    from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
-    from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
-    from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
-    from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
-    from agentic_core.mixins.healer_mixin import HealerMixin
-    """
-    Verifies that:
-    1. Root state is initialized BEFORE Mixins run (avoiding AttributeError).
-    2. The _sovereign_initialized flag prevents double-init.
-    3. State containers exist as dataclass fields.
-    """
+        from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
+        from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
+        from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
+        from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
+        from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
+        from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
+        from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
+        from agentic_core.mixins.healer_mixin import HealerMixin
+        """
+        Verifies that:
+        1. Root state is initialized BEFORE Mixins run (avoiding AttributeError).
+        2. The _sovereign_initialized flag prevents double-init.
+        3. State containers exist as dataclass fields.
+        """
+        print("\n[TEST 1] MRO Integrity and Initialization Order...")
+
     print("\n[TEST 1] MRO Integrity and Initialization Order...")
 
     from dataclasses import dataclass

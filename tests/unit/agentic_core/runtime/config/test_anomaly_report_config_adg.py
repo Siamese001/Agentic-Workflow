@@ -173,18 +173,20 @@ pytestmark = pytest.mark.unit
 
 class TestAnomalySeverity:
     def test_low_value(self):
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.runtime.config.anomaly_report_config import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-    """Test low_value runtime behavior."""
-    # Arrange
-    # TODO: Set up runtime environment
-    """Test critical_value runtime behavior."""
-    # Arrange
-    # TODO: Set up runtime environment
-    """Test all_levels runtime behavior."""
-    # Arrange
-    # TODO: Set up runtime environment
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.runtime.config.anomaly_report_config import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+            """Test low_value runtime behavior."""
+            # Arrange
+            # TODO: Set up runtime environment
+            """Test critical_value runtime behavior."""
+            # Arrange
+            # TODO: Set up runtime environment
+            """Test all_levels runtime behavior."""
+            # Arrange
+            # TODO: Set up runtime environment
+            runtime_context = {}  # Replace with actual runtime context
+
     runtime_context = {}  # Replace with actual runtime context
 
     # Act

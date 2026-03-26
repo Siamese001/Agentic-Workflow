@@ -203,18 +203,20 @@ pytestmark = pytest.mark.governance
 
 
 def test_preflight_passes_small_prompt() -> None:
-    from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-    from agentic_core.L2_execution.types.vllm_token_budget_types import (
-    from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-    """Small prompt with known task class must pass preflight."""
-    prompt = "Fix the import error."
-    result = run_preflight_budget_check(
-        prompt=prompt,
-        task_class=TaskClass.HEALING_JSON_ARTIFACT.value,
-        max_model_len=QWEN_7B_MAX_MODEL_LEN,
-    )
-    assert result.token_budget_ok is True
-    assert result.route_to_gemini is False
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L2_execution.types.vllm_token_budget_types import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        """Small prompt with known task class must pass preflight."""
+        prompt = "Fix the import error."
+        result = run_preflight_budget_check(
+            prompt=prompt,
+            task_class=TaskClass.HEALING_JSON_ARTIFACT.value,
+            max_model_len=QWEN_7B_MAX_MODEL_LEN,
+        )
+        assert result.token_budget_ok is True
+        assert result.route_to_gemini is False
+        assert result.failure_type is None
+
     assert result.failure_type is None
 
 

@@ -18,9 +18,11 @@ import pytest
 
 
 def test_policy_hash_computed_from_actual_file():
-    from agentic_core.L0_routing.config.path_constants import (
-    """
-    PASS: policy_hash is SHA256 of v15_policy_pack.json file content.
+        from agentic_core.L0_routing.config.path_constants import (
+        """
+        PASS: policy_hash is SHA256 of v15_policy_pack.json file content.
+        FAIL: policy_hash equals hardcoded sentinel sha256("sovereign-policy-v1.0").
+
     FAIL: policy_hash equals hardcoded sentinel sha256("sovereign-policy-v1.0").
 
     Per .windsurfrules §1.3: Deterministic - same file content → same hash.

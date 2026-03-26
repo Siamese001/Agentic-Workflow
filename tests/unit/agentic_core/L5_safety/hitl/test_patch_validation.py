@@ -171,13 +171,15 @@ class TestValidatePatch:
         }
 
     def test_valid_patch_returns_validated(self):
-        from agentic_core.L5_safety.hitl.patch_validator import ValidatedPatch, validate_patch
-        from agentic_core.L5_safety.types.hardening_errors import HumanPatchValidationError
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        result = validate_patch(self._valid_patch())
-        assert isinstance(result, ValidatedPatch)
-        assert result.reviewer_signature == "reviewer@example.com"
-        assert result.original_plan_hash == "abc123"
+                from agentic_core.L5_safety.hitl.patch_validator import ValidatedPatch, validate_patch
+                from agentic_core.L5_safety.types.hardening_errors import HumanPatchValidationError
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                result = validate_patch(self._valid_patch())
+                assert isinstance(result, ValidatedPatch)
+                assert result.reviewer_signature == "reviewer@example.com"
+                assert result.original_plan_hash == "abc123"
+                assert result.patch_hash  # non-empty SHA256
+
         assert result.patch_hash  # non-empty SHA256
 
     def test_patch_hash_is_64_chars(self):

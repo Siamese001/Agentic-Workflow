@@ -5,9 +5,10 @@ import pytest
 
 pytestmark = pytest.mark.unit
 
-import apps_lic.tools.AssessContentRisk  # noqa: F401
 
 
 def test_module_importable():
     """Module AssessContentRisk must be importable."""
+    import apps_lic.tools.AssessContentRisk  # noqa: F401
+
     assert apps_lic.tools.AssessContentRisk is not None

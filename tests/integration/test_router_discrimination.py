@@ -218,17 +218,19 @@ def _classify(tmp_path: Path, file_path: Path):
 
 class TestRouterSuffix:
     def test_router_suffix_classified_as_engine(self, tmp_path):
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.L5_safety.reasoning.FileClassificationAgent import (
-        from agentic_core.L5_safety.reasoning.FileClassificationAgent import (
-        code = """\
-        class RequestRouter:
-            def route_to(self, target):
-                return target.handle()
-        """
-        p = _make_file(tmp_path, "request_router.py", code)
-        result, stats = _classify(tmp_path, p)
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L5_safety.reasoning.FileClassificationAgent import (
+                from agentic_core.L5_safety.reasoning.FileClassificationAgent import (
+                code = """\
+                class RequestRouter:
+                    def route_to(self, target):
+                        return target.handle()
+                """
+                p = _make_file(tmp_path, "request_router.py", code)
+                result, stats = _classify(tmp_path, p)
+                assert result == "ENGINE"
+
         assert result == "ENGINE"
 
     def test_router_class_name_classified_as_engine(self, tmp_path):

@@ -5,9 +5,10 @@ import pytest
 
 pytestmark = pytest.mark.unit
 
-import apps_lic.scripts.purge_legacy_archive  # noqa: F401
 
 
 def test_module_importable():
     """Module purge_legacy_archive must be importable."""
+    import apps_lic.scripts.purge_legacy_archive  # noqa: F401
+
     assert apps_lic.scripts.purge_legacy_archive is not None

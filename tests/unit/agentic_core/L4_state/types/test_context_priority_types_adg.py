@@ -168,11 +168,13 @@ pytestmark = pytest.mark.unit
 
 class TestContextPriority:
     def test_is_enum(self):
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.L4_state.types.context_priority_types import ContextChunk, ContextPriority, ContextType
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        import enum; assert issubclass(ContextPriority, enum.Enum)
-    def test_has_critical(self):
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L4_state.types.context_priority_types import ContextChunk, ContextPriority, ContextType
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                import enum; assert issubclass(ContextPriority, enum.Enum)
+            def test_has_critical(self):
+                assert ContextPriority.CRITICAL.value == "critical"
+
         assert ContextPriority.CRITICAL.value == "critical"
 
 class TestContextType:

@@ -185,10 +185,12 @@ def _snap(tick: int) -> SemanticClockSnapshot:
 
 class TestAssertClockSynchronized:
     def test_identical_ticks_passes(self):
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.L0_routing.types.determinism_types import SemanticClockSnapshot
-        from agentic_core.L4_state.enforcement.elevator_shaft_consistency_enforcer import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L0_routing.types.determinism_types import SemanticClockSnapshot
+                from agentic_core.L4_state.enforcement.elevator_shaft_consistency_enforcer import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                assert_clock_synchronized(_snap(10), _snap(10))
+
         assert_clock_synchronized(_snap(10), _snap(10))
 
     def test_within_tolerance_passes(self):

@@ -5,6 +5,8 @@ from __future__ import annotations
 
 
 def test_module_importable():
-    import agentic_core.L5_safety.enforcement.conf_calib_gate  # noqa: F401
-    """Module conf_calib_gate must be importable."""
+        import agentic_core.L5_safety.enforcement.conf_calib_gate  # noqa: F401
+        """Module conf_calib_gate must be importable."""
+        assert agentic_core.L5_safety.enforcement.conf_calib_gate is not None
+
     assert agentic_core.L5_safety.enforcement.conf_calib_gate is not None

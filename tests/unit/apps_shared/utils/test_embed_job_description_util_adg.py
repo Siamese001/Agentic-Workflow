@@ -5,9 +5,10 @@ import pytest
 
 pytestmark = pytest.mark.unit
 
-import apps_shared.utils.embed_job_description_util  # noqa: F401
 
 
 def test_module_importable():
     """Module embed_job_description_util must be importable."""
+    import apps_shared.utils.embed_job_description_util  # noqa: F401
+
     assert apps_shared.utils.embed_job_description_util is not None

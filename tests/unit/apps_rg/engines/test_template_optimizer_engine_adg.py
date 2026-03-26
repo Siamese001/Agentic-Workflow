@@ -5,9 +5,10 @@ import pytest
 
 pytestmark = pytest.mark.unit
 
-import apps_rg.engines.template_optimizer_engine  # noqa: F401
 
 
 def test_module_importable():
     """Module template_optimizer_engine must be importable."""
+    import apps_rg.engines.template_optimizer_engine  # noqa: F401
+
     assert apps_rg.engines.template_optimizer_engine is not None

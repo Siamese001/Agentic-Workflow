@@ -28,7 +28,9 @@ pytestmark = pytest.mark.unit
 
 class TestReconcilerAdapterContract:
     def test_is_class(self):
-        from agentic_core.L0_routing.scripts.ssot_adapters import (  # noqa: F401
+                from agentic_core.L0_routing.scripts.ssot_adapters import (  # noqa: F401
+                assert isinstance(ReconcilerAdapter, type)
+
         assert isinstance(ReconcilerAdapter, type)
 
     def test_has_method_pre_commit(self):

@@ -5,9 +5,10 @@ import pytest
 
 pytestmark = pytest.mark.unit
 
-import apps_lic.reasoning.MessageArchitectAgent as _mod  # noqa: F401
 
 
 def test_module_importable():
     """Module MessageArchitectAgent must be importable."""
+    import apps_lic.reasoning.MessageArchitectAgent as _mod  # noqa: F401
+
     assert _mod is not None

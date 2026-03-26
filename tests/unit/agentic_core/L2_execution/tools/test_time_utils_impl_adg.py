@@ -170,16 +170,18 @@ pytestmark = pytest.mark.unit
 
 class TestTimeTools:
     def test_creates(self):
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.L2_execution.tools.time_utils_impl import TimeTools
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-    """Test creates runtime behavior."""
-    # Arrange
-    # TODO: Set up test data for creates
-    test_data = {}  # Replace with actual test data
-    """Test has_fallback_method runtime behavior."""
-    # Arrange
-    # TODO: Set up test data for has_fallback_method
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L2_execution.tools.time_utils_impl import TimeTools
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+            """Test creates runtime behavior."""
+            # Arrange
+            # TODO: Set up test data for creates
+            test_data = {}  # Replace with actual test data
+            """Test has_fallback_method runtime behavior."""
+            # Arrange
+            # TODO: Set up test data for has_fallback_method
+            test_data = {}  # Replace with actual test data
+
     test_data = {}  # Replace with actual test data
 
     # Act

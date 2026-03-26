@@ -28,8 +28,10 @@ pytestmark = pytest.mark.unit
 
 class TestProviderContract:
     def test_is_enum(self):
-        from agentic_core.L4_state.config.vllm_routing_predicates import (  # noqa: F401
-        import enum
+                from agentic_core.L4_state.config.vllm_routing_predicates import (  # noqa: F401
+                import enum
+                assert issubclass(Provider, enum.Enum)
+
         assert issubclass(Provider, enum.Enum)
 
     def test_has_members(self):

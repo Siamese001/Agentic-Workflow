@@ -172,13 +172,16 @@ pytestmark = pytest.mark.unit
 
 class TestL1CognitionPublicAPI:
     def test_all_exports_present(self):
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        import agentic_core.L1_cognition as m
-        import agentic_core.L1_cognition as m
-        import agentic_core.L1_cognition as m
-#  # MOVED: import agentic_core.L1_cognition as m
-        for name in m.__all__:
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                import agentic_core.L1_cognition as m
+                import agentic_core.L1_cognition as m
+                import agentic_core.L1_cognition as m
+                import agentic_core.L1_cognition as m
+        #  # MOVED: import agentic_core.L1_cognition as m
+                for name in m.__all__:
+                    assert hasattr(m, name), f"Missing __all__ member: {name}"
+
             assert hasattr(m, name), f"Missing __all__ member: {name}"
 
     def test_action_request_importable(self):

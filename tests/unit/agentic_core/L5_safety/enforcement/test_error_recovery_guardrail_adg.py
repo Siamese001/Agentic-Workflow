@@ -5,6 +5,8 @@ from __future__ import annotations
 
 
 def test_module_importable():
-    import agentic_core.L5_safety.enforcement.error_recovery_guardrail  # noqa: F401
-    """Module error_recovery_guardrail must be importable."""
+        import agentic_core.L5_safety.enforcement.error_recovery_guardrail  # noqa: F401
+        """Module error_recovery_guardrail must be importable."""
+        assert agentic_core.L5_safety.enforcement.error_recovery_guardrail is not None
+
     assert agentic_core.L5_safety.enforcement.error_recovery_guardrail is not None

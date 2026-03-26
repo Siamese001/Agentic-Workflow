@@ -27,8 +27,10 @@ pytestmark = pytest.mark.unit
 
 class TestContextCompletenessScoreContract:
     def test_is_dataclass(self):
-        from agentic_core.utils.workflow_engines.completeness import (  # noqa: F401
-        import dataclasses
+                from agentic_core.utils.workflow_engines.completeness import (  # noqa: F401
+                import dataclasses
+                assert dataclasses.is_dataclass(ContextCompletenessScore)
+
         assert dataclasses.is_dataclass(ContextCompletenessScore)
 
     def test_is_frozen(self):

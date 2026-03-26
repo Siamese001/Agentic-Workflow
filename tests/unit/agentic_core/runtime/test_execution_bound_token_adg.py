@@ -170,12 +170,14 @@ pytestmark = pytest.mark.unit
 
 class TestCapabilityType:
     def test_read_only_value(self):
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.runtime.execution_bound_token import CapabilityType, ExecutionBoundToken
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-    """Test read_only_value runtime behavior."""
-    # Arrange
-    # TODO: Set up runtime environment
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.runtime.execution_bound_token import CapabilityType, ExecutionBoundToken
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+            """Test read_only_value runtime behavior."""
+            # Arrange
+            # TODO: Set up runtime environment
+            runtime_context = {}  # Replace with actual runtime context
+
     runtime_context = {}  # Replace with actual runtime context
 
     # Act

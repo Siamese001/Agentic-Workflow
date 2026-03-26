@@ -5,6 +5,8 @@ from __future__ import annotations
 
 
 def test_module_importable():
-    import agentic_core.L5_safety.reasoning.IntegrityGateExecutorAgent  # noqa: F401
-    """Module IntegrityGateExecutorAgent must be importable."""
+        import agentic_core.L5_safety.reasoning.IntegrityGateExecutorAgent  # noqa: F401
+        """Module IntegrityGateExecutorAgent must be importable."""
+        assert agentic_core.L5_safety.reasoning.IntegrityGateExecutorAgent is not None
+
     assert agentic_core.L5_safety.reasoning.IntegrityGateExecutorAgent is not None

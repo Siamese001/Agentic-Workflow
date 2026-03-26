@@ -173,10 +173,12 @@ pytestmark = pytest.mark.unit
 
 class TestCacheSufficiencyResult:
     def test_creates_sufficient(self):
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.L4_state.utils.rag_enhancement_util import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        r = CacheSufficiencyResult(is_sufficient=True, cached_response="hi", confidence=1.0)
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L4_state.utils.rag_enhancement_util import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                r = CacheSufficiencyResult(is_sufficient=True, cached_response="hi", confidence=1.0)
+                assert r.is_sufficient is True
+
         assert r.is_sufficient is True
 
     def test_creates_insufficient(self):

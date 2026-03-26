@@ -5,8 +5,10 @@ from __future__ import annotations
 
 
 def test_module_importable():
-    import agentic_core.L2_execution.types.tool_intent_types  # noqa: F401
 """Test module_importable runtime behavior."""
+        import agentic_core.L2_execution.types.tool_intent_types  # noqa: F401
+    """Test module_importable runtime behavior."""
+
 # Arrange
 # TODO: Set up test data for module_importable
 test_data = {}  # Replace with actual test data

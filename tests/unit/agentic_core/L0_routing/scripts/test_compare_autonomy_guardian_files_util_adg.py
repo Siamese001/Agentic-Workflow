@@ -27,7 +27,9 @@ except (ValueError, TypeError, RuntimeError) as e:  # guardian: allow-silent-swa
 
 class TestMaxRetriesConstant:
     def test_is_not_none(self):
-        from agentic_core.L0_routing.scripts.compare_autonomy_guardian_files_util import (  # noqa: F401
+                from agentic_core.L0_routing.scripts.compare_autonomy_guardian_files_util import (  # noqa: F401
+                assert MAX_RETRIES is not None
+
         assert MAX_RETRIES is not None
 
 class TestDefaultSleepConstant:

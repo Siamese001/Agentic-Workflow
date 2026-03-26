@@ -5,9 +5,10 @@ import pytest
 
 pytestmark = pytest.mark.unit
 
-import apps_rg.scripts.generate_final_report  # noqa: F401
 
 
 def test_module_importable():
     """Module generate_final_report must be importable."""
+    import apps_rg.scripts.generate_final_report  # noqa: F401
+
     assert apps_rg.scripts.generate_final_report is not None

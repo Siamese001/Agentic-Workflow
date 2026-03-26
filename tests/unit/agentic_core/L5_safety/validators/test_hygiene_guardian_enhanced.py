@@ -168,12 +168,14 @@ class TestHygieneGuardianNamingEnhanced:
         self.tmp_path = None
 
     def test_camel_case_splitting(self, tmp_path, disable_path_shield):
-        from agentic_core.L5_safety.reasoning.HygieneGuardianAgent import HygieneGuardianAgent
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        """
-        Ensures CamelCase files are counted correctly.
-        'MyVeryLongFileNameDetector.py' should be 6 words, not 1.
-        """
+                from agentic_core.L5_safety.reasoning.HygieneGuardianAgent import HygieneGuardianAgent
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                """
+                Ensures CamelCase files are counted correctly.
+                'MyVeryLongFileNameDetector.py' should be 6 words, not 1.
+                """
+                guardian = HygieneGuardianAgent(project_root=tmp_path)
+
         guardian = HygieneGuardianAgent(project_root=tmp_path)
 
         # "My", "Very", "Long", "File", "Name", "Detector" = 6 words

@@ -5,9 +5,10 @@ import pytest
 
 pytestmark = pytest.mark.unit
 
-import apps_shared.validators.__init__ as _mod  # noqa: F401
 
 
 def test_module_importable():
     """Module validators must be importable."""
+    import apps_shared.validators.__init__ as _mod  # noqa: F401
+
     assert _mod is not None

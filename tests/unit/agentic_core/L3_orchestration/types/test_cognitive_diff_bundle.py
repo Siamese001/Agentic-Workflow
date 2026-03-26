@@ -204,18 +204,20 @@ def after_state() -> CognitiveStateSnapshot:
 
 class TestContractSerialization:
     def test_to_dict_stable_json(self, clock, before_state, after_state):
-        from agentic_core.L0_routing.types.determinism_types import SemanticClockSnapshot
-        from agentic_core.L3_orchestration.types.cognitive_diff_types import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        bundle = emit_cognitive_diff_bundle(
-            before=before_state,
-            after=after_state,
-            semantic_clock=clock,
-        )
-        j = json.dumps(bundle.to_dict(), sort_keys=True, separators=(",", ":"))
-        assert isinstance(j, str)
-        parsed = json.loads(j)
-        assert parsed["artifact_type"] == "COGNITIVE_DIFF_BUNDLE"
+                from agentic_core.L0_routing.types.determinism_types import SemanticClockSnapshot
+                from agentic_core.L3_orchestration.types.cognitive_diff_types import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                bundle = emit_cognitive_diff_bundle(
+                    before=before_state,
+                    after=after_state,
+                    semantic_clock=clock,
+                )
+                j = json.dumps(bundle.to_dict(), sort_keys=True, separators=(",", ":"))
+                assert isinstance(j, str)
+                parsed = json.loads(j)
+                assert parsed["artifact_type"] == "COGNITIVE_DIFF_BUNDLE"
+                assert parsed["semantic_clock"]["tick"] == 7
+
         assert parsed["semantic_clock"]["tick"] == 7
 
     def test_diff_ops_sorted_by_path(self, clock, before_state, after_state):

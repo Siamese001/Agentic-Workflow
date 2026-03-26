@@ -9,6 +9,8 @@ pytestmark = pytest.mark.unit
 
 
 def test_module_importable():
-    import agentic_core.L3_orchestration.reasoning.SubatomicHopAgent  # noqa: F401
-    """Module SubatomicHopAgent must be importable."""
+        import agentic_core.L3_orchestration.reasoning.SubatomicHopAgent  # noqa: F401
+        """Module SubatomicHopAgent must be importable."""
+        assert agentic_core.L3_orchestration.reasoning.SubatomicHopAgent is not None
+
     assert agentic_core.L3_orchestration.reasoning.SubatomicHopAgent is not None

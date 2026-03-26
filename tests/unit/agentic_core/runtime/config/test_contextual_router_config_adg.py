@@ -36,34 +36,36 @@ def _src_text():
 
 class TestContextualRouterConfigSource:
     def test_source_exists(self):
-        import agentic_core.runtime.config.contextual_router_config as _mod  # noqa: F401  # ADG covers
-    """Test source_exists runtime behavior."""
-    # Arrange
-    # TODO: Set up runtime environment
-    """Test parses_without_error runtime behavior."""
-    # Arrange
-    # TODO: Set up error condition
-    """Test has_routing_request_class runtime behavior."""
-    # Arrange
-    # TODO: Set up runtime environment
-    """Test has_route_decision_class runtime behavior."""
-    # Arrange
-    # TODO: Set up runtime environment
-    """Test has_request_id_field runtime behavior."""
-    # Arrange
-    # TODO: Set up runtime environment
-    """Test has_action_type_field runtime behavior."""
-    # Arrange
-    # TODO: Set up runtime environment
-    """Test has_target_files_field runtime behavior."""
-    # Arrange
-    # TODO: Set up runtime environment
-    """Test has_agent_name_field runtime behavior."""
-    # Arrange
-    # TODO: Set up runtime environment
-    """Test has_payload_field runtime behavior."""
-    # Arrange
-    # TODO: Set up runtime environment
+                import agentic_core.runtime.config.contextual_router_config as _mod  # noqa: F401  # ADG covers
+            """Test source_exists runtime behavior."""
+            # Arrange
+            # TODO: Set up runtime environment
+            """Test parses_without_error runtime behavior."""
+            # Arrange
+            # TODO: Set up error condition
+            """Test has_routing_request_class runtime behavior."""
+            # Arrange
+            # TODO: Set up runtime environment
+            """Test has_route_decision_class runtime behavior."""
+            # Arrange
+            # TODO: Set up runtime environment
+            """Test has_request_id_field runtime behavior."""
+            # Arrange
+            # TODO: Set up runtime environment
+            """Test has_action_type_field runtime behavior."""
+            # Arrange
+            # TODO: Set up runtime environment
+            """Test has_target_files_field runtime behavior."""
+            # Arrange
+            # TODO: Set up runtime environment
+            """Test has_agent_name_field runtime behavior."""
+            # Arrange
+            # TODO: Set up runtime environment
+            """Test has_payload_field runtime behavior."""
+            # Arrange
+            # TODO: Set up runtime environment
+            runtime_context = {}  # Replace with actual runtime context
+
     runtime_context = {}  # Replace with actual runtime context
 
     # Act

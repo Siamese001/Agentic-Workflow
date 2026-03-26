@@ -9,6 +9,8 @@ pytestmark = pytest.mark.unit
 
 
 def test_module_importable():
-    import agentic_core.L3_orchestration.reasoning.mcp_manager  # noqa: F401
-    """Module mcp_manager must be importable."""
+        import agentic_core.L3_orchestration.reasoning.mcp_manager  # noqa: F401
+        """Module mcp_manager must be importable."""
+        assert agentic_core.L3_orchestration.reasoning.mcp_manager is not None
+
     assert agentic_core.L3_orchestration.reasoning.mcp_manager is not None

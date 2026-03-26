@@ -26,7 +26,9 @@ pytestmark = pytest.mark.unit
 
 class TestHealingTransactionContract:
     def test_is_class(self):
-        from agentic_core.L5_safety.enforcement.sovereign_healing_engine_enforcer import (  # noqa: F401
+                from agentic_core.L5_safety.enforcement.sovereign_healing_engine_enforcer import (  # noqa: F401
+                assert isinstance(HealingTransaction, type)
+
         assert isinstance(HealingTransaction, type)
 
     def test_instantiable_or_abstract(self):

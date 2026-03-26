@@ -5,9 +5,10 @@ import pytest
 
 pytestmark = pytest.mark.unit
 
-import apps_shared.utils.input_guardrail_util  # noqa: F401
 
 
 def test_module_importable():
     """Module input_guardrail_util must be importable."""
+    import apps_shared.utils.input_guardrail_util  # noqa: F401
+
     assert apps_shared.utils.input_guardrail_util is not None

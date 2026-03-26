@@ -25,14 +25,16 @@ pytestmark = pytest.mark.unit
 
 class TestInitializeJinjaEnvironmentFunction:
     def test_is_callable(self):
-        from agentic_core.prompt_governance.scripts.dry_run_compiler import (  # noqa: F401
-    """Test is_callable runtime behavior."""
-    # Arrange
-    # TODO: Set up execution parameters
-    input_data = {}  # Replace with actual test data
-    """Test is_callable runtime behavior."""
-    # Arrange
-    # TODO: Set up execution parameters
+                from agentic_core.prompt_governance.scripts.dry_run_compiler import (  # noqa: F401
+            """Test is_callable runtime behavior."""
+            # Arrange
+            # TODO: Set up execution parameters
+            input_data = {}  # Replace with actual test data
+            """Test is_callable runtime behavior."""
+            # Arrange
+            # TODO: Set up execution parameters
+            input_data = {}  # Replace with actual test data
+
     input_data = {}  # Replace with actual test data
 
     # Act

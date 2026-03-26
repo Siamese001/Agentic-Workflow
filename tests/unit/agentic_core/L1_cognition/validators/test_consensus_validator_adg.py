@@ -170,10 +170,12 @@ pytestmark = pytest.mark.unit
 
 class TestConsensusEngine:
     def test_creates_with_defaults(self):
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.L1_cognition.validators.consensus_validator import ConsensusEngine
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        engine = ConsensusEngine()
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L1_cognition.validators.consensus_validator import ConsensusEngine
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                engine = ConsensusEngine()
+                assert engine is not None
+
         assert engine is not None
 
     def test_critical_keywords_is_list(self):

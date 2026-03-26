@@ -5,9 +5,10 @@ import pytest
 
 pytestmark = pytest.mark.unit
 
-import apps_shared.utils.canon_error_util  # noqa: F401
 
 
 def test_module_importable():
     """Module canon_error_util must be importable."""
+    import apps_shared.utils.canon_error_util  # noqa: F401
+
     assert apps_shared.utils.canon_error_util is not None

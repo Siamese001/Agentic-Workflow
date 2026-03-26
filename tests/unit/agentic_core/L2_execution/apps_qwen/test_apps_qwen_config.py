@@ -6,8 +6,10 @@ import pytest
 
 
 def test_apps_qwen_config_validates() -> None:
-    from agentic_core.L2_execution.apps_qwen.apps_qwen_config import AppsQwenConfig
 """Test apps_qwen_config_validates runtime behavior."""
+        from agentic_core.L2_execution.apps_qwen.apps_qwen_config import AppsQwenConfig
+    """Test apps_qwen_config_validates runtime behavior."""
+
 # Arrange
 # TODO: Set up test data for apps_qwen_config_validates
 test_data = {}  # Replace with actual test data

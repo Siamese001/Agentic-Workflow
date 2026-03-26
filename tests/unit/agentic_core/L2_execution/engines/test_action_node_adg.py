@@ -170,12 +170,14 @@ pytestmark = pytest.mark.unit
 
 class TestActionNode:
     def test_creates(self):
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.L2_execution.engines.action_node import ActionNode
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-    """Test creates runtime behavior."""
-    # Arrange
-    # TODO: Set up test data for creates
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L2_execution.engines.action_node import ActionNode
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+            """Test creates runtime behavior."""
+            # Arrange
+            # TODO: Set up test data for creates
+            test_data = {}  # Replace with actual test data
+
     test_data = {}  # Replace with actual test data
 
     # Act

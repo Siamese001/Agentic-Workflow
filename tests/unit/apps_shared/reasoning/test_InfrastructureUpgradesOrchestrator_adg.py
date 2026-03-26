@@ -5,9 +5,10 @@ import pytest
 
 pytestmark = pytest.mark.unit
 
-import apps_shared.reasoning.InfrastructureUpgradesOrchestrator  # noqa: F401
 
 
 def test_module_importable():
     """Module InfrastructureUpgradesOrchestrator must be importable."""
+    import apps_shared.reasoning.InfrastructureUpgradesOrchestrator  # noqa: F401
+
     assert apps_shared.reasoning.InfrastructureUpgradesOrchestrator is not None

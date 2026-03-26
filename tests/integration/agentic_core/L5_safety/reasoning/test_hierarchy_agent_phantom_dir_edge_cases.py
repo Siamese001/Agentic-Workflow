@@ -264,24 +264,26 @@ class TestFileInsideDepthAlignedDir:
     """
 
     def test_file_in_depth_aligned_correct_depth_returns_zero(self, tmp_path):
-        from agentic_core.L0_routing.config.path_constants import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.L5_safety.reasoning.hierarchy_healer import HierarchyAgent
-        from agentic_core.L5_safety.config.structure_blueprint import (
-        from agentic_core.L5_safety.config.structure_blueprint import (
-        from agentic_core.L5_safety.config.structure_blueprint import (
-        from agentic_core.L5_safety.reasoning.hierarchy_healer import HierarchyAgent
-        from agentic_core.L5_safety.reasoning.hierarchy_healer import HierarchyAgent
-        from agentic_core.L5_safety.reasoning.hierarchy_healer import HierarchyAgent
-        """
-        Silent bypass: agentic_core/cache/depth_aligned/schema_cache.py
-        depth=3, expected=3 → falls through all branches → returns 0, no gk call.
-        """
-        agent = _make_agent(tmp_path)
-        rel = Path("agentic_core/cache/depth_aligned/schema_cache.py")
-        file_path = tmp_path / rel
-        file_path.parent.mkdir(parents=True)
+                from agentic_core.L0_routing.config.path_constants import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L5_safety.reasoning.hierarchy_healer import HierarchyAgent
+                from agentic_core.L5_safety.config.structure_blueprint import (
+                from agentic_core.L5_safety.config.structure_blueprint import (
+                from agentic_core.L5_safety.config.structure_blueprint import (
+                from agentic_core.L5_safety.reasoning.hierarchy_healer import HierarchyAgent
+                from agentic_core.L5_safety.reasoning.hierarchy_healer import HierarchyAgent
+                from agentic_core.L5_safety.reasoning.hierarchy_healer import HierarchyAgent
+                """
+                Silent bypass: agentic_core/cache/depth_aligned/schema_cache.py
+                depth=3, expected=3 → falls through all branches → returns 0, no gk call.
+                """
+                agent = _make_agent(tmp_path)
+                rel = Path("agentic_core/cache/depth_aligned/schema_cache.py")
+                file_path = tmp_path / rel
+                file_path.parent.mkdir(parents=True)
+                file_path.write_text("")
+
         file_path.write_text("")
 
         result = _call(agent, file_path, rel, depth=3, expected=3)

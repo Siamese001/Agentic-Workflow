@@ -328,13 +328,15 @@ class TestRouteDecisionArtifactContract:
     """Assert RouteDecisionArtifact is attached to delegate_task return."""
 
     def test_success_path_contains_artifact_with_all_keys(self):
-        from agentic_core.L0_routing.types.routing_artifact_types import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.L0_routing.types.routing_contracts_types import TelemetryEmitter
-    """Test success_path_contains_artifact_with_all_keys contract compliance."""
-    # Arrange
-    # TODO: Set up contract parties and terms
+                from agentic_core.L0_routing.types.routing_artifact_types import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L0_routing.types.routing_contracts_types import TelemetryEmitter
+            """Test success_path_contains_artifact_with_all_keys contract compliance."""
+            # Arrange
+            # TODO: Set up contract parties and terms
+            contract_terms = {}  # Replace with actual contract terms
+
     contract_terms = {}  # Replace with actual contract terms
 
     # Act

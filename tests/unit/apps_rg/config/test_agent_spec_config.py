@@ -10,23 +10,24 @@ import pytest
 
 pytestmark = pytest.mark.unit
 
-from apps_rg.config.agent_spec_config import (  # noqa: F401
-    BATCH_SIZE,
-    BUFFER_SIZE,
-    DEFAULT_SLEEP,
-    MAX_RETRIES,
-    THRESHOLD,
-    AgentSpec,
-    ClerkExtractionConfig,
-    EnrichmentConfig,
-    GenerationConfig,
-    OrchestrationTopology,
-    ValidationConfig,
-)
 
 
 class TestAgentSpecContract:
     def test_is_class(self):
+        from apps_rg.config.agent_spec_config import (  # noqa: F401
+            BATCH_SIZE,
+            BUFFER_SIZE,
+            DEFAULT_SLEEP,
+            MAX_RETRIES,
+            THRESHOLD,
+            AgentSpec,
+            ClerkExtractionConfig,
+            EnrichmentConfig,
+            GenerationConfig,
+            OrchestrationTopology,
+            ValidationConfig,
+        )
+
         assert isinstance(AgentSpec, type)
 
     def test_instantiable_or_abstract(self):

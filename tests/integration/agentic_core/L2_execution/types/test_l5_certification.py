@@ -245,14 +245,16 @@ def verifier_no_l5():
 
 
 def test_l5_certification_creation(base_packet):
-    from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-    from agentic_core.L2_execution.enforcement.boundary_verifier import (
-    from agentic_core.L2_execution.enforcement.key_source import (
-    from agentic_core.L2_execution.types.instruction_packet_types import (
-    from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-    """Test L5 certification can be applied to InstructionPacket."""
-    agent_registry_hash = hashlib.sha256(b"agent-registry-data").hexdigest()
-    execution_profile_hash = hashlib.sha256(b"execution-profile-data").hexdigest()
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L2_execution.enforcement.boundary_verifier import (
+        from agentic_core.L2_execution.enforcement.key_source import (
+        from agentic_core.L2_execution.types.instruction_packet_types import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        """Test L5 certification can be applied to InstructionPacket."""
+        agent_registry_hash = hashlib.sha256(b"agent-registry-data").hexdigest()
+        execution_profile_hash = hashlib.sha256(b"execution-profile-data").hexdigest()
+        policy_hash = hashlib.sha256(b"policy-data").hexdigest()
+
     policy_hash = hashlib.sha256(b"policy-data").hexdigest()
 
     certified_packet = base_packet.certify_l5(

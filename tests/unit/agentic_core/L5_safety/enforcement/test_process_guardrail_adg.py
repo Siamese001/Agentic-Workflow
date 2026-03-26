@@ -177,36 +177,38 @@ pytestmark = pytest.mark.unit
 
 class TestBlockedCommands:
     def test_is_frozenset(self):
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.L5_safety.enforcement.process_guardrail import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-    """Test is_frozenset runtime behavior."""
-    # Arrange
-    # TODO: Set up test data for is_frozenset
-    """Test pip_blocked runtime behavior."""
-    # Arrange
-    # TODO: Set up test data for pip_blocked
-    """Test rm_blocked runtime behavior."""
-    # Arrange
-    # TODO: Set up test data for rm_blocked
-    """Test sudo_blocked runtime behavior."""
-    # Arrange
-    # TODO: Set up test data for sudo_blocked
-    """Test powershell_blocked runtime behavior."""
-    # Arrange
-    # TODO: Set up test data for powershell_blocked
-    """Test npm_blocked runtime behavior."""
-    # Arrange
-    # TODO: Set up test data for npm_blocked
-    """Test python_not_blocked runtime behavior."""
-    # Arrange
-    # TODO: Set up test data for python_not_blocked
-    """Test echo_not_blocked runtime behavior."""
-    # Arrange
-    # TODO: Set up test data for echo_not_blocked
     test_data = {}  # Replace with actual test data
 
 """Test is_exception runtime behavior."""
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L5_safety.enforcement.process_guardrail import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+            """Test is_frozenset runtime behavior."""
+            # Arrange
+            # TODO: Set up test data for is_frozenset
+            """Test pip_blocked runtime behavior."""
+            # Arrange
+            # TODO: Set up test data for pip_blocked
+            """Test rm_blocked runtime behavior."""
+            # Arrange
+            # TODO: Set up test data for rm_blocked
+            """Test sudo_blocked runtime behavior."""
+            # Arrange
+            # TODO: Set up test data for sudo_blocked
+            """Test powershell_blocked runtime behavior."""
+            # Arrange
+            # TODO: Set up test data for powershell_blocked
+            """Test npm_blocked runtime behavior."""
+            # Arrange
+            # TODO: Set up test data for npm_blocked
+            """Test python_not_blocked runtime behavior."""
+            # Arrange
+            # TODO: Set up test data for python_not_blocked
+            """Test echo_not_blocked runtime behavior."""
+            # Arrange
+            # TODO: Set up test data for echo_not_blocked
+            test_data = {}  # Replace with actual test data
+
 # Arrange
 # TODO: Set up error condition
 """Test attributes_stored runtime behavior."""

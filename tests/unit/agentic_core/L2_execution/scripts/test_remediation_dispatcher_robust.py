@@ -221,23 +221,26 @@ class TestTierEscalateGuard1StatusNotFailed:
 
     @pytest.mark.parametrize("status", [HealStatus.HEALED, HealStatus.PARTIAL, HealStatus.SKIPPED])
     def test_non_failed_status_returns_skip_note(self, status):
-        from agentic_core.L2_execution.types.heal_contract_types import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.L2_execution.scripts.remediation_dispatcher import _tier_escalate
-        from agentic_core.L2_execution.scripts.remediation_dispatcher import _tier_escalate
-        from agentic_core.L2_execution.scripts.remediation_dispatcher import _invoke_healer
-        from agentic_core.L2_execution.scripts.remediation_dispatcher import _invoke_healer
-        from agentic_core.L2_execution.scripts.remediation_dispatcher import _invoke_healer
-        from agentic_core.L2_execution.scripts.remediation_dispatcher import _invoke_healer
-        from agentic_core.L2_execution.scripts.remediation_dispatcher import _invoke_healer
-        from agentic_core.L2_execution.scripts.remediation_dispatcher import _invoke_healer
-        from agentic_core.L2_execution.scripts.remediation_dispatcher import _invoke_healer
-        from agentic_core.L2_execution.scripts.remediation_dispatcher import _invoke_healer
-        from agentic_core.L2_execution.scripts.remediation_dispatcher import _invoke_healer
-        from agentic_core.L2_execution.scripts.remediation_dispatcher import _invoke_healer
-        from agentic_core.L2_execution.scripts.remediation_dispatcher import _invoke_healer
-        from agentic_core.L2_execution.scripts.remediation_dispatcher import _invoke_healer
+                from agentic_core.L2_execution.types.heal_contract_types import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L2_execution.scripts.remediation_dispatcher import _tier_escalate
+                from agentic_core.L2_execution.scripts.remediation_dispatcher import _tier_escalate
+                from agentic_core.L2_execution.scripts.remediation_dispatcher import _invoke_healer
+                from agentic_core.L2_execution.scripts.remediation_dispatcher import _invoke_healer
+                from agentic_core.L2_execution.scripts.remediation_dispatcher import _invoke_healer
+                from agentic_core.L2_execution.scripts.remediation_dispatcher import _invoke_healer
+                from agentic_core.L2_execution.scripts.remediation_dispatcher import _invoke_healer
+                from agentic_core.L2_execution.scripts.remediation_dispatcher import _invoke_healer
+                from agentic_core.L2_execution.scripts.remediation_dispatcher import _invoke_healer
+                from agentic_core.L2_execution.scripts.remediation_dispatcher import _invoke_healer
+                from agentic_core.L2_execution.scripts.remediation_dispatcher import _invoke_healer
+                from agentic_core.L2_execution.scripts.remediation_dispatcher import _invoke_healer
+                from agentic_core.L2_execution.scripts.remediation_dispatcher import _invoke_healer
+                from agentic_core.L2_execution.scripts.remediation_dispatcher import _invoke_healer
+                from agentic_core.L2_execution.scripts.remediation_dispatcher import _invoke_healer
+        #  # MOVED: from agentic_core.L2_execution.scripts.remediation_dispatcher import _tier_escalate
+
 #  # MOVED: from agentic_core.L2_execution.scripts.remediation_dispatcher import _tier_escalate
 
         result = _make_result(status=status, needs_llm_escalation=True)

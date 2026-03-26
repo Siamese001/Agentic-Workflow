@@ -49,8 +49,10 @@ class BoundaryStressTest:
         return all_exist
 
     def test_a_structural_realignment(self) -> dict:
-        from agentic_core.L0_routing.config.path_constants import L0_ROUTING_DIR
-        """
+                from agentic_core.L0_routing.config.path_constants import L0_ROUTING_DIR
+                """
+                Test Case A: Structural Re-alignment (Automatic)
+
         Test Case A: Structural Re-alignment (Automatic)
 
         Expected: rogue_script.py should be moved automatically without prompts.

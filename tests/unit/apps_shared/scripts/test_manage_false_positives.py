@@ -10,22 +10,23 @@ import pytest
 
 pytestmark = pytest.mark.unit
 
-from apps_shared.scripts.manage_false_positives import (  # noqa: F401
-    BATCH_SIZE,
-    BUFFER_SIZE,
-    DEFAULT_SLEEP,
-    MAX_RETRIES,
-    THRESHOLD,
-    load_false_positives,
-    load_review_log,
-    save_false_positives,
-    show_pending_reviews,
-)
 
 
 class TestLoadReviewLogFunction:
     def test_is_callable(self):
     """Test is_callable runtime behavior."""
+        from apps_shared.scripts.manage_false_positives import (  # noqa: F401
+            BATCH_SIZE,
+            BUFFER_SIZE,
+            DEFAULT_SLEEP,
+            MAX_RETRIES,
+            THRESHOLD,
+            load_false_positives,
+            load_review_log,
+            save_false_positives,
+            show_pending_reviews,
+        )
+
     # Arrange
     # TODO: Set up execution parameters
     input_data = {}  # Replace with actual test data

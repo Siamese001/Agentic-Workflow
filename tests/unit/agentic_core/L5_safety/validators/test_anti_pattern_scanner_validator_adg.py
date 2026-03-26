@@ -173,10 +173,12 @@ pytestmark = pytest.mark.unit
 
 class TestScanReport:
     def test_creates(self, tmp_path):
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.L5_safety.validators.anti_pattern_scanner_validator import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        report = ScanReport(project_root=tmp_path)
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L5_safety.validators.anti_pattern_scanner_validator import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                report = ScanReport(project_root=tmp_path)
+                assert report is not None
+
         assert report is not None
 
     def test_has_summary(self):

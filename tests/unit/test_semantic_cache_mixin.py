@@ -20,46 +20,6 @@ from dataclasses import dataclass
 
 import pytest
 
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-    _emit_agent_executes_agent,
-    _emit_applies_guardrail,  # noqa: E402
-    _emit_authorize_and_execute,
-    _emit_blocks_direct_write,
-    _emit_captures_evaluation_metric,
-    _emit_captures_execution_output,
-    _emit_checks_agent_registry,
-    _emit_coordinates_agents,
-    _emit_dispatches_agent,
-    _emit_dispatches_execution_plan,
-    _emit_dispatches_healing_run,
-    _emit_escalates_failure,
-    _emit_escalates_to_human,
-    _emit_gated_by_confidence,
-    _emit_hard_fails_untranscripted,
-    _emit_invokes_evaluation,
-    _emit_links_execution_to_snapshot,
-    _emit_observes_runtime_state,
-    _emit_orchestrates_workflow,
-    _emit_reads_policy_state,  # noqa: E402
-    _emit_records_execution_trace,  # noqa: E402
-    _emit_records_healing_outcome,
-    _emit_records_telemetry_event,
-    _emit_records_tool_invocation,
-    _emit_records_workflow_lineage,
-    _emit_routes_through,
-    _emit_routes_to_agent,
-    _emit_routes_to_capability,
-    _emit_signs_execution_trace,  # noqa: E402
-    _emit_snapshots_state,  # noqa: E402
-    _emit_stores_embedding,
-    _emit_transcripts_response,
-    _emit_updates_meta_learning_state,
-    _emit_validates_agent_capability,
-    _emit_validates_capability,
-    _emit_verifies_boundary,
-    _emit_verifies_policy,
-    _emit_writes_via_uwg,
-    emit_determinism_digest,  # noqa: E402
     emit_replay_key,  # noqa: E402
 )
 
@@ -67,42 +27,6 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 # REMOVED: _emit_applies_guardrail("p0", "test_semantic_cache_mixin", "p0_governance")
 # REMOVED: _emit_reads_policy_state("p0", "test_semantic_cache_mixin", "policy_binding")
 # REMOVED: _emit_snapshots_state("p0", "test_semantic_cache_mixin", "state_snapshot")
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-    _emit_agent_executes_agent,
-    _emit_captures_pattern,
-    _emit_captures_runtime_anomaly,
-    _emit_checks_agent_registry,
-    _emit_dispatches_execution_plan,
-    _emit_emits_metric_event,
-    _emit_escalates_to_human,
-    _emit_execution_terminates_at_uwg,
-    _emit_feeds_meta_learning,
-    _emit_gated_by_confidence,
-    _emit_hard_fails_untranscripted,
-    _emit_improves_agent_policy,
-    _emit_invokes_eval,
-    _emit_links_incident_trace,  # noqa: E402
-    _emit_observes_runtime_state,
-    _emit_proposal_commits_routing,
-    _emit_pulls_context,
-    _emit_reads_environ,
-    _emit_reads_runtime_state,
-    _emit_records_execution_trace,
-    _emit_records_incident_event,
-    _emit_records_learning_event,
-    _emit_routes_through,
-    _emit_routes_to_agent,
-    _emit_stores_learning_state,
-    _emit_transcripts_response,
-    _emit_triggers_alert,
-    _emit_updates_monitoring_state,
-    _emit_updates_routing_strategy,
-    _emit_validated_by_safety_plane,
-    _emit_validates_agent_capability,
-    _emit_verifies_boundary,
-    _emit_verifies_policy,
-    _emit_writes_learning_snapshot,
-    _emit_writes_observability_log,
     _emit_writes_through,  # noqa: E402
 )
 
@@ -189,15 +113,10 @@ os.environ.setdefault("HIVE_MIND_STRICT_MODE", "false")
 
 
 def _reset_hive():
-    from agentic_core.L4_state.memory.semantic_cache_manager import SemanticCacheManager
-
     SemanticCacheManager.reset_instance()
 
 
 def _fresh_agent():
-    from agentic_core.mixins.semantic_cache_mixin import SemanticCacheMixin
-
-    class _A(SemanticCacheMixin):
         pass
 
     return _A()
@@ -210,14 +129,152 @@ def _fresh_agent():
 
 class TestSemanticCacheMixinImport:
     def test_module_imports_cleanly(self):
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+            _emit_agent_executes_agent,
+            _emit_applies_guardrail,  # noqa: E402
+            _emit_authorize_and_execute,
+            _emit_blocks_direct_write,
+            _emit_captures_evaluation_metric,
+            _emit_captures_execution_output,
+            _emit_checks_agent_registry,
+            _emit_coordinates_agents,
+            _emit_dispatches_agent,
+            _emit_dispatches_execution_plan,
+            _emit_dispatches_healing_run,
+            _emit_escalates_failure,
+            _emit_escalates_to_human,
+            _emit_gated_by_confidence,
+            _emit_hard_fails_untranscripted,
+            _emit_invokes_evaluation,
+            _emit_links_execution_to_snapshot,
+            _emit_observes_runtime_state,
+            _emit_orchestrates_workflow,
+            _emit_reads_policy_state,  # noqa: E402
+            _emit_records_execution_trace,  # noqa: E402
+            _emit_records_healing_outcome,
+            _emit_records_telemetry_event,
+            _emit_records_tool_invocation,
+            _emit_records_workflow_lineage,
+            _emit_routes_through,
+            _emit_routes_to_agent,
+            _emit_routes_to_capability,
+            _emit_signs_execution_trace,  # noqa: E402
+            _emit_snapshots_state,  # noqa: E402
+            _emit_stores_embedding,
+            _emit_transcripts_response,
+            _emit_updates_meta_learning_state,
+            _emit_validates_agent_capability,
+            _emit_validates_capability,
+            _emit_verifies_boundary,
+            _emit_verifies_policy,
+            _emit_writes_via_uwg,
+            emit_determinism_digest,  # noqa: E402
+            emit_replay_key,  # noqa: E402
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+            _emit_agent_executes_agent,
+            _emit_captures_pattern,
+            _emit_captures_runtime_anomaly,
+            _emit_checks_agent_registry,
+            _emit_dispatches_execution_plan,
+            _emit_emits_metric_event,
+            _emit_escalates_to_human,
+            _emit_execution_terminates_at_uwg,
+            _emit_feeds_meta_learning,
+            _emit_gated_by_confidence,
+            _emit_hard_fails_untranscripted,
+            _emit_improves_agent_policy,
+            _emit_invokes_eval,
+            _emit_links_incident_trace,  # noqa: E402
+            _emit_observes_runtime_state,
+            _emit_proposal_commits_routing,
+            _emit_pulls_context,
+            _emit_reads_environ,
+            _emit_reads_runtime_state,
+            _emit_records_execution_trace,
+            _emit_records_incident_event,
+            _emit_records_learning_event,
+            _emit_routes_through,
+            _emit_routes_to_agent,
+            _emit_stores_learning_state,
+            _emit_transcripts_response,
+            _emit_triggers_alert,
+            _emit_updates_monitoring_state,
+            _emit_updates_routing_strategy,
+            _emit_validated_by_safety_plane,
+            _emit_validates_agent_capability,
+            _emit_verifies_boundary,
+            _emit_verifies_policy,
+            _emit_writes_learning_snapshot,
+            _emit_writes_observability_log,
+            _emit_writes_through,  # noqa: E402
+            from agentic_core.L4_state.memory.semantic_cache_manager import SemanticCacheManager
+            SemanticCacheManager.reset_instance()
+            from agentic_core.mixins.semantic_cache_mixin import SemanticCacheMixin
+            class _A(SemanticCacheMixin):
+                pass
+                from agentic_core.mixins.semantic_cache_mixin import (
+                    SemanticCacheMixin,
+                    semantic_cache_mixin,
+                )
+                from agentic_core.mixins.semantic_cache_mixin import SemanticCacheMixin
+                assert not hasattr(SemanticCacheMixin, "_semantic_cache"), (
+                    "_semantic_cache class var must not exist — instance caching causes stale refs"
+                )
+                from agentic_core.mixins.semantic_cache_mixin import SemanticCacheMixin
+                required = {
+                    "semantic_cache",
+                    "semantic_recall",
+                    "semantic_learn",
+                    "semantic_promote",
+                    "semantic_update_feedback",
+                    "semantic_stats",
+                }
+                agent = type("_T", (SemanticCacheMixin,), {})()
+                actual = {m for m in dir(agent) if m.startswith("semantic")}
+                missing = required - actual
+                assert not missing, f"Missing methods: {missing}"
+                from agentic_core.L4_state.memory.semantic_cache_manager import SemanticCacheManager
+                from agentic_core.mixins.semantic_cache_mixin import SemanticCacheMixin
+                from agentic_core.mixins.semantic_cache_mixin import SemanticCacheMixin
+                class Agent(SemanticCacheMixin):
+                    pass
+                from agentic_core.L4_state.memory.semantic_cache_manager import SemanticCacheManager
+                agent = _fresh_agent()
+                old = agent.semantic_cache
+                _reset_hive()
+                new = SemanticCacheManager.get_instance()
+                assert agent.semantic_cache is new, "Stale ref bug: agent still holds old singleton"
+                assert old is not new
+                from agentic_core.mixins.semantic_cache_mixin import SemanticCacheMixin
+                class A(SemanticCacheMixin):
+                    pass
+                from agentic_core.mixins.semantic_cache_mixin import SemanticCacheMixin
+                @dataclass
+                class DataAgent(SemanticCacheMixin):
+                    name: str = "agent"
+                    value: int = 0
+                from agentic_core.mixins.semantic_cache_mixin import SemanticCacheMixin
+                results = []
+                errors = []
+                from agentic_core.mixins.semantic_cache_mixin import SemanticCacheMixin
+                class Base:
+                    pass
+                from agentic_core.mixins.semantic_cache_mixin import SemanticCacheMixin
+                class FakeAgent(SemanticCacheMixin):
+                    pass
+                from agentic_core.mixins.semantic_cache_mixin import SemanticCacheMixin
+                @dataclass
+                class DataAgent(SemanticCacheMixin):
+                    name: str = "agent"
+                    value: int = 0
+                from agentic_core.mixins.semantic_cache_mixin import SemanticCacheMixin
+                class StandaloneAgent(SemanticCacheMixin):
+                    pass
+
         mod = importlib.import_module("agentic_core.mixins.semantic_cache_mixin")
         assert hasattr(mod, "SemanticCacheMixin")
 
     def test_backward_compat_alias(self):
-        from agentic_core.mixins.semantic_cache_mixin import (
-            SemanticCacheMixin,
-            semantic_cache_mixin,
-        )
 
         assert semantic_cache_mixin is SemanticCacheMixin
 
@@ -256,26 +313,8 @@ class TestSemanticCacheMixinImport:
 
     def test_no_class_var_semantic_cache(self):
         """_semantic_cache class var removed to prevent stale ref bug."""
-        from agentic_core.mixins.semantic_cache_mixin import SemanticCacheMixin
-
-        assert not hasattr(SemanticCacheMixin, "_semantic_cache"), (
-            "_semantic_cache class var must not exist — instance caching causes stale refs"
-        )
 
     def test_all_public_methods_present(self):
-        from agentic_core.mixins.semantic_cache_mixin import SemanticCacheMixin
-
-        required = {
-            "semantic_cache",
-            "semantic_recall",
-            "semantic_learn",
-            "semantic_promote",
-            "semantic_update_feedback",
-            "semantic_stats",
-        }
-        agent = type("_T", (SemanticCacheMixin,), {})()
-        actual = {m for m in dir(agent) if m.startswith("semantic")}
-        missing = required - actual
         assert not missing, f"Missing methods: {missing}"
 
     def test_semantic_update_feedback_is_callable(self):
@@ -298,10 +337,6 @@ class TestSemanticCacheMixinImport:
         _reset_hive()
 
     def test_property_returns_live_singleton(self):
-        from agentic_core.L4_state.memory.semantic_cache_manager import SemanticCacheManager
-        from agentic_core.mixins.semantic_cache_mixin import SemanticCacheMixin
-
-        class Agent(SemanticCacheMixin):
             pass
 
         agent = Agent()
@@ -310,19 +345,9 @@ class TestSemanticCacheMixinImport:
 
     def test_no_stale_ref_after_reset(self):
         """After reset_instance(), semantic_cache must return the NEW singleton."""
-        from agentic_core.L4_state.memory.semantic_cache_manager import SemanticCacheManager
-
-        agent = _fresh_agent()
-        old = agent.semantic_cache
-        _reset_hive()
-        new = SemanticCacheManager.get_instance()
-        assert agent.semantic_cache is new, "Stale ref bug: agent still holds old singleton"
         assert old is not new
 
     def test_singleton_identity_across_instances(self):
-        from agentic_core.mixins.semantic_cache_mixin import SemanticCacheMixin
-
-        class A(SemanticCacheMixin):
             pass
 
         class B(SemanticCacheMixin):
@@ -395,11 +420,6 @@ class TestSemanticCacheMixinImport:
             agent.semantic_learn("ctx", "NS", "not-a-dict")  # type: ignore[arg-type]
 
     def test_mixin_is_safe_for_dataclass_subclass(self):
-        from agentic_core.mixins.semantic_cache_mixin import SemanticCacheMixin
-
-        @dataclass
-        class DataAgent(SemanticCacheMixin):
-            name: str = "agent"
             value: int = 0
 
         agent = DataAgent(name="test", value=42)
@@ -408,9 +428,6 @@ class TestSemanticCacheMixinImport:
 
     def test_mixin_thread_safety_singleton_identity(self):
         """Multiple threads accessing semantic_cache must all get the same singleton."""
-        from agentic_core.mixins.semantic_cache_mixin import SemanticCacheMixin
-
-        results = []
         errors = []
 
         class Agent(SemanticCacheMixin):
@@ -433,9 +450,6 @@ class TestSemanticCacheMixinImport:
 
     def test_mixin_multiple_inheritance_mro_safe(self):
         """SemanticCacheMixin must compose safely in diamond MRO."""
-        from agentic_core.mixins.semantic_cache_mixin import SemanticCacheMixin
-
-        class Base:
             pass
 
         class Left(SemanticCacheMixin, Base):
@@ -549,9 +563,6 @@ class TestAgentBaseMixinInheritance:
         pytest.fail("LICAgentBase not found")
 
     def test_mixin_methods_available_on_plain_subclass(self):
-        from agentic_core.mixins.semantic_cache_mixin import SemanticCacheMixin
-
-        class FakeAgent(SemanticCacheMixin):
             pass
 
         agent = FakeAgent()
@@ -565,11 +576,6 @@ class TestAgentBaseMixinInheritance:
             assert callable(getattr(agent, method)), f"Missing: {method}"
 
     def test_mixin_is_safe_for_dataclass_subclass(self):
-        from agentic_core.mixins.semantic_cache_mixin import SemanticCacheMixin
-
-        @dataclass
-        class DataAgent(SemanticCacheMixin):
-            name: str = "agent"
             value: int = 0
 
         agent = DataAgent(name="test", value=42)
@@ -637,9 +643,6 @@ class TestAgentBaseGracefulFallback:
 
     def test_semantic_cache_mixin_standalone_import_always_works(self):
         """SemanticCacheMixin must be importable standalone, independent of AppBase."""
-        from agentic_core.mixins.semantic_cache_mixin import SemanticCacheMixin
-
-        class StandaloneAgent(SemanticCacheMixin):
             pass
 
         agent = StandaloneAgent()

@@ -10,22 +10,23 @@ import pytest
 
 pytestmark = pytest.mark.unit
 
-from apps_shared.utils.rank_observability_components_util import (  # noqa: F401
-    BATCH_SIZE,
-    BUFFER_SIZE,
-    DEFAULT_SLEEP,
-    MAX_RETRIES,
-    THRESHOLD,
-    batch_process_invalidation,
-    insert_entity,
-    insert_event,
-    insert_triplet,
-)
 
 
 class TestInsertEntityFunction:
     def test_is_callable(self):
     """Test is_callable runtime behavior."""
+        from apps_shared.utils.rank_observability_components_util import (  # noqa: F401
+            BATCH_SIZE,
+            BUFFER_SIZE,
+            DEFAULT_SLEEP,
+            MAX_RETRIES,
+            THRESHOLD,
+            batch_process_invalidation,
+            insert_entity,
+            insert_event,
+            insert_triplet,
+        )
+
     # Arrange
     # TODO: Set up execution parameters
     input_data = {}  # Replace with actual test data

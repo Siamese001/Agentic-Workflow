@@ -172,14 +172,16 @@ pytestmark = pytest.mark.unit
 
 class TestPermissionScope:
     def test_is_enum(self):
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.L3_orchestration.types.permission_scope_types import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        import enum; assert issubclass(PermissionScope, enum.Enum)
-    def test_has_tool_execution(self):
-    """Test has_tool_execution runtime behavior."""
-    # Arrange
-    # TODO: Set up test data for has_tool_execution
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L3_orchestration.types.permission_scope_types import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                import enum; assert issubclass(PermissionScope, enum.Enum)
+            def test_has_tool_execution(self):
+            """Test has_tool_execution runtime behavior."""
+            # Arrange
+            # TODO: Set up test data for has_tool_execution
+            test_data = {}  # Replace with actual test data
+
     test_data = {}  # Replace with actual test data
 
     # Act

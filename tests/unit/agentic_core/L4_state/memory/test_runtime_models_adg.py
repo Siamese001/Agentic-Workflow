@@ -170,12 +170,14 @@ pytestmark = pytest.mark.unit
 
 class TestInjectionPattern:
     def test_creates_with_defaults(self):
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.L4_state.memory.runtime_models import InjectionMatch, InjectionPattern
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-    """Test creates_with_defaults runtime behavior."""
-    # Arrange
-    # TODO: Set up runtime environment
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L4_state.memory.runtime_models import InjectionMatch, InjectionPattern
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+            """Test creates_with_defaults runtime behavior."""
+            # Arrange
+            # TODO: Set up runtime environment
+            runtime_context = {}  # Replace with actual runtime context
+
     runtime_context = {}  # Replace with actual runtime context
 
     # Act

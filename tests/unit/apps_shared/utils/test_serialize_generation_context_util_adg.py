@@ -5,9 +5,10 @@ import pytest
 
 pytestmark = pytest.mark.unit
 
-import apps_shared.utils.serialize_generation_context_util  # noqa: F401
 
 
 def test_module_importable():
     """Module serialize_generation_context_util must be importable."""
+    import apps_shared.utils.serialize_generation_context_util  # noqa: F401
+
     assert apps_shared.utils.serialize_generation_context_util is not None

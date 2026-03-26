@@ -188,11 +188,13 @@ def fixer_env(tmp_path):
 
 
 def test_identical_collision_deletes_violator(fixer_env):
-    from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-    from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-    """Test safe deduplication of identical files."""
-    fixer = PascalSovereigntyFixer(dry_run=False)
-    target = fixer_env / "subatomic_testing_mixin.py"
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        """Test safe deduplication of identical files."""
+        fixer = PascalSovereigntyFixer(dry_run=False)
+        target = fixer_env / "subatomic_testing_mixin.py"
+        violator = fixer_env / "SubatomicTestingMixin.py"
+
     violator = fixer_env / "SubatomicTestingMixin.py"
 
     code = "class SubatomicTestingMixin: pass"

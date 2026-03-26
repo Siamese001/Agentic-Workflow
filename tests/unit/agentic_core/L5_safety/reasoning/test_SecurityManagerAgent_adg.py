@@ -5,6 +5,8 @@ from __future__ import annotations
 
 
 def test_module_importable():
-    import agentic_core.L5_safety.reasoning.SecurityManagerAgent  # noqa: F401
-    """Module SecurityManagerAgent must be importable."""
+        import agentic_core.L5_safety.reasoning.SecurityManagerAgent  # noqa: F401
+        """Module SecurityManagerAgent must be importable."""
+        assert agentic_core.L5_safety.reasoning.SecurityManagerAgent is not None
+
     assert agentic_core.L5_safety.reasoning.SecurityManagerAgent is not None

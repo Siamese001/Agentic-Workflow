@@ -180,12 +180,14 @@ def dirty_repo(tmp_path):
 
 
 def test_hygiene_enforcement(dirty_repo, monkeypatch):
-    from agentic_core.L0_routing.config.path_constants import (
-    from agentic_core.L0_routing.scripts.root_hygiene_util import enforce_root_hygiene
-    from agentic_core.L5_safety.config.structure_blueprint.ssot import REPORTS_DIR
-    from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-    """Test that scripts are moved to correct locations and root is cleaned."""
-    monkeypatch.chdir(dirty_repo)
+        from agentic_core.L0_routing.config.path_constants import (
+        from agentic_core.L0_routing.scripts.root_hygiene_util import enforce_root_hygiene
+        from agentic_core.L5_safety.config.structure_blueprint.ssot import REPORTS_DIR
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        """Test that scripts are moved to correct locations and root is cleaned."""
+        monkeypatch.chdir(dirty_repo)
+        monkeypatch.setenv("AGENTIC_ALLOW_MUTATION_FOR_TESTS", "1")
+
     monkeypatch.setenv("AGENTIC_ALLOW_MUTATION_FOR_TESTS", "1")
 
     # Run Enforcer

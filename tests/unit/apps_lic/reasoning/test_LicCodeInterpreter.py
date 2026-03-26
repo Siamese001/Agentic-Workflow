@@ -10,23 +10,24 @@ import pytest
 
 pytestmark = pytest.mark.unit
 
-from apps_lic.reasoning.LicCodeInterpreter import (  # noqa: F401
-    BATCH_SIZE,
-    BUFFER_SIZE,
-    DEFAULT_SLEEP,
-    MAX_RETRIES,
-    THRESHOLD,
-    KeywordExtractionResult,
-    LICCodeInterpreter,
-    ScoredCandidate,
-    ScoringCriteria,
-    SimilarityResult,
-    create_code_interpreter,
-)
 
 
 class TestScoredCandidateContract:
     def test_is_dataclass(self):
+        from apps_lic.reasoning.LicCodeInterpreter import (  # noqa: F401
+            BATCH_SIZE,
+            BUFFER_SIZE,
+            DEFAULT_SLEEP,
+            MAX_RETRIES,
+            THRESHOLD,
+            KeywordExtractionResult,
+            LICCodeInterpreter,
+            ScoredCandidate,
+            ScoringCriteria,
+            SimilarityResult,
+            create_code_interpreter,
+        )
+
         import dataclasses
         assert dataclasses.is_dataclass(ScoredCandidate)
 

@@ -5,6 +5,8 @@ from __future__ import annotations
 
 
 def test_module_importable():
-    import agentic_core.L5_safety.audit.human_review_queue  # noqa: F401
-    """Module human_review_queue must be importable."""
+        import agentic_core.L5_safety.audit.human_review_queue  # noqa: F401
+        """Module human_review_queue must be importable."""
+        assert agentic_core.L5_safety.audit.human_review_queue is not None
+
     assert agentic_core.L5_safety.audit.human_review_queue is not None

@@ -9,6 +9,8 @@ pytestmark = pytest.mark.unit
 
 
 def test_module_importable():
-    import agentic_core.L5_safety.utils.surgical_context_types_util as _mod  # noqa: F401
-    """Module surgical_context_types_util must be importable."""
+        import agentic_core.L5_safety.utils.surgical_context_types_util as _mod  # noqa: F401
+        """Module surgical_context_types_util must be importable."""
+        assert _mod is not None
+
     assert _mod is not None

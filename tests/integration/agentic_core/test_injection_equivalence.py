@@ -188,10 +188,12 @@ class TestInjectionEquivalence:
         return snapshot_file
 
     def test_injection_count_consistency(self):
-        from agentic_core.runtime.config.instructional_injections import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        """Test that injection count is consistent."""
-        all_patterns = get_instructional_injections()
+                from agentic_core.runtime.config.instructional_injections import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                """Test that injection count is consistent."""
+                all_patterns = get_instructional_injections()
+                required_patterns = get_required_injections()
+
         required_patterns = get_required_injections()
 
         # Verify we have patterns

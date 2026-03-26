@@ -9,6 +9,8 @@ pytestmark = pytest.mark.unit
 
 
 def test_module_importable():
-    import agentic_core.L4_state.memory.sovereign_reasoning_memory_ledger  # noqa: F401
-    """Module sovereign_reasoning_memory_ledger must be importable."""
+        import agentic_core.L4_state.memory.sovereign_reasoning_memory_ledger  # noqa: F401
+        """Module sovereign_reasoning_memory_ledger must be importable."""
+        assert agentic_core.L4_state.memory.sovereign_reasoning_memory_ledger is not None
+
     assert agentic_core.L4_state.memory.sovereign_reasoning_memory_ledger is not None

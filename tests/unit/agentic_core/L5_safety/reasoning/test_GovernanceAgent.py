@@ -26,7 +26,9 @@ pytestmark = pytest.mark.unit
 
 class TestDependencyGraphContract:
     def test_is_class(self):
-        from agentic_core.L5_safety.reasoning.GovernanceAgent import (  # noqa: F401
+                from agentic_core.L5_safety.reasoning.GovernanceAgent import (  # noqa: F401
+                assert isinstance(DependencyGraph, type)
+
         assert isinstance(DependencyGraph, type)
 
     def test_has_method_build(self):

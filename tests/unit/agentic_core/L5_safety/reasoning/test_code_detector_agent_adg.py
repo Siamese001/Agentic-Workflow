@@ -175,9 +175,11 @@ pytestmark = pytest.mark.unit
 
 class TestDetectionType:
     def test_dead_code_member(self):
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.L5_safety.reasoning.CodeDetectorAgent import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L5_safety.reasoning.CodeDetectorAgent import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                assert hasattr(DetectionType, "DEAD_CODE")
+
         assert hasattr(DetectionType, "DEAD_CODE")
 
     def test_drift_member(self):

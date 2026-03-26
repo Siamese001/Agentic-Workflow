@@ -208,22 +208,23 @@ def _tests_subfolders() -> dict:
 
 class TestConstantsQuarantineInvariant:
     def test_quarantine_not_in_tests_subfolders(self):
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.L0_routing.config.path_constants import TESTS_DIR
-        from agentic_core.L5_safety.config.structure_blueprint import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        """Hard invariant: _quarantine must NEVER appear in tests.subfolders.
-        Healers must never create a _quarantine folder — it has no semantic meaning
-        as a heal destination and caused data loss in previous heal runs.
-        """
-        subs = _tests_subfolders()
-        assert "_quarantine" not in subs, (
-            "_quarantine is present in get_all_territories()['tests']['subfolders']. "
-            "This must be removed — healers must never create a _quarantine folder."
-        )
 
     def test_tests_territory_exists(self):
         """tests territory must be declared in get_all_territories()."""
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L0_routing.config.path_constants import TESTS_DIR
+                from agentic_core.L5_safety.config.structure_blueprint import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                """Hard invariant: _quarantine must NEVER appear in tests.subfolders.
+                Healers must never create a _quarantine folder — it has no semantic meaning
+                as a heal destination and caused data loss in previous heal runs.
+                """
+                subs = _tests_subfolders()
+                assert "_quarantine" not in subs, (
+                    "_quarantine is present in get_all_territories()['tests']['subfolders']. "
+                    "This must be removed — healers must never create a _quarantine folder."
+                )
+
         assert TESTS_DIR in get_all_territories()
 
     def test_tests_subfolders_is_dict(self):

@@ -173,11 +173,13 @@ pytestmark = pytest.mark.unit
 
 class TestSubAtomicAgentInit:
     def test_creates_without_args(self):
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.L3_orchestration.reasoning.SubAtomicAgent import SubAtomicAgent
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
-        agent = SubAtomicAgent()
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L3_orchestration.reasoning.SubAtomicAgent import SubAtomicAgent
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
+                agent = SubAtomicAgent()
+                assert agent is not None
+
         assert agent is not None
 
     def test_is_sovereign_base_agent(self):

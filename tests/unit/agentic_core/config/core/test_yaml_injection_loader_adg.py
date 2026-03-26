@@ -176,9 +176,11 @@ pytestmark = pytest.mark.unit
 
 class TestYamlValidationError:
     def test_importable(self):
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.config.core.yaml_injection_loader import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.config.core.yaml_injection_loader import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                assert callable(YamlValidationError)
+
         assert callable(YamlValidationError)
 
     def test_missing_key_message(self):

@@ -204,10 +204,13 @@ pytestmark = pytest.mark.governance
 
 
 def test_constants_are_hardcoded() -> None:
-    from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-    from agentic_core.L2_execution.types.vllm_token_budget_types import (
-    from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 """Test constants_are_hardcoded runtime behavior."""
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L2_execution.types.vllm_token_budget_types import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+    """Test constants_are_hardcoded runtime behavior."""
+
 # Arrange
 # TODO: Set up test data for constants_are_hardcoded
 test_data = {}  # Replace with actual test data

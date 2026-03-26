@@ -200,9 +200,11 @@ def _minimal_bundle(**overrides: object) -> ApprovalBundle:
 
 class TestApprovalContractValidation:
     def test_validate_minimal(self) -> None:
-        from agentic_core.L3_orchestration.types.approval_contract_types import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        bundle = _minimal_bundle()
+                from agentic_core.L3_orchestration.types.approval_contract_types import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                bundle = _minimal_bundle()
+                assert bundle.validate() == []
+
         assert bundle.validate() == []
 
     def test_validate_multiple_records(self) -> None:

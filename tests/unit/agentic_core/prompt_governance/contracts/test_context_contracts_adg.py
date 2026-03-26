@@ -9,6 +9,8 @@ pytestmark = pytest.mark.unit
 
 
 def test_module_importable():
-    import agentic_core.prompt_governance.contracts.context_contracts  # noqa: F401
-    """Module context_contracts must be importable."""
+        import agentic_core.prompt_governance.contracts.context_contracts  # noqa: F401
+        """Module context_contracts must be importable."""
+        assert agentic_core.prompt_governance.contracts.context_contracts is not None
+
     assert agentic_core.prompt_governance.contracts.context_contracts is not None

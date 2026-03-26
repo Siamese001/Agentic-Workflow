@@ -5,9 +5,10 @@ import pytest
 
 pytestmark = pytest.mark.unit
 
-import apps_rg.engines.search_filter_builder  # noqa: F401
 
 
 def test_module_importable():
     """Module search_filter_builder must be importable."""
+    import apps_rg.engines.search_filter_builder  # noqa: F401
+
     assert apps_rg.engines.search_filter_builder is not None

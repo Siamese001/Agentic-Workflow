@@ -5,9 +5,10 @@ import pytest
 
 pytestmark = pytest.mark.unit
 
-import apps_shared.utils.configuration_service_util  # noqa: F401
 
 
 def test_module_importable():
     """Module configuration_service_util must be importable."""
+    import apps_shared.utils.configuration_service_util  # noqa: F401
+
     assert apps_shared.utils.configuration_service_util is not None

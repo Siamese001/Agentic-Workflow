@@ -10,25 +10,26 @@ import pytest
 
 pytestmark = pytest.mark.unit
 
-from apps_shared.utils.mutation_phase_util import (  # noqa: F401
-    BATCH_SIZE,
-    BUFFER_SIZE,
-    DEFAULT_SLEEP,
-    MAX_RETRIES,
-    THRESHOLD,
-    DAGSafetyManager,
-    MutationPhase,
-    SafeMutationContext,
-    StateSnapshot,
-    validate_acyclic_hook,
-    validate_connectivity_hook,
-    validate_depth_consistency_hook,
-    validate_node_attributes_hook,
-)
 
 
 class TestMutationPhaseContract:
     def test_is_enum(self):
+        from apps_shared.utils.mutation_phase_util import (  # noqa: F401
+            BATCH_SIZE,
+            BUFFER_SIZE,
+            DEFAULT_SLEEP,
+            MAX_RETRIES,
+            THRESHOLD,
+            DAGSafetyManager,
+            MutationPhase,
+            SafeMutationContext,
+            StateSnapshot,
+            validate_acyclic_hook,
+            validate_connectivity_hook,
+            validate_depth_consistency_hook,
+            validate_node_attributes_hook,
+        )
+
         import enum
         assert issubclass(MutationPhase, enum.Enum)
 

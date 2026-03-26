@@ -254,15 +254,17 @@ def assert_telemetry_fields(telemetry: VLLMGatewayTelemetry) -> None:
 
 
 def test_local_success_telemetry_fields_present():
-    from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-    from agentic_core.L2_execution.types.vllm_backpressure_types import (
-    from agentic_core.L2_execution.types.vllm_gateway_integration_types import (
-    from agentic_core.L2_execution.types.vllm_serving_profile_types import (
-    from agentic_core.L2_execution.types.vllm_token_budget_types import (
-    from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-    ctrl, reg = make_clean()
-    result = evaluate_gateway_call(SHORT_PROMPT, TASK, "low", ctrl, reg)
-    assert not result.route_to_gemini
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L2_execution.types.vllm_backpressure_types import (
+        from agentic_core.L2_execution.types.vllm_gateway_integration_types import (
+        from agentic_core.L2_execution.types.vllm_serving_profile_types import (
+        from agentic_core.L2_execution.types.vllm_token_budget_types import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        ctrl, reg = make_clean()
+        result = evaluate_gateway_call(SHORT_PROMPT, TASK, "low", ctrl, reg)
+        assert not result.route_to_gemini
+        assert_telemetry_fields(result.telemetry)
+
     assert_telemetry_fields(result.telemetry)
 
 

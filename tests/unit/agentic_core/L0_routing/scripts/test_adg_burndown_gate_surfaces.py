@@ -208,9 +208,11 @@ def restore_stdio():
 
 @pytest.mark.unit
 def test_resolve_adg_file_graph_latest_by_sorted_name() -> None:
-    from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-    from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-    """Sorted descending glob → lexicographically last file is chosen."""
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        """Sorted descending glob → lexicographically last file is chosen."""
+        from ops_scripts.ci.adg_burndown_gate import _resolve_adg_file_graph
+
     from ops_scripts.ci.adg_burndown_gate import _resolve_adg_file_graph
 
     tmp = Path(tempfile.mkdtemp())

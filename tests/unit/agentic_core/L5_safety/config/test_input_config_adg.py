@@ -9,6 +9,8 @@ pytestmark = pytest.mark.unit
 
 
 def test_module_importable():
-    import agentic_core.L5_safety.config.input_config  # noqa: F401
-    """Module input_config must be importable."""
+        import agentic_core.L5_safety.config.input_config  # noqa: F401
+        """Module input_config must be importable."""
+        assert agentic_core.L5_safety.config.input_config is not None
+
     assert agentic_core.L5_safety.config.input_config is not None

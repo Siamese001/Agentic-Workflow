@@ -5,6 +5,8 @@ from __future__ import annotations
 
 
 def test_module_importable():
-    import agentic_core.L5_safety.reasoning.root_hygiene_healer  # noqa: F401
-    """Module root_hygiene_healer must be importable."""
+        import agentic_core.L5_safety.reasoning.root_hygiene_healer  # noqa: F401
+        """Module root_hygiene_healer must be importable."""
+        assert agentic_core.L5_safety.reasoning.root_hygiene_healer is not None
+
     assert agentic_core.L5_safety.reasoning.root_hygiene_healer is not None

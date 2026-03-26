@@ -174,16 +174,18 @@ pytestmark = pytest.mark.unit
 
 class TestCacheEntry:
     def test_creates(self):
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.L5_safety.validators.context_validator import CacheEntry
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        entry = CacheEntry(
-            key="test:key",
-            value={"result": True},
-            timestamp=_FIXED_TS,
-            ttl=60,
-            agent="TestAgent",
-        )
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L5_safety.validators.context_validator import CacheEntry
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                entry = CacheEntry(
+                    key="test:key",
+                    value={"result": True},
+                    timestamp=_FIXED_TS,
+                    ttl=60,
+                    agent="TestAgent",
+                )
+                assert entry.key == "test:key"
+
         assert entry.key == "test:key"
 
     def test_not_expired_fresh(self):

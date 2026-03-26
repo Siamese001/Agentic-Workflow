@@ -188,13 +188,16 @@ class MockMetaPriorProvider:
 
 
 def test_get_historical_success_rate_with_provider() -> None:
-    from agentic_core.L2_execution.healers.healing_tier_config import HealingTierConfig
-    from agentic_core.L2_execution.healers.healing_tier_router import (
-    from agentic_core.L2_execution.healers.healing_tier_types import (
-    from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-    from system_learning.ports.meta_prior_provider import (
-    from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 """Test get_historical_success_rate_with_provider runtime behavior."""
+        from agentic_core.L2_execution.healers.healing_tier_config import HealingTierConfig
+        from agentic_core.L2_execution.healers.healing_tier_router import (
+        from agentic_core.L2_execution.healers.healing_tier_types import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from system_learning.ports.meta_prior_provider import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+    """Test get_historical_success_rate_with_provider runtime behavior."""
+
 # Arrange
 # TODO: Set up test data for get_historical_success_rate_with_provider
 test_data = {}  # Replace with actual test data

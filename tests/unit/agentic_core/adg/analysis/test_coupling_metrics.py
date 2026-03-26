@@ -19,8 +19,10 @@ pytestmark = pytest.mark.unit
 
 class TestModuleMetricsContract:
     def test_is_dataclass(self):
-        from agentic_core.adg.analysis.coupling_metrics_config import (  # noqa: F401
-        import dataclasses
+                from agentic_core.adg.analysis.coupling_metrics_config import (  # noqa: F401
+                import dataclasses
+                assert dataclasses.is_dataclass(ModuleMetrics)
+
         assert dataclasses.is_dataclass(ModuleMetrics)
 
     def test_field_names_present(self):

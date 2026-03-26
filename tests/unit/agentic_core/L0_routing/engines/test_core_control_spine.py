@@ -239,14 +239,16 @@ def _make_payload(
 class TestPathRouterSuccess:
     @pytest.mark.governance
     def test_select_path_returns_A_when_check_ids_empty(self):
-        from agentic_core.L0_routing.engines.assembly_stage import (
-        from agentic_core.L0_routing.engines.path_router import Path, PathRouter
-        from agentic_core.L0_routing.engines.reasoning_policy_engine import (
-        from agentic_core.L0_routing.types.reasoning_intensity_types import ReasoningTier
-        from agentic_core.L0_routing.types.routing_artifact_types import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        router = PathRouter()
-        payload = _make_payload(check_ids=(), sanitized=False)
+                from agentic_core.L0_routing.engines.assembly_stage import (
+                from agentic_core.L0_routing.engines.path_router import Path, PathRouter
+                from agentic_core.L0_routing.engines.reasoning_policy_engine import (
+                from agentic_core.L0_routing.types.reasoning_intensity_types import ReasoningTier
+                from agentic_core.L0_routing.types.routing_artifact_types import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                router = PathRouter()
+                payload = _make_payload(check_ids=(), sanitized=False)
+                assert router.select_path(payload) == Path.A
+
         assert router.select_path(payload) == Path.A
 
     @pytest.mark.governance

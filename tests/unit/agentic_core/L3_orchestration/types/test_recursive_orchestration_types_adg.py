@@ -36,7 +36,9 @@ def _top_func_names():
 
 class TestRecursiveOrchestrationTypesSource:
     def test_source_exists(self):
-        import agentic_core.L3_orchestration.types.recursive_orchestration_types as _mod  # noqa: F401  # ADG covers
+                import agentic_core.L3_orchestration.types.recursive_orchestration_types as _mod  # noqa: F401  # ADG covers
+                assert _SRC.exists()
+
         assert _SRC.exists()
 
     def test_parses_without_error(self):

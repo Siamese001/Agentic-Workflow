@@ -212,13 +212,15 @@ class TestEnforcerClassification:
     """Kernel-level ENFORCER detection."""
 
     def test_guardrail_with_verify_change_block(self, tmp_path):
-        from agentic_core.L5_safety.core_kernel.classification_kernel import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.L5_safety.reasoning.FileClassificationAgent import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-    """Test guardrail_with_verify_change_block contract compliance."""
-    # Arrange
-    # TODO: Set up contract test scenario
+                from agentic_core.L5_safety.core_kernel.classification_kernel import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L5_safety.reasoning.FileClassificationAgent import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+            """Test guardrail_with_verify_change_block contract compliance."""
+            # Arrange
+            # TODO: Set up contract test scenario
+            test_scenario = {}  # Replace with actual test scenario
+
     test_scenario = {}  # Replace with actual test scenario
 
     # Act

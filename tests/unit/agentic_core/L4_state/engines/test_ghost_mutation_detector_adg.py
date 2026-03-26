@@ -5,6 +5,8 @@ from __future__ import annotations
 
 
 def test_module_importable():
-    import agentic_core.L4_state.engines.ghost_mutation_detector  # noqa: F401
-    """Module ghost_mutation_detector must be importable."""
+        import agentic_core.L4_state.engines.ghost_mutation_detector  # noqa: F401
+        """Module ghost_mutation_detector must be importable."""
+        assert agentic_core.L4_state.engines.ghost_mutation_detector is not None
+
     assert agentic_core.L4_state.engines.ghost_mutation_detector is not None

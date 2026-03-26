@@ -5,9 +5,10 @@ import pytest
 
 pytestmark = pytest.mark.unit
 
-import apps_lic.reasoning.LicTemplateOptimizerAgent  # noqa: F401
 
 
 def test_module_importable():
     """Module LicTemplateOptimizerAgent must be importable."""
+    import apps_lic.reasoning.LicTemplateOptimizerAgent  # noqa: F401
+
     assert apps_lic.reasoning.LicTemplateOptimizerAgent is not None

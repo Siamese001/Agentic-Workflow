@@ -10,19 +10,21 @@ pytestmark = pytest.mark.unit
 
 class TestRuntimeSafetyMixin:
     def test_importable(self):
-        from agentic_core.mixins.runtime_safety_mixin import RuntimeSafetyMixin
-    """Test importable runtime behavior."""
-    # Arrange
-    # TODO: Set up runtime environment
-    """Test has_cleanup_processes runtime behavior."""
-    # Arrange
-    # TODO: Set up processing data
-    """Test has_safe_run runtime behavior."""
-    # Arrange
-    # TODO: Set up execution parameters
-    """Test is_class runtime behavior."""
-    # Arrange
-    # TODO: Set up runtime environment
+                from agentic_core.mixins.runtime_safety_mixin import RuntimeSafetyMixin
+            """Test importable runtime behavior."""
+            # Arrange
+            # TODO: Set up runtime environment
+            """Test has_cleanup_processes runtime behavior."""
+            # Arrange
+            # TODO: Set up processing data
+            """Test has_safe_run runtime behavior."""
+            # Arrange
+            # TODO: Set up execution parameters
+            """Test is_class runtime behavior."""
+            # Arrange
+            # TODO: Set up runtime environment
+            runtime_context = {}  # Replace with actual runtime context
+
     runtime_context = {}  # Replace with actual runtime context
 
     # Act

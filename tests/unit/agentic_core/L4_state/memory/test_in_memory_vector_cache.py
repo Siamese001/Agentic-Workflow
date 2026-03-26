@@ -25,7 +25,9 @@ pytestmark = pytest.mark.unit
 
 class TestInMemoryVectorCacheContract:
     def test_is_class(self):
-        from agentic_core.L4_state.memory.in_memory_vector_cache import (  # noqa: F401
+                from agentic_core.L4_state.memory.in_memory_vector_cache import (  # noqa: F401
+                assert isinstance(InMemoryVectorCache, type)
+
         assert isinstance(InMemoryVectorCache, type)
 
     def test_has_method_add_documents(self):

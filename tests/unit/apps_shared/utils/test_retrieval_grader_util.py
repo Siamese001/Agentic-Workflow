@@ -10,25 +10,26 @@ import pytest
 
 pytestmark = pytest.mark.unit
 
-from apps_shared.utils.retrieval_grader_util import (  # noqa: F401
-    BATCH_SIZE,
-    BUFFER_SIZE,
-    DEFAULT_SLEEP,
-    MAX_RETRIES,
-    THRESHOLD,
-    GradeStatus,
-    RetrievalGrade,
-    RetrievalGrader,
-    WebSearchFallback,
-    fallback_web_search,
-    get_retrieval_grader,
-    get_web_search_fallback,
-    grade_retrieval,
-)
 
 
 class TestGradeStatusContract:
     def test_is_enum(self):
+        from apps_shared.utils.retrieval_grader_util import (  # noqa: F401
+            BATCH_SIZE,
+            BUFFER_SIZE,
+            DEFAULT_SLEEP,
+            MAX_RETRIES,
+            THRESHOLD,
+            GradeStatus,
+            RetrievalGrade,
+            RetrievalGrader,
+            WebSearchFallback,
+            fallback_web_search,
+            get_retrieval_grader,
+            get_web_search_fallback,
+            grade_retrieval,
+        )
+
         import enum
         assert issubclass(GradeStatus, enum.Enum)
 

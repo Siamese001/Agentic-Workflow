@@ -27,8 +27,10 @@ pytestmark = pytest.mark.unit
 
 class TestLazyUpwardImportContract:
     def test_is_dataclass(self):
-        from agentic_core.L5_safety.governance.lazy_seam_scanner import (  # noqa: F401
-        import dataclasses
+                from agentic_core.L5_safety.governance.lazy_seam_scanner import (  # noqa: F401
+                import dataclasses
+                assert dataclasses.is_dataclass(LazyUpwardImport)
+
         assert dataclasses.is_dataclass(LazyUpwardImport)
 
     def test_field_names_present(self):

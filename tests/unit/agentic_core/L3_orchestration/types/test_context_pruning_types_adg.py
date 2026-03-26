@@ -172,12 +172,14 @@ pytestmark = pytest.mark.unit
 
 class TestCriticalDnaKeys:
     def test_is_frozenset(self): assert isinstance(CRITICAL_DNA_KEYS, frozenset)
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.L3_orchestration.types.context_pruning_types import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-    """Test is_frozenset runtime behavior."""
-    # Arrange
-    # TODO: Set up test data for is_frozenset
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L3_orchestration.types.context_pruning_types import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+            """Test is_frozenset runtime behavior."""
+            # Arrange
+            # TODO: Set up test data for is_frozenset
+            test_data = {}  # Replace with actual test data
+
     test_data = {}  # Replace with actual test data
 
     # Act

@@ -10,23 +10,24 @@ import pytest
 
 pytestmark = pytest.mark.unit
 
-from apps_shared.utils.provider_util import (  # noqa: F401
-    BATCH_SIZE,
-    BUFFER_SIZE,
-    DEFAULT_SLEEP,
-    MAX_RETRIES,
-    THRESHOLD,
-    MultiProviderClient,
-    Provider,
-    get_client,
-    get_default_model,
-    get_instructor_client,
-    get_litellm_completion,
-)
 
 
 class TestProviderContract:
     def test_is_enum(self):
+        from apps_shared.utils.provider_util import (  # noqa: F401
+            BATCH_SIZE,
+            BUFFER_SIZE,
+            DEFAULT_SLEEP,
+            MAX_RETRIES,
+            THRESHOLD,
+            MultiProviderClient,
+            Provider,
+            get_client,
+            get_default_model,
+            get_instructor_client,
+            get_litellm_completion,
+        )
+
         import enum
         assert issubclass(Provider, enum.Enum)
 

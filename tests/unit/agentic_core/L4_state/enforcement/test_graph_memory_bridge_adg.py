@@ -5,6 +5,8 @@ from __future__ import annotations
 
 
 def test_module_importable():
-    import agentic_core.L4_state.enforcement.graph_memory_bridge  # noqa: F401
-    """Module graph_memory_bridge must be importable."""
+        import agentic_core.L4_state.enforcement.graph_memory_bridge  # noqa: F401
+        """Module graph_memory_bridge must be importable."""
+        assert agentic_core.L4_state.enforcement.graph_memory_bridge is not None
+
     assert agentic_core.L4_state.enforcement.graph_memory_bridge is not None

@@ -10,26 +10,27 @@ import pytest
 
 pytestmark = pytest.mark.unit
 
-from apps_shared.utils.unified_executor_util import (  # noqa: F401
-    BATCH_SIZE,
-    BUFFER_SIZE,
-    DEFAULT_SLEEP,
-    MAX_RETRIES,
-    THRESHOLD,
-    APIExecutionStrategy,
-    ExecutionContext,
-    ExecutionResult,
-    ExecutionStatus,
-    ExecutionStrategy,
-    LLMExecutionStrategy,
-    execute_outreach_generation,
-    execute_resume_generation,
-    get_engine_executor,
-)
 
 
 class TestExecutionStatusContract:
     def test_is_enum(self):
+        from apps_shared.utils.unified_executor_util import (  # noqa: F401
+            BATCH_SIZE,
+            BUFFER_SIZE,
+            DEFAULT_SLEEP,
+            MAX_RETRIES,
+            THRESHOLD,
+            APIExecutionStrategy,
+            ExecutionContext,
+            ExecutionResult,
+            ExecutionStatus,
+            ExecutionStrategy,
+            LLMExecutionStrategy,
+            execute_outreach_generation,
+            execute_resume_generation,
+            get_engine_executor,
+        )
+
         import enum
         assert issubclass(ExecutionStatus, enum.Enum)
 

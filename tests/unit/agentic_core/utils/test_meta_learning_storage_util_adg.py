@@ -5,6 +5,8 @@ from __future__ import annotations
 
 
 def test_module_importable():
-    import agentic_core.utils.meta_learning_storage_util  # noqa: F401
-    """Module meta_learning_storage_util must be importable."""
+        import agentic_core.utils.meta_learning_storage_util  # noqa: F401
+        """Module meta_learning_storage_util must be importable."""
+        assert agentic_core.utils.meta_learning_storage_util is not None
+
     assert agentic_core.utils.meta_learning_storage_util is not None

@@ -272,16 +272,18 @@ def _print_w1_env_digest_once() -> str:
 
 
 def test_envelope_canonical_bytes_stable():
-    from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-    from agentic_core.L2_execution.enforcement.boundary_verifier import L2BoundaryVerifier
-    from agentic_core.L2_execution.types.instruction_packet_types import (
-    from agentic_core.L2_execution.types.sandbox_envelope_types import SandboxEnvelope
-    from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-    from agentic_core.L2_execution.types.sandbox_envelope_types import ToolBudget
-    from agentic_core.L2_execution.types.instruction_packet_types import InstructionPacket as _IP
-    from agentic_core.L2_execution.types.instruction_packet_types import InstructionPacket as _IP
-    b1 = _ENVELOPE_V.canonical_bytes()
-    b2 = _ENVELOPE_V.canonical_bytes()
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L2_execution.enforcement.boundary_verifier import L2BoundaryVerifier
+        from agentic_core.L2_execution.types.instruction_packet_types import (
+        from agentic_core.L2_execution.types.sandbox_envelope_types import SandboxEnvelope
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L2_execution.types.sandbox_envelope_types import ToolBudget
+        from agentic_core.L2_execution.types.instruction_packet_types import InstructionPacket as _IP
+        from agentic_core.L2_execution.types.instruction_packet_types import InstructionPacket as _IP
+        b1 = _ENVELOPE_V.canonical_bytes()
+        b2 = _ENVELOPE_V.canonical_bytes()
+        assert b1 == b2
+
     assert b1 == b2
 
 

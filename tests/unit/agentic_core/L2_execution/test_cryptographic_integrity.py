@@ -205,12 +205,14 @@ def _emitter_compute(emitter: DeterminismDigestEmitter | None = None, **override
 class TestDigestCalculator:
     @pytest.mark.governance
     def test_compute_returns_64_hex_chars(self):
-        from agentic_core.L2_execution.determinism.digest_calculator import DigestCalculator
-        from agentic_core.L6_observability.engines.determinism_digest_emitter import (
-        from agentic_core.L6_observability.engines.provider_binding_fingerprint import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        result = _compute()
-        assert len(result) == 64
+                from agentic_core.L2_execution.determinism.digest_calculator import DigestCalculator
+                from agentic_core.L6_observability.engines.determinism_digest_emitter import (
+                from agentic_core.L6_observability.engines.provider_binding_fingerprint import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                result = _compute()
+                assert len(result) == 64
+                int(result, 16)
+
         int(result, 16)
 
     @pytest.mark.governance

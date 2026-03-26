@@ -172,17 +172,19 @@ pytestmark = pytest.mark.unit
 
 class TestValidateResultArtifact:
     def test_valid_dict(self):
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.L0_routing.types.artifact_validators_types import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        d = {"trace_id": "t1", "execution_outcome": "ok", "final_state_hash": "h1", "artifact_class": "ac"}
-        r = validate_result_artifact(d); assert r["trace_id"] == "t1"
-    def test_missing_field_raises(self):
-        with pytest.raises(ValueError): validate_result_artifact({"trace_id": "t1"})
-    def test_emitting_layer_defaults(self):
-        d = {"trace_id": "t1", "execution_outcome": "ok", "final_state_hash": "h1", "artifact_class": "ac"}
-        r = validate_result_artifact(d); assert r["emitting_layer"] == "L2"
-    def test_unsupported_type_raises(self):
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L0_routing.types.artifact_validators_types import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                d = {"trace_id": "t1", "execution_outcome": "ok", "final_state_hash": "h1", "artifact_class": "ac"}
+                r = validate_result_artifact(d); assert r["trace_id"] == "t1"
+            def test_missing_field_raises(self):
+                with pytest.raises(ValueError): validate_result_artifact({"trace_id": "t1"})
+            def test_emitting_layer_defaults(self):
+                d = {"trace_id": "t1", "execution_outcome": "ok", "final_state_hash": "h1", "artifact_class": "ac"}
+                r = validate_result_artifact(d); assert r["emitting_layer"] == "L2"
+            def test_unsupported_type_raises(self):
+                with pytest.raises(TypeError): validate_result_artifact("not_a_dict")  # type: ignore[arg-type]
+
         with pytest.raises(TypeError): validate_result_artifact("not_a_dict")  # type: ignore[arg-type]
 
 class TestValidateHealingPlan:

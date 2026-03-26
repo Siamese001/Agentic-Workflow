@@ -197,11 +197,13 @@ class TestMixinEnforcement(unittest.TestCase):
         self.fixer = PascalSovereigntyFixer(dry_run=True)
 
     def test_hygiene_mixin_rename(self):
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        """Standard Case: Ensure HygieneMixin.py is flagged for rename to snake_case."""
-        mock_path = Mock(spec=Path)
-        mock_path.stem = "HygieneMixin"
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                """Standard Case: Ensure HygieneMixin.py is flagged for rename to snake_case."""
+                mock_path = Mock(spec=Path)
+                mock_path.stem = "HygieneMixin"
+                mock_path.name = "HygieneMixin.py"
+
         mock_path.name = "HygieneMixin.py"
 
         new_name = self.fixer.get_compliant_name(mock_path, "MIXIN")

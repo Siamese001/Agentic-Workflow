@@ -10,22 +10,23 @@ import pytest
 
 pytestmark = pytest.mark.unit
 
-from apps_lic.tools.clean_duplicates_enhanced import (  # noqa: F401
-    BATCH_SIZE,
-    BUFFER_SIZE,
-    DEFAULT_SLEEP,
-    MAX_RETRIES,
-    THRESHOLD,
-    aggressive_cleanup,
-    extract_functions,
-    get_file_hash,
-    organize_structure,
-)
 
 
 class TestAggressiveCleanupFunction:
     def test_is_callable(self):
     """Test is_callable runtime behavior."""
+        from apps_lic.tools.clean_duplicates_enhanced import (  # noqa: F401
+            BATCH_SIZE,
+            BUFFER_SIZE,
+            DEFAULT_SLEEP,
+            MAX_RETRIES,
+            THRESHOLD,
+            aggressive_cleanup,
+            extract_functions,
+            get_file_hash,
+            organize_structure,
+        )
+
     # Arrange
     # TODO: Set up execution parameters
     input_data = {}  # Replace with actual test data

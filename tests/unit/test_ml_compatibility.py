@@ -6,19 +6,6 @@ from __future__ import annotations
 
 import pytest
 
-from agentic_core.L0_routing.config.path_constants import (
-    AGENTIC_CORE_DIR,
-    APPS_LIC_DIR,
-    APPS_RG_DIR,
-)
-from agentic_core.L2_execution.types.ml_pattern_record_types import (
-    MLPatternRecord,
-    PatternCompatibilityError,
-    enforce_pattern_compatibility,
-)
-from agentic_core.L4_state.config.versioned_configs import (
-    get_active_configs,
-)
 
 # REMOVED: _emit_emits_metric_event("test_ml_compatibility", "p4obs", "metric_1")
 # REMOVED: _emit_emits_metric_event("test_ml_compatibility", "p4obs", "metric_2")
@@ -126,6 +113,28 @@ def _record(
 
 class TestMLPatternRecord:
     def test_build_produces_valid_record(self):
+        from agentic_core.L0_routing.config.path_constants import (
+            AGENTIC_CORE_DIR,
+            APPS_LIC_DIR,
+            APPS_RG_DIR,
+        )
+        from agentic_core.L2_execution.types.ml_pattern_record_types import (
+            MLPatternRecord,
+            PatternCompatibilityError,
+            enforce_pattern_compatibility,
+        )
+        from agentic_core.L4_state.config.versioned_configs import (
+            get_active_configs,
+        )
+                from agentic_core.L0_routing.config.path_constants import AGENT_CORE_DIR
+                rec = _record(domain_id=AGENTIC_CORE_DIR)
+                ph, mh = _active_hashes()
+                # Should not raise when pattern is compatible
+                try:
+                    enforce_pattern_compatibility(rec, AGENT_CORE_DIR, ph, mh)
+                except PatternCompatibilityError as e:
+                    pytest.fail(f"Compatible pattern raised error: {e}")
+
         rec = _record()
         assert rec.schema_version == 1
         assert rec.domain_id == AGENTIC_CORE_DIR
@@ -190,14 +199,6 @@ class TestMLPatternRecord:
     # assert validation_result.get("valid", False), "Data should conform to schema"
 class TestPatternCompatibilityEnforcement:
     def test_compatible_pattern_passes(self):
-        from agentic_core.L0_routing.config.path_constants import AGENT_CORE_DIR
-
-        rec = _record(domain_id=AGENTIC_CORE_DIR)
-        ph, mh = _active_hashes()
-        # Should not raise when pattern is compatible
-        try:
-            enforce_pattern_compatibility(rec, AGENT_CORE_DIR, ph, mh)
-        except PatternCompatibilityError as e:
             pytest.fail(f"Compatible pattern raised error: {e}")
 
     def test_pattern_retrieval_filters_by_domain_hash(self):

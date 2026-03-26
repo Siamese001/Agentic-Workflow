@@ -5,9 +5,10 @@ import pytest
 
 pytestmark = pytest.mark.unit
 
-import system_learning.constraints.config_surfaces  # noqa: F401
 
 
 def test_module_importable():
     """Module config_surfaces must be importable."""
+    import system_learning.constraints.config_surfaces  # noqa: F401
+
     assert system_learning.constraints.config_surfaces is not None

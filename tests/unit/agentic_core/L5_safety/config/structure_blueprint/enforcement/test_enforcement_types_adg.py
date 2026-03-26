@@ -174,11 +174,13 @@ pytestmark = pytest.mark.unit
 
 class TestViolation:
     def test_creates(self):
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.L5_safety.config.structure_blueprint.enforcement.types import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        v: Violation = {"type": "layer_gravity", "path": "foo.py", "severity": "error", "detail": "upward import"}
-        assert v["type"] == "layer_gravity"
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L5_safety.config.structure_blueprint.enforcement.types import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                v: Violation = {"type": "layer_gravity", "path": "foo.py", "severity": "error", "detail": "upward import"}
+                assert v["type"] == "layer_gravity"
+                assert v["severity"] == "error"
+
         assert v["severity"] == "error"
 
 

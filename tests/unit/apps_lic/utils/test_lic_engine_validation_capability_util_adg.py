@@ -5,11 +5,12 @@ import pytest
 
 pytestmark = pytest.mark.unit
 
-from apps_lic.utils.lic_engine_validation_capability_util import LICEngineValidationCapability
 
 
 class TestLICEngineValidationCapability:
     def test_importable(self):
+        from apps_lic.utils.lic_engine_validation_capability_util import LICEngineValidationCapability
+
         assert callable(LICEngineValidationCapability)
 
     def test_signal_name_default_empty(self):

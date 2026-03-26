@@ -5,9 +5,10 @@ import pytest
 
 pytestmark = pytest.mark.unit
 
-import apps_shared.types.standard_type_types  # noqa: F401
 
 
 def test_module_importable():
     """Module standard_type_types must be importable."""
+    import apps_shared.types.standard_type_types  # noqa: F401
+
     assert apps_shared.types.standard_type_types is not None

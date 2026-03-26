@@ -5,9 +5,10 @@ import pytest
 
 pytestmark = pytest.mark.unit
 
-import system_learning.enforcement.boundary_guard  # noqa: F401
 
 
 def test_module_importable():
     """Module boundary_guard must be importable."""
+    import system_learning.enforcement.boundary_guard  # noqa: F401
+
     assert system_learning.enforcement.boundary_guard is not None

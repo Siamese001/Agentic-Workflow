@@ -9,8 +9,10 @@ pytestmark = pytest.mark.unit
 
 
 def test_module_importable():
-    import agentic_core.L0_routing.scripts.verify_heal_invocation_util  # noqa: F401
 """Test module_importable contract compliance."""
+        import agentic_core.L0_routing.scripts.verify_heal_invocation_util  # noqa: F401
+    """Test module_importable contract compliance."""
+
 # Arrange
 # TODO: Set up contract test scenario
 test_scenario = {}  # Replace with actual test scenario

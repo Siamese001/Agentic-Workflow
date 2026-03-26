@@ -9,9 +9,6 @@ from __future__ import annotations
 import ast
 from pathlib import Path
 
-from agentic_core.L0_routing.config.path_constants import (
-    AGENTIC_CORE_DIR,
-)
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
 CANONICAL = REPO_ROOT / AGENTIC_CORE_DIR / "mixins"
@@ -43,6 +40,10 @@ def _find_mixin_classes_outside_canonical() -> list[str]:
 
 def test_no_mixin_definitions_outside_canonical():
     """FAIL if any class ending with Mixin is defined outside agentic_core/mixins/."""
+    from agentic_core.L0_routing.config.path_constants import (
+        AGENTIC_CORE_DIR,
+    )
+
     violations = _find_mixin_classes_outside_canonical()
     assert violations == [], f"{len(violations)} Mixin class(es) outside canonical folder:\n" + "\n".join(
         violations,

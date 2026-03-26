@@ -10,22 +10,23 @@ import pytest
 
 pytestmark = pytest.mark.unit
 
-from apps_shared.utils.secure_config_manager_util import (  # noqa: F401
-    BATCH_SIZE,
-    BUFFER_SIZE,
-    DEFAULT_SLEEP,
-    MAX_RETRIES,
-    THRESHOLD,
-    SecureConfigManager,
-    get_config,
-    get_config_manager,
-    get_encryption_key,
-    set_config,
-)
 
 
 class TestSecureConfigManagerContract:
     def test_is_class(self):
+        from apps_shared.utils.secure_config_manager_util import (  # noqa: F401
+            BATCH_SIZE,
+            BUFFER_SIZE,
+            DEFAULT_SLEEP,
+            MAX_RETRIES,
+            THRESHOLD,
+            SecureConfigManager,
+            get_config,
+            get_config_manager,
+            get_encryption_key,
+            set_config,
+        )
+
         assert isinstance(SecureConfigManager, type)
 
     def test_has_method_get(self):

@@ -203,16 +203,18 @@ class TestFailureSignalImportInvariant:
     """
 
     def test_failure_signal_is_module_level_name_in_dispatcher(self):
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.L2_execution.healers.healing_tier_types import FailureSignal
-        from agentic_core.L2_execution.healers.healing_tier_types import (
-        from agentic_core.L2_execution.healers.healing_tier_types import HealingInput
-        from agentic_core.L2_execution.healers.healing_tier_types import HealingDecision
-        from agentic_core.L2_execution.healers.healing_tier_types import HealingDecision
-    """Test failure_signal_is_module_level_name_in_dispatcher runtime behavior."""
-    # Arrange
-    # TODO: Set up error condition
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L2_execution.healers.healing_tier_types import FailureSignal
+                from agentic_core.L2_execution.healers.healing_tier_types import (
+                from agentic_core.L2_execution.healers.healing_tier_types import HealingInput
+                from agentic_core.L2_execution.healers.healing_tier_types import HealingDecision
+                from agentic_core.L2_execution.healers.healing_tier_types import HealingDecision
+            """Test failure_signal_is_module_level_name_in_dispatcher runtime behavior."""
+            # Arrange
+            # TODO: Set up error condition
+            error_input = {}  # Replace with actual error condition
+
     error_input = {}  # Replace with actual error condition
 
     # Act & Assert

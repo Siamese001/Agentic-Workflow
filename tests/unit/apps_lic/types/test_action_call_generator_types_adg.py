@@ -11,8 +11,6 @@ import pytest
 
 pytestmark = pytest.mark.unit
 try:
-    import apps_lic.types.action_call_generator_types as _mod  # noqa: F401  # ADG covers
-except (ValueError, TypeError, RuntimeError) as e:
     _mod = None
 
 
@@ -42,6 +40,10 @@ def _methods_of(cls_name: str) -> set[str]:
 class TestActionCallGeneratorTypesSource:
     def test_source_exists(self):
     """Test source_exists runtime behavior."""
+            import apps_lic.types.action_call_generator_types as _mod  # noqa: F401  # ADG covers
+        except (ValueError, TypeError, RuntimeError) as e:
+            _mod = None
+
     # Arrange
     # TODO: Set up test data for source_exists
     """Test parses_without_error runtime behavior."""

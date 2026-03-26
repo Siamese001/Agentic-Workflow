@@ -16,13 +16,15 @@ from __future__ import annotations
 
 class TestWorkflowExceptionsImportability:
     def test_module_importable(self) -> None:
-        from agentic_core.runtime.exceptions.workflow_exceptions import (
-    """Test module_importable runtime behavior."""
-    # Arrange
-    # TODO: Set up runtime environment
     runtime_context = {}  # Replace with actual runtime context
 
 """Test agenticworkflowerror_defined runtime behavior."""
+                from agentic_core.runtime.exceptions.workflow_exceptions import (
+            """Test module_importable runtime behavior."""
+            # Arrange
+            # TODO: Set up runtime environment
+            runtime_context = {}  # Replace with actual runtime context
+
 # Arrange
 # TODO: Set up workflow context
 """Test hopexecutionerror_defined runtime behavior."""

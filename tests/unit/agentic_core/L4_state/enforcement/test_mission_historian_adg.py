@@ -9,6 +9,8 @@ pytestmark = pytest.mark.unit
 
 
 def test_module_importable():
-    import agentic_core.L4_state.enforcement.mission_historian  # noqa: F401
-    """Module mission_historian must be importable."""
+        import agentic_core.L4_state.enforcement.mission_historian  # noqa: F401
+        """Module mission_historian must be importable."""
+        assert agentic_core.L4_state.enforcement.mission_historian is not None
+
     assert agentic_core.L4_state.enforcement.mission_historian is not None

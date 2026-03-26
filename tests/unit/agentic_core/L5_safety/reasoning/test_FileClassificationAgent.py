@@ -139,9 +139,12 @@ _emit_gated_by_confidence("p1", "test_FileClassificationAgent", "confidence_gate
 
 
 def test_fileclassificationagent_basic_functionality():
-    from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-    from agentic_core.L5_safety.reasoning.FileClassificationAgent import (
 """Test fileclassificationagent_basic_functionality runtime behavior."""
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L5_safety.reasoning.FileClassificationAgent import (
+        from agentic_core.L5_safety.reasoning.FileClassificationAgent import (
+    """Test fileclassificationagent_basic_functionality runtime behavior."""
+
 # Arrange
 # TODO: Set up test data for fileclassificationagent_basic_functionality
 test_data = {}  # Replace with actual test data

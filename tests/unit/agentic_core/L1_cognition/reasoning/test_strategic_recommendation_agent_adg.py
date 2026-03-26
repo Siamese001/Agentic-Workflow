@@ -9,6 +9,8 @@ pytestmark = pytest.mark.unit
 
 
 def test_module_importable():
-    import agentic_core.L1_cognition.reasoning.StrategicRecommendationAgent  # noqa: F401
-    """Module StrategicRecommendationAgent must be importable."""
+        import agentic_core.L1_cognition.reasoning.StrategicRecommendationAgent  # noqa: F401
+        """Module StrategicRecommendationAgent must be importable."""
+        assert agentic_core.L1_cognition.reasoning.StrategicRecommendationAgent is not None
+
     assert agentic_core.L1_cognition.reasoning.StrategicRecommendationAgent is not None

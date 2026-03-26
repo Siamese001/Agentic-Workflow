@@ -165,21 +165,23 @@ class TestASTCoordinate:
     """Tests for ASTCoordinate dataclass."""
 
     def test_create_coordinate(self):
-        from agentic_core.L5_safety.types.surgical_context_types import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        """Test creating an AST coordinate."""
-        coord = ASTCoordinate(
-            node_id="func_1",
-            node_type="FunctionDef",
-            line=10,
-            column=0,
-            end_line=20,
-            end_column=0,
-        )
-        assert coord.node_id == "func_1"
-        assert coord.node_type == "FunctionDef"
-        assert coord.line == 10
-        assert coord.column == 0
+                from agentic_core.L5_safety.types.surgical_context_types import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                """Test creating an AST coordinate."""
+                coord = ASTCoordinate(
+                    node_id="func_1",
+                    node_type="FunctionDef",
+                    line=10,
+                    column=0,
+                    end_line=20,
+                    end_column=0,
+                )
+                assert coord.node_id == "func_1"
+                assert coord.node_type == "FunctionDef"
+                assert coord.line == 10
+                assert coord.column == 0
+                assert coord.end_line == 20
+
         assert coord.end_line == 20
 
     def test_coordinate_defaults(self):

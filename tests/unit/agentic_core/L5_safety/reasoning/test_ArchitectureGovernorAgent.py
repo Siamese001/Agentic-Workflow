@@ -22,8 +22,10 @@ pytestmark = pytest.mark.unit
 
 class TestArchitectureGovernorAgentContract:
     def test_is_dataclass(self):
-        from agentic_core.L5_safety.reasoning.ArchitectureGovernorAgent import (  # noqa: F401
-        import dataclasses
+                from agentic_core.L5_safety.reasoning.ArchitectureGovernorAgent import (  # noqa: F401
+                import dataclasses
+                assert dataclasses.is_dataclass(ArchitectureGovernorAgent)
+
         assert dataclasses.is_dataclass(ArchitectureGovernorAgent)
 
     def test_field_names_present(self):

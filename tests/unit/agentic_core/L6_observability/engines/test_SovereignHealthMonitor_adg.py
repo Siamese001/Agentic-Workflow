@@ -9,6 +9,8 @@ pytestmark = pytest.mark.unit
 
 
 def test_module_importable():
-    import agentic_core.L6_observability.engines.SovereignHealthMonitor  # noqa: F401
-    """Module SovereignHealthMonitor must be importable."""
+        import agentic_core.L6_observability.engines.SovereignHealthMonitor  # noqa: F401
+        """Module SovereignHealthMonitor must be importable."""
+        assert agentic_core.L6_observability.engines.SovereignHealthMonitor is not None
+
     assert agentic_core.L6_observability.engines.SovereignHealthMonitor is not None

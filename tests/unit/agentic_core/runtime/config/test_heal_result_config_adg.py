@@ -170,18 +170,20 @@ pytestmark = pytest.mark.unit
 
 class TestHealStatus:
     def test_success_value(self):
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.runtime.config.heal_result_config import HealResult, HealStatus
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-    """Test success_value runtime behavior."""
-    # Arrange
-    # TODO: Set up runtime environment
-    """Test error_value runtime behavior."""
-    # Arrange
-    # TODO: Set up error condition
-    """Test all_statuses runtime behavior."""
-    # Arrange
-    # TODO: Set up initial state
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.runtime.config.heal_result_config import HealResult, HealStatus
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+            """Test success_value runtime behavior."""
+            # Arrange
+            # TODO: Set up runtime environment
+            """Test error_value runtime behavior."""
+            # Arrange
+            # TODO: Set up error condition
+            """Test all_statuses runtime behavior."""
+            # Arrange
+            # TODO: Set up initial state
+            initial_state = {}  # Replace with actual initial state
+
     initial_state = {}  # Replace with actual initial state
 
     # Act

@@ -172,17 +172,20 @@ pytestmark = pytest.mark.unit
 
 class TestUtilsPackagePublicAPI:
     def test_standard_heal_importable(self):
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.utils import standard_heal
-        from agentic_core.utils import standard_heal_async
-        from agentic_core.utils import timeout
-        from agentic_core.utils import TimeoutError as AgenticTimeoutError
-        from agentic_core.utils import HEAL_RESULT_SCHEMA
-        from agentic_core.utils import HEAL_RESULT_SCHEMA
-        import agentic_core.utils as pkg
-        import agentic_core.utils.security_util as m
-#  # MOVED: from agentic_core.utils import standard_heal
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.utils import standard_heal
+                from agentic_core.utils import standard_heal_async
+                from agentic_core.utils import timeout
+                from agentic_core.utils import TimeoutError as AgenticTimeoutError
+                from agentic_core.utils import HEAL_RESULT_SCHEMA
+                from agentic_core.utils import HEAL_RESULT_SCHEMA
+                import agentic_core.utils as pkg
+                import agentic_core.utils.security_util as m
+                import agentic_core.utils.security_util as m
+        #  # MOVED: from agentic_core.utils import standard_heal
+                assert callable(standard_heal)
+
         assert callable(standard_heal)
 
     def test_standard_heal_async_importable(self):
