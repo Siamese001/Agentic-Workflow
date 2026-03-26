@@ -144,6 +144,21 @@
         "PYTEST_TIMEOUT": "300",
         "COVERAGE_ENABLED": "true"
       }
+    },
+    "meta_learning": {
+      "_comment": "System Learning Meta-Learning MCP \u00e2\u20ac\u201d CUSTOM: Access runtime execution evidence and learning patterns from Windsurf chat. Provides query interface for 37+ runtime ADG snapshots and meta-learning pipelines. 7 tools for runtime ADG status, querying, comparison, meta-learning insights, pipeline status, cross-repo import, and state management.",
+      "command": "python",
+      "args": [
+        "C:\\Git\\Agentic-Workflow\\tools\\learning\\meta_learning_mcp_server.py"
+      ],
+      "cwd": "C:\\Git\\Agentic-Workflow",
+      "disabled": false,
+      "env": {
+        "META_LEARNING_MCP_LOG_LEVEL": "INFO",
+        "RUNTIME_ADG_SNAPSHOTS_DIR": "C:\\Git\\Agentic-Workflow\\system_learning\\meta_learning\\runtime_adg_snapshots",
+        "META_LEARNING_DIR": "C:\\Git\\Agentic-Workflow\\system_learning\\meta_learning",
+        "CROSS_REPO_DIR": "C:\\Git\\Agentic-Workflow\\system_learning\\cross_repo"
+      }
     }
   }
 }
