@@ -195,6 +195,7 @@ try:
     from agentic_core.L3_orchestration.reasoning.subatomic_testing_mixin import (
         L3SubatomicTestingMixin,
     )
+# guardian: allow-silent-degradation - Optional subatomic testing mixin
 except ImportError:  # guardian: allow-silent-swallow
 
     class L3SubatomicTestingMixin:
@@ -932,6 +933,7 @@ class MCPHardenedMixin:
 
 try:
     from agentic_core.mixins.healer_mixin import HealerMixin
+# guardian: allow-silent-degradation - Optional healer mixin
 except ImportError:
 
     class HealerMixin:  # type: ignore[no-redef]
