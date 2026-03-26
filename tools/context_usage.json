@@ -1,0 +1,18 @@
+{
+  "batches": [
+    {
+      "batch_name": "runtime_config_batch1",
+      "layer": "runtime",
+      "file_count": 15,
+      "estimated_usage_kb": 72.0,
+      "percentage_of_limit": 56.25,
+      "status": "OK",
+      "base_context_kb": 45,
+      "per_file_kb": 1.8,
+      "timestamp": "C:\\Git\\Agentic-Workflow",
+      "actual_usage_kb": null
+    }
+  ],
+  "current_session": {},
+  "warnings": []
+}

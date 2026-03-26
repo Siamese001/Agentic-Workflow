@@ -6,7 +6,10 @@ import pathlib
 import subprocess
 import sys
 from datetime import datetime
-from typing import Any
+from typing import List, Dict, Any
+
+# Add tools directory to path for imports
+sys.path.insert(0, str(pathlib.Path(__file__).parent))
 
 from generate_test_stubs import TestStubGenerator
 
@@ -120,13 +123,17 @@ class BatchProcessor:
 
             # Convert test directory to source directory
             if source_parts[0] == "unit":
-                source_parts = ["agentic_core"] + list(source_parts[1:])
+                source_parts = list(source_parts[1:])  # Remove 'unit', keep the rest
 
-            # Remove 'test_' prefix from filename
+            # Remove 'test_' prefix and '_adg' suffix from filename
             if source_parts:
                 filename = source_parts[-1]
                 if filename.startswith("test_"):
                     filename = filename[5:]  # Remove 'test_'
+                if filename.endswith("_adg.py"):
+                    filename = filename[:-7] + ".py"  # Remove '_adg' and add '.py'
+                elif not filename.endswith(".py"):
+                    filename = filename + ".py"
                 source_parts[-1] = filename
 
             source_path = pathlib.Path(*source_parts)
