@@ -13,8 +13,22 @@ MAX_FILES = 1000
 DEFAULT_TIMEOUT = 300  # 5 minutes
 
 @pytest.mark.unit
-class TestCacheLoader:
-    """Test CacheLoader functionality."""
+class GeneratedTest:
+    """Generated test class for agentic_core.adg.runtime."""
+
+    def test_load_or_scan(self):
+        """Test load_or_scan function."""
+        from agentic_core.adg.runtime import load_or_scan
+        # TODO: Implement actual test
+        result = load_or_scan()
+        assertIsNotNone(result)
+    def test_invalidate_cache(self):
+        """Test invalidate_cache function."""
+        from agentic_core.adg.runtime import invalidate_cache
+        # TODO: Implement actual test
+        result = invalidate_cache()
+        assertIsNotNone(result)
+
 
     def test_placeholder_1(self):
         """Placeholder test 1."""
