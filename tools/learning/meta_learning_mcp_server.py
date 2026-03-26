@@ -140,19 +140,19 @@ def _refresh_snapshot_cache():
     """Refresh runtime ADG snapshot cache."""
     global _last_cache_update
     current_time = int(time.time())
-    
+
     if current_time - _last_cache_update < CACHE_TTL:
         return
-    
+
     # Scan for runtime ADG snapshots
     if RUNTIME_ADG_SNAPSHOTS_DIR.exists():
         snapshot_files = list(RUNTIME_ADG_SNAPSHOTS_DIR.glob("runtime_adg_*.json"))
-        
+
         for snapshot_file in snapshot_files:
             try:
                 with open(snapshot_file, 'r') as f:
                     snapshot_data = json.load(f)
-                
+
                 snapshot_id = snapshot_file.stem
                 _snapshot_cache[snapshot_id] = {
                     "file_path": str(snapshot_file),
@@ -166,21 +166,21 @@ def _refresh_snapshot_cache():
                 }
             except Exception as e:
                 logger.warning(f"Failed to load snapshot {snapshot_file}: {e}")
-    
+
     _last_cache_update = current_time
 
 
 @mcp.tool()
 def runtime_adg_status() -> dict[str, Any]:
     """Get runtime ADG snapshot count, freshness, and health.
-    
+
     Returns:
         Dictionary with runtime ADG status and health metrics.
     """
     _refresh_snapshot_cache()
-    
+
     total_snapshots = len(_snapshot_cache)
-    
+
     if total_snapshots == 0:
         return {
             "timestamp": int(time.time()),
@@ -189,15 +189,15 @@ def runtime_adg_status() -> dict[str, Any]:
             "freshness": "unknown",
             "recommendations": ["Generate runtime ADG snapshots by running system execution"]
         }
-    
+
     # Calculate freshness metrics
     current_time = int(time.time())
     timestamps = [cache["timestamp"] for cache in _snapshot_cache.values()]
-    
+
     oldest_snapshot = min(timestamps)
     newest_snapshot = max(timestamps)
     avg_age = (current_time - sum(timestamps) / len(timestamps)) / 3600  # hours
-    
+
     # Determine health status
     if avg_age < 1:  # Less than 1 hour old on average
         health_status = "excellent"
@@ -207,12 +207,12 @@ def runtime_adg_status() -> dict[str, Any]:
         health_status = "fair"
     else:
         health_status = "poor"
-    
+
     # Calculate size metrics
     total_nodes = sum(cache["node_count"] for cache in _snapshot_cache.values())
     total_edges = sum(cache["edge_count"] for cache in _snapshot_cache.values())
     total_size = sum(cache["file_size"] for cache in _snapshot_cache.values())
-    
+
     result = {
         "timestamp": int(time.time()),
         "total_snapshots": total_snapshots,
@@ -231,7 +231,7 @@ def runtime_adg_status() -> dict[str, Any]:
         },
         "recommendations": _get_health_recommendations(health_status, avg_age)
     }
-    
+
     logger.info("runtime_adg_status_checked", extra=result)
     return result
 
@@ -249,26 +249,31 @@ def runtime_adg_query(trace_id: str = None, agent_name: str = None, time_window_
     Returns:
         Dictionary with matching snapshots and query metadata.
     """
-    _refresh_snapshot_cache()
+    if time_window_hours <= 0 or time_window_hours > 168:  # Max 1 week
+        return {"success": False, "error": "time_window_hours must be between 1 and 168"}
     
+    if limit <= 0 or limit > 500:
+        return {"success": False, "error": "limit must be between 1 and 500"}
+    _refresh_snapshot_cache()
+
     current_time = int(time.time())
     cutoff_time = current_time - (time_window_hours * 3600)
-    
+
     matching_snapshots = []
-    
+
     for snapshot_id, cache_entry in _snapshot_cache.items():
         # Apply filters
         if trace_id and cache_entry.get("trace_id") != trace_id:
             continue
-        
+
         if cache_entry.get("timestamp", 0) < cutoff_time:
             continue
-        
+
         # Load full snapshot data for detailed analysis
         try:
             with open(cache_entry["file_path"], 'r') as f:
                 snapshot_data = json.load(f)
-            
+
             # Agent name filter (if specified)
             if agent_name:
                 nodes = snapshot_data.get("nodes", [])
@@ -279,7 +284,7 @@ def runtime_adg_query(trace_id: str = None, agent_name: str = None, time_window_
                 )
                 if not agent_found:
                     continue
-            
+
             matching_snapshots.append({
                 "snapshot_id": snapshot_id,
                 "trace_id": cache_entry.get("trace_id"),
@@ -288,17 +293,17 @@ def runtime_adg_query(trace_id: str = None, agent_name: str = None, time_window_
                 "edge_count": cache_entry.get("edge_count"),
                 "snapshot_data": snapshot_data
             })
-            
+
             if len(matching_snapshots) >= limit:
                 break
-                
+
         except Exception as e:
             logger.warning(f"Failed to load snapshot {snapshot_id}: {e}")
             continue
-    
+
     # Sort by timestamp (most recent first)
     matching_snapshots.sort(key=lambda x: x["timestamp"], reverse=True)
-    
+
     result = {
         "timestamp": int(time.time()),
         "query_params": {
@@ -310,29 +315,29 @@ def runtime_adg_query(trace_id: str = None, agent_name: str = None, time_window_
         "total_matches": len(matching_snapshots),
         "snapshots": matching_snapshots
     }
-    
+
     logger.info("runtime_adg_queried", extra={
         "total_matches": result["total_matches"],
         "trace_id": trace_id,
         "agent_name": agent_name
     })
-    
+
     return result
 
 
 @mcp.tool()
 def runtime_adg_compare(snapshot_id_1: str, snapshot_id_2: str) -> dict[str, Any]:
     """Compare execution patterns between two runtime ADG snapshots.
-    
+
     Args:
         snapshot_id_1: First snapshot ID
         snapshot_id_2: Second snapshot ID
-        
+
     Returns:
         Dictionary with comparison analysis and differences.
     """
     _refresh_snapshot_cache()
-    
+
     # Load both snapshots
     snapshots = {}
     for snapshot_id in [snapshot_id_1, snapshot_id_2]:
@@ -343,7 +348,7 @@ def runtime_adg_compare(snapshot_id_1: str, snapshot_id_2: str) -> dict[str, Any
                 "snapshot_id_1": snapshot_id_1,
                 "snapshot_id_2": snapshot_id_2
             }
-        
+
         try:
             with open(_snapshot_cache[snapshot_id]["file_path"], 'r') as f:
                 snapshots[snapshot_id] = json.load(f)
@@ -354,11 +359,11 @@ def runtime_adg_compare(snapshot_id_1: str, snapshot_id_2: str) -> dict[str, Any
                 "snapshot_id_1": snapshot_id_1,
                 "snapshot_id_2": snapshot_id_2
             }
-    
+
     # Perform comparison analysis
     snapshot_1 = snapshots[snapshot_id_1]
     snapshot_2 = snapshots[snapshot_id_2]
-    
+
     # Compare basic metrics
     comparison = {
         "timestamp": int(time.time()),
@@ -372,14 +377,14 @@ def runtime_adg_compare(snapshot_id_1: str, snapshot_id_2: str) -> dict[str, Any
             "time_diff": snapshot_2.get("timestamp", 0) - snapshot_1.get("timestamp", 0)
         }
     }
-    
+
     # Compare node distributions
     nodes_1 = snapshot_1.get("nodes", [])
     nodes_2 = snapshot_2.get("nodes", [])
-    
+
     node_types_1 = {node.get("kind", "unknown") for node in nodes_1}
     node_types_2 = {node.get("kind", "unknown") for node in nodes_2}
-    
+
     comparison["node_analysis"] = {
         "types_1": list(node_types_1),
         "types_2": list(node_types_2),
@@ -387,14 +392,14 @@ def runtime_adg_compare(snapshot_id_1: str, snapshot_id_2: str) -> dict[str, Any
         "unique_types_1": list(node_types_1 - node_types_2),
         "unique_types_2": list(node_types_2 - node_types_1)
     }
-    
+
     # Compare edge distributions
     edges_1 = snapshot_1.get("edges", [])
     edges_2 = snapshot_2.get("edges", [])
-    
+
     edge_types_1 = {edge.get("relation_type", "unknown") for edge in edges_1}
     edge_types_2 = {edge.get("relation_type", "unknown") for edge in edges_2}
-    
+
     comparison["edge_analysis"] = {
         "types_1": list(edge_types_1),
         "types_2": list(edge_types_2),
@@ -402,56 +407,56 @@ def runtime_adg_compare(snapshot_id_1: str, snapshot_id_2: str) -> dict[str, Any
         "unique_types_1": list(edge_types_1 - edge_types_2),
         "unique_types_2": list(edge_types_2 - edge_types_1)
     }
-    
+
     # Identify significant differences
     differences = []
-    
+
     if comparison["basic_metrics"]["nodes_1"] != comparison["basic_metrics"]["nodes_2"]:
         differences.append(f"Node count differs: {comparison['basic_metrics']['nodes_1']} vs {comparison['basic_metrics']['nodes_2']}")
-    
+
     if comparison["basic_metrics"]["edges_1"] != comparison["basic_metrics"]["edges_2"]:
         differences.append(f"Edge count differs: {comparison['basic_metrics']['edges_1']} vs {comparison['basic_metrics']['edges_2']}")
-    
+
     if comparison["node_analysis"]["unique_types_1"]:
         differences.append(f"Unique node types in snapshot 1: {', '.join(comparison['node_analysis']['unique_types_1'])}")
-    
+
     if comparison["node_analysis"]["unique_types_2"]:
         differences.append(f"Unique node types in snapshot 2: {', '.join(comparison['node_analysis']['unique_types_2'])}")
-    
+
     comparison["differences"] = differences
     comparison["similarity_score"] = _calculate_similarity_score(comparison)
-    
+
     logger.info("runtime_adg_compared", extra={
         "snapshot_id_1": snapshot_id_1,
         "snapshot_id_2": snapshot_id_2,
         "similarity_score": comparison["similarity_score"]
     })
-    
+
     return comparison
 
 
 @mcp.tool()
 def meta_learning_insights(pattern_type: str = "all", time_window_hours: int = 168) -> dict[str, Any]:
     """Get pattern detection results and meta-learning insights.
-    
+
     Args:
         pattern_type: Type of patterns to analyze (all, performance, errors, agents, flows)
         time_window_hours: Time window for analysis (default 168 hours = 1 week)
-        
+
     Returns:
         Dictionary with meta-learning insights and patterns.
     """
     _refresh_snapshot_cache()
-    
+
     current_time = int(time.time())
     cutoff_time = current_time - (time_window_hours * 3600)
-    
+
     # Filter snapshots within time window
     recent_snapshots = [
         cache_entry for cache_entry in _snapshot_cache.values()
         if cache_entry.get("timestamp", 0) >= cutoff_time
     ]
-    
+
     if not recent_snapshots:
         return {
             "timestamp": int(time.time()),
@@ -460,29 +465,29 @@ def meta_learning_insights(pattern_type: str = "all", time_window_hours: int = 1
             "insights": [],
             "recommendations": ["No recent snapshots available for analysis"]
         }
-    
+
     insights = []
-    
+
     # Analyze different pattern types
     if pattern_type in ["all", "performance"]:
         performance_insights = _analyze_performance_patterns(recent_snapshots)
         insights.extend(performance_insights)
-    
+
     if pattern_type in ["all", "errors"]:
         error_insights = _analyze_error_patterns(recent_snapshots)
         insights.extend(error_insights)
-    
+
     if pattern_type in ["all", "agents"]:
         agent_insights = _analyze_agent_patterns(recent_snapshots)
         insights.extend(agent_insights)
-    
+
     if pattern_type in ["all", "flows"]:
         flow_insights = _analyze_flow_patterns(recent_snapshots)
         insights.extend(flow_insights)
-    
+
     # Generate recommendations
     recommendations = _generate_meta_learning_recommendations(insights)
-    
+
     result = {
         "timestamp": int(time.time()),
         "pattern_type": pattern_type,
@@ -492,20 +497,20 @@ def meta_learning_insights(pattern_type: str = "all", time_window_hours: int = 1
         "recommendations": recommendations,
         "confidence_score": _calculate_insight_confidence(insights)
     }
-    
+
     logger.info("meta_learning_insights_generated", extra={
         "pattern_type": pattern_type,
         "insights_count": len(insights),
         "confidence_score": result["confidence_score"]
     })
-    
+
     return result
 
 
 @mcp.tool()
 def learning_pipeline_status() -> dict[str, Any]:
     """Get learning pipeline health and progress status.
-    
+
     Returns:
         Dictionary with pipeline status and health metrics.
     """
@@ -516,11 +521,11 @@ def learning_pipeline_status() -> dict[str, Any]:
         "meta_learning_processor": META_LEARNING_DIR.exists(),
         "cross_repo_importer": CROSS_REPO_DIR.exists()
     }
-    
+
     # Check for recent activity
     current_time = int(time.time())
     activity_indicators = {}
-    
+
     # Runtime ADG activity
     if RUNTIME_ADG_SNAPSHOTS_DIR.exists():
         snapshot_files = list(RUNTIME_ADG_SNAPSHOTS_DIR.glob("runtime_adg_*.json"))
@@ -531,7 +536,7 @@ def learning_pipeline_status() -> dict[str, Any]:
             activity_indicators["latest_snapshot_age_hours"] = None
     else:
         activity_indicators["latest_snapshot_age_hours"] = None
-    
+
     # Meta-learning activity
     if META_LEARNING_DIR.exists():
         pattern_files = list(META_LEARNING_DIR.glob("pattern_*.json"))
@@ -542,12 +547,12 @@ def learning_pipeline_status() -> dict[str, Any]:
             activity_indicators["latest_pattern_age_hours"] = None
     else:
         activity_indicators["latest_pattern_age_hours"] = None
-    
+
     # Calculate overall health
     active_components = sum(pipeline_components.values())
     total_components = len(pipeline_components)
     component_health = active_components / total_components
-    
+
     # Determine pipeline status
     if component_health >= 0.75:
         pipeline_status = "healthy"
@@ -555,7 +560,7 @@ def learning_pipeline_status() -> dict[str, Any]:
         pipeline_status = "degraded"
     else:
         pipeline_status = "unhealthy"
-    
+
     result = {
         "timestamp": int(time.time()),
         "pipeline_status": pipeline_status,
@@ -564,10 +569,9 @@ def learning_pipeline_status() -> dict[str, Any]:
         "activity_indicators": activity_indicators,
         "recommendations": _get_pipeline_recommendations(pipeline_status, activity_indicators)
     }
-    
+
     logger.info("learning_pipeline_status_checked", extra=result)
     return result
-
 
 @mcp.tool()
 def cross_repo_import(repo_url: str, import_type: str = "patterns") -> dict[str, Any]:
@@ -580,17 +584,23 @@ def cross_repo_import(repo_url: str, import_type: str = "patterns") -> dict[str,
     Returns:
         Dictionary with import results and status.
     """
+    if not repo_url or not repo_url.strip():
+        return {"success": False, "error": "repo_url cannot be empty"}
+    
+    valid_import_types = ["patterns", "snapshots", "models"]
+    if import_type not in valid_import_types:
+        return {"success": False, "error": f"import_type must be one of: {', '.join(valid_import_types)}"}
     # Check if cross-repo importer exists
     importer_script = CROSS_REPO_DIR / "import_external_learning.py"
-    
+
     if not importer_script.exists():
         return {
             "success": False,
-            "error": "Cross-repo importer not found",
+            "error": f"Cross-repo importer not found at {importer_script}. Install cross-repo learning components.",
             "repo_url": repo_url,
             "import_type": import_type
         }
-    
+
     try:
         # This is a simplified implementation
         # In practice, this would call the actual cross-repo importer
@@ -607,15 +617,15 @@ def cross_repo_import(repo_url: str, import_type: str = "patterns") -> dict[str,
                 "Update meta-learning models"
             ]
         }
-        
+
         logger.info("cross_repo_import_executed", extra={
             "repo_url": repo_url,
             "import_type": import_type,
             "success": import_result["success"]
         })
-        
+
         return import_result
-        
+
     except Exception as e:
         logger.error("cross_repo_import_error", extra={
             "repo_url": repo_url,
@@ -632,11 +642,11 @@ def cross_repo_import(repo_url: str, import_type: str = "patterns") -> dict[str,
 @mcp.tool()
 def learning_state_management(action: str, state_id: str = None) -> dict[str, Any]:
     """Manage learning state and snapshots.
-    
+
     Args:
         action: Action to perform (list, backup, restore, cleanup)
         state_id: State ID for backup/restore operations
-        
+
     Returns:
         Dictionary with operation results and state information.
     """
@@ -652,31 +662,31 @@ def learning_state_management(action: str, state_id: str = None) -> dict[str, An
             }
             for snapshot_id, cache_entry in _snapshot_cache.items()
         ]
-        
+
         return {
             "success": True,
             "action": action,
             "total_states": len(states),
             "states": sorted(states, key=lambda x: x["timestamp"], reverse=True)
         }
-    
+
     elif action == "backup":
         # Create backup of current learning state
         backup_id = f"backup_{int(time.time())}"
         backup_path = META_LEARNING_DIR / f"{backup_id}.json"
-        
+
         backup_data = {
             "backup_id": backup_id,
             "timestamp": int(time.time()),
             "snapshot_count": len(_snapshot_cache),
             "snapshots": list(_snapshot_cache.keys())
         }
-        
+
         try:
             META_LEARNING_DIR.mkdir(exist_ok=True)
             with open(backup_path, 'w') as f:
                 json.dump(backup_data, f, indent=2)
-            
+
             return {
                 "success": True,
                 "action": action,
@@ -690,7 +700,7 @@ def learning_state_management(action: str, state_id: str = None) -> dict[str, An
                 "action": action,
                 "error": str(e)
             }
-    
+
     elif action == "cleanup":
         # Clean up old snapshots (older than 30 days)
         cutoff_time = int(time.time()) - (30 * 24 * 3600)
@@ -698,7 +708,7 @@ def learning_state_management(action: str, state_id: str = None) -> dict[str, An
             snapshot_id for snapshot_id, cache_entry in _snapshot_cache.items()
             if cache_entry.get("timestamp", 0) < cutoff_time
         ]
-        
+
         cleaned_count = 0
         for snapshot_id in old_snapshots:
             try:
@@ -707,17 +717,17 @@ def learning_state_management(action: str, state_id: str = None) -> dict[str, An
                 cleaned_count += 1
             except Exception as e:
                 logger.warning(f"Failed to cleanup snapshot {snapshot_id}: {e}")
-        
+
         # Refresh cache after cleanup
         _refresh_snapshot_cache()
-        
+
         return {
             "success": True,
             "action": action,
             "cleaned_count": cleaned_count,
             "remaining_snapshots": len(_snapshot_cache)
         }
-    
+
     else:
         return {
             "success": False,
@@ -731,7 +741,7 @@ def learning_state_management(action: str, state_id: str = None) -> dict[str, An
 def _get_health_recommendations(health_status: str, avg_age: float) -> list[str]:
     """Get health recommendations based on status and age."""
     recommendations = []
-    
+
     if health_status == "poor":
         recommendations.extend([
             "Generate fresh runtime ADG snapshots",
@@ -740,48 +750,48 @@ def _get_health_recommendations(health_status: str, avg_age: float) -> list[str]
         ])
     elif health_status == "fair":
         recommendations.append("Consider generating more recent snapshots")
-    
+
     if avg_age > 168:  # More than 1 week
         recommendations.append("Snapshots are quite old - fresh execution data needed")
-    
+
     return recommendations
 
 
 def _calculate_similarity_score(comparison: dict[str, Any]) -> float:
     """Calculate similarity score between two snapshots."""
     score = 1.0
-    
+
     # Penalize node count differences
     nodes_diff = abs(comparison["basic_metrics"]["nodes_1"] - comparison["basic_metrics"]["nodes_2"])
     max_nodes = max(comparison["basic_metrics"]["nodes_1"], comparison["basic_metrics"]["nodes_2"])
     if max_nodes > 0:
         score -= nodes_diff / max_nodes * 0.3
-    
+
     # Penalize edge count differences
     edges_diff = abs(comparison["basic_metrics"]["edges_1"] - comparison["basic_metrics"]["edges_2"])
     max_edges = max(comparison["basic_metrics"]["edges_1"], comparison["basic_metrics"]["edges_2"])
     if max_edges > 0:
         score -= edges_diff / max_edges * 0.3
-    
+
     # Penalize unique node types
     unique_types = len(comparison["node_analysis"]["unique_types_1"]) + len(comparison["node_analysis"]["unique_types_2"])
     total_types = len(comparison["node_analysis"]["common_types"]) + unique_types
     if total_types > 0:
         score -= unique_types / total_types * 0.2
-    
+
     # Penalize unique edge types
     unique_edge_types = len(comparison["edge_analysis"]["unique_types_1"]) + len(comparison["edge_analysis"]["unique_types_2"])
     total_edge_types = len(comparison["edge_analysis"]["common_types"]) + unique_edge_types
     if total_edge_types > 0:
         score -= unique_edge_types / total_edge_types * 0.2
-    
+
     return max(0.0, score)
 
 
 def _analyze_performance_patterns(snapshots: list[dict[str, Any]]) -> list[dict[str, Any]]:
     """Analyze performance patterns from snapshots."""
     patterns = []
-    
+
     # Mock performance analysis
     patterns.append({
         "type": "performance",
@@ -790,14 +800,14 @@ def _analyze_performance_patterns(snapshots: list[dict[str, Any]]) -> list[dict[
         "confidence": 0.8,
         "evidence": f"Analyzed {len(snapshots)} snapshots"
     })
-    
+
     return patterns
 
 
 def _analyze_error_patterns(snapshots: list[dict[str, Any]]) -> list[dict[str, Any]]:
     """Analyze error patterns from snapshots."""
     patterns = []
-    
+
     # Mock error analysis
     patterns.append({
         "type": "errors",
@@ -806,14 +816,14 @@ def _analyze_error_patterns(snapshots: list[dict[str, Any]]) -> list[dict[str, A
         "confidence": 0.7,
         "evidence": f"Analyzed {len(snapshots)} snapshots"
     })
-    
+
     return patterns
 
 
 def _analyze_agent_patterns(snapshots: list[dict[str, Any]]) -> list[dict[str, Any]]:
     """Analyze agent patterns from snapshots."""
     patterns = []
-    
+
     # Mock agent analysis
     patterns.append({
         "type": "agents",
@@ -822,14 +832,14 @@ def _analyze_agent_patterns(snapshots: list[dict[str, Any]]) -> list[dict[str, A
         "confidence": 0.75,
         "evidence": f"Analyzed {len(snapshots)} snapshots"
     })
-    
+
     return patterns
 
 
 def _analyze_flow_patterns(snapshots: list[dict[str, Any]]) -> list[dict[str, Any]]:
     """Analyze flow patterns from snapshots."""
     patterns = []
-    
+
     # Mock flow analysis
     patterns.append({
         "type": "flows",
@@ -838,14 +848,14 @@ def _analyze_flow_patterns(snapshots: list[dict[str, Any]]) -> list[dict[str, An
         "confidence": 0.8,
         "evidence": f"Analyzed {len(snapshots)} snapshots"
     })
-    
+
     return patterns
 
 
 def _generate_meta_learning_recommendations(insights: list[dict[str, Any]]) -> list[str]:
     """Generate recommendations based on insights."""
     recommendations = []
-    
+
     if len(insights) == 0:
         recommendations.append("Generate more runtime snapshots for better insights")
     else:
@@ -854,7 +864,7 @@ def _generate_meta_learning_recommendations(insights: list[dict[str, Any]]) -> l
             recommendations.append("Increase snapshot frequency for better pattern detection")
         else:
             recommendations.append("Current pattern detection is performing well")
-    
+
     return recommendations
 
 
@@ -862,14 +872,14 @@ def _calculate_insight_confidence(insights: list[dict[str, Any]]) -> float:
     """Calculate overall confidence score for insights."""
     if not insights:
         return 0.0
-    
+
     return sum(insight.get("confidence", 0) for insight in insights) / len(insights)
 
 
 def _get_pipeline_recommendations(status: str, activity: dict[str, Any]) -> list[str]:
     """Get pipeline recommendations based on status and activity."""
     recommendations = []
-    
+
     if status == "unhealthy":
         recommendations.extend([
             "Check pipeline component installation",
@@ -878,14 +888,14 @@ def _get_pipeline_recommendations(status: str, activity: dict[str, Any]) -> list
         ])
     elif status == "degraded":
         recommendations.append("Some components may need attention")
-    
+
     # Check activity indicators
     if activity.get("latest_snapshot_age_hours") is not None and activity.get("latest_snapshot_age_hours", 0) > 24:
         recommendations.append("Snapshot generation may be stalled")
-    
+
     if activity.get("latest_pattern_age_hours") is not None and activity.get("latest_pattern_age_hours", 0) > 48:
         recommendations.append("Pattern processing may be delayed")
-    
+
     return recommendations
 
 

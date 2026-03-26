@@ -133,7 +133,7 @@ GUARDIAN_AGENTS_DIR = Path("C:/Git/Agentic-Workflow/agentic_core/L5_safety/reaso
 # Known guardian scripts
 GUARDIAN_SCRIPTS = [
     "run_guardian_hierarchy_compliance.py",
-    "run_guardian_layer_boundary.py", 
+    "run_guardian_layer_boundary.py",
     "run_guardian_sovereignty.py",
     "run_guardian_hygiene.py",
     "run_guardian_import_discipline.py",
@@ -161,20 +161,20 @@ def _refresh_guardian_cache():
     """Refresh guardian status cache."""
     global _last_cache_update
     current_time = int(time.time())
-    
+
     if current_time - _last_cache_update < CACHE_TTL:
         return
-    
+
     # Scan for guardian reports
     for script in GUARDIAN_SCRIPTS:
         guardian_name = script.replace("run_guardian_", "").replace(".py", "")
         report_file = GUARDIAN_REPORTS_DIR / f"{guardian_name}_report.json"
-        
+
         if report_file.exists():
             try:
                 with open(report_file, 'r') as f:
                     report = json.load(f)
-                
+
                 _guardian_cache[guardian_name] = {
                     "name": guardian_name,
                     "script": script,
@@ -205,26 +205,26 @@ def _refresh_guardian_cache():
                 "issues_found": 0,
                 "report_file": str(report_file)
             }
-    
+
     _last_cache_update = current_time
 
 
 @mcp.tool()
 def guardian_status() -> dict[str, Any]:
     """Get current status of all guardians (passed/failed/never_run).
-    
+
     Returns:
         Dictionary with guardian status summary and detailed status list.
     """
     _refresh_guardian_cache()
-    
+
     status_counts = {"passed": 0, "failed": 0, "never_run": 0, "error": 0, "unknown": 0}
     guardian_details = []
-    
+
     for guardian_name, cache_entry in _guardian_cache.items():
         status = cache_entry["status"]
         status_counts[status] = status_counts.get(status, 0) + 1
-        
+
         guardian_details.append({
             "name": guardian_name,
             "status": status,
@@ -232,7 +232,7 @@ def guardian_status() -> dict[str, Any]:
             "issues_found": cache_entry["issues_found"],
             "summary": cache_entry["summary"]
         })
-    
+
     result = {
         "timestamp": int(time.time()),
         "total_guardians": len(_guardian_cache),
@@ -240,32 +240,42 @@ def guardian_status() -> dict[str, Any]:
         "overall_health": status_counts["passed"] / max(len(_guardian_cache), 1),
         "guardians": guardian_details
     }
-    
+
     logger.info("guardian_status_checked", extra=result)
     return result
 
 
 @mcp.tool()
-def guardian_run(guardian_name: str, force: bool = False) -> dict[str, Any]:
+def guardian_run(guardian_name: str, force: bool = False, timeout: int = 300) -> dict[str, Any]:
     """Execute a specific guardian script.
-    
+
     Args:
         guardian_name: Name of guardian (e.g., "hierarchy_compliance")
         force: Force re-run even if recently executed
-        
+        timeout: Execution timeout in seconds
+
     Returns:
         Dictionary with execution result and output.
     """
+    if timeout <= 0 or timeout > 1800:  # Max 30 minutes
+        return {"success": False, "error": "timeout must be between 1 and 1800 seconds"}
+    
+    if not guardian_name or not guardian_name.strip():
+        return {"success": False, "error": "guardian_name cannot be empty"}
+    
+    if len(guardian_name) > 50:
+        return {"success": False, "error": "guardian_name too long (max 50 characters)"}
+
     script_name = f"run_guardian_{guardian_name}.py"
     script_path = GUARDIAN_SCRIPTS_DIR / script_name
-    
+
     if not script_path.exists():
         return {
             "success": False,
             "error": f"Guardian script not found: {script_name}",
             "guardian_name": guardian_name
         }
-    
+
     # Check if recently run (unless forced)
     if not force:
         _refresh_guardian_cache()
@@ -278,17 +288,17 @@ def guardian_run(guardian_name: str, force: bool = False) -> dict[str, Any]:
                 "guardian_name": guardian_name,
                 "last_run": last_run
             }
-    
+
     try:
         # Execute guardian script
         result = subprocess.run(
             ["python", str(script_path)],
             capture_output=True,
             text=True,
-            timeout=300,  # 5 minute timeout
+            timeout=timeout,  # Use provided timeout
             cwd="C:/Git/Agentic-Workflow"
         )
-        
+
         execution_result = {
             "success": result.returncode == 0,
             "guardian_name": guardian_name,
@@ -298,18 +308,18 @@ def guardian_run(guardian_name: str, force: bool = False) -> dict[str, Any]:
             "stderr": result.stderr,
             "timestamp": int(time.time())
         }
-        
+
         # Refresh cache after execution
         _refresh_guardian_cache()
-        
+
         logger.info("guardian_run_executed", extra={
             "guardian_name": guardian_name,
             "success": execution_result["success"],
             "return_code": result.returncode
         })
-        
+
         return execution_result
-        
+
     except subprocess.TimeoutExpired:
         return {
             "success": False,
@@ -333,30 +343,30 @@ def guardian_run(guardian_name: str, force: bool = False) -> dict[str, Any]:
 @mcp.tool()
 def guardian_report(guardian_name: str = None) -> dict[str, Any]:
     """Get latest guardian execution results.
-    
+
     Args:
         guardian_name: Specific guardian name, or None for all guardians
-        
+
     Returns:
         Dictionary with detailed guardian reports.
     """
     _refresh_guardian_cache()
-    
+
     if guardian_name:
         if guardian_name not in _guardian_cache:
             return {
                 "success": False,
                 "error": f"Guardian not found: {guardian_name}"
             }
-        
+
         cache_entry = _guardian_cache[guardian_name]
         report_file = Path(cache_entry["report_file"])
-        
+
         if report_file.exists():
             try:
                 with open(report_file, 'r') as f:
                     report = json.load(f)
-                
+
                 return {
                     "success": True,
                     "guardian_name": guardian_name,
@@ -384,7 +394,7 @@ def guardian_report(guardian_name: str = None) -> dict[str, Any]:
                 "summary": cache_entry["summary"],
                 "issues_found": cache_entry["issues_found"]
             }
-        
+
         return {
             "success": True,
             "guardian_count": len(reports),
@@ -395,7 +405,7 @@ def guardian_report(guardian_name: str = None) -> dict[str, Any]:
 @mcp.tool()
 def guardian_manifest() -> dict[str, Any]:
     """Get sovereignty and hygiene manifest status.
-    
+
     Returns:
         Dictionary with manifest compliance status and details.
     """
@@ -405,7 +415,7 @@ def guardian_manifest() -> dict[str, Any]:
         "hygiene_manifest.json",
         "architecture_manifest.json"
     ]
-    
+
     manifests = {}
     for manifest_file in manifest_files:
         manifest_path = GUARDIAN_REPORTS_DIR / manifest_file
@@ -417,18 +427,18 @@ def guardian_manifest() -> dict[str, Any]:
                 manifests[manifest_file.replace(".json", "")] = {
                     "error": f"Failed to load: {e}"
                 }
-    
+
     # Calculate overall compliance
     total_compliance = 0
     compliance_count = 0
-    
+
     for manifest_name, manifest_data in manifests.items():
         if isinstance(manifest_data, dict) and "compliance_score" in manifest_data:
             total_compliance += manifest_data["compliance_score"]
             compliance_count += 1
-    
+
     overall_compliance = total_compliance / max(compliance_count, 1)
-    
+
     result = {
         "timestamp": int(time.time()),
         "overall_compliance": overall_compliance,
@@ -436,7 +446,7 @@ def guardian_manifest() -> dict[str, Any]:
         "manifests": manifests,
         "status": "compliant" if overall_compliance >= 0.95 else "non_compliant"
     }
-    
+
     logger.info("guardian_manifest_checked", extra=result)
     return result
 
@@ -444,36 +454,36 @@ def guardian_manifest() -> dict[str, Any]:
 @mcp.tool()
 def guardian_healing(failure_id: str, healing_type: str = "automatic") -> dict[str, Any]:
     """Trigger healing for failed guardians.
-    
+
     Args:
         failure_id: Guardian failure identifier or guardian name
         healing_type: Type of healing (automatic, manual, assisted)
-        
+
     Returns:
         Dictionary with healing initiation result.
     """
     # Find the guardian with this failure
     _refresh_guardian_cache()
     target_guardian = None
-    
+
     for guardian_name, cache_entry in _guardian_cache.items():
-        if (guardian_name == failure_id or 
+        if (guardian_name == failure_id or
             cache_entry.get("status") == "failed" or
             cache_entry.get("issues_found", 0) > 0):
             target_guardian = guardian_name
             break
-    
+
     if not target_guardian:
         return {
             "success": False,
-            "error": f"No failed guardian found for failure_id: {failure_id}",
+            "error": f"No failed guardian found for failure_id: {failure_id}. Available failed guardians: {list(_guardian_cache.keys())}",
             "failure_id": failure_id
         }
-    
+
     try:
         # Trigger healing by re-running the guardian with analysis
         healing_result = guardian_run(target_guardian, force=True)
-        
+
         healing_response = {
             "success": healing_result["success"],
             "failure_id": failure_id,
@@ -482,19 +492,19 @@ def guardian_healing(failure_id: str, healing_type: str = "automatic") -> dict[s
             "timestamp": int(time.time()),
             "execution_result": healing_result
         }
-        
+
         # If healing succeeded, update cache
         if healing_result["success"]:
             _refresh_guardian_cache()
-        
+
         logger.info("guardian_healing_triggered", extra={
             "failure_id": failure_id,
             "target_guardian": target_guardian,
             "success": healing_response["success"]
         })
-        
+
         return healing_response
-        
+
     except Exception as e:
         logger.error("guardian_healing_error", extra={
             "failure_id": failure_id,
@@ -510,17 +520,17 @@ def guardian_healing(failure_id: str, healing_type: str = "automatic") -> dict[s
 @mcp.tool()
 def guardian_audit(time_window_hours: int = 24) -> dict[str, Any]:
     """Get governance decision audit trail.
-    
+
     Args:
         time_window_hours: Time window for audit (default 24 hours)
-        
+
     Returns:
         Dictionary with audit trail and governance decisions.
     """
     cutoff_time = int(time.time()) - (time_window_hours * 3600)
-    
+
     audit_events = []
-    
+
     # Collect recent guardian executions
     _refresh_guardian_cache()
     for guardian_name, cache_entry in _guardian_cache.items():
@@ -533,15 +543,15 @@ def guardian_audit(time_window_hours: int = 24) -> dict[str, Any]:
                 "issues_found": cache_entry["issues_found"],
                 "summary": cache_entry["summary"]
             })
-    
+
     # Sort by timestamp (most recent first)
     audit_events.sort(key=lambda x: x["timestamp"], reverse=True)
-    
+
     # Calculate governance metrics
     total_executions = len(audit_events)
     failed_executions = len([e for e in audit_events if e["status"] == "failed"])
     total_issues = sum(e["issues_found"] for e in audit_events)
-    
+
     result = {
         "time_window_hours": time_window_hours,
         "cutoff_time": cutoff_time,
@@ -552,7 +562,7 @@ def guardian_audit(time_window_hours: int = 24) -> dict[str, Any]:
         "audit_events": audit_events[:100],  # Limit to 100 most recent
         "governance_health": "healthy" if failed_executions == 0 else "degraded"
     }
-    
+
     logger.info("guardian_audit_generated", extra=result)
     return result
 
@@ -560,17 +570,17 @@ def guardian_audit(time_window_hours: int = 24) -> dict[str, Any]:
 @mcp.tool()
 def guardian_impact_analysis(change_set: list[str]) -> dict[str, Any]:
     """Predict governance impact of proposed changes.
-    
+
     Args:
         change_set: List of file paths that will be changed
-        
+
     Returns:
         Dictionary with impact analysis and affected guardians.
     """
     # Simple impact analysis based on file paths
     affected_guardians = []
     impact_level = "low"
-    
+
     for file_path in change_set:
         # Map file patterns to affected guardians
         if "agentic_core/L" in file_path and "routing" in file_path:
@@ -588,10 +598,10 @@ def guardian_impact_analysis(change_set: list[str]) -> dict[str, Any]:
         elif "docs/" in file_path or "README" in file_path:
             affected_guardians.append("documentation")
             impact_level = "low"
-    
+
     # Remove duplicates
     affected_guardians = list(set(affected_guardians))
-    
+
     result = {
         "change_set": change_set,
         "affected_guardians": affected_guardians,
@@ -600,7 +610,7 @@ def guardian_impact_analysis(change_set: list[str]) -> dict[str, Any]:
         "recommendation": _get_impact_recommendation(impact_level),
         "timestamp": int(time.time())
     }
-    
+
     logger.info("guardian_impact_analyzed", extra=result)
     return result
 
@@ -608,16 +618,16 @@ def guardian_impact_analysis(change_set: list[str]) -> dict[str, Any]:
 @mcp.tool()
 def guardian_registry() -> dict[str, Any]:
     """List all available guardians with metadata.
-    
+
     Returns:
         Dictionary with guardian registry and metadata.
     """
     registry = []
-    
+
     for script in GUARDIAN_SCRIPTS:
         guardian_name = script.replace("run_guardian_", "").replace(".py", "")
         script_path = GUARDIAN_SCRIPTS_DIR / script
-        
+
         # Get script metadata
         metadata = {
             "name": guardian_name,
@@ -628,7 +638,7 @@ def guardian_registry() -> dict[str, Any]:
             "description": _get_guardian_description(guardian_name),
             "typical_duration": _get_guardian_duration(guardian_name)
         }
-        
+
         # Add current status if available
         _refresh_guardian_cache()
         if guardian_name in _guardian_cache:
@@ -638,16 +648,16 @@ def guardian_registry() -> dict[str, Any]:
                 "last_run": cache_entry["last_run"],
                 "issues_found": cache_entry["issues_found"]
             })
-        
+
         registry.append(metadata)
-    
+
     result = {
         "timestamp": int(time.time()),
         "total_guardians": len(registry),
         "guardians": registry,
         "categories": list(set(g["category"] for g in registry))
     }
-    
+
     logger.info("guardian_registry_generated", extra=result)
     return result
 
@@ -700,7 +710,7 @@ def _get_guardian_duration(guardian_name: str) -> str:
     """Get typical execution duration."""
     durations = {
         "hierarchy_compliance": "2-5 minutes",
-        "layer_boundary": "1-3 minutes", 
+        "layer_boundary": "1-3 minutes",
         "sovereignty": "1-2 minutes",
         "hygiene": "3-8 minutes",
         "import_discipline": "1-2 minutes",

@@ -127,6 +127,8 @@ logger = logging.getLogger(__name__)
 PROJECT_ROOT = Path("C:/Git/Agentic-Workflow")
 TESTS_DIR = PROJECT_ROOT / "tests"
 PYTEST_INI = PROJECT_ROOT / "pytest.ini"
+if not PYTEST_INI.exists():
+    raise FileNotFoundError(f"pytest.ini not found at {PYTEST_INI}")
 COVERAGE_DIR = PROJECT_ROOT / "htmlcov"
 ADG_ARTIFACTS_DIR = PROJECT_ROOT / "artifacts/adg"
 ADG_INCREMENTAL_SCRIPT = PROJECT_ROOT / "tools/adg_incremental_update.py"
@@ -154,13 +156,13 @@ def _refresh_test_cache():
     """Refresh test status cache."""
     global _last_cache_update
     current_time = int(time.time())
-    
+
     if current_time - _last_cache_update < CACHE_TTL:
         return
-    
+
     # Check for recent test results
     test_results = {}
-    
+
     # Look for pytest cache and coverage files
     pytest_cache_dir = PROJECT_ROOT / ".pytest_cache"
     if pytest_cache_dir.exists():
@@ -168,7 +170,7 @@ def _refresh_test_cache():
         test_results["cache_timestamp"] = pytest_cache_dir.stat().st_mtime
     else:
         test_results["cache_available"] = False
-    
+
     # Check coverage
     if COVERAGE_DIR.exists():
         coverage_file = COVERAGE_DIR / "index.html"
@@ -177,14 +179,14 @@ def _refresh_test_cache():
             test_results["coverage_timestamp"] = coverage_file.stat().st_mtime
     else:
         test_results["coverage_available"] = False
-    
+
     # Count test files
     if TESTS_DIR.exists():
         test_files = list(TESTS_DIR.rglob("test_*.py")) + list(TESTS_DIR.rglob("*_test.py"))
         test_results["total_test_files"] = len(test_files)
     else:
         test_results["total_test_files"] = 0
-    
+
     _test_cache.update(test_results)
     _last_cache_update = current_time
 
@@ -200,7 +202,7 @@ def _run_pytest(args: list[str], timeout: int = 300) -> dict[str, Any]:
             timeout=timeout,
             cwd=str(PROJECT_ROOT)
         )
-        
+
         return {
             "success": result.returncode == 0,
             "return_code": result.returncode,
@@ -235,7 +237,7 @@ def _parse_pytest_output(output: str) -> dict[str, Any]:
         "errors": 0,
         "duration": 0.0
     }
-    
+
     lines = output.split('\n')
     for line in lines:
         if " passed" in line and " failed" in line:
@@ -255,7 +257,7 @@ def _parse_pytest_output(output: str) -> dict[str, Any]:
                         results["duration"] = float(parts[i+1].rstrip('s'))
                     except ValueError:
                         pass
-    
+
     results["total"] = results["passed"] + results["failed"] + results["skipped"] + results["errors"]
     return results
 
@@ -263,12 +265,12 @@ def _parse_pytest_output(output: str) -> dict[str, Any]:
 @mcp.tool()
 def pytest_status() -> dict[str, Any]:
     """Get test health, coverage, and recent failure status.
-    
+
     Returns:
         Dictionary with overall test health and status metrics.
     """
     _refresh_test_cache()
-    
+
     # Get recent test results from cache
     status = {
         "timestamp": int(time.time()),
@@ -279,7 +281,7 @@ def pytest_status() -> dict[str, Any]:
         "recent_failures": [],
         "recommendations": []
     }
-    
+
     # Calculate health score
     health_factors = []
     if status["cache_available"]:
@@ -288,9 +290,9 @@ def pytest_status() -> dict[str, Any]:
         health_factors.append(0.4)
     if status["total_test_files"] > 0:
         health_factors.append(0.3)
-    
+
     status["health_score"] = sum(health_factors)
-    
+
     # Add recommendations
     if not status["cache_available"]:
         status["recommendations"].append("Run tests to generate cache")
@@ -298,7 +300,7 @@ def pytest_status() -> dict[str, Any]:
         status["recommendations"].append("Run tests with coverage to generate reports")
     if status["total_test_files"] == 0:
         status["recommendations"].append("No test files found - check test directory structure")
-    
+
     logger.info("pytest_status_checked", extra=status)
     return status
 
@@ -314,6 +316,11 @@ def pytest_run_adg_impact(file_list: list[str], timeout: int = 300) -> dict[str,
     Returns:
         Dictionary with impact analysis and test execution results.
     """
+    if not file_list or len(file_list) == 0:
+        return {"success": False, "error": "file_list cannot be empty"}
+    
+    if timeout <= 0 or timeout > 1800:  # Max 30 minutes
+        return {"success": False, "error": "timeout must be between 1 and 1800 seconds"}
     # First, run ADG impact analysis
     try:
         impact_args = [str(ADG_INCREMENTAL_SCRIPT)] + file_list
@@ -324,14 +331,14 @@ def pytest_run_adg_impact(file_list: list[str], timeout: int = 300) -> dict[str,
             timeout=120,
             cwd=str(PROJECT_ROOT)
         )
-        
+
         if impact_result.returncode != 0:
             return {
                 "success": False,
                 "error": f"ADG impact analysis failed: {impact_result.stderr}",
                 "file_list": file_list
             }
-        
+
         # Parse impact output to get affected test files
         affected_modules = []
         for line in impact_result.stdout.split('\n'):
@@ -341,7 +348,7 @@ def pytest_run_adg_impact(file_list: list[str], timeout: int = 300) -> dict[str,
                 test_path = TESTS_DIR / module_path.replace("agentic_core/", "").replace(".py", "_test.py")
                 if test_path.exists():
                     affected_modules.append(str(test_path))
-        
+
         if not affected_modules:
             return {
                 "success": True,
@@ -350,17 +357,17 @@ def pytest_run_adg_impact(file_list: list[str], timeout: int = 300) -> dict[str,
                 "affected_modules": [],
                 "impact_analysis": impact_result.stdout
             }
-        
+
         # Run tests for affected modules
         pytest_args = affected_modules + ["-v", "--tb=short"]
         test_result = _run_pytest(pytest_args, timeout)
-        
+
         # Parse test results
         if test_result["success"]:
             parsed_results = _parse_pytest_output(test_result["stdout"])
         else:
             parsed_results = {"error": "Test execution failed"}
-        
+
         result = {
             "success": test_result["success"],
             "file_list": file_list,
@@ -371,15 +378,15 @@ def pytest_run_adg_impact(file_list: list[str], timeout: int = 300) -> dict[str,
             "test_results": parsed_results,
             "timestamp": int(time.time())
         }
-        
+
         logger.info("pytest_adg_impact_executed", extra={
             "file_count": len(file_list),
             "affected_modules": len(affected_modules),
             "success": result["success"]
         })
-        
+
         return result
-        
+
     except subprocess.TimeoutExpired:
         return {
             "success": False,
@@ -401,10 +408,10 @@ def pytest_run_adg_impact(file_list: list[str], timeout: int = 300) -> dict[str,
 @mcp.tool()
 def pytest_run_guardians(timeout: int = 600) -> dict[str, Any]:
     """Run governance test suite to enforce Constitutional Rule #3.
-    
+
     Args:
         timeout: Test execution timeout in seconds
-        
+
     Returns:
         Dictionary with governance test results and compliance status.
     """
@@ -412,14 +419,14 @@ def pytest_run_guardians(timeout: int = 600) -> dict[str, Any]:
     for test_path in GOVERNANCE_TESTS:
         if Path(test_path).exists():
             governance_args.append(test_path)
-    
+
     if not governance_args:
         return {
             "success": False,
             "error": "No governance test paths found",
             "searched_paths": GOVERNANCE_TESTS
         }
-    
+
     # Add governance-specific pytest options
     governance_args.extend([
         "-v",
@@ -427,13 +434,13 @@ def pytest_run_guardians(timeout: int = 600) -> dict[str, Any]:
         "--strict-markers",
         "-m", "governance or integration"
     ])
-    
+
     test_result = _run_pytest(governance_args, timeout)
-    
+
     # Parse results
     if test_result["success"]:
         parsed_results = _parse_pytest_output(test_result["stdout"])
-        
+
         # Check for test skipping (Constitutional Rule #3 violation)
         if parsed_results.get("skipped", 0) > 0:
             compliance_status = "non_compliant"
@@ -445,7 +452,7 @@ def pytest_run_guardians(timeout: int = 600) -> dict[str, Any]:
         parsed_results = {"error": "Governance test execution failed"}
         compliance_status = "unknown"
         violation = "Test execution failed"
-    
+
     result = {
         "success": test_result["success"],
         "governance_paths": GOVERNANCE_TESTS,
@@ -456,22 +463,22 @@ def pytest_run_guardians(timeout: int = 600) -> dict[str, Any]:
         "constitutional_rule_3_violation": violation,
         "timestamp": int(time.time())
     }
-    
+
     logger.info("pytest_guardians_executed", extra={
         "success": result["success"],
         "compliance": compliance_status
     })
-    
+
     return result
 
 
 @mcp.tool()
 def pytest_run_smoke(timeout: int = 180) -> dict[str, Any]:
     """Run quick smoke test with critical path validation.
-    
+
     Args:
         timeout: Test execution timeout in seconds
-        
+
     Returns:
         Dictionary with smoke test results and critical path status.
     """
@@ -479,14 +486,14 @@ def pytest_run_smoke(timeout: int = 180) -> dict[str, Any]:
     for test_path in SMOKE_TESTS:
         if Path(test_path).exists():
             smoke_args.append(test_path)
-    
+
     if not smoke_args:
         return {
             "success": False,
             "error": "No smoke test paths found",
             "searched_paths": SMOKE_TESTS
         }
-    
+
     # Add smoke test specific options
     smoke_args.extend([
         "-v",
@@ -494,9 +501,9 @@ def pytest_run_smoke(timeout: int = 180) -> dict[str, Any]:
         "-m", "smoke or unit",
         "--maxfail=5"  # Stop after 5 failures for quick feedback
     ])
-    
+
     test_result = _run_pytest(smoke_args, timeout)
-    
+
     # Parse results
     if test_result["success"]:
         parsed_results = _parse_pytest_output(test_result["stdout"])
@@ -504,7 +511,7 @@ def pytest_run_smoke(timeout: int = 180) -> dict[str, Any]:
     else:
         parsed_results = {"error": "Smoke test execution failed"}
         critical_path_status = "unknown"
-    
+
     result = {
         "success": test_result["success"],
         "smoke_paths": SMOKE_TESTS,
@@ -514,22 +521,22 @@ def pytest_run_smoke(timeout: int = 180) -> dict[str, Any]:
         "critical_path_status": critical_path_status,
         "timestamp": int(time.time())
     }
-    
+
     logger.info("pytest_smoke_executed", extra={
         "success": result["success"],
         "critical_path": critical_path_status
     })
-    
+
     return result
 
 
 @mcp.tool()
 def pytest_coverage_analysis(layer_filter: str = "all") -> dict[str, Any]:
     """Coverage analysis by ADG layer and edge type.
-    
+
     Args:
         layer_filter: Filter by ADG layer (L0, L1, L2, L3, L4, L5, L6, all)
-        
+
     Returns:
         Dictionary with coverage breakdown by ADG components.
     """
@@ -541,20 +548,20 @@ def pytest_coverage_analysis(layer_filter: str = "all") -> dict[str, Any]:
         "--cov-report=html",
         "tests/"
     ]
-    
+
     coverage_result = _run_pytest(coverage_args, timeout=600)
-    
+
     # Parse coverage JSON if available
     coverage_data = {}
     coverage_file = PROJECT_ROOT / "coverage.json"
-    
+
     if coverage_file.exists():
         try:
             with open(coverage_file, 'r') as f:
                 coverage_data = json.load(f)
         except Exception as e:
             logger.warning(f"Failed to parse coverage JSON: {e}")
-    
+
     # Analyze coverage by ADG layer
     layer_coverage = {}
     if coverage_data.get("files"):
@@ -565,10 +572,10 @@ def pytest_coverage_analysis(layer_filter: str = "all") -> dict[str, Any]:
                 layer = f"L{layer_match}"
             else:
                 layer = "other"
-            
+
             if layer_filter != "all" and layer != layer_filter:
                 continue
-            
+
             if layer not in layer_coverage:
                 layer_coverage[layer] = {
                     "files": 0,
@@ -577,12 +584,12 @@ def pytest_coverage_analysis(layer_filter: str = "all") -> dict[str, Any]:
                     "total_lines": 0,
                     "coverage_percent": 0.0
                 }
-            
+
             layer_coverage[layer]["files"] += 1
             layer_coverage[layer]["lines_covered"] += file_data.get("summary", {}).get("covered_lines", 0)
             layer_coverage[layer]["lines_missing"] += file_data.get("summary", {}).get("missing_lines", 0)
             layer_coverage[layer]["total_lines"] += file_data.get("summary", {}).get("num_statements", 0)
-        
+
         # Calculate coverage percentages
         for layer in layer_coverage:
             total = layer_coverage[layer]["total_lines"]
@@ -590,7 +597,7 @@ def pytest_coverage_analysis(layer_filter: str = "all") -> dict[str, Any]:
                 layer_coverage[layer]["coverage_percent"] = (
                     layer_coverage[layer]["lines_covered"] / total * 100
                 )
-    
+
     result = {
         "success": coverage_result["success"],
         "layer_filter": layer_filter,
@@ -599,22 +606,22 @@ def pytest_coverage_analysis(layer_filter: str = "all") -> dict[str, Any]:
         "overall_coverage": coverage_data.get("totals", {}).get("percent_covered", 0),
         "timestamp": int(time.time())
     }
-    
+
     logger.info("pytest_coverage_analyzed", extra={
         "layer_filter": layer_filter,
         "overall_coverage": result["overall_coverage"]
     })
-    
+
     return result
 
 
 @mcp.tool()
 def pytest_failure_analysis(test_run_id: str = None) -> dict[str, Any]:
     """Root cause analysis of test failures with ADG context.
-    
+
     Args:
         test_run_id: Specific test run ID to analyze (optional)
-        
+
     Returns:
         Dictionary with failure analysis and ADG context.
     """
@@ -626,12 +633,12 @@ def pytest_failure_analysis(test_run_id: str = None) -> dict[str, Any]:
         "adg_context": {},
         "recommendations": []
     }
-    
+
     # Look for recent failure files
     if pytest_cache_dir.exists():
         # Find recent cache files that might contain failure info
         cache_files = list(pytest_cache_dir.rglob("*.cache"))
-        
+
         for cache_file in cache_files[-10:]:  # Last 10 cache files
             try:
                 # Simple attempt to read cache file (actual parsing would be more complex)
@@ -646,7 +653,7 @@ def pytest_failure_analysis(test_run_id: str = None) -> dict[str, Any]:
                         })
             except Exception:
                 continue
-    
+
     # Add ADG context recommendations
     if failure_analysis["failures"]:
         failure_analysis["recommendations"].extend([
@@ -659,18 +666,18 @@ def pytest_failure_analysis(test_run_id: str = None) -> dict[str, Any]:
         failure_analysis["recommendations"].append(
             "No recent failures detected - run tests to generate failure data"
         )
-    
+
     result = {
         "success": True,
         "analysis": failure_analysis,
         "timestamp": int(time.time())
     }
-    
+
     logger.info("pytest_failure_analyzed", extra={
         "test_run_id": test_run_id or "latest",
         "failures_found": len(failure_analysis["failures"])
     })
-    
+
     return result
 
 
