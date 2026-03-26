@@ -1,5 +1,4 @@
 # NOTE: l0_execute.py was planned but never implemented. This file is ACTIVE.
-# guardian: allow-silent_swallower
 """
 Unified Sovereign Compliance Protocol
 
@@ -123,29 +122,48 @@ _emit_stores_embedding("p4", "execute_ssot", "embedding_store")
 _emit_updates_meta_learning_state("p4", "execute_ssot", "meta_learning")
 _emit_links_execution_to_snapshot("p4", "execute_ssot", "exec_snapshot_link")
 
+# tqdm - optional progress bar with explicit dependency management
 try:
     from tqdm import tqdm
-except ImportError:  # guardian: allow-silent-swallow
+    _TQDM_AVAILABLE = True
+except ImportError as e:
+    _TQDM_AVAILABLE = False
+    logging.warning(f"tqdm not available for progress bars: {e}. Install with: pip install tqdm")
 
     class tqdm:
         def __init__(self, iterable=None, total=None, desc=None, **kwargs):
-            self.iterable = iterable
+            self.iterable = iterable or []
+            self.total = total or (len(iterable) if iterable else 0)
+            self.desc = desc or ""
             self.n = 0
-            self.total = total
-
+            
         def __iter__(self):
-            return iter(self.iterable) if self.iterable else iter([])
-
+            return self
+            
+        def __next__(self):
+            if self.iterable:
+                try:
+                    item = next(iter(self.iterable))
+                    self.update(1)
+                    return item
+                except StopIteration:
+                    raise StopIteration
+            else:
+                if self.n >= self.total:
+                    raise StopIteration
+                self.n += 1
+                return self.n - 1
+                
+        def update(self, n=1):
+            self.n += n
+            
+        def set_description(self, desc):
+            self.desc = desc
+            
         def __enter__(self):
             return self
 
         def __exit__(self, *args):
-            pass
-
-        def update(self, n=1):
-            self.n += n
-
-        def set_description(self, desc):
             pass
 
 
@@ -464,9 +482,9 @@ def _fire_meta_learning_intake(state_mgr: "RuntimeStateManager", now_utc: int) -
                         if _loaded_vecs and len(_loaded_vecs[0]) == _dim:
                             _prior_vecs = _loaded_vecs
                             _prior_metas = _loaded_metas
-                    # guardian: allow-silent-swallow
-                    except (_MIE, Exception):
-                        pass
+                    except (ImportError, OSError, ValueError, KeyError) as e:
+                        logging.warning(f"Failed to load FAISS vectors from disk: {e}")
+                        # Continue with empty prior vectors
                 _all_vecs = _prior_vecs + _faiss_vectors
                 _all_metas = _prior_metas + _faiss_metas
                 _MAX_FAISS_VECS = 1000
@@ -557,8 +575,7 @@ def _fire_meta_learning_intake(state_mgr: "RuntimeStateManager", now_utc: int) -
         logging.info("[MetaLearning] meta_learning_pipeline.run_pipeline() completed.")
     except ImportError as _imp_err:
         logging.debug("[MetaLearning] Pipeline not yet available (pre-Wave 0B): %s", _imp_err)
-    # guardian: allow-silent-swallow
-    except Exception as _pl_err:
+    except (AttributeError, ValueError, RuntimeError) as _pl_err:
         logging.warning("[MetaLearning] Pipeline run failed (non-fatal): %s", _pl_err)
 
 
@@ -817,10 +834,11 @@ def _maybe_force_utf8_console() -> None:
                 stderr=DEVNULL,
                 check=False,
                 allow_protected_root_mutation=True,
-                # guardian: allow-silent-swallow - optional file resource
             )
         except FileNotFoundError:
-            pass
+            logging.debug("Optional file resource not found, continuing without it")
+        except (OSError, subprocess.SubprocessError) as e:
+            logging.warning(f"Failed to execute optional subprocess: {e}")
     try:
         sys.stdout.reconfigure(encoding="utf-8", errors="replace")
     except (AttributeError, OSError):
@@ -1342,7 +1360,6 @@ class ASTCodeQualityValidator:
             if os.path.getsize(fp) > self.max_file_size:
                 return (None, "File too large for AST analysis")
             with open(fp, encoding="utf-8") as f:
-                # guardian: allow-silent-swallow - acceptable exception handling
                 tree = ast.parse(f.read(), filename=fp)
                 return (tree, None)
         except (OSError, SyntaxError) as e:
