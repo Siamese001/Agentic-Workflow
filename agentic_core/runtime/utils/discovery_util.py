@@ -12,7 +12,12 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
-from agentic_core.utils.ssot_discovery_validator import get_python_files
+# from agentic_core.utils.ssot_discovery_validator import get_python_files
+# ssot_discovery_validator not found - create placeholder
+def get_python_files(path):
+    """Placeholder function to get Python files."""
+    from pathlib import Path
+    return list(Path(path).glob("**/*.py"))
 
 from agentic_core.L0_routing.config.path_constants import AGENTIC_CORE_DIR
 from agentic_core.L5_safety.core_kernel.classification_kernel import is_agent_file
