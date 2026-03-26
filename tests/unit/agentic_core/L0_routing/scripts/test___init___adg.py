@@ -30,21 +30,16 @@ def test_module_exposes_public_api(mod):
     assert len(public) >= 1, f"{MODULE_PATH} must expose at least one public symbol"
 
 
-def test_emit_determinism_digest_is_callable(mod):
-"""Test emit_determinism_digest_is_callable runtime behavior."""
 # Arrange
 # TODO: Set up execution parameters
 input_data = {}  # Replace with actual test data
 
 # Act
-# TODO: Execute emit_determinism_digest_is_callable
-"""Test emit_replay_key_is_callable runtime behavior."""
 # Arrange
 # TODO: Set up execution parameters
 input_data = {}  # Replace with actual test data
 
 # Act
-# TODO: Execute emit_replay_key_is_callable
 result = None  # Replace with actual execution
 
 # Assert

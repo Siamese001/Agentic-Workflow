@@ -37,21 +37,16 @@ def test_path_is_instantiable(mod):
     assert isinstance(cls, type), "Path must be a class"
 
 
-def test_emit_determinism_digest_is_callable(mod):
-"""Test emit_determinism_digest_is_callable runtime behavior."""
 # Arrange
 # TODO: Set up execution parameters
 input_data = {}  # Replace with actual test data
 
 # Act
-# TODO: Execute emit_determinism_digest_is_callable
-"""Test emit_replay_key_is_callable runtime behavior."""
 # Arrange
 # TODO: Set up execution parameters
 input_data = {}  # Replace with actual test data
 
 # Act
-# TODO: Execute emit_replay_key_is_callable
 """Test find_corruption_is_callable runtime behavior."""
 # Arrange
 # TODO: Set up execution parameters

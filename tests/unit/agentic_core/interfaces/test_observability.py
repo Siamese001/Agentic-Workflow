@@ -44,14 +44,11 @@ def test_systemtelemetry_is_instantiable(mod):
     assert isinstance(cls, type), "SystemTelemetry must be a class"
 
 
-def test_emit_determinism_digest_is_callable(mod):
-"""Test emit_determinism_digest_is_callable runtime behavior."""
 # Arrange
 # TODO: Set up execution parameters
 input_data = {}  # Replace with actual test data
 
 # Act
-# TODO: Execute emit_determinism_digest_is_callable
 """Test record_execution_trace_is_callable runtime behavior."""
 # Arrange
 # TODO: Set up execution parameters
