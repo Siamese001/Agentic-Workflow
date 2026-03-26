@@ -144,11 +144,14 @@ repos:
     hooks:
       - id: trailing-whitespace
         name: "T0: Trailing Whitespace"
+        exclude: '.*\.md$'
       - id: end-of-file-fixer
         name: "T0: End-of-File Fixer"
+        exclude: '.*\.md$'
       - id: mixed-line-ending
         name: "T0: Enforce LF Line Endings"
         args: [--fix=lf]
+        exclude: '.*\.md$'
       - id: check-merge-conflict
         name: "T0: Check Merge Conflict Markers"
 
@@ -176,7 +179,7 @@ repos:
         exclude: ops_scripts/ci/check_anti_patterns\.py
       - id: ruff-format
         name: "T3: Ruff Format"
-        exclude: ops_scripts/ci/check_anti_patterns\.py
+        exclude: '.*\.md$|ops_scripts/ci/check_anti_patterns\.py'
 
   # ============================================================================
   # TIER 4: ADG Accelerator Auto-Fixers
