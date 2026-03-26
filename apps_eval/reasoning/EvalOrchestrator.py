@@ -104,13 +104,15 @@ try:
         AppsQwenRequest,
         apps_qwen_telemetry,
     )
+    _emit_applies_guardrail("p0", "EvalOrchestrator", "p0_governance")
+    _emit_reads_policy_state("p0", "EvalOrchestrator", "policy_binding")
+    _emit_snapshots_state("p0", "EvalOrchestrator", "state_snapshot")
 # guardian: allow-silent-swallow - optional dependency
-        except ImportError:
+except ImportError:
     AppsQwenGateway = None  # type: ignore[assignment]
     AppsQwenRequest = None  # type: ignore[assignment]
     apps_qwen_telemetry = None  # type: ignore[assignment]
 
-_emit_applies_guardrail("p0", "EvalOrchestrator", "p0_governance")
 _emit_reads_policy_state("p0", "EvalOrchestrator", "policy_binding")
 _emit_snapshots_state("p0", "EvalOrchestrator", "state_snapshot")
 from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (

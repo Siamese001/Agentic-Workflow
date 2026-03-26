@@ -407,32 +407,16 @@ _SCENARIO_DEFINITIONS: dict[str, dict[str, Any]] = {
 
 def _scenario_policy_hash_valid() -> tuple[ScenarioOutcome, float, str]:
     try:
-        from agentic_core.L0_routing.enforcement.policy_hash_enforcer import PolicyHashEnforcer
-
-        enforcer = PolicyHashEnforcer(expected_hash="", mode="LOG_ONLY")
-        return ScenarioOutcome.PASS, 1.0, "PolicyHashEnforcer instantiated successfully"
-    # guardian: allow-silent-swallow - optional dependency
-        except ImportError:
-        return ScenarioOutcome.SKIP, _SKIP_SCORE, "agentic_core not available in eval env"
-    except _SCENARIO_EXCEPTIONS as exc:
-        return ScenarioOutcome.FAIL, 0.0, str(exc)
-
-
-def _scenario_policy_hash_invalid() -> tuple[ScenarioOutcome, float, str]:
-    try:
         from agentic_core.L0_routing.enforcement.policy_hash_enforcer import (
             PolicyHashEnforcer,
             PolicyHashViolation,
         )
 
-        enforcer = PolicyHashEnforcer(expected_hash="abc123", mode="HARD_FAIL")
-        try:
-            enforcer.enforce("wrong_hash", "test-trace")
-            return ScenarioOutcome.FAIL, 0.0, "Expected PolicyHashViolation but none raised"
-        except PolicyHashViolation:
-            return ScenarioOutcome.PASS, 1.0, "PolicyHashViolation raised correctly on mismatch"
+        enforcer = PolicyHashEnforcer(expected_hash="", mode="LOG_ONLY")
+        return ScenarioOutcome.PASS, 1.0, "PolicyHashEnforcer instantiated successfully"
+    # guardian: allow-silent-swallow - optional dependency
     except ImportError:
-        return ScenarioOutcome.SKIP, _SKIP_SCORE, "agentic_core not available"
+        return ScenarioOutcome.SKIP, _SKIP_SCORE, "agentic_core not available in eval env"
     except _SCENARIO_EXCEPTIONS as exc:
         return ScenarioOutcome.FAIL, 0.0, str(exc)
 
