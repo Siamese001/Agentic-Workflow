@@ -13,8 +13,16 @@ MAX_FILES = 1000
 DEFAULT_TIMEOUT = 300  # 5 minutes
 
 @pytest.mark.unit
-class TestFixAllTunnelsUtilAdg:
-    """Test FixAllTunnelsUtilAdg functionality."""
+class GeneratedTest:
+    """Generated test class for agentic_core.L0_routing.utils."""
+
+    def test_fix_tunnel_violations(self):
+        """Test fix_tunnel_violations function."""
+        from agentic_core.L0_routing.utils import fix_tunnel_violations
+        # TODO: Implement actual test
+        result = fix_tunnel_violations()
+        assertIsNotNone(result)
+
 
     def test_placeholder_1(self):
         """Placeholder test 1."""

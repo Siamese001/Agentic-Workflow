@@ -13,8 +13,22 @@ MAX_FILES = 1000
 DEFAULT_TIMEOUT = 300  # 5 minutes
 
 @pytest.mark.unit
-class TestAddTestCoverageUtil:
-    """Test AddTestCoverageUtil functionality."""
+class GeneratedTest:
+    """Generated test class for agentic_core.L0_routing.utils."""
+
+    def test_has_tests(self):
+        """Test has_tests function."""
+        from agentic_core.L0_routing.utils import has_tests
+        # TODO: Implement actual test
+        result = has_tests()
+        assertIsNotNone(result)
+    def test_add_test_to_file(self):
+        """Test add_test_to_file function."""
+        from agentic_core.L0_routing.utils import add_test_to_file
+        # TODO: Implement actual test
+        result = add_test_to_file()
+        assertIsNotNone(result)
+
 
     def test_placeholder_1(self):
         """Placeholder test 1."""

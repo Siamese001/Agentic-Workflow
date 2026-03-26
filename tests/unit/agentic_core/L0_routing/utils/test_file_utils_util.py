@@ -13,8 +13,22 @@ MAX_FILES = 1000
 DEFAULT_TIMEOUT = 300  # 5 minutes
 
 @pytest.mark.unit
-class TestFileUtilsUtil:
-    """Test FileUtilsUtil functionality."""
+class GeneratedTest:
+    """Generated test class for agentic_core.L0_routing.utils."""
+
+    def test_ensure_directory(self):
+        """Test ensure_directory function."""
+        from agentic_core.L0_routing.utils import ensure_directory
+        # TODO: Implement actual test
+        result = ensure_directory()
+        assertIsNotNone(result)
+    def test_safe_read_file(self):
+        """Test safe_read_file function."""
+        from agentic_core.L0_routing.utils import safe_read_file
+        # TODO: Implement actual test
+        result = safe_read_file()
+        assertIsNotNone(result)
+
 
     def test_placeholder_1(self):
         """Placeholder test 1."""

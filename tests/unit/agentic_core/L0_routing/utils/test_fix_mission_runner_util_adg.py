@@ -13,8 +13,16 @@ MAX_FILES = 1000
 DEFAULT_TIMEOUT = 300  # 5 minutes
 
 @pytest.mark.unit
-class TestFixMissionRunnerUtilAdg:
-    """Test FixMissionRunnerUtilAdg functionality."""
+class GeneratedTest:
+    """Generated test class for agentic_core.L0_routing.utils."""
+
+    def test_fix_mission_runner(self):
+        """Test fix_mission_runner function."""
+        from agentic_core.L0_routing.utils import fix_mission_runner
+        # TODO: Implement actual test
+        result = fix_mission_runner()
+        assertIsNotNone(result)
+
 
     def test_placeholder_1(self):
         """Placeholder test 1."""

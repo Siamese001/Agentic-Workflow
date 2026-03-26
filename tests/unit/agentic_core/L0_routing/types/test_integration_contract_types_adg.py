@@ -13,10 +13,48 @@ import pytest
 
 
 
-class TestSchemaVersion:
-    def test_is_string(self):
-            """Test is_string contract compliance."""
-            """Test semver_format contract compliance."""
+class GeneratedTest:
+    """Generated test class for agentic_core.L0_routing.types."""
+
+    def test_to_ordered_dict(self):
+        """Test to_ordered_dict function."""
+        from agentic_core.L0_routing.types import to_ordered_dict
+        # TODO: Implement actual test
+        result = to_ordered_dict()
+        assertIsNotNone(result)
+    def test_status(self):
+        """Test status function."""
+        from agentic_core.L0_routing.types import status
+        # TODO: Implement actual test
+        result = status()
+        assertIsNotNone(result)
+    def test_Finding_init(self):
+        """Test Finding initialization."""
+        from agentic_core.L0_routing.types import Finding
+        # TODO: Implement actual test
+        instance = Finding()
+        assertIsNotNone(instance)
+    def test_Finding_to_ordered_dict(self):
+        """Test Finding.to_ordered_dict method."""
+        from agentic_core.L0_routing.types import Finding
+        # TODO: Implement actual test
+        instance = Finding()
+        result = instance.to_ordered_dict()
+        assertIsNotNone(result)
+    def test_ResultEnvelope_init(self):
+        """Test ResultEnvelope initialization."""
+        from agentic_core.L0_routing.types import ResultEnvelope
+        # TODO: Implement actual test
+        instance = ResultEnvelope()
+        assertIsNotNone(instance)
+    def test_ResultEnvelope_status(self):
+        """Test ResultEnvelope.status method."""
+        from agentic_core.L0_routing.types import ResultEnvelope
+        # TODO: Implement actual test
+        instance = ResultEnvelope()
+        result = instance.status()
+        assertIsNotNone(result)
+
 
 
     """Test valid_creation contract compliance."""

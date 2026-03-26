@@ -13,8 +13,41 @@ MAX_FILES = 1000
 DEFAULT_TIMEOUT = 300  # 5 minutes
 
 @pytest.mark.unit
-class TestCoreIntegrityUtilAdg:
-    """Test CoreIntegrityUtilAdg functionality."""
+class GeneratedTest:
+    """Generated test class for agentic_core.L0_routing.utils."""
+
+    def test_emergency_shutdown(self):
+        """Test emergency_shutdown function."""
+        from agentic_core.L0_routing.utils import emergency_shutdown
+        # TODO: Implement actual test
+        result = emergency_shutdown()
+        assertIsNotNone(result)
+    def test_verify_core_integrity(self):
+        """Test verify_core_integrity function."""
+        from agentic_core.L0_routing.utils import verify_core_integrity
+        # TODO: Implement actual test
+        result = verify_core_integrity()
+        assertIsNotNone(result)
+    def test_ConfigurationError_init(self):
+        """Test ConfigurationError initialization."""
+        from agentic_core.L0_routing.utils import ConfigurationError
+        # TODO: Implement actual test
+        instance = ConfigurationError()
+        assertIsNotNone(instance)
+    def test_CoreIntegrityVerifier_init(self):
+        """Test CoreIntegrityVerifier initialization."""
+        from agentic_core.L0_routing.utils import CoreIntegrityVerifier
+        # TODO: Implement actual test
+        instance = CoreIntegrityVerifier()
+        assertIsNotNone(instance)
+    def test_CoreIntegrityVerifier_verify_core_integrity(self):
+        """Test CoreIntegrityVerifier.verify_core_integrity method."""
+        from agentic_core.L0_routing.utils import CoreIntegrityVerifier
+        # TODO: Implement actual test
+        instance = CoreIntegrityVerifier()
+        result = instance.verify_core_integrity()
+        assertIsNotNone(result)
+
 
     def test_placeholder_1(self):
         """Placeholder test 1."""

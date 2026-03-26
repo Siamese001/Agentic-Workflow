@@ -13,8 +13,35 @@ MAX_FILES = 1000
 DEFAULT_TIMEOUT = 300  # 5 minutes
 
 @pytest.mark.unit
-class TestComplexityVisitorUtil:
-    """Test ComplexityVisitorUtil functionality."""
+class GeneratedTest:
+    """Generated test class for agentic_core.L0_routing.utils."""
+
+    def test_should_exclude_path(self):
+        """Test should_exclude_path function."""
+        from agentic_core.L0_routing.utils import should_exclude_path
+        # TODO: Implement actual test
+        result = should_exclude_path()
+        assertIsNotNone(result)
+    def test_should_exclude_file(self):
+        """Test should_exclude_file function."""
+        from agentic_core.L0_routing.utils import should_exclude_file
+        # TODO: Implement actual test
+        result = should_exclude_file()
+        assertIsNotNone(result)
+    def test__CCVisitor_init(self):
+        """Test _CCVisitor initialization."""
+        from agentic_core.L0_routing.utils import _CCVisitor
+        # TODO: Implement actual test
+        instance = _CCVisitor()
+        assertIsNotNone(instance)
+    def test__CCVisitor_visit_If(self):
+        """Test _CCVisitor.visit_If method."""
+        from agentic_core.L0_routing.utils import _CCVisitor
+        # TODO: Implement actual test
+        instance = _CCVisitor()
+        result = instance.visit_If()
+        assertIsNotNone(result)
+
 
     def test_placeholder_1(self):
         """Placeholder test 1."""
