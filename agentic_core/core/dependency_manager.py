@@ -1,7 +1,27 @@
-"""Dependency management framework for explicit dependency handling.
+"""Dependency management framework for runtime dependency handling.
 
-Provides dependency injection, circuit breaker patterns, and explicit
-failure modes to replace silent degradation patterns.
+This framework provides circuit breaker patterns and explicit failure modes
+for RUNTIME dependencies (services, databases, external APIs). It is NOT
+intended as a direct replacement for import-time dependency handling.
+
+For import-time dependencies (like tqdm, FAISS, etc.), use explicit
+try/except patterns with specific exception types and logging, as demonstrated
+in the Phase 2 fixes to _ssot_phases.py, execute_ssot.py, etc.
+
+Usage:
+    # For runtime services
+    manager = DependencyManager()
+    manager.register_dependency("database", DatabaseConnection, health_check=is_db_healthy)
+
+    # For import-time dependencies, use explicit try/except:
+    try:
+        from tqdm import tqdm
+        _TQDM_AVAILABLE = True
+    except ImportError as e:
+        _TQDM_AVAILABLE = False
+        logger.warning(f"tqdm not available: {e}. Install with: pip install tqdm")
+        # Define fallback implementation
+        class tqdm: ...
 """
 
 from __future__ import annotations

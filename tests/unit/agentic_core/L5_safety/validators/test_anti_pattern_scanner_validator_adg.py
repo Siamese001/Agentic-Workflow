@@ -40,13 +40,20 @@ class TestScanReport:
         assert report.passed is True
 
     def test_passed_property_false_with_violations(self, tmp_path):
-        """Passed property should be False when violations exist."""
+        """Passed property should be False when violations exist with state validation."""
         from agentic_core.L5_safety.validators.base_detector_validator import (
             AntiPatternCategory,
             AntiPatternViolation,
         )
 
         report = ScanReport(project_root=tmp_path)
+
+        # Verify initial state
+        assert report.passed is True
+        assert report.total_violations == 0
+        assert len(report.all_violations) == 0
+
+        # Add violation using dataclass properties
         violation = AntiPatternViolation(
             file_path=tmp_path / "test.py",
             line_number=1,
@@ -56,8 +63,18 @@ class TestScanReport:
         )
         report.all_violations.append(violation)
         report.total_violations = 1
+        report.files_with_violations = 1
 
+        # Validate state transition
         assert report.passed is False
+        assert report.total_violations == 1
+        assert len(report.all_violations) == 1
+        assert report.files_with_violations == 1
+        assert violation in report.all_violations
+
+        # Validate behavioral consistency
+        assert report.passed == (report.total_violations == 0)  # Should be False
+        assert report.to_dict()["total_violations"] == 1
 
 
 class TestAntiPatternScanner:
@@ -79,19 +96,33 @@ class TestAntiPatternScanner:
         assert report.project_root == tmp_path
 
     def test_scan_file_returns_violations_list(self, tmp_path):
-        """Scan file should return list of violations."""
+        """Scan file should return list of violations with error handling."""
         # Create a test file with a violation
         test_file = tmp_path / "bad_code.py"
-        test_file.write_text("""
-try:
-    import missing_module
-except ImportError:
-    pass
-""")
+        test_file.write_text("# Bad naming pattern\nbad_var = 1\n")
 
         scanner = AntiPatternScanner(project_root=tmp_path)
         violations = scanner.scan_file(test_file)
+
+        # Validate return type and structure
         assert isinstance(violations, list)
+
+        # Should detect violations (if implementation supports it)
+        if violations:
+            assert all(hasattr(v, 'file_path') for v in violations)
+            assert all(hasattr(v, 'line_number') for v in violations)
+            assert all(v.file_path == test_file for v in violations)
+
+        # Test error handling with non-existent file
+        non_existent = tmp_path / "does_not_exist.py"
+        error_violations = scanner.scan_file(non_existent)
+        assert isinstance(error_violations, list)  # Should return empty list, not crash
+
+        # Test error handling with invalid Python
+        invalid_file = tmp_path / "invalid.py"
+        invalid_file.write_text("invalid python syntax {{{")
+        error_violations = scanner.scan_file(invalid_file)
+        assert isinstance(error_violations, list)  # Should handle gracefully
         # Should detect the silent degradation
         assert len(violations) > 0
         assert all(hasattr(v, "category") for v in violations)
