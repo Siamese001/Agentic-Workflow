@@ -1,0 +1,98 @@
+# [Plan Title]
+
+One-sentence summary of what this plan accomplishes.
+
+---
+
+## Wave Structure
+
+| Waves | Metric | Scope | Checkpoint | Tokens |
+|-------|--------|-------|------------|---------|
+| Wave 1 | [Metric 1] | [Scope 1] | A | [Tokens] 🟢 |
+| Wave 2 | [Metric 2] | [Scope 2] | B | [Tokens] 🟢 |
+| Wave 3 | [Metric 3] | [Scope 3] | C | [Tokens] 🟢 |
+| Wave 4 | [Metric 4] | [Scope 4] | D | [Tokens] 🟢 |
+
+**Total: [Total] tokens across 4 waves, all GREEN**
+
+---
+
+## Gap Register
+
+**GAP-1: [Gap description]**
+- [Details about the gap]
+- [Impact]
+
+**GAP-2: [Gap description]**
+- [Details about the gap]
+- [Impact]
+
+---
+
+## Execution Plan
+
+### Phase 1 — [Phase Title]
+**Scope**: [What this phase does]
+
+**Commands**:
+```bash
+# Command 1
+# Command 2
+```
+
+**Acceptance**: [Success criteria]
+
+### Phase 2 — [Phase Title]
+**Scope**: [What this phase does]
+
+**Commands**:
+```bash
+# Command 1
+# Command 2
+```
+
+**Acceptance**: [Success criteria]
+
+---
+
+## Rules
+
+- [Rule 1]
+- [Rule 2]
+- [Rule 3]
+
+---
+
+## Success Criteria
+
+- [ ] [Criteria 1]
+- [ ] [Criteria 2]
+- [ ] [Criteria 3]
+
+---
+
+## Implementation Commands
+
+```bash
+# Full implementation sequence
+python tools/[script].py --option
+python tools/[script].py --option
+```
+
+---
+
+## Rollback Strategy
+
+If things go wrong:
+1. [Rollback step 1]
+2. [Rollback step 2]
+3. [Rollback step 3]
+
+---
+
+## Acceptance Criteria
+
+| Metric | Target | Verification |
+|---|---|---|
+| [Metric 1] | [Target] | [How to verify] |
+| [Metric 2] | [Target] | [How to verify] |
