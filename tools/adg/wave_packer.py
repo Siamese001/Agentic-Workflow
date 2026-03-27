@@ -7,15 +7,25 @@ Uses agentic_core.planning.token_estimator for accurate token counts.
 
 import os
 import sys
+import logging
 from typing import List, Dict, Any
+
+logging.basicConfig(level=logging.INFO)
 
 # Ensure we can import from agentic_core
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..")))
 
-from agentic_core.planning.token_estimator import ContextWindowEstimator, TokenBudget
+try:
+    from agentic_core.planning.token_estimator import ContextWindowEstimator, TokenBudget
+except ImportError as e:
+    logging.error(f"Could not import token estimation utilities: {e}")
+    sys.exit(1)
 
 class WavePacker:
     def __init__(self, target_tokens: int = 155000, hard_limit: int = 200000):
+        if target_tokens >= hard_limit:
+            raise ValueError("target_tokens must be strictly less than hard_limit.")
+            
         self.target_tokens = target_tokens
         self.hard_limit = hard_limit
         self.estimator = ContextWindowEstimator(TokenBudget(HARD_MAX_CONTEXT=hard_limit))
@@ -26,17 +36,27 @@ class WavePacker:
         """
         Greedy bin-packing of phases into waves.
         Preserves original order of phases.
+        Raises ValueError if a single phase exceeds the hard limit.
         """
+        if not phases:
+            return []
+            
         waves = []
         current_wave_phases = []
         current_wave_tokens = 0
 
         for phase in phases:
-            phase_tokens = phase['tokens']
+            if 'tokens' not in phase or not isinstance(phase['tokens'], (int, float)) or phase['tokens'] < 0:
+                raise ValueError(f"Invalid or missing 'tokens' value in phase: {phase.get('id', 'Unknown')}")
+                
+            phase_tokens = int(phase['tokens'])
             
-            # Check if this single phase is too big
+            # Strict enforcement: Check if this single phase is too big
             if phase_tokens + self.overhead > self.hard_limit:
-                print(f"Warning: Phase {phase['id']} ({phase_tokens:,} tokens) exceeds hard limit even when alone.")
+                raise ValueError(
+                    f"Phase {phase.get('id')} requires {phase_tokens + self.overhead:,} tokens "
+                    f"(including overhead), exceeding the hard limit of {self.hard_limit:,}."
+                )
 
             # If adding this phase exceeds target, finish current wave and start new one
             if current_wave_phases and (current_wave_tokens + phase_tokens + self.overhead > self.target_tokens):
