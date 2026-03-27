@@ -50,7 +50,7 @@ class TestContextualBandit:
     def sample_context(self):
         """Create a sample bandit context"""
         return BanditContext(
-            intent_embedding=np.random.randn(10),
+            intent_embedding=np.random.randn(20),  # Changed from 10 to 20
             intent_length=25,
             intent_complexity=0.5,
             user_history_score=0.8,

@@ -726,6 +726,12 @@ def create_few_shot_task(
 ) -> MetaLearningTask:
     """Create a few-shot learning task from data"""
     
+    if not examples_data:
+        raise ValueError("examples_data cannot be empty")
+    
+    if len(examples_data) < 2:
+        raise ValueError("examples_data must contain at least 2 examples for support/query split")
+    
     task_examples = [
         TaskExample(
             query=data["query"],

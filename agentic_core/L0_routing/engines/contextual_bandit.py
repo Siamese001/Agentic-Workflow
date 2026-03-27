@@ -71,10 +71,10 @@ class BanditArm:
     current_load: float
     success_rate: float
     
-    # Bandit parameters
-    A: np.ndarray = field(default_factory=lambda: np.eye(10))  # Context dimension
-    b: np.ndarray = field(default_factory=lambda: np.zeros(10))
-    theta: np.ndarray = field(default_factory=lambda: np.zeros(10))
+    # Bandit parameters (will be initialized in add_arm)
+    A: np.ndarray = field(default=None)
+    b: np.ndarray = field(default=None)
+    theta: np.ndarray = field(default=None)
     
     def update_parameters(self, context: np.ndarray, reward: float):
         """Update bandit parameters with observed reward"""
@@ -182,6 +182,10 @@ class LinUCBBandit:
             raise ValueError("No arms available for selection")
         
         context_vector = context.to_vector()
+        
+        # Validate dimension compatibility
+        if len(context_vector) != self.context_dim:
+            raise ValueError(f"Context dimension mismatch: expected {self.context_dim}, got {len(context_vector)}")
         
         # Calculate UCB for each arm
         arm_scores = {}

@@ -514,9 +514,10 @@ class MixtureOfExperts:
         # Update load balancer
         self.load_balancer.update_load(selected_expert_id, 0.1)
         
-        # Calculate final confidence and uncertainty
-        confidence = selected_prediction.confidence * final_scores[selected_expert_id]
-        uncertainty = selected_prediction.uncertainty
+        # Calculate final confidence with minimum threshold
+        base_confidence = selected_prediction.confidence * final_scores[selected_expert_id]
+        confidence = max(0.1, base_confidence)  # Minimum confidence threshold
+        uncertainty = max(0.0, 1.0 - confidence)
         
         # Create reasoning
         reasoning_parts = [

@@ -103,6 +103,10 @@ class QuantizationCompressor(ModelCompressor):
         """Compress model using quantization"""
         start_time = time.time()
         
+        # Validate model compatibility
+        if not hasattr(model, '__dict__'):
+            raise ValueError("Model must have __dict__ attribute for quantization")
+        
         # Get original model size (simplified)
         original_size = self._estimate_model_size(model)
         original_latency = self._measure_inference_latency(model)
@@ -120,7 +124,7 @@ class QuantizationCompressor(ModelCompressor):
         optimized_accuracy = self._measure_accuracy(compressed_model)
         accuracy_degradation = (original_accuracy - optimized_accuracy) / original_accuracy
         optimized_memory = self._estimate_memory_usage(compressed_model)
-        memory_savings = (original_memory - optimized_memory) / original_memory
+        memory_savings = (original_memory - optimized_memory) / original_memory if original_memory > 0 else 0.0
         
         metrics = OptimizationMetrics(
             original_size=original_size,
@@ -230,7 +234,7 @@ class PruningCompressor(ModelCompressor):
         optimized_accuracy = self._measure_accuracy(compressed_model)
         accuracy_degradation = (original_accuracy - optimized_accuracy) / original_accuracy
         optimized_memory = self._estimate_memory_usage(compressed_model)
-        memory_savings = (original_memory - optimized_memory) / original_memory
+        memory_savings = (original_memory - optimized_memory) / original_memory if original_memory > 0 else 0.0
         
         metrics = OptimizationMetrics(
             original_size=original_size,

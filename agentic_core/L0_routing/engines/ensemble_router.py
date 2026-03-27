@@ -361,7 +361,13 @@ class EnsembleRouter:
         # Confidence features
         confidences = [p.confidence for p in predictions]
         mean_confidence = np.mean(confidences)
-        std_confidence = np.std(confidences)
+        
+        # Safe standard deviation calculation
+        if len(confidences) > 1:
+            std_confidence = np.std(confidences)
+        else:
+            std_confidence = 0.0
+            
         max_confidence = np.max(confidences)
         min_confidence = np.min(confidences)
         
@@ -381,10 +387,25 @@ class EnsembleRouter:
         # Uncertainty features
         uncertainties = [p.uncertainty for p in predictions]
         mean_uncertainty = np.mean(uncertainties)
-        std_uncertainty = np.std(uncertainties)
+        
+        # Safe standard deviation calculation
+        if len(uncertainties) > 1:
+            std_uncertainty = np.std(uncertainties)
+        else:
+            std_uncertainty = 0.0
         
         # Calculate uncertainty correlation (simplified)
-        uncertainty_correlation = -np.corrcoef(confidences, uncertainties)[0, 1] if len(confidences) > 1 else 0.0
+        if len(confidences) > 1 and len(uncertainties) > 1:
+            try:
+                correlation_matrix = np.corrcoef(confidences, uncertainties)
+                if not np.isnan(correlation_matrix[0, 1]):
+                    uncertainty_correlation = correlation_matrix[0, 1]
+                else:
+                    uncertainty_correlation = 0.0
+            except:
+                uncertainty_correlation = 0.0
+        else:
+            uncertainty_correlation = 0.0
         
         return EnsembleFeatures(
             mean_confidence=mean_confidence,
