@@ -339,6 +339,16 @@ def _fire_meta_learning_intake(state_mgr: "object", now_utc: int, repo_root: Pat
             state_mgr.state.setdefault("meta_learning", {})["success_rate_store"] = _sr_store.export_state()
         except (ImportError, AttributeError, KeyError) as _sr_err:
             logging.warning("[MetaLearning] Wave1 success_rate_store failed (non-fatal): %s", _sr_err)
+        
+        # Wave A-4: Emit ADG behavioral score for routing confidence
+        try:
+            _adg_territory_score = state_mgr.state.get("adg_territory_score", 0.0)
+            _sr_store = _get_sr_store()
+            # Emit ADG score as a special signal to the success rate store
+            _sr_store._emit_adg_behavioral_score(_adg_territory_score, now_utc)
+            logging.debug("[MetaLearning] Emitted ADG behavioral score: %.3f", _adg_territory_score)
+        except (ImportError, AttributeError, KeyError) as _adg_err:
+            logging.debug("[MetaLearning] ADG behavioral score emission failed (non-fatal): %s", _adg_err)
         try:
             from agentic_core.L0_routing.meta_control.meta_learning_bus import (
                 get_process_bus as _get_proc_bus,

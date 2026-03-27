@@ -356,6 +356,7 @@ class CircuitBreaker:
         self._success_count = 0
         self._half_open_calls = 0
         self.metrics.state_transitions += 1
+        self._emit_state_transition_event("OPEN")
 
     def _transition_to_half_open(self) -> None:
         """Transition to HALF_OPEN state."""
@@ -363,6 +364,7 @@ class CircuitBreaker:
         self._success_count = 0
         self._half_open_calls = 0
         self.metrics.state_transitions += 1
+        self._emit_state_transition_event("HALF_OPEN")
 
     def _transition_to_closed(self) -> None:
         """Transition to CLOSED state."""
@@ -373,6 +375,25 @@ class CircuitBreaker:
         self._current_reset_timeout = self.config.reset_timeout_seconds
         self.metrics.current_backoff = 0.0
         self.metrics.state_transitions += 1
+        self._emit_state_transition_event("CLOSED")
+
+    def _emit_state_transition_event(self, new_state: str) -> None:
+        """Emit circuit breaker state transition to system learning."""
+        try:
+            from system_learning.adapters.system_learning_memory_bridge import get_sl_memory_bridge
+            bridge = get_sl_memory_bridge()
+            bridge.persist_circuit_breaker_event(
+                breaker_name=self.name,
+                old_state="UNKNOWN",  # Could track previous state if needed
+                new_state=new_state,
+                timestamp_utc=int(time.time() * 1000),
+                failure_count=self._failure_count,
+                success_count=self._success_count,
+                current_backoff=self._current_reset_timeout,
+            )
+        except Exception:
+            # System learning unavailable - continue without emission
+            pass
 
     def get_time_until_retry(self) -> float:
         """Get seconds until retry is allowed (for OPEN state)."""

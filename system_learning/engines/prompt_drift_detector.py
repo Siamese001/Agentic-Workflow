@@ -321,6 +321,7 @@ class PromptDriftDetector:
         prompt_hash_before: str,
         prompt_hash_after: str,
         timestamp_utc: int,
+        structural_drift_detected: bool = False,
     ) -> list[PromptDriftSignal]:
         """Detect drift between two windows of outcome records.
 
@@ -336,6 +337,8 @@ class PromptDriftDetector:
             Prompt hash for the current window.
         timestamp_utc : int
             Caller-supplied detection timestamp.
+        structural_drift_detected : bool
+            Whether structural template drift was detected.
 
         Returns
         -------
@@ -354,6 +357,15 @@ class PromptDriftDetector:
         current = _compute_stats(current_records)
 
         signals: list[PromptDriftSignal] = []
+
+        # --- Structural drift from template files ---
+        if structural_drift_detected:
+            signals.append(self._make_signal(
+                prompt_hash_before, prompt_hash_after,
+                "STRUCTURAL_DRIFT", 1.0, None,
+                baseline.n, current.n,
+                DRIFT_REGRESSION_DETECTED, timestamp_utc,
+            ))
 
         # --- Escalation rate ---
         esc_delta = current.escalation_rate - baseline.escalation_rate

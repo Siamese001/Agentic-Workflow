@@ -283,6 +283,8 @@ def propose_routing_confidence_change(
     history: dict[str, Any],
     cooldown_policy: CooldownPolicy,
     sample_policy: SampleSizePolicy,
+    adg_territory_score: float = 0.0,
+    adg_confidence_tiers: dict[str, int] | None = None,
 ) -> RoutingConfidenceChangePackage | None:
     """Propose a routing_min_confidence adjustment when p10 drops below trigger.
 
@@ -303,6 +305,10 @@ def propose_routing_confidence_change(
         Cooldown dampening policy.
     sample_policy : SampleSizePolicy
         Sample-size dampening policy.
+    adg_territory_score : float
+        ADG behavioral score (0-1, higher = more risk).
+    adg_confidence_tiers : dict[str, int] | None
+        ADG confidence tier distribution (e.g., {'C0': 1000, 'C1': 500}).
 
     Returns
     -------
@@ -316,7 +322,22 @@ def propose_routing_confidence_change(
 
     p10 = round(_compute_p10(confidence_values), 4)
 
-    if p10 >= _P10_TRIGGER:
+    # Adjust p10 trigger based on ADG territory score
+    # Higher ADG risk = lower trigger threshold (more sensitive)
+    adjusted_trigger = _P10_TRIGGER - (adg_territory_score * 0.1)  # Max 0.1 reduction
+    adjusted_trigger = max(0.5, adjusted_trigger)  # Never go below 0.5
+    
+    # Further adjust based on ADG confidence tiers
+    if adg_confidence_tiers:
+        total_edges = sum(adg_confidence_tiers.values())
+        if total_edges > 0:
+            # High proportion of low confidence (C0/C1) increases sensitivity
+            low_conf_ratio = (adg_confidence_tiers.get('C0', 0) + adg_confidence_tiers.get('C1', 0)) / total_edges
+            if low_conf_ratio > 0.3:  # More than 30% low confidence
+                adjusted_trigger -= 0.05  # Additional sensitivity boost
+                adjusted_trigger = max(0.5, adjusted_trigger)
+
+    if p10 >= adjusted_trigger:
         return None
 
     last_update_utc = history.get(f"{surface}_last_update", 0)
@@ -345,7 +366,9 @@ def propose_routing_confidence_change(
         new_value = round(new_value, 4)
 
     justification = (
-        f"routing_confidence_p10={p10:.4f} below trigger={_P10_TRIGGER}; "
+        f"routing_confidence_p10={p10:.4f} below adjusted_trigger={adjusted_trigger:.4f} "
+        f"(base_trigger={_P10_TRIGGER}, adg_score={adg_territory_score:.3f}, "
+        f"low_conf_ratio={(adg_confidence_tiers and (sum(adg_confidence_tiers.get(t, 0) for t in ('C0', 'C1')) / sum(adg_confidence_tiers.values())) or 0):.3f}); "
         f"adjusting {surface} from {current_value} to {new_value} (delta={delta:.4f})"
     )
     logger.debug("RoutingConfidenceMonitor: %s", justification)
@@ -380,6 +403,8 @@ class L0RoutingConfidenceProposerAdapter:
         history: Any,
         cooldown: Any,
         sample: Any,
+        adg_territory_score: float = 0.0,
+        adg_confidence_tiers: dict[str, int] | None = None,
     ) -> RoutingConfidenceChangePackage | None:
         snapshot_id = getattr(snapshot, "snapshot_id", "unknown")
 
@@ -408,6 +433,8 @@ class L0RoutingConfidenceProposerAdapter:
             history=history,
             cooldown_policy=cooldown,
             sample_policy=sample,
+            adg_territory_score=adg_territory_score,
+            adg_confidence_tiers=adg_confidence_tiers,
         )
 
 

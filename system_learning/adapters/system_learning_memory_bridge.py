@@ -964,6 +964,92 @@ class SystemLearningMemoryBridge:
                 return int(obs[16:])
         return 0
 
+    def persist_circuit_breaker_event(
+        self,
+        breaker_name: str,
+        old_state: str,
+        new_state: str,
+        timestamp_utc: int,
+        failure_count: int,
+        success_count: int,
+        current_backoff: float,
+    ) -> bool:
+        """Persist circuit breaker state transition event.
+        
+        Args:
+            breaker_name: Name of the circuit breaker
+            old_state: Previous state
+            new_state: New state
+            timestamp_utc: Timestamp in milliseconds
+            failure_count: Current failure count
+            success_count: Current success count
+            current_backoff: Current backoff timeout
+            
+        Returns:
+            True if persisted, False on failure
+        """
+        if not self._bridge:
+            return False
+        
+        try:
+            entity_name = f"CircuitBreakerEvent_{breaker_name}_{int(timestamp_utc)}"
+            self._bridge.create_agent_entity(
+                agent_name=entity_name,
+                agent_type=self.ENTITY_TYPE_TELEMETRY_EVENT,
+                observations=[
+                    f"breaker={breaker_name}",
+                    f"old_state={old_state}",
+                    f"new_state={new_state}",
+                    f"ts={timestamp_utc}",
+                    f"failure_count={failure_count}",
+                    f"success_count={success_count}",
+                    f"backoff={current_backoff}",
+                ],
+            )
+            return True
+        except Exception as e:
+            logger.debug("[SLMemoryBridge] persist_circuit_breaker_event failed: %s", e)
+            return False
+
+    def persist_adg_confidence_summary(self, conf_summary: dict[str, Any], timestamp: str) -> bool:
+        """Persist ADG confidence tier distribution.
+        
+        Args:
+            conf_summary: Confidence summary dict from ADG confidence scoring
+            timestamp: ADG timestamp string
+            
+        Returns:
+            True if persisted, False on failure
+        """
+        if not self._bridge:
+            return False
+        
+        try:
+            entity_name = f"ADGConfidenceSummary_{timestamp}"
+            observations = [
+                f"ts={timestamp}",
+                f"total_edges={conf_summary.get('total_edges', 0)}",
+            ]
+            
+            # Add tier distribution
+            tier_dist = conf_summary.get('tier_distribution', {})
+            for tier, count in tier_dist.items():
+                observations.append(f"tier_{tier}={count}")
+            
+            # Add confidence metrics
+            for metric, value in conf_summary.get('confidence_metrics', {}).items():
+                observations.append(f"metric_{metric}={value}")
+            
+            self._bridge.create_agent_entity(
+                agent_name=entity_name,
+                agent_type=self.ENTITY_TYPE_TELEMETRY_EVENT,
+                observations=observations,
+            )
+            return True
+        except Exception as e:
+            logger.debug("[SLMemoryBridge] persist_adg_confidence_summary failed: %s", e)
+            return False
+
 
 def get_sl_memory_bridge() -> SystemLearningMemoryBridge:
     """Return the process-global SystemLearningMemoryBridge instance."""
