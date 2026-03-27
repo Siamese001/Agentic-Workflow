@@ -21,7 +21,8 @@ try:
     est = ContextWindowEstimator()
 except ImportError as e:
     logging.error(f"Failed to import ContextWindowEstimator: {e}. Ensure agentic_core is available.")
-    sys.exit(1)
+    ContextWindowEstimator = None
+    est = None
 
 # --- Agentic Context Assumptions ---
 # Establish baseline overhead for the L1/C0 worktable assembly
@@ -50,6 +51,10 @@ def tok(text, ctype="text"):
 
 
 def main():
+    if est is None:
+        logging.error("ContextWindowEstimator is required but not available")
+        return
+
     # --- Phase 0: Token Optimization & Pre-Commit Cleanup ---
     plan_content = chars(
         "docs/reports/plans/repo-hygiene-precommit-optimization-e0f719.md"
@@ -135,7 +140,7 @@ def main():
     total_input = p0 + p1 + p2 + p3 + p4 + p5
     reserved_output = est.budget.DEFAULT_RESERVED_OUTPUT
     safety_buffer = est.budget.DEFAULT_SAFETY_BUFFER
-    
+
     # The true context window includes the system prompt, history, files, and output buffers
     baseline_overhead = ASSUMED_SYSTEM_PROMPT_TOKENS + ASSUMED_HISTORY_TOKENS
     grand_total = baseline_overhead + total_input + reserved_output + safety_buffer

@@ -19,23 +19,27 @@ try:
     from agentic_core.planning.token_estimator import ContextWindowEstimator, TokenBudget
 except ImportError as e:
     logging.error(f"Could not import token estimation utilities: {e}")
-    sys.exit(1)
+    ContextWindowEstimator = None
+    TokenBudget = None
 
 class WavePacker:
     def __init__(
-        self, 
-        target_tokens: int = 155000, 
+        self,
+        target_tokens: int = 155000,
         hard_limit: int = 200000,
         system_prompt_tokens: int = 2500,
         history_tokens: int = 1500
     ):
+        if ContextWindowEstimator is None or TokenBudget is None:
+            raise ImportError("ContextWindowEstimator or TokenBudget is required but not available")
+
         if target_tokens >= hard_limit:
             raise ValueError("target_tokens must be strictly less than hard_limit.")
-            
+
         self.target_tokens = target_tokens
         self.hard_limit = hard_limit
         self.estimator = ContextWindowEstimator(TokenBudget(HARD_MAX_CONTEXT=hard_limit))
-        
+
         # Total baseline overhead required before any file payload is added
         self.static_overhead = system_prompt_tokens + history_tokens
         self.dynamic_buffers = self.estimator.budget.DEFAULT_RESERVED_OUTPUT + self.estimator.budget.DEFAULT_SAFETY_BUFFER
@@ -49,7 +53,7 @@ class WavePacker:
         """
         if not phases:
             return []
-            
+
         waves = []
         current_wave_phases = []
         current_wave_tokens = 0
@@ -57,9 +61,9 @@ class WavePacker:
         for phase in phases:
             if 'tokens' not in phase or not isinstance(phase['tokens'], (int, float)) or phase['tokens'] < 0:
                 raise ValueError(f"Invalid or missing 'tokens' value in phase: {phase.get('id', 'Unknown')}")
-                
+
             phase_tokens = int(phase['tokens'])
-            
+
             # Strict enforcement: Check if this single phase is too big
             if phase_tokens + self.total_overhead > self.hard_limit:
                 raise ValueError(
@@ -98,7 +102,7 @@ def run_optimization():
     # P3: 92,401 (Original P3 before split)
     # P4: 64,104 (Original P4 before split)
     # P5: 1,926
-    
+
     phases = [
         {"id": "P0", "name": "Token Optimization", "tokens": 9261},
         {"id": "P1", "name": "Inventory", "tokens": 46755},

@@ -101,6 +101,14 @@ repos:
         always_run: true
         require_serial: true
 
+      - id: auto-stage-hook-fixes
+        name: "T0-stage: Auto-Stage Hook Modifications"
+        entry: python ops_scripts/hooks/auto_stage_hook_fixes.py
+        language: system
+        pass_filenames: false
+        always_run: true
+        require_serial: true
+
       - id: adg-phase-gate
         name: "T0-ADG: ADG Repair Phase Gate (§ADG-1.2)"
         entry: python tools/adg_ci_gate.py check-phase
@@ -154,14 +162,6 @@ repos:
         exclude: '.*\.md$'
       - id: check-merge-conflict
         name: "T0: Check Merge Conflict Markers"
-      
-      - id: auto-stage-hook-fixes
-        name: "T0: Auto-Stage Hook Modifications"
-        entry: python ops_scripts/hooks/auto_stage_hook_fixes.py
-        language: system
-        pass_filenames: false
-        always_run: true
-        require_serial: true
 
   # ============================================================================
   # TIER 1: Syntax Gate (Fastest Fail — broken files never proceed)
