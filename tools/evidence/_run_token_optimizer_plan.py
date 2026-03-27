@@ -23,6 +23,11 @@ except ImportError as e:
     logging.error(f"Failed to import ContextWindowEstimator: {e}. Ensure agentic_core is available.")
     sys.exit(1)
 
+# --- Agentic Context Assumptions ---
+# Establish baseline overhead for the L1/C0 worktable assembly
+ASSUMED_SYSTEM_PROMPT_TOKENS = 2500  # Core laws, persona definitions, strict rules
+ASSUMED_HISTORY_TOKENS = 1500        # Recent conversation turns/context
+
 
 def chars(path):
     """Safely reads characters from a file path."""
@@ -130,11 +135,15 @@ def main():
     total_input = p0 + p1 + p2 + p3 + p4 + p5
     reserved_output = est.budget.DEFAULT_RESERVED_OUTPUT
     safety_buffer = est.budget.DEFAULT_SAFETY_BUFFER
-    grand_total = total_input + reserved_output + safety_buffer
+    
+    # The true context window includes the system prompt, history, files, and output buffers
+    baseline_overhead = ASSUMED_SYSTEM_PROMPT_TOKENS + ASSUMED_HISTORY_TOKENS
+    grand_total = baseline_overhead + total_input + reserved_output + safety_buffer
 
     print("=" * 60)
     print(f"ANALYSIS: FULL PLAN (UNPACKED)")
-    print(f"  Total input tokens:   {total_input:>8,}")
+    print(f"  File payload tokens:  {total_input:>8,}")
+    print(f"  Agent overhead:       {baseline_overhead:>8,} (System + History)")
     print(f"  Grand total:          {grand_total:>8,}")
     print(f"  Status:               {est._determine_status_action(grand_total)[0].upper()}")
     print("=" * 60)
@@ -142,12 +151,12 @@ def main():
     # High-Density Packing Analysis
     # Wave 1: P0 (Cleanup) + P1 (Inventory) + P2 (Archive) + P4 (CI/Precommit) + P5 (Enforcement)
     w1_input = p0 + p1 + p2 + p4 + p5
-    w1_total = w1_input + reserved_output + safety_buffer
+    w1_total = baseline_overhead + w1_input + reserved_output + safety_buffer
     w1_status, _ = est._determine_status_action(w1_total)
 
     # Wave 2: P3 (Extract)
     w2_input = p3
-    w2_total = w2_input + reserved_output + safety_buffer
+    w2_total = baseline_overhead + w2_input + reserved_output + safety_buffer
     w2_status, _ = est._determine_status_action(w2_total)
 
     print("\n=== HIGH-DENSITY WAVE PACKING (Target 150-160K) ===")
@@ -172,7 +181,7 @@ def main():
     print(f"| P3 Extract | {p3:,} | {extract_chars:,} | 20 files × 300 lines × 40 chars |")
     print(f"| P4 CI Integration | {p4:,} | {wf_chars + len(precommit_content):,} | {wf_count} workflows + pre-commit |")
     print(f"| P5 Enforcement | {p5:,} | {p5_chars:,} | ~5KB script updates |")
-    print(f"| **Total** | **{grand_total:,}** | — | incl. {reserved_output:,} output + {safety_buffer:,} buffer |")
+    print(f"| **Total** | **{grand_total:,}** | — | incl. {baseline_overhead:,} overhead + {reserved_output:,} output + {safety_buffer:,} buffer |")
 
 if __name__ == "__main__":
     main()

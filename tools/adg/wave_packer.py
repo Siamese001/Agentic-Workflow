@@ -22,15 +22,24 @@ except ImportError as e:
     sys.exit(1)
 
 class WavePacker:
-    def __init__(self, target_tokens: int = 155000, hard_limit: int = 200000):
+    def __init__(
+        self, 
+        target_tokens: int = 155000, 
+        hard_limit: int = 200000,
+        system_prompt_tokens: int = 2500,
+        history_tokens: int = 1500
+    ):
         if target_tokens >= hard_limit:
             raise ValueError("target_tokens must be strictly less than hard_limit.")
             
         self.target_tokens = target_tokens
         self.hard_limit = hard_limit
         self.estimator = ContextWindowEstimator(TokenBudget(HARD_MAX_CONTEXT=hard_limit))
-        # Account for overhead
-        self.overhead = self.estimator.budget.DEFAULT_RESERVED_OUTPUT + self.estimator.budget.DEFAULT_SAFETY_BUFFER
+        
+        # Total baseline overhead required before any file payload is added
+        self.static_overhead = system_prompt_tokens + history_tokens
+        self.dynamic_buffers = self.estimator.budget.DEFAULT_RESERVED_OUTPUT + self.estimator.budget.DEFAULT_SAFETY_BUFFER
+        self.total_overhead = self.static_overhead + self.dynamic_buffers
 
     def pack_phases(self, phases: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
         """
@@ -52,17 +61,17 @@ class WavePacker:
             phase_tokens = int(phase['tokens'])
             
             # Strict enforcement: Check if this single phase is too big
-            if phase_tokens + self.overhead > self.hard_limit:
+            if phase_tokens + self.total_overhead > self.hard_limit:
                 raise ValueError(
-                    f"Phase {phase.get('id')} requires {phase_tokens + self.overhead:,} tokens "
+                    f"Phase {phase.get('id')} requires {phase_tokens + self.total_overhead:,} tokens "
                     f"(including overhead), exceeding the hard limit of {self.hard_limit:,}."
                 )
 
             # If adding this phase exceeds target, finish current wave and start new one
-            if current_wave_phases and (current_wave_tokens + phase_tokens + self.overhead > self.target_tokens):
+            if current_wave_phases and (current_wave_tokens + phase_tokens + self.total_overhead > self.target_tokens):
                 waves.append({
                     "phases": current_wave_phases,
-                    "total_tokens": current_wave_tokens + self.overhead,
+                    "total_tokens": current_wave_tokens + self.total_overhead,
                     "input_tokens": current_wave_tokens
                 })
                 current_wave_phases = []
@@ -75,7 +84,7 @@ class WavePacker:
         if current_wave_phases:
             waves.append({
                 "phases": current_wave_phases,
-                "total_tokens": current_wave_tokens + self.overhead,
+                "total_tokens": current_wave_tokens + self.total_overhead,
                 "input_tokens": current_wave_tokens
             })
 
