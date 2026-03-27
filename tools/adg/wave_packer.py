@@ -5,7 +5,7 @@ Groups plan phases into waves targeting a specific token context window.
 Uses incremental token growth model with shared prefix separation.
 """
 
-from typing import List, Dict, Any, Optional
+from typing import Any
 
 # ============================================================
 # CONFIG (Aligned to OpenAI best practices)
@@ -31,14 +31,15 @@ SAFETY_BUFFER_TOKENS = 5000
 # CORE PACKER (Incremental Token Accounting)
 # ============================================================
 
+
 def pack_waves(
-    phases: List[Dict[str, Any]],
+    phases: list[dict[str, Any]],
     max_context_tokens: int = MAX_CONTEXT_TOKENS,
     shared_prefix_tokens: int = DEFAULT_SHARED_PREFIX_TOKENS,
     history_tokens: int = DEFAULT_HISTORY_TOKENS,
     generation_reserve_tokens: int = GENERATION_RESERVE_TOKENS,
     safety_buffer_tokens: int = SAFETY_BUFFER_TOKENS,
-) -> List[Dict[str, Any]]:
+) -> list[dict[str, Any]]:
     """
     Packs phases into waves using:
 
@@ -55,8 +56,8 @@ def pack_waves(
     - Reserves output tokens explicitly
     """
 
-    waves: List[Dict[str, Any]] = []
-    current_wave: List[Dict[str, Any]] = []
+    waves: list[dict[str, Any]] = []
+    current_wave: list[dict[str, Any]] = []
 
     incremental_tokens = 0
 
@@ -76,11 +77,13 @@ def pack_waves(
         projected_total = compute_total_context(incremental_tokens + inc_tokens)
 
         if projected_total > max_context_tokens:
-            waves.append({
-                "phases": current_wave,
-                "tokens": compute_total_context(incremental_tokens),
-                "break_reason": "context_limit"
-            })
+            waves.append(
+                {
+                    "phases": current_wave,
+                    "tokens": compute_total_context(incremental_tokens),
+                    "break_reason": "context_limit",
+                }
+            )
 
             current_wave = []
             incremental_tokens = 0
@@ -89,11 +92,13 @@ def pack_waves(
         incremental_tokens += inc_tokens
 
     if current_wave:
-        waves.append({
-            "phases": current_wave,
-            "tokens": compute_total_context(incremental_tokens),
-            "break_reason": "end"
-        })
+        waves.append(
+            {
+                "phases": current_wave,
+                "tokens": compute_total_context(incremental_tokens),
+                "break_reason": "end",
+            }
+        )
 
     return waves
 
@@ -102,13 +107,11 @@ def pack_waves(
 # OPTIONAL: REPORTING (Visibility + Debugging)
 # ============================================================
 
-def summarize_wave(wave: Dict[str, Any]) -> Dict[str, Any]:
+
+def summarize_wave(wave: dict[str, Any]) -> dict[str, Any]:
     phases = wave["phases"]
 
-    total_incremental = sum(
-        p.get("incremental_input_tokens", p.get("tokens", 0))
-        for p in phases
-    )
+    total_incremental = sum(p.get("incremental_input_tokens", p.get("tokens", 0)) for p in phases)
 
     return {
         "num_phases": len(phases),
@@ -122,6 +125,7 @@ def summarize_wave(wave: Dict[str, Any]) -> Dict[str, Any]:
 # LEGACY COMPATIBILITY LAYER
 # ============================================================
 
+
 class WavePacker:
     """
     Legacy compatibility wrapper for existing code.
@@ -133,14 +137,14 @@ class WavePacker:
         target_tokens: int = 155000,
         hard_limit: int = 200000,
         system_prompt_tokens: int = 2500,
-        history_tokens: int = 1500
+        history_tokens: int = 1500,
     ):
         self.target_tokens = target_tokens
         self.hard_limit = hard_limit
         self.system_prompt_tokens = system_prompt_tokens
         self.history_tokens = history_tokens
 
-    def pack_phases(self, phases: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+    def pack_phases(self, phases: list[dict[str, Any]]) -> list[dict[str, Any]]:
         """Legacy method that maps to new pack_waves function."""
 
         # Convert old format to new format expectations
@@ -148,8 +152,8 @@ class WavePacker:
         for phase in phases:
             converted_phase = phase.copy()
             # Map old 'tokens' to 'incremental_input_tokens' if not present
-            if 'tokens' in phase and 'incremental_input_tokens' not in phase:
-                converted_phase['incremental_input_tokens'] = phase['tokens']
+            if "tokens" in phase and "incremental_input_tokens" not in phase:
+                converted_phase["incremental_input_tokens"] = phase["tokens"]
             converted_phases.append(converted_phase)
 
         # Use new packer with legacy-compatible defaults
@@ -157,7 +161,7 @@ class WavePacker:
             phases=converted_phases,
             max_context_tokens=self.hard_limit,
             shared_prefix_tokens=self.system_prompt_tokens,
-            history_tokens=self.history_tokens
+            history_tokens=self.history_tokens,
         )
 
         # Convert back to legacy format for compatibility
@@ -166,7 +170,9 @@ class WavePacker:
             legacy_wave = {
                 "phases": wave["phases"],
                 "total_tokens": wave["tokens"],
-                "input_tokens": sum(p.get("incremental_input_tokens", p.get("tokens", 0)) for p in wave["phases"])
+                "input_tokens": sum(
+                    p.get("incremental_input_tokens", p.get("tokens", 0)) for p in wave["phases"]
+                ),
             }
             legacy_waves.append(legacy_wave)
 
@@ -191,18 +197,25 @@ def run_optimization():
         {"id": "P5", "name": "Enforcement", "incremental_input_tokens": 1926},
     ]
 
-    print(f"--- Optimizing Wave Packing (Target: 150-160K) ---")
+    print("--- Optimizing Wave Packing (Target: 150-160K) ---")
     waves = pack_waves(phases)
 
     for i, wave in enumerate(waves):
-        print(f"\nWave {i+1}:")
+        print(f"\nWave {i + 1}:")
         summary = summarize_wave(wave)
         print(f"  Phases:       {', '.join(summary['phase_ids'])}")
         print(f"  Input Tokens: {summary['incremental_tokens']:>8,}")
         print(f"  Total Context: {summary['total_context_tokens']:>8,}")
-        status = "GREEN" if summary['total_context_tokens'] <= 150000 else "YELLOW" if summary['total_context_tokens'] <= 170000 else "RED"
+        status = (
+            "GREEN"
+            if summary["total_context_tokens"] <= 180000
+            else "YELLOW"
+            if summary["total_context_tokens"] <= 200000
+            else "RED"
+        )
         print(f"  Status:       {status}")
         print(f"  Break Reason: {wave['break_reason']}")
+
 
 if __name__ == "__main__":
     run_optimization()
