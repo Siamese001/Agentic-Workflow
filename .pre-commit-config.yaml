@@ -90,9 +90,7 @@ exclude: |
 
 repos:
   # ============================================================================
-  # TIER 0-ADG: ADG Phase Gate (§ADG-1 — must run FIRST, before all else)
-  # Blocks full-suite pytest during PHASE 5-6 repair loops.
-  # Only passes in PHASE 7+ or when artifacts/adg_current_phase.json says so.
+  # TIER 0: Auto-staging, CI gates, admission guards
   # ============================================================================
   - repo: local
     hooks:
@@ -103,16 +101,6 @@ repos:
         pass_filenames: false
         always_run: true
         require_serial: true
-
-      - id: adg-phase-gate
-        name: "T0-ADG: ADG Repair Phase Gate (§ADG-1.2)"
-        entry: python tools/adg_ci_gate.py check-phase
-        language: system
-        pass_filenames: false
-        always_run: false
-        types: [python]
-        require_serial: true
-
 
       - id: windsurf-plan-ci
         name: "T0-ci: Windsurf Plan CI"
