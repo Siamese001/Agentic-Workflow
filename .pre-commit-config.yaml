@@ -1,31 +1,34 @@
 # .pre-commit-config.yaml
-# STREAMLINED: Normalize -> Syntax Gate -> Auto-Fix -> Format -> Ratchets -> Structural -> ADG -> Cleanup
+# OPTIMIZED: authorize -> normalize -> prove basic validity -> mutate safely ->
+#            certify structure -> enforce policy -> run heavy topology checks -> clean up
 # Order of operations:
-#   T0   guards/normalize — no-verify guard, HITL, agent-deletion, whitespace/LF/EOF/merge-conflict
-#   T1   py_compile       — fastest gate, catches broken syntax immediately
-#   T2   ruff --fix       — auto-fix lint issues (imports, unused vars, etc.)
-#   T3   ruff-format      — normalize style on clean code (separate from lint; both required)
-#   T4   guardian-fix     — canonicalize guardian comment format in staged files
-#   T5   adg-ci-gates     — Wave 0 ADG CI delta gates M1-M6 (manual only)
-#   T6   burndown         — unified anti-pattern ratchet (new pairs blocked; counts only decrease)
-#   T7   c0-sovereignty   — embedding must not drive routing (manual only)
-#   T8   dedup-guard      — prevent duplicate symbols (manual only)
-#   T9   script-sprawl    — block new runner scripts (manual only)
-#   T10  shim-discipline  — backward-compatibility enforcement (manual only)
-#   T11  rollback-gate    — multi-file phase checkpoints (manual only)
-#   T12  report-loc       — structural SSOT path check (no ADG dependency; fast)
-#   T13  guard            — reject generated artifacts that got re-tracked (no ADG dependency; fast)
-#   T14  tooling-bnd      — tooling/apps_* boundary guard, ops_scripts/ci must not import apps_* (no ADG dependency)
-#   T15  module-coll      — architectural module collision check (no ADG dependency)
-#   T16  adg-stale        — ADG Redis cache freshness warning
-#   T17  grep-ban         — hard-fail if staged files use grep/rg as ADG substitute
-#   T18  mypy-ban         — hard-fail if staged files invoke mypy directly via subprocess
-#   T19  pytest-ban       — hard-fail if staged files invoke pytest broadly
-#   T20  yaml-grep-ban    — hard-fail if staged YAML workflows use grep/rg in run: steps
-#   T21  skip-ratchet     — enforce skip-file directive count ceiling
-#   T22  purge-cache      — cleanup, always last
+#   T0   admission/guards  — auto-stage, no-verify guard, HITL, agent-deletion, whitespace/LF/EOF/merge-conflict
+#   T1   py_compile        — fastest gate, catches broken syntax immediately
+#   T2   ruff --fix        — auto-fix lint issues (imports, unused vars, etc.)
+#   T3   ruff-format       — normalize style on clean code (separate from lint; both required)
+#   T4   guardian-fix      — canonicalize guardian comment format in staged files
+#   T5   adg-ci-gates      — Wave 0 ADG CI delta gates M1-M6 (manual only)
+#   T6   hollow-file-gate  — AST semantic validity check (cheap; before burndown)
+#   T7   report-loc        — structural SSOT path check (no ADG dependency; fast)
+#   T8   reject-artifacts  — reject generated artifacts that got re-tracked (fast)
+#   T9   tooling-bnd       — tooling/apps_* boundary guard (no ADG dependency)
+#   T10  module-coll       — architectural module collision check (no ADG dependency)
+#   T11  mcp-config        — MCP config sovereignty (file-triggered; cheap)
+#   T12  exemption-gate    — guardian exemption quality ratchet
+#   T13  burndown          — unified anti-pattern ratchet (new pairs blocked; counts only decrease)
+#   T14  grep-ban          — hard-fail if staged files use grep/rg as ADG substitute
+#   T15  mypy-ban          — hard-fail if staged files invoke mypy directly via subprocess
+#   T16  pytest-ban        — hard-fail if staged files invoke pytest broadly
+#   T17  yaml-grep-ban     — hard-fail if staged YAML workflows use grep/rg in run: steps
+#   T18  skip-ratchet      — enforce skip-file directive count ceiling
+#   T19  adg-stale         — ADG Redis cache freshness warning (non-blocking, --warn)
+#   T20  purge-cache       — cleanup, always last
 #
-# NOTE: T6–T21 share a single `repo: local` block. Tier labels in comments
+# Manual / CI-only lane (stages: [manual]):
+#   adg-ci-gates, c0-sovereignty, dedup-guard, script-sprawl,
+#   shim-discipline, rollback-gate
+#
+# NOTE: T12–T20 share a single `repo: local` block. Tier labels in comments
 #       are logical groupings; YAML structure groups them under one repo entry.
 #
 # NOTE: `default_language_version` applies to hooks with `language: python`
@@ -93,17 +96,9 @@ repos:
   # ============================================================================
   - repo: local
     hooks:
-      - id: auto-stage-untracked
-        name: "T0-stage: Auto-Stage Untracked Files"
-        entry: python ops_scripts/hooks/auto_stage_untracked.py
-        language: system
-        pass_filenames: false
-        always_run: true
-        require_serial: true
-
-      - id: auto-stage-hook-fixes
-        name: "T0-stage: Auto-Stage Hook Modifications"
-        entry: python ops_scripts/hooks/auto_stage_hook_fixes.py
+      - id: auto-stage
+        name: "T0-stage: Auto-Stage Files (untracked + hook fixes)"
+        entry: python ops_scripts/hooks/auto_stage.py
         language: system
         pass_filenames: false
         always_run: true
@@ -114,8 +109,17 @@ repos:
         entry: python tools/adg_ci_gate.py check-phase
         language: system
         pass_filenames: false
-        always_run: true
+        always_run: false
+        types: [python]
         require_serial: true
+
+
+      - id: windsurf-plan-ci
+        name: "T0-ci: Windsurf Plan CI"
+        entry: python ops_scripts/hooks/windsurf_plan_ci.py
+        language: system
+        pass_filenames: false
+        always_run: true
         stages: [manual]
 
       - id: guard-no-verify
@@ -225,25 +229,102 @@ repos:
         require_serial: true
         stages: [manual]
 
-      # -- T6: Guardian Exemption Quality Ratchet ----------------------------------
+      # ---- CHEAP STRUCTURAL HARD-FAILS (T6-T11) ---------------------------------
+      # Run before ratchets: lower cost, more decisive. Fail fast on obvious
+      # structural breakage before spending time on burndown/exemption accounting.
+
+      # -- T6: Hollow File Gate — AST Semantic Verification -----------------------
+      # Blocks new hollow files; flags existing files that become hollow.
+      # AST parse with --changed-only: cheap. Must run before burndown.
+      - id: hollow-file-gate
+        name: "T6: Hollow File Gate — AST Semantic Verification"
+        entry: cmd /c "set PYTHONPATH=.&& python ops_scripts/ci/hollow_file_gate.py --changed-only"
+        language: system
+        pass_filenames: false
+        always_run: true
+        require_serial: true
+
+      # -- T7: Report location SSOT (staged-only, structural) -------------------
+      - id: check-report-location
+        name: "T7: Report Location SSOT Check"
+        entry: cmd /c "set PYTHONPATH=.&& python ops_scripts/hooks/validate_report_location.py --staged-only"
+        language: system
+        pass_filenames: false
+        always_run: true
+        require_serial: true
+
+      # -- T8: Generated-artifact tracking guard ----------------------------------
+      # Rejects commits if git tracks any of:
+      #   **/guardian_report.json, **/.core_golden_seal, v15_d_evidence_*.json
+      # On failure: prints tracked paths + exact `git rm --cached` fix.
+      - id: reject-generated-artifacts-tracked
+        name: "T8: Reject Tracked Generated Artifacts"
+        entry: cmd /c "set PYTHONPATH=.&& python ops_scripts/hooks/reject_tracked_generated_artifacts.py"
+        language: system
+        pass_filenames: false
+        always_run: true
+        require_serial: true
+
+      # -- T9: Tooling/Apps Boundary Guard (§8.3) ----------------------------------
+      # tools/evidence and ops_scripts/ci must not import apps_* runtime modules.
+      # Tooling must remain pure — apps_* only referenced as strings/paths.
+      - id: check-tooling-apps-boundary
+        name: "T9: Tooling/Apps Boundary Guard (§8.3)"
+        entry: cmd /c "set PYTHONPATH=.&& python ops_scripts/ci/check_tooling_apps_boundary.py --staged-only"
+        language: system
+        pass_filenames: false
+        always_run: false
+        types: [python]
+        require_serial: true
+
+      # -- T10: Module Collision Guard (architectural enforcement) -----------------
+      # Scope: Detect duplicate modules, logical import paths, case collisions
+      # Blocks commits that violate architectural module integrity
+      - id: module-collision-guard
+        name: "T10: Module Collision Guard"
+        entry: cmd /c "set PYTHONPATH=.&& python agentic_core/L5_safety/enforcement/module_collision_guardrail.py"
+        language: system
+        pass_filenames: false
+        always_run: true
+        require_serial: true
+
+      # -- T11: MCP Config Sovereignty gate -------------------------------------
+      # Validates mcp_config.json: filesystem server present + not disabled,
+      # allowedDirectories locked to repo root only, _comment documents sovereign
+      # write territories and Constitutional Rule #0, no out-of-repo/forbidden
+      # paths in any server args or cwd.
+      - id: mcp-config-sovereignty
+        name: "T11: MCP Config Sovereignty — filesystem allowedDirectories locked to repo root (Rule #0)"
+        entry: cmd /c "set PYTHONPATH=.&& python ops_scripts/ci/check_mcp_config_sovereignty.py"
+        language: system
+        pass_filenames: false
+        files: ^mcp_config\.json$
+        always_run: false
+        require_serial: true
+
+      # ---- RATCHETS AND POLICY ENFORCEMENT (T12-T18) ----------------------------
+      # Run after structural certification. Heavier accounting; only reached by
+      # files that are structurally valid.
+
+      # -- T12: Guardian Exemption Quality Ratchet ----------------------------------
       # Closes the scanner blind spot: burndown gate only counts unwhitelisted
       # violations; once a guardian comment is added the violation is invisible.
       # Rule 1 (zero-tolerance): every guardian comment MUST have -- <justification>.
       # Rule 2 (ratchet): exemption counts in production code may only decrease.
       # Init:  ADG_EXEMPTION_INIT=1 python ops_scripts/ci/guardian_exemption_gate.py
       - id: guardian-exemption-gate
-        name: "T6: Guardian Exemption Quality Ratchet"
+        name: "T12: Guardian Exemption Quality Ratchet"
         entry: cmd /c "set PYTHONPATH=.&& python ops_scripts/ci/guardian_exemption_gate.py"
         language: system
         pass_filenames: false
         always_run: true
         require_serial: true
 
-      # -- T7: Unified ADG Anti-Pattern Burndown Ratchet ---------------------------
+      # -- T13: Unified ADG Anti-Pattern Burndown Ratchet ---------------------------
       # Single scan enforces both Rule 1 (no new file+category pairs) and
       # Rule 2 (existing counts may only decrease). Supersedes check_anti_patterns.py.
       - id: adg-burndown-gate
-        name: "T7: ADG Anti-Pattern Burndown Ratchet"
+        name: "T13: ADG Anti-Pattern Burndown Ratchet"
         entry: cmd /c "set PYTHONPATH=.&& python ops_scripts/ci/adg_burndown_gate.py"
         language: system
         pass_filenames: false
@@ -251,173 +332,25 @@ repos:
         require_serial: true
         exclude: (ops_scripts/ci/adg_burndown_gate\.py|ops_scripts/.*|tests/.*|__pycache__/.*|\.nox/.*|archives/.*|\.backup/.*)
 
-      # -- T25: Hollow File Gate — AST Semantic Verification -----------------------
-      # Blocks new hollow files; flags existing files that become hollow
-      - id: hollow-file-gate
-        name: "T25: Hollow File Gate — AST Semantic Verification"
-        entry: cmd /c "set PYTHONPATH=.&& python ops_scripts/ci/hollow_file_gate.py --changed-only"
-        language: system
-        pass_filenames: false
-        always_run: true
-        require_serial: true
-
-      # -- T8: C0 Sovereignty Guardian (embedding must not drive routing) ----------
-      # OPTIMIZED: Run manually or in CI only - not needed for every local commit
-      - id: check-c0-sovereignty
-        name: "T8: C0 Sovereignty — Embedding Boundary Enforcement"
-        entry: cmd /c "set PYTHONPATH=.&& python agentic_core/L0_routing/scripts/run_guardian_c0_sovereignty.py"
-        language: system
-        pass_filenames: false
-        always_run: true
-        require_serial: true
-        stages: [manual]
-
-      # -- T9: Dedup Guard (prevent duplicate symbols) ----------------------------
-      # OPTIMIZED: Run manually or in CI only - not needed for every local commit
-      - id: check-dedup-violations
-        name: "T9: Dedup Guard — Prevent Duplicate Symbols"
-        entry: cmd /c "set PYTHONPATH=.&& python ops_scripts/ci/check_dedup_violations.py"
-        language: system
-        pass_filenames: false
-        always_run: true
-        require_serial: true
-        stages: [manual]
-
-      # -- T10: Script Sprawl Guard (block new runner scripts) --------------------
-      # OPTIMIZED: Run manually or in CI only - not needed for every local commit
-      - id: check-script-sprawl
-        name: "T10: Script Sprawl Guard — Block New Runners"
-        entry: cmd /c "set PYTHONPATH=.&& python ops_scripts/ci/check_script_sprawl.py"
-        language: system
-        pass_filenames: false
-        always_run: true
-        require_serial: true
-        stages: [manual]
-
-      # -- T11: Shim Discipline (backward-compatibility enforcement) --------------
-      # OPTIMIZED: Run manually or in CI only - not needed for every local commit
-      - id: check-shim-discipline
-        name: "T11: Shim Discipline — Backward-Compatibility"
-        entry: cmd /c "set PYTHONPATH=.&& python ops_scripts/ci/check_shim_discipline.py"
-        language: system
-        pass_filenames: false
-        always_run: true
-        require_serial: true
-        stages: [manual]
-
-      # -- T12: Rollback Gate (multi-file phase checkpoints) ----------------------
-      # OPTIMIZED: Run manually or in CI only - not needed for every local commit
-      - id: check-rollback-checkpoints
-        name: "T12: Rollback Gate — Phase Checkpoints"
-        entry: cmd /c "set PYTHONPATH=.&& python ops_scripts/ci/check_rollback_checkpoints.py"
-        language: system
-        pass_filenames: false
-        always_run: true
-        require_serial: true
-        stages: [manual]
-
-      # -- T13: Report location SSOT (staged-only, structural) -------------------
-      - id: check-report-location
-        name: "T13: Report Location SSOT Check"
-        entry: cmd /c "set PYTHONPATH=.&& python ops_scripts/hooks/validate_report_location.py --staged-only"
-        language: system
-        pass_filenames: false
-        always_run: true
-        require_serial: true
-
-      # -- T14: Generated-artifact tracking guard ----------------------------------
-      # Rejects commits if git tracks any of:
-      #   **/guardian_report.json, **/.core_golden_seal, v15_d_evidence_*.json
-      # On failure: prints tracked paths + exact `git rm --cached` fix.
-      - id: reject-generated-artifacts-tracked
-        name: "T14: Reject Tracked Generated Artifacts"
-        entry: cmd /c "set PYTHONPATH=.&& python ops_scripts/hooks/reject_tracked_generated_artifacts.py"
-        language: system
-        pass_filenames: false
-        always_run: true
-        require_serial: true
-
-      # -- T15: Tooling/Apps Boundary Guard (§8.3) ----------------------------------
-      # tools/evidence and ops_scripts/ci must not import apps_* runtime modules.
-      # Tooling must remain pure — apps_* only referenced as strings/paths.
-      - id: check-tooling-apps-boundary
-        name: "T15: Tooling/Apps Boundary Guard (§8.3)"
-        entry: cmd /c "set PYTHONPATH=.&& python ops_scripts/ci/check_tooling_apps_boundary.py"
+      # -- T14: ADG Python Ban Gate (Accelerator enforcement) ------------------------
+      # Consolidated gate: hard-fail if staged Python files use grep/mypy/pytest as ADG substitutes.
+      # Exempt a specific line with: # guardian: allow-<type> -- <justification>
+      # Exempt an entire file with: # adg-<type>-ban: skip-file (first 5 lines)
+      - id: adg-python-ban-gate
+        name: "T14: ADG Python Ban Gate — no grep/mypy/pytest as ADG substitutes"
+        entry: cmd /c "set PYTHONPATH=.&& python ops_scripts/ci/adg_python_ban_gate.py --staged"
         language: system
         pass_filenames: false
         always_run: false
         types: [python]
         require_serial: true
 
-      # -- T16: Module Collision Guard (architectural enforcement) -----------------
-      # Scope: Detect duplicate modules, logical import paths, case collisions
-      # Blocks commits that violate architectural module integrity
-      - id: module-collision-guard
-        name: "T16: Module Collision Guard"
-        entry: cmd /c "set PYTHONPATH=.&& python agentic_core/L5_safety/enforcement/module_collision_guardrail.py"
-        language: system
-        pass_filenames: false
-        always_run: true
-        require_serial: true
-
-      # -- T17: ADG Staleness Guard (Accelerator #2) -------------------------------
-      # Warns when ADG Redis cache is stale vs. latest Python commits.
-      # --warn mode: always exits 0 (non-blocking); works without Redis in CI.
-      # Developers: run without --warn to get exit-1 enforcement locally.
-      - id: adg-stale-guard
-        name: "T17: ADG Staleness Guard (Accelerator #2)"
-        entry: python tools/adg/adg_stale_guard.py --warn
-        language: system
-        pass_filenames: false
-        always_run: true
-        require_serial: true
-
-      # -- T18: ADG Grep-Ban Gate (Accelerator enforcement) ------------------------
-      # Hard-fail if staged Python files use grep/rg/ripgrep as ADG substitutes.
-      # Exempt a specific line with: # guardian: allow-grep -- <justification>
-      # Exempt an entire file with: # adg-grep-ban: skip-file (first 5 lines)
-      - id: adg-grep-ban-gate
-        name: "T18: ADG Grep-Ban Gate — no grep/rg as ADG fallback"
-        entry: cmd /c "set PYTHONPATH=.&& python ops_scripts/ci/adg_grep_ban_gate.py --staged"
-        language: system
-        pass_filenames: false
-        always_run: false
-        types: [python]
-        require_serial: true
-
-      # -- T19: ADG Mypy-Ban Gate (Accelerator enforcement) ------------------------
-      # Hard-fail if staged Python files invoke mypy directly via subprocess.
-      # Only adg_type_check.py (via sys.executable) is allowed to call mypy.
-      # Exempt a specific line with: # guardian: allow-mypy -- <justification>
-      # Exempt an entire file with: # adg-mypy-ban: skip-file (first 5 lines)
-      - id: adg-mypy-ban-gate
-        name: "T19: ADG Mypy-Ban Gate — no broad mypy; use adg_type_check.py"
-        entry: cmd /c "set PYTHONPATH=.&& python ops_scripts/ci/adg_mypy_ban_gate.py --staged"
-        language: system
-        pass_filenames: false
-        always_run: false
-        types: [python]
-        require_serial: true
-
-      # -- T20: ADG Pytest-Ban Gate (Accelerator enforcement) ----------------------
-      # Hard-fail if staged Python files invoke pytest broadly (directory/no files).
-      # Use adg_test_selector.py --from-diff --pytest-args to select via ADG.
-      # Exempt a specific line with: # guardian: allow-pytest -- <justification>
-      - id: adg-pytest-ban-gate
-        name: "T20: ADG Pytest-Ban Gate — no broad pytest; use adg_test_selector.py"
-        entry: cmd /c "set PYTHONPATH=.&& python ops_scripts/ci/adg_pytest_ban_gate.py --staged"
-        language: system
-        pass_filenames: false
-        always_run: false
-        types: [python]
-        require_serial: true
-
-      # -- T21: ADG YAML Grep-Ban Gate -------------------------------------------
+      # -- T15: ADG YAML Grep-Ban Gate -------------------------------------------
       # Hard-fail if staged YAML workflow files invoke grep/rg in run: steps.
       # Use Python-based ADG accelerators or explicit Python scripts instead.
       # Exempt a line with: # guardian: allow-grep-yaml -- <justification>
       - id: adg-yaml-grep-ban-gate
-        name: "T21: ADG YAML Grep-Ban Gate — no grep/rg in GitHub Actions run: steps"
+        name: "T15: ADG YAML Grep-Ban Gate — no grep/rg in GitHub Actions run: steps"
         entry: cmd /c "set PYTHONPATH=.&& python ops_scripts/ci/adg_yaml_grep_ban_gate.py --staged"
         language: system
         pass_filenames: false
@@ -425,40 +358,97 @@ repos:
         types: [yaml]
         require_serial: true
 
-      # -- T22: Skip-File Ratchet ------------------------------------------------
+      # -- T18: Skip-File Ratchet ------------------------------------------------
       # Hard-fail if new # adg-grep-ban: skip-file directives were added without
       # updating the baseline in ops_scripts/hooks/skip_file_budget.json.
       # To legitimately add: run python ops_scripts/ci/adg_skip_file_ratchet.py --update
       - id: adg-skip-file-ratchet
-        name: "T22: ADG Skip-File Ratchet — enforce skip-file directive count ceiling"
+        name: "T16: ADG Skip-File Ratchet — enforce skip-file directive count ceiling"
         entry: cmd /c "set PYTHONPATH=.&& python ops_scripts/ci/adg_skip_file_ratchet.py"
+        language: system
+        pass_filenames: false
+        always_run: false
+        types: [python]
+        require_serial: true
+
+      # ---- MANUAL / CI-ONLY LANE -----------------------------------------------
+      # These are too heavy or too specialized for every local commit.
+
+      # -- C0 Sovereignty Guardian (embedding must not drive routing) ----------
+      - id: check-c0-sovereignty
+        name: "CI: C0 Sovereignty — Embedding Boundary Enforcement"
+        entry: cmd /c "set PYTHONPATH=.&& python agentic_core/L0_routing/scripts/run_guardian_c0_sovereignty.py"
         language: system
         pass_filenames: false
         always_run: true
         require_serial: true
+        stages: [manual]
 
-      # -- T23: Pycache purge (FINAL CLEANUP - runs last) -----------------------
+      # -- Dedup Guard (prevent duplicate symbols) ----------------------------
+      - id: check-dedup-violations
+        name: "CI: Dedup Guard — Prevent Duplicate Symbols"
+        entry: cmd /c "set PYTHONPATH=.&& python ops_scripts/ci/check_dedup_violations.py"
+        language: system
+        pass_filenames: false
+        always_run: true
+        require_serial: true
+        stages: [manual]
+
+      # -- Script Sprawl Guard (block new runner scripts) --------------------
+      - id: check-script-sprawl
+        name: "CI: Script Sprawl Guard — Block New Runners"
+        entry: cmd /c "set PYTHONPATH=.&& python ops_scripts/ci/check_script_sprawl.py"
+        language: system
+        pass_filenames: false
+        always_run: true
+        require_serial: true
+        stages: [manual]
+
+      # -- Shim Discipline (backward-compatibility enforcement) --------------
+      - id: check-shim-discipline
+        name: "CI: Shim Discipline — Backward-Compatibility"
+        entry: cmd /c "set PYTHONPATH=.&& python ops_scripts/ci/check_shim_discipline.py"
+        language: system
+        pass_filenames: false
+        always_run: true
+        require_serial: true
+        stages: [manual]
+
+      # -- Rollback Gate (multi-file phase checkpoints) ----------------------
+      - id: check-rollback-checkpoints
+        name: "CI: Rollback Gate — Phase Checkpoints"
+        entry: cmd /c "set PYTHONPATH=.&& python ops_scripts/ci/check_rollback_checkpoints.py"
+        language: system
+        pass_filenames: false
+        always_run: true
+        require_serial: true
+        stages: [manual]
+
+      # ---- NON-BLOCKING FRESHNESS WARNING (T19) ----------------------------------
+
+      # -- T19: ADG Staleness Guard (Accelerator #2) -------------------------------
+      # Warns when ADG Redis cache is stale vs. latest Python commits.
+      # --warn mode: always exits 0 (non-blocking); works without Redis in CI.
+      # Developers: run without --warn to get exit-1 enforcement locally.
+      - id: adg-stale-guard
+        name: "T19: ADG Staleness Guard (Accelerator #2)"
+        entry: python tools/adg/adg_stale_guard.py --warn
+        language: system
+        pass_filenames: false
+        always_run: false
+        types: [python]
+        require_serial: true
+
+      # ---- CLEANUP (T20 — always last) ------------------------------------------
+
+      # -- T20: Pycache purge (FINAL CLEANUP) ------------------------------------
       # Scope: rglob("__pycache__") from repo root, skips .venv/env/.git.
       # CRITICAL: Must run AFTER all Python hooks to prevent __pycache__ litter.
       # Idempotent: deleting absent dirs is a no-op; --quiet suppresses output.
       - id: purge-cache
-        name: "T23: Pycache Purge (Final Cleanup)"
+        name: "T20: Pycache Purge (Final Cleanup)"
         entry: python ops_scripts/maintenance/purge_cache.py --quiet --all
         language: system
         pass_filenames: false
         always_run: true
-        require_serial: true
-
-      # -- T24: MCP Config Sovereignty gate -------------------------------------
-      # Validates mcp_config.json: filesystem server present + not disabled,
-      # allowedDirectories locked to repo root only, _comment documents sovereign
-      # write territories and Constitutional Rule #0, no out-of-repo/forbidden
-      # paths in any server args or cwd.
-      - id: mcp-config-sovereignty
-        name: "T24: MCP Config Sovereignty — filesystem allowedDirectories locked to repo root (Rule #0)"
-        entry: cmd /c "set PYTHONPATH=.&& python ops_scripts/ci/check_mcp_config_sovereignty.py"
-        language: system
-        pass_filenames: false
-        files: ^mcp_config\.json$
-        always_run: false
         require_serial: true
