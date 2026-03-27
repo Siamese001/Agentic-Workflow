@@ -1,0 +1,11 @@
+name: repair-gate-validator
+description: Validates all 5 repair gates pass before any file edit
+version: 1.0.0
+parameters:
+  file_path:
+    type: string
+    description: The file to be edited
+  edit_type:
+    type: string
+    description: Type of edit being performed
+entrypoint: main.py
