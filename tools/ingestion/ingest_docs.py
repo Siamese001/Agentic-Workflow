@@ -260,12 +260,19 @@ class EmbeddingGenerator:
 class VectorDBIngestor:
     """Handles ingestion into ChromaDB vector store."""
 
-    def __init__(self, collection_name: str = "docs"):
+    def __init__(self, collection_name: str = "docs", persist_directory: str = None):
         self.collection_name = collection_name
         self.config = MemoryStoreConfig()
 
-        # Initialize ChromaDB client
-        self.client = chromadb.Client()
+        # Initialize ChromaDB client with persistent storage
+        if persist_directory:
+            self.client = chromadb.PersistentClient(path=persist_directory)
+        else:
+            # Default to artifacts/chromadb for persistence
+            persist_dir = Path("artifacts/chromadb")
+            persist_dir.mkdir(parents=True, exist_ok=True)
+            self.client = chromadb.PersistentClient(path=str(persist_dir))
+
         self.collection = self.client.get_or_create_collection(name=collection_name)
 
         Logger.info(f"Initialized ChromaDB collection: {collection_name}")
