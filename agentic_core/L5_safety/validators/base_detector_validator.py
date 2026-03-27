@@ -199,6 +199,7 @@ class AntiPatternCategory(str, Enum):
     GLOBAL_MUTATION = "global_mutation"
     CONFIG_WITH_LOGIC = "config_with_logic"
     DIRECT_PROMPT_COMPILATION = "direct_prompt_compilation"
+    HOLLOW_FILE = "hollow_file"
 
 
 @dataclass

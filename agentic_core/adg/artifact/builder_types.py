@@ -354,6 +354,8 @@ class ADGArtifact:
     blind_spots: BlindSpotReport = field(default_factory=BlindSpotReport)
     artifact_digest: str = ""
     type_surface_map: dict[str, str] = field(default_factory=dict)
+    hollow_file_map: dict[str, bool] = field(default_factory=dict)
+    boilerplate_ratio_map: dict[str, float] = field(default_factory=dict)
 
     def to_dict(self) -> dict:
         return {
@@ -439,6 +441,8 @@ class ADGArtifactBuilder:
             repo_state_hash=result.repo_state_hash or "",
             scanner_digest=result.digest or "",
             type_surface_map=getattr(result, "type_surface_map", {}),
+            hollow_file_map=getattr(result, "hollow_file_map", {}),
+            boilerplate_ratio_map=getattr(result, "boilerplate_ratio_map", {}),
         )
 
         # 1. Populate relations from edges

@@ -243,6 +243,16 @@ repos:
         require_serial: true
         exclude: (ops_scripts/ci/adg_burndown_gate\.py|ops_scripts/.*|tests/.*|__pycache__/.*|\.nox/.*|archives/.*|\.backup/.*)
 
+      # -- T25: Hollow File Gate — AST Semantic Verification -----------------------
+      # Blocks new hollow files; flags existing files that become hollow
+      - id: hollow-file-gate
+        name: "T25: Hollow File Gate — AST Semantic Verification"
+        entry: cmd /c "set PYTHONPATH=.&& python ops_scripts/ci/hollow_file_gate.py --changed-only"
+        language: system
+        pass_filenames: false
+        always_run: true
+        require_serial: true
+
       # -- T8: C0 Sovereignty Guardian (embedding must not drive routing) ----------
       # OPTIMIZED: Run manually or in CI only - not needed for every local commit
       - id: check-c0-sovereignty

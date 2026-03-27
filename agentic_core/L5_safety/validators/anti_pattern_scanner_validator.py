@@ -57,6 +57,9 @@ from agentic_core.L5_safety.validators.silent_swallower_validator import (
 from agentic_core.L5_safety.validators.type_erasure_validator import (
     TypeErasureDetector,
 )
+from agentic_core.L5_safety.validators.hollow_file_detector_validator import (
+    HollowFileDetector,
+)
 from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     LayerSegment,
     _emit_agent_executes_agent,
@@ -303,7 +306,7 @@ class AntiPatternScanner:
     @classmethod
     def get_default_scan_dirs(cls) -> list[str]:
         """Get default scan directories using dynamic apps discovery.
-        
+
         Returns:
             List of directory names to scan, including all apps_* directories.
         """
@@ -314,12 +317,12 @@ class AntiPatternScanner:
             SYSTEM_LEARNING_DIR,
             TOOLS_DIR,
         ]
-        
+
         # Add all apps_* directories dynamically
         apps_paths = get_all_apps_paths()
         apps_dirs = [p.name for p in apps_paths]
         dirs.extend(apps_dirs)
-        
+
         return dirs
 
     # Default exclude patterns
@@ -364,6 +367,7 @@ class AntiPatternScanner:
                 GlobalMutationDetector(enforcement_level=enforcement_level),
                 ConfigWithLogicDetector(enforcement_level=enforcement_level),
                 DirectPromptCompilationDetector(enforcement_level=enforcement_level),
+                HollowFileDetector(enforcement_level=enforcement_level),
             ],
         )
 
@@ -558,3 +562,4 @@ __all__ = [
     "ScanReport",
     "run_scan",
 ]
+

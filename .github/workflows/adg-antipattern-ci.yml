@@ -71,3 +71,45 @@ jobs:
         env:
           PYTHONPATH: .
           ADG_EXEMPTION_DRY_RUN: "1"
+
+  hollow-file-gate:
+    name: Hollow File Gate — AST Semantic Verification
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Check hollow files in changed Python files
+        run: |
+          # Get all Python files changed in this push/PR vs base
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            BASE="${{ github.event.pull_request.base.sha }}"
+          else
+            BASE="${{ github.event.before }}"
+            # On first push before is all zeros — check all .py files
+            if [ "$BASE" = "0000000000000000000000000000000000000000" ]; then
+              BASE="HEAD~1" 2>/dev/null || BASE=""
+            fi
+          fi
+
+          if [ -n "$BASE" ]; then
+            CHANGED=$(git diff --name-only "$BASE" HEAD -- '*.py' 2>/dev/null || true)
+          else
+            CHANGED=$(git ls-files '*.py')
+          fi
+
+          if [ -z "$CHANGED" ]; then
+            echo "[hollow-file-gate] No Python files changed — skipping."
+            exit 0
+          fi
+
+          echo "[hollow-file-gate] Checking $(echo "$CHANGED" | wc -l | tr -d ' ') Python file(s)..."
+          python ops_scripts/ci/hollow_file_gate.py --changed-only --base "$BASE"
+        env:
+          PYTHONPATH: .

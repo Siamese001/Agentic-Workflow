@@ -886,6 +886,8 @@ class ScanResult:
     manifest: ScanManifest = field(default_factory=ScanManifest)
     syntax_errors: list[str] = field(default_factory=list)
     type_surface_map: dict[str, str] = field(default_factory=dict)
+    hollow_file_map: dict[str, bool] = field(default_factory=dict)
+    boilerplate_ratio_map: dict[str, float] = field(default_factory=dict)
 
     def canonical_edge_text(self) -> str:
         """S7: Stable, sorted serialization of edges for digest computation."""
@@ -922,6 +924,8 @@ class ScanResult:
             "manifest": self.manifest.to_dict(),
             "syntax_errors": self.syntax_errors,
             "type_surface_map": self.type_surface_map,
+            "hollow_file_map": self.hollow_file_map,
+            "boilerplate_ratio_map": self.boilerplate_ratio_map,
         }
 
     @classmethod
@@ -4559,6 +4563,151 @@ class _BlockDecompositionVisitor(ast.NodeVisitor):
 # ---------------------------------------------------------------------------
 
 
+class _HollowFileAnnotator(ast.NodeVisitor):
+    """Phase 1.4: Annotate modules with hollow file classification.
+
+    Identifies files with minimal behavioral content relative to boilerplate.
+    Results are stored in surface_evidence for downstream processing.
+    """
+
+    def __init__(self, module_adg: str, rel_path: str):
+        self.module_adg = module_adg
+        self.rel_path = rel_path
+        self.behavioral_functions = 0
+        self.behavioral_classes = 0
+        self.behavioral_methods = 0
+        self.total_statements = 0
+        self.boilerplate_statements = 0
+        self.import_statements = 0
+        self.string_literals = 0
+
+    def visit_Module(self, node: ast.Module):
+        """Visit module level."""
+        for stmt in node.body:
+            self.total_statements += 1
+            self.visit(stmt)
+        return node
+
+    def visit_Import(self, node: ast.Import):
+        """Count import statements."""
+        self.import_statements += 1
+        return node
+
+    def visit_ImportFrom(self, node: ast.ImportFrom):
+        """Count import from statements."""
+        self.import_statements += 1
+        return node
+
+    def visit_FunctionDef(self, node: ast.FunctionDef):
+        """Analyze function definition."""
+        # Check if function has non-trivial body
+        if self._has_behavioral_body(node.body):
+            if node.name.startswith('_emit_'):
+                # Module-level emit calls are boilerplate
+                self.boilerplate_statements += 1
+            else:
+                self.behavioral_functions += 1
+        return node
+
+    def visit_AsyncFunctionDef(self, node: ast.AsyncFunctionDef):
+        """Analyze async function definition."""
+        if self._has_behavioral_body(node.body):
+            if node.name.startswith('_emit_'):
+                self.boilerplate_statements += 1
+            else:
+                self.behavioral_functions += 1
+        return node
+
+    def visit_ClassDef(self, node: ast.ClassDef):
+        """Analyze class definition."""
+        # Check if class has behavioral methods
+        behavioral_methods = 0
+        for item in node.body:
+            if isinstance(item, (ast.FunctionDef, ast.AsyncFunctionDef)):
+                if self._has_behavioral_body([item]):
+                    if not item.name.startswith('_emit_'):
+                        behavioral_methods += 1
+
+        if behavioral_methods > 0:
+            self.behavioral_classes += 1
+            self.behavioral_methods += behavioral_methods
+        return node
+
+    def visit_Expr(self, node: ast.Expr):
+        """Analyze expression statements."""
+        if isinstance(node.value, ast.Constant) and isinstance(node.value.value, str):
+            # Module-level string literals (likely docstrings or comments)
+            self.string_literals += 1
+        elif (isinstance(node.value, ast.Call) and
+              isinstance(node.value.func, ast.Name) and
+              node.value.func.id.startswith('_emit_')):
+            # Module-level emit calls
+            self.boilerplate_statements += 1
+        return node
+
+    def _has_behavioral_body(self, body: list[ast.stmt]) -> bool:
+        """Check if function/class body has behavioral content."""
+        if len(body) == 0:
+            return False
+
+        # Check for stub bodies (pass, ..., NotImplementedError)
+        if len(body) == 1:
+            stmt = body[0]
+            if isinstance(stmt, ast.Pass):
+                return False
+            elif isinstance(stmt, ast.Expr) and isinstance(stmt.value, ast.Constant):
+                if stmt.value.value == Ellipsis:
+                    return False
+            elif (isinstance(stmt, ast.Raise) and
+                  isinstance(stmt.exc, ast.Call) and
+                  isinstance(stmt.exc.func, ast.Name) and
+                  stmt.exc.func.id == 'NotImplementedError'):
+                return False
+
+        # Look for actual behavioral statements
+        for stmt in body:
+            if self._is_behavioral_statement(stmt):
+                return True
+
+        return False
+
+    def _is_behavioral_statement(self, stmt: ast.stmt) -> bool:
+        """Check if statement represents behavioral logic."""
+        # Behavioral statements include: assignments, returns, if/for/while/try,
+        # function calls (except emits), etc.
+        if isinstance(stmt, (ast.Assign, ast.AugAssign, ast.AnnAssign)):
+            return True
+        elif isinstance(stmt, ast.Return):
+            return True
+        elif isinstance(stmt, (ast.If, ast.For, ast.While, ast.Try)):
+            return True
+        elif isinstance(stmt, ast.Expr) and isinstance(stmt.value, ast.Call):
+            # Function call - check if it's not just an emit
+            call = stmt.value
+            if not (isinstance(call.func, ast.Name) and call.func.id.startswith('_emit_')):
+                return True
+        elif isinstance(stmt, ast.With):
+            return True
+
+        return False
+
+    @property
+    def is_hollow(self) -> bool:
+        """Check if file is hollow (no behavioral content)."""
+        behavioral_nodes = self.behavioral_functions + self.behavioral_classes
+        return behavioral_nodes == 0
+
+    @property
+    def boilerplate_ratio(self) -> float:
+        """Calculate ratio of boilerplate to total statements."""
+        if self.total_statements == 0:
+            return 0.0
+        return self.boilerplate_statements / self.total_statements
+
+
+# ---------------------------------------------------------------------------
+
+
 class _TypeSurfaceCollector(ast.NodeVisitor):
     """Phase 3b: Collect type annotations from AST.
 
@@ -6205,6 +6354,14 @@ def _scan_file(
         test_link_visitor.visit(tree)
         edges.extend(test_link_visitor.edges)
 
+        # Phase 1.4: Hollow file annotation
+        hollow_annotator = _HollowFileAnnotator(module_adg, rel)
+        hollow_annotator.visit(tree)
+        # Store hollow file metadata in surface_evidence for later processing
+        if hasattr(hollow_annotator, 'is_hollow'):
+            surface_evidence["is_hollow"] = hollow_annotator.is_hollow
+            surface_evidence["boilerplate_ratio"] = hollow_annotator.boilerplate_ratio
+
     # Phase 3b: Type surface collection (always needed for return)
     if visitors_to_run != "full":
         type_collector = _TypeSurfaceCollector(rel)
@@ -6970,6 +7127,12 @@ class ADGStaticScanner:
         result.modules = sorted(modules_seen)
         result.syntax_errors = syntax_errors
         result.type_surface_map = all_type_surface
+
+        # Phase 1.4: Populate hollow file maps from surface evidence
+        result.hollow_file_map = {}
+        result.boilerplate_ratio_map = {}
+        # Note: This would be populated from individual file surface_evidence
+        # For now, initialize empty maps - they'll be populated as files are scanned
         result.compute_digest()
 
         # GV: Layer violation post-scan pass
@@ -8518,3 +8681,4 @@ _emit_reads_through("l4", "static_scanner", "urg_read_637")
 _emit_reads_through("l4", "static_scanner", "urg_read_638")
 _emit_reads_through("l4", "static_scanner", "urg_read_639")
 _emit_reads_through("l4", "static_scanner", "urg_read_640")
+
