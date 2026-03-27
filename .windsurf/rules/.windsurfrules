@@ -677,3 +677,9 @@ Mixing exploration and repair in the same step = HARD FAIL.
 Structural refactors FORBIDDEN while: active scoped failures > 0, UNRESOLVED facts exist, registered skips have expired/missing resolution plans, full-suite not green.
 
 **Priority order:** Correctness → Determinism → Governance integrity → Reproducible green scoped runs → Structural refactors.
+
+---
+
+## Constitutional Rules
+
+### 10. **ZERO-LOSS REFACTOR DISCIPLINE.** When removing `_emit_*` boilerplate, trace instrumentation, or synthetic scaffolding from a file, the resulting file MUST be checked by the hollow file detector. If the file has zero behavioral FunctionDefs/ClassDefs after the removal, the file MUST be deleted entirely — not left as an empty shell. Gate: `ops_scripts/ci/zero_loss_refactor_verifier.py`. Pre-commit hook: T25 hollow-file-gate.
