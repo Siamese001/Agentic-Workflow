@@ -12,8 +12,8 @@ Complete plan to expand ChromaDB from 101,807 items to full-coverage embeddings 
 | Wave 2 | Create code collection | AST-based Python chunking | B | 78,000 🟢 | ✅ Complete (15,071 items) |
 | Wave 3 | Create apps collection | Application specs and CLIs | C | 35,000 🟢 | ✅ Complete (295 items) |
 | Wave 4 | Create ADG artifacts collection | Reports and analyses | D | 28,000 🟢 | ✅ Complete (22 items) |
-| Wave 5 | Expand traces collection | Multiple sources + metadata | E | 92,000 🟢 | ⏳ Pending |
-| Wave 6 | Upgrade embeddings | OpenAI integration (optional) | F | 15,000 🟢 | ⏳ Pending |
+| Wave 5 | Expand traces collection | Multiple sources + metadata | E | 92,000 🟢 | ✅ Complete (100,150 items) |
+| Wave 6 | Upgrade embeddings | BGE integration (open-source) | F | 15,000 🟢 | ✅ Complete (BGE-M3 model) |
 
 **Total: 293,000 tokens across 6 waves, all GREEN**
 
@@ -21,18 +21,22 @@ Complete plan to expand ChromaDB from 101,807 items to full-coverage embeddings 
 
 ## Progress Update (2026-03-27)
 
-### ✅ Waves 1-4 Complete
+### ✅ All Waves 1-6 Complete
 - **Wave 1**: Successfully ingested 724 technical documentation chunks from `docs/technical`
 - **Wave 2**: Successfully ingested 15,071 Python code chunks using AST-based chunking
 - **Wave 3**: Successfully ingested 295 application specification chunks from apps_* directories
 - **Wave 4**: Successfully ingested 22 ADG artifact reports and analyses
-- **Final Collections**: docs (724), code (15,071), apps (295), adg_artifacts (22), traces (100,000)
-- **Total Items**: 116,112 (exceeding target of 101,807)
-- **Committed**: Changes pushed to GitHub with commit e3178d8bfe
+- **Wave 5**: Successfully expanded traces to 100,150 items with enhanced metadata
+- **Wave 6**: Successfully upgraded to BGE-M3 embeddings (open-source, 1024 dimensions)
+- **Final Collections**: docs (724), code (15,071), apps (295), adg_artifacts (22), traces (100,150)
+- **Total Items**: 116,262 (exceeding target of 101,807 by 14%)
+- **Embedding Model**: BAAI/bge-m3 (multilingual, high-quality, open-source)
 
-### Next Steps
-- Wave 5: Expanded traces with metadata
-- Wave 6: OpenAI embeddings (optional)
+### Implementation Highlights
+- Wave 5: Added 150 new trace items from JSONL and log sources
+- Wave 6: Replaced OpenAI with BGE embeddings (no API costs, data privacy)
+- All collections now use high-quality open-source embeddings
+- Rich metadata for trace categorization and search
 
 ---
 
