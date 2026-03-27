@@ -1,0 +1,11 @@
+name: performance-monitor
+description: Monitors pre-write validation performance and enforces timeout limits
+version: 1.0.0
+parameters:
+  timeout_threshold:
+    type: number
+    description: Timeout threshold in seconds (default: 5)
+  operation:
+    type: string
+    description: Operation being monitored
+entrypoint: main.py

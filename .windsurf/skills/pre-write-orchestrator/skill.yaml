@@ -1,0 +1,14 @@
+name: pre-write-orchestrator
+description: Unified pre-write validation orchestrator with dependency resolution
+version: 1.0.0
+parameters:
+  file_path:
+    type: string
+    description: The file to be written/edited
+  operation:
+    type: string
+    description: Type of operation (write, edit, delete)
+  context:
+    type: string
+    description: Additional context for validation
+entrypoint: main.py
