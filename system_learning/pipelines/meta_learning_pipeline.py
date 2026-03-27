@@ -910,11 +910,22 @@ def run_pipeline(
     )
     from system_learning.engines.rca_engine import analyze_failures_and_persist as analyze_failures
 
+    # Get ADG violation file set for correlation
+    violation_file_set = None
+    try:
+        from agentic_core.adg.adapters.ADGMemoryAdapter import get_adapter
+        adapter = get_adapter()
+        violation_file_set = adapter.get_violation_file_set()
+    except Exception:
+        # ADG unavailable - continue without violation correlation
+        pass
+
     rca_report = analyze_failures(
         snapshot_id=snapshot.snapshot_id,
         audit_slice=audit_slice,
         window_start_utc=window_start_utc,
         window_end_utc=window_end_utc,
+        violation_file_set=violation_file_set,
     )
     if deps.failure_fingerprinter is not None and hasattr(rca_report, "failure_events"):
         fingerprints = [

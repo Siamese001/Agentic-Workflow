@@ -247,6 +247,24 @@ class DefaultHealingPatternAdvisor:
                 "extra_reason_codes": (),
             }
 
+        # Check if failing module is an ADG hotspot
+        module_name = getattr(healing_input, 'module_name', None)
+        if module_name:
+            try:
+                from agentic_core.adg.adapters.ADGMemoryAdapter import get_adapter
+                adapter = get_adapter()
+                hotspots = adapter.get_hotspot_modules(limit=20)
+                if module_name in hotspots:
+                    # Add hotspot boost
+                    patterns.append({
+                        "pattern_name": "adg_hotspot",
+                        "confidence_boost": 0.1,  # 10% boost for hotspots
+                        "description": f"Module {module_name} is in top-20 fan-out hotspots"
+                    })
+            except Exception:
+                # ADG unavailable - continue without hotspot boost
+                pass
+
         # Take the highest-confidence pattern (advisory only)
         best = max(patterns, key=lambda p: p.get("confidence_boost", 0.0))
         boost = min(best.get("confidence_boost", 0.0), _MAX_PATTERN_BOOST)
@@ -254,6 +272,8 @@ class DefaultHealingPatternAdvisor:
         extra_reason_codes = []
         if boost > 0:
             extra_reason_codes.append(f"pattern_boost={boost:.2f}")
+            if best.get("pattern_name") == "adg_hotspot":
+                extra_reason_codes.append("adg_hotspot")
 
         return {
             "pattern_match": True,

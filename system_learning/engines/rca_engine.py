@@ -223,7 +223,7 @@ def classify_line(line: str) -> tuple[str, str] | None:
 
 
 def analyze_failures(
-    snapshot_id: str, audit_slice: bytes, window_start_utc: int, window_end_utc: int
+    snapshot_id: str, audit_slice: bytes, window_start_utc: int, window_end_utc: int, *, violation_file_set: frozenset[str] | None = None
 ) -> object:
     """Analyze failures from audit slice and produce RCA report.
 
@@ -243,6 +243,8 @@ def analyze_failures(
         Start of analysis window.
     window_end_utc : int
         End of analysis window.
+    violation_file_set : frozenset[str] | None
+        Set of file paths with ADG violations for correlation.
 
     Returns
     -------
@@ -279,11 +281,37 @@ def analyze_failures(
             findings_dict[key].append(line)
     if not findings_dict:
         findings_dict["UNKNOWN", "no_patterns_matched"] = ["<no matching patterns>"]
+    
+    # Check for ADG violation correlation
+    adg_correlated = False
+    violation_type = None
+    if violation_file_set:
+        for line in lines:
+            line = line.strip()
+            # Extract file path from error lines (common patterns)
+            for prefix in ["File ", "  File ", "    File "]:
+                if line.startswith(prefix):
+                    parts = line.split('"')
+                    if len(parts) > 1:
+                        file_path = parts[1]
+                        if file_path in violation_file_set:
+                            adg_correlated = True
+                            violation_type = "layer_boundary"
+                            break
+            if adg_correlated:
+                break
+    
     findings = []
     for (category, signature), evidence_lines in findings_dict.items():
         count = len(evidence_lines)
         canonical_evidence = "\n".join(sorted(evidence_lines)).encode("utf-8")
         evidence_hash = hashlib.sha256(canonical_evidence).hexdigest()
+        
+        # Add ADG correlation metadata if applicable
+        if adg_correlated and category in ["SYNTAX", "IMPORT", "RUNTIME"]:
+            # Add correlation info to signature
+            signature = f"{signature}_ADG_CORRELATED"
+        
         findings.append(
             RCAFinding(category=category, signature=signature, count=count, evidence_hash=evidence_hash)
         )

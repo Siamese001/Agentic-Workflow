@@ -186,6 +186,8 @@ class DriftSummary:
     drift_score: float
     deterministic_digest: str
     drift_threshold: float = _DEFAULT_DRIFT_THRESHOLD
+    drift_source: str = "embedding_cosine"
+    violation_delta: int | None = None
 
     def emit_digest(self) -> None:
         """Print the drift digest for determinism verification."""
@@ -255,22 +257,46 @@ class ShadowDriftAnalyzer:
                 drift_score=0.0,
                 deterministic_digest=self._compute_digest([], profile_id, now_utc),
             )
-        cosine_values.sort()
-        mean_cosine = round(statistics.mean(cosine_values), 6)
-        p95_cosine = round(self._compute_percentile(cosine_values, 0.95), 6)
-        drift_flag = p95_cosine < self._drift_threshold
-        drift_score = round(max(0.0, min(1.0, 1.0 - p95_cosine)), 6)
-        deterministic_digest = self._compute_digest(cosine_values, profile_id, now_utc)
-        summary = DriftSummary(
+        
+        # Check for ADG violation trend drift
+        violation_delta = None
+        drift_source = "embedding_cosine"
+        try:
+            from system_learning.adapters.system_learning_memory_bridge import get_sl_memory_bridge
+            bridge = get_sl_memory_bridge()
+            current_count, previous_count = bridge.get_latest_violation_counts()
+            if current_count > 0 and previous_count > 0:
+                violation_delta = current_count - previous_count
+                if violation_delta > 0:
+                    # Violations increased - this is structural drift
+                    drift_source = "adg_structural"
+        except Exception:
+            # ADG data unavailable - continue with embedding-only analysis
+            pass
+        
+        mean_cosine = statistics.mean(cosine_values)
+        p95_cosine = self._compute_percentile(cosine_values, 95)
+        drift_score = max(0.0, (p95_cosine - self._drift_threshold) / self._drift_threshold)
+        drift_flag = p95_cosine > self._drift_threshold or (violation_delta and violation_delta > 0)
+        
+        # Adjust drift score based on violation trend
+        if violation_delta and violation_delta > 0:
+            # Boost drift score for structural violations
+            drift_score = max(drift_score, 0.5 + (violation_delta / 10.0))
+        
+        return DriftSummary(
             profile_id=profile_id,
             batch_size=len(shadow_records),
-            mean_cosine=mean_cosine,
-            p95_cosine=p95_cosine,
+            mean_cosine=round(mean_cosine, 6),
+            p95_cosine=round(p95_cosine, 6),
             drift_flag=drift_flag,
-            drift_score=drift_score,
-            deterministic_digest=deterministic_digest,
-            drift_threshold=self._drift_threshold,
+            drift_score=round(drift_score, 6),
+            deterministic_digest=self._compute_digest(cosine_values, profile_id, now_utc),
+            drift_source=drift_source,
+            violation_delta=violation_delta,
         )
+        
+        # Emit to registry
         self._emit_to_registry(summary)
         return summary
 

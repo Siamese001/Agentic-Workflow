@@ -923,6 +923,47 @@ class SystemLearningMemoryBridge:
             logger.debug("[SLMemoryBridge] query_failure_patterns failed: %s", e)
             return []
 
+    def get_latest_violation_counts(self) -> tuple[int, int]:
+        """Get violation counts from the two most recent ADG snapshots.
+        
+        Returns:
+            Tuple of (current_count, previous_count)
+        """
+        if not self._bridge:
+            return (0, 0)
+        
+        try:
+            # Query ADGSnapshot entities, sorted by timestamp descending
+            snapshots = self._bridge.search_entities("ADGSnapshot")
+            if len(snapshots) < 2:
+                return (0, 0)
+            
+            # Sort by timestamp (most recent first)
+            snapshots.sort(key=lambda s: self._extract_timestamp(s), reverse=True)
+            
+            # Get violation counts from top 2 snapshots
+            current_count = self._extract_violation_count(snapshots[0])
+            previous_count = self._extract_violation_count(snapshots[1])
+            
+            return (current_count, previous_count)
+        except Exception as e:
+            logger.debug("[SLMemoryBridge] get_latest_violation_counts failed: %s", e)
+            return (0, 0)
+    
+    def _extract_timestamp(self, snapshot: dict[str, Any]) -> int:
+        """Extract timestamp from snapshot entity."""
+        for obs in snapshot.get("observations", []):
+            if obs.startswith("ts="):
+                return int(obs[3:])
+        return 0
+    
+    def _extract_violation_count(self, snapshot: dict[str, Any]) -> int:
+        """Extract violation count from snapshot entity."""
+        for obs in snapshot.get("observations", []):
+            if obs.startswith("violation_count="):
+                return int(obs[16:])
+        return 0
+
 
 def get_sl_memory_bridge() -> SystemLearningMemoryBridge:
     """Return the process-global SystemLearningMemoryBridge instance."""
