@@ -12,11 +12,12 @@ This plan addresses three critical hygiene issues: (1) ~90 phase-named scripts a
 
 | Wave | Phase IDs | Focus | Est. Tokens | Assumptions | Status | Success Criteria |
 |---|---|---|---|---|---|---|
-| **Wave 1** | P0, P1, P2, P4 | **Foundational Hygiene & CI Tiering** | 144,389 | Cleanup + Inventory (644 files) + Archive (90 files) + CI Consolidation (31 wf) | 🟢 GREEN | Pre-commit -33% tokens, T6/T7 staged-only, 31→5 GitHub Actions |
-| **Wave 2** | P3, P5 | **Capability Extraction & Enforcement** | 114,327 | Reusable logic extraction (20 files) + boundary enforcement rules | 🟢 GREEN | 20 reusable capabilities promoted, script-sprawl guard active |
+| **Wave 1** | P0, P1, P2 | **Inventory, Classification & Archive** | 80,285 | Token optimization (9K) + Inventory (47K) + Archive (4K) | 🟢 GREEN | 644 files inventoried, 90 phase scripts archived |
+| **Wave 2** | P3 | **Capability Extraction** | 112,401 | Reusable logic extraction (20 files, 92K tokens) | 🟢 GREEN | 20 reusable capabilities promoted to shared modules |
+| **Wave 3** | P4, P5 | **CI Integration & Enforcement** | 86,030 | CI consolidation (64K) + boundary enforcement (2K) | 🟢 GREEN | 31→5 GitHub Actions, script-sprawl guard active |
 
-**Total Cumulative Tokens:** 258,716 across 2 waves<br>
-**Packing Strategy:** Optimized for SWE 1.5 128K context (using 200K hard limit). Wave 1 packs infrastructure setup and classification; Wave 2 packs complex code extractions and final gating.<br>
+**Total Cumulative Tokens:** 278,716 across 3 waves<br>
+**Packing Strategy:** Optimized 3-wave distribution targeting 150-160K per wave. Each wave stays well under the 200K hard limit with comfortable buffers.<br>
 **HITL Gates:** 3 mandatory checkpoints (Wave 1 Inventory review, Wave 1 Archive batch confirm, Wave 2 Extraction confirm)
 
 ---
@@ -90,26 +91,23 @@ LOCAL PRE-COMMIT (fast, staged-only)     CI PIPELINE (full-repo, blocking on PR)
 
 ## Wave Plan (High-Density Packing)
 
-### Wave 1: Foundational Hygiene & Infrastructure
-**Goal:** Clean up existing sprawl, inventory all files, restructure CI, and set enforcement boundaries.
-**Est. Tokens:** 146,315 (GREEN - within 150K threshold)
+### Wave 1: Inventory, Classification & Archive
+**Goal:** Clean up existing sprawl, inventory all files, and archive phase scripts.
+**Est. Tokens:** 80,285 (GREEN - well under 150K threshold)
 
-1. **Foundational Cleanup (P0 & P5):**
+1. **Token Optimization (P0):**
    - Run `python tools/evidence/_run_token_optimizer_plan.py` to verify packing.
-   - Optimize pre-commit config tokens (-33% target).
-   - Implement `ops_scripts/ci/check_script_sprawl.py` and root hygiene gates.
+   - Optimize pre-commit config tokens.
    
 2. **Inventory & Classification (P1):**
    - Generate JSON manifest for 644 files via `tools/adg/repo_hygiene_classifier.py`.
    - **HITL Gate:** Review classification before execution.
 
-3. **Restructure & Archive (P2 & P4):**
-   - Move ~90 files to `tools/archive/` batches.
+3. **Archive Phase Scripts (P2):**
+   - Move ~90 phase-named files to `tools/archive/` in batches.
    - **HITL Gate:** Batch confirm moves.
-   - Split T6/T7 into staged-only local + full-repo CI.
-   - Consolidate GitHub Actions (31 → 5 core workflows).
 
-### Wave 2: Complex Capability Extraction
+### Wave 2: Capability Extraction
 **Goal:** Promote reusable logic into proper modules.
 **Est. Tokens:** 112,401 (GREEN)
 
@@ -117,12 +115,23 @@ LOCAL PRE-COMMIT (fast, staged-only)     CI PIPELINE (full-repo, blocking on PR)
    - Promote 20 scripts into capability-named modules in `tools/adg/`.
    - **HITL Gate:** Confirm each extraction logic to prevent logic loss.
 
+### Wave 3: CI Integration & Enforcement
+**Goal:** Restructure pre-commit tiers and consolidate GitHub Actions.
+**Est. Tokens:** 86,030 (GREEN)
+
+1. **Pre-Commit Tiering (P4):**
+   - Split T6/T7 into staged-only local + full-repo CI.
+   - Consolidate GitHub Actions (31 → 5 core workflows).
+
+2. **Boundary Enforcement (P5):**
+   - Implement `ops_scripts/ci/check_script_sprawl.py` and root hygiene gates.
+
 ---
 
 ## Execution Order & HITL Gates
 
 ```
-Wave 1 (Foundational) ──→ HITL: Review Manifest & Archive Batches ──→ Wave 2 (Extraction) ──→ HITL: Confirm Extractions
+Wave 1 (Inventory & Archive) ──→ HITL: Review Manifest & Archive Batches ──→ Wave 2 (Extraction) ──→ HITL: Confirm Extractions ──→ Wave 3 (CI & Enforcement)
 ```
 
 Destructive actions (moves, deletions, promotions) require explicit HITL confirmation within each wave.
@@ -141,7 +150,7 @@ Destructive actions (moves, deletions, promotions) require explicit HITL confirm
 | Pre-commit config tokens | ~4.5KB | ~3KB (-33%) |
 | CI full-repo burndown enforcement | none | every push/PR to main |
 | New phase-named file prevention | none | script-sprawl guard blocks |
-| **Wave Packing Efficiency** | N/A | **Wave 1: 144K / Wave 2: 114K** |
+| **Wave Packing Efficiency** | N/A | **Wave 1: 80K / Wave 2: 112K / Wave 3: 86K** |
 
 ---
 
