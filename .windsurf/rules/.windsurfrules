@@ -686,7 +686,7 @@ Structural refactors FORBIDDEN while: active scoped failures > 0, UNRESOLVED fac
 
 ### 10.1 Required Plan Header Table
 
-Every plan MUST include a phases/waves table at the top with the following columns:
+Every plan MUST include a waves table at the top with the following columns:
 
 | Column | Requirement |
 |--------|-------------|
@@ -704,6 +704,12 @@ Every plan MUST include a phases/waves table at the top with the following colum
 |---|---|---|---|---|---|---|
 | **Wave 1** | P0, P1, P2 | Inventory & Archive | 80,285 | 644 files + 90 scripts | 🟢 GREEN | All files inventoried |
 ```
+
+**SSOT Terminology Requirement:**
+- **Waves** = Single source of truth term for execution grouping (Wave 1, Wave 2, etc.)
+- **P0, P1, P2...** = Component identifiers within waves
+- **Phases** = Only used when referring to historical "phase-named" problems
+- All plans MUST use consistent "Waves" terminology throughout
 
 ### 10.2 Token Estimation Workflow Requirement
 
@@ -726,11 +732,12 @@ python tools/adg/wave_packer.py
 ### 10.3 Plan Validation Checklist
 
 Before committing any plan document:
-- ✅ Phases/waves table present at top with all required columns
+- ✅ Waves table present at top with all required columns
 - ✅ Token estimator workflow executed with results included
 - ✅ All waves have GREEN status (YELLOW requires HITL approval, RED forbidden)
 - ✅ Success criteria are measurable and specific
 - ✅ Assumptions are clearly documented
+- ✅ Consistent "Waves" terminology used throughout (SSOT compliance)
 
 **Enforcement:** Plans missing required table or token estimation will be rejected during review.
 
