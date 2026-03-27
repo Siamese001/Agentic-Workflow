@@ -185,12 +185,12 @@ class TestPreWriteSkills:
             )
             assert result.returncode != 0, "Should reject invalid format"
 
-            # Test valid format
+            # Test valid format with proper justification
             result = subprocess.run(
                 [
                     "python",
                     str(main_script),
-                    "# guardian: allow-silent-swallower -- Specific justification for exception handling in test validation",
+                    "# guardian: allow-zero-assert -- Assert value returned with emitted signal for state change",
                     "test.py",
                 ],
                 capture_output=True,
