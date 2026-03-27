@@ -369,6 +369,84 @@ class ShadowDriftAnalyzer:
         # guardian: allow-silent-swallow
         except Exception:
             pass
+    
+    # Wave B-7: Infrastructure drift detection from cache coherence violations
+    def analyze_infrastructure_drift(
+        self,
+        coherence_violations: list[dict[str, Any]],
+        now_utc: int,
+    ) -> dict[str, Any]:
+        """Analyze infrastructure drift from cache coherence violations.
+        
+        Args:
+            coherence_violations: List of cache coherence violations
+            now_utc: Current timestamp
+            
+        Returns:
+            Infrastructure drift analysis
+        """
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_verifies_policy(str(_uuid.uuid4()), "Module.analyze_infrastructure_drift", "L4_STATE")
+        _emit_observes_runtime_state(str(_uuid.uuid4()), "Module.analyze_infrastructure_drift", "L4_STATE")
+        _emit_snapshots_state(str(_uuid.uuid4()), "Module.analyze_infrastructure_drift", "L4_STATE")
+        
+        if not coherence_violations:
+            return {
+                "drift_detected": False,
+                "violation_count": 0,
+                "timestamp_utc": now_utc,
+                "analysis": "No coherence violations detected",
+            }
+        
+        # Group violations by layer type
+        layer_violations = {}
+        for violation in coherence_violations:
+            layer = violation.get("layer_type", "unknown")
+            if layer not in layer_violations:
+                layer_violations[layer] = []
+            layer_violations[layer].append(violation)
+        
+        # Compute drift metrics
+        total_violations = len(coherence_violations)
+        layers_affected = len(layer_violations)
+        max_violations_layer = max(layer_violations.keys(), key=lambda k: len(layer_violations[k]))
+        max_violations_count = len(layer_violations[max_violations_layer])
+        
+        # Determine drift severity
+        drift_detected = total_violations > 5  # Threshold for infrastructure drift
+        severity = "high" if total_violations > 20 else "medium" if total_violations > 10 else "low"
+        
+        analysis = {
+            "drift_detected": drift_detected,
+            "severity": severity,
+            "violation_count": total_violations,
+            "layers_affected": layers_affected,
+            "most_affected_layer": max_violations_layer,
+            "max_layer_violations": max_violations_count,
+            "layer_breakdown": {layer: len(violations) for layer, violations in layer_violations.items()},
+            "timestamp_utc": now_utc,
+            "trace_id": _trace_id,
+        }
+        
+        # Persist infrastructure drift analysis
+        try:
+            from system_learning.adapters.system_learning_memory_bridge import get_sl_memory_bridge
+            bridge = get_sl_memory_bridge()
+            
+            bridge.persist_infrastructure_drift_analysis(
+                drift_detected=drift_detected,
+                severity=severity,
+                violation_count=total_violations,
+                layers_affected=layers_affected,
+                analysis_json=json.dumps(analysis, sort_keys=True),
+                timestamp_utc=now_utc,
+            )
+        except Exception:
+            # Bridge unavailable - continue without it
+            pass
+        
+        return analysis
 
     def _compute_percentile(self, values: list[float], percentile: float) -> float:
         """Compute percentile with deterministic method."""

@@ -1622,6 +1622,194 @@ class SystemLearningMemoryBridge:
         # Placeholder for future query implementation
         return []
 
+    def persist_cache_coherence_violation(
+        self,
+        layer_type: str,
+        violation_type: str,
+        error_message: str,
+        affected_keys: list[str],
+        timestamp_utc: int,
+    ) -> bool:
+        """Persist cache coherence violations for drift detection.
+        
+        Args:
+            layer_type: Type of layer where violation occurred
+            violation_type: Type of violation
+            error_message: Error message
+            affected_keys: List of affected cache keys
+            timestamp_utc: Timestamp in milliseconds
+            
+        Returns:
+            True if persisted, False on failure
+        """
+        if not self._bridge:
+            return False
+        
+        try:
+            entity_name = f"CacheCoherenceViolation_{layer_type}_{int(timestamp_utc)}"
+            observations = [
+                f"ts={timestamp_utc}",
+                f"layer_type={layer_type}",
+                f"violation_type={violation_type}",
+                f"error_message={error_message[:100]}...",  # Truncate
+                f"affected_keys_count={len(affected_keys)}",
+            ]
+            
+            # Add first few keys as evidence
+            for i, key in enumerate(affected_keys[:3]):
+                observations.append(f"key_{i}={key[:50]}...")
+            
+            self._bridge.create_agent_entity(
+                agent_name=entity_name,
+                agent_type=self.ENTITY_TYPE_TELEMETRY_EVENT,
+                observations=observations,
+            )
+            return True
+        except Exception as e:
+            logger.debug("[SLMemoryBridge] persist_cache_coherence_violation failed: %s", e)
+            return False
+
+    def persist_infrastructure_drift_analysis(
+        self,
+        drift_detected: bool,
+        severity: str,
+        violation_count: int,
+        layers_affected: int,
+        analysis_json: str,
+        timestamp_utc: int,
+    ) -> bool:
+        """Persist infrastructure drift analysis.
+        
+        Args:
+            drift_detected: Whether drift was detected
+            severity: Drift severity level
+            violation_count: Number of violations
+            layers_affected: Number of layers affected
+            analysis_json: Full analysis JSON
+            timestamp_utc: Timestamp in milliseconds
+            
+        Returns:
+            True if persisted, False on failure
+        """
+        if not self._bridge:
+            return False
+        
+        try:
+            entity_name = f"InfrastructureDriftAnalysis_{int(timestamp_utc)}"
+            observations = [
+                f"ts={timestamp_utc}",
+                f"drift_detected={drift_detected}",
+                f"severity={severity}",
+                f"violation_count={violation_count}",
+                f"layers_affected={layers_affected}",
+                f"analysis={analysis_json[:500]}...",  # Truncate
+            ]
+            
+            self._bridge.create_agent_entity(
+                agent_name=entity_name,
+                agent_type=self.ENTITY_TYPE_TELEMETRY_EVENT,
+                observations=observations,
+            )
+            return True
+        except Exception as e:
+            logger.debug("[SLMemoryBridge] persist_infrastructure_drift_analysis failed: %s", e)
+            return False
+
+    def persist_cross_domain_healing_event(
+        self,
+        orchestrator_class: str,
+        cycle_index: int,
+        total_violations: int,
+        fixed_violations: int,
+        error_violations: int,
+        success_rate: float,
+        timestamp_utc: int,
+        domain: str,
+    ) -> bool:
+        """Persist cross-domain healing events for pattern sharing.
+        
+        Args:
+            orchestrator_class: Class name of the orchestrator
+            cycle_index: Cycle index number
+            total_violations: Total violations processed
+            fixed_violations: Number of violations fixed
+            error_violations: Number of errors
+            success_rate: Success rate (0.0-1.0)
+            timestamp_utc: Timestamp in milliseconds
+            domain: Domain identifier
+            
+        Returns:
+            True if persisted, False on failure
+        """
+        if not self._bridge:
+            return False
+        
+        try:
+            entity_name = f"CrossDomainHealingEvent_{domain}_{orchestrator_class}_{int(timestamp_utc)}"
+            observations = [
+                f"ts={timestamp_utc}",
+                f"orchestrator_class={orchestrator_class}",
+                f"cycle_index={cycle_index}",
+                f"total_violations={total_violations}",
+                f"fixed_violations={fixed_violations}",
+                f"error_violations={error_violations}",
+                f"success_rate={success_rate:.3f}",
+                f"domain={domain}",
+            ]
+            
+            self._bridge.create_agent_entity(
+                agent_name=entity_name,
+                agent_type=self.ENTITY_TYPE_TELEMETRY_EVENT,
+                observations=observations,
+            )
+            return True
+        except Exception as e:
+            logger.debug("[SLMemoryBridge] persist_cross_domain_healing_event failed: %s", e)
+            return False
+
+    def persist_cross_domain_pattern_analysis(
+        self,
+        patterns_detected: bool,
+        domains_count: int,
+        correlations_count: int,
+        analysis_json: str,
+        timestamp_utc: int,
+    ) -> bool:
+        """Persist cross-domain pattern analysis.
+        
+        Args:
+            patterns_detected: Whether patterns were detected
+            domains_count: Number of domains analyzed
+            correlations_count: Number of correlations found
+            analysis_json: Full analysis JSON
+            timestamp_utc: Timestamp in milliseconds
+            
+        Returns:
+            True if persisted, False on failure
+        """
+        if not self._bridge:
+            return False
+        
+        try:
+            entity_name = f"CrossDomainPatternAnalysis_{int(timestamp_utc)}"
+            observations = [
+                f"ts={timestamp_utc}",
+                f"patterns_detected={patterns_detected}",
+                f"domains_count={domains_count}",
+                f"correlations_count={correlations_count}",
+                f"analysis={analysis_json[:500]}...",  # Truncate
+            ]
+            
+            self._bridge.create_agent_entity(
+                agent_name=entity_name,
+                agent_type=self.ENTITY_TYPE_TELEMETRY_EVENT,
+                observations=observations,
+            )
+            return True
+        except Exception as e:
+            logger.debug("[SLMemoryBridge] persist_cross_domain_pattern_analysis failed: %s", e)
+            return False
+
 
 def get_sl_memory_bridge() -> SystemLearningMemoryBridge:
     """Return the process-global SystemLearningMemoryBridge instance."""

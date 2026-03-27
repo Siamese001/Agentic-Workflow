@@ -13,6 +13,7 @@ from __future__ import annotations
 import hashlib
 import json
 import logging
+import time
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
@@ -345,6 +346,26 @@ class BaseHealingOrchestrator(SovereignBaseAgent):
                 bridge.create_relation(
                     from_entity=self.__class__.__name__, to_entity="HealingCycle", relation_type="HEALED"
                 )
+            
+            # Wave C-1: Emit cross-domain healing events for pattern sharing
+            try:
+                from system_learning.adapters.system_learning_memory_bridge import get_sl_memory_bridge
+                sl_bridge = get_sl_memory_bridge()
+                
+                # Emit cross-domain healing event
+                sl_bridge.persist_cross_domain_healing_event(
+                    orchestrator_class=self.__class__.__name__,
+                    cycle_index=cycle_idx,
+                    total_violations=total,
+                    fixed_violations=fixed,
+                    error_violations=errors,
+                    success_rate=fixed / total if total > 0 else 0.0,
+                    timestamp_utc=int(time.time() * 1000),
+                    domain="apps_shared",  # Cross-domain identifier
+                )
+            except Exception:
+                # System learning bridge unavailable - continue without it
+                pass
         # guardian: allow-silent-swallow
         except Exception as e:
             Logger.debug(f"[{self.__class__.__name__}] KG healing cycle persistence skipped: {e}")
