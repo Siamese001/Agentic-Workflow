@@ -680,6 +680,62 @@ Structural refactors FORBIDDEN while: active scoped failures > 0, UNRESOLVED fac
 
 ---
 
+## §10. PLAN DOCUMENTATION STANDARDS
+
+**ENFORCEMENT:** All plan documents in `docs/reports/plans/` MUST follow this structure.
+
+### 10.1 Required Plan Header Table
+
+Every plan MUST include a phases/waves table at the top with the following columns:
+
+| Column | Requirement |
+|--------|-------------|
+| **Wave** | Sequential wave number (1, 2, 3...) |
+| **Phase IDs** | Comma-separated phase identifiers (P0, P1, P2...) |
+| **Focus** | Brief description of wave's primary objective |
+| **Est. Tokens** | Token estimate from ContextWindowEstimator |
+| **Assumptions** | Key assumptions driving the estimate |
+| **Status** | 🟢 GREEN (≤150K), 🟡 YELLOW (150-175K), 🔴 RED (>175K) |
+| **Success Criteria** | Measurable outcomes for the wave |
+
+**Table Format Example:**
+```markdown
+| Wave | Phase IDs | Focus | Est. Tokens | Assumptions | Status | Success Criteria |
+|---|---|---|---|---|---|---|
+| **Wave 1** | P0, P1, P2 | Inventory & Archive | 80,285 | 644 files + 90 scripts | 🟢 GREEN | All files inventoried |
+```
+
+### 10.2 Token Estimation Workflow Requirement
+
+**MANDATORY WORKFLOW:** Every plan MUST run the token estimator workflow before finalization:
+
+```bash
+# Run token optimization analysis
+python tools/evidence/_run_token_optimizer_plan.py
+
+# Run wave packing optimization  
+python tools/adg/wave_packer.py
+```
+
+**Requirements:**
+- Token estimates MUST use `ContextWindowEstimator` with conservative 1.1× bias
+- Each wave MUST target 150-160K tokens maximum
+- Total tokens per wave MUST include: input + 12K output + 8K safety buffer
+- Status colors MUST reflect: GREEN (≤150K), YELLOW (150-175K), RED (>175K)
+
+### 10.3 Plan Validation Checklist
+
+Before committing any plan document:
+- ✅ Phases/waves table present at top with all required columns
+- ✅ Token estimator workflow executed with results included
+- ✅ All waves have GREEN status (YELLOW requires HITL approval, RED forbidden)
+- ✅ Success criteria are measurable and specific
+- ✅ Assumptions are clearly documented
+
+**Enforcement:** Plans missing required table or token estimation will be rejected during review.
+
+---
+
 ## Constitutional Rules
 
-### 10. **ZERO-LOSS REFACTOR DISCIPLINE.** When removing `_emit_*` boilerplate, trace instrumentation, or synthetic scaffolding from a file, the resulting file MUST be checked by the hollow file detector. If the file has zero behavioral FunctionDefs/ClassDefs after the removal, the file MUST be deleted entirely — not left as an empty shell. Gate: `ops_scripts/ci/zero_loss_refactor_verifier.py`. Pre-commit hook: T25 hollow-file-gate.
+### 11. **ZERO-LOSS REFACTOR DISCIPLINE.** When removing `_emit_*` boilerplate, trace instrumentation, or synthetic scaffolding from a file, the resulting file MUST be checked by the hollow file detector. If the file has zero behavioral FunctionDefs/ClassDefs after the removal, the file MUST be deleted entirely — not left as an empty shell. Gate: `ops_scripts/ci/zero_loss_refactor_verifier.py`. Pre-commit hook: T25 hollow-file-gate.
