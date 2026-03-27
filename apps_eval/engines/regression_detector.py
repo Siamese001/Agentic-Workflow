@@ -12,6 +12,7 @@ from __future__ import annotations
 
 import json
 import logging
+import time
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
@@ -271,6 +272,9 @@ class RegressionDetector:
         if auto_update:
             self._write_baseline(scorecard_rows, trace_id)
 
+        # Emit regression results to system learning for drift detection
+        self._emit_regression_results(result, trace_id)
+
         return result
 
     def _load_baseline(self) -> dict[str, float] | None:
@@ -294,3 +298,33 @@ class RegressionDetector:
         }
         baseline_path.write_text(json.dumps(data, indent=2, sort_keys=True), encoding="utf-8")
         _log.info("[RegressionDetector] Updated baseline at %s", baseline_path)
+
+    def _emit_regression_results(self, result: RegressionResult, trace_id: str) -> None:
+        """Emit regression results to system learning for drift detection."""
+        try:
+            from system_learning.adapters.system_learning_memory_bridge import get_sl_memory_bridge
+            bridge = get_sl_memory_bridge()
+            
+            # Calculate regression metrics
+            total_records = len(result.records)
+            regression_count = result.regression_count
+            regression_rate = regression_count / total_records if total_records > 0 else 0.0
+            
+            # Count verdicts
+            verdict_counts = {}
+            for record in result.records:
+                verdict = record.verdict.name if hasattr(record.verdict, 'name') else str(record.verdict)
+                verdict_counts[verdict] = verdict_counts.get(verdict, 0) + 1
+            
+            bridge.persist_eval_regression_results(
+                trace_id=trace_id,
+                total_records=total_records,
+                regression_count=regression_count,
+                regression_rate=regression_rate,
+                verdict_counts=verdict_counts,
+                baseline_loaded=result.baseline_loaded,
+                timestamp_utc=int(time.time() * 1000),
+            )
+        except Exception:
+            # System learning unavailable - continue without emission
+            pass

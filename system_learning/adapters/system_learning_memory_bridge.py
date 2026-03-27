@@ -1050,6 +1050,306 @@ class SystemLearningMemoryBridge:
             logger.debug("[SLMemoryBridge] persist_adg_confidence_summary failed: %s", e)
             return False
 
+    def persist_injection_detection_counts(
+        self,
+        total_scans: int,
+        detection_counts: dict[str, int],
+        timestamp_utc: int,
+    ) -> bool:
+        """Persist injection detection counts for security pattern analysis.
+        
+        Args:
+            total_scans: Total number of scans performed
+            detection_counts: Dictionary of signature_id -> count
+            timestamp_utc: Timestamp in milliseconds
+            
+        Returns:
+            True if persisted, False on failure
+        """
+        if not self._bridge:
+            return False
+        
+        try:
+            entity_name = f"InjectionDetectionCounts_{int(timestamp_utc)}"
+            observations = [
+                f"ts={timestamp_utc}",
+                f"total_scans={total_scans}",
+                f"total_detections={sum(detection_counts.values())}",
+            ]
+            
+            # Add top 10 most frequent signatures
+            sorted_sigs = sorted(detection_counts.items(), key=lambda x: x[1], reverse=True)[:10]
+            for sig_id, count in sorted_sigs:
+                observations.append(f"sig_{sig_id}={count}")
+            
+            self._bridge.create_agent_entity(
+                agent_name=entity_name,
+                agent_type=self.ENTITY_TYPE_TELEMETRY_EVENT,
+                observations=observations,
+            )
+            return True
+        except Exception as e:
+            logger.debug("[SLMemoryBridge] persist_injection_detection_counts failed: %s", e)
+            return False
+
+    def persist_healing_tier_outcome(
+        self,
+        tier: str,
+        failure_type: str,
+        module_name: str,
+        success: bool,
+        duration_ms: int,
+        timestamp_utc: int,
+        agent_name: str,
+        trace_id: str,
+    ) -> bool:
+        """Persist healing tier dispatch outcome for effectiveness analysis.
+        
+        Args:
+            tier: Healing tier dispatched (LOCAL_AGENT, QWEN_VLLM, GEMINI_2_5_PRO)
+            failure_type: Type of failure encountered
+            module_name: Module being healed
+            success: Whether healing was successful
+            duration_ms: Duration of healing attempt in milliseconds
+            timestamp_utc: Timestamp in milliseconds
+            agent_name: Name of the healing agent
+            trace_id: Trace ID for correlation
+            
+        Returns:
+            True if persisted, False on failure
+        """
+        if not self._bridge:
+            return False
+        
+        try:
+            entity_name = f"HealingTierOutcome_{tier}_{int(timestamp_utc)}"
+            observations = [
+                f"ts={timestamp_utc}",
+                f"tier={tier}",
+                f"failure_type={failure_type}",
+                f"module={module_name}",
+                f"success={success}",
+                f"duration_ms={duration_ms}",
+                f"agent={agent_name}",
+                f"trace_id={trace_id}",
+            ]
+            
+            self._bridge.create_agent_entity(
+                agent_name=entity_name,
+                agent_type=self.ENTITY_TYPE_TELEMETRY_EVENT,
+                observations=observations,
+            )
+            return True
+        except Exception as e:
+            logger.debug("[SLMemoryBridge] persist_healing_tier_outcome failed: %s", e)
+            return False
+
+    def persist_workflow_outcome(
+        self,
+        bundle_id: str,
+        trace_id: str,
+        workflow_type: str,
+        success: bool,
+        elapsed_ms: float,
+        agent_sequence: list[str],
+        quality_score: float,
+        outcome_hash: str,
+        timestamp_utc: int,
+    ) -> bool:
+        """Persist workflow outcome for meta-learning analysis.
+        
+        Args:
+            bundle_id: Workflow bundle identifier
+            trace_id: Trace ID for correlation
+            workflow_type: Type of workflow executed
+            success: Whether workflow succeeded
+            elapsed_ms: Execution duration in milliseconds
+            agent_sequence: Sequence of agents executed
+            quality_score: Quality assessment score
+            outcome_hash: Deterministic outcome hash
+            timestamp_utc: Timestamp in milliseconds
+            
+        Returns:
+            True if persisted, False on failure
+        """
+        if not self._bridge:
+            return False
+        
+        try:
+            entity_name = f"WorkflowOutcome_{workflow_type}_{int(timestamp_utc)}"
+            observations = [
+                f"ts={timestamp_utc}",
+                f"bundle_id={bundle_id}",
+                f"trace_id={trace_id}",
+                f"workflow_type={workflow_type}",
+                f"success={success}",
+                f"elapsed_ms={elapsed_ms}",
+                f"quality_score={quality_score}",
+                f"outcome_hash={outcome_hash}",
+                f"agent_count={len(agent_sequence)}",
+            ]
+            
+            # Add agent sequence (up to 10 agents)
+            for i, agent in enumerate(agent_sequence[:10]):
+                observations.append(f"agent_{i}={agent}")
+            
+            self._bridge.create_agent_entity(
+                agent_name=entity_name,
+                agent_type=self.ENTITY_TYPE_TELEMETRY_EVENT,
+                observations=observations,
+            )
+            return True
+        except Exception as e:
+            logger.debug("[SLMemoryBridge] persist_workflow_outcome failed: %s", e)
+            return False
+
+    def persist_eval_regression_results(
+        self,
+        trace_id: str,
+        total_records: int,
+        regression_count: int,
+        regression_rate: float,
+        verdict_counts: dict[str, int],
+        baseline_loaded: bool,
+        timestamp_utc: int,
+    ) -> bool:
+        """Persist evaluation regression results for drift detection.
+        
+        Args:
+            trace_id: Evaluation trace ID
+            total_records: Total number of evaluation records
+            regression_count: Number of regression records
+            regression_rate: Regression rate (0-1)
+            verdict_counts: Dictionary of verdict type -> count
+            baseline_loaded: Whether baseline was available
+            timestamp_utc: Timestamp in milliseconds
+            
+        Returns:
+            True if persisted, False on failure
+        """
+        if not self._bridge:
+            return False
+        
+        try:
+            entity_name = f"EvalRegressionResults_{int(timestamp_utc)}"
+            observations = [
+                f"ts={timestamp_utc}",
+                f"trace_id={trace_id}",
+                f"total_records={total_records}",
+                f"regression_count={regression_count}",
+                f"regression_rate={regression_rate}",
+                f"baseline_loaded={baseline_loaded}",
+            ]
+            
+            # Add verdict counts
+            for verdict, count in verdict_counts.items():
+                observations.append(f"verdict_{verdict}={count}")
+            
+            self._bridge.create_agent_entity(
+                agent_name=entity_name,
+                agent_type=self.ENTITY_TYPE_TELEMETRY_EVENT,
+                observations=observations,
+            )
+            return True
+        except Exception as e:
+            logger.debug("[SLMemoryBridge] persist_eval_regression_results failed: %s", e)
+            return False
+
+    def persist_cognitive_dispositions(
+        self,
+        dispositions_json: str,
+        timestamp_utc: int,
+        trace_id: str,
+    ) -> bool:
+        """Persist cognitive dispositions for RCA enrichment.
+        
+        Args:
+            dispositions_json: JSON-serialized cognitive disposition data
+            timestamp_utc: Timestamp in milliseconds
+            trace_id: Trace ID for correlation
+            
+        Returns:
+            True if persisted, False on failure
+        """
+        if not self._bridge:
+            return False
+        
+        try:
+            entity_name = f"CognitiveDispositions_{int(timestamp_utc)}"
+            observations = [
+                f"ts={timestamp_utc}",
+                f"trace_id={trace_id}",
+                f"dispositions_json={dispositions_json[:500]}...",  # Truncate for storage
+            ]
+            
+            self._bridge.create_agent_entity(
+                agent_name=entity_name,
+                agent_type=self.ENTITY_TYPE_TELEMETRY_EVENT,
+                observations=observations,
+            )
+            return True
+        except Exception as e:
+            logger.debug("[SLMemoryBridge] persist_cognitive_dispositions failed: %s", e)
+            return False
+
+    def persist_safety_audit_record(
+        self,
+        audit_id: str,
+        run_id: str,
+        trace_id: str,
+        decision_type: str,
+        decision_outcome: str,
+        policy_hash: str,
+        actor_id: str,
+        action_class: str,
+        reason: str,
+        timestamp_utc: int,
+    ) -> bool:
+        """Persist safety audit record for RCA clustering.
+        
+        Args:
+            audit_id: Unique audit identifier
+            run_id: Run identifier
+            trace_id: Trace ID for correlation
+            decision_type: Type of decision made
+            decision_outcome: Outcome of the decision
+            policy_hash: Hash of the policy applied
+            actor_id: ID of the actor making the decision
+            action_class: Class of action taken
+            reason: Reason for the decision
+            timestamp_utc: Timestamp in milliseconds
+            
+        Returns:
+            True if persisted, False on failure
+        """
+        if not self._bridge:
+            return False
+        
+        try:
+            entity_name = f"SafetyAudit_{audit_id}"
+            observations = [
+                f"ts={timestamp_utc}",
+                f"audit_id={audit_id}",
+                f"run_id={run_id}",
+                f"trace_id={trace_id}",
+                f"decision_type={decision_type}",
+                f"decision_outcome={decision_outcome}",
+                f"policy_hash={policy_hash}",
+                f"actor_id={actor_id}",
+                f"action_class={action_class}",
+                f"reason={reason[:200]}...",  # Truncate for storage
+            ]
+            
+            self._bridge.create_agent_entity(
+                agent_name=entity_name,
+                agent_type=self.ENTITY_TYPE_TELEMETRY_EVENT,
+                observations=observations,
+            )
+            return True
+        except Exception as e:
+            logger.debug("[SLMemoryBridge] persist_safety_audit_record failed: %s", e)
+            return False
+
 
 def get_sl_memory_bridge() -> SystemLearningMemoryBridge:
     """Return the process-global SystemLearningMemoryBridge instance."""

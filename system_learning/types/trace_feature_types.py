@@ -406,6 +406,8 @@ class TraceFeatureRecord:
     adg_relation_ids: tuple[str, ...]
     feature_bundle_hash: str
     timestamp_utc: int
+    safety_audit_count: int = 0  # Count of safety audit records for this trace
+    safety_audit_outcomes: tuple[str, ...] = ()  # Safety audit outcomes observed
 
     def __post_init__(self) -> None:
         if not self.trace_id:
@@ -430,6 +432,8 @@ class TraceFeatureRecord:
             "retrieval_groundedness": round(self.retrieval_groundedness, 6),
             "retrieval_pattern": self.retrieval_pattern,
             "route": self.route,
+            "safety_audit_count": self.safety_audit_count,
+            "safety_audit_outcomes": list(self.safety_audit_outcomes),
             "timestamp_utc": self.timestamp_utc,
             "trace_id": self.trace_id,
         }

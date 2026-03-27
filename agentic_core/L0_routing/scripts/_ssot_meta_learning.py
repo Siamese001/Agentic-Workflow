@@ -340,7 +340,26 @@ def _fire_meta_learning_intake(state_mgr: "object", now_utc: int, repo_root: Pat
         except (ImportError, AttributeError, KeyError) as _sr_err:
             logging.warning("[MetaLearning] Wave1 success_rate_store failed (non-fatal): %s", _sr_err)
         
-        # Wave A-4: Emit ADG behavioral score for routing confidence
+        # Wave A-4: Emit cognitive dispositions for RCA enrichment
+        cognitive_dispositions = state_mgr.state.get("cognitive_dispositions", [])
+        if cognitive_dispositions:
+            try:
+                from system_learning.adapters.system_learning_memory_bridge import get_sl_memory_bridge
+                bridge = get_sl_memory_bridge()
+                
+                # Serialize cognitive dispositions as JSON for RCA analysis
+                import json as _cog_json
+                cog_json = _cog_json.dumps(cognitive_dispositions)
+                
+                bridge.persist_cognitive_dispositions(
+                    dispositions_json=cog_json,
+                    timestamp_utc=now_utc,
+                    trace_id=_tid,
+                )
+            except Exception as e:
+                logging.debug("[MetaLearning] Cognitive disposition persistence failed (non-fatal): %s", e)
+        
+        # Emit ADG behavioral score for routing confidence monitor
         try:
             _adg_territory_score = state_mgr.state.get("adg_territory_score", 0.0)
             _sr_store = _get_sr_store()

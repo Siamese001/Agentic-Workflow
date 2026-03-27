@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import logging
 import re
+import time
 from typing import Any
 
 from agentic_core.prompt_governance.security.utils.normalization_util import normalize_and_decode
@@ -280,6 +281,10 @@ class InjectionDetector:
 
     BLOCKLIST = BLOCKLIST
 
+    def __init__(self) -> None:
+        self._detection_counts: dict[str, int] = {}
+        self._total_scans = 0
+
     def scan(self, text: str) -> bool:
         """
         Checks for injection patterns.
@@ -294,13 +299,19 @@ class InjectionDetector:
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "InjectionDetector.scan")
 
+        self._total_scans += 1
+        
         if not text:
             return True
+        
         original_lower = text.lower()
         self._check_signatures(original_lower)
         normalized_text, meta = normalize_and_decode(text)
         if normalized_text != original_lower:
             self._check_signatures(normalized_text)
+        
+        # Emit detection counts to system learning
+        self._emit_detection_counts()
         return True
 
     def _check_signatures(self, text: str) -> None:
@@ -310,6 +321,7 @@ class InjectionDetector:
         """
         for sig_id, phrase in INJECTION_SIGNATURES_V2:
             if phrase in text:
+                self._detection_counts[sig_id] = self._detection_counts.get(sig_id, 0) + 1
                 Logger.warning("Injection signature matched: sig_id=%s", sig_id)
                 raise SecurityViolationError(
                     message=f"Detected potential prompt injection (sig_id='{sig_id}')",
@@ -317,11 +329,34 @@ class InjectionDetector:
                 )
         for sig_id, pattern in _REGEX_SIGNATURES:
             if pattern.search(text):
+                self._detection_counts[sig_id] = self._detection_counts.get(sig_id, 0) + 1
                 Logger.warning("Injection regex matched: sig_id=%s", sig_id)
                 raise SecurityViolationError(
                     message=f"Detected potential prompt injection (sig_id='{sig_id}')",
                     violation_type="PROMPT_INJECTION",
                 )
+
+    def _emit_detection_counts(self) -> None:
+        """Emit injection detection counts to system learning."""
+        try:
+            from system_learning.adapters.system_learning_memory_bridge import get_sl_memory_bridge
+            bridge = get_sl_memory_bridge()
+            
+            # Create a summary of detection counts
+            total_detections = sum(self._detection_counts.values())
+            if total_detections > 0:
+                bridge.persist_injection_detection_counts(
+                    total_scans=self._total_scans,
+                    detection_counts=self._detection_counts.copy(),
+                    timestamp_utc=int(time.time() * 1000),
+                )
+        except Exception:
+            # System learning unavailable - continue without emission
+            pass
+
+    def get_detection_counts(self) -> dict[str, int]:
+        """Get current detection counts (for testing/monitoring)."""
+        return self._detection_counts.copy()
 
     def check_regression_compliance(
         self,

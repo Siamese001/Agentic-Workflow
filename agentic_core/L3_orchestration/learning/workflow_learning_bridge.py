@@ -298,9 +298,30 @@ def reset_workflow_learning_bridge() -> None:
     _global_bridge = None
 
 
+def ensure_sl_adapter_registered() -> None:
+    """Ensure the System Learning adapter is registered with the bridge.
+    
+    This is a convenience function to auto-register the SL adapter
+    when the bridge is first used.
+    """
+    bridge = get_workflow_learning_bridge()
+    
+    # Check if already registered
+    if "system_learning" in bridge._learners:
+        return
+    
+    try:
+        from system_learning.adapters.workflow_outcome_sl_adapter import register_with_workflow_bridge
+        register_with_workflow_bridge()
+    except ImportError:
+        # System learning unavailable - continue without registration
+        pass
+
+
 __all__ = [
     "WorkflowOutcome",
     "WorkflowLearningBridge",
     "get_workflow_learning_bridge",
     "reset_workflow_learning_bridge",
+    "ensure_sl_adapter_registered",
 ]

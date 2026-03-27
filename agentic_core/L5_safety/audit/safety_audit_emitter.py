@@ -385,6 +385,27 @@ def emit_safety_audit_record(
 
     _registry.persist_audit(audit)
 
+    # Emit safety audit to system learning for RCA clustering
+    try:
+        from system_learning.adapters.system_learning_memory_bridge import get_sl_memory_bridge
+        bridge = get_sl_memory_bridge()
+        
+        bridge.persist_safety_audit_record(
+            audit_id=audit.audit_id,
+            run_id=audit.run_id,
+            trace_id=audit.trace_id,
+            decision_type=audit.decision_type,
+            decision_outcome=audit.decision_outcome,
+            policy_hash=audit.policy_hash,
+            actor_id=audit.actor_id,
+            action_class=audit.action_class,
+            reason=audit.reason,
+            timestamp_utc=int(audit.timestamp_utc * 1000) if hasattr(audit, 'timestamp_utc') else 0,
+        )
+    except Exception:
+        # System learning unavailable - continue without emission
+        pass
+
     # Explicit ADG edge emission for static scanner detection
     def safety_audit_emitted(
         audit_id: str,

@@ -239,16 +239,16 @@ def _derive_failure_pattern(record: TraceFeatureRecord) -> str:
         return "REPLAY_FAILURE"
     if oc == "ROLLBACK":
         return "ROLLBACK"
-    if record.healer_used is not None:
-        return "HEALER_REQUIRED"
-    if record.hitl_escalation:
-        return "HITL_ESCALATION"
-    if record.retrieval_groundedness < 0.5:
-        return "LOW_GROUNDEDNESS"
-    if record.guardrail_edges:
-        return "GUARDRAIL_BLOCK"
     if record.policy_edges and oc not in ("SUCCESS", "HEALED_SUCCESS"):
         return "POLICY_VIOLATION"
+    if record.safety_audit_count > 0:
+        # Factor safety audit into failure pattern
+        if "REJECT" in record.safety_audit_outcomes:
+            return "SAFETY_REJECTION"
+        elif "ESCALATE" in record.safety_audit_outcomes:
+            return "SAFETY_ESCALATION"
+        else:
+            return "SAFETY_AUDIT"
     if oc == "SAFE_FAILURE":
         return "SAFE_FAILURE"
     if oc in ("SUCCESS", "HEALED_SUCCESS", "HUMAN_OVERRIDE"):
