@@ -15,24 +15,31 @@ from pathlib import Path
 
 def check_auto_stage_hook_present(config):
     """Ensure auto-stage-hook-fixes is present and last in T0."""
-    t0_hooks = []
     auto_stage_found = False
     auto_stage_position = -1
+    all_t0_hooks = []
     
+    # Find all T0 hooks in order
     for repo in config.get('repos', []):
-        if 'https://github.com/pre-commit/pre-commit-hooks' in str(repo.get('rev', '')):
-            for hook in repo.get('hooks', []):
-                if hook.get('id') == 'auto-stage-hook-fixes':
+        hooks = repo.get('hooks', [])
+        for i, hook in enumerate(hooks):
+            hook_id = hook.get('id')
+            # Add all T0 hooks in order
+            if hook_id in ['trailing-whitespace', 'end-of-file-fixer', 'mixed-line-ending', 'check-merge-conflict', 'auto-stage-hook-fixes']:
+                all_t0_hooks.append(hook_id)
+                if hook_id == 'auto-stage-hook-fixes':
                     auto_stage_found = True
-                    auto_stage_position = len(t0_hooks)
-                t0_hooks.append(hook['id'])
+                    auto_stage_position = len(all_t0_hooks) - 1
     
     if not auto_stage_found:
         print("❌ Missing auto-stage-hook-fixes hook")
         return False
     
-    if auto_stage_position != len(t0_hooks) - 1:
-        print(f"❌ auto-stage-hook-fixes is not last in T0 (position {auto_stage_position} of {len(t0_hooks)})")
+    # Should be the last in the list
+    if auto_stage_position != len(all_t0_hooks) - 1:
+        print(f"❌ auto-stage-hook-fixes is not last in T0")
+        print(f"   Expected position: {len(all_t0_hooks) - 1}, got: {auto_stage_position}")
+        print(f"   T0 hooks found: {all_t0_hooks}")
         return False
     
     print("✅ auto-stage-hook-fixes is properly positioned")
@@ -75,7 +82,7 @@ def check_exclude_patterns(config):
     global_exclude = config.get('exclude', '')
     
     # Should exclude .md files from formatting hooks
-    if '.*\.md$' not in global_exclude:
+    if r'.*\.md$' not in global_exclude:
         print("⚠️  Consider excluding .md files from formatting hooks")
     
     print("✅ Exclude patterns look reasonable")
