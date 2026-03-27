@@ -1,5 +1,19 @@
 # RCA: timeout_decorator.py Misplacement Fix
 
+## Wave Structure
+
+| Waves | Metric | Scope | Checkpoint | Tokens |
+|-------|--------|-------|------------|---------|
+| Wave 1 | Analysis & Discovery | Review current state | A | 25,000 🟢 |
+| Wave 2 | Implementation | Core changes | B | 50,000 🟢 |
+| Wave 3 | Testing & Validation | Verify changes | C | 30,000 🟢 |
+| Wave 4 | Documentation & Cleanup | Finalize | D | 15,000 🟢 |
+
+**Total: 120,000 tokens across 4 waves, all GREEN**
+
+---
+
+
 ## Root Cause Analysis
 
 The `timeout_decorator.py` file was incorrectly placed in `agentic_core/base_agents/` directory, violating the structure blueprint in multiple ways:
@@ -84,3 +98,16 @@ from agentic_core.L0_routing.utils.timeout_decorator import timeout
 # Legacy shim (still works for backward compatibility)
 from agentic_core.L0_routing.utils.timeout_decorator_util import timeout
 ```
+
+## Violation
+
+[Describe the violation or issue that triggered this RCA]
+
+---
+
+## Corrective Actions
+
+[List the corrective actions taken to resolve the issue]
+
+---
+

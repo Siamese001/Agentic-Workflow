@@ -210,3 +210,22 @@ tests/agentic_core/test_phase5_timeshift_escalation_routing.py::TestStaticAuditN
 | **Static audit: no hardcoded float literals in router Compare nodes** | test_no_hardcoded_severity_threshold_in_router_module | PASS |
 | **Static audit: router references escalation_severity_threshold from config** | test_router_references_routing_config_threshold | PASS |
 | **Total: 61 tests, 0 failures** | all three test files | PASS |
+
+## Rules
+
+1. Follow all constitutional rules and guidelines
+2. Maintain compliance with established standards
+3. Document all changes and decisions
+4. Validate all implementations before completion
+
+---
+
+## Success Criteria
+
+- [ ] All objectives completed successfully
+- [ ] Validation tests pass
+- [ ] Documentation updated
+- [ ] Stakeholder approval received
+
+---
+

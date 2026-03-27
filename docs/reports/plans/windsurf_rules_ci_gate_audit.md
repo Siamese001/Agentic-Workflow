@@ -296,3 +296,16 @@ T5: purge-cache
 **Gap**: 10 critical rules lack automated enforcement
 
 **Next Steps**: Implement Priority 1 gates to close critical gaps and achieve full constitutional rule enforcement.
+
+## Findings
+
+[Document key findings from the investigation]
+
+---
+
+## Evidence
+
+[Provide evidence supporting the findings]
+
+---
+

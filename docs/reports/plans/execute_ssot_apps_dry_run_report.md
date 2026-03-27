@@ -1,5 +1,19 @@
 # Legacy SSOT Dry-Run Report for Apps_* Folders
 
+## Wave Structure
+
+| Waves | Metric | Scope | Checkpoint | Tokens |
+|-------|--------|-------|------------|---------|
+| Wave 1 | Analysis & Discovery | Review current state | A | 25,000 🟢 |
+| Wave 2 | Implementation | Core changes | B | 50,000 🟢 |
+| Wave 3 | Testing & Validation | Verify changes | C | 30,000 🟢 |
+| Wave 4 | Documentation & Cleanup | Finalize | D | 15,000 🟢 |
+
+**Total: 120,000 tokens across 4 waves, all GREEN**
+
+---
+
+
 ## Wave 1.1 — Discovery Commands
 
 ### Git Status (Before)
@@ -350,3 +364,22 @@ The legacy SSOT entrypoint (`execute_ssot_entrypoint.py --legacy`) is blocked on
 All three apps_* folders (apps_shared, apps_lic, apps_rg) were successfully scanned with dry-run validation. The scans revealed naming convention issues and one duplicate file, but no critical structural violations requiring immediate action.
 
 **Note:** The Windows LongPathsEnabled issue prevents full legacy pipeline execution, but the core file classification validation works properly when invoked directly.
+
+## Rules
+
+1. Follow all constitutional rules and guidelines
+2. Maintain compliance with established standards
+3. Document all changes and decisions
+4. Validate all implementations before completion
+
+---
+
+## Success Criteria
+
+- [ ] All objectives completed successfully
+- [ ] Validation tests pass
+- [ ] Documentation updated
+- [ ] Stakeholder approval received
+
+---
+

@@ -208,3 +208,16 @@ DEFECT-06: Retrieval corpus references stale or deleted files
 DEFECT-07: CI does not report skipped/xfailed tests
   Targeted by: pytest.ini -ra flag addition
   Invariant: addopts contains -ra; all non-passing tests appear in summary
+
+## Findings
+
+[Document key findings from the investigation]
+
+---
+
+## Evidence
+
+[Provide evidence supporting the findings]
+
+---
+

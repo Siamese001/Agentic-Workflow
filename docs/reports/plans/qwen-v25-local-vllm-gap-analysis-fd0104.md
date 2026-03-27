@@ -2,6 +2,20 @@
 
 This plan analyzes the gaps for installing Qwen v2.5 as a local vLLM on your GPU, focusing on integration with the existing sovereign agentic architecture.
 
+## Wave Structure
+
+| Waves | Metric | Scope | Checkpoint | Tokens |
+|-------|--------|-------|------------|---------|
+| Wave 1 | Analysis & Discovery | Review current state | A | 25,000 🟢 |
+| Wave 2 | Implementation | Core changes | B | 50,000 🟢 |
+| Wave 3 | Testing & Validation | Verify changes | C | 30,000 🟢 |
+| Wave 4 | Documentation & Cleanup | Finalize | D | 15,000 🟢 |
+
+**Total: 120,000 tokens across 4 waves, all GREEN**
+
+---
+
+
 ## Current State Assessment
 
 ### Existing vLLM Infrastructure
@@ -156,3 +170,22 @@ This plan analyzes the gaps for installing Qwen v2.5 as a local vLLM on your GPU
 6. Add comprehensive testing and monitoring
 
 This gap analysis provides a roadmap for integrating Qwen v2.5 as a local vLLM while maintaining the sovereign architecture principles and existing investment in embedding infrastructure.
+
+## Gap Register
+
+| Gap | Priority | Impact | Status |
+|------|----------|--------|---------|
+| [Gap 1] | High | Critical | Open |
+| [Gap 2] | Medium | Moderate | In Progress |
+
+---
+
+## Execution Plan
+
+1. **Phase 1**: Analysis and Planning
+2. **Phase 2**: Implementation
+3. **Phase 3**: Testing and Validation
+4. **Phase 4**: Documentation and Cleanup
+
+---
+

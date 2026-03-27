@@ -619,3 +619,16 @@
 - `[TERRITORY] meta_learning_storage.py (VALIDATOR) is in utils`
 - `[FOLDER_PURITY] meta_learning_storage.py in utils/ violates purity rules. Should be in enforcement/`
 - `[FOLDER_PURITY] structural_healing_engine.py in utils/ violates purity rules. Should be in enforcement/`
+
+## Findings
+
+[Document key findings from the investigation]
+
+---
+
+## Evidence
+
+[Provide evidence supporting the findings]
+
+---
+

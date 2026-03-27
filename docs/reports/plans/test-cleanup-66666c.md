@@ -122,3 +122,16 @@ Clean up the test directory based on current repository state, removing broken i
 | Keep external deps excluded | CI stability maintained |
 
 **Net effect: +~77 tests properly collected, cleaner configuration, no broken import false positives.**
+
+## Findings
+
+[Document key findings from the investigation]
+
+---
+
+## Evidence
+
+[Provide evidence supporting the findings]
+
+---
+

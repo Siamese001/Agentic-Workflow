@@ -2,6 +2,20 @@
 
 This comprehensive plan identifies and addresses critical governance blind spots across the entire agentic workflow repository, including documentation gaps and systemic security vulnerabilities.
 
+## Wave Structure
+
+| Waves | Metric | Scope | Checkpoint | Tokens |
+|-------|--------|-------|------------|---------|
+| Wave 1 | Analysis & Discovery | Review current state | A | 25,000 🟢 |
+| Wave 2 | Implementation | Core changes | B | 50,000 🟢 |
+| Wave 3 | Testing & Validation | Verify changes | C | 30,000 🟢 |
+| Wave 4 | Documentation & Cleanup | Finalize | D | 15,000 🟢 |
+
+**Total: 120,000 tokens across 4 waves, all GREEN**
+
+---
+
+
 ## Executive Summary
 
 The repository contains multiple critical governance blind spots affecting documentation, configuration security, artifacts, logs, and operational systems. These gaps create significant security vulnerabilities, operational inefficiencies, and compliance risks that require immediate attention.
@@ -301,3 +315,22 @@ By implementing this plan, the repository will achieve:
 - **Maintainability**: Sustainable systems with minimal manual intervention
 
 The phased approach ensures immediate security fixes while building toward comprehensive governance coverage, minimizing disruption while maximizing impact.
+
+## Gap Register
+
+| Gap | Priority | Impact | Status |
+|------|----------|--------|---------|
+| [Gap 1] | High | Critical | Open |
+| [Gap 2] | Medium | Moderate | In Progress |
+
+---
+
+## Execution Plan
+
+1. **Phase 1**: Analysis and Planning
+2. **Phase 2**: Implementation
+3. **Phase 3**: Testing and Validation
+4. **Phase 4**: Documentation and Cleanup
+
+---
+

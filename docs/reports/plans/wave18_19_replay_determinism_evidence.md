@@ -1,5 +1,19 @@
 # Wave 18 & 19 Evidence — Replay Determinism Closure
 
+## Wave Structure
+
+| Waves | Metric | Scope | Checkpoint | Tokens |
+|-------|--------|-------|------------|---------|
+| Wave 1 | Analysis & Discovery | Review current state | A | 25,000 🟢 |
+| Wave 2 | Implementation | Core changes | B | 50,000 🟢 |
+| Wave 3 | Testing & Validation | Verify changes | C | 30,000 🟢 |
+| Wave 4 | Documentation & Cleanup | Finalize | D | 15,000 🟢 |
+
+**Total: 120,000 tokens across 4 waves, all GREEN**
+
+---
+
+
 ## Scope
 Wave 18: REQ-136/142/157/158/256/267/270/273/302/303 - Cross-layer schema, seam audit, trace replay, hash chain
 Wave 19: REQ-184/186/188/189/192/201/212/222/242/262/289/327/331/360/365/381/384/390/392/393/395/396/398/399/403/404/407/409/411/413 - Canonical hashing, HMAC, enclave, semantic clock, provider binding
@@ -181,3 +195,22 @@ Wave 18 is complete with all tests passing. Wave 19 infrastructure is in place w
 
 Total Wave 18 tests: 52 passing
 Wave 19 test files: 8 planned (infrastructure ready)
+
+## Rules
+
+1. Follow all constitutional rules and guidelines
+2. Maintain compliance with established standards
+3. Document all changes and decisions
+4. Validate all implementations before completion
+
+---
+
+## Success Criteria
+
+- [ ] All objectives completed successfully
+- [ ] Validation tests pass
+- [ ] Documentation updated
+- [ ] Stakeholder approval received
+
+---
+

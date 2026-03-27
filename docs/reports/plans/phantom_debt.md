@@ -38,3 +38,16 @@ Phantom count: 34
 | `tests/unit/structure_blueprint/test_enforcement_counters.py` | `mixin_ast` | `from agentic_core.L5_safety.config.structure_blueprint.enforcement import mixin_ast` (line 21) | remove phantom import |
 | `tests/unit/structure_blueprint/test_enforcement_counters.py` | `territory_diff` | `from agentic_core.L5_safety.config.structure_blueprint.enforcement import territory_diff` (line 21) | remove phantom import |
 | `tests/unit/structure_blueprint/test_enforcement_counters.py` | `volatile_rules` | `from agentic_core.L5_safety.config.structure_blueprint.enforcement import volatile_rules` (line 21) | remove phantom import |
+
+## Findings
+
+[Document key findings from the investigation]
+
+---
+
+## Evidence
+
+[Provide evidence supporting the findings]
+
+---
+

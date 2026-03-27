@@ -1,5 +1,19 @@
 # Redis Cache Expansion — 5 High-Value Caching Opportunities
 
+## Wave Structure
+
+| Waves | Metric | Scope | Checkpoint | Tokens |
+|-------|--------|-------|------------|---------|
+| Wave 1 | Analysis & Discovery | Review current state | A | 25,000 🟢 |
+| Wave 2 | Implementation | Core changes | B | 50,000 🟢 |
+| Wave 3 | Testing & Validation | Verify changes | C | 30,000 🟢 |
+| Wave 4 | Documentation & Cleanup | Finalize | D | 15,000 🟢 |
+
+**Total: 120,000 tokens across 4 waves, all GREEN**
+
+---
+
+
 ## Scope
 
 Identified and implemented 5 high-value Redis caching opportunities to reduce latency in deterministic lookup operations across the agentic architecture.
@@ -200,3 +214,22 @@ Baseline update deferred to avoid scope expansion. Follow-on remediation issue: 
 - Full test suite: 6725 passed, 8 pre-existing failures unrelated to this work
 - All implementations follow canonical cache seam pattern
 - Content-addressed keys ensure automatic invalidation
+
+## Gap Register
+
+| Gap | Priority | Impact | Status |
+|------|----------|--------|---------|
+| [Gap 1] | High | Critical | Open |
+| [Gap 2] | Medium | Moderate | In Progress |
+
+---
+
+## Execution Plan
+
+1. **Phase 1**: Analysis and Planning
+2. **Phase 2**: Implementation
+3. **Phase 3**: Testing and Validation
+4. **Phase 4**: Documentation and Cleanup
+
+---
+

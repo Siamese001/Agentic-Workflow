@@ -4,6 +4,20 @@ A prioritized plan to close the gap between the current V15 codebase and the Pro
 
 ---
 
+## Wave Structure
+
+| Waves | Metric | Scope | Checkpoint | Tokens |
+|-------|--------|-------|------------|---------|
+| Wave 1 | Analysis & Discovery | Review current state | A | 25,000 🟢 |
+| Wave 2 | Implementation | Core changes | B | 50,000 🟢 |
+| Wave 3 | Testing & Validation | Verify changes | C | 30,000 🟢 |
+| Wave 4 | Documentation & Cleanup | Finalize | D | 15,000 🟢 |
+
+**Total: 120,000 tokens across 4 waves, all GREEN**
+
+---
+
+
 ## Current State Assessment (Revised)
 
 The codebase has **significantly more** V15 infrastructure than initially apparent:
@@ -364,3 +378,22 @@ TIER 4 (Hardening)
 ## Key Insight
 
 The gap analysis compliance is **much closer than initially assessed**. The typed artifact infrastructure (Layer A) and contract enforcement (Layer B) are nearly complete with 332 passing guardian tests. The primary work is **Layer D (runtime wiring)** — making the 149 active agents actually consume and emit the artifacts that already exist as typed definitions. This is a wiring exercise, not a design exercise.
+
+## Gap Register
+
+| Gap | Priority | Impact | Status |
+|------|----------|--------|---------|
+| [Gap 1] | High | Critical | Open |
+| [Gap 2] | Medium | Moderate | In Progress |
+
+---
+
+## Execution Plan
+
+1. **Phase 1**: Analysis and Planning
+2. **Phase 2**: Implementation
+3. **Phase 3**: Testing and Validation
+4. **Phase 4**: Documentation and Cleanup
+
+---
+

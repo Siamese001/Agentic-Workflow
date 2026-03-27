@@ -53,3 +53,10 @@
 - Evidence file: `docs/reports/plans/restore_env_file_evidence.md`
 
 ## Status: COMPLETE
+
+## Findings
+
+[Document key findings from the investigation]
+
+---
+

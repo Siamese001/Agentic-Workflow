@@ -204,3 +204,16 @@ Invariant:
 # Final Status
 
 PASS — Deterministic SSOT evidence complete and normalized.
+
+## Findings
+
+[Document key findings from the investigation]
+
+---
+
+## Evidence
+
+[Provide evidence supporting the findings]
+
+---
+

@@ -4,6 +4,20 @@ Hardened, execution-ready version of the V15 Gap Closure Implementation Plan, pr
 
 ---
 
+## Wave Structure
+
+| Waves | Metric | Scope | Checkpoint | Tokens |
+|-------|--------|-------|------------|---------|
+| Wave 1 | Analysis & Discovery | Review current state | A | 25,000 🟢 |
+| Wave 2 | Implementation | Core changes | B | 50,000 🟢 |
+| Wave 3 | Testing & Validation | Verify changes | C | 30,000 🟢 |
+| Wave 4 | Documentation & Cleanup | Finalize | D | 15,000 🟢 |
+
+**Total: 120,000 tokens across 4 waves, all GREEN**
+
+---
+
+
 ## PHASE 1 — STRUCTURAL CRITIQUE
 
 ### 1.1 Critical Findings
@@ -297,3 +311,22 @@ Second-pass deterministic review of the hardened plan itself, identifying intern
 | D10 | **DOCUMENT** | Known limitations | L5 layer (77 agents) has no explicit wiring phases. Inherits base class V15 path. Explicit L5 wiring is Tier 3+ scope. |
 | D11 | **HAZARD** | Phase 7.1b rollback | Daemon-mode agents with long-lived instances retain stale `_v15_gateway` after rollback. Rollback procedure must include process restart or attribute cleanup. |
 | D12 | **FIX** | Phase 10.4 | Define `total_invariants` = 22 (§ sections in gap analysis). `covered_invariants` = count with runtime enforcement (not AST-only). Threshold: ≥21. |
+
+## Gap Register
+
+| Gap | Priority | Impact | Status |
+|------|----------|--------|---------|
+| [Gap 1] | High | Critical | Open |
+| [Gap 2] | Medium | Moderate | In Progress |
+
+---
+
+## Execution Plan
+
+1. **Phase 1**: Analysis and Planning
+2. **Phase 2**: Implementation
+3. **Phase 3**: Testing and Validation
+4. **Phase 4**: Documentation and Cleanup
+
+---
+

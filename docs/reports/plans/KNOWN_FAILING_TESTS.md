@@ -4,6 +4,20 @@
 **Branch**: `v5.1-agentic-core-heal-complete`
 **Pre-consolidation SHA**: `ccaed1df6`
 
+## Wave Structure
+
+| Waves | Metric | Scope | Checkpoint | Tokens |
+|-------|--------|-------|------------|---------|
+| Wave 1 | Analysis & Discovery | Review current state | A | 25,000 🟢 |
+| Wave 2 | Implementation | Core changes | B | 50,000 🟢 |
+| Wave 3 | Testing & Validation | Verify changes | C | 30,000 🟢 |
+| Wave 4 | Documentation & Cleanup | Finalize | D | 15,000 🟢 |
+
+**Total: 120,000 tokens across 4 waves, all GREEN**
+
+---
+
+
 ## Summary
 
 All skipped tests documented below were **already failing before consolidation**.
@@ -51,3 +65,22 @@ Per constitutional rule §30 (No Silent Masking):
 - No `pytest.mark.skip` without quarantine entry
 - No `xfail` without regression deadline
 - Quarantine ceiling must not increase without explicit commit rationale
+
+## Rules
+
+1. Follow all constitutional rules and guidelines
+2. Maintain compliance with established standards
+3. Document all changes and decisions
+4. Validate all implementations before completion
+
+---
+
+## Success Criteria
+
+- [ ] All objectives completed successfully
+- [ ] Validation tests pass
+- [ ] Documentation updated
+- [ ] Stakeholder approval received
+
+---
+

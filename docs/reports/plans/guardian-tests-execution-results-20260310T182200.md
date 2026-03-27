@@ -92,3 +92,10 @@ Violations: 0
 Guardian reports are generated at:
 - `agentic_core/L0_routing/logs/guardian_report.json`
 - `docs/reports/verification/guardian/` (when aggregation works)
+
+## Findings
+
+[Document key findings from the investigation]
+
+---
+

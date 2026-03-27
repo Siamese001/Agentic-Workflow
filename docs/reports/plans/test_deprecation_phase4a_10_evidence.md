@@ -1,5 +1,19 @@
 # Test Deprecation Phases 4a-10 Evidence
 
+## Wave Structure
+
+| Waves | Metric | Scope | Checkpoint | Tokens |
+|-------|--------|-------|------------|---------|
+| Wave 1 | Analysis & Discovery | Review current state | A | 25,000 🟢 |
+| Wave 2 | Implementation | Core changes | B | 50,000 🟢 |
+| Wave 3 | Testing & Validation | Verify changes | C | 30,000 🟢 |
+| Wave 4 | Documentation & Cleanup | Finalize | D | 15,000 🟢 |
+
+**Total: 120,000 tokens across 4 waves, all GREEN**
+
+---
+
+
 ## Scope
 
 Phases 4a through 10 of the hardened test deprecation plan:
@@ -99,3 +113,22 @@ $ python -m pytest tests/unit_min_deps/test_quarantine_manifest_contract.py -q -
 | 8 | 2473ac873 | Add 4 CI guards + clean 5 violations |
 | 9 | fa7f9a2af | Backfill introduced_commit+owner_agent into manifest (75 entries) |
 | 10 | 0e60b82b2 | Final cleanup 8 D escapees + stale ceilings + skip docs |
+
+## Rules
+
+1. Follow all constitutional rules and guidelines
+2. Maintain compliance with established standards
+3. Document all changes and decisions
+4. Validate all implementations before completion
+
+---
+
+## Success Criteria
+
+- [ ] All objectives completed successfully
+- [ ] Validation tests pass
+- [ ] Documentation updated
+- [ ] Stakeholder approval received
+
+---
+

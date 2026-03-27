@@ -149,3 +149,16 @@ $ python -m pytest -q --color=no
 9. KEY SEGMENT SAFETY: Non-hash segments validated against colon injection
 10. CORRUPT DATA RESILIENCE: get_json() and TemplateRenderCache.get() return
     None on corrupt bytes instead of raising exceptions
+
+## Findings
+
+[Document key findings from the investigation]
+
+---
+
+## Evidence
+
+[Provide evidence supporting the findings]
+
+---
+

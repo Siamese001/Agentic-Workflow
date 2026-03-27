@@ -59,3 +59,16 @@ P3–P6 items remain at their current status as documented in
 [p0_p1_remediation_backlog.md](p0_p1_remediation_backlog.md).
 No P3–P6 work shall be undertaken without explicit authorization.
 This baseline is the authoritative reference for the V15 audit closure state.
+
+## Findings
+
+[Document key findings from the investigation]
+
+---
+
+## Evidence
+
+[Provide evidence supporting the findings]
+
+---
+

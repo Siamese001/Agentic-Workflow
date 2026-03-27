@@ -4,6 +4,20 @@ Converge the repo to the target-state mapping by establishing formal agent reaso
 
 ---
 
+## Wave Structure
+
+| Waves | Metric | Scope | Checkpoint | Tokens |
+|-------|--------|-------|------------|---------|
+| Wave 1 | Analysis & Discovery | Review current state | A | 25,000 🟢 |
+| Wave 2 | Implementation | Core changes | B | 50,000 🟢 |
+| Wave 3 | Testing & Validation | Verify changes | C | 30,000 🟢 |
+| Wave 4 | Documentation & Cleanup | Finalize | D | 15,000 🟢 |
+
+**Total: 120,000 tokens across 4 waves, all GREEN**
+
+---
+
+
 ## Baseline (commit `8333412146c5019266b24c7a0b4476162ec2e862`, branch `embeddings`)
 
 **Critical discovery:** `healing_provider_adapters.py` already contains `QwenInvokerAdapter` + `GeminiInvokerAdapter` with real HTTP calls (`temperature=0.1` at line 94 — must become 0.0 in Phase F). G4 fix = wire dispatcher to use them, not rewrite.
@@ -632,3 +646,22 @@ python -m pytest tests/agentic_core/L2_execution/healers/test_healing_tier_dispa
 - apps_lic spine adapter — no violation found in Phase 0 inspection
 - MetaLearningClientMixin in engines — already clean, no change needed
 - `agentic_process_mapping.md` — target state, not modified
+
+## Rules
+
+1. Follow all constitutional rules and guidelines
+2. Maintain compliance with established standards
+3. Document all changes and decisions
+4. Validate all implementations before completion
+
+---
+
+## Success Criteria
+
+- [ ] All objectives completed successfully
+- [ ] Validation tests pass
+- [ ] Documentation updated
+- [ ] Stakeholder approval received
+
+---
+

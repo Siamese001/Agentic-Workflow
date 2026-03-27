@@ -2,6 +2,20 @@
 
 **Executive Summary**: Converting ADG from a high-volume structural scan into a deterministic, authoritative, executive-grade system-of-record capable of supporting current-state truth, remediation prioritization, replay/audit proof, policy enforcement evidence, and validation-driven system learning.
 
+## Wave Structure
+
+| Waves | Metric | Scope | Checkpoint | Tokens |
+|-------|--------|-------|------------|---------|
+| Wave 1 | Analysis & Discovery | Review current state | A | 25,000 🟢 |
+| Wave 2 | Implementation | Core changes | B | 50,000 🟢 |
+| Wave 3 | Testing & Validation | Verify changes | C | 30,000 🟢 |
+| Wave 4 | Documentation & Cleanup | Finalize | D | 15,000 🟢 |
+
+**Total: 120,000 tokens across 4 waves, all GREEN**
+
+---
+
+
 ## Implementation Status
 
 ### ✅ COMPLETED PHASES (High Priority)
@@ -264,3 +278,22 @@ Master Suite (run_adg_mandatory_verification.py)
 **Last Updated**: 2025-03-21
 **Status**: Core Infrastructure Complete, Specialized Phases Pending
 **Next Review**: After CI/CD Integration and Baseline Assessment
+
+## Rules
+
+1. Follow all constitutional rules and guidelines
+2. Maintain compliance with established standards
+3. Document all changes and decisions
+4. Validate all implementations before completion
+
+---
+
+## Success Criteria
+
+- [ ] All objectives completed successfully
+- [ ] Validation tests pass
+- [ ] Documentation updated
+- [ ] Stakeholder approval received
+
+---
+

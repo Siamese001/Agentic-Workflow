@@ -4,6 +4,20 @@ Addresses the highest-risk cross-cutting gaps found in the AST scan that do not 
 
 ---
 
+## Wave Structure
+
+| Waves | Metric | Scope | Checkpoint | Tokens |
+|-------|--------|-------|------------|---------|
+| Wave 1 | Analysis & Discovery | Review current state | A | 25,000 🟢 |
+| Wave 2 | Implementation | Core changes | B | 50,000 🟢 |
+| Wave 3 | Testing & Validation | Verify changes | C | 30,000 🟢 |
+| Wave 4 | Documentation & Cleanup | Finalize | D | 15,000 🟢 |
+
+**Total: 120,000 tokens across 4 waves, all GREEN**
+
+---
+
+
 ## Current State (AST Scan Findings)
 
 This plan covers risks that span multiple subsystems. Each gap was discovered during the deep AST scan and poses production-level risk.
@@ -187,3 +201,22 @@ Create `tests/architecture/test_cross_cutting_invariants.py`:
 All five invariants are AST-based (no regex).
 
 **Evidence file:** `docs/reports/sub/phase_cross_cutting_gaps_evidence.md`
+
+## Gap Register
+
+| Gap | Priority | Impact | Status |
+|------|----------|--------|---------|
+| [Gap 1] | High | Critical | Open |
+| [Gap 2] | Medium | Moderate | In Progress |
+
+---
+
+## Execution Plan
+
+1. **Phase 1**: Analysis and Planning
+2. **Phase 2**: Implementation
+3. **Phase 3**: Testing and Validation
+4. **Phase 4**: Documentation and Cleanup
+
+---
+

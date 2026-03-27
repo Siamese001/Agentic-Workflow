@@ -190,3 +190,16 @@ run_tampered != run_clean  (negative control confirmed by test_negative_control_
 
 After clearing tamper env:
 run_restored == run_clean  (restore confirmed by test_clean_run_after_tamper_restores_identical_digest)
+
+## Findings
+
+[Document key findings from the investigation]
+
+---
+
+## Evidence
+
+[Provide evidence supporting the findings]
+
+---
+

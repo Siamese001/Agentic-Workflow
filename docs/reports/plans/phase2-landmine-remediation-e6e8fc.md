@@ -2,6 +2,20 @@
 
 This plan provides a comprehensive, step-by-step approach to remediate 522 systemic anti-patterns discovered across the Agentic-Workflow codebase, prioritizing critical reliability risks and implementing structured fixes with minimal disruption.
 
+## Wave Structure
+
+| Waves | Metric | Scope | Checkpoint | Tokens |
+|-------|--------|-------|------------|---------|
+| Wave 1 | Analysis & Discovery | Review current state | A | 25,000 🟢 |
+| Wave 2 | Implementation | Core changes | B | 50,000 🟢 |
+| Wave 3 | Testing & Validation | Verify changes | C | 30,000 🟢 |
+| Wave 4 | Documentation & Cleanup | Finalize | D | 15,000 🟢 |
+
+**Total: 120,000 tokens across 4 waves, all GREEN**
+
+---
+
+
 ## Executive Summary
 
 The Phase 2 remediation addresses **522 landmines** across 5 categories: Silent Swallowers (47), Type Erasures (89), Path Fragility (63), Magic Configuration (134), and Global Mutations (89). This 4-week implementation plan uses a risk-based approach, focusing first on Critical Risk items that could cause cascading agent failures, then systematically hardening the codebase with structured types, cross-platform compatibility, and externalized configuration.
@@ -326,3 +340,22 @@ def test_path_cross_platform():
 - Integration with broader code quality initiatives
 
 This comprehensive plan ensures systematic elimination of systemic anti-patterns while maintaining system stability and improving long-term maintainability.
+
+## Rules
+
+1. Follow all constitutional rules and guidelines
+2. Maintain compliance with established standards
+3. Document all changes and decisions
+4. Validate all implementations before completion
+
+---
+
+## Success Criteria
+
+- [ ] All objectives completed successfully
+- [ ] Validation tests pass
+- [ ] Documentation updated
+- [ ] Stakeholder approval received
+
+---
+

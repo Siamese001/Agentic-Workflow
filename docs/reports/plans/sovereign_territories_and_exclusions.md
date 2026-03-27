@@ -101,3 +101,16 @@ These territories contain transient/generated content:
 - **Standard**: Most territories follow standard enforcement
 - **Relaxed**: artifacts territory has relaxed enforcement
 - **Exclusions**: artifacts territory excluded from depth, naming, and layer validation rules
+
+## Findings
+
+[Document key findings from the investigation]
+
+---
+
+## Evidence
+
+[Provide evidence supporting the findings]
+
+---
+

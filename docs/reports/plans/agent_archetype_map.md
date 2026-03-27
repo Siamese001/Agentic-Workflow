@@ -266,3 +266,16 @@
 |-------|-------|-----------|----------|
 | UnusedCleanupAgent | L5 | 39 | 0.00 |
 | CodeFormatterAgent | L5 | 52 | 0.00 |
+
+## Findings
+
+[Document key findings from the investigation]
+
+---
+
+## Evidence
+
+[Provide evidence supporting the findings]
+
+---
+

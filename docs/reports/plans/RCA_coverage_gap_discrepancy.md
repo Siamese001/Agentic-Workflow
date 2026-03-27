@@ -189,3 +189,22 @@ covered in the accelerator. The 966 agreed true gaps are all real production fil
 **Authoritative source**: `docs/reports/plans/phase0_validation_findings.md`
 **True actionable gap**: 966 production modules with zero coverage in both systems
 **Priority order**: `apps_lic/reasoning` (30) → `apps_rg/engines` (33) → `L5_safety` (167) → `system_learning` (31)
+
+## Violation
+
+[Describe the violation or issue that triggered this RCA]
+
+---
+
+## Root Cause
+
+[Identify and explain the root cause of the violation]
+
+---
+
+## Corrective Actions
+
+[List the corrective actions taken to resolve the issue]
+
+---
+

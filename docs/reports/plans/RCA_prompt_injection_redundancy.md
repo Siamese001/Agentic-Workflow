@@ -1,5 +1,19 @@
 # RCA: Prompt Injection Redundancy Analysis
 
+## Wave Structure
+
+| Waves | Metric | Scope | Checkpoint | Tokens |
+|-------|--------|-------|------------|---------|
+| Wave 1 | Analysis & Discovery | Review current state | A | 25,000 🟢 |
+| Wave 2 | Implementation | Core changes | B | 50,000 🟢 |
+| Wave 3 | Testing & Validation | Verify changes | C | 30,000 🟢 |
+| Wave 4 | Documentation & Cleanup | Finalize | D | 15,000 🟢 |
+
+**Total: 120,000 tokens across 4 waves, all GREEN**
+
+---
+
+
 ## Executive Summary
 
 **Issue**: The prompt injection patterns exist in BOTH markdown format AND Python code, creating potential redundancy and maintenance burden.
@@ -235,3 +249,22 @@ This is actually **reasonable architectural separation** IF:
 **Status**: ✅ **ANALYSIS COMPLETE** - Redundancy is intentional but needs validation
 **Date**: 2026-02-15
 **Next Step**: Implement synchronization validation tests
+
+## Violation
+
+[Describe the violation or issue that triggered this RCA]
+
+---
+
+## Root Cause
+
+[Identify and explain the root cause of the violation]
+
+---
+
+## Corrective Actions
+
+[List the corrective actions taken to resolve the issue]
+
+---
+

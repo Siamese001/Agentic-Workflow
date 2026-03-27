@@ -2,6 +2,20 @@
 
 Comprehensive plan to optimize memory MCP storage and Redis usage based on ADG dependency analysis — **Phase 1 & 2 implemented** (20260311T194341Z ADG: 3,329 modules, 152,269 edges, 220 violations, 711 repair routes).
 
+## Wave Structure
+
+| Waves | Metric | Scope | Checkpoint | Tokens |
+|-------|--------|-------|------------|---------|
+| Wave 1 | Analysis & Discovery | Review current state | A | 25,000 🟢 |
+| Wave 2 | Implementation | Core changes | B | 50,000 🟢 |
+| Wave 3 | Testing & Validation | Verify changes | C | 30,000 🟢 |
+| Wave 4 | Documentation & Cleanup | Finalize | D | 15,000 🟢 |
+
+**Total: 120,000 tokens across 4 waves, all GREEN**
+
+---
+
+
 ## Executive Summary
 
 **ADG Refresh: 20260311T193725Z** (artifact digest: `47c5fac0fe420863a316dbd4b77458374061d9707484213ef65c00953364e92a`)
@@ -577,3 +591,22 @@ All `system_learning` engines were **stateless across process restarts**:
 
 **Estimated Effort**: Phases 1-3 complete
 **Dependencies**: Memory MCP server availability, Redis 6.0+
+
+## Rules
+
+1. Follow all constitutional rules and guidelines
+2. Maintain compliance with established standards
+3. Document all changes and decisions
+4. Validate all implementations before completion
+
+---
+
+## Success Criteria
+
+- [ ] All objectives completed successfully
+- [ ] Validation tests pass
+- [ ] Documentation updated
+- [ ] Stakeholder approval received
+
+---
+

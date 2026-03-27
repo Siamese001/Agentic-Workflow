@@ -1,5 +1,19 @@
 # Comprehensive Prompt Governance Integration Plan
 
+## Wave Structure
+
+| Waves | Metric | Scope | Checkpoint | Tokens |
+|-------|--------|-------|------------|---------|
+| Wave 1 | Analysis & Discovery | Review current state | A | 25,000 🟢 |
+| Wave 2 | Implementation | Core changes | B | 50,000 🟢 |
+| Wave 3 | Testing & Validation | Verify changes | C | 30,000 🟢 |
+| Wave 4 | Documentation & Cleanup | Finalize | D | 15,000 🟢 |
+
+**Total: 120,000 tokens across 4 waves, all GREEN**
+
+---
+
+
 ## Executive Summary
 Transform the fragmented prompt governance system by migrating from markdown-based injection patterns to production-grade YAML templates, establishing unified integration across both `agentic_core` and `apps_*` layers, and implementing comprehensive test coverage with backward compatibility.
 
@@ -245,3 +259,13 @@ agentic_core/config/core/yaml_injection_loader.py
 6. **Better Testing**: Comprehensive coverage for all scenarios
 
 This consolidated plan provides a complete roadmap from current fragmented state to unified, production-grade prompt governance across the entire system.
+
+## Rules
+
+1. Follow all constitutional rules and guidelines
+2. Maintain compliance with established standards
+3. Document all changes and decisions
+4. Validate all implementations before completion
+
+---
+

@@ -169,3 +169,16 @@ VERDICT: LOW_SIGNAL (2/12 gate criteria passed, 0 failed, 10 N/A)
 Post-fix run completed with `--heal` processing all territories, `[ADG-BOOTSTRAP]` log
 emitted at `_legacy_main` startup, confirming the fresh graph is available to all agents
 via `state_mgr.state["adg_scan_result"]` before any phase executes.
+
+## Violation
+
+[Describe the violation or issue that triggered this RCA]
+
+---
+
+## Corrective Actions
+
+[List the corrective actions taken to resolve the issue]
+
+---
+

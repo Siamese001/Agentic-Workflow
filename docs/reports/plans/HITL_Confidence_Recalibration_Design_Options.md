@@ -6,6 +6,20 @@
 
 ---
 
+## Wave Structure
+
+| Waves | Metric | Scope | Checkpoint | Tokens |
+|-------|--------|-------|------------|---------|
+| Wave 1 | Analysis & Discovery | Review current state | A | 25,000 🟢 |
+| Wave 2 | Implementation | Core changes | B | 50,000 🟢 |
+| Wave 3 | Testing & Validation | Verify changes | C | 30,000 🟢 |
+| Wave 4 | Documentation & Cleanup | Finalize | D | 15,000 🟢 |
+
+**Total: 120,000 tokens across 4 waves, all GREEN**
+
+---
+
+
 ## **ADG Analysis Summary**
 
 ### **Key Findings from ADG Redis Cache**
@@ -453,3 +467,22 @@ def _auto_tune_risk_level(self, operation_name: str) -> None:
 - **L0 Confidence Monitor**: `system_learning/engines/l0_routing_confidence_monitor.py`
 - **Arbitration Engine**: `system_learning/arbitration/engine.py`
 - **Approval Gates**: `system_learning/pipelines/approval_gates.py`
+
+## Rules
+
+1. Follow all constitutional rules and guidelines
+2. Maintain compliance with established standards
+3. Document all changes and decisions
+4. Validate all implementations before completion
+
+---
+
+## Success Criteria
+
+- [ ] All objectives completed successfully
+- [ ] Validation tests pass
+- [ ] Documentation updated
+- [ ] Stakeholder approval received
+
+---
+

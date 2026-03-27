@@ -102,3 +102,16 @@
 - **Currently governed**: ~45 folders (all L* subfolders with standard names)
 - **Currently ungoverned**: ~25 folders (global folders + special L* subfolders)
 - **Need rules added**: All ungoverned folders per user requirement
+
+## Findings
+
+[Document key findings from the investigation]
+
+---
+
+## Evidence
+
+[Provide evidence supporting the findings]
+
+---
+

@@ -2,6 +2,20 @@
 
 Phased implementation plan to remediate 6 failing guardians identified in the dry run, addressing 228 import violations, 30 empty folders, 4 misplaced files, and structural compliance issues.
 
+## Wave Structure
+
+| Waves | Metric | Scope | Checkpoint | Tokens |
+|-------|--------|-------|------------|---------|
+| Wave 1 | Analysis & Discovery | Review current state | A | 25,000 🟢 |
+| Wave 2 | Implementation | Core changes | B | 50,000 🟢 |
+| Wave 3 | Testing & Validation | Verify changes | C | 30,000 🟢 |
+| Wave 4 | Documentation & Cleanup | Finalize | D | 15,000 🟢 |
+
+**Total: 120,000 tokens across 4 waves, all GREEN**
+
+---
+
+
 ## Violation Summary
 
 | Guardian | Status | Violations |
@@ -330,3 +344,16 @@ GuardianSpec(
 2. **Phase 4**: Preferred strategy for import violations (A, B, C, or D)?
 3. **Scope**: Should all phases be implemented, or prioritize specific ones?
 4. **Timeline**: Any deadline constraints?
+
+## Root Cause
+
+[Identify and explain the root cause of the violation]
+
+---
+
+## Corrective Actions
+
+[List the corrective actions taken to resolve the issue]
+
+---
+

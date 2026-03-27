@@ -78,3 +78,16 @@ All 6658 skips are **by design** — `_AVAILABLE = False` from failed imports.
 - **0 failures** (from 53)
 - **6658 skips accepted** as design-correct graceful degradation
 - **~7822+ passed** (7769 + recovered failures)
+
+## Findings
+
+[Document key findings from the investigation]
+
+---
+
+## Evidence
+
+[Provide evidence supporting the findings]
+
+---
+

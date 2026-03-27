@@ -1,5 +1,19 @@
 # RCA: Domain Prompts Misalignment in data/ Folder
 
+## Wave Structure
+
+| Waves | Metric | Scope | Checkpoint | Tokens |
+|-------|--------|-------|------------|---------|
+| Wave 1 | Analysis & Discovery | Review current state | A | 25,000 🟢 |
+| Wave 2 | Implementation | Core changes | B | 50,000 🟢 |
+| Wave 3 | Testing & Validation | Verify changes | C | 30,000 🟢 |
+| Wave 4 | Documentation & Cleanup | Finalize | D | 15,000 🟢 |
+
+**Total: 120,000 tokens across 4 waves, all GREEN**
+
+---
+
+
 ## Executive Summary
 
 **Issue**: Domain-specific prompt templates (`data/prompts/`) are misaligned with the architectural blueprint, creating orphaned content that violates the SSOT (Single Source of Truth) governance model.
@@ -291,3 +305,22 @@ python -m agentic_core.L5_safety.config.structure_blueprint._verify
 **Status**: ✅ **COMPLETE** - All orphaned domain prompts migrated to canonical SSOT location
 **Date**: 2026-02-15
 **Impact**: Eliminated SSOT violation, restored architectural integrity
+
+## Violation
+
+[Describe the violation or issue that triggered this RCA]
+
+---
+
+## Root Cause
+
+[Identify and explain the root cause of the violation]
+
+---
+
+## Corrective Actions
+
+[List the corrective actions taken to resolve the issue]
+
+---
+

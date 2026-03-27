@@ -1,5 +1,19 @@
 # L7 Meta-Learning Migration Plan with L0_maintenance Cleanup
 
+## Wave Structure
+
+| Waves | Metric | Scope | Checkpoint | Tokens |
+|-------|--------|-------|------------|---------|
+| Wave 1 | Analysis & Discovery | Review current state | A | 25,000 🟢 |
+| Wave 2 | Implementation | Core changes | B | 50,000 🟢 |
+| Wave 3 | Testing & Validation | Verify changes | C | 30,000 🟢 |
+| Wave 4 | Documentation & Cleanup | Finalize | D | 15,000 🟢 |
+
+**Total: 120,000 tokens across 4 waves, all GREEN**
+
+---
+
+
 ## Summary
 Move `agentic_core/L7_meta_learning` to `system_learning/` and fix stale L0_maintenance references throughout the codebase.
 
@@ -190,3 +204,13 @@ from agentic_core.base_agents.L0MaintenanceBase import L0MaintenanceBase
 - No broken references remain
 - Meta-learning functionality fully preserved
 - Base agent functionality fully preserved
+
+## Rules
+
+1. Follow all constitutional rules and guidelines
+2. Maintain compliance with established standards
+3. Document all changes and decisions
+4. Validate all implementations before completion
+
+---
+

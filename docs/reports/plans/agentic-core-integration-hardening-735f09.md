@@ -4,6 +4,20 @@ Wire `apps_rg/scripts/generate_resume.py` through all agentic_core layers (L0–
 
 ---
 
+## Wave Structure
+
+| Waves | Metric | Scope | Checkpoint | Tokens |
+|-------|--------|-------|------------|---------|
+| Wave 1 | Analysis & Discovery | Review current state | A | 25,000 🟢 |
+| Wave 2 | Implementation | Core changes | B | 50,000 🟢 |
+| Wave 3 | Testing & Validation | Verify changes | C | 30,000 🟢 |
+| Wave 4 | Documentation & Cleanup | Finalize | D | 15,000 🟢 |
+
+**Total: 120,000 tokens across 4 waves, all GREEN**
+
+---
+
+
 ## Pre-Plan Evidence Summary
 
 Evidence gathered via ripgrep + file reads (not assumed):
@@ -239,3 +253,22 @@ No external dependencies introduced. No Pinecone/Redis/RL required.
 3. ✅ L5 safety verdict enforced (FAIL → non-zero exit)
 4. ✅ `prompt_governance` digest provable in manifest
 5. ✅ `pytest tests/integration/test_resume_manifest.py -xvs` passes; tests fail on bypass/regression
+
+## Rules
+
+1. Follow all constitutional rules and guidelines
+2. Maintain compliance with established standards
+3. Document all changes and decisions
+4. Validate all implementations before completion
+
+---
+
+## Success Criteria
+
+- [ ] All objectives completed successfully
+- [ ] Validation tests pass
+- [ ] Documentation updated
+- [ ] Stakeholder approval received
+
+---
+

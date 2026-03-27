@@ -1,4 +1,18 @@
 # Evidence-Backed Full Gap Analysis — Certification Grade
+## Wave Structure
+
+| Waves | Metric | Scope | Checkpoint | Tokens |
+|-------|--------|-------|------------|---------|
+| Wave 1 | Analysis & Discovery | Review current state | A | 25,000 🟢 |
+| Wave 2 | Implementation | Core changes | B | 50,000 🟢 |
+| Wave 3 | Testing & Validation | Verify changes | C | 30,000 🟢 |
+| Wave 4 | Documentation & Cleanup | Finalize | D | 15,000 🟢 |
+
+**Total: 120,000 tokens across 4 waves, all GREEN**
+
+---
+
+
 ## Repository: `C:\Git\Agentic-Workflow`
 ## Generated: 2026-02-28 21:18:50 UTC
 ## Generator: `tools/evidence/gap_analysis_evidence_v2.py`
@@ -24883,3 +24897,22 @@ ci_test (0): []
 **AST_SIGNALS_HIT:** (not computed — early exit)
 
 **Classification:** FAIL | Missing: No production or test evidence
+
+## Gap Register
+
+| Gap | Priority | Impact | Status |
+|------|----------|--------|---------|
+| [Gap 1] | High | Critical | Open |
+| [Gap 2] | Medium | Moderate | In Progress |
+
+---
+
+## Execution Plan
+
+1. **Phase 1**: Analysis and Planning
+2. **Phase 2**: Implementation
+3. **Phase 3**: Testing and Validation
+4. **Phase 4**: Documentation and Cleanup
+
+---
+

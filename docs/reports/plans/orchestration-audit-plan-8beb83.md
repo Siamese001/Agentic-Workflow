@@ -2,6 +2,20 @@
 
 This plan provides a comprehensive architectural audit and refactoring strategy to transition the L3 orchestration layer from static DAGs to a fully realized Forward-Rolling Recursion agentic pipeline while preserving SSOT principles and DNA integrity.
 
+## Wave Structure
+
+| Waves | Metric | Scope | Checkpoint | Tokens |
+|-------|--------|-------|------------|---------|
+| Wave 1 | Analysis & Discovery | Review current state | A | 25,000 🟢 |
+| Wave 2 | Implementation | Core changes | B | 50,000 🟢 |
+| Wave 3 | Testing & Validation | Verify changes | C | 30,000 🟢 |
+| Wave 4 | Documentation & Cleanup | Finalize | D | 15,000 🟢 |
+
+**Total: 120,000 tokens across 4 waves, all GREEN**
+
+---
+
+
 ## Current Architecture Analysis
 
 Based on discovery of 171 agents across the repository, the L3 orchestration layer contains 10 orchestrators with the following key components:
@@ -145,3 +159,13 @@ Based on discovery of 171 agents across the repository, the L3 orchestration lay
 5. **SSOT**: Single source of truth for forward-rolling logic
 
 This plan provides a systematic approach to transforming the orchestration layer while maintaining architectural integrity and operational stability.
+
+## Rules
+
+1. Follow all constitutional rules and guidelines
+2. Maintain compliance with established standards
+3. Document all changes and decisions
+4. Validate all implementations before completion
+
+---
+

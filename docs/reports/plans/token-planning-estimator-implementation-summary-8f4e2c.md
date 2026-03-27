@@ -1,5 +1,19 @@
 # Token Planning Estimator - Implementation Complete
 
+## Wave Structure
+
+| Waves | Metric | Scope | Checkpoint | Tokens |
+|-------|--------|-------|------------|---------|
+| Wave 1 | Analysis & Discovery | Review current state | A | 25,000 🟢 |
+| Wave 2 | Implementation | Core changes | B | 50,000 🟢 |
+| Wave 3 | Testing & Validation | Verify changes | C | 30,000 🟢 |
+| Wave 4 | Documentation & Cleanup | Finalize | D | 15,000 🟢 |
+
+**Total: 120,000 tokens across 4 waves, all GREEN**
+
+---
+
+
 ## Summary
 
 Successfully implemented a deterministic context window estimator for SWE 1.5 planning phases and waves. The system ensures every step stays safely within the 200K context window by estimating tokens from the actual assembled payload before each model call.
@@ -172,3 +186,13 @@ The token planning estimator is now ready for production use in planning workflo
 4. Monitor and tune budget thresholds based on actual usage patterns
 
 The system provides deterministic token budget management that eliminates guesswork and ensures reliable operation within SWE 1.5's context window limits.
+
+## Rules
+
+1. Follow all constitutional rules and guidelines
+2. Maintain compliance with established standards
+3. Document all changes and decisions
+4. Validate all implementations before completion
+
+---
+

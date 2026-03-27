@@ -6,6 +6,20 @@ Close all open threads from the "Refactor Mixin and CI" and "RCA: Dedup Report S
 
 ---
 
+## Wave Structure
+
+| Waves | Metric | Scope | Checkpoint | Tokens |
+|-------|--------|-------|------------|---------|
+| Wave 1 | Analysis & Discovery | Review current state | A | 25,000 🟢 |
+| Wave 2 | Implementation | Core changes | B | 50,000 🟢 |
+| Wave 3 | Testing & Validation | Verify changes | C | 30,000 🟢 |
+| Wave 4 | Documentation & Cleanup | Finalize | D | 15,000 🟢 |
+
+**Total: 120,000 tokens across 4 waves, all GREEN**
+
+---
+
+
 ## Phase 1: Evacuate Root-Level Report Files (Low risk, quick wins)
 
 **Problem**: 10 `.md` files sit at repo root — violates `ARTIFACT_ROUTING_MAP` and ROOT_ALLOWED_PATTERNS.
@@ -173,3 +187,22 @@ Close all open threads from the "Refactor Mixin and CI" and "RCA: Dedup Report S
 | 5 | Cluster re-assessment | 20 min | Phase 2 |
 
 **Total**: ~2.5 hours. Phases 1, 2, 3 are independent and can be done in any order.
+
+## Violation
+
+[Describe the violation or issue that triggered this RCA]
+
+---
+
+## Root Cause
+
+[Identify and explain the root cause of the violation]
+
+---
+
+## Corrective Actions
+
+[List the corrective actions taken to resolve the issue]
+
+---
+

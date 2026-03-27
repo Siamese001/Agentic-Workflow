@@ -98,3 +98,16 @@ Keep only:
 ---
 
 **Final Status:** Issue is **by design**. Windsurf's `@` picker intentionally shows git commits. Use `Ctrl+P` for file-only search.
+
+## Violation
+
+[Describe the violation or issue that triggered this RCA]
+
+---
+
+## Corrective Actions
+
+[List the corrective actions taken to resolve the issue]
+
+---
+

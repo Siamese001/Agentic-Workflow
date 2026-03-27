@@ -2,6 +2,20 @@
 
 This plan analyzes the most common Machine Learning models used in routing agentic architectures and provides implementation recommendations for confidence calibration in L0 routing, following OpenAI agentic best practices.
 
+## Wave Structure
+
+| Waves | Metric | Scope | Checkpoint | Tokens |
+|-------|--------|-------|------------|---------|
+| Wave 1 | Analysis & Discovery | Review current state | A | 25,000 🟢 |
+| Wave 2 | Implementation | Core changes | B | 50,000 🟢 |
+| Wave 3 | Testing & Validation | Verify changes | C | 30,000 🟢 |
+| Wave 4 | Documentation & Cleanup | Finalize | D | 15,000 🟢 |
+
+**Total: 120,000 tokens across 4 waves, all GREEN**
+
+---
+
+
 ## Executive Summary
 
 Modern agentic architectures require sophisticated routing mechanisms that can reliably classify user intents and select appropriate agents while maintaining calibrated confidence scores for HITL (Human-in-the-Loop) integration. This document analyzes industry-standard ML approaches and provides concrete implementation recommendations for L0 routing.
@@ -263,3 +277,13 @@ class RoutingFeedback:
 ## Conclusion
 
 A multi-model approach with proper confidence calibration is essential for reliable L0 routing in agentic architectures. By combining embedding-based classification, contextual bandits, and ensemble methods with robust calibration techniques, we can achieve both high accuracy and reliable confidence estimates for effective HITL integration.
+
+## Rules
+
+1. Follow all constitutional rules and guidelines
+2. Maintain compliance with established standards
+3. Document all changes and decisions
+4. Validate all implementations before completion
+
+---
+

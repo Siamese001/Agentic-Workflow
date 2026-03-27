@@ -2,6 +2,20 @@
 
 ---
 
+## Wave Structure
+
+| Waves | Metric | Scope | Checkpoint | Tokens |
+|-------|--------|-------|------------|---------|
+| Wave 1 | Analysis & Discovery | Review current state | A | 25,000 🟢 |
+| Wave 2 | Implementation | Core changes | B | 50,000 🟢 |
+| Wave 3 | Testing & Validation | Verify changes | C | 30,000 🟢 |
+| Wave 4 | Documentation & Cleanup | Finalize | D | 15,000 🟢 |
+
+**Total: 120,000 tokens across 4 waves, all GREEN**
+
+---
+
+
 ## 1. Root Cause Analysis: enforcement/ Duplicates
 
 ### Finding
@@ -132,3 +146,16 @@ After renames, remove entries from `UTILS_SUFFIX_ALLOWLIST` and `TYPES_SUFFIX_AL
 - **Git blame disruption**: Renames break `git blame` continuity.
 - **Agent registry**: `agent_discovery_full.json` may reference old names.
 - Recommend: one git commit per phase, run full pytest after each.
+
+## Violation
+
+[Describe the violation or issue that triggered this RCA]
+
+---
+
+## Corrective Actions
+
+[List the corrective actions taken to resolve the issue]
+
+---
+

@@ -204,3 +204,22 @@ tests/agentic_core/test_phase3_timeshift_routing.py::TestTimeshiftRouterModule::
 | timeshift_router.py imports get_active_configs + anomaly_routing_threshold + get_prior_detection_signal (AST) | test_timeshift_router_module_imports_get_active_configs | PASS |
 | evaluate_timeshift_routing() with no prior → STANDARD (real module call) | test_evaluate_timeshift_routing_no_prior_returns_standard | PASS |
 | Total: 40 tests, 0 failures | all three test files | PASS |
+
+## Rules
+
+1. Follow all constitutional rules and guidelines
+2. Maintain compliance with established standards
+3. Document all changes and decisions
+4. Validate all implementations before completion
+
+---
+
+## Success Criteria
+
+- [ ] All objectives completed successfully
+- [ ] Validation tests pass
+- [ ] Documentation updated
+- [ ] Stakeholder approval received
+
+---
+

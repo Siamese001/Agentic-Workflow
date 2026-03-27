@@ -6,6 +6,20 @@
 
 ---
 
+## Wave Structure
+
+| Waves | Metric | Scope | Checkpoint | Tokens |
+|-------|--------|-------|------------|---------|
+| Wave 1 | Analysis & Discovery | Review current state | A | 25,000 🟢 |
+| Wave 2 | Implementation | Core changes | B | 50,000 🟢 |
+| Wave 3 | Testing & Validation | Verify changes | C | 30,000 🟢 |
+| Wave 4 | Documentation & Cleanup | Finalize | D | 15,000 🟢 |
+
+**Total: 120,000 tokens across 4 waves, all GREEN**
+
+---
+
+
 ## ChatGPT's Identified Runtime Gaps
 
 | Gap | Type | Why ADG Cannot Prove |
@@ -342,3 +356,22 @@ With these runtime files, ChatGPT should be able to validate:
 **ChatGPT's structural claims are ACCURATE** (validated via ADG).
 
 To validate **runtime enforcement claims**, upload the files listed above organized by gap category. The minimal set (10-12 files) should be sufficient to prove runtime enforcement exists. The comprehensive set (40-45 files) provides complete runtime validation coverage.
+
+## Rules
+
+1. Follow all constitutional rules and guidelines
+2. Maintain compliance with established standards
+3. Document all changes and decisions
+4. Validate all implementations before completion
+
+---
+
+## Success Criteria
+
+- [ ] All objectives completed successfully
+- [ ] Validation tests pass
+- [ ] Documentation updated
+- [ ] Stakeholder approval received
+
+---
+

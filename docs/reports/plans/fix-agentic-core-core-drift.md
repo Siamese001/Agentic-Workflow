@@ -4,6 +4,20 @@ Comprehensive plan to fix 5 categories of blueprint drift and add 8 structural p
 
 ---
 
+## Wave Structure
+
+| Waves | Metric | Scope | Checkpoint | Tokens |
+|-------|--------|-------|------------|---------|
+| Wave 1 | Analysis & Discovery | Review current state | A | 25,000 🟢 |
+| Wave 2 | Implementation | Core changes | B | 50,000 🟢 |
+| Wave 3 | Testing & Validation | Verify changes | C | 30,000 🟢 |
+| Wave 4 | Documentation & Cleanup | Finalize | D | 15,000 🟢 |
+
+**Total: 120,000 tokens across 4 waves, all GREEN**
+
+---
+
+
 ## ARCHITECTURE DECISIONS (Resolved Before Coding)
 
 ### AD-1: Enforcement Engine Ownership — Singular
@@ -503,3 +517,22 @@ All criteria must pass. Each maps to a measurable artifact.
 | Enforcement modules | 7 (territory_diff, leaf_node, volatile_rules, mixin_ast, import_verifier, blueprint_hash, cross_layer) |
 | Shared infrastructure | 2 (import_graph, types) |
 | Artifact files | 2 (`enforcement_report.json`, `blueprint_integrity.sha256`) |
+
+## Rules
+
+1. Follow all constitutional rules and guidelines
+2. Maintain compliance with established standards
+3. Document all changes and decisions
+4. Validate all implementations before completion
+
+---
+
+## Success Criteria
+
+- [ ] All objectives completed successfully
+- [ ] Validation tests pass
+- [ ] Documentation updated
+- [ ] Stakeholder approval received
+
+---
+

@@ -338,3 +338,16 @@ stats = collector.get_collection_stats()
 **Commit:** `8a7f597dd9` - All Phase 3 changes committed and synced
 
 **Ready for Production Deployment** 🚀
+
+## Findings
+
+[Document key findings from the investigation]
+
+---
+
+## Evidence
+
+[Provide evidence supporting the findings]
+
+---
+

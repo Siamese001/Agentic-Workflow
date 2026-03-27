@@ -2,6 +2,20 @@
 
 This plan addresses the critical issue of V15 legacy references in guardian tests and provides a comprehensive consolidation strategy for the testing structure.
 
+## Wave Structure
+
+| Waves | Metric | Scope | Checkpoint | Tokens |
+|-------|--------|-------|------------|---------|
+| Wave 1 | Analysis & Discovery | Review current state | A | 25,000 🟢 |
+| Wave 2 | Implementation | Core changes | B | 50,000 🟢 |
+| Wave 3 | Testing & Validation | Verify changes | C | 30,000 🟢 |
+| Wave 4 | Documentation & Cleanup | Finalize | D | 15,000 🟢 |
+
+**Total: 120,000 tokens across 4 waves, all GREEN**
+
+---
+
+
 ## Critical Finding: V15 Legacy References
 
 **Problem**: Guardian tests contain extensive V15 references that appear to be from an old/obsolete version, creating confusion and technical debt.
@@ -161,3 +175,22 @@ tests/guardian/
 - **Agility**: Faster test suite execution and easier modifications
 
 This revised plan prioritizes the critical V15 legacy cleanup while maintaining the overall goal of test consolidation and improved maintainability.
+
+## Rules
+
+1. Follow all constitutional rules and guidelines
+2. Maintain compliance with established standards
+3. Document all changes and decisions
+4. Validate all implementations before completion
+
+---
+
+## Success Criteria
+
+- [ ] All objectives completed successfully
+- [ ] Validation tests pass
+- [ ] Documentation updated
+- [ ] Stakeholder approval received
+
+---
+

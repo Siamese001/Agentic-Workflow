@@ -4,6 +4,20 @@ Unified multi-phase refactoring of `apps_rg`, `apps_lic`, and `apps_shared` mirr
 
 ---
 
+## Wave Structure
+
+| Waves | Metric | Scope | Checkpoint | Tokens |
+|-------|--------|-------|------------|---------|
+| Wave 1 | Analysis & Discovery | Review current state | A | 25,000 🟢 |
+| Wave 2 | Implementation | Core changes | B | 50,000 🟢 |
+| Wave 3 | Testing & Validation | Verify changes | C | 30,000 🟢 |
+| Wave 4 | Documentation & Cleanup | Finalize | D | 15,000 🟢 |
+
+**Total: 120,000 tokens across 4 waves, all GREEN**
+
+---
+
+
 ## Source Reference
 
 This plan mirrors three prior execute_ssot plans:
@@ -330,3 +344,22 @@ Verify `adg_latest.json` digest changes. If digest is unchanged from prior run, 
 - apps_* entity count in ADG ≥ current baseline (no silent removal)
 - Both `__main__.py` files call `build_pre_run_report` before any agent dispatch
 - No new files created outside the designated layer folders
+
+## Rules
+
+1. Follow all constitutional rules and guidelines
+2. Maintain compliance with established standards
+3. Document all changes and decisions
+4. Validate all implementations before completion
+
+---
+
+## Success Criteria
+
+- [ ] All objectives completed successfully
+- [ ] Validation tests pass
+- [ ] Documentation updated
+- [ ] Stakeholder approval received
+
+---
+

@@ -2,6 +2,20 @@
 
 This plan extends folder purity governance to ALL folders under agentic_core (excluding __pycache), ensuring every folder has strict naming rules and execute_ssot can heal violations automatically.
 
+## Wave Structure
+
+| Waves | Metric | Scope | Checkpoint | Tokens |
+|-------|--------|-------|------------|---------|
+| Wave 1 | Analysis & Discovery | Review current state | A | 25,000 🟢 |
+| Wave 2 | Implementation | Core changes | B | 50,000 🟢 |
+| Wave 3 | Testing & Validation | Verify changes | C | 30,000 🟢 |
+| Wave 4 | Documentation & Cleanup | Finalize | D | 15,000 🟢 |
+
+**Total: 120,000 tokens across 4 waves, all GREEN**
+
+---
+
+
 ## Current State
 - **Governed folders**: 10 folders (config, dashboards, enforcement, engines, reasoning, scripts, tools, types, utils, validators)
 - **Ungoverned folders**: 20 folders that need rules added
@@ -106,3 +120,13 @@ This plan extends folder purity governance to ALL folders under agentic_core (ex
 - execute_ssot.py automatically fixes all violations
 - Zero folder purity violations in test suite
 - Full coverage of agentic_core folder structure
+
+## Rules
+
+1. Follow all constitutional rules and guidelines
+2. Maintain compliance with established standards
+3. Document all changes and decisions
+4. Validate all implementations before completion
+
+---
+

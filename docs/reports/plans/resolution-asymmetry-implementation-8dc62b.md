@@ -2,6 +2,20 @@
 
 This plan provides a detailed phased approach to eliminate Resolution Asymmetry gaps across 13 agents, implementing high-resolution healing capabilities to match sophisticated validation levels.
 
+## Wave Structure
+
+| Waves | Metric | Scope | Checkpoint | Tokens |
+|-------|--------|-------|------------|---------|
+| Wave 1 | Analysis & Discovery | Review current state | A | 25,000 🟢 |
+| Wave 2 | Implementation | Core changes | B | 50,000 🟢 |
+| Wave 3 | Testing & Validation | Verify changes | C | 30,000 🟢 |
+| Wave 4 | Documentation & Cleanup | Finalize | D | 15,000 🟢 |
+
+**Total: 120,000 tokens across 4 waves, all GREEN**
+
+---
+
+
 ## Executive Summary
 
 The Resolution Asymmetry Audit identified 13 agents (7.6% of total) with critical architectural gaps where sophisticated validation (Type-Check/Semantic level) is paired with primitive healing (Raw Error Dumping). This implementation plan delivers a systematic approach to achieve resolution parity through AST-level healing, surgical CST manipulation, and structured error recovery.
@@ -431,3 +445,22 @@ This implementation plan provides a systematic approach to eliminating Resolutio
 **Total Timeline**: 5 weeks
 **Critical Path**: Phase 0 → Phase 1 → Phase 2 → Phase 3 → Phase 4 → Phase 5
 **Success Criteria**: 100% resolution parity with <5% performance impact
+
+## Rules
+
+1. Follow all constitutional rules and guidelines
+2. Maintain compliance with established standards
+3. Document all changes and decisions
+4. Validate all implementations before completion
+
+---
+
+## Success Criteria
+
+- [ ] All objectives completed successfully
+- [ ] Validation tests pass
+- [ ] Documentation updated
+- [ ] Stakeholder approval received
+
+---
+

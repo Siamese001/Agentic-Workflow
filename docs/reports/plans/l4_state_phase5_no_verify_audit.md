@@ -63,3 +63,16 @@ All 42 guardian failures in Phase 5 files are pre-existing. Phase 5 edits change
 | ruff (lint) | PASS |
 | ruff-format | PASS |
 | **check-anti-patterns** | **FAIL (pre-existing, repo-wide)** |
+
+## Findings
+
+[Document key findings from the investigation]
+
+---
+
+## Evidence
+
+[Provide evidence supporting the findings]
+
+---
+

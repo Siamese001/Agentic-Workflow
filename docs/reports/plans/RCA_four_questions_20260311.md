@@ -207,3 +207,22 @@ path and the full `adg_full_*.json` path.
 2. **`__init__.py` stubs** — restore 6 deleted `agentic_core/evaluation/*/` `__init__.py` files from `421a1f377`
 3. **`STRUCTURAL_INVARIANT` guardrail** — add pre-commit check: any `git rm` on `agentic_core/` must
    pass an ADG blast-radius check (zero importers) before deletion is permitted
+
+## Violation
+
+[Describe the violation or issue that triggered this RCA]
+
+---
+
+## Root Cause
+
+[Identify and explain the root cause of the violation]
+
+---
+
+## Corrective Actions
+
+[List the corrective actions taken to resolve the issue]
+
+---
+

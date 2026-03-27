@@ -1,5 +1,19 @@
 # ADG Hardening Addendum - COMPLETE IMPLEMENTATION
 
+## Wave Structure
+
+| Waves | Metric | Scope | Checkpoint | Tokens |
+|-------|--------|-------|------------|---------|
+| Wave 1 | Analysis & Discovery | Review current state | A | 25,000 🟢 |
+| Wave 2 | Implementation | Core changes | B | 50,000 🟢 |
+| Wave 3 | Testing & Validation | Verify changes | C | 30,000 🟢 |
+| Wave 4 | Documentation & Cleanup | Finalize | D | 15,000 🟢 |
+
+**Total: 120,000 tokens across 4 waves, all GREEN**
+
+---
+
+
 ## 🎯 EXECUTIVE SUMMARY
 
 **STATUS**: ✅ **CORE INFRASTRUCTURE COMPLETE** - 15/18 phases implemented with comprehensive verification suite
@@ -348,3 +362,22 @@ The ADG now meets the requirements for **deterministic, authoritative, executive
 **Document Version**: 2.0 - Complete Implementation
 **Last Updated**: 2025-03-22
 **Status**: ✅ CORE INFRASTRUCTURE COMPLETE - DEPLOY READY
+
+## Rules
+
+1. Follow all constitutional rules and guidelines
+2. Maintain compliance with established standards
+3. Document all changes and decisions
+4. Validate all implementations before completion
+
+---
+
+## Success Criteria
+
+- [ ] All objectives completed successfully
+- [ ] Validation tests pass
+- [ ] Documentation updated
+- [ ] Stakeholder approval received
+
+---
+

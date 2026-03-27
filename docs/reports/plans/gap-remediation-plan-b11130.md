@@ -2,6 +2,20 @@
 
 Close all 68 PARTIAL and 1 FAIL findings from the v3.2 gap analysis by adding targeted tests, CI gates, and minimal production guards — **no architectural redesign; every change is additive and scoped**.
 
+## Wave Structure
+
+| Waves | Metric | Scope | Checkpoint | Tokens |
+|-------|--------|-------|------------|---------|
+| Wave 1 | Analysis & Discovery | Review current state | A | 25,000 🟢 |
+| Wave 2 | Implementation | Core changes | B | 50,000 🟢 |
+| Wave 3 | Testing & Validation | Verify changes | C | 30,000 🟢 |
+| Wave 4 | Documentation & Cleanup | Finalize | D | 15,000 🟢 |
+
+**Total: 120,000 tokens across 4 waves, all GREEN**
+
+---
+
+
 ### HARDENING RULES (BINDING)
 
 1. No requirement corpus changes (REQ text/severity/IDs/metadata schema frozen).
@@ -1111,3 +1125,22 @@ Each wave is complete when:
 2. `git status` clean
 3. Evidence file committed under `docs/reports/plans/`
 4. Gap analysis re-run shows wave's requirements promoted to PASS
+
+## Gap Register
+
+| Gap | Priority | Impact | Status |
+|------|----------|--------|---------|
+| [Gap 1] | High | Critical | Open |
+| [Gap 2] | Medium | Moderate | In Progress |
+
+---
+
+## Execution Plan
+
+1. **Phase 1**: Analysis and Planning
+2. **Phase 2**: Implementation
+3. **Phase 3**: Testing and Validation
+4. **Phase 4**: Documentation and Cleanup
+
+---
+

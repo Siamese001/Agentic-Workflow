@@ -4,6 +4,20 @@ Seven hardening improvements to eliminate known bypass debt, structurally preven
 
 ---
 
+## Wave Structure
+
+| Waves | Metric | Scope | Checkpoint | Tokens |
+|-------|--------|-------|------------|---------|
+| Wave 1 | Analysis & Discovery | Review current state | A | 25,000 🟢 |
+| Wave 2 | Implementation | Core changes | B | 50,000 🟢 |
+| Wave 3 | Testing & Validation | Verify changes | C | 30,000 🟢 |
+| Wave 4 | Documentation & Cleanup | Finalize | D | 15,000 🟢 |
+
+**Total: 120,000 tokens across 4 waves, all GREEN**
+
+---
+
+
 ## H-1: Eliminate `tiktoken` Bypass Debt in `hardening_mixin.py`
 
 **Gap:** `agentic_core/mixins/hardening_mixin.py:187` uses `import tiktoken` directly for token counting. This is in `KNOWN_EMBEDDING_BYPASS_DEBT` but carries no expiry — it becomes a permanent bypass lane.
@@ -172,3 +186,22 @@ Seven hardening improvements to eliminate known bypass debt, structurally preven
 - `EmbeddingInputGuard.guard(text)` strips secrets before embed call
 - Logger never contains raw embedded text (AST-verified)
 - All existing Phase 10 tests still pass (12 passed, 1 skipped)
+
+## Rules
+
+1. Follow all constitutional rules and guidelines
+2. Maintain compliance with established standards
+3. Document all changes and decisions
+4. Validate all implementations before completion
+
+---
+
+## Success Criteria
+
+- [ ] All objectives completed successfully
+- [ ] Validation tests pass
+- [ ] Documentation updated
+- [ ] Stakeholder approval received
+
+---
+

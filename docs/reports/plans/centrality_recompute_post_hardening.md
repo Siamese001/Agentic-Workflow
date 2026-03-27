@@ -46,3 +46,16 @@ The following modules are allowlisted above the general ceiling of 15:
 ## Verdict
 
 All modules within ceilings. No new gravity nodes from consolidation hardening.
+
+## Findings
+
+[Document key findings from the investigation]
+
+---
+
+## Evidence
+
+[Provide evidence supporting the findings]
+
+---
+

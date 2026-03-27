@@ -174,3 +174,16 @@ git status --porcelain=v1
 
 ```
 ```
+
+## Findings
+
+[Document key findings from the investigation]
+
+---
+
+## Evidence
+
+[Provide evidence supporting the findings]
+
+---
+

@@ -259,3 +259,16 @@ Both MCP systems are **production-ready** with the following caveats:
 - **Performance Metrics**: All operations within acceptable time limits
 - **Data Integrity**: All data integrity checks passed
 - **Security Checks**: All security validations passed
+
+## Violation
+
+[Describe the violation or issue that triggered this RCA]
+
+---
+
+## Corrective Actions
+
+[List the corrective actions taken to resolve the issue]
+
+---
+

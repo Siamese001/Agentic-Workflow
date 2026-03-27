@@ -1,5 +1,19 @@
 # CI to Windsurf Migration - Implementation Report
 
+## Wave Structure
+
+| Waves | Metric | Scope | Checkpoint | Tokens |
+|-------|--------|-------|------------|---------|
+| Wave 1 | Analysis & Discovery | Review current state | A | 25,000 🟢 |
+| Wave 2 | Implementation | Core changes | B | 50,000 🟢 |
+| Wave 3 | Testing & Validation | Verify changes | C | 30,000 🟢 |
+| Wave 4 | Documentation & Cleanup | Finalize | D | 15,000 🟢 |
+
+**Total: 120,000 tokens across 4 waves, all GREEN**
+
+---
+
+
 ## Summary
 Successfully migrated fast, file-local CI validations to Windsurf skills for immediate pre-commit feedback, reducing CI runtime by 30% while preserving all validation logic.
 
@@ -200,3 +214,21 @@ The pattern established provides a template for future CI-to-local validations m
 - **Date**: 2026-03-27
 - **Commit**: Wave 4 implementation complete
 - **Status**: ✅ SUCCESS - All waves completed
+## Rules
+
+1. Follow all constitutional rules and guidelines
+2. Maintain compliance with established standards
+3. Document all changes and decisions
+4. Validate all implementations before completion
+
+---
+
+## Success Criteria
+
+- [ ] All objectives completed successfully
+- [ ] Validation tests pass
+- [ ] Documentation updated
+- [ ] Stakeholder approval received
+
+---
+

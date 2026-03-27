@@ -1,5 +1,19 @@
 # Meta-Learning Bus: What execute_ssot Incorporates for the Next Healing Round
 
+## Wave Structure
+
+| Waves | Metric | Scope | Checkpoint | Tokens |
+|-------|--------|-------|------------|---------|
+| Wave 1 | Analysis & Discovery | Review current state | A | 25,000 🟢 |
+| Wave 2 | Implementation | Core changes | B | 50,000 🟢 |
+| Wave 3 | Testing & Validation | Verify changes | C | 30,000 🟢 |
+| Wave 4 | Documentation & Cleanup | Finalize | D | 15,000 🟢 |
+
+**Total: 120,000 tokens across 4 waves, all GREEN**
+
+---
+
+
 ## Overview
 
 Every `execute_ssot --heal` run feeds data into the meta-learning bus through
@@ -258,3 +272,22 @@ The meta-learning bus is a **multi-layer feedback system**:
 All layers currently operate in **proposal-only / informational-only** mode.
 No automatic application occurs until `ActivationFlags.meta_learning_enabled`
 is set to `True` via explicit approval.
+
+## Rules
+
+1. Follow all constitutional rules and guidelines
+2. Maintain compliance with established standards
+3. Document all changes and decisions
+4. Validate all implementations before completion
+
+---
+
+## Success Criteria
+
+- [ ] All objectives completed successfully
+- [ ] Validation tests pass
+- [ ] Documentation updated
+- [ ] Stakeholder approval received
+
+---
+

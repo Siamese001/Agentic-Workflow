@@ -2,6 +2,20 @@
 
 **Objective**: Maximize the efficiency, performance, and fit-for-purpose usage of existing MCPs across agentic_core and apps_* modules through optimization, better orchestration, and enhanced utilization patterns.
 
+## Wave Structure
+
+| Waves | Metric | Scope | Checkpoint | Tokens |
+|-------|--------|-------|------------|---------|
+| Wave 1 | Analysis & Discovery | Review current state | A | 25,000 🟢 |
+| Wave 2 | Implementation | Core changes | B | 50,000 🟢 |
+| Wave 3 | Testing & Validation | Verify changes | C | 30,000 🟢 |
+| Wave 4 | Documentation & Cleanup | Finalize | D | 15,000 🟢 |
+
+**Total: 120,000 tokens across 4 waves, all GREEN**
+
+---
+
+
 ## Current MCP Landscape Analysis
 
 ### Installed MCP Tools (Current State)
@@ -401,3 +415,22 @@ data/sdks_mcps/orchestration_templates/
 - Enhanced developer productivity and system performance
 
 This refocused plan maximizes the efficiency and fit-for-purpose usage of existing MCPs rather than expanding to new tools, ensuring optimal utilization of the current sovereign architecture investment.
+
+## Rules
+
+1. Follow all constitutional rules and guidelines
+2. Maintain compliance with established standards
+3. Document all changes and decisions
+4. Validate all implementations before completion
+
+---
+
+## Success Criteria
+
+- [ ] All objectives completed successfully
+- [ ] Validation tests pass
+- [ ] Documentation updated
+- [ ] Stakeholder approval received
+
+---
+

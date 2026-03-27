@@ -115,3 +115,16 @@ git commit -m "Add remaining files"
 - [ ] Verify `.gitignore` includes `artifacts/adg/_archive/` pattern
 - [ ] Decide if `Error & Exception Handling.md` should be committed
 - [ ] Document git workflow expectations for team
+
+## Violation
+
+[Describe the violation or issue that triggered this RCA]
+
+---
+
+## Corrective Actions
+
+[List the corrective actions taken to resolve the issue]
+
+---
+

@@ -4,6 +4,20 @@
 **Severity:** Critical - Architectural Design Flaw
 **Status:** Identified
 
+## Wave Structure
+
+| Waves | Metric | Scope | Checkpoint | Tokens |
+|-------|--------|-------|------------|---------|
+| Wave 1 | Analysis & Discovery | Review current state | A | 25,000 🟢 |
+| Wave 2 | Implementation | Core changes | B | 50,000 🟢 |
+| Wave 3 | Testing & Validation | Verify changes | C | 30,000 🟢 |
+| Wave 4 | Documentation & Cleanup | Finalize | D | 15,000 🟢 |
+
+**Total: 120,000 tokens across 4 waves, all GREEN**
+
+---
+
+
 ## Executive Summary
 
 `SOVEREIGN_TERRITORIES` contains a fundamental architectural flaw: it defines validation metadata (depth, subfolders, enforcement rules) for **system directories that should never be validated** (`.backup`, `artifacts`, `.gravity_state`, `logs`, etc.).
@@ -288,3 +302,16 @@ assert "artifacts" in SYSTEM_DIRECTORIES
 The fix: **Separate concerns** into domain-specific constants that clearly communicate intent and prevent absurd validation scenarios.
 
 The current replacement work (using `CODE_TERRITORIES` instead of `SOVEREIGN_TERRITORIES`) is **correct and necessary** - it's the first step toward eliminating this architectural flaw.
+
+## Violation
+
+[Describe the violation or issue that triggered this RCA]
+
+---
+
+## Corrective Actions
+
+[List the corrective actions taken to resolve the issue]
+
+---
+

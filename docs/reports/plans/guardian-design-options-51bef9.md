@@ -2,6 +2,20 @@
 
 Guardian tests should operate as **pure reporting instruments** that track architectural health without blocking development, with optional agent-driven remediation for systematic fixes.
 
+## Wave Structure
+
+| Waves | Metric | Scope | Checkpoint | Tokens |
+|-------|--------|-------|------------|---------|
+| Wave 1 | Analysis & Discovery | Review current state | A | 25,000 🟢 |
+| Wave 2 | Implementation | Core changes | B | 50,000 🟢 |
+| Wave 3 | Testing & Validation | Verify changes | C | 30,000 🟢 |
+| Wave 4 | Documentation & Cleanup | Finalize | D | 15,000 🟢 |
+
+**Total: 120,000 tokens across 4 waves, all GREEN**
+
+---
+
+
 ## Current State Analysis
 
 ### What Guardian Tests Do Now
@@ -300,3 +314,22 @@ This approach has **zero risk** but requires **more human effort**.
 **Alternative:** Option 1 (Pure Reporting) if the team values maximum control and is willing to invest manual effort in remediation.
 
 **Not Recommended:** Option 3 (Full Autonomous) is too risky without extensive testing and validation infrastructure.
+
+## Rules
+
+1. Follow all constitutional rules and guidelines
+2. Maintain compliance with established standards
+3. Document all changes and decisions
+4. Validate all implementations before completion
+
+---
+
+## Success Criteria
+
+- [ ] All objectives completed successfully
+- [ ] Validation tests pass
+- [ ] Documentation updated
+- [ ] Stakeholder approval received
+
+---
+

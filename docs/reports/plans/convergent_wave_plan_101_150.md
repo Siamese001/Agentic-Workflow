@@ -31,3 +31,13 @@
 - Fail wave if denominator increases by even 1
 - Incremental ADG after each wave
 - Full canonical ADG + SQLite rebuild at checkpoints (every 5 waves)
+
+## Success Criteria
+
+- [ ] All objectives completed successfully
+- [ ] Validation tests pass
+- [ ] Documentation updated
+- [ ] Stakeholder approval received
+
+---
+

@@ -217,3 +217,16 @@ collected 30 / executed 30
 | Prompt file with 'cache' in name wrongly flagged | test_prompt_file_with_cache_in_name_no_l1_gap_prompt |
 | L1-GAP-PROMPT priority not MEDIUM | test_l1_gap_prompt_is_medium_priority_if_present, test_prompt_file_no_cache_generates_l1_gap_prompt |
 | Gap missing evidence_files | test_all_l0_gaps_have_evidence_files, test_all_l1_gaps_have_evidence_files |
+
+## Findings
+
+[Document key findings from the investigation]
+
+---
+
+## Evidence
+
+[Provide evidence supporting the findings]
+
+---
+

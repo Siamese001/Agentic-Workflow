@@ -2,6 +2,20 @@
 
 This plan implements runtime sovereignty enforcement, bypass-proof architecture, and deterministic replay validation to achieve 100% convergence with the HARDEN-MERGE-LOCKDOWN requirements.
 
+## Wave Structure
+
+| Waves | Metric | Scope | Checkpoint | Tokens |
+|-------|--------|-------|------------|---------|
+| Wave 1 | Analysis & Discovery | Review current state | A | 25,000 🟢 |
+| Wave 2 | Implementation | Core changes | B | 50,000 🟢 |
+| Wave 3 | Testing & Validation | Verify changes | C | 30,000 🟢 |
+| Wave 4 | Documentation & Cleanup | Finalize | D | 15,000 🟢 |
+
+**Total: 120,000 tokens across 4 waves, all GREEN**
+
+---
+
+
 ## Executive Summary
 
 The HARDEN-MERGE-LOCKDOWN phase will implement fail-closed runtime enforcement across all L2 boundaries, create comprehensive bypass detection via AST scanning, and establish deterministic replay validation with negative control testing. This transforms the existing cryptographic foundations into a fully sovereignty-enforced architecture.
@@ -369,3 +383,22 @@ tests/sovereign_hardening/
 - Do not repeat HARDEN-MERGE-LOCKDOWN phase
 
 This plan creates a bypass-proof, sovereignty-enforced architecture with comprehensive runtime guards, deterministic replay validation, and complete bypass detection via AST scanning and CI enforcement.
+
+## Rules
+
+1. Follow all constitutional rules and guidelines
+2. Maintain compliance with established standards
+3. Document all changes and decisions
+4. Validate all implementations before completion
+
+---
+
+## Success Criteria
+
+- [ ] All objectives completed successfully
+- [ ] Validation tests pass
+- [ ] Documentation updated
+- [ ] Stakeholder approval received
+
+---
+

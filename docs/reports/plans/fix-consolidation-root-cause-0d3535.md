@@ -2,6 +2,20 @@
 
 This plan addresses the root cause of why 37 Agent files were incorrectly placed in engines/ and 3 _types files had mixed content, which occurred during the consolidation pass because folder purity validation was missing.
 
+## Wave Structure
+
+| Waves | Metric | Scope | Checkpoint | Tokens |
+|-------|--------|-------|------------|---------|
+| Wave 1 | Analysis & Discovery | Review current state | A | 25,000 🟢 |
+| Wave 2 | Implementation | Core changes | B | 50,000 🟢 |
+| Wave 3 | Testing & Validation | Verify changes | C | 30,000 🟢 |
+| Wave 4 | Documentation & Cleanup | Finalize | D | 15,000 🟢 |
+
+**Total: 120,000 tokens across 4 waves, all GREEN**
+
+---
+
+
 ## Root Cause Summary
 
 The consolidation pass (2026-02-08) focused only on agent count reduction (190→149) but lacked folder structure validation, causing it to accept and preserve existing architectural violations without questioning them.
@@ -103,3 +117,16 @@ The consolidation pass (2026-02-08) focused only on agent count reduction (190�
 - `.pre-commit-config.yaml`
 
 This plan ensures the root cause is fixed by adding validation to prevent future architectural violations during any consolidation or refactoring efforts.
+
+## Violation
+
+[Describe the violation or issue that triggered this RCA]
+
+---
+
+## Corrective Actions
+
+[List the corrective actions taken to resolve the issue]
+
+---
+

@@ -220,3 +220,16 @@ For issues or questions:
 **Status**: ✅ Migration Complete - All agentic_core and apps_* modules now use `data/sdks_mcps` as the single source of truth for LLM SDK interactions.
 
 **Last Updated**: 2026-02-15
+
+## Findings
+
+[Document key findings from the investigation]
+
+---
+
+## Evidence
+
+[Provide evidence supporting the findings]
+
+---
+

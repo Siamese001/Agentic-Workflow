@@ -4,6 +4,20 @@ Comprehensive gap analysis updated to reflect **Phase 5: Confidence-Tier Healing
 
 ---
 
+## Wave Structure
+
+| Waves | Metric | Scope | Checkpoint | Tokens |
+|-------|--------|-------|------------|---------|
+| Wave 1 | Analysis & Discovery | Review current state | A | 25,000 🟢 |
+| Wave 2 | Implementation | Core changes | B | 50,000 🟢 |
+| Wave 3 | Testing & Validation | Verify changes | C | 30,000 🟢 |
+| Wave 4 | Documentation & Cleanup | Finalize | D | 15,000 🟢 |
+
+**Total: 120,000 tokens across 4 waves, all GREEN**
+
+---
+
+
 ## Executive Summary
 
 **Major Progress Since Last Analysis:**
@@ -317,3 +331,22 @@ Phase 5 has delivered a **production-ready L2.3 healing subsystem** with confide
 Once Phase 6 is complete, the L2 learning loop will be functional, and the remaining phases can proceed in parallel with minimal dependencies. The phased approach ensures incremental value delivery while maintaining safety and governance standards.
 
 **Immediate Next Step:** Implement Phase 6 (Healing Outcome Aggregator) to close the L2 learning loop.
+
+## Gap Register
+
+| Gap | Priority | Impact | Status |
+|------|----------|--------|---------|
+| [Gap 1] | High | Critical | Open |
+| [Gap 2] | Medium | Moderate | In Progress |
+
+---
+
+## Execution Plan
+
+1. **Phase 1**: Analysis and Planning
+2. **Phase 2**: Implementation
+3. **Phase 3**: Testing and Validation
+4. **Phase 4**: Documentation and Cleanup
+
+---
+

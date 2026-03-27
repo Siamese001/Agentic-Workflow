@@ -2,6 +2,20 @@
 
 This plan splits the comprehensive 172-agent optimization audit into 5 discrete, manageable phases that ensure success through focused execution and measurable progress.
 
+## Wave Structure
+
+| Waves | Metric | Scope | Checkpoint | Tokens |
+|-------|--------|-------|------------|---------|
+| Wave 1 | Analysis & Discovery | Review current state | A | 25,000 🟢 |
+| Wave 2 | Implementation | Core changes | B | 50,000 🟢 |
+| Wave 3 | Testing & Validation | Verify changes | C | 30,000 🟢 |
+| Wave 4 | Documentation & Cleanup | Finalize | D | 15,000 🟢 |
+
+**Total: 120,000 tokens across 4 waves, all GREEN**
+
+---
+
+
 ## Phase 1: Configuration Extraction (Cat 4) - Foundation Layer
 **Scope:** 28 agents (16%) with hardcoded configurations
 **Timeline:** 1-2 weeks
@@ -123,3 +137,13 @@ This plan splits the comprehensive 172-agent optimization audit into 5 discrete,
 - **Configuration**: 80% improvement in config flexibility
 
 This phased approach ensures manageable execution, measurable progress, and minimal risk while delivering the full optimization benefits identified in the audit.
+
+## Rules
+
+1. Follow all constitutional rules and guidelines
+2. Maintain compliance with established standards
+3. Document all changes and decisions
+4. Validate all implementations before completion
+
+---
+

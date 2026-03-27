@@ -2,6 +2,20 @@
 
 This implementation plan provides a phased approach to integrating Redis and Pinecone meta-learning capabilities into the Sovereign Architecture, enabling agents to learn from healing cycles while maintaining strict safety controls and maximizing success probability.
 
+## Wave Structure
+
+| Waves | Metric | Scope | Checkpoint | Tokens |
+|-------|--------|-------|------------|---------|
+| Wave 1 | Analysis & Discovery | Review current state | A | 25,000 🟢 |
+| Wave 2 | Implementation | Core changes | B | 50,000 🟢 |
+| Wave 3 | Testing & Validation | Verify changes | C | 30,000 🟢 |
+| Wave 4 | Documentation & Cleanup | Finalize | D | 15,000 🟢 |
+
+**Total: 120,000 tokens across 4 waves, all GREEN**
+
+---
+
+
 ## Phase 0: Foundation & Infrastructure Setup (Week 1)
 
 ### 0.1 External Dependencies Setup
@@ -314,3 +328,13 @@ This implementation plan provides a phased approach to integrating Redis and Pin
 5. Gradual re-enable with enhanced monitoring
 
 This implementation plan maximizes success probability through gradual rollout, comprehensive testing, and robust safety measures while delivering significant performance improvements and learning capabilities to the Sovereign Architecture.
+
+## Rules
+
+1. Follow all constitutional rules and guidelines
+2. Maintain compliance with established standards
+3. Document all changes and decisions
+4. Validate all implementations before completion
+
+---
+

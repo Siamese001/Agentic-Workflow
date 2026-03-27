@@ -428,3 +428,22 @@ Based on the gap analysis, the next highest-value guardian tests to write:
 | P3 | `test_l6_observability_write_contract.py` | L6 must not write (§ constitutional rule); AST scan |
 | P4 | `test_apps_shared_enforcement_contracts.py` | All 11 `apps_shared/enforcement/` strategies importable + have required interface methods |
 | P5 | `test_apps_rg_engine_contracts.py` | `apps_rg/engines/` have required `run()`/`execute()` methods; no direct LLM SDK imports |
+
+## Gap Register
+
+| Gap | Priority | Impact | Status |
+|------|----------|--------|---------|
+| [Gap 1] | High | Critical | Open |
+| [Gap 2] | Medium | Moderate | In Progress |
+
+---
+
+## Execution Plan
+
+1. **Phase 1**: Analysis and Planning
+2. **Phase 2**: Implementation
+3. **Phase 3**: Testing and Validation
+4. **Phase 4**: Documentation and Cleanup
+
+---
+

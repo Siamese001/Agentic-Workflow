@@ -4,6 +4,20 @@ Execute a full forensic compliance audit against Prompt v5.0 (V15 Target State),
 
 ---
 
+## Wave Structure
+
+| Waves | Metric | Scope | Checkpoint | Tokens |
+|-------|--------|-------|------------|---------|
+| Wave 1 | Analysis & Discovery | Review current state | A | 25,000 🟢 |
+| Wave 2 | Implementation | Core changes | B | 50,000 🟢 |
+| Wave 3 | Testing & Validation | Verify changes | C | 30,000 🟢 |
+| Wave 4 | Documentation & Cleanup | Finalize | D | 15,000 🟢 |
+
+**Total: 120,000 tokens across 4 waves, all GREEN**
+
+---
+
+
 ## Pre-Execution Findings (Critical Blockers)
 
 The audit prompt contains several references that **do not match** the current codebase. These must be reconciled before execution:
@@ -80,3 +94,13 @@ Before execution, confirm:
 - **Option C**: Proceed with full fresh run (Option A) but accept the schema mapping as a known deviation
 
 The prior clean report shows near-total MISSING/FAIL for V15 capabilities. A fresh run will produce substantially similar results unless new code has been added since 2026-02-09.
+
+## Gap Register
+
+| Gap | Priority | Impact | Status |
+|------|----------|--------|---------|
+| [Gap 1] | High | Critical | Open |
+| [Gap 2] | Medium | Moderate | In Progress |
+
+---
+

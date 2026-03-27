@@ -7,6 +7,20 @@ Phased plan to close 89 V15 target-state gaps (0% compliant → full compliance)
 
 ---
 
+## Wave Structure
+
+| Waves | Metric | Scope | Checkpoint | Tokens |
+|-------|--------|-------|------------|---------|
+| Wave 1 | Analysis & Discovery | Review current state | A | 25,000 🟢 |
+| Wave 2 | Implementation | Core changes | B | 50,000 🟢 |
+| Wave 3 | Testing & Validation | Verify changes | C | 30,000 🟢 |
+| Wave 4 | Documentation & Cleanup | Finalize | D | 15,000 🟢 |
+
+**Total: 120,000 tokens across 4 waves, all GREEN**
+
+---
+
+
 ## Cross-Cutting Invariant: No Parallel Schemas
 
 **INV-1**: When V15 enforcement is enabled, every typed artifact at a runtime boundary MUST use the V15 canonical type.  Legacy/non-V15 schemas MUST NOT coexist at the same boundary.  This applies to:
@@ -421,3 +435,22 @@ If any critical D-set item is D=false, the P1 gate fails even if overall D ≥ 8
 10. **P2.1 hardened**: MRO scanner must consume ONLY pinned discovery JSON — no live reflection fallback
 11. **Critical D-set added**: 6 high-leverage contracts must be 100% D=true regardless of overall P1 percentage
 12. **INV-4 added**: P4 cannot introduce new contract types — compose only, back-port if needed
+
+## Rules
+
+1. Follow all constitutional rules and guidelines
+2. Maintain compliance with established standards
+3. Document all changes and decisions
+4. Validate all implementations before completion
+
+---
+
+## Success Criteria
+
+- [ ] All objectives completed successfully
+- [ ] Validation tests pass
+- [ ] Documentation updated
+- [ ] Stakeholder approval received
+
+---
+

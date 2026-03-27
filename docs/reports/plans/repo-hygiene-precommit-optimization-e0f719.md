@@ -184,3 +184,13 @@ Destructive actions (moves, deletions, promotions) require explicit HITL confirm
 | `tools/adg/edge_census.py` | NEW — unified from wave_*_census.py |
 | ~90 files | Moved from repo root to `tools/archive/root/` |
 | ~90 files | Moved from other territories to `tools/archive/[territory]/` |
+
+## Rules
+
+1. Follow all constitutional rules and guidelines
+2. Maintain compliance with established standards
+3. Document all changes and decisions
+4. Validate all implementations before completion
+
+---
+

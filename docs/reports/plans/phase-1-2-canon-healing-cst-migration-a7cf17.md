@@ -2,6 +2,20 @@
 
 This plan migrates the CodeHealerAgent's canon healing capabilities from legacy string-based operations to zero-loss CST-based transformations, following the successful pattern established for import healing in Phase 1.1b.
 
+## Wave Structure
+
+| Waves | Metric | Scope | Checkpoint | Tokens |
+|-------|--------|-------|------------|---------|
+| Wave 1 | Analysis & Discovery | Review current state | A | 25,000 🟢 |
+| Wave 2 | Implementation | Core changes | B | 50,000 🟢 |
+| Wave 3 | Testing & Validation | Verify changes | C | 30,000 🟢 |
+| Wave 4 | Documentation & Cleanup | Finalize | D | 15,000 🟢 |
+
+**Total: 120,000 tokens across 4 waves, all GREEN**
+
+---
+
+
 ## Current State Analysis
 
 The current `heal_canon()` method in `code_healer_agent.py` uses legacy string manipulation for:
@@ -167,3 +181,16 @@ violation = ViolationConstraint(
 4. Integration verification with existing workflow
 
 This plan ensures zero-loss canon healing while maintaining the established patterns from Phase 1.1b.
+
+## Root Cause
+
+[Identify and explain the root cause of the violation]
+
+---
+
+## Corrective Actions
+
+[List the corrective actions taken to resolve the issue]
+
+---
+

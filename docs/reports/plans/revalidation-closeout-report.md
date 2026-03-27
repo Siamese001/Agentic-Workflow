@@ -60,3 +60,16 @@ Revalidation of Phases 1-X completed successfully. All residual gaps identified 
 ---
 *Generated: 2026-03-26*
 *Scope: Phases 1-X Revalidation*
+
+## Findings
+
+[Document key findings from the investigation]
+
+---
+
+## Evidence
+
+[Provide evidence supporting the findings]
+
+---
+

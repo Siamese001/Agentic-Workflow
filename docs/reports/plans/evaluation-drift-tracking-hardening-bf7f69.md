@@ -4,6 +4,20 @@ Locks in a deterministic, interview-grade evaluation and drift tracking system c
 
 ---
 
+## Wave Structure
+
+| Waves | Metric | Scope | Checkpoint | Tokens |
+|-------|--------|-------|------------|---------|
+| Wave 1 | Analysis & Discovery | Review current state | A | 25,000 🟢 |
+| Wave 2 | Implementation | Core changes | B | 50,000 🟢 |
+| Wave 3 | Testing & Validation | Verify changes | C | 30,000 🟢 |
+| Wave 4 | Documentation & Cleanup | Finalize | D | 15,000 🟢 |
+
+**Total: 120,000 tokens across 4 waves, all GREEN**
+
+---
+
+
 ## Current State (AST Scan Findings)
 
 ### Files in scope
@@ -266,3 +280,22 @@ ReplayEvaluationRunner → compare vs L4 baseline → regression alerts
 | L4 persistence volume growth (append-only JSONL) | Low | Monthly rotation policy; store only last 30-day window |
 | Shadow drift threshold not governing: hard-coded 0.92 | High | Phase 5-A: externalize immediately (single-line fix) |
 | `DriftAlert.alert_id` non-deterministic (UUID4) | Medium | Inject `id_factory` in tests; production keeps UUID4 |
+
+## Rules
+
+1. Follow all constitutional rules and guidelines
+2. Maintain compliance with established standards
+3. Document all changes and decisions
+4. Validate all implementations before completion
+
+---
+
+## Success Criteria
+
+- [ ] All objectives completed successfully
+- [ ] Validation tests pass
+- [ ] Documentation updated
+- [ ] Stakeholder approval received
+
+---
+

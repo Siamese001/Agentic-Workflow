@@ -2,6 +2,20 @@
 
 This plan identifies critical gaps between the theoretical Zero-Loss Prompt Taxonomy and current implementation, providing detailed phases and waves to achieve best-in-class prompt governance across all prompt types in the agentic architecture.
 
+## Wave Structure
+
+| Waves | Metric | Scope | Checkpoint | Tokens |
+|-------|--------|-------|------------|---------|
+| Wave 1 | Analysis & Discovery | Review current state | A | 25,000 🟢 |
+| Wave 2 | Implementation | Core changes | B | 50,000 🟢 |
+| Wave 3 | Testing & Validation | Verify changes | C | 30,000 🟢 |
+| Wave 4 | Documentation & Cleanup | Finalize | D | 15,000 🟢 |
+
+**Total: 120,000 tokens across 4 waves, all GREEN**
+
+---
+
+
 ## Executive Summary
 
 The current architecture has foundational prompt governance components but lacks comprehensive implementation of the Zero-Loss Taxonomy's 5-tier authority model, deterministic assembly, and airlock integrity. Critical gaps include missing L5 safety gate integration, incomplete slot-based assembly, absent elevator shaft context loading, and non-deterministic prompt routing.
@@ -297,3 +311,22 @@ class ExecutionOrchestrator:
 This implementation plan bridges the gap between the theoretical Zero-Loss Prompt Taxonomy and current implementation, providing a comprehensive roadmap for achieving best-in-class prompt governance. The phased approach ensures manageable implementation while maintaining system stability and performance.
 
 The plan addresses all critical gaps including L5 safety integration, airlock integrity, comprehensive prompt type coverage, and full L2 execution pipeline integration. Successful implementation will result in a robust, deterministic, and governable prompt architecture that meets the highest standards of security and compliance.
+
+## Rules
+
+1. Follow all constitutional rules and guidelines
+2. Maintain compliance with established standards
+3. Document all changes and decisions
+4. Validate all implementations before completion
+
+---
+
+## Success Criteria
+
+- [ ] All objectives completed successfully
+- [ ] Validation tests pass
+- [ ] Documentation updated
+- [ ] Stakeholder approval received
+
+---
+

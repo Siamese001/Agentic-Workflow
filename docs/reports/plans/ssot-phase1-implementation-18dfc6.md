@@ -2,6 +2,20 @@
 
 This plan addresses critical SSOT compliance violations through a carefully phased approach that minimizes risk by processing files in small, manageable batches with comprehensive validation at each step.
 
+## Wave Structure
+
+| Waves | Metric | Scope | Checkpoint | Tokens |
+|-------|--------|-------|------------|---------|
+| Wave 1 | Analysis & Discovery | Review current state | A | 25,000 🟢 |
+| Wave 2 | Implementation | Core changes | B | 50,000 🟢 |
+| Wave 3 | Testing & Validation | Verify changes | C | 30,000 🟢 |
+| Wave 4 | Documentation & Cleanup | Finalize | D | 15,000 🟢 |
+
+**Total: 120,000 tokens across 4 waves, all GREEN**
+
+---
+
+
 ## Overview
 
 Phase 1 focuses on the highest-priority violations: VALIDATOR (335 files), CONFIG naming (128 files), and SCRIPT file remediation (498 files). The implementation is divided into 10 sub-phases to ensure safe execution with rollback capabilities.
@@ -141,3 +155,13 @@ Phase 1 focuses on the highest-priority violations: VALIDATOR (335 files), CONFI
 - Test suite must be stable and passing
 - CI/CD pipeline access for validation
 - Stakeholder approval for each sub-phase
+
+## Rules
+
+1. Follow all constitutional rules and guidelines
+2. Maintain compliance with established standards
+3. Document all changes and decisions
+4. Validate all implementations before completion
+
+---
+

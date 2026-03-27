@@ -2,6 +2,20 @@
 
 This plan consolidates 15+ redundant L5 agents into 6 unified agents through a 4-phase approach that extracts shared utilities to L4, maintains backwards compatibility, and provides concrete file diffs for each implementation step.
 
+## Wave Structure
+
+| Waves | Metric | Scope | Checkpoint | Tokens |
+|-------|--------|-------|------------|---------|
+| Wave 1 | Analysis & Discovery | Review current state | A | 25,000 🟢 |
+| Wave 2 | Implementation | Core changes | B | 50,000 🟢 |
+| Wave 3 | Testing & Validation | Verify changes | C | 30,000 🟢 |
+| Wave 4 | Documentation & Cleanup | Finalize | D | 15,000 🟢 |
+
+**Total: 120,000 tokens across 4 waves, all GREEN**
+
+---
+
+
 ## Phase 1: Extract Shared Utilities (Week 1)
 
 ### Subphase 1.1: Create L4 Utils Infrastructure
@@ -455,3 +469,13 @@ If any phase introduces regressions:
 2. Run full test suite to verify rollback
 3. Analyze failure and adjust approach
 4. Re-implement with modified strategy
+
+## Rules
+
+1. Follow all constitutional rules and guidelines
+2. Maintain compliance with established standards
+3. Document all changes and decisions
+4. Validate all implementations before completion
+
+---
+

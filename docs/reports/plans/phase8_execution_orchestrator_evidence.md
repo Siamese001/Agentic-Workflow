@@ -94,3 +94,16 @@ Date:   Sat Feb 21 11:16:31 2026 -0500
  .../unit/L0_routing/test_execution_orchestrator.py | 132 ++++++++++++++++++++-
  2 files changed, 145 insertions(+), 10 deletions(-)
 ```
+
+## Findings
+
+[Document key findings from the investigation]
+
+---
+
+## Evidence
+
+[Provide evidence supporting the findings]
+
+---
+

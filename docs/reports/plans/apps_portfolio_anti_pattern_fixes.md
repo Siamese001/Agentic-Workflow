@@ -83,3 +83,16 @@ except (FileNotFoundError, json.JSONDecodeError, ValueError, OSError) as exc:
 3. ⏳ Fix magic_configuration by extracting constants
 4. ⏳ Optimize .pre-commit-config.yaml
 5. ⏳ Commit with clean code (no bypasses, no anti-patterns)
+
+## Findings
+
+[Document key findings from the investigation]
+
+---
+
+## Evidence
+
+[Provide evidence supporting the findings]
+
+---
+

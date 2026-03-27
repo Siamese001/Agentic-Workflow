@@ -7,6 +7,20 @@ Enrich the ADG builder/scanner to produce a richer catalog — more first-class 
 
 ---
 
+## Wave Structure
+
+| Waves | Metric | Scope | Checkpoint | Tokens |
+|-------|--------|-------|------------|---------|
+| Wave 1 | Analysis & Discovery | Review current state | A | 25,000 🟢 |
+| Wave 2 | Implementation | Core changes | B | 50,000 🟢 |
+| Wave 3 | Testing & Validation | Verify changes | C | 30,000 🟢 |
+| Wave 4 | Documentation & Cleanup | Finalize | D | 15,000 🟢 |
+
+**Total: 120,000 tokens across 4 waves, all GREEN**
+
+---
+
+
 ## What the New ADG Data Reveals
 
 Three categories of enrichment gap, all diagnosed directly from `adg_indexed_03122026.sqlite`:
@@ -649,3 +663,22 @@ Also promote `SovereignLLMGateway` symbol node to a `gateway` node (ties back to
 | `PromptSlot` node entity_type | `symbol` (wrong) | **`prompt_slot`** |
 | Seam modules entity_type | `module` (generic) | **`seam`** |
 | `confidence = 0.0` | 100% | **0%** |
+
+## Rules
+
+1. Follow all constitutional rules and guidelines
+2. Maintain compliance with established standards
+3. Document all changes and decisions
+4. Validate all implementations before completion
+
+---
+
+## Success Criteria
+
+- [ ] All objectives completed successfully
+- [ ] Validation tests pass
+- [ ] Documentation updated
+- [ ] Stakeholder approval received
+
+---
+

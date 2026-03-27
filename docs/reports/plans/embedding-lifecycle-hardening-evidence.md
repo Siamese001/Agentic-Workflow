@@ -80,3 +80,16 @@ tests/system_learning/test_phase_c_pipeline_integration.py::test_retrieve_semant
 tests/system_learning/test_phase_c_pipeline_integration.py::test_live_run_adapter_record_count_empty PASSED
 tests/system_learning/test_phase_c_pipeline_integration.py::test_live_run_adapter_record_count_nonzero PASSED
 30 passed in 0.36s
+
+## Findings
+
+[Document key findings from the investigation]
+
+---
+
+## Evidence
+
+[Provide evidence supporting the findings]
+
+---
+

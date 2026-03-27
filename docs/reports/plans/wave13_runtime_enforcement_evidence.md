@@ -47,3 +47,22 @@ $ python -m pytest -q tests/governance/test_req270_273_seam_mutable_ref.py tests
 .......................
 23 passed in 0.08s
 EXIT CODE: 0
+
+## Rules
+
+1. Follow all constitutional rules and guidelines
+2. Maintain compliance with established standards
+3. Document all changes and decisions
+4. Validate all implementations before completion
+
+---
+
+## Success Criteria
+
+- [ ] All objectives completed successfully
+- [ ] Validation tests pass
+- [ ] Documentation updated
+- [ ] Stakeholder approval received
+
+---
+

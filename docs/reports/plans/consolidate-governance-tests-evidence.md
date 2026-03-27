@@ -127,3 +127,16 @@ New failures introduced by this phase: 0
 
 $ python -m pytest -q --color=no tests/governance/test_embedding_invariants.py tests/governance/test_replay_determinism_invariants.py tests/governance/test_gateway_egress_invariants.py tests/governance/test_static_bypass_scanners.py
 45 passed, 4 skipped in 7.72s
+
+## Findings
+
+[Document key findings from the investigation]
+
+---
+
+## Evidence
+
+[Provide evidence supporting the findings]
+
+---
+

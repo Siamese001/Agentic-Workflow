@@ -5,6 +5,20 @@
 **Severity Distribution:** CRITICAL: 394 | HIGH: 91 | MEDIUM: 1
 **Finalization Report:** See `Agentic-Requirements-Finalization.md` for full 8-phase audit + W-FINAL execution report
 
+## Wave Structure
+
+| Waves | Metric | Scope | Checkpoint | Tokens |
+|-------|--------|-------|------------|---------|
+| Wave 1 | Analysis & Discovery | Review current state | A | 25,000 🟢 |
+| Wave 2 | Implementation | Core changes | B | 50,000 🟢 |
+| Wave 3 | Testing & Validation | Verify changes | C | 30,000 🟢 |
+| Wave 4 | Documentation & Cleanup | Finalize | D | 15,000 🟢 |
+
+**Total: 120,000 tokens across 4 waves, all GREEN**
+
+---
+
+
 ## Machine-Verifiable Integrity Block
 
 ```
@@ -489,3 +503,22 @@ ENFORCEMENT_AUDIT_STATUS = PASS (0 failures)
 | REQ-COG-002 | Cognitive Safety | Automatic prompt augmentation MUST inject dependency facts + MRO constraints, be ≤300 tokens, logged/auditable, and included in PromptBundleArtifact lineage | Runtime prompt_governance augmentation + schema | HIGH | Runtime, Schema | EXECUTION_PATH |
 | REQ-HEALX-001 | Healing Seam | HealingProviderInvoker MUST be an injectable Protocol seam; tests MUST use FakeInvoker (no network); production uses DefaultInvoker | Runtime dependency injection + CI enforcement | CRITICAL | Runtime, CI | EXECUTION_PATH |
 | REQ-HEALX-002 | Healing Seam | Invoker MUST return typed InvocationRecord (tier, model_id, trace_id, prompt_hash, replay_key); record persisted to L4 for meta-learning intake | Schema + runtime persistence | HIGH | Runtime, Schema | EXECUTION_PATH |
+
+## Rules
+
+1. Follow all constitutional rules and guidelines
+2. Maintain compliance with established standards
+3. Document all changes and decisions
+4. Validate all implementations before completion
+
+---
+
+## Success Criteria
+
+- [ ] All objectives completed successfully
+- [ ] Validation tests pass
+- [ ] Documentation updated
+- [ ] Stakeholder approval received
+
+---
+

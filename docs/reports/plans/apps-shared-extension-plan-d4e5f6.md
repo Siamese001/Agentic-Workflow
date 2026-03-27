@@ -7,6 +7,20 @@
 
 ---
 
+## Wave Structure
+
+| Waves | Metric | Scope | Checkpoint | Tokens |
+|-------|--------|-------|------------|---------|
+| Wave 1 | Analysis & Discovery | Review current state | A | 25,000 🟢 |
+| Wave 2 | Implementation | Core changes | B | 50,000 🟢 |
+| Wave 3 | Testing & Validation | Verify changes | C | 30,000 🟢 |
+| Wave 4 | Documentation & Cleanup | Finalize | D | 15,000 🟢 |
+
+**Total: 120,000 tokens across 4 waves, all GREEN**
+
+---
+
+
 ## Executive Summary
 
 `apps_shared` (L_SHARED layer, 651 modules) is the **highest fan-out layer** in the repo. The hottest single symbol is `apps_shared/types/sovereign_severity_types.py` with fan-out 1,146. Four new apps (`apps_coaching`, `apps_intel`, `apps_comply`, `apps_onboard`) will add approximately 200–300 new L_APP modules, all of which need to import from `apps_shared`.
@@ -444,3 +458,22 @@ Phase 4 (apps_shared refactors) ──► Phase 6 (ADG re-scan)
 ```
 
 **Critical path:** `compliance_framework_config.py` (Phase 1) → `control_mapping_engine.py` (Phase 2) → `ComplyOrchestrator.py` (Phase 3) → `ComplyGateValidator` (Phase 4). This is the longest chain and should be started first.
+
+## Rules
+
+1. Follow all constitutional rules and guidelines
+2. Maintain compliance with established standards
+3. Document all changes and decisions
+4. Validate all implementations before completion
+
+---
+
+## Success Criteria
+
+- [ ] All objectives completed successfully
+- [ ] Validation tests pass
+- [ ] Documentation updated
+- [ ] Stakeholder approval received
+
+---
+

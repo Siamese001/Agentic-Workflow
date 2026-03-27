@@ -4,6 +4,20 @@
 **Severity**: Architectural (SSOT Violation)
 **Status**: RESOLVED
 
+## Wave Structure
+
+| Waves | Metric | Scope | Checkpoint | Tokens |
+|-------|--------|-------|------------|---------|
+| Wave 1 | Analysis & Discovery | Review current state | A | 25,000 🟢 |
+| Wave 2 | Implementation | Core changes | B | 50,000 🟢 |
+| Wave 3 | Testing & Validation | Verify changes | C | 30,000 🟢 |
+| Wave 4 | Documentation & Cleanup | Finalize | D | 15,000 🟢 |
+
+**Total: 120,000 tokens across 4 waves, all GREEN**
+
+---
+
+
 ## Problem Statement
 
 The structure blueprint configuration existed in **three redundant locations**:
@@ -68,3 +82,16 @@ structure_blueprint_config.py  <-- SHIM (399 lines, re-exports from package)
 1. **New definitions** go in the modular package, not the shim
 2. **The shim must never define its own data** — it only re-exports
 3. **`structure_blueprint_config_new.py` is permanently deleted** — do not recreate
+
+## Violation
+
+[Describe the violation or issue that triggered this RCA]
+
+---
+
+## Corrective Actions
+
+[List the corrective actions taken to resolve the issue]
+
+---
+

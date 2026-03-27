@@ -108,3 +108,16 @@ Replace the duplicated `os.walk` loop with a call to `FilesystemSSOTReconcilerAg
 Before executing Steps 5–6 (removing functions from execute_ssot.py), confirm:
 1. Is `l0_execute.py` the live replacement with equivalent contract test coverage?
 2. Should `test_execute_ssot_v15_contract.py` be deleted wholesale once `l0_execute.py` has its own contract tests (rather than just trimmed in Step 4)?
+
+## Findings
+
+[Document key findings from the investigation]
+
+---
+
+## Evidence
+
+[Provide evidence supporting the findings]
+
+---
+

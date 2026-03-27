@@ -362,3 +362,16 @@ confidence avg:          0.8856
 | `RgHealingOrchestrator` | `BaseHealingOrchestrator` | `...BaseHealingOrchestrator.BaseHealingOrchestrator` | fan-in query |
 | `LICValidationExecutor` | `ParameterizedValidator` | `...ParameterizedValidator.ParameterizedValidator` | bidirectional |
 | `RGValidationExecutor` | `ParameterizedValidator` | `...ParameterizedValidator.ParameterizedValidator` | bidirectional |
+
+## Findings
+
+[Document key findings from the investigation]
+
+---
+
+## Evidence
+
+[Provide evidence supporting the findings]
+
+---
+

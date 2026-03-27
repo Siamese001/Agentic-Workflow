@@ -78,3 +78,16 @@ tests/agentic_core/test_wave6_hitl_gates.py::test_execute_ssot_wires_hitl_approv
 tests/agentic_core/test_wave6_hitl_gates.py::test_execute_ssot_hitl_gate_before_heal_violations PASSED
 
 13 passed in 1.10s
+
+## Findings
+
+[Document key findings from the investigation]
+
+---
+
+## Evidence
+
+[Provide evidence supporting the findings]
+
+---
+

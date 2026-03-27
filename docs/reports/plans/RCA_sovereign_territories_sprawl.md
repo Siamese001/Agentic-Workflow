@@ -147,3 +147,16 @@ for v in violations:
 **Rule:** `SOVEREIGN_TERRITORIES` must never be imported outside `agentic_core/L5_safety/config/structure_blueprint/` package.
 
 **Enforcement:** Add architectural guardian test to block imports of `SOVEREIGN_TERRITORIES` from application code.
+
+## Violation
+
+[Describe the violation or issue that triggered this RCA]
+
+---
+
+## Corrective Actions
+
+[List the corrective actions taken to resolve the issue]
+
+---
+

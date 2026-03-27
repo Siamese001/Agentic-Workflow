@@ -368,3 +368,16 @@ False
 **Bucket totals:** core=19, dev=1, infra=34, sdks=3 (57 total)
 
 **pyproject.toml:** NOT MODIFIED (zero diff against HEAD)
+
+## Findings
+
+[Document key findings from the investigation]
+
+---
+
+## Evidence
+
+[Provide evidence supporting the findings]
+
+---
+

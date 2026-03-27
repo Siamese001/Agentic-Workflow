@@ -5,6 +5,20 @@
 
 ---
 
+## Wave Structure
+
+| Waves | Metric | Scope | Checkpoint | Tokens |
+|-------|--------|-------|------------|---------|
+| Wave 1 | Analysis & Discovery | Review current state | A | 25,000 🟢 |
+| Wave 2 | Implementation | Core changes | B | 50,000 🟢 |
+| Wave 3 | Testing & Validation | Verify changes | C | 30,000 🟢 |
+| Wave 4 | Documentation & Cleanup | Finalize | D | 15,000 🟢 |
+
+**Total: 120,000 tokens across 4 waves, all GREEN**
+
+---
+
+
 ## Summary of Bugs
 
 Four related bugs allow `*Agent.py` files to be autonomously relocated into `tests/` (specifically `tests/support/`) by the healer system. The bugs form a chain: SSOT does not forbid it → confidence heuristic recommends it → relocation guard does not block it → prefix enforcement skips files already inside approved subfolders.
@@ -191,3 +205,22 @@ New file: `tests/architecture/test_hierarchy_agent_invariants.py`
 | `agentic_core/L5_safety/enforcement/mission_utils_enforcer.py` | Add `_calculate_subfolder_confidence_for_agent`, guard `get_best_target_l2` |
 | `agentic_core/L5_safety/reasoning/HierarchyAgent.py` | Fix `_enforce_tests_structure` skip; add `_block_agent_files_in_tests` |
 | `tests/architecture/test_hierarchy_agent_invariants.py` | New — 12 invariant tests |
+
+## Gap Register
+
+| Gap | Priority | Impact | Status |
+|------|----------|--------|---------|
+| [Gap 1] | High | Critical | Open |
+| [Gap 2] | Medium | Moderate | In Progress |
+
+---
+
+## Execution Plan
+
+1. **Phase 1**: Analysis and Planning
+2. **Phase 2**: Implementation
+3. **Phase 3**: Testing and Validation
+4. **Phase 4**: Documentation and Cleanup
+
+---
+

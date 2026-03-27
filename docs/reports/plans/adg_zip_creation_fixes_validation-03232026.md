@@ -218,3 +218,16 @@ The ADG zip creation and archiving system has been comprehensively fixed to prev
 - **Maintainability**: Modular, well-tested codebase
 
 The fixes are **production-ready** and will prevent similar archive failures in the future.
+
+## Findings
+
+[Document key findings from the investigation]
+
+---
+
+## Evidence
+
+[Provide evidence supporting the findings]
+
+---
+

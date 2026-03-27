@@ -4,6 +4,20 @@ Every structural guarantee in the spec (guarantees 1–24) is converted to an en
 
 ---
 
+## Wave Structure
+
+| Waves | Metric | Scope | Checkpoint | Tokens |
+|-------|--------|-------|------------|---------|
+| Wave 1 | Analysis & Discovery | Review current state | A | 25,000 🟢 |
+| Wave 2 | Implementation | Core changes | B | 50,000 🟢 |
+| Wave 3 | Testing & Validation | Verify changes | C | 30,000 🟢 |
+| Wave 4 | Documentation & Cleanup | Finalize | D | 15,000 🟢 |
+
+**Total: 120,000 tokens across 4 waves, all GREEN**
+
+---
+
+
 ## Guarantee → Invariant Mapping (quick ref)
 
 | G# | Guarantee (spec) | Enforcement vehicle |
@@ -1205,3 +1219,22 @@ Every guarantee now has at least one of: (a) runtime hard-raise, (b) CI AST guar
 | Runtime (new) | `human_decision_artifact.py`, `execution_trace.py` (revised), `budget_enforcer.py` |
 | Runtime (modified) | `SovereignLLMGateway.py`, `sandbox_envelope.py`, `human_review_queue.py`, `c0_context_retriever.py`, `meta_learning_pipeline.py` |
 | Invariant tests (new) | `test_c0_informational_only.py`, `test_modify_diff_l5_reclear.py`, `test_unregistered_agent_hard_fail.py`, `test_tier_choke_point.py`, `test_proposal_only_dual_injection.py`, `test_replay_key_determinism.py` |
+
+## Rules
+
+1. Follow all constitutional rules and guidelines
+2. Maintain compliance with established standards
+3. Document all changes and decisions
+4. Validate all implementations before completion
+
+---
+
+## Success Criteria
+
+- [ ] All objectives completed successfully
+- [ ] Validation tests pass
+- [ ] Documentation updated
+- [ ] Stakeholder approval received
+
+---
+

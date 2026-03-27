@@ -2,6 +2,20 @@
 
 This plan implements a Meta-Learning Logic Layer that enables agents to recall successful healing strategies using Pinecone (semantic retrieval) and optimize performance using Redis (hot-path caching), closing the loop on hardening cycles.
 
+## Wave Structure
+
+| Waves | Metric | Scope | Checkpoint | Tokens |
+|-------|--------|-------|------------|---------|
+| Wave 1 | Analysis & Discovery | Review current state | A | 25,000 🟢 |
+| Wave 2 | Implementation | Core changes | B | 50,000 🟢 |
+| Wave 3 | Testing & Validation | Verify changes | C | 30,000 🟢 |
+| Wave 4 | Documentation & Cleanup | Finalize | D | 15,000 🟢 |
+
+**Total: 120,000 tokens across 4 waves, all GREEN**
+
+---
+
+
 ## Routing Instructions
 
 **ACTION REQUIRED**: Move this plan to `docs/reports/plans/meta-learning-integration-plan-f76f56.md` to align with project SSOT documentation structure. Remove the redundant `docs/reports/plan/` directory after migration.
@@ -135,3 +149,22 @@ Based on comprehensive repository analysis of 51+ agents across L0-L6 layers, we
 5. **Week 4**: Full deployment with observability and optimization
 
 This plan provides a systematic approach to embedding Meta-Learning capabilities while maintaining the hardened, sovereign nature of the existing architecture.
+
+## Rules
+
+1. Follow all constitutional rules and guidelines
+2. Maintain compliance with established standards
+3. Document all changes and decisions
+4. Validate all implementations before completion
+
+---
+
+## Success Criteria
+
+- [ ] All objectives completed successfully
+- [ ] Validation tests pass
+- [ ] Documentation updated
+- [ ] Stakeholder approval received
+
+---
+

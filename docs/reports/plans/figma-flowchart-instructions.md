@@ -472,3 +472,16 @@ Recreate existing legend with 4 artifact types:
 | CI Governance badge | 4 CI gates + forbidden flags | Top-right corner |
 | Enforcement Artifacts | 5 new artifact types | Observability strip, right |
 | Control Plane → layers arrows | Governance connections upward | Between sections |
+
+## Findings
+
+[Document key findings from the investigation]
+
+---
+
+## Evidence
+
+[Provide evidence supporting the findings]
+
+---
+

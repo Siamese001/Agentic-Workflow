@@ -52,3 +52,16 @@ All P1–P6 invariants from Prompt v5.0 Enhanced are now COMPLIANT with typed ar
 1. Not weaken existing V15 tests (336 tests, 0 skips).
 2. Not modify the pinned discovery hash.
 3. Produce a new audit delta if any P1–P6 artifact is changed.
+
+## Findings
+
+[Document key findings from the investigation]
+
+---
+
+## Evidence
+
+[Provide evidence supporting the findings]
+
+---
+

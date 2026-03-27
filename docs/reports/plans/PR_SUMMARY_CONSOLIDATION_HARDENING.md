@@ -48,3 +48,16 @@ All baseline/snapshot writes go through `baseline_io.write_json_atomic()` which 
 - `artifacts/consolidation/mro_diamond_baseline.json` — MRO diamond baseline
 - `artifacts/consolidation/centrality_baseline.json` — centrality baseline
 - `artifacts/consolidation/target_manifest_v3.json` — consolidation target manifest
+
+## Findings
+
+[Document key findings from the investigation]
+
+---
+
+## Evidence
+
+[Provide evidence supporting the findings]
+
+---
+

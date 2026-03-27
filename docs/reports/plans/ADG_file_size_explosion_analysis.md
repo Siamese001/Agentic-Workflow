@@ -192,3 +192,16 @@ The ADG file size "explosion" from 221k → 960k edges (**+334%**) is **intentio
 **Verdict**: ✅ **EXPECTED GROWTH** — not a bug, not bloat. This is the cost of comprehensive runtime observability and governance instrumentation across 3,011 modules.
 
 **Action**: Accept current size. Monitor future growth. Set alert at 1.2M edges or 250 MB.
+
+## Violation
+
+[Describe the violation or issue that triggered this RCA]
+
+---
+
+## Corrective Actions
+
+[List the corrective actions taken to resolve the issue]
+
+---
+

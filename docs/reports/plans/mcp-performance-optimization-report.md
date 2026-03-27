@@ -114,3 +114,15 @@ The filesystem and sequential-thinking MCP servers are now optimized for maximum
 3. **Monitor startup times** for validation
 4. **Consider optimizing** other MCP servers if needed
 5. **Document best practices** for team members
+## Findings
+
+[Document key findings from the investigation]
+
+---
+
+## Evidence
+
+[Provide evidence supporting the findings]
+
+---
+

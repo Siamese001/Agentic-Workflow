@@ -123,3 +123,16 @@ tests/unit_min_deps/test_execute_ssot_digest_emission.py::TestNegativeControlTwo
 tests/unit_min_deps/test_execute_ssot_digest_emission.py::TestNegativeControlTwoRun::test_restore_after_tamper_gives_clean_digest PASSED
 
 15 passed in 0.18s
+
+## Findings
+
+[Document key findings from the investigation]
+
+---
+
+## Evidence
+
+[Provide evidence supporting the findings]
+
+---
+

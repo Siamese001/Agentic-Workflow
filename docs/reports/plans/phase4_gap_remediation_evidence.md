@@ -91,3 +91,22 @@ Run 1: W4-DETERMINISM-DIGEST: 1d4c3ef350fbff9f16b519b8a733f94cb293d5c903a75f924a
 Run 2: W4-DETERMINISM-DIGEST: 1d4c3ef350fbff9f16b519b8a733f94cb293d5c903a75f924ad2154848ae8cf1
 
 PASS: Identical W4-DETERMINISM-DIGEST across independent runs.
+
+## Rules
+
+1. Follow all constitutional rules and guidelines
+2. Maintain compliance with established standards
+3. Document all changes and decisions
+4. Validate all implementations before completion
+
+---
+
+## Success Criteria
+
+- [ ] All objectives completed successfully
+- [ ] Validation tests pass
+- [ ] Documentation updated
+- [ ] Stakeholder approval received
+
+---
+

@@ -211,3 +211,16 @@ The core fix is: **redefine gate success criteria to require production callers,
 1. Retrofit existing call sites (P0 urgency)
 2. Add coverage ratio thresholds to CI gates (P0 urgency)
 3. Pre-commit chokepoint bypass gate (P1 urgency)
+
+## Violation
+
+[Describe the violation or issue that triggered this RCA]
+
+---
+
+## Corrective Actions
+
+[List the corrective actions taken to resolve the issue]
+
+---
+

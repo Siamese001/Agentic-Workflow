@@ -125,3 +125,16 @@ Pattern H — __getattr__ lazy loader (VALID, no fix needed):
 $ python -m pytest -q --color=no
 6554 passed, 83 skipped, 7 xfailed in 92.84s
 EXIT CODE: 0
+
+## Findings
+
+[Document key findings from the investigation]
+
+---
+
+## Evidence
+
+[Provide evidence supporting the findings]
+
+---
+

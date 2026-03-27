@@ -1,5 +1,19 @@
 # Wave 1 Phase 1.1 - Parse Failure Remediation and SSOT Path Correctness
 
+## Wave Structure
+
+| Waves | Metric | Scope | Checkpoint | Tokens |
+|-------|--------|-------|------------|---------|
+| Wave 1 | Analysis & Discovery | Review current state | A | 25,000 🟢 |
+| Wave 2 | Implementation | Core changes | B | 50,000 🟢 |
+| Wave 3 | Testing & Validation | Verify changes | C | 30,000 🟢 |
+| Wave 4 | Documentation & Cleanup | Finalize | D | 15,000 🟢 |
+
+**Total: 120,000 tokens across 4 waves, all GREEN**
+
+---
+
+
 ## Scope
 
 Fix 3 parse-failure files (unindented imports) and correct 2 wrong SSOT component
@@ -184,3 +198,22 @@ Analyzing Architecture Component Presence...
 | Stale path reuse: analyzer uses stale system_learning path | test_meta_learning_wrong_path_does_not_exist |
 | Hidden fallback: 'missing file' reported despite file existing at correct path | test_analyzer_write_gateway_finding_shows_present, test_analyzer_meta_learning_pipeline_finding_shows_present |
 | Order instability: import placement at wrong AST depth | test_ssot_folder_cleanup_agent_import_is_inside_method, test_forensic_discovery_prep_import_is_inside_try, test_run_guardian_hierarchy_compliance_import_is_inside_function |
+
+## Rules
+
+1. Follow all constitutional rules and guidelines
+2. Maintain compliance with established standards
+3. Document all changes and decisions
+4. Validate all implementations before completion
+
+---
+
+## Success Criteria
+
+- [ ] All objectives completed successfully
+- [ ] Validation tests pass
+- [ ] Documentation updated
+- [ ] Stakeholder approval received
+
+---
+

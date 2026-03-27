@@ -2,6 +2,20 @@
 
 This plan implements a mathematically immutable, zero-loss architecture for agent LLM API integration with absolute determinism, frozen governance surfaces, and complete elimination of environmental nondeterminism.
 
+## Wave Structure
+
+| Waves | Metric | Scope | Checkpoint | Tokens |
+|-------|--------|-------|------------|---------|
+| Wave 1 | Analysis & Discovery | Review current state | A | 25,000 🟢 |
+| Wave 2 | Implementation | Core changes | B | 50,000 🟢 |
+| Wave 3 | Testing & Validation | Verify changes | C | 30,000 🟢 |
+| Wave 4 | Documentation & Cleanup | Finalize | D | 15,000 🟢 |
+
+**Total: 120,000 tokens across 4 waves, all GREEN**
+
+---
+
+
 ## Absolute Sovereignty Invariants (Mathematically Immutable)
 
 ### Structural Guarantees
@@ -673,3 +687,22 @@ class QwenVLLMAdapter:
 - **Total**: 10-15 days
 
 This truly immutable plan achieves **100% Zero-Loss Architecture compliance** with mathematical determinism guarantees.
+
+## Rules
+
+1. Follow all constitutional rules and guidelines
+2. Maintain compliance with established standards
+3. Document all changes and decisions
+4. Validate all implementations before completion
+
+---
+
+## Success Criteria
+
+- [ ] All objectives completed successfully
+- [ ] Validation tests pass
+- [ ] Documentation updated
+- [ ] Stakeholder approval received
+
+---
+

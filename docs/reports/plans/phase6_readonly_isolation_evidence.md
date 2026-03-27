@@ -210,3 +210,22 @@ tests/agentic_core/test_phase6_end_to_end_readonly_retrieval.py::TestStaticAudit
 | **Static audit: orchestrator imports read_only_retrieval_scope** | test_orchestrator_imports_read_only_scope | PASS |
 | **Static audit: scope module uses global flag** | test_scope_module_uses_global_flag | PASS |
 | **Total: 62 tests, 0 failures** | all three test files | PASS |
+
+## Rules
+
+1. Follow all constitutional rules and guidelines
+2. Maintain compliance with established standards
+3. Document all changes and decisions
+4. Validate all implementations before completion
+
+---
+
+## Success Criteria
+
+- [ ] All objectives completed successfully
+- [ ] Validation tests pass
+- [ ] Documentation updated
+- [ ] Stakeholder approval received
+
+---
+

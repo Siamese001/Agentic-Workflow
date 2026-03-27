@@ -4,6 +4,20 @@
 **Investigator**: Cascade AI
 **Severity**: High - Misleading metrics causing incorrect Wave 7 scope
 
+## Wave Structure
+
+| Waves | Metric | Scope | Checkpoint | Tokens |
+|-------|--------|-------|------------|---------|
+| Wave 1 | Analysis & Discovery | Review current state | A | 25,000 🟢 |
+| Wave 2 | Implementation | Core changes | B | 50,000 🟢 |
+| Wave 3 | Testing & Validation | Verify changes | C | 30,000 🟢 |
+| Wave 4 | Documentation & Cleanup | Finalize | D | 15,000 🟢 |
+
+**Total: 120,000 tokens across 4 waves, all GREEN**
+
+---
+
+
 ## Executive Summary
 
 The ADG reports **4,409 dead_imports** and **1,528 antipatterns** for Wave 7 burndown, despite multiple commits claiming to have removed these violations. Root cause: **ADG was generated BEFORE the Wave 1-6 anomaly fix commits were applied**, creating a temporal ordering issue where the index reflects pre-fix code state.
@@ -140,3 +154,16 @@ Without regenerating the ADG first, Wave 7 work will:
 The antipatterns were NOT reintroduced. The ADG simply never saw the fixes because it was generated from pre-fix code state. Wave 7 scope is based on stale data and must be recalculated after ADG regeneration.
 
 **Next Step**: Run `/adg-redis-refresh` workflow to regenerate ADG from current HEAD before proceeding with any Wave 7 work.
+
+## Violation
+
+[Describe the violation or issue that triggered this RCA]
+
+---
+
+## Corrective Actions
+
+[List the corrective actions taken to resolve the issue]
+
+---
+

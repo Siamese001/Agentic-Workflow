@@ -440,3 +440,16 @@ ENFORCEMENT GAP:
 5. **No Compliance Testing:** No automated tests verify Cascade follows rules
 
 **Fix:** Implement pre-action validation layer that blocks non-compliant actions before execution.
+
+## Violation
+
+[Describe the violation or issue that triggered this RCA]
+
+---
+
+## Corrective Actions
+
+[List the corrective actions taken to resolve the issue]
+
+---
+

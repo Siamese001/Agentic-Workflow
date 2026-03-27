@@ -1,5 +1,19 @@
 # Guardian Junior-Pattern Brittleness Elimination
 
+## Wave Structure
+
+| Waves | Metric | Scope | Checkpoint | Tokens |
+|-------|--------|-------|------------|---------|
+| Wave 1 | Analysis & Discovery | Review current state | A | 25,000 🟢 |
+| Wave 2 | Implementation | Core changes | B | 50,000 🟢 |
+| Wave 3 | Testing & Validation | Verify changes | C | 30,000 🟢 |
+| Wave 4 | Documentation & Cleanup | Finalize | D | 15,000 🟢 |
+
+**Total: 120,000 tokens across 4 waves, all GREEN**
+
+---
+
+
 ## Summary
 
 Eliminated 4 junior-pattern brittleness issues: (1) removed line-number coupling from AST fixtures, (2) ratcheted against `.value` drift for `artifact_class`, (3) SSOT-locked the contract-gate test scope, and (4) enforced alias non-usage beyond definition.
@@ -110,3 +124,22 @@ GUARDIAN STATUS: PASS
 | v5      | 213        | 213+        | +9    |
 
 *Note: Total tests exceed 213 when including pre-existing failing tests outside core guardian suite.*
+
+## Rules
+
+1. Follow all constitutional rules and guidelines
+2. Maintain compliance with established standards
+3. Document all changes and decisions
+4. Validate all implementations before completion
+
+---
+
+## Success Criteria
+
+- [ ] All objectives completed successfully
+- [ ] Validation tests pass
+- [ ] Documentation updated
+- [ ] Stakeholder approval received
+
+---
+

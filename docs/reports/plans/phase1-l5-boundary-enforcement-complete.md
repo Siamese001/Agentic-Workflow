@@ -1,5 +1,19 @@
 # Phase 1: L5 Guardian Boundary Enforcement - COMPLETE
 
+## Wave Structure
+
+| Waves | Metric | Scope | Checkpoint | Tokens |
+|-------|--------|-------|------------|---------|
+| Wave 1 | Analysis & Discovery | Review current state | A | 25,000 🟢 |
+| Wave 2 | Implementation | Core changes | B | 50,000 🟢 |
+| Wave 3 | Testing & Validation | Verify changes | C | 30,000 🟢 |
+| Wave 4 | Documentation & Cleanup | Finalize | D | 15,000 🟢 |
+
+**Total: 120,000 tokens across 4 waves, all GREEN**
+
+---
+
+
 ## Summary
 Phase 1 of the hardened L5→L2 signaling plan has been successfully implemented and committed. The boundary enforcement mechanism is now operational with fail-closed L5 certification verification at L2 initialization.
 
@@ -143,3 +157,22 @@ Phase 1 is complete. The remaining phases from the hardened plan include:
 
 ## Status
 ✅ **COMPLETE** - Phase 1 boundary enforcement is operational and ready for Phase 2 integration.
+
+## Rules
+
+1. Follow all constitutional rules and guidelines
+2. Maintain compliance with established standards
+3. Document all changes and decisions
+4. Validate all implementations before completion
+
+---
+
+## Success Criteria
+
+- [ ] All objectives completed successfully
+- [ ] Validation tests pass
+- [ ] Documentation updated
+- [ ] Stakeholder approval received
+
+---
+

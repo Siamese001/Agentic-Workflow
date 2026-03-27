@@ -1,5 +1,19 @@
 # Test Deprecation Phase 11 — Full Redo Sweep (Zero-Failure Target)
 
+## Wave Structure
+
+| Waves | Metric | Scope | Checkpoint | Tokens |
+|-------|--------|-------|------------|---------|
+| Wave 1 | Analysis & Discovery | Review current state | A | 25,000 🟢 |
+| Wave 2 | Implementation | Core changes | B | 50,000 🟢 |
+| Wave 3 | Testing & Validation | Verify changes | C | 30,000 🟢 |
+| Wave 4 | Documentation & Cleanup | Finalize | D | 15,000 🟢 |
+
+**Total: 120,000 tokens across 4 waves, all GREEN**
+
+---
+
+
 ## Scope
 
 Complete redo of the test deprecation implementation to achieve:
@@ -132,3 +146,22 @@ tests/unit_min_deps/test_ssot_mutation_fence.py:
 ops_scripts/ci/skip_quarantine_check.py:
   - Removed test_discovery_registry_consistency.py from CRITICAL_TEST_FILES
     (file deleted as Cat H: 15/17 tests failing due to assertion rot)
+
+## Rules
+
+1. Follow all constitutional rules and guidelines
+2. Maintain compliance with established standards
+3. Document all changes and decisions
+4. Validate all implementations before completion
+
+---
+
+## Success Criteria
+
+- [ ] All objectives completed successfully
+- [ ] Validation tests pass
+- [ ] Documentation updated
+- [ ] Stakeholder approval received
+
+---
+

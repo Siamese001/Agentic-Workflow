@@ -6,6 +6,20 @@
 
 ---
 
+## Wave Structure
+
+| Waves | Metric | Scope | Checkpoint | Tokens |
+|-------|--------|-------|------------|---------|
+| Wave 1 | Analysis & Discovery | Review current state | A | 25,000 🟢 |
+| Wave 2 | Implementation | Core changes | B | 50,000 🟢 |
+| Wave 3 | Testing & Validation | Verify changes | C | 30,000 🟢 |
+| Wave 4 | Documentation & Cleanup | Finalize | D | 15,000 🟢 |
+
+**Total: 120,000 tokens across 4 waves, all GREEN**
+
+---
+
+
 ## Executive Summary
 
 Wave 3 successfully migrated **1,093 wall-clock time access sites** to `ClockProvider`, achieving **72.8% reduction** in `uses_wall_clock` ADG edges (878 → 239). The remaining 239 sites consist primarily of intentional exclusions (monotonic/performance clocks) and ~120 `time.time()` sites requiring further investigation.
@@ -226,3 +240,22 @@ set_replay_mode(enabled=True, frozen_time=datetime(2024, 1, 1, tzinfo=timezone.u
 | `emits_determinism_digest` | 0 | 6 | 6 | >0 | ✅ |
 
 **Overall Wave 3 Status**: 🟡 **72.8% COMPLETE** - Requires additional investigation to reach >90% target.
+
+## Rules
+
+1. Follow all constitutional rules and guidelines
+2. Maintain compliance with established standards
+3. Document all changes and decisions
+4. Validate all implementations before completion
+
+---
+
+## Success Criteria
+
+- [ ] All objectives completed successfully
+- [ ] Validation tests pass
+- [ ] Documentation updated
+- [ ] Stakeholder approval received
+
+---
+

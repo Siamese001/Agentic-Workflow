@@ -2,6 +2,20 @@
 
 This plan implements a comprehensive system to wire agents in apps_*, agentic_core, and other repo folders to call LLM APIs (Qwen or Gemini) based on confidence levels, using the agent_2x2_inventory.json as the Single Source of Truth (SSOT) for determining which agents need LLM API calls vs deterministic healing.
 
+## Wave Structure
+
+| Waves | Metric | Scope | Checkpoint | Tokens |
+|-------|--------|-------|------------|---------|
+| Wave 1 | Analysis & Discovery | Review current state | A | 25,000 🟢 |
+| Wave 2 | Implementation | Core changes | B | 50,000 🟢 |
+| Wave 3 | Testing & Validation | Verify changes | C | 30,000 🟢 |
+| Wave 4 | Documentation & Cleanup | Finalize | D | 15,000 🟢 |
+
+**Total: 120,000 tokens across 4 waves, all GREEN**
+
+---
+
+
 ## Current State Analysis
 
 ### Existing Infrastructure
@@ -203,3 +217,22 @@ class DeterministicHealingPath:
 - **Total**: 11-16 days
 
 This plan ensures systematic, confidence-based LLM API integration across all agents while maintaining the integrity of deterministic healing pathways.
+
+## Rules
+
+1. Follow all constitutional rules and guidelines
+2. Maintain compliance with established standards
+3. Document all changes and decisions
+4. Validate all implementations before completion
+
+---
+
+## Success Criteria
+
+- [ ] All objectives completed successfully
+- [ ] Validation tests pass
+- [ ] Documentation updated
+- [ ] Stakeholder approval received
+
+---
+

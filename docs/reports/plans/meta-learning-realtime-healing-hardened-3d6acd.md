@@ -4,6 +4,20 @@ This plan integrates architectural hardenings to ensure meta-learning is applied
 
 ---
 
+## Wave Structure
+
+| Waves | Metric | Scope | Checkpoint | Tokens |
+|-------|--------|-------|------------|---------|
+| Wave 1 | Analysis & Discovery | Review current state | A | 25,000 🟢 |
+| Wave 2 | Implementation | Core changes | B | 50,000 🟢 |
+| Wave 3 | Testing & Validation | Verify changes | C | 30,000 🟢 |
+| Wave 4 | Documentation & Cleanup | Finalize | D | 15,000 🟢 |
+
+**Total: 120,000 tokens across 4 waves, all GREEN**
+
+---
+
+
 ## Executive Summary
 
 The original plan closed 6 gaps where meta-learning was post-fact, but introduced sovereignty violations. This hardened revision eliminates those violations while preserving all gap closures. Key changes: pattern advice is advisory-only (no tier promotion), bus is injected from L0, cross-layer imports removed, and success rate store is deterministic.
@@ -252,3 +266,22 @@ Each phase requires tests for:
 | **Total** | **10** | **All 6 gaps** | **Fully compliant** |
 
 This hardened plan closes all meta-learning gaps while preserving architectural sovereignty and determinism.
+
+## Rules
+
+1. Follow all constitutional rules and guidelines
+2. Maintain compliance with established standards
+3. Document all changes and decisions
+4. Validate all implementations before completion
+
+---
+
+## Success Criteria
+
+- [ ] All objectives completed successfully
+- [ ] Validation tests pass
+- [ ] Documentation updated
+- [ ] Stakeholder approval received
+
+---
+

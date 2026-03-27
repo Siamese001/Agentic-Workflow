@@ -74,3 +74,16 @@ Generated: 2026-02-08
 - `agentic_core.L5_safety.config.structure_blueprint.ssot` — `ROOT_WHITELIST`, `DOCS_REPORTS_PLANS`, `get_validated_project_root`, etc.
 - `agentic_core.core.classification_kernel` — `classify_file_standalone`, `is_agent_file`
 - `agent_discovery_full.json` — Canonical agent registry (SSOT via `AGENT_DISCOVERY_JSON`)
+
+## Findings
+
+[Document key findings from the investigation]
+
+---
+
+## Evidence
+
+[Provide evidence supporting the findings]
+
+---
+

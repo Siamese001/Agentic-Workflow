@@ -8,6 +8,20 @@
 
 **Resolution**: Fixed migration tool bugs (underscore exclusion, missing layers, missing `datetime.datetime.utcnow()` pattern). Re-executed migration with 97 additional mutations. Reduced `uses_wall_clock` from 294 → 239 sites. Remaining 239 sites are primarily monotonic/performance clocks (intentional exclusions) plus ~120 `time.time()` sites requiring further investigation.
 
+## Wave Structure
+
+| Waves | Metric | Scope | Checkpoint | Tokens |
+|-------|--------|-------|------------|---------|
+| Wave 1 | Analysis & Discovery | Review current state | A | 25,000 🟢 |
+| Wave 2 | Implementation | Core changes | B | 50,000 🟢 |
+| Wave 3 | Testing & Validation | Verify changes | C | 30,000 🟢 |
+| Wave 4 | Documentation & Cleanup | Finalize | D | 15,000 🟢 |
+
+**Total: 120,000 tokens across 4 waves, all GREEN**
+
+---
+
+
 ## Incident Summary
 
 Wave 3 clock migration tool (`bulk_clock_migrator.py`) successfully migrated 996 sites but left 294 `uses_wall_clock` edges in the ADG. Investigation reveals the remaining sites fall into three categories:
@@ -120,3 +134,10 @@ Tool patterns did not include:
 ## Next Steps
 
 Execute short-term corrective actions to complete Wave 3 clock migration to >90% coverage.
+
+## Violation
+
+[Describe the violation or issue that triggered this RCA]
+
+---
+

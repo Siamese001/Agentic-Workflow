@@ -4,6 +4,20 @@ Hardens the agentic RAG pipeline so query planning (L1), hybrid retrieval (L2/L3
 
 ---
 
+## Wave Structure
+
+| Waves | Metric | Scope | Checkpoint | Tokens |
+|-------|--------|-------|------------|---------|
+| Wave 1 | Analysis & Discovery | Review current state | A | 25,000 🟢 |
+| Wave 2 | Implementation | Core changes | B | 50,000 🟢 |
+| Wave 3 | Testing & Validation | Verify changes | C | 30,000 🟢 |
+| Wave 4 | Documentation & Cleanup | Finalize | D | 15,000 🟢 |
+
+**Total: 120,000 tokens across 4 waves, all GREEN**
+
+---
+
+
 ## Current State (AST Scan Findings)
 
 ### Files in scope
@@ -134,3 +148,22 @@ RAG pipeline is single-pass. No iterative query refinement or sufficiency check 
 | LLM reranking latency in hot path | Medium | Max candidate list bounded; fallback to score-sort |
 | Reflection loop infinite recursion | Low | Hard cap of 2 iterations with counter guard |
 | BM25 index rebuild overhead on startup | Medium | Lazy rebuild only when `.sovereign_local_index.json` absent |
+
+## Rules
+
+1. Follow all constitutional rules and guidelines
+2. Maintain compliance with established standards
+3. Document all changes and decisions
+4. Validate all implementations before completion
+
+---
+
+## Success Criteria
+
+- [ ] All objectives completed successfully
+- [ ] Validation tests pass
+- [ ] Documentation updated
+- [ ] Stakeholder approval received
+
+---
+

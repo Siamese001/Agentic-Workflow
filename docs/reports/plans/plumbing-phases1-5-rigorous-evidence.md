@@ -1,5 +1,19 @@
 # Plumbing Phases 1-5 Rigorous Evidence
 
+## Wave Structure
+
+| Waves | Metric | Scope | Checkpoint | Tokens |
+|-------|--------|-------|------------|---------|
+| Wave 1 | Analysis & Discovery | Review current state | A | 25,000 🟢 |
+| Wave 2 | Implementation | Core changes | B | 50,000 🟢 |
+| Wave 3 | Testing & Validation | Verify changes | C | 30,000 🟢 |
+| Wave 4 | Documentation & Cleanup | Finalize | D | 15,000 🟢 |
+
+**Total: 120,000 tokens across 4 waves, all GREEN**
+
+---
+
+
 ## Scope
 
 Phases 1-5 AST plumbing plan. Changed logic surfaces under audit:
@@ -185,3 +199,22 @@ Phases 1-5 AST plumbing plan. Changed logic surfaces under audit:
 | Repeated execute mutates orchestrator state | ExecutionOrchestrator | test_execute_repeated_calls_same_orchestrator |
 | Error message lost on L3 exception | ExecutionOrchestrator._delegate_to_l3 | test_execute_l3_error_message_preserved_exactly |
 | Seam contains control flow (If/Try) breaking invariant | elevator_shaft_seam | test_load_context_jit_no_control_flow_in_seam (governance) + test_seam_has_no_routing_logic (unit) |
+
+## Rules
+
+1. Follow all constitutional rules and guidelines
+2. Maintain compliance with established standards
+3. Document all changes and decisions
+4. Validate all implementations before completion
+
+---
+
+## Success Criteria
+
+- [ ] All objectives completed successfully
+- [ ] Validation tests pass
+- [ ] Documentation updated
+- [ ] Stakeholder approval received
+
+---
+

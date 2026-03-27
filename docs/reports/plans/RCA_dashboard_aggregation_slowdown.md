@@ -4,6 +4,20 @@
 **Date:** 2026-03-15
 **Severity:** High (Performance Impact)
 
+## Wave Structure
+
+| Waves | Metric | Scope | Checkpoint | Tokens |
+|-------|--------|-------|------------|---------|
+| Wave 1 | Analysis & Discovery | Review current state | A | 25,000 🟢 |
+| Wave 2 | Implementation | Core changes | B | 50,000 🟢 |
+| Wave 3 | Testing & Validation | Verify changes | C | 30,000 🟢 |
+| Wave 4 | Documentation & Cleanup | Finalize | D | 15,000 🟢 |
+
+**Total: 120,000 tokens across 4 waves, all GREEN**
+
+---
+
+
 ## Executive Summary
 
 ADG generation was experiencing severe performance degradation due to recursive dashboard aggregation overhead. Every AST visitor call in the static scanner triggered `_emit_records_execution_trace()`, which in turn called `aggregate_simple_dashboard()`, creating a massive performance bottleneck. The fix is to set `ADG_SCAN_ACTIVE=1` environment variable to disable dashboard aggregation during ADG scans.
@@ -210,3 +224,16 @@ python tools/adg_test_accelerator.py gap
 The root cause was not a design flaw, but an **activation gap** - the guard existed but was never being triggered. Setting `ADG_SCAN_ACTIVE=1` activates the intentional performance optimization.
 
 **Status:** ✅ RESOLVED - All ADG generation entry points now set `ADG_SCAN_ACTIVE=1` by default.
+
+## Violation
+
+[Describe the violation or issue that triggered this RCA]
+
+---
+
+## Corrective Actions
+
+[List the corrective actions taken to resolve the issue]
+
+---
+

@@ -1,5 +1,19 @@
 # ADG System Implementation
 
+## Wave Structure
+
+| Waves | Metric | Scope | Checkpoint | Tokens |
+|-------|--------|-------|------------|---------|
+| Wave 1 | Analysis & Discovery | Review current state | A | 25,000 🟢 |
+| Wave 2 | Implementation | Core changes | B | 50,000 🟢 |
+| Wave 3 | Testing & Validation | Verify changes | C | 30,000 🟢 |
+| Wave 4 | Documentation & Cleanup | Finalize | D | 15,000 🟢 |
+
+**Total: 120,000 tokens across 4 waves, all GREEN**
+
+---
+
+
 ## Scope
 
 Full implementation of the Architecture Dependency Graph (ADG) system:
@@ -345,3 +359,22 @@ Per ss6 exemption: pre-commit fails on repo-wide unrelated violations not touche
 The ADG source files themselves pass all pre-commit hooks (T0-T2b lint/format).
 Follow-on remediation: existing anti-pattern violations in LocationHealerAgent,
 SafetyInspectorAgent, StructureEnforcerAgent should be addressed in a dedicated phase.
+
+## Rules
+
+1. Follow all constitutional rules and guidelines
+2. Maintain compliance with established standards
+3. Document all changes and decisions
+4. Validate all implementations before completion
+
+---
+
+## Success Criteria
+
+- [ ] All objectives completed successfully
+- [ ] Validation tests pass
+- [ ] Documentation updated
+- [ ] Stakeholder approval received
+
+---
+

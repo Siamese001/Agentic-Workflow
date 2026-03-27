@@ -21,3 +21,22 @@ Remove empty tools/ directory, prove zero references remain, run full verificati
 
 ## Evidence File
 Single file: docs/reports/sub/tools_directory_migration_phase1.md (overwritten at end of Wave 1.3 with all raw outputs and final proof).
+
+## Rules
+
+1. Follow all constitutional rules and guidelines
+2. Maintain compliance with established standards
+3. Document all changes and decisions
+4. Validate all implementations before completion
+
+---
+
+## Success Criteria
+
+- [ ] All objectives completed successfully
+- [ ] Validation tests pass
+- [ ] Documentation updated
+- [ ] Stakeholder approval received
+
+---
+

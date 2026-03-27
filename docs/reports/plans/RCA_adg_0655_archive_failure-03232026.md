@@ -202,3 +202,22 @@ with gzip.open('artifacts/adg/_archive/2026-03/adg_run_03232026_0655.zip.gz', 'r
 
 **RCA Status**: ✅ RESOLVED - All corrective actions completed, preventive measures implemented, monitoring established.
 **Next Review**: 2026-04-23 (30-day follow-up)
+
+## Violation
+
+[Describe the violation or issue that triggered this RCA]
+
+---
+
+## Root Cause
+
+[Identify and explain the root cause of the violation]
+
+---
+
+## Corrective Actions
+
+[List the corrective actions taken to resolve the issue]
+
+---
+

@@ -85,3 +85,16 @@ Date:   Sat Feb 21 09:29:42 2026 -0500
  tests/unit/L0_routing/test_path_router.py          | 62 ++++++++++++++++++++++
  2 files changed, 87 insertions(+)
 ```
+
+## Findings
+
+[Document key findings from the investigation]
+
+---
+
+## Evidence
+
+[Provide evidence supporting the findings]
+
+---
+

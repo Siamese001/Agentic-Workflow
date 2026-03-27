@@ -67,3 +67,16 @@ Any change to this policy should:
 The `archives/` directory is tracked in Git due to a **deliberate governance decision** made during the "Canon 2025" reorganization. This represents an intentional architectural choice rather than an oversight or error.
 
 **Evidence**: Commit messages explicitly state "immortalize data/ and archives/" with 6,803 files and 1M+ insertions, indicating a large-scale deliberate action.
+
+## Violation
+
+[Describe the violation or issue that triggered this RCA]
+
+---
+
+## Corrective Actions
+
+[List the corrective actions taken to resolve the issue]
+
+---
+

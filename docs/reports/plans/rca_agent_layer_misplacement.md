@@ -104,3 +104,16 @@ Errors: 0
   - Added `suggest_agent_layer()` method (~130 lines)
   - Added `AGENT_LAYER_MISPLACEMENT` check to `validate_layer_alignment()`
   - Self-exclusion for `FileClassificationAgent.py` in both methods
+
+## Violation
+
+[Describe the violation or issue that triggered this RCA]
+
+---
+
+## Corrective Actions
+
+[List the corrective actions taken to resolve the issue]
+
+---
+

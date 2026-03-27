@@ -82,3 +82,22 @@ EXIT CODE: 0
 pinecone_nodes: 0
 pinecone_importers: 0
 PINECONE_BUDGET (CI gate): 0 (hard zero, enforced)
+
+## Rules
+
+1. Follow all constitutional rules and guidelines
+2. Maintain compliance with established standards
+3. Document all changes and decisions
+4. Validate all implementations before completion
+
+---
+
+## Success Criteria
+
+- [ ] All objectives completed successfully
+- [ ] Validation tests pass
+- [ ] Documentation updated
+- [ ] Stakeholder approval received
+
+---
+

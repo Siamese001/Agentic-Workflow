@@ -98,3 +98,16 @@ All 8 hardening items (H0–H7) implemented across 4 phases:
 | 4 | H6 + H7 | (this commit) | +285 (6 + 279) |
 
 **Total governance tests: 546 (was 189 pre-hardening)**
+
+## Findings
+
+[Document key findings from the investigation]
+
+---
+
+## Evidence
+
+[Provide evidence supporting the findings]
+
+---
+

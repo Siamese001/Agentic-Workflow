@@ -4,6 +4,20 @@ Gap analysis of 10 high-signal anti-patterns against existing code governance en
 
 ---
 
+## Wave Structure
+
+| Waves | Metric | Scope | Checkpoint | Tokens |
+|-------|--------|-------|------------|---------|
+| Wave 1 | Analysis & Discovery | Review current state | A | 25,000 🟢 |
+| Wave 2 | Implementation | Core changes | B | 50,000 🟢 |
+| Wave 3 | Testing & Validation | Verify changes | C | 30,000 🟢 |
+| Wave 4 | Documentation & Cleanup | Finalize | D | 15,000 🟢 |
+
+**Total: 120,000 tokens across 4 waves, all GREEN**
+
+---
+
+
 ## Coverage Summary
 
 | # | Anti-Pattern | Pre-Commit | Guardian Tests | Governance Tests | CI Workflow | Gap Level |
@@ -155,3 +169,22 @@ Gap analysis of 10 high-signal anti-patterns against existing code governance en
 | 🟡 P2 | UWG Mutation — write-call AST scan missing | Activate `_FORBIDDEN_IO_SYMBOLS` write checks in `test_req_p0_gateway_monopoly.py` | Low |
 | 🟡 P2 | Oscillation — wiring not integration-tested | `test_oscillation_circuit_breaker_wired.py` in `tests/integration/` | Medium |
 | 🟡 P2 | Duplicate SSOTs — prompt/spec dedup missing | `test_guardian_duplicate_ssot_prompts.py` in `tests/guardian/` | Medium |
+
+## Gap Register
+
+| Gap | Priority | Impact | Status |
+|------|----------|--------|---------|
+| [Gap 1] | High | Critical | Open |
+| [Gap 2] | Medium | Moderate | In Progress |
+
+---
+
+## Execution Plan
+
+1. **Phase 1**: Analysis and Planning
+2. **Phase 2**: Implementation
+3. **Phase 3**: Testing and Validation
+4. **Phase 4**: Documentation and Cleanup
+
+---
+

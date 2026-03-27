@@ -242,3 +242,16 @@ from the previous RCA masked the crash during static analysis but left productio
 **Fix:** Restore `_emit_records_execution_trace` to its correct single-responsibility contract
 (pure logger, no side effects), and remove all recursion-capable calls from the dashboard
 aggregate stack. All 39 regression tests confirm the fix is complete and correct.
+
+## Violation
+
+[Describe the violation or issue that triggered this RCA]
+
+---
+
+## Corrective Actions
+
+[List the corrective actions taken to resolve the issue]
+
+---
+

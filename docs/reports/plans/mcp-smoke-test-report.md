@@ -235,3 +235,15 @@
 **Test Duration**: Comprehensive validation completed  
 **Critical Issues**: 0  
 **Warnings**: 1 (non-impacting)
+## Findings
+
+[Document key findings from the investigation]
+
+---
+
+## Evidence
+
+[Provide evidence supporting the findings]
+
+---
+

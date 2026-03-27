@@ -1,5 +1,19 @@
 # Phase 1 Gap Remediation Execution Evidence (v2 - post-review correction)
 
+## Wave Structure
+
+| Waves | Metric | Scope | Checkpoint | Tokens |
+|-------|--------|-------|------------|---------|
+| Wave 1 | Analysis & Discovery | Review current state | A | 25,000 🟢 |
+| Wave 2 | Implementation | Core changes | B | 50,000 🟢 |
+| Wave 3 | Testing & Validation | Verify changes | C | 30,000 🟢 |
+| Wave 4 | Documentation & Cleanup | Finalize | D | 15,000 🟢 |
+
+**Total: 120,000 tokens across 4 waves, all GREEN**
+
+---
+
+
 ## Scope
 
 Wave 1 (W1.1-W1.5): Gateway SDK bypass removal (openai/anthropic), CI allowlist
@@ -166,3 +180,22 @@ Phase 1 changes do NOT touch any system_learning module.
 Counts: 3442 passed, 175 failed (deferred), 19 skipped, 10 xfailed.
 Full-suite deferral rationale: system_learning failures pre-date Phase 1
   and are tracked separately. Phase 1 acceptance gate is governance tests only.
+
+## Rules
+
+1. Follow all constitutional rules and guidelines
+2. Maintain compliance with established standards
+3. Document all changes and decisions
+4. Validate all implementations before completion
+
+---
+
+## Success Criteria
+
+- [ ] All objectives completed successfully
+- [ ] Validation tests pass
+- [ ] Documentation updated
+- [ ] Stakeholder approval received
+
+---
+

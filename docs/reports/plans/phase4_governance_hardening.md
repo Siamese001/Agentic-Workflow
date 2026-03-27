@@ -123,3 +123,16 @@ File: `tests/architecture/test_classification_hardening.py`
 
 ### Wave 4.3 (Evidence)
 - `docs/reports/plans/phase4_governance_hardening.md` (this file)
+
+## Findings
+
+[Document key findings from the investigation]
+
+---
+
+## Evidence
+
+[Provide evidence supporting the findings]
+
+---
+

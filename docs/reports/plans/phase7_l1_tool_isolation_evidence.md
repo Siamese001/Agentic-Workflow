@@ -224,3 +224,22 @@ tests/agentic_core/test_phase7_end_to_end_gateway_tool_isolation.py::TestStaticA
 | **Static audit: no direct setex/upsert in tool_intent_executor.py** | test_no_direct_redis_set_in_executor_module | PASS |
 | **Static audit: executor imports is_commit_sandbox_active** | test_executor_imports_commit_sandbox_check | PASS |
 | **Total: 77 tests, 0 failures** | all three test files | PASS |
+
+## Rules
+
+1. Follow all constitutional rules and guidelines
+2. Maintain compliance with established standards
+3. Document all changes and decisions
+4. Validate all implementations before completion
+
+---
+
+## Success Criteria
+
+- [ ] All objectives completed successfully
+- [ ] Validation tests pass
+- [ ] Documentation updated
+- [ ] Stakeholder approval received
+
+---
+

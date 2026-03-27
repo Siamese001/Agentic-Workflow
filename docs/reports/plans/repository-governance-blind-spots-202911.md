@@ -2,6 +2,20 @@
 
 This report identifies critical governance blind spots across the entire agentic workflow repository beyond the previously documented docs/ folder gaps.
 
+## Wave Structure
+
+| Waves | Metric | Scope | Checkpoint | Tokens |
+|-------|--------|-------|------------|---------|
+| Wave 1 | Analysis & Discovery | Review current state | A | 25,000 🟢 |
+| Wave 2 | Implementation | Core changes | B | 50,000 🟢 |
+| Wave 3 | Testing & Validation | Verify changes | C | 30,000 🟢 |
+| Wave 4 | Documentation & Cleanup | Finalize | D | 15,000 🟢 |
+
+**Total: 120,000 tokens across 4 waves, all GREEN**
+
+---
+
+
 ## Summary
 
 The repository contains multiple significant governance blind spots affecting configuration management, security, artifacts, logs, test quarantine, and backup systems. These gaps create potential security vulnerabilities, operational inefficiencies, and compliance risks.
@@ -237,3 +251,22 @@ The repository contains multiple significant governance blind spots affecting co
 - **Monitoring**: Continuous monitoring of governance effectiveness
 
 This analysis reveals critical governance gaps that, when addressed, will significantly improve security, operational efficiency, and compliance across the entire agentic workflow system.
+
+## Rules
+
+1. Follow all constitutional rules and guidelines
+2. Maintain compliance with established standards
+3. Document all changes and decisions
+4. Validate all implementations before completion
+
+---
+
+## Success Criteria
+
+- [ ] All objectives completed successfully
+- [ ] Validation tests pass
+- [ ] Documentation updated
+- [ ] Stakeholder approval received
+
+---
+

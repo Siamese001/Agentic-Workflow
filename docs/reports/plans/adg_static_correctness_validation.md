@@ -133,3 +133,16 @@ But fails on:
 4. **Signal ratio → 0.90**: Reclassify `exports` and `decomposes_into` as meaningful (debatable) or reduce their emission
 5. **Synthetic count → 0**: Either remove `violation_propagates_through` edges or raise their confidence above 0.5
 6. **Duplicate ratio → 0**: Deduplicate edges in post-processing or add visitor-awareness to edge emission
+
+## Findings
+
+[Document key findings from the investigation]
+
+---
+
+## Evidence
+
+[Provide evidence supporting the findings]
+
+---
+

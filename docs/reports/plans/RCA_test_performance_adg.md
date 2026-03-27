@@ -5,6 +5,20 @@
 
 ---
 
+## Wave Structure
+
+| Waves | Metric | Scope | Checkpoint | Tokens |
+|-------|--------|-------|------------|---------|
+| Wave 1 | Analysis & Discovery | Review current state | A | 25,000 🟢 |
+| Wave 2 | Implementation | Core changes | B | 50,000 🟢 |
+| Wave 3 | Testing & Validation | Verify changes | C | 30,000 🟢 |
+| Wave 4 | Documentation & Cleanup | Finalize | D | 15,000 🟢 |
+
+**Total: 120,000 tokens across 4 waves, all GREEN**
+
+---
+
+
 ## Executive Summary
 
 Tests account for **38% of all ADG edges** (322,978 / 841,382) across **3,274 test files**. The root causes of slow test execution are: (1) massive per-file bootstrap overhead from `lifecycle_trace_contract` imports (76–77 emitter calls per file), (2) the `tests/adg/` directory averaging **672 edges per file** (13× the `tests/unit/` average), and (3) expensive non-structural edge types (`tests_execution_of`, `decomposes_into`, `flows_to`) that dominate test file processing.
@@ -338,3 +352,16 @@ def mock_adg():
 ## Conclusion
 
 The ADG proves that **test files are treated identically to production code** by the scanner — all 33+ visitors, all 97 relation types, all bootstrap wiring. This creates a situation where 38% of the entire graph is test-related overhead. This phased approach systematically decouples test coverage tracking from test execution performance while preserving architectural integrity.
+
+## Violation
+
+[Describe the violation or issue that triggered this RCA]
+
+---
+
+## Corrective Actions
+
+[List the corrective actions taken to resolve the issue]
+
+---
+

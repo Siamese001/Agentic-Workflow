@@ -4,6 +4,20 @@ Complete integrated plan to wire `text-embedding-3-large` into all HS injection 
 
 ---
 
+## Wave Structure
+
+| Waves | Metric | Scope | Checkpoint | Tokens |
+|-------|--------|-------|------------|---------|
+| Wave 1 | Analysis & Discovery | Review current state | A | 25,000 🟢 |
+| Wave 2 | Implementation | Core changes | B | 50,000 🟢 |
+| Wave 3 | Testing & Validation | Verify changes | C | 30,000 🟢 |
+| Wave 4 | Documentation & Cleanup | Finalize | D | 15,000 🟢 |
+
+**Total: 120,000 tokens across 4 waves, all GREEN**
+
+---
+
+
 ## Architecture Snapshot
 
 | Component | File | Current State |
@@ -346,3 +360,13 @@ Governance test asserts this invariant.
 - Replay engine uses 1536-dim synthetic vectors (no reshaping)
 
 **Result:** Phase 10 reaches 100% structural closure with full OpenAI `text-embedding-3-large` activation across all HS injection points — elevated from "activated feature" to **sovereign infrastructure primitive**.
+
+## Execution Plan
+
+1. **Phase 1**: Analysis and Planning
+2. **Phase 2**: Implementation
+3. **Phase 3**: Testing and Validation
+4. **Phase 4**: Documentation and Cleanup
+
+---
+

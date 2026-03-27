@@ -264,3 +264,22 @@ tests/agentic_core/test_phase4_ml_end_to_end_envelope.py::TestDirectClientBypass
 | AST: default_ttl_seconds field declared inside MLCacheConfig | test_default_ttl_field_present_in_class | PASS |
 | AST: literal 3600 does not appear outside MLCacheConfig body | test_no_banned_hardcoded_ttl_outside_config_class | PASS |
 | **Total: 65 tests, 0 failures** | all four test files | PASS |
+
+## Rules
+
+1. Follow all constitutional rules and guidelines
+2. Maintain compliance with established standards
+3. Document all changes and decisions
+4. Validate all implementations before completion
+
+---
+
+## Success Criteria
+
+- [ ] All objectives completed successfully
+- [ ] Validation tests pass
+- [ ] Documentation updated
+- [ ] Stakeholder approval received
+
+---
+

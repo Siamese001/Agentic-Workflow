@@ -199,3 +199,16 @@ All 54 `@standard_heal` agents route through `decide_heal_escalation()` in
 `HEAL_POLICY_MODEL_ESCALATION=1` env var is set AND confidence falls below 0.75.
 At runtime with default env: **all 54 resolve deterministically (no LLM)**. LLM
 escalation is opt-in per deployment.
+
+## Findings
+
+[Document key findings from the investigation]
+
+---
+
+## Evidence
+
+[Provide evidence supporting the findings]
+
+---
+

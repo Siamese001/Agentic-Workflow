@@ -111,3 +111,22 @@ tests/unit/prompt_governance/test_prompt_governance_coverage.py       — 21 pas
 3. **Register app-level agents** — The `AGENT_REGISTRY` only has infrastructure agents. App-level agents (`ValidatorAgent`, `HOPPipelineExecutor`, etc.) should be registered with proper tier classification.
 
 4. **ADG re-index after these changes** — Run `python tools/generate_full_adg.py` to pick up the widened `PROMPT_INJECTION_SYMBOLS` in the next scan.
+
+## Gap Register
+
+| Gap | Priority | Impact | Status |
+|------|----------|--------|---------|
+| [Gap 1] | High | Critical | Open |
+| [Gap 2] | Medium | Moderate | In Progress |
+
+---
+
+## Execution Plan
+
+1. **Phase 1**: Analysis and Planning
+2. **Phase 2**: Implementation
+3. **Phase 3**: Testing and Validation
+4. **Phase 4**: Documentation and Cleanup
+
+---
+

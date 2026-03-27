@@ -230,3 +230,16 @@ All rationalization work is complete and verified. No further action needed.
 - `TestBaseClassInterfaceContracts` (9 tests) — `inspect` + `issubclass`
 - `TestFileRelocationVerification` (5 tests) — `Path.exists()`
 - `TestMROVerification` (2 tests) — `inspect.getmro()`
+
+## Findings
+
+[Document key findings from the investigation]
+
+---
+
+## Evidence
+
+[Provide evidence supporting the findings]
+
+---
+

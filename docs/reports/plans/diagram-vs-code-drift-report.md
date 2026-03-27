@@ -199,3 +199,16 @@ Your diagrams are local PNGs, not in Figma. The Figma MCP needs live Figma URLs 
 ---
 
 *Generated 2026-02-11. Cross-referenced against: agent_discovery_full.json, structure_blueprint, classification_kernel.py, consolidation artifacts, and 5 architecture PNGs.*
+
+## Findings
+
+[Document key findings from the investigation]
+
+---
+
+## Evidence
+
+[Provide evidence supporting the findings]
+
+---
+

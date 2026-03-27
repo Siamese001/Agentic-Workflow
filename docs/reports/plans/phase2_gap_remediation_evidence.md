@@ -1,5 +1,19 @@
 # Phase 2 Gap Remediation Evidence
 
+## Wave Structure
+
+| Waves | Metric | Scope | Checkpoint | Tokens |
+|-------|--------|-------|------------|---------|
+| Wave 1 | Analysis & Discovery | Review current state | A | 25,000 🟢 |
+| Wave 2 | Implementation | Core changes | B | 50,000 🟢 |
+| Wave 3 | Testing & Validation | Verify changes | C | 30,000 🟢 |
+| Wave 4 | Documentation & Cleanup | Finalize | D | 15,000 🟢 |
+
+**Total: 120,000 tokens across 4 waves, all GREEN**
+
+---
+
+
 ## PHASE 2 ACCEPTANCE CRITERION (BINDING)
 
 - Phase 2 acceptance gate: `pytest -m governance` must complete and all Phase-2-added governance tests must pass.
@@ -129,3 +143,22 @@ SOV-DELTA: check_object_dunder_setattr.py AST scanner
 - SDK_IMPORT_SCAN = python ops_scripts/ci/check_llm_sdk_imports.py + OK: no forbidden LLM/network SDK imports
 - WALL_CLOCK_SCAN = N/A
 - FULL_SUITE_STATUS = DEFERRED (24 pre-existing failures, 1073 passed, all 26 new P2 tests pass)
+
+## Rules
+
+1. Follow all constitutional rules and guidelines
+2. Maintain compliance with established standards
+3. Document all changes and decisions
+4. Validate all implementations before completion
+
+---
+
+## Success Criteria
+
+- [ ] All objectives completed successfully
+- [ ] Validation tests pass
+- [ ] Documentation updated
+- [ ] Stakeholder approval received
+
+---
+

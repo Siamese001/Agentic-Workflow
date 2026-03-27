@@ -2,6 +2,20 @@
 
 This plan analyzes semantic gaps between the documented agentic architecture and actual repository implementation, providing a phased remediation approach with constitutional-grade testing requirements aligned with `.windsurfrules` §4.
 
+## Wave Structure
+
+| Waves | Metric | Scope | Checkpoint | Tokens |
+|-------|--------|-------|------------|---------|
+| Wave 1 | Analysis & Discovery | Review current state | A | 25,000 🟢 |
+| Wave 2 | Implementation | Core changes | B | 50,000 🟢 |
+| Wave 3 | Testing & Validation | Verify changes | C | 30,000 🟢 |
+| Wave 4 | Documentation & Cleanup | Finalize | D | 15,000 🟢 |
+
+**Total: 120,000 tokens across 4 waves, all GREEN**
+
+---
+
+
 ## Executive Summary
 
 The agentic process mapping document describes a sophisticated 6-layer architecture with strict sovereignty boundaries, deterministic execution, and comprehensive governance. The actual repository shows 23 critical gaps in implementation completeness, layer separation, and architectural compliance. This hardened plan provides a 4-wave remediation strategy with rigorous testing requirements ensuring every changed logic surface has deterministic tests for success paths, branch paths, negative paths, failure/exception paths, and recovery behavior.
@@ -788,3 +802,22 @@ The gap between documented architecture and actual implementation is significant
 5. **Determinism First**: Replay mode stability proven for all decision surfaces
 
 **Constitutional Compliance**: All phases align with `.windsurfrules` §4 testing requirements, ensuring no defect can recur through the same ingress path and every fail-closed claim has proving automated test.
+
+## Gap Register
+
+| Gap | Priority | Impact | Status |
+|------|----------|--------|---------|
+| [Gap 1] | High | Critical | Open |
+| [Gap 2] | Medium | Moderate | In Progress |
+
+---
+
+## Execution Plan
+
+1. **Phase 1**: Analysis and Planning
+2. **Phase 2**: Implementation
+3. **Phase 3**: Testing and Validation
+4. **Phase 4**: Documentation and Cleanup
+
+---
+

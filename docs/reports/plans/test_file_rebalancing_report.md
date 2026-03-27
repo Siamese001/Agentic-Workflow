@@ -41,3 +41,16 @@ All output files verified with `pytest --collect-only -q`. Zero test count delta
 | `tests/unit_min_deps/test_meta_learning_pipeline_wiring.py` | 30 |
 | `tests/unit_min_deps/test_vllm_contracts.py` | 22 |
 | `tests/unit_min_deps/test_vllm_replay.py` | 11 |
+
+## Findings
+
+[Document key findings from the investigation]
+
+---
+
+## Evidence
+
+[Provide evidence supporting the findings]
+
+---
+

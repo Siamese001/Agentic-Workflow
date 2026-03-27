@@ -197,3 +197,22 @@ with patch('agentic_core.cloud_native.cloud_native_manager.config'):
 4. **Error path testing is essential** - All defects are in error handling paths
 
 **RECOMMENDATION:** Treat this as a critical quality gate. The system is not production-ready until these defects are resolved and comprehensive error path testing is implemented.
+
+## Violation
+
+[Describe the violation or issue that triggered this RCA]
+
+---
+
+## Root Cause
+
+[Identify and explain the root cause of the violation]
+
+---
+
+## Corrective Actions
+
+[List the corrective actions taken to resolve the issue]
+
+---
+

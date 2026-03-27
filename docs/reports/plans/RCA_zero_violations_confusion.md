@@ -68,3 +68,16 @@ The ADG issues are a **separate workstream** requiring:
 - Layer violation remediation (import refactoring per gravity rules)
 
 These should be tracked as separate tasks, not conflated with anti-pattern burndown.
+
+## Violation
+
+[Describe the violation or issue that triggered this RCA]
+
+---
+
+## Corrective Actions
+
+[List the corrective actions taken to resolve the issue]
+
+---
+

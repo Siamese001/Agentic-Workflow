@@ -321,3 +321,16 @@ Cache write failures do not prevent result return per §4:134-139
 - Determinism guaranteed via content-addressed keys
 - Fail-closed validation before cache operations
 - Side-effect safety proven for all error paths
+
+## Findings
+
+[Document key findings from the investigation]
+
+---
+
+## Evidence
+
+[Provide evidence supporting the findings]
+
+---
+

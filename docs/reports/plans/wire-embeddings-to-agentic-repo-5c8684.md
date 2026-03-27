@@ -2,6 +2,20 @@
 
 Integrate the 1.14GB `text-embedding-3-large` seed pack into the agentic repo's highest-impact subsystems, with streaming-hash normalization, eps-guarded division, pack-hash-seeded spot-checks, z-score σ-floor, total kill-switch coverage, replay-mode RAG bypass, fallback telemetry containment, and psutil process-identity fork guard — fully aligned with L0–L6 zero-loss model.
 
+## Wave Structure
+
+| Waves | Metric | Scope | Checkpoint | Tokens |
+|-------|--------|-------|------------|---------|
+| Wave 1 | Analysis & Discovery | Review current state | A | 25,000 🟢 |
+| Wave 2 | Implementation | Core changes | B | 50,000 🟢 |
+| Wave 3 | Testing & Validation | Verify changes | C | 30,000 🟢 |
+| Wave 4 | Documentation & Cleanup | Finalize | D | 15,000 🟢 |
+
+**Total: 120,000 tokens across 4 waves, all GREEN**
+
+---
+
+
 ## Embedding Pack Reference
 ```
 namespace:  healing_contexts
@@ -261,3 +275,22 @@ All emitted **async via Meta-Learning Bus only** — zero synchronous routing si
 - No changes to existing builder/validator/artifact/replay logic
 - No Pinecone migration
 - `healing_contexts` pack is **read-only** at runtime; all writes go to versioned isolated namespaces
+
+## Rules
+
+1. Follow all constitutional rules and guidelines
+2. Maintain compliance with established standards
+3. Document all changes and decisions
+4. Validate all implementations before completion
+
+---
+
+## Success Criteria
+
+- [ ] All objectives completed successfully
+- [ ] Validation tests pass
+- [ ] Documentation updated
+- [ ] Stakeholder approval received
+
+---
+

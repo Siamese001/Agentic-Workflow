@@ -122,3 +122,10 @@ All 23 dead copies had **0 imports** across the codebase. The canonical (importe
 | Documented interfaces/ Option B convention | N/A | DONE |
 | Documented mixins.py placement (correct) | N/A | DONE |
 | Documented reasoning/ non-Agent files | 4 files | DOCUMENTED (future work) |
+
+## Corrective Actions
+
+[List the corrective actions taken to resolve the issue]
+
+---
+

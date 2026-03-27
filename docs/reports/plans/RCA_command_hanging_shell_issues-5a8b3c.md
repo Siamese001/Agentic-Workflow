@@ -63,3 +63,10 @@ This RCA is now RESOLVED. All immediate corrective actions have been completed a
 ---
 *Created: 2026-03-26*
 *Last Updated: 2026-03-26*
+
+## Corrective Actions
+
+[List the corrective actions taken to resolve the issue]
+
+---
+

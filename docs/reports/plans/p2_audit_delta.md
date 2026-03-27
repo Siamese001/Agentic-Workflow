@@ -82,3 +82,16 @@ GUARDIAN STATUS: PASS
 | `agentic_core/L0_maintenance/types/v15_p2_types.py` | Created — P2 typed artifacts (SurgicalManifest, SemanticClock, BoundarySnapshot, cognitive memory types, ForensicTraceBuffer) |
 | `agentic_core/L0_maintenance/types/v15_p2_contracts.py` | Created — P2 enforcement contracts (forbidden input validation, AST serialization, dedupe, wall-clock scan, rollback verification) |
 | `tests/guardian/test_v15_p2_compliance.py` | Created — 64 regression tests (0 skips) |
+
+## Findings
+
+[Document key findings from the investigation]
+
+---
+
+## Evidence
+
+[Provide evidence supporting the findings]
+
+---
+

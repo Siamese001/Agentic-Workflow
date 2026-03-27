@@ -2,6 +2,20 @@
 **Date**: 2026-02-26
 **Reference**: `docs/technical/agentic_process_mapping.md`
 
+## Wave Structure
+
+| Waves | Metric | Scope | Checkpoint | Tokens |
+|-------|--------|-------|------------|---------|
+| Wave 1 | Analysis & Discovery | Review current state | A | 25,000 🟢 |
+| Wave 2 | Implementation | Core changes | B | 50,000 🟢 |
+| Wave 3 | Testing & Validation | Verify changes | C | 30,000 🟢 |
+| Wave 4 | Documentation & Cleanup | Finalize | D | 15,000 🟢 |
+
+**Total: 120,000 tokens across 4 waves, all GREEN**
+
+---
+
+
 ## Executive Summary
 
 The agentic system maintains strong separation between L0-L6 layers and apps_* packages, but **critical violations remain** where apps_* packages directly import from agentic_core.L* layers, bypassing the intended interface boundaries.
@@ -99,3 +113,22 @@ from agentic_core.L0_routing.engines.assembly_stage import canonical_bytes
 2. Systematically replace direct imports in apps_* files
 3. Add to CI pipeline: `python -m agentic_core.enforcement.import_boundary_check`
 4. Update architectural documentation to reflect corrected boundaries
+
+## Gap Register
+
+| Gap | Priority | Impact | Status |
+|------|----------|--------|---------|
+| [Gap 1] | High | Critical | Open |
+| [Gap 2] | Medium | Moderate | In Progress |
+
+---
+
+## Execution Plan
+
+1. **Phase 1**: Analysis and Planning
+2. **Phase 2**: Implementation
+3. **Phase 3**: Testing and Validation
+4. **Phase 4**: Documentation and Cleanup
+
+---
+

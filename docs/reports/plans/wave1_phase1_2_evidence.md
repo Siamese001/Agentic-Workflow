@@ -1,5 +1,19 @@
 # Wave 1 Phase 1.2 - Sovereignty: Direct Provider Import Detection Fix
 
+## Wave Structure
+
+| Waves | Metric | Scope | Checkpoint | Tokens |
+|-------|--------|-------|------------|---------|
+| Wave 1 | Analysis & Discovery | Review current state | A | 25,000 🟢 |
+| Wave 2 | Implementation | Core changes | B | 50,000 🟢 |
+| Wave 3 | Testing & Validation | Verify changes | C | 30,000 🟢 |
+| Wave 4 | Documentation & Cleanup | Finalize | D | 15,000 🟢 |
+
+**Total: 120,000 tokens across 4 waves, all GREEN**
+
+---
+
+
 ## Scope
 
 Fix direct provider import detection to eliminate 8 false-positive internal
@@ -157,3 +171,22 @@ collected 24 / executed 24
 | Off-by-one: same-layer imports wrongly flagged as upward | test_detect_upward_imports_same_layer_not_upward |
 | Hidden fallback: missing layer returns non-empty violation list | test_detect_upward_imports_no_layer_returns_empty |
 | Duplicate mutation: non-L2 provider SDK imports go undetected | test_no_real_provider_imports_outside_l2 |
+
+## Rules
+
+1. Follow all constitutional rules and guidelines
+2. Maintain compliance with established standards
+3. Document all changes and decisions
+4. Validate all implementations before completion
+
+---
+
+## Success Criteria
+
+- [ ] All objectives completed successfully
+- [ ] Validation tests pass
+- [ ] Documentation updated
+- [ ] Stakeholder approval received
+
+---
+

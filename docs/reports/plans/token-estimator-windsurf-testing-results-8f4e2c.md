@@ -1,5 +1,19 @@
 # Token Estimator Testing Results - Windsurf Integration
 
+## Wave Structure
+
+| Waves | Metric | Scope | Checkpoint | Tokens |
+|-------|--------|-------|------------|---------|
+| Wave 1 | Analysis & Discovery | Review current state | A | 25,000 🟢 |
+| Wave 2 | Implementation | Core changes | B | 50,000 🟢 |
+| Wave 3 | Testing & Validation | Verify changes | C | 30,000 🟢 |
+| Wave 4 | Documentation & Cleanup | Finalize | D | 15,000 🟢 |
+
+**Total: 120,000 tokens across 4 waves, all GREEN**
+
+---
+
+
 ## 🎯 Executive Summary
 
 The token planning estimator has been **successfully implemented and tested** in Windsurf with comprehensive enforcement capabilities. All 90 tests pass, demonstrating robust production readiness for SWE 1.5 development workflows.
@@ -199,3 +213,22 @@ The implementation successfully addresses all requirements for deterministic, co
 **Test Environment**: Windows, Python 3.12.10  
 **Total Test Execution Time**: ~7.6 seconds for 90 tests  
 **Status**: ✅ PRODUCTION READY
+
+## Rules
+
+1. Follow all constitutional rules and guidelines
+2. Maintain compliance with established standards
+3. Document all changes and decisions
+4. Validate all implementations before completion
+
+---
+
+## Success Criteria
+
+- [ ] All objectives completed successfully
+- [ ] Validation tests pass
+- [ ] Documentation updated
+- [ ] Stakeholder approval received
+
+---
+

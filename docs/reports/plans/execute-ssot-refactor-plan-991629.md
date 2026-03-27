@@ -2,6 +2,20 @@
 
 Retire `execute_ssot_entrypoint.py` and decompose the 3,126-line `execute_ssot.py` monolith into layer-aligned modules that consume Guardian output, matching the A++ Enforceable L2 Control Spec (Guardian → L3 HIL → L2 Validator-Healer).
 
+## Wave Structure
+
+| Waves | Metric | Scope | Checkpoint | Tokens |
+|-------|--------|-------|------------|---------|
+| Wave 1 | Analysis & Discovery | Review current state | A | 25,000 🟢 |
+| Wave 2 | Implementation | Core changes | B | 50,000 🟢 |
+| Wave 3 | Testing & Validation | Verify changes | C | 30,000 🟢 |
+| Wave 4 | Documentation & Cleanup | Finalize | D | 15,000 🟢 |
+
+**Total: 120,000 tokens across 4 waves, all GREEN**
+
+---
+
+
 ## Context
 
 **Current state**: `execute_ssot.py` is a pre-Guardian monolith containing a 5-phase pipeline (Discovery → Reconciliation → Alignment → Validation → Healing → Certification) with its own confidence-based decision engine, agent discovery, state management, and reporting. `execute_ssot_entrypoint.py` is a 115-line shell that gates access to it behind `--legacy`.
@@ -142,3 +156,22 @@ run_all_guardians.py          # L5: deterministic scan
 - **Archived files**: 2 (execute_ssot_entrypoint.py, execute_ssot.py)
 - **New guardian scripts** (Step 5): 4, but these are phase 2 of the refactor
 - **LOC delta**: ~+400 new, ~-3,240 archived = net -2,840
+
+## Rules
+
+1. Follow all constitutional rules and guidelines
+2. Maintain compliance with established standards
+3. Document all changes and decisions
+4. Validate all implementations before completion
+
+---
+
+## Success Criteria
+
+- [ ] All objectives completed successfully
+- [ ] Validation tests pass
+- [ ] Documentation updated
+- [ ] Stakeholder approval received
+
+---
+

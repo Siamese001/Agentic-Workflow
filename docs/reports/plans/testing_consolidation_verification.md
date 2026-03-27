@@ -88,3 +88,16 @@
 ✅ **Signal clarity significantly improved**
 ✅ **Enforceability enhanced through centralization**
 ✅ **All rigorous testing standards preserved (including negative tests)**
+
+## Findings
+
+[Document key findings from the investigation]
+
+---
+
+## Evidence
+
+[Provide evidence supporting the findings]
+
+---
+

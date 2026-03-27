@@ -2,6 +2,20 @@
 
 This plan integrates embeddings throughout the existing L0-L6 agentic architecture with local SSD storage optimization, enabling semantic similarity matching, pattern recognition, and intelligent optimization while leveraging 4TB SSD for high-performance local embedding population and storage.
 
+## Wave Structure
+
+| Waves | Metric | Scope | Checkpoint | Tokens |
+|-------|--------|-------|------------|---------|
+| Wave 1 | Analysis & Discovery | Review current state | A | 25,000 🟢 |
+| Wave 2 | Implementation | Core changes | B | 50,000 🟢 |
+| Wave 3 | Testing & Validation | Verify changes | C | 30,000 🟢 |
+| Wave 4 | Documentation & Cleanup | Finalize | D | 15,000 🟢 |
+
+**Total: 120,000 tokens across 4 waves, all GREEN**
+
+---
+
+
 ## CURRENT STATE ANALYSIS
 
 ### Existing Embedding Infrastructure (Latest)
@@ -456,3 +470,22 @@ class SSDOptimizationConfig:
 6. **Week 9-10**: Implement DPO enhancement and production monitoring
 
 This unified plan provides comprehensive embedding integration throughout the meta-learning pipeline while fully leveraging your 4TB SSD for high-performance local storage, maintaining cloud backup capabilities, and ensuring robust, scalable, and efficient semantic intelligence across the entire agentic architecture.
+
+## Rules
+
+1. Follow all constitutional rules and guidelines
+2. Maintain compliance with established standards
+3. Document all changes and decisions
+4. Validate all implementations before completion
+
+---
+
+## Success Criteria
+
+- [ ] All objectives completed successfully
+- [ ] Validation tests pass
+- [ ] Documentation updated
+- [ ] Stakeholder approval received
+
+---
+

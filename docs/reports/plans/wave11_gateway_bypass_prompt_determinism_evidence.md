@@ -43,3 +43,22 @@ $ python -m pytest -q tests/governance/test_req011_012_gateway_bypass.py tests/g
 .........
 9 passed in 5.51s
 EXIT CODE: 0
+
+## Rules
+
+1. Follow all constitutional rules and guidelines
+2. Maintain compliance with established standards
+3. Document all changes and decisions
+4. Validate all implementations before completion
+
+---
+
+## Success Criteria
+
+- [ ] All objectives completed successfully
+- [ ] Validation tests pass
+- [ ] Documentation updated
+- [ ] Stakeholder approval received
+
+---
+

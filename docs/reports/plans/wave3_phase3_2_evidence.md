@@ -304,3 +304,16 @@ collected 44 / executed 44
 | ARCH-COMPONENT-WEAK gap generated despite signals present | test_arch_component_signals_present_no_gap |
 | _dedupe_gaps drops lower-priority duplicate instead of higher-priority | test_dedupe_gaps_duplicate_key_keeps_higher_priority |
 | _dedupe_gaps output not sorted by priority | test_dedupe_gaps_sorted_by_priority |
+
+## Findings
+
+[Document key findings from the investigation]
+
+---
+
+## Evidence
+
+[Provide evidence supporting the findings]
+
+---
+

@@ -181,3 +181,16 @@ The "Silent Swallower" patterns represent **controlled, documented, and architec
 - Guardian Comments: 2,471 explicit approvals
 - Test Coverage: 142/142 tests pass with exception handling
 - System Learning: Pattern detection and adaptive policies
+
+## Root Cause
+
+[Identify and explain the root cause of the violation]
+
+---
+
+## Corrective Actions
+
+[List the corrective actions taken to resolve the issue]
+
+---
+

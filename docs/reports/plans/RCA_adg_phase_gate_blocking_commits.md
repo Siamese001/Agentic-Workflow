@@ -113,3 +113,15 @@ Consider modifying the ADG phase gate to:
 - Full functionality restored
 
 The pre-commit hook optimization is now successfully deployed and functioning correctly.
+## Violation
+
+[Describe the violation or issue that triggered this RCA]
+
+---
+
+## Corrective Actions
+
+[List the corrective actions taken to resolve the issue]
+
+---
+

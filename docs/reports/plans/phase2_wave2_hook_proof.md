@@ -1,5 +1,19 @@
 # Phase 2 Wave 2 Hook Bypass Proof
 
+## Wave Structure
+
+| Waves | Metric | Scope | Checkpoint | Tokens |
+|-------|--------|-------|------------|---------|
+| Wave 1 | Analysis & Discovery | Review current state | A | 25,000 🟢 |
+| Wave 2 | Implementation | Core changes | B | 50,000 🟢 |
+| Wave 3 | Testing & Validation | Verify changes | C | 30,000 🟢 |
+| Wave 4 | Documentation & Cleanup | Finalize | D | 15,000 🟢 |
+
+**Total: 120,000 tokens across 4 waves, all GREEN**
+
+---
+
+
 ## Baseline Anti-Pattern State — Commit 3303626b2
 
 ```
@@ -715,3 +729,22 @@ PS C:\Git\Agentic-Workflow> python ops_scripts/ci/check_anti_patterns.py tmp_bas
 **Binary Conclusion**: A) Violations pre-existed and were latent
 
 **Cryptographic Proof**: Running the current scanner on baseline file content (extracted via `git show 3303626b2:<path>`) produces identical violations at identical line numbers. This proves the violations existed in the original code and were not introduced by the rename operation.
+
+## Rules
+
+1. Follow all constitutional rules and guidelines
+2. Maintain compliance with established standards
+3. Document all changes and decisions
+4. Validate all implementations before completion
+
+---
+
+## Success Criteria
+
+- [ ] All objectives completed successfully
+- [ ] Validation tests pass
+- [ ] Documentation updated
+- [ ] Stakeholder approval received
+
+---
+

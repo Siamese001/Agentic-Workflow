@@ -252,3 +252,16 @@ equivalent export from `structure_blueprint_config`.
 | 7 | L — `SubatomicTestingMixin` not imported | 2 files | Low |
 | 8 | M — Script side-effect on import | 1 file | Low |
 | 9 | C/D/E/F/G/N — misc NameError/ImportError | 8 files | Low–Medium |
+
+## Findings
+
+[Document key findings from the investigation]
+
+---
+
+## Evidence
+
+[Provide evidence supporting the findings]
+
+---
+

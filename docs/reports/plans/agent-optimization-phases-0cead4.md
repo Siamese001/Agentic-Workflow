@@ -2,6 +2,20 @@
 
 This plan breaks down the comprehensive agent optimization project into small, manageable phases with clear deliverables and validation criteria for each step.
 
+## Wave Structure
+
+| Waves | Metric | Scope | Checkpoint | Tokens |
+|-------|--------|-------|------------|---------|
+| Wave 1 | Analysis & Discovery | Review current state | A | 25,000 🟢 |
+| Wave 2 | Implementation | Core changes | B | 50,000 🟢 |
+| Wave 3 | Testing & Validation | Verify changes | C | 30,000 🟢 |
+| Wave 4 | Documentation & Cleanup | Finalize | D | 15,000 🟢 |
+
+**Total: 120,000 tokens across 4 waves, all GREEN**
+
+---
+
+
 ## Phase 1: Foundation & Infrastructure (Week 1)
 
 ### Phase 1.1: Deterministic Layer Framework Setup
@@ -214,3 +228,13 @@ This plan breaks down the comprehensive agent optimization project into small, m
 - **Cost:** 60%+ reduction in LLM API calls
 - **Reliability:** 99.9% uptime for deterministic components
 - **Maintainability:** 30%+ reduction in code complexity
+
+## Rules
+
+1. Follow all constitutional rules and guidelines
+2. Maintain compliance with established standards
+3. Document all changes and decisions
+4. Validate all implementations before completion
+
+---
+

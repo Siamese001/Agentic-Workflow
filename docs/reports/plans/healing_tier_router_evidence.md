@@ -139,3 +139,16 @@ tests/agentic_core/L2_execution/healers/test_healing_tier_router.py
 docs/technical/agent_confidence_tiering_recommendations.csv
 docs/technical/agent_confidence_tiering_recommendations.md
 ```
+
+## Findings
+
+[Document key findings from the investigation]
+
+---
+
+## Evidence
+
+[Provide evidence supporting the findings]
+
+---
+

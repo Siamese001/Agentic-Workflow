@@ -4,6 +4,20 @@ Exhaustive bug/inefficiency audit of `agentic_core/L0_routing/scripts/execute_ss
 
 ---
 
+## Wave Structure
+
+| Waves | Metric | Scope | Checkpoint | Tokens |
+|-------|--------|-------|------------|---------|
+| Wave 1 | Analysis & Discovery | Review current state | A | 25,000 🟢 |
+| Wave 2 | Implementation | Core changes | B | 50,000 🟢 |
+| Wave 3 | Testing & Validation | Verify changes | C | 30,000 🟢 |
+| Wave 4 | Documentation & Cleanup | Finalize | D | 15,000 🟢 |
+
+**Total: 120,000 tokens across 4 waves, all GREEN**
+
+---
+
+
 ## P1 — Correctness: Report Accuracy (7 bugs + 3 new)
 
 ### B1 · Global violations stamped onto every per-territory JSON
@@ -209,3 +223,22 @@ Exhaustive bug/inefficiency audit of `agentic_core/L0_routing/scripts/execute_ss
 - No dead expressions or unreachable code in modified sections
 - `state_mgr.save()` call count reduced to <50 per run (from 500+)
 - Per-territory stdout output suppressed unless `--verbose`
+
+## Rules
+
+1. Follow all constitutional rules and guidelines
+2. Maintain compliance with established standards
+3. Document all changes and decisions
+4. Validate all implementations before completion
+
+---
+
+## Success Criteria
+
+- [ ] All objectives completed successfully
+- [ ] Validation tests pass
+- [ ] Documentation updated
+- [ ] Stakeholder approval received
+
+---
+

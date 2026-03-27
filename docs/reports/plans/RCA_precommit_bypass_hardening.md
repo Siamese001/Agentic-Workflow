@@ -398,3 +398,16 @@ The ability to bypass pre-commit hooks with a single flag is a **systemic vulner
 4. **Rare** - used only for genuine emergencies
 
 **Key Principle**: If tests are failing, fix the tests. Never bypass quality gates to "unblock" broken code.
+
+## Violation
+
+[Describe the violation or issue that triggered this RCA]
+
+---
+
+## Corrective Actions
+
+[List the corrective actions taken to resolve the issue]
+
+---
+

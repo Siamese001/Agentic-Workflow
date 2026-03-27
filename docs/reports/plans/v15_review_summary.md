@@ -31,3 +31,16 @@
 **Ready for human approval: NO**
 
 Reason(s): gate failures or missing evidence
+
+## Findings
+
+[Document key findings from the investigation]
+
+---
+
+## Evidence
+
+[Provide evidence supporting the findings]
+
+---
+

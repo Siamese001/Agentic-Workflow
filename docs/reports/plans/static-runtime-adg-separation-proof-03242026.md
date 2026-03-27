@@ -238,3 +238,16 @@ The static/runtime ADG separation has been achieved with perfect compliance to t
 5. **Perfect mental model alignment** with library analogy
 
 The separation is proven, documented, and ready for production use.
+
+## Findings
+
+[Document key findings from the investigation]
+
+---
+
+## Evidence
+
+[Provide evidence supporting the findings]
+
+---
+

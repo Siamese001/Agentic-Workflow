@@ -93,3 +93,16 @@ Date:   Sat Feb 21 11:19:55 2026 -0500
 
     feat(L6): add deterministic OutcomeReconciler (Phase 9.2)
 ```
+
+## Findings
+
+[Document key findings from the investigation]
+
+---
+
+## Evidence
+
+[Provide evidence supporting the findings]
+
+---
+

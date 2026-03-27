@@ -119,3 +119,16 @@ failures without my changes on branch ssot_test).
 | observability_probe replaces conversational_repair | EXECUTION_PLAN + CANONICAL_ROSTER_KEYS + agents dict updated | test_observability_probe_replaces_conversational_repair |
 | root_hygiene no longer dead code | RootHygieneAdapter invokes run() directly | test_root_hygiene_in_pipeline |
 | cognitive_disposition excluded from pipeline loop | AGENT_PIPELINE has 9 entries; cda is advisor only | test_agent_pipeline_contains_nine_agents |
+
+## Findings
+
+[Document key findings from the investigation]
+
+---
+
+## Evidence
+
+[Provide evidence supporting the findings]
+
+---
+

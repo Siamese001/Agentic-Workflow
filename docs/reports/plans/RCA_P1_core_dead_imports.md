@@ -6,6 +6,20 @@
 
 ---
 
+## Wave Structure
+
+| Waves | Metric | Scope | Checkpoint | Tokens |
+|-------|--------|-------|------------|---------|
+| Wave 1 | Analysis & Discovery | Review current state | A | 25,000 🟢 |
+| Wave 2 | Implementation | Core changes | B | 50,000 🟢 |
+| Wave 3 | Testing & Validation | Verify changes | C | 30,000 🟢 |
+| Wave 4 | Documentation & Cleanup | Finalize | D | 15,000 🟢 |
+
+**Total: 120,000 tokens across 4 waves, all GREEN**
+
+---
+
+
 ## 1. Problem Statement
 
 `P1_core/` directories were deprecated and physically removed from all layers
@@ -340,3 +354,22 @@ in place. The table below maps each R-item to the delivered artifact.
 - `artifacts/l0_refactor/phase2_import_sites_pre.txt` — import site inventory
 - This RCA document: `docs/reports/plans/RCA_P1_core_dead_imports.md`
 - Deprecation governance: `docs/reports/plans/DEPRECATION_PLAYBOOK.md`
+
+## Violation
+
+[Describe the violation or issue that triggered this RCA]
+
+---
+
+## Root Cause
+
+[Identify and explain the root cause of the violation]
+
+---
+
+## Corrective Actions
+
+[List the corrective actions taken to resolve the issue]
+
+---
+

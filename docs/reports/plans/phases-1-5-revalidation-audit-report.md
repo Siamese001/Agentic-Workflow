@@ -5,6 +5,20 @@
 
 ---
 
+## Wave Structure
+
+| Waves | Metric | Scope | Checkpoint | Tokens |
+|-------|--------|-------|------------|---------|
+| Wave 1 | Analysis & Discovery | Review current state | A | 25,000 🟢 |
+| Wave 2 | Implementation | Core changes | B | 50,000 🟢 |
+| Wave 3 | Testing & Validation | Verify changes | C | 30,000 🟢 |
+| Wave 4 | Documentation & Cleanup | Finalize | D | 15,000 🟢 |
+
+**Total: 120,000 tokens across 4 waves, all GREEN**
+
+---
+
+
 ## EXECUTIVE SUMMARY
 
 **CRITICAL FINDINGS:** 12 hidden defects discovered across 6 failure categories
@@ -369,3 +383,22 @@ def test_anomaly_detection_determinism():
 **RECOMMENDATION:** Do not deploy to production until all HIGH and CRITICAL severity defects are addressed. The test suite needs significant hardening to provide meaningful validation of system correctness.
 
 **ESTIMATED REMEDIATION TIME:** 2-3 days for critical fixes, 1 week for comprehensive test hardening.
+
+## Rules
+
+1. Follow all constitutional rules and guidelines
+2. Maintain compliance with established standards
+3. Document all changes and decisions
+4. Validate all implementations before completion
+
+---
+
+## Success Criteria
+
+- [ ] All objectives completed successfully
+- [ ] Validation tests pass
+- [ ] Documentation updated
+- [ ] Stakeholder approval received
+
+---
+

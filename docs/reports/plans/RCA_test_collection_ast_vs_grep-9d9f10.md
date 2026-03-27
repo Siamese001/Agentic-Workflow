@@ -6,6 +6,20 @@
 **Status**: ✅ RESOLVED
 **Severity**: HIGH (Constitutional Rule Violation)
 
+## Wave Structure
+
+| Waves | Metric | Scope | Checkpoint | Tokens |
+|-------|--------|-------|------------|---------|
+| Wave 1 | Analysis & Discovery | Review current state | A | 25,000 🟢 |
+| Wave 2 | Implementation | Core changes | B | 50,000 🟢 |
+| Wave 3 | Testing & Validation | Verify changes | C | 30,000 🟢 |
+| Wave 4 | Documentation & Cleanup | Finalize | D | 15,000 🟢 |
+
+**Total: 120,000 tokens across 4 waves, all GREEN**
+
+---
+
+
 ## Incident Summary
 
 Test collection commands are using `pytest --collect-only` followed by `grep/regex` processing, violating Windsurf Constitutional Rule §4.3 which forbids "Regex/grep for structural logic". The system should use unified AST-based processing throughout.
@@ -83,3 +97,10 @@ This fix aligns with the **ADG vs AST Reconciliation Architecture**:
 ## Resolution Status
 
 ✅ **FULLY RESOLVED** - Test collection now uses unified AST scanning per Windsurf Constitutional requirements. No grep/regex usage in structural logic processing.
+
+## Violation
+
+[Describe the violation or issue that triggered this RCA]
+
+---
+

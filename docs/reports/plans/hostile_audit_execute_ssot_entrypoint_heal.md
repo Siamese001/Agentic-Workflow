@@ -1,4 +1,18 @@
 # HOSTILE MASTER AUDITOR REPORT
+## Wave Structure
+
+| Waves | Metric | Scope | Checkpoint | Tokens |
+|-------|--------|-------|------------|---------|
+| Wave 1 | Analysis & Discovery | Review current state | A | 25,000 🟢 |
+| Wave 2 | Implementation | Core changes | B | 50,000 🟢 |
+| Wave 3 | Testing & Validation | Verify changes | C | 30,000 🟢 |
+| Wave 4 | Documentation & Cleanup | Finalize | D | 15,000 🟢 |
+
+**Total: 120,000 tokens across 4 waves, all GREEN**
+
+---
+
+
 ## Target: `python -m agentic_core.L0_routing.scripts.execute_ssot_entrypoint --heal`
 ## Date: 2026-03-09 | Auditor position: zero-trust, forensic-grade standard
 
@@ -929,3 +943,22 @@ Trust is restored when **all of the following are verifiable from artifacts alon
 7. `decision_summary.json` derives `overall_result` solely from sub-artifacts, not from memory counters
 
 Until all 7 conditions are met for a given run, the run's result is **UNVERIFIED** and must be treated as a potential false positive.
+
+## Rules
+
+1. Follow all constitutional rules and guidelines
+2. Maintain compliance with established standards
+3. Document all changes and decisions
+4. Validate all implementations before completion
+
+---
+
+## Success Criteria
+
+- [ ] All objectives completed successfully
+- [ ] Validation tests pass
+- [ ] Documentation updated
+- [ ] Stakeholder approval received
+
+---
+

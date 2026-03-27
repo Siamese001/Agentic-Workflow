@@ -1,5 +1,19 @@
 # Remaining Scope Breakdown - Phases 2C-6
 
+## Wave Structure
+
+| Waves | Metric | Scope | Checkpoint | Tokens |
+|-------|--------|-------|------------|---------|
+| Wave 1 | Analysis & Discovery | Review current state | A | 25,000 🟢 |
+| Wave 2 | Implementation | Core changes | B | 50,000 🟢 |
+| Wave 3 | Testing & Validation | Verify changes | C | 30,000 🟢 |
+| Wave 4 | Documentation & Cleanup | Finalize | D | 15,000 🟢 |
+
+**Total: 120,000 tokens across 4 waves, all GREEN**
+
+---
+
+
 ## Current State
 - **Total Progress:** Phases 1-2B Complete (57% reduction in broken imports)
 - **Remaining Issues:** 3 broken imports, 64 signature mismatches
@@ -275,3 +289,22 @@ Each phase must meet:
 4. **Validate Continuously:** Run audit after each change to verify improvement
 
 This breakdown ensures success through small, testable increments with clear validation criteria at each step.
+
+## Rules
+
+1. Follow all constitutional rules and guidelines
+2. Maintain compliance with established standards
+3. Document all changes and decisions
+4. Validate all implementations before completion
+
+---
+
+## Success Criteria
+
+- [ ] All objectives completed successfully
+- [ ] Validation tests pass
+- [ ] Documentation updated
+- [ ] Stakeholder approval received
+
+---
+

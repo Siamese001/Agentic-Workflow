@@ -2517,3 +2517,16 @@ ADG: 6036 modules, GT_covers=7822, GV_violates=0
 - `agentic_core/utils/workflow_engines/reranker.py::HeuristicReranker`
 - `agentic_core/utils/workflow_engines/reranker.py::PassthroughReranker`
 - `agentic_core/utils/workflow_engines/validators.py::ChunkManifestValidator`
+
+## Findings
+
+[Document key findings from the investigation]
+
+---
+
+## Evidence
+
+[Provide evidence supporting the findings]
+
+---
+

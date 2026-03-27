@@ -149,3 +149,16 @@ Breakdown of line_no=1 excluding legitimate imports (3,698):
 ---
 
 *Audit completed 2026-03-24. All findings are falsifiable and reproducible via `tools/adg_scanner_audit.py`.*
+
+## Findings
+
+[Document key findings from the investigation]
+
+---
+
+## Evidence
+
+[Provide evidence supporting the findings]
+
+---
+

@@ -2,6 +2,20 @@
 
 This plan provides a detailed phased approach to enhance the FileClassificationAgent with improved agent detection logic and new category detection capabilities, ensuring minimal disruption and maximum success.
 
+## Wave Structure
+
+| Waves | Metric | Scope | Checkpoint | Tokens |
+|-------|--------|-------|------------|---------|
+| Wave 1 | Analysis & Discovery | Review current state | A | 25,000 🟢 |
+| Wave 2 | Implementation | Core changes | B | 50,000 🟢 |
+| Wave 3 | Testing & Validation | Verify changes | C | 30,000 🟢 |
+| Wave 4 | Documentation & Cleanup | Finalize | D | 15,000 🟢 |
+
+**Total: 120,000 tokens across 4 waves, all GREEN**
+
+---
+
+
 ## Phase 0: Foundation & Preparation (1 day)
 
 ### Sub-phase 0.1: Environment Setup
@@ -181,3 +195,13 @@ This plan provides a detailed phased approach to enhance the FileClassificationA
 3. Begin Phase 0: Foundation & Preparation
 4. Daily progress updates via standup meetings
 5. Weekly milestone reviews
+
+## Rules
+
+1. Follow all constitutional rules and guidelines
+2. Maintain compliance with established standards
+3. Document all changes and decisions
+4. Validate all implementations before completion
+
+---
+

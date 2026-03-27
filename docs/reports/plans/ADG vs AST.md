@@ -44,3 +44,16 @@
                             |       Ground Truth        |
                             |   (The True Target Files) |
                             +---------------------------+
+
+## Findings
+
+[Document key findings from the investigation]
+
+---
+
+## Evidence
+
+[Provide evidence supporting the findings]
+
+---
+

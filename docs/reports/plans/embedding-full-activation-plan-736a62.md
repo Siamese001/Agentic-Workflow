@@ -4,6 +4,20 @@ Complete plan to wire `text-embedding-3-large` into all HS injection points, eli
 
 ---
 
+## Wave Structure
+
+| Waves | Metric | Scope | Checkpoint | Tokens |
+|-------|--------|-------|------------|---------|
+| Wave 1 | Analysis & Discovery | Review current state | A | 25,000 🟢 |
+| Wave 2 | Implementation | Core changes | B | 50,000 🟢 |
+| Wave 3 | Testing & Validation | Verify changes | C | 30,000 🟢 |
+| Wave 4 | Documentation & Cleanup | Finalize | D | 15,000 🟢 |
+
+**Total: 120,000 tokens across 4 waves, all GREEN**
+
+---
+
+
 ## Architecture Snapshot
 
 | Component | File | Current State |
@@ -264,3 +278,13 @@ Complete plan to wire `text-embedding-3-large` into all HS injection points, eli
 - `EmbeddingInputGuard.guard()` strips secrets; logger never contains raw embedded text (AST-verified)
 - No direct `openai` SDK imports outside `embedding_factory.py` (AST: cryptographic allowlist)
 - All Phase 10 tests pass (12 passed, 1 skipped); new governance test covers all 10 phases
+
+## Execution Plan
+
+1. **Phase 1**: Analysis and Planning
+2. **Phase 2**: Implementation
+3. **Phase 3**: Testing and Validation
+4. **Phase 4**: Documentation and Cleanup
+
+---
+

@@ -270,3 +270,16 @@ python tools/generate_full_adg.py
 # Check closure report
 python -c "import json; r=json.load(open('artifacts/adg/closure_validation_report_03242026_1242.json')); print(r['summary'])"
 ```
+
+## Findings
+
+[Document key findings from the investigation]
+
+---
+
+## Evidence
+
+[Provide evidence supporting the findings]
+
+---
+

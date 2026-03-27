@@ -154,3 +154,16 @@ Phase A (WRONG_IMPORT non-test)  →  Phase B (LAYER_ROOTS)
 ```
 
 Run `pytest tests/ --ignore=tests/e2e --ignore=tests/integration_full_deps` after each phase.
+
+## Findings
+
+[Document key findings from the investigation]
+
+---
+
+## Evidence
+
+[Provide evidence supporting the findings]
+
+---
+

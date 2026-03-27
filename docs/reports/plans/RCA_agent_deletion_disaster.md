@@ -7,6 +7,20 @@
 
 ---
 
+## Wave Structure
+
+| Waves | Metric | Scope | Checkpoint | Tokens |
+|-------|--------|-------|------------|---------|
+| Wave 1 | Analysis & Discovery | Review current state | A | 25,000 🟢 |
+| Wave 2 | Implementation | Core changes | B | 50,000 🟢 |
+| Wave 3 | Testing & Validation | Verify changes | C | 30,000 🟢 |
+| Wave 4 | Documentation & Cleanup | Finalize | D | 15,000 🟢 |
+
+**Total: 120,000 tokens across 4 waves, all GREEN**
+
+---
+
+
 ## Executive Summary
 
 `LocationAgent.py` was **intentionally deleted** on 2026-03-07 in commit `ce2fce74d` as part of a "Phase 2 shim cleanup" refactor. However, the file **reappeared** in later commits and was deleted again in commit `301eb5547` (2026-03-11) during test failure fixes. This reveals a **catastrophic gap** in our governance: **agents can be deleted without authorization, validation, or safeguards**.
@@ -471,3 +485,16 @@ The deletion of `LocationAgent.py` reveals a **catastrophic gap** in our governa
 **Key Principle**: Agent deletion is a **destructive operation** that requires the same rigor as database schema changes - authorization, validation, migration verification, and rollback planning.
 
 We must implement agent deletion guards immediately to prevent future disasters.
+
+## Violation
+
+[Describe the violation or issue that triggered this RCA]
+
+---
+
+## Corrective Actions
+
+[List the corrective actions taken to resolve the issue]
+
+---
+

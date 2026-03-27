@@ -101,3 +101,16 @@ python tools/validate_plan_format.py
 ```
 
 This enforcement solution ensures Windsurf plan format compliance through automated validation and pre-commit integration.
+
+## Violation
+
+[Describe the violation or issue that triggered this RCA]
+
+---
+
+## Corrective Actions
+
+[List the corrective actions taken to resolve the issue]
+
+---
+

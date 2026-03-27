@@ -5,6 +5,20 @@
 
 ---
 
+## Wave Structure
+
+| Waves | Metric | Scope | Checkpoint | Tokens |
+|-------|--------|-------|------------|---------|
+| Wave 1 | Analysis & Discovery | Review current state | A | 25,000 🟢 |
+| Wave 2 | Implementation | Core changes | B | 50,000 🟢 |
+| Wave 3 | Testing & Validation | Verify changes | C | 30,000 🟢 |
+| Wave 4 | Documentation & Cleanup | Finalize | D | 15,000 🟢 |
+
+**Total: 120,000 tokens across 4 waves, all GREEN**
+
+---
+
+
 ## 1. Full Inventory of Guardian Tests
 
 **Source**: `pytest --collect-only -q tests/guardian` → 503 tests collected.
@@ -517,3 +531,16 @@ AST-scans all `CONTRACT_GATE_TEST_MODULES` for forbidden constructs:
 | `SUBATOMIC_MONOLITH`, `SUBATOMIC_MIXIN_LIMIT`, `SUBATOMIC_METHOD_LIMIT`, `SUBATOMIC_NAMING`, `SUBATOMIC_LAYER_ZONING` | `test_subatomic_compliance`, `test_ssot_compliance` |
 | `FORENSIC_LLM_VALIDATION`, `FORENSIC_STRUCTURAL`, `FORENSIC_INTROSPECTION` | `test_forensic_audit_unified` |
 | `CONSTITUTIONAL_BASE_AGENT` | `test_ssot_compliance` |
+
+## Root Cause
+
+[Identify and explain the root cause of the violation]
+
+---
+
+## Corrective Actions
+
+[List the corrective actions taken to resolve the issue]
+
+---
+

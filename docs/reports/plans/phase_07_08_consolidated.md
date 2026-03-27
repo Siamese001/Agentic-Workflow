@@ -2368,3 +2368,10 @@ jobs:
       - name: Run evidence contract checker
         run: python ops_scripts/ci/check_evidence_contract_v2.py --paths docs/reports/plans
 ```
+
+## Findings
+
+[Document key findings from the investigation]
+
+---
+

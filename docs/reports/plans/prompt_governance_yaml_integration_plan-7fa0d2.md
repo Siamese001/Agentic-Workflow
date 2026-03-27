@@ -1,5 +1,19 @@
 # Plan: Convert Markdown Prompt Injections to Production-Grade YAML and Ensure Full Integration
 
+## Wave Structure
+
+| Waves | Metric | Scope | Checkpoint | Tokens |
+|-------|--------|-------|------------|---------|
+| Wave 1 | Analysis & Discovery | Review current state | A | 25,000 🟢 |
+| Wave 2 | Implementation | Core changes | B | 50,000 🟢 |
+| Wave 3 | Testing & Validation | Verify changes | C | 30,000 🟢 |
+| Wave 4 | Documentation & Cleanup | Finalize | D | 15,000 🟢 |
+
+**Total: 120,000 tokens across 4 waves, all GREEN**
+
+---
+
+
 ## Executive Summary
 Convert the 30 instructional injection patterns from markdown in `data/prompt_governance\prompt_injections` to structured YAML templates in `data/prompt_governance\injections`, then implement a unified loader that serves both `agentic_core` and `apps_*` with proper test coverage.
 
@@ -107,3 +121,13 @@ The YAML templates are **production-ready but unused**, while markdown files are
 - **Total**: 7-9 days
 
 This plan ensures production-grade YAML templates are fully integrated across both `agentic_core` and `apps_*` while maintaining backward compatibility and comprehensive test coverage.
+
+## Rules
+
+1. Follow all constitutional rules and guidelines
+2. Maintain compliance with established standards
+3. Document all changes and decisions
+4. Validate all implementations before completion
+
+---
+

@@ -1,5 +1,19 @@
 # RCA: Test Files Misplaced in data/prompt_governance/misc/
 
+## Wave Structure
+
+| Waves | Metric | Scope | Checkpoint | Tokens |
+|-------|--------|-------|------------|---------|
+| Wave 1 | Analysis & Discovery | Review current state | A | 25,000 🟢 |
+| Wave 2 | Implementation | Core changes | B | 50,000 🟢 |
+| Wave 3 | Testing & Validation | Verify changes | C | 30,000 🟢 |
+| Wave 4 | Documentation & Cleanup | Finalize | D | 15,000 🟢 |
+
+**Total: 120,000 tokens across 4 waves, all GREEN**
+
+---
+
+
 ## Executive Summary
 
 **Issue**: Python test files incorrectly placed in `data/prompt_governance/misc/` directory, violating the architectural separation between code and data.
@@ -248,3 +262,22 @@ python -m pytest tests/guardian/test_ssot_compliance.py -v
 **Status**: ✅ **COMPLETE** - All misplaced test files relocated to proper test structure
 **Date**: 2026-02-15
 **Impact**: Restored code/data separation, cleaned up test infrastructure, improved architectural integrity
+
+## Violation
+
+[Describe the violation or issue that triggered this RCA]
+
+---
+
+## Root Cause
+
+[Identify and explain the root cause of the violation]
+
+---
+
+## Corrective Actions
+
+[List the corrective actions taken to resolve the issue]
+
+---
+

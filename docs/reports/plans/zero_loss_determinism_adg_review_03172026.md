@@ -1,5 +1,19 @@
 # Zero Loss Determinism & Replay Core — ADG Review (03/17/2026)
 
+## Wave Structure
+
+| Waves | Metric | Scope | Checkpoint | Tokens |
+|-------|--------|-------|------------|---------|
+| Wave 1 | Analysis & Discovery | Review current state | A | 25,000 🟢 |
+| Wave 2 | Implementation | Core changes | B | 50,000 🟢 |
+| Wave 3 | Testing & Validation | Verify changes | C | 30,000 🟢 |
+| Wave 4 | Documentation & Cleanup | Finalize | D | 15,000 🟢 |
+
+**Total: 120,000 tokens across 4 waves, all GREEN**
+
+---
+
+
 ## ADG Snapshot (adg_indexed_03172026_1249.sqlite)
 - **Nodes**: 68,911
 - **Edges**: 1,009,287
@@ -147,3 +161,22 @@ The **Zero Loss Determinism & Replay Core** document is a **high-quality archite
 - Deduct 5% for missing operational details (failure modes, replay mode lifecycle)
 
 **Recommendation**: Update document with Priority 1 items before next architecture review. Current version is suitable for executive/architect consumption but insufficient for implementation teams building new deterministic components.
+
+## Rules
+
+1. Follow all constitutional rules and guidelines
+2. Maintain compliance with established standards
+3. Document all changes and decisions
+4. Validate all implementations before completion
+
+---
+
+## Success Criteria
+
+- [ ] All objectives completed successfully
+- [ ] Validation tests pass
+- [ ] Documentation updated
+- [ ] Stakeholder approval received
+
+---
+

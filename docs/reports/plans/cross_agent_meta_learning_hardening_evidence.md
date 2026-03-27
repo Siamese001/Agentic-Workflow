@@ -63,3 +63,16 @@ $ python ops_scripts/ci/check_anti_patterns.py
 | G_RS | EmbeddingRetentionScheduler.run_once() | rebuild() updates in-memory index but never calls persist_to_disk(); pruned state lost on restart | Added persist_base_path param; persist_to_disk() called after rebuild in both rolling_window and predicate modes |
 | G_HI | historical_ingestion_orchestrator.ingest_and_build_indexes_with_embedder() | populate_from_jsonl() calls finalize_build() (in-memory only); no persist_to_disk() call; all indexes lost at process exit | Added persist_to_disk() for healing_contexts_v1, telemetry_events_v1, dpo_pairs_v1 using EmbeddingStorageLayout paths |
 | G_MLA | MetaLearningAgent.strategy_weights | Pure in-memory dict reset to defaults on every restart; no persistence mechanism | Added strategy_weights_file constructor param, _load_strategy_weights(), _save_strategy_weights(); auto-saves after update_strategy_weights() |
+
+## Findings
+
+[Document key findings from the investigation]
+
+---
+
+## Evidence
+
+[Provide evidence supporting the findings]
+
+---
+

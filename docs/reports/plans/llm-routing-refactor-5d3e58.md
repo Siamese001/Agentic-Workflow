@@ -4,6 +4,20 @@ Consolidate the two conflicting LLM invocation patterns into one canonical desig
 
 ---
 
+## Wave Structure
+
+| Waves | Metric | Scope | Checkpoint | Tokens |
+|-------|--------|-------|------------|---------|
+| Wave 1 | Analysis & Discovery | Review current state | A | 25,000 🟢 |
+| Wave 2 | Implementation | Core changes | B | 50,000 🟢 |
+| Wave 3 | Testing & Validation | Verify changes | C | 30,000 🟢 |
+| Wave 4 | Documentation & Cleanup | Finalize | D | 15,000 🟢 |
+
+**Total: 120,000 tokens across 4 waves, all GREEN**
+
+---
+
+
 ## The Problem: Two Competing Patterns
 
 ### Pattern A — `@standard_heal` decorator (54 agents)
@@ -183,3 +197,16 @@ Step 4 is mechanical (single-line additions). Steps 1–3 are the only code-logi
 1. **Should HIGH agents always enable LLM**, or should it remain opt-in even for them (env var still required)?
 2. **Step 3 scope**: Is `FissionManagerAgent` the only one that needs real LLM output back (not just a heal signal)? The `dispatch_healing()` path currently returns an `InvocationRecord`, not the LLM response body — the migration needs to wire the response back to the caller.
 3. **Step 4**: Do you want to audit all 43 agents together in one PR, or only wire the ~8 that genuinely need HIGH reasoning?
+
+## Violation
+
+[Describe the violation or issue that triggered this RCA]
+
+---
+
+## Corrective Actions
+
+[List the corrective actions taken to resolve the issue]
+
+---
+

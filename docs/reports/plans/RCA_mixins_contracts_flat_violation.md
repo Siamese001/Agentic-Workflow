@@ -63,3 +63,16 @@ file inside a directory that should be flat. No validator flagged it.
 Any future attempt to create a subdirectory inside `mixins/`, `base_agents/`,
 or `interfaces/` will be caught by `validate_flat_directory()` in the
 `LocationValidatorAgent` validation chain.
+
+## Violation
+
+[Describe the violation or issue that triggered this RCA]
+
+---
+
+## Corrective Actions
+
+[List the corrective actions taken to resolve the issue]
+
+---
+

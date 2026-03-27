@@ -141,3 +141,16 @@ Single change: `test_contextual_router_has_six_decisions` — replaced skip-guar
 | `test_import_safety::test_zombie_reference_check` | Hardcoded `@pytest.mark.skip` — false positive refactor needed | No |
 
 These 2 skips are pre-existing, non-P1, and untouched by this remediation.
+
+## Findings
+
+[Document key findings from the investigation]
+
+---
+
+## Evidence
+
+[Provide evidence supporting the findings]
+
+---
+

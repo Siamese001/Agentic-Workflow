@@ -101,3 +101,22 @@ imports, missing transitive deps, or NameErrors in import chain.
 to surface real import errors instead of silently skipping.
 **Files**: Test files with overly broad guards.
 **Expected impact**: More accurate skip/fail categorization.
+
+## Rules
+
+1. Follow all constitutional rules and guidelines
+2. Maintain compliance with established standards
+3. Document all changes and decisions
+4. Validate all implementations before completion
+
+---
+
+## Success Criteria
+
+- [ ] All objectives completed successfully
+- [ ] Validation tests pass
+- [ ] Documentation updated
+- [ ] Stakeholder approval received
+
+---
+

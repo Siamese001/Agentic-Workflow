@@ -131,3 +131,16 @@ Result:
 | Observability binding | PASS |
 | Drift self-protection | PASS |
 | Performance control | PASS |
+
+## Findings
+
+[Document key findings from the investigation]
+
+---
+
+## Evidence
+
+[Provide evidence supporting the findings]
+
+---
+

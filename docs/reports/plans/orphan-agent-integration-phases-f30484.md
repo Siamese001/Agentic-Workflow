@@ -2,6 +2,20 @@
 
 This plan breaks down the orphan agent integration into 4 phases with specific sub-phases to maximize success and minimize risk, ensuring each orphan agent is properly integrated into the existing validation infrastructure.
 
+## Wave Structure
+
+| Waves | Metric | Scope | Checkpoint | Tokens |
+|-------|--------|-------|------------|---------|
+| Wave 1 | Analysis & Discovery | Review current state | A | 25,000 🟢 |
+| Wave 2 | Implementation | Core changes | B | 50,000 🟢 |
+| Wave 3 | Testing & Validation | Verify changes | C | 30,000 🟢 |
+| Wave 4 | Documentation & Cleanup | Finalize | D | 15,000 🟢 |
+
+**Total: 120,000 tokens across 4 waves, all GREEN**
+
+---
+
+
 ## Phase 1: Foundation & Validation (Week 1)
 
 ### Sub-Phase 1.1: Create Integration Infrastructure
@@ -140,3 +154,13 @@ Each phase includes rollback procedures:
 2. Assign owners for each phase
 3. Set up tracking for success criteria
 4. Begin Phase 1 implementation
+
+## Rules
+
+1. Follow all constitutional rules and guidelines
+2. Maintain compliance with established standards
+3. Document all changes and decisions
+4. Validate all implementations before completion
+
+---
+

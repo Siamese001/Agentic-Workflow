@@ -5,6 +5,20 @@
 
 ---
 
+## Wave Structure
+
+| Waves | Metric | Scope | Checkpoint | Tokens |
+|-------|--------|-------|------------|---------|
+| Wave 1 | Analysis & Discovery | Review current state | A | 25,000 🟢 |
+| Wave 2 | Implementation | Core changes | B | 50,000 🟢 |
+| Wave 3 | Testing & Validation | Verify changes | C | 30,000 🟢 |
+| Wave 4 | Documentation & Cleanup | Finalize | D | 15,000 🟢 |
+
+**Total: 120,000 tokens across 4 waves, all GREEN**
+
+---
+
+
 ## Phase 1: Registry-First Policy
 
 **Objective:** Make registry sole authority; filesystem discovery becomes diagnostic-only.
@@ -138,3 +152,22 @@ Summary: 1 guardian(s) failed out of 2 (4 checks)
 3. **Hard RuntimeError on cap breach** → Structured FAIL with remediation hints
 4. **Missing artifact attribution** → Index maps guardian_id → artifacts for L6
 5. **Optional CI** → Mandatory workflow with correlation-id tracing
+
+## Rules
+
+1. Follow all constitutional rules and guidelines
+2. Maintain compliance with established standards
+3. Document all changes and decisions
+4. Validate all implementations before completion
+
+---
+
+## Success Criteria
+
+- [ ] All objectives completed successfully
+- [ ] Validation tests pass
+- [ ] Documentation updated
+- [ ] Stakeholder approval received
+
+---
+

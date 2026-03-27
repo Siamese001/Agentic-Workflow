@@ -137,3 +137,22 @@ Delete in this order (Wave 3 floor already confirmed safe):
 | `data/prompt_governance/registry/` | **Delete** (empty) |
 
 No changes to: any `apps_*` files, any existing test files, `pytest.ini`, `requirements.txt`.
+
+## Rules
+
+1. Follow all constitutional rules and guidelines
+2. Maintain compliance with established standards
+3. Document all changes and decisions
+4. Validate all implementations before completion
+
+---
+
+## Success Criteria
+
+- [ ] All objectives completed successfully
+- [ ] Validation tests pass
+- [ ] Documentation updated
+- [ ] Stakeholder approval received
+
+---
+

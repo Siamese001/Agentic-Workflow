@@ -2,6 +2,20 @@
 
 This plan establishes L0 as the authoritative policy engine for deterministic reasoning intensity calibration with versioned profiles, pure-function complexity scoring, and fail-closed enforcement across the architectural stack.
 
+## Wave Structure
+
+| Waves | Metric | Scope | Checkpoint | Tokens |
+|-------|--------|-------|------------|---------|
+| Wave 1 | Analysis & Discovery | Review current state | A | 25,000 🟢 |
+| Wave 2 | Implementation | Core changes | B | 50,000 🟢 |
+| Wave 3 | Testing & Validation | Verify changes | C | 30,000 🟢 |
+| Wave 4 | Documentation & Cleanup | Finalize | D | 15,000 🟢 |
+
+**Total: 120,000 tokens across 4 waves, all GREEN**
+
+---
+
+
 ## Architecture Analysis Summary
 
 **Current State:** Static configuration in apps_lic/rg with environment-based presets, no runtime adaptation, and inconsistent reasoning intensity across applications.
@@ -146,3 +160,13 @@ This plan establishes L0 as the authoritative policy engine for deterministic re
 7. **Sovereign:** No upward policy mutation across layers
 
 This hardened architecture eliminates environment toggle drift, centralizes reasoning intensity under sovereign L0 control, and provides production-grade determinism with full auditability.
+
+## Rules
+
+1. Follow all constitutional rules and guidelines
+2. Maintain compliance with established standards
+3. Document all changes and decisions
+4. Validate all implementations before completion
+
+---
+

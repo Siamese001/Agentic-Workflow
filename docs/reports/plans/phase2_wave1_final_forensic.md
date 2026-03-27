@@ -1,5 +1,19 @@
 # Phase 2 — Wave 1 Pre-Mutation Deterministic Analysis
 
+## Wave Structure
+
+| Waves | Metric | Scope | Checkpoint | Tokens |
+|-------|--------|-------|------------|---------|
+| Wave 1 | Analysis & Discovery | Review current state | A | 25,000 🟢 |
+| Wave 2 | Implementation | Core changes | B | 50,000 🟢 |
+| Wave 3 | Testing & Validation | Verify changes | C | 30,000 🟢 |
+| Wave 4 | Documentation & Cleanup | Finalize | D | 15,000 🟢 |
+
+**Total: 120,000 tokens across 4 waves, all GREEN**
+
+---
+
+
 ## Declaration: PRE-MUTATION ANALYSIS
 
 **This Wave 1 is PRE-MUTATION deterministic analysis. The `_config.py → _util.py` renames have NOT been executed.**
@@ -349,3 +363,22 @@ R090    agentic_core/config/core/config_mixin_config_mixin.py   agentic_core/mix
 **Git State**: 21 app-layer files tracked as `*_config.py`, working tree CLEAN
 **Governance Debt**: 1 file (environment_config.py split recommended)
 **Next Phase**: Wave 2 - Execute all pending renames and commit with proper provenance
+
+## Rules
+
+1. Follow all constitutional rules and guidelines
+2. Maintain compliance with established standards
+3. Document all changes and decisions
+4. Validate all implementations before completion
+
+---
+
+## Success Criteria
+
+- [ ] All objectives completed successfully
+- [ ] Validation tests pass
+- [ ] Documentation updated
+- [ ] Stakeholder approval received
+
+---
+

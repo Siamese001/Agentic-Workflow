@@ -2,6 +2,20 @@
 
 **Objective**: Review all tools used across L0-L6 layers and ensure SDK_MCPs are updated and synced with comprehensive gap analysis, implementation report, file diffs, and test cases.
 
+## Wave Structure
+
+| Waves | Metric | Scope | Checkpoint | Tokens |
+|-------|--------|-------|------------|---------|
+| Wave 1 | Analysis & Discovery | Review current state | A | 25,000 🟢 |
+| Wave 2 | Implementation | Core changes | B | 50,000 🟢 |
+| Wave 3 | Testing & Validation | Verify changes | C | 30,000 🟢 |
+| Wave 4 | Documentation & Cleanup | Finalize | D | 15,000 🟢 |
+
+**Total: 120,000 tokens across 4 waves, all GREEN**
+
+---
+
+
 ## Current State Assessment (Updated)
 
 ### Critical Finding: Migration Incomplete
@@ -385,3 +399,22 @@ class TestMCPIntegration:
 7. Establish testing framework for MCP integration validation
 
 This updated plan addresses the critical finding that the previously reported migration work is incomplete, with Phase 0 added as an urgent priority to ensure core LLM gateway components actually use the centralized data/sdks_mcps client wrappers as intended.
+
+## Gap Register
+
+| Gap | Priority | Impact | Status |
+|------|----------|--------|---------|
+| [Gap 1] | High | Critical | Open |
+| [Gap 2] | Medium | Moderate | In Progress |
+
+---
+
+## Execution Plan
+
+1. **Phase 1**: Analysis and Planning
+2. **Phase 2**: Implementation
+3. **Phase 3**: Testing and Validation
+4. **Phase 4**: Documentation and Cleanup
+
+---
+

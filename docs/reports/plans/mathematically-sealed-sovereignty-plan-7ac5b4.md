@@ -2,6 +2,20 @@
 
 This plan delivers true cryptographic-grade architectural sovereignty through corrected determinism proofs, execution-bound capability tokens, and mathematically-verified replay guarantees across apps_*, agentic_core layers (L0-L6), and system_learning.
 
+## Wave Structure
+
+| Waves | Metric | Scope | Checkpoint | Tokens |
+|-------|--------|-------|------------|---------|
+| Wave 1 | Analysis & Discovery | Review current state | A | 25,000 🟢 |
+| Wave 2 | Implementation | Core changes | B | 50,000 🟢 |
+| Wave 3 | Testing & Validation | Verify changes | C | 30,000 🟢 |
+| Wave 4 | Documentation & Cleanup | Finalize | D | 15,000 🟢 |
+
+**Total: 120,000 tokens across 4 waves, all GREEN**
+
+---
+
+
 ## Executive Summary
 
 **Current State**: Strong architectural sovereignty with critical determinism engine flaws preventing mathematical closure.
@@ -896,3 +910,22 @@ This corrected plan delivers **true mathematically-sealed architectural sovereig
 - **Secure Authority**: Environment-injected secrets with cryptographic verification
 
 The system now achieves **cryptographic-grade architectural sovereignty** with mathematically-proven replay verification, execution-bound capabilities, and structural namespace enforcement - representing the highest achievable level of architectural integrity in software systems.
+
+## Rules
+
+1. Follow all constitutional rules and guidelines
+2. Maintain compliance with established standards
+3. Document all changes and decisions
+4. Validate all implementations before completion
+
+---
+
+## Success Criteria
+
+- [ ] All objectives completed successfully
+- [ ] Validation tests pass
+- [ ] Documentation updated
+- [ ] Stakeholder approval received
+
+---
+

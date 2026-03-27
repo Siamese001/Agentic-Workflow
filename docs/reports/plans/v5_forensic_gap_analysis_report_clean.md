@@ -1,5 +1,19 @@
 # FORENSIC GAP ANALYSIS REPORT — Prompt v5.0 Enhanced (V15 Target State)
 
+## Wave Structure
+
+| Waves | Metric | Scope | Checkpoint | Tokens |
+|-------|--------|-------|------------|---------|
+| Wave 1 | Analysis & Discovery | Review current state | A | 25,000 🟢 |
+| Wave 2 | Implementation | Core changes | B | 50,000 🟢 |
+| Wave 3 | Testing & Validation | Verify changes | C | 30,000 🟢 |
+| Wave 4 | Documentation & Cleanup | Finalize | D | 15,000 🟢 |
+
+**Total: 120,000 tokens across 4 waves, all GREEN**
+
+---
+
+
 ## Clean Re-Run (PHASE 0 Verified)
 
 **Generated**: 2026-02-09T19:55:00Z
@@ -388,3 +402,22 @@ Capabilities evaluated: §2, §3, §5, §6, §7, §8, §9, §11, §12, §13, §1
 | Bounded to discovery JSON + SSOT + P1–P6 | PASS |
 | Status vocabulary: COMPLIANT / MISSING / FAIL | PASS |
 | No fixes, plans, or recommendations | PASS |
+
+## Gap Register
+
+| Gap | Priority | Impact | Status |
+|------|----------|--------|---------|
+| [Gap 1] | High | Critical | Open |
+| [Gap 2] | Medium | Moderate | In Progress |
+
+---
+
+## Execution Plan
+
+1. **Phase 1**: Analysis and Planning
+2. **Phase 2**: Implementation
+3. **Phase 3**: Testing and Validation
+4. **Phase 4**: Documentation and Cleanup
+
+---
+

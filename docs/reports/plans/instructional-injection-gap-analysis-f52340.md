@@ -4,6 +4,20 @@ Gap analysis of the Agentic-Workflow repository's instructional injection defens
 
 ---
 
+## Wave Structure
+
+| Waves | Metric | Scope | Checkpoint | Tokens |
+|-------|--------|-------|------------|---------|
+| Wave 1 | Analysis & Discovery | Review current state | A | 25,000 🟢 |
+| Wave 2 | Implementation | Core changes | B | 50,000 🟢 |
+| Wave 3 | Testing & Validation | Verify changes | C | 30,000 🟢 |
+| Wave 4 | Documentation & Cleanup | Finalize | D | 15,000 🟢 |
+
+**Total: 120,000 tokens across 4 waves, all GREEN**
+
+---
+
+
 ## Executive Summary
 
 The repo has **strong foundational security** — XML semantic fencing, a 85+ signature injection detector with normalization pipeline, canary token defense, MCP sovereign authority, tool verification, and a 30-pattern instructional injection mixin. However, **7 critical gaps** and **5 moderate gaps** exist when measured against the OWASP 2025 framework and agentic-specific best practices.
@@ -690,3 +704,22 @@ class TestAdversarialDetectionRate:
 8. **Output schema validation** — §P2 validates LLM response structure with retry.
 9. **Rate limiting mixin** — `rate_limit_mixin.py` exists for abuse prevention.
 10. **Golden test data** — 20 categorized injection attacks in JSONL for testing.
+
+## Gap Register
+
+| Gap | Priority | Impact | Status |
+|------|----------|--------|---------|
+| [Gap 1] | High | Critical | Open |
+| [Gap 2] | Medium | Moderate | In Progress |
+
+---
+
+## Execution Plan
+
+1. **Phase 1**: Analysis and Planning
+2. **Phase 2**: Implementation
+3. **Phase 3**: Testing and Validation
+4. **Phase 4**: Documentation and Cleanup
+
+---
+

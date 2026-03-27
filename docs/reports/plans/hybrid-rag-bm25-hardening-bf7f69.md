@@ -4,6 +4,20 @@ Consolidates the fragmented BM25 implementations, wires the unified hybrid retri
 
 ---
 
+## Wave Structure
+
+| Waves | Metric | Scope | Checkpoint | Tokens |
+|-------|--------|-------|------------|---------|
+| Wave 1 | Analysis & Discovery | Review current state | A | 25,000 🟢 |
+| Wave 2 | Implementation | Core changes | B | 50,000 🟢 |
+| Wave 3 | Testing & Validation | Verify changes | C | 30,000 🟢 |
+| Wave 4 | Documentation & Cleanup | Finalize | D | 15,000 🟢 |
+
+**Total: 120,000 tokens across 4 waves, all GREEN**
+
+---
+
+
 ## Current State (AST Scan Findings)
 
 ### Files in scope
@@ -140,3 +154,22 @@ Invariants to prove:
 | BM25 index rebuild latency on first call | Medium | Lazy rebuild + JSON cache at `L4_state/memory/.sovereign_local_index.json` |
 | In-place `score` mutation in `reciprocal_rank_fusion` | Medium | Phase 4-A adds `original_score` before mutation |
 | `NoOpGuardrail` masking reranking issues in tests | Low | Integration tests must assert BM25 + dense both contribute |
+
+## Rules
+
+1. Follow all constitutional rules and guidelines
+2. Maintain compliance with established standards
+3. Document all changes and decisions
+4. Validate all implementations before completion
+
+---
+
+## Success Criteria
+
+- [ ] All objectives completed successfully
+- [ ] Validation tests pass
+- [ ] Documentation updated
+- [ ] Stakeholder approval received
+
+---
+

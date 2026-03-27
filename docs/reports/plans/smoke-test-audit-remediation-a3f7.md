@@ -96,3 +96,16 @@ All 3 previously skipped tests have been **resolved** by fixing import paths and
 2. **`get_hierarchy_validator`** raises `NotImplementedError` — not yet wired. Smoke test verifies signature only.
 3. **`EvalOrchestrator`** and **`ExecOrchestrator`** have `IndentationError` — cannot be imported. Not included in smoke suite until fixed.
 4. **`system_learning.pipelines.pipeline_factory`** has `SyntaxError` at line 294 — excluded from pipeline smoke tests.
+
+## Findings
+
+[Document key findings from the investigation]
+
+---
+
+## Evidence
+
+[Provide evidence supporting the findings]
+
+---
+

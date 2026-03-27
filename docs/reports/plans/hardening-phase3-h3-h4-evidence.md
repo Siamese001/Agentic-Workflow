@@ -76,3 +76,16 @@ Previous: 232 passed. Current: 261 passed (+29: 15 H3 + 14 H4).
 - [x] Full governance suite: 261/261 pass
 - [x] No regressions
 - [x] Scope matches declaration (5 files)
+
+## Findings
+
+[Document key findings from the investigation]
+
+---
+
+## Evidence
+
+[Provide evidence supporting the findings]
+
+---
+

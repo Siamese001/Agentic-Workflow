@@ -1,5 +1,19 @@
 # INTEGRATION: Orphan Prompts Activation Plan
 
+## Wave Structure
+
+| Waves | Metric | Scope | Checkpoint | Tokens |
+|-------|--------|-------|------------|---------|
+| Wave 1 | Analysis & Discovery | Review current state | A | 25,000 🟢 |
+| Wave 2 | Implementation | Core changes | B | 50,000 🟢 |
+| Wave 3 | Testing & Validation | Verify changes | C | 30,000 🟢 |
+| Wave 4 | Documentation & Cleanup | Finalize | D | 15,000 🟢 |
+
+**Total: 120,000 tokens across 4 waves, all GREEN**
+
+---
+
+
 ## Executive Summary
 
 **Issue**: 11 orphan prompts in `data/prompt_governance` with zero usage in agentic_core or apps_* folders.
@@ -371,3 +385,22 @@ The phased approach ensures safe, systematic integration with minimal risk and m
 **Status**: ✅ **PLAN READY** - Awaiting implementation approval
 **Date**: 2026-02-15
 **Priority**: HIGH - Eliminates waste and unlocks significant capabilities
+
+## Rules
+
+1. Follow all constitutional rules and guidelines
+2. Maintain compliance with established standards
+3. Document all changes and decisions
+4. Validate all implementations before completion
+
+---
+
+## Success Criteria
+
+- [ ] All objectives completed successfully
+- [ ] Validation tests pass
+- [ ] Documentation updated
+- [ ] Stakeholder approval received
+
+---
+

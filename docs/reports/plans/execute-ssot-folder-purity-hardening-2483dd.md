@@ -2,6 +2,20 @@
 
 This plan hardens the execute_ssot.py pipeline and FileClassificationAgent to automatically fix all 222 folder purity violations when run, without any manual file changes.
 
+## Wave Structure
+
+| Waves | Metric | Scope | Checkpoint | Tokens |
+|-------|--------|-------|------------|---------|
+| Wave 1 | Analysis & Discovery | Review current state | A | 25,000 🟢 |
+| Wave 2 | Implementation | Core changes | B | 50,000 🟢 |
+| Wave 3 | Testing & Validation | Verify changes | C | 30,000 🟢 |
+| Wave 4 | Documentation & Cleanup | Finalize | D | 15,000 🟢 |
+
+**Total: 120,000 tokens across 4 waves, all GREEN**
+
+---
+
+
 ## Current Architecture
 - `execute_ssot.py` → Phase 2.5 calls `FileClassificationAgent.heal_repository()`
 - `FileClassificationAgent` uses `_enforce_folder_purity()` to detect and fix violations
@@ -69,3 +83,13 @@ This plan hardens the execute_ssot.py pipeline and FileClassificationAgent to au
 - All folder purity violations eliminated
 - Tests pass with zero failures
 - No manual intervention required
+
+## Rules
+
+1. Follow all constitutional rules and guidelines
+2. Maintain compliance with established standards
+3. Document all changes and decisions
+4. Validate all implementations before completion
+
+---
+

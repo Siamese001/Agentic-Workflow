@@ -2,6 +2,20 @@
 
 This plan merges the Zero-Loss Prompt Taxonomy gaps with cryptographic sovereignty hardening requirements to achieve a truly mathematically-sealed governance architecture.
 
+## Wave Structure
+
+| Waves | Metric | Scope | Checkpoint | Tokens |
+|-------|--------|-------|------------|---------|
+| Wave 1 | Analysis & Discovery | Review current state | A | 25,000 🟢 |
+| Wave 2 | Implementation | Core changes | B | 50,000 🟢 |
+| Wave 3 | Testing & Validation | Verify changes | C | 30,000 🟢 |
+| Wave 4 | Documentation & Cleanup | Finalize | D | 15,000 🟢 |
+
+**Total: 120,000 tokens across 4 waves, all GREEN**
+
+---
+
+
 ## Executive Summary
 
 The original prompt taxonomy implementation plan identified critical gaps but lacked cryptographic boundary enforcement, determinism invariants, and sovereignty-hardened execution guarantees. This merged plan incorporates hardening requirements to achieve Zero-Loss compliance through cryptographic contracts, replay-verified determinism, and capability-bound execution tokens.
@@ -288,3 +302,22 @@ This sovereignty-complete implementation plan merges the Zero-Loss Prompt Taxono
 The phased approach ensures manageable implementation while maintaining system stability and achieving the highest standards of security, compliance, and architectural sovereignty. Successful implementation will result in a cryptographically-sealed, mathematically-provable prompt governance architecture that meets Zero-Loss compliance requirements.
 
 **Final Verdict: Conceptually Strong + Cryptographically Complete = Sovereignty-Ready**
+
+## Rules
+
+1. Follow all constitutional rules and guidelines
+2. Maintain compliance with established standards
+3. Document all changes and decisions
+4. Validate all implementations before completion
+
+---
+
+## Success Criteria
+
+- [ ] All objectives completed successfully
+- [ ] Validation tests pass
+- [ ] Documentation updated
+- [ ] Stakeholder approval received
+
+---
+

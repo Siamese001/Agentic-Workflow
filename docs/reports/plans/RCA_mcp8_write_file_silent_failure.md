@@ -148,3 +148,16 @@ for path, content in test_cases:
 **Status:** Open - Requires MCP server fix
 **Workaround:** Use `write_to_file` for all workspace file operations
 **Risk Level:** HIGH until fixed
+
+## Violation
+
+[Describe the violation or issue that triggered this RCA]
+
+---
+
+## Corrective Actions
+
+[List the corrective actions taken to resolve the issue]
+
+---
+

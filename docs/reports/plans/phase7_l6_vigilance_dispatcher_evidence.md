@@ -72,3 +72,16 @@ Date:   Sat Feb 21 11:11:02 2026 -0500
 
     feat(L6): add deterministic meta payload adapter (Phase 7.2)
 ```
+
+## Findings
+
+[Document key findings from the investigation]
+
+---
+
+## Evidence
+
+[Provide evidence supporting the findings]
+
+---
+

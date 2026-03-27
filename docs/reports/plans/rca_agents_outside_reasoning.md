@@ -63,3 +63,16 @@ Out of scope for this RCA.
 - `test_routing_decision.py`: 3/3 PASS
 - `test_integrity_gate_executor.py`: 3/3 FAIL (pre-existing `NameError`, not caused by move)
 - Full re-scan: 0 true violations remaining
+
+## Violation
+
+[Describe the violation or issue that triggered this RCA]
+
+---
+
+## Corrective Actions
+
+[List the corrective actions taken to resolve the issue]
+
+---
+

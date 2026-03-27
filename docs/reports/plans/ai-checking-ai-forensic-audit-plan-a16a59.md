@@ -2,6 +2,20 @@
 
 Plan to conduct a comprehensive forensic audit of the Agentic-Workflow repository to identify "AI-Checking-AI" violations where AI agents perform structural, MRO, or layer-zoning validation that should be handled by deterministic Guardian tests.
 
+## Wave Structure
+
+| Waves | Metric | Scope | Checkpoint | Tokens |
+|-------|--------|-------|------------|---------|
+| Wave 1 | Analysis & Discovery | Review current state | A | 25,000 🟢 |
+| Wave 2 | Implementation | Core changes | B | 50,000 🟢 |
+| Wave 3 | Testing & Validation | Verify changes | C | 30,000 🟢 |
+| Wave 4 | Documentation & Cleanup | Finalize | D | 15,000 🟢 |
+
+**Total: 120,000 tokens across 4 waves, all GREEN**
+
+---
+
+
 ## Phase 1: Forensic Audit Scope
 
 Based on analysis, I will examine approximately 218 agents total, focusing on:
@@ -100,3 +114,22 @@ Proceed with systematic examination of all agents, prioritizing:
 6. apps_shared utilities (7+ agents)
 
 The audit will produce a comprehensive report identifying all AI-Checking-AI violations across the entire repository and providing deterministic remediation paths.
+
+## Rules
+
+1. Follow all constitutional rules and guidelines
+2. Maintain compliance with established standards
+3. Document all changes and decisions
+4. Validate all implementations before completion
+
+---
+
+## Success Criteria
+
+- [ ] All objectives completed successfully
+- [ ] Validation tests pass
+- [ ] Documentation updated
+- [ ] Stakeholder approval received
+
+---
+

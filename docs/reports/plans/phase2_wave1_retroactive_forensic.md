@@ -1,5 +1,19 @@
 # Phase 2 — Wave 1 Retroactive Forensic Analysis
 
+## Wave Structure
+
+| Waves | Metric | Scope | Checkpoint | Tokens |
+|-------|--------|-------|------------|---------|
+| Wave 1 | Analysis & Discovery | Review current state | A | 25,000 🟢 |
+| Wave 2 | Implementation | Core changes | B | 50,000 🟢 |
+| Wave 3 | Testing & Validation | Verify changes | C | 30,000 🟢 |
+| Wave 4 | Documentation & Cleanup | Finalize | D | 15,000 🟢 |
+
+**Total: 120,000 tokens across 4 waves, all GREEN**
+
+---
+
+
 ## Declaration: RETROACTIVE DOCUMENTATION OF EXECUTED MUTATIONS
 
 **This Wave 1 is forensic documentation of mutations that HAVE ALREADY OCCURRED.**
@@ -243,3 +257,22 @@ apps_rg/reasoning/CampaignPlannerAgent.py:11 - from apps_shared.config.config_lo
 **Wave 1 Retroactive Forensic Status**: COMPLETE ✅
 **Mutation Reference**: commit `61efb8fb8` (2026-02-06)
 **Next Phase**: Wave 2 - Execute PIISanitizerSpecialistAgent.py rename
+
+## Rules
+
+1. Follow all constitutional rules and guidelines
+2. Maintain compliance with established standards
+3. Document all changes and decisions
+4. Validate all implementations before completion
+
+---
+
+## Success Criteria
+
+- [ ] All objectives completed successfully
+- [ ] Validation tests pass
+- [ ] Documentation updated
+- [ ] Stakeholder approval received
+
+---
+

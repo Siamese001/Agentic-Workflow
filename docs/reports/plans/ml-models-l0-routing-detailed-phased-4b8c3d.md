@@ -2,6 +2,20 @@
 
 This plan provides a detailed phased implementation of ML models for L0 routing confidence calibration, with waves, token analysis per phase, and specific deliverables for each wave.
 
+## Wave Structure
+
+| Waves | Metric | Scope | Checkpoint | Tokens |
+|-------|--------|-------|------------|---------|
+| Wave 1 | Analysis & Discovery | Review current state | A | 25,000 🟢 |
+| Wave 2 | Implementation | Core changes | B | 50,000 🟢 |
+| Wave 3 | Testing & Validation | Verify changes | C | 30,000 🟢 |
+| Wave 4 | Documentation & Cleanup | Finalize | D | 15,000 🟢 |
+
+**Total: 120,000 tokens across 4 waves, all GREEN**
+
+---
+
+
 ## Executive Summary
 
 Implementing sophisticated ML models for L0 routing requires careful phased approach to ensure reliability, maintainability, and proper integration with existing systems. This plan breaks down the implementation into 3 phases with multiple waves each, incorporating token budget analysis for every phase direction.
@@ -555,3 +569,13 @@ class MixtureOfExperts:
 ## Conclusion
 
 This detailed phased implementation plan ensures systematic development of ML models for L0 routing with proper token budget management. Each wave builds upon previous work while maintaining focus on specific deliverables and success criteria. The token analysis per direction ensures efficient use of context window throughout implementation.
+
+## Rules
+
+1. Follow all constitutional rules and guidelines
+2. Maintain compliance with established standards
+3. Document all changes and decisions
+4. Validate all implementations before completion
+
+---
+

@@ -169,3 +169,16 @@ The following findings are gated **exclusively** by P2–P6 invariants (no P1 in
 | `discovery_integrity.sha256` | stored in `agentic_core/L5_safety/config/structure_blueprint/discovery_integrity.sha256` |
 | `blueprint_integrity.sha256` | `56ce497ea5703d884c1849187431e72bd18a254e271518596669860266158ea0` |
 | Discovery commit | `7f6d87befab360bf9cff3dd87772832cbbcbf742` |
+
+## Findings
+
+[Document key findings from the investigation]
+
+---
+
+## Evidence
+
+[Provide evidence supporting the findings]
+
+---
+

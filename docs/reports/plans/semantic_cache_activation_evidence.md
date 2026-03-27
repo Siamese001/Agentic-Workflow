@@ -93,3 +93,22 @@ $ python -m pytest -q --color=no --tb=short
  fails intermittently in full-suite ordering. Confirmed pre-existing: passes on clean stash.]
 
 0 new failures introduced by our changes.
+
+## Rules
+
+1. Follow all constitutional rules and guidelines
+2. Maintain compliance with established standards
+3. Document all changes and decisions
+4. Validate all implementations before completion
+
+---
+
+## Success Criteria
+
+- [ ] All objectives completed successfully
+- [ ] Validation tests pass
+- [ ] Documentation updated
+- [ ] Stakeholder approval received
+
+---
+

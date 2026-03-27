@@ -34,7 +34,7 @@ def generate_wave_table() -> str:
     """Generate a standard wave table template."""
     return """## Wave Structure
 
-| Waves | Metric | Scope | Checkpoint | Tokens |
+| Waves | Metric | Scope | Checkpoint | [Tokens |]
 |-------|--------|-------|------------|---------|
 | Wave 1 | Analysis & Discovery | Review current state | A | 25,000 🟢 |
 | Wave 2 | Implementation | Core changes | B | 50,000 🟢 |

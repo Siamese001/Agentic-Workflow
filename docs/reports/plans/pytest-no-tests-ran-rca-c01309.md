@@ -2,6 +2,20 @@
 
 This plan investigates why pytest consistently shows "collected N items" but "no tests ran" for enforcement tests, using a structured 3-wave RCA approach with raw evidence capture.
 
+## Wave Structure
+
+| Waves | Metric | Scope | Checkpoint | Tokens |
+|-------|--------|-------|------------|---------|
+| Wave 1 | Analysis & Discovery | Review current state | A | 25,000 🟢 |
+| Wave 2 | Implementation | Core changes | B | 50,000 🟢 |
+| Wave 3 | Testing & Validation | Verify changes | C | 30,000 🟢 |
+| Wave 4 | Documentation & Cleanup | Finalize | D | 15,000 🟢 |
+
+**Total: 120,000 tokens across 4 waves, all GREEN**
+
+---
+
+
 ## Objective
 
 Produce a deterministic root-cause analysis (RCA) identifying the exact mechanism (hook/plugin/conftest/config) that suppresses test execution after collection in `tests/enforcement/test_constitutional_validator.py`.
@@ -82,3 +96,22 @@ git commit -m "docs: pytest no-tests-ran RCA evidence"
 1. Should I create the evidence file with a header before starting Wave 1, or append to an existing file?
 2. The prior evidence shows `tests/enforcement/conftest.py` was created in Phase 2 - should I examine its behavior as a primary suspect?
 3. Are there any known nox sessions or CI configurations that might provide clues about the suppression mechanism?
+
+## Rules
+
+1. Follow all constitutional rules and guidelines
+2. Maintain compliance with established standards
+3. Document all changes and decisions
+4. Validate all implementations before completion
+
+---
+
+## Success Criteria
+
+- [ ] All objectives completed successfully
+- [ ] Validation tests pass
+- [ ] Documentation updated
+- [ ] Stakeholder approval received
+
+---
+

@@ -1,5 +1,19 @@
 # Prompt Governance Data Usage Assessment Report
 
+## Wave Structure
+
+| Waves | Metric | Scope | Checkpoint | Tokens |
+|-------|--------|-------|------------|---------|
+| Wave 1 | Analysis & Discovery | Review current state | A | 25,000 🟢 |
+| Wave 2 | Implementation | Core changes | B | 50,000 🟢 |
+| Wave 3 | Testing & Validation | Verify changes | C | 30,000 🟢 |
+| Wave 4 | Documentation & Cleanup | Finalize | D | 15,000 🟢 |
+
+**Total: 120,000 tokens across 4 waves, all GREEN**
+
+---
+
+
 ## Executive Summary
 
 **Finding**: Prompt governance data from `data/prompt_governance/prompt_injections` is actively integrated into `agentic_core` but **NOT** pulled into prompts in `apps_*` folders.
@@ -97,3 +111,22 @@ agentic_core/mixins/instructional_injection_mixin.py
 ## Conclusion
 
 The prompt governance system is **partially implemented** - fully functional in `agentic_core` but **disconnected from application layers** (`apps_*`). This creates a governance gap where application-level agents may not benefit from centralized prompt security and enhancement patterns.
+
+## Rules
+
+1. Follow all constitutional rules and guidelines
+2. Maintain compliance with established standards
+3. Document all changes and decisions
+4. Validate all implementations before completion
+
+---
+
+## Success Criteria
+
+- [ ] All objectives completed successfully
+- [ ] Validation tests pass
+- [ ] Documentation updated
+- [ ] Stakeholder approval received
+
+---
+

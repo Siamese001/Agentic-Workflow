@@ -4,6 +4,20 @@ Fix all confirmed AST-verified violations in archives management code, plus run 
 
 ---
 
+## Wave Structure
+
+| Waves | Metric | Scope | Checkpoint | Tokens |
+|-------|--------|-------|------------|---------|
+| Wave 1 | Analysis & Discovery | Review current state | A | 25,000 🟢 |
+| Wave 2 | Implementation | Core changes | B | 50,000 🟢 |
+| Wave 3 | Testing & Validation | Verify changes | C | 30,000 🟢 |
+| Wave 4 | Documentation & Cleanup | Finalize | D | 15,000 🟢 |
+
+**Total: 120,000 tokens across 4 waves, all GREEN**
+
+---
+
+
 ## SSOT Constants Reference
 
 All replacements must import from one of two canonical sources:
@@ -155,3 +169,22 @@ Run `pytest tests/` after each phase before proceeding.
 | `ops_scripts/general/analyze_archive.py` | 3 | **EDITED** |
 | `agentic_core/L5_safety/enforcement/archival_gatekeeper_gate.py` | 4 | **EDITED** |
 | `ops_scripts/dev_tools/l0_scripts/ssot_archive_refactor_util.py` | 5 | **DELETED** |
+
+## Rules
+
+1. Follow all constitutional rules and guidelines
+2. Maintain compliance with established standards
+3. Document all changes and decisions
+4. Validate all implementations before completion
+
+---
+
+## Success Criteria
+
+- [ ] All objectives completed successfully
+- [ ] Validation tests pass
+- [ ] Documentation updated
+- [ ] Stakeholder approval received
+
+---
+

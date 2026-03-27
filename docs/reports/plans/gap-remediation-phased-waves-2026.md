@@ -67,6 +67,20 @@
 
 ## Wave Structure
 
+| Waves | Metric | Scope | Checkpoint | [Tokens |]
+|-------|--------|-------|------------|---------|
+| Wave 1 | Analysis & Discovery | Review current state | A | 25,000 🟢 |
+| Wave 2 | Implementation | Core changes | B | 50,000 🟢 |
+| Wave 3 | Testing & Validation | Verify changes | C | 30,000 🟢 |
+| Wave 4 | Documentation & Cleanup | Finalize | D | 15,000 🟢 |
+
+**Total: 120,000 tokens across 4 waves, all GREEN**
+
+
+---
+
+
+
 ```
 Wave 0  ── ADG becomes a hard CI blocker            (no new debt admitted)          [prerequisite]
 Wave 1  ── Write path sovereignty                   (UWG universalisation)          [structural]
@@ -846,3 +860,22 @@ The architecture cannot claim closure of P0 gaps until all seven conditions hold
 | 5 | All traces can be deterministically replayed | W4 | `emits_replay_key >= 50` + replay harness passing 10 traces |
 | 6 | All state mutations are versioned and auditable | W6 | `observes_runtime_state >= 50` + `RunStateAuthority` ledger verified |
 | 7 | All architectural debt is prevented from re-entering | W0 + W7 | CI modules 1–6 all in `enforce` mode + `dead_imports = 0` + `antipattern <= 200` |
+
+## Rules
+
+1. Follow all constitutional rules and guidelines
+2. Maintain compliance with established standards
+3. Document all changes and decisions
+4. Validate all implementations before completion
+
+---
+
+## Success Criteria
+
+- [ ] All objectives completed successfully
+- [ ] Validation tests pass
+- [ ] Documentation updated
+- [ ] Stakeholder approval received
+
+---
+

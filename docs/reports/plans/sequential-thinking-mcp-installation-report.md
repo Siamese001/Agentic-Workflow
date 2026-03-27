@@ -135,3 +135,15 @@ The sequential thinking server complements existing MCP servers:
 - **sequential-thinking**: Structured analysis and reasoning
 
 This creates a comprehensive toolset for repository analysis, problem-solving, and architectural decision-making.
+## Findings
+
+[Document key findings from the investigation]
+
+---
+
+## Evidence
+
+[Provide evidence supporting the findings]
+
+---
+

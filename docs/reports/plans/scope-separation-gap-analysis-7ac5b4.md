@@ -2,6 +2,20 @@
 
 This plan identifies critical scope separation violations across apps_*, agentic_core layers (L0-L6), and system_learning, providing a phased remediation approach with detailed file diffs to ensure rigorous architectural boundaries.
 
+## Wave Structure
+
+| Waves | Metric | Scope | Checkpoint | Tokens |
+|-------|--------|-------|------------|---------|
+| Wave 1 | Analysis & Discovery | Review current state | A | 25,000 🟢 |
+| Wave 2 | Implementation | Core changes | B | 50,000 🟢 |
+| Wave 3 | Testing & Validation | Verify changes | C | 30,000 🟢 |
+| Wave 4 | Documentation & Cleanup | Finalize | D | 15,000 🟢 |
+
+**Total: 120,000 tokens across 4 waves, all GREEN**
+
+---
+
+
 ## Executive Summary
 
 **Current State**: Multiple scope violations detected where core layers import downstream apps_* modules, breaking architectural sovereignty and creating circular dependencies. Runtime enforcement lacks cryptographic guarantees.
@@ -697,3 +711,22 @@ This enhanced implementation plan establishes **mathematically-sealed architectu
 The plan achieves the highest level of architectural sovereignty possible in software systems—moving beyond "enforced policy" to "mathematically-proven architectural integrity" with cryptographically-sealed guarantees across all execution paths.
 
 This aligns with the agentic process mapping document's sovereignty matrix and critical dissemination guarantees, ensuring the system maintains its architectural integrity while supporting future scaling requirements with Zero-Loss Architecture compliance.
+
+## Gap Register
+
+| Gap | Priority | Impact | Status |
+|------|----------|--------|---------|
+| [Gap 1] | High | Critical | Open |
+| [Gap 2] | Medium | Moderate | In Progress |
+
+---
+
+## Execution Plan
+
+1. **Phase 1**: Analysis and Planning
+2. **Phase 2**: Implementation
+3. **Phase 3**: Testing and Validation
+4. **Phase 4**: Documentation and Cleanup
+
+---
+

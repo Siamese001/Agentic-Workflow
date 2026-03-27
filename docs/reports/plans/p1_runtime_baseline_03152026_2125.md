@@ -37,3 +37,10 @@
 - Downstream governance/trace evidence already exists: `invokes_eval`, `applies_guardrail`, `records_execution_trace`, and `reads_policy_state` are populated.
 - The provided deficit SQL required schema translation for this repository because the `edges` table uses `src_id` and `dst_id` rather than `caller` and `callee` columns.
 - A zero `routes_to_agent` count makes the numeric target matrix degenerate to zero, but this does not satisfy the stated orchestration-coverage objective; it indicates missing route-edge emission rather than completed governance coverage.
+
+## Evidence
+
+[Provide evidence supporting the findings]
+
+---
+

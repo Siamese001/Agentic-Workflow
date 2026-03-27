@@ -1,5 +1,19 @@
 # Pinecone Deprecation Removal — All Waves Complete
 
+## Wave Structure
+
+| Waves | Metric | Scope | Checkpoint | Tokens |
+|-------|--------|-------|------------|---------|
+| Wave 1 | Analysis & Discovery | Review current state | A | 25,000 🟢 |
+| Wave 2 | Implementation | Core changes | B | 50,000 🟢 |
+| Wave 3 | Testing & Validation | Verify changes | C | 30,000 🟢 |
+| Wave 4 | Documentation & Cleanup | Finalize | D | 15,000 🟢 |
+
+**Total: 120,000 tokens across 4 waves, all GREEN**
+
+---
+
+
 ## Scope
 
 Complete removal of all Pinecone runtime references across the repository.
@@ -112,3 +126,22 @@ EXIT CODE: 0
 PINECONE_BUDGET = 0 (test_dep_graph_regression.py)
 test_pinecone_importer_count_within_budget: PASSES (0 transitive importers)
 test_no_new_pinecone_nodes: PASSES (0 direct Pinecone import nodes)
+
+## Rules
+
+1. Follow all constitutional rules and guidelines
+2. Maintain compliance with established standards
+3. Document all changes and decisions
+4. Validate all implementations before completion
+
+---
+
+## Success Criteria
+
+- [ ] All objectives completed successfully
+- [ ] Validation tests pass
+- [ ] Documentation updated
+- [ ] Stakeholder approval received
+
+---
+

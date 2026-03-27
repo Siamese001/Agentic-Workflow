@@ -4,6 +4,20 @@ Perform a comprehensive agent classification scan, then implement a hardened LLM
 
 ---
 
+## Wave Structure
+
+| Waves | Metric | Scope | Checkpoint | Tokens |
+|-------|--------|-------|------------|---------|
+| Wave 1 | Analysis & Discovery | Review current state | A | 25,000 🟢 |
+| Wave 2 | Implementation | Core changes | B | 50,000 🟢 |
+| Wave 3 | Testing & Validation | Verify changes | C | 30,000 🟢 |
+| Wave 4 | Documentation & Cleanup | Finalize | D | 15,000 🟢 |
+
+**Total: 120,000 tokens across 4 waves, all GREEN**
+
+---
+
+
 ## Executive Summary
 
 This plan consolidates all previous work into a single implementation path:
@@ -256,3 +270,13 @@ if estimated_tokens > policy.generation_budgets[reasoning_class]:
 | L6 adaptation | Dynamic healing thresholds from state |
 
 The architecture is governance-complete and ready for implementation.
+
+## Rules
+
+1. Follow all constitutional rules and guidelines
+2. Maintain compliance with established standards
+3. Document all changes and decisions
+4. Validate all implementations before completion
+
+---
+

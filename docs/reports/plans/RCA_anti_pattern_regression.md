@@ -83,3 +83,10 @@ ALLOW_LANDMINE_BASELINE_WRITE=1 python ops_scripts/ci/check_anti_patterns.py --w
 - Tooling and utility code needs same anti-pattern discipline as application code
 - Scope expansion without corresponding quality controls creates debt
 - Clear reporting metrics are essential to avoid misconceptions
+
+## Corrective Actions
+
+[List the corrective actions taken to resolve the issue]
+
+---
+

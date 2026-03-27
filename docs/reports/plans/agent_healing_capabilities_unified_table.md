@@ -156,3 +156,16 @@
 - Medium Confidence (0.50-0.75): `GEMINI_MODEL` = `gemini-3-flash-preview`
 - Low Confidence (< 0.50): `GEMINI_PRO_MODEL` = `gemini-2.5-pro`
 - High Confidence (> 0.75): Sovereign-auto (no LLM)
+
+## Findings
+
+[Document key findings from the investigation]
+
+---
+
+## Evidence
+
+[Provide evidence supporting the findings]
+
+---
+

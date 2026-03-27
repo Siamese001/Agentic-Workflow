@@ -6,6 +6,20 @@
 **Ingestion Time**: 93.2 seconds  
 **Hex Suffix**: 221786
 
+## Wave Structure
+
+| Waves | Metric | Scope | Checkpoint | Tokens |
+|-------|--------|-------|------------|---------|
+| Wave 1 | Analysis & Discovery | Review current state | A | 25,000 🟢 |
+| Wave 2 | Implementation | Core changes | B | 50,000 🟢 |
+| Wave 3 | Testing & Validation | Verify changes | C | 30,000 🟢 |
+| Wave 4 | Documentation & Cleanup | Finalize | D | 15,000 🟢 |
+
+**Total: 120,000 tokens across 4 waves, all GREEN**
+
+---
+
+
 ## Executive Summary
 
 MCP Redis has been experiencing persistent hanging issues during hot cache ingestion, causing the MCP server to become unresponsive. This report provides a comprehensive Root Cause Analysis (RCA) and implements a robust fix that resolves all hanging issues while dramatically improving performance.
@@ -304,3 +318,16 @@ The MCP Redis hanging issues have been comprehensively analyzed and fixed. The r
 The fix is production-ready and provides a foundation for reliable MCP Redis operations at scale.
 
 **Next Steps**: Deploy the optimized ingestion script and integrate fixes into the MCP Redis server for all users.
+
+## Violation
+
+[Describe the violation or issue that triggered this RCA]
+
+---
+
+## Corrective Actions
+
+[List the corrective actions taken to resolve the issue]
+
+---
+

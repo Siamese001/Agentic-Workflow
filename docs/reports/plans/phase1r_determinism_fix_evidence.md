@@ -1,4 +1,18 @@
 [1m============================= test session starts =============================[0m
+## Wave Structure
+
+| Waves | Metric | Scope | Checkpoint | Tokens |
+|-------|--------|-------|------------|---------|
+| Wave 1 | Analysis & Discovery | Review current state | A | 25,000 🟢 |
+| Wave 2 | Implementation | Core changes | B | 50,000 🟢 |
+| Wave 3 | Testing & Validation | Verify changes | C | 30,000 🟢 |
+| Wave 4 | Documentation & Cleanup | Finalize | D | 15,000 🟢 |
+
+**Total: 120,000 tokens across 4 waves, all GREEN**
+
+---
+
+
 platform win32 -- Python 3.12.10, pytest-9.0.2, pluggy-1.6.0
 rootdir: C:\Git\Agentic-Workflow
 configfile: pytest.ini (WARNING: ignoring pytest config in pyproject.toml!)
@@ -160,3 +174,22 @@ Date:   Sat Feb 21 05:55:57 2026 -0500
 === Wall-clock token scan ===
 telemetry_recorder_path agentic_core\L4_state\enforcement\telemetry_recorder.py
 wallclock_tokens_found []
+
+## Rules
+
+1. Follow all constitutional rules and guidelines
+2. Maintain compliance with established standards
+3. Document all changes and decisions
+4. Validate all implementations before completion
+
+---
+
+## Success Criteria
+
+- [ ] All objectives completed successfully
+- [ ] Validation tests pass
+- [ ] Documentation updated
+- [ ] Stakeholder approval received
+
+---
+

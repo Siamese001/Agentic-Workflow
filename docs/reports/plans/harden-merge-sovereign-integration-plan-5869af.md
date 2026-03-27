@@ -2,6 +2,20 @@
 
 This plan implements cryptographic sovereignty hardening and merges the L2 Architecture Gap Analysis with the Full Zero-Loss Widescreen Architecture to create a deterministically replayable, sovereignty-enforced four-bucket L2 structure.
 
+## Wave Structure
+
+| Waves | Metric | Scope | Checkpoint | Tokens |
+|-------|--------|-------|------------|---------|
+| Wave 1 | Analysis & Discovery | Review current state | A | 25,000 🟢 |
+| Wave 2 | Implementation | Core changes | B | 50,000 🟢 |
+| Wave 3 | Testing & Validation | Verify changes | C | 30,000 🟢 |
+| Wave 4 | Documentation & Cleanup | Finalize | D | 15,000 🟢 |
+
+**Total: 120,000 tokens across 4 waves, all GREEN**
+
+---
+
+
 ## Executive Summary
 
 The HARDEN-MERGE phase will cryptographically seal all four L2 buckets (Pre-commit, Validation, Execution, Healing) with deterministic replay, universal write gateway enforcement, and healing sovereignty choke points. This creates a zero-loss architecture where every component is cryptographically verifiable and deterministically replayable.
@@ -295,3 +309,22 @@ tests/sovereign_hardening/
 - Do not repeat HARDEN-MERGE phase
 
 This plan creates a cryptographically sovereign, deterministically replayable architecture that enforces strict boundaries between all four L2 buckets while maintaining backward compatibility and operational excellence.
+
+## Gap Register
+
+| Gap | Priority | Impact | Status |
+|------|----------|--------|---------|
+| [Gap 1] | High | Critical | Open |
+| [Gap 2] | Medium | Moderate | In Progress |
+
+---
+
+## Execution Plan
+
+1. **Phase 1**: Analysis and Planning
+2. **Phase 2**: Implementation
+3. **Phase 3**: Testing and Validation
+4. **Phase 4**: Documentation and Cleanup
+
+---
+

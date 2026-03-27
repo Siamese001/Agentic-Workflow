@@ -104,3 +104,16 @@ Date:   Sat Feb 21 10:50:46 2026 -0500
  tests/unit/L5_safety/test_conf_calib_gate.py       | 200 +++++++++++++++++++++
  2 files changed, 280 insertions(+)
 ```
+
+## Findings
+
+[Document key findings from the investigation]
+
+---
+
+## Evidence
+
+[Provide evidence supporting the findings]
+
+---
+

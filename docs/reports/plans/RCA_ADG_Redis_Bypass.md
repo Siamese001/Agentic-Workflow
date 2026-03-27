@@ -183,3 +183,10 @@ Based on system memory, Redis contains:
 **Incident closed:** Functional success, constitutional failure
 **Follow-up required:** Yes - implement corrective actions P0 and P1
 **ADG regeneration needed:** No - Redis schema is correct, query method was wrong
+
+## Violation
+
+[Describe the violation or issue that triggered this RCA]
+
+---
+

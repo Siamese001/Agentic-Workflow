@@ -5,6 +5,20 @@ Hardened vs v1: fixed false positives in Cat B (relaxed resolver),
 fixed false Cat C classification of GENERATED_MIRROR_TEST files,
 added Cat F (mirror→broken) and Cat G (_1 duplicates).
 
+## Wave Structure
+
+| Waves | Metric | Scope | Checkpoint | Tokens |
+|-------|--------|-------|------------|---------|
+| Wave 1 | Analysis & Discovery | Review current state | A | 25,000 🟢 |
+| Wave 2 | Implementation | Core changes | B | 50,000 🟢 |
+| Wave 3 | Testing & Validation | Verify changes | C | 30,000 🟢 |
+| Wave 4 | Documentation & Cleanup | Finalize | D | 15,000 🟢 |
+
+**Total: 120,000 tokens across 4 waves, all GREEN**
+
+---
+
+
 ## Summary
 
 | Cat | Description | Count | % |
@@ -929,3 +943,22 @@ These are technically live (top-level imports OK) but have broken runtime paths.
 
 75 files in `tests/_quarantine/` tracked by `QUARANTINE_MANIFEST.json`.
 Ceiling: 75, actual: 75. No drift detected.
+
+## Rules
+
+1. Follow all constitutional rules and guidelines
+2. Maintain compliance with established standards
+3. Document all changes and decisions
+4. Validate all implementations before completion
+
+---
+
+## Success Criteria
+
+- [ ] All objectives completed successfully
+- [ ] Validation tests pass
+- [ ] Documentation updated
+- [ ] Stakeholder approval received
+
+---
+

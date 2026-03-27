@@ -1,5 +1,19 @@
 # Wave 1 Phase 1.3 - Governance Stamps, Airlock, JIT Sync Marker Tests
 
+## Wave Structure
+
+| Waves | Metric | Scope | Checkpoint | Tokens |
+|-------|--------|-------|------------|---------|
+| Wave 1 | Analysis & Discovery | Review current state | A | 25,000 🟢 |
+| Wave 2 | Implementation | Core changes | B | 50,000 🟢 |
+| Wave 3 | Testing & Validation | Verify changes | C | 30,000 🟢 |
+| Wave 4 | Documentation & Cleanup | Finalize | D | 15,000 🟢 |
+
+**Total: 120,000 tokens across 4 waves, all GREEN**
+
+---
+
+
 ## Scope
 
 Add 33-test branch-coverage suite for governance/elevator/path_d detection machinery.
@@ -187,3 +201,22 @@ OK: PATH_D_HINTS has 5 hints
 | Elevator gap has wrong priority (not MEDIUM) | test_elevator_gap_priority_is_medium |
 | Hint tuple becomes empty (silently disables all detection) | test_governance_hints_tuple_non_empty, test_elevator_shaft_hints_tuple_non_empty, test_path_d_hints_tuple_non_empty |
 | _has_any_marker returns True for empty analysis (false positive) | test_has_any_marker_false_when_all_empty |
+
+## Rules
+
+1. Follow all constitutional rules and guidelines
+2. Maintain compliance with established standards
+3. Document all changes and decisions
+4. Validate all implementations before completion
+
+---
+
+## Success Criteria
+
+- [ ] All objectives completed successfully
+- [ ] Validation tests pass
+- [ ] Documentation updated
+- [ ] Stakeholder approval received
+
+---
+

@@ -5,6 +5,20 @@ die at process end in `execute_ssot`, hardened against all 17 AST-identified gap
 
 ---
 
+## Wave Structure
+
+| Waves | Metric | Scope | Checkpoint | Tokens |
+|-------|--------|-------|------------|---------|
+| Wave 1 | Analysis & Discovery | Review current state | A | 25,000 🟢 |
+| Wave 2 | Implementation | Core changes | B | 50,000 🟢 |
+| Wave 3 | Testing & Validation | Verify changes | C | 30,000 🟢 |
+| Wave 4 | Documentation & Cleanup | Finalize | D | 15,000 🟢 |
+
+**Total: 120,000 tokens across 4 waves, all GREEN**
+
+---
+
+
 ## § 0 — Governance Invariants (Non-Negotiable)
 
 All waves below are bound by these invariants. Any implementation that violates them is invalid.
@@ -570,3 +584,22 @@ _shadow_telemetry_batch = []
 
 *Integrated from: healer-output-system-learning-persistence-400f4c.md (four-wave implementation plan +
 hardening overlay) and healing-output-gap-analysis-ca26ba.md (17-gap AST review).*
+
+## Rules
+
+1. Follow all constitutional rules and guidelines
+2. Maintain compliance with established standards
+3. Document all changes and decisions
+4. Validate all implementations before completion
+
+---
+
+## Success Criteria
+
+- [ ] All objectives completed successfully
+- [ ] Validation tests pass
+- [ ] Documentation updated
+- [ ] Stakeholder approval received
+
+---
+

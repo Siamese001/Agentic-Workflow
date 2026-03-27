@@ -70,3 +70,16 @@ This converts collection-blocking ERRORs to individual test FAILUREs.
 2. **§9 timeout workflow** — all new scripts must have explicit timeout per operation
 3. **subprocess isolation** — never `importlib.import_module()` untrusted code in-process
 4. **Progress reporting** — all loops >50 items must report progress
+
+## Violation
+
+[Describe the violation or issue that triggered this RCA]
+
+---
+
+## Corrective Actions
+
+[List the corrective actions taken to resolve the issue]
+
+---
+

@@ -2,6 +2,20 @@
 
 This plan performs a comprehensive gap analysis of the current agentic architecture against the four-bucket L2 structure (Pre-commit, Validation, Execution, Healing) defined in the technical mapping document, and provides a detailed phased implementation approach.
 
+## Wave Structure
+
+| Waves | Metric | Scope | Checkpoint | Tokens |
+|-------|--------|-------|------------|---------|
+| Wave 1 | Analysis & Discovery | Review current state | A | 25,000 🟢 |
+| Wave 2 | Implementation | Core changes | B | 50,000 🟢 |
+| Wave 3 | Testing & Validation | Verify changes | C | 30,000 🟢 |
+| Wave 4 | Documentation & Cleanup | Finalize | D | 15,000 🟢 |
+
+**Total: 120,000 tokens across 4 waves, all GREEN**
+
+---
+
+
 ## Executive Summary
 
 The current Agentic-Workflow repository contains 190 agents across agentic_core (L0-L6 layers) and apps_* domains, but lacks the structured four-bucket L2 architecture specified in the technical mapping. Significant architectural refactoring is required to align with the intended design.
@@ -259,3 +273,22 @@ class AssemblyPackage:
 ## Conclusion
 
 This implementation plan transforms the current agent ecosystem into a structured four-bucket L2 architecture that aligns with the technical specification. The phased approach minimizes risk while delivering incremental value, ultimately providing a more robust, scalable, and governable agentic system.
+
+## Gap Register
+
+| Gap | Priority | Impact | Status |
+|------|----------|--------|---------|
+| [Gap 1] | High | Critical | Open |
+| [Gap 2] | Medium | Moderate | In Progress |
+
+---
+
+## Execution Plan
+
+1. **Phase 1**: Analysis and Planning
+2. **Phase 2**: Implementation
+3. **Phase 3**: Testing and Validation
+4. **Phase 4**: Documentation and Cleanup
+
+---
+

@@ -1,5 +1,19 @@
 # Windsurf Pre-Write Validation Assessment - Summary Report
 
+## Wave Structure
+
+| Waves | Metric | Scope | Checkpoint | Tokens |
+|-------|--------|-------|------------|---------|
+| Wave 1 | Analysis & Discovery | Review current state | A | 25,000 🟢 |
+| Wave 2 | Implementation | Core changes | B | 50,000 🟢 |
+| Wave 3 | Testing & Validation | Verify changes | C | 30,000 🟢 |
+| Wave 4 | Documentation & Cleanup | Finalize | D | 15,000 🟢 |
+
+**Total: 120,000 tokens across 4 waves, all GREEN**
+
+---
+
+
 ## Assessment Complete
 
 The comprehensive assessment of Windsurf's pre-write validation hooks has been completed, identifying critical gaps and proposing a unified enforcement framework.
@@ -128,3 +142,21 @@ The proposed unified framework addresses these issues while providing a foundati
 **Total Documents Created**: 2  
 **Implementation Timeline**: 4 weeks  
 **Priority**: High - Critical constitutional enforcement gaps
+## Gap Register
+
+| Gap | Priority | Impact | Status |
+|------|----------|--------|---------|
+| [Gap 1] | High | Critical | Open |
+| [Gap 2] | Medium | Moderate | In Progress |
+
+---
+
+## Execution Plan
+
+1. **Phase 1**: Analysis and Planning
+2. **Phase 2**: Implementation
+3. **Phase 3**: Testing and Validation
+4. **Phase 4**: Documentation and Cleanup
+
+---
+

@@ -4,6 +4,20 @@ Comprehensive gap analysis of `agentic_core/knowledge/` vs LCD+ best practices, 
 
 ---
 
+## Wave Structure
+
+| Waves | Metric | Scope | Checkpoint | Tokens |
+|-------|--------|-------|------------|---------|
+| Wave 1 | Analysis & Discovery | Review current state | A | 25,000 🟢 |
+| Wave 2 | Implementation | Core changes | B | 50,000 🟢 |
+| Wave 3 | Testing & Validation | Verify changes | C | 30,000 🟢 |
+| Wave 4 | Documentation & Cleanup | Finalize | D | 15,000 🟢 |
+
+**Total: 120,000 tokens across 4 waves, all GREEN**
+
+---
+
+
 ## Current State Summary
 
 **Files**: 13 `.py` files across 6 subfolders
@@ -364,3 +378,22 @@ class HtmlDocumentLoader:
 - Phase 2 file moves trigger §1.4 (Rename/Move Closure Rule) — all repo-wide imports must be updated and validated by discovery + structure verification + tests.
 - The `wiki_healer.py` depends on `filesystem_mcp_client_1` and `ssot_discovery_validator` — verify those exist before moving.
 - `SovereignRagOrchestrator` depends on `semantic_memory` (Gemini embedder, Pinecone, BM25) — all behind try/except, low risk.
+
+## Gap Register
+
+| Gap | Priority | Impact | Status |
+|------|----------|--------|---------|
+| [Gap 1] | High | Critical | Open |
+| [Gap 2] | Medium | Moderate | In Progress |
+
+---
+
+## Execution Plan
+
+1. **Phase 1**: Analysis and Planning
+2. **Phase 2**: Implementation
+3. **Phase 3**: Testing and Validation
+4. **Phase 4**: Documentation and Cleanup
+
+---
+

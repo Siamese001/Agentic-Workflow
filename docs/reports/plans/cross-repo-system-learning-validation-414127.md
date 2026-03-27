@@ -65,3 +65,16 @@ Digest parity:
 - Determinism digests: `artifacts/system_learning/cross_repo_import/determinism_digests.json`
 - Pipeline context payload: `artifacts/system_learning/cross_repo_import/latest_context.json`
 - Incorporation report: `docs/reports/plans/cross-repo-system-learning-incorporation-414127.md`
+
+## Findings
+
+[Document key findings from the investigation]
+
+---
+
+## Evidence
+
+[Provide evidence supporting the findings]
+
+---
+

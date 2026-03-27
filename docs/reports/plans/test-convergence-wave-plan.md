@@ -1,5 +1,19 @@
 # Test Convergence Wave Plan — 2026-03-18
 
+## Wave Structure
+
+| Waves | Metric | Scope | Checkpoint | Tokens |
+|-------|--------|-------|------------|---------|
+| Wave 1 | Analysis & Discovery | Review current state | A | 25,000 🟢 |
+| Wave 2 | Implementation | Core changes | B | 50,000 🟢 |
+| Wave 3 | Testing & Validation | Verify changes | C | 30,000 🟢 |
+| Wave 4 | Documentation & Cleanup | Finalize | D | 15,000 🟢 |
+
+**Total: 120,000 tokens across 4 waves, all GREEN**
+
+---
+
+
 ## Baseline (post-ADG refresh)
 - **Guardian**: 1671 passed, 0 failed, 25 skipped ✅
 - **Sovereign**: 59 passed, 0 failed, 1 skipped ✅
@@ -207,3 +221,16 @@
 - adg: 0F, 0E (excluding intentional skips)
 - architecture: 0F, 0E (excluding intentional skips)
 - All skips have documented justification
+
+## Violation
+
+[Describe the violation or issue that triggered this RCA]
+
+---
+
+## Corrective Actions
+
+[List the corrective actions taken to resolve the issue]
+
+---
+

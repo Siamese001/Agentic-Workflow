@@ -1,5 +1,19 @@
 # Guardian Scripts Dry Run Report
 
+## Wave Structure
+
+| Waves | Metric | Scope | Checkpoint | Tokens |
+|-------|--------|-------|------------|---------|
+| Wave 1 | Analysis & Discovery | Review current state | A | 25,000 🟢 |
+| Wave 2 | Implementation | Core changes | B | 50,000 🟢 |
+| Wave 3 | Testing & Validation | Verify changes | C | 30,000 🟢 |
+| Wave 4 | Documentation & Cleanup | Finalize | D | 15,000 🟢 |
+
+**Total: 120,000 tokens across 4 waves, all GREEN**
+
+---
+
+
 ## Executive Summary
 
 Performed a comprehensive dry run of all guardian scripts in the `tests/guardian` directory. The guardian system consists of 7 registered guardians that perform structural and architectural validation of the codebase.
@@ -190,3 +204,22 @@ tests/unit/utils
 7. Move misplaced files to correct LCD folders per classification
 8. Remove or populate empty folders
 9. Remove or relocate backup/temp files (.bak, .backup, .old, .tmp)
+
+## Rules
+
+1. Follow all constitutional rules and guidelines
+2. Maintain compliance with established standards
+3. Document all changes and decisions
+4. Validate all implementations before completion
+
+---
+
+## Success Criteria
+
+- [ ] All objectives completed successfully
+- [ ] Validation tests pass
+- [ ] Documentation updated
+- [ ] Stakeholder approval received
+
+---
+

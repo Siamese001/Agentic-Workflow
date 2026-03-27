@@ -150,3 +150,16 @@
 ---
 
 **Result:** 100% CI health with comprehensive governance coverage
+
+## Findings
+
+[Document key findings from the investigation]
+
+---
+
+## Evidence
+
+[Provide evidence supporting the findings]
+
+---
+

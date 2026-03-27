@@ -13,3 +13,16 @@
 
 - <factor 1>
 - <factor 2>
+
+## Findings
+
+[Document key findings from the investigation]
+
+---
+
+## Evidence
+
+[Provide evidence supporting the findings]
+
+---
+

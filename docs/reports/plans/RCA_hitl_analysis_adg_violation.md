@@ -152,3 +152,22 @@ AND e.relation_type = 'imports'
 - ADG Memory: `SYSTEM-RETRIEVED-MEMORY[1c4e46e0-72e8-4c4f-8a61-fb8b6c3d9c40]`
 - ADG Redis Ingest: `tools/adg/adg_redis_ingest.py`
 - ADG Query Tool: `tools/adg/adg_redis_query.py`
+
+## Violation
+
+[Describe the violation or issue that triggered this RCA]
+
+---
+
+## Root Cause
+
+[Identify and explain the root cause of the violation]
+
+---
+
+## Corrective Actions
+
+[List the corrective actions taken to resolve the issue]
+
+---
+

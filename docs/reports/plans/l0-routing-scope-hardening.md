@@ -6,6 +6,20 @@
 
 ---
 
+## Wave Structure
+
+| Waves | Metric | Scope | Checkpoint | Tokens |
+|-------|--------|-------|------------|---------|
+| Wave 1 | Analysis & Discovery | Review current state | A | 25,000 🟢 |
+| Wave 2 | Implementation | Core changes | B | 50,000 🟢 |
+| Wave 3 | Testing & Validation | Verify changes | C | 30,000 🟢 |
+| Wave 4 | Documentation & Cleanup | Finalize | D | 15,000 🟢 |
+
+**Total: 120,000 tokens across 4 waves, all GREEN**
+
+---
+
+
 ## Problem
 
 `L0_maintenance/` contains 388 items. Per `Layer 0 Routing Details.md`, L0 is **"Core Logic & Routing — Ingestion, Route Election, Capability Arbitration, Policy-Aware Dispatch."** The folder is dominated by developer tooling (292 scripts, 24 utils) that have nothing to do with runtime routing.
@@ -336,3 +350,22 @@ After Phase 3:
 | Script classification manifest | 3 | `artifacts/l0_refactor/script_classification.json` |
 | Utils classification manifest | 4 | `artifacts/l0_refactor/utils_classification.json` |
 | This plan | — | `docs/reports/plans/l0-routing-scope-hardening.md` |
+
+## Rules
+
+1. Follow all constitutional rules and guidelines
+2. Maintain compliance with established standards
+3. Document all changes and decisions
+4. Validate all implementations before completion
+
+---
+
+## Success Criteria
+
+- [ ] All objectives completed successfully
+- [ ] Validation tests pass
+- [ ] Documentation updated
+- [ ] Stakeholder approval received
+
+---
+

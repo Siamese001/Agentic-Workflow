@@ -1,5 +1,19 @@
 # V15 SSOT Entrypoint Audit — Evidence
 
+## Wave Structure
+
+| Waves | Metric | Scope | Checkpoint | Tokens |
+|-------|--------|-------|------------|---------|
+| Wave 1 | Analysis & Discovery | Review current state | A | 25,000 🟢 |
+| Wave 2 | Implementation | Core changes | B | 50,000 🟢 |
+| Wave 3 | Testing & Validation | Verify changes | C | 30,000 🟢 |
+| Wave 4 | Documentation & Cleanup | Finalize | D | 15,000 🟢 |
+
+**Total: 120,000 tokens across 4 waves, all GREEN**
+
+---
+
+
 ## Scope
 
 3 files changed:
@@ -98,3 +112,22 @@ tests/ssot_equivalence/test_execute_ssot_frozen.py::test_v15_bootstrap_wired_in_
 | ACTIVE label missing or misplaced | test_active_header_present, test_active_header_is_early |
 | l0_execute.py accidentally created without architecture update | test_l0_execute_does_not_exist |
 | §8.1e V15 audit accidentally removed from _legacy_main | test_v15_bootstrap_wired_in_legacy_main |
+
+## Rules
+
+1. Follow all constitutional rules and guidelines
+2. Maintain compliance with established standards
+3. Document all changes and decisions
+4. Validate all implementations before completion
+
+---
+
+## Success Criteria
+
+- [ ] All objectives completed successfully
+- [ ] Validation tests pass
+- [ ] Documentation updated
+- [ ] Stakeholder approval received
+
+---
+

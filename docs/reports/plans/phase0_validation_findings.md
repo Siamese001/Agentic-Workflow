@@ -171,3 +171,16 @@ Based on production criticality × true gap count:
 | `tools/evidence/_phase0_validation.py` | Validation script (rerunnable) |
 | `tools/evidence/_phase0_deep_analysis.py` | Deep analysis script (rerunnable) |
 | `docs/reports/plans/RCA_coverage_gap_discrepancy.md` | Original RCA (needs update per Finding #7) |
+
+## Findings
+
+[Document key findings from the investigation]
+
+---
+
+## Evidence
+
+[Provide evidence supporting the findings]
+
+---
+

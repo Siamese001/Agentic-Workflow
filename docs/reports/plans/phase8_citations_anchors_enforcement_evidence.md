@@ -206,3 +206,22 @@ tests/agentic_core/test_phase8_end_to_end_gateway_citations.py::TestStaticAuditC
 | **Static audit: assemble_response() calls enforce_citations_for_retrieval** | test_assemble_response_calls_enforce_citations | PASS |
 | **Static audit: canonical_bytes excludes retrieved_at_utc** | test_citation_bundle_excludes_volatile_fields_from_canonical_bytes | PASS |
 | **Total: 60 tests, 0 failures** | all three test files | PASS |
+
+## Rules
+
+1. Follow all constitutional rules and guidelines
+2. Maintain compliance with established standards
+3. Document all changes and decisions
+4. Validate all implementations before completion
+
+---
+
+## Success Criteria
+
+- [ ] All objectives completed successfully
+- [ ] Validation tests pass
+- [ ] Documentation updated
+- [ ] Stakeholder approval received
+
+---
+

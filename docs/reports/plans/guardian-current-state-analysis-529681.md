@@ -2,6 +2,20 @@
 
 The current Guardian implementation is a **hybrid between Option 1 (Pure Reporting) and a threshold-based approach** that attempts to prevent test failures while tracking technical debt.
 
+## Wave Structure
+
+| Waves | Metric | Scope | Checkpoint | Tokens |
+|-------|--------|-------|------------|---------|
+| Wave 1 | Analysis & Discovery | Review current state | A | 25,000 🟢 |
+| Wave 2 | Implementation | Core changes | B | 50,000 🟢 |
+| Wave 3 | Testing & Validation | Verify changes | C | 30,000 🟢 |
+| Wave 4 | Documentation & Cleanup | Finalize | D | 15,000 🟢 |
+
+**Total: 120,000 tokens across 4 waves, all GREEN**
+
+---
+
+
 ## Current Implementation Analysis
 
 ### What I Found in the Code
@@ -229,3 +243,22 @@ if config.AUTO_FIX_ENABLED:
 **What it actually does:** Reports violations, fails tests when arbitrary thresholds are exceeded, provides no path to fix violations.
 
 **What it should do:** Either commit to pure reporting (Option 1) OR implement hybrid with auto-fixing (Option 4). The current middle ground is the worst of both worlds.
+
+## Rules
+
+1. Follow all constitutional rules and guidelines
+2. Maintain compliance with established standards
+3. Document all changes and decisions
+4. Validate all implementations before completion
+
+---
+
+## Success Criteria
+
+- [ ] All objectives completed successfully
+- [ ] Validation tests pass
+- [ ] Documentation updated
+- [ ] Stakeholder approval received
+
+---
+

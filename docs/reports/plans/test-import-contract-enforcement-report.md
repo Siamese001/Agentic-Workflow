@@ -3,6 +3,20 @@
 **Generated**: 2026-03-24 22:30:00
 **Tool**: `tools/test_enforcement/`
 
+## Wave Structure
+
+| Waves | Metric | Scope | Checkpoint | Tokens |
+|-------|--------|-------|------------|---------|
+| Wave 1 | Analysis & Discovery | Review current state | A | 25,000 🟢 |
+| Wave 2 | Implementation | Core changes | B | 50,000 🟢 |
+| Wave 3 | Testing & Validation | Verify changes | C | 30,000 🟢 |
+| Wave 4 | Documentation & Cleanup | Finalize | D | 15,000 🟢 |
+
+**Total: 120,000 tokens across 4 waves, all GREEN**
+
+---
+
+
 ## Executive Summary
 
 The test suite has been fully audited and refactored to enforce deterministic import behavior
@@ -117,3 +131,22 @@ python tools/test_enforcement/deep_audit.py
 | Deep audit results | `artifacts/test_enforcement/deep_audit_results.json` |
 | Wave 1 results | `artifacts/test_enforcement/wave1_results.json` |
 | CI workflow | `.github/workflows/test-import-contracts.yml` |
+
+## Rules
+
+1. Follow all constitutional rules and guidelines
+2. Maintain compliance with established standards
+3. Document all changes and decisions
+4. Validate all implementations before completion
+
+---
+
+## Success Criteria
+
+- [ ] All objectives completed successfully
+- [ ] Validation tests pass
+- [ ] Documentation updated
+- [ ] Stakeholder approval received
+
+---
+

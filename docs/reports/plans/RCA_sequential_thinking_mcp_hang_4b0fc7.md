@@ -110,3 +110,22 @@ SENT tools_call → RECV: {"result":{"content":[{"type":"text","text":"{...}"}]}
 PID 8540:  npx-cli.js -y @modelcontextprotocol/server-sequential-thinking  (parent)
 PID 31828: server-sequential-thinking\dist\index.js                         (child)
 ```
+
+## Violation
+
+[Describe the violation or issue that triggered this RCA]
+
+---
+
+## Root Cause
+
+[Identify and explain the root cause of the violation]
+
+---
+
+## Corrective Actions
+
+[List the corrective actions taken to resolve the issue]
+
+---
+

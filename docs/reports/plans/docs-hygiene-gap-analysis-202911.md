@@ -2,6 +2,20 @@
 
 This plan analyzes how the `docs/` folder is treated by hygiene agents in the agentic workflow system and identifies critical gaps in documentation governance.
 
+## Wave Structure
+
+| Waves | Metric | Scope | Checkpoint | Tokens |
+|-------|--------|-------|------------|---------|
+| Wave 1 | Analysis & Discovery | Review current state | A | 25,000 🟢 |
+| Wave 2 | Implementation | Core changes | B | 50,000 🟢 |
+| Wave 3 | Testing & Validation | Verify changes | C | 30,000 🟢 |
+| Wave 4 | Documentation & Cleanup | Finalize | D | 15,000 🟢 |
+
+**Total: 120,000 tokens across 4 waves, all GREEN**
+
+---
+
+
 ## Summary
 
 The `docs/` folder contains rich content (506+ files including architecture plans, reports, metrics, and specifications) but is systematically overlooked by hygiene agents, creating a significant governance gap for documentation assets.
@@ -142,3 +156,22 @@ The `docs/` folder contains rich content (506+ files including architecture plan
 5. Integrate with existing hygiene workflows
 
 This analysis reveals a significant governance gap that, when addressed, will dramatically improve documentation quality, consistency, and maintainability across the agentic workflow system.
+
+## Gap Register
+
+| Gap | Priority | Impact | Status |
+|------|----------|--------|---------|
+| [Gap 1] | High | Critical | Open |
+| [Gap 2] | Medium | Moderate | In Progress |
+
+---
+
+## Execution Plan
+
+1. **Phase 1**: Analysis and Planning
+2. **Phase 2**: Implementation
+3. **Phase 3**: Testing and Validation
+4. **Phase 4**: Documentation and Cleanup
+
+---
+

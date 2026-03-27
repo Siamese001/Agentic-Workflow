@@ -1,6 +1,20 @@
 # Phase 2.1 SSOT Promotion Evidence
 # L4 as Versioned State Bus + Grounded Retrieval — Runtime Integration
 
+## Wave Structure
+
+| Waves | Metric | Scope | Checkpoint | Tokens |
+|-------|--------|-------|------------|---------|
+| Wave 1 | Analysis & Discovery | Review current state | A | 25,000 🟢 |
+| Wave 2 | Implementation | Core changes | B | 50,000 🟢 |
+| Wave 3 | Testing & Validation | Verify changes | C | 30,000 🟢 |
+| Wave 4 | Documentation & Cleanup | Finalize | D | 15,000 🟢 |
+
+**Total: 120,000 tokens across 4 waves, all GREEN**
+
+---
+
+
 ## Commit Hash
 **85327788e** — phase2.1: add end-to-end gateway.execute() tests proving L2.0 hash enforcement
 
@@ -200,3 +214,22 @@ tests/agentic_core/test_phase2_determinism_thresholds.py::TestStaticAudit::test_
 | All 63 tests pass (45 unit + 18 integration) | PASS |
 | Single tip commit 85327788e | PASS |
 | Evidence file updated in place, no raw capture files | PASS |
+
+## Rules
+
+1. Follow all constitutional rules and guidelines
+2. Maintain compliance with established standards
+3. Document all changes and decisions
+4. Validate all implementations before completion
+
+---
+
+## Success Criteria
+
+- [ ] All objectives completed successfully
+- [ ] Validation tests pass
+- [ ] Documentation updated
+- [ ] Stakeholder approval received
+
+---
+

@@ -70,3 +70,16 @@ Post-change result: 1 skipped, 13 warnings, 16 errors in collection. Zero regres
 Collection errors are unrelated import failures (missing agentic_core.L4_state.utils.layer_gravity,
 blueprint_hash symbol) that pre-date this phase.
 EXIT CODE: 1
+
+## Findings
+
+[Document key findings from the investigation]
+
+---
+
+## Evidence
+
+[Provide evidence supporting the findings]
+
+---
+

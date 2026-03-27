@@ -84,3 +84,16 @@ python -m pytest tests/architecture/test_mathematical_determinism.py tests/archi
 
 ## Conclusion
 The mathematical determinism tests are now fully functional and all related architecture tests are passing. The fixes maintain the integrity of the compile-time frozen governance system while ensuring tests can run successfully in various environments.
+
+## Findings
+
+[Document key findings from the investigation]
+
+---
+
+## Evidence
+
+[Provide evidence supporting the findings]
+
+---
+

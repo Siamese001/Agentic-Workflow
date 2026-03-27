@@ -64,3 +64,22 @@
 - NO new edge types (per original validation prompt)
 - NO runtime traces / OpenTelemetry / UWG logs
 - NO scanner logic modification unless falsification proven (violation confidence IS falsification — depth-3 edges are semantically valid but confidence formula was wrong)
+
+## Rules
+
+1. Follow all constitutional rules and guidelines
+2. Maintain compliance with established standards
+3. Document all changes and decisions
+4. Validate all implementations before completion
+
+---
+
+## Success Criteria
+
+- [ ] All objectives completed successfully
+- [ ] Validation tests pass
+- [ ] Documentation updated
+- [ ] Stakeholder approval received
+
+---
+

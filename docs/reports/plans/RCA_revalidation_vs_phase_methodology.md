@@ -6,6 +6,20 @@
 
 ---
 
+## Wave Structure
+
+| Waves | Metric | Scope | Checkpoint | Tokens |
+|-------|--------|-------|------------|---------|
+| Wave 1 | Analysis & Discovery | Review current state | A | 25,000 🟢 |
+| Wave 2 | Implementation | Core changes | B | 50,000 🟢 |
+| Wave 3 | Testing & Validation | Verify changes | C | 30,000 🟢 |
+| Wave 4 | Documentation & Cleanup | Finalize | D | 15,000 🟢 |
+
+**Total: 120,000 tokens across 4 waves, all GREEN**
+
+---
+
+
 ## 1. Problem Statement
 
 A revalidation audit of Phases 1–4 reported **19 "critical defects"** and declared all phases **FAILED**. However, detailed forensic analysis reveals the audit methodology was fundamentally flawed — it conflated **pre-existing technical debt** with **phase deliverable failures**, inflating the defect count by ~4×.
@@ -284,3 +298,22 @@ The fix-forward method is: **Hybrid Wave-Phase Protocol** — use phase framewor
 ---
 
 *This RCA is stored at the SSOT-approved location: `docs/reports/plans/`*
+
+## Rules
+
+1. Follow all constitutional rules and guidelines
+2. Maintain compliance with established standards
+3. Document all changes and decisions
+4. Validate all implementations before completion
+
+---
+
+## Success Criteria
+
+- [ ] All objectives completed successfully
+- [ ] Validation tests pass
+- [ ] Documentation updated
+- [ ] Stakeholder approval received
+
+---
+

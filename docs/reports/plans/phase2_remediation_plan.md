@@ -1,5 +1,19 @@
 # Phase 2 Remediation Plan - Systemic Naming Drift Remediation
 
+## Wave Structure
+
+| Waves | Metric | Scope | Checkpoint | Tokens |
+|-------|--------|-------|------------|---------|
+| Wave 1 | Analysis & Discovery | Review current state | A | 25,000 🟢 |
+| Wave 2 | Implementation | Core changes | B | 50,000 🟢 |
+| Wave 3 | Testing & Validation | Verify changes | C | 30,000 🟢 |
+| Wave 4 | Documentation & Cleanup | Finalize | D | 15,000 🟢 |
+
+**Total: 120,000 tokens across 4 waves, all GREEN**
+
+---
+
+
 ## Executive Summary
 
 Phase 2 addresses 21 systemic naming violations across all app domains, focusing on MISNAMED_UTILITY files that contain active logic but are misclassified as config files.
@@ -158,3 +172,16 @@ Phase 2 addresses 21 systemic naming violations across all app domains, focusing
 ---
 **Phase 2 Status**: PLANNING COMPLETE
 **Ready to Execute**: Systematic naming drift remediation
+
+## Root Cause
+
+[Identify and explain the root cause of the violation]
+
+---
+
+## Corrective Actions
+
+[List the corrective actions taken to resolve the issue]
+
+---
+

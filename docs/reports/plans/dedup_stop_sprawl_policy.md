@@ -57,3 +57,16 @@ jobs:
       - run: python artifacts/dedup/run_dedup_analysis.py
       - run: python artifacts/dedup/sprawl_gate.py --max-similarity 0.75
 ```
+
+## Findings
+
+[Document key findings from the investigation]
+
+---
+
+## Evidence
+
+[Provide evidence supporting the findings]
+
+---
+

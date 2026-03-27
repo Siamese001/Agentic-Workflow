@@ -4,6 +4,20 @@ All 30 production gaps across 32 files — derived from codebase scan, `Embeddin
 
 ---
 
+## Wave Structure
+
+| Waves | Metric | Scope | Checkpoint | Tokens |
+|-------|--------|-------|------------|---------|
+| Wave 1 | Analysis & Discovery | Review current state | A | 25,000 🟢 |
+| Wave 2 | Implementation | Core changes | B | 50,000 🟢 |
+| Wave 3 | Testing & Validation | Verify changes | C | 30,000 🟢 |
+| Wave 4 | Documentation & Cleanup | Finalize | D | 15,000 🟢 |
+
+**Total: 120,000 tokens across 4 waves, all GREEN**
+
+---
+
+
 ## Lifecycle Anchor (from `Embedding Lifecycle.md`)
 
 ```
@@ -177,3 +191,22 @@ Required:
 ## Process Map Documentation Update (post-code)
 
 `agentic_process_mapping.md` line 60 reads `Embedder: OpenAI text-embedding-3-large (Batch=500, Retry=8)` and line 228 reads `Embedding gen (OpenAI)`. Update to `Embedder: BAAI/bge-m3 (dim=1024)` after code migration.
+
+## Rules
+
+1. Follow all constitutional rules and guidelines
+2. Maintain compliance with established standards
+3. Document all changes and decisions
+4. Validate all implementations before completion
+
+---
+
+## Success Criteria
+
+- [ ] All objectives completed successfully
+- [ ] Validation tests pass
+- [ ] Documentation updated
+- [ ] Stakeholder approval received
+
+---
+

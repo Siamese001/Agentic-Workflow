@@ -2,6 +2,20 @@
 
 Apply 8 minimal patches to `artifacts/windsurf/planB_refreshed.md` to reach governance-grade quality. Document-only changes; no source files yet.
 
+## Wave Structure
+
+| Waves | Metric | Scope | Checkpoint | Tokens |
+|-------|--------|-------|------------|---------|
+| Wave 1 | Analysis & Discovery | Review current state | A | 25,000 🟢 |
+| Wave 2 | Implementation | Core changes | B | 50,000 🟢 |
+| Wave 3 | Testing & Validation | Verify changes | C | 30,000 🟢 |
+| Wave 4 | Documentation & Cleanup | Finalize | D | 15,000 🟢 |
+
+**Total: 120,000 tokens across 4 waves, all GREEN**
+
+---
+
+
 ## Patch List
 
 1. **Dimensions** — Replace hardcoded `dim=768/384/512` with "read from `IndexBuildMetadata.dimension`; values shown are examples only."
@@ -24,3 +38,22 @@ Apply 8 minimal patches to `artifacts/windsurf/planB_refreshed.md` to reach gove
 - **1 file modified**: `artifacts/windsurf/planB_refreshed.md`
 - **No source files touched**
 - Commit + push to `embeddings` branch
+
+## Rules
+
+1. Follow all constitutional rules and guidelines
+2. Maintain compliance with established standards
+3. Document all changes and decisions
+4. Validate all implementations before completion
+
+---
+
+## Success Criteria
+
+- [ ] All objectives completed successfully
+- [ ] Validation tests pass
+- [ ] Documentation updated
+- [ ] Stakeholder approval received
+
+---
+

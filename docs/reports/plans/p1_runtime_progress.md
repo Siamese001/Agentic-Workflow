@@ -94,3 +94,22 @@
 - No orchestration DAG divergence or safety bypass detected across all 4 waves.
 - Redis hot cache refreshed and HOT.
 - **P1 remediation is COMPLETE. No further micro-waves required.**
+
+## Rules
+
+1. Follow all constitutional rules and guidelines
+2. Maintain compliance with established standards
+3. Document all changes and decisions
+4. Validate all implementations before completion
+
+---
+
+## Success Criteria
+
+- [ ] All objectives completed successfully
+- [ ] Validation tests pass
+- [ ] Documentation updated
+- [ ] Stakeholder approval received
+
+---
+

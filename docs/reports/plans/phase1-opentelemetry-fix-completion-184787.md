@@ -4,6 +4,20 @@
 **Status:** COMPLETED
 **Duration:** ~2 hours
 
+## Wave Structure
+
+| Waves | Metric | Scope | Checkpoint | Tokens |
+|-------|--------|-------|------------|---------|
+| Wave 1 | Analysis & Discovery | Review current state | A | 25,000 🟢 |
+| Wave 2 | Implementation | Core changes | B | 50,000 🟢 |
+| Wave 3 | Testing & Validation | Verify changes | C | 30,000 🟢 |
+| Wave 4 | Documentation & Cleanup | Finalize | D | 15,000 🟢 |
+
+**Total: 120,000 tokens across 4 waves, all GREEN**
+
+---
+
+
 ## Objective
 Fix the critical OpenTelemetry installation gap where telemetry dependencies were in an optional group, causing `OTEL_AVAILABLE = False` in production environments.
 
@@ -113,3 +127,22 @@ Phase 1 successfully resolves the **critical blocker** for the entire OpenTeleme
 **Phase 1 Status: COMPLETE ✅**
 
 **Ready for Phase 2: Runtime ADG Storage Integration**
+
+## Rules
+
+1. Follow all constitutional rules and guidelines
+2. Maintain compliance with established standards
+3. Document all changes and decisions
+4. Validate all implementations before completion
+
+---
+
+## Success Criteria
+
+- [ ] All objectives completed successfully
+- [ ] Validation tests pass
+- [ ] Documentation updated
+- [ ] Stakeholder approval received
+
+---
+

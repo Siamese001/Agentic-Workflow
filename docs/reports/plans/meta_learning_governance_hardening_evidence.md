@@ -1,5 +1,19 @@
 # Meta-Learning Governance Hardening (h2-h10)
 
+## Wave Structure
+
+| Waves | Metric | Scope | Checkpoint | Tokens |
+|-------|--------|-------|------------|---------|
+| Wave 1 | Analysis & Discovery | Review current state | A | 25,000 🟢 |
+| Wave 2 | Implementation | Core changes | B | 50,000 🟢 |
+| Wave 3 | Testing & Validation | Verify changes | C | 30,000 🟢 |
+| Wave 4 | Documentation & Cleanup | Finalize | D | 15,000 🟢 |
+
+**Total: 120,000 tokens across 4 waves, all GREEN**
+
+---
+
+
 ## Scope
 
 Ten governance and determinism gaps identified in the meta-learning persistence stack.
@@ -140,3 +154,22 @@ tests/system_learning/test_cross_agent_meta_learning_hardening.py::TestStrategyW
 tests/system_learning/test_cross_agent_meta_learning_hardening.py::TestStrategyWeightsHardening::test_load_ignores_schema_version_field PASSED
 tests/system_learning/test_cross_agent_meta_learning_hardening.py::TestStrategyWeightsHardening::test_weights_file_ascii_only_with_schema_version PASSED
 38 passed, 123 warnings in 0.43s
+
+## Rules
+
+1. Follow all constitutional rules and guidelines
+2. Maintain compliance with established standards
+3. Document all changes and decisions
+4. Validate all implementations before completion
+
+---
+
+## Success Criteria
+
+- [ ] All objectives completed successfully
+- [ ] Validation tests pass
+- [ ] Documentation updated
+- [ ] Stakeholder approval received
+
+---
+

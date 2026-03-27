@@ -1,5 +1,19 @@
 # Wave 2 Phase 2.2 - Embedding Sovereignty: Factory Seam Branch Coverage
 
+## Wave Structure
+
+| Waves | Metric | Scope | Checkpoint | Tokens |
+|-------|--------|-------|------------|---------|
+| Wave 1 | Analysis & Discovery | Review current state | A | 25,000 🟢 |
+| Wave 2 | Implementation | Core changes | B | 50,000 🟢 |
+| Wave 3 | Testing & Validation | Verify changes | C | 30,000 🟢 |
+| Wave 4 | Documentation & Cleanup | Finalize | D | 15,000 🟢 |
+
+**Total: 120,000 tokens across 4 waves, all GREEN**
+
+---
+
+
 ## Scope
 
 Add 22-test branch-coverage suite for analyze_rag_embedding_sovereignty.
@@ -200,3 +214,22 @@ OK: EMBEDDING_HINT_PATTERNS has 5 hints
 | Gap with empty evidence_files (unverifiable) | test_all_embedding_gaps_have_evidence_files |
 | EMBEDDING_HINT_PATTERNS emptied (detection silenced) | test_embedding_hint_patterns_non_empty |
 | Critical hint removed from EMBEDDING_HINT_PATTERNS | test_embedding_hint_patterns_contains_expected_entries |
+
+## Rules
+
+1. Follow all constitutional rules and guidelines
+2. Maintain compliance with established standards
+3. Document all changes and decisions
+4. Validate all implementations before completion
+
+---
+
+## Success Criteria
+
+- [ ] All objectives completed successfully
+- [ ] Validation tests pass
+- [ ] Documentation updated
+- [ ] Stakeholder approval received
+
+---
+

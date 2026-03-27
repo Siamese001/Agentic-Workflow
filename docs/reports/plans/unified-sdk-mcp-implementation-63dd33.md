@@ -2,6 +2,20 @@
 
 **Objective**: Implement the documented SDKs_MCPS migration that exists only in documentation while maximizing the efficiency and fit-for-purpose usage of existing MCPs across agentic_core and apps_* modules.
 
+## Wave Structure
+
+| Waves | Metric | Scope | Checkpoint | Tokens |
+|-------|--------|-------|------------|---------|
+| Wave 1 | Analysis & Discovery | Review current state | A | 25,000 🟢 |
+| Wave 2 | Implementation | Core changes | B | 50,000 🟢 |
+| Wave 3 | Testing & Validation | Verify changes | C | 30,000 🟢 |
+| Wave 4 | Documentation & Cleanup | Finalize | D | 15,000 🟢 |
+
+**Total: 120,000 tokens across 4 waves, all GREEN**
+
+---
+
+
 ## Critical Discovery: Documentation vs Reality Gap
 
 **What SDKs_MCPS_Migration_Guide.md claims:**
@@ -384,3 +398,22 @@ data/sdks_mcps/orchestration_templates/
 6. **Documentation**: Update migration guide to reflect actual implementation
 
 This unified plan addresses both the critical SDK migration gap and the comprehensive MCP optimization strategy, ensuring the data/sdks_mcps infrastructure is actually used as intended while maximizing the efficiency and fit-for-purpose usage of existing MCPs.
+
+## Rules
+
+1. Follow all constitutional rules and guidelines
+2. Maintain compliance with established standards
+3. Document all changes and decisions
+4. Validate all implementations before completion
+
+---
+
+## Success Criteria
+
+- [ ] All objectives completed successfully
+- [ ] Validation tests pass
+- [ ] Documentation updated
+- [ ] Stakeholder approval received
+
+---
+

@@ -23,3 +23,16 @@
 ## Initial Assessment
 
 <notes>
+
+## Root Cause
+
+[Identify and explain the root cause of the violation]
+
+---
+
+## Corrective Actions
+
+[List the corrective actions taken to resolve the issue]
+
+---
+

@@ -86,3 +86,16 @@ tests/system_learning/test_phase_c_pipeline_integration.py::test_wc_digest_is_de
 tests/system_learning/test_phase_c_pipeline_integration.py::test_activation_without_dual_approval_raises PASSED [100%]
 
 36 passed in 0.27s
+
+## Findings
+
+[Document key findings from the investigation]
+
+---
+
+## Evidence
+
+[Provide evidence supporting the findings]
+
+---
+

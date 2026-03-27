@@ -770,3 +770,22 @@ After reverting to `"expires": "2026-Q2"`, `_verify.py` returns exit code 0 (PAS
 | `blueprint_maintenance_workflow.md` | Section 5: ceiling=2 → ceiling=3. Section 6: `enforcement/blueprint_hash.json` → canonical `blueprint_integrity.sha256` path |
 | `enforcement_report.json` | Regenerated: `debt_ceiling=3`, `expired_debt_items=0` |
 | Evidence report | Updated to v5.2 with verbatim excerpts and expiry enforcement proof |
+
+## Violation
+
+[Describe the violation or issue that triggered this RCA]
+
+---
+
+## Root Cause
+
+[Identify and explain the root cause of the violation]
+
+---
+
+## Corrective Actions
+
+[List the corrective actions taken to resolve the issue]
+
+---
+

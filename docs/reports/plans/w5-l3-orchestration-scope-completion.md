@@ -135,3 +135,16 @@ failed: 0
 deselected: 0
 
 OK: W5 L3 Orchestration scope 100% complete.
+
+## Findings
+
+[Document key findings from the investigation]
+
+---
+
+## Evidence
+
+[Provide evidence supporting the findings]
+
+---
+

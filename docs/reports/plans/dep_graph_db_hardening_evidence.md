@@ -137,3 +137,16 @@ $ python -m pytest -q --color=no tests/governance/test_dep_graph_regression.py -
 
 $ python -m pytest -q --color=no
 6554 passed, 83 skipped, 7 xfailed in 83.73s (0:01:23)
+
+## Findings
+
+[Document key findings from the investigation]
+
+---
+
+## Evidence
+
+[Provide evidence supporting the findings]
+
+---
+

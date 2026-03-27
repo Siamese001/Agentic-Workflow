@@ -4,6 +4,20 @@ Comprehensive gap analysis of the agentic architecture's prompt engineering prac
 
 ---
 
+## Wave Structure
+
+| Waves | Metric | Scope | Checkpoint | Tokens |
+|-------|--------|-------|------------|---------|
+| Wave 1 | Analysis & Discovery | Review current state | A | 25,000 🟢 |
+| Wave 2 | Implementation | Core changes | B | 50,000 🟢 |
+| Wave 3 | Testing & Validation | Verify changes | C | 30,000 🟢 |
+| Wave 4 | Documentation & Cleanup | Finalize | D | 15,000 🟢 |
+
+**Total: 120,000 tokens across 4 waves, all GREEN**
+
+---
+
+
 ## Executive Summary
 
 The architecture has **strong foundational infrastructure** — a 30-pattern instructional injection system, XML semantic fencing, a prompt governance CMS with versioning, and adversarial red-team templates. However, several critical gaps exist in **injection defense depth, few-shot/multi-shot implementation maturity, observability instrumentation, and output validation enforcement**. This report identifies 28 findings across 8 categories with severity ratings and actionable recommendations.
@@ -291,3 +305,22 @@ The architecture has **strong foundational infrastructure** — a 30-pattern ins
 - **Progressive constraint reinforcement**: The retry-with-escalation pattern in resume generation is a best practice
 - **Constitutional guardrails**: Pattern #23 and delegation guards (#24) align with Anthropic-style constitutional AI
 - **Sovereign rendering**: StrictUndefined Jinja2 with schema validation prevents template injection
+
+## Gap Register
+
+| Gap | Priority | Impact | Status |
+|------|----------|--------|---------|
+| [Gap 1] | High | Critical | Open |
+| [Gap 2] | Medium | Moderate | In Progress |
+
+---
+
+## Execution Plan
+
+1. **Phase 1**: Analysis and Planning
+2. **Phase 2**: Implementation
+3. **Phase 3**: Testing and Validation
+4. **Phase 4**: Documentation and Cleanup
+
+---
+

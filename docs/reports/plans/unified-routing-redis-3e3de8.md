@@ -4,6 +4,20 @@ Collapse 5 separate DET/QWEN/GEMINI routing systems into 1 canonical choke point
 
 ---
 
+## Wave Structure
+
+| Waves | Metric | Scope | Checkpoint | Tokens |
+|-------|--------|-------|------------|---------|
+| Wave 1 | Analysis & Discovery | Review current state | A | 25,000 🟢 |
+| Wave 2 | Implementation | Core changes | B | 50,000 🟢 |
+| Wave 3 | Testing & Validation | Verify changes | C | 30,000 🟢 |
+| Wave 4 | Documentation & Cleanup | Finalize | D | 15,000 🟢 |
+
+**Total: 120,000 tokens across 4 waves, all GREEN**
+
+---
+
+
 ## ADG Source: Redis hot cache (timestamp 03132026_1424 -- 8121 nodes, 221,487 edges)
 
 | System | File | Layer | ADG Prod Callers | Action |
@@ -129,3 +143,22 @@ decorators_util.py (2 reads_env edges confirmed -- HEAL_POLICY_MODEL_ESCALATION)
     pytest tests/unit_min_deps/test_three_tier_convergence.py
     python tools/generate_full_adg.py
     python tools/adg/adg_redis_ingest.py --force
+
+## Rules
+
+1. Follow all constitutional rules and guidelines
+2. Maintain compliance with established standards
+3. Document all changes and decisions
+4. Validate all implementations before completion
+
+---
+
+## Success Criteria
+
+- [ ] All objectives completed successfully
+- [ ] Validation tests pass
+- [ ] Documentation updated
+- [ ] Stakeholder approval received
+
+---
+

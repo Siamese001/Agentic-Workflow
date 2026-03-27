@@ -4,6 +4,20 @@ Implement a Redis-backed drift score engine (`tools/adg/drift_score.py`) that qu
 
 ---
 
+## Wave Structure
+
+| Waves | Metric | Scope | Checkpoint | Tokens |
+|-------|--------|-------|------------|---------|
+| Wave 1 | Analysis & Discovery | Review current state | A | 25,000 🟢 |
+| Wave 2 | Implementation | Core changes | B | 50,000 🟢 |
+| Wave 3 | Testing & Validation | Verify changes | C | 30,000 🟢 |
+| Wave 4 | Documentation & Cleanup | Finalize | D | 15,000 🟢 |
+
+**Total: 120,000 tokens across 4 waves, all GREEN**
+
+---
+
+
 ## Real ADG Baseline (from `adg:snapshot`, timestamp 03132026_1424)
 
 | Surface | Count |
@@ -148,3 +162,22 @@ All keys: **1-hour TTL**, idempotent (re-run resets TTL).
 - **Snapshot for blast hotspots**: `top_fan_out_hotspots` in `adg:snapshot` seeds the top-20 blast report for free; full blast scan is only needed for the score formula
 - **D_violation weight 0.10**: real data shows `violates=2` edges — signal is sparse; upweighting would make score noisy relative to actual structural risk
 - **Idempotent + CI-safe**: all writes go through a Redis pipeline with TTL; safe to call from any CI step after ADG ingest
+
+## Rules
+
+1. Follow all constitutional rules and guidelines
+2. Maintain compliance with established standards
+3. Document all changes and decisions
+4. Validate all implementations before completion
+
+---
+
+## Success Criteria
+
+- [ ] All objectives completed successfully
+- [ ] Validation tests pass
+- [ ] Documentation updated
+- [ ] Stakeholder approval received
+
+---
+

@@ -1,5 +1,19 @@
 # ADG Critical Gaps Remediation Plan
 
+## Wave Structure
+
+| Waves | Metric | Scope | Checkpoint | Tokens |
+|-------|--------|-------|------------|---------|
+| Wave 1 | Analysis & Discovery | Review current state | A | 25,000 🟢 |
+| Wave 2 | Implementation | Core changes | B | 50,000 🟢 |
+| Wave 3 | Testing & Validation | Verify changes | C | 30,000 🟢 |
+| Wave 4 | Documentation & Cleanup | Finalize | D | 15,000 🟢 |
+
+**Total: 120,000 tokens across 4 waves, all GREEN**
+
+---
+
+
 ## Executive Summary
 Address the 5 most critical gaps identified in the assessment to achieve "materially more reliable, attributable, and auditable" ADG system.
 
@@ -190,3 +204,13 @@ Address the 5 most critical gaps identified in the assessment to achieve "materi
 2. Review and adjust plan based on Phase 1 results
 3. Proceed with remaining phases sequentially
 4. Conduct final validation and sign-off
+
+## Rules
+
+1. Follow all constitutional rules and guidelines
+2. Maintain compliance with established standards
+3. Document all changes and decisions
+4. Validate all implementations before completion
+
+---
+

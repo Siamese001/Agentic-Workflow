@@ -4,6 +4,20 @@ Extends the routing scorecard hardening plan with a mandatory four-phase (pre-co
 
 ---
 
+## Wave Structure
+
+| Waves | Metric | Scope | Checkpoint | Tokens |
+|-------|--------|-------|------------|---------|
+| Wave 1 | Analysis & Discovery | Review current state | A | 25,000 🟢 |
+| Wave 2 | Implementation | Core changes | B | 50,000 🟢 |
+| Wave 3 | Testing & Validation | Verify changes | C | 30,000 🟢 |
+| Wave 4 | Documentation & Cleanup | Finalize | D | 15,000 🟢 |
+
+**Total: 120,000 tokens across 4 waves, all GREEN**
+
+---
+
+
 ## Status Snapshot
 
 | Component | State |
@@ -600,3 +614,22 @@ P.8 Phase isolation — validate() called independently does not mutate agent st
 | `agentic_core/L2_execution/reasoning/SubAtomicRegistryAgent.py` | Edit — four phases |
 | `agentic_core/L2_execution/reasoning/ToolsmithAgent.py` | Edit — four phases |
 | `tests/agentic_core/L2_execution/test_l2_agent_phases.py` | New — P.1-P.8 phase tests |
+
+## Rules
+
+1. Follow all constitutional rules and guidelines
+2. Maintain compliance with established standards
+3. Document all changes and decisions
+4. Validate all implementations before completion
+
+---
+
+## Success Criteria
+
+- [ ] All objectives completed successfully
+- [ ] Validation tests pass
+- [ ] Documentation updated
+- [ ] Stakeholder approval received
+
+---
+

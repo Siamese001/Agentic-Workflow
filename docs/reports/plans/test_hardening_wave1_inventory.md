@@ -90,3 +90,22 @@ Priority fixes for Wave 2:
 3. Convert 15 non-strict xfail to `strict=True` or remove
 4. Fix 7 fixture swallowers in `test_execute_ssot_*.py`
 5. Remove 9 explicit "deps unavailable" skips for first-party code
+
+## Rules
+
+1. Follow all constitutional rules and guidelines
+2. Maintain compliance with established standards
+3. Document all changes and decisions
+4. Validate all implementations before completion
+
+---
+
+## Success Criteria
+
+- [ ] All objectives completed successfully
+- [ ] Validation tests pass
+- [ ] Documentation updated
+- [ ] Stakeholder approval received
+
+---
+

@@ -1,5 +1,19 @@
 # Phase 1 Remediation Plan - SSOT Governance Compliance
 
+## Wave Structure
+
+| Waves | Metric | Scope | Checkpoint | Tokens |
+|-------|--------|-------|------------|---------|
+| Wave 1 | Analysis & Discovery | Review current state | A | 25,000 🟢 |
+| Wave 2 | Implementation | Core changes | B | 50,000 🟢 |
+| Wave 3 | Testing & Validation | Verify changes | C | 30,000 🟢 |
+| Wave 4 | Documentation & Cleanup | Finalize | D | 15,000 🟢 |
+
+**Total: 120,000 tokens across 4 waves, all GREEN**
+
+---
+
+
 ## Summary
 This plan addresses all BLOCKER and MAJOR governance violations identified in the Phase 1 SSOT dry-run review using 3 waves maximum per governance rules, with deterministic enforcement semantics clarified.
 
@@ -132,3 +146,16 @@ Phase 1 marked COMPLETE only when:
 2. Execute waves sequentially
 3. Document all changes for governance audit
 4. Update Phase 1 report with remediation evidence
+
+## Root Cause
+
+[Identify and explain the root cause of the violation]
+
+---
+
+## Corrective Actions
+
+[List the corrective actions taken to resolve the issue]
+
+---
+

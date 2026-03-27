@@ -134,3 +134,16 @@
 ---
 
 **Note:** This report should be reviewed and updated quarterly to prevent workflow staleness accumulation.
+
+## Findings
+
+[Document key findings from the investigation]
+
+---
+
+## Evidence
+
+[Provide evidence supporting the findings]
+
+---
+

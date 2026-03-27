@@ -82,3 +82,16 @@
 2. **Cluster 2**: Extract RGValidationCapability (medium scope, 4 agents, high confidence)
 3. **Cluster 1 sub-cluster A**: Extract SemanticAnalysisCapability (medium scope, 5 agents)
 4. **Cluster 1 sub-cluster B**: Extract InspectionCapability (small scope, 3 agents)
+
+## Findings
+
+[Document key findings from the investigation]
+
+---
+
+## Evidence
+
+[Provide evidence supporting the findings]
+
+---
+

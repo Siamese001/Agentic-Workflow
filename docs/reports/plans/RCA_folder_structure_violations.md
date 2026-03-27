@@ -156,3 +156,16 @@ All fixes verified:
 ## Conclusion
 
 All structural violations have been remediated. The codebase now fully complies with the blueprint's territory and folder structure rules. The high-impact moves (decorators.py with 114 imports, dev_tools with 157 imports) were successfully completed with no broken references.
+
+## Violation
+
+[Describe the violation or issue that triggered this RCA]
+
+---
+
+## Corrective Actions
+
+[List the corrective actions taken to resolve the issue]
+
+---
+

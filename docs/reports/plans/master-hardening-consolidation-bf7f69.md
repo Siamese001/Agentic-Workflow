@@ -6,6 +6,20 @@ Synthesizes all 14 source plans, a live AST audit of `apps_rg`/`apps_lic`, a cri
 
 ---
 
+## Wave Structure
+
+| Waves | Metric | Scope | Checkpoint | Tokens |
+|-------|--------|-------|------------|---------|
+| Wave 1 | Analysis & Discovery | Review current state | A | 25,000 🟢 |
+| Wave 2 | Implementation | Core changes | B | 50,000 🟢 |
+| Wave 3 | Testing & Validation | Verify changes | C | 30,000 🟢 |
+| Wave 4 | Documentation & Cleanup | Finalize | D | 15,000 🟢 |
+
+**Total: 120,000 tokens across 4 waves, all GREEN**
+
+---
+
+
 ## Critical Design Principle: "DONE" ≠ "Runtime Enforced"
 
 All items marked complete are verified as committed code, NOT as runtime-enforced. Each Phase 1 gap fix must also produce a runtime invariant test + negative control + CI enforcement triple. Phase 0 validates all prior "DONE" claims.
@@ -849,3 +863,22 @@ assert human_patch.l5_clearance_signature is not None
 | **P3** | 4.1-4.3 Semantic Cache Determinism | Already partially implemented |
 | **P3** | 6.1-6.3 HITL Safety | Lower frequency path |
 | **P4** | 7.1-7.3 CI Enforcement | Infrastructure hardening |
+
+## Gap Register
+
+| Gap | Priority | Impact | Status |
+|------|----------|--------|---------|
+| [Gap 1] | High | Critical | Open |
+| [Gap 2] | Medium | Moderate | In Progress |
+
+---
+
+## Execution Plan
+
+1. **Phase 1**: Analysis and Planning
+2. **Phase 2**: Implementation
+3. **Phase 3**: Testing and Validation
+4. **Phase 4**: Documentation and Cleanup
+
+---
+

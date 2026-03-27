@@ -121,3 +121,16 @@ The 3,606 violations represent **controlled anti-patterns and approved dependenc
 - Test Results: `tests/unit/agentic_core/adg/` (142 passed)
 - Violation List: Available via ADG Redis MCP (`adg_violations`)
 - Cache Status: HOT with digest `c07f1a897e6aaa9e`
+
+## Root Cause
+
+[Identify and explain the root cause of the violation]
+
+---
+
+## Corrective Actions
+
+[List the corrective actions taken to resolve the issue]
+
+---
+

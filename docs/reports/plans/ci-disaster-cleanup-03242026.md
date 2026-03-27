@@ -109,3 +109,16 @@ python ops_scripts/ci/_adg_ci_gates.py --status
 ## Conclusion
 
 The CI disaster was caused by a simple configuration mismatch in the ADG scanner. By fixing the `include_tests` parameter and updating the baseline/thresholds accordingly, all CI gates are now passing and the repository is unblocked for development. Additionally, the static/runtime ADG separation has been properly enforced by removing runtime files from the static ADG zip archive.
+
+## Violation
+
+[Describe the violation or issue that triggered this RCA]
+
+---
+
+## Corrective Actions
+
+[List the corrective actions taken to resolve the issue]
+
+---
+

@@ -40,3 +40,16 @@ Removed 20+ temporary files from project root:
 - Place test files in appropriate `tests/` subdirectories
 - Clean up temporary files after use
 - Validate file locations against SSOT before creation
+
+## Root Cause
+
+[Identify and explain the root cause of the violation]
+
+---
+
+## Corrective Actions
+
+[List the corrective actions taken to resolve the issue]
+
+---
+

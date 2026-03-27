@@ -79,3 +79,16 @@
 | Artifact | SHA-256 | Status |
 | --- | --- | --- |
 | `artifacts/forensic_discovery_output.json` | `f09ec166b82746f6d62cf1c7e9215de70ec29534f784bee95d13798b04da4fd4` | UNCHANGED |
+
+## Findings
+
+[Document key findings from the investigation]
+
+---
+
+## Evidence
+
+[Provide evidence supporting the findings]
+
+---
+

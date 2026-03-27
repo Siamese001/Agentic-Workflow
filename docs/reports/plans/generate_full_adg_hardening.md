@@ -151,3 +151,16 @@ _archive_old_artifacts(Path("artifacts/adg"), "03132026", retention_days=3)
 4. **Restoration:**
    - Helper function to decompress and restore archived artifacts
    - Diff tool to compare archived vs current ADG
+
+## Findings
+
+[Document key findings from the investigation]
+
+---
+
+## Evidence
+
+[Provide evidence supporting the findings]
+
+---
+

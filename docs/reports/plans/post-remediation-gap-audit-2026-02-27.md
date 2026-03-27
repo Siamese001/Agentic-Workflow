@@ -7,6 +7,20 @@
 
 ---
 
+## Wave Structure
+
+| Waves | Metric | Scope | Checkpoint | Tokens |
+|-------|--------|-------|------------|---------|
+| Wave 1 | Analysis & Discovery | Review current state | A | 25,000 🟢 |
+| Wave 2 | Implementation | Core changes | B | 50,000 🟢 |
+| Wave 3 | Testing & Validation | Verify changes | C | 30,000 🟢 |
+| Wave 4 | Documentation & Cleanup | Finalize | D | 15,000 🟢 |
+
+**Total: 120,000 tokens across 4 waves, all GREEN**
+
+---
+
+
 ## 1. REQ Ledger (417 rows)
 
 | REQ | Severity | Status | Runtime | CI/AST | Tests | Determinism | Notes |
@@ -606,3 +620,22 @@ Digest is deterministic (sha256 of canonical payload).
 | 8. HIL TTL expiration (SemanticClock) | PASS (ttl_ticks + is_expired()) | PASS |
 | 9. uuid4 scanner | 78 hits (deterministic_providers, mixins) | MEDIUM (pre-existing) |
 | 10. Replay determinism (two-run digest) | PASS (identical digest) | PASS |
+
+## Rules
+
+1. Follow all constitutional rules and guidelines
+2. Maintain compliance with established standards
+3. Document all changes and decisions
+4. Validate all implementations before completion
+
+---
+
+## Success Criteria
+
+- [ ] All objectives completed successfully
+- [ ] Validation tests pass
+- [ ] Documentation updated
+- [ ] Stakeholder approval received
+
+---
+

@@ -330,3 +330,16 @@ or `reads_from`=72,660) measure fundamentally different categories than their nu
 
 1. **`EXECUTION_TRACE_CLASSES`** → feeds `records_execution_trace` DENOMINATOR (caught Wave 111, reverted)
 2. **`GUARDRAIL_CLASS_NAMES`** → feeds `applies_guardrail` DENOMINATOR (caught Wave 126, reverted)
+
+## Violation
+
+[Describe the violation or issue that triggered this RCA]
+
+---
+
+## Corrective Actions
+
+[List the corrective actions taken to resolve the issue]
+
+---
+

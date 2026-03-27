@@ -2,6 +2,20 @@
 
 Implement a comprehensive phased approach to ensure all reports are stored in the canonical SSOT location `docs/reports` with maximum success probability through incremental, validated steps.
 
+## Wave Structure
+
+| Waves | Metric | Scope | Checkpoint | Tokens |
+|-------|--------|-------|------------|---------|
+| Wave 1 | Analysis & Discovery | Review current state | A | 25,000 🟢 |
+| Wave 2 | Implementation | Core changes | B | 50,000 🟢 |
+| Wave 3 | Testing & Validation | Verify changes | C | 30,000 🟢 |
+| Wave 4 | Documentation & Cleanup | Finalize | D | 15,000 🟢 |
+
+**Total: 120,000 tokens across 4 waves, all GREEN**
+
+---
+
+
 ## Current State Analysis
 
 **SSOT Location**: `docs/reports/` contains 180+ properly organized reports
@@ -183,3 +197,13 @@ End of each phase requires:
 - Performance impact assessment
 - Team sign-off on changes
 - Documentation update verification
+
+## Rules
+
+1. Follow all constitutional rules and guidelines
+2. Maintain compliance with established standards
+3. Document all changes and decisions
+4. Validate all implementations before completion
+
+---
+

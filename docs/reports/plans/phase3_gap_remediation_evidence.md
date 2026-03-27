@@ -148,3 +148,16 @@ Pre-existing failure categories (all unrelated to Phase 3 scope):
 - test_phase12_write_gateway_bypass (1): filesystem write bypass
 - test_phase5_gateway_enforcement (3): SDK imports, model/agent registry
 - test_upward_import_enforcement (4): lazy seam budget and definition violations
+
+## Findings
+
+[Document key findings from the investigation]
+
+---
+
+## Evidence
+
+[Provide evidence supporting the findings]
+
+---
+

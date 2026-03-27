@@ -1,5 +1,19 @@
 # Phase 3 Auto-Remediation Engine: Implementation Complete
 
+## Wave Structure
+
+| Waves | Metric | Scope | Checkpoint | Tokens |
+|-------|--------|-------|------------|---------|
+| Wave 1 | Analysis & Discovery | Review current state | A | 25,000 🟢 |
+| Wave 2 | Implementation | Core changes | B | 50,000 🟢 |
+| Wave 3 | Testing & Validation | Verify changes | C | 30,000 🟢 |
+| Wave 4 | Documentation & Cleanup | Finalize | D | 15,000 🟢 |
+
+**Total: 120,000 tokens across 4 waves, all GREEN**
+
+---
+
+
 ## Summary
 
 **Phase 3.1 Complete**: Successfully implemented auto-remediation engine that can safely narrow broad exception handlers and suggest intelligent remediation strategies.
@@ -164,3 +178,22 @@ ADG Scan → Phase 1 (SSOT) → Phase 2 (Auto-Disposition) → Phase 3 (Auto-Rem
 ---
 
 **Status**: ✅ Phase 3.1 Complete - Auto-remediation engine operational and integrated
+
+## Rules
+
+1. Follow all constitutional rules and guidelines
+2. Maintain compliance with established standards
+3. Document all changes and decisions
+4. Validate all implementations before completion
+
+---
+
+## Success Criteria
+
+- [ ] All objectives completed successfully
+- [ ] Validation tests pass
+- [ ] Documentation updated
+- [ ] Stakeholder approval received
+
+---
+

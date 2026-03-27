@@ -1,6 +1,20 @@
 # ML Decision Support Layer Implementation Plan
 **Phase Scope Standardized by Token Estimator**
 
+## Wave Structure
+
+| Waves | Metric | Scope | Checkpoint | Tokens |
+|-------|--------|-------|------------|---------|
+| Wave 1 | Analysis & Discovery | Review current state | A | 25,000 🟢 |
+| Wave 2 | Implementation | Core changes | B | 50,000 🟢 |
+| Wave 3 | Testing & Validation | Verify changes | C | 30,000 🟢 |
+| Wave 4 | Documentation & Cleanup | Finalize | D | 15,000 🟢 |
+
+**Total: 120,000 tokens across 4 waves, all GREEN**
+
+---
+
+
 ## HARDENING OBJECTIVE
 
 Implement a deterministic, governed ML decision-support layer across L0-L6 that augments routing, retrieval, orchestration, safety, healing, observability, and meta-learning WITHOUT violating the architecture SSOT.
@@ -519,3 +533,22 @@ This plan implements a conservative, governed approach to ML integration that:
 - Delivers measurable business value
 
 The phased approach allows for gradual learning and adjustment while maintaining system stability and reliability.
+
+## Rules
+
+1. Follow all constitutional rules and guidelines
+2. Maintain compliance with established standards
+3. Document all changes and decisions
+4. Validate all implementations before completion
+
+---
+
+## Success Criteria
+
+- [ ] All objectives completed successfully
+- [ ] Validation tests pass
+- [ ] Documentation updated
+- [ ] Stakeholder approval received
+
+---
+

@@ -149,3 +149,16 @@ uwg.write(target="redis", key="foo", value="bar")  # Emits edge
 4. Regenerate ADG and verify edge increase
 
 **Estimated Total Effort**: 4-6 hours (vs. Wave 4's 2-3 hours for 490 edges)
+
+## Findings
+
+[Document key findings from the investigation]
+
+---
+
+## Evidence
+
+[Provide evidence supporting the findings]
+
+---
+

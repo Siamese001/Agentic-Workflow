@@ -8,6 +8,20 @@
 
 ---
 
+## Wave Structure
+
+| Waves | Metric | Scope | Checkpoint | Tokens |
+|-------|--------|-------|------------|---------|
+| Wave 1 | Analysis & Discovery | Review current state | A | 25,000 🟢 |
+| Wave 2 | Implementation | Core changes | B | 50,000 🟢 |
+| Wave 3 | Testing & Validation | Verify changes | C | 30,000 🟢 |
+| Wave 4 | Documentation & Cleanup | Finalize | D | 15,000 🟢 |
+
+**Total: 120,000 tokens across 4 waves, all GREEN**
+
+---
+
+
 ## Redis Hot Cache Verification
 
 | Field | Value |
@@ -473,3 +487,22 @@ No single file should combine all these behaviors. The script has accumulated re
 | v1/A-08 — Four validator-only domains | All 4 have L2 healers in `HEALER_REGISTRY`. Architecture is two-tier by design: L5 validator emits check_dict → L2 healer via `remediation_dispatcher.py`. Confirmed via healer_registry_types.py. |
 | v1/A-07 (GravityLeakHealerAgent) | Carried forward as A-13 (lower severity), same finding |
 | file_classification_validator.py writes_to | 3 `writes_to` via `classifier.run()` with `validate_only=True` set beforehand; ADG cannot resolve conditional flag state. Low confidence — not promoted to anomaly. |
+
+## Rules
+
+1. Follow all constitutional rules and guidelines
+2. Maintain compliance with established standards
+3. Document all changes and decisions
+4. Validate all implementations before completion
+
+---
+
+## Success Criteria
+
+- [ ] All objectives completed successfully
+- [ ] Validation tests pass
+- [ ] Documentation updated
+- [ ] Stakeholder approval received
+
+---
+

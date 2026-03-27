@@ -212,3 +212,16 @@ Authoritative command exit code: 0
 | **D18: Matrix coverage: pipeline mode × retriever presence** | `TestMatrixRetrievalPipelineMode` (7 parametrized cases) |
 | **D19: n=1 stability edge case in drift monitor** | `TestBoundaryDriftMonitorThresholds::test_n_equals_one_no_stability_drift` |
 | **D20: Mutation sensitivity: guard removal makes score > 1.0** | `TestRegressionRecallDuplicates::test_mutation_sensitivity_operator_flip` |
+
+## Findings
+
+[Document key findings from the investigation]
+
+---
+
+## Evidence
+
+[Provide evidence supporting the findings]
+
+---
+

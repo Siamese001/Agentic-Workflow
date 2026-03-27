@@ -95,3 +95,16 @@ Ruff (I001, F, E on changed files): **All checks passed**
 - `RuntimeADGSnapshot.canonical_bytes()` is consumed by `FileBackedVersionStore.commit_change_package()`
 - `FileBackedVersionStore` already emits telemetry and calls `SystemLearningMemoryBridge`
 - Runtime snapshots feed system learning automatically through existing L4 seam
+
+## Findings
+
+[Document key findings from the investigation]
+
+---
+
+## Evidence
+
+[Provide evidence supporting the findings]
+
+---
+

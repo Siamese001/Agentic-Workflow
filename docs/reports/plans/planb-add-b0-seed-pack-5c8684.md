@@ -2,6 +2,20 @@
 
 Add Phase B0 to Plan B before B1 to provide a governed, deterministic bootstrap embedding snapshot that enables immediate similarity-based proposals without waiting for full historical ingestion.
 
+## Wave Structure
+
+| Waves | Metric | Scope | Checkpoint | Tokens |
+|-------|--------|-------|------------|---------|
+| Wave 1 | Analysis & Discovery | Review current state | A | 25,000 🟢 |
+| Wave 2 | Implementation | Core changes | B | 50,000 🟢 |
+| Wave 3 | Testing & Validation | Verify changes | C | 30,000 🟢 |
+| Wave 4 | Documentation & Cleanup | Finalize | D | 15,000 🟢 |
+
+**Total: 120,000 tokens across 4 waves, all GREEN**
+
+---
+
+
 ## Changes to planB_refreshed.md
 
 ### 1. Insert new Phase B0 section before current B1
@@ -155,3 +169,22 @@ tests/unit_min_deps/system_learning/test_seed_embedding_pack_b0.py
 - **1 file modified**: `artifacts/windsurf/planB_refreshed.md`
 - **No source files yet** (B0 implementation comes after plan approval)
 - Commit message: "plan: add Phase B0 Seed Embedding Pack bootstrap to Plan B"
+
+## Rules
+
+1. Follow all constitutional rules and guidelines
+2. Maintain compliance with established standards
+3. Document all changes and decisions
+4. Validate all implementations before completion
+
+---
+
+## Success Criteria
+
+- [ ] All objectives completed successfully
+- [ ] Validation tests pass
+- [ ] Documentation updated
+- [ ] Stakeholder approval received
+
+---
+

@@ -71,3 +71,16 @@ agentic_core/runtime/execution_trace.py
 agentic_core/runtime/mathematical_determinism.py
 agentic_core/runtime/sovereignty_bootstrap.py
 agentic_core/runtime/sovereignty_exceptions.py
+
+## Findings
+
+[Document key findings from the investigation]
+
+---
+
+## Evidence
+
+[Provide evidence supporting the findings]
+
+---
+

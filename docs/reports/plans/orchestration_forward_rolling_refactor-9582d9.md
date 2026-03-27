@@ -2,6 +2,20 @@
 
 Comprehensive architectural audit and refactoring plan to transition L3 orchestration from static DAGs to Forward-Rolling Recursion agentic pipeline while preserving SSOT principles and DNA integrity.
 
+## Wave Structure
+
+| Waves | Metric | Scope | Checkpoint | Tokens |
+|-------|--------|-------|------------|---------|
+| Wave 1 | Analysis & Discovery | Review current state | A | 25,000 🟢 |
+| Wave 2 | Implementation | Core changes | B | 50,000 🟢 |
+| Wave 3 | Testing & Validation | Verify changes | C | 30,000 🟢 |
+| Wave 4 | Documentation & Cleanup | Finalize | D | 15,000 🟢 |
+
+**Total: 120,000 tokens across 4 waves, all GREEN**
+
+---
+
+
 ## Discovery Analysis
 
 Based on full agent discovery scan, the L3 orchestration layer contains:
@@ -919,3 +933,22 @@ class AdaptiveDepthManager:
 4. **Circuit Breaker Enhancement**: Implement multiple circuit breakers (memory, depth, time, error-rate).
 
 This architectural pivot represents a significant evolution from static workflow management to dynamic recursive orchestration, but requires careful attention to memory management, performance optimization, and architectural coherence to ensure successful implementation.
+
+## Rules
+
+1. Follow all constitutional rules and guidelines
+2. Maintain compliance with established standards
+3. Document all changes and decisions
+4. Validate all implementations before completion
+
+---
+
+## Success Criteria
+
+- [ ] All objectives completed successfully
+- [ ] Validation tests pass
+- [ ] Documentation updated
+- [ ] Stakeholder approval received
+
+---
+

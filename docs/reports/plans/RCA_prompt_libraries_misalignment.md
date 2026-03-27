@@ -1,5 +1,19 @@
 # RCA: Prompt Libraries Domain Templates Misalignment
 
+## Wave Structure
+
+| Waves | Metric | Scope | Checkpoint | Tokens |
+|-------|--------|-------|------------|---------|
+| Wave 1 | Analysis & Discovery | Review current state | A | 25,000 🟢 |
+| Wave 2 | Implementation | Core changes | B | 50,000 🟢 |
+| Wave 3 | Testing & Validation | Verify changes | C | 30,000 🟢 |
+| Wave 4 | Documentation & Cleanup | Finalize | D | 15,000 🟢 |
+
+**Total: 120,000 tokens across 4 waves, all GREEN**
+
+---
+
+
 ## Executive Summary
 
 **Issue**: Domain-specific templates in `data/prompt_libraries/templates/` are orphaned and misaligned with SSOT governance, creating additional fragmentation beyond the `data/prompts/` issue.
@@ -261,3 +275,22 @@ python -m agentic_core.L5_safety.config.structure_blueprint._verify
 **Status**: ✅ **COMPLETE** - All orphaned domain templates migrated to canonical SSOT location
 **Date**: 2026-02-15
 **Impact**: Eliminated template fragmentation, restored architectural integrity, established clear domain boundaries
+
+## Violation
+
+[Describe the violation or issue that triggered this RCA]
+
+---
+
+## Root Cause
+
+[Identify and explain the root cause of the violation]
+
+---
+
+## Corrective Actions
+
+[List the corrective actions taken to resolve the issue]
+
+---
+
