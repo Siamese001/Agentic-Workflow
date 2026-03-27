@@ -73,6 +73,7 @@ env/
 
 # Generated analysis and technical docs
 # docs/ - REMOVED: docs/ is now tracked
+docs/technical/
 
 # IDE and OS noise
 .vscode/

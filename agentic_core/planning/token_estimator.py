@@ -5,7 +5,10 @@ Deterministic token estimation for planning phases and waves.
 Ensures every step stays safely within the 200K context window.
 """
 
+import copy
+import hashlib
 import json
+import math
 import re
 from typing import Dict, List, Any, Optional, Tuple
 from dataclasses import dataclass, field
@@ -26,6 +29,16 @@ class TokenBudget:
     DEFAULT_SAFETY_BUFFER: int = 8000
     DEFAULT_MAX_INPUT_TARGET: int = 150000
 
+    def __post_init__(self) -> None:
+        if self.HARD_MAX_CONTEXT <= 0:
+            raise ValueError("HARD_MAX_CONTEXT must be > 0")
+        if not (0 < self.WARNING_THRESHOLD <= self.SAFE_OPERATING_CAP <= self.HARD_MAX_CONTEXT):
+            raise ValueError(
+                "Budget invariants violated: WARNING_THRESHOLD <= SAFE_OPERATING_CAP <= HARD_MAX_CONTEXT"
+            )
+        if self.DEFAULT_RESERVED_OUTPUT < 0 or self.DEFAULT_SAFETY_BUFFER < 0:
+            raise ValueError("Reserved output and safety buffer must be >= 0")
+
 @dataclass
 class ContextSource:
     """Represents a source of context tokens"""
@@ -34,6 +47,10 @@ class ContextSource:
     tokens: int = 0
     compressed: bool = False
     metadata: Dict[str, Any] = field(default_factory=dict)
+
+    def content_fingerprint(self) -> str:
+        normalized = self.content.strip().encode("utf-8", errors="ignore")
+        return hashlib.sha256(normalized).hexdigest()
 
 @dataclass
 class TokenEstimate:
@@ -60,6 +77,7 @@ class ContextWindowEstimator:
     def __init__(self, budget: Optional[TokenBudget] = None):
         self.budget = budget or TokenBudget()
         self.compression_policies = self._init_compression_policies()
+        self._error_pattern = re.compile(r'(?i)(error|traceback|exception|failed)')
         
         # Conservative token estimation rates (chars -> tokens, biased high)
         self.token_rates = {
@@ -69,6 +87,15 @@ class ContextWindowEstimator:
             'diff': 0.3,   # ~3.3 chars per token for diffs
             'log': 0.38,   # ~2.6 chars per token for logs
             'system': 0.42  # ~2.4 chars per token for system prompts
+        }
+        self.min_tokens_by_type = {
+            'system': 8,
+            'user_prompt': 8,
+            'file': 4,
+            'diff': 4,
+            'log': 4,
+            'retrieval': 4,
+            'prior_step': 4,
         }
     
     def _init_compression_policies(self) -> Dict[str, Any]:
@@ -119,10 +146,26 @@ class ContextWindowEstimator:
         Returns:
             TokenEstimate with detailed breakdown and recommendations
         """
+        # Defensive initialization for potential None inputs
+        files = files or []
+        diffs = diffs or []
+        logs = logs or []
+        retrieved_context = retrieved_context or []
+        prior_steps = prior_steps or []
         
         # Use defaults if not provided
-        reserved_output = reserved_output or self.budget.DEFAULT_RESERVED_OUTPUT
-        safety_buffer = safety_buffer or self.budget.DEFAULT_SAFETY_BUFFER
+        reserved_output = (
+            self.budget.DEFAULT_RESERVED_OUTPUT
+            if reserved_output is None
+            else reserved_output
+        )
+        safety_buffer = (
+            self.budget.DEFAULT_SAFETY_BUFFER
+            if safety_buffer is None
+            else safety_buffer
+        )
+        if reserved_output < 0 or safety_buffer < 0:
+            raise ValueError("reserved_output and safety_buffer must be >= 0")
         
         # Collect all context sources
         sources = []
@@ -132,7 +175,7 @@ class ContextWindowEstimator:
             sources.append(ContextSource(
                 'system_prompt', 
                 system_prompt,
-                self._estimate_tokens(system_prompt, 'system'),
+                self._estimate_source_tokens('system_prompt', system_prompt, 'system'),
                 metadata={'type': 'system'}
             ))
         
@@ -141,7 +184,7 @@ class ContextWindowEstimator:
             sources.append(ContextSource(
                 'user_prompt',
                 user_prompt,
-                self._estimate_tokens(user_prompt, 'text'),
+                self._estimate_source_tokens('user_prompt', user_prompt, 'text'),
                 metadata={'type': 'prompt'}
             ))
         
@@ -152,12 +195,12 @@ class ContextWindowEstimator:
             sources.append(ContextSource(
                 'file',
                 content,
-                self._estimate_tokens(content, file_type),
+                self._estimate_source_tokens('file', content, file_type),
                 metadata={
                     'path': file_info.get('path', ''),
                     'type': file_type,
                     'size': len(content),
-                    'lines': content.count('\n') + 1
+                    'lines': len(content.splitlines())
                 }
             ))
         
@@ -167,11 +210,11 @@ class ContextWindowEstimator:
             sources.append(ContextSource(
                 'diff',
                 content,
-                self._estimate_tokens(content, 'diff'),
+                self._estimate_source_tokens('diff', content, 'diff'),
                 metadata={
                     'path': diff_info.get('path', ''),
-                    'lines_added': content.count('+'),
-                    'lines_removed': content.count('-'),
+                    'lines_added': self._count_diff_lines(content, prefix='+'),
+                    'lines_removed': self._count_diff_lines(content, prefix='-'),
                     'hunks': content.count('@@')
                 }
             ))
@@ -182,11 +225,11 @@ class ContextWindowEstimator:
             sources.append(ContextSource(
                 'log',
                 content,
-                self._estimate_tokens(content, 'log'),
+                self._estimate_source_tokens('log', content, 'log'),
                 metadata={
                     'source': log_info.get('source', ''),
-                    'lines': content.count('\n') + 1,
-                    'has_errors': 'ERROR' in content or 'Traceback' in content
+                    'lines': len(content.splitlines()),
+                    'has_errors': bool(self._error_pattern.search(content))
                 }
             ))
         
@@ -196,7 +239,7 @@ class ContextWindowEstimator:
             sources.append(ContextSource(
                 'retrieval',
                 content,
-                self._estimate_tokens(content, 'text'),
+                self._estimate_source_tokens('retrieval', content, 'text'),
                 metadata={
                     'source': ctx_info.get('source', ''),
                     'chunk_id': ctx_info.get('chunk_id', ''),
@@ -210,7 +253,7 @@ class ContextWindowEstimator:
                 sources.append(ContextSource(
                     'prior_step',
                     step_content,
-                    self._estimate_tokens(step_content, 'text'),
+                    self._estimate_source_tokens('prior_step', step_content, 'text'),
                     metadata={'step_index': i}
                 ))
         
@@ -264,17 +307,29 @@ class ContextWindowEstimator:
         conservative_multiplier = 1.1
         
         # Calculate estimated tokens
-        estimated = int(len(text) * rate * conservative_multiplier)
+        estimated = math.ceil(len(text) * rate * conservative_multiplier)
         
         # Minimum of 1 token for non-empty content
         return max(1, estimated)
+
+    def _estimate_source_tokens(self, source_type: str, text: str, content_type: str) -> int:
+        estimated = self._estimate_tokens(text, content_type)
+        minimum = self.min_tokens_by_type.get(source_type, 1)
+        return max(minimum, estimated)
+
+    def _count_diff_lines(self, content: str, prefix: str) -> int:
+        count = 0
+        for line in content.splitlines():
+            if line.startswith(prefix) and not line.startswith(prefix * 3):
+                count += 1
+        return count
     
     def _detect_content_type(self, content: str, file_path: str) -> str:
         """Detect content type based on file path and content"""
         path_lower = file_path.lower()
         
         # Check file extension
-        if any(path_lower.endswith(ext) for ext in ['.py', '.js', '.ts', '.java', '.cpp', '.c']):
+        if path_lower.endswith(('.py', '.js', '.ts', '.java', '.cpp', '.c')):
             return 'code'
         elif path_lower.endswith('.json'):
             return 'json'
@@ -287,6 +342,8 @@ class ContextWindowEstimator:
     
     def _determine_status_action(self, total_tokens: int) -> Tuple[str, str]:
         """Determine status and action based on token count"""
+        if total_tokens > self.budget.HARD_MAX_CONTEXT:
+            return 'red', 'block'
         if total_tokens <= self.budget.WARNING_THRESHOLD:
             return 'green', 'proceed'
         elif total_tokens <= self.budget.SAFE_OPERATING_CAP:
@@ -379,7 +436,7 @@ class ContextWindowEstimator:
                           estimate: TokenEstimate, 
                           sources: List[ContextSource]) -> TokenEstimate:
         """Apply compression policies to reduce token count"""
-        compressed_sources = sources.copy()
+        compressed_sources = copy.deepcopy(sources)
         compression_applied = []
         
         # Apply compression in order
@@ -435,6 +492,12 @@ class ContextWindowEstimator:
             )
         
         estimate.compression_applied = compression_applied
+        estimate.top_contributors = self._get_top_contributors(compressed_sources)
+        estimate.recommended_reductions = self._generate_recommendations(
+            compressed_sources,
+            estimate.status,
+            estimate.total_projected_tokens
+        )
         return estimate
     
     def _remove_duplicates(self, sources: List[ContextSource]) -> Tuple[List[ContextSource], bool]:
@@ -443,9 +506,15 @@ class ContextWindowEstimator:
         filtered_sources = []
         
         for source in sources:
-            content_hash = hash(source.content[:1000])  # Hash first 1000 chars
-            if content_hash not in seen_content:
-                seen_content.add(content_hash)
+            content_hash = source.content_fingerprint()
+            identity = (
+                source.source_type,
+                source.metadata.get("path", ""),
+                source.metadata.get("chunk_id", ""),
+                content_hash,
+            )
+            if identity not in seen_content:
+                seen_content.add(identity)
                 filtered_sources.append(source)
         
         return filtered_sources, len(filtered_sources) < len(sources)
@@ -455,7 +524,7 @@ class ContextWindowEstimator:
         trimmed = False
         for source in sources:
             if source.source_type == 'log':
-                lines = source.content.split('\n')
+                lines = source.content.splitlines()
                 # Keep only last N lines for retry history
                 if len(lines) > self.compression_policies['max_retry_history'] * 10:
                     source.content = '\n'.join(lines[-self.compression_policies['max_retry_history'] * 10:])
@@ -474,7 +543,7 @@ class ContextWindowEstimator:
                 source.metadata.get('lines', 0) > threshold):
                 
                 # Create summary
-                lines = source.content.split('\n')
+                lines = source.content.splitlines()
                 summary = f"# File: {source.metadata.get('path', 'unknown')}\n"
                 summary += f"# Lines: {len(lines)}\n"
                 summary += f"# Size: {len(source.content)} chars\n"
@@ -484,7 +553,7 @@ class ContextWindowEstimator:
                 # Keep first 20 lines and last 20 lines
                 if len(lines) > 40:
                     summary += "\n".join(lines[:20])
-                    summary += "\n# ... [truncated {len(lines) - 40} lines] ...\n"
+                    summary += f"\n# ... [truncated {len(lines) - 40} lines] ...\n"
                     summary += "\n".join(lines[-20:])
                 else:
                     summary = source.content  # Keep as-is if not too large
@@ -502,24 +571,20 @@ class ContextWindowEstimator:
         
         for source in sources:
             if source.source_type == 'log':
-                lines = source.content.split('\n')
-                error_lines = [
-                    line for line in lines 
-                    if any(keyword in line for keyword in ['ERROR', 'Traceback', 'Exception', 'Failed'])
-                ]
+                lines = source.content.splitlines()
                 
-                # Add context lines around errors
-                if error_lines:
-                    trimmed_lines = []
-                    for i, line in enumerate(lines):
-                        # Keep error lines and 2 lines before/after
-                        is_error = any(keyword in line for keyword in ['ERROR', 'Traceback', 'Exception', 'Failed'])
-                        if is_error:
-                            start = max(0, i - 2)
-                            end = min(len(lines), i + 3)
-                            trimmed_lines.extend(lines[start:end])
-                    
-                    # Remove duplicates and limit
+                # Fast pre-check to avoid processing if no errors exist
+                if not self._error_pattern.search(source.content):
+                    continue
+                
+                trimmed_lines = []
+                for i, line in enumerate(lines):
+                    if self._error_pattern.search(line):
+                        start = max(0, i - 2)
+                        end = min(len(lines), i + 3)
+                        trimmed_lines.extend(lines[start:end])
+                
+                if trimmed_lines:
                     unique_lines = list(dict.fromkeys(trimmed_lines))
                     if len(unique_lines) > self.compression_policies['max_log_lines']:
                         unique_lines = unique_lines[:self.compression_policies['max_log_lines']]
@@ -539,11 +604,22 @@ class ContextWindowEstimator:
             return sources, False
         
         # Keep highest scoring chunks (assuming first ones are most relevant)
-        kept_chunks = retrieval_sources[:max_chunks]
-        removed_chunks = retrieval_sources[max_chunks:]
+        ranked = sorted(
+            retrieval_sources,
+            key=lambda s: (
+                float(s.metadata.get("score", 0.0)),
+                not bool(s.metadata.get("overlap", False))
+            ),
+            reverse=True,
+        )
+        kept_chunks = ranked[:max_chunks]
+        kept_ids = {id(s) for s in kept_chunks}
         
         # Remove removed chunks from sources
-        filtered_sources = [s for s in sources if s not in removed_chunks]
+        filtered_sources = [
+            s for s in sources
+            if s.source_type != 'retrieval' or id(s) in kept_ids
+        ]
         
         return filtered_sources, True
     
@@ -561,7 +637,7 @@ class ContextWindowEstimator:
                 diff_paths[path] = i
         
         # Find overlaps and remove files
-        overlap_paths = set(file_paths.keys()) & set(diff_paths.keys())
+        overlap_paths = {p for p in set(file_paths.keys()) & set(diff_paths.keys()) if p}
         if overlap_paths:
             # Remove full files, keep diffs
             filtered_sources = [
@@ -646,3 +722,37 @@ class ContextWindowEstimator:
                 print(f"  - {compression}")
         
         print("=" * 30)
+
+    def estimate_with_breakdown(
+        self,
+        plan_step: str,
+        system_prompt: str,
+        user_prompt: str,
+        files: List[Dict[str, Any]],
+        diffs: List[Dict[str, Any]],
+        logs: List[Dict[str, Any]],
+        retrieved_context: List[Dict[str, Any]],
+        prior_steps: List[str],
+        reserved_output: Optional[int] = None,
+        safety_buffer: Optional[int] = None,
+    ) -> Dict[str, Any]:
+        estimate = self.estimate_step_tokens(
+            plan_step=plan_step,
+            system_prompt=system_prompt,
+            user_prompt=user_prompt,
+            files=files,
+            diffs=diffs,
+            logs=logs,
+            retrieved_context=retrieved_context,
+            prior_steps=prior_steps,
+            reserved_output=reserved_output,
+            safety_buffer=safety_buffer,
+        )
+        return {
+            "estimate": self.to_dict(estimate),
+            "budget": {
+                "hard_max_context": self.budget.HARD_MAX_CONTEXT,
+                "safe_operating_cap": self.budget.SAFE_OPERATING_CAP,
+                "warning_threshold": self.budget.WARNING_THRESHOLD,
+            },
+        }

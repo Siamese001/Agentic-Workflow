@@ -297,10 +297,6 @@ class SovereignRagOrchestrator:
         if not isinstance(file_path, Path):
             raise TypeError(f"file_path must be a Path object, got {type(file_path).__name__}")
         
-        # Validate input
-        if file_path is None:
-            raise TypeError("file_path cannot be None")
-        
         # Validate file exists and is not a directory
         if not file_path.exists():
             raise FileNotFoundError(f"File not found: {file_path}")

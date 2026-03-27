@@ -1,0 +1,173 @@
+# Repo Hygiene & Pre-Commit Optimization Plan
+
+Consolidate ~180 phase-named dead-end scripts across 6 sprawl territories, restructure pre-commit into a tiered fast-local/full-CI pipeline, and establish HITL-gated archive discipline with GitHub Actions consolidation — all targeting SVP Engineering quality for OpenAI Agentic Lead review.
+
+## Executive Summary
+
+This plan addresses three critical hygiene issues: (1) ~90 phase-named scripts and ~142 root-sprawl scripts creating discoverability debt, (2) pre-commit hooks scanning ~644 files on every commit including dead archives, and (3) 31 redundant GitHub Actions workflows with overlapping responsibilities. The solution implements a tiered pre-commit model (fast local, full CI), HITL-gated archiving, and workflow consolidation to achieve SVP-grade codebase quality.
+
+## Phases & Waves Overview
+
+*Token estimates from `ContextWindowEstimator` (conservative 1.1× bias, rates: code=0.385, text=0.44, json=0.363 tokens/char)*
+
+| Wave | Phase IDs | Focus | Est. Tokens | Assumptions | Status | Success Criteria |
+|---|---|---|---|---|---|---|
+| **Wave 1** | P0, P1, P2, P4 | **Foundational Hygiene & CI Tiering** | 144,389 | Cleanup + Inventory (644 files) + Archive (90 files) + CI Consolidation (31 wf) | 🟢 GREEN | Pre-commit -33% tokens, T6/T7 staged-only, 31→5 GitHub Actions |
+| **Wave 2** | P3, P5 | **Capability Extraction & Enforcement** | 114,327 | Reusable logic extraction (20 files) + boundary enforcement rules | 🟢 GREEN | 20 reusable capabilities promoted, script-sprawl guard active |
+
+**Total Cumulative Tokens:** 258,716 across 2 waves<br>
+**Packing Strategy:** Optimized for SWE 1.5 128K context (using 200K hard limit). Wave 1 packs infrastructure setup and classification; Wave 2 packs complex code extractions and final gating.<br>
+**HITL Gates:** 3 mandatory checkpoints (Wave 1 Inventory review, Wave 1 Archive batch confirm, Wave 2 Extraction confirm)
+
+---
+
+## Problem Statement
+
+### 1. Phase-Named Script Sprawl (Extensibility Debt)
+Scripts named after transient phases (`wave7b_*`, `p0_*`, `phase01_*`) encode *when* they were created, not *what capability they provide*. They cannot be discovered or reused.
+
+| Territory | Phase-named | Root Sprl* | Total .py | Sprawl % |
+|---|---|---|---|---|
+| **repo root** | 0 | ~90 | 90 | 100% |
+| **tools/** (depth=1) | ~36 | ~15 | 79 | 65% |
+| **tools/evidence/** | ~45 | ~20 | 149 | 44% |
+| **tools/test_enforcement/** | ~8 | ~2 | 25 | 40% |
+| **ops_scripts/ci/** | ~1 | ~5 | 241 | 2% |
+| **ops_scripts/general/** | 0 | ~10 | 60 | 17% |
+| **Total** | **~90** | **~142** | **~644** | **36%** |
+
+*Root Sprl = capability-named but in wrong location (e.g., `analyze_*`, `check_*` at repo root)
+
+### 2. Pre-Commit Burns Cycles on Archive Candidates
+- **T7 (burndown gate)** does `rglob("*.py")` across the entire repo on every commit — scans ALL ~644 files above including dead-end scripts that will never be touched again.
+- **T6 (guardian exemption gate)** similarly scans all production directories.
+- Every phase-named script in `tools/` or `ops_scripts/` that imports `lifecycle_trace_contract` emitters (lines 46-88 of `adg_burndown_gate.py` alone has **~200 lines of emitter bootstrap**) adds import overhead to every hook invocation.
+- `fail_fast: true` means any slow hook blocks the entire pipeline.
+
+### 3. CI/CD Pipeline Redundancy Overhead
+The repository has **31 GitHub Actions workflows** with significant overlap:
+- `adg-antipattern-ci.yml` duplicates T4 (guardian fixer) and T6 (exemption ratchet)
+- `adg-ci-gates.yml` duplicates T5 (ADG CI gates) 
+- `main_ci_pipeline.yml` lacks burndown enforcement, creating escape hatch
+- Many workflows have restrictive `paths:` filters that rarely trigger
+- No centralized CI enforcement of anti-pattern ratchets
+
+### 4. Token and Performance Bloat
+Pre-commit config has inefficiencies:
+- Verbose tier descriptions consume ~1.2KB of tokens
+- Redundant exclude patterns (86 lines, many overlapping)
+- `cmd /c "set PYTHONPATH=."` repeated 15+ times
+- Manual-stage hooks (T8-T12) still execute locally when not in manual mode
+
+---
+
+## Strategy: Tiered Pipeline + HITL Archive + CI Consolidation
+
+### Tier Architecture
+
+```
+LOCAL PRE-COMMIT (fast, staged-only)     CI PIPELINE (full-repo, blocking on PR)
+┌─────────────────────────────────┐     ┌──────────────────────────────────────┐
+│ T0: whitespace/LF/merge-conflict│     │ Full-repo burndown ratchet (T7)      │
+│ T1: py_compile (staged only)    │     │ Full-repo guardian exemption (T6)    │
+│ T2: ruff --fix (staged only)    │     │ Full-repo module collision (T16)     │
+│ T3: ruff-format (staged only)   │     │ ADG CI delta gates (T5)              │
+│ T4: guardian comment fix        │     │ Full anti-pattern scan + evidence    │
+│ T7': burndown DELTA (staged)    │     └──────────────────────────────────────┘
+│ T13: report location SSOT      │
+│ T14: reject tracked artifacts   │
+│ T15: tooling/apps boundary      │
+│ T17: ADG staleness (warn)       │
+│ T18-T21: ban gates (staged)     │
+│ T22: skip-file ratchet          │
+│ T23: pycache purge              │
+└─────────────────────────────────┘
+```
+
+**Key change:** T6 + T7 move from full-repo local → staged-only local + full-repo CI.
+
+---
+
+## Wave Plan (High-Density Packing)
+
+### Wave 1: Foundational Hygiene & Infrastructure
+**Goal:** Clean up existing sprawl, inventory all files, restructure CI, and set enforcement boundaries.
+**Est. Tokens:** 146,315 (GREEN - within 150K threshold)
+
+1. **Foundational Cleanup (P0 & P5):**
+   - Run `python tools/evidence/_run_token_optimizer_plan.py` to verify packing.
+   - Optimize pre-commit config tokens (-33% target).
+   - Implement `ops_scripts/ci/check_script_sprawl.py` and root hygiene gates.
+   
+2. **Inventory & Classification (P1):**
+   - Generate JSON manifest for 644 files via `tools/adg/repo_hygiene_classifier.py`.
+   - **HITL Gate:** Review classification before execution.
+
+3. **Restructure & Archive (P2 & P4):**
+   - Move ~90 files to `tools/archive/` batches.
+   - **HITL Gate:** Batch confirm moves.
+   - Split T6/T7 into staged-only local + full-repo CI.
+   - Consolidate GitHub Actions (31 → 5 core workflows).
+
+### Wave 2: Complex Capability Extraction
+**Goal:** Promote reusable logic into proper modules.
+**Est. Tokens:** 112,401 (GREEN)
+
+1. **Extraction Pipeline (P3):**
+   - Promote 20 scripts into capability-named modules in `tools/adg/`.
+   - **HITL Gate:** Confirm each extraction logic to prevent logic loss.
+
+---
+
+## Execution Order & HITL Gates
+
+```
+Wave 1 (Foundational) ──→ HITL: Review Manifest & Archive Batches ──→ Wave 2 (Extraction) ──→ HITL: Confirm Extractions
+```
+
+Destructive actions (moves, deletions, promotions) require explicit HITL confirmation within each wave.
+
+---
+
+## Success Criteria
+
+| Metric | Before | After |
+|---|---|---|
+| Root-level .py files | 90 | ≤2 (conftest.py + maybe 1) |
+| Phase-named scripts in active tools/ | ~36 | 0 |
+| Pre-commit T7 scan scope (local) | full rglob (~644+ files) | staged files only (~5-20) |
+| Pre-commit T6 scan scope (local) | all production dirs | staged production files only |
+| GitHub Actions workflows | 31 | 5 |
+| Pre-commit config tokens | ~4.5KB | ~3KB (-33%) |
+| CI full-repo burndown enforcement | none | every push/PR to main |
+| New phase-named file prevention | none | script-sprawl guard blocks |
+| **Wave Packing Efficiency** | N/A | **Wave 1: 144K / Wave 2: 114K** |
+
+---
+
+## Risk Mitigations
+
+- **Git history preserved** — `git log --follow` works for moved files; `git rm` not used
+- **Evidence trail intact** — `tools/archive/` is tracked, searchable, and `git blame` works
+- **Rollback** — `git mv` is reversible; archive directory can be dissolved
+- **No production code changes** — only tooling/CI infrastructure modified
+- **Emitter bootstrap** — pruning the module-level `_emit_*` calls reduces import time but must be validated against ADG edge counts (the emitters exist to create static ADG edges for these files)
+
+---
+
+## Files Modified (Estimated)
+
+| File | Change |
+|---|---|
+| `.pre-commit-config.yaml` | T6/T7 → `--staged`, add `tools/archive/` exclude |
+| `ops_scripts/ci/adg_burndown_gate.py` | Add `--staged` mode, move emitters to lazy init |
+| `ops_scripts/ci/guardian_exemption_gate.py` | Add `--staged` mode |
+| `pyproject.toml` | Add `tools/archive` to ruff exclude |
+| `.github/workflows/adg-burndown-ci.yml` | NEW — full-repo CI enforcement |
+| `ops_scripts/ci/check_script_sprawl.py` | Add phase-name and root-hygiene rules |
+| `tools/adg/repo_hygiene_classifier.py` | NEW — manifest generator |
+| `tools/adg/batch_wirer.py` | NEW — extracted from p0_batch_wirer.py |
+| `tools/adg/coverage_gap_analyzer.py` | NEW — extracted from p0_gap_analyzer.py |
+| `tools/adg/edge_census.py` | NEW — unified from wave_*_census.py |
+| ~90 files | Moved from repo root to `tools/archive/root/` |
+| ~90 files | Moved from other territories to `tools/archive/[territory]/` |
