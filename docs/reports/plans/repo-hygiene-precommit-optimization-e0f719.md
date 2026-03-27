@@ -6,7 +6,7 @@ Consolidate ~180 phase-named dead-end scripts across 6 sprawl territories, restr
 
 This plan addresses three critical hygiene issues: (1) ~90 phase-named scripts and ~142 root-sprawl scripts creating discoverability debt, (2) pre-commit hooks scanning ~644 files on every commit including dead archives, and (3) 31 redundant GitHub Actions workflows with overlapping responsibilities. The solution implements a tiered pre-commit model (fast local, full CI), HITL-gated archiving, and workflow consolidation to achieve SVP-grade codebase quality.
 
-## Wave Overview
+## Waves Overview
 
 *Token estimates from `ContextWindowEstimator` (conservative 1.1× bias, rates: code=0.385, text=0.44, json=0.363 tokens/char)*
 
@@ -21,6 +21,8 @@ This plan addresses three critical hygiene issues: (1) ~90 phase-named scripts a
 **Total Cumulative Tokens:** 278,716 across 3 waves<br>
 **Packing Strategy:** Optimized 3-wave distribution targeting 150-160K per wave. Each wave stays well under the 200K hard limit with comfortable buffers.<br>
 **HITL Gates:** 3 mandatory checkpoints (Wave 1 Inventory review, Wave 1 Archive batch confirm, Wave 2 Extraction confirm)
+
+**SSOT Terminology:** This plan uses "Waves" as the single source of truth term for execution grouping. Individual components are referred to as "P0, P1, P2..." but the grouping and execution structure uses "Waves" consistently.
 
 ---
 
@@ -91,7 +93,7 @@ LOCAL PRE-COMMIT (fast, staged-only)     CI PIPELINE (full-repo, blocking on PR)
 
 ---
 
-## Wave Implementation Plan
+## Wave Execution Plan
 
 ### Wave 1: Inventory, Classification & Archive
 **Goal:** Clean up existing sprawl, inventory all files, and archive phase scripts.
@@ -130,7 +132,7 @@ LOCAL PRE-COMMIT (fast, staged-only)     CI PIPELINE (full-repo, blocking on PR)
 
 ---
 
-## Wave Execution Order & HITL Gates
+## Execution Order & HITL Gates
 
 ```
 Wave 1 (Inventory & Archive) ──→ HITL: Review Manifest & Archive Batches ──→ Wave 2 (Extraction) ──→ HITL: Confirm Extractions ──→ Wave 3 (CI & Enforcement)
