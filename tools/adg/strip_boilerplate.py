@@ -98,8 +98,12 @@ class SafeBoilerplateStripper:
         
     def count_behavioral_nodes(self, tree: ast.AST) -> int:
         """Count behavioral nodes in AST."""
-        counter = self.detector._node_counter
-        counter.reset()
+        if not tree:
+            return 0
+        
+        # Create a new counter for each analysis
+        from agentic_core.L5_safety.validators.hollow_file_detector_validator import BehavioralNodeCounter
+        counter = BehavioralNodeCounter()
         counter.visit(tree)
         return counter.behavioral_functions + counter.behavioral_classes
     
@@ -110,6 +114,10 @@ class SafeBoilerplateStripper:
         except (OSError, UnicodeDecodeError):
             return StripResult(action="skipped", reason="Cannot read file")
         
+        # Handle empty file
+        if not content.strip():
+            return StripResult(action="skipped", reason="Empty file")
+        
         # Parse original tree
         try:
             original_tree = ast.parse(content)
@@ -118,6 +126,10 @@ class SafeBoilerplateStripper:
         
         # Count original behavioral nodes
         original_behavioral = self.count_behavioral_nodes(original_tree)
+        
+        # If no behavioral nodes to begin with, skip
+        if original_behavioral == 0:
+            return StripResult(action="skipped", reason="No behavioral content to preserve")
         
         # Apply stripper
         stripper = BoilerplateStripper()

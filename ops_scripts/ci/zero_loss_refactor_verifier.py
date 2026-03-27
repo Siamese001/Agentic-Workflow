@@ -76,7 +76,7 @@ def check_file_neutered(file_path: Path, before_hash: str, after_hash: str = "HE
     # Check if neutered
     is_neutered = before_behavioral > 0 and after_behavioral == 0
     
-    return is_neutered, before_behavioral, after_behavior
+    return is_neutered, before_behavioral, after_behavioral
 
 
 def get_modified_files_since(base_hash: str) -> List[Path]:
