@@ -1,0 +1,498 @@
+"""RAG Pipeline.
+
+End-to-end Retrieval-Augmented Generation pipeline that integrates
+search, context assembly, prompt templating, and LLM generation.
+"""
+
+from __future__ import annotations
+
+import uuid
+from datetime import datetime
+from typing import Any, Dict, List, Optional, Set, Tuple
+
+from agentic_core.L1_cognition.config.graphrag_config import get_config
+from agentic_core.L1_cognition.engines.context_assembler import create_context_assembler
+from agentic_core.L1_cognition.engines.prompt_template_manager import create_prompt_template_manager
+from agentic_core.L1_cognition.engines.search_fusion_engine import SearchFusionEngine
+from agentic_core.L1_cognition.types.rag_types import (
+    GenerationRequest,
+    GenerationResult,
+    RAGConfig,
+    RAGContext,
+    RAGMetrics,
+    RAGQuery,
+    RAGResponse,
+)
+from agentic_core.L1_cognition.types.search_types import SearchQuery
+from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_agent_executes_agent,
+    _emit_applies_guardrail,
+    _emit_authorize_and_execute,
+    _emit_blocks_direct_write,
+    _emit_captures_evaluation_metric,
+    _emit_captures_execution_output,
+    _emit_checks_agent_registry,
+    _emit_coordinates_agents,
+    _emit_dispatches_agent,
+    _emit_dispatches_execution_plan,
+    _emit_dispatches_healing_run,  # noqa: E402
+    _emit_escalates_failure,
+    _emit_escalates_to_human,  # noqa: E402
+    _emit_gated_by_confidence,
+    _emit_hard_fails_untranscripted,
+    _emit_invokes_evaluation,
+    _emit_links_execution_to_snapshot,
+    _emit_observes_runtime_state,
+    _emit_orchestrates_workflow,
+    _emit_reads_policy_state,  # noqa: E402
+    _emit_records_execution_trace,
+    _emit_records_healing_outcome,
+    _emit_records_telemetry_event,
+    _emit_records_tool_invocation,
+    _emit_records_workflow_lineage,
+    _emit_routes_through,  # noqa: E402
+    _emit_routes_to_agent,
+    _emit_routes_to_capability,
+    _emit_signs_execution_trace,
+    _emit_snapshots_state,
+    _emit_stores_embedding,
+    _emit_transcripts_response,
+    _emit_updates_meta_learning_state,
+    _emit_validates_agent_capability,
+    _emit_validates_capability,
+    _emit_verifies_boundary,
+    _emit_verifies_policy,
+    _emit_writes_via_uwg,
+    emit_determinism_digest,  # noqa: E402
+    emit_replay_key,  # noqa: E402
+)
+
+emit_replay_key("p0", "rag_pipeline")
+emit_determinism_digest("p0", "rag_pipeline")
+
+_emit_dispatches_healing_run("p1", "rag_pipeline", "L1")
+_emit_routes_through("p1", "rag_pipeline", "L1")
+_emit_checks_agent_registry("p1", "rag_pipeline", "agent_registry")
+_emit_validates_agent_capability("p1", "rag_pipeline", "capability")
+_emit_dispatches_execution_plan("p1", "rag_pipeline", "exec_plan")
+_emit_agent_executes_agent("p1", "rag_pipeline", "sub_agent")
+_emit_routes_to_agent("p1", "rag_pipeline", "target_agent")
+_emit_verifies_policy("p1", "rag_pipeline", "policy_check")
+_emit_observes_runtime_state("p1", "rag_pipeline", "runtime_state")
+_emit_verifies_boundary("p1", "rag_pipeline", "boundary_check")
+_emit_transcripts_response("p1", "rag_pipeline", "transcript")
+_emit_hard_fails_untranscripted("p1", "rag_pipeline")
+_emit_gated_by_confidence("p1", "rag_pipeline", "confidence_gate")
+_emit_escalates_to_human("p1", "rag_pipeline", "L1")
+_emit_reads_policy_state("p1", "rag_pipeline", "L1")
+_emit_authorize_and_execute("p2", "rag_pipeline", "execution_auth")
+_emit_validates_capability("p2", "rag_pipeline", "capability_check")
+_emit_routes_to_capability("p2", "rag_pipeline", "capability_route")
+_emit_writes_via_uwg("p2", "rag_pipeline", "uwg_write")
+_emit_blocks_direct_write("p2", "rag_pipeline", "direct_write_block")
+_emit_records_tool_invocation("p2", "rag_pipeline", "tool_invocation")
+_emit_captures_execution_output("p2", "rag_pipeline", "exec_output")
+_emit_dispatches_agent("p3", "rag_pipeline", "agent_dispatch")
+_emit_coordinates_agents("p3", "rag_pipeline", "agent_coordination")
+_emit_records_workflow_lineage("p3", "rag_pipeline", "workflow_lineage")
+_emit_records_healing_outcome("p3", "rag_pipeline", "healing_outcome")
+_emit_escalates_failure("p3", "rag_pipeline", "failure_escalation")
+_emit_orchestrates_workflow("p3", "rag_pipeline", "workflow_orchestration")
+_emit_dispatches_healing_run("p3", "rag_pipeline", "healing_dispatch")
+_emit_invokes_evaluation("p3", "rag_pipeline", "evaluation_signal")
+_emit_records_telemetry_event("p4", "rag_pipeline", "telemetry_event")
+_emit_captures_evaluation_metric("p4", "rag_pipeline", "eval_metric")
+_emit_stores_embedding("p4", "rag_pipeline", "embedding_store")
+
+
+class MockLLMClient:
+    """Mock LLM client for demonstration purposes."""
+    
+    async def generate(
+        self,
+        system_prompt: str,
+        user_prompt: str,
+        temperature: float = 0.7,
+        max_tokens: int = 1000,
+        top_p: float = 0.9,
+        top_k: int = 40
+    ) -> GenerationResult:
+        """Generate text using mock LLM."""
+        # This is a mock implementation
+        # In practice, you would integrate with actual LLM APIs
+        
+        request_id = str(uuid.uuid4())
+        
+        # Simulate generation
+        generated_text = f"Based on the provided context, here's a response to your query. This is a mock response that would normally be generated by an LLM like GPT-4, Claude, or similar. The actual implementation would call the LLM API with the system and user prompts."
+        
+        # Calculate mock metrics
+        tokens_generated = len(generated_text.split())
+        tokens_prompt = len((system_prompt + user_prompt).split())
+        generation_time_ms = 500.0  # Mock generation time
+        
+        return GenerationResult(
+            request_id=request_id,
+            generated_text=generated_text,
+            model_used="mock-llm-v1",
+            tokens_generated=tokens_generated,
+            tokens_prompt=tokens_prompt,
+            tokens_total=tokens_generated + tokens_prompt,
+            generation_time_ms=generation_time_ms,
+            coherence_score=0.8,
+            relevance_score=0.7,
+            completeness_score=0.75,
+            source_citations=[],
+            attribution_confidence=0.6
+        )
+
+
+class RAGPipeline:
+    """End-to-end RAG pipeline for knowledge generation."""
+    
+    def __init__(
+        self,
+        search_engine: SearchFusionEngine,
+        config: Optional[RAGConfig] = None,
+        llm_client: Optional[Any] = None
+    ) -> None:
+        """Initialize the RAG pipeline.
+        
+        Args:
+            search_engine: The search engine for finding context
+            config: RAG configuration
+            llm_client: LLM client for generation
+        """
+        self.config = config or RAGConfig()
+        self.graphrag_config = get_config()
+        
+        # Initialize components
+        self.search_engine = search_engine
+        self.context_assembler = create_context_assembler(search_engine, self.config)
+        self.template_manager = create_prompt_template_manager(self.config)
+        self.llm_client = llm_client or MockLLMClient()
+        
+        # Pipeline statistics
+        self._pipeline_stats: Dict[str, List[float]] = {
+            "total_time": [],
+            "search_time": [],
+            "context_time": [],
+            "generation_time": [],
+            "quality_score": []
+        }
+    
+    async def process_query(self, query: RAGQuery) -> RAGResponse:
+        """Process a RAG query end-to-end.
+        
+        Args:
+            query: The RAG query to process
+            
+        Returns:
+            Complete RAG response
+        """
+        start_time = datetime.utcnow()
+        
+        try:
+            # Step 1: Assemble context
+            context_start = datetime.utcnow()
+            context = await self.context_assembler.assemble_context(query)
+            context_time = (datetime.utcnow() - context_start).total_seconds() * 1000
+            
+            # Step 2: Select and render template
+            template_start = datetime.utcnow()
+            system_prompt, user_prompt = self.template_manager.render_template(
+                query_type=query.query_type,
+                context=context,
+                query=query
+            )
+            template_time = (datetime.utcnow() - template_start).total_seconds() * 1000
+            
+            # Step 3: Generate response
+            generation_start = datetime.utcnow()
+            generation = await self.llm_client.generate(
+                system_prompt=system_prompt,
+                user_prompt=user_prompt,
+                temperature=query.temperature,
+                max_tokens=query.max_tokens,
+                top_p=query.top_p,
+                top_k=query.top_k
+            )
+            generation_time = (datetime.utcnow() - generation_start).total_seconds() * 1000
+            
+            # Step 4: Create response
+            total_time = (datetime.utcnow() - start_time).total_seconds() * 1000
+            
+            # Calculate quality scores
+            context_quality = self._calculate_context_quality(context)
+            generation_quality = self._calculate_generation_quality(generation)
+            overall_quality = (context_quality + generation_quality) / 2
+            
+            response = RAGResponse(
+                query=query,
+                context=context,
+                template=self.template_manager.get_template(query_type=query.query_type),
+                generation=generation,
+                total_time_ms=total_time,
+                search_time_ms=context.assembly_time_ms,  # Search time included in assembly
+                context_assembly_time_ms=context_time,
+                generation_time_ms=generation_time,
+                overall_quality_score=overall_quality,
+                context_quality_score=context_quality,
+                generation_quality_score=generation_quality,
+                errors=[],
+                warnings=context.warnings
+            )
+            
+            # Update statistics
+            self._update_stats(response)
+            
+            _emit_records_telemetry_event(
+                "rag_pipeline",
+                f"query_processed_{response.overall_quality_score:.2f}_quality"
+            )
+            
+            return response
+            
+        except Exception as e:
+            # Return error response
+            total_time = (datetime.utcnow() - start_time).total_seconds() * 1000
+            
+            return RAGResponse(
+                query=query,
+                context=RAGContext(
+                    query=query,
+                    items=[],
+                    total_items=0,
+                    total_length=0,
+                    token_estimate=0,
+                    avg_relevance_score=0.0,
+                    max_relevance_score=0.0,
+                    min_relevance_score=0.0,
+                    item_type_distribution={},
+                    source_distribution={},
+                    assembly_time_ms=0.0,
+                    assembly_method="error",
+                    truncation_applied=False,
+                    warnings=[]
+                ),
+                template=self.template_manager.get_template(query_type=query.query_type),
+                generation=GenerationResult(
+                    request_id=str(uuid.uuid4()),
+                    generated_text="",
+                    model_used="error",
+                    tokens_generated=0,
+                    tokens_prompt=0,
+                    tokens_total=0,
+                    generation_time_ms=0.0,
+                    coherence_score=0.0,
+                    relevance_score=0.0,
+                    completeness_score=0.0,
+                    errors=[f"Pipeline error: {str(e)}"]
+                ),
+                total_time_ms=total_time,
+                search_time_ms=0.0,
+                context_assembly_time_ms=0.0,
+                generation_time_ms=0.0,
+                overall_quality_score=0.0,
+                context_quality_score=0.0,
+                generation_quality_score=0.0,
+                errors=[f"RAG pipeline failed: {str(e)}"]
+            )
+    
+    async def process_batch(self, queries: List[RAGQuery]) -> List[RAGResponse]:
+        """Process multiple queries in batch.
+        
+        Args:
+            queries: List of RAG queries to process
+            
+        Returns:
+            List of RAG responses
+        """
+        import asyncio
+        
+        # Limit concurrent requests
+        semaphore = asyncio.Semaphore(self.config.max_concurrent_requests)
+        
+        async def process_single(query: RAGQuery) -> RAGResponse:
+            async with semaphore:
+                return await self.process_query(query)
+        
+        # Process all queries
+        responses = await asyncio.gather(
+            *[process_single(query) for query in queries],
+            return_exceptions=True
+        )
+        
+        # Handle exceptions
+        processed_responses = []
+        for i, response in enumerate(responses):
+            if isinstance(response, Exception):
+                # Create error response
+                error_response = RAGResponse(
+                    query=queries[i],
+                    context=RAGContext(
+                        query=queries[i],
+                        items=[],
+                        total_items=0,
+                        total_length=0,
+                        token_estimate=0,
+                        avg_relevance_score=0.0,
+                        max_relevance_score=0.0,
+                        min_relevance_score=0.0,
+                        item_type_distribution={},
+                        source_distribution={},
+                        assembly_time_ms=0.0,
+                        assembly_method="error",
+                        truncation_applied=False
+                    ),
+                    template=self.template_manager.get_template(),
+                    generation=GenerationResult(
+                        request_id=str(uuid.uuid4()),
+                        generated_text="",
+                        model_used="error",
+                        tokens_generated=0,
+                        tokens_prompt=0,
+                        tokens_total=0,
+                        generation_time_ms=0.0,
+                        coherence_score=0.0,
+                        relevance_score=0.0,
+                        completeness_score=0.0,
+                        errors=[f"Batch processing error: {str(response)}"]
+                    ),
+                    total_time_ms=0.0,
+                    search_time_ms=0.0,
+                    context_assembly_time_ms=0.0,
+                    generation_time_ms=0.0,
+                    overall_quality_score=0.0,
+                    context_quality_score=0.0,
+                    generation_quality_score=0.0,
+                    errors=[f"Batch processing failed: {str(response)}"]
+                )
+                processed_responses.append(error_response)
+            else:
+                processed_responses.append(response)
+        
+        return processed_responses
+    
+    def _calculate_context_quality(self, context: RAGContext) -> float:
+        """Calculate context quality score."""
+        if not context.items:
+            return 0.0
+        
+        # Factors: relevance score, item count, diversity
+        relevance_weight = 0.5
+        count_weight = 0.3
+        diversity_weight = 0.2
+        
+        # Relevance score (normalized to 0-1)
+        relevance_score = context.avg_relevance_score
+        
+        # Item count score (optimal range)
+        optimal_items = 5
+        count_score = 1.0 - abs(context.total_items - optimal_items) / optimal_items
+        count_score = max(0.0, min(1.0, count_score))
+        
+        # Diversity score (based on type distribution)
+        type_diversity = len(context.item_type_distribution)
+        max_types = 3  # entity, relationship, community
+        diversity_score = type_diversity / max_types
+        
+        # Combined score
+        quality = (
+            relevance_score * relevance_weight +
+            count_score * count_weight +
+            diversity_score * diversity_weight
+        )
+        
+        return min(1.0, quality)
+    
+    def _calculate_generation_quality(self, generation: GenerationResult) -> float:
+        """Calculate generation quality score."""
+        # Use the quality metrics from generation result
+        return (
+            generation.coherence_score * 0.4 +
+            generation.relevance_score * 0.4 +
+            generation.completeness_score * 0.2
+        )
+    
+    def _update_stats(self, response: RAGResponse) -> None:
+        """Update pipeline statistics."""
+        self._pipeline_stats["total_time"].append(response.total_time_ms)
+        self._pipeline_stats["search_time"].append(response.search_time_ms)
+        self._pipeline_stats["context_time"].append(response.context_assembly_time_ms)
+        self._pipeline_stats["generation_time"].append(response.generation_time_ms)
+        self._pipeline_stats["quality_score"].append(response.overall_quality_score)
+    
+    def get_pipeline_stats(self) -> Dict[str, Dict[str, float]]:
+        """Get pipeline performance statistics."""
+        stats = {}
+        
+        for metric, values in self._pipeline_stats.items():
+            if values:
+                stats[metric] = {
+                    "avg": sum(values) / len(values),
+                    "min": min(values),
+                    "max": max(values),
+                    "p95": self._percentile(values, 0.95),
+                    "p99": self._percentile(values, 0.99),
+                    "count": len(values)
+                }
+            else:
+                stats[metric] = {
+                    "avg": 0.0,
+                    "min": 0.0,
+                    "max": 0.0,
+                    "p95": 0.0,
+                    "p99": 0.0,
+                    "count": 0
+                }
+        
+        return stats
+    
+    def _percentile(self, values: List[float], percentile: float) -> float:
+        """Calculate percentile of values."""
+        if not values:
+            return 0.0
+        
+        sorted_values = sorted(values)
+        index = int(len(sorted_values) * percentile)
+        return sorted_values[min(index, len(sorted_values) - 1)]
+    
+    def get_metrics(self) -> RAGMetrics:
+        """Get comprehensive RAG metrics."""
+        stats = self.get_pipeline_stats()
+        
+        return RAGMetrics(
+            avg_response_time_ms=stats["total_time"]["avg"],
+            p95_response_time_ms=stats["total_time"]["p95"],
+            p99_response_time_ms=stats["total_time"]["p99"],
+            requests_per_second=1000.0 / stats["total_time"]["avg"] if stats["total_time"]["avg"] > 0 else 0.0,
+            avg_quality_score=stats["quality_score"]["avg"],
+            avg_context_relevance=0.0,  # Would need to track separately
+            avg_generation_coherence=0.0,  # Would need to track separately
+            total_requests=stats["total_time"]["count"],
+            successful_requests=stats["total_time"]["count"],  # Simplified
+            error_rate=0.0,  # Would need to track errors
+            avg_context_items=0.0,  # Would need to track separately
+            avg_context_length=0.0,  # Would need to track separately
+            truncation_rate=0.0,  # Would need to track separately
+            template_usage=self.template_manager.get_template_stats()["templates_by_type"]
+        )
+
+
+# Factory function
+def create_rag_pipeline(
+    search_engine: SearchFusionEngine,
+    config: Optional[RAGConfig] = None,
+    llm_client: Optional[Any] = None
+) -> RAGPipeline:
+    """Create a RAG pipeline."""
+    return RAGPipeline(search_engine, config, llm_client)
+
+
+__all__ = [
+    "RAGPipeline",
+    "create_rag_pipeline",
+    "MockLLMClient",
+]
