@@ -238,9 +238,12 @@ class VectorDBIngestor:
             persist_dir.mkdir(parents=True, exist_ok=True)
             self.client = chromadb.PersistentClient(path=str(persist_dir))
         
-        self.collection = self.client.get_or_create_collection(name=collection_name)
-        
-        Logger.info(f"Initialized ChromaDB collection: {collection_name}")
+        try:
+            self.collection = self.client.get_or_create_collection(name=collection_name)
+            Logger.info(f"Initialized ChromaDB collection: {collection_name}")
+        except Exception as e:
+            Logger.error(f"Failed to initialize ChromaDB collection '{collection_name}': {e}")
+            raise
     
     def ingest_chunks(self, chunks: List[Dict], embeddings: List[List[float]]) -> int:
         """Ingest chunks and embeddings into ChromaDB."""

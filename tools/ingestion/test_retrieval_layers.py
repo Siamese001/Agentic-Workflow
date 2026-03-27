@@ -4,6 +4,7 @@ Test script to validate L1-L4 retrieval layers integration
 """
 
 import sys
+import time
 from pathlib import Path
 
 # Add project root to path for imports
@@ -25,29 +26,35 @@ def test_l1_exact_cache():
     cache = L1ExactCache(ttl_seconds=60)
     
     # Test miss
-    result = cache.get("test_query_12345_unique")  # Use unique query
+    unique_query = f"test_query_{hash(time.time())}"  # Ensure uniqueness
+    result = cache.get(unique_query)
     print(f"Initial query result: {result}")
-    if result is not None:
-        print("Warning: Cache had data, using different query")
-        result = cache.get("another_unique_query_67890")
-        print(f"Second query result: {result}")
-    assert result is None, "Should be None on first query"
+    assert result is None, f"Should be None on first query for: {unique_query}"
     
     # Test set and hit
-    cache.set("How does ADG work?", "ADG is the Architecture Dependency Graph...")
-    result = cache.get("How does ADG work?")
-    print(f"Cached query result: {result[:50]}...")
-    assert result is not None, "Should return cached result"
+    test_query = "How does ADG work?"
+    test_response = "ADG is the Architecture Dependency Graph..."
+    cache.set(test_query, test_response)
+    result = cache.get(test_query)
+    print(f"Cached query result: {result[:50] if result else 'None'}...")
+    assert result == test_response, f"Should return exact cached response: {test_response}"
     
     # Test normalization
-    result = cache.get("how does adg work?")  # Different case
-    print(f"Normalized query result: {result[:50]}...")
-    assert result is not None, "Should work with normalized query"
+    normalized_query = "how does adg work?"  # Different case
+    result = cache.get(normalized_query)
+    print(f"Normalized query result: {result[:50] if result else 'None'}...")
+    assert result == test_response, "Should work with normalized query"
+    
+    # Test different query miss
+    different_query = "completely different query"
+    result = cache.get(different_query)
+    assert result is None, "Should return None for different query"
     
     # Check stats
     stats = cache.get_stats()
     print(f"L1 Stats: {stats}")
-    assert stats["hit_count"] >= 2, "Should have at least 2 hits"
+    assert stats["hit_count"] >= 2, f"Should have at least 2 hits, got {stats['hit_count']}"
+    assert stats["miss_count"] >= 2, f"Should have at least 2 misses, got {stats['miss_count']}"
     
     print("✅ L1 Exact Cache test passed")
     return True
@@ -59,30 +66,36 @@ def test_l2_semantic_cache():
     
     cache = L2SemanticCache(similarity_threshold=0.95, ttl_seconds=60)
     
-    # Test miss
-    result = cache.get("test_semantic_query_12345_unique")  # Use unique query
+    # Test miss with unique query
+    unique_query = f"semantic_test_{hash(time.time())}"
+    result = cache.get(unique_query)
     print(f"Initial query result: {result}")
-    if result is not None:
-        print("Warning: Cache had data, using different query")
-        result = cache.get("another_semantic_query_67890")
-        print(f"Second query result: {result}")
+    assert result is None, f"Should be None on first query for: {unique_query}"
     
-    # Test set and hit
-    cache.set("What is the ADG architecture?", "ADG architecture consists of layers L0-L6...")
-    result = cache.get("What is the ADG architecture?")
+    # Test set and exact hit
+    test_query = "What is the ADG architecture?"
+    test_response = "ADG architecture consists of layers L0-L6..."
+    cache.set(test_query, test_response)
+    result = cache.get(test_query)
     print(f"Cached query result: {result}")
-    if result:
-        print(f"Cached query result type: {type(result)}")
-        print(f"Cached query result[:50]: {result[:50] if isinstance(result, str) else 'Not a string'}")
-    assert result is not None, "Should return cached result"
+    assert result == test_response, f"Should return exact cached response: {test_response}"
     
-    # Test similar query (may or may not hit depending on embeddings)
-    result = cache.get("Describe the ADG architecture")
+    # Test semantic similarity (same query should hit)
+    result = cache.get(test_query)
     print(f"Similar query result: {result}")
+    assert result == test_response, "Same query should hit semantic cache"
+    
+    # Test different query miss
+    different_query = "completely unrelated topic"
+    result = cache.get(different_query)
+    assert result is None, "Should return None for different query"
     
     # Check stats
     stats = cache.get_stats()
     print(f"L2 Stats: {stats}")
+    assert stats["hit_count"] >= 1, f"Should have at least 1 hit, got {stats['hit_count']}"
+    assert stats["miss_count"] >= 2, f"Should have at least 2 misses, got {stats['miss_count']}"
+    assert stats["similarity_threshold"] == 0.95, "Should maintain similarity threshold"
     
     print("✅ L2 Semantic Cache test passed")
     return True

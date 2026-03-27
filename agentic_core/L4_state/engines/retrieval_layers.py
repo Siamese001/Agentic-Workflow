@@ -114,7 +114,8 @@ class L2SemanticCache:
         if self.mock_embeddings:
             # Generate deterministic mock embedding based on text hash
             import random
-            random.seed(self.embedding_seed + hash(text))
+            # Ensure positive seed by using absolute value of hash
+            random.seed(self.embedding_seed + abs(hash(text)))
             return [random.uniform(-1, 1) for _ in range(1536)]
         
         try:
@@ -231,6 +232,8 @@ class L3SemanticRAG:
             Logger.warning("OPENAI_API_KEY not set, using mock embeddings")
             self.embedding_client = None
             self.mock_embeddings = True
+            # For deterministic mock embeddings
+            self.embedding_seed = 42
         
         self.query_count = 0
     
@@ -277,8 +280,10 @@ class L3SemanticRAG:
     def _get_embedding(self, text: str) -> Optional[List[float]]:
         """Get embedding for text."""
         if self.mock_embeddings:
-            # Generate mock embedding
+            # Generate deterministic mock embedding based on text hash
             import random
+            # Ensure positive seed by using absolute value of hash
+            random.seed(self.embedding_seed + abs(hash(text)))
             return [random.uniform(-1, 1) for _ in range(1536)]
         
         try:
@@ -479,13 +484,30 @@ class RetrievalOrchestrator:
     
     def _parse_action_query(self, query: str) -> Tuple[str, Dict[str, Any]]:
         """Parse action query into action name and parameters."""
+        query_lower = query.lower()
+        
         # Simple parsing - in production, this would be more sophisticated
-        if "search" in query.lower():
-            return "search_docs", {"query": query, "n_results": 5}
-        elif "trace" in query.lower():
-            return "find_similar_traces", {"trace_id": "trace_000042", "n_results": 5}
-        elif "architecture" in query.lower():
-            return "get_architecture_info", {"component": "ADG"}
+        if "search" in query_lower:
+            # Extract search term if present
+            search_term = query  # Use full query as search term for now
+            return "search_docs", {"query": search_term, "n_results": 5}
+        elif "trace" in query_lower:
+            # Look for trace ID pattern
+            import re
+            trace_match = re.search(r'trace_\d+', query)
+            trace_id = trace_match.group(0) if trace_match else "trace_000042"
+            return "find_similar_traces", {"trace_id": trace_id, "n_results": 5}
+        elif "architecture" in query_lower:
+            # Extract component name if mentioned
+            if "adg" in query_lower:
+                component = "ADG"
+            elif "l0" in query_lower:
+                component = "L0"
+            elif "l4" in query_lower:
+                component = "L4"
+            else:
+                component = "ADG"  # Default
+            return "get_architecture_info", {"component": component}
         else:
             return "unknown", {}
     
