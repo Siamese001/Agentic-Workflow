@@ -562,4 +562,3 @@ __all__ = [
     "ScanReport",
     "run_scan",
 ]
-

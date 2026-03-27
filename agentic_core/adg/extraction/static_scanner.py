@@ -8681,4 +8681,3 @@ _emit_reads_through("l4", "static_scanner", "urg_read_637")
 _emit_reads_through("l4", "static_scanner", "urg_read_638")
 _emit_reads_through("l4", "static_scanner", "urg_read_639")
 _emit_reads_through("l4", "static_scanner", "urg_read_640")
-
