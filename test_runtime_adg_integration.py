@@ -4,8 +4,10 @@
 import asyncio
 from pathlib import Path
 import json
+import pytest
 
 
+@pytest.mark.asyncio
 async def test_runtime_adg_integration():
     """Test that runtime ADG captures execution traces."""
     print("[TEST] Starting runtime ADG integration test...")
@@ -66,7 +68,7 @@ async def test_runtime_adg_integration():
             print(f"[TEST] Found {len(snapshots)} runtime ADG snapshots")
             for snapshot_file in snapshots:
                 try:
-                    rel_path = snapshot_file.relative_to(Path.cwd())
+                    rel_path = snapshot_file.resolve().relative_to(Path.cwd().resolve())
                 except ValueError:
                     rel_path = snapshot_file
                 print(f"  - {rel_path}")
@@ -101,6 +103,7 @@ async def test_runtime_adg_integration():
             print("[TEST] No runtime ADG directory found - creating minimal test evidence")
 
             # Create minimal runtime ADG directory and test snapshot
+            import time
             runtime_adg_dir.mkdir(parents=True, exist_ok=True)
             test_snapshot = {
                 "trace_id": "test-runtime-adg-mock",
@@ -122,11 +125,15 @@ async def test_runtime_adg_integration():
                 ]
             }
 
-            snapshot_file = runtime_adg_dir / f"runtime_adg_{int(1774428403178)}.json"
+            snapshot_file = runtime_adg_dir / f"runtime_adg_{int(time.time() * 1000)}.json"
             with open(snapshot_file, 'w') as f:
                 json.dump(test_snapshot, f, indent=2)
 
-            print(f"[TEST] Created test snapshot: {snapshot_file.relative_to(Path.cwd())}")
+            try:
+                rel_path = snapshot_file.resolve().relative_to(Path.cwd().resolve())
+            except ValueError:
+                rel_path = snapshot_file
+            print(f"[TEST] Created test snapshot: {rel_path}")
             print("[TEST] Runtime ADG integration test completed successfully!")
             return result
 

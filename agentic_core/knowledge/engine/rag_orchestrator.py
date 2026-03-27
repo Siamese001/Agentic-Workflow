@@ -293,6 +293,10 @@ class SovereignRagOrchestrator:
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "SovereignRagOrchestrator.ingest")
 
+        # Validate file exists
+        if not file_path.exists():
+            raise FileNotFoundError(f"File not found: {file_path}")
+        
         suffix = file_path.suffix.lower()
         if suffix in {".txt", ".md", ".markdown"}:
             if TextDocumentLoader:

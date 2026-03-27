@@ -1,11 +1,11 @@
 {
-  "timestamp": 1774430375.9228475,
+  "timestamp": 1774578875.9778073,
   "summary": {
     "total_tests": 10,
     "passed_tests": 9,
     "failed_tests": 1,
     "warnings": 1,
-    "errors": 1,
+    "errors": 0,
     "success_rate": 0.9
   },
   "results": {
@@ -18,14 +18,19 @@
       "concurrent_access": true
     },
     "performance": {
-      "retrieval_latency": {
-        "average_latency": 0.7314277648925781,
-        "max_latency": 7.2126851081848145,
+      "ingestion_throughput": {
+        "files_per_second": 9998.340882002383,
+        "elapsed_time": 0.0010001659393310547,
         "passed": true
       },
+      "retrieval_latency": {
+        "average_latency": 2.6391439199447633,
+        "max_latency": 26.318195581436157,
+        "passed": false
+      },
       "memory_usage": {
-        "baseline_mb": 1730.6328125,
-        "peak_mb": 1731.03125,
+        "baseline_mb": 1821.4375,
+        "peak_mb": 1821.8359375,
         "increase_mb": 0.3984375,
         "passed": true
       }
@@ -40,7 +45,5 @@
   "warnings": [
     "    \u26a0 Only 3/5 payloads handled"
   ],
-  "errors": [
-    "    \u2717 Ingestion throughput test failed"
-  ]
+  "errors": []
 }
