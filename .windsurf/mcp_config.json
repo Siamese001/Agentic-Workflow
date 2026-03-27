@@ -14,15 +14,15 @@
       }
     },
     "sequential-thinking": {
-      "_comment": "Sequential Thinking MCP \u00e2\u20ac\u201d OPTIMIZED: Using global npm for consistent 5.0s startup. TypeScript-based server for structured problem-solving and reasoning processes. FIXED: Added explicit cwd to resolve Windows ESM path issue.",
-      "command": "node",
+      "_comment": "Sequential Thinking MCP — HARDENED: Direct node.exe path avoids fnm/npx wrapper resolution issues on Windows. DISABLE_THOUGHT_LOGGING=true suppresses stderr chalk rendering that can stall stdio transport. Explicit cwd for ESM module resolution.",
+      "command": "C:\\Users\\amita\\AppData\\Roaming\\fnm\\node-versions\\v24.13.0\\installation\\node.exe",
       "args": [
         "C:\\Users\\amita\\AppData\\Roaming\\fnm\\node-versions\\v24.13.0\\installation\\node_modules\\@modelcontextprotocol\\server-sequential-thinking\\dist\\index.js"
       ],
       "cwd": "C:\\Users\\amita\\AppData\\Roaming\\fnm\\node-versions\\v24.13.0\\installation\\node_modules\\@modelcontextprotocol\\server-sequential-thinking",
       "disabled": false,
       "env": {
-        "DISABLE_THOUGHT_LOGGING": "false"
+        "DISABLE_THOUGHT_LOGGING": "true"
       }
     },
     "redis": {
