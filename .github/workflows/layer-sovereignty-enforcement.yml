@@ -33,11 +33,11 @@ jobs:
       - name: Layer sovereignty validation status
         if: env.SKIP_LOCAL_CHECKS == 'true'
         run: |
-          echo "✅ Layer sovereignty validation now handled by Windsurf pre-write hooks"
-          echo "📋 Local validation provides immediate feedback during editing"
-          echo "⚡ CI runtime reduced by migrating to Windsurf skills"
+          echo "[PASS] Layer sovereignty validation now handled by Windsurf pre-write hooks"
+          echo "[INFO] Local validation provides immediate feedback during editing"
+          echo "[INFO] CI runtime reduced by migrating to Windsurf skills"
           echo ""
-          echo "🔍 Layer sovereignty enforces architectural boundaries:"
+          echo "[INFO] Layer sovereignty enforces architectural boundaries:"
           echo "   - L1 must NOT import L2, L3, L4, L5, L6"
           echo "   - L2 must NOT import L5, L6"
           echo "   - L3 must NOT import L5, L6"
@@ -46,27 +46,27 @@ jobs:
       - name: Check L4 State Write Sovereignty
         if: env.SKIP_LOCAL_CHECKS != 'true'
         run: |
-          echo "✅ L4 State Write Sovereignty now handled by Windsurf pre-write hooks"
+          echo "[PASS] L4 State Write Sovereignty now handled by Windsurf pre-write hooks"
 
       - name: Run L4 State Guardian Tests
         if: env.SKIP_LOCAL_CHECKS != 'true'
         run: |
-          echo "✅ L4 State Guardian Tests now handled by Windsurf pre-write hooks"
+          echo "[PASS] L4 State Guardian Tests now handled by Windsurf pre-write hooks"
 
       - name: Run L1 Cognition Purity Tests
         if: env.SKIP_LOCAL_CHECKS != 'true'
         run: |
-          echo "✅ L1 Cognition Purity Tests now handled by Windsurf pre-write hooks"
+          echo "[PASS] L1 Cognition Purity Tests now handled by Windsurf pre-write hooks"
 
       - name: Check Interface Layer Compliance
         if: env.SKIP_LOCAL_CHECKS != 'true'
         run: |
-          echo "✅ Interface Layer Compliance now handled by Windsurf pre-write hooks"
+          echo "[PASS] Interface Layer Compliance now handled by Windsurf pre-write hooks"
 
       - name: Verify No Direct L* Cross-Layer Imports
         if: env.SKIP_LOCAL_CHECKS != 'true'
         run: |
-          echo "✅ Cross-layer import validation now handled by Windsurf pre-write hooks"
+          echo "[PASS] Cross-layer import validation now handled by Windsurf pre-write hooks"
 
       - name: Check C0 Informational Boundary (§21)
         run: python ops_scripts/ci/check_c0_boundary.py
