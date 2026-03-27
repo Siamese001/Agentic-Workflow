@@ -235,6 +235,7 @@ class SystemLearningMemoryBridge:
     ENTITY_TYPE_POLICY_REC = "SLPolicyRecommendation"
     ENTITY_TYPE_AGGREGATE = "SLHealingAggregate"
     ENTITY_TYPE_PATTERN = "SLFailurePattern"
+    ENTITY_TYPE_TELEMETRY_EVENT = "SLTelemetryEvent"
 
     RELATION_TRIGGERED = "SL_TRIGGERED"
     RELATION_RESOLVED_BY = "SL_RESOLVED_BY"
