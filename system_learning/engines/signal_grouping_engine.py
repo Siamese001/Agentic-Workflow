@@ -362,7 +362,7 @@ class SignalGroupingEngine:
         
         for sig_type, current_count in current_counts.items():
             baseline = baseline_counts.get(sig_type, 1)  # Default baseline
-            spike_ratio = current_count / baseline if baseline > 0 else 0
+            spike_ratio = current_count / baseline if baseline > 0 else current_count  # Fix: use count as ratio when baseline is 0
             
             if spike_ratio >= spike_threshold:
                 spike_signals.append({
