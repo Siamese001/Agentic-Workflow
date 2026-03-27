@@ -21,7 +21,7 @@ from pathlib import Path
 from typing import Any
 
 # Add project root to Python path
-project_root = Path(__file__).parents[3]
+project_root = Path(__file__).parents[2]
 sys.path.insert(0, str(project_root))
 
 from agentic_core.L5_safety.validators.anti_pattern_scanner_validator import (
@@ -238,7 +238,7 @@ def main() -> int:
 
     # Report results
     if violations:
-        print(f"\n[hollow-file-gate] ❌ Found {len(violations)} hollow file violations:")
+        print(f"\n[hollow-file-gate] FAIL: Found {len(violations)} hollow file violations:")
 
         for file_path, violation in violations:
             rel_path = str(file_path.relative_to(project_root))
@@ -247,13 +247,13 @@ def main() -> int:
 
             if (file_path, violation) in new_hollow_files:
                 status = "NEW"
-                icon = "🚫"
+                icon = "[BLOCK]"
             elif (file_path, violation) in became_hollow_files:
                 status = "BECAME_HOLLOW"
-                icon = "⚠️"
+                icon = "[WARN]"
             else:
                 status = "EXISTING"
-                icon = "📝"
+                icon = "[INFO]"
 
             print(f"  {icon} {rel_path} [{classification}] {severity} ({status})")
             print(f"     {violation.get('message', 'No message')}")
@@ -262,23 +262,23 @@ def main() -> int:
         blocking_files = new_hollow_files + became_hollow_files
 
         if blocking_files:
-            print(f"\n[hollow-file-gate] 🚫 BLOCKING {len(blocking_files)} files:")
+            print(f"\n[hollow-file-gate] BLOCKING {len(blocking_files)} files:")
             for file_path, _ in blocking_files:
                 rel_path = str(file_path.relative_to(project_root))
                 print(f"  - {rel_path}")
 
-            print(f"\n[hollow-file-gate] 💡 Suggestions:")
+            print(f"\n[hollow-file-gate] SUGGESTIONS:")
             print(f"  - For NEW files: Add behavioral logic or delete the file")
             print(f"  - For BECAME_HOLLOW files: Restore behavioral content or delete")
             print(f"  - Run with --report to see full repository state")
 
             return 1
         else:
-            print(f"\n[hollow-file-gate] ⚠️  Existing hollow files detected (not blocking)")
+            print(f"\n[hollow-file-gate] WARNING: Existing hollow files detected (not blocking)")
             print(f"  Run with --init to set baseline, or --report for full inventory")
             return 0
     else:
-        print(f"[hollow-file-gate] ✅ No hollow file violations found")
+        print(f"[hollow-file-gate] OK: No hollow file violations found")
         return 0
 
 
