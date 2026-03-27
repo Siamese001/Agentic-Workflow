@@ -52,6 +52,9 @@ class MultiQueryFusion:
         Args:
             semantic_retriever: Semantic retriever instance
         """
+        if semantic_retriever is None:
+            raise ValueError("semantic_retriever cannot be None")
+        
         self.retriever = semantic_retriever
         self.router = QueryRouter()
         self.executor = ThreadPoolExecutor(max_workers=10)

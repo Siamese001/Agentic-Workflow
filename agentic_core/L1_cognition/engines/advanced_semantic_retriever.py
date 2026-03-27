@@ -75,6 +75,18 @@ class AdvancedSemanticRetriever:
         Returns:
             Advanced retrieval response with comprehensive results
         """
+        # Input validation
+        if request is None:
+            raise ValueError("request cannot be None")
+        if not request.query or not request.query.strip():
+            raise ValueError("request.query cannot be empty")
+        if request.fusion_strategy not in self.fusion_engine.fusion_strategies:
+            raise ValueError(f"Invalid fusion strategy: {request.fusion_strategy}")
+        if request.max_results_per_collection <= 0:
+            raise ValueError("max_results_per_collection must be positive")
+        if request.max_final_results <= 0:
+            raise ValueError("max_final_results must be positive")
+        
         start_time = time.time()
         
         logger.info(f"Starting advanced retrieval: {request.query}")

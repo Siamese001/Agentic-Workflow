@@ -224,7 +224,7 @@ class QueryRouter:
         confidence = 0.5
         
         # Boost confidence based on keyword matches
-        patterns = self.query_patterns[query_type]
+        patterns = self.query_patterns.get(query_type, [])
         matches = sum(1 for pattern in patterns if pattern in query)
         
         if matches > 0:
@@ -256,7 +256,8 @@ class QueryRouter:
         
         # Keyword reasoning
         matched_keywords = []
-        for pattern in self.query_patterns[query_type]:
+        patterns = self.query_patterns.get(query_type, [])
+        for pattern in patterns:
             if pattern in query:
                 matched_keywords.append(pattern)
         

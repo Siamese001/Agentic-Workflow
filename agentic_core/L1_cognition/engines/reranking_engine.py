@@ -145,6 +145,14 @@ class RerankingEngine:
         import time
         start_time = time.time()
         
+        # Input validation
+        if fusion_result is None:
+            raise ValueError("fusion_result cannot be None")
+        if not query or not query.strip():
+            raise ValueError("query cannot be empty")
+        if max_results <= 0:
+            raise ValueError("max_results must be positive")
+        
         # Flatten all results
         all_results = []
         for collection_results in fusion_result.collection_results.values():
