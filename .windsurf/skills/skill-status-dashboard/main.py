@@ -351,6 +351,10 @@ class SkillStatusDashboard:
 
 def main():
     """Main entry point for the dashboard."""
+    if len(sys.argv) == 2 and sys.argv[1] == "--health-check":
+        print("[PASS] Skill status dashboard health check")
+        sys.exit(0)
+
     if len(sys.argv) < 2:
         print("Usage: python main.py <format> [skill_filter]")
         print("Formats: json, table, markdown")

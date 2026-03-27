@@ -48,6 +48,10 @@ def validate_command(command: str, file_path: str) -> tuple[bool, list[str]]:
 
 def main():
     """Main entry point for the skill."""
+    if len(sys.argv) == 2 and sys.argv[1] == "--health-check":
+        print("[PASS] PowerShell guard health check")
+        sys.exit(0)
+
     if len(sys.argv) != 3:
         print("Usage: python main.py <command> <file_path>")
         sys.exit(1)
@@ -65,7 +69,7 @@ def main():
         print("  Use subprocess.run([cmd, arg1, arg2], shell=False, encoding='utf-8')")
         sys.exit(1)
     else:
-        print("✅ Command passes PowerShell guard validation")
+        print("[PASS] Command passes PowerShell guard validation")
         sys.exit(0)
 
 

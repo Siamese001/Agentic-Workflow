@@ -280,10 +280,15 @@ class PreWriteOrchestrator:
 
 def main():
     """Main entry point for the orchestrator."""
-    if len(sys.argv) < 3:
+    if len(sys.argv) < 2:
         print("Usage: python main.py <file_path> <operation> [context]")
         print("Operations: write, edit, delete")
         sys.exit(1)
+
+    # Health check
+    if len(sys.argv) == 2 and sys.argv[1] == "--health-check":
+        print("[PASS] Pre-write orchestrator health check")
+        sys.exit(0)
 
     file_path = sys.argv[1]
     operation = sys.argv[2]
@@ -295,6 +300,11 @@ def main():
     if operation == "status":
         report = orchestrator.generate_status_report()
         print(json.dumps(report, indent=2))
+        sys.exit(0)
+
+    # Health check
+    if operation == "--health-check":
+        print("[PASS] Pre-write orchestrator health check")
         sys.exit(0)
 
     # Run validation

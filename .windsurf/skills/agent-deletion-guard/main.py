@@ -110,7 +110,7 @@ def main():
         print("   See §5 - No Agent Deletion in .windsurfrules")
         sys.exit(1)
     else:
-        print("✅ Agent deletion authorization validated")
+        print("[PASS] Agent deletion authorization validated")
         sys.exit(0)
 
 

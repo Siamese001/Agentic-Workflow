@@ -79,6 +79,10 @@ def check_repair_gates(file_path: str, edit_type: str) -> tuple[bool, list[str]]
 
 def main():
     """Main entry point for the skill."""
+    if len(sys.argv) == 2 and sys.argv[1] == "--health-check":
+        print("[PASS] Repair gate validator health check")
+        sys.exit(0)
+
     if len(sys.argv) != 3:
         print("Usage: python main.py <file_path> <edit_type>")
         sys.exit(1)

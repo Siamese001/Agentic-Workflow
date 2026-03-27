@@ -117,6 +117,10 @@ except:
 
 def main():
     """Main entry point for the skill."""
+    if len(sys.argv) == 2 and sys.argv[1] == "--health-check":
+        print("[PASS] HITL decision validator health check")
+        sys.exit(0)
+
     if len(sys.argv) != 3:
         print("Usage: python main.py <decision_context> <options_count>")
         sys.exit(1)
@@ -142,7 +146,7 @@ def main():
         print("   See §8 - HITL Discipline in .windsurfrules")
         sys.exit(1)
     else:
-        print("✅ HITL decision validation passed")
+        print("[PASS] HITL decision validation passed")
         sys.exit(0)
 
 

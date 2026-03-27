@@ -133,6 +133,11 @@ def main(content: str, file_path: str) -> dict[str, any]:
 
 
 if __name__ == "__main__":
+    # Health check
+    if len(sys.argv) == 2 and sys.argv[1] == "--health-check":
+        print("[PASS] Plan validation health check")
+        sys.exit(0)
+
     # Test mode
     if len(sys.argv) > 1:
         test_file = sys.argv[1]

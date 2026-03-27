@@ -129,6 +129,10 @@ def validate_guardian_exemption(comment: str, file_path: str) -> tuple[bool, lis
 
 def main():
     """Main entry point for the skill."""
+    if len(sys.argv) == 2 and sys.argv[1] == "--health-check":
+        print("[PASS] Guardian exemption validator health check")
+        sys.exit(0)
+
     if len(sys.argv) != 3:
         print("Usage: python main.py <comment> <file_path>")
         sys.exit(1)
@@ -139,10 +143,10 @@ def main():
     is_valid, issues = validate_guardian_exemption(comment, file_path)
 
     if not is_valid:
-        print("❌ Guardian Exemption Validator Failed:")
+        print("[FAIL] Guardian Exemption Validator Failed:")
         for issue in issues:
             print(f"  - {issue}")
-        print("\n🚫 Guardian exemption requirements:")
+        print("\n[WARN] Guardian exemption requirements:")
         print("   1. Format: # guardian: allow-<type> -- <specific justification>")
         print("   2. No generic words (needed, required, temporary, legacy)")
         print("   3. Specific, detailed justification (20+ chars)")
@@ -151,7 +155,7 @@ def main():
         print("   See §10 - Guardian Exemption Discipline in .windsurfrules")
         sys.exit(1)
     else:
-        print("✅ Guardian exemption validation passed")
+        print("[PASS] Guardian exemption validation passed")
         sys.exit(0)
 
 
