@@ -617,6 +617,78 @@ class OpenTelemetryTracingAdapter:
             True if tracing is enabled
         """
         return self._enabled
+    
+    # Wave C-2: Expose spans for telemetry store integration
+    def get_active_spans(self) -> list[dict[str, Any]]:
+        """Get all active spans for telemetry store integration.
+        
+        Returns:
+            List of active span data
+        """
+        if not self._enabled or not hasattr(self, '_active_spans'):
+            return []
+        
+        spans_data = []
+        for span_id, span in self._active_spans.items():
+            span_data = {
+                "span_id": span_id,
+                "trace_id": getattr(span, 'trace_id', 'unknown'),
+                "name": getattr(span, 'name', 'unknown'),
+                "start_time": getattr(span, 'start_time', 0),
+                "end_time": getattr(span, 'end_time', None),
+                "status": getattr(span, 'status', 'RUNNING'),
+                "attributes": getattr(span, 'attributes', {}),
+                "events": getattr(span, 'events', []),
+            }
+            spans_data.append(span_data)
+        
+        return spans_data
+    
+    def get_span_metrics(self) -> dict[str, Any]:
+        """Get span metrics for telemetry analysis.
+        
+        Returns:
+            Span metrics summary
+        """
+        if not self._enabled or not hasattr(self, '_active_spans'):
+            return {
+                "total_spans": 0,
+                "running_spans": 0,
+                "completed_spans": 0,
+                "error_spans": 0,
+                "avg_duration_ms": 0.0,
+            }
+        
+        spans = list(self._active_spans.values())
+        total_spans = len(spans)
+        
+        running_spans = sum(1 for span in spans 
+                          if getattr(span, 'status', 'RUNNING') == 'RUNNING')
+        completed_spans = sum(1 for span in spans 
+                            if getattr(span, 'status', 'RUNNING') == 'COMPLETED')
+        error_spans = sum(1 for span in spans 
+                        if getattr(span, 'status', 'RUNNING') == 'ERROR')
+        
+        # Calculate average duration for completed spans
+        completed_span_data = [span for span in spans 
+                              if getattr(span, 'status', 'RUNNING') == 'COMPLETED'
+                              and hasattr(span, 'start_time')
+                              and hasattr(span, 'end_time')
+                              and span.end_time is not None]
+        
+        if completed_span_data:
+            durations = [(span.end_time - span.start_time) for span in completed_span_data]
+            avg_duration_ms = sum(durations) / len(durations)
+        else:
+            avg_duration_ms = 0.0
+        
+        return {
+            "total_spans": total_spans,
+            "running_spans": running_spans,
+            "completed_spans": completed_spans,
+            "error_spans": error_spans,
+            "avg_duration_ms": avg_duration_ms,
+        }
 
 
 _global_tracer: OpenTelemetryTracingAdapter | None = None

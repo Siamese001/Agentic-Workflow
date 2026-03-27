@@ -1810,6 +1810,208 @@ class SystemLearningMemoryBridge:
             logger.debug("[SLMemoryBridge] persist_cross_domain_pattern_analysis failed: %s", e)
             return False
 
+    def persist_otel_span(
+        self,
+        span_id: str,
+        trace_id: str,
+        span_name: str,
+        span_data_json: str,
+        timestamp_utc: int,
+    ) -> bool:
+        """Persist OpenTelemetry span data.
+        
+        Args:
+            span_id: Unique span identifier
+            trace_id: Trace identifier
+            span_name: Span name
+            span_data_json: Span data as JSON
+            timestamp_utc: Timestamp in milliseconds
+            
+        Returns:
+            True if persisted, False on failure
+        """
+        if not self._bridge:
+            return False
+        
+        try:
+            entity_name = f"OTelSpan_{span_id}_{int(timestamp_utc)}"
+            observations = [
+                f"ts={timestamp_utc}",
+                f"span_id={span_id}",
+                f"trace_id={trace_id}",
+                f"span_name={span_name}",
+                f"span_data={span_data_json[:500]}...",  # Truncate
+            ]
+            
+            self._bridge.create_agent_entity(
+                agent_name=entity_name,
+                agent_type=self.ENTITY_TYPE_TELEMETRY_EVENT,
+                observations=observations,
+            )
+            return True
+        except Exception as e:
+            logger.debug("[SLMemoryBridge] persist_otel_span failed: %s", e)
+            return False
+
+    def persist_otel_span_metrics(
+        self,
+        metrics_json: str,
+        timestamp_utc: int,
+    ) -> bool:
+        """Persist OpenTelemetry span metrics.
+        
+        Args:
+            metrics_json: Span metrics as JSON
+            timestamp_utc: Timestamp in milliseconds
+            
+        Returns:
+            True if persisted, False on failure
+        """
+        if not self._bridge:
+            return False
+        
+        try:
+            entity_name = f"OTelSpanMetrics_{int(timestamp_utc)}"
+            observations = [
+                f"ts={timestamp_utc}",
+                f"metrics={metrics_json[:500]}...",  # Truncate
+            ]
+            
+            self._bridge.create_agent_entity(
+                agent_name=entity_name,
+                agent_type=self.ENTITY_TYPE_TELEMETRY_EVENT,
+                observations=observations,
+            )
+            return True
+        except Exception as e:
+            logger.debug("[SLMemoryBridge] persist_otel_span_metrics failed: %s", e)
+            return False
+
+    def persist_injection_detection_counts(
+        self,
+        total_scans: int,
+        detection_counts: dict[str, int],
+        timestamp_utc: int,
+    ) -> bool:
+        """Persist injection detection counts.
+        
+        Args:
+            total_scans: Total number of scans performed
+            detection_counts: Detection counts by signature ID
+            timestamp_utc: Timestamp in milliseconds
+            
+        Returns:
+            True if persisted, False on failure
+        """
+        if not self._bridge:
+            return False
+        
+        try:
+            entity_name = f"InjectionDetectionCounts_{int(timestamp_utc)}"
+            observations = [
+                f"ts={timestamp_utc}",
+                f"total_scans={total_scans}",
+                f"total_detections={sum(detection_counts.values())}",
+            ]
+            
+            # Add top detection signatures
+            sorted_detections = sorted(detection_counts.items(), key=lambda x: x[1], reverse=True)[:5]
+            for sig_id, count in sorted_detections:
+                observations.append(f"{sig_id}={count}")
+            
+            self._bridge.create_agent_entity(
+                agent_name=entity_name,
+                agent_type=self.ENTITY_TYPE_TELEMETRY_EVENT,
+                observations=observations,
+            )
+            return True
+        except Exception as e:
+            logger.debug("[SLMemoryBridge] persist_injection_detection_counts failed: %s", e)
+            return False
+
+    def persist_injection_context_data(
+        self,
+        agent_id: str,
+        route: str,
+        scan_counts: dict[str, int],
+        detection_counts: dict[str, int],
+        timestamp_utc: int,
+    ) -> bool:
+        """Persist injection detection context data.
+        
+        Args:
+            agent_id: Agent identifier
+            route: Route identifier
+            scan_counts: Scan counts by context
+            detection_counts: Detection counts by context
+            timestamp_utc: Timestamp in milliseconds
+            
+        Returns:
+            True if persisted, False on failure
+        """
+        if not self._bridge:
+            return False
+        
+        try:
+            entity_name = f"InjectionContextData_{agent_id}_{route}_{int(timestamp_utc)}"
+            observations = [
+                f"ts={timestamp_utc}",
+                f"agent_id={agent_id}",
+                f"route={route}",
+                f"context_scans={scan_counts.get(f'{agent_id}:{route}', 0)}",
+                f"context_detections={detection_counts.get(f'{agent_id}:{route}', 0)}",
+            ]
+            
+            self._bridge.create_agent_entity(
+                agent_name=entity_name,
+                agent_type=self.ENTITY_TYPE_TELEMETRY_EVENT,
+                observations=observations,
+            )
+            return True
+        except Exception as e:
+            logger.debug("[SLMemoryBridge] persist_injection_context_data failed: %s", e)
+            return False
+
+    def persist_signal_spike_detection(
+        self,
+        spike_detected: bool,
+        spike_count: int,
+        analysis_json: str,
+        timestamp_utc: int,
+    ) -> bool:
+        """Persist signal spike detection results.
+        
+        Args:
+            spike_detected: Whether spikes were detected
+            spike_count: Number of spikes detected
+            analysis_json: Full analysis JSON
+            timestamp_utc: Timestamp in milliseconds
+            
+        Returns:
+            True if persisted, False on failure
+        """
+        if not self._bridge:
+            return False
+        
+        try:
+            entity_name = f"SignalSpikeDetection_{int(timestamp_utc)}"
+            observations = [
+                f"ts={timestamp_utc}",
+                f"spike_detected={spike_detected}",
+                f"spike_count={spike_count}",
+                f"analysis={analysis_json[:500]}...",  # Truncate
+            ]
+            
+            self._bridge.create_agent_entity(
+                agent_name=entity_name,
+                agent_type=self.ENTITY_TYPE_TELEMETRY_EVENT,
+                observations=observations,
+            )
+            return True
+        except Exception as e:
+            logger.debug("[SLMemoryBridge] persist_signal_spike_detection failed: %s", e)
+            return False
+
 
 def get_sl_memory_bridge() -> SystemLearningMemoryBridge:
     """Return the process-global SystemLearningMemoryBridge instance."""

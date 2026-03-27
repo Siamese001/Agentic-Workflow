@@ -365,6 +365,16 @@ def build_pipeline_deps(
 
     cross_repo_learning_context = load_cross_repo_learning_context(repo_root)
 
+    # Wave C-2: Register OTel telemetry store adapter
+    otel_telemetry_store = None
+    try:
+        from system_learning.adapters.otel_telemetry_store_adapter import OTelTelemetryStoreAdapter
+        
+        otel_telemetry_store = OTelTelemetryStoreAdapter()
+        logger.debug("OTel telemetry store adapter registered")
+    except ImportError:
+        logger.debug("OTel telemetry store adapter not available; skipping.")
+
     return PipelineDependencies(
         audit_store=audit_store,
         telemetry_store=telemetry_store,
@@ -386,6 +396,7 @@ def build_pipeline_deps(
         rlhf_optimizer=rlhf_optimizer,
         freeze_reader=freeze_reader,
         cross_repo_learning_context=cross_repo_learning_context,
+        otel_telemetry_store=otel_telemetry_store,
     )
 
 
