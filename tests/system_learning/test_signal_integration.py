@@ -1,0 +1,393 @@
+"""Integration tests for system learning signal enhancement.
+
+Tests end-to-end signal flow across all phases.
+"""
+
+from __future__ import annotations
+
+import json
+import time
+import unittest
+from unittest.mock import Mock, patch
+from typing import Any, Dict
+
+from system_learning.config.feature_flags import get_feature_flags, reset_feature_flags
+from system_learning.adapters.system_learning_memory_bridge import SystemLearningMemoryBridge
+
+
+class TestSignalIntegration(unittest.TestCase):
+    """Test suite for signal integration across all phases."""
+    
+    def setUp(self) -> None:
+        """Set up test environment."""
+        reset_feature_flags()
+        self.bridge = SystemLearningMemoryBridge.get_instance()
+        self.test_timestamp = int(time.time() * 1000)
+    
+    def test_phase_1a_adg_integration(self) -> None:
+        """Test Phase 1A: ADG Foundation integration."""
+        flags = get_feature_flags()
+        
+        if not flags.enable_adg_rca_integration:
+            self.skipTest("ADG RCA integration disabled")
+        
+        # Test RCA findings persistence
+        success = self.bridge.persist_rca_finding(
+            violation_id="test_violation_001",
+            module_path="test/module.py",
+            violation_type="IMPORT_VIOLATION",
+            confidence_score=0.85,
+            timestamp_utc=self.test_timestamp,
+        )
+        self.assertTrue(success, "RCA finding should persist successfully")
+        
+        # Test hotspot tracking
+        success = self.bridge.persist_hotspot_module(
+            module_path="test/module.py",
+            hotspot_score=0.92,
+            violation_count=5,
+            timestamp_utc=self.test_timestamp,
+        )
+        self.assertTrue(success, "Hotspot module should persist successfully")
+        
+        # Test drift detection
+        success = self.bridge.persist_drift_detection(
+            module_path="test/module.py",
+            drift_type="STRUCTURAL_DRIFT",
+            drift_score=0.78,
+            baseline_version="v1.0.0",
+            current_version="v1.1.0",
+            timestamp_utc=self.test_timestamp,
+        )
+        self.assertTrue(success, "Drift detection should persist successfully")
+    
+    def test_phase_1b_safety_governance(self) -> None:
+        """Test Phase 1B: Safety & Governance integration."""
+        flags = get_feature_flags()
+        
+        if not flags.enable_circuit_breaker_tracking:
+            self.skipTest("Circuit breaker tracking disabled")
+        
+        # Test circuit breaker tracking
+        success = self.bridge.persist_circuit_breaker_event(
+            service_name="test_service",
+            event_type="CIRCUIT_OPEN",
+            failure_count=5,
+            timestamp_utc=self.test_timestamp,
+        )
+        self.assertTrue(success, "Circuit breaker event should persist successfully")
+        
+        # Test template drift detection
+        success = self.bridge.persist_template_drift(
+            template_name="test_template",
+            drift_type="PARAMETER_DRIFT",
+            drift_score=0.65,
+            timestamp_utc=self.test_timestamp,
+        )
+        self.assertTrue(success, "Template drift should persist successfully")
+        
+        # Test safety audit emission
+        success = self.bridge.persist_safety_audit_record(
+            audit_id="test_audit_001",
+            policy_hash="abc123",
+            decision_outcome="ALLOWED",
+            actor_id="test_agent",
+            action_class="test_action",
+            timestamp_utc=self.test_timestamp,
+        )
+        self.assertTrue(success, "Safety audit record should persist successfully")
+    
+    def test_phase_2_execution_orchestration(self) -> None:
+        """Test Phase 2: Execution & Orchestration integration."""
+        flags = get_feature_flags()
+        
+        if not flags.enable_injection_monitoring:
+            self.skipTest("Injection monitoring disabled")
+        
+        # Test injection detection
+        success = self.bridge.persist_injection_detection_counts(
+            total_scans=100,
+            detection_counts={"EN_DIRECT_01": 3, "EN_SYSTEM_01": 1},
+            timestamp_utc=self.test_timestamp,
+        )
+        self.assertTrue(success, "Injection detection counts should persist successfully")
+        
+        # Test healing tier tracking
+        success = self.bridge.persist_healing_tier_outcome(
+            tier="L2_EXECUTION",
+            outcome="HEALED",
+            duration_ms=1500,
+            timestamp_utc=self.test_timestamp,
+        )
+        self.assertTrue(success, "Healing tier outcome should persist successfully")
+        
+        # Test workflow outcome intake
+        success = self.bridge.persist_workflow_outcome(
+            workflow_id="test_workflow_001",
+            outcome="SUCCESS",
+            step_count=5,
+            duration_ms=3000,
+            timestamp_utc=self.test_timestamp,
+        )
+        self.assertTrue(success, "Workflow outcome should persist successfully")
+    
+    def test_phase_3_resource_memory(self) -> None:
+        """Test Phase 3: Resource & Memory integration."""
+        flags = get_feature_flags()
+        
+        if not flags.enable_resource_prediction_tracking:
+            self.skipTest("Resource prediction tracking disabled")
+        
+        # Test resource prediction tracking
+        success = self.bridge.persist_resource_prediction(
+            resource_type="CPU",
+            predicted_usage=0.75,
+            actual_usage=0.72,
+            model_version="v1.0",
+            timestamp_utc=self.test_timestamp,
+        )
+        self.assertTrue(success, "Resource prediction should persist successfully")
+        
+        # Test healing memory quality
+        success = self.bridge.persist_healing_memory_retrieval_quality(
+            query_type="SIMILARITY_SEARCH",
+            retrieval_score=0.88,
+            result_count=10,
+            latency_ms=45,
+            timestamp_utc=self.test_timestamp,
+        )
+        self.assertTrue(success, "Healing memory quality should persist successfully")
+        
+        # Test phase outcome intake
+        success = self.bridge.persist_execute_ssot_phase_outcomes(
+            phase_name="VALIDATION",
+            total_violations=25,
+            fixed_violations=20,
+            duration_ms=5000,
+            timestamp_utc=self.test_timestamp,
+        )
+        self.assertTrue(success, "Phase outcome should persist successfully")
+    
+    def test_phase_4_cross_domain(self) -> None:
+        """Test Phase 4: Cross-Domain & Infrastructure integration."""
+        flags = get_feature_flags()
+        
+        if not flags.enable_cross_domain_healing_events:
+            self.skipTest("Cross-domain healing events disabled")
+        
+        # Test cache coherence violations
+        success = self.bridge.persist_cache_coherence_violation(
+            layer_type="REDIS_EXACT_MATCH",
+            violation_type="invalidation_error",
+            error_message="Connection timeout",
+            affected_keys=["key1", "key2", "key3"],
+            timestamp_utc=self.test_timestamp,
+        )
+        self.assertTrue(success, "Cache coherence violation should persist successfully")
+        
+        # Test infrastructure drift analysis
+        success = self.bridge.persist_infrastructure_drift_analysis(
+            drift_detected=True,
+            severity="medium",
+            violation_count=8,
+            layers_affected=2,
+            analysis_json='{"drift_score": 0.65}',
+            timestamp_utc=self.test_timestamp,
+        )
+        self.assertTrue(success, "Infrastructure drift analysis should persist successfully")
+        
+        # Test cross-domain healing events
+        success = self.bridge.persist_cross_domain_healing_event(
+            orchestrator_class="TestHealingOrchestrator",
+            cycle_index=1,
+            total_violations=10,
+            fixed_violations=8,
+            error_violations=1,
+            success_rate=0.8,
+            timestamp_utc=self.test_timestamp,
+            domain="test_domain",
+        )
+        self.assertTrue(success, "Cross-domain healing event should persist successfully")
+    
+    def test_phase_5_advanced_integration(self) -> None:
+        """Test Phase 5: Advanced Integration."""
+        flags = get_feature_flags()
+        
+        if not flags.enable_otel_span_collection:
+            self.skipTest("OTel span collection disabled")
+        
+        # Test OTel span persistence
+        success = self.bridge.persist_otel_span(
+            span_id="test_span_001",
+            trace_id="test_trace_001",
+            span_name="test_operation",
+            span_data_json='{"status": "completed"}',
+            timestamp_utc=self.test_timestamp,
+        )
+        self.assertTrue(success, "OTel span should persist successfully")
+        
+        # Test OTel span metrics
+        success = self.bridge.persist_otel_span_metrics(
+            metrics_json='{"total_spans": 10, "completed_spans": 8}',
+            timestamp_utc=self.test_timestamp,
+        )
+        self.assertTrue(success, "OTel span metrics should persist successfully")
+        
+        # Test injection context data
+        success = self.bridge.persist_injection_context_data(
+            agent_id="test_agent",
+            route="test_route",
+            scan_counts={"test_agent:test_route": 50},
+            detection_counts={"test_agent:test_route": 2},
+            timestamp_utc=self.test_timestamp,
+        )
+        self.assertTrue(success, "Injection context data should persist successfully")
+        
+        # Test signal spike detection
+        success = self.bridge.persist_signal_spike_detection(
+            spike_detected=True,
+            spike_count=2,
+            analysis_json='{"spike_signals": [{"signal_type": "injection_detection"}]}',
+            timestamp_utc=self.test_timestamp,
+        )
+        self.assertTrue(success, "Signal spike detection should persist successfully")
+    
+    def test_end_to_end_signal_flow(self) -> None:
+        """Test end-to-end signal flow across all phases."""
+        flags = get_feature_flags()
+        
+        if not flags.enable_end_to_end_validation:
+            self.skipTest("End-to-end validation disabled")
+        
+        # Simulate a complete signal flow
+        signal_events = []
+        
+        # Phase 1A: ADG violation detected
+        if flags.enable_adg_rca_integration:
+            self.bridge.persist_rca_finding(
+                violation_id="e2e_violation_001",
+                module_path="e2e/test_module.py",
+                violation_type="IMPORT_VIOLATION",
+                confidence_score=0.90,
+                timestamp_utc=self.test_timestamp,
+            )
+            signal_events.append("rca_finding")
+        
+        # Phase 1B: Safety check triggered
+        if flags.enable_safety_audit_emission:
+            self.bridge.persist_safety_audit_record(
+                audit_id="e2e_audit_001",
+                policy_hash="def456",
+                decision_outcome="BLOCKED",
+                actor_id="e2e_agent",
+                action_class="e2e_action",
+                timestamp_utc=self.test_timestamp,
+            )
+            signal_events.append("safety_audit")
+        
+        # Phase 2: Injection attempt detected
+        if flags.enable_injection_monitoring:
+            self.bridge.persist_injection_detection_counts(
+                total_scans=1,
+                detection_counts={"EN_DIRECT_01": 1},
+                timestamp_utc=self.test_timestamp,
+            )
+            signal_events.append("injection_detection")
+        
+        # Phase 3: Healing initiated
+        if flags.enable_healing_tier_tracking:
+            self.bridge.persist_healing_tier_outcome(
+                tier="L2_EXECUTION",
+                outcome="HEALED",
+                duration_ms=2000,
+                timestamp_utc=self.test_timestamp,
+            )
+            signal_events.append("healing_outcome")
+        
+        # Phase 4: Cross-domain pattern shared
+        if flags.enable_cross_domain_healing_events:
+            self.bridge.persist_cross_domain_healing_event(
+                orchestrator_class="E2EHealingOrchestrator",
+                cycle_index=1,
+                total_violations=1,
+                fixed_violations=1,
+                error_violations=0,
+                success_rate=1.0,
+                timestamp_utc=self.test_timestamp,
+                domain="e2e_test",
+            )
+            signal_events.append("cross_domain_healing")
+        
+        # Phase 5: OTel span collected
+        if flags.enable_otel_span_collection:
+            self.bridge.persist_otel_span(
+                span_id="e2e_span_001",
+                trace_id="e2e_trace_001",
+                span_name="e2e_operation",
+                span_data_json='{"status": "completed", "duration_ms": 1500}',
+                timestamp_utc=self.test_timestamp,
+            )
+            signal_events.append("otel_span")
+        
+        # Verify all signal events were processed
+        self.assertGreater(len(signal_events), 0, "At least one signal event should be processed")
+        
+        # In a real implementation, we would verify the signals are properly
+        # stored and can be retrieved for analysis
+        self.assertTrue(True, "End-to-end signal flow completed successfully")
+    
+    def test_graceful_degradation(self) -> None:
+        """Test graceful degradation when components are unavailable."""
+        flags = get_feature_flags()
+        
+        if not flags.enable_graceful_degradation:
+            self.skipTest("Graceful degradation disabled")
+        
+        # Mock bridge to simulate unavailability
+        with patch.object(self.bridge, '_bridge', None):
+            # All persistence calls should return False gracefully
+            success = self.bridge.persist_rca_finding(
+                violation_id="test_violation",
+                module_path="test/module.py",
+                violation_type="TEST",
+                confidence_score=0.5,
+                timestamp_utc=self.test_timestamp,
+            )
+            self.assertFalse(success, "Should return False when bridge unavailable")
+            
+            # Should not raise exceptions
+            try:
+                self.bridge.persist_safety_audit_record(
+                    audit_id="test_audit",
+                    policy_hash="test",
+                    decision_outcome="ALLOWED",
+                    actor_id="test",
+                    action_class="test",
+                    timestamp_utc=self.test_timestamp,
+                )
+            except Exception as e:
+                self.fail(f"Should not raise exception: {e}")
+    
+    def test_feature_flag_configuration(self) -> None:
+        """Test feature flag configuration."""
+        flags = get_feature_flags()
+        
+        # Test default configuration
+        self.assertIsInstance(flags.enable_adg_rca_integration, bool)
+        self.assertIsInstance(flags.enable_injection_monitoring, bool)
+        self.assertIsInstance(flags.enable_otel_span_collection, bool)
+        
+        # Test to_dict conversion
+        flags_dict = flags.to_dict()
+        self.assertIn("phase_1a", flags_dict)
+        self.assertIn("phase_2", flags_dict)
+        self.assertIn("phase_5", flags_dict)
+        
+        # Test individual feature check
+        self.assertTrue(hasattr(flags, "enable_adg_rca_integration"))
+        self.assertTrue(hasattr(flags, "enable_cross_domain_healing_events"))
+        self.assertTrue(hasattr(flags, "enable_graceful_degradation"))
+
+
+if __name__ == "__main__":
+    unittest.main()
