@@ -200,14 +200,7 @@ class SafetyEvaluator:
                 safe_to_proceed=safe_to_proceed,
                 recommended_actions=recommendations,
                 evaluation_time_ms=evaluation_time,
-                evaluator_version="1.0.0",
-                metadata={
-                    "content_type": content_type,
-                    "context": context,
-                    "constitutional_passed": constitutional_report.passed,
-                    "content_filter_passed": content_filter_report.passed,
-                    **(additional_metadata or {})
-                }
+                evaluator_version="1.0.0"
             )
             
             # Update statistics
@@ -221,7 +214,8 @@ class SafetyEvaluator:
             
             _emit_records_telemetry_event(
                 "safety_evaluator",
-                f"safety_evaluated_{evaluation.overall_safety_score:.2f}_{risk_level.value}"
+                f"safety_evaluated_{evaluation.overall_safety_score:.2f}_{risk_level.value}",
+                "safety_evaluated"
             )
             
             return evaluation
@@ -238,11 +232,7 @@ class SafetyEvaluator:
                 safe_to_proceed=False,
                 recommended_actions=["escalate_to_human", "review_error"],
                 evaluation_time_ms=(datetime.utcnow() - start_time).total_seconds() * 1000,
-                evaluator_version="1.0.0",
-                metadata={
-                    "error": str(e),
-                    "content_type": content_type
-                }
+                evaluator_version="1.0.0"
             )
     
     def _calculate_safety_scores(

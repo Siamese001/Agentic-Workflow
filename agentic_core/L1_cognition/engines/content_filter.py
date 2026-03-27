@@ -330,7 +330,8 @@ class ContentFilterEngine:
             
             _emit_records_telemetry_event(
                 "content_filter",
-                f"filtering_completed_{len(checks)}_checks_{report.passed}"
+                f"filtering_completed_{len(checks)}_checks_{report.passed}",
+                "filtering_completed"
             )
             
             return report

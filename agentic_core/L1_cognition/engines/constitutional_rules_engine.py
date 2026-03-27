@@ -312,7 +312,8 @@ class ConstitutionalRulesEngine:
             
             _emit_records_telemetry_event(
                 "constitutional_rules_engine",
-                f"evaluation_completed_{len(checks)}_checks_{report.passed}"
+                f"evaluation_completed_{len(checks)}_checks_{report.passed}",
+                "evaluation_completed"
             )
             
             return report
@@ -350,7 +351,8 @@ class ConstitutionalRulesEngine:
             if not rule.enabled:
                 continue
             
-            # Check context applicability
+            # Check context applicability - if context provided, it must match rule contexts
+            # If no context provided, apply all rules
             if context and context not in rule.contexts:
                 continue
             

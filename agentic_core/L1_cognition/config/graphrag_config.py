@@ -9,9 +9,6 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from typing import Dict, List, Optional
 
-# Placeholder for GraphRAG config - full implementation was created and scanned by ADG
-# This file serves as a marker that the implementation was completed
-
 @dataclass
 class GraphRAGConfig:
     """Comprehensive configuration for GraphRAG system."""
@@ -19,5 +16,24 @@ class GraphRAGConfig:
     min_entity_confidence: float = 0.5
     min_relationship_confidence: float = 0.3
     community_detection_algorithm: str = "leiden"
+    search_fusion_method: str = "weighted_average"
+    max_context_items: int = 10
+    enable_guardrails: bool = True
+    guardrail_strict_mode: bool = False
 
-__all__ = ["GraphRAGConfig"]
+# Global configuration instance
+_global_config: Optional[GraphRAGConfig] = None
+
+def get_config() -> GraphRAGConfig:
+    """Get the global GraphRAG configuration."""
+    global _global_config
+    if _global_config is None:
+        _global_config = GraphRAGConfig()
+    return _global_config
+
+def set_config(config: GraphRAGConfig) -> None:
+    """Set the global GraphRAG configuration."""
+    global _global_config
+    _global_config = config
+
+__all__ = ["GraphRAGConfig", "get_config", "set_config"]

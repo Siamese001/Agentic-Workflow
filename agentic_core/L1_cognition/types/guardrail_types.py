@@ -206,19 +206,15 @@ class ContentFilter:
     filter_id: str
     name: str
     description: str
-    
-    # Filter configuration
     content_type: ContentType
-    pattern: Optional[str] = None  # Regex pattern
-    keywords: List[str] = field(default_factory=list)
-    
-    # Filter behavior
     action: GuardrailAction
     severity: GuardrailSeverity
-    confidence_threshold: float = 0.7
-    
-    # Metadata
     category: str
+    
+    # Optional fields with defaults
+    pattern: Optional[str] = None  # Regex pattern
+    keywords: List[str] = field(default_factory=list)
+    confidence_threshold: float = 0.7
     tags: List[str] = field(default_factory=list)
     enabled: bool = True
     
@@ -264,23 +260,17 @@ class GuardrailCheck:
     check_id: str
     rule_id: Optional[str]  # None for content filters
     filter_id: Optional[str]  # None for constitutional rules
-    
-    # Check results
     passed: bool
     confidence: float
     severity: GuardrailSeverity
-    
-    # Details
     reason: str
     evidence: str
-    matched_content: Optional[str] = None
-    
-    # Action taken
     action: GuardrailAction
-    modified_content: Optional[str] = None
-    
-    # Metadata
     check_type: str  # "constitutional", "content_filter"
+    
+    # Optional fields with defaults
+    matched_content: Optional[str] = None
+    modified_content: Optional[str] = None
     timestamp: datetime = field(default_factory=datetime.utcnow)
     metadata: Dict[str, Any] = field(default_factory=dict)
 
@@ -401,20 +391,12 @@ class SafetyEvaluation:
     
     evaluation_id: str
     content_id: str
-    
-    # Safety scores
     overall_safety_score: float  # 0.0 (unsafe) to 1.0 (safe)
     category_scores: Dict[str, float]  # Safety scores by category
-    
-    # Risk assessment
     risk_level: GuardrailSeverity
     risk_factors: List[str]
-    
-    # Recommendations
     safe_to_proceed: bool
     recommended_actions: List[str]
-    
-    # Evaluation details
     evaluation_time_ms: float
     evaluator_version: str
     timestamp: datetime = field(default_factory=datetime.utcnow)
