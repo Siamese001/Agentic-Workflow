@@ -14,12 +14,12 @@ This plan addresses three critical hygiene issues: (1) ~90 phase-named scripts a
 
 | Wave | Phase IDs | Focus | Est. Tokens | Assumptions | Status | Success Criteria |
 |---|---|---|---|---|---|---|
-| **Wave 1** | P0, P1, P2 | **Inventory, Classification & Archive** | 80,285 | Token optimization (9K) + Inventory (47K) + Archive (4K) | 🟢 GREEN | 644 files inventoried, 90 phase scripts archived |
-| **Wave 2** | P3 | **Capability Extraction** | 112,401 | Reusable logic extraction (20 files, 92K tokens) | 🟢 GREEN | 20 reusable capabilities promoted to shared modules |
-| **Wave 3** | P4, P5 | **CI Integration & Enforcement** | 86,030 | CI consolidation (64K) + boundary enforcement (2K) | 🟢 GREEN | 31→5 GitHub Actions, script-sprawl guard active |
+| **Wave 1** | P0, P1, P2 | **Inventory, Classification & Archive** | 84,285 | Token optimization (13K) + Inventory (47K) + Archive (4K) + 4K overhead | 🟢 GREEN | 644 files inventoried, 90 phase scripts archived |
+| **Wave 2** | P3 | **Capability Extraction** | 116,401 | Reusable logic extraction (92K tokens) + 4K overhead | 🟢 GREEN | 20 reusable capabilities promoted to shared modules |
+| **Wave 3** | P4, P5 | **CI Integration & Enforcement** | 90,030 | CI consolidation (64K) + boundary enforcement (2K) + 4K overhead | 🟢 GREEN | 31→5 GitHub Actions, script-sprawl guard active |
 
-**Total Cumulative Tokens:** 278,716 across 3 waves<br>
-**Packing Strategy:** Optimized 3-wave distribution targeting 150-160K per wave. Each wave stays well under the 200K hard limit with comfortable buffers.<br>
+**Total Cumulative Tokens:** 290,716 across 3 waves<br>
+**Packing Strategy:** Optimized 3-wave distribution targeting 150-160K per wave with agent overhead (4K system+history per wave). Each wave stays well under the 200K hard limit with comfortable buffers.<br>
 **HITL Gates:** 3 mandatory checkpoints (Wave 1 Inventory review, Wave 1 Archive batch confirm, Wave 2 Extraction confirm)
 
 **SSOT Terminology:** This plan uses "Waves" as the single source of truth term for execution grouping. Individual components are referred to as "P0, P1, P2..." but the grouping and execution structure uses "Waves" consistently.
@@ -97,7 +97,7 @@ LOCAL PRE-COMMIT (fast, staged-only)     CI PIPELINE (full-repo, blocking on PR)
 
 ### Wave 1: Inventory, Classification & Archive
 **Goal:** Clean up existing sprawl, inventory all files, and archive phase scripts.
-**Est. Tokens:** 80,285 (GREEN - well under 150K threshold)
+**Est. Tokens:** 84,285 (GREEN - well under 150K threshold)
 
 1. **Token Optimization (P0):**
    - Run `python tools/evidence/_run_token_optimizer_plan.py` to verify packing.
@@ -113,7 +113,7 @@ LOCAL PRE-COMMIT (fast, staged-only)     CI PIPELINE (full-repo, blocking on PR)
 
 ### Wave 2: Capability Extraction
 **Goal:** Promote reusable logic into proper modules.
-**Est. Tokens:** 112,401 (GREEN)
+**Est. Tokens:** 116,401 (GREEN)
 
 1. **Extraction Pipeline (P3):**
    - Promote 20 scripts into capability-named modules in `tools/adg/`.
@@ -121,7 +121,7 @@ LOCAL PRE-COMMIT (fast, staged-only)     CI PIPELINE (full-repo, blocking on PR)
 
 ### Wave 3: CI Integration & Enforcement
 **Goal:** Restructure pre-commit tiers and consolidate GitHub Actions.
-**Est. Tokens:** 86,030 (GREEN)
+**Est. Tokens:** 90,030 (GREEN)
 
 1. **Pre-Commit Tiering (P4):**
    - Split T6/T7 into staged-only local + full-repo CI.
