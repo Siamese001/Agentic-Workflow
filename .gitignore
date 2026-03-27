@@ -8,6 +8,12 @@
 # Auto-generated on 2025-12-29 by canon validator
 *.archived
 
+# ChromaDB artifacts (large vector database files)
+artifacts/chromadb/
+*.sqlite3
+*.bin
+*.pickle
+
 data/cache/
 data/tmp/
 data/**/*.bin
