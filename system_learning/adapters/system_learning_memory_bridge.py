@@ -1350,6 +1350,278 @@ class SystemLearningMemoryBridge:
             logger.debug("[SLMemoryBridge] persist_safety_audit_record failed: %s", e)
             return False
 
+    def persist_resource_prediction_feedback(
+        self,
+        failure_type: str,
+        fingerprint: str,
+        predicted_cpu: int,
+        predicted_memory: int,
+        predicted_timeout: int,
+        actual_cpu: int,
+        actual_memory: int,
+        actual_timeout: int,
+        cpu_error_rate: float,
+        memory_error_rate: float,
+        timeout_error_rate: float,
+        confidence: float,
+        success: bool,
+        timestamp_utc: int,
+    ) -> bool:
+        """Persist resource prediction accuracy feedback.
+        
+        Args:
+            failure_type: Type of failure predicted
+            fingerprint: Failure signature fingerprint
+            predicted_cpu: Predicted CPU cores
+            predicted_memory: Predicted memory in MB
+            predicted_timeout: Predicted timeout in seconds
+            actual_cpu: Actual CPU cores used
+            actual_memory: Actual memory used in MB
+            actual_timeout: Actual timeout in seconds
+            cpu_error_rate: Normalized CPU error rate
+            memory_error_rate: Normalized memory error rate
+            timeout_error_rate: Normalized timeout error rate
+            confidence: Prediction confidence
+            success: Whether prediction was successful
+            timestamp_utc: Timestamp in milliseconds
+            
+        Returns:
+            True if persisted, False on failure
+        """
+        if not self._bridge:
+            return False
+        
+        try:
+            entity_name = f"ResourcePredictionFeedback_{int(timestamp_utc)}"
+            observations = [
+                f"ts={timestamp_utc}",
+                f"failure_type={failure_type}",
+                f"fingerprint={fingerprint}",
+                f"predicted_cpu={predicted_cpu}",
+                f"predicted_memory={predicted_memory}",
+                f"predicted_timeout={predicted_timeout}",
+                f"actual_cpu={actual_cpu}",
+                f"actual_memory={actual_memory}",
+                f"actual_timeout={actual_timeout}",
+                f"cpu_error_rate={cpu_error_rate:.3f}",
+                f"memory_error_rate={memory_error_rate:.3f}",
+                f"timeout_error_rate={timeout_error_rate:.3f}",
+                f"confidence={confidence:.3f}",
+                f"success={success}",
+            ]
+            
+            self._bridge.create_agent_entity(
+                agent_name=entity_name,
+                agent_type=self.ENTITY_TYPE_TELEMETRY_EVENT,
+                observations=observations,
+            )
+            return True
+        except Exception as e:
+            logger.debug("[SLMemoryBridge] persist_resource_prediction_feedback failed: %s", e)
+            return False
+
+    def persist_rollback_strategy_outcome(
+        self,
+        failure_type: str,
+        failure_fingerprint: str,
+        strategy_chosen: str,
+        strategy_score: float,
+        strategy_reasons: list[str],
+        success: bool,
+        execution_time_ms: int,
+        timestamp_utc: int,
+    ) -> bool:
+        """Persist rollback strategy outcome for learning.
+        
+        Args:
+            failure_type: Type of failure that triggered rollback
+            failure_fingerprint: Failure signature fingerprint
+            strategy_chosen: Rollback strategy that was chosen
+            strategy_score: Confidence score for the strategy
+            strategy_reasons: List of reasoning factors
+            success: Whether rollback was successful
+            execution_time_ms: Execution time in milliseconds
+            timestamp_utc: Timestamp in milliseconds
+            
+        Returns:
+            True if persisted, False on failure
+        """
+        if not self._bridge:
+            return False
+        
+        try:
+            entity_name = f"RollbackStrategyOutcome_{strategy_chosen}_{int(timestamp_utc)}"
+            observations = [
+                f"ts={timestamp_utc}",
+                f"failure_type={failure_type}",
+                f"failure_fingerprint={failure_fingerprint}",
+                f"strategy_chosen={strategy_chosen}",
+                f"strategy_score={strategy_score:.3f}",
+                f"success={success}",
+                f"execution_time_ms={execution_time_ms}",
+            ]
+            
+            # Add top 5 reasons
+            for i, reason in enumerate(strategy_reasons[:5]):
+                observations.append(f"reason_{i}={reason}")
+            
+            self._bridge.create_agent_entity(
+                agent_name=entity_name,
+                agent_type=self.ENTITY_TYPE_TELEMETRY_EVENT,
+                observations=observations,
+            )
+            return True
+        except Exception as e:
+            logger.debug("[SLMemoryBridge] persist_rollback_strategy_outcome failed: %s", e)
+            return False
+
+    def persist_healing_memory_retrieval_quality(
+        self,
+        signal_hash: str,
+        results_count: int,
+        avg_similarity: float,
+        high_similarity_count: int,
+        retrieval_quality: str,
+        top_k_used: int,
+        timestamp_utc: int,
+    ) -> bool:
+        """Persist healing memory retrieval quality metrics.
+        
+        Args:
+            signal_hash: Hash of the retrieval signal
+            results_count: Number of results returned
+            avg_similarity: Average similarity score
+            high_similarity_count: Count of high similarity results (>0.8)
+            retrieval_quality: Quality classification (high/medium/low)
+            top_k_used: Top-K parameter used
+            timestamp_utc: Timestamp in milliseconds
+            
+        Returns:
+            True if persisted, False on failure
+        """
+        if not self._bridge:
+            return False
+        
+        try:
+            entity_name = f"HealingMemoryRetrievalQuality_{int(timestamp_utc)}"
+            observations = [
+                f"ts={timestamp_utc}",
+                f"signal_hash={signal_hash}",
+                f"results_count={results_count}",
+                f"avg_similarity={avg_similarity:.3f}",
+                f"high_similarity_count={high_similarity_count}",
+                f"retrieval_quality={retrieval_quality}",
+                f"top_k_used={top_k_used}",
+            ]
+            
+            self._bridge.create_agent_entity(
+                agent_name=entity_name,
+                agent_type=self.ENTITY_TYPE_TELEMETRY_EVENT,
+                observations=observations,
+            )
+            return True
+        except Exception as e:
+            logger.debug("[SLMemoryBridge] persist_healing_memory_retrieval_quality failed: %s", e)
+            return False
+
+    def persist_execute_ssot_phase_outcomes(
+        self,
+        phase_name: str,
+        outcomes_json: str,
+        timestamp_utc: int,
+        trace_id: str,
+    ) -> bool:
+        """Persist Execute_SSOT phase outcomes for system learning.
+        
+        Args:
+            phase_name: Name of the phase (e.g., "execute_ssot")
+            outcomes_json: JSON string containing phase outcomes
+            timestamp_utc: Timestamp in milliseconds
+            trace_id: Trace ID for correlation
+            
+        Returns:
+            True if persisted, False on failure
+        """
+        if not self._bridge:
+            return False
+        
+        try:
+            entity_name = f"ExecuteSSOTPhaseOutcomes_{phase_name}_{int(timestamp_utc)}"
+            observations = [
+                f"ts={timestamp_utc}",
+                f"phase_name={phase_name}",
+                f"trace_id={trace_id}",
+                f"outcomes={outcomes_json[:500]}...",  # Truncate for storage
+            ]
+            
+            self._bridge.create_agent_entity(
+                agent_name=entity_name,
+                agent_type=self.ENTITY_TYPE_TELEMETRY_EVENT,
+                observations=observations,
+            )
+            return True
+        except Exception as e:
+            logger.debug("[SLMemoryBridge] persist_execute_ssot_phase_outcomes failed: %s", e)
+            return False
+
+    def persist_repair_routes(
+        self,
+        repair_routes_json: str,
+        timestamp_utc: int,
+        trace_id: str,
+    ) -> bool:
+        """Persist repair routes for optimization proposals.
+        
+        Args:
+            repair_routes_json: JSON string containing repair routes
+            timestamp_utc: Timestamp in milliseconds
+            trace_id: Trace ID for correlation
+            
+        Returns:
+            True if persisted, False on failure
+        """
+        if not self._bridge:
+            return False
+        
+        try:
+            entity_name = f"RepairRoutes_{int(timestamp_utc)}"
+            observations = [
+                f"ts={timestamp_utc}",
+                f"trace_id={trace_id}",
+                f"routes={repair_routes_json[:500]}...",  # Truncate for storage
+            ]
+            
+            self._bridge.create_agent_entity(
+                agent_name=entity_name,
+                agent_type=self.ENTITY_TYPE_TELEMETRY_EVENT,
+                observations=observations,
+            )
+            return True
+        except Exception as e:
+            logger.debug("[SLMemoryBridge] persist_repair_routes failed: %s", e)
+            return False
+
+    def _query_execute_ssot_outcomes(self, timestamp_utc: int) -> None:
+        """Query recent Execute_SSOT outcomes (placeholder for future implementation).
+        
+        Args:
+            timestamp_utc: Current timestamp
+        """
+        # Placeholder for future query implementation
+        pass
+
+    def _query_recent_healing_memory_quality(self, hours: int) -> list[dict[str, Any]]:
+        """Query recent healing memory retrieval quality metrics.
+        
+        Args:
+            hours: Number of hours to look back
+            
+        Returns:
+            List of quality metrics
+        """
+        # Placeholder for future query implementation
+        return []
+
 
 def get_sl_memory_bridge() -> SystemLearningMemoryBridge:
     """Return the process-global SystemLearningMemoryBridge instance."""

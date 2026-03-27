@@ -372,3 +372,38 @@ class DefaultDeterministicRollbackRefiner:
         reasons.append("deterministic_tie_break")
 
         return reasons
+
+    def track_strategy_outcome(
+        self,
+        request: RollbackRefinementRequest,
+        decision: RollbackRefinementDecision,
+        success: bool,
+        execution_time_ms: int,
+        timestamp_utc: int,
+    ) -> None:
+        """Track rollback strategy outcomes for system learning feedback.
+        
+        Args:
+            request: The rollback refinement request
+            decision: The rollback decision made
+            success: Whether the rollback was successful
+            execution_time_ms: Time taken to execute rollback in milliseconds
+            timestamp_utc: Timestamp for tracking
+        """
+        try:
+            from system_learning.adapters.system_learning_memory_bridge import get_sl_memory_bridge
+            bridge = get_sl_memory_bridge()
+            
+            bridge.persist_rollback_strategy_outcome(
+                failure_type=request.failure_signature.failure_type,
+                failure_fingerprint=request.failure_signature.fingerprint,
+                strategy_chosen=decision.strategy.name,
+                strategy_score=decision.confidence,
+                strategy_reasons=list(decision.reasons),
+                success=success,
+                execution_time_ms=execution_time_ms,
+                timestamp_utc=timestamp_utc,
+            )
+        except Exception:
+            # System learning unavailable - continue without tracking
+            pass

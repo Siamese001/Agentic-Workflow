@@ -622,6 +622,55 @@ def _fire_meta_learning_intake(state_mgr: "object", now_utc: int, repo_root: Pat
             except (OSError, TypeError) as _prop_err:
                 logging.warning("[MetaLearning] proposal write failed: %s", _prop_err)
         logging.info("[MetaLearning] meta_learning_pipeline.run_pipeline() completed.")
+    
+    # Wave B-5: Collect Execute_SSOT phase outcomes for system learning
+    try:
+        from system_learning.adapters.system_learning_memory_bridge import get_sl_memory_bridge
+        
+        bridge = get_sl_memory_bridge()
+        
+        # Collect phase outcomes from state manager
+        phase_outcomes = {
+            "total_experiences": store.count() if 'store' in locals() else 0,
+            "healing_actions": len(healing_actions) if 'healing_actions' in locals() else 0,
+            "faiss_vectors": len(_faiss_vectors) if '_faiss_vectors' in locals() else 0,
+            "proposals_generated": len(_ml_proposals) if '_ml_proposals' in locals() else 0,
+            "backup_events": len(_backup_events) if '_backup_events' in locals() else 0,
+            "adg_territory_score": state_mgr.state.get("adg_territory_score", 0.0),
+            "meta_learning_schema": 1,
+            "timestamp_utc": now_utc,
+            "trace_id": _tid if '_tid' in locals() else "unknown",
+        }
+        
+        # Persist phase outcomes
+        bridge.persist_execute_ssot_phase_outcomes(
+            phase_name="execute_ssot",
+            outcomes_json=json.dumps(phase_outcomes, sort_keys=True),
+            timestamp_utc=now_utc,
+            trace_id=_tid if '_tid' in locals() else "unknown",
+        )
+        
+        logging.debug("[MetaLearning] Execute_SSOT phase outcomes persisted to system learning")
+    except Exception as e:
+        logging.debug("[MetaLearning] Phase outcome persistence failed (non-fatal): %s", e)
+    
+    # Wave B-6: Serialize repair routes for optimization proposals
+    try:
+        repair_routes = state_mgr.state.get("repair_routes", [])
+        if repair_routes:
+            # Serialize repair routes as JSON for optimization proposal engine
+            import json as _repair_json
+            repair_routes_json = _repair_json.dumps(repair_routes)
+            
+            bridge = get_sl_memory_bridge()
+            bridge.persist_repair_routes(
+                repair_routes_json=repair_routes_json,
+                timestamp_utc=now_utc,
+                trace_id=_tid if '_tid' in locals() else "unknown",
+            )
+            logging.debug("[MetaLearning] Repair routes serialized for optimization proposals")
+    except Exception as e:
+        logging.debug("[MetaLearning] Repair route serialization failed (non-fatal): %s", e)
     except ImportError as _imp_err:
         logging.debug("[MetaLearning] Pipeline not yet available (pre-Wave 0B): %s", _imp_err)
     except (AttributeError, TypeError, ValueError) as _pl_err:

@@ -341,3 +341,54 @@ class DefaultDeterministicResourcePredictor:
         confidence = max(0.0, min(1.0, base_confidence))
 
         return confidence, tuple(reasons)
+
+    def track_prediction_accuracy(
+        self,
+        signature: FailureSignature,
+        prediction: ResourcePrediction,
+        actual_usage: ResourceEnvelope,
+        success: bool,
+        timestamp_utc: int,
+    ) -> None:
+        """Track prediction accuracy for system learning feedback.
+        
+        Args:
+            signature: The failure signature that was predicted
+            prediction: The resource prediction made
+            actual_usage: Actual resources used
+            success: Whether the prediction was successful
+            timestamp_utc: Timestamp for tracking
+        """
+        try:
+            from system_learning.adapters.system_learning_memory_bridge import get_sl_memory_bridge
+            bridge = get_sl_memory_bridge()
+            
+            # Calculate accuracy metrics
+            cpu_error = abs(prediction.envelope.cpu_cores - actual_usage.cpu_cores)
+            memory_error = abs(prediction.envelope.memory_mb - actual_usage.memory_mb)
+            timeout_error = abs(prediction.envelope.timeout_s - actual_usage.timeout_s)
+            
+            # Normalized error rates
+            cpu_error_rate = cpu_error / max(1.0, prediction.envelope.cpu_cores)
+            memory_error_rate = memory_error / max(1.0, prediction.envelope.memory_mb)
+            timeout_error_rate = timeout_error / max(1.0, prediction.envelope.timeout_s)
+            
+            bridge.persist_resource_prediction_feedback(
+                failure_type=signature.failure_type,
+                fingerprint=signature.fingerprint,
+                predicted_cpu=prediction.envelope.cpu_cores,
+                predicted_memory=prediction.envelope.memory_mb,
+                predicted_timeout=prediction.envelope.timeout_s,
+                actual_cpu=actual_usage.cpu_cores,
+                actual_memory=actual_usage.memory_mb,
+                actual_timeout=actual_usage.timeout_s,
+                cpu_error_rate=cpu_error_rate,
+                memory_error_rate=memory_error_rate,
+                timeout_error_rate=timeout_error_rate,
+                confidence=prediction.confidence,
+                success=success,
+                timestamp_utc=timestamp_utc,
+            )
+        except Exception:
+            # System learning unavailable - continue without tracking
+            pass

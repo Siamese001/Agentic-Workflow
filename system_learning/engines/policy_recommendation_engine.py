@@ -300,6 +300,21 @@ class MemoryAwarePolicyRecommendationEngine(PolicyRecommendationEngine):
             from system_learning.adapters.system_learning_memory_bridge import get_sl_memory_bridge
 
             get_sl_memory_bridge().persist_policy_recommendation(recommendation, ts=str(now_utc))
+            
+            # Factor healing memory retrieval quality into recommendation confidence
+            try:
+                bridge = get_sl_memory_bridge()
+                # Query recent retrieval quality metrics
+                recent_quality = bridge._query_recent_healing_memory_quality(hours=24)
+                if recent_quality:
+                    avg_quality_score = sum(q.get('score', 0.5) for q in recent_quality) / len(recent_quality)
+                    # Adjust confidence based on retrieval quality
+                    quality_adjustment = (avg_quality_score - 0.5) * 0.2  # ±10% adjustment
+                    recommendation.confidence_score = max(0.0, min(1.0, 
+                        recommendation.confidence_score + quality_adjustment))
+            except Exception:
+                # Quality adjustment unavailable - continue without it
+                pass
         # guardian: allow-silent-swallow
         except Exception:
             pass

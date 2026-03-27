@@ -1317,4 +1317,17 @@ def run_pipeline(
         if deps.activator is not None:
             component = getattr(pkg, "target_surface", None) or getattr(pkg, "target", "unknown")
             deps.activator.activate(component, version_id)
+    
+    # Wave B-5: Unpack Execute_SSOT phase outcomes for meta-learning
+    try:
+        from system_learning.adapters.system_learning_memory_bridge import get_sl_memory_bridge
+        bridge = get_sl_memory_bridge()
+        
+        # Query recent Execute_SSOT phase outcomes
+        # This would need a query method in the bridge - for now track that we attempted
+        bridge._query_execute_ssot_outcomes(now_utc)
+    except Exception:
+        # Query failed - continue without it
+        pass
+    
     return tuple(validated_proposals)

@@ -472,6 +472,151 @@ class OptimizationProposalEngine:
         return proposals
 
 
+# Wave B-6: RepairRouteCluster support for optimization proposals
+@dataclass(frozen=True)
+class RepairRouteCluster:
+    """Cluster of repair routes for optimization analysis.
+    
+    Attributes
+    ----------
+    cluster_id : str
+        Content-addressed cluster identifier
+    repair_routes : list[dict[str, Any]]
+        List of repair route dictionaries
+    failure_pattern : str
+        Dominant failure pattern in this cluster
+    affected_components : list[str]
+        Components affected by these repair routes
+    success_rate : float
+        Overall success rate of repair routes in cluster
+    timestamp_utc : int
+        Cluster creation timestamp
+    """
+    cluster_id: str
+    repair_routes: list[dict[str, Any]]
+    failure_pattern: str
+    affected_components: list[str]
+    success_rate: float
+    timestamp_utc: int
+    
+    def stable_hash(self) -> str:
+        """Compute stable hash for content addressing."""
+        import json
+        
+        data = {
+            "repair_routes": sorted(self.repair_routes, key=lambda x: x.get("route_id", "")),
+            "failure_pattern": self.failure_pattern,
+            "affected_components": sorted(self.affected_components),
+        }
+        canonical = json.dumps(data, sort_keys=True, separators=(",", ":"))
+        return hashlib.sha256(canonical.encode("utf-8")).hexdigest()
+
+
+class RepairRouteOptimizationEngine:
+    """Generates optimization proposals from RepairRouteCluster objects.
+    
+    Converts repair route data into actionable optimization proposals
+    targeting specific components and improvement opportunities.
+    """
+    
+    def __init__(self, config: ProposalEngineConfig | None = None) -> None:
+        self._config = config or ProposalEngineConfig()
+    
+    def generate_from_repair_routes(
+        self,
+        repair_clusters: Sequence[RepairRouteCluster],
+        timestamp_utc: int,
+    ) -> list[OptimizationProposal]:
+        """Generate optimization proposals from repair route clusters.
+        
+        Args:
+            repair_clusters: Sequence of repair route clusters
+            timestamp_utc: Caller-supplied Unix timestamp
+            
+        Returns:
+            List of optimization proposals sorted by proposal_id
+        """
+        import uuid as _uuid  # noqa: PLC0415
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "RepairRouteOptimizationEngine.generate")
+        
+        proposals: list[OptimizationProposal] = []
+        for cluster in repair_clusters:
+            proposals.extend(self._generate_from_cluster(cluster, timestamp_utc))
+        proposals.sort(key=lambda p: p.proposal_id)
+        return proposals
+    
+    def _generate_from_cluster(
+        self,
+        cluster: RepairRouteCluster,
+        timestamp_utc: int,
+    ) -> list[OptimizationProposal]:
+        """Generate proposals from a single repair route cluster."""
+        if cluster.success_rate < 0.3:
+            # Low success rate - suggest strategy changes
+            change_type = "REPAIR_STRATEGY_OVERHAUL"
+            risk_class = "HIGH" if cluster.success_rate < 0.1 else "MEDIUM"
+        elif cluster.success_rate < 0.7:
+            # Moderate success rate - suggest tuning
+            change_type = "REPAIR_TUNING"
+            risk_class = "MEDIUM"
+        else:
+            # High success rate - suggest optimization
+            change_type = "REPAIR_OPTIMIZATION"
+            risk_class = "LOW"
+        
+        proposals: list[OptimizationProposal] = []
+        for component in cluster.affected_components[:3]:  # Cap at 3 components
+            proposal_id = _build_proposal_id(cluster.cluster_id, change_type, component, timestamp_utc)
+            change_spec = _build_repair_change_spec(cluster, change_type)
+            expected = f"Improve repair success rate from {cluster.success_rate:.2%} for {component}"
+            
+            proposal = OptimizationProposal(
+                proposal_id=proposal_id,
+                cluster_id=cluster.cluster_id,
+                proposed_change_type=change_type,
+                affected_component=component,
+                expected_outcome=expected,
+                risk_class=risk_class,
+                change_spec=change_spec,
+                evidence_bundle_hashes=(cluster.stable_hash(),),
+                reward_score=None,
+                policy_hash=self._config.policy_hash,
+                timestamp_utc=timestamp_utc,
+            )
+            proposals.append(proposal)
+        
+        return proposals
+
+
+def _build_repair_change_spec(
+    cluster: RepairRouteCluster,
+    change_type: str,
+) -> dict[str, Any]:
+    """Build change specification for repair route optimization."""
+    if change_type == "REPAIR_STRATEGY_OVERHAUL":
+        return {
+            "type": "repair_strategy_overhaul",
+            "current_success_rate": cluster.success_rate,
+            "recommended_strategies": ["adaptive_routing", "parallel_execution", "fallback_mechanisms"],
+            "evidence": cluster.repair_routes[:5],  # Top 5 routes as evidence
+        }
+    elif change_type == "REPAIR_TUNING":
+        return {
+            "type": "repair_tuning",
+            "current_success_rate": cluster.success_rate,
+            "tuning_parameters": ["timeout_adjustment", "resource_scaling", "retry_policy"],
+            "evidence": cluster.repair_routes[:3],
+        }
+    else:  # REPAIR_OPTIMIZATION
+        return {
+            "type": "repair_optimization",
+            "current_success_rate": cluster.success_rate,
+            "optimization_targets": ["latency_reduction", "resource_efficiency", "success_rate_improvement"],
+            "evidence": cluster.repair_routes[:2],
+        }
+
+
 # ---------------------------------------------------------------------------
 # Module-level convenience
 # ---------------------------------------------------------------------------
@@ -490,5 +635,7 @@ def generate_proposals(
 __all__ = [
     "OptimizationProposalEngine",
     "ProposalEngineConfig",
+    "RepairRouteCluster",
+    "RepairRouteOptimizationEngine",
     "generate_proposals",
 ]
