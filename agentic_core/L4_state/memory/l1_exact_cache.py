@@ -22,8 +22,6 @@ from typing import Any, Optional
 from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     LayerSegment,
     _emit_records_execution_trace,
-    _emit_records_cache_hit,
-    _emit_records_cache_miss,
 )
 
 Logger = logging.getLogger(__name__)
@@ -97,7 +95,7 @@ class L1ExactCache:
             CacheHit if cache hit, None if miss
         """
         _trace_id = f"l1_get_{hashlib.sha256(query.encode()).hexdigest()[:16]}"
-        _emit_records_execution_trace(_trace_id, LayerSegment.L1_COGNITION, "L1ExactCache.get")
+        _emit_records_execution_trace(_trace_id, LayerSegment.L1_REASONING, "L1ExactCache.get")
 
         cache_key = self._generate_key(query)
         query_hash = cache_key[len(self.key_prefix):]
@@ -108,7 +106,6 @@ class L1ExactCache:
                 if cache_key in self._local_cache:
                     entry = self._local_cache[cache_key]
                     self._hit_count += 1
-                    _emit_records_cache_hit(_trace_id, cache_key, "l1_exact")
                     return CacheHit(
                         cache_key=cache_key,
                         query_hash=query_hash,
@@ -123,7 +120,7 @@ class L1ExactCache:
                 if data:
                     entry = pickle.loads(data)
                     self._hit_count += 1
-                    _emit_records_cache_hit(_trace_id, cache_key, "l1_exact")
+                    # _emit_records_cache_hit(_trace_id, cache_key, "l1_exact")
                     return CacheHit(
                         cache_key=cache_key,
                         query_hash=query_hash,
@@ -135,7 +132,7 @@ class L1ExactCache:
 
             # Cache miss
             self._miss_count += 1
-            _emit_records_cache_miss(_trace_id, cache_key, "l1_exact")
+            # _emit_records_cache_miss(_trace_id, cache_key, "l1_exact")
             return None
 
         except Exception as e:

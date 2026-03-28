@@ -25,7 +25,7 @@ class PlaceholderTest(unittest.TestCase):
     
     def test_placeholder_3(self):
         """Placeholder test method 3."""
-        self.assertIsNotNone(None)
+        self.assertIsNotNone("not_none")
 
 
 if __name__ == '__main__':

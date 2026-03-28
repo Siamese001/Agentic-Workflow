@@ -521,8 +521,7 @@ class ChunkingEngine:
             Strategy name
         """
         # Check for headings
-        heading_pattern = r'^(#{1,6}\s+|.+
-[=-]+|\d+\.\s+)'
+        heading_pattern = r'^(#{1,6}\s+|.+[=-]+|\d+\.\s+)'
         if re.search(heading_pattern, text, re.MULTILINE):
             return "section_aware"
 

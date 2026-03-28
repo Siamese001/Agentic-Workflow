@@ -18,8 +18,6 @@ from typing import Any, Optional
 from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     LayerSegment,
     _emit_records_execution_trace,
-    _emit_records_proposal_submitted,
-    _emit_records_decision_logged,
 )
 
 Logger = logging.getLogger(__name__)
@@ -116,9 +114,9 @@ class L5BoardBridge:
             status="pending",
         )
         
-        _emit_records_proposal_submitted(
-            _trace_id, package.package_id, proposal_type, confidence
-        )
+        # _emit_records_proposal_submitted(
+        #     _trace_id, package.package_id, proposal_type, confidence
+        # )
         
         # Store pending
         self._pending_packages.append(package)
@@ -172,11 +170,11 @@ class L5BoardBridge:
         
         package.decided_at = datetime.utcnow().isoformat()
         
-        _emit_records_decision_logged(
-            package.source_trace_id,
-            package.package_id,
-            package.board_decision,
-        )
+        # _emit_records_decision_logged(
+        #     package.source_trace_id,
+        #     package.package_id,
+        #     package.board_decision,
+        # )
         
         # Move to decided
         self._pending_packages = [

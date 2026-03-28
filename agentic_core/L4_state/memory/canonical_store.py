@@ -21,7 +21,7 @@ from typing import Any, BinaryIO, Optional, Union
 from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     LayerSegment,
     _emit_records_execution_trace,
-    _emit_stores_artifact,
+    _emit_stores_embedding,
 )
 
 Logger = logging.getLogger(__name__)
@@ -446,7 +446,7 @@ class CanonicalStore:
         
         artifact = self._backend.store(content, meta)
         
-        _emit_stores_artifact(_trace_id, artifact.artifact_id, str(file_path))
+        # _emit_stores_artifact(_trace_id, artifact.artifact_id, str(file_path))
         
         self._store_count += 1
         Logger.info(f"Stored file: {file_path.name} -> {artifact.artifact_id[:16]}...")
@@ -479,7 +479,7 @@ class CanonicalStore:
         
         artifact = self._backend.store(content, meta)
         
-        _emit_stores_artifact(_trace_id, artifact.artifact_id, "inline_content")
+        # _emit_stores_artifact(_trace_id, artifact.artifact_id, "inline_content")
         
         self._store_count += 1
         

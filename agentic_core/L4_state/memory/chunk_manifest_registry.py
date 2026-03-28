@@ -27,7 +27,7 @@ from typing import Any, Optional
 from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     LayerSegment,
     _emit_records_execution_trace,
-    _emit_stores_embedding_fact_vec,
+    _emit_stores_embedding,
     _emit_records_learning_event,
 )
 
