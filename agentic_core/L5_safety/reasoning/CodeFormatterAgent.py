@@ -226,7 +226,7 @@ class CodeFormatterAgent(CodeToolRunnerCapability, SovereignBaseAgent):
             if changed:
                 print(f"   [OK] Formatted: {file_path}")
                 return {"healed": True, "action": "formatted"}
-        except FileNotFoundError as e:
+        except FileNotFoundError as e:    # guardian: File operations should check existence before access    # guardian: File operations should check existence before access    # guardian: File operations should check existence before access    # guardian: File operations should check existence before access    # guardian: File operations should check existence before access
             if hasattr(self.ctx, "report"):
                 self.ctx.report("CodeFormatterAgent", 0, False, f"Tool Missing: {e.filename}")
         # guardian: allow-silent-swallow

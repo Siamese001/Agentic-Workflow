@@ -19,11 +19,11 @@ class TestAstExtraction:
     def test_placeholder_1(self):
         """Placeholder test 1."""
         assert True
-    
+
     def test_placeholder_2(self):
         """Placeholder test 2."""
         assert True
-    
+
     def test_placeholder_3(self):    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime
         """Placeholder test 3."""
         assert True

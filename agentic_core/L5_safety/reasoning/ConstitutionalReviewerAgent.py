@@ -289,7 +289,7 @@ class ConstitutionalReviewerAgent(SovereignBaseAgent, L5SafetyBase):
     def _run_self_tests(self) -> dict:
         """Run internal self-tests."""
         results = {"passed": 0, "failed": 0, "tests": []}
-        try:
+        try:    # guardian: AssertionError should be handled with specific context    # guardian: AssertionError should be handled with specific context    # guardian: AssertionError should be handled with specific context    # guardian: AssertionError should be handled with specific context    # guardian: AssertionError should be handled with specific context
             assert self is not None
             results["passed"] += 1
             results["tests"].append({"name": "test_instantiation", "status": "passed"})

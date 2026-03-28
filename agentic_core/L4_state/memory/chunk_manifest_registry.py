@@ -37,13 +37,13 @@ Logger = logging.getLogger(__name__)
 @dataclass
 class EnrichedChunkManifest:
     """Enriched chunk manifest data contract [22].
-    
+
     Contains the semantic enrichment output from Pipeline B Step 3.
     """
     chunk_id: str  # SHA-256 hash
     raw_content: str
     enriched_content: dict[str, Any]  # Structured Knowledge Object
-    
+
     # Enrichment fields
     title: str = ""
     summary: str = ""
@@ -51,26 +51,26 @@ class EnrichedChunkManifest:
     agentic_patterns: list[str] = field(default_factory=list)
     execution_insight: str = ""
     query_expansion_terms: list[str] = field(default_factory=list)
-    
+
     # Metadata
     source_file: str = ""
     doc_id: str = ""
     chunk_index: int = 0
     security_labels: list[str] = field(default_factory=list)
     adg_edges: list[dict[str, Any]] = field(default_factory=list)
-    
+
     # Embedding
     fact_vec: Optional[list[float]] = None
     fact_vec_hash: str = ""
     embedding_model: str = ""
-    
+
     # Provenance
     created_at: str = field(default_factory=lambda: datetime.utcnow().isoformat())
     healer_used: str = ""
     success_status: bool = True
     trace_id: str = ""
     replay_key: str = ""
-    
+
     # Versioning
     version: int = 1
     parent_chunk_id: Optional[str] = None
@@ -78,30 +78,30 @@ class EnrichedChunkManifest:
 
 class ChunkManifestRegistry:
     """L4D ChunkManifestRegistry - Ingest/Substrate Domain.
-    
+
     Stores enriched chunk manifests with:
     - Content-addressable storage (SHA-256)
     - Metadata persistence
     - Versioning and lineage
     - ADG edge tracking
     """
-    
+
     def __init__(self, db_path: str = "artifacts/l4d_manifests.sqlite"):
         """Initialize ChunkManifestRegistry.
-        
+
         Args:
             db_path: SQLite database path
         """
         self.db_path = db_path
         self._init_db()
-    
+
     def _init_db(self) -> None:
         """Initialize SQLite database."""
         Path(self.db_path).parent.mkdir(parents=True, exist_ok=True)
-        
+
         conn = sqlite3.connect(self.db_path)
         cursor = conn.cursor()
-        
+
         cursor.execute("""
             CREATE TABLE IF NOT EXISTS chunk_manifests (
                 chunk_id TEXT PRIMARY KEY,
@@ -131,7 +131,7 @@ class ChunkManifestRegistry:
                 FOREIGN KEY (parent_chunk_id) REFERENCES chunk_manifests(chunk_id)
             )
         """)
-        
+
         # Indexes
         cursor.execute("""
             CREATE INDEX IF NOT EXISTS idx_doc_id ON chunk_manifests(doc_id)
@@ -142,18 +142,18 @@ class ChunkManifestRegistry:
         cursor.execute("""
             CREATE INDEX IF NOT EXISTS idx_created_at ON chunk_manifests(created_at)
         """)
-        
+
         conn.commit()
         conn.close()
-        
+
         Logger.info(f"Initialized ChunkManifestRegistry at {self.db_path}")
-    
+
     def store_manifest(self, manifest: EnrichedChunkManifest) -> bool:
         """Store an enriched chunk manifest.
-        
+
         Args:
             manifest: EnrichedChunkManifest to store
-            
+
         Returns:
             True if stored successfully
         """
@@ -164,15 +164,15 @@ class ChunkManifestRegistry:
         _emit_records_learning_event(
             _trace_id, "chunk_manifest_stored", f"doc:{manifest.doc_id}"
         )
-        
+
         if manifest.fact_vec:
             _emit_stores_embedding_fact_vec(
                 _trace_id, manifest.chunk_id, manifest.fact_vec_hash
             )
-        
+
         conn = sqlite3.connect(self.db_path)
         cursor = conn.cursor()
-        
+
         try:
             cursor.execute("""
                 INSERT OR REPLACE INTO chunk_manifests (
@@ -208,174 +208,174 @@ class ChunkManifestRegistry:
                 manifest.version,
                 manifest.parent_chunk_id,
             ))
-            
+
             conn.commit()
             Logger.info(f"Stored manifest: {manifest.chunk_id[:16]}...")
             return True
-            
+
         except Exception as e:
             Logger.error(f"Failed to store manifest: {e}")
             return False
         finally:
             conn.close()
-    
+
     def get_manifest(self, chunk_id: str) -> Optional[EnrichedChunkManifest]:
         """Retrieve a chunk manifest by ID.
-        
+
         Args:
             chunk_id: SHA-256 chunk identifier
-            
+
         Returns:
             EnrichedChunkManifest if found
         """
         conn = sqlite3.connect(self.db_path)
         cursor = conn.cursor()
-        
+
         try:
             cursor.execute("""
                 SELECT * FROM chunk_manifests WHERE chunk_id = ?
             """, (chunk_id,))
-            
+
             row = cursor.fetchone()
             if row is None:
                 return None
-            
+
             return self._row_to_manifest(row, cursor)
-            
+
         finally:
             conn.close()
-    
+
     def get_manifests_by_doc(self, doc_id: str) -> list[EnrichedChunkManifest]:
         """Retrieve all manifests for a document.
-        
+
         Args:
             doc_id: Document ID
-            
+
         Returns:
             List of EnrichedChunkManifest
         """
         conn = sqlite3.connect(self.db_path)
         cursor = conn.cursor()
-        
+
         try:
             cursor.execute("""
                 SELECT * FROM chunk_manifests WHERE doc_id = ? ORDER BY chunk_index
             """, (doc_id,))
-            
+
             rows = cursor.fetchall()
             return [self._row_to_manifest(row, cursor) for row in rows]
-            
+
         finally:
             conn.close()
-    
+
     def get_manifests_by_source(self, source_file: str) -> list[EnrichedChunkManifest]:
         """Retrieve all manifests for a source file.
-        
+
         Args:
             source_file: Source file path
-            
+
         Returns:
             List of EnrichedChunkManifest
         """
         conn = sqlite3.connect(self.db_path)
         cursor = conn.cursor()
-        
+
         try:
             cursor.execute("""
                 SELECT * FROM chunk_manifests WHERE source_file = ?
             """, (source_file,))
-            
+
             rows = cursor.fetchall()
             return [self._row_to_manifest(row, cursor) for row in rows]
-            
+
         finally:
             conn.close()
-    
+
     def get_lineage(self, chunk_id: str) -> dict[str, Any]:
         """Get chunk lineage (parent and children).
-        
+
         Args:
             chunk_id: Chunk ID to trace
-            
+
         Returns:
             Lineage info with parent and children
         """
         conn = sqlite3.connect(self.db_path)
         cursor = conn.cursor()
-        
+
         try:
             # Get this chunk
             cursor.execute("""
                 SELECT chunk_id, parent_chunk_id FROM chunk_manifests WHERE chunk_id = ?
             """, (chunk_id,))
-            
+
             row = cursor.fetchone()
             if row is None:
                 return {"error": "Chunk not found"}
-            
+
             parent_id = row[1]
-            
+
             # Get children
             cursor.execute("""
                 SELECT chunk_id FROM chunk_manifests WHERE parent_chunk_id = ?
             """, (chunk_id,))
-            
+
             children = [r[0] for r in cursor.fetchall()]
-            
+
             return {
                 "chunk_id": chunk_id,
                 "parent_id": parent_id,
                 "children_ids": children,
             }
-            
+
         finally:
             conn.close()
-    
+
     def search_by_concept(self, concept: str, limit: int = 100) -> list[EnrichedChunkManifest]:
         """Search manifests by key concept.
-        
+
         Args:
             concept: Concept to search for
             limit: Maximum results
-            
+
         Returns:
             List of matching manifests
         """
         conn = sqlite3.connect(self.db_path)
         cursor = conn.cursor()
-        
+
         try:
             # Simple LIKE search on key_concepts JSON
             pattern = f'%"{concept}"%'
-            
+
             cursor.execute("""
                 SELECT * FROM chunk_manifests WHERE key_concepts LIKE ? LIMIT ?
             """, (pattern, limit))
-            
+
             rows = cursor.fetchall()
             return [self._row_to_manifest(row, cursor) for row in rows]
-            
+
         finally:
             conn.close()
-    
+
     def get_stats(self) -> dict[str, Any]:
         """Get registry statistics."""
         conn = sqlite3.connect(self.db_path)
         cursor = conn.cursor()
-        
+
         try:
             cursor.execute("SELECT COUNT(*) FROM chunk_manifests")
             total = cursor.fetchone()[0]
-            
+
             cursor.execute("SELECT COUNT(DISTINCT doc_id) FROM chunk_manifests")
             unique_docs = cursor.fetchone()[0]
-            
+
             cursor.execute("SELECT COUNT(DISTINCT source_file) FROM chunk_manifests")
             unique_sources = cursor.fetchone()[0]
-            
+
             cursor.execute("SELECT AVG(version) FROM chunk_manifests")
             avg_version = cursor.fetchone()[0] or 0
-            
+
             return {
                 "total_manifests": total,
                 "unique_documents": unique_docs,
@@ -383,10 +383,10 @@ class ChunkManifestRegistry:
                 "avg_version": avg_version,
                 "db_path": self.db_path,
             }
-            
+
         finally:
             conn.close()
-    
+
     def _row_to_manifest(
         self,
         row: tuple,
@@ -395,7 +395,7 @@ class ChunkManifestRegistry:
         """Convert database row to EnrichedChunkManifest."""
         columns = [desc[0] for desc in cursor.description]
         row_dict = dict(zip(columns, row))
-        
+
         return EnrichedChunkManifest(
             chunk_id=row_dict["chunk_id"],
             raw_content=row_dict["raw_content"],

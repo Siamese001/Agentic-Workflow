@@ -461,7 +461,7 @@ def _run_self_tests(self) -> dict:
         assert self is not None
         results["passed"] += 1
         results["tests"].append({"name": "test_instantiation", "status": "passed"})
-    except AssertionError as e:
+    except AssertionError as e:    # guardian: AssertionError should be handled with specific context    # guardian: AssertionError should be handled with specific context    # guardian: AssertionError should be handled with specific context    # guardian: AssertionError should be handled with specific context    # guardian: AssertionError should be handled with specific context
         results["failed"] += 1
         results["tests"].append({"name": "test_instantiation", "status": "failed", "error": str(e)})
     return results

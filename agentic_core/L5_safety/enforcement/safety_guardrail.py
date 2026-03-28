@@ -205,7 +205,7 @@ class SafetyGuardrail:
             return (False, "Safety Block: Attempted to wipe file.")
         try:
             ast.parse(new_code)
-        except SyntaxError as e:
+        except SyntaxError as e:    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime
             return (False, f"Safety Block: Mutation introduced syntax error: {e.msg} at line {e.lineno}")
         orig_len: Any = len(original_code.splitlines())
         new_len: Any = len(new_code.splitlines())

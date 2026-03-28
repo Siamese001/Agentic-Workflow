@@ -600,7 +600,7 @@ def authorize_and_execute(
             _tgt,
             outcome.value,
         )
-    except SafetyAuditMissingError as audit_exc:
+    except SafetyAuditMissingError as audit_exc:    # guardian: SafetyAuditMissingError should be handled with specific context    # guardian: SafetyAuditMissingError should be handled with specific context    # guardian: SafetyAuditMissingError should be handled with specific context    # guardian: SafetyAuditMissingError should be handled with specific context    # guardian: SafetyAuditMissingError should be handled with specific context
         logger.error(
             "EXECUTION_GUARDRAIL_AUDIT_FAILED: %s (req=%s target=%s)",
             audit_exc,
@@ -707,7 +707,7 @@ def authorize_and_execute(
             tool_callable=_effective_callable,
         )
         output = _contract_result.output_payload.get("result", _contract_result.output_payload)
-    except (ToolInputSchemaViolation, ToolOutputSchemaViolation, UnregisteredToolError) as exc:
+    except (ToolInputSchemaViolation, ToolOutputSchemaViolation, UnregisteredToolError) as exc:    # guardian: Multiple exceptions (ToolInputSchemaViolation, ToolOutputSchemaViolation) need specific handling    # guardian: Multiple exceptions (ToolInputSchemaViolation, ToolOutputSchemaViolation) need specific handling    # guardian: Multiple exceptions (ToolInputSchemaViolation, ToolOutputSchemaViolation) need specific handling    # guardian: Multiple exceptions (ToolInputSchemaViolation, ToolOutputSchemaViolation) need specific handling    # guardian: Multiple exceptions (ToolInputSchemaViolation, ToolOutputSchemaViolation) need specific handling
         # P3/L2: Record execution observability for tool errors
         try:
             obs_context = ExecutionObservabilityContext.create(

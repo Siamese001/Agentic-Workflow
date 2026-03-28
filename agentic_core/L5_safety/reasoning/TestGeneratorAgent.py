@@ -236,7 +236,7 @@ class TestGeneratorAgent(SovereignBaseAgent):
         try:
             source = path.read_text(encoding="utf-8")
             tree = ast.parse(source)
-        except SyntaxError as e:
+        except SyntaxError as e:    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime
             return {"success": False, "error": f"Syntax error: {e}"}
         except Exception as e:
             return {"success": False, "error": str(e)}

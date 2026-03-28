@@ -103,7 +103,7 @@ def process_file(pyfile: Path) -> bool:
     try:
         pyfile.read_text(encoding='utf-8')
         ast.parse(content)
-    except (SyntaxError, OSError):
+    except (SyntaxError, OSError):    # guardian: Multiple exceptions (SyntaxError, OSError) need specific handling    # guardian: Multiple exceptions (SyntaxError, OSError) need specific handling    # guardian: Multiple exceptions (SyntaxError, OSError) need specific handling    # guardian: Multiple exceptions (SyntaxError, OSError) need specific handling    # guardian: Multiple exceptions (SyntaxError, OSError) need specific handling
         return False
     needs_fix: Any = []
     for node in ast.walk(tree):

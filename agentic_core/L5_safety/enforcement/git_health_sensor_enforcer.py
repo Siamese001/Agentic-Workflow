@@ -149,7 +149,7 @@ class GitHealthSensor:
             return result.returncode, result.stdout, result.stderr
         except subprocess.TimeoutExpired:
             return -1, "", "Git command timed out"
-        except FileNotFoundError:
+        except FileNotFoundError:    # guardian: File operations should check existence before access    # guardian: File operations should check existence before access    # guardian: File operations should check existence before access    # guardian: File operations should check existence before access    # guardian: File operations should check existence before access
             return -1, "", "Git not found in PATH"
         # guardian: allow-silent-swallow (pre-existing, moved from L0)
         except Exception as e:

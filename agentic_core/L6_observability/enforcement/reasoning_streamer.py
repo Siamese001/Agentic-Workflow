@@ -259,7 +259,7 @@ class L5Streamer:
                                 asyncio.run_coroutine_threadsafe(
                                     client.send(message), asyncio.get_event_loop()
                                 ).result(timeout=DEFAULT_TIMEOUT)
-                            except Exception:
+                            except (ValueError, TypeError, RuntimeError) as e:
                                 raise
                                 disconnected.add(client)
                         self._websocket_clients -= disconnected
@@ -390,7 +390,7 @@ class L5Streamer:
                 asyncio.run_coroutine_threadsafe(client.close(), asyncio.get_event_loop()).result(
                     timeout=DEFAULT_TIMEOUT
                 )
-            except Exception:
+            except (ValueError, TypeError, RuntimeError) as e:
                 raise
                 pass
         self._websocket_clients.clear()

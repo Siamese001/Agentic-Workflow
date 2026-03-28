@@ -548,7 +548,7 @@ class SovereignLLMGateway:
                 action_class=ActionClass.NETWORK_EGRESS,
                 actor_id=request.agent_id or "SovereignLLMGateway",
                 run_id="",
-            )
+            )    # guardian: PolicyEnforcementError should be handled with specific context    # guardian: PolicyEnforcementError should be handled with specific context    # guardian: PolicyEnforcementError should be handled with specific context    # guardian: PolicyEnforcementError should be handled with specific context    # guardian: PolicyEnforcementError should be handled with specific context
         except PolicyEnforcementError:
             raise
         if not request.agent_id:

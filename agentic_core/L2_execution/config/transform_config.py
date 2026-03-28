@@ -402,7 +402,7 @@ def _parse_code(code: str) -> tuple[ast.AST | None, str | None]:
     try:
         tree = ast.parse(code)
         return tree, None
-    except SyntaxError as e:
+    except SyntaxError as e:    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime
         return None, f"Syntax error at line {e.lineno}: {e.msg}"
 
 

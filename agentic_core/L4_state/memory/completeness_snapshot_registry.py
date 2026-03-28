@@ -39,22 +39,22 @@ class ContextCompletenessMetrics:
     """Context completeness metrics data contract [18]."""
     # Core completeness score (0-1)
     context_completeness_score: float = 0.0
-    
+
     # Component scores
     coverage_score: float = 0.0  # Query term coverage
     diversity_score: float = 0.0  # Source diversity
     freshness_score: float = 0.0  # Temporal freshness
     authority_score: float = 0.0  # Source authority
-    
+
     # Missing signals for meta-learning
     missing_signals: list[str] = field(default_factory=list)
-    
+
     # Diagnostic info
     query_terms_covered: int = 0
     query_terms_total: int = 0
     sources_retrieved: int = 0
     sources_unique: int = 0
-    
+
     # Thresholds for triggers
     completeness_threshold: float = 0.5
     coverage_threshold: float = 0.7
@@ -67,21 +67,21 @@ class CompletenessSnapshot:
     trace_id: str
     query: str
     query_hash: str
-    
+
     # Metrics
     metrics: ContextCompletenessMetrics
-    
+
     # Context summary
     retrieved_contexts: list[dict[str, Any]]  # Chunk summaries
     context_count: int = 0
-    
+
     # Triggers for Pipeline D
     triggered_actions: list[str] = field(default_factory=list)
-    
+
     # Metadata
     timestamp: str = field(default_factory=lambda: datetime.utcnow().isoformat())
     retrieval_config: dict[str, Any] = field(default_factory=dict)
-    
+
     # Provenance
     session_id: str = ""
     user_id: str = ""
@@ -89,30 +89,30 @@ class CompletenessSnapshot:
 
 class CompletenessSnapshotRegistry:
     """L4G CompletenessSnapshotRegistry - Context Health Domain.
-    
+
     Stores completeness snapshots with:
     - Context completeness scoring
     - Missing signal tracking
     - Meta-learning feedback emission
     - CompletenessRAGProposer feeding
     """
-    
+
     def __init__(self, db_path: str = "artifacts/l4g_completeness.sqlite"):
         """Initialize CompletenessSnapshotRegistry.
-        
+
         Args:
             db_path: SQLite database path
         """
         self.db_path = db_path
         self._init_db()
-    
+
     def _init_db(self) -> None:
         """Initialize SQLite database."""
         Path(self.db_path).parent.mkdir(parents=True, exist_ok=True)
-        
+
         conn = sqlite3.connect(self.db_path)
         cursor = conn.cursor()
-        
+
         cursor.execute("""
             CREATE TABLE IF NOT EXISTS completeness_snapshots (
                 snap_id TEXT PRIMARY KEY,
@@ -141,7 +141,7 @@ class CompletenessSnapshotRegistry:
                 FOREIGN KEY (trace_id) REFERENCES evaluation_runs (trace_id)
             )
         """)
-        
+
         # Indexes
         cursor.execute("""
             CREATE INDEX IF NOT EXISTS idx_trace_id_snap ON completeness_snapshots(trace_id)
@@ -152,12 +152,12 @@ class CompletenessSnapshotRegistry:
         cursor.execute("""
             CREATE INDEX IF NOT EXISTS idx_completeness_score ON completeness_snapshots(context_completeness_score)
         """)
-        
+
         conn.commit()
         conn.close()
-        
+
         Logger.info(f"Initialized CompletenessSnapshotRegistry at {self.db_path}")
-    
+
     def compute_completeness(
         self,
         query: str,
@@ -165,20 +165,20 @@ class CompletenessSnapshotRegistry:
         query_terms: Optional[list[str]] = None,
     ) -> ContextCompletenessMetrics:
         """Compute context completeness metrics.
-        
+
         Args:
             query: Original query
             retrieved_contexts: Retrieved contexts with metadata
             query_terms: Pre-extracted query terms
-            
+
         Returns:
             ContextCompletenessMetrics
         """
         if query_terms is None:
             query_terms = query.lower().split()
-        
+
         query_terms_set = set(query_terms)
-        
+
         # Coverage: % of query terms found in contexts
         covered_terms = set()
         for ctx in retrieved_contexts:
@@ -186,21 +186,21 @@ class CompletenessSnapshotRegistry:
             for term in query_terms_set:
                 if term in ctx_text:
                     covered_terms.add(term)
-        
+
         coverage_score = len(covered_terms) / len(query_terms_set) if query_terms_set else 0.0
-        
+
         # Diversity: unique sources / total sources
         sources = [ctx.get("source_file", ctx.get("doc_id", "unknown")) for ctx in retrieved_contexts]
         unique_sources = len(set(sources))
         total_sources = len(sources)
         diversity_score = unique_sources / total_sources if total_sources > 0 else 0.0
-        
+
         # Freshness: temporal decay (simplified)
         freshness_score = 1.0  # Default fresh
-        
+
         # Authority: source quality (simplified)
         authority_score = 1.0  # Default authoritative
-        
+
         # Combined completeness score
         # Weight: coverage 50%, diversity 25%, freshness 15%, authority 10%
         context_completeness_score = (
@@ -209,19 +209,19 @@ class CompletenessSnapshotRegistry:
             freshness_score * 0.15 +
             authority_score * 0.10
         )
-        
+
         # Determine missing signals
         missing_signals = []
-        
+
         if coverage_score < 0.7:
             missing_signals.append("low_coverage")
-        
+
         if diversity_score < 0.5:
             missing_signals.append("low_diversity")
-        
+
         if context_completeness_score < 0.5:
             missing_signals.append("low_completeness")
-        
+
         return ContextCompletenessMetrics(
             context_completeness_score=context_completeness_score,
             coverage_score=coverage_score,
@@ -234,7 +234,7 @@ class CompletenessSnapshotRegistry:
             sources_retrieved=total_sources,
             sources_unique=unique_sources,
         )
-    
+
     def capture_snapshot(
         self,
         trace_id: str,
@@ -245,7 +245,7 @@ class CompletenessSnapshotRegistry:
         user_id: str = "",
     ) -> CompletenessSnapshot:
         """Capture a completeness snapshot.
-        
+
         Args:
             trace_id: Execution trace ID
             query: Original query
@@ -253,7 +253,7 @@ class CompletenessSnapshotRegistry:
             retrieval_config: Configuration used for retrieval
             session_id: Session identifier
             user_id: User identifier
-            
+
         Returns:
             CompletenessSnapshot with computed metrics
         """
@@ -261,29 +261,29 @@ class CompletenessSnapshotRegistry:
         _emit_records_execution_trace(
             _trace_id, LayerSegment.L4_STATE, "CompletenessSnapshotRegistry.capture_snapshot"
         )
-        
+
         # Generate IDs
         query_hash = hashlib.sha256(query.encode()).hexdigest()[:16]
         snap_id = f"{trace_id}_{query_hash}"
-        
+
         # Compute metrics
         metrics = self.compute_completeness(query, retrieved_contexts)
-        
+
         # Determine triggered actions
         triggered_actions = []
-        
+
         if metrics.context_completeness_score < metrics.completeness_threshold:
             triggered_actions.append("Depth++")
             _emit_writes_learning_snapshot(
                 _trace_id, "completeness", metrics.context_completeness_score
             )
-        
+
         if "low_diversity" in metrics.missing_signals:
             triggered_actions.append("Enrichment+")
-        
+
         if coverage_score := metrics.coverage_score < metrics.coverage_threshold:
             triggered_actions.append("LexicalBoost")
-        
+
         snapshot = CompletenessSnapshot(
             snap_id=snap_id,
             trace_id=trace_id,
@@ -298,31 +298,31 @@ class CompletenessSnapshotRegistry:
             session_id=session_id,
             user_id=user_id,
         )
-        
+
         # Store snapshot
         self._store_snapshot(snapshot)
-        
+
         # Emit meta-learning signal
         if triggered_actions:
             _emit_feeds_meta_learning(
                 _trace_id, "CompletenessSnapshotRegistry", json.dumps(triggered_actions)
             )
-        
+
         Logger.info(
             f"Captured completeness snapshot: {snap_id[:32]}... "
             f"(score={metrics.context_completeness_score:.2f}, "
             f"triggers={triggered_actions})"
         )
-        
+
         return snapshot
-    
+
     def _store_snapshot(self, snapshot: CompletenessSnapshot) -> bool:
         """Store snapshot in database."""
         conn = sqlite3.connect(self.db_path)
         cursor = conn.cursor()
-        
+
         metrics = snapshot.metrics
-        
+
         try:
             cursor.execute("""
                 INSERT OR REPLACE INTO completeness_snapshots (
@@ -360,68 +360,68 @@ class CompletenessSnapshotRegistry:
                 snapshot.session_id,
                 snapshot.user_id,
             ))
-            
+
             conn.commit()
             return True
-            
+
         except Exception as e:
             Logger.error(f"Failed to store snapshot: {e}")
             return False
         finally:
             conn.close()
-    
+
     def get_snapshot(self, snap_id: str) -> Optional[CompletenessSnapshot]:
         """Retrieve snapshot by ID."""
         conn = sqlite3.connect(self.db_path)
         cursor = conn.cursor()
-        
+
         try:
             cursor.execute("""
                 SELECT * FROM completeness_snapshots WHERE snap_id = ?
             """, (snap_id,))
-            
+
             row = cursor.fetchone()
             if row is None:
                 return None
-            
+
             return self._row_to_snapshot(row, cursor)
-            
+
         finally:
             conn.close()
-    
+
     def get_snapshots_by_trace(self, trace_id: str) -> list[CompletenessSnapshot]:
         """Get all snapshots for a trace."""
         conn = sqlite3.connect(self.db_path)
         cursor = conn.cursor()
-        
+
         try:
             cursor.execute("""
                 SELECT * FROM completeness_snapshots WHERE trace_id = ?
             """, (trace_id,))
-            
+
             rows = cursor.fetchall()
             return [self._row_to_snapshot(row, cursor) for row in rows]
-            
+
         finally:
             conn.close()
-    
+
     def get_low_completeness_snapshots(
         self,
         threshold: float = 0.5,
         since: Optional[str] = None,
     ) -> list[CompletenessSnapshot]:
         """Get snapshots with low completeness scores.
-        
+
         Args:
             threshold: Completeness threshold
             since: ISO timestamp to filter from
-            
+
         Returns:
             List of low completeness snapshots
         """
         conn = sqlite3.connect(self.db_path)
         cursor = conn.cursor()
-        
+
         try:
             if since:
                 cursor.execute("""
@@ -435,31 +435,31 @@ class CompletenessSnapshotRegistry:
                     WHERE context_completeness_score < ?
                     ORDER BY context_completeness_score ASC
                 """, (threshold,))
-            
+
             rows = cursor.fetchall()
             return [self._row_to_snapshot(row, cursor) for row in rows]
-            
+
         finally:
             conn.close()
-    
+
     def get_aggregated_completeness(
         self,
         since: Optional[str] = None,
     ) -> dict[str, Any]:
         """Get aggregated completeness metrics.
-        
+
         Args:
             since: ISO timestamp to filter from
-            
+
         Returns:
             Aggregated metrics
         """
         conn = sqlite3.connect(self.db_path)
         cursor = conn.cursor()
-        
+
         try:
             query = """
-                SELECT 
+                SELECT
                     AVG(context_completeness_score),
                     AVG(coverage_score),
                     AVG(diversity_score),
@@ -467,28 +467,28 @@ class CompletenessSnapshotRegistry:
                 FROM completeness_snapshots
             """
             params = []
-            
+
             if since:
                 query += " WHERE timestamp >= ?"
                 params.append(since)
-            
+
             cursor.execute(query, params)
             row = cursor.fetchone()
-            
+
             # Count low completeness snapshots
             low_query = "SELECT COUNT(*) FROM completeness_snapshots WHERE context_completeness_score < 0.5"
             if since:
                 low_query += " AND timestamp >= ?"
-            
+
             cursor.execute(low_query, params)
             low_count = cursor.fetchone()[0]
-            
+
             # Get trigger distribution
             cursor.execute("""
                 SELECT triggered_actions FROM completeness_snapshots
                 WHERE triggered_actions IS NOT NULL AND triggered_actions != '[]'
             """)
-            
+
             trigger_counts = {}
             for (triggers_json,) in cursor.fetchall():
                 try:
@@ -497,7 +497,7 @@ class CompletenessSnapshotRegistry:
                         trigger_counts[trigger] = trigger_counts.get(trigger, 0) + 1
                 except:
                     pass
-            
+
             return {
                 "avg_completeness_score": row[0] or 0.0,
                 "avg_coverage_score": row[1] or 0.0,
@@ -506,14 +506,14 @@ class CompletenessSnapshotRegistry:
                 "low_completeness_count": low_count,
                 "trigger_distribution": trigger_counts,
             }
-            
+
         finally:
             conn.close()
-    
+
     def get_stats(self) -> dict[str, Any]:
         """Get registry statistics."""
         return self.get_aggregated_completeness()
-    
+
     def _row_to_snapshot(
         self,
         row: tuple,
@@ -522,7 +522,7 @@ class CompletenessSnapshotRegistry:
         """Convert database row to CompletenessSnapshot."""
         columns = [desc[0] for desc in cursor.description]
         row_dict = dict(zip(columns, row))
-        
+
         metrics = ContextCompletenessMetrics(
             context_completeness_score=row_dict["context_completeness_score"],
             coverage_score=row_dict["coverage_score"],
@@ -537,7 +537,7 @@ class CompletenessSnapshotRegistry:
             completeness_threshold=row_dict["completeness_threshold"],
             coverage_threshold=row_dict["coverage_threshold"],
         )
-        
+
         return CompletenessSnapshot(
             snap_id=row_dict["snap_id"],
             trace_id=row_dict["trace_id"],

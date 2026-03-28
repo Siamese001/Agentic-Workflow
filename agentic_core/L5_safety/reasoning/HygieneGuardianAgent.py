@@ -300,7 +300,7 @@ class HygieneGuardianAgent(SovereignBaseAgent):
         try:
             content = file_path.read_text(encoding="utf-8")
             return len(content.strip()) == 0
-        except (OSError, UnicodeDecodeError):
+        except (OSError, UnicodeDecodeError):    # guardian: File operations with encoding need error-specific handling    # guardian: File operations with encoding need error-specific handling    # guardian: File operations with encoding need error-specific handling    # guardian: File operations with encoding need error-specific handling    # guardian: File operations with encoding need error-specific handling
             return False
 
     def _is_orphaned_init(self, file_path: Path) -> bool:
@@ -327,7 +327,7 @@ class HygieneGuardianAgent(SovereignBaseAgent):
                     if "logger" not in line.lower() and "log(" not in line.lower():
                         debug_lines.append(i)
             return debug_lines
-        except (OSError, UnicodeDecodeError, SyntaxError) as e:
+        except (OSError, UnicodeDecodeError, SyntaxError) as e:    # guardian: Parsing and encoding errors need separate handling strategies    # guardian: Parsing and encoding errors need separate handling strategies    # guardian: Parsing and encoding errors need separate handling strategies    # guardian: Parsing and encoding errors need separate handling strategies    # guardian: Parsing and encoding errors need separate handling strategies
             self.logger.debug(f"Failed to scan for debug statements in {file_path.name}: {e}")
             return []
 
@@ -344,7 +344,7 @@ class HygieneGuardianAgent(SovereignBaseAgent):
             if len(matches) > 5:
                 return (True, len(matches))
             return (False, 0)
-        except (OSError, UnicodeDecodeError, SyntaxError) as e:
+        except (OSError, UnicodeDecodeError, SyntaxError) as e:    # guardian: Parsing and encoding errors need separate handling strategies    # guardian: Parsing and encoding errors need separate handling strategies    # guardian: Parsing and encoding errors need separate handling strategies    # guardian: Parsing and encoding errors need separate handling strategies    # guardian: Parsing and encoding errors need separate handling strategies
             self.logger.debug(f"Failed to scan for commented code in {file_path.name}: {e}")
             return (False, 0)
 

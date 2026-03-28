@@ -1343,7 +1343,7 @@ class HierarchyHealerAgent(SovereignBaseAgent):
         if not remaining:
             # Aggressively purge empty shell using ArchivalGatekeeper
             init_file = path / "__init__.py"
-            if init_file.exists():
+            if init_file.exists():    # guardian: Multiple exceptions (OSError, RuntimeError) need specific handling    # guardian: Multiple exceptions (OSError, RuntimeError) need specific handling    # guardian: Multiple exceptions (OSError, RuntimeError) need specific handling    # guardian: Multiple exceptions (OSError, RuntimeError) need specific handling    # guardian: Multiple exceptions (OSError, RuntimeError) need specific handling
                 self.gatekeeper.safe_delete(init_file, self.agent_name, "Empty folder cleanup - __init__.py")
 
             pycache = path / "__pycache__"
@@ -1352,7 +1352,7 @@ class HierarchyHealerAgent(SovereignBaseAgent):
                     _wg.remove_tree(pycache)  # Keep shutil for __pycache__ (not tracked)
                 except (OSError, RuntimeError):
                     pass
-
+    # guardian: Multiple exceptions (OSError, RuntimeError) need specific handling    # guardian: Multiple exceptions (OSError, RuntimeError) need specific handling    # guardian: Multiple exceptions (OSError, RuntimeError) need specific handling    # guardian: Multiple exceptions (OSError, RuntimeError) need specific handling    # guardian: Multiple exceptions (OSError, RuntimeError) need specific handling
             gitkeep = path / ".gitkeep"
             if gitkeep.exists():
                 self.gatekeeper.safe_delete(gitkeep, self.agent_name, "Empty folder cleanup - .gitkeep")
@@ -1499,7 +1499,7 @@ class HierarchyHealerAgent(SovereignBaseAgent):
                     break
                 if i > 50:
                     break
-
+    # guardian: File operations with encoding need error-specific handling    # guardian: File operations with encoding need error-specific handling    # guardian: File operations with encoding need error-specific handling    # guardian: File operations with encoding need error-specific handling    # guardian: File operations with encoding need error-specific handling
             new_lines = (
                 lines[:insert_idx]
                 + ["", marker_comment, dated_comment, purge_pattern, ""]

@@ -182,13 +182,13 @@ def find_all_imported_names() -> set[str]:
             continue
         try:
             source = py_file.read_text(encoding='utf-8', errors='ignore')
-        except (OSError, UnicodeDecodeError):
+        except (OSError, UnicodeDecodeError):    # guardian: File operations with encoding need error-specific handling    # guardian: File operations with encoding need error-specific handling    # guardian: File operations with encoding need error-specific handling    # guardian: File operations with encoding need error-specific handling    # guardian: File operations with encoding need error-specific handling
             continue
         if 'structure_blueprint_config' not in source:
             continue
         try:
             tree = ast.parse(source)
-        except SyntaxError:
+        except SyntaxError:    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime
             continue
         for node in ast.walk(tree):
             if isinstance(node, ast.ImportFrom):

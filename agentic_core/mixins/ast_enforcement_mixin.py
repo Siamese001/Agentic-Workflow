@@ -191,7 +191,7 @@ class ASTEnforcementMixin:
         """
         try:
             tree = ast.parse(content)
-        # guardian: allow-silent-swallow - acceptable exception handling
+        # guardian: allow-silent-swallow - acceptable exception handling    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime
         except SyntaxError:
             return {
                 "snake_classes": 0,
@@ -284,7 +284,7 @@ class ASTEnforcementMixin:
                     )
                     total_snake += audit["snake_classes"]
                     total_aliases += audit["aliases"]
-                # guardian: allow-silent-swallow - acceptable exception handling
+                # guardian: allow-silent-swallow - acceptable exception handling    # guardian: Multiple exceptions (UnicodeDecodeError, PermissionError) need specific handling    # guardian: Multiple exceptions (UnicodeDecodeError, PermissionError) need specific handling    # guardian: Multiple exceptions (UnicodeDecodeError, PermissionError) need specific handling    # guardian: Multiple exceptions (UnicodeDecodeError, PermissionError) need specific handling    # guardian: Multiple exceptions (UnicodeDecodeError, PermissionError) need specific handling
                 total_pascal += audit["pascal_classes"]
             except (UnicodeDecodeError, PermissionError):
                 continue
@@ -307,7 +307,7 @@ class ASTEnforcementMixin:
             List of class names
         """
         try:
-            tree = ast.parse(content)
+            tree = ast.parse(content)    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime
             # guardian: allow-silent-swallow - acceptable exception handling
             return [node.name for node in ast.walk(tree) if isinstance(node, ast.ClassDef)]
         except SyntaxError:

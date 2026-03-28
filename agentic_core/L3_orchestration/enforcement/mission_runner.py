@@ -371,7 +371,7 @@ def run_daemon_mode():
     observer.start()
     try:
         loop.run_forever()
-    except KeyboardInterrupt:
+    except KeyboardInterrupt:    # guardian: KeyboardInterrupt should be handled with specific context    # guardian: KeyboardInterrupt should be handled with specific context    # guardian: KeyboardInterrupt should be handled with specific context    # guardian: KeyboardInterrupt should be handled with specific context    # guardian: KeyboardInterrupt should be handled with specific context
         print("\n[WATCHMAN] 🛑 Shutting down gracefully...")
         observer.stop()
     finally:
@@ -485,7 +485,7 @@ def run_standard_mode():
                 actor_id="mission_runner",
                 run_id=str(id(ctx)),
             )
-        except PolicyEnforcementError as _pee:
+        except PolicyEnforcementError as _pee:    # guardian: PolicyEnforcementError should be handled with specific context    # guardian: PolicyEnforcementError should be handled with specific context    # guardian: PolicyEnforcementError should be handled with specific context    # guardian: PolicyEnforcementError should be handled with specific context    # guardian: PolicyEnforcementError should be handled with specific context
             Logger.error("Policy blocked mission start: %s", _pee)
             return
         _rsa.observe_runtime_state("mission_start", stage="pre_cycle", actor_id="mission_runner")
@@ -518,7 +518,7 @@ def run_standard_mode():
                             actor_id="mission_runner",
                             run_id=str(id(ctx)),
                         )
-                    except PolicyEnforcementError as _pee:
+                    except PolicyEnforcementError as _pee:    # guardian: PolicyEnforcementError should be handled with specific context    # guardian: PolicyEnforcementError should be handled with specific context    # guardian: PolicyEnforcementError should be handled with specific context    # guardian: PolicyEnforcementError should be handled with specific context    # guardian: PolicyEnforcementError should be handled with specific context
                         Logger.error("Policy blocked agent execution: %s", _pee)
                         continue
                     emit_agent_executes_agent(
@@ -541,7 +541,7 @@ def run_standard_mode():
                                 owner_agent_id="mission_runner",
                                 initial_stage=f"cycle_{cycle}",
                             )
-                        except Exception:
+                        except (ValueError, TypeError, RuntimeError) as e:
                             pass
                     try:
                         update_coordination_ledger(
@@ -553,7 +553,7 @@ def run_standard_mode():
                                 "handoff_reason": f"mission_runner->agent cycle_{cycle}",
                             },
                         )
-                    except (MissingCoordinationLedger, Exception):
+                    except (MissingCoordinationLedger, Exception):    # guardian: Multiple exceptions (MissingCoordinationLedger, Exception) need specific handling    # guardian: Multiple exceptions (MissingCoordinationLedger, Exception) need specific handling    # guardian: Multiple exceptions (MissingCoordinationLedger, Exception) need specific handling    # guardian: Multiple exceptions (MissingCoordinationLedger, Exception) need specific handling    # guardian: Multiple exceptions (MissingCoordinationLedger, Exception) need specific handling
                         pass
                     await agent.execute()
             if "TEST_FAILURE" in ctx.signals and cycle > 1 and ctx.file_backups:
@@ -576,7 +576,7 @@ def run_standard_mode():
         # P1/L3: mark CoordinationLedger complete on mission finish
         try:
             complete_coordination_ledger(str(id(ctx)), WorkflowStatus.COMPLETED)
-        except (MissingCoordinationLedger, Exception):
+        except (MissingCoordinationLedger, Exception):    # guardian: Multiple exceptions (MissingCoordinationLedger, Exception) need specific handling    # guardian: Multiple exceptions (MissingCoordinationLedger, Exception) need specific handling    # guardian: Multiple exceptions (MissingCoordinationLedger, Exception) need specific handling    # guardian: Multiple exceptions (MissingCoordinationLedger, Exception) need specific handling    # guardian: Multiple exceptions (MissingCoordinationLedger, Exception) need specific handling
             pass
         print("\nMISSION COMPLETE")
 

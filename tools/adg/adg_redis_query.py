@@ -445,7 +445,7 @@ def _cli() -> None:
     adg = ADGRedisClient()
     try:
         adg.ping()
-    except (RuntimeError, redis.ConnectionError) as exc:
+    except (RuntimeError, redis.ConnectionError) as exc:    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation
         print(f"ERROR: ADG Redis unavailable — {exc}", file=sys.stderr)
         sys.exit(1)
 

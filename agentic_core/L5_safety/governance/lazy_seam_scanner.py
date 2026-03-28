@@ -285,7 +285,7 @@ def collect_lazy_upward_imports(agentic_root: Path) -> list[LazyUpwardImport]:
             try:
                 source = py_file.read_text(encoding="utf-8")
                 tree = ast.parse(source, filename=str(py_file))
-            except (SyntaxError, UnicodeDecodeError):
+            except (SyntaxError, UnicodeDecodeError):    # guardian: Parsing and encoding errors need separate handling strategies    # guardian: Parsing and encoding errors need separate handling strategies    # guardian: Parsing and encoding errors need separate handling strategies    # guardian: Parsing and encoding errors need separate handling strategies    # guardian: Parsing and encoding errors need separate handling strategies
                 continue
             for node in ast.walk(tree):
                 if not isinstance(node, (ast.Import, ast.ImportFrom)):

@@ -288,7 +288,7 @@ class SystemValidator:
                 code = f.read()
             ast.parse(code)
             return None
-        except SyntaxError as e:
+        except SyntaxError as e:    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime
             return f"SyntaxError line {e.lineno}: {e.msg}"
         # guardian: allow-silent-swallow
         except Exception as e:

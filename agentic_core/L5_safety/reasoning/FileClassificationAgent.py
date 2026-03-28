@@ -780,7 +780,7 @@ class FileClassificationHealerAgent(*BASE_CLASSES):
                     else:
                         # Default to UTILITY violations for MISNAMED_UTILITY
                         self.stats["violations"]["UTILITY"] += 1
-            except (OSError, UnicodeDecodeError) as e:
+            except (OSError, UnicodeDecodeError) as e:    # guardian: File operations with encoding need error-specific handling    # guardian: File operations with encoding need error-specific handling    # guardian: File operations with encoding need error-specific handling    # guardian: File operations with encoding need error-specific handling    # guardian: File operations with encoding need error-specific handling
                 self.logger.debug(f"File read failure for {path.name}, skipping purity/config check: {e}")
 
             # [BASE_AGENTS PURITY] Enforce STRICT IDENTITY ONLY
@@ -1077,7 +1077,7 @@ class FileClassificationHealerAgent(*BASE_CLASSES):
                 return "STUB"
 
             tree = ast.parse(content)
-        except (SyntaxError, UnicodeDecodeError, OSError):
+        except (SyntaxError, UnicodeDecodeError, OSError):    # guardian: Parsing and encoding errors need separate handling strategies    # guardian: Parsing and encoding errors need separate handling strategies    # guardian: Parsing and encoding errors need separate handling strategies    # guardian: Parsing and encoding errors need separate handling strategies    # guardian: Parsing and encoding errors need separate handling strategies
             return "IGNORE"
 
         # [PRIORITY 2.3] FILENAME DUAL-TAG CONFLICT DETECTION
@@ -2237,7 +2237,7 @@ class FileClassificationHealerAgent(*BASE_CLASSES):
 
         try:
             content = path.read_text(encoding="utf-8", errors="ignore")
-        except OSError:
+        except OSError:    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging
             return None
 
         # === SIGNAL 1: Direct imports (strongest signal) ===
@@ -2385,7 +2385,7 @@ class FileClassificationHealerAgent(*BASE_CLASSES):
         if "L5_safety" in parts:
             try:
                 content = path.read_text(encoding="utf-8", errors="ignore")
-            except OSError:
+            except OSError:    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging
                 content = ""
             if "import subprocess" in content or "from subprocess" in content:
                 if path.name not in L5_SUBPROCESS_ALLOWLIST:
@@ -2403,7 +2403,7 @@ class FileClassificationHealerAgent(*BASE_CLASSES):
         if "L6_observability" in parts:
             try:
                 content = path.read_text(encoding="utf-8", errors="ignore")
-            except OSError:
+            except OSError:    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging
                 content = ""
             if "import subprocess" in content or "from subprocess" in content:
                 if path.name not in L6_HYBRID_ALLOWLIST:
@@ -2501,7 +2501,7 @@ class FileClassificationHealerAgent(*BASE_CLASSES):
                     )
                     for n in ast.walk(tree)
                 )
-            except (SyntaxError, OSError):
+            except (SyntaxError, OSError):    # guardian: Multiple exceptions (SyntaxError, OSError) need specific handling    # guardian: Multiple exceptions (SyntaxError, OSError) need specific handling    # guardian: Multiple exceptions (SyntaxError, OSError) need specific handling    # guardian: Multiple exceptions (SyntaxError, OSError) need specific handling    # guardian: Multiple exceptions (SyntaxError, OSError) need specific handling
                 has_agent_class = False
             if not has_agent_class:
                 current_layer = next(
@@ -2547,7 +2547,7 @@ class FileClassificationHealerAgent(*BASE_CLASSES):
                 agent_classes = [
                     n.name for n in ast.walk(tree) if isinstance(n, ast.ClassDef) and n.name.endswith("Agent")
                 ]
-            except (SyntaxError, OSError):
+            except (SyntaxError, OSError):    # guardian: Multiple exceptions (SyntaxError, OSError) need specific handling    # guardian: Multiple exceptions (SyntaxError, OSError) need specific handling    # guardian: Multiple exceptions (SyntaxError, OSError) need specific handling    # guardian: Multiple exceptions (SyntaxError, OSError) need specific handling    # guardian: Multiple exceptions (SyntaxError, OSError) need specific handling
                 agent_classes = []
             if agent_classes:
                 return {
@@ -2585,7 +2585,7 @@ class FileClassificationHealerAgent(*BASE_CLASSES):
         """
         try:
             content = path.read_text(encoding="utf-8", errors="ignore")
-        except OSError:
+        except OSError:    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging
             return None
 
         content_lower = content.lower()
@@ -2635,7 +2635,7 @@ class FileClassificationHealerAgent(*BASE_CLASSES):
         try:
             content = path.read_text(encoding="utf-8", errors="ignore")
             tree = ast.parse(content)
-        except (SyntaxError, UnicodeDecodeError, OSError):
+        except (SyntaxError, UnicodeDecodeError, OSError):    # guardian: Parsing and encoding errors need separate handling strategies    # guardian: Parsing and encoding errors need separate handling strategies    # guardian: Parsing and encoding errors need separate handling strategies    # guardian: Parsing and encoding errors need separate handling strategies    # guardian: Parsing and encoding errors need separate handling strategies
             return None
 
         parts = path.parts
@@ -3366,7 +3366,7 @@ class FileClassificationHealerAgent(*BASE_CLASSES):
                                 _seen_modules.add(_seg)
                 for _mod in _seen_modules:
                     _import_index[_mod] = _import_index.get(_mod, 0) + 1
-            except (SyntaxError, OSError, UnicodeDecodeError):
+            except (SyntaxError, OSError, UnicodeDecodeError):    # guardian: Parsing and encoding errors need separate handling strategies    # guardian: Parsing and encoding errors need separate handling strategies    # guardian: Parsing and encoding errors need separate handling strategies    # guardian: Parsing and encoding errors need separate handling strategies    # guardian: Parsing and encoding errors need separate handling strategies
                 continue
 
         for directory, paths in dir_index.items():
@@ -3391,7 +3391,7 @@ class FileClassificationHealerAgent(*BASE_CLASSES):
                             norm_key = norm.replace("_", "").lower()
                             class_map.setdefault(norm_key, []).append(path)
                             break  # Only inspect primary class
-                except (SyntaxError, OSError, UnicodeDecodeError):
+                except (SyntaxError, OSError, UnicodeDecodeError):    # guardian: Parsing and encoding errors need separate handling strategies    # guardian: Parsing and encoding errors need separate handling strategies    # guardian: Parsing and encoding errors need separate handling strategies    # guardian: Parsing and encoding errors need separate handling strategies    # guardian: Parsing and encoding errors need separate handling strategies
                     continue
 
             # Flag groups with >1 file sharing the same normalised primary class
@@ -3448,7 +3448,7 @@ class FileClassificationHealerAgent(*BASE_CLASSES):
         try:
             content = path.read_text(encoding="utf-8", errors="replace")
             tree = ast.parse(content)
-        except (SyntaxError, OSError):
+        except (SyntaxError, OSError):    # guardian: Multiple exceptions (SyntaxError, OSError) need specific handling    # guardian: Multiple exceptions (SyntaxError, OSError) need specific handling    # guardian: Multiple exceptions (SyntaxError, OSError) need specific handling    # guardian: Multiple exceptions (SyntaxError, OSError) need specific handling    # guardian: Multiple exceptions (SyntaxError, OSError) need specific handling
             return scores
 
         # Combine all text signals: module docstring + class names + method names + docstrings
@@ -3523,7 +3523,7 @@ class FileClassificationHealerAgent(*BASE_CLASSES):
         try:
             content = path.read_text(encoding="utf-8")
             tree = ast.parse(content)
-        except (SyntaxError, UnicodeDecodeError, OSError):
+        except (SyntaxError, UnicodeDecodeError, OSError):    # guardian: Parsing and encoding errors need separate handling strategies    # guardian: Parsing and encoding errors need separate handling strategies    # guardian: Parsing and encoding errors need separate handling strategies    # guardian: Parsing and encoding errors need separate handling strategies    # guardian: Parsing and encoding errors need separate handling strategies
             return scores
 
         for node in ast.walk(tree):
@@ -3893,7 +3893,7 @@ class FileClassificationHealerAgent(*BASE_CLASSES):
                     ):
                         return True
 
-        except SyntaxError:
+        except SyntaxError:    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime
             # Fallback to simple content check if AST parsing fails
             content_lower = content.lower()
             for pattern in patterns:
@@ -4398,7 +4398,7 @@ class FileClassificationHealerAgent(*BASE_CLASSES):
             new_content = content.replace(old_name, new_name)
             if new_content != content:
                 _wg.write_text(path, new_content, encoding="utf-8")
-        except (OSError, UnicodeDecodeError) as e:
+        except (OSError, UnicodeDecodeError) as e:    # guardian: File operations with encoding need error-specific handling    # guardian: File operations with encoding need error-specific handling    # guardian: File operations with encoding need error-specific handling    # guardian: File operations with encoding need error-specific handling    # guardian: File operations with encoding need error-specific handling
             self.logger.debug(f"Failed to update docstring in {path.name}: {e}")
 
     def sync_companion_test(self, src_path: Path, new_name: str):
@@ -4451,7 +4451,7 @@ class FileClassificationHealerAgent(*BASE_CLASSES):
                         print(f"  [CONFIG] Updating reference in {path.name}")
                         if not self.dry_run:
                             _wg.write_text(path, new_content, encoding="utf-8")
-            except (OSError, UnicodeDecodeError) as e:
+            except (OSError, UnicodeDecodeError) as e:    # guardian: File operations with encoding need error-specific handling    # guardian: File operations with encoding need error-specific handling    # guardian: File operations with encoding need error-specific handling    # guardian: File operations with encoding need error-specific handling    # guardian: File operations with encoding need error-specific handling
                 self.logger.debug(f"Failed to update config file {path.name}: {e}")
                 continue
 
@@ -4547,7 +4547,7 @@ class FileClassificationHealerAgent(*BASE_CLASSES):
                     if not self.dry_run:
                         _wg.write_text(path, new_content, encoding="utf-8")
                     count += 1
-            except (OSError, UnicodeDecodeError) as e:
+            except (OSError, UnicodeDecodeError) as e:    # guardian: File operations with encoding need error-specific handling    # guardian: File operations with encoding need error-specific handling    # guardian: File operations with encoding need error-specific handling    # guardian: File operations with encoding need error-specific handling    # guardian: File operations with encoding need error-specific handling
                 self.logger.debug(f"Failed to refactor imports in {path.name}: {e}")
                 continue
         return count
@@ -4614,7 +4614,7 @@ class FileClassificationHealerAgent(*BASE_CLASSES):
                     return False  # No action needed
                 else:
                     is_collision = True
-            except OSError as e:
+            except OSError as e:    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging
                 print(f"  [WARNING] Could not resolve paths for comparison: {e}")
                 is_collision = True
 
@@ -4698,7 +4698,7 @@ class FileClassificationHealerAgent(*BASE_CLASSES):
                 print("  [WARNING] Temp file still exists after rename - cleaning up")
                 try:
                     _wg.remove_file(temp)
-                except OSError as e:
+                except OSError as e:    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging
                     self.logger.debug(f"Failed to cleanup temp file {temp.name}: {e}")
                     # Best effort cleanup - continue anyway
 
@@ -4738,7 +4738,7 @@ class FileClassificationHealerAgent(*BASE_CLASSES):
 
         try:
             tree = ast.parse(content)
-        except SyntaxError:
+        except SyntaxError:    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime
             return None
 
         for node in ast.walk(tree):
@@ -4974,7 +4974,7 @@ class FileClassificationHealerAgent(*BASE_CLASSES):
         if classification == "AGENT" and path.stem.endswith("Agent"):
             try:
                 tree = ast.parse(content)
-            except SyntaxError:
+            except SyntaxError:    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime
                 return None
 
             for node in ast.walk(tree):
@@ -5421,7 +5421,7 @@ class FileClassificationHealerAgent(*BASE_CLASSES):
             tree = ast.parse(path.read_text(encoding="utf-8"))
             classes = [n.name for n in ast.walk(tree) if isinstance(n, ast.ClassDef)]
             target_name = classes[0] if classes else path.stem
-        except (OSError, UnicodeDecodeError, SyntaxError) as e:
+        except (OSError, UnicodeDecodeError, SyntaxError) as e:    # guardian: Parsing and encoding errors need separate handling strategies    # guardian: Parsing and encoding errors need separate handling strategies    # guardian: Parsing and encoding errors need separate handling strategies    # guardian: Parsing and encoding errors need separate handling strategies    # guardian: Parsing and encoding errors need separate handling strategies
             self.logger.debug(f"Failed to parse {path.name} for class name, using stem: {e}")
             target_name = path.stem
 

@@ -407,7 +407,7 @@ class CodeDeduplicationAgent(SovereignBaseAgent):
         try:
             source = file_path.read_text(encoding="utf-8")
             tree = ast.parse(source)
-        except (OSError, UnicodeDecodeError, SyntaxError) as e:
+        except (OSError, UnicodeDecodeError, SyntaxError) as e:    # guardian: Parsing and encoding errors need separate handling strategies    # guardian: Parsing and encoding errors need separate handling strategies    # guardian: Parsing and encoding errors need separate handling strategies    # guardian: Parsing and encoding errors need separate handling strategies    # guardian: Parsing and encoding errors need separate handling strategies
             self.logger.debug(f"Failed to extract blocks from {file_path.name}: {e}")
             return []
         blocks = []
@@ -552,7 +552,7 @@ class CodeDeduplicationAgent(SovereignBaseAgent):
                     lines.append(" ".join(stripped.split()))
             content = "\n".join(lines)
             return hashlib.sha256(content.encode("utf-8")).hexdigest()
-        except (OSError, UnicodeDecodeError) as e:
+        except (OSError, UnicodeDecodeError) as e:    # guardian: File operations with encoding need error-specific handling    # guardian: File operations with encoding need error-specific handling    # guardian: File operations with encoding need error-specific handling    # guardian: File operations with encoding need error-specific handling    # guardian: File operations with encoding need error-specific handling
             self.errors.append(f"File hash error {file_path}: {e}")
             return None
 
@@ -839,21 +839,21 @@ class CodeDeduplicationAgent(SovereignBaseAgent):
                 self.scan_for_duplicates([str(f) for f in python_files])
                 block_duplicates = len(self.duplicate_blocks) if hasattr(self, "duplicate_blocks") else 0
                 violations_found += block_duplicates
-            except (OSError, UnicodeDecodeError, SyntaxError) as e:
+            except (OSError, UnicodeDecodeError, SyntaxError) as e:    # guardian: Parsing and encoding errors need separate handling strategies    # guardian: Parsing and encoding errors need separate handling strategies    # guardian: Parsing and encoding errors need separate handling strategies    # guardian: Parsing and encoding errors need separate handling strategies    # guardian: Parsing and encoding errors need separate handling strategies
                 self.logger.error(f"  Error scanning code blocks: {e}")
                 errors += 1
             try:
                 self.scan_file_level_duplicates(python_files)
                 file_duplicates = len(self.file_duplicates) if hasattr(self, "file_duplicates") else 0
                 violations_found += file_duplicates
-            except (OSError, UnicodeDecodeError) as e:
+            except (OSError, UnicodeDecodeError) as e:    # guardian: File operations with encoding need error-specific handling    # guardian: File operations with encoding need error-specific handling    # guardian: File operations with encoding need error-specific handling    # guardian: File operations with encoding need error-specific handling    # guardian: File operations with encoding need error-specific handling
                 self.logger.error(f"  Error scanning file duplicates: {e}")
                 errors += 1
             try:
                 self.scan_filename_duplicates(python_files)
                 name_duplicates = len(self.filename_duplicates) if hasattr(self, "filename_duplicates") else 0
                 violations_found += name_duplicates
-            except (OSError, UnicodeDecodeError) as e:
+            except (OSError, UnicodeDecodeError) as e:    # guardian: File operations with encoding need error-specific handling    # guardian: File operations with encoding need error-specific handling    # guardian: File operations with encoding need error-specific handling    # guardian: File operations with encoding need error-specific handling    # guardian: File operations with encoding need error-specific handling
                 self.logger.error(f"  Error scanning filename duplicates: {e}")
                 errors += 1
             if violations_found > 0:
@@ -945,13 +945,13 @@ class CodeDeduplicationAgent(SovereignBaseAgent):
         """Analyze a single Python file for dead code."""
         try:
             content = file_path.read_text(encoding="utf-8")
-        except (OSError, UnicodeDecodeError) as e:
+        except (OSError, UnicodeDecodeError) as e:    # guardian: File operations with encoding need error-specific handling    # guardian: File operations with encoding need error-specific handling    # guardian: File operations with encoding need error-specific handling    # guardian: File operations with encoding need error-specific handling    # guardian: File operations with encoding need error-specific handling
             return {"error": f"Could not read {file_path}: {e}"}
         if not content.strip() or file_path.name == "__init__.py":
             return {"skipped": True, "reason": "Empty or __init__ file"}
         try:
             tree = ast.parse(content, filename=str(file_path))
-        except SyntaxError as e:
+        except SyntaxError as e:    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime
             return {"error": f"Syntax error in {file_path}: {e}"}
         imported, funcs, classes, used, import_lines, def_lines = self._collect_ast_symbols(tree)
         return {

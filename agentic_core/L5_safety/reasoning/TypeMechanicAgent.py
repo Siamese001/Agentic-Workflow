@@ -231,7 +231,7 @@ class TypeMechanicAgent(SubAtomicAgent):
             with open(fp, encoding="utf-8") as f:
                 tree = ast.parse(f.read(), filename=fp)
                 return (tree, None)
-        except (OSError, SyntaxError) as e:
+        except (OSError, SyntaxError) as e:    # guardian: Multiple exceptions (OSError, SyntaxError) need specific handling    # guardian: Multiple exceptions (OSError, SyntaxError) need specific handling    # guardian: Multiple exceptions (OSError, SyntaxError) need specific handling    # guardian: Multiple exceptions (OSError, SyntaxError) need specific handling    # guardian: Multiple exceptions (OSError, SyntaxError) need specific handling
             return (None, f"Error parsing {fp}: {e}")
 
     def _get_missing_type_hint_violations_for_tree(self, fp: str, tree: ast.AST) -> list[str]:
@@ -344,7 +344,7 @@ class TypeMechanicAgent(SubAtomicAgent):
             with open(fp, encoding="utf-8") as f:
                 tree = ast.parse(f.read(), filename=fp)
             return self._get_function_violations_for_file(fp, tree)
-        except (OSError, SyntaxError) as e:
+        except (OSError, SyntaxError) as e:    # guardian: Multiple exceptions (OSError, SyntaxError) need specific handling    # guardian: Multiple exceptions (OSError, SyntaxError) need specific handling    # guardian: Multiple exceptions (OSError, SyntaxError) need specific handling    # guardian: Multiple exceptions (OSError, SyntaxError) need specific handling    # guardian: Multiple exceptions (OSError, SyntaxError) need specific handling
             self.ctx.log_error(f"Error parsing {fp} for unused variables: {e}")
             return []
 

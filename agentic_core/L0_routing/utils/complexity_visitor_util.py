@@ -541,7 +541,7 @@ SELF_TESTING_BASES = {
 DELEGATION_BASES = {"MaintenanceBaseAgent", "L0DelegationTestingMixin", "L0DelegationMixin"}
 
 
-def safe_parse(code: str, file_path: Path) -> ast.AST | None:
+def safe_parse(code: str, file_path: Path) -> ast.AST | None:    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime
     """Parse code with error tolerance."""
     try:
         return ast.parse(code)
@@ -1122,7 +1122,7 @@ def main():
                     log.warning(
                         f"[INCREMENTAL] Previous count ({previous_count}) != expected ({EXPECTED_AGENT_COUNT}). Registry may be stale → falling back to full scan for integrity"
                     )
-                    incremental_mode = False
+                    incremental_mode = False    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging
             except json.JSONDecodeError as e:
                 log.error(f"[INCREMENTAL] JSON corrupted ({e}) → falling back to full scan")
                 incremental_mode = False
@@ -1200,7 +1200,7 @@ def main():
             rel_path = str(py_file.relative_to(PROJECT_ROOT)).replace("\\", "/")
             try:
                 file_hash = hashlib.md5(py_file.read_bytes()).hexdigest()
-                current_hashes[rel_path] = file_hash
+                current_hashes[rel_path] = file_hash    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging
             except OSError as e:
                 log.debug(f"[HASH ERROR] {rel_path}: {e}")
                 changed_rel_paths.add(rel_path)

@@ -397,7 +397,7 @@ class ASTValidatorAgent(ASTValidatorBase, SovereignBaseAgent):
             assert self is not None
             results["passed"] += 1
             results["tests"].append({"name": "test_instantiation", "status": "passed"})
-        except AssertionError as e:
+        except AssertionError as e:    # guardian: AssertionError should be handled with specific context    # guardian: AssertionError should be handled with specific context    # guardian: AssertionError should be handled with specific context    # guardian: AssertionError should be handled with specific context    # guardian: AssertionError should be handled with specific context
             results["failed"] += 1
             results["tests"].append({"name": "test_instantiation", "status": "failed", "error": str(e)})
         try:
@@ -406,7 +406,7 @@ class ASTValidatorAgent(ASTValidatorBase, SovereignBaseAgent):
             assert any("bare except" in v.get("message", "").lower() for v in violations)
             results["passed"] += 1
             results["tests"].append({"name": "test_bare_except_detection", "status": "passed"})
-        except AssertionError as e:
+        except AssertionError as e:    # guardian: AssertionError should be handled with specific context    # guardian: AssertionError should be handled with specific context    # guardian: AssertionError should be handled with specific context    # guardian: AssertionError should be handled with specific context    # guardian: AssertionError should be handled with specific context
             results["failed"] += 1
             results["tests"].append(
                 {"name": "test_bare_except_detection", "status": "failed", "error": str(e)}
@@ -418,7 +418,7 @@ class ASTValidatorAgent(ASTValidatorBase, SovereignBaseAgent):
             assert any("empty except" in v.get("message", "").lower() for v in violations)
             results["passed"] += 1
             results["tests"].append({"name": "test_empty_except_detection", "status": "passed"})
-        except AssertionError as e:
+        except AssertionError as e:    # guardian: AssertionError should be handled with specific context    # guardian: AssertionError should be handled with specific context    # guardian: AssertionError should be handled with specific context    # guardian: AssertionError should be handled with specific context    # guardian: AssertionError should be handled with specific context
             results["failed"] += 1
             results["tests"].append(
                 {"name": "test_empty_except_detection", "status": "failed", "error": str(e)}
@@ -430,7 +430,7 @@ class ASTValidatorAgent(ASTValidatorBase, SovereignBaseAgent):
             assert any("eval" in v.get("message", "").lower() for v in violations)
             results["passed"] += 1
             results["tests"].append({"name": "test_eval_detection", "status": "passed"})
-        except AssertionError as e:
+        except AssertionError as e:    # guardian: AssertionError should be handled with specific context    # guardian: AssertionError should be handled with specific context    # guardian: AssertionError should be handled with specific context    # guardian: AssertionError should be handled with specific context    # guardian: AssertionError should be handled with specific context
             results["failed"] += 1
             results["tests"].append({"name": "test_eval_detection", "status": "failed", "error": str(e)})
         try:
@@ -440,7 +440,7 @@ class ASTValidatorAgent(ASTValidatorBase, SovereignBaseAgent):
             assert any("dangerous builtin" in v.get("message", "").lower() for v in violations)
             results["passed"] += 1
             results["tests"].append({"name": "test_dangerous_builtins_detection", "status": "passed"})
-        except AssertionError as e:
+        except AssertionError as e:    # guardian: AssertionError should be handled with specific context    # guardian: AssertionError should be handled with specific context    # guardian: AssertionError should be handled with specific context    # guardian: AssertionError should be handled with specific context    # guardian: AssertionError should be handled with specific context
             results["failed"] += 1
             results["tests"].append(
                 {"name": "test_dangerous_builtins_detection", "status": "failed", "error": str(e)}
@@ -452,7 +452,7 @@ class ASTValidatorAgent(ASTValidatorBase, SovereignBaseAgent):
             assert any("breakpoint" in v.get("message", "").lower() for v in violations)
             results["passed"] += 1
             results["tests"].append({"name": "test_debugger_detection", "status": "passed"})
-        except AssertionError as e:
+        except AssertionError as e:    # guardian: AssertionError should be handled with specific context    # guardian: AssertionError should be handled with specific context    # guardian: AssertionError should be handled with specific context    # guardian: AssertionError should be handled with specific context    # guardian: AssertionError should be handled with specific context
             results["failed"] += 1
             results["tests"].append({"name": "test_debugger_detection", "status": "failed", "error": str(e)})
         try:
@@ -462,7 +462,7 @@ class ASTValidatorAgent(ASTValidatorBase, SovereignBaseAgent):
             assert not any("eval" in v.get("message", "").lower() for v in violations)
             results["passed"] += 1
             results["tests"].append({"name": "test_type_checking_skip", "status": "passed"})
-        except AssertionError as e:
+        except AssertionError as e:    # guardian: AssertionError should be handled with specific context    # guardian: AssertionError should be handled with specific context    # guardian: AssertionError should be handled with specific context    # guardian: AssertionError should be handled with specific context    # guardian: AssertionError should be handled with specific context
             results["failed"] += 1
             results["tests"].append({"name": "test_type_checking_skip", "status": "failed", "error": str(e)})
         return results

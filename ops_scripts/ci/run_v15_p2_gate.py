@@ -83,7 +83,7 @@ def run_phase2_gate(repo_root: Path | None=None) -> int:
     finally:
         try:
             os.unlink(tmp_path)
-        except OSError:
+        except OSError:    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging
             pass
 
 def main() -> int:

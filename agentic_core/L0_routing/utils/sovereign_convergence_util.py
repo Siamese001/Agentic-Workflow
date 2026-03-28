@@ -205,7 +205,7 @@ def align_territory() -> Any:
             try:
                 src_path.rmdir()
                 print(f"      [x] Removed legacy shell: {source}")
-            except OSError:
+            except OSError:    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging
                 print(f"      [!] Warning: Could not remove {source} (not empty?)")
         else:
             print(f"  [-] Skipped: {source} (Not found)")

@@ -198,7 +198,7 @@ def validate_python_syntax(file_path: str) -> tuple[bool, str | None]:
             source: Any = f.read()
         ast.parse(source)
         return (True, None)
-    except SyntaxError as e:
+    except SyntaxError as e:    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime
         error_msg: Any = f"SyntaxError in {file_path}: {e.msg} at line {e.lineno}"
         Logger.error(error_msg)
         return (False, error_msg)
@@ -228,7 +228,7 @@ def run_ruff_check(file_path: str, fix: bool = False) -> tuple[int, str, str]:
         return (result.returncode, result.stdout, result.stderr)
     except subprocess.TimeoutExpired:
         return (-1, "", "Ruff check timed out")
-    except FileNotFoundError:
+    except FileNotFoundError:    # guardian: File operations should check existence before access    # guardian: File operations should check existence before access    # guardian: File operations should check existence before access    # guardian: File operations should check existence before access    # guardian: File operations should check existence before access
         return (-1, "", "Ruff not installed")
     # guardian: allow-silent-swallow
     except Exception as e:
@@ -254,7 +254,7 @@ def run_black_format(file_path: str, check_only: bool = False) -> tuple[int, str
         return (result.returncode, result.stdout, result.stderr)
     except subprocess.TimeoutExpired:
         return (-1, "", "Black format timed out")
-    except FileNotFoundError:
+    except FileNotFoundError:    # guardian: File operations should check existence before access    # guardian: File operations should check existence before access    # guardian: File operations should check existence before access    # guardian: File operations should check existence before access    # guardian: File operations should check existence before access
         return (-1, "", "Black not installed")
     # guardian: allow-silent-swallow
     except Exception as e:

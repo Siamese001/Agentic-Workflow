@@ -277,7 +277,7 @@ def get_file_hash(filepath):
     try:
         with open(filepath, "rb") as f:
             return hashlib.md5(f.read()).hexdigest()
-    except OSError:
+    except OSError:    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging
         return None
 
 

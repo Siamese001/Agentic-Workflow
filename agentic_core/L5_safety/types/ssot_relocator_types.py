@@ -541,5 +541,5 @@ class SSOTRelocator:
                 _wg.remove_dir(directory)
                 logger.info(f"Cleaned up empty directory: {directory}")
                 self._cleanup_empty_dirs(directory.parent)
-        except (OSError, PermissionError):
+        except (OSError, PermissionError):    # guardian: Multiple exceptions (OSError, PermissionError) need specific handling    # guardian: Multiple exceptions (OSError, PermissionError) need specific handling    # guardian: Multiple exceptions (OSError, PermissionError) need specific handling    # guardian: Multiple exceptions (OSError, PermissionError) need specific handling    # guardian: Multiple exceptions (OSError, PermissionError) need specific handling
             pass

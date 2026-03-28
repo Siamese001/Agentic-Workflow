@@ -371,7 +371,7 @@ class CodeEnforcerAgent(SovereignBaseAgent):
         violations = []
         try:
             tree = ast.parse(content)
-        except SyntaxError:
+        except SyntaxError:    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime
             return violations
         for node in ast.walk(tree):
             if isinstance(node, ast.FunctionDef):
@@ -395,7 +395,7 @@ class CodeEnforcerAgent(SovereignBaseAgent):
             return violations
         try:
             tree = ast.parse(content)
-        except SyntaxError:
+        except SyntaxError:    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime
             return violations
         for node in ast.walk(tree):
             if isinstance(node, ast.Import | ast.ImportFrom):

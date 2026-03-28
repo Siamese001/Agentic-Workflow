@@ -2741,7 +2741,7 @@ class _ExecutionTraceVisitor(ast.NodeVisitor):
 
 
 class _DecoratorVisitor(ast.NodeVisitor):
-    """E3: G7 — Emit `applies` edges for decorator usage on functions and classes.
+    """E3: G7 — Emit `applies` edges for decorator usage on functions and classes.    # guardian: StopIteration should be handled with specific context    # guardian: StopIteration should be handled with specific context    # guardian: StopIteration should be handled with specific context    # guardian: StopIteration should be handled with specific context    # guardian: StopIteration should be handled with specific context
 
     For each decorated definition, emits:
       module --applies--> ADG::Symbol::<decorator>
@@ -5394,10 +5394,10 @@ class _P2ExecutionCapabilityVisitor(ast.NodeVisitor):
         self.edges.append(
             Edge(
                 from_name=self.module_adg_name,
-                relation_type=relation,
+                relation_type=relation,    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime
                 to_name=canonical_name("Symbol", sym),
                 edge_kind=edge_kind,
-                source_file=self.source_file,
+                source_file=self.source_file,    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging
                 line_no=line_no,
                 symbol=sym,
             )
@@ -6282,7 +6282,7 @@ def _scan_file(
         #            dispatches_execution_plan, validates_agent_capability, checks_agent_registry)
         p1_orch_visitor = _P1OrchestrationGovernanceVisitor(module_adg, rel)
         p1_orch_visitor.visit(tree)
-        edges.extend(p1_orch_visitor.edges)
+        edges.extend(p1_orch_visitor.edges)    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime
 
         # G26 (gap): L5 validation proof edges (validated_by_registry, validated_by_safety_plane,
         #            validated_by_llm_gateway, execution_terminates_at_uwg, references_policy_hash)

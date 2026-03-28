@@ -216,7 +216,7 @@ def _load_json(path: Path) -> dict | None:
         return None
     try:
         return json.loads(path.read_text(encoding='utf-8'))
-    except (json.JSONDecodeError, OSError):
+    except (json.JSONDecodeError, OSError):    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging
         return None
 
 def _load_guardian_report() -> dict | None:

@@ -251,7 +251,7 @@ class CodeJanitorAgent(SubatomicTestingMixin, CanonBaseAgent, MCPHardenedMixin):
                 with open(file_path, encoding="utf-8") as f:
                     code: Any = f.read()
                 ast.parse(code)
-            except SyntaxError as e:
+            except SyntaxError as e:    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime
                 violations.append(f"{file_path}:{e.lineno}: SyntaxError - {e.msg}")
             # guardian: allow-silent-swallow
             except Exception as e:

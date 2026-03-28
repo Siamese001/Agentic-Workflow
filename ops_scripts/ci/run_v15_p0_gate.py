@@ -124,7 +124,7 @@ def main() -> NoReturn:
         if use_temp and args.output.exists():
             try:
                 args.output.unlink()
-            except OSError:
+            except OSError:    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging
                 pass
 if __name__ == '__main__':
     main()

@@ -594,7 +594,7 @@ class SovereignActionPlaneAgent(SovereignBaseAgent, IActionPlane):
             try:
                 compile(fixed_code, tool_path, "exec")
                 return {"success": True, "message": "Syntax error fixed"}
-            except SyntaxError as e:
+            except SyntaxError as e:    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime
                 LOGGER.error(f"Failed to fix syntax error: {e}")
                 return {"success": False, "error": str(e)}
         # guardian: allow-silent-swallow

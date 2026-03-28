@@ -207,7 +207,7 @@ class DeterministicCleaner:
         try:
             safe_execute([tool_name, "--version"], capture_output=True, check=True)
             return True
-        except (subprocess.CalledProcessError, FileNotFoundError):
+        except (subprocess.CalledProcessError, FileNotFoundError):    # guardian: File operations should check existence before access    # guardian: File operations should check existence before access    # guardian: File operations should check existence before access    # guardian: File operations should check existence before access    # guardian: File operations should check existence before access
             return False
 
     def deterministic_clean(self, code: str, file_path: str | None = None) -> tuple[str, bool]:
@@ -377,7 +377,7 @@ class CompliantFileWriter:
         try:
             ast.parse(content)
             return True
-        except SyntaxError as e:
+        except SyntaxError as e:    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime
             LOGGER.error(f"Syntax error: {e}")
             return False
         # guardian: allow-silent-swallow

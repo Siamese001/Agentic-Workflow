@@ -394,7 +394,7 @@ class L5SafetyExerciserAgent(SovereignBaseAgent):
         """Repository healing with parent chain invocation."""
         try:
             result = super().heal_repository(dry_run=dry_run, **kwargs)
-        except AttributeError:
+        except AttributeError:    # guardian: AssertionError should be handled with specific context    # guardian: AssertionError should be handled with specific context    # guardian: AssertionError should be handled with specific context    # guardian: AssertionError should be handled with specific context    # guardian: AssertionError should be handled with specific context
             result = {}
         return {"healed": 0, "skipped": 0, "parent": result}
 

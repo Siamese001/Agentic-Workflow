@@ -193,7 +193,7 @@ def find_class_end(source: str, class_name: str) -> tuple[int, int]:
     """Find the end of a class definition to insert method before it."""
     try:
         tree = ast.parse(source)
-    except SyntaxError:
+    except SyntaxError:    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime
         return (-1, -1)
     for node in ast.walk(tree):
         if isinstance(node, ast.ClassDef) and node.name == class_name:
@@ -217,7 +217,7 @@ def has_heal_repository(source: str, class_name: str) -> bool:
     """Check if class already has heal_repository method."""
     try:
         tree = ast.parse(source)
-    except SyntaxError:
+    except SyntaxError:    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime
         return True
     for node in ast.walk(tree):
         if isinstance(node, ast.ClassDef) and node.name == class_name:

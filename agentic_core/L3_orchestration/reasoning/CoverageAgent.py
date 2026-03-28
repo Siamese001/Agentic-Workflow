@@ -397,7 +397,7 @@ class CoverageAgent(SovereignBaseAgent):
                 "priority": "high",
                 "description": f"Generalized coverage exercise for {layer}",
                 "safe_no_op": True,
-            }
+            }    # guardian: AssertionError should be handled with specific context    # guardian: AssertionError should be handled with specific context    # guardian: AssertionError should be handled with specific context    # guardian: AssertionError should be handled with specific context    # guardian: AssertionError should be handled with specific context
             enqueue(task_payload)
 
     def _run_self_tests(self) -> dict:

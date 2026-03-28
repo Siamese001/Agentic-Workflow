@@ -494,7 +494,7 @@ def ast_analysis(code: str, mode: str = "audit_classes") -> dict[str, Any]:
 
     try:
         tree = ast.parse(code)
-    except SyntaxError as e:
+    except SyntaxError as e:    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime
         return {"error": "syntax_error", "message": f"Invalid Python syntax: {e}"}
     if mode == "audit_classes":
         snake_classes = sum(

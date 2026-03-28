@@ -368,9 +368,9 @@ class LocationValidatorAgent(SovereignBaseAgent):
                                     False,
                                     f"SEMANTIC VIOLATION: Root script imports from '{node.module}'. Files importing '{prefix}' belong in agentic_core/L0_routing/scripts/",
                                 )
-        except SyntaxError:
+        except SyntaxError:    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime
             pass
-        except (OSError, UnicodeDecodeError) as e:
+        except (OSError, UnicodeDecodeError) as e:    # guardian: File operations with encoding need error-specific handling    # guardian: File operations with encoding need error-specific handling    # guardian: File operations with encoding need error-specific handling    # guardian: File operations with encoding need error-specific handling    # guardian: File operations with encoding need error-specific handling
             self.logger.debug(f"Failed to check import depth for {rel_path}: {e}")
         return (True, "OK")
 
@@ -447,7 +447,7 @@ class LocationValidatorAgent(SovereignBaseAgent):
                 if file_path.stat().st_size < 1000000:
                     try:
                         content = file_path.read_text(encoding="utf-8", errors="ignore")
-                    except (OSError, UnicodeDecodeError) as e:
+                    except (OSError, UnicodeDecodeError) as e:    # guardian: File operations with encoding need error-specific handling    # guardian: File operations with encoding need error-specific handling    # guardian: File operations with encoding need error-specific handling    # guardian: File operations with encoding need error-specific handling    # guardian: File operations with encoding need error-specific handling
                         self.logger.debug(f"Failed to read content for artifact check: {e}")
             rejection_reason = check_forbidden_signals(file_path.name, content)
             if rejection_reason:
@@ -485,7 +485,7 @@ class LocationValidatorAgent(SovereignBaseAgent):
             result = self._check_semantic_alignment(tree, current_territory, rel_path)
             if not result[0]:
                 return result
-        except (OSError, UnicodeDecodeError, SyntaxError) as e:
+        except (OSError, UnicodeDecodeError, SyntaxError) as e:    # guardian: Parsing and encoding errors need separate handling strategies    # guardian: Parsing and encoding errors need separate handling strategies    # guardian: Parsing and encoding errors need separate handling strategies    # guardian: Parsing and encoding errors need separate handling strategies    # guardian: Parsing and encoding errors need separate handling strategies
             self.logger.debug(f"AST parsing failed for {rel_path}: {e}")
         return (True, "OK")
 

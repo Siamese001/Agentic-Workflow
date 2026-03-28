@@ -220,7 +220,7 @@ def scan_empty_folders(root: Path) -> list[Path]:
                 children = [x for x in current_dir.iterdir() if x.name not in IGNORE_FILES]
                 if not children:
                     empty_folders.append(current_dir)
-            # guardian: allow-silent-swallow - acceptable exception handling
+            # guardian: allow-silent-swallow - acceptable exception handling    # guardian: Permission errors should validate access before operation    # guardian: Permission errors should validate access before operation    # guardian: Permission errors should validate access before operation    # guardian: Permission errors should validate access before operation    # guardian: Permission errors should validate access before operation
             except PermissionError:
                 pass
     return empty_folders
@@ -248,7 +248,7 @@ def scan_folders_with_only_init(root: Path) -> list[Path]:
                 if len(meaningful_children) == 1:
                     only_child = meaningful_children[0]
                     if only_child.is_file() and only_child.name == "__init__.py":
-                        # guardian: allow-silent-swallow - acceptable exception handling
+                        # guardian: allow-silent-swallow - acceptable exception handling    # guardian: Permission errors should validate access before operation    # guardian: Permission errors should validate access before operation    # guardian: Permission errors should validate access before operation    # guardian: Permission errors should validate access before operation    # guardian: Permission errors should validate access before operation
                         init_only_folders.append(current_dir)
             except PermissionError:
                 pass

@@ -262,7 +262,7 @@ def heal_file(file_path: Path, dry_run: bool = False) -> tuple[bool, int]:
         healed_content: Any = inject_imports(content, Missing)
         try:
             ast.parse(healed_content)
-        except SyntaxError as e:
+        except SyntaxError as e:    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime
             print(f"   [!] Syntax error after healing {file_path.name}: {e}")
             return (False, 0)
         if not dry_run:

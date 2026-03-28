@@ -350,7 +350,7 @@ def secure_exception(
         async def async_wrapper(*args, **kwargs):
             try:
                 return await func(*args, **kwargs)
-            except SecureError:
+            except SecureError:    # guardian: SecureError should be handled with specific context    # guardian: SecureError should be handled with specific context    # guardian: SecureError should be handled with specific context    # guardian: SecureError should be handled with specific context    # guardian: SecureError should be handled with specific context
                 raise
             except Exception as e:
                 raise
@@ -371,7 +371,7 @@ def secure_exception(
         def sync_wrapper(*args, **kwargs):
             try:
                 return func(*args, **kwargs)
-            except SecureError:
+            except SecureError:    # guardian: SecureError should be handled with specific context    # guardian: SecureError should be handled with specific context    # guardian: SecureError should be handled with specific context    # guardian: SecureError should be handled with specific context    # guardian: SecureError should be handled with specific context
                 raise
             except Exception as e:
                 raise

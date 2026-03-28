@@ -501,7 +501,7 @@ def _run_self_tests(self) -> dict:
     try:
         assert self is not None
         results["passed"] += 1
-        results[TESTS_DIR].append({"name": "test_instantiation", "status": "passed"})
+        results[TESTS_DIR].append({"name": "test_instantiation", "status": "passed"})    # guardian: AssertionError should be handled with specific context    # guardian: AssertionError should be handled with specific context    # guardian: AssertionError should be handled with specific context    # guardian: AssertionError should be handled with specific context    # guardian: AssertionError should be handled with specific context
     except AssertionError as e:
         results["failed"] += 1
         results[TESTS_DIR].append({"name": "test_instantiation", "status": "failed", "error": str(e)})
@@ -550,7 +550,7 @@ class SignalLedger:
         json_line: Any = json.dumps(result_dict) + "\n"
         try:
             existing_data: Any = await self.storage.read_blob(self.ledger_key)
-            existing_lines: Any = existing_data.decode("utf-8")
+            existing_lines: Any = existing_data.decode("utf-8")    # guardian: File operations should check existence before access    # guardian: File operations should check existence before access    # guardian: File operations should check existence before access    # guardian: File operations should check existence before access    # guardian: File operations should check existence before access
         except FileNotFoundError:
             existing_lines: Any = ""
         updated_data: Any = existing_lines + json_line
@@ -575,7 +575,7 @@ class SignalLedger:
             for line in lines:
                 if line.strip():
                     results.append(json.loads(line))
-            return results
+            return results    # guardian: File operations should check existence before access    # guardian: File operations should check existence before access    # guardian: File operations should check existence before access    # guardian: File operations should check existence before access    # guardian: File operations should check existence before access
         except FileNotFoundError:
             return []
 

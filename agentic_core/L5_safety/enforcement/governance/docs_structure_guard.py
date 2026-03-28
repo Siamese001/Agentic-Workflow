@@ -192,7 +192,7 @@ def has_h1_heading(file_path: Path) -> bool:
         with open(file_path, encoding="utf-8") as f:
             content = f.read()
             return "# " in content
-    except (UnicodeDecodeError, PermissionError):
+    except (UnicodeDecodeError, PermissionError):    # guardian: Multiple exceptions (UnicodeDecodeError, PermissionError) need specific handling    # guardian: Multiple exceptions (UnicodeDecodeError, PermissionError) need specific handling    # guardian: Multiple exceptions (UnicodeDecodeError, PermissionError) need specific handling    # guardian: Multiple exceptions (UnicodeDecodeError, PermissionError) need specific handling    # guardian: Multiple exceptions (UnicodeDecodeError, PermissionError) need specific handling
         return False
 
 

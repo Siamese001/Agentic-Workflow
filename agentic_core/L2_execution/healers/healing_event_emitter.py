@@ -246,7 +246,7 @@ class HealingEventEmitter:
             try:
                 with open(self._path, "a", encoding="utf-8") as f:
                     f.write(event.to_jsonl() + "\n")
-            except OSError as exc:
+            except OSError as exc:    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging
                 logger.warning("HealingEventEmitter: write failed: %s", exc)
             self._emitted.append(event)
         logger.info(

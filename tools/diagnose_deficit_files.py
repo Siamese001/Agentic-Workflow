@@ -49,7 +49,7 @@ def get_module_docstring_text(lines):
 def ast_called_funcs(src):
     try:
         tree = ast.parse(src)
-    # guardian: allow-silent-swallow - acceptable exception handling
+    # guardian: allow-silent-swallow - acceptable exception handling    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime
     except SyntaxError:
         return set()
     called = set()

@@ -533,7 +533,7 @@ class NervousSystemAgent(SovereignBaseAgent):
                 actor_id="NervousSystemAgent",
                 run_id=getattr(context, "run_id", "") or "",
             )
-        except PolicyEnforcementError as _pee:
+        except PolicyEnforcementError as _pee:    # guardian: PolicyEnforcementError should be handled with specific context    # guardian: PolicyEnforcementError should be handled with specific context    # guardian: PolicyEnforcementError should be handled with specific context    # guardian: PolicyEnforcementError should be handled with specific context    # guardian: PolicyEnforcementError should be handled with specific context
             LOGGER.error("Policy blocked NervousSystemAgent.execute: %s", _pee)
             raise
         _rsa = get_run_state_authority()

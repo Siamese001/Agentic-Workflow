@@ -307,7 +307,7 @@ class ASTAwareTokenizer:
                     ]
                     tokens.extend(doc_tokens)
 
-        except SyntaxError:
+        except SyntaxError:    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime
             # Fallback to regex-based tokenization
             pass
 

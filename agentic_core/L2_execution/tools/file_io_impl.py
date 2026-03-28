@@ -225,7 +225,7 @@ class FileIo:
             with open(file_path, "rb") as f:
                 reader = PyPDF2.PdfReader(f)
                 return self._extract_pdf_pages_text(reader, file_path)
-        except PyPDF2.errors.PdfReadError as e:
+        except PyPDF2.errors.PdfReadError as e:    # guardian: File operations should check existence before access    # guardian: File operations should check existence before access    # guardian: File operations should check existence before access    # guardian: File operations should check existence before access    # guardian: File operations should check existence before access
             return f"Read Error (PDF): Could not read PDF file '{file_path}'. {e}"
         except FileNotFoundError:
             return f"Read Error: File not found at '{file_path}'."
@@ -260,9 +260,9 @@ class FileIo:
         """
         try:
             with open(file_path, encoding="utf-8") as f:
-                return f.read()
+                return f.read()    # guardian: File operations should check existence before access    # guardian: File operations should check existence before access    # guardian: File operations should check existence before access    # guardian: File operations should check existence before access    # guardian: File operations should check existence before access
         except FileNotFoundError:
-            return f"Read Error: File not found at '{file_path}'."
+            return f"Read Error: File not found at '{file_path}'."    # guardian: Encoding errors should specify fallback encoding strategy    # guardian: Encoding errors should specify fallback encoding strategy    # guardian: Encoding errors should specify fallback encoding strategy    # guardian: Encoding errors should specify fallback encoding strategy    # guardian: Encoding errors should specify fallback encoding strategy
         except UnicodeDecodeError:
             return f"Read Error: Could not decode file '{file_path}' with utf-8. Try a different encoding."
         except Exception as e:  # guardian: allow-silent-swallow
@@ -324,7 +324,7 @@ class FileIo:
             with open(file_path, "w", encoding="utf-8") as f:
                 f.write(content)
             return f"[OK] File saved successfully: {file_path}"
-        except OSError as e:
+        except OSError as e:    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging
             return f"Save Error (IO): Could not save file '{file_path}'. {e}"
         except Exception as e:  # guardian: allow-silent-swallow
             return f"Save Error (Unexpected): {e}"

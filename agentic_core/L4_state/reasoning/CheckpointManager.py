@@ -339,7 +339,7 @@ class CheckpointManager(SovereignBaseAgent):
                 asyncio.get_running_loop()
                 asyncio.ensure_future(self._save_async(checkpoint_id, state_data, file_hashes, metadata))
                 return checkpoint_id
-            except RuntimeError:
+            except RuntimeError:    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation
                 return asyncio.run(self._save_async(checkpoint_id, state_data, file_hashes, metadata))
 
     async def create_checkpoint_async(
@@ -820,7 +820,7 @@ class CheckpointManager(SovereignBaseAgent):
             assert self.storage_path.exists()
             results["passed"] += 1
             results["tests"].append({"name": "test_instantiation", "status": "passed"})
-        except AssertionError as e:
+        except AssertionError as e:    # guardian: AssertionError should be handled with specific context    # guardian: AssertionError should be handled with specific context    # guardian: AssertionError should be handled with specific context    # guardian: AssertionError should be handled with specific context    # guardian: AssertionError should be handled with specific context
             results["failed"] += 1
             results["tests"].append({"name": "test_instantiation", "status": "failed", "error": str(e)})
         try:
@@ -829,7 +829,7 @@ class CheckpointManager(SovereignBaseAgent):
             assert "test" in cp_id
             results["passed"] += 1
             results["tests"].append({"name": "test_checkpoint_id_generation", "status": "passed"})
-        except AssertionError as e:
+        except AssertionError as e:    # guardian: AssertionError should be handled with specific context    # guardian: AssertionError should be handled with specific context    # guardian: AssertionError should be handled with specific context    # guardian: AssertionError should be handled with specific context    # guardian: AssertionError should be handled with specific context
             results["failed"] += 1
             results["tests"].append(
                 {"name": "test_checkpoint_id_generation", "status": "failed", "error": str(e)}
@@ -844,7 +844,7 @@ class CheckpointManager(SovereignBaseAgent):
             assert cp_restored.state_snapshot == cp.state_snapshot
             results["passed"] += 1
             results["tests"].append({"name": "test_checkpoint_serialization", "status": "passed"})
-        except AssertionError as e:
+        except AssertionError as e:    # guardian: AssertionError should be handled with specific context    # guardian: AssertionError should be handled with specific context    # guardian: AssertionError should be handled with specific context    # guardian: AssertionError should be handled with specific context    # guardian: AssertionError should be handled with specific context
             results["failed"] += 1
             results["tests"].append(
                 {"name": "test_checkpoint_serialization", "status": "failed", "error": str(e)}

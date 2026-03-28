@@ -219,7 +219,7 @@ def get_file_imports(file_path: Path) -> list[tuple[str, int]]:
         visitor = GravityVisitor("unknown", file_path)
         visitor.visit(tree)
         return visitor.imports
-    except SyntaxError as e:
+    except SyntaxError as e:    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime
         Logger.debug(f"Syntax error in {file_path}: {e}")
         return []
     # guardian: allow-silent-swallow

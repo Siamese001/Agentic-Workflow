@@ -209,7 +209,7 @@ AGENTIC_CORE = PROJECT_ROOT / AGENTIC_CORE_DIR
 try:
     _DET, _GED, _SEF = _get_ssot_exclusions()
     EXCLUDED_DIRS = _GED | _SEF | _DET
-except Exception:  # guardian: allow-silent-swallow
+except (ValueError, TypeError, RuntimeError) as e:  # guardian: allow-silent-swallow
     EXCLUDED_DIRS = frozenset({"__pycache__", ".git", "node_modules", "venv", ".venv", "archives"})
 
 # Canonical agent methods — presence strongly indicates "agent" role

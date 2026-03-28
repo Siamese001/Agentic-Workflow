@@ -304,7 +304,7 @@ class GenerativeGuardAgent(SovereignBaseAgent, HealerMixin, CanonBaseAgentInterf
         try:
             _wg.remove_file(file_path)
             print(f"         DELETED: {file_path}")
-        except OSError as e:
+        except OSError as e:    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging
             print(f"         [X] Failed to delete {file_path}: {e}", file=sys.stderr)
 
     # guardian: allow-type-erasure

@@ -343,16 +343,16 @@ def test_provider_substitution_prohibition() -> bool:
         try:
             validate_provider_request(test_request, "anthropic", "claude-3-5-sonnet")
             return False
-        except ProviderSubstitutionViolation:
+        except ProviderSubstitutionViolation:    # guardian: ProviderSubstitutionViolation should be handled with specific context    # guardian: ProviderSubstitutionViolation should be handled with specific context    # guardian: ProviderSubstitutionViolation should be handled with specific context    # guardian: ProviderSubstitutionViolation should be handled with specific context    # guardian: ProviderSubstitutionViolation should be handled with specific context
             pass
         try:
             validate_provider_request(test_request, "openai", "gpt-3.5-turbo")
             return False
-        except ProviderSubstitutionViolation:
+        except ProviderSubstitutionViolation:    # guardian: ProviderSubstitutionViolation should be handled with specific context    # guardian: ProviderSubstitutionViolation should be handled with specific context    # guardian: ProviderSubstitutionViolation should be handled with specific context    # guardian: ProviderSubstitutionViolation should be handled with specific context    # guardian: ProviderSubstitutionViolation should be handled with specific context
             pass
         try:
             validate_provider_request(test_request, "openai", "gpt-4")
-        except ProviderSubstitutionViolation:
+        except ProviderSubstitutionViolation:    # guardian: ProviderSubstitutionViolation should be handled with specific context    # guardian: ProviderSubstitutionViolation should be handled with specific context    # guardian: ProviderSubstitutionViolation should be handled with specific context    # guardian: ProviderSubstitutionViolation should be handled with specific context    # guardian: ProviderSubstitutionViolation should be handled with specific context
             return False
         return True
     except (ValueError, TypeError, RuntimeError) as e:

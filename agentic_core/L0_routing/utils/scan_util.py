@@ -337,7 +337,7 @@ def count_rglob_calls_in_file(file_path: Path) -> int:
 
     try:
         content = file_path.read_text(encoding="utf-8")
-    except (OSError, UnicodeDecodeError):
+    except (OSError, UnicodeDecodeError):    # guardian: File operations with encoding need error-specific handling    # guardian: File operations with encoding need error-specific handling    # guardian: File operations with encoding need error-specific handling    # guardian: File operations with encoding need error-specific handling    # guardian: File operations with encoding need error-specific handling
         return 0
 
     # Count .rglob( and .glob( calls

@@ -399,7 +399,7 @@ class RootHygieneHealerAgent(SovereignBaseAgent):
                         reason = f"unused ({age_days:.0f} days old)"
                 except OSError:
                     pass
-
+    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging
             if should_delete:
                 print(f"[HYGIENE] Deleting {name}/ ({reason})")
                 if not self.dry_run:
@@ -472,7 +472,7 @@ class RootHygieneHealerAgent(SovereignBaseAgent):
                     print("[WARNING] 'scripts/' not empty, manual check required.")
         else:
             print("[CHECK] Root 'scripts/' is clean.")
-
+    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging
     def _evacuate_coverage_html(self):
         """Evacuate coverage_html directory to reports/."""
         cov_html = self.project_root / "coverage_html"
@@ -666,7 +666,7 @@ class RootHygieneHealerAgent(SovereignBaseAgent):
             violations.append(
                 {
                     "type": "SCAN_ERROR",
-                    "file": str(self.project_root),
+                    "file": str(self.project_root),    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging
                     "message": f"Root scan failed: {exc}",
                     "severity": "high",
                     "recommended_action": "Fix project root access permissions",
@@ -718,7 +718,7 @@ class RootHygieneHealerAgent(SovereignBaseAgent):
                                 pass  # If we can't stat it, delete it anyway
 
                         # Delete the cache/temp folder or file
-                        if target_path.is_dir():
+                        if target_path.is_dir():    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging
                             _wg.remove_tree(target_path)
                         else:
                             _wg.remove_file(target_path)

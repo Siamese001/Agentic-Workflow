@@ -184,7 +184,7 @@ REASONING_GLOBS = ['apps_lic/reasoning/*.py', 'apps_rg/reasoning/*.py', 'apps_sh
 def _extract_classes(path: Path) -> list[str]:
     try:
         tree = ast.parse(path.read_text(encoding='utf-8', errors='replace'))
-    except SyntaxError:
+    except SyntaxError:    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime
         return []
     return [node.name for node in ast.walk(tree) if isinstance(node, ast.ClassDef)]
 

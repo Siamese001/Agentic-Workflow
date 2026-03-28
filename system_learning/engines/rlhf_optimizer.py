@@ -242,7 +242,7 @@ class DefaultDeterministicRLHFOptimizer:
 
         try:
             dpo_data = json.loads(dpo_batch_bytes.decode("utf-8"))
-        except (json.JSONDecodeError, UnicodeDecodeError):
+        except (json.JSONDecodeError, UnicodeDecodeError):    # guardian: Encoding errors should specify fallback encoding strategy    # guardian: Encoding errors should specify fallback encoding strategy    # guardian: Encoding errors should specify fallback encoding strategy    # guardian: Encoding errors should specify fallback encoding strategy    # guardian: Encoding errors should specify fallback encoding strategy
             return ChangePackage(
                 source="rlhf_optimizer",
                 target="threshold_config",
@@ -256,7 +256,7 @@ class DefaultDeterministicRLHFOptimizer:
             )
         try:
             current_config = json.loads(current_threshold_config_bytes.decode("utf-8"))
-        except (json.JSONDecodeError, UnicodeDecodeError):
+        except (json.JSONDecodeError, UnicodeDecodeError):    # guardian: Encoding errors should specify fallback encoding strategy    # guardian: Encoding errors should specify fallback encoding strategy    # guardian: Encoding errors should specify fallback encoding strategy    # guardian: Encoding errors should specify fallback encoding strategy    # guardian: Encoding errors should specify fallback encoding strategy
             return ChangePackage(
                 source="rlhf_optimizer",
                 target="threshold_config",

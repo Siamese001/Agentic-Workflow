@@ -281,7 +281,7 @@ class RegressionOracleAgent(SovereignBaseAgent):
         violations: list[str] = []
         try:
             tree = _ast.parse(test_code)
-        except SyntaxError as e:
+        except SyntaxError as e:    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime
             return [f"SyntaxError in generated code: {e}"]
         for node in _ast.walk(tree):
             if isinstance(node, _ast.Call):

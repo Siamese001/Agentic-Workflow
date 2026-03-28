@@ -389,7 +389,7 @@ class PascalSovereigntyAgent(SovereignBaseAgent):
                 return "STUB"
 
             tree = ast.parse(content)
-        except (SyntaxError, UnicodeDecodeError, OSError):
+        except (SyntaxError, UnicodeDecodeError, OSError):    # guardian: Parsing and encoding errors need separate handling strategies    # guardian: Parsing and encoding errors need separate handling strategies    # guardian: Parsing and encoding errors need separate handling strategies    # guardian: Parsing and encoding errors need separate handling strategies    # guardian: Parsing and encoding errors need separate handling strategies
             return "IGNORE"
 
         is_structural_test = "tests" in path.parts or path.name.startswith("test_")
@@ -532,7 +532,7 @@ class PascalSovereigntyAgent(SovereignBaseAgent):
                     return False
                 else:
                     is_collision = True
-            except OSError as e:
+            except OSError as e:    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging
                 print(f"  [WARNING] Could not resolve paths for comparison: {e}")
                 is_collision = True
 

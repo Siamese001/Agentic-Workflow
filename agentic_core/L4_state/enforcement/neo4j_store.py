@@ -208,7 +208,7 @@ class Neo4jGraphStore:
         CYPHER = "\n        MERGE (e:Entity {id: $id})\n        SET e.type = $type,\n            E.NAME = $name\n        WITH e\n        CALL apoc.create.addProperties(e, $metadata) YIELD node\n        RETURN node\n        "
         try:
             self.run(CYPHER, {"id": entity_id, "type": etype, "name": name, "metadata": metadata or {}})
-        except Exception:
+        except (ValueError, TypeError, RuntimeError) as e:
             raise
             fallback_cypher = "\n            MERGE (e:Entity {id: $id})\n            SET e.type = $type,\n                E.NAME = $name,\n                E += $metadata\n            RETURN e\n            "
             self.run(
@@ -245,7 +245,7 @@ class Neo4jGraphStore:
             try:
                 CYPHER += "\n                WITH r\n                CALL apoc.create.addProperties(r, $attrs) YIELD rel\n                RETURN rel\n                "
                 params["attrs"] = attrs
-            except Exception:
+            except (ValueError, TypeError, RuntimeError) as e:
                 raise
                 CYPHER += "\nSET r += $attrs"
                 params["attrs"] = attrs

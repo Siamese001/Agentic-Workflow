@@ -1081,7 +1081,7 @@ class ArchitectureGovernorAgent(SovereignBaseAgent):
                     Logger.info(f"  [CLEANUP] Removed empty directory: {rel_path}")
                 except ValueError:
                     Logger.info(f"  [CLEANUP] Removed empty directory: {path}")
-            except OSError:
+            except OSError:    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging
                 pass
 
     def finalize_sovereign_lockdown(self) -> tuple[bool, dict]:

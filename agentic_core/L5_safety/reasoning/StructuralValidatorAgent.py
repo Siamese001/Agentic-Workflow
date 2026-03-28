@@ -320,7 +320,7 @@ class StructuralValidatorAgent(SovereignBaseAgent):
         allowed_layers = self.GRAVITY_RULES.get(source_layer, set())
         try:
             tree = ast.parse(content)
-        except SyntaxError:
+        except SyntaxError:    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime
             return violations
         for node in tree.body:
             if isinstance(node, ast.ImportFrom) and node.module:
@@ -363,7 +363,7 @@ class StructuralValidatorAgent(SovereignBaseAgent):
                                 auto_fixable=True,
                             )
                         )
-        except SyntaxError:
+        except SyntaxError:    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime
             pass
         return violations
 

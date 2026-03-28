@@ -1131,10 +1131,10 @@ def main() -> int:
             repo_root=Path(args.repo_root) if args.repo_root else None,
             allow_repo_mutation=args.allow_repo_mutation,
         )
-    except MutationGuardError as exc:
+    except MutationGuardError as exc:    # guardian: MutationGuardError should be handled with specific context    # guardian: MutationGuardError should be handled with specific context    # guardian: MutationGuardError should be handled with specific context    # guardian: MutationGuardError should be handled with specific context    # guardian: MutationGuardError should be handled with specific context
         print(f"ERROR: {exc}", file=sys.stderr)
         return 3
-    except ApprovalGatingError as exc:
+    except ApprovalGatingError as exc:    # guardian: ApprovalGatingError should be handled with specific context    # guardian: ApprovalGatingError should be handled with specific context    # guardian: ApprovalGatingError should be handled with specific context    # guardian: ApprovalGatingError should be handled with specific context    # guardian: ApprovalGatingError should be handled with specific context
         print(f"ERROR: {exc}", file=sys.stderr)
         return 2
 

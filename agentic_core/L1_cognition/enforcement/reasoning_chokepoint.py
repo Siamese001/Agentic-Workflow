@@ -375,7 +375,7 @@ def reason_and_record(
             reasoning_context.trace_id,
         )
 
-    except ReasoningPlanError as _rpe:
+    except ReasoningPlanError as _rpe:    # guardian: ReasoningPlanError should be handled with specific context    # guardian: ReasoningPlanError should be handled with specific context    # guardian: ReasoningPlanError should be handled with specific context    # guardian: ReasoningPlanError should be handled with specific context    # guardian: ReasoningPlanError should be handled with specific context
         logger.warning(
             "REASONING_PLAN_FAILED: %s, continuing without plan",
             _rpe,
@@ -510,7 +510,7 @@ def reason_and_record(
             evaluator_id=reasoning_context.model_id or "ReasoningChokepoint",
             outcome=ReasoningEvaluationOutcome.PASS,
         )
-    except OrphanReasoningEvaluationError as _oee:
+    except OrphanReasoningEvaluationError as _oee:    # guardian: OrphanReasoningEvaluationError should be handled with specific context    # guardian: OrphanReasoningEvaluationError should be handled with specific context    # guardian: OrphanReasoningEvaluationError should be handled with specific context    # guardian: OrphanReasoningEvaluationError should be handled with specific context    # guardian: OrphanReasoningEvaluationError should be handled with specific context
         logger.warning("reason_and_record: orphan evaluation guard triggered: %s", _oee)
     except Exception as _ee:  # guardian: allow-silent-swallow
         logger.debug("reason_and_record: evaluation emission failed: %s", _ee)

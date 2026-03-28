@@ -225,7 +225,7 @@ class DependencyPruningAgent(SovereignBaseAgent):
             if result.returncode == 0:
                 data: dict[str, Any] = json.loads(result.stdout)
                 return data.get("unused", [])
-        except FileNotFoundError:
+        except FileNotFoundError:    # guardian: File operations should check existence before access    # guardian: File operations should check existence before access    # guardian: File operations should check existence before access    # guardian: File operations should check existence before access    # guardian: File operations should check existence before access
             pass
         # guardian: allow-silent-swallow
         except (json.JSONDecodeError, Exception):

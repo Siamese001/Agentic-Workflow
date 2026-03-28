@@ -638,7 +638,7 @@ class ToolsmithAgent(SovereignBaseAgent):
                         write_text(str(file_path), content)
                         results["seeded"].append(str(file_path.relative_to(project_root)))
                         Logger.info(f"Seeded: {file_path.relative_to(project_root)}")
-                    except OSError as e:
+                    except OSError as e:    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging
                         results["errors"].append(f"{filename}: {e}")
         return results
 

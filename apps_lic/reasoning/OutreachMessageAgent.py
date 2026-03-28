@@ -278,9 +278,9 @@ class OutreachMessageAgent:
         try:
             content = template_path.read_text(encoding="utf-8")
             return content.format(**payload)
-        except FileNotFoundError:
+        except FileNotFoundError:    # guardian: File operations should check existence before access    # guardian: File operations should check existence before access    # guardian: File operations should check existence before access    # guardian: File operations should check existence before access    # guardian: File operations should check existence before access
             raise OutreachTemplateError(f"Template file not found: {template_path}")
-        except (OSError, UnicodeDecodeError) as e:
+        except (OSError, UnicodeDecodeError) as e:    # guardian: File operations with encoding need error-specific handling    # guardian: File operations with encoding need error-specific handling    # guardian: File operations with encoding need error-specific handling    # guardian: File operations with encoding need error-specific handling    # guardian: File operations with encoding need error-specific handling
             raise OutreachTemplateError(f"Error reading template file {template_path}: {e}")
         except KeyError as e:
             raise OutreachTemplateError(f"Missing template variable {e} in {template_path}")

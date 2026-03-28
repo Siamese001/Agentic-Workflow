@@ -506,7 +506,7 @@ class SSOTFolderCleanupAgent(SovereignBaseAgent):
         """
         try:
             tree = ast.parse(content)
-        # guardian: allow-silent-swallow - acceptable exception handling
+        # guardian: allow-silent-swallow - acceptable exception handling    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime
         except SyntaxError:
             Logger.warning("Syntax error in file, skipping import updates")
             return content
@@ -554,7 +554,7 @@ class SSOTFolderCleanupAgent(SovereignBaseAgent):
                     dir_path.rmdir()
                     Logger.info(f"Deleted empty folder: {dir_path}")
                     deleted_count += 1
-                    # guardian: allow-silent-swallow - acceptable exception handling
+                    # guardian: allow-silent-swallow - acceptable exception handling    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging
                     self.stats["folders_deleted"] += 1
                 except OSError as e:
                     Logger.warning(f"Failed to delete folder {dir_path}: {e}")

@@ -226,7 +226,7 @@ class GitHygieneAgent(SovereignBaseAgent):
         try:
             result = safe_git_execute(cmd, repo_root=self.project_root, timeout=kwargs.get("timeout", 30))
             return result.stdout.strip() if result.returncode == 0 else ""
-        except FileNotFoundError:
+        except FileNotFoundError:    # guardian: File operations should check existence before access    # guardian: File operations should check existence before access    # guardian: File operations should check existence before access    # guardian: File operations should check existence before access    # guardian: File operations should check existence before access
             if hasattr(self.ctx, "report"):
                 self.ctx.report("GitHygieneAgent", 0, False, "git not installed")
             return ""

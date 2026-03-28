@@ -222,7 +222,7 @@ class UnusedCleanupAgent(CodeToolRunnerCapability, SovereignBaseAgent):
             )
             if result.returncode == 0:
                 return {"healed": True, "action": "unused_removed"}
-        except FileNotFoundError:
+        except FileNotFoundError:    # guardian: File operations should check existence before access    # guardian: File operations should check existence before access    # guardian: File operations should check existence before access    # guardian: File operations should check existence before access    # guardian: File operations should check existence before access
             return {"healed": False, "error": "autoflake not installed"}
         return {"healed": False}
 

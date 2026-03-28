@@ -263,7 +263,7 @@ class DependencyGraph:
                     elif isinstance(node, ast.ImportFrom):
                         if node.module:
                             self.graph[file_path]["imports"].append(node.module)
-            except (OSError, SyntaxError, UnicodeDecodeError):
+            except (OSError, SyntaxError, UnicodeDecodeError):    # guardian: Parsing and encoding errors need separate handling strategies    # guardian: Parsing and encoding errors need separate handling strategies    # guardian: Parsing and encoding errors need separate handling strategies    # guardian: Parsing and encoding errors need separate handling strategies    # guardian: Parsing and encoding errors need separate handling strategies
                 continue
         for file, data in self.graph.items():
             for imp in data["imports"]:
@@ -364,7 +364,7 @@ class ValidationContext:
                     data = json.load(f)
                     self.file_hashes = data.get("hashes", {})
                     self.skip_files = set(data.get("skip", []))
-            except (OSError, json.JSONDecodeError) as e:
+            except (OSError, json.JSONDecodeError) as e:    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging
                 print(f"      [DEBUG] Failed to load memory: {e}")
 
     def _save_memory(self):
@@ -383,7 +383,7 @@ class ValidationContext:
         try:
             with open(file_path, encoding="utf-8") as f:
                 return f.read()
-        except (OSError, UnicodeDecodeError):
+        except (OSError, UnicodeDecodeError):    # guardian: File operations with encoding need error-specific handling    # guardian: File operations with encoding need error-specific handling    # guardian: File operations with encoding need error-specific handling    # guardian: File operations with encoding need error-specific handling    # guardian: File operations with encoding need error-specific handling
             return ""
 
     def write_compliant_file(self, path: str, content: str) -> bool:
@@ -492,7 +492,7 @@ class ValidationContext:
                     elif isinstance(node, ast.ImportFrom):
                         if node.module:
                             self.graph.graph[file_path]["imports"].append(node.module)
-            except (OSError, SyntaxError, UnicodeDecodeError):
+            except (OSError, SyntaxError, UnicodeDecodeError):    # guardian: Parsing and encoding errors need separate handling strategies    # guardian: Parsing and encoding errors need separate handling strategies    # guardian: Parsing and encoding errors need separate handling strategies    # guardian: Parsing and encoding errors need separate handling strategies    # guardian: Parsing and encoding errors need separate handling strategies
                 continue
         for file, data in self.graph.graph.items():
             for imp in data["imports"]:

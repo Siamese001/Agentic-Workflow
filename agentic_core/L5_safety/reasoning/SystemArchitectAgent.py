@@ -272,7 +272,7 @@ class SystemArchitectAgent(SovereignBaseAgent):
                     violations.append(f"{file_path}: Missing Canonical Header Docstring")
                 if TESTS_DIR in str(file_path) and "Test Protocol" not in content:
                     violations.append(f"{file_path}: Missing Test Protocol in header")
-            except (OSError, UnicodeDecodeError):
+            except (OSError, UnicodeDecodeError):    # guardian: File operations with encoding need error-specific handling    # guardian: File operations with encoding need error-specific handling    # guardian: File operations with encoding need error-specific handling    # guardian: File operations with encoding need error-specific handling    # guardian: File operations with encoding need error-specific handling
                 continue
         return violations
 
@@ -377,7 +377,7 @@ class SystemArchitectAgent(SovereignBaseAgent):
                         elif isinstance(node, ast.ImportFrom):
                             if node.module:
                                 dependency_graph[mod].add(node.module)
-                except (OSError, UnicodeDecodeError, SyntaxError) as e:
+                except (OSError, UnicodeDecodeError, SyntaxError) as e:    # guardian: Parsing and encoding errors need separate handling strategies    # guardian: Parsing and encoding errors need separate handling strategies    # guardian: Parsing and encoding errors need separate handling strategies    # guardian: Parsing and encoding errors need separate handling strategies    # guardian: Parsing and encoding errors need separate handling strategies
                     Logger.warning(f"Failed to parse {p}: {e}")
             self._cached_scan_root = cache_key
             self._cached_module_map = module_map
@@ -482,7 +482,7 @@ class SystemArchitectAgent(SovereignBaseAgent):
                     line_count: Any = len(f.readlines())
                 if line_count > max_lines:
                     violations.append(f"{file_path}: {line_count} lines exceeds max {max_lines}")
-            except (OSError, UnicodeDecodeError):
+            except (OSError, UnicodeDecodeError):    # guardian: File operations with encoding need error-specific handling    # guardian: File operations with encoding need error-specific handling    # guardian: File operations with encoding need error-specific handling    # guardian: File operations with encoding need error-specific handling    # guardian: File operations with encoding need error-specific handling
                 continue
         return (len(violations) == 0, violations)
 
@@ -534,7 +534,7 @@ class SystemArchitectAgent(SovereignBaseAgent):
             resolved_path = Path(file_path).resolve()
             with open(resolved_path, encoding="utf-8") as f:
                 original_code = f.read()
-        except (OSError, UnicodeDecodeError) as e:
+        except (OSError, UnicodeDecodeError) as e:    # guardian: File operations with encoding need error-specific handling    # guardian: File operations with encoding need error-specific handling    # guardian: File operations with encoding need error-specific handling    # guardian: File operations with encoding need error-specific handling    # guardian: File operations with encoding need error-specific handling
             print(f"      [!] Cannot read {file_path}: {e}")
             return
         if any(

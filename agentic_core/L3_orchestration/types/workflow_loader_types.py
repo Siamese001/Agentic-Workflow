@@ -275,7 +275,7 @@ class WorkflowLoader:
             with open(self.workflow_path, encoding="utf-8") as f:
                 self._workflow_data = json.load(f)
             LOGGER.info(f"Loaded workflow v{self.get_version()} from {self.workflow_path}")
-        except FileNotFoundError:
+        except FileNotFoundError:    # guardian: File operations should check existence before access    # guardian: File operations should check existence before access    # guardian: File operations should check existence before access    # guardian: File operations should check existence before access    # guardian: File operations should check existence before access
             LOGGER.warning(f"Workflow file not found at {self.workflow_path}, using fallback defaults")
             self._workflow_data = self._get_fallback_workflow()
         except json.JSONDecodeError as e:

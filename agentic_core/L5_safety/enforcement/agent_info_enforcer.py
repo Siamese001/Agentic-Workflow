@@ -380,7 +380,7 @@ def find_agent_classes(base_path: str) -> list[AgentInfo]:
                                 method_names=method_names,
                             )
                         )
-                    except SyntaxError:
+                    except SyntaxError:    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime
                         agents.append(
                             AgentInfo(
                                 name=class_name,
@@ -420,7 +420,7 @@ def generate_fingerprint(file_path: str, class_name: str) -> tuple[str, str]:
             normalized_code = ast.dump(normalized)
         fingerprint = hashlib.sha256(normalized_code.encode()).hexdigest()[:16]
         return (fingerprint, normalized_code)
-    except SyntaxError as e:
+    except SyntaxError as e:    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime
         return ("SYNTAX_ERROR", str(e))
     # guardian: allow-silent-swallow
     except Exception as e:

@@ -301,7 +301,7 @@ def deduplicate_file(file_path: Path, dry_run: bool = True) -> dict:
             'dry_run': dry_run,
         }
 
-    # guardian: allow-silent-swallow - acceptable exception handling
+    # guardian: allow-silent-swallow - acceptable exception handling    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime
     except SyntaxError as e:
         return {
             'status': 'error',

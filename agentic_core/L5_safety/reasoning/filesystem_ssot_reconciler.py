@@ -421,7 +421,7 @@ class FilesystemSSOTReconcilerAgent(AutonomyMixin, SelfDiagnosisMixin, L0Routing
             Logger.info("User approved changes - proceeding with application")
             return (True, None)
         except KeyboardInterrupt:
-            Logger.warning("User aborted reconciliation")
+            Logger.warning("User aborted reconciliation")    # guardian: KeyboardInterrupt should be handled with specific context    # guardian: KeyboardInterrupt should be handled with specific context    # guardian: KeyboardInterrupt should be handled with specific context    # guardian: KeyboardInterrupt should be handled with specific context    # guardian: KeyboardInterrupt should be handled with specific context
             return (False, self._create_rejected_result(proposals, "Reconciliation aborted by user"))
 
     # guardian: allow-type-erasure
@@ -974,7 +974,7 @@ class FilesystemSSOTReconcilerAgent(AutonomyMixin, SelfDiagnosisMixin, L0Routing
                 Logger.warning("Non-interactive environment detected - cannot request approval")
                 print("\n[ERROR] Cannot request approval in non-interactive environment")
                 return False
-
+    # guardian: EOFError should be handled with specific context    # guardian: EOFError should be handled with specific context    # guardian: EOFError should be handled with specific context    # guardian: EOFError should be handled with specific context    # guardian: EOFError should be handled with specific context
     def _validate_blueprint_syntax(self) -> bool:
         """
         Ensure blueprint is still valid Python after modifications.
@@ -991,7 +991,7 @@ class FilesystemSSOTReconcilerAgent(AutonomyMixin, SelfDiagnosisMixin, L0Routing
             Logger.error(f"Blueprint syntax error after update: {e}")
             return False
 
-    def _rollback_to_backup(self, backup_path: Path) -> None:
+    def _rollback_to_backup(self, backup_path: Path) -> None:    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime
         """
         Restore blueprint from backup (Phase 3 safety mechanism).
 

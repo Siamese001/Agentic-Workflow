@@ -31,7 +31,7 @@ class Chunk:
     end_pos: int
     chunk_type: str = "text"
     metadata: dict[str, Any] = None
-    
+
     def __post_init__(self):
         if self.metadata is None:
             self.metadata = {}
@@ -39,15 +39,15 @@ class Chunk:
 
 class ChunkingStrategy(ABC):
     """Abstract base class for chunking strategies."""
-    
+
     @abstractmethod
     def chunk(self, text: str, doc_id: str = "") -> list[Chunk]:
         """Chunk text into pieces.
-        
+
         Args:
             text: Text to chunk
             doc_id: Document identifier
-            
+
         Returns:
             List of chunks
         """
@@ -56,13 +56,13 @@ class ChunkingStrategy(ABC):
 
 class FixedTokenChunker(ChunkingStrategy):
     """Fixed-size token chunking.
-    
+
     Chunks text into fixed-size pieces by token count.
     """
-    
+
     def __init__(self, tokens_per_chunk: int = 512, overlap_tokens: int = 50):
         """Initialize fixed token chunker.
-        
+
         Args:
             tokens_per_chunk: Tokens per chunk (default 512)
             overlap_tokens: Overlap between chunks (default 50)
@@ -70,28 +70,28 @@ class FixedTokenChunker(ChunkingStrategy):
         self.tokens_per_chunk = tokens_per_chunk
         self.overlap_tokens = overlap_tokens
         self.approx_chars_per_token = 4  # Rough estimate
-    
+
     def chunk(self, text: str, doc_id: str = "") -> list[Chunk]:
         """Chunk text into fixed-size pieces."""
         _emit_records_execution_trace(
             f"chunk_fixed_{doc_id}", LayerSegment.L2_EXECUTION, "FixedTokenChunker.chunk"
         )
-        
+
         chunks = []
         chars_per_chunk = self.tokens_per_chunk * self.approx_chars_per_token
         overlap_chars = self.overlap_tokens * self.approx_chars_per_token
-        
+
         start = 0
         chunk_idx = 0
-        
+
         while start < len(text):
             end = min(start + chars_per_chunk, len(text))
-            
+
             # Extend to word boundary
             if end < len(text):
                 while end < len(text) and text[end] not in ' \n\t':
                     end += 1
-            
+
             chunk_text = text[start:end].strip()
             if chunk_text:
                 chunks.append(Chunk(
@@ -106,24 +106,24 @@ class FixedTokenChunker(ChunkingStrategy):
                     },
                 ))
                 chunk_idx += 1
-            
+
             # Move start with overlap
             start = end - overlap_chars if end < len(text) else end
             if start >= end:  # Prevent infinite loop
                 start = end
-        
+
         return chunks
 
 
 class OverlapWindowChunker(ChunkingStrategy):
     """Sliding window chunking with overlap.
-    
+
     Uses sliding windows with configurable stride.
     """
-    
+
     def __init__(self, window_size: int = 400, stride: int = 200):
         """Initialize overlap window chunker.
-        
+
         Args:
             window_size: Window size in tokens (default 400)
             stride: Stride between windows in tokens (default 200)
@@ -131,23 +131,23 @@ class OverlapWindowChunker(ChunkingStrategy):
         self.window_size = window_size
         self.stride = stride
         self.approx_chars_per_token = 4
-    
+
     def chunk(self, text: str, doc_id: str = "") -> list[Chunk]:
         """Chunk text using sliding windows."""
         _emit_records_execution_trace(
             f"chunk_overlap_{doc_id}", LayerSegment.L2_EXECUTION, "OverlapWindowChunker.chunk"
         )
-        
+
         chunks = []
         window_chars = self.window_size * self.approx_chars_per_token
         stride_chars = self.stride * self.approx_chars_per_token
-        
+
         start = 0
         chunk_idx = 0
-        
+
         while start < len(text):
             end = min(start + window_chars, len(text))
-            
+
             chunk_text = text[start:end].strip()
             if len(chunk_text) > 50:  # Minimum chunk size
                 chunks.append(Chunk(
@@ -163,27 +163,27 @@ class OverlapWindowChunker(ChunkingStrategy):
                     },
                 ))
                 chunk_idx += 1
-            
+
             start += stride_chars
-        
+
         return chunks
 
 
 class SectionAwareChunker(ChunkingStrategy):
     """Section/heading-aware chunking.
-    
+
     Chunks based on document structure (headings, sections).
     """
-    
+
     def __init__(self, max_section_tokens: int = 1000):
         """Initialize section-aware chunker.
-        
+
         Args:
             max_section_tokens: Max tokens per section (default 1000)
         """
         self.max_section_tokens = max_section_tokens
         self.approx_chars_per_token = 4
-        
+
         # Heading patterns
         self.heading_patterns = [
             r'^#{1,6}\s+(.+)$',  # Markdown headings
@@ -191,17 +191,17 @@ class SectionAwareChunker(ChunkingStrategy):
             r'^\d+\.\s+(.+)$',     # Numbered sections
             r'^[A-Z][A-Z\s]+$',   # ALL CAPS headings
         ]
-    
+
     def _find_headings(self, text: str) -> list[tuple[int, str]]:
         """Find all headings in text.
-        
+
         Returns:
             List of (position, heading_text) tuples
         """
         headings = []
         lines = text.split('\n')
         pos = 0
-        
+
         for i, line in enumerate(lines):
             for pattern in self.heading_patterns:
                 match = re.match(pattern, line.strip())
@@ -209,33 +209,33 @@ class SectionAwareChunker(ChunkingStrategy):
                     headings.append((pos, line.strip()))
                     break
             pos += len(line) + 1  # +1 for newline
-        
+
         return headings
-    
+
     def chunk(self, text: str, doc_id: str = "") -> list[Chunk]:
         """Chunk text by sections."""
         _emit_records_execution_trace(
             f"chunk_section_{doc_id}", LayerSegment.L2_EXECUTION, "SectionAwareChunker.chunk"
         )
-        
+
         headings = self._find_headings(text)
-        
+
         if not headings:
             # No headings found, fall back to fixed token
             return FixedTokenChunker().chunk(text, doc_id)
-        
+
         chunks = []
         max_chars = self.max_section_tokens * self.approx_chars_per_token
-        
+
         for i, (start_pos, heading) in enumerate(headings):
             # Section extends to next heading or end
             if i + 1 < len(headings):
                 end_pos = headings[i + 1][0]
             else:
                 end_pos = len(text)
-            
+
             section_text = text[start_pos:end_pos].strip()
-            
+
             # If section too large, subdivide
             if len(section_text) > max_chars:
                 sub_chunks = self._subdivide_section(section_text, start_pos, max_chars)
@@ -266,9 +266,9 @@ class SectionAwareChunker(ChunkingStrategy):
                         "strategy": "section_aware",
                     },
                 ))
-        
+
         return chunks
-    
+
     def _subdivide_section(
         self,
         section_text: str,
@@ -278,15 +278,15 @@ class SectionAwareChunker(ChunkingStrategy):
         """Subdivide a large section into smaller chunks."""
         sub_chunks = []
         start = 0
-        
+
         while start < len(section_text):
             end = min(start + max_chars, len(section_text))
-            
+
             # Extend to paragraph boundary
             if end < len(section_text):
                 while end < len(section_text) and section_text[end:end+2] != '\n\n':
                     end += 1
-            
+
             chunk_text = section_text[start:end].strip()
             if chunk_text:
                 sub_chunks.append((
@@ -294,21 +294,21 @@ class SectionAwareChunker(ChunkingStrategy):
                     section_start + end,
                     chunk_text,
                 ))
-            
+
             start = end
-        
+
         return sub_chunks
 
 
 class SemanticObjectChunker(ChunkingStrategy):
     """Semantic object chunking.
-    
+
     Chunks based on semantic units (paragraphs, sentences, semantic boundaries).
     """
-    
+
     def __init__(self, target_tokens: int = 300, max_tokens: int = 500):
         """Initialize semantic object chunker.
-        
+
         Args:
             target_tokens: Target tokens per chunk (default 300)
             max_tokens: Maximum tokens per chunk (default 500)
@@ -316,26 +316,26 @@ class SemanticObjectChunker(ChunkingStrategy):
         self.target_tokens = target_tokens
         self.max_tokens = max_tokens
         self.approx_chars_per_token = 4
-    
+
     def _split_into_units(self, text: str) -> list[tuple[int, int, str, str]]:
         """Split text into semantic units.
-        
+
         Returns:
             List of (start, end, unit_type, content) tuples
         """
         units = []
         pos = 0
-        
+
         # Split into paragraphs first
         paragraphs = re.split(r'\n\n+', text)
-        
+
         for para in paragraphs:
             para = para.strip()
             if not para:
                 continue
-            
+
             para_len = len(para)
-            
+
             # Check if paragraph is small enough
             if para_len <= self.max_tokens * self.approx_chars_per_token:
                 units.append((pos, pos + para_len, "paragraph", para))
@@ -343,44 +343,44 @@ class SemanticObjectChunker(ChunkingStrategy):
                 # Split large paragraphs into sentences
                 sentences = re.split(r'(?<=[.!?])\s+', para)
                 sent_pos = pos
-                
+
                 for sent in sentences:
                     sent = sent.strip()
                     if sent:
                         sent_len = len(sent)
                         units.append((sent_pos, sent_pos + sent_len, "sentence", sent))
                         sent_pos += sent_len + 1
-            
+
             pos += para_len + 2  # +2 for paragraph breaks
-        
+
         return units
-    
+
     def chunk(self, text: str, doc_id: str = "") -> list[Chunk]:
         """Chunk text into semantic objects."""
         _emit_records_execution_trace(
             f"chunk_semantic_{doc_id}", LayerSegment.L2_EXECUTION, "SemanticObjectChunker.chunk"
         )
-        
+
         units = self._split_into_units(text)
         chunks = []
         chunk_idx = 0
-        
+
         current_units = []
         current_size = 0
         chunk_start = units[0][0] if units else 0
-        
+
         target_chars = self.target_tokens * self.approx_chars_per_token
         max_chars = self.max_tokens * self.approx_chars_per_token
-        
+
         for start, end, unit_type, content in units:
             unit_size = end - start
-            
+
             # Check if adding this unit exceeds max
             if current_size + unit_size > max_chars and current_units:
                 # Finalize current chunk
                 chunk_text = ' '.join(u[3] for u in current_units)
                 chunk_end = current_units[-1][1]
-                
+
                 chunks.append(Chunk(
                     id=f"{doc_id}_semantic_{chunk_idx}",
                     content=chunk_text,
@@ -394,7 +394,7 @@ class SemanticObjectChunker(ChunkingStrategy):
                     },
                 ))
                 chunk_idx += 1
-                
+
                 # Start new chunk
                 current_units = [(start, end, unit_type, content)]
                 current_size = unit_size
@@ -402,12 +402,12 @@ class SemanticObjectChunker(ChunkingStrategy):
             else:
                 current_units.append((start, end, unit_type, content))
                 current_size += unit_size
-            
+
             # Check if we've hit target size
             if current_size >= target_chars:
                 chunk_text = ' '.join(u[3] for u in current_units)
                 chunk_end = current_units[-1][1]
-                
+
                 chunks.append(Chunk(
                     id=f"{doc_id}_semantic_{chunk_idx}",
                     content=chunk_text,
@@ -421,16 +421,16 @@ class SemanticObjectChunker(ChunkingStrategy):
                     },
                 ))
                 chunk_idx += 1
-                
+
                 current_units = []
                 current_size = 0
                 chunk_start = end
-        
+
         # Add remaining units
         if current_units:
             chunk_text = ' '.join(u[3] for u in current_units)
             chunk_end = current_units[-1][1]
-            
+
             chunks.append(Chunk(
                 id=f"{doc_id}_semantic_{chunk_idx}",
                 content=chunk_text,
@@ -443,51 +443,51 @@ class SemanticObjectChunker(ChunkingStrategy):
                     "strategy": "semantic_object",
                 },
             ))
-        
+
         return chunks
 
 
 class ChunkingEngine:
     """Unified chunking engine with strategy selection.
-    
+
     Automatically selects appropriate chunking strategy based on document type.
     """
-    
+
     STRATEGIES = {
         "fixed_token": FixedTokenChunker,
         "overlap_window": OverlapWindowChunker,
         "section_aware": SectionAwareChunker,
         "semantic_object": SemanticObjectChunker,
     }
-    
+
     def __init__(self, default_strategy: str = "semantic_object"):
         """Initialize chunking engine.
-        
+
         Args:
             default_strategy: Default chunking strategy
         """
         self.default_strategy = default_strategy
         self._chunkers: dict[str, ChunkingStrategy] = {}
-    
+
     def get_chunker(self, strategy: Optional[str] = None) -> ChunkingStrategy:
         """Get chunker for strategy.
-        
+
         Args:
             strategy: Strategy name (defaults to default_strategy)
-            
+
         Returns:
             ChunkingStrategy instance
         """
         strategy = strategy or self.default_strategy
-        
+
         if strategy not in self._chunkers:
             if strategy in self.STRATEGIES:
                 self._chunkers[strategy] = self.STRATEGIES[strategy]()
             else:
                 self._chunkers[strategy] = SemanticObjectChunker()
-        
+
         return self._chunkers[strategy]
-    
+
     def chunk(
         self,
         text: str,
@@ -495,28 +495,28 @@ class ChunkingEngine:
         strategy: Optional[str] = None,
     ) -> list[Chunk]:
         """Chunk text using specified strategy.
-        
+
         Args:
             text: Text to chunk
             doc_id: Document identifier
             strategy: Chunking strategy (auto-selected if None)
-            
+
         Returns:
             List of chunks
         """
         # Auto-select strategy based on content
         if strategy is None:
             strategy = self._auto_select_strategy(text)
-        
+
         chunker = self.get_chunker(strategy)
         return chunker.chunk(text, doc_id)
-    
+
     def _auto_select_strategy(self, text: str) -> str:
         """Auto-select best strategy for text.
-        
+
         Args:
             text: Text to analyze
-            
+
         Returns:
             Strategy name
         """
@@ -525,25 +525,25 @@ class ChunkingEngine:
 [=-]+|\d+\.\s+)'
         if re.search(heading_pattern, text, re.MULTILINE):
             return "section_aware"
-        
+
         # Check for code blocks (semantic chunking better)
         if '```' in text or text.count('\n    ') > 10:
             return "semantic_object"
-        
+
         # Default
         return self.default_strategy
-    
+
     def chunk_batch(
         self,
         documents: list[tuple[str, str]],  # (doc_id, text) pairs
         strategy: Optional[str] = None,
     ) -> dict[str, list[Chunk]]:
         """Chunk multiple documents.
-        
+
         Args:
             documents: List of (doc_id, text) tuples
             strategy: Chunking strategy
-            
+
         Returns:
             Dict mapping doc_id to chunks
         """

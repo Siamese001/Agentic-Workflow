@@ -519,7 +519,7 @@ class SubAtomicRegistryAgent(SovereignBaseAgent):
                         doc = ast.get_docstring(node) or "No docstring provided."
                         source_lines = ast.get_source_segment(open(py_file).read(), node) or ""
                         methods.append(
-                            {
+                            {    # guardian: Parsing and encoding errors need separate handling strategies    # guardian: Parsing and encoding errors need separate handling strategies    # guardian: Parsing and encoding errors need separate handling strategies    # guardian: Parsing and encoding errors need separate handling strategies    # guardian: Parsing and encoding errors need separate handling strategies
                                 "id": f"{py_file.stem}_{node.name}",
                                 "path": str(py_file),
                                 "method": node.name,
@@ -535,7 +535,7 @@ class SubAtomicRegistryAgent(SovereignBaseAgent):
         return methods
 
     # guardian: allow-type-erasure
-    def rebuild_registry(self) -> Any:
+    def rebuild_registry(self) -> Any:    # guardian: File operations with encoding need error-specific handling    # guardian: File operations with encoding need error-specific handling    # guardian: File operations with encoding need error-specific handling    # guardian: File operations with encoding need error-specific handling    # guardian: File operations with encoding need error-specific handling
         """Rebuild — full method index + Redis cache warm"""
         print("   [REBUILD] SubAtomicRegistry: Indexing all methods...")
         methods = self.extract_methods()

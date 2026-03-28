@@ -377,7 +377,7 @@ class DDDAlignmentAgent(SovereignBaseAgent):
         try:
             content = filepath.read_text(encoding="utf-8")
             tree = ast.parse(content)
-        except (SyntaxError, UnicodeDecodeError) as e:
+        except (SyntaxError, UnicodeDecodeError) as e:    # guardian: Parsing and encoding errors need separate handling strategies    # guardian: Parsing and encoding errors need separate handling strategies    # guardian: Parsing and encoding errors need separate handling strategies    # guardian: Parsing and encoding errors need separate handling strategies    # guardian: Parsing and encoding errors need separate handling strategies
             Logger.debug(f"Could not parse {filepath}: {e}")
             return violations
         for node in ast.walk(tree):

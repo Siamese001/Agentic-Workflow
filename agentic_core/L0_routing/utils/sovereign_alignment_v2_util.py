@@ -209,7 +209,7 @@ def flush_and_align() -> Any:
             try:
                 src_path.rmdir()
                 print(f"  [>] Migrated Drift: {source} -> {target}")
-            except OSError:
+            except OSError:    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging
                 print(f"  [!] Could not remove {source} (not empty)")
         else:
             print(f"  [-] Skipped: {source} (not found)")
