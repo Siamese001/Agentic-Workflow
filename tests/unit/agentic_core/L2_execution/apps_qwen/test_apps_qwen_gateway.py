@@ -1,33 +1,42 @@
-"""Placeholder test file - syntax fixed."""
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300
+"""Tests for apps_qwen_gateway module."""
 import unittest
 
-class GeneratedTest(unittest.TestCase):
-    """Generated test class for agentic_core.L2_execution.apps_qwen."""
+from agentic_core.L2_execution.apps_qwen import (
+    AppsQwenGateway,
+    AppsQwenRequest,
+    AppsQwenResponse,
+)
 
-    def test_health_check(self):
-        """Test health_check function."""
-        from agentic_core.L2_execution.apps_qwen import health_check
-        result = health_check()
-        self.assertIsNotNone(result)
+
+class TestAppsQwenGateway(unittest.TestCase):
+    """Test class for AppsQwenGateway."""
 
     def test_AppsQwenRequest_init(self):
         """Test AppsQwenRequest initialization."""
-        from agentic_core.L2_execution.apps_qwen import AppsQwenRequest
-        instance = AppsQwenRequest()
+        instance = AppsQwenRequest(
+            app_name="test_app",
+            prompt="Test prompt",
+            confidence_threshold=0.7,
+            max_tokens=1024,
+            temperature=0.3,
+        )
         self.assertIsNotNone(instance)
+        self.assertEqual(instance.app_name, "test_app")
+        self.assertEqual(instance.prompt, "Test prompt")
 
     def test_AppsQwenResponse_init(self):
         """Test AppsQwenResponse initialization."""
-        from agentic_core.L2_execution.apps_qwen import AppsQwenResponse
-        instance = AppsQwenResponse()
+        instance = AppsQwenResponse(
+            success=True,
+            response="Test response",
+            confidence=0.85,
+            model_used="Qwen/Qwen2.5-7B-Instruct",
+            latency_ms=100.0,
+        )
         self.assertIsNotNone(instance)
-if __name__ == '__main__':
+        self.assertEqual(instance.success, True)
+        self.assertEqual(instance.confidence, 0.85)
+
+
+if __name__ == "__main__":
     unittest.main()

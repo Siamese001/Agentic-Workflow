@@ -1,39 +1,56 @@
-"""Placeholder test file - syntax fixed."""
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300
+"""Tests for apps_qwen_telemetry module."""
+import time
 import unittest
 
-class GeneratedTest(unittest.TestCase):
-    """Generated test class for agentic_core.L2_execution.apps_qwen."""
+from agentic_core.L2_execution.apps_qwen import (
+    AppsQwenMetric,
+    AppsQwenSessionMetrics,
+    AppsQwenTelemetry,
+)
+
+
+class TestAppsQwenTelemetry(unittest.TestCase):
+    """Test class for AppsQwenTelemetry."""
 
     def test_start_session(self):
-        """Test start_session function."""
-        from agentic_core.L2_execution.apps_qwen import start_session
-        result = start_session()
+        """Test start_session method."""
+        telemetry = AppsQwenTelemetry()
+        result = telemetry.start_session("test_app")
         self.assertIsNotNone(result)
+        self.assertTrue(result.startswith("test_app_"))
 
     def test_end_session(self):
-        """Test end_session function."""
-        from agentic_core.L2_execution.apps_qwen import end_session
-        result = end_session()
+        """Test end_session method."""
+        telemetry = AppsQwenTelemetry()
+        session_id = telemetry.start_session("test_app")
+        result = telemetry.end_session(session_id)
         self.assertIsNotNone(result)
+        self.assertEqual(result.session_id, session_id)
 
     def test_AppsQwenMetric_init(self):
         """Test AppsQwenMetric initialization."""
-        from agentic_core.L2_execution.apps_qwen import AppsQwenMetric
-        instance = AppsQwenMetric()
+        instance = AppsQwenMetric(
+            timestamp=time.time(),
+            app_name="test_app",
+            model_id="Qwen/Qwen2.5-7B-Instruct",
+            metric_name="confidence",
+            value=0.95,
+        )
         self.assertIsNotNone(instance)
+        self.assertEqual(instance.app_name, "test_app")
+        self.assertEqual(instance.metric_name, "confidence")
 
     def test_AppsQwenSessionMetrics_init(self):
         """Test AppsQwenSessionMetrics initialization."""
-        from agentic_core.L2_execution.apps_qwen import AppsQwenSessionMetrics
-        instance = AppsQwenSessionMetrics()
+        instance = AppsQwenSessionMetrics(
+            session_id="test_session_123",
+            app_name="test_app",
+            start_time=time.time(),
+        )
         self.assertIsNotNone(instance)
-if __name__ == '__main__':
+        self.assertEqual(instance.session_id, "test_session_123")
+        self.assertEqual(instance.app_name, "test_app")
+
+
+if __name__ == "__main__":
     unittest.main()
