@@ -18,13 +18,14 @@ class TestImportIsolation:
         def test_import_1():
             from agentic_core.L2_execution.tools.write_gateway import WriteAmplificationError
             # Create an instance to test state retention
-            error1 = WriteAmplificationError("test1", max_bytes=1000)
+            from pathlib import Path
+            error1 = WriteAmplificationError(Path("test1"), 100, 1000, 10.0)
             return id(error1), type(error1)
         
         # Second test - same import should create fresh state
         def test_import_2():
             from agentic_core.L2_execution.tools.write_gateway import WriteAmplificationError
-            error2 = WriteAmplificationError("test2", max_bytes=2000)
+            error2 = WriteAmplificationError(Path("test2"), 200, 2000, 10.0)
             return id(error2), type(error2)
         
         # Run both and verify they're independent
@@ -172,7 +173,8 @@ class TestSingletonIsolation:
         def create_object_and_check():
             # Create an object
             from agentic_core.L2_execution.tools.write_gateway import WriteAmplificationError
-            obj = WriteAmplificationError("test", max_bytes=1000)
+            from pathlib import Path
+            obj = WriteAmplificationError(Path("test"), 100, 1000, 10.0)
             
             # Create weak reference
             weak_ref = weakref.ref(obj)
@@ -217,7 +219,7 @@ class TestSingletonIsolation:
             from agentic_core.L2_execution.tools.write_gateway import WriteAmplificationError
             from agentic_core.L_CONTRACTS.lifecycle_trace_contract import _emit_agent_executes_agent
             # Create some instances
-            error = WriteAmplificationError("test", max_bytes=1000)
+            error = WriteAmplificationError(Path("test"), 100, 1000, 10.0)
         except ImportError:
             pass  # Modules might not be available
         

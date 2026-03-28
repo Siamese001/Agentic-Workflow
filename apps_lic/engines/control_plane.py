@@ -312,33 +312,35 @@ class ControlPlane:
 
     def get_prompt(self, prompt_id: str) -> str:
         """Get prompt from knowledge base.
-
+        
         Raises:
             TypeError: If prompt_id is None
             KeyError: If prompt_id not found in knowledge base
+            RuntimeError: If knowledge base is not available
         """
         if prompt_id is None:
             raise TypeError("prompt_id cannot be None")
-        if self.knowledge:
-            from apps_lic.config.knowledge_base import get_prompt
-
-            return get_prompt(prompt_id)
-        return ""
+        if not self.knowledge:
+            raise RuntimeError("Knowledge base not available")
+        from apps_lic.config.knowledge_base import get_prompt
+        
+        return get_prompt(prompt_id)
 
     def get_node_config(self, node_id: str) -> Any:
         """Get K-node configuration from knowledge base.
-
+        
         Raises:
             TypeError: If node_id is None
             KeyError: If node_id not found in knowledge base
+            RuntimeError: If knowledge base is not available
         """
         if node_id is None:
             raise TypeError("node_id cannot be None")
-        if self.knowledge:
-            from apps_lic.config.knowledge_base import get_node_config
-
-            return get_node_config(node_id)
-        return None
+        if not self.knowledge:
+            raise RuntimeError("Knowledge base not available")
+        from apps_lic.config.knowledge_base import get_node_config
+        
+        return get_node_config(node_id)
 
     def get_stats(self) -> dict[str, Any]:
         return {"total_decisions": self._decision_count, "total_blocks": self._block_count, "knowledge_available": self.knowledge is not None}

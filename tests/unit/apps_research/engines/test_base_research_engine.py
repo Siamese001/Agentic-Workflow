@@ -48,11 +48,11 @@ def test_get_prompt_failure_path_raises_keyerror_for_unknown_prompt():
 
 
 def test_get_prompt_edge_path_returns_empty_when_knowledge_absent():
-    """Test that get_prompt returns empty string when knowledge is disabled."""
-    engine = _DummyEngine()
-    engine.knowledge = None
-
-    assert engine.get_prompt("research_query_expansion") == ""
+    """Edge path: get_prompt returns empty string when knowledge absent."""
+    be = _DummyEngine()
+    be.knowledge = None  # Force unavailable
+    with pytest.raises(RuntimeError, match="Knowledge base not available"):
+        be.get_prompt("research_query_expansion")
 
 
 def test_get_node_config_happy_path_returns_config():
@@ -66,11 +66,11 @@ def test_get_node_config_happy_path_returns_config():
 
 
 def test_get_node_config_edge_path_returns_none_when_knowledge_absent():
-    """Test that get_node_config returns None when knowledge is disabled."""
-    engine = _DummyEngine()
-    engine.knowledge = None
-
-    assert engine.get_node_config("discovery") is None
+    """Edge path: get_node_config returns None when knowledge absent."""
+    be = _DummyEngine()
+    be.knowledge = None  # Force unavailable
+    with pytest.raises(RuntimeError, match="Knowledge base not available"):
+        be.get_node_config("discovery")
 
 
 def test_get_prompt_none_raises_typeerror():

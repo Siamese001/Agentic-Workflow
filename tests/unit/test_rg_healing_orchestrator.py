@@ -69,7 +69,7 @@ class TestRgHealingOrchestratorAgent:
     result = None  # Replace with actual execution
 
     # Assert
-    assert result is not None, f"{function_name} should return a result"
+    assert result is not None, "Function should return a result"
     assert isinstance(result, (dict, list, str, int, float, bool)), "Result should be a common type"
     # TODO: Add specific execution assertions
     def test_no_network_calls_on_import(self):
@@ -84,7 +84,7 @@ class TestRgHealingOrchestratorAgent:
     result = None  # Replace with actual execution
 
     # Assert
-    assert result is not None, f"{function_name} should return a result"
+    assert result is not None, "Function should return a result"
     assert isinstance(result, (dict, list, str, int, float, bool)), "Result should be a common type"
     # TODO: Add specific execution assertions
 

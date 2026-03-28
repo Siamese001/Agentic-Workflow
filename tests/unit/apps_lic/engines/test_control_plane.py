@@ -35,11 +35,11 @@ def test_get_prompt_failure_path_raises_keyerror_for_unknown_prompt():
 
 
 def test_get_prompt_edge_path_returns_empty_when_knowledge_absent():
-    """Test that get_prompt returns empty string when knowledge is disabled."""
+    """Edge path: get_prompt returns empty string when knowledge absent."""
     cp = ControlPlane()
-    cp.knowledge = None
-
-    assert cp.get_prompt("lic_connection_request") == ""
+    cp.knowledge = None  # Force unavailable
+    with pytest.raises(RuntimeError, match="Knowledge base not available"):
+        cp.get_prompt("lic_connection_request")
 
 
 def test_get_node_config_happy_path_returns_config():
@@ -53,11 +53,11 @@ def test_get_node_config_happy_path_returns_config():
 
 
 def test_get_node_config_edge_path_returns_none_when_knowledge_absent():
-    """Test that get_node_config returns None when knowledge is disabled."""
+    """Edge path: get_node_config returns None when knowledge absent."""
     cp = ControlPlane()
-    cp.knowledge = None
-
-    assert cp.get_node_config("archetype") is None
+    cp.knowledge = None  # Force unavailable
+    with pytest.raises(RuntimeError, match="Knowledge base not available"):
+        cp.get_node_config("archetype")
 
 
 def test_get_prompt_none_raises_typeerror():
