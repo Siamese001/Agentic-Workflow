@@ -243,7 +243,7 @@ def get_embedding_client(name: str = "default") -> EmbeddingClient:
 
 
 def create_embedding_client(
-    provider: Literal["openai", "gemini", "anthropic"],
+    provider: Literal["openai", "gemini", "anthropic", "bge-m3"],
     model: str | None = None,
     **kwargs: Any,
 ) -> EmbeddingClient:
@@ -383,12 +383,150 @@ def create_embedding_client(
         # Anthropic doesn't provide embeddings, but we keep the interface
         raise NotImplementedError("Anthropic does not provide embedding models")
 
+    elif provider == "bge-m3":
+        # BAAI/bge-m3 - Local embedding model (spec-compliant for Pipeline B/C)
+        client = _create_bge_m3_client(model or "BAAI/bge-m3", kwargs.get("device", "cpu"))
+
     else:
         raise ValueError(f"Unsupported embedding provider: {provider}")
 
     # Register and return
     register_embedding_client(client_name, client)
     return client
+
+
+def _create_bge_m3_client(model_name: str, device: str = "cpu") -> EmbeddingClient:
+    """
+    Create BGE-M3 embedding client using sentence-transformers.
+
+    BGE-M3 is the spec-compliant embedding model for Pipeline B/C consistency.
+
+    Args:
+        model_name: HuggingFace model name (default: BAAI/bge-m3)
+        device: Device to run on (cpu, cuda, etc.)
+
+    Returns:
+        EmbeddingClient instance for BGE-M3
+    """
+    try:
+        from sentence_transformers import SentenceTransformer
+    except ImportError as e:
+        raise ImportError(
+            "sentence-transformers is required for BGE-M3 embeddings. "
+            "Install with: pip install sentence-transformers"
+        ) from e
+
+    # Load model
+    model = SentenceTransformer(model_name, device=device)
+
+    class BGEM3EmbeddingClient:
+        """BGE-M3 embedding client wrapper."""
+
+        def __init__(self, model: SentenceTransformer, model_name: str):
+            self.model = model
+            self.model_name = model_name
+            self._cache: dict[str, list[float]] = {}
+
+            # Compute pack hash for replay key
+            pack_hash_str = f"bge-m3_{model_name}"
+            self.pack_hash = hashlib.sha256(pack_hash_str.encode("utf-8")).hexdigest()[:16]
+
+            # W11: Embedder identity for deterministic cache keys
+            self.embedder_identity = {
+                "provider": "bge-m3",
+                "model": self.model_name,
+                "dimensions": 1024,  # BGE-M3 default
+                "normalization_policy": "l2",
+                "chunking_policy": "none",
+            }
+
+            # Detect actual dimension
+            self.observed_dimension = model.get_sentence_embedding_dimension()
+            self.embedder_identity["dimensions"] = self.observed_dimension
+
+        async def get_embedding(self, guarded_text: GuardedText) -> list[float]:
+            import uuid as _uuid  # noqa: PLC0415
+
+            _trace_id = str(_uuid.uuid4())
+            _emit_records_execution_trace(
+                _trace_id, LayerSegment.L3_ORCHESTRATION, "BGEM3EmbeddingClient.get_embedding"
+            )
+
+            # Use deterministic cache key
+            cache_key = create_deterministic_cache_key(
+                guarded_text.redacted_text, self.embedder_identity
+            )
+            if cache_key in self._cache:
+                return self._cache[cache_key]
+
+            # Generate embedding
+            embedding = self.model.encode(
+                guarded_text.redacted_text,
+                convert_to_numpy=True,
+                normalize_embeddings=True,  # L2 normalization
+            ).tolist()
+
+            # Stable float32 casting
+            embedding = [float(x) for x in embedding]
+
+            self._cache[cache_key] = embedding
+
+            _emit_stores_embedding(_trace_id, "bge-m3", cache_key)
+
+            return embedding
+
+        async def get_embeddings_batch(self, guarded_texts: list[GuardedText]) -> list[list[float]]:
+            results: list[list[float] | None] = [None] * len(guarded_texts)
+            texts_to_embed: list[tuple[int, str]] = []
+
+            for i, guarded_text in enumerate(guarded_texts):
+                cache_key = create_deterministic_cache_key(
+                    guarded_text.redacted_text, self.embedder_identity
+                )
+                if cache_key in self._cache:
+                    results[i] = self._cache[cache_key]
+                else:
+                    texts_to_embed.append((i, guarded_text.redacted_text))
+
+            if not texts_to_embed:
+                return [r for r in results if r is not None]
+
+            # Batch encode
+            texts = [t for _, t in texts_to_embed]
+            embeddings = self.model.encode(
+                texts,
+                convert_to_numpy=True,
+                normalize_embeddings=True,
+                batch_size=32,
+                show_progress_bar=False,
+            ).tolist()
+
+            # Stable float32 casting
+            embeddings = [[float(x) for x in emb] for emb in embeddings]
+
+            for i, embedding in enumerate(embeddings):
+                original_index, text = texts_to_embed[i]
+                cache_key = create_deterministic_cache_key(text, self.embedder_identity)
+                self._cache[cache_key] = embedding
+                results[original_index] = embedding
+
+            return [r for r in results if r is not None]
+
+        def get_replay_metadata(self) -> dict[str, Any]:
+            """Get embedder metadata for replay key surface."""
+            return {
+                "provider": "bge-m3",
+                "model": self.model_name,
+                "pack_hash": self.pack_hash,
+                "embedding_dimension": self.observed_dimension,
+                "distance_metric": "cosine",
+                "tokenization_policy_version": "bge-m3-v1",
+                "normalization_policy": "l2",
+                "chunking_policy": "none",
+                "hs_injection_surface_version": "1.0",
+            }
+
+    return BGEM3EmbeddingClient(model, model_name)
 
 
 def guard_embedding_instantiation(module_name: str, class_name: str) -> None:
