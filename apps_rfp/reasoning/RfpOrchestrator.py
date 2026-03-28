@@ -20,6 +20,29 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
 
+# guardian: allow-silent-degradation -- Qwen vLLM is optional for proposal generation; graceful fallback to manual templates
+try:
+    from agentic_core.L2_execution.apps_qwen import (
+        AppsQwenGateway,
+        AppsQwenInferenceWorker,
+        AppsQwenRequest,
+        apps_qwen_telemetry,
+    )
+    from agentic_core.L2_execution.apps_qwen.apps_qwen_config import (
+        AppsQwenModelConfig,
+        AppsQwenPromptConfig,
+    )
+
+    _QWEN_AVAILABLE = True
+except ImportError:
+    AppsQwenGateway = None  # type: ignore[assignment]
+    AppsQwenRequest = None  # type: ignore[assignment]
+    AppsQwenInferenceWorker = None  # type: ignore[assignment]
+    apps_qwen_telemetry = None  # type: ignore[assignment]
+    AppsQwenModelConfig = None  # type: ignore[assignment]
+    AppsQwenPromptConfig = None  # type: ignore[assignment]
+    _QWEN_AVAILABLE = False
+
 from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     LayerSegment,
     _emit_agent_executes_agent,
@@ -200,10 +223,43 @@ class RfpOrchestrator:
     output_dir: str = "rfp"
     gate_mode: str = "HARD_FAIL"
     hop_checkpoints: list[dict[str, Any]] = field(default_factory=list)
+    qwen_enabled: bool = True
 
     def __post_init__(self) -> None:
         self._assembly = ProposalAssemblyEngine()
         self._gate = ProposalGateValidator()
+
+        # Initialize Qwen vLLM for proposal generation
+        self._qwen_gateway = None
+        self._qwen_inference_worker = None
+        self._qwen_session_id = None
+
+        if self.qwen_enabled and _QWEN_AVAILABLE:
+            try:
+                # Initialize Qwen gateway for proposal generation
+                self._qwen_gateway = AppsQwenGateway(model_id="Qwen/Qwen2.5-7B-Instruct")
+
+                # Initialize inference worker with proposal-specific config
+                model_config = AppsQwenModelConfig(
+                    model_id="Qwen/Qwen2.5-7B-Instruct",
+                    max_tokens=4096,  # High token limit for detailed proposals
+                    temperature=0.3,  # Balanced temperature for professional proposals
+                    confidence_threshold=0.8,
+                    timeout_seconds=90,
+                )
+                self._qwen_inference_worker = AppsQwenInferenceWorker(model_config)
+
+                # Start telemetry session
+                if apps_qwen_telemetry is not None:
+                    self._qwen_session_id = apps_qwen_telemetry.start_session("apps_rfp")
+
+                _emit_records_execution_trace("RfpOrchestrator", "L2_EXECUTION", "qwen_vllm_init")
+
+            except Exception as e:
+                _emit_records_telemetry_event("RfpOrchestrator", "L2_EXECUTION", "qwen_init_error")
+                _log.warning(f"Failed to initialize Qwen vLLM: {e}")
+                self.qwen_enabled = False
+
         try:
             from agentic_core.adg.runtime.behavioral_index import ADGBehavioralIndex
 
@@ -218,6 +274,7 @@ class RfpOrchestrator:
     def run(self, request: RfpRequest) -> RfpResult:
         """Execute full proposal generation pipeline."""
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "RfpOrchestrator.run")
 
@@ -352,6 +409,154 @@ class RfpOrchestrator:
 
     def _record_hop(self, hop_id: str, success: bool) -> None:
         self.hop_checkpoints.append({"hop_id": hop_id, "status": "COMPLETED" if success else "FAILED"})
+
+    async def generate_proposal_with_qwen(
+        self, rfp_details: dict[str, Any], proposal_type: str = "technical"
+    ) -> dict[str, Any]:
+        """Generate proposal content using Qwen vLLM inference.
+
+        Args:
+            rfp_details: Dictionary containing RFP requirements, constraints, and context
+            proposal_type: Type of proposal (technical, commercial, executive_summary)
+
+        Returns:
+            Dictionary with generated proposal content and metadata
+        """
+        if not self.qwen_enabled or self._qwen_gateway is None:
+            return {"success": False, "error": "qwen_disabled", "content": None}
+
+        try:
+            # Prepare proposal generation prompt
+            prompt = self._prepare_proposal_generation_prompt(rfp_details, proposal_type)
+
+            # Create Qwen request
+            request = AppsQwenRequest(
+                app_name="apps_rfp",
+                prompt=prompt,
+                confidence_threshold=0.8,
+                max_tokens=4096,  # High token limit for detailed proposals
+                temperature=0.3,  # Balanced temperature for professional proposals
+            )
+
+            # Record telemetry start
+            if apps_qwen_telemetry is not None and self._qwen_session_id is not None:
+                apps_qwen_telemetry.record_request_start(
+                    session_id=self._qwen_session_id,
+                    app_name="apps_rfp",
+                    model_id="Qwen/Qwen2.5-7B-Instruct",
+                )
+
+            # Perform inference
+            response = await self._qwen_gateway.infer(request)
+
+            # Record telemetry result
+            if apps_qwen_telemetry is not None and self._qwen_session_id is not None:
+                if response.success:
+                    apps_qwen_telemetry.record_request_success(
+                        session_id=self._qwen_session_id,
+                        app_name="apps_rfp",
+                        model_id=response.model_used,
+                        latency_ms=response.latency_ms,
+                        confidence=response.confidence,
+                        tokens_used=len(prompt.split()) + len(response.response.split())
+                        if response.response
+                        else 0,
+                    )
+                else:
+                    apps_qwen_telemetry.record_request_error(
+                        session_id=self._qwen_session_id,
+                        app_name="apps_rfp",
+                        model_id=response.model_used,
+                        error_message=response.error_message or "unknown_error",
+                    )
+
+            _emit_captures_evaluation_metric("apps_rfp", "RfpOrchestrator", "proposal_generation")
+
+            return {
+                "success": response.success,
+                "content": response.response,
+                "confidence": response.confidence,
+                "model_used": response.model_used,
+                "latency_ms": response.latency_ms,
+                "proposal_type": proposal_type,
+                "rfp_industry": rfp_details.get("industry", "unknown"),
+                "error_message": response.error_message,
+            }
+
+        except Exception as e:
+            _emit_records_telemetry_event("apps_rfp", "RfpOrchestrator", "proposal_generation_error")
+            return {"success": False, "error": f"proposal_generation_failed: {str(e)}", "content": None}
+
+    def _prepare_proposal_generation_prompt(self, rfp_details: dict[str, Any], proposal_type: str) -> str:
+        """Prepare prompt for proposal generation using Qwen.
+
+        Args:
+            rfp_details: RFP requirements and context
+            proposal_type: Type of proposal requested
+
+        Returns:
+            Formatted prompt string
+        """
+        # Extract key RFP information
+        industry = rfp_details.get("industry", "Technology")
+        problem_statement = rfp_details.get("problem_statement", "Business challenge requiring AI solution")
+        requirements = rfp_details.get("requirements", [])
+        constraints = rfp_details.get("constraints", [])
+        timeline = rfp_details.get("timeline", "6 months")
+        budget = rfp_details.get("budget", "To be determined")
+
+        # Format requirements
+        requirements_text = ""
+        for i, req in enumerate(requirements[:8], 1):  # Limit to 8 requirements
+            requirements_text += f"{i}. {req}\n"
+
+        # Format constraints
+        constraints_text = ""
+        for constraint in constraints[:5]:  # Limit to 5 constraints
+            constraints_text += f"- {constraint}\n"
+
+        proposal_instructions = {
+            "technical": "Generate a comprehensive technical proposal focusing on solution architecture, implementation approach, and technical feasibility.",
+            "commercial": "Generate a commercial proposal focusing on business value, ROI, pricing structure, and competitive advantages.",
+            "executive_summary": "Generate an executive summary proposal focusing on strategic alignment, key benefits, and high-level approach.",
+            "full": "Generate a complete proposal covering technical, commercial, and strategic aspects.",
+        }
+
+        instruction = proposal_instructions.get(proposal_type, proposal_instructions["technical"])
+
+        prompt = f"""PROPOSAL GENERATION REQUEST
+
+INDUSTRY: {industry}
+PROPOSAL TYPE: {proposal_type}
+TIMELINE: {timeline}
+BUDGET: {budget}
+
+PROBLEM STATEMENT:
+{problem_statement}
+
+REQUIREMENTS:
+{requirements_text}
+
+CONSTRAINTS:
+{constraints_text}
+
+INSTRUCTIONS:
+{instruction}
+
+Please provide a professional proposal that includes:
+1. Executive Summary
+2. Understanding of Requirements
+3. Proposed Solution
+4. Implementation Approach
+5. Value Proposition
+6. Risk Assessment
+7. Timeline and Milestones
+8. Next Steps
+
+Ensure the proposal is persuasive, technically sound, and addresses all stated requirements. Use professional business language and maintain a confident, competent tone throughout.
+"""
+
+        return prompt
 
     @staticmethod
     def _make_trace_id(request: RfpRequest) -> str:

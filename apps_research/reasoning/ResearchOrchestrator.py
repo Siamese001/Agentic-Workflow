@@ -20,6 +20,29 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
 
+# guardian: allow-silent-degradation -- Qwen vLLM is optional for research synthesis; graceful fallback to manual processing
+try:
+    from agentic_core.L2_execution.apps_qwen import (
+        AppsQwenGateway,
+        AppsQwenInferenceWorker,
+        AppsQwenRequest,
+        apps_qwen_telemetry,
+    )
+    from agentic_core.L2_execution.apps_qwen.apps_qwen_config import (
+        AppsQwenModelConfig,
+        AppsQwenPromptConfig,
+    )
+
+    _QWEN_AVAILABLE = True
+except ImportError:
+    AppsQwenGateway = None  # type: ignore[assignment]
+    AppsQwenRequest = None  # type: ignore[assignment]
+    AppsQwenInferenceWorker = None  # type: ignore[assignment]
+    apps_qwen_telemetry = None  # type: ignore[assignment]
+    AppsQwenModelConfig = None  # type: ignore[assignment]
+    AppsQwenPromptConfig = None  # type: ignore[assignment]
+    _QWEN_AVAILABLE = False
+
 from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     LayerSegment,
     _emit_agent_executes_agent,
@@ -200,16 +223,48 @@ class ResearchOrchestrator:
     output_dir: str = "reports/research"
     gate_mode: str = "HARD_FAIL"
     hop_checkpoints: list[dict[str, Any]] = field(default_factory=list)
+    qwen_enabled: bool = True
 
     def __post_init__(self) -> None:
         self._assembly = ResearchAssemblyEngine()
         self._gate = ResearchGateValidator()
 
+        # Initialize Qwen vLLM for research synthesis
+        self._qwen_gateway = None
+        self._qwen_inference_worker = None
+        self._qwen_session_id = None
+
+        if self.qwen_enabled and _QWEN_AVAILABLE:
+            try:
+                # Initialize Qwen gateway for research synthesis
+                self._qwen_gateway = AppsQwenGateway(model_id="Qwen/Qwen2.5-7B-Instruct")
+
+                # Initialize inference worker with research-specific config
+                model_config = AppsQwenModelConfig(
+                    model_id="Qwen/Qwen2.5-7B-Instruct",
+                    max_tokens=3072,  # Higher token limit for research content
+                    temperature=0.4,  # Moderate temperature for creative synthesis
+                    confidence_threshold=0.7,
+                    timeout_seconds=60,
+                )
+                self._qwen_inference_worker = AppsQwenInferenceWorker(model_config)
+
+                # Start telemetry session
+                if apps_qwen_telemetry is not None:
+                    self._qwen_session_id = apps_qwen_telemetry.start_session("apps_research")
+
+                _emit_records_execution_trace("ResearchOrchestrator", "L2_EXECUTION", "qwen_vllm_init")
+
+            except Exception as e:
+                _emit_records_telemetry_event("ResearchOrchestrator", "L2_EXECUTION", "qwen_init_error")
+                _log.warning(f"Failed to initialize Qwen vLLM: {e}")
+                self.qwen_enabled = False
+
         try:
             from apps_research.config import load_research_specs
 
             self._specs = load_research_specs()
-        # guardian: allow-silent-swallow - optional dependency
+        # guardian: allow-silent-swallow -- Optional research specs dependency; not critical for core functionality
         except ImportError:
             self._specs = None
 
@@ -227,6 +282,7 @@ class ResearchOrchestrator:
     def run(self, request: ResearchRequest) -> ResearchResult:
         """Execute full research generation pipeline."""
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "ResearchOrchestrator.run")
 
@@ -373,6 +429,144 @@ class ResearchOrchestrator:
 
     def _record_hop(self, hop_id: str, success: bool) -> None:
         self.hop_checkpoints.append({"hop_id": hop_id, "status": "COMPLETED" if success else "FAILED"})
+
+    async def synthesize_research_with_qwen(
+        self, research_topic: str, sources: list[dict[str, Any]], synthesis_type: str = "comprehensive"
+    ) -> dict[str, Any]:
+        """Synthesize research content using Qwen vLLM inference.
+
+        Args:
+            research_topic: Main research topic/question
+            sources: List of source materials with titles, content, and metadata
+            synthesis_type: Type of synthesis (comprehensive, comparative, analytical)
+
+        Returns:
+            Dictionary with synthesized research content and metadata
+        """
+        if not self.qwen_enabled or self._qwen_gateway is None:
+            return {"success": False, "error": "qwen_disabled", "content": None}
+
+        try:
+            # Prepare research synthesis prompt
+            prompt = self._prepare_research_synthesis_prompt(research_topic, sources, synthesis_type)
+
+            # Create Qwen request
+            request = AppsQwenRequest(
+                app_name="apps_research",
+                prompt=prompt,
+                confidence_threshold=0.75,
+                max_tokens=3072,  # Higher token limit for research synthesis
+                temperature=0.4,  # Moderate temperature for creative synthesis
+            )
+
+            # Record telemetry start
+            if apps_qwen_telemetry is not None and self._qwen_session_id is not None:
+                apps_qwen_telemetry.record_request_start(
+                    session_id=self._qwen_session_id,
+                    app_name="apps_research",
+                    model_id="Qwen/Qwen2.5-7B-Instruct",
+                )
+
+            # Perform inference
+            response = await self._qwen_gateway.infer(request)
+
+            # Record telemetry result
+            if apps_qwen_telemetry is not None and self._qwen_session_id is not None:
+                if response.success:
+                    apps_qwen_telemetry.record_request_success(
+                        session_id=self._qwen_session_id,
+                        app_name="apps_research",
+                        model_id=response.model_used,
+                        latency_ms=response.latency_ms,
+                        confidence=response.confidence,
+                        tokens_used=len(prompt.split()) + len(response.response.split())
+                        if response.response
+                        else 0,
+                    )
+                else:
+                    apps_qwen_telemetry.record_request_error(
+                        session_id=self._qwen_session_id,
+                        app_name="apps_research",
+                        model_id=response.model_used,
+                        error_message=response.error_message or "unknown_error",
+                    )
+
+            _emit_captures_evaluation_metric("apps_research", "ResearchOrchestrator", "research_synthesis")
+
+            return {
+                "success": response.success,
+                "content": response.response,
+                "confidence": response.confidence,
+                "model_used": response.model_used,
+                "latency_ms": response.latency_ms,
+                "synthesis_type": synthesis_type,
+                "sources_count": len(sources),
+                "error_message": response.error_message,
+            }
+
+        except Exception as e:
+            _emit_records_telemetry_event("apps_research", "ResearchOrchestrator", "research_synthesis_error")
+            return {"success": False, "error": f"synthesis_failed: {str(e)}", "content": None}
+
+    def _prepare_research_synthesis_prompt(
+        self, research_topic: str, sources: list[dict[str, Any]], synthesis_type: str
+    ) -> str:
+        """Prepare prompt for research synthesis using Qwen.
+
+        Args:
+            research_topic: Main research topic
+            sources: List of source materials
+            synthesis_type: Type of synthesis requested
+
+        Returns:
+            Formatted prompt string
+        """
+        # Format sources for the prompt
+        sources_text = ""
+        for i, source in enumerate(sources[:10], 1):  # Limit to 10 sources for token limits
+            sources_text += f"\nSOURCE {i}:\n"
+            sources_text += f"Title: {source.get('title', 'Untitled')}\n"
+            sources_text += (
+                f"Content: {source.get('content', source.get('summary', 'No content available'))[:500]}...\n"
+            )
+            if source.get("author"):
+                sources_text += f"Author: {source['author']}\n"
+            if source.get("date"):
+                sources_text += f"Date: {source['date']}\n"
+            sources_text += "---\n"
+
+        synthesis_instructions = {
+            "comprehensive": "Provide a comprehensive synthesis that integrates all sources, identifies key themes, and presents a holistic view of the research topic.",
+            "comparative": "Compare and contrast the sources, identifying similarities, differences, and unique contributions of each source.",
+            "analytical": "Analyze the sources critically, identifying strengths, weaknesses, biases, and research gaps.",
+            "meta": "Provide a meta-analysis of the research landscape, identifying trends, controversies, and future directions.",
+        }
+
+        instruction = synthesis_instructions.get(synthesis_type, synthesis_instructions["comprehensive"])
+
+        prompt = f"""RESEARCH SYNTHESIS REQUEST
+
+TOPIC: {research_topic}
+SYNTHESIS TYPE: {synthesis_type}
+
+SOURCES:
+{sources_text}
+
+INSTRUCTIONS:
+{instruction}
+
+Please provide a well-structured synthesis that includes:
+1. Executive Summary
+2. Key Themes and Findings
+3. Source Analysis
+4. Critical Insights
+5. Research Gaps or Future Directions
+6. Conclusions
+
+Ensure proper academic tone, cite sources appropriately, and maintain objectivity throughout the synthesis.
+"""
+
+        return prompt
 
     @staticmethod
     def _make_trace_id(request: ResearchRequest) -> str:

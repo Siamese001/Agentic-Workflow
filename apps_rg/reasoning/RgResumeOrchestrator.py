@@ -13,6 +13,31 @@ from typing import Any
 from agentic_core.base_agents.timeout_decorator import timeout
 from apps_rg.utils.RGAgentBase import RGAgentBase
 
+# guardian: allow-silent-degradation -- Qwen vLLM is optional for resume generation; graceful fallback to manual templates
+try:
+    from agentic_core.L2_execution.apps_qwen import (
+        AppsQwenGateway,
+        AppsQwenInferenceWorker,
+        AppsQwenRequest,
+        apps_qwen_telemetry,
+    )
+    from agentic_core.L2_execution.apps_qwen.apps_qwen_config import (
+        AppsQwenConfig,
+        AppsQwenModelConfig,
+        AppsQwenPromptConfig,
+    )
+
+    _QWEN_AVAILABLE = True
+except ImportError:
+    AppsQwenGateway = None  # type: ignore[assignment]
+    AppsQwenRequest = None  # type: ignore[assignment]
+    AppsQwenInferenceWorker = None  # type: ignore[assignment]
+    apps_qwen_telemetry = None  # type: ignore[assignment]
+    AppsQwenConfig = None  # type: ignore[assignment]
+    AppsQwenModelConfig = None  # type: ignore[assignment]
+    AppsQwenPromptConfig = None  # type: ignore[assignment]
+    _QWEN_AVAILABLE = False
+
 from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     LayerSegment,
     _emit_agent_executes_agent,
@@ -184,6 +209,7 @@ class RgResumeOrchestrator(RGAgentBase):
     master_resume: dict[str, Any] = field(default_factory=dict)
     test_mode: bool = False
     hop_checkpoints: list[dict[str, Any]] = field(default_factory=list)
+    qwen_enabled: bool = True
 
     def __post_init__(self) -> None:
         """Initialize the orchestrator."""
@@ -191,11 +217,42 @@ class RgResumeOrchestrator(RGAgentBase):
         self.constraints = None
         self.jd_enforcer = None
 
+        # Initialize Qwen vLLM integration
+        self._qwen_gateway = None
+        self._qwen_inference_worker = None
+        self._qwen_session_id = None
+
+        if self.qwen_enabled and _QWEN_AVAILABLE:
+            try:
+                # Initialize Qwen gateway for resume generation
+                self._qwen_gateway = AppsQwenGateway(model_id="Qwen/Qwen2.5-7B-Instruct")
+
+                # Initialize inference worker with resume-specific config
+                model_config = AppsQwenModelConfig(
+                    model_id="Qwen/Qwen2.5-7B-Instruct",
+                    max_tokens=2048,
+                    temperature=0.3,  # Lower temperature for consistent resume content
+                )
+                self._qwen_inference_worker = AppsQwenInferenceWorker(model_config)
+
+                # Start telemetry session
+                if apps_qwen_telemetry is not None:
+                    self._qwen_session_id = apps_qwen_telemetry.start_session("apps_rg")
+
+                _emit_records_execution_trace("RgResumeOrchestrator", "L2_EXECUTION", "qwen_vllm_init")
+
+            except Exception as e:
+                _emit_records_telemetry_event("RgResumeOrchestrator", "L2_EXECUTION", "qwen_init_error")
+                _logger.warning(f"Failed to initialize Qwen vLLM: {e}")
+                self.qwen_enabled = False
+
     def run(self, JobDescription: str) -> dict[str, object]:
         """Execute the full resume generation workflow."""
         import uuid  # noqa: PLC0415
 
-        _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, "RgResumeOrchestrator.run")
+        _emit_records_execution_trace(
+            str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, "RgResumeOrchestrator.run"
+        )
         if self.jd_enforcer:
             self.jd_enforcer.validate_jd_input(JobDescription, "HOP-0")
             if self.jd_enforcer.has_failures():
@@ -215,10 +272,115 @@ class RgResumeOrchestrator(RGAgentBase):
     def _record_hop(self, hop_id: str, results: list = None) -> None:
         """Record a hop Checkpoint."""
         status = "COMPLETED" if not results or all(getattr(r, "passed", True) for r in results) else "FAILED"
-        self.hop_checkpoints.append({"hop_id": hop_id, "status": status})
+        self.hop_checkpoints.append({"hop_id": hop_id, "status": "status"})
+
+    async def generate_resume_with_qwen(
+        self, job_description: str, candidate_profile: dict[str, Any]
+    ) -> dict[str, Any]:
+        """Generate resume content using Qwen vLLM inference.
+
+        Args:
+            job_description: Job description text
+            candidate_profile: Candidate profile information
+
+        Returns:
+            Dictionary with generated resume content and metadata
+        """
+        if not self.qwen_enabled or self._qwen_gateway is None:
+            return {"success": False, "error": "qwen_disabled", "content": None}
+
+        try:
+            # Prepare prompt for resume generation
+            prompt = self._prepare_resume_generation_prompt(job_description, candidate_profile)
+
+            # Create Qwen request
+            request = AppsQwenRequest(
+                app_name="apps_rg",
+                prompt=prompt,
+                confidence_threshold=0.7,
+                max_tokens=2048,
+                temperature=0.3,
+            )
+
+            # Record telemetry start
+            if apps_qwen_telemetry is not None and self._qwen_session_id is not None:
+                apps_qwen_telemetry.record_request_start(
+                    session_id=self._qwen_session_id,
+                    app_name="apps_rg",
+                    model_id="Qwen/Qwen2.5-7B-Instruct",
+                )
+
+            # Perform inference
+            response = await self._qwen_gateway.infer(request)
+
+            # Record telemetry result
+            if apps_qwen_telemetry is not None and self._qwen_session_id is not None:
+                if response.success:
+                    apps_qwen_telemetry.record_request_success(
+                        session_id=self._qwen_session_id,
+                        app_name="apps_rg",
+                        model_id=response.model_used,
+                        latency_ms=response.latency_ms,
+                        tokens_used=len(prompt.split()) + len(response.response.split())
+                        if response.response
+                        else 0,
+                    )
+                else:
+                    apps_qwen_telemetry.record_request_error(
+                        session_id=self._qwen_session_id,
+                        app_name="apps_rg",
+                        model_id=response.model_used,
+                        error_message=response.error_message or "unknown_error",
+                    )
+
+            _emit_captures_evaluation_metric("apps_rg", "RgResumeOrchestrator", "resume_generation")
+
+            return {
+                "success": response.success,
+                "content": response.response,
+                "confidence": response.confidence,
+                "model_used": response.model_used,
+                "latency_ms": response.latency_ms,
+                "error_message": response.error_message,
+            }
+
+        except Exception as e:
+            _emit_records_telemetry_event("apps_rg", "RgResumeOrchestrator", "resume_generation_error")
+            return {"success": False, "error": f"generation_failed: {str(e)}", "content": None}
+
+    def _prepare_resume_generation_prompt(
+        self, job_description: str, candidate_profile: dict[str, Any]
+    ) -> str:
+        """Prepare prompt for resume generation using Qwen.
+
+        Args:
+            job_description: Job description text
+            candidate_profile: Candidate profile dictionary
+
+        Returns:
+            Formatted prompt string
+        """
+        prompt = f"""Generate a professional resume tailored to the following job description:
+
+JOB DESCRIPTION:
+{job_description}
+
+CANDIDATE PROFILE:
+{candidate_profile}
+
+Please generate:
+1. A compelling professional summary
+2. Relevant experience section with achievements
+3. Skills section aligned with job requirements
+4. Education section
+5. Any additional relevant sections
+
+Focus on matching the candidate's experience to the job requirements and quantifying achievements where possible. Use professional language and format the content clearly.
+"""
+        return prompt
 
     @timeout(300)
-    # guardian: allow-magic-config
+    # guardian: allow-magic-config -- Environment-specific configuration; owner: deployment team
     def heal_repository(
         self,
         dry_run: bool = True,

@@ -21,6 +21,29 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
 
+# guardian: allow-silent-degradation -- Qwen vLLM is optional for execution planning; graceful fallback to manual planning
+try:
+    from agentic_core.L2_execution.apps_qwen import (
+        AppsQwenGateway,
+        AppsQwenInferenceWorker,
+        AppsQwenRequest,
+        apps_qwen_telemetry,
+    )
+    from agentic_core.L2_execution.apps_qwen.apps_qwen_config import (
+        AppsQwenModelConfig,
+        AppsQwenPromptConfig,
+    )
+
+    _QWEN_AVAILABLE = True
+except ImportError:
+    AppsQwenGateway = None  # type: ignore[assignment]
+    AppsQwenRequest = None  # type: ignore[assignment]
+    AppsQwenInferenceWorker = None  # type: ignore[assignment]
+    apps_qwen_telemetry = None  # type: ignore[assignment]
+    AppsQwenModelConfig = None  # type: ignore[assignment]
+    AppsQwenPromptConfig = None  # type: ignore[assignment]
+    _QWEN_AVAILABLE = False
+
 from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     LayerSegment,
     _emit_agent_executes_agent,
@@ -208,12 +231,45 @@ class ExecOrchestrator:
     output_dir: str = "reports/executive"
     gate_mode: str = "HARD_FAIL"
     hop_checkpoints: list[dict[str, Any]] = field(default_factory=list)
+    qwen_enabled: bool = True
 
     def __post_init__(self) -> None:
         self._ingestion = IngestionEngine()
         self._extraction = CapabilityExtractionEngine()
         self._assembly = BriefAssemblyEngine()
         self._gate = StyleGateValidator()
+
+        # Initialize Qwen vLLM for execution planning
+        self._qwen_gateway = None
+        self._qwen_inference_worker = None
+        self._qwen_session_id = None
+
+        if self.qwen_enabled and _QWEN_AVAILABLE:
+            try:
+                # Initialize Qwen gateway for execution planning
+                self._qwen_gateway = AppsQwenGateway(model_id="Qwen/Qwen2.5-7B-Instruct")
+
+                # Initialize inference worker with execution-specific config
+                model_config = AppsQwenModelConfig(
+                    model_id="Qwen/Qwen2.5-7B-Instruct",
+                    max_tokens=3584,  # High token limit for detailed execution plans
+                    temperature=0.2,  # Low temperature for precise execution planning
+                    confidence_threshold=0.85,
+                    timeout_seconds=60,
+                )
+                self._qwen_inference_worker = AppsQwenInferenceWorker(model_config)
+
+                # Start telemetry session
+                if apps_qwen_telemetry is not None:
+                    self._qwen_session_id = apps_qwen_telemetry.start_session("apps_exec")
+
+                _emit_records_execution_trace("ExecOrchestrator", "L2_EXECUTION", "qwen_vllm_init")
+
+            except Exception as e:
+                _emit_records_telemetry_event("ExecOrchestrator", "L2_EXECUTION", "qwen_init_error")
+                _log.warning(f"Failed to initialize Qwen vLLM: {e}")
+                self.qwen_enabled = False
+
         try:
             from agentic_core.adg.runtime.behavioral_index import ADGBehavioralIndex
 
@@ -235,6 +291,7 @@ class ExecOrchestrator:
             ExecBriefResult with all sections, artifacts, and provenance.
         """
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "ExecOrchestrator.run")
 
@@ -376,6 +433,148 @@ class ExecOrchestrator:
 
     def _record_hop(self, hop_id: str, success: bool) -> None:
         self.hop_checkpoints.append({"hop_id": hop_id, "status": "COMPLETED" if success else "FAILED"})
+
+    async def plan_execution_with_qwen(
+        self, objectives: list[str], constraints: dict[str, Any], planning_type: str = "strategic"
+    ) -> dict[str, Any]:
+        """Generate execution plans using Qwen vLLM inference.
+
+        Args:
+            objectives: List of strategic objectives to achieve
+            constraints: Dictionary containing resource, timeline, and technical constraints
+            planning_type: Type of planning (strategic, tactical, operational)
+
+        Returns:
+            Dictionary with generated execution plan and metadata
+        """
+        if not self.qwen_enabled or self._qwen_gateway is None:
+            return {"success": False, "error": "qwen_disabled", "content": None}
+
+        try:
+            # Prepare execution planning prompt
+            prompt = self._prepare_execution_planning_prompt(objectives, constraints, planning_type)
+
+            # Create Qwen request
+            request = AppsQwenRequest(
+                app_name="apps_exec",
+                prompt=prompt,
+                confidence_threshold=0.85,
+                max_tokens=3584,  # High token limit for detailed execution plans
+                temperature=0.2,  # Low temperature for precise execution planning
+            )
+
+            # Record telemetry start
+            if apps_qwen_telemetry is not None and self._qwen_session_id is not None:
+                apps_qwen_telemetry.record_request_start(
+                    session_id=self._qwen_session_id,
+                    app_name="apps_exec",
+                    model_id="Qwen/Qwen2.5-7B-Instruct",
+                )
+
+            # Perform inference
+            response = await self._qwen_gateway.infer(request)
+
+            # Record telemetry result
+            if apps_qwen_telemetry is not None and self._qwen_session_id is not None:
+                if response.success:
+                    apps_qwen_telemetry.record_request_success(
+                        session_id=self._qwen_session_id,
+                        app_name="apps_exec",
+                        model_id=response.model_used,
+                        latency_ms=response.latency_ms,
+                        confidence=response.confidence,
+                        tokens_used=len(prompt.split()) + len(response.response.split())
+                        if response.response
+                        else 0,
+                    )
+                else:
+                    apps_qwen_telemetry.record_request_error(
+                        session_id=self._qwen_session_id,
+                        app_name="apps_exec",
+                        model_id=response.model_used,
+                        error_message=response.error_message or "unknown_error",
+                    )
+
+            _emit_captures_evaluation_metric("apps_exec", "ExecOrchestrator", "execution_planning")
+
+            return {
+                "success": response.success,
+                "content": response.response,
+                "confidence": response.confidence,
+                "model_used": response.model_used,
+                "latency_ms": response.latency_ms,
+                "planning_type": planning_type,
+                "objectives_count": len(objectives),
+                "error_message": response.error_message,
+            }
+
+        except Exception as e:
+            _emit_records_telemetry_event("apps_exec", "ExecOrchestrator", "execution_planning_error")
+            return {"success": False, "error": f"execution_planning_failed: {str(e)}", "content": None}
+
+    def _prepare_execution_planning_prompt(
+        self, objectives: list[str], constraints: dict[str, Any], planning_type: str
+    ) -> str:
+        """Prepare prompt for execution planning using Qwen.
+
+        Args:
+            objectives: Strategic objectives to achieve
+            constraints: Resource and technical constraints
+            planning_type: Type of planning requested
+
+        Returns:
+            Formatted prompt string
+        """
+        # Format objectives
+        objectives_text = ""
+        for i, objective in enumerate(objectives[:6], 1):  # Limit to 6 objectives
+            objectives_text += f"{i}. {objective}\n"
+
+        # Format constraints
+        constraints_text = ""
+        constraint_fields = ["timeline", "budget", "resources", "technical", "regulatory", "stakeholders"]
+        for field in constraint_fields:
+            if field in constraints:
+                constraints_text += f"{field.title()}: {constraints[field]}\n"
+
+        planning_instructions = {
+            "strategic": "Generate a strategic execution plan focusing on high-level goals, key initiatives, and success metrics.",
+            "tactical": "Generate a tactical execution plan focusing on specific actions, resource allocation, and timeline.",
+            "operational": "Generate an operational execution plan focusing on day-to-day activities, processes, and coordination.",
+            "comprehensive": "Generate a comprehensive execution plan covering strategic, tactical, and operational aspects.",
+        }
+
+        instruction = planning_instructions.get(planning_type, planning_instructions["strategic"])
+
+        prompt = f"""EXECUTION PLANNING REQUEST
+
+PLANNING TYPE: {planning_type}
+
+OBJECTIVES:
+{objectives_text}
+
+CONSTRAINTS:
+{constraints_text}
+
+INSTRUCTIONS:
+{instruction}
+
+Please provide a detailed execution plan that includes:
+1. Executive Summary
+2. Key Success Factors
+3. Phase-by-Phase Implementation
+4. Resource Requirements
+5. Risk Mitigation Strategies
+6. Success Metrics and KPIs
+7. Timeline and Milestones
+8. Governance and Oversight
+9. Communication Plan
+10. Contingency Planning
+
+Ensure the plan is actionable, realistic, and aligned with the stated objectives and constraints. Use clear, structured language with specific, measurable outcomes.
+"""
+
+        return prompt
 
     @staticmethod
     def _make_trace_id(request: ExecBriefRequest) -> str:

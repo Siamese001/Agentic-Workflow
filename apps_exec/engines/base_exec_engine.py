@@ -7,7 +7,7 @@ Mirrors apps_rg BaseRGEngine pattern with exec-specific contracts.
 from __future__ import annotations
 
 import logging
-from abc import ABCMeta, abstractmethod
+from abc import ABC, abstractmethod
 from typing import Any
 
 try:

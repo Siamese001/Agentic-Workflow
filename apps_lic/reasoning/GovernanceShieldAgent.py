@@ -10,8 +10,33 @@ from __future__ import annotations
 import logging
 import re
 from dataclasses import dataclass, field
+from enum import Enum
+from typing import Any
 
 from apps_lic.utils.LICAgentBase import LICAgentBase
+
+# guardian: allow-silent-degradation -- Qwen vLLM is optional for governance analysis; graceful fallback to rule-based checks
+try:
+    from agentic_core.L2_execution.apps_qwen import (
+        AppsQwenGateway,
+        AppsQwenInferenceWorker,
+        AppsQwenRequest,
+        apps_qwen_telemetry,
+    )
+    from agentic_core.L2_execution.apps_qwen.apps_qwen_config import (
+        AppsQwenModelConfig,
+        AppsQwenPromptConfig,
+    )
+
+    _QWEN_AVAILABLE = True
+except ImportError:
+    AppsQwenGateway = None  # type: ignore[assignment]
+    AppsQwenRequest = None  # type: ignore[assignment]
+    AppsQwenInferenceWorker = None  # type: ignore[assignment]
+    apps_qwen_telemetry = None  # type: ignore[assignment]
+    AppsQwenModelConfig = None  # type: ignore[assignment]
+    AppsQwenPromptConfig = None  # type: ignore[assignment]
+    _QWEN_AVAILABLE = False
 
 from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     LayerSegment,
@@ -174,6 +199,33 @@ _emit_links_execution_to_snapshot("p4", "GovernanceShieldAgent", "exec_snapshot_
 logger = logging.getLogger(__name__)
 
 
+class IndustrySensitivity(Enum):
+    """Industry sensitivity levels for risk assessment."""
+
+    LOW = "LOW"
+    MEDIUM = "MEDIUM"
+    HIGH = "HIGH"
+
+
+@dataclass
+class RiskProfile:
+    """Risk profile for industry and job description analysis."""
+
+    industry_sensitivity: IndustrySensitivity
+    compliance_keywords: list[str]
+    data_sensitivity: list[str]
+
+
+@dataclass
+class SafetyProtocol:
+    """Safety protocol for AI deployment."""
+
+    validation_strategy: str
+    data_privacy_approach: str
+    human_in_the_loop_policy: str
+    compliance_frameworks: list[str] = field(default_factory=list)
+
+
 @dataclass
 class GovernanceShieldAgent(LICAgentBase):
     """Sovereign Governance Shield - Audits and upgrades content for risk maturity."""
@@ -181,10 +233,41 @@ class GovernanceShieldAgent(LICAgentBase):
     risk_thresholds: dict[str, float] = field(
         default_factory=lambda: {"max_confidence_score": 0.95, "min_safety_level": 0.8}
     )
+    qwen_enabled: bool = True
 
     def __post_init__(self) -> None:
         """Initialize Sovereign Capabilities."""
         super().__post_init__()
+
+        # Initialize Qwen vLLM for governance analysis
+        self._qwen_gateway = None
+        self._qwen_inference_worker = None
+        self._qwen_session_id = None
+
+        if self.qwen_enabled and _QWEN_AVAILABLE:
+            try:
+                # Initialize Qwen gateway for governance analysis
+                self._qwen_gateway = AppsQwenGateway(model_id="Qwen/Qwen2.5-7B-Instruct")
+
+                # Initialize inference worker with governance-specific config
+                model_config = AppsQwenModelConfig(
+                    model_id="Qwen/Qwen2.5-7B-Instruct",
+                    max_tokens=1536,
+                    temperature=0.1,  # Very low temperature for consistent governance analysis
+                )
+                self._qwen_inference_worker = AppsQwenInferenceWorker(model_config)
+
+                # Start telemetry session
+                if apps_qwen_telemetry is not None:
+                    self._qwen_session_id = apps_qwen_telemetry.start_session("apps_lic")
+
+                _emit_records_execution_trace("GovernanceShieldAgent", "L2_EXECUTION", "qwen_vllm_init")
+
+            except Exception as e:
+                _emit_records_telemetry_event("GovernanceShieldAgent", "L2_EXECUTION", "qwen_init_error")
+                logger.warning(f"Failed to initialize Qwen vLLM: {e}")
+                self.qwen_enabled = False
+
         self.naive_patterns = {
             "absolute_accuracy": [
                 "100% accurate",
@@ -263,7 +346,7 @@ class GovernanceShieldAgent(LICAgentBase):
                         logger.debug(f"Replaced {category} claim with: {replacement}")
             sanitized = self._fix_privacy_language(sanitized)
             return sanitized
-        # guardian: allow-silent-swallow
+        # guardian: allow-silent-swallow -- Non-critical error handling; logged and gracefully degraded
         except Exception as e:
             logger.error(f"Error sanitizing claims: {str(e)}")
             return content
@@ -279,13 +362,15 @@ class GovernanceShieldAgent(LICAgentBase):
         """
         import uuid  # noqa: PLC0415
 
-        _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L5_POLICY, "GovernanceShieldAgent.generate_safety_protocol")
+        _emit_records_execution_trace(
+            str(uuid.uuid4()), LayerSegment.L5_POLICY, "GovernanceShieldAgent.generate_safety_protocol"
+        )
         try:
             if risk_profile.is_high_risk:
                 return self._generate_high_risk_protocol(risk_profile)
             else:
                 return self._generate_standard_protocol(risk_profile)
-        # guardian: allow-silent-swallow
+        # guardian: allow-silent-swallow -- Non-critical error handling; logged and gracefully degraded
         except Exception as e:
             logger.error(f"Error generating safety protocol: {str(e)}")
             return SafetyProtocol(
@@ -308,7 +393,7 @@ class GovernanceShieldAgent(LICAgentBase):
             if any(term in audited.lower() for term in ["hipaa", "phi", "health data"]):
                 audited += "\n\n[Note: All healthcare applications maintain HIPAA compliance through on-prem deployment or BAA-compliant APIs.]"
             return audited
-        # guardian: allow-silent-swallow
+        # guardian: allow-silent-swallow -- Non-critical error handling; logged and gracefully degraded
         except Exception as e:
             logger.error(f"Error auditing outreach: {str(e)}")
             return email_draft
@@ -360,7 +445,7 @@ class GovernanceShieldAgent(LICAgentBase):
                 compliance_keywords=list(set(compliance)),
                 data_sensitivity=data_types,
             )
-        # guardian: allow-silent-swallow
+        # guardian: allow-silent-swallow -- Non-critical error handling; logged and gracefully degraded
         except Exception as e:
             logger.error(f"Error scanning risk level: {str(e)}")
             return RiskProfile(
@@ -406,6 +491,116 @@ class GovernanceShieldAgent(LICAgentBase):
             content = re.sub(pattern, replacement, content, flags=re.IGNORECASE)
         return content
 
+    async def analyze_governance_with_qwen(
+        self, content: str, context: dict[str, Any] = None
+    ) -> dict[str, Any]:
+        """Analyze content for governance compliance using Qwen vLLM.
+
+        Args:
+            content: Content to analyze for governance issues
+            context: Additional context for analysis (industry, compliance requirements, etc.)
+
+        Returns:
+            Dictionary with governance analysis results and recommendations
+        """
+        if not self.qwen_enabled or self._qwen_gateway is None:
+            return {"success": False, "error": "qwen_disabled", "analysis": None}
+
+        try:
+            # Prepare governance analysis prompt
+            prompt = self._prepare_governance_analysis_prompt(content, context)
+
+            # Create Qwen request
+            request = AppsQwenRequest(
+                app_name="apps_lic",
+                prompt=prompt,
+                confidence_threshold=0.8,
+                max_tokens=1536,
+                temperature=0.1,  # Very low temperature for consistent governance analysis
+            )
+
+            # Record telemetry start
+            if apps_qwen_telemetry is not None and self._qwen_session_id is not None:
+                apps_qwen_telemetry.record_request_start(
+                    session_id=self._qwen_session_id,
+                    app_name="apps_lic",
+                    model_id="Qwen/Qwen2.5-7B-Instruct",
+                )
+
+            # Perform inference
+            response = await self._qwen_gateway.infer(request)
+
+            # Record telemetry result
+            if apps_qwen_telemetry is not None and self._qwen_session_id is not None:
+                if response.success:
+                    apps_qwen_telemetry.record_request_success(
+                        session_id=self._qwen_session_id,
+                        app_name="apps_lic",
+                        model_id=response.model_used,
+                        latency_ms=response.latency_ms,
+                        tokens_used=len(prompt.split()) + len(response.response.split())
+                        if response.response
+                        else 0,
+                    )
+                else:
+                    apps_qwen_telemetry.record_request_error(
+                        session_id=self._qwen_session_id,
+                        app_name="apps_lic",
+                        model_id=response.model_used,
+                        error_message=response.error_message or "unknown_error",
+                    )
+
+            _emit_captures_evaluation_metric("apps_lic", "GovernanceShieldAgent", "governance_analysis")
+
+            return {
+                "success": response.success,
+                "analysis": response.response,
+                "confidence": response.confidence,
+                "model_used": response.model_used,
+                "latency_ms": response.latency_ms,
+                "error_message": response.error_message,
+            }
+
+        except Exception as e:
+            _emit_records_telemetry_event("apps_lic", "GovernanceShieldAgent", "governance_analysis_error")
+            return {"success": False, "error": f"analysis_failed: {str(e)}", "analysis": None}
+
+    def _prepare_governance_analysis_prompt(self, content: str, context: dict[str, Any] = None) -> str:
+        """Prepare prompt for governance analysis using Qwen.
+
+        Args:
+            content: Content to analyze
+            context: Additional context for analysis
+
+        Returns:
+            Formatted prompt string
+        """
+        context_str = ""
+        if context:
+            context_str = f"\nCONTEXT:\n{context}\n"
+
+        prompt = f"""Analyze the following content for governance compliance and risk maturity:
+
+CONTENT:
+{content}{context_str}
+
+Please analyze and identify:
+1. Naive claims or absolute statements that need risk-mature language
+2. Potential privacy violations or data handling concerns
+3. Security claims that may be overstated
+4. Accuracy claims that need qualification
+5. Recommendations for more responsible language
+
+Provide specific suggestions for improvement and identify any high-risk areas that require immediate attention. Focus on enterprise-grade, risk-aware communication suitable for senior leadership.
+
+Format your response as:
+- RISKS_IDENTIFIED: [list of identified risks]
+- SEVERITY_LEVEL: [LOW/MEDIUM/HIGH]
+- RECOMMENDATIONS: [specific improvement suggestions]
+- REPLACEMENT_LANGUAGE: [example alternative phrasing]
+"""
+        return prompt
+
     def _generate_high_risk_protocol(self, risk_profile: RiskProfile) -> SafetyProtocol:
         """Generate protocol for high-risk industries.
 
@@ -446,7 +641,7 @@ class GovernanceShieldAgent(LICAgentBase):
     def heal(self, violation, **kwargs):
         return super().heal(violation, **kwargs)
 
-    # guardian: allow-type-erasure
+    # guardian: allow-type-erasure -- Required for generic typing compatibility with mypy enforcement
     def heal_repository(self, *args, **kwargs) -> dict:
         """heal_repository() not implemented for GovernanceShieldAgent."""
         raise NotImplementedError("heal_repository() not implemented for GovernanceShieldAgent")
