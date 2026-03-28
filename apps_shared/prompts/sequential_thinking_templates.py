@@ -21,6 +21,16 @@ class SequentialThinkingTemplate(Enum):
     SWE_PLANNING = "swe_planning"
     SWE_INTEGRATION = "swe_integration"
 
+    # ADG-based templates
+    SWE_ADG_ANALYSIS = "swe_adg_analysis"
+    SWE_VIOLATION_REMEDIATION = "swe_violation_remediation"
+    SWE_LAYER_BOUNDARY_AUDIT = "swe_layer_boundary_audit"
+    SWE_DEPENDENCY_GRAPH_ANALYSIS = "swe_dependency_graph_analysis"
+    SWE_ARCHITECTURAL_REVIEW = "swe_architectural_review"
+    SWE_ANTIPATTERN_DETECTION = "swe_antipattern_detection"
+    SWE_SYSTEM_RESTRUCTURING = "swe_system_restructuring"
+    SWE_GRAPH_TRAVERSAL_OPTIMIZATION = "swe_graph_traversal_optimization"
+
 @dataclass
 class SequentialThinkingPrompt:
     """Sequential thinking prompt template."""
@@ -581,6 +591,576 @@ Please design this integration systematically using sequential thinking.""",
         variables=["integration_title", "context", "integration_requirements"],
         complexity_threshold="high",
         estimated_tokens=7000
+    ),
+
+    # ADG-based Templates
+    SequentialThinkingTemplate.SWE_ADG_ANALYSIS: SequentialThinkingPrompt(
+        template_id="swe_adg_analysis_seq_v1",
+        name="ADG Graph Analysis Sequential Thinking",
+        template_type=SequentialThinkingTemplate.SWE_ADG_ANALYSIS,
+        content="""# Sequential ADG Analysis: {analysis_title}
+
+## Context
+{context}
+
+## ADG Graph Statistics
+- Total Nodes: {node_count}
+- Total Edges: {edge_count}
+- Layers: {layer_info}
+- Violations: {violation_count}
+
+## Sequential ADG Analysis Requirements
+
+Please provide a structured sequential thinking analysis of the ADG graph:
+
+### Thought 1: Graph Structure & Topology Analysis
+- What is the overall graph topology and density?
+- How are nodes distributed across layers (L0-L6)?
+- What are the key connectivity patterns?
+- Identify graph clusters and communities
+
+### Thought 2: Layer Boundary & Gravity Analysis
+- How well do layer boundaries respect gravity rules?
+- What violations exist in layer transitions?
+- Which layers have the most cross-layer dependencies?
+- Analyze upward vs downward dependency patterns
+
+### Thought 3: Dependency Flow & Impact Analysis
+- What are the critical dependency paths?
+- Which nodes have the highest betweenness centrality?
+- Identify potential single points of failure
+- Map information flow through the system
+
+### Thought 4: Violation Pattern & Anti-pattern Detection
+- What types of violations are most prevalent?
+- Are there systematic anti-patterns in the graph?
+- Which files/modules have the most violations?
+- Analyze violation severity and impact
+
+### Thought 5: Architectural Insights & Recommendations
+- What does the graph reveal about system architecture?
+- Where are architectural hotspots and bottlenecks?
+- What refactoring opportunities exist?
+- Identify areas for architectural improvement
+
+### Thought 6: Graph Health & Maintenance Strategy
+- What is the overall health of the dependency graph?
+- How can graph quality be maintained over time?
+- What metrics should be tracked for graph health?
+- Develop a strategy for ongoing graph optimization
+
+## Expected Output Format
+For each thought, provide:
+- Graph analysis findings with specific metrics
+- Visual insights about system structure
+- Actionable recommendations based on graph properties
+- Risk assessment based on dependency patterns
+
+Please analyze this ADG graph systematically using sequential thinking.""",
+        version="1.0.0",
+        description="Sequential thinking template for ADG graph analysis",
+        tags=["adg", "graph", "analysis", "architecture", "dependencies"],
+        variables=["analysis_title", "context", "node_count", "edge_count", "layer_info", "violation_count"],
+        complexity_threshold="high",
+        estimated_tokens=7500
+    ),
+
+    SequentialThinkingTemplate.SWE_VIOLATION_REMEDIATION: SequentialThinkingPrompt(
+        template_id="swe_violation_remediation_seq_v1",
+        name="Violation Remediation Sequential Thinking",
+        template_type=SequentialThinkingTemplate.SWE_VIOLATION_REMEDIATION,
+        content="""# Sequential Violation Remediation: {remediation_title}
+
+## Context
+{context}
+
+## Violation Summary
+- Total Violations: {violation_count}
+- High Severity: {high_severity_count}
+- Medium Severity: {medium_severity_count}
+- Low Severity: {low_severity_count}
+- Most Common Types: {common_violation_types}
+
+## Sequential Violation Remediation Requirements
+
+Please provide a structured sequential thinking approach to remediate violations:
+
+### Thought 1: Violation Classification & Prioritization
+- How should violations be classified by severity and impact?
+- Which violations pose the highest architectural risk?
+- What are the dependencies between violations?
+- Prioritize violations based on system impact and fix complexity
+
+### Thought 2: Root Cause Analysis & Pattern Detection
+- What are the underlying causes of these violations?
+- Are there systematic patterns in violation occurrences?
+- Which files or modules are violation hotspots?
+- Identify architectural or process issues causing violations
+
+### Thought 3: Remediation Strategy & Approach
+- What is the overall strategy for violation remediation?
+- Should violations be fixed incrementally or in batches?
+- What are the risks and mitigation strategies for fixes?
+- How will fixes be validated and tested?
+
+### Thought 4: Implementation Planning & Sequencing
+- What is the optimal sequence for fixing violations?
+- How will fixes be coordinated across teams?
+- What are the dependencies between different fixes?
+- Plan for rollback and recovery strategies
+
+### Thought 5: Prevention & Process Improvement
+- How can similar violations be prevented in the future?
+- What process improvements are needed?
+- How can automated detection be enhanced?
+- Develop guidelines for violation-free development
+
+### Thought 6: Monitoring & Quality Assurance
+- How will violation-free status be maintained?
+- What metrics should be tracked for ongoing quality?
+- How will code reviews and checks be enhanced?
+- Plan for continuous quality improvement
+
+## Expected Output Format
+For each thought, provide:
+- Specific remediation steps and priorities
+- Risk assessment for each fix
+- Implementation timeline and dependencies
+- Prevention strategies and process improvements
+
+Please remediate these violations systematically using sequential thinking.""",
+        version="1.0.0",
+        description="Sequential thinking template for violation remediation",
+        tags=["violations", "remediation", "quality", "anti-patterns", "architecture"],
+        variables=["remediation_title", "context", "violation_count", "high_severity_count", "medium_severity_count", "low_severity_count", "common_violation_types"],
+        complexity_threshold="high",
+        estimated_tokens=7000
+    ),
+
+    SequentialThinkingTemplate.SWE_LAYER_BOUNDARY_AUDIT: SequentialThinkingPrompt(
+        template_id="swe_layer_boundary_audit_seq_v1",
+        name="Layer Boundary Audit Sequential Thinking",
+        template_type=SequentialThinkingTemplate.SWE_LAYER_BOUNDARY_AUDIT,
+        content="""# Sequential Layer Boundary Audit: {audit_title}
+
+## Context
+{context}
+
+## Layer Architecture Overview
+- Total Layers: {layer_count}
+- Layer Distribution: {layer_distribution}
+- Boundary Violations: {boundary_violations}
+- Gravity Violations: {gravity_violations}
+
+## Sequential Layer Boundary Audit Requirements
+
+Please provide a structured sequential thinking analysis of layer boundaries:
+
+### Thought 1: Layer Architecture & Design Review
+- What is the intended layer architecture and purpose?
+- How well are layer boundaries defined and documented?
+- What are the intended dependency directions (gravity)?
+- Assess the clarity and consistency of layer design
+
+### Thought 2: Boundary Violation Analysis
+- What specific violations exist in layer boundaries?
+- Which violations break architectural principles?
+- How do violations impact system maintainability?
+- Categorize violations by type and severity
+
+### Thought 3: Dependency Flow & Gravity Assessment
+- How well do dependencies respect layer gravity?
+- What are the problematic upward dependencies?
+- Which layers have excessive cross-dependencies?
+- Analyze the impact on system stability
+
+### Thought 4: Architectural Impact & Risk Analysis
+- What are the architectural risks from boundary violations?
+- How do violations affect system modularity?
+- What are the maintenance and evolution challenges?
+- Assess impact on testing and deployment
+
+### Thought 5: Remediation & Refactoring Strategy
+- What is the strategy for fixing boundary violations?
+- How can dependencies be restructured to respect boundaries?
+- What refactoring patterns are most appropriate?
+- Plan incremental improvement approach
+
+### Thought 6: Governance & Prevention Strategy
+- How can layer boundary compliance be enforced?
+- What automated checks and validations are needed?
+- How will architectural reviews be enhanced?
+- Develop ongoing governance and monitoring strategy
+
+## Expected Output Format
+For each thought, provide:
+- Specific boundary violation analysis
+- Architectural risk assessment
+- Remediation recommendations and priorities
+- Governance and prevention strategies
+
+Please audit these layer boundaries systematically using sequential thinking.""",
+        version="1.0.0",
+        description="Sequential thinking template for layer boundary audit",
+        tags=["layers", "boundaries", "architecture", "governance", "violations"],
+        variables=["audit_title", "context", "layer_count", "layer_distribution", "boundary_violations", "gravity_violations"],
+        complexity_threshold="high",
+        estimated_tokens=6500
+    ),
+
+    SequentialThinkingTemplate.SWE_DEPENDENCY_GRAPH_ANALYSIS: SequentialThinkingPrompt(
+        template_id="swe_dependency_graph_analysis_seq_v1",
+        name="Dependency Graph Analysis Sequential Thinking",
+        template_type=SequentialThinkingTemplate.SWE_DEPENDENCY_GRAPH_ANALYSIS,
+        content="""# Sequential Dependency Graph Analysis: {analysis_title}
+
+## Context
+{context}
+
+## Dependency Graph Metrics
+- Total Dependencies: {dependency_count}
+- Circular Dependencies: {circular_deps}
+- Longest Dependency Chain: {longest_chain}
+- Highly Connected Nodes: {hub_nodes}
+
+## Sequential Dependency Graph Analysis Requirements
+
+Please provide a structured sequential thinking analysis of dependencies:
+
+### Thought 1: Graph Topology & Structure Analysis
+- What is the overall structure of the dependency graph?
+- How dense or sparse are the connections?
+- What are the key graph clusters and components?
+- Identify the backbone of the dependency structure
+
+### Thought 2: Critical Dependencies & Bottlenecks
+- Which dependencies are most critical to system operation?
+- What are the potential single points of failure?
+- How resilient is the system to dependency failures?
+- Identify dependency bottlenecks and constraints
+
+### Thought 3: Circular Dependency & Cycle Analysis
+- What circular dependencies exist in the system?
+- How do cycles impact system maintainability?
+- What are the risks from circular dependencies?
+- Develop strategies for cycle elimination
+
+### Thought 4: Dependency Coupling & Cohesion Assessment
+- How tightly coupled are system components?
+- What are the cohesion levels within modules?
+- Which dependencies indicate poor separation of concerns?
+- Assess impact on modifiability and testability
+
+### Thought 5: Evolution & Maintenance Analysis
+- How will dependencies evolve over time?
+- What are the risks of dependency accumulation?
+- How can dependency growth be managed?
+- Plan for sustainable dependency management
+
+### Thought 6: Optimization & Refactoring Strategy
+- What dependencies can be eliminated or simplified?
+- How can dependency structure be improved?
+- What refactoring patterns are most beneficial?
+- Develop a dependency optimization roadmap
+
+## Expected Output Format
+For each thought, provide:
+- Dependency analysis with specific metrics
+- Risk assessment for dependency issues
+- Refactoring recommendations and priorities
+- Long-term dependency management strategy
+
+Please analyze this dependency graph systematically using sequential thinking.""",
+        version="1.0.0",
+        description="Sequential thinking template for dependency graph analysis",
+        tags=["dependencies", "graph", "coupling", "architecture", "refactoring"],
+        variables=["analysis_title", "context", "dependency_count", "circular_deps", "longest_chain", "hub_nodes"],
+        complexity_threshold="high",
+        estimated_tokens=7000
+    ),
+
+    SequentialThinkingTemplate.SWE_ARCHITECTURAL_REVIEW: SequentialThinkingPrompt(
+        template_id="swe_architectural_review_seq_v1",
+        name="Architectural Review Sequential Thinking",
+        template_type=SequentialThinkingTemplate.SWE_ARCHITECTURAL_REVIEW,
+        content="""# Sequential Architectural Review: {review_title}
+
+## Context
+{context}
+
+## Architecture Overview
+- System Components: {component_count}
+- Architectural Patterns: {patterns_used}
+- Integration Points: {integration_points}
+- Quality Attributes: {quality_attributes}
+
+## Sequential Architectural Review Requirements
+
+Please provide a structured sequential thinking architectural review:
+
+### Thought 1: Architectural Principles & Design Assessment
+- How well does the architecture follow established principles?
+- What are the strengths of the current design?
+- Where are architectural principles violated?
+- Assess overall architectural coherence and consistency
+
+### Thought 2: Component Structure & Relationships Analysis
+- How well are components structured and organized?
+- What are the key component relationships and interactions?
+- Which components have excessive responsibilities?
+- Analyze component cohesion and coupling
+
+### Thought 3: Quality Attributes & Non-Functional Requirements
+- How well does the architecture address quality requirements?
+- What are the performance, scalability, and reliability characteristics?
+- How are security and maintainability addressed?
+- Assess trade-offs between quality attributes
+
+### Thought 4: Integration & Interface Design Review
+- How well are system interfaces designed and implemented?
+- What are the integration patterns and their effectiveness?
+- How are external dependencies managed?
+- Assess integration complexity and risks
+
+### Thought 5: Evolution & Change Management Assessment
+- How well can the architecture evolve and adapt?
+- What are the change hotspots and areas of fragility?
+- How is technical debt managed in the architecture?
+- Assess long-term sustainability and maintainability
+
+### Thought 6: Recommendations & Improvement Strategy
+- What specific architectural improvements are needed?
+- How should architectural decisions be prioritized?
+- What is the roadmap for architectural evolution?
+- Develop governance and decision-making processes
+
+## Expected Output Format
+For each thought, provide:
+- Architectural assessment with specific findings
+- Risk analysis and mitigation strategies
+- Improvement recommendations with priorities
+- Long-term architectural roadmap
+
+Please conduct this architectural review systematically using sequential thinking.""",
+        version="1.0.0",
+        description="Sequential thinking template for architectural review",
+        tags=["architecture", "review", "quality", "patterns", "design"],
+        variables=["review_title", "context", "component_count", "patterns_used", "integration_points", "quality_attributes"],
+        complexity_threshold="high",
+        estimated_tokens=7500
+    ),
+
+    SequentialThinkingTemplate.SWE_ANTIPATTERN_DETECTION: SequentialThinkingPrompt(
+        template_id="swe_antipattern_detection_seq_v1",
+        name="Anti-pattern Detection Sequential Thinking",
+        template_type=SequentialThinkingTemplate.SWE_ANTIPATTERN_DETECTION,
+        content="""# Sequential Anti-pattern Detection: {detection_title}
+
+## Context
+{context}
+
+## Anti-pattern Summary
+- Total Anti-patterns: {antipattern_count}
+- High Impact: {high_impact_count}
+- Common Categories: {common_categories}
+- Affected Files: {affected_files}
+
+## Sequential Anti-pattern Detection Requirements
+
+Please provide a structured sequential thinking analysis of anti-patterns:
+
+### Thought 1: Anti-pattern Classification & Categorization
+- What types of anti-patterns are present in the codebase?
+- How should anti-patterns be classified by severity and impact?
+- Which anti-patterns are most prevalent?
+- Identify patterns of anti-pattern occurrence
+
+### Thought 2: Root Cause Analysis & Systemic Issues
+- What are the underlying causes of these anti-patterns?
+- Are there systemic issues in development practices?
+- How do anti-patterns relate to architectural decisions?
+- Identify process or knowledge gaps causing anti-patterns
+
+### Thought 3: Impact Assessment & Risk Analysis
+- What is the impact of each anti-pattern on system quality?
+- How do anti-patterns affect maintainability and performance?
+- Which anti-patterns pose the highest risk?
+- Assess technical debt accumulation from anti-patterns
+
+### Thought 4: Refactoring Strategy & Prioritization
+- What is the strategy for eliminating anti-patterns?
+- How should refactoring efforts be prioritized?
+- What are the dependencies between different fixes?
+- Plan incremental refactoring approach
+
+### Thought 5: Prevention & Process Improvement
+- How can similar anti-patterns be prevented in the future?
+- What development practices need improvement?
+- How can code reviews and guidelines be enhanced?
+- Develop education and training strategies
+
+### Thought 6: Quality Assurance & Monitoring Strategy
+- How can anti-pattern detection be automated?
+- What metrics should be tracked for code quality?
+- How will quality gates be implemented?
+- Plan ongoing quality monitoring and improvement
+
+## Expected Output Format
+For each thought, provide:
+- Specific anti-pattern analysis with examples
+- Impact assessment and risk evaluation
+- Refactoring recommendations and priorities
+- Prevention and quality improvement strategies
+
+Please detect and analyze these anti-patterns systematically using sequential thinking.""",
+        version="1.0.0",
+        description="Sequential thinking template for anti-pattern detection",
+        tags=["anti-patterns", "quality", "refactoring", "technical-debt", "best-practices"],
+        variables=["detection_title", "context", "antipattern_count", "high_impact_count", "common_categories", "affected_files"],
+        complexity_threshold="medium",
+        estimated_tokens=6500
+    ),
+
+    SequentialThinkingTemplate.SWE_SYSTEM_RESTRUCTURING: SequentialThinkingPrompt(
+        template_id="swe_system_restructuring_seq_v1",
+        name="System Restructuring Sequential Thinking",
+        template_type=SequentialThinkingTemplate.SWE_SYSTEM_RESTRUCTURING,
+        content="""# Sequential System Restructuring: {restructuring_title}
+
+## Context
+{context}
+
+## Current System State
+- System Size: {system_size}
+- Complexity Metrics: {complexity_metrics}
+- Identified Issues: {identified_issues}
+- Restructuring Goals: {restructuring_goals}
+
+## Sequential System Restructuring Requirements
+
+Please provide a structured sequential thinking approach to system restructuring:
+
+### Thought 1: Current State Analysis & Problem Definition
+- What are the specific problems requiring restructuring?
+- How is the current system structured and organized?
+- What are the pain points and bottlenecks?
+- Define the scope and boundaries of restructuring effort
+
+### Thought 2: Target Architecture Design & Vision
+- What should the restructured system look like?
+- How will components be organized and related?
+- What architectural patterns will be applied?
+- Design the target state with clear principles
+
+### Thought 3: Migration Strategy & Transition Planning
+- How will the system be migrated from current to target state?
+- What is the optimal sequence of restructuring steps?
+- How will system continuity be maintained during transition?
+- Plan for rollback and recovery strategies
+
+### Thought 4: Risk Assessment & Mitigation Planning
+- What are the major risks in this restructuring effort?
+- How will risks be identified, assessed, and mitigated?
+- What are the potential failure modes and impacts?
+- Develop comprehensive risk management strategy
+
+### Thought 5: Implementation Planning & Execution Strategy
+- What resources and timeline are needed for restructuring?
+- How will changes be implemented and validated?
+- What are the coordination and communication requirements?
+- Plan detailed implementation approach
+
+### Thought 6: Validation & Success Measurement
+- How will restructuring success be measured and validated?
+- What are the key performance indicators and metrics?
+- How will system quality and performance be verified?
+- Plan for ongoing monitoring and optimization
+
+## Expected Output Format
+For each thought, provide:
+- Detailed restructuring analysis and recommendations
+- Migration strategy with specific steps and timelines
+- Risk assessment and mitigation plans
+- Success metrics and validation approaches
+
+Please plan this system restructuring systematically using sequential thinking.""",
+        version="1.0.0",
+        description="Sequential thinking template for system restructuring",
+        tags=["restructuring", "architecture", "migration", "transformation", "strategy"],
+        variables=["restructuring_title", "context", "system_size", "complexity_metrics", "identified_issues", "restructuring_goals"],
+        complexity_threshold="critical",
+        estimated_tokens=8000
+    ),
+
+    SequentialThinkingTemplate.SWE_GRAPH_TRAVERSAL_OPTIMIZATION: SequentialThinkingPrompt(
+        template_id="swe_graph_traversal_optimization_seq_v1",
+        name="Graph Traversal Optimization Sequential Thinking",
+        template_type=SequentialThinkingTemplate.SWE_GRAPH_TRAVERSAL_OPTIMIZATION,
+        content="""# Sequential Graph Traversal Optimization: {optimization_title}
+
+## Context
+{context}
+
+## Graph Performance Metrics
+- Current Traversal Time: {current_traversal_time}
+- Graph Size: {graph_size}
+- Traversal Frequency: {traversal_frequency}
+- Performance Bottlenecks: {bottlenecks}
+
+## Sequential Graph Traversal Optimization Requirements
+
+Please provide a structured sequential thinking approach to optimize graph traversal:
+
+### Thought 1: Current Performance Analysis & Bottleneck Identification
+- What are the current performance characteristics of graph traversal?
+- Where are the bottlenecks in traversal operations?
+- How do different graph structures affect traversal performance?
+- Identify specific performance issues and their causes
+
+### Thought 2: Traversal Algorithm Analysis & Selection
+- What traversal algorithms are currently being used?
+- How appropriate are these algorithms for the graph structure?
+- What alternative algorithms might be more efficient?
+- Analyze algorithmic complexity and suitability
+
+### Thought 3: Data Structure Optimization & Indexing Strategy
+- How can the graph data structures be optimized for traversal?
+- What indexing strategies would improve traversal performance?
+- How can memory layout and access patterns be improved?
+- Design optimized data structures for specific traversal patterns
+
+### Thought 4: Caching & Memoization Strategy
+- What traversal results can be cached for performance improvement?
+- How can memoization be applied to expensive traversal operations?
+- What are the cache invalidation and consistency requirements?
+- Design effective caching and memoization strategies
+
+### Thought 5: Parallelization & Concurrency Optimization
+- How can traversal operations be parallelized?
+- What are the opportunities for concurrent processing?
+- How will thread safety and consistency be maintained?
+- Design parallelization strategy for traversal operations
+
+### Thought 6: Monitoring & Continuous Optimization
+- How will traversal performance be monitored and measured?
+- What metrics will indicate optimization success?
+- How will performance be maintained over time?
+- Plan for ongoing optimization and performance tuning
+
+## Expected Output Format
+For each thought, provide:
+- Performance analysis with specific metrics and benchmarks
+- Optimization recommendations with implementation details
+- Risk assessment for optimization changes
+- Monitoring and maintenance strategies
+
+Please optimize this graph traversal systematically using sequential thinking.""",
+        version="1.0.0",
+        description="Sequential thinking template for graph traversal optimization",
+        tags=["optimization", "performance", "graph", "algorithms", "traversal"],
+        variables=["optimization_title", "context", "current_traversal_time", "graph_size", "traversal_frequency", "bottlenecks"],
+        complexity_threshold="high",
+        estimated_tokens=7000
     )
 }
 
@@ -616,7 +1196,11 @@ def get_template_for_complexity(complexity: str) -> List[SequentialThinkingTempl
                   SequentialThinkingTemplate.SWE_REFACTORING, SequentialThinkingTemplate.SWE_TESTING,
                   SequentialThinkingTemplate.SWE_PLANNING],
         "high": [SequentialThinkingTemplate.SWE_ARCHITECTURE, SequentialThinkingTemplate.SWE_IMPLEMENTATION,
-                 SequentialThinkingTemplate.SWE_INTEGRATION, SequentialThinkingTemplate.SWE_PLANNING],
+                 SequentialThinkingTemplate.SWE_INTEGRATION, SequentialThinkingTemplate.SWE_PLANNING,
+                 SequentialThinkingTemplate.SWE_ADG_ANALYSIS, SequentialThinkingTemplate.SWE_VIOLATION_REMEDIATION,
+                 SequentialThinkingTemplate.SWE_LAYER_BOUNDARY_AUDIT, SequentialThinkingTemplate.SWE_DEPENDENCY_GRAPH_ANALYSIS,
+                 SequentialThinkingTemplate.SWE_ARCHITECTURAL_REVIEW, SequentialThinkingTemplate.SWE_ANTIPATTERN_DETECTION,
+                 SequentialThinkingTemplate.SWE_GRAPH_TRAVERSAL_OPTIMIZATION],
         "critical": list(SequentialThinkingTemplate)  # All templates for critical complexity
     }
 
