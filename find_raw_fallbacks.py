@@ -7,10 +7,10 @@ print('=== Finding raw edge_kind fallbacks ===')
 
 # Find edges where semantic_type == edge_kind (raw fallbacks)
 cursor = conn.execute('''
-    SELECT edge_kind, relation_type, COUNT(*) 
-    FROM edges 
-    WHERE semantic_type == edge_kind 
-    GROUP BY edge_kind, relation_type 
+    SELECT edge_kind, relation_type, COUNT(*)
+    FROM edges
+    WHERE semantic_type == edge_kind
+    GROUP BY edge_kind, relation_type
     ORDER BY COUNT(*) DESC
     LIMIT 20
 ''')

@@ -20,7 +20,7 @@ print(f'Execution edges with generic semantic types: {execution_generic}')
 
 # Check expected semantic types for execution
 expected_execution_semantics = [
-    'attribute_dispatch', 'branch', 'loop', 'invokes_function', 
+    'attribute_dispatch', 'branch', 'loop', 'invokes_function',
     'instantiates_class', 'dynamic_getattr', 'dynamic_exec', 'eval_call'
 ]
 cursor = conn.execute('SELECT COUNT(*) FROM edges WHERE edge_kind = "execution" AND semantic_type IN ({})'.format(

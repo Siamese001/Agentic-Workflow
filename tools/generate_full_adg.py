@@ -329,7 +329,7 @@ def generate_full_adg(adg_artifacts_dir: Path, ts: str, archive_old: bool = True
     # --- E9: Confidence ---
     scored_edges = score_edges(list(result.edges))
     conf_summary = confidence_summary(scored_edges)
-    
+
     # Persist confidence summary for L0 routing confidence monitor
     try:
         from system_learning.adapters.system_learning_memory_bridge import get_sl_memory_bridge

@@ -25,7 +25,7 @@ for edge_kind, rel_type, sem_type in samples:
 # Check if our fallback map should have caught these
 print('\n=== Expected behavior ===')
 print('reads_runtime_state edges should use relation_type "reads_runtime_state" fallback')
-print('reads_policy_state edges should use relation_type "reads_policy_state" fallback')  
+print('reads_policy_state edges should use relation_type "reads_policy_state" fallback')
 print('layer_membership edges should use relation_type "belongs_to_layer" fallback')
 
 conn.close()

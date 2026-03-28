@@ -7,12 +7,12 @@ print('=== ADG EDGE SEMANTIC PRECISION ROOT CAUSE ===')
 print()
 
 # The validation is checking for execution edges with generic semantic types
-# Generic semantics include: "execution", "call", "read", "write", "controls_flow", 
+# Generic semantics include: "execution", "call", "read", "write", "controls_flow",
 # "flows_to", "emits_side_effect", "resolves_callsite"
 
 generic_semantics = {
     "execution",
-    "call", 
+    "call",
     "read",
     "write",
     "controls_flow",
@@ -57,11 +57,11 @@ else:
 # Let's check what semantic types execution edges actually have
 print('\n=== ACTUAL EXECUTION EDGE SEMANTIC TYPES ===')
 cursor = conn.execute('''
-    SELECT semantic_type, COUNT(*) 
-    FROM edges 
-    WHERE edge_kind = "execution" 
-    GROUP BY semantic_type 
-    ORDER BY COUNT(*) DESC 
+    SELECT semantic_type, COUNT(*)
+    FROM edges
+    WHERE edge_kind = "execution"
+    GROUP BY semantic_type
+    ORDER BY COUNT(*) DESC
     LIMIT 15
 ''')
 semantic_types = cursor.fetchall()

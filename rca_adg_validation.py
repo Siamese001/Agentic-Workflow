@@ -25,7 +25,7 @@ if semantic_row:
     print(f"Ratio: {semantic_row['ratio']}")
     print(f"Threshold: {semantic_row['threshold']}")
     print()
-    
+
     evidence = semantic_row.get('evidence', {})
     print("Evidence from validation:")
     for key, value in evidence.items():
@@ -80,15 +80,15 @@ if semantic_row and not semantic_row['passed']:
     print("1. The validation is checking different data than what's in the database")
     print("2. There's a timing issue between when validation runs and when data is written")
     print("3. The validation logic has a bug")
-    
+
     # Check if the issue is in the evidence reporting
     evidence = semantic_row.get('evidence', {})
     reported_generic = evidence.get('execution_generic_semantic_count', 0)
     reported_total = evidence.get('execution_total', 0)
-    
+
     print(f"Validation reports: {reported_generic}/{reported_total} generic execution edges")
     print(f"Database shows: {execution_generic}/{execution_total} generic execution edges")
-    
+
     if reported_generic != execution_generic or reported_total != execution_total:
         print("❌ DATA MISMATCH: Validation report doesn't match database")
     else:

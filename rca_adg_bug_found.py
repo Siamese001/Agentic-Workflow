@@ -36,9 +36,9 @@ conn = sqlite3.connect('artifacts/adg/adg_indexed_03272026_1955.sqlite')
 
 # Find edges where semantic_type == edge_kind
 cursor = conn.execute('''
-    SELECT DISTINCT edge_kind, semantic_type, COUNT(*) 
-    FROM edges 
-    WHERE semantic_type == edge_kind 
+    SELECT DISTINCT edge_kind, semantic_type, COUNT(*)
+    FROM edges
+    WHERE semantic_type == edge_kind
     GROUP BY edge_kind, semantic_type
     ORDER BY COUNT(*) DESC
 ''')

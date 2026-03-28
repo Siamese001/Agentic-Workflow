@@ -6357,15 +6357,15 @@ def _scan_file(
         # Phase 1.4: Hollow file annotation
         hollow_annotator = _HollowFileAnnotator(module_adg, rel)
         hollow_annotator.visit(tree)
-        
+
     # Initialize surface_evidence
     surface_evidence = {}
-    
+
     # Store hollow file metadata in surface_evidence for later processing
     if visitors_to_run == "full" and hasattr(hollow_annotator, 'is_hollow'):
         surface_evidence["is_hollow"] = hollow_annotator.is_hollow
         surface_evidence["boilerplate_ratio"] = hollow_annotator.boilerplate_ratio
-    
+
     # Phase 3b: Type surface collection (always needed for return)
     if visitors_to_run != "full":
         type_collector = _TypeSurfaceCollector(rel)
@@ -6615,7 +6615,7 @@ _SEMANTIC_FALLBACK: dict[str, str] = {
     "violation_propagates_through": "violation_trace",
     # Add missing relation_type fallbacks to prevent raw edge kind fallbacks
     "reads_runtime_state": "reads_runtime_state",
-    "reads_policy_state": "reads_policy_state", 
+    "reads_policy_state": "reads_policy_state",
     "reads_secret": "reads_secret",
     "authorization": "authorization",
     "routing_commit": "routing_commit",

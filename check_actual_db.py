@@ -7,9 +7,9 @@ print('=== Checking actual database content ===')
 
 # Check layer_membership edges specifically
 cursor = conn.execute('''
-    SELECT edge_kind, relation_type, semantic_type, COUNT(*) 
-    FROM edges 
-    WHERE edge_kind = "layer_membership" 
+    SELECT edge_kind, relation_type, semantic_type, COUNT(*)
+    FROM edges
+    WHERE edge_kind = "layer_membership"
     GROUP BY edge_kind, relation_type, semantic_type
 ''')
 results = cursor.fetchall()

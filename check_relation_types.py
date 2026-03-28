@@ -11,7 +11,7 @@ for kind in problem_kinds:
     rel_types = cursor.fetchall()
     for rel_type, count in rel_types:
         print(f'  relation_type: {rel_type}, count: {count}')
-    
+
     # Check if relation_type is in our fallback map
     cursor = conn.execute('SELECT COUNT(*) FROM edges WHERE edge_kind = ? AND semantic_type = edge_kind', (kind,))
     raw_count = cursor.fetchone()[0]
