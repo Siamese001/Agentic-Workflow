@@ -85,7 +85,7 @@ env/
 
 # Generated analysis and technical docs
 # docs/ - REMOVED: docs/ is now tracked
-docs/technical/
+# docs/technical/ moved to docs/reference/ (SSOT-compliant)
 
 # IDE and OS noise
 .vscode/

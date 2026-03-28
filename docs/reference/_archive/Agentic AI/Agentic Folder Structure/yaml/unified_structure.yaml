@@ -1,0 +1,771 @@
+agentic_core:
+  l1_planning/: {}
+  strategy_planning/: {}
+  blueprint/: {}
+  goals/: {}
+  goal_definitions.py: null
+  goal_constraints.py: null
+  goal_templates.yaml: null
+  signals/: {}
+  signal_types.py: null
+  signal_extractors.py: null
+  signal_weights.yaml: null
+  orchestration/: {}
+  plan_schema.py: null
+  plan_optimizer.py: null
+  plan_safety_checks.py: null
+  decomposition/: {}
+  task_segmentation.py: null
+  task_graph_builder.py: null
+  task_normalization.py: null
+  refinement/: {}
+  validator.py: null
+  redundancy_pruning.py: null
+  scoring.py: null
+  qa_planning/: {}
+  question_understanding/: {}
+  classification.py: null
+  intent_extraction.py: null
+  disambiguation.py: null
+  retrieval_plans/: {}
+  rag_blueprints.py: null
+  ranking_strategies.py: null
+  fallback_routes.yaml: null
+  answer_blueprints/: {}
+  format_constraints.py: null
+  answer_templates.yaml: null
+  verification_rules.py: null
+  rag_planning/: {}
+  query_generation/: {}
+  expansion_hyde.py: null
+  query_rewriting.py: null
+  signal_weighting.py: null
+  fusion/: {}
+  rrf.py: null
+  hybrid_fuser.py: null
+  scoring_models.py: null
+  routing/: {}
+  vector_db_selection.py: null
+  cross_db_balancing.py: null
+  retrieval_budgeting.py: null
+  safety_planning/: {}
+  detectors/: {}
+  pii.py: null
+  toxicity.py: null
+  jailbreak_patterns.yaml: null
+  policies/: {}
+  rule_engine.py: null
+  policy_map.yaml: null
+  severity_levels.yaml: null
+  mitigation/: {}
+  redact.py: null
+  rephrase.py: null
+  block.py: null
+  utils/: {}
+  schema_helpers.py: null
+  context_pruning.py: null
+  scoring_utils.py: null
+  l2_execution/: {}
+  tools/: {}
+  browser/: {}
+  run_search.py: null
+  scrape.py: null
+  extraction_utils.py: null
+  file_ops/: {}
+  load_file.py: null
+  find_in_file.py: null
+  summarization_utils.py: null
+  api/: {}
+  openai_client.py: null
+  anthropic_client.py: null
+  retry_backoff.py: null
+  execution_engines/: {}
+  tool_invocation.py: null
+  validation.py: null
+  error_handling.py: null
+  parsing.py: null
+  serialization.py: null
+  io_limits.py: null
+  l3_orchestration/: {}
+  dag/: {}
+  node_types/: {}
+  plan_node.py: null
+  act_node.py: null
+  observe_node.py: null
+  graph_builder.py: null
+  graph_optimizer.py: null
+  graph_validator.py: null
+  react/: {}
+  think_step.py: null
+  act_step.py: null
+  observe_step.py: null
+  controllers/: {}
+  loop_controller.py: null
+  retry_controller.py: null
+  escalate_controller.py: null
+  l4_memory/: {}
+  short_term/: {}
+  buffer.py: null
+  summarizer.py: null
+  eviction_policy.py: null
+  long_term/: {}
+  embeddings_store.py: null
+  document_index.py: null
+  versioning.py: null
+  state/: {}
+  execution_context.py: null
+  thread_state.py: null
+  persistence.py: null
+  l5_safety/:
+    filters/: {}
+    pii_filter.py: null
+    violence_filter.py: null
+    policy_classifier.py: null
+    guardrails/: {}
+    enforcement_engine.py: null
+    safety_events.py: null
+    runtime_blocks.py: null
+    audit/:
+      logging.py: null
+      trace_capture.py: null
+      safety_reports.py: null
+apps:
+  'resume_engine/                         # LEVEL 1': {}
+  'api/                               # LEVEL 2': {}
+  'v1/                             # LEVEL 3': {}
+  'endpoints/                  # LEVEL 4': {}
+  'generate_resume.py      # LEVEL 5': null
+  validate_resume.py: null
+  healthcheck.py: null
+  'schemas/                    # LEVEL 4': {}
+  'resume_request.json      # LEVEL 5': null
+  resume_response.json: null
+  'middleware/                 # LEVEL 4': {}
+  'auth.py                 # LEVEL 5': null
+  rate_limit.py: null
+  'router.py                   # LEVEL 4': null
+  'services/                           # LEVEL 2': {}
+  'builders/                       # LEVEL 3': {}
+  'resume_builder.py           # LEVEL 4': null
+  'ats_optimizer.py            # LEVEL 4': null
+  'enrichers/                      # LEVEL 3': {}
+  'skill_expander.py           # LEVEL 4': null
+  'job_alignment.py            # LEVEL 4': null
+  'generators/                     # LEVEL 3': {}
+  'section_generator.py        # LEVEL 4': null
+  'summary_generator.py        # LEVEL 4': null
+  'pipelines/                      # LEVEL 3': {}
+  'resume_pipeline.py          # LEVEL 4': null
+  'validation_pipeline.py      # LEVEL 4': null
+  'utils/                          # LEVEL 3': {}
+  'formatting.py               # LEVEL 4': null
+  'scoring.py                  # LEVEL 4': null
+  'workers/                            # LEVEL 2': {}
+  'job_ingest_worker.py            # LEVEL 3': null
+  'resume_generate_worker.py       # LEVEL 3': null
+  'enrichment_worker.py            # LEVEL 3': null
+  'cli/                                # LEVEL 2': {}
+  'run_resume_engine.py            # LEVEL 3': null
+  'debug_tools.py                  # LEVEL 3': null
+  'tests/                              # LEVEL 2': {}
+  'unit/                           # LEVEL 3': {}
+  'test_resume_builder.py      # LEVEL 4': null
+  'test_skill_expander.py      # LEVEL 4': null
+  'integration/                    # LEVEL 3': {}
+  'test_resume_pipeline.py     # LEVEL 4': null
+  'test_api_endpoints.py       # LEVEL 4': null
+  'e2e/                            # LEVEL 3': {}
+  'test_full_resume_flow.py    # LEVEL 4': null
+  'test_error_recovery.py      # LEVEL 4': null
+  'outreach_engine/                        # LEVEL 1': {}
+  'api/                                # LEVEL 2': {}
+  'send_outreach.py        # LEVEL 5': null
+  preview_message.py: null
+  'outreach_request.json   # LEVEL 5': null
+  outreach_response.json: null
+  'planners/                       # LEVEL 3': {}
+  'message_planner.py          # LEVEL 4': null
+  'cadence_planner.py          # LEVEL 4': null
+  'outreach_generator.py       # LEVEL 4': null
+  'personalization_engine.py   # LEVEL 4': null
+  'contact_enricher.py         # LEVEL 4': null
+  'profile_analyzer.py         # LEVEL 4': null
+  'outreach_pipeline.py        # LEVEL 4': null
+  'compliance_pipeline.py      # LEVEL 4': null
+  'linkedin_send_worker.py         # LEVEL 3': null
+  'email_send_worker.py            # LEVEL 3': null
+  'run_outreach_engine.py          # LEVEL 3': null
+  'test_message_planner.py     # LEVEL 4': null
+  'test_outreach_generator.py  # LEVEL 4': null
+  'test_outreach_pipeline.py   # LEVEL 4': null
+  'test_full_outreach_flow.py  # LEVEL 4': null
+  'shared/                                 # LEVEL 1':
+    'utils/                              # LEVEL 2': {}
+    'logging.py                      # LEVEL 3': null
+    'constants.py                    # LEVEL 3': null
+    'time.py                         # LEVEL 3': null
+    'adapters/                           # LEVEL 2': {}
+    'linkedin_adapter.py             # LEVEL 3': null
+    'email_adapter.py                # LEVEL 3': null
+    'redis_adapter.py                # LEVEL 3': null
+    'tests/                              # LEVEL 2':
+      'unit/                           # LEVEL 3': {}
+      'integration/                    # LEVEL 3': {}
+      'e2e/                            # LEVEL 3': {}
+config:
+  'services/                                # Service-level config boundaries': {}
+  resume_engine/: {}
+  routing/: {}
+  model_routing.yaml: null
+  safety_routing.yaml: null
+  cost_routing.yaml: null
+  prompts/: {}
+  system_prompts.yaml: null
+  planner_prompts.yaml: null
+  generator_prompts.yaml: null
+  policies/: {}
+  safety_policies.yaml: null
+  pii_policies.yaml: null
+  output_policies.yaml: null
+  defaults/: {}
+  inference_defaults.yaml: null
+  embeddings_defaults.yaml: null
+  retry_defaults.yaml: null
+  schemas/: {}
+  resume_plan.schema.json: null
+  resume_message.schema.json: null
+  resume_strategy.schema.json: null
+  outreach_engine/: {}
+  outreach_model_routing.yaml: null
+  personalization_routing.yaml: null
+  outreach_planner.yaml: null
+  outreach_writer.yaml: null
+  outreach_style.yaml: null
+  linkedin_policies.yaml: null
+  compliance.yaml: null
+  cadence_defaults.yaml: null
+  template_defaults.yaml: null
+  outreach_plan.schema.json: null
+  outreach_message.schema.json: null
+  outreach_strategy.schema.json: null
+  shared/: {}
+  llm/: {}
+  model_profiles.yaml: null
+  cost_profiles.yaml: null
+  api_settings.yaml: null
+  telemetry/: {}
+  event_schema.yaml: null
+  metric_counters.yaml: null
+  cost_tracking.yaml: null
+  memory/: {}
+  cache_settings.yaml: null
+  redis_settings.yaml: null
+  knowledge_profiles.yaml: null
+  tools/: {}
+  search.yaml: null
+  browser.yaml: null
+  codeexec.yaml: null
+  'environments/                            # Environment overlays (L5 policy-compliant)': {}
+  dev/: {}
+  settings.yaml: null
+  routing_overrides.yaml: null
+  telemetry_overrides.yaml: null
+  staging/: {}
+  safety_overrides.yaml: null
+  llm_overrides.yaml: null
+  prod/: {}
+  cost_overrides.yaml: null
+  'governance/                              # Prompt + safety + ACL governance': {}
+  prompt_registry.yaml: null
+  version_map.yaml: null
+  rollout_policies.yaml: null
+  fallback_policies.yaml: null
+  'policies/                                # System-wide L5 policies': {}
+  pii.yaml: null
+  data_retention.yaml: null
+  safety.yaml: null
+  agent_boundary.yaml: null
+  llm_governance.yaml: null
+  'loaders/                                 # Config loaders for runtime':
+    schema_loader.py: null
+    yaml_loader.py: null
+    policy_loader.py: null
+    registry_loader.py: null
+data:
+  'raw/                               # L1 ingestion – untouched source files': {}
+  transcripts/: {}
+  2025_Q1_call.pkl: null
+  2025_Q2_call.pkl: null
+  …: {}
+  web_scrapes/: {}
+  yahoo_finance/: {}
+  sec_filings/: {}
+  uploads/: {}
+  manual_user_docs/: {}
+  external_sources/: {}
+  hf_downloads/: {}
+  'interim/                           # L2 transformation – chunked, cleaned, structured': {}
+  chunked/: {}
+  amd/: {}
+  nvda/: {}
+  semantic_embeddings/: {}
+  text-embedding-3-small/: {}
+  text-embedding-3-large/: {}
+  temporal_events/: {}
+  raw_events/: {}
+  validated_events/: {}
+  extraction_outputs/: {}
+  statements/: {}
+  triplets/: {}
+  entities/: {}
+  'processed/                         # L3 orchestration – finalized, canonical datasets': {}
+  canonical_entities/: {}
+  organizations.json: null
+  people.json: null
+  products.json: null
+  knowledge_graph/: {}
+  graph_edges.parquet: null
+  graph_nodes.parquet: null
+  neo4j_export/: {}
+  temporal_kg/: {}
+  events_clean.parquet: null
+  invalidations.parquet: null
+  retrieval_indexes/: {}
+  bm25/: {}
+  dense/: {}
+  hybrid/: {}
+  rr_fusion/: {}
+  model_ready/: {}
+  train_dataset/: {}
+  eval_dataset/: {}
+  'reference/                         # L4 state: static lookup tables and dictionaries': {}
+  predicate_definitions.yaml: null
+  entity_type_ontology.yaml: null
+  temporal_labeling_rules.yaml: null
+  schema_mappings/: {}
+  glossaries/: {}
+  'logs/                              # L5 safety + observability':
+    ingestion/: {}
+    extraction/: {}
+    invalidation/: {}
+    retrieval/: {}
+    errors/: {}
+observability:
+  'logging/                           # L4 Logs (event, state, error)': {}
+  'sinks/                         # -1  Concrete output destinations': {}
+  console_logger.py: null
+  file_logger.py: null
+  structured_json_logger.py: null
+  'formatters/                    # -1  Formatting logic for log events': {}
+  base_formatter.py: null
+  json_formatter.py: null
+  color_formatter.py: null
+  'processors/                    # -1  Interceptors, enrichers, scrubbers': {}
+  pii_sanitizer.py: null
+  metadata_enricher.py: null
+  sampling_processor.py: null
+  'core/                          # -1  Core logging interfaces': {}
+  logger.py: null
+  log_event.py: null
+  log_config.py: null
+  'adapters/                      # -1  External adapter integrations': {}
+  openai_logger_adapter.py: null
+  mcp_tool_logger.py: null
+  http_api_logger.py: null
+  'metrics/                           # L4 Metrics (counters, timers, gauges)': {}
+  'collectors/                    # -1  Concrete metric collectors': {}
+  base_collector.py: null
+  runtime_metrics_collector.py: null
+  pipeline_metrics_collector.py: null
+  'exporters/                     # -1  Output channels for metrics': {}
+  prometheus_exporter.py: null
+  json_exporter.py: null
+  in_memory_exporter.py: null
+  'instruments/                   # -1  Metric primitives': {}
+  counter.py: null
+  gauge.py: null
+  histogram.py: null
+  'registries/                    # -1 Metric registry objects': {}
+  metric_registry.py: null
+  metric_config.py: null
+  'adapters/                      # -1 Third-party metrics hooks': {}
+  opentelemetry_adapter.py: null
+  cloudwatch_adapter.py: null
+  'tracing/                           # L4 Distributed Tracing': {}
+  'spans/                         # -1 Span models': {}
+  span.py: null
+  span_context.py: null
+  span_config.py: null
+  'propagators/                   # -1 Context propagation': {}
+  w3c_trace_context.py: null
+  baggage_propagator.py: null
+  'samplers/                      # -1 Sampling strategies': {}
+  always_on_sampler.py: null
+  probabilistic_sampler.py: null
+  parent_based_sampler.py: null
+  'exporters/                     # -1  Trace exporters': {}
+  otlp_exporter.py: null
+  json_trace_exporter.py: null
+  console_trace_exporter.py: null
+  'adapters/                      # -1  Third-party tracing bridges': {}
+  opentelemetry_tracing_adapter.py: null
+  jaeger_adapter.py: null
+  'audits/                            # L5 Compliance + tamper-proof trails': {}
+  'event_log/                     # -1  Immutable audit event objects': {}
+  audit_event.py: null
+  audit_schema.json: null
+  'stores/                        # -1  Where audit logs persist': {}
+  sqlite_audit_store.py: null
+  file_audit_store.py: null
+  append_only_store.py: null
+  'verifiers/                     # -1  Integrity verification': {}
+  hash_chain_verifier.py: null
+  signature_verifier.py: null
+  tamper_detector.py: null
+  'processors/                    # -1  Pre-store transformations': {}
+  pii_redaction.py: null
+  audit_event_normalizer.py: null
+  'diagnostics/                       # Internal debugging & health surfaces':
+    'health_checks/                 # -1  Liveness + readiness checks': {}
+    cpu_check.py: null
+    memory_check.py: null
+    dependency_check.py: null
+    'profilers/                     # -1  Perf & latency profiling': {}
+    time_profiler.py: null
+    async_profiler.py: null
+    cost_profiler.py: null
+    'inspectors/                    # -1  Attach-at-runtime introspection': {}
+    state_inspector.py: null
+    token_budget_inspector.py: null
+    dag_runtime_inspector.py: null
+    'snapshots/                     # -1  Periodic snapshots':
+      runtime_snapshot.py: null
+      planning_snapshot.py: null
+      execution_snapshot.py: null
+prompt_governance:
+  engines/: {}
+  outreach_engine/: {}
+  archetype.yaml: null
+  messaging.yaml: null
+  personalization.yaml: null
+  reflective_checks.yaml: null
+  resume_engine/: {}
+  rewriting.yaml: null
+  scoring.yaml: null
+  summarization.yaml: null
+  system_prompts.yaml: null
+  evaluations/: {}
+  eval_sets.yaml: null
+  regression_tests.yaml: null
+  rubric.yaml: null
+  style_checks.yaml: null
+  governance/: {}
+  approval_workflow.yaml: null
+  change_history.yaml: null
+  guard_base.py: null
+  ownership.yaml: null
+  policy_base.py: null
+  semantic_versioning.yaml: null
+  schemas/: {}
+  prompt_schema.json: null
+  injections/: {}
+  constraints.yaml: null
+  context_engineering.yaml: null
+  framing.yaml: null
+  output_governance.yaml: null
+  reasoning.yaml: null
+  safety.yaml: null
+  tool_use.yaml: null
+  layering/: {}
+  injection_templates.py: null
+  registry/: {}
+  prompt_index.yaml: null
+  prompt_manifest.yaml: null
+  rollback_policies.yaml: null
+  version_map.yaml: null
+  prompts/: {}
+  analysis_prompt.json: null
+  draft_executor.json: null
+  version_map/: {}
+  templates/:
+    base.py: null
+    __init__.py: null
+    outreach/: {}
+    cold_outreach_template.md: null
+    connection_request.md: null
+    followup_template.md: null
+    resume/:
+      experience_template.md: null
+      skills_template.md: null
+      summary_template.md: null
+runtime:
+  cache/: {}
+  __init__.py: null
+  .cache/: null
+  .gitkeep: null
+  .mypy_cache/: null
+  3.13/: null
+  <*.data.json / *.meta.json artifacts>: null
+  config/: {}
+  .keep: null
+  agent_profile.py: null
+  budget_profile.py: null
+  config_profiles_v10_10.py: null
+  context_profile.py: null
+  lic_assembly.py: null
+  lic_cta.py: null
+  lic_routing.py: null
+  lic_seniority.py: null
+  lic_tone.py: null
+  lic_validation.py: null
+  llm_profile.py: null
+  meta_profile.py: null
+  retrieval_profile.py: null
+  rg_config.py: null
+  safety_profile.py: null
+  core/: {}
+  routing.py: null
+  models/: {}
+  models.py: null
+  __pycache__/:
+    execution_budget_manager.*.pyc: null
+    runtime_utils.*.pyc: null
+    telemetry.*.pyc: null
+    __init__.*.pyc: null
+  cost/: {}
+  cost_tracking.json: null
+  data/: {}
+  environment/: {}
+  eval/: {}
+  golden_state/: {}
+  datasets.py: null
+  evaluator.py: null
+  gating.py: null
+  judge.py: null
+  runner.py: null
+  scorer.py: null
+  simulation/: {}
+  inference/: {}
+  context_manager.py: null
+  execution_budget_manager.py: null
+  executor.py: null
+  runtime_utils.py: null
+  infra/: {}
+  model_routing/: {}
+  policies.py: null
+  sandbox/: {}
+  fs_template.py: null
+  microvm.py: null
+  networking.py: null
+  sandbox_errors.py: null
+  vm_manager.py: null
+  logs/: {}
+  meta/: {}
+  schema_validation.py: null
+  metacognition/: {}
+  hypothesis.py: null
+  refinement.py: null
+  uncertainty.py: null
+  ranking/: {}
+  scoring.py: null
+  retrieval/: {}
+  hybrid_ranker.py: null
+  orchestrate.py: null
+  ops/: {}
+  cost_tracker.py: null
+  golden_datasets.py: null
+  llm_judge.py: null
+  reliability_scorer.py: null
+  rest_interface.py: null
+  session_manager.py: null
+  orchestration/: {}
+  policy_engine.py: null
+  tool_registry.py: null
+  router/: {}
+  telemetry/: {}
+  metrics.json: null
+  metrics.py: null
+  telemetry.py: null
+  utils/: {}
+  observability.py: null
+  tmp/: {}
+schemas:
+  migration_report.json: null
+  schemas-tree.txt: null
+  __init__.py: null
+  core/: {}
+  agent.py: null
+  base.py: null
+  base_schemas.py: null
+  shared_types.json: null
+  __pycache__/: {}
+  agent.cpython-314.pyc: null
+  base.cpython-314.pyc: null
+  base_schemas.cpython-314.pyc: null
+  __init__.cpython-314.pyc: null
+  data_assets/: {}
+  execution/: {}
+  .gitkeep: null
+  execution_schemas.py: null
+  execution_types.json: null
+  execution_schemas.cpython-314.pyc: null
+  memory_state/: {}
+  memory_schemas.py: null
+  memory_types.json: null
+  memory_schemas.cpython-314.pyc: null
+  model_routing/: {}
+  observability/: {}
+  orchestration/: {}
+  orchestration_schemas.py: null
+  orchestration_types.json: null
+  orchestration_schemas.cpython-314.pyc: null
+  planning/: {}
+  plan.py: null
+  planning_schemas.py: null
+  planning_types.json: null
+  plan.cpython-314.pyc: null
+  planning_schemas.cpython-314.pyc: null
+  prompt_governance/: {}
+  safety/: {}
+  safety_schemas.py: null
+  safety_types.json: null
+  safety_schemas.cpython-314.pyc: null
+  tests/:
+    __pycache__/:
+      __init__.cpython-314.pyc: null
+scripts:
+  'ci_pipeline/                           # LEVEL 2': {}
+  'ci_enforcer.py                     # LEVEL 3': null
+  'build_artifacts.py                 # LEVEL 3 (placeholder, if added)': null
+  'run_tests.py                       # LEVEL 3 (placeholder)': null
+  'run_lint.py                        # LEVEL 3 (placeholder)': null
+  'check_schemas.py                   # LEVEL 3 (placeholder)': null
+  'verify_golden_sets.py              # LEVEL 3 (placeholder)': null
+  'maintenance/                           # LEVEL 2': {}
+  'ast_purity_scanner.py              # LEVEL 3': null
+  'cleanup_observability.py           # LEVEL 3 (placeholder)': null
+  'enforce_config_structure.py        # LEVEL 3 (placeholder)': null
+  'enforce_data_structure.py          # LEVEL 3 (placeholder)': null
+  'normalize_permissions.ps1          # LEVEL 3 (placeholder)': null
+  'remove_pycache.py                  # LEVEL 3 (placeholder)': null
+  'validation/                            # LEVEL 2': {}
+  'contract_registry_validator.py      # LEVEL 3': null
+  'golden_trace_auditor.py             # LEVEL 3': null
+  'manifest_validator.py               # LEVEL 3': null
+  'semantic_validation_engine.py       # LEVEL 3': null
+  'test_matrix_validator.py            # LEVEL 3': null
+  'validate_root_folders.py            # LEVEL 3 (placeholder)': null
+  'validate_config_schemas.py          # LEVEL 3 (placeholder)': null
+  'validate_observability_structure.py # LEVEL 3 (placeholder)': null
+  'validate_runtime_integrity.py       # LEVEL 3 (placeholder)': null
+  'validate_prompt_governance.py       # LEVEL 3 (placeholder)': null
+  'validate_test_structure.py          # LEVEL 3 (placeholder)': null
+  'ingestion/                              # LEVEL 2': {}
+  'ingest_job_descriptions.py          # LEVEL 3 (placeholder)': null
+  'ingest_resume_inputs.py             # LEVEL 3 (placeholder)': null
+  'ingest_taxonomy_data.py             # LEVEL 3 (placeholder)': null
+  'sanitize_inputs.py                  # LEVEL 3 (placeholder)': null
+  'dev_tools/                              # LEVEL 2': {}
+  'tree_export.ps1                     # LEVEL 3 (placeholder)': null
+  'show_repo_summary.py                # LEVEL 3 (placeholder)': null
+  'diff_folder_structure.py            # LEVEL 3 (placeholder)': null
+  'check_for_large_files.py            # LEVEL 3 (placeholder)': null
+  'utils/                                  # LEVEL 2': {}
+  'io_helpers.py                       # LEVEL 3 (placeholder)': null
+  'file_ops.py                         # LEVEL 3 (placeholder)': null
+  'hashing.py                          # LEVEL 3 (placeholder)': null
+  'logging_utils.py                    # LEVEL 3 (placeholder)': null
+  'pipeline_artifacts/                     # LEVEL 2': {}
+  'pipeline_test_001_results.json      # LEVEL 3': null
+  'pipeline_logs/                          # LEVEL 2': {}
+  '.gitkeep                            # LEVEL 3': null
+  'runtime/                                # LEVEL 2': {}
+  'metrics.json                        # LEVEL 3': null
+  'migrate_scripts.py                      # LEVEL 2': null
+  'scripts-tree.txt                        # LEVEL 2': null
+tests:
+  __init__.py: null
+  data/: {}
+  sample_rg_resume_input.json: null
+  sample_lic_outreach_input.json: null
+  sample_company_kg.json: null
+  sample_contact_kg.json: null
+  fixtures/: {}
+  rg_resume_fixtures.py: null
+  lic_outreach_fixtures.py: null
+  memory_fixtures.py: null
+  rag_fixtures.py: null
+  model_stub_fixtures.py: null
+  e2e/: {}
+  test_e2e_rg_resume_flow.py: null
+  test_e2e_lic_outreach_flow.py: null
+  test_e2e_tool_error_recovery.py: null
+  test_e2e_multi_turn_state.py: null
+  test_e2e_safety_blocking_flows.py: null
+  integration/: {}
+  test_cross_layer_purity.py: null
+  test_model_routing.py: null
+  test_rag_pipeline_integration.py: null
+  test_kg_pipeline_integration.py: null
+  test_memory_integration.py: null
+  test_tool_calls.py: null
+  test_observability_integration.py: null
+  regression/: {}
+  test_regression_rg_resume_outputs.py: null
+  test_regression_lic_outreach_outputs.py: null
+  test_regression_temporal_memory.py: null
+  test_api_stability.py: null
+  test_output_stability.py: null
+  test_performance_stability.py: null
+  l1_planning/: {}
+  test_l1_rg_planning_integration.py: null
+  test_l1_lic_planning_integration.py: null
+  unit/: {}
+  test_rg_message_planner.py: null
+  test_rg_research_planner.py: null
+  test_rg_strategy_planner.py: null
+  test_rg_safety_planner.py: null
+  test_rg_refinement_planner.py: null
+  test_lic_message_planner.py: null
+  test_lic_research_planner.py: null
+  test_lic_strategy_planner.py: null
+  test_lic_safety_planner.py: null
+  test_lic_refinement_planner.py: null
+  test_planning_schema_validation.py: null
+  l2_execution/: {}
+  test_l2_rg_execution_integration.py: null
+  test_l2_lic_execution_integration.py: null
+  test_rg_company_research_executor.py: null
+  test_rg_contact_research_executor.py: null
+  test_rg_message_generation_executor.py: null
+  test_lic_company_research_executor.py: null
+  test_lic_contact_research_executor.py: null
+  test_lic_message_generation_executor.py: null
+  test_tool_request_builder.py: null
+  test_tool_response_parser.py: null
+  l3_orchestration/: {}
+  dag/: {}
+  test_rg_resume_engine_dag.py: null
+  test_lic_outreach_engine_dag.py: null
+  test_self_correction_loops.py: null
+  test_dag_validity.py: null
+  test_fallback_paths.py: null
+  l4_memory/: {}
+  providers/: {}
+  test_rg_memory_mappings.py: null
+  test_rg_temporal_memory.py: null
+  test_lic_memory_mappings.py: null
+  test_lic_temporal_memory.py: null
+  test_provider_registry.py: null
+  test_long_term_memory.py: null
+  test_memory_schema_validation.py: null
+  l5_safety/:
+    __init__.py: null
+    rules/:
+      __init__.py: null
+      test_filters.py: null
+      test_policy_engine.py: null
+      test_prompt_injection_protection.py: null
+      test_validators.py: null
+      test_safety_schema_validation.py: null
+      test_llm_guardrails.py: null

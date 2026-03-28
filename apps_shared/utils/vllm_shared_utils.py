@@ -106,6 +106,13 @@ class VLLMSharedManager:
         """
         if not self._qwen_enabled or self._qwen_gateway is None:
             return {"success": False, "error": "vllm_unavailable", "content": None, "app_name": self.app_name}
+        
+        # Validate input parameters
+        if not prompt or not prompt.strip():
+            return {"success": False, "error": "empty_prompt", "content": None, "app_name": self.app_name}
+        
+        if confidence_threshold < 0 or confidence_threshold > 1:
+            return {"success": False, "error": "invalid_confidence_threshold", "content": None, "app_name": self.app_name}
 
         try:
             # Create Qwen request

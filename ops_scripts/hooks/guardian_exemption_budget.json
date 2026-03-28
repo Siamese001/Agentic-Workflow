@@ -1806,6 +1806,9 @@
   "apps_exec/engines/base_exec_engine.py": {
     "silent-swallow": 1
   },
+  "apps_exec/reasoning/ExecOrchestrator.py": {
+    "silent-degradation": 1
+  },
   "apps_exec/tools/exec_dry_run_tool.py": {
     "silent-swallower": 1
   },
@@ -1828,6 +1831,7 @@
     "silent-swallow": 1
   },
   "apps_lic/reasoning/GovernanceShieldAgent.py": {
+    "silent-degradation": 1,
     "silent-swallow": 4,
     "type-erasure": 1
   },
@@ -1904,6 +1908,7 @@
     "silent-swallow": 1
   },
   "apps_research/reasoning/ResearchOrchestrator.py": {
+    "silent-degradation": 1,
     "silent-swallow": 1
   },
   "apps_research/tools/research_dry_run_tool.py": {
@@ -1914,6 +1919,9 @@
   },
   "apps_rfp/engines/base_rfp_engine.py": {
     "silent-swallow": 1
+  },
+  "apps_rfp/reasoning/RfpOrchestrator.py": {
+    "silent-degradation": 1
   },
   "apps_rfp/tools/rfp_dry_run_tool.py": {
     "silent-swallower": 1
@@ -1963,7 +1971,8 @@
     "type-erasure": 3
   },
   "apps_rg/reasoning/RgResumeOrchestrator.py": {
-    "magic-config": 1
+    "magic-config": 1,
+    "silent-degradation": 1
   },
   "apps_rg/scripts/generate_final_report.py": {
     "global-mutation": 1,
@@ -2368,6 +2377,12 @@
   },
   "apps_shared/utils/vector_memory_types_util.py": {
     "silent-swallow": 1
+  },
+  "apps_shared/utils/vllm_advanced_features.py": {
+    "silent-degradation": 1
+  },
+  "apps_shared/utils/vllm_shared_utils.py": {
+    "silent-degradation": 1
   },
   "apps_shared/validators/cache_entry_validator.py": {
     "magic-config": 1,
