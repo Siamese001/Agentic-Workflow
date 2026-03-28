@@ -123,6 +123,35 @@ class VLLMBatchProcessor:
         batch_id = batch_id or f"batch_{int(time.time())}"
         start_time = time.time()
 
+        # Validate batch requests
+        if not requests:
+            return BatchResult(
+                batch_id=batch_id,
+                total_requests=0,
+                successful_requests=0,
+                failed_requests=0,
+                average_latency_ms=0.0,
+                average_confidence=0.0,
+                results=[],
+                errors=[{"error": "empty_batch"}],
+                processing_time_seconds=time.time() - start_time,
+            )
+        
+        # Validate individual requests
+        for request in requests:
+            if not request.id or not request.prompt:
+                return BatchResult(
+                    batch_id=batch_id,
+                    total_requests=len(requests),
+                    successful_requests=0,
+                    failed_requests=len(requests),
+                    average_latency_ms=0.0,
+                    average_confidence=0.0,
+                    results=[],
+                    errors=[{"request_id": request.id, "error": "invalid_request"}],
+                    processing_time_seconds=time.time() - start_time,
+                )
+
         _log.info(f"Starting batch processing for {len(requests)} requests (batch_id: {batch_id})")
 
         # Process requests concurrently with rate limiting

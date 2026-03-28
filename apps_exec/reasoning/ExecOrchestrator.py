@@ -449,6 +449,16 @@ class ExecOrchestrator:
         """
         if not self.qwen_enabled or self._qwen_gateway is None:
             return {"success": False, "error": "qwen_disabled", "content": None}
+        
+        # Validate inputs
+        if not objectives or not isinstance(objectives, list):
+            return {"success": False, "error": "invalid_objectives", "content": None}
+        
+        if not constraints or not isinstance(constraints, dict):
+            return {"success": False, "error": "invalid_constraints", "content": None}
+        
+        if not planning_type or not planning_type.strip():
+            return {"success": False, "error": "invalid_planning_type", "content": None}
 
         try:
             # Prepare execution planning prompt
