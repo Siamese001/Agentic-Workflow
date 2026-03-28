@@ -1,0 +1,433 @@
+{
+  "timestamp": 1774659755.5961912,
+  "duration": 34.83271145820618,
+  "repository": "C:\\Git\\Agentic-Workflow",
+  "results": {
+    "terminal": {
+      "server": "terminal",
+      "scenarios": {
+        "file_operations": {
+          "name": "File Operations",
+          "success": false,
+          "tests": [
+            {
+              "name": "File operations error",
+              "success": false,
+              "error": "[WinError 2] The system cannot find the file specified"
+            }
+          ]
+        },
+        "git_operations": {
+          "name": "Git Operations",
+          "success": true,
+          "tests": [
+            {
+              "name": "Git status",
+              "success": true,
+              "duration": 0.040952205657958984,
+              "has_changes": true
+            },
+            {
+              "name": "Git log",
+              "success": true,
+              "duration": 0.02435469627380371,
+              "commits_shown": 5
+            }
+          ]
+        },
+        "python_execution": {
+          "name": "Python Execution",
+          "success": true,
+          "tests": [
+            {
+              "name": "Execute Python script",
+              "success": true,
+              "duration": 0.028864383697509766,
+              "output": "Hello from test file!"
+            },
+            {
+              "name": "Python version check",
+              "success": true,
+              "duration": 0.029761552810668945,
+              "version": "Python 3.12.10 (tags/v3.12.10:0cc8128, Apr  8 2025, 12:21:36) [MSC v.1943 64 bit (AMD64)]"
+            }
+          ]
+        },
+        "system_info": {
+          "name": "System Information",
+          "success": false,
+          "tests": [
+            {
+              "name": "System info error",
+              "success": false,
+              "error": "[WinError 2] The system cannot find the file specified"
+            }
+          ]
+        }
+      },
+      "start_time": 1774659720.7639847,
+      "success": true,
+      "errors": [],
+      "end_time": 1774659720.8899581,
+      "total_duration": 0.12597346305847168
+    },
+    "pytest": {
+      "server": "pytest",
+      "scenarios": {
+        "test_discovery": {
+          "name": "Test Discovery",
+          "success": true,
+          "tests": [
+            {
+              "name": "Discover routing tests",
+              "success": false,
+              "duration": 1.7058026790618896,
+              "tests_found": 0
+            },
+            {
+              "name": "Discover all tests",
+              "success": false,
+              "duration": 6.539148330688477,
+              "total_tests": 0
+            }
+          ]
+        },
+        "test_execution": {
+          "name": "Test Execution",
+          "success": true,
+          "tests": [
+            {
+              "name": "Execute routing tests",
+              "success": false,
+              "duration": 0.5460803508758545,
+              "passed": 0,
+              "failed": 0,
+              "errors": 0,
+              "total": 0
+            }
+          ]
+        },
+        "test_coverage": {
+          "name": "Coverage Analysis",
+          "success": true,
+          "tests": [
+            {
+              "name": "Coverage analysis",
+              "success": false,
+              "duration": 0.6726112365722656,
+              "coverage_generated": false,
+              "total_coverage": 0
+            }
+          ]
+        },
+        "test_analysis": {
+          "name": "Test Analysis",
+          "success": true,
+          "tests": [
+            {
+              "name": "Pytest version",
+              "success": true,
+              "duration": 0.10679960250854492,
+              "version": "pytest 9.0.2"
+            },
+            {
+              "name": "Configuration check",
+              "success": false,
+              "duration": 6.473335266113281,
+              "config_lines": 14897
+            }
+          ]
+        }
+      },
+      "start_time": 1774659720.8899581,
+      "success": true,
+      "errors": [],
+      "end_time": 1774659736.9367685,
+      "total_duration": 16.046810388565063
+    },
+    "enhanced_http": {
+      "server": "enhanced_http",
+      "scenarios": {
+        "api_testing": {
+          "name": "API Testing",
+          "success": true,
+          "tests": [
+            {
+              "name": "GET request",
+              "success": true,
+              "duration": 0.4566681385040283,
+              "status_code": 200,
+              "response_size": 307
+            },
+            {
+              "name": "POST request",
+              "success": true,
+              "duration": 0.5117590427398682,
+              "status_code": 200,
+              "json_response": {
+                "test": "data",
+                "timestamp": 1774659737.430054
+              }
+            },
+            {
+              "name": "PUT request",
+              "success": true,
+              "duration": 0.6144123077392578,
+              "status_code": 200
+            }
+          ]
+        },
+        "authentication": {
+          "name": "Authentication",
+          "success": true,
+          "tests": [
+            {
+              "name": "Bearer token auth",
+              "success": true,
+              "duration": 0.5101804733276367,
+              "authenticated": true
+            },
+            {
+              "name": "Basic auth",
+              "success": true,
+              "duration": 0.6148848533630371,
+              "authenticated": true
+            }
+          ]
+        },
+        "error_handling": {
+          "name": "Error Handling",
+          "success": true,
+          "tests": [
+            {
+              "name": "404 handling",
+              "success": true,
+              "duration": 0.5116620063781738,
+              "error_handled": true
+            },
+            {
+              "name": "Timeout handling",
+              "success": true,
+              "duration": 2.408393383026123,
+              "timeout_handled": true
+            }
+          ]
+        },
+        "batch_operations": {
+          "name": "Batch Operations",
+          "success": true,
+          "tests": [
+            {
+              "name": "Concurrent requests",
+              "success": true,
+              "duration": 0.5295517444610596,
+              "requests_count": 5,
+              "success_count": 5,
+              "avg_time_per_request": 0.10591034889221192
+            }
+          ]
+        }
+      },
+      "start_time": 1774659736.9367685,
+      "success": true,
+      "errors": [],
+      "end_time": 1774659743.1370406,
+      "total_duration": 6.200272083282471
+    },
+    "vector_db": {
+      "server": "vector_db",
+      "scenarios": {
+        "document_indexing": {
+          "name": "Document Indexing",
+          "success": true,
+          "tests": [
+            {
+              "name": "Index documents",
+              "success": true,
+              "duration": 1.3518311977386475,
+              "documents_count": 5,
+              "embedding_dimension": 384
+            },
+            {
+              "name": "Verify indexing",
+              "success": true,
+              "duration": 0.0,
+              "stored_count": 5
+            }
+          ]
+        },
+        "semantic_search": {
+          "name": "Semantic Search",
+          "success": true,
+          "tests": [
+            {
+              "name": "Search: programming languages",
+              "success": true,
+              "duration": 0.009719133377075195,
+              "results_count": 3,
+              "top_result": "Python is a popular programming language"
+            },
+            {
+              "name": "Search: version control systems",
+              "success": true,
+              "duration": 0.004054546356201172,
+              "results_count": 3,
+              "top_result": "Git is used for version control"
+            },
+            {
+              "name": "Search: containerization technology",
+              "success": true,
+              "duration": 0.003804445266723633,
+              "results_count": 3,
+              "top_result": "Docker containers help with application deployment"
+            }
+          ]
+        },
+        "collection_management": {
+          "name": "Collection Management",
+          "success": true,
+          "tests": [
+            {
+              "name": "List collections",
+              "success": true,
+              "duration": 0.0,
+              "collection_count": 1
+            },
+            {
+              "name": "Collection info",
+              "success": true,
+              "duration": 0.0015358924865722656,
+              "document_count": 5
+            },
+            {
+              "name": "Delete collection",
+              "success": true,
+              "duration": 0.003282785415649414
+            }
+          ]
+        },
+        "performance_testing": {
+          "name": "Performance Testing",
+          "success": true,
+          "tests": [
+            {
+              "name": "Embed batch 10",
+              "success": true,
+              "duration": 0.005684852600097656,
+              "batch_size": 10,
+              "docs_per_second": 1759.060560308673
+            },
+            {
+              "name": "Embed batch 50",
+              "success": true,
+              "duration": 0.009422063827514648,
+              "batch_size": 50,
+              "docs_per_second": 5306.692983122042
+            },
+            {
+              "name": "Embed batch 100",
+              "success": true,
+              "duration": 0.012705326080322266,
+              "batch_size": 100,
+              "docs_per_second": 7870.71495590167
+            }
+          ]
+        }
+      },
+      "start_time": 1774659743.1370406,
+      "success": true,
+      "errors": [],
+      "end_time": 1774659750.2939339,
+      "total_duration": 7.156893253326416
+    },
+    "integration": {
+      "terminal_pytest": {
+        "name": "Terminal + Pytest Integration",
+        "success": true,
+        "tests": [
+          {
+            "name": "Terminal pytest execution",
+            "success": false,
+            "duration": 0.549480676651001,
+            "test_results": 0,
+            "exit_code": 4
+          }
+        ]
+      },
+      "http_vector_db": {
+        "name": "HTTP + Vector DB Integration",
+        "success": true,
+        "tests": [
+          {
+            "name": "HTTP to Vector DB workflow",
+            "success": true,
+            "duration": 1.1589839458465576,
+            "content_size": 292,
+            "indexed": true
+          }
+        ]
+      },
+      "multi_server_workflow": {
+        "name": "Multi-Server Workflow",
+        "success": true,
+        "tests": [
+          {
+            "name": "Complete workflow",
+            "success": false,
+            "duration": 1.7220370769500732,
+            "steps_completed": 4,
+            "git_success": true,
+            "http_success": true,
+            "vector_db_success": true,
+            "pytest_success": false
+          }
+        ]
+      }
+    },
+    "stress": {
+      "concurrent_operations": {
+        "name": "Concurrent Operations",
+        "success": true,
+        "tests": [
+          {
+            "name": "Concurrent HTTP requests",
+            "success": true,
+            "duration": 0.8021411895751953,
+            "requests_count": 10,
+            "success_rate": 1.0,
+            "avg_time_per_request": 0.08021411895751954
+          }
+        ]
+      },
+      "large_datasets": {
+        "name": "Large Datasets",
+        "success": true,
+        "tests": [
+          {
+            "name": "Large batch embedding",
+            "success": true,
+            "duration": 0.016138792037963867,
+            "document_count": 100,
+            "embedding_dimension": 384,
+            "docs_per_second": 6196.250609386772
+          }
+        ]
+      },
+      "memory_stress": {
+        "name": "Memory Stress",
+        "success": true,
+        "tests": [
+          {
+            "name": "Memory stress test",
+            "success": true,
+            "baseline_memory_mb": 1733.71875,
+            "peak_memory_mb": 1737.47265625,
+            "final_memory_mb": 1703.828125,
+            "memory_increase_mb": 3.75390625,
+            "memory_recovered_mb": 33.64453125
+          }
+        ]
+      }
+    }
+  }
+}
