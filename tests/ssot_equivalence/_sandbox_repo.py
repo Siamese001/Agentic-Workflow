@@ -194,7 +194,7 @@ def run_cmd(
         )
     except subprocess.TimeoutExpired:
         return (-1, "", f"Command timed out after {timeout}s")
-    except FileNotFoundError:
+    except FileNotFoundError:    # guardian: File operations should check existence before access    # guardian: File operations should check existence before access    # guardian: File operations should check existence before access    # guardian: File operations should check existence before access    # guardian: File operations should check existence before access
         return (-2, "", f"Command not found: {cmd[0]}")
 
 
@@ -265,7 +265,7 @@ def destroy_sandbox(repo_root: Path, sandbox_path: Path) -> None:
         )
         # Prune stale worktree refs
         run_cmd(repo_root, ["git", "worktree", "prune"], timeout=PRUNE_TIMEOUT)
-    except (subprocess.CalledProcessError, OSError):
+    except (subprocess.CalledProcessError, OSError):    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging
         pass
 
     # Force-remove directory if still present

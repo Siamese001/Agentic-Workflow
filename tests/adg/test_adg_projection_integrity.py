@@ -202,7 +202,7 @@ class TestProjectionCompleteness:
             assert redis_hash["line_no"] == str(row["line_no"])
             assert redis_hash["symbol"] == str(row["symbol"])
 
-    def test_all_nodes_projected(self, fixture_env):
+    def test_all_nodes_projected(self, fixture_env):    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging
         r = fixture_env["redis"]
         for node in _FIXTURE_NODES:
             node_id = str(node[0])
