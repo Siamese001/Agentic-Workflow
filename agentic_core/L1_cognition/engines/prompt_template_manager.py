@@ -102,35 +102,35 @@ _emit_stores_embedding("p4", "prompt_template_manager", "embedding_store")
 
 class PromptTemplateManager:
     """Manages prompt templates for RAG generation."""
-    
+
     def __init__(
         self,
         config: Optional[RAGConfig] = None,
         templates_path: Optional[Path] = None
     ) -> None:
         """Initialize the prompt template manager.
-        
+
         Args:
             config: RAG configuration
             templates_path: Path to templates directory
         """
         self.config = config or RAGConfig()
         self.graphrag_config = get_config()
-        
+
         # Template storage
         self.templates: Dict[str, PromptTemplate] = {}
         self.templates_path = templates_path or Path(__file__).parent.parent.parent.parent / "templates" / "rag"
-        
+
         # Initialize default templates
         self._initialize_default_templates()
-        
+
         # Load custom templates if path exists
         if self.templates_path.exists():
             self._load_templates_from_disk()
-    
+
     def _initialize_default_templates(self) -> None:
         """Initialize default prompt templates."""
-        
+
         # QA Template
         qa_template = PromptTemplate(
             template_id="qa_default",
@@ -145,7 +145,7 @@ class PromptTemplateManager:
             version="1.0"
         )
         self.templates["qa_default"] = qa_template
-        
+
         # Summarization Template
         summary_template = PromptTemplate(
             template_id="summarization_default",
@@ -160,7 +160,7 @@ class PromptTemplateManager:
             version="1.0"
         )
         self.templates["summarization_default"] = summary_template
-        
+
         # Explanation Template
         explanation_template = PromptTemplate(
             template_id="explanation_default",
@@ -175,7 +175,7 @@ class PromptTemplateManager:
             version="1.0"
         )
         self.templates["explanation_default"] = explanation_template
-        
+
         # Analysis Template
         analysis_template = PromptTemplate(
             template_id="analysis_default",
@@ -190,7 +190,7 @@ class PromptTemplateManager:
             version="1.0"
         )
         self.templates["analysis_default"] = analysis_template
-        
+
         # Code-related QA Template
         code_qa_template = PromptTemplate(
             template_id="code_qa_default",
@@ -205,17 +205,17 @@ class PromptTemplateManager:
             version="1.0"
         )
         self.templates["code_qa_default"] = code_qa_template
-    
+
     def _load_templates_from_disk(self) -> None:
         """Load custom templates from disk."""
         if not self.templates_path.exists():
             return
-        
+
         for template_file in self.templates_path.glob("*.json"):
             try:
                 with open(template_file, 'r', encoding='utf-8') as f:
                     template_data = json.load(f)
-                
+
                 template = PromptTemplate(
                     template_id=template_data.get("template_id", template_file.stem),
                     name=template_data.get("name", template_file.stem),
@@ -228,45 +228,45 @@ class PromptTemplateManager:
                     target_llm=template_data.get("target_llm", "generic"),
                     version=template_data.get("version", "1.0")
                 )
-                
+
                 self.templates[template.template_id] = template
-                
+
             except Exception as e:
                 # Log error but continue loading other templates
                 print(f"Error loading template {template_file}: {e}")
-    
+
     def get_template(
         self,
         template_id: Optional[str] = None,
         query_type: Optional[str] = None
     ) -> PromptTemplate:
         """Get a prompt template.
-        
+
         Args:
             template_id: Specific template ID to retrieve
             query_type: Query type to find appropriate template
-            
+
         Returns:
             PromptTemplate instance
         """
         # If specific template ID provided, try to get it
         if template_id and template_id in self.templates:
             return self.templates[template_id]
-        
+
         # Find template by query type
         if query_type:
             for template in self.templates.values():
                 if template.template_type == query_type:
                     return template
-        
+
         # Fall back to default
         default_id = self.config.default_template_id
         if default_id in self.templates:
             return self.templates[default_id]
-        
+
         # Ultimate fallback
         return self.templates["qa_default"]
-    
+
     def render_template(
         self,
         template_id: Optional[str] = None,
@@ -276,117 +276,120 @@ class PromptTemplateManager:
         additional_data: Optional[Dict[str, Any]] = None
     ) -> Tuple[str, str]:
         """Render a template with context and query.
-        
+
         Args:
             template_id: Specific template ID to use
             query_type: Query type to find appropriate template
             context: RAG context for rendering
             query: RAG query for rendering
             additional_data: Additional data for placeholders
-            
+
         Returns:
             Tuple of (system_prompt, user_prompt)
         """
         # Get template
         template = self.get_template(template_id, query_type)
-        
+
         # Validate inputs
         if not context or not query:
             raise ValueError("Both context and query are required for template rendering")
-        
+
         # Render template
         system_prompt, user_prompt = template.render(context, query, additional_data)
-        
+
         # Update template usage statistics
         template.usage_count += 1
         template.last_used = datetime.utcnow()
-        
+
         _emit_records_telemetry_event(
+            query.query_id,
             "prompt_template_manager",
             f"template_rendered_{template.template_id}_{template.template_type}"
         )
-        
+
         return system_prompt, user_prompt
-    
+
     def list_templates(self) -> List[PromptTemplate]:
         """List all available templates."""
         return list(self.templates.values())
-    
+
     def get_templates_by_type(self, template_type: str) -> List[PromptTemplate]:
         """Get templates by type."""
         return [t for t in self.templates.values() if t.template_type == template_type]
-    
+
     def add_template(self, template: PromptTemplate) -> None:
         """Add a new template."""
         self.templates[template.template_id] = template
-        
+
         _emit_records_telemetry_event(
+            template.template_id,
             "prompt_template_manager",
             f"template_added_{template.template_id}"
         )
-    
+
     def remove_template(self, template_id: str) -> bool:
         """Remove a template."""
         if template_id in self.templates:
             del self.templates[template_id]
-            
+
             _emit_records_telemetry_event(
+                template_id,
                 "prompt_template_manager",
                 f"template_removed_{template_id}"
             )
             return True
         return False
-    
+
     def validate_template(self, template: PromptTemplate) -> List[str]:
         """Validate a template and return any issues."""
         issues = []
-        
+
         # Check required fields
         if not template.template_id:
             issues.append("Template ID is required")
-        
+
         if not template.name:
             issues.append("Template name is required")
-        
+
         if not template.system_prompt:
             issues.append("System prompt is required")
-        
+
         if not template.user_prompt_template:
             issues.append("User prompt template is required")
-        
+
         # Check placeholders
         system_placeholders = self._extract_placeholders(template.system_prompt)
         user_placeholders = self._extract_placeholders(template.user_prompt_template)
         all_placeholders = system_placeholders | user_placeholders
-        
+
         # Check if required placeholders are missing
         for required in template.required_placeholders:
             if required not in all_placeholders:
                 issues.append(f"Required placeholder '{required}' not found in templates")
-        
+
         # Check if placeholders in templates are declared
         declared_placeholders = set(template.required_placeholders + template.optional_placeholders)
         for placeholder in all_placeholders:
             if placeholder not in declared_placeholders:
                 issues.append(f"Undeclared placeholder '{placeholder}' found in templates")
-        
+
         return issues
-    
+
     def _extract_placeholders(self, template_text: str) -> Set[str]:
         """Extract placeholders from template text."""
         import re
-        
+
         # Find all {placeholder} patterns
         placeholders = re.findall(r'\{([^}]+)\}', template_text)
         return set(placeholders)
-    
+
     def save_template_to_disk(self, template: PromptTemplate) -> bool:
         """Save a template to disk."""
         if not self.templates_path.exists():
             self.templates_path.mkdir(parents=True, exist_ok=True)
-        
+
         template_file = self.templates_path / f"{template.template_id}.json"
-        
+
         try:
             template_data = {
                 "template_id": template.template_id,
@@ -400,16 +403,16 @@ class PromptTemplateManager:
                 "target_llm": template.target_llm,
                 "version": template.version
             }
-            
+
             with open(template_file, 'w', encoding='utf-8') as f:
                 json.dump(template_data, f, indent=2)
-            
+
             return True
-            
+
         except Exception as e:
             print(f"Error saving template to disk: {e}")
             return False
-    
+
     def get_template_stats(self) -> Dict[str, Any]:
         """Get template usage statistics."""
         stats = {
@@ -418,12 +421,12 @@ class PromptTemplateManager:
             "most_used": None,
             "recently_used": None
         }
-        
+
         # Count by type
         for template in self.templates.values():
             template_type = template.template_type
             stats["templates_by_type"][template_type] = stats["templates_by_type"].get(template_type, 0) + 1
-        
+
         # Find most used
         if self.templates:
             most_used = max(self.templates.values(), key=lambda t: t.usage_count)
@@ -431,7 +434,7 @@ class PromptTemplateManager:
                 "template_id": most_used.template_id,
                 "usage_count": most_used.usage_count
             }
-        
+
         # Find recently used
         recent_templates = [t for t in self.templates.values() if t.last_used]
         if recent_templates:
@@ -440,7 +443,7 @@ class PromptTemplateManager:
                 "template_id": most_recent.template_id,
                 "last_used": most_recent.last_used.isoformat()
             }
-        
+
         return stats
 
 

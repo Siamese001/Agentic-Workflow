@@ -249,7 +249,7 @@ class BaseRGEngine(MCPHardenedMixin, HealerMixin, ABC):
             self.toggles = None
             self.logger.warning("Reasoning toggles not available")
         try:
-            from apps_rg.config.knowledge_base import FROZEN_SNAPSHOT
+            from apps_rg.types.PromptTemplate import FROZEN_SNAPSHOT
 
             self.knowledge = FROZEN_SNAPSHOT
         # guardian: allow-silent-degradation - Optional knowledge base
@@ -324,7 +324,7 @@ class BaseRGEngine(MCPHardenedMixin, HealerMixin, ABC):
     def get_prompt(self, prompt_id: str) -> str:
         """Get prompt from knowledge base."""
         if self.knowledge:
-            from apps_rg.config.knowledge_base import get_prompt
+            from apps_rg.types.PromptTemplate import get_prompt
 
             return get_prompt(prompt_id)
         return ""
@@ -333,7 +333,7 @@ class BaseRGEngine(MCPHardenedMixin, HealerMixin, ABC):
         """Get K-node configuration from knowledge base."""
         # guardian: allow-config-with-logic
         if self.knowledge:
-            from apps_rg.config.knowledge_base import get_node_config
+            from apps_rg.types.PromptTemplate import get_node_config
 
             return get_node_config(node_id)
         return None

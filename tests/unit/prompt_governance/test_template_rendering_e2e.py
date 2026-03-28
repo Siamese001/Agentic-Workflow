@@ -16,6 +16,17 @@ from typing import Any
 
 import pytest
 
+from agentic_core.prompt_governance.core.sovereign_prompt_renderer import (
+    SovereignPromptRenderer,
+    TemplateValidationError,
+)
+from agentic_core.prompt_governance.core.template_catalog import (
+    TEMPLATE_CATALOG,
+    TemplateCategory,
+    TemplateStatus,
+    get_templates_for_agent,
+)
+
 
 # ---------------------------------------------------------------------------
 # Shared fixtures
