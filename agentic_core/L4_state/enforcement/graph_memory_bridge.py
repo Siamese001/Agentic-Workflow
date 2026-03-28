@@ -229,6 +229,9 @@ class GraphMemoryBridge:
             # Automatically cleaned up when exiting context
     """
 
+    _instance = None
+    _instance_lock = threading.Lock()
+
     RELATION_MASTERED_TASK = "MASTERED_TASK"
     RELATION_FAILED_TASK = "FAILED_TASK"
     RELATION_INTERACTS_WITH = "INTERACTS_WITH"
@@ -255,6 +258,15 @@ class GraphMemoryBridge:
         self._registered_entities: set[str] = set()
         self._cleanup_registered = False
         self._init_mcp()
+
+    @classmethod
+    def get_instance(cls):
+        """Return singleton instance of GraphMemoryBridge for backward compatibility."""
+        if cls._instance is None:
+            with cls._instance_lock:
+                if cls._instance is None:
+                    cls._instance = cls()
+        return cls._instance
 
     def __enter__(self):
         """Context manager entry - return self for use in 'with' statement."""
