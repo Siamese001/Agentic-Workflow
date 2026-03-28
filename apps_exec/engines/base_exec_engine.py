@@ -84,7 +84,14 @@ class BaseExecEngine(SemanticCacheMixin, EmbeddingMixin, ABC):
         """Main execution method — must be implemented by subclasses."""
 
     def get_prompt(self, prompt_id: str) -> str:
-        """Get prompt from knowledge base."""
+        """Get prompt from knowledge base.
+        
+        Raises:
+            TypeError: If prompt_id is None
+            KeyError: If prompt_id not found in knowledge base
+        """
+        if prompt_id is None:
+            raise TypeError("prompt_id cannot be None")
         if self.knowledge:
             from apps_exec.config.knowledge_base import get_prompt
 
@@ -92,7 +99,14 @@ class BaseExecEngine(SemanticCacheMixin, EmbeddingMixin, ABC):
         return ""
 
     def get_node_config(self, node_id: str) -> Any:
-        """Get K-node configuration from knowledge base."""
+        """Get K-node configuration from knowledge base.
+        
+        Raises:
+            TypeError: If node_id is None
+            KeyError: If node_id not found in knowledge base
+        """
+        if node_id is None:
+            raise TypeError("node_id cannot be None")
         if self.knowledge:
             from apps_exec.config.knowledge_base import get_node_config
 

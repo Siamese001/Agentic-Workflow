@@ -73,6 +73,22 @@ def test_get_node_config_edge_path_returns_none_when_knowledge_absent():
     assert engine.get_node_config("analysis") is None
 
 
+def test_get_prompt_none_raises_typeerror():
+    """Test that get_prompt raises TypeError for None prompt_id."""
+    engine = _DummyEngine()
+
+    with pytest.raises(TypeError, match="prompt_id cannot be None"):
+        engine.get_prompt(None)
+
+
+def test_get_node_config_none_raises_typeerror():
+    """Test that get_node_config raises TypeError for None node_id."""
+    engine = _DummyEngine()
+
+    with pytest.raises(TypeError, match="node_id cannot be None"):
+        engine.get_node_config(None)
+
+
 def test_knowledge_base_exports():
     """Test that knowledge_base module exports expected symbols."""
     from apps_rfp.config import knowledge_base
