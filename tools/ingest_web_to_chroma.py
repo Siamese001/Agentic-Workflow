@@ -8,9 +8,12 @@ chunks it, generates embeddings using BAAI/bge-m3, and stores results in ChromaD
 
 import hashlib
 import logging
+import re
 import time
 import uuid
+from dataclasses import dataclass
 from pathlib import Path
+from typing import List, Optional, Tuple
 from urllib.parse import urlparse
 
 import chromadb
@@ -25,6 +28,42 @@ logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(
 logger = logging.getLogger(__name__)
 
 
+@dataclass
+class DocumentStructure:
+    """Represents the hierarchical structure of a document."""
+    title: str
+    sections: List['Section']
+
+
+@dataclass
+class Section:
+    """Represents a document section with hierarchical content."""
+    level: int  # 1 for h1, 2 for h2, 3 for h3
+    title: str
+    content_blocks: List['ContentBlock']
+    subsections: List['Section']
+
+
+@dataclass
+class ContentBlock:
+    """Represents a block of content (paragraph, list, code, etc.)."""
+    block_type: str  # 'paragraph', 'list', 'code', 'heading'
+    content: str
+    raw_html: Optional[str] = None
+
+
+@dataclass
+class SemanticChunk:
+    """Represents a semantic chunk with context and metadata."""
+    chunk_id: str
+    section_title: str
+    subsection_title: Optional[str]
+    chunk_type: str
+    content: str
+    context_header: str
+    token_estimate: int
+
+
 class WebRAGIngestionPipeline:
     """Production-ready pipeline for ingesting web content into ChromaDB with BGE embeddings."""
 
@@ -32,7 +71,8 @@ class WebRAGIngestionPipeline:
                  urls_file: str = "data/rag_seeds/agentic_best_practices_urls.txt",
                  chroma_path: str = "artifacts/chromadb",
                  collection_name: str = "agentic_best_practices",
-                 model_name: str = "BAAI/bge-m3"):
+                 model_name: str = "BAAI/bge-m3",
+                 debug_chunks: bool = False):
         """
         Initialize the RAG ingestion pipeline.
 
@@ -41,11 +81,13 @@ class WebRAGIngestionPipeline:
             chroma_path: Path to store ChromaDB
             collection_name: Name of ChromaDB collection
             model_name: Name of sentence transformer model
+            debug_chunks: Enable chunk debugging output
         """
         self.urls_file = Path(urls_file)
         self.chroma_path = Path(chroma_path)
         self.collection_name = collection_name
         self.model_name = model_name
+        self.debug_chunks = debug_chunks
 
         # Ensure directories exist
         self.chroma_path.mkdir(parents=True, exist_ok=True)
@@ -175,9 +217,400 @@ class WebRAGIngestionPipeline:
 
         return clean_text, title
 
-    def chunk_text(self, text: str, chunk_size: int = 700, overlap: int = 100) -> list[str]:
+    def extract_document_structure(self, html: str, url: str) -> DocumentStructure:
         """
-        Split text into overlapping chunks.
+        Extract hierarchical structure from HTML document.
+
+        Args:
+            html: HTML content
+            url: Source URL
+
+        Returns:
+            DocumentStructure with hierarchical sections
+        """
+        soup = BeautifulSoup(html, 'lxml')
+
+        # Remove unwanted elements
+        for element in soup(['script', 'style', 'nav', 'footer', 'header', 'aside', 'iframe']):
+            element.decompose()
+
+        # Extract document title
+        title_tag = soup.find('title')
+        doc_title = title_tag.get_text().strip() if title_tag else urlparse(url).netloc
+
+        # Find main content area
+        main_content = None
+        for selector in ['main', 'article', '[role="main"]', '.content', '#content']:
+            main_content = soup.select_one(selector)
+            if main_content:
+                break
+
+        if not main_content:
+            main_content = soup.find('body') or soup
+
+        # Extract structure
+        sections = []
+        current_section = None
+        current_subsection = None
+
+        # Get all elements in order - expanded to catch more content
+        elements = main_content.find_all(['h1', 'h2', 'h3', 'h4', 'p', 'ul', 'ol', 'pre', 'div', 'span', 'li', 'section', 'article'])
+
+        if self.debug_chunks:
+            print(f"Found {len(elements)} elements to process")
+
+        for element in elements:
+            tag_name = element.name.lower()
+
+            # Handle headings
+            if tag_name in ['h1', 'h2', 'h3']:
+                heading_text = element.get_text().strip()
+                if not heading_text:
+                    continue
+
+                level = int(tag_name[1])
+
+                if self.debug_chunks:
+                    print(f"Found H{level}: {heading_text}")
+
+                if level == 1 or level == 2:
+                    # New main section
+                    current_section = Section(
+                        level=level,
+                        title=heading_text,
+                        content_blocks=[],
+                        subsections=[]
+                    )
+                    sections.append(current_section)
+                    current_subsection = None
+                elif level == 3 and current_section:
+                    # New subsection
+                    current_subsection = Section(
+                        level=level,
+                        title=heading_text,
+                        content_blocks=[],
+                        subsections=[]
+                    )
+                    current_section.subsections.append(current_subsection)
+
+            # Handle content blocks
+            elif tag_name in ['p', 'ul', 'ol', 'pre', 'div', 'section', 'article']:
+                content_text = element.get_text().strip()
+                if not content_text or len(content_text) < 10:
+                    continue
+
+                # Skip if this is just a container for other elements
+                if tag_name in ['div', 'section', 'article'] and len(element.find_all(['h1', 'h2', 'h3', 'p', 'ul', 'ol', 'pre'])) > 0:
+                    if self.debug_chunks:
+                        print(f"Skipping container {tag_name} with nested elements")
+                    continue
+
+                if self.debug_chunks:
+                    print(f"Found {tag_name}: {content_text[:50]}...")
+
+                block_type = 'paragraph' if tag_name == 'p' else ('list' if tag_name in ['ul', 'ol'] else ('code' if tag_name == 'pre' else 'content'))
+                content_block = ContentBlock(
+                    block_type=block_type,
+                    content=content_text,
+                    raw_html=str(element)
+                )
+
+                # Add to appropriate section
+                if current_subsection:
+                    current_subsection.content_blocks.append(content_block)
+                elif current_section:
+                    current_section.content_blocks.append(content_block)
+                else:
+                    # Create default section if no headings found
+                    if not sections:
+                        current_section = Section(
+                            level=1,
+                            title="Introduction",
+                            content_blocks=[],
+                            subsections=[]
+                        )
+                        sections.append(current_section)
+                        if self.debug_chunks:
+                            print("Created default 'Introduction' section")
+                    current_section.content_blocks.append(content_block)
+
+        if self.debug_chunks:
+            print(f"Created {len(sections)} sections")
+            for i, section in enumerate(sections):
+                print(f"  Section {i+1}: {section.title} ({len(section.content_blocks)} blocks, {len(section.subsections)} subsections)")
+
+        return DocumentStructure(title=doc_title, sections=sections)
+
+    def estimate_tokens(self, text: str) -> int:
+        """
+        Lightweight token estimation using word count approximation.
+
+        Args:
+            text: Input text
+
+        Returns:
+            Estimated token count
+        """
+        word_count = len(text.split())
+        return int(word_count * 1.3)  # Approximate tokens per word
+
+    def classify_chunk_type(self, content: str) -> str:
+        """
+        Classify chunk type using simple keyword heuristics.
+
+        Args:
+            content: Chunk content
+
+        Returns:
+            Chunk type classification
+        """
+        content_lower = content.lower()
+
+        # Check for code
+        if any(indicator in content_lower for indicator in ['```', 'def ', 'class ', 'import ', 'function(', 'var ', 'const ']):
+            return 'code'
+
+        # Check for examples
+        if any(indicator in content_lower for indicator in ['example', 'for instance', 'such as', 'e.g.', 'sample']):
+            return 'example'
+
+        # Check for procedures
+        if any(indicator in content_lower for indicator in ['step', 'procedure', 'how to', 'first,', 'second,', 'finally', 'follow']):
+            return 'procedure'
+
+        # Check for definitions
+        if any(indicator in content_lower for indicator in ['definition', 'defined as', 'refers to', 'means', 'is a']):
+            return 'definition'
+
+        # Default to concept
+        return 'concept'
+
+    def split_sentences(self, text: str) -> List[str]:
+        """
+        Split text into sentences using simple punctuation-based splitting.
+
+        Args:
+            text: Input text
+
+        Returns:
+            List of sentences
+        """
+        # Handle common abbreviations to avoid incorrect splits
+        abbreviations = {'mr.', 'mrs.', 'dr.', 'prof.', 'sr.', 'jr.', 'vs.', 'etc.', 'e.g.', 'i.e.'}
+
+        for abbr in abbreviations:
+            text = text.replace(abbr, abbr.replace('.', '<DOT>'))
+
+        # Split on sentence endings
+        sentences = re.split(r'[.!?]+', text)
+
+        # Restore abbreviations and clean up
+        clean_sentences = []
+        for sentence in sentences:
+            sentence = sentence.replace('<DOT>', '.').strip()
+            if sentence and len(sentence) > 5:
+                clean_sentences.append(sentence)
+
+        return clean_sentences
+
+    def build_semantic_chunks(self, structure: DocumentStructure, url: str) -> List[SemanticChunk]:
+        """
+        Build semantic chunks from document structure.
+
+        Args:
+            structure: Document structure
+            url: Source URL
+
+        Returns:
+            List of semantic chunks
+        """
+        chunks = []
+        domain = urlparse(url).netloc
+
+        def process_section(section: Section, parent_section: Optional[str] = None):
+            """Recursively process sections and create chunks."""
+            section_title = section.title
+            subsection_title = parent_section if parent_section else None
+
+            # Group content blocks into semantic units - merge small blocks
+            semantic_units = []
+            current_unit_blocks = []
+            current_tokens = 0
+
+            for block in section.content_blocks:
+                block_tokens = self.estimate_tokens(block.content)
+
+                # If this is a very small block, try to merge with previous
+                if block_tokens < 20 and current_unit_blocks:
+                    # Add to current unit to build up content
+                    current_unit_blocks.append(block)
+                    current_tokens += block_tokens
+                    continue
+
+                # Check if adding this block would exceed target size (relaxed)
+                if current_tokens + block_tokens > 1200 and current_unit_blocks:  # Increased from 800
+                    # Save current unit and start new one
+                    semantic_units.append(current_unit_blocks)
+                    current_unit_blocks = [block]
+                    current_tokens = block_tokens
+                else:
+                    current_unit_blocks.append(block)
+                    current_tokens += block_tokens
+
+            # Add the last unit if it exists
+            if current_unit_blocks:
+                semantic_units.append(current_unit_blocks)
+
+            # If we have very small units, merge them
+            if len(semantic_units) > 1:
+                merged_units = []
+                current_merged = semantic_units[0]
+                current_tokens = sum(self.estimate_tokens(block.content) for block in current_merged)
+
+                for unit in semantic_units[1:]:
+                    unit_tokens = sum(self.estimate_tokens(block.content) for block in unit)
+
+                    # Merge if current unit is small and combined size is reasonable
+                    if current_tokens < 30 and current_tokens + unit_tokens < 200:
+                        current_merged.extend(unit)
+                        current_tokens += unit_tokens
+                    else:
+                        merged_units.append(current_merged)
+                        current_merged = unit
+                        current_tokens = unit_tokens
+
+                merged_units.append(current_merged)
+                semantic_units = merged_units
+
+            # Create chunks from semantic units
+            for i, unit_blocks in enumerate(semantic_units):
+                # Combine content from blocks
+                unit_content = '\n\n'.join(block.content for block in unit_blocks)
+
+                # Skip if too short (relaxed threshold)
+                unit_tokens = self.estimate_tokens(unit_content)
+                if self.debug_chunks:
+                    print(f"Unit {i}: {unit_tokens} tokens, {len(unit_blocks)} blocks")
+                    print(f"Content preview: {unit_content[:100]}...")
+
+                if unit_tokens < 20:  # Further reduced from 50
+                    if self.debug_chunks:
+                        print(f"Skipping unit {i}: too short ({unit_tokens} tokens)")
+                    continue
+
+                # Skip if mostly boilerplate (more specific check)
+                content_lower = unit_content.lower()
+                boilerplate_indicators = ['navigation', 'menu', 'footer', 'header', 'copyright', 'all rights reserved']
+                if any(indicator in content_lower for indicator in boilerplate_indicators):
+                    # Only skip if it's primarily boilerplate (>50% boilerplate indicators)
+                    boilerplate_count = sum(1 for indicator in boilerplate_indicators if indicator in content_lower)
+                    if boilerplate_count > 2:  # More than 2 boilerplate indicators
+                        if self.debug_chunks:
+                            print(f"Skipping unit {i}: too much boilerplate ({boilerplate_count} indicators)")
+                        continue
+
+                # Create context header
+                context_header = f"[SECTION]: {section_title}"
+                if subsection_title:
+                    context_header += f"\n[SUBSECTION]: {subsection_title}"
+                context_header += f"\n[SOURCE]: {domain}"
+
+                # Classify chunk type
+                chunk_type = self.classify_chunk_type(unit_content)
+
+                # Generate chunk ID
+                chunk_id = hashlib.sha256(f"{section_title}_{i}_{unit_content[:100]}".encode()).hexdigest()[:12]
+
+                # Create semantic chunk
+                chunk = SemanticChunk(
+                    chunk_id=chunk_id,
+                    section_title=section_title,
+                    subsection_title=subsection_title,
+                    chunk_type=chunk_type,
+                    content=unit_content,
+                    context_header=context_header,
+                    token_estimate=unit_tokens
+                )
+
+                chunks.append(chunk)
+
+                # Debug output if enabled
+                if self.debug_chunks:
+                    print(f"\n--- CHUNK {chunk_id} ---")
+                    print(f"Type: {chunk_type}")
+                    print(f"Tokens: {unit_tokens}")
+                    print(f"Context:\n{context_header}")
+                    print(f"Content:\n{unit_content[:200]}...")
+                    print("-" * 40)
+
+            # Process subsections
+            for subsection in section.subsections:
+                process_section(subsection, section_title)
+
+        # Process all sections
+        for section in structure.sections:
+            process_section(section)
+
+        return chunks
+
+    def chunk_text(self, text: str, chunk_size: int = 700, overlap: int = 100, html: str = "", url: str = "") -> List[Tuple[str, dict]]:
+        """
+        Split text into semantic chunks using structure-aware approach.
+
+        Args:
+            text: Input text (legacy parameter, not used in new implementation)
+            chunk_size: Target chunk size (legacy parameter)
+            overlap: Overlap (legacy parameter)
+            html: HTML content for structure extraction
+            url: Source URL
+
+        Returns:
+            List of tuples containing (chunk_text, metadata)
+        """
+        if not html:
+            # Fallback to simple chunking if no HTML provided
+            return self._fallback_chunking(text, chunk_size, overlap)
+
+        # Extract document structure
+        structure = self.extract_document_structure(html, url)
+
+        # Build semantic chunks
+        semantic_chunks = self.build_semantic_chunks(structure, url)
+
+        # Debug logging
+        if self.debug_chunks:
+            print(f"\n=== DOCUMENT STRUCTURE DEBUG ===")
+            print(f"Document: {structure.title}")
+            print(f"Total sections: {len(structure.sections)}")
+            print(f"Total chunks created: {len(semantic_chunks)}")
+
+            if semantic_chunks:
+                avg_tokens = sum(chunk.token_estimate for chunk in semantic_chunks) / len(semantic_chunks)
+                print(f"Average chunk size: {avg_tokens:.1f} tokens")
+
+            print("=" * 40)
+
+        # Convert to legacy format (text, metadata)
+        result = []
+        for chunk in semantic_chunks:
+            # Combine context header with content
+            full_chunk_text = f"{chunk.context_header}\n\n{chunk.content}"
+
+            metadata = {
+                'chunk_id': chunk.chunk_id,
+                'section_title': chunk.section_title,
+                'subsection_title': chunk.subsection_title,
+                'chunk_type': chunk.chunk_type,
+                'token_estimate': chunk.token_estimate
+            }
+
+            result.append((full_chunk_text, metadata))
+
+        return result
+
+    def _fallback_chunking(self, text: str, chunk_size: int = 700, overlap: int = 100) -> List[Tuple[str, dict]]:
+        """
+        Fallback chunking method for when HTML is not available.
 
         Args:
             text: Input text
@@ -185,20 +618,29 @@ class WebRAGIngestionPipeline:
             overlap: Overlap between chunks in tokens
 
         Returns:
-            List of text chunks
+            List of tuples containing (chunk_text, metadata)
         """
         # Simple word-based chunking (approximate token count)
         words = text.split()
         chunks = []
 
         start = 0
+        chunk_index = 0
         while start < len(words):
             end = start + chunk_size
             chunk_words = words[start:end]
             chunk = ' '.join(chunk_words)
 
             if len(chunk.strip()) > 50:  # Skip very short chunks
-                chunks.append(chunk.strip())
+                metadata = {
+                    'chunk_id': f"fallback_{chunk_index}",
+                    'section_title': 'Unknown',
+                    'subsection_title': None,
+                    'chunk_type': 'concept',
+                    'token_estimate': self.estimate_tokens(chunk)
+                }
+                chunks.append((chunk.strip(), metadata))
+                chunk_index += 1
 
             if end >= len(words):
                 break
@@ -235,9 +677,9 @@ class WebRAGIngestionPipeline:
             logger.warning(f"Insufficient content extracted from {url}")
             return 0
 
-        # Chunk text
-        chunks = self.chunk_text(clean_text)
-        if not chunks:
+        # Use semantic chunking
+        chunk_results = self.chunk_text(clean_text, html=html, url=url)
+        if not chunk_results:
             logger.warning(f"No chunks generated from {url}")
             return 0
 
@@ -247,8 +689,9 @@ class WebRAGIngestionPipeline:
         fetched_at = int(time.time())
 
         # Generate embeddings for all chunks
-        logger.info(f"Generating embeddings for {len(chunks)} chunks...")
-        embeddings = self.embedding_model.encode(chunks, convert_to_numpy=True)
+        chunk_texts = [chunk_text for chunk_text, _ in chunk_results]
+        logger.info(f"Generating embeddings for {len(chunk_texts)} chunks...")
+        embeddings = self.embedding_model.encode(chunk_texts, convert_to_numpy=True)
 
         # Prepare batch data
         documents = []
@@ -256,9 +699,9 @@ class WebRAGIngestionPipeline:
         metadatas = []
         ids = []
 
-        for i, (chunk, embedding) in enumerate(zip(chunks, embeddings)):
+        for i, ((chunk_text, chunk_metadata), embedding) in enumerate(zip(chunk_results, embeddings)):
             # Generate content hash for deduplication
-            content_hash = self.generate_content_hash(chunk)
+            content_hash = self.generate_content_hash(chunk_text)
 
             # Check if chunk already exists
             existing = self.collection.get(
@@ -271,7 +714,7 @@ class WebRAGIngestionPipeline:
                 self.stats["chunks_skipped"] += 1
                 continue
 
-            # Prepare metadata
+            # Prepare enhanced metadata
             metadata = {
                 "source_url": url,
                 "domain": domain,
@@ -279,11 +722,17 @@ class WebRAGIngestionPipeline:
                 "chunk_id": str(uuid.uuid4()),
                 "chunk_index": i,
                 "fetched_at": fetched_at,
-                "content_hash": content_hash
+                "content_hash": content_hash,
+                # Enhanced semantic metadata
+                "semantic_chunk_id": chunk_metadata.get('chunk_id', f"chunk_{i}"),
+                "section_title": chunk_metadata.get('section_title', 'Unknown'),
+                "subsection_title": chunk_metadata.get('subsection_title'),
+                "chunk_type": chunk_metadata.get('chunk_type', 'concept'),
+                "token_estimate": chunk_metadata.get('token_estimate', 0)
             }
 
             # Add to batch
-            documents.append(chunk)
+            documents.append(chunk_text)
             embeddings_list.append(embedding.tolist())
             metadatas.append(metadata)
             ids.append(f"{url}_{i}_{content_hash[:8]}")
@@ -390,7 +839,13 @@ class WebRAGIngestionPipeline:
 
 def main():
     """Main entry point."""
-    pipeline = WebRAGIngestionPipeline()
+    import argparse
+
+    parser = argparse.ArgumentParser(description="Web RAG Ingestion Pipeline with Semantic Chunking")
+    parser.add_argument("--debug-chunks", action="store_true", help="Enable chunk debugging output")
+    args = parser.parse_args()
+
+    pipeline = WebRAGIngestionPipeline(debug_chunks=args.debug_chunks)
     pipeline.run()
 
     # Optional: Test query
