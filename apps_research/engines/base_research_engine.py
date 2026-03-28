@@ -7,7 +7,7 @@ Mirrors apps_exec BaseExecEngine pattern with research-specific contracts.
 from __future__ import annotations
 
 import logging
-from abc import ABCMeta, abstractmethod
+from abc import ABC, abstractmethod
 from typing import Any
 
 try:
@@ -64,9 +64,34 @@ class BaseResearchEngine(SemanticCacheMixin, EmbeddingMixin, ABC):
         except ImportError:
             self.toggles = None
 
+        # Initialize knowledge base for prompt templates
+        try:
+            from apps_research.config.knowledge_base import FROZEN_SNAPSHOT
+
+            self.knowledge = FROZEN_SNAPSHOT
+        except ImportError:
+            self.knowledge = None
+            self.logger.warning("[%s] knowledge base not available", self.name)
+
     @abstractmethod
     def execute(self, input_data: Any) -> Any:
         """Main execution method — must be implemented by subclasses."""
+
+    def get_prompt(self, prompt_id: str) -> str:
+        """Get prompt from knowledge base."""
+        if self.knowledge:
+            from apps_research.config.knowledge_base import get_prompt
+
+            return get_prompt(prompt_id)
+        return ""
+
+    def get_node_config(self, node_id: str) -> Any:
+        """Get K-node configuration from knowledge base."""
+        if self.knowledge:
+            from apps_research.config.knowledge_base import get_node_config
+
+            return get_node_config(node_id)
+        return None
 
     def record_fail(self, message: str, *, signal: str = "", data: dict | None = None) -> None:
         self.logger.warning("FAIL [%s]: %s", self.name, message)
@@ -79,4 +104,5 @@ class BaseResearchEngine(SemanticCacheMixin, EmbeddingMixin, ABC):
             "engine": self.name,
             "initialized": self._initialized,
             "specs_available": self.specs is not None,
+            "knowledge_available": self.knowledge is not None,
         }
