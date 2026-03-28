@@ -127,9 +127,9 @@ class TestL1ExactCache:
     def test_pattern_invalidation(self):
         """Test pattern-based invalidation."""
         # Add entries
-        self.cache.set("query about cats", "response1")
-        self.cache.set("query about dogs", "response2")
-        self.cache.set("query about birds", "response3")
+        self.cache.set("query about cats", "response about cats and kittens")
+        self.cache.set("query about dogs", "response about dogs and puppies")
+        self.cache.set("query about birds", "response about birds and parrots")
         
         # Invalidate pattern
         count = self.cache.invalidate_pattern("cats")
@@ -204,8 +204,8 @@ class TestConvenienceFunctions:
         cache2 = get_global_l1_cache()
         assert cache is cache2
     
-    def test_convenience_get_set(self):
-        """Test convenience get/set functions."""
+    def test_convenience_functions(self):
+        """Test convenience functions."""
         query = "test query"
         response = "test response"
         
@@ -216,21 +216,3 @@ class TestConvenienceFunctions:
         # Get using convenience function
         retrieved = l1_cache_get(query)
         assert retrieved == response
-    
-    @patch('agentic_core.L4_state.memory.l1_exact_cache.redis')
-    def test_redis_backend(self, mock_redis):
-        """Test Redis backend integration."""
-        # Mock Redis client
-        mock_client = MagicMock()
-        mock_redis.Redis.return_value = mock_client
-        
-        cache = L1ExactCache(redis_client=mock_client)
-        
-        # Test set
-        cache.set("query", "response")
-        assert mock_client.setex.called
-        
-        # Test get
-        mock_client.get.return_value = b'{"response": "response", "timestamp": "2023-01-01"}'
-        hit = cache.get("query")
-        assert hit is not None

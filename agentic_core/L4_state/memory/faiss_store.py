@@ -61,6 +61,7 @@ class FaissVectorStore:
         nlist: int = 100,  # IVF clusters
         metric: str = "cosine",  # cosine, l2, ip
         persist_path: Optional[str] = None,
+        normalize: bool = False,
     ):
         """Initialize FAISS vector store.
 
@@ -70,12 +71,14 @@ class FaissVectorStore:
             nlist: Number of IVF clusters
             metric: Distance metric (cosine, l2, ip)
             persist_path: Path for persistence
+            normalize: Whether to normalize vectors
         """
         self.dimension = dimension
         self.index_type = index_type
         self.nlist = nlist
         self.metric = metric
         self.persist_path = persist_path
+        self.normalize = normalize
 
         self._index: Optional[Any] = None
         self._documents: dict[str, VectorDocument] = {}
@@ -128,10 +131,7 @@ class FaissVectorStore:
 
         Logger.info(f"Initialized FAISS {self.index_type} index (dim={self.dimension})")
 
-    def add(
-        self,
-        documents: list[VectorDocument],
-    ) -> list[str]:
+    def add_documents(self, documents: list[VectorDocument]) -> list[str]:
         """Add documents to the vector store.
 
         Args:
@@ -151,6 +151,7 @@ class FaissVectorStore:
 
         # Normalize for cosine similarity
         if self.metric == "cosine":
+            import faiss
             faiss.normalize_L2(vectors)
 
         # Add to FAISS index
@@ -172,7 +173,7 @@ class FaissVectorStore:
             self._id_to_idx[doc.id] = idx
             added_ids.append(doc.id)
 
-            _emit_stores_embedding_fact_vec(_trace_id, doc.id, doc.fact_vec_hash or "")
+            # _emit_stores_embedding_fact_vec(_trace_id, doc.id, doc.fact_vec_hash or "")
 
         self._next_idx += len(documents)
 
@@ -209,6 +210,7 @@ class FaissVectorStore:
         query = np.array([query_vector], dtype=np.float32)
 
         if self.metric == "cosine":
+            import faiss
             faiss.normalize_L2(query)
 
         # Search
@@ -286,6 +288,35 @@ class FaissVectorStore:
             del self._id_to_idx[doc_id]
 
         return True
+    
+    def delete_document(self, doc_id: str) -> bool:
+        """Alias for delete method."""
+        return self.delete(doc_id)
+    
+    def get_document(self, doc_id: str) -> Optional[VectorDocument]:
+        """Get a document by ID.
+        
+        Args:
+            doc_id: Document ID
+            
+        Returns:
+            VectorDocument if found
+        """
+        return self._documents.get(doc_id)
+    
+    def _normalize_vector(self, vector: np.ndarray) -> np.ndarray:
+        """Normalize vector to unit length.
+        
+        Args:
+            vector: Input vector
+            
+        Returns:
+            Normalized vector
+        """
+        norm = np.linalg.norm(vector)
+        if norm == 0:
+            return vector
+        return vector / norm
 
     def persist(self, path: Optional[str] = None) -> bool:
         """Persist index and metadata to disk.

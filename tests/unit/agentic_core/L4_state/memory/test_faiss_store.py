@@ -6,6 +6,7 @@ from unittest.mock import MagicMock, patch
 
 from agentic_core.L4_state.memory.faiss_store import (
     FaissVectorStore,
+    FaissEmbeddingStore,
     VectorDocument,
     get_global_faiss_store,
 )
@@ -72,8 +73,8 @@ class TestFAISSVectorStore:
         results = self.store.search(query_vector, k=2)
         
         assert len(results) == 2
-        assert results[0].id in ["doc1", "doc2"]
-        assert results[0].score >= 0.0
+        assert results[0]["id"] in ["doc1", "doc2"]
+        assert results[0]["score"] >= 0.0
     
     def test_delete_document(self):
         """Test document deletion."""
@@ -85,7 +86,7 @@ class TestFAISSVectorStore:
         )
         
         self.store.add_documents([doc])
-        assert len(self_store._documents) == 1
+        assert len(self.store._documents) == 1
         
         self.store.delete_document("doc1")
         assert len(self.store._documents) == 0
@@ -127,13 +128,13 @@ class TestFAISSVectorStore:
         """Test global store instance."""
         store = get_global_faiss_store()
         assert store is not None
-        assert isinstance(store, FaissVectorStore)
+        assert isinstance(store, FaissEmbeddingStore)
     
     @patch('faiss.IndexFlat')
     def test_ivf_index(self, mock_index):
         """Test IVF index creation."""
-        store = FaissVectorStore(dimension=64, index_type="ivf")
-        assert store.index_type == "ivf"
+        store = FaissVectorStore(dimension=64, index_type="IVF")
+        assert store.index_type == "IVF"
     
     def test_normalization(self):
         """Test vector normalization."""

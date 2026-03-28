@@ -30,11 +30,13 @@ class TestChunkingModes:
     
     def test_overlap_window_chunker(self):
         """Test overlap window chunking."""
-        chunker = OverlapWindowChunker(window_size=8, stride=4)
+        chunker = OverlapWindowChunker(window_size=50, stride=25)
         
-        text = "word1 word2 word3 word4 word5 word6 word7 word8 word9 word10 word11 word12"
+        # Create a long text that will definitely create multiple chunks
+        text = " ".join([f"word{i}" for i in range(200)])  # 200 words
         chunks = chunker.chunk(text, "test_doc")
         
+        # Should create multiple chunks with overlap
         assert len(chunks) > 1
         assert all(chunk.chunk_type == "overlap_window" for chunk in chunks)
         assert chunks[0].id.startswith("test_doc_overlap_")
