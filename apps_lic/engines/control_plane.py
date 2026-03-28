@@ -227,6 +227,7 @@ class ControlPlane:
         self._decision_count = 0
         self._block_count = 0
         self._shield: Any = None
+        self.knowledge: Any = None
         try:
             from apps_lic.reasoning.GovernanceShieldAgent import GovernanceShieldAgent
 
@@ -234,6 +235,15 @@ class ControlPlane:
         # guardian: allow-silent-swallow
         except Exception as exc:
             logger.warning("ControlPlane: GovernanceShieldAgent not available: %s", exc)
+
+        # Initialize knowledge base for prompt templates
+        try:
+            from apps_lic.config.knowledge_base import FROZEN_SNAPSHOT
+
+            self.knowledge = FROZEN_SNAPSHOT
+        except ImportError:
+            self.knowledge = None
+            logger.warning("ControlPlane: knowledge base not available")
 
     def evaluate_input(self, content: str, context: dict[str, Any] | None = None) -> PolicyDecision:
         """Evaluate input content before processing.
@@ -300,8 +310,24 @@ class ControlPlane:
             metadata={"is_input": is_input, "decision_id": self._decision_count},
         )
 
+    def get_prompt(self, prompt_id: str) -> str:
+        """Get prompt from knowledge base."""
+        if self.knowledge:
+            from apps_lic.config.knowledge_base import get_prompt
+
+            return get_prompt(prompt_id)
+        return ""
+
+    def get_node_config(self, node_id: str) -> Any:
+        """Get K-node configuration from knowledge base."""
+        if self.knowledge:
+            from apps_lic.config.knowledge_base import get_node_config
+
+            return get_node_config(node_id)
+        return None
+
     def get_stats(self) -> dict[str, Any]:
-        return {"total_decisions": self._decision_count, "total_blocks": self._block_count}
+        return {"total_decisions": self._decision_count, "total_blocks": self._block_count, "knowledge_available": self.knowledge is not None}
 
 
 __all__ = ["ControlPlane", "PolicyAction", "PolicyDecision"]
