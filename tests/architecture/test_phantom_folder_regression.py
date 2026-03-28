@@ -44,61 +44,10 @@ def test_territorydefinition_is_instantiable(mod):
     assert isinstance(cls, type), "TerritoryDefinition must be a class"
 
 
-# Arrange
-# TODO: Set up execution parameters
-input_data = {}  # Replace with actual test data
-
-# Act
-# Arrange
-# TODO: Set up execution parameters
-input_data = {}  # Replace with actual test data
-
-# Act
-"""Test get_all_territories_is_callable runtime behavior."""
-# Arrange
-# TODO: Set up execution parameters
-input_data = {}  # Replace with actual test data
-
-# Act
-# TODO: Execute get_all_territories_is_callable
-"""Test get_apps_lic_subfolder_map_is_callable runtime behavior."""
-# Arrange
-# TODO: Set up execution parameters
-input_data = {}  # Replace with actual test data
-
-# Act
-# TODO: Execute get_apps_lic_subfolder_map_is_callable
-"""Test get_apps_rg_subfolder_map_is_callable runtime behavior."""
-# Arrange
-# TODO: Set up execution parameters
-input_data = {}  # Replace with actual test data
-
-# Act
-# TODO: Execute get_apps_rg_subfolder_map_is_callable
-"""Test get_apps_shared_subfolder_map_is_callable runtime behavior."""
-# Arrange
-# TODO: Set up execution parameters
-input_data = {}  # Replace with actual test data
-
-# Act
-# TODO: Execute get_apps_shared_subfolder_map_is_callable
-"""Test get_canonical_path_is_callable runtime behavior."""
-# Arrange
-# TODO: Set up execution parameters
-input_data = {}  # Replace with actual test data
-
-# Act
-# TODO: Execute get_canonical_path_is_callable
-"""Test get_core_subfolder_map_is_callable runtime behavior."""
-# Arrange
-# TODO: Set up execution parameters
-input_data = {}  # Replace with actual test data
-
-# Act
-# TODO: Execute get_core_subfolder_map_is_callable
-result = None  # Replace with actual execution
-
-# Assert
-assert result is not None, "get_core_subfolder_map_is_callable should return a result"
-assert isinstance(result, (dict, list, str, int, float, bool)), "Result should be a common type"
-# TODO: Add specific execution assertions
+def test_get_core_subfolder_map(mod):
+    """Test get_core_subfolder_map runtime behavior."""
+    result = mod.get_core_subfolder_map()
+    assert result is not None, "get_core_subfolder_map should return a result"
+    assert isinstance(result, dict), "Result should be a dictionary"
+    assert "adg" in result, "Result should contain 'adg' key"
+    assert "L0_routing" in result, "Result should contain 'L0_routing' key"
