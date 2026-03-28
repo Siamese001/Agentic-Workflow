@@ -779,6 +779,74 @@ BUDGET_EXCEEDED_EXCEPTIONS: frozenset[str] = frozenset(
         "TokenBudgetExceeded",
     }
 )
+P1_ROUTES_TO_AGENT_SYMBOLS: frozenset[str] = frozenset(
+    {
+        "route_to_agent",
+        "RouteToAgent",
+        "AgentRouter",
+        "route_execution_to_agent",
+        "RouteExecutionToAgent",
+        "ExecutionRouter",
+        "dispatch_to_agent",
+        "DispatchToAgent",
+        "AgentDispatcher",
+        "send_to_agent",
+        "SendToAgent",
+        "forward_to_agent",
+        "ForwardToAgent",
+    }
+)
+P1_DISPATCHES_EXECUTION_PLAN_SYMBOLS: frozenset[str] = frozenset(
+    {
+        "dispatch_execution_plan",
+        "DispatchExecutionPlan",
+        "ExecutionPlanDispatcher",
+        "send_execution_plan",
+        "SendExecutionPlan",
+        "PlanDispatcher",
+        "dispatch_plan",
+        "DispatchPlan",
+        "ExecutionDispatcher",
+        "submit_execution_plan",
+        "SubmitExecutionPlan",
+        "PlanSubmitter",
+    }
+)
+P1_VALIDATES_AGENT_CAPABILITY_SYMBOLS: frozenset[str] = frozenset(
+    {
+        "validate_agent_capability",
+        "ValidateAgentCapability",
+        "AgentCapabilityValidator",
+        "check_agent_capability",
+        "CheckAgentCapability",
+        "CapabilityChecker",
+        "verify_agent_capability",
+        "VerifyAgentCapability",
+        "AgentCapabilityVerifier",
+        "assert_agent_capability",
+        "AssertAgentCapability",
+        "validate_capability",
+        "ValidateCapability",
+    }
+)
+P1_CHECKS_AGENT_REGISTRY_SYMBOLS: frozenset[str] = frozenset(
+    {
+        "check_agent_registry",
+        "CheckAgentRegistry",
+        "AgentRegistryChecker",
+        "lookup_agent_registry",
+        "LookupAgentRegistry",
+        "RegistryLookup",
+        "verify_agent_registry",
+        "VerifyAgentRegistry",
+        "AgentRegistryVerifier",
+        "query_agent_registry",
+        "QueryAgentRegistry",
+        "RegistryQuery",
+        "get_agent_from_registry",
+        "GetAgentFromRegistry",
+    }
+)
 JIT_CONTEXT_CLASSES: frozenset[str] = frozenset(
     {
         "JITContext",
@@ -1800,6 +1868,10 @@ __all__ = [
     "WORK_CONTRACT_METHODS",
     "TOOL_BUDGET_CLASSES",
     "BUDGET_EXCEEDED_EXCEPTIONS",
+    "P1_ROUTES_TO_AGENT_SYMBOLS",
+    "P1_DISPATCHES_EXECUTION_PLAN_SYMBOLS",
+    "P1_VALIDATES_AGENT_CAPABILITY_SYMBOLS",
+    "P1_CHECKS_AGENT_REGISTRY_SYMBOLS",
     "JIT_CONTEXT_CLASSES",
     "FREEZE_METHOD_NAMES",
     "BOUNDARY_VERIFIER_CLASSES",

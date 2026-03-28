@@ -90,6 +90,11 @@ from agentic_core.adg.schema_util import (
     # G23-G27 (gap): new proof-edge frozensets
     NONDETERMINISM_WALL_CLOCK_SYMBOLS,
     ORCHESTRATION_ROUTE_SYMBOLS,
+    # P1 orchestration symbols
+    P1_ROUTES_TO_AGENT_SYMBOLS,
+    P1_DISPATCHES_EXECUTION_PLAN_SYMBOLS,
+    P1_VALIDATES_AGENT_CAPABILITY_SYMBOLS,
+    P1_CHECKS_AGENT_REGISTRY_SYMBOLS,
     PATH_CONTROL_CLASSES,
     PATH_REROUTE_METHODS,
     POLICY_HASH_METHODS,
@@ -5353,6 +5358,57 @@ class _P1OrchestrationGovernanceVisitor(ast.NodeVisitor):
         )
 
 
+class _P1OrchestrationVisitor(ast.NodeVisitor):
+    """G28 (gap): P1 orchestration proof edges.
+
+    Emits:
+        routes_to_agent — when routing to specific agents
+        dispatches_execution_plan — when dispatching execution plans
+        validates_agent_capability — when validating agent capabilities
+        checks_agent_registry — when checking agent registry
+    """
+
+    def __init__(self, module_adg_name: str, source_file: str) -> None:
+        self.module_adg_name = module_adg_name
+        self.source_file = source_file
+        self.edges: list[Edge] = []
+
+    def visit_Call(self, node: ast.Call) -> None:
+        """Detect P1 orchestration calls and emit edges."""
+        func_name = _get_call_name(node.func)
+        if not func_name:
+            self.generic_visit(node)
+            return
+
+        # Check P1 orchestration symbols
+        if func_name in P1_ROUTES_TO_AGENT_SYMBOLS:
+            self._emit_p1_edge(node, "routes_to_agent", func_name)
+        elif func_name in P1_DISPATCHES_EXECUTION_PLAN_SYMBOLS:
+            self._emit_p1_edge(node, "dispatches_execution_plan", func_name)
+        elif func_name in P1_VALIDATES_AGENT_CAPABILITY_SYMBOLS:
+            self._emit_p1_edge(node, "validates_agent_capability", func_name)
+        elif func_name in P1_CHECKS_AGENT_REGISTRY_SYMBOLS:
+            self._emit_p1_edge(node, "checks_agent_registry", func_name)
+
+        self.generic_visit(node)
+
+    def _emit_p1_edge(self, node: ast.AST, relation: str, symbol: str) -> None:
+        """Emit a P1 orchestration edge."""
+        line_no = getattr(node, "lineno", 1)
+        target_adg = f"ADG::P1Orchestration::{symbol}"
+        self.edges.append(
+            Edge(
+                from_name=self.module_adg_name,
+                to_name=target_adg,
+                relation_type=relation,
+                edge_kind="p1_orchestration",
+                source_file=self.source_file,
+                line_no=line_no,
+                symbol=symbol,
+            )
+        )
+
+
 class _P2ExecutionCapabilityVisitor(ast.NodeVisitor):
     """G29 (gap): P2 execution capability proof edges.
 
@@ -6292,6 +6348,12 @@ def _scan_file(
 
     # All P-series visitors (only in full mode)
     if visitors_to_run == "full":
+        # G28 (gap): P1 orchestration (routes_to_agent, dispatches_execution_plan,
+        #            validates_agent_capability, checks_agent_registry)
+        p1_orch_visitor = _P1OrchestrationVisitor(module_adg, rel)
+        p1_orch_visitor.visit(tree)
+        edges.extend(p1_orch_visitor.edges)
+
         # G29 (gap): P2 execution capability (authorize_and_execute, validates_capability,
         #            routes_to_capability, writes_via_uwg, blocks_direct_write,
         #            records_tool_invocation, captures_execution_output)

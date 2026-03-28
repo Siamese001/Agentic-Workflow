@@ -931,6 +931,85 @@ PATH_CONTROL_CLASSES: frozenset[str] = frozenset(
         "DeterministicReplayGuard",
     }
 )
+P1_ROUTES_TO_AGENT_SYMBOLS: frozenset[str] = frozenset(
+    {
+        "route_to_agent",
+        "route_agent",
+        "AgentRouter",
+        "route_execution_to_agent",
+        "RouteExecutionToAgent",
+        "ExecutionRouter",
+        "dispatch_to_agent",
+        "DispatchToAgent",
+        "AgentDispatcher",
+        "send_to_agent",
+        "SendToAgent",
+        "forward_to_agent",
+        "ForwardToAgent",
+    }
+)
+P1_DISPATCHES_EXECUTION_PLAN_SYMBOLS: frozenset[str] = frozenset(
+    {
+        "dispatch_execution_plan",
+        "DispatchExecutionPlan",
+        "ExecutionPlanDispatcher",
+        "send_execution_plan",
+        "SendExecutionPlan",
+        "PlanDispatcher",
+        "dispatch_plan",
+        "DispatchPlan",
+        "ExecutionDispatcher",
+        "submit_execution_plan",
+        "SubmitExecutionPlan",
+        "PlanSubmitter",
+    }
+)
+P1_VALIDATES_AGENT_CAPABILITY_SYMBOLS: frozenset[str] = frozenset(
+    {
+        "validate_agent_capability",
+        "ValidateAgentCapability",
+        "AgentCapabilityValidator",
+        "check_agent_capability",
+        "CheckAgentCapability",
+        "CapabilityChecker",
+        "verify_agent_capability",
+        "VerifyAgentCapability",
+        "AgentCapabilityVerifier",
+        "assert_agent_capability",
+        "AssertAgentCapability",
+        "validate_capability",
+        "ValidateCapability",
+    }
+)
+P1_CHECKS_AGENT_REGISTRY_SYMBOLS: frozenset[str] = frozenset(
+    {
+        "check_agent_registry",
+        "CheckAgentRegistry",
+        "AgentRegistryChecker",
+        "lookup_agent_registry",
+        "LookupAgentRegistry",
+        "RegistryLookup",
+        "verify_agent_registry",
+        "VerifyAgentRegistry",
+        "AgentRegistryVerifier",
+        "query_agent_registry",
+        "QueryAgentRegistry",
+        "RegistryQuery",
+        "get_agent_from_registry",
+        "GetAgentFromRegistry",
+    }
+)
+WORKFLOW_ORCHESTRATION_SYMBOLS: frozenset[str] = frozenset(
+    {
+        "GroundednessScorer",
+        "RetrievalEvaluator",
+        "NDCGScorer",
+        "MRRScorer",
+        "CompletenessScorer",
+        "EvalSpine",
+        "OptimizationSpine",
+    }
+)
 PATH_REROUTE_METHODS: frozenset[str] = frozenset(
     {
         "route_path",
@@ -1827,6 +1906,10 @@ __all__ = [
     "AUTHORIZE_EXECUTE_SYMBOLS",
     "VALIDATES_CAPABILITY_SYMBOLS",
     "ROUTES_TO_CAPABILITY_SYMBOLS",
+    "P1_ROUTES_TO_AGENT_SYMBOLS",
+    "P1_DISPATCHES_EXECUTION_PLAN_SYMBOLS",
+    "P1_VALIDATES_AGENT_CAPABILITY_SYMBOLS",
+    "P1_CHECKS_AGENT_REGISTRY_SYMBOLS",
     "WRITES_VIA_UWG_SYMBOLS",
     "BLOCKS_DIRECT_WRITE_SYMBOLS",
     "RECORDS_TOOL_INVOCATION_SYMBOLS",
