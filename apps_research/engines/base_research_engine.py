@@ -79,7 +79,7 @@ class BaseResearchEngine(SemanticCacheMixin, EmbeddingMixin, ABC):
 
     def get_prompt(self, prompt_id: str) -> str:
         """Get prompt from knowledge base.
-        
+
         Raises:
             TypeError: If prompt_id is None
             KeyError: If prompt_id not found in knowledge base
@@ -94,7 +94,7 @@ class BaseResearchEngine(SemanticCacheMixin, EmbeddingMixin, ABC):
 
     def get_node_config(self, node_id: str) -> Any:
         """Get K-node configuration from knowledge base.
-        
+
         Raises:
             TypeError: If node_id is None
             KeyError: If node_id not found in knowledge base
