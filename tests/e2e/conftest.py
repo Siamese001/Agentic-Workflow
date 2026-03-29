@@ -17,18 +17,14 @@ Reference: docs/reference/agentic_process_mapping_v12.md
 from __future__ import annotations
 
 import hashlib
-import json
-import os
-import tempfile
 import threading
 import time
 import uuid
-from concurrent.futures import ThreadPoolExecutor, as_completed
 from dataclasses import dataclass, field
 from enum import Enum, auto
 from pathlib import Path
-from typing import Any, Callable, Dict, List, Optional, Protocol, Set, Tuple, TypeVar, Union
-from unittest.mock import MagicMock, Mock, patch
+from typing import Any
+from unittest.mock import MagicMock
 
 import pytest
 
@@ -72,16 +68,16 @@ class TestExecutionContext:
     trace_id: str
     policy_hash: str
     path: ExecutionPath
-    layer_states: Dict[Layer, Dict[str, Any]] = field(default_factory=dict)
-    bus_events: List[Tuple[BusType, Dict[str, Any]]] = field(default_factory=list)
-    mutations: List[Dict[str, Any]] = field(default_factory=list)
+    layer_states: dict[Layer, dict[str, Any]] = field(default_factory=dict)
+    bus_events: list[tuple[BusType, dict[str, Any]]] = field(default_factory=list)
+    mutations: list[dict[str, Any]] = field(default_factory=list)
     start_time: float = field(default_factory=time.time)
 
-    def record_bus_event(self, bus: BusType, payload: Dict[str, Any]) -> None:
+    def record_bus_event(self, bus: BusType, payload: dict[str, Any]) -> None:
         """Record a bus communication event."""
         self.bus_events.append((bus, payload))
 
-    def record_mutation(self, layer: Layer, operation: str, details: Dict[str, Any]) -> None:
+    def record_mutation(self, layer: Layer, operation: str, details: dict[str, Any]) -> None:
         """Record a mutation attempt."""
         self.mutations.append({
             "layer": layer.value,
@@ -101,7 +97,7 @@ class RobustnessResult:
     determinism_verified: bool
     fail_closed_verified: bool
     side_effects_contained: bool
-    errors: List[str] = field(default_factory=list)
+    errors: list[str] = field(default_factory=list)
 
 
 # =============================================================================
@@ -149,7 +145,7 @@ def mock_uwg() -> MagicMock:
 
 
 @pytest.fixture
-def bus_monitor() -> "BusCommunicationMonitor":
+def bus_monitor() -> BusCommunicationMonitor:
     """Provide bus communication monitor."""
     return BusCommunicationMonitor()
 
@@ -169,10 +165,10 @@ class BusCommunicationMonitor:
     """Monitor and validate bus communications."""
 
     def __init__(self) -> None:
-        self.events: List[Dict[str, Any]] = []
+        self.events: list[dict[str, Any]] = []
         self._lock = threading.Lock()
 
-    def record(self, bus_type: BusType, source: Layer, target: Layer, payload: Dict[str, Any]) -> None:
+    def record(self, bus_type: BusType, source: Layer, target: Layer, payload: dict[str, Any]) -> None:
         """Record a bus communication event."""
         with self._lock:
             self.events.append({
@@ -183,12 +179,12 @@ class BusCommunicationMonitor:
                 "timestamp": time.time(),
             })
 
-    def get_events_for_bus(self, bus_type: BusType) -> List[Dict[str, Any]]:
+    def get_events_for_bus(self, bus_type: BusType) -> list[dict[str, Any]]:
         """Get all events for a specific bus type."""
         with self._lock:
             return [e for e in self.events if e["bus"] == bus_type]
 
-    def verify_bus_rules(self, bus_type: BusType) -> Tuple[bool, List[str]]:
+    def verify_bus_rules(self, bus_type: BusType) -> tuple[bool, list[str]]:
         """Verify bus communication follows architectural rules.
 
         Rules per v12:
@@ -219,7 +215,7 @@ class BusCommunicationMonitor:
             elif bus_type == BusType.BUS_T:
                 # BUS T: Read-only, any direction allowed but no mutation
                 if event["payload"].get("mutates_state", False):
-                    errors.append(f"BUS_T mutation violation: attempted state mutation")
+                    errors.append("BUS_T mutation violation: attempted state mutation")
 
             elif bus_type == BusType.BUS_U:
                 # BUS U: Only to L5 (governed commits)
@@ -253,7 +249,7 @@ class LayerBoundaryValidator:
     }
 
     @classmethod
-    def check_import_allowed(cls, source: Layer, target: Layer) -> Tuple[bool, Optional[str]]:
+    def check_import_allowed(cls, source: Layer, target: Layer) -> tuple[bool, str | None]:
         """Check if import from source to target is allowed (gravity rule)."""
         source_idx = cls.LAYER_ORDER.index(source)
         target_idx = cls.LAYER_ORDER.index(target)
@@ -264,7 +260,7 @@ class LayerBoundaryValidator:
         return True, None
 
     @classmethod
-    def check_mutation_allowed(cls, source: Layer, target: Layer) -> Tuple[bool, Optional[str]]:
+    def check_mutation_allowed(cls, source: Layer, target: Layer) -> tuple[bool, str | None]:
         """Check if mutation from source to target is allowed."""
         rules = cls.HARD_RULES.get(source, {})
         cannot = rules.get("cannot_mutate", [])
@@ -286,7 +282,7 @@ class DeterminismValidator:
     ]
 
     @classmethod
-    def validate_digest_chain(cls, mutations: List[Dict[str, Any]]) -> Tuple[bool, List[str]]:
+    def validate_digest_chain(cls, mutations: list[dict[str, Any]]) -> tuple[bool, list[str]]:
         """Validate mutation digest chain for replay."""
         errors = []
 
@@ -309,7 +305,7 @@ class DeterminismValidator:
         return len(errors) == 0, errors
 
     @classmethod
-    def validate_execution_trace(cls, trace: Dict[str, Any]) -> Tuple[bool, List[str]]:
+    def validate_execution_trace(cls, trace: dict[str, Any]) -> tuple[bool, list[str]]:
         """Validate execution trace contains all required determinism components."""
         errors = []
 
@@ -332,14 +328,14 @@ class E2ETestReport:
     """Collect and report E2E test results."""
 
     def __init__(self) -> None:
-        self.results: List[RobustnessResult] = []
+        self.results: list[RobustnessResult] = []
         self.start_time = time.time()
 
     def add_result(self, result: RobustnessResult) -> None:
         """Add a test result."""
         self.results.append(result)
 
-    def generate_report(self) -> Dict[str, Any]:
+    def generate_report(self) -> dict[str, Any]:
         """Generate comprehensive test report."""
         total = len(self.results)
         passed = sum(1 for r in self.results if r.success)
@@ -381,6 +377,6 @@ def record_test_result(result: RobustnessResult) -> None:
     _e2e_report.add_result(result)
 
 
-def get_final_report() -> Dict[str, Any]:
+def get_final_report() -> dict[str, Any]:
     """Get final E2E test report."""
     return _e2e_report.generate_report()

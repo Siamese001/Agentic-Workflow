@@ -97,10 +97,25 @@ try:
     from opentelemetry.sdk.trace.export import BatchSpanProcessor, ConsoleSpanExporter
     from opentelemetry.trace import Status, StatusCode
 
+    # Phase 1: OTLP exporter support for external telemetry backends
+    try:
+        from opentelemetry.exporter.otlp.proto.grpc.trace_exporter import OTLPSpanExporter as OTLPGrpcExporter
+        OTEL_GRPC_EXPORTER_AVAILABLE = True
+    except ImportError:
+        OTEL_GRPC_EXPORTER_AVAILABLE = False
+    
+    try:
+        from opentelemetry.exporter.otlp.proto.http.trace_exporter import OTLPSpanExporter as OTLPHttpExporter
+        OTEL_HTTP_EXPORTER_AVAILABLE = True
+    except ImportError:
+        OTEL_HTTP_EXPORTER_AVAILABLE = False
+
     OTEL_AVAILABLE = True
 # guardian: allow-silent-swallow - optional dependency
 except ImportError:
     OTEL_AVAILABLE = False
+    OTEL_GRPC_EXPORTER_AVAILABLE = False
+    OTEL_HTTP_EXPORTER_AVAILABLE = False
 from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     LayerSegment,
     _emit_agent_executes_agent,
