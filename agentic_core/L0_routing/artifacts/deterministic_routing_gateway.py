@@ -15,10 +15,6 @@ import logging
 from dataclasses import dataclass
 from typing import Any
 
-from agentic_core.L5_safety.hitl.hitl_escalation_activator import (
-    EscalationPriority,
-    get_hitl_escalation_activator,
-)
 from agentic_core.adg.runtime.hitl_graph import HITLGraph, HITLRuntimeRecorder
 from agentic_core.L0_routing.types.routing_artifact_types import (
     RouteDecisionArtifact,
