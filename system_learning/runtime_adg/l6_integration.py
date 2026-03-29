@@ -161,6 +161,13 @@ and system evolution based on execution patterns.
 
         # Update snapshot index with size limit
         project_root = get_validated_project_root()
+        try:
+            # Try to get relative path for portability
+            file_path_str = str(snapshot_file.relative_to(project_root))[:512]
+        except ValueError:
+            # If file is outside project root (e.g., temp directory in tests), use absolute path
+            file_path_str = str(snapshot_file.resolve())[:512]
+
         self._snapshot_index[meta_learning_id] = {
             "trace_id": snapshot.trace_id[:256] if snapshot.trace_id else "",
             "timestamp": timestamp,
@@ -168,7 +175,7 @@ and system evolution based on execution patterns.
             "node_count": len(snapshot.nodes),
             "edge_count": len(snapshot.edges),
             "duration_ms": max(0, snapshot.ended_at_utc - snapshot.started_at_utc),
-            "file_path": str(snapshot_file.relative_to(project_root))[:512],  # Limit path length
+            "file_path": file_path_str,
         }
 
         # Trim index if too large (keep last 1000 entries)

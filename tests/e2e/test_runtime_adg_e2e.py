@@ -67,7 +67,7 @@ from system_learning.runtime_adg.auto_persistence import (
 @pytest.fixture
 def temp_runtime_adg_dir(tmp_path: Path) -> Path:
     """Provide temporary directory for runtime ADG artifacts.
-    
+
     Note: FileBackedRuntimeADGStore requires paths within project root.
     Tests using L4 storage should use get_validated_project_root() paths.
     """
@@ -79,7 +79,7 @@ def temp_runtime_adg_dir(tmp_path: Path) -> Path:
 @pytest.fixture
 def l4_store_project_path() -> Path:
     """Provide L4-compliant storage path within project root.
-    
+
     FileBackedRuntimeADGStore requires paths within L4 sovereign territory.
     """
     project_root = get_validated_project_root()
@@ -169,12 +169,12 @@ class TestRuntimeADGFullPipeline:
     ) -> None:
         """Test complete pipeline: spans → snapshot → L4 → L6."""
         import shutil
-        
+
         # Clean up any previous test data
         if l4_store_project_path.exists():
             shutil.rmtree(l4_store_project_path)
         l4_store_project_path.mkdir(parents=True, exist_ok=True)
-        
+
         # Step 1: Materialize snapshot from spans
         snapshot = materializer.materialize(
             sample_spans,
@@ -223,13 +223,13 @@ class TestRuntimeADGFullPipeline:
     ) -> None:
         """Test L4 storage with multiple snapshots and retrieval."""
         import shutil
-        
+
         # Clean up and set up test directory
         l4_test_path = l4_store_project_path / "storage_test"
         if l4_test_path.exists():
             shutil.rmtree(l4_test_path)
         l4_test_path.mkdir(parents=True, exist_ok=True)
-        
+
         l4_store = FileBackedRuntimeADGStore(l4_test_path)
 
         # Create multiple snapshots
@@ -268,13 +268,13 @@ class TestRuntimeADGFullPipeline:
     ) -> None:
         """Test L6 meta-learning pattern extraction and analysis."""
         import shutil
-        
+
         # Clean up and set up test directory
         l6_test_path = l4_store_project_path / "ml_test"
         if l6_test_path.exists():
             shutil.rmtree(l6_test_path)
         l6_test_path.mkdir(parents=True, exist_ok=True)
-        
+
         l6_bridge = L6MetaLearningBridge(l6_base_dir=l6_test_path)
 
         # Create snapshot with mixed layer distribution
@@ -485,13 +485,13 @@ class TestRuntimeADGAutoPersistence:
     ) -> None:
         """Test AutoPersistenceTracingAdapter with full pipeline."""
         import shutil
-        
+
         # Clean up and set up test directories within project
         auto_test_path = l4_store_project_path / "auto_persistence"
         if auto_test_path.exists():
             shutil.rmtree(auto_test_path)
         auto_test_path.mkdir(parents=True, exist_ok=True)
-        
+
         # Create adapter with auto-persistence enabled using L4-compliant paths
         adapter = AutoPersistenceTracingAdapter(
             service_name="test-service",
@@ -508,16 +508,15 @@ class TestRuntimeADGAutoPersistence:
         assert status["l4_store_available"] is True
         assert status["l6_bridge_available"] is True
 
-        # Simulate trace execution
+        # Simulate trace execution using proper context managers
         with adapter.trace_orchestrator("test-mission", {"agent": "TestAgent"}):
-            # Simulate some work by creating spans directly
-            adapter.start_span(
-                name="test.operation",
-                kind="tool",
-                layer="L2",
-                component="TestTool",
-            )
-            adapter.end_span()
+            # Simulate some work by creating a tool span
+            with adapter.trace_tool(
+                tool_name="test_operation",
+                parameters={},
+                metadata={"layer": "L2", "component": "TestTool"},
+            ):
+                pass  # Span auto-closes
 
         # Force persistence (since we're not in a real async context)
         result = adapter.force_persist_current_spans("test-mission")
@@ -525,6 +524,10 @@ class TestRuntimeADGAutoPersistence:
         # Verify persistence result - may succeed or fail depending on span availability
         # but should not crash
         assert "success" in result
+        # If spans were drained and persisted successfully
+        if result.get("success"):
+            assert "l4_version_id" in result
+            assert "l6_meta_id" in result
 
     def test_auto_persistence_disabled(
         self,
@@ -561,13 +564,13 @@ class TestRuntimeADGConcurrency:
     ) -> None:
         """Test thread-safe concurrent snapshot persistence."""
         import shutil
-        
+
         # Clean up and set up test directory
         concurrent_test_path = l4_store_project_path / "concurrent_test"
         if concurrent_test_path.exists():
             shutil.rmtree(concurrent_test_path)
         concurrent_test_path.mkdir(parents=True, exist_ok=True)
-        
+
         l4_store = FileBackedRuntimeADGStore(concurrent_test_path)
 
         num_threads = 10
@@ -621,13 +624,13 @@ class TestRuntimeADGPatternExtraction:
     ) -> None:
         """Test accurate pattern extraction from snapshots."""
         import shutil
-        
+
         # Clean up and set up test directory
         pattern_test_path = l4_store_project_path / "pattern_test"
         if pattern_test_path.exists():
             shutil.rmtree(pattern_test_path)
         pattern_test_path.mkdir(parents=True, exist_ok=True)
-        
+
         l6_bridge = L6MetaLearningBridge(l6_base_dir=pattern_test_path)
 
         # Create snapshot with known patterns
@@ -702,13 +705,13 @@ class TestRuntimeADGPatternExtraction:
     ) -> None:
         """Test evolution log maintains integrity across operations."""
         import shutil
-        
+
         # Clean up and set up test directory
         evolution_test_path = l4_store_project_path / "evolution_test"
         if evolution_test_path.exists():
             shutil.rmtree(evolution_test_path)
         evolution_test_path.mkdir(parents=True, exist_ok=True)
-        
+
         l6_bridge = L6MetaLearningBridge(l6_base_dir=evolution_test_path)
 
         # Store multiple snapshots
@@ -776,13 +779,13 @@ class TestRuntimeADGFailClosed:
     ) -> None:
         """Test that corrupted snapshot data is handled gracefully."""
         import shutil
-        
+
         # Clean up and set up test directory
         corrupt_test_path = l4_store_project_path / "corrupt_test"
         if corrupt_test_path.exists():
             shutil.rmtree(corrupt_test_path)
         corrupt_test_path.mkdir(parents=True, exist_ok=True)
-        
+
         l4_store = FileBackedRuntimeADGStore(corrupt_test_path)
 
         # Persist valid snapshot

@@ -23,7 +23,7 @@ class TestUserFlowE2E:
     """E2E test for complete user flow."""
 
     @pytest.mark.e2e
-    def test_user_registration_flow(self, page: Page):
-        """Test user registration flow."""
-        # This is a placeholder test - actual implementation needed
+    def test_user_registration_flow(self):
+        """Test user registration flow - placeholder."""
+        # This is a placeholder test - actual implementation needs Playwright setup
         assert True, "Placeholder test"
