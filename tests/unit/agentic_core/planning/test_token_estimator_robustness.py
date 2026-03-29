@@ -4,20 +4,21 @@ Error Handling and Robustness Tests for Token Planning Estimator
 Tests for error scenarios, edge cases, malformed inputs, and recovery mechanisms.
 """
 
-import pytest
-import json
 import tempfile
-import os
 from pathlib import Path
-from typing import Dict, List, Any
 from unittest import mock
 
-# Import estimator classes and exceptions for robustness tests
-from agentic_core.planning.token_estimator import ContextWindowEstimator, ContextSource, TokenEstimate
-from agentic_core.planning.preflight_hook import TokenBudgetExceededError
+import pytest
 
 
 # Lazy imports to avoid collection-time conflicts
+@pytest.fixture
+def token_estimator_classes():
+    from agentic_core.planning.preflight_hook import TokenBudgetExceededError
+    from agentic_core.planning.token_estimator import ContextSource, ContextWindowEstimator, TokenEstimate
+    return ContextWindowEstimator, ContextSource, TokenEstimate, TokenBudgetExceededError
+
+
 @pytest.fixture
 def planning_preflight_hook(tmp_path):
     from agentic_core.planning.preflight_hook import PlanningPreflightHook

@@ -5,19 +5,11 @@ Tests infrastructure, feature extractors, models, and inference components
 to ensure deterministic behavior, governance compliance, and reliability.
 """
 
-import pytest
 import tempfile
-import json
-import numpy as np
-from datetime import datetime
 from pathlib import Path
-from unittest.mock import Mock, patch
+from unittest.mock import Mock
 
-# Import shared types used across tests
-from agentic_core.L1_cognition.ml_decision_support.config.model_registry import ModelStatus
-from agentic_core.L1_cognition.ml_decision_support.models.base_model import DecisionMode, PredictionType
-from agentic_core.L1_cognition.ml_decision_support.models.l0_route_recommender import L0RouteRecommender
-from agentic_core.L1_cognition.ml_decision_support.inference.shadow_logger import ShadowMode
+import pytest
 
 
 # Lazy import fixtures to avoid collection-time conflicts
@@ -25,6 +17,31 @@ from agentic_core.L1_cognition.ml_decision_support.inference.shadow_logger impor
 def model_registry():
     from agentic_core.L1_cognition.ml_decision_support.config.model_registry import ModelRegistry
     return ModelRegistry()
+
+@pytest.fixture
+def model_status():
+    from agentic_core.L1_cognition.ml_decision_support.config.model_registry import ModelStatus
+    return ModelStatus
+
+@pytest.fixture
+def decision_mode():
+    from agentic_core.L1_cognition.ml_decision_support.models.base_model import DecisionMode
+    return DecisionMode
+
+@pytest.fixture
+def prediction_type():
+    from agentic_core.L1_cognition.ml_decision_support.models.base_model import PredictionType
+    return PredictionType
+
+@pytest.fixture
+def l0_route_recommender():
+    from agentic_core.L1_cognition.ml_decision_support.models.l0_route_recommender import L0RouteRecommender
+    return L0RouteRecommender
+
+@pytest.fixture
+def shadow_mode():
+    from agentic_core.L1_cognition.ml_decision_support.inference.shadow_logger import ShadowMode
+    return ShadowMode
 
 @pytest.fixture
 def feature_schemas():
@@ -38,7 +55,9 @@ def threshold_config():
 
 @pytest.fixture
 def deterministic_feature_extractor():
-    from agentic_core.L1_cognition.ml_decision_support.features.base_extractor import DeterministicFeatureExtractor
+    from agentic_core.L1_cognition.ml_decision_support.features.base_extractor import (
+        DeterministicFeatureExtractor,
+    )
     return DeterministicFeatureExtractor()
 
 @pytest.fixture
@@ -56,10 +75,6 @@ def l6_feature_extractor():
     from agentic_core.L1_cognition.ml_decision_support.features.l6_features import L6FeatureExtractor
     return L6FeatureExtractor()
 
-@pytest.fixture
-def l0_route_recommender():
-    from agentic_core.L1_cognition.ml_decision_support.models.l0_route_recommender import L0RouteRecommender
-    return L0RouteRecommender()
 
 @pytest.fixture
 def c0_reranker():
@@ -107,7 +122,7 @@ class TestFeatureSchemas:
             "trace_id_hash": "abc123def456"
         }
 
-        is_valid, errors = schema.validate_features(valid_features)
+        is_valid, errors, _ = schema.validate_features(valid_features)
         assert is_valid
         assert len(errors) == 0
 
@@ -622,7 +637,6 @@ class TestDeterminismRequirements:
     def test_governance_compliance(self):
         """Test that all components respect governance rules."""
         # Test that models only operate in allowed modes
-        from agentic_core.L1_cognition.ml_decision_support.models.base_model import DecisionMode
 
         # L0 should only use advisory or escalated modes
         l0_model = L0RouteRecommender()

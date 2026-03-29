@@ -1,0 +1,29 @@
+{
+  "request_id": "UW-2024-001234",
+  "decision_state": "APPROVE_WITH_CONDITIONS",
+  "recommended_structure": {
+    "amount": 2500000.00,
+    "term_months": 60,
+    "amortization_months": 60,
+    "interest_type": "floating",
+    "collateral_required": true,
+    "guarantor_required": true
+  },
+  "pricing_adjustment_bps": null,
+  "conditions": [
+    "Monthly borrowing base certificates required",
+    "First lien UCC filing on AR required",
+    "Unlimited personal guaranty from all 20%+ owners required",
+    "Evidence of insurance naming Lender as loss payee required"
+  ],
+  "covenants": [
+    "Minimum quarterly DSCR of 1.15x tested quarterly",
+    "Maximum Debt/EBITDA of 2.25x tested quarterly",
+    "Quarterly financial reporting and annual CPA-reviewed financials required",
+    "Monthly borrowing base certificate and financial reporting required"
+  ],
+  "exception_flags": [],
+  "confidence_score": 0.82,
+  "review_required": false,
+  "review_reason": null
+}

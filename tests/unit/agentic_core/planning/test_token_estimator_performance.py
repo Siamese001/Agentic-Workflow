@@ -5,18 +5,21 @@ Tests for performance characteristics, scalability, and efficiency
 under various load conditions.
 """
 
-import pytest
-import time
-import psutil
 import os
+import time
 from pathlib import Path
-from typing import Dict, List, Any
 
-# Import estimator classes for performance tests
-from agentic_core.planning.token_estimator import ContextWindowEstimator, ContextSource, TokenEstimate
+import psutil
+import pytest
 
 
 # Lazy imports to avoid collection-time conflicts
+@pytest.fixture
+def token_estimator_classes():
+    from agentic_core.planning.token_estimator import ContextSource, ContextWindowEstimator, TokenEstimate
+    return ContextWindowEstimator, ContextSource, TokenEstimate
+
+
 @pytest.fixture
 def planning_preflight_hook(tmp_path):
     from agentic_core.planning.preflight_hook import PlanningPreflightHook

@@ -5,17 +5,18 @@ Tests for real-world planning scenarios, integration with planning workflows,
 and end-to-end functionality.
 """
 
-import pytest
-import json
-import time
 from pathlib import Path
-from typing import Dict, List, Any
 
-# Import token budget decorator for integration tests
-from agentic_core.planning.preflight_hook import require_token_budget, TokenBudgetExceededError
+import pytest
 
 
 # Lazy imports to avoid collection-time conflicts
+@pytest.fixture
+def token_estimator_classes():
+    from agentic_core.planning.preflight_hook import TokenBudgetExceededError, require_token_budget
+    return require_token_budget, TokenBudgetExceededError
+
+
 @pytest.fixture
 def planning_preflight_hook(tmp_path):
     from agentic_core.planning.preflight_hook import PlanningPreflightHook
