@@ -1,156 +1,161 @@
 """
 apps_exec domain types — Executive Brief Generator.
 
-All types are frozen dataclasses or Pydantic models.
+All types are Pydantic models with strict validation.
 No mutable shared state. Every artifact carries provenance metadata.
 """
 
 from __future__ import annotations
 
-from dataclasses import dataclass, field
-from enum import Enum
-from typing import Any
+from typing import Literal
+
+from pydantic import BaseModel, Field, field_validator
 
 
-class AudiencePersona(str, Enum):
-    RECRUITER = "recruiter"
-    CTO = "cto"
-    SVP_ENG = "svp_eng"
-    BOARD = "board"
-    HEAD_OF_AI = "head_of_ai"
+AudiencePersona = Literal["recruiter", "cto", "svp_eng", "board", "head_of_ai"]
+
+BriefTone = Literal["board-ready", "cto-ready", "recruiter-friendly", "technical"]
+
+EmphasisArea = Literal[
+    "governance", "orchestration", "rag", "commercialization",
+    "safety", "observability", "determinism"
+]
+
+BriefStatus = Literal["pending", "generating", "gate_checking", "complete", "failed", "dry_run"]
 
 
-class BriefTone(str, Enum):
-    BOARD_READY = "board-ready"
-    CTO_READY = "cto-ready"
-    RECRUITER_FRIENDLY = "recruiter-friendly"
-    TECHNICAL = "technical"
-
-
-class EmphasisArea(str, Enum):
-    GOVERNANCE = "governance"
-    ORCHESTRATION = "orchestration"
-    RAG = "rag"
-    COMMERCIALIZATION = "commercialization"
-    SAFETY = "safety"
-    OBSERVABILITY = "observability"
-    DETERMINISM = "determinism"
-
-
-class BriefStatus(str, Enum):
-    PENDING = "pending"
-    GENERATING = "generating"
-    GATE_CHECKING = "gate_checking"
-    COMPLETE = "complete"
-    FAILED = "failed"
-    DRY_RUN = "dry_run"
-
-
-@dataclass(frozen=True)
-class CapabilityEvidence:
+class CapabilityEvidence(BaseModel):
     """A single extracted platform capability with its evidence anchor."""
 
-    capability_id: str
-    label: str
-    description: str
-    evidence_anchors: tuple[str, ...] = field(default_factory=tuple)
-    layer: str = ""
-    emphasis_area: str = ""
+    capability_id: str = Field(..., min_length=1, description="Unique capability ID")
+    label: str = Field(..., min_length=1, description="Capability label")
+    description: str = Field(..., min_length=10, description="Detailed description")
+    evidence_anchors: list[str] = Field(default_factory=list, description="Evidence references")
+    layer: str = Field("", description="Architecture layer")
+    emphasis_area: str = Field("", description="Related emphasis area")
+
+    @field_validator("description")
+    @classmethod
+    def validate_description(cls, v):
+        if len(v.strip()) < 10:
+            raise ValueError("description must be at least 10 characters")
+        return v.strip()
 
 
-@dataclass(frozen=True)
-class BriefSection:
+class BriefSection(BaseModel):
     """One section of an executive brief."""
 
-    section_id: str
-    heading: str
-    body: str
-    is_deterministic: bool = True
-    evidence_anchors: tuple[str, ...] = field(default_factory=tuple)
-    why_this_matters: str = ""
-    word_count: int = 0
+    section_id: str = Field(..., min_length=1, description="Unique section ID")
+    heading: str = Field(..., min_length=1, description="Section heading")
+    body: str = Field(..., min_length=50, description="Section body content")
+    is_deterministic: bool = Field(True, description="Whether content is deterministic")
+    evidence_anchors: list[str] = Field(default_factory=list, description="Evidence references")
+    why_this_matters: str = Field("", description="Business significance")
+    word_count: int = Field(0, ge=0, description="Word count")
+
+    @field_validator("body")
+    @classmethod
+    def validate_body(cls, v):
+        if len(v.strip()) < 50:
+            raise ValueError("body must be at least 50 characters")
+        return v.strip()
 
 
-@dataclass
-class ExecBriefRequest:
+class ExecBriefConfig(BaseModel):
+    """Executive brief generation configuration."""
+
+    min_quality_score: float = Field(0.7, ge=0, le=1, description="Minimum quality threshold")
+    max_sections: int = Field(8, ge=1, le=20, description="Maximum sections")
+    min_evidence_anchors: int = Field(2, ge=0, description="Minimum evidence per section")
+    require_board_ready: bool = Field(False, description="Require board-ready quality")
+    enforce_tone_consistency: bool = Field(True, description="Enforce tone consistency")
+
+
+class ExecBriefRequest(BaseModel):
     """Input contract for a single executive brief generation run."""
 
-    audience: AudiencePersona = AudiencePersona.RECRUITER
-    source_dirs: list[str] = field(default_factory=lambda: ["docs/architecture"])
-    emphasis_areas: list[EmphasisArea] = field(default_factory=list)
-    tone: BriefTone = BriefTone.TECHNICAL
-    industry: str = ""
-    dry_run: bool = False
-    trace_id: str = ""
-    extra: dict[str, Any] = field(default_factory=dict)
+    audience: AudiencePersona = Field("recruiter", description="Target audience")
+    source_dirs: list[str] = Field(default_factory=lambda: ["docs/architecture"], description="Source directories")
+    emphasis_areas: list[EmphasisArea] = Field(default_factory=list, description="Areas to emphasize")
+    tone: BriefTone = Field("technical", description="Brief tone")
+    industry: str = Field("", description="Industry sector")
+    config: ExecBriefConfig = Field(default_factory=ExecBriefConfig, description="Brief configuration")
+    dry_run: bool = Field(False, description="Dry run mode")
+    trace_id: str = Field("", description="Trace identifier")
 
 
-@dataclass
-class ExecBriefResult:
+class ExecBriefResult(BaseModel):
     """Output contract for a single executive brief generation run."""
 
-    trace_id: str = ""
-    audience: str = ""
-    tone: str = ""
-    status: BriefStatus = BriefStatus.PENDING
-    sections: list[BriefSection] = field(default_factory=list)
-    capabilities_extracted: list[CapabilityEvidence] = field(default_factory=list)
-    quality_score: float = 0.0
-    gate_violations: list[str] = field(default_factory=list)
-    artifact_paths: list[str] = field(default_factory=list)
-    provenance: dict[str, Any] = field(default_factory=dict)
-    run_summary_path: str = ""
-    error: str = ""
+    trace_id: str = Field("", description="Trace identifier")
+    audience: str = Field("", description="Target audience")
+    tone: str = Field("", description="Brief tone")
+    status: BriefStatus = Field("pending", description="Generation status")
+    sections: list[BriefSection] = Field(default_factory=list, description="Generated sections")
+    capabilities_extracted: list[CapabilityEvidence] = Field(default_factory=list, description="Extracted capabilities")
+    quality_score: float = Field(0.0, ge=0, le=1, description="Overall quality score")
+    gate_violations: list[str] = Field(default_factory=list, description="Gate violations")
+    artifact_paths: list[str] = Field(default_factory=list, description="Output artifact paths")
+    provenance: dict = Field(default_factory=dict, description="Provenance metadata")
+    run_summary_path: str = Field("", description="Summary output path")
+    error: str = Field("", description="Error message")
 
     @property
     def passed_gate(self) -> bool:
-        return len(self.gate_violations) == 0 and self.status == BriefStatus.COMPLETE
+        """Check if brief passed all gates."""
+        return len(self.gate_violations) == 0 and self.status in ("complete", "dry_run")
+
+    @field_validator("quality_score")
+    @classmethod
+    def validate_quality(cls, v):
+        if not 0 <= v <= 1:
+            raise ValueError("quality_score must be between 0.0 and 1.0")
+        return v
 
 
-@dataclass(frozen=True)
-class StyleViolation:
+class StyleViolation(BaseModel):
     """A single style gate violation."""
 
-    rule_id: str
-    severity: str
-    message: str
-    section_id: str = ""
-    evidence: str = ""
+    rule_id: str = Field(..., min_length=1, description="Rule identifier")
+    severity: str = Field(..., description="Violation severity")
+    message: str = Field(..., min_length=5, description="Violation message")
+    section_id: str = Field("", description="Related section ID")
+    evidence: str = Field("", description="Supporting evidence")
 
 
-@dataclass
-class RunSummary:
-    """Top-level run summary artifact emitted at end of every run."""
+class RunSummary(BaseModel):
+    """Top-level run summary artifact."""
 
-    trace_id: str = ""
-    app: str = "apps_exec"
-    version: str = "1.0.0"
-    status: str = "pending"
-    audience: str = ""
-    tone: str = ""
-    sections_generated: int = 0
-    capabilities_extracted: int = 0
-    quality_score: float = 0.0
-    gate_violations: list[str] = field(default_factory=list)
-    artifacts: list[str] = field(default_factory=list)
-    dry_run: bool = False
-    error: str = ""
-    provenance: dict[str, Any] = field(default_factory=dict)
+    trace_id: str = Field("", description="Trace identifier")
+    app: str = Field("apps_exec", description="Application name")
+    version: str = Field("1.0.0", description="Version")
+    status: str = Field("pending", description="Run status")
+    audience: str = Field("", description="Target audience")
+    tone: str = Field("", description="Brief tone")
+    sections_generated: int = Field(0, ge=0, description="Sections generated")
+    capabilities_extracted: int = Field(0, ge=0, description="Capabilities extracted")
+    quality_score: float = Field(0.0, ge=0, le=1, description="Overall quality score")
+    gate_violations: list[str] = Field(default_factory=list, description="Gate violations")
+    artifacts: list[str] = Field(default_factory=list, description="Generated artifacts")
+    dry_run: bool = Field(False, description="Dry run mode")
+    error: str = Field("", description="Error message")
+    provenance: dict = Field(default_factory=dict, description="Provenance metadata")
 
-    def to_dict(self) -> dict[str, Any]:
-        return {
-            "trace_id": self.trace_id,
-            "app": self.app,
-            "version": self.version,
-            "status": self.status,
-            "audience": self.audience,
-            "tone": self.tone,
-            "sections_generated": self.sections_generated,
-            "capabilities_extracted": self.capabilities_extracted,
-            "quality_score": self.quality_score,
-            "gate_violations": self.gate_violations,
-            "artifacts": self.artifacts,
-            "dry_run": self.dry_run,
-            "error": self.error,
-            "provenance": self.provenance,
+    def to_dict(self) -> dict:
+        """Export as dictionary."""
+        return self.model_dump()
+
+    class Config:
+        json_schema_extra = {
+            "example": {
+                "trace_id": "EXEC-2024-001",
+                "app": "apps_exec",
+                "version": "1.0.0",
+                "status": "complete",
+                "audience": "board",
+                "tone": "board-ready",
+                "sections_generated": 6,
+                "capabilities_extracted": 12,
+                "quality_score": 0.85,
+            }
         }

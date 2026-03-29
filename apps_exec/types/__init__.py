@@ -2,26 +2,28 @@
 
 from apps_exec.types.exec_types import (
     AudiencePersona,
-    BriefTone,
-    EmphasisArea,
-    BriefStatus,
-    CapabilityEvidence,
     BriefSection,
+    BriefStatus,
+    BriefTone,
+    CapabilityEvidence,
+    EmphasisArea,
+    ExecBriefConfig,
     ExecBriefRequest,
     ExecBriefResult,
-    StyleViolation,
     RunSummary,
+    StyleViolation,
 )
 
 __all__ = [
     "AudiencePersona",
-    "BriefTone",
-    "EmphasisArea",
-    "BriefStatus",
-    "CapabilityEvidence",
     "BriefSection",
+    "BriefStatus",
+    "BriefTone",
+    "CapabilityEvidence",
+    "EmphasisArea",
+    "ExecBriefConfig",
     "ExecBriefRequest",
     "ExecBriefResult",
-    "StyleViolation",
     "RunSummary",
+    "StyleViolation",
 ]
