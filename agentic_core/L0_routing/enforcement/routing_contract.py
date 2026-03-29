@@ -565,7 +565,7 @@ def create_and_commit_routing_contract(
             routing_contract_id,
             optimization.routing_optimization_id,
         )
-    except Exception as _optimization_exc:  # guardian: allow-silent-swallow -- optimization failure non-blocking
+    except (RuntimeError, OSError, ValueError) as _optimization_exc:  # guardian: allow-silent-swallow -- optimization failure non-blocking
         _LOG.warning("ROUTING_OPTIMIZATION_ERROR: %s", _optimization_exc)
         # Continue - optimization failure should not block contract creation
 
