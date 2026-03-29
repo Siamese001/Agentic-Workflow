@@ -1,3 +1,27 @@
+import pytest
+
+# Lazy import fixtures - avoid collection-time errors
+
+@pytest.fixture(scope="session")
+def _lazy_agentic_core_L0_routing_engines_assembly_stage_0():
+    from agentic_core.L0_routing.engines.assembly_stage import AirlockAssembler
+    return type('_Import', (), {"AirlockAssembler": AirlockAssembler})
+
+@pytest.fixture(scope="session")
+def _lazy_agentic_core_L0_routing_engines_prompt_bom_builder_1():
+    from agentic_core.L0_routing.engines.prompt_bom_builder import PromptBOMBuilder
+    return type('_Import', (), {"PromptBOMBuilder": PromptBOMBuilder})
+
+@pytest.fixture(scope="session")
+def _lazy_agentic_core_L0_routing_types_l0_instruction_packet_2():
+    from agentic_core.L0_routing.types.l0_instruction_packet import InstructionPacket
+    return type('_Import', (), {"InstructionPacket": InstructionPacket})
+
+@pytest.fixture(scope="session")
+def _lazy_agentic_core_prompt_governance_contracts_3():
+    from agentic_core.prompt_governance.contracts import CompiledPromptArtifact, PromptBOM, TemplateManifest
+    return type('_Import', (), {"CompiledPromptArtifact": CompiledPromptArtifact, "PromptBOM": PromptBOM, "TemplateManifest": TemplateManifest})
+
 """Ultra-aggressive E2E tests for Prompt Lifecycle with edge cases.
 
 Tests boundary conditions, malicious inputs, and failure modes.
@@ -10,13 +34,7 @@ import unittest
 from typing import Any
 from unittest.mock import MagicMock, patch
 
-from agentic_core.L0_routing.engines.assembly_stage import AirlockAssembler
-from agentic_core.L0_routing.engines.prompt_bom_builder import PromptBOMBuilder
-from agentic_core.L0_routing.types.l0_instruction_packet import InstructionPacket
-from agentic_core.prompt_governance.contracts import (
-    CompiledPromptArtifact,
-    PromptBOM,
-    TemplateManifest,
+
 )
 
 

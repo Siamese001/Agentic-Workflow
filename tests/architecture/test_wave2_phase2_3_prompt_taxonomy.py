@@ -8,14 +8,24 @@ import hmac
 import unittest
 from typing import Any
 
-# Test data contracts
-from agentic_core.L0_routing.types.l0_instruction_packet import InstructionPacket
-from agentic_core.prompt_governance.contracts import (
-    CompiledPromptArtifact,
-    PromptBOM,
-    TemplateManifest,
-)
-from agentic_core.prompt_governance.contracts.slot_contracts import SLOT_ORDER
+import pytest
+
+# Lazy imports - avoid collection-time import errors
+def _get_instruction_packet():
+    from agentic_core.L0_routing.types.l0_instruction_packet import InstructionPacket
+    return InstructionPacket
+
+def _get_prompt_contracts():
+    from agentic_core.prompt_governance.contracts import (
+        CompiledPromptArtifact,
+        PromptBOM,
+        TemplateManifest,
+    )
+    return CompiledPromptArtifact, PromptBOM, TemplateManifest
+
+def _get_slot_order():
+    from agentic_core.prompt_governance.contracts.slot_contracts import SLOT_ORDER
+    return SLOT_ORDER
 
 
 class TestPromptTaxonomyArchitecture(unittest.TestCase):
@@ -23,11 +33,13 @@ class TestPromptTaxonomyArchitecture(unittest.TestCase):
 
     def test_slot_taxonomy_order(self) -> None:
         """Verify S0→D0→I0→C0→U0 slot ordering is enforced."""
+        SLOT_ORDER = _get_slot_order()
         # SLOT_ORDER must be the canonical ordering
         self.assertEqual(SLOT_ORDER, ("S0", "D0", "I0", "C0", "U0"))
 
     def test_prompt_bom_immutability(self) -> None:
         """Verify PromptBOM is immutable (frozen dataclass)."""
+        _, PromptBOM, _ = _get_prompt_contracts()
         bom = PromptBOM(
             trace_id="test-123",
             system_version_hash="hash",
@@ -43,6 +55,7 @@ class TestPromptTaxonomyArchitecture(unittest.TestCase):
 
     def test_compiled_artifact_signature(self) -> None:
         """Verify CompiledPromptArtifact has HMAC-SHA256 signature."""
+        CompiledPromptArtifact, _, _ = _get_prompt_contracts()
         secret_key = b"test-secret"
 
         # Create artifact

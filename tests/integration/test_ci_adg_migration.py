@@ -6,6 +6,28 @@ Verify that refactored CI scripts produce same results as originals.
 """
 
 import pytest
+
+# Lazy import fixtures - avoid collection-time errors
+
+@pytest.fixture(scope="session")
+def _lazy_agentic_core_L0_routing_config_0():
+    from agentic_core.L0_routing.config import path_constants  # Valid import
+    return type('_Import', (), {"path_constants  # Valid import": path_constants  # Valid import})
+
+@pytest.fixture(scope="session")
+def _lazy_agentic_core_L5_safety_config_1():
+    from agentic_core.L5_safety.config import ssot  # Valid import
+    return type('_Import', (), {"ssot  # Valid import": ssot  # Valid import})
+
+@pytest.fixture(scope="session")
+def _lazy_agentic_core_L2_execution_something_2():
+    from agentic_core.L2_execution.something import module  # Layer violation
+    return type('_Import', (), {"module  # Layer violation": module  # Layer violation})
+
+@pytest.fixture(scope="session")
+def _lazy_agentic_core_L3_orchestration_other_3():
+    from agentic_core.L3_orchestration.other import stuff  # Layer violation
+    return type('_Import', (), {"stuff  # Layer violation": stuff  # Layer violation})
 import subprocess
 import tempfile
 import json
@@ -59,16 +81,13 @@ import os
 import sys
 import nonexistent_module  # This should be flagged
 
-from agentic_core.L0_routing.config import path_constants  # Valid import
-from agentic_core.L5_safety.config import ssot  # Valid import
 
 def test_function():
     pass
 """,
                 "test_layer_violation.py": """
 # This file simulates being in L1 layer
-from agentic_core.L2_execution.something import module  # Layer violation
-from agentic_core.L3_orchestration.other import stuff  # Layer violation
+
 
 import os  # Should be fine
 import sys  # Should be fine

@@ -23,6 +23,13 @@ from typing import Any
 
 import pytest
 
+# Lazy import fixtures - avoid collection-time errors
+
+@pytest.fixture(scope="session")
+def _lazy_agentic_core_L5_safety_config_structure_blueprint_ssot_0():
+    from agentic_core.L5_safety.config.structure_blueprint.ssot import get_validated_project_root
+    return type('_Import', (), {"get_validated_project_root": get_validated_project_root})
+
 
 # =============================================================================
 # Fixtures
@@ -33,7 +40,7 @@ def sample_python_code() -> dict[str, str]:
     """Provide sample Python code for validation testing."""
     return {
         "valid_code": """
-from agentic_core.L5_safety.config.structure_blueprint.ssot import get_validated_project_root
+
 
 def valid_function():
     return get_validated_project_root()

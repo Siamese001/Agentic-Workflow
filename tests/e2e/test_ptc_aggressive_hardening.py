@@ -14,40 +14,80 @@ from typing import Any
 
 import pytest
 
+# Lazy import fixtures - avoid collection-time errors
+
+@pytest.fixture(scope="session")
+def _lazy_agentic_core_L2_execution_enforcement_key_source_0():
+    from agentic_core.L2_execution.enforcement.key_source import TestKeySource, inject_key_source
+    return type('_Import', (), {"TestKeySource": TestKeySource, "inject_key_source": inject_key_source})
+
+@pytest.fixture(scope="session")
+def _lazy_agentic_core_L2_execution_tools_ptc_contract_1():
+    from agentic_core.L2_execution.tools.ptc_contract import PTC_STDOUT_BYTE_CAP, PTCBytesCapExceeded, PTCContractEnforcer, PTCContractViolation, redact_output
+    return type('_Import', (), {"PTC_STDOUT_BYTE_CAP": PTC_STDOUT_BYTE_CAP, "PTCBytesCapExceeded": PTCBytesCapExceeded, "PTCContractEnforcer": PTCContractEnforcer, "PTCContractViolation": PTCContractViolation, "redact_output": redact_output})
+
+@pytest.fixture(scope="session")
+def _lazy_agentic_core_L2_execution_types_sandbox_envelope_types_2():
+    from agentic_core.L2_execution.types.sandbox_envelope_types import SandboxEnvelope, ToolBudget
+    return type('_Import', (), {"SandboxEnvelope": SandboxEnvelope, "ToolBudget": ToolBudget})
+
+@pytest.fixture(scope="session")
+def _lazy_agentic_core_L3_orchestration_ptc_ptc_hitl_integration_3():
+    from agentic_core.L3_orchestration.ptc.ptc_hitl_integration import PTCHITLIntegration, PTCScriptRiskLevel
+    return type('_Import', (), {"PTCHITLIntegration": PTCHITLIntegration, "PTCScriptRiskLevel": PTCScriptRiskLevel})
+
+@pytest.fixture(scope="session")
+def _lazy_agentic_core_L3_orchestration_ptc_ptc_registry_4():
+    from agentic_core.L3_orchestration.ptc.ptc_registry import ToolRegistry
+    return type('_Import', (), {"ToolRegistry": ToolRegistry})
+
+@pytest.fixture(scope="session")
+def _lazy_agentic_core_L3_orchestration_ptc_ptc_safety_gates_5():
+    from agentic_core.L3_orchestration.ptc.ptc_safety_gates import PTCSafetyGateManager
+    return type('_Import', (), {"PTCSafetyGateManager": PTCSafetyGateManager})
+
+@pytest.fixture(scope="session")
+def _lazy_agentic_core_L3_orchestration_ptc_tool_contract_6():
+    from agentic_core.L3_orchestration.ptc.tool_contract import ToolArg, ToolSpec, canonical_json
+    return type('_Import', (), {"ToolArg": ToolArg, "ToolSpec": ToolSpec, "canonical_json": canonical_json})
+
+@pytest.fixture(scope="session")
+def _lazy_agentic_core_L3_orchestration_ptc_tool_contract_7():
+    from agentic_core.L3_orchestration.ptc.tool_contract import ToolCall as PTCToolCall
+    return type('_Import', (), {"ToolCall as PTCToolCall": ToolCall as PTCToolCall})
+
+@pytest.fixture(scope="session")
+def _lazy_agentic_core_L3_orchestration_ptc_tool_invoker_8():
+    from agentic_core.L3_orchestration.ptc.tool_invoker import ToolInvoker
+    return type('_Import', (), {"ToolInvoker": ToolInvoker})
+
+@pytest.fixture(scope="session")
+def _lazy_agentic_core_L_CONTRACTS_lifecycle_trace_contract_9():
+    from agentic_core.L_CONTRACTS.lifecycle_trace_contract import LayerSegment
+    return type('_Import', (), {"LayerSegment": LayerSegment})
+
+@pytest.fixture(scope="session")
+def _lazy_agentic_core_L_CONTRACTS_lifecycle_trace_contract_10():
+    from agentic_core.L_CONTRACTS.lifecycle_trace_contract import _emit_records_execution_trace, _emit_records_tool_invocation, emit_determinism_digest, emit_replay_key
+    return type('_Import', (), {"_emit_records_execution_trace": _emit_records_execution_trace, "_emit_records_tool_invocation": _emit_records_tool_invocation, "emit_determinism_digest": emit_determinism_digest, "emit_replay_key": emit_replay_key})
+
 # PTC Core imports
-from agentic_core.L2_execution.enforcement.key_source import (
-    TestKeySource,
-    inject_key_source,
+
 )
-from agentic_core.L2_execution.tools.ptc_contract import (
-    PTC_STDOUT_BYTE_CAP,
-    PTCBytesCapExceeded,
-    PTCContractEnforcer,
-    PTCContractViolation,
-    redact_output,
+
 )
-from agentic_core.L2_execution.types.sandbox_envelope_types import (
-    SandboxEnvelope,
-    ToolBudget,
+
 )
-from agentic_core.L3_orchestration.ptc.ptc_hitl_integration import (
-    PTCHITLIntegration,
-    PTCScriptRiskLevel,
+
 )
-from agentic_core.L3_orchestration.ptc.ptc_registry import ToolRegistry
-from agentic_core.L3_orchestration.ptc.ptc_safety_gates import (
-    PTCSafetyGateManager,
+
+
 )
-from agentic_core.L3_orchestration.ptc.tool_contract import (
-    ToolArg,
-    ToolSpec,
-    canonical_json,
+
 )
-from agentic_core.L3_orchestration.ptc.tool_contract import (
-    ToolCall as PTCToolCall,
+
 )
-from agentic_core.L3_orchestration.ptc.tool_invoker import ToolInvoker
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import LayerSegment
+
 
 # =============================================================================
 # Fixtures
@@ -734,11 +774,7 @@ class TestPTCSafetyGateTorture:
 # Lifecycle Trace Contract Compliance
 # =============================================================================
 
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-    _emit_records_execution_trace,
-    _emit_records_tool_invocation,
-    emit_determinism_digest,
-    emit_replay_key,
+
 )
 
 emit_replay_key("p0", "test_ptc_aggressive")

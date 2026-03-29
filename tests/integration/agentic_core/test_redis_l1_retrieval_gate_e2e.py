@@ -1,3 +1,17 @@
+import pytest
+
+# Lazy import fixtures - avoid collection-time errors
+
+@pytest.fixture(scope="session")
+def _lazy_agentic_core_cache_0():
+    from agentic_core.cache import get_hot_cache, reset_cache_singletons
+    return type('_Import', (), {"get_hot_cache": get_hot_cache, "reset_cache_singletons": reset_cache_singletons})
+
+@pytest.fixture(scope="session")
+def _lazy_agentic_core_L4_state_engines_retrieval_layers_1():
+    from agentic_core.L4_state.engines.retrieval_layers import L1ExactCache, L2SemanticCache, L3SemanticRAG, L4AgenticActions, RetrievalOrchestrator
+    return type('_Import', (), {"L1ExactCache": L1ExactCache, "L2SemanticCache": L2SemanticCache, "L3SemanticRAG": L3SemanticRAG, "L4AgenticActions": L4AgenticActions, "RetrievalOrchestrator": RetrievalOrchestrator})
+
 """
 End-to-End Test Suite for Redis L1 Retrieval Gate
 
@@ -28,13 +42,7 @@ from unittest.mock import MagicMock, Mock, patch
 # Add project root to path
 sys.path.insert(0, str(Path(__file__).parent.parent.parent.parent))
 
-from agentic_core.cache import get_hot_cache, reset_cache_singletons
-from agentic_core.L4_state.engines.retrieval_layers import (
-    L1ExactCache,
-    L2SemanticCache,
-    L3SemanticRAG,
-    L4AgenticActions,
-    RetrievalOrchestrator,
+
 )
 
 

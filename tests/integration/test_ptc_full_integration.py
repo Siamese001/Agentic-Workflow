@@ -18,115 +18,112 @@ from unittest.mock import MagicMock
 
 import pytest
 
+# Lazy import fixtures - avoid collection-time errors
+
+@pytest.fixture(scope="session")
+def _lazy_agentic_core_L2_execution_tools_ptc_contract_0():
+    from agentic_core.L2_execution.tools.ptc_contract import PTCBytesCapExceeded, PTCContractEnforcer, PTCContractViolation, PTCUnsignedEnvelopeError, PTC_STDOUT_BYTE_CAP, redact_output
+    return type('_Import', (), {"PTCBytesCapExceeded": PTCBytesCapExceeded, "PTCContractEnforcer": PTCContractEnforcer, "PTCContractViolation": PTCContractViolation, "PTCUnsignedEnvelopeError": PTCUnsignedEnvelopeError, "PTC_STDOUT_BYTE_CAP": PTC_STDOUT_BYTE_CAP, "redact_output": redact_output})
+
+@pytest.fixture(scope="session")
+def _lazy_agentic_core_L2_execution_types_ptc_tool_contracts_types_1():
+    from agentic_core.L2_execution.types.ptc_tool_contracts_types import ToolCall, ToolResult, ToolContractViolation
+    return type('_Import', (), {"ToolCall": ToolCall, "ToolResult": ToolResult, "ToolContractViolation": ToolContractViolation})
+
+@pytest.fixture(scope="session")
+def _lazy_agentic_core_L2_execution_types_sandbox_envelope_types_2():
+    from agentic_core.L2_execution.types.sandbox_envelope_types import SandboxEnvelope
+    return type('_Import', (), {"SandboxEnvelope": SandboxEnvelope})
+
+@pytest.fixture(scope="session")
+def _lazy_agentic_core_L3_orchestration_ptc_tool_contract_3():
+    from agentic_core.L3_orchestration.ptc.tool_contract import ToolArg, ToolCall as PTCToolCall, ToolCallResult, ToolSpec, canonical_json, generate_call_id, hash_result_data
+    return type('_Import', (), {"ToolArg": ToolArg, "ToolCall as PTCToolCall": ToolCall as PTCToolCall, "ToolCallResult": ToolCallResult, "ToolSpec": ToolSpec, "canonical_json": canonical_json, "generate_call_id": generate_call_id, "hash_result_data": hash_result_data})
+
+@pytest.fixture(scope="session")
+def _lazy_agentic_core_L3_orchestration_ptc_ptc_registry_4():
+    from agentic_core.L3_orchestration.ptc.ptc_registry import ToolRegistry, get_global_registry, register_tool
+    return type('_Import', (), {"ToolRegistry": ToolRegistry, "get_global_registry": get_global_registry, "register_tool": register_tool})
+
+@pytest.fixture(scope="session")
+def _lazy_agentic_core_L3_orchestration_ptc_tool_invoker_5():
+    from agentic_core.L3_orchestration.ptc.tool_invoker import ToolInvoker
+    return type('_Import', (), {"ToolInvoker": ToolInvoker})
+
+@pytest.fixture(scope="session")
+def _lazy_agentic_core_L3_orchestration_ptc_tool_call_store_6():
+    from agentic_core.L3_orchestration.ptc.tool_call_store import ToolCallStore, get_tool_call_store, record_tool_call
+    return type('_Import', (), {"ToolCallStore": ToolCallStore, "get_tool_call_store": get_tool_call_store, "record_tool_call": record_tool_call})
+
+@pytest.fixture(scope="session")
+def _lazy_agentic_core_L3_orchestration_ptc_builtin_tools_7():
+    from agentic_core.L3_orchestration.ptc.builtin_tools import repo_rg_handler, expr_eval_handler
+    return type('_Import', (), {"repo_rg_handler": repo_rg_handler, "expr_eval_handler": expr_eval_handler})
+
+@pytest.fixture(scope="session")
+def _lazy_agentic_core_L3_orchestration_ptc_ptc_orchestrator_8():
+    from agentic_core.L3_orchestration.ptc.ptc_orchestrator import PTCOrchestrator, PTCScriptPlan, PTCExecutionResult, PTCSandboxContext, PTCSandboxExecutor, parse_ptc_script, execute_ptc_batch, execute_in_ptc_sandbox, get_ptc_orchestrator, get_ptc_sandbox, reset_ptc_orchestrator, reset_ptc_sandbox
+    return type('_Import', (), {"PTCOrchestrator": PTCOrchestrator, "PTCScriptPlan": PTCScriptPlan, "PTCExecutionResult": PTCExecutionResult, "PTCSandboxContext": PTCSandboxContext, "PTCSandboxExecutor": PTCSandboxExecutor, "parse_ptc_script": parse_ptc_script, "execute_ptc_batch": execute_ptc_batch, "execute_in_ptc_sandbox": execute_in_ptc_sandbox, "get_ptc_orchestrator": get_ptc_orchestrator, "get_ptc_sandbox": get_ptc_sandbox, "reset_ptc_orchestrator": reset_ptc_orchestrator, "reset_ptc_sandbox": reset_ptc_sandbox})
+
+@pytest.fixture(scope="session")
+def _lazy_agentic_core_L3_orchestration_ptc_ptc_hitl_integration_9():
+    from agentic_core.L3_orchestration.ptc.ptc_hitl_integration import PTCHITLIntegration, PTCScriptRiskLevel, PTCSafetyGateResult, PTCHumanDecision, PTCSafetyAssessment, PTCHumanReviewRecord, assess_ptc_script_safety, request_ptc_human_review, perform_ptc_l5_reclear, generate_ptc_dpo_pair, get_ptc_hitl_integration, reset_ptc_hitl_integration
+    return type('_Import', (), {"PTCHITLIntegration": PTCHITLIntegration, "PTCScriptRiskLevel": PTCScriptRiskLevel, "PTCSafetyGateResult": PTCSafetyGateResult, "PTCHumanDecision": PTCHumanDecision, "PTCSafetyAssessment": PTCSafetyAssessment, "PTCHumanReviewRecord": PTCHumanReviewRecord, "assess_ptc_script_safety": assess_ptc_script_safety, "request_ptc_human_review": request_ptc_human_review, "perform_ptc_l5_reclear": perform_ptc_l5_reclear, "generate_ptc_dpo_pair": generate_ptc_dpo_pair, "get_ptc_hitl_integration": get_ptc_hitl_integration, "reset_ptc_hitl_integration": reset_ptc_hitl_integration})
+
+@pytest.fixture(scope="session")
+def _lazy_agentic_core_L3_orchestration_ptc_ptc_safety_gates_10():
+    from agentic_core.L3_orchestration.ptc.ptc_safety_gates import PTCSafetyGateType, PTCSafetyGateStatus, PTCSafetyGateResult, PTCSafetyGateViolation, PTCConfidenceGate, PTCRoutingGate, PTCExecutionGate, PTCValidationGate, PTCSafetyGateManager, get_ptc_safety_gate_manager, reset_ptc_safety_gate_manager, evaluate_ptc_safety_gates, check_ptc_safety_passed
+    return type('_Import', (), {"PTCSafetyGateType": PTCSafetyGateType, "PTCSafetyGateStatus": PTCSafetyGateStatus, "PTCSafetyGateResult": PTCSafetyGateResult, "PTCSafetyGateViolation": PTCSafetyGateViolation, "PTCConfidenceGate": PTCConfidenceGate, "PTCRoutingGate": PTCRoutingGate, "PTCExecutionGate": PTCExecutionGate, "PTCValidationGate": PTCValidationGate, "PTCSafetyGateManager": PTCSafetyGateManager, "get_ptc_safety_gate_manager": get_ptc_safety_gate_manager, "reset_ptc_safety_gate_manager": reset_ptc_safety_gate_manager, "evaluate_ptc_safety_gates": evaluate_ptc_safety_gates, "check_ptc_safety_passed": check_ptc_safety_passed})
+
+@pytest.fixture(scope="session")
+def _lazy_agentic_core_L3_orchestration_types_human_decision_artifact_types_11():
+    from agentic_core.L3_orchestration.types.human_decision_artifact_types import HumanAction, create_approval_artifact, create_human_review_draft, create_rejection_artifact
+    return type('_Import', (), {"HumanAction": HumanAction, "create_approval_artifact": create_approval_artifact, "create_human_review_draft": create_human_review_draft, "create_rejection_artifact": create_rejection_artifact})
+
+@pytest.fixture(scope="session")
+def _lazy_agentic_core_L5_safety_hitl_hitl_escalation_activator_12():
+    from agentic_core.L5_safety.hitl.hitl_escalation_activator import EscalationPriority, EscalationRequest, HITLEscalationActivator, get_hitl_escalation_activator, reset_hitl_escalation_activator
+    return type('_Import', (), {"EscalationPriority": EscalationPriority, "EscalationRequest": EscalationRequest, "HITLEscalationActivator": HITLEscalationActivator, "get_hitl_escalation_activator": get_hitl_escalation_activator, "reset_hitl_escalation_activator": reset_hitl_escalation_activator})
+
+@pytest.fixture(scope="session")
+def _lazy_agentic_core_L_CONTRACTS_lifecycle_trace_contract_13():
+    from agentic_core.L_CONTRACTS.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace, _emit_records_tool_invocation, emit_determinism_digest, emit_replay_key
+    return type('_Import', (), {"LayerSegment": LayerSegment, "_emit_records_execution_trace": _emit_records_execution_trace, "_emit_records_tool_invocation": _emit_records_tool_invocation, "emit_determinism_digest": emit_determinism_digest, "emit_replay_key": emit_replay_key})
+
 # PTC Core imports
-from agentic_core.L2_execution.tools.ptc_contract import (
-    PTCBytesCapExceeded,
-    PTCContractEnforcer,
-    PTCContractViolation,
-    PTCUnsignedEnvelopeError,
-    PTC_STDOUT_BYTE_CAP,
-    redact_output,
+
 )
-from agentic_core.L2_execution.types.ptc_tool_contracts_types import (
-    ToolCall,
-    ToolResult,
-    ToolContractViolation,
+
 )
-from agentic_core.L2_execution.types.sandbox_envelope_types import SandboxEnvelope
+
 
 # PTC Orchestration imports
-from agentic_core.L3_orchestration.ptc.tool_contract import (
-    ToolArg,
-    ToolCall as PTCToolCall,
-    ToolCallResult,
-    ToolSpec,
-    canonical_json,
-    generate_call_id,
-    hash_result_data,
+
 )
-from agentic_core.L3_orchestration.ptc.ptc_registry import (
-    ToolRegistry,
-    get_global_registry,
-    register_tool,
+
 )
-from agentic_core.L3_orchestration.ptc.tool_invoker import ToolInvoker
-from agentic_core.L3_orchestration.ptc.tool_call_store import (
-    ToolCallStore,
-    get_tool_call_store,
-    record_tool_call,
+
+
 )
-from agentic_core.L3_orchestration.ptc.builtin_tools import (
-    repo_rg_handler,
-    expr_eval_handler,
+
 )
 
 # PTC New Components
-from agentic_core.L3_orchestration.ptc.ptc_orchestrator import (
-    PTCOrchestrator,
-    PTCScriptPlan,
-    PTCExecutionResult,
-    PTCSandboxContext,
-    PTCSandboxExecutor,
-    parse_ptc_script,
-    execute_ptc_batch,
-    execute_in_ptc_sandbox,
-    get_ptc_orchestrator,
-    get_ptc_sandbox,
-    reset_ptc_orchestrator,
-    reset_ptc_sandbox,
+
 )
-from agentic_core.L3_orchestration.ptc.ptc_hitl_integration import (
-    PTCHITLIntegration,
-    PTCScriptRiskLevel,
-    PTCSafetyGateResult,
-    PTCHumanDecision,
-    PTCSafetyAssessment,
-    PTCHumanReviewRecord,
-    assess_ptc_script_safety,
-    request_ptc_human_review,
-    perform_ptc_l5_reclear,
-    generate_ptc_dpo_pair,
-    get_ptc_hitl_integration,
-    reset_ptc_hitl_integration,
+
 )
-from agentic_core.L3_orchestration.ptc.ptc_safety_gates import (
-    PTCSafetyGateType,
-    PTCSafetyGateStatus,
-    PTCSafetyGateResult,
-    PTCSafetyGateViolation,
-    PTCConfidenceGate,
-    PTCRoutingGate,
-    PTCExecutionGate,
-    PTCValidationGate,
-    PTCSafetyGateManager,
-    get_ptc_safety_gate_manager,
-    reset_ptc_safety_gate_manager,
-    evaluate_ptc_safety_gates,
-    check_ptc_safety_passed,
+
 )
 
 # HITL imports
-from agentic_core.L3_orchestration.types.human_decision_artifact_types import (
-    HumanAction,
-    create_approval_artifact,
-    create_human_review_draft,
-    create_rejection_artifact,
+
 )
-from agentic_core.L5_safety.hitl.hitl_escalation_activator import (
-    EscalationPriority,
-    EscalationRequest,
-    HITLEscalationActivator,
-    get_hitl_escalation_activator,
-    reset_hitl_escalation_activator,
+
 )
 
 # Lifecycle trace imports
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-    LayerSegment,
-    _emit_records_execution_trace,
-    _emit_records_tool_invocation,
-    emit_determinism_digest,
-    emit_replay_key,
+
 )
 
 # Constants

@@ -26,48 +26,54 @@ from unittest.mock import MagicMock, Mock, patch
 
 import pytest
 
+# Lazy import fixtures - avoid collection-time errors
+
+@pytest.fixture(scope="session")
+def _lazy_agentic_core_L3_orchestration_engines_graph_aware_indexer_0():
+    from agentic_core.L3_orchestration.engines.graph_aware_indexer import GraphAwareIndexer, ADGEdgeExtractor, ADGEdgeBinding, index_document, get_global_indexer
+    return type('_Import', (), {"GraphAwareIndexer": GraphAwareIndexer, "ADGEdgeExtractor": ADGEdgeExtractor, "ADGEdgeBinding": ADGEdgeBinding, "index_document": index_document, "get_global_indexer": get_global_indexer})
+
+@pytest.fixture(scope="session")
+def _lazy_agentic_core_L4_state_memory_chunk_manifest_registry_1():
+    from agentic_core.L4_state.memory.chunk_manifest_registry import ChunkManifestRegistry, EnrichedChunkManifest
+    return type('_Import', (), {"ChunkManifestRegistry": ChunkManifestRegistry, "EnrichedChunkManifest": EnrichedChunkManifest})
+
+@pytest.fixture(scope="session")
+def _lazy_agentic_core_evaluation_retrieval_l4_registries_2():
+    from agentic_core.evaluation.retrieval.l4_registries import ChunkManifestRegistry as InMemoryChunkRegistry, ParentChildIndexRegistry, ParentChildLink
+    return type('_Import', (), {"ChunkManifestRegistry as InMemoryChunkRegistry": ChunkManifestRegistry as InMemoryChunkRegistry, "ParentChildIndexRegistry": ParentChildIndexRegistry, "ParentChildLink": ParentChildLink})
+
+@pytest.fixture(scope="session")
+def _lazy_agentic_core_L3_orchestration_engines_l4e_retrieval_integration_3():
+    from agentic_core.L3_orchestration.engines.l4e_retrieval_integration import GraphRetrievalEngine, ADGEdgeHydrator, GraphRetrievalContext, RetrievalWithGraphIntegration, search, get_global_engine
+    return type('_Import', (), {"GraphRetrievalEngine": GraphRetrievalEngine, "ADGEdgeHydrator": ADGEdgeHydrator, "GraphRetrievalContext": GraphRetrievalContext, "RetrievalWithGraphIntegration": RetrievalWithGraphIntegration, "search": search, "get_global_engine": get_global_engine})
+
+@pytest.fixture(scope="session")
+def _lazy_agentic_core_L4_state_engines_parent_child_expansion_4():
+    from agentic_core.L4_state.engines.parent_child_expansion import ParentChildExpander, L4ERetrievalIntegrator, ExpansionContext
+    return type('_Import', (), {"ParentChildExpander": ParentChildExpander, "L4ERetrievalIntegrator": L4ERetrievalIntegrator, "ExpansionContext": ExpansionContext})
+
+@pytest.fixture(scope="session")
+def _lazy_agentic_core_L4_state_engines_meta_learning_feedback_5():
+    from agentic_core.L4_state.engines.meta_learning_feedback import CompletenessRAGProposer, EvaluationRunner, CompletenessAnalyzer, FeedbackTrigger, FeedbackProposal, CompletenessChangePackage, get_global_proposer
+    return type('_Import', (), {"CompletenessRAGProposer": CompletenessRAGProposer, "EvaluationRunner": EvaluationRunner, "CompletenessAnalyzer": CompletenessAnalyzer, "FeedbackTrigger": FeedbackTrigger, "FeedbackProposal": FeedbackProposal, "CompletenessChangePackage": CompletenessChangePackage, "get_global_proposer": get_global_proposer})
+
 # Pipeline B imports
-from agentic_core.L3_orchestration.engines.graph_aware_indexer import (
-    GraphAwareIndexer,
-    ADGEdgeExtractor,
-    ADGEdgeBinding,
-    index_document,
-    get_global_indexer,
+
 )
-from agentic_core.L4_state.memory.chunk_manifest_registry import (
-    ChunkManifestRegistry,
-    EnrichedChunkManifest,
+
 )
-from agentic_core.evaluation.retrieval.l4_registries import (
-    ChunkManifestRegistry as InMemoryChunkRegistry,
-    ParentChildIndexRegistry,
-    ParentChildLink,
+
 )
 
 # Pipeline C imports
-from agentic_core.L3_orchestration.engines.l4e_retrieval_integration import (
-    GraphRetrievalEngine,
-    ADGEdgeHydrator,
-    GraphRetrievalContext,
-    RetrievalWithGraphIntegration,
-    search,
-    get_global_engine,
+
 )
-from agentic_core.L4_state.engines.parent_child_expansion import (
-    ParentChildExpander,
-    L4ERetrievalIntegrator,
-    ExpansionContext,
+
 )
 
 # Pipeline D imports
-from agentic_core.L4_state.engines.meta_learning_feedback import (
-    CompletenessRAGProposer,
-    EvaluationRunner,
-    CompletenessAnalyzer,
-    FeedbackTrigger,
-    FeedbackProposal,
-    CompletenessChangePackage,
-    get_global_proposer,
+
 )
 
 

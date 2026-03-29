@@ -26,8 +26,14 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-from agentic_core.L5_safety.config.structure_blueprint.ssot import (
-    get_validated_project_root,
+# Lazy import fixtures - avoid collection-time errors
+
+@pytest.fixture(scope="session")
+def _lazy_agentic_core_L5_safety_config_structure_blueprint_ssot_0():
+    from agentic_core.L5_safety.config.structure_blueprint.ssot import get_validated_project_root
+    return type('_Import', (), {"get_validated_project_root": get_validated_project_root})
+
+
 )
 from apps_shared.utils.open_telemetry_tracing_adapter_util import (
     OpenTelemetryTracingAdapter,

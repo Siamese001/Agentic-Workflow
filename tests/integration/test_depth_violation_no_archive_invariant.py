@@ -13,21 +13,38 @@ from unittest.mock import patch
 
 import pytest
 
-from agentic_core.L0_routing.config.path_constants import (
-    AGENTIC_CORE_DIR,
-    APPS_LIC_DIR,
-    APPS_RG_DIR,
-    APPS_SHARED_DIR,
+# Lazy import fixtures - avoid collection-time errors
+
+@pytest.fixture(scope="session")
+def _lazy_agentic_core_L0_routing_config_path_constants_0():
+    from agentic_core.L0_routing.config.path_constants import AGENTIC_CORE_DIR, APPS_LIC_DIR, APPS_RG_DIR, APPS_SHARED_DIR
+    return type('_Import', (), {"AGENTIC_CORE_DIR": AGENTIC_CORE_DIR, "APPS_LIC_DIR": APPS_LIC_DIR, "APPS_RG_DIR": APPS_RG_DIR, "APPS_SHARED_DIR": APPS_SHARED_DIR})
+
+@pytest.fixture(scope="session")
+def _lazy_agentic_core_L_CONTRACTS_lifecycle_trace_contract_1():
+    from agentic_core.L_CONTRACTS.lifecycle_trace_contract import _emit_records_execution_trace, _emit_applies_guardrail, _emit_reads_policy_state, _emit_snapshots_state
+    return type('_Import', (), {"_emit_records_execution_trace": _emit_records_execution_trace, "_emit_applies_guardrail": _emit_applies_guardrail, "_emit_reads_policy_state": _emit_reads_policy_state, "_emit_snapshots_state": _emit_snapshots_state})
+
+@pytest.fixture(scope="session")
+def _lazy_agentic_core_L5_safety_reasoning_LocationHealerAgent_2():
+    from agentic_core.L5_safety.reasoning.LocationHealerAgent import LocationHealerAgent
+    return type('_Import', (), {"LocationHealerAgent": LocationHealerAgent})
+
+@pytest.fixture(scope="session")
+def _lazy_agentic_core_L5_safety_utils_location_constants_util_3():
+    from agentic_core.L5_safety.utils.location_constants_util import HEALING_STRATEGY_MAP
+    return type('_Import', (), {"HEALING_STRATEGY_MAP": HEALING_STRATEGY_MAP})
+
+@pytest.fixture(scope="session")
+def _lazy_agentic_core_L5_safety_config_structure_blueprint_4():
+    from agentic_core.L5_safety.config.structure_blueprint import get_all_territories
+    return type('_Import', (), {"get_all_territories": get_all_territories})
+
+
 )
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-    _emit_records_execution_trace,
-    _emit_applies_guardrail,
-    _emit_reads_policy_state,
-    _emit_snapshots_state,
+
 )
-from agentic_core.L5_safety.reasoning.LocationHealerAgent import LocationHealerAgent
-from agentic_core.L5_safety.utils.location_constants_util import HEALING_STRATEGY_MAP
-from agentic_core.L5_safety.config.structure_blueprint import get_all_territories
+
 
 _emit_records_execution_trace("p0", "evidence", "test_depth_violation_no_archive_invariant")
 _emit_applies_guardrail("p0", "test_depth_violation_no_archive_invariant", "p0_governance")

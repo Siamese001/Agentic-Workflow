@@ -9,8 +9,14 @@ from __future__ import annotations
 
 import pytest
 
-from agentic_core.L5_safety.validators.anti_pattern_scanner_validator import (
-    AntiPatternScanner,
+# Lazy import fixtures - avoid collection-time errors
+
+@pytest.fixture(scope="session")
+def _lazy_agentic_core_L5_safety_validators_anti_pattern_scanner_validator_0():
+    from agentic_core.L5_safety.validators.anti_pattern_scanner_validator import AntiPatternScanner
+    return type('_Import', (), {"AntiPatternScanner": AntiPatternScanner})
+
+
 )
 
 

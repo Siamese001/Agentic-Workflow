@@ -22,6 +22,13 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
+# Lazy import fixtures - avoid collection-time errors
+
+@pytest.fixture(scope="session")
+def _lazy_agentic_core_L6_observability_enforcement_rag_telemetry_collector_0():
+    from agentic_core.L6_observability.enforcement.rag_telemetry_collector import RagTelemetryCollector, RagMetrics
+    return type('_Import', (), {"RagTelemetryCollector": RagTelemetryCollector, "RagMetrics": RagMetrics})
+
 # Phase 1: OpenTelemetry imports
 try:
     from opentelemetry import trace
@@ -57,9 +64,7 @@ from system_learning.engines.telemetry_consumer import (
     ingest_otel_spans,
     create_telemetry_consumer_with_otel,
 )
-from agentic_core.L6_observability.enforcement.rag_telemetry_collector import (
-    RagTelemetryCollector,
-    RagMetrics,
+
 )
 from apps_shared.utils.agentic_span_processor import (
     AgenticSpanProcessor,

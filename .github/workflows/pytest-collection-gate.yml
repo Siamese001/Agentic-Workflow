@@ -86,7 +86,7 @@ jobs:
 
       - name: Run ADG collection safety check
         run: |
-          python tools/adg_test_accelerator.py collection-safety --json artifacts/adg_collection_safety.json || true
+          python tools/adg/adg_test.py check --json artifacts/adg_collection_safety.json || true
 
       - name: Upload ADG report
         uses: actions/upload-artifact@v4

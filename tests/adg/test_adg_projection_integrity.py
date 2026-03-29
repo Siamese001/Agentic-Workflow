@@ -32,10 +32,13 @@ from pathlib import Path
 
 import pytest
 
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-    _emit_applies_guardrail,
-    _emit_records_execution_trace,
-)
+# Lazy imports - loaded in fixture to avoid collection-time errors
+def _get_lifecycle_emitters():
+    from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        _emit_applies_guardrail,
+        _emit_records_execution_trace,
+    )
+    return _emit_applies_guardrail, _emit_records_execution_trace
 
 # ---------------------------------------------------------------------------
 # Skip if redis is not available
@@ -49,10 +52,17 @@ try:
 except (ValueError, TypeError, RuntimeError) as e:
     _REDIS_OK = False
 
-_emit_applies_guardrail("projection_integrity_test", "test_harness", "L5")
-_emit_records_execution_trace("projection_integrity_test", "L5", "test_collection")
-
 _SKIP_REASON = "Redis not available on localhost:6379"
+
+
+@pytest.fixture(scope="module", autouse=True)
+def _emit_test_lifecycle():
+    """Emit lifecycle events at test module load time."""
+    _emit_applies_guardrail, _emit_records_execution_trace = _get_lifecycle_emitters()
+    _emit_applies_guardrail("projection_integrity_test", "test_harness", "L5")
+    _emit_records_execution_trace("projection_integrity_test", "L5", "test_collection")
+    yield
+
 
 # Fixture SQLite schema (mirrors multi_writer.py DDL)
 _FIXTURE_DDL = """
