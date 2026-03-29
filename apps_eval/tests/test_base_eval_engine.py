@@ -5,7 +5,7 @@ import unittest
 from unittest.mock import MagicMock, patch
 
 from apps_eval.engines.base_eval_engine import BaseEvalEngine
-from apps_eval.types import EvalRequest, EvalResult, EvalStatus
+from apps_eval.types import EvalRequest, EvalResult
 
 
 class MockEvalEngine(BaseEvalEngine):
@@ -23,7 +23,7 @@ class MockEvalEngine(BaseEvalEngine):
         """Execute evaluation - abstract method implementation."""
         return EvalResult(
             trace_id=request.trace_id,
-            status=EvalStatus.COMPLETE,
+            status="complete",
             overall_score=0.95,
         )
 
@@ -41,7 +41,6 @@ class TestBaseEvalEngine(unittest.TestCase):
     def test_engine_initialization(self):
         """Test engine initializes correctly."""
         self.assertIsNotNone(self.engine)
-        # Engine config is loaded during init
 
     def test_engine_run(self):
         """Test engine run method."""
@@ -50,7 +49,7 @@ class TestBaseEvalEngine(unittest.TestCase):
 
         self.assertIsNotNone(result)
         self.assertEqual(result.trace_id, "test-001")
-        self.assertEqual(result.status, EvalStatus.COMPLETE)
+        self.assertEqual(result.status, "complete")
         self.assertEqual(result.overall_score, 0.95)
 
     def test_eval_request_defaults(self):
@@ -62,7 +61,7 @@ class TestBaseEvalEngine(unittest.TestCase):
     def test_eval_result_defaults(self):
         """Test EvalResult with defaults."""
         result = EvalResult()
-        self.assertEqual(result.status, EvalStatus.PENDING)
+        self.assertEqual(result.status, "pending")
         self.assertEqual(result.overall_score, 0.0)
         self.assertEqual(result.gate_violations, [])
 

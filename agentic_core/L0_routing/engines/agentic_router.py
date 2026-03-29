@@ -415,7 +415,7 @@ class AgenticRouter:
 
             except RoutingCapacityError as _rce:
                 pass  # Continue with original routing - capacity failure should not block routing
-            except Exception as _cap_exc:  # guardian: allow-silent-swallow -- capacity routing non-blocking
+            except (ImportError, AttributeError, KeyError, TypeError, ValueError) as _cap_exc:
                 Logger.error(
                     "CAPACITY_ROUTING_ERROR: %s, falling back to original routing",
                     _cap_exc,

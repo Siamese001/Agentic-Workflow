@@ -32,22 +32,22 @@ jobs:
     if: github.event.inputs.accelerator == 'testing-collection-safety' || github.event.inputs.accelerator == 'full-suite' || github.event_name != 'workflow_dispatch'
     steps:
       - uses: actions/checkout@v4
-      
+
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
           python-version: '3.12'
-      
+
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt
           pip install pytest pyyaml
-      
+
       - name: Run collection safety accelerator
         run: |
           python -m tools.adg.accelerators testing collection-safety --json artifacts/adg_collection_safety.json
-      
+
       - name: Upload report
         uses: actions/upload-artifact@v4
         with:
@@ -61,22 +61,22 @@ jobs:
     if: github.event.inputs.accelerator == 'testing-gap-analysis' || github.event.inputs.accelerator == 'full-suite'
     steps:
       - uses: actions/checkout@v4
-      
+
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
           python-version: '3.12'
-      
+
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt
-      
+
       - name: Run gap analysis accelerator
         run: |
           mkdir -p artifacts
           python -m tools.adg.accelerators testing gap --top 50 --json artifacts/adg_gap_analysis.json
-      
+
       - name: Upload report
         uses: actions/upload-artifact@v4
         with:
@@ -92,24 +92,24 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0  # Need full history for diff
-      
+
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
           python-version: '3.12'
-      
+
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt
-      
+
       - name: Get changed files
         id: changed
         run: |
           git diff --name-only HEAD~1 HEAD > changed_files.txt
           echo "Changed files:"
           cat changed_files.txt
-      
+
       - name: Run scope accelerator
         run: |
           # Run scope analysis on each changed Python file
@@ -129,24 +129,24 @@ jobs:
     if: github.event.inputs.accelerator == 'hardening-p0-check' || github.event.inputs.accelerator == 'full-suite'
     steps:
       - uses: actions/checkout@v4
-      
+
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
           python-version: '3.12'
-      
+
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt
-      
+
       - name: Check P0 coverage by layer
         run: |
           for layer in L0 L1 L2 L3 L4 L5 L6; do
             echo "=== Checking P0 coverage for $layer ==="
             python tools/p0_batch_wirer.py --layer $layer --dim evidence --dry-run 2>/dev/null || true
           done
-      
+
       - name: Generate P0 coverage report
         run: |
           mkdir -p artifacts
@@ -158,22 +158,22 @@ jobs:
     if: github.event.inputs.accelerator == 'hardening-p1-check' || github.event.inputs.accelerator == 'full-suite'
     steps:
       - uses: actions/checkout@v4
-      
+
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
           python-version: '3.12'
-      
+
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt
-      
+
       - name: Check P1 coverage
         run: |
           # Dry-run P1 wiring to check coverage
           python tools/p1_batch_wire.py --dry-run 2>/dev/null || echo "P1 check completed"
-      
+
       - name: Generate P1 coverage report
         run: |
           mkdir -p artifacts
@@ -185,17 +185,17 @@ jobs:
     if: github.event.inputs.accelerator == 'hardening-p2-check' || github.event.inputs.accelerator == 'full-suite'
     steps:
       - uses: actions/checkout@v4
-      
+
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
           python-version: '3.12'
-      
+
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt
-      
+
       - name: Check P2 coverage
         run: |
           if [ -f "tools/p2_batch_wire.py" ]; then
@@ -204,7 +204,7 @@ jobs:
             echo "P2 batch wire not found, checking edge coverage via ADG"
             python tools/adg/adg_query_bridge.py --query "SELECT COUNT(*) FROM edges WHERE edge_kind LIKE '%P2%'" 2>/dev/null || true
           fi
-      
+
       - name: Generate P2 coverage report
         run: |
           mkdir -p artifacts
@@ -219,21 +219,21 @@ jobs:
     if: github.event.inputs.accelerator == 'incremental-scan' || github.event.inputs.accelerator == 'full-suite'
     steps:
       - uses: actions/checkout@v4
-      
+
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
           python-version: '3.12'
-      
+
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt
-      
+
       - name: Run incremental scan with cache
         run: |
           python tools/generate_full_adg.py --use-cache
-      
+
       - name: Upload scan artifacts
         uses: actions/upload-artifact@v4
         with:
@@ -251,13 +251,13 @@ jobs:
     needs: [testing-collection-safety, testing-gap-analysis, hardening-p0-check, hardening-p1-check, hardening-p2-check, incremental-scan]
     steps:
       - uses: actions/checkout@v4
-      
+
       - name: Download all artifacts
         uses: actions/download-artifact@v4
         with:
           path: artifacts/
           merge-multiple: true
-      
+
       - name: Generate summary report
         run: |
           echo "# ADG Accelerators Full Suite Report" > artifacts/FULL_SUITE_REPORT.md
@@ -267,7 +267,7 @@ jobs:
           echo "" >> artifacts/FULL_SUITE_REPORT.md
           echo "## Gap Analysis" >> artifacts/FULL_SUITE_REPORT.md
           cat artifacts/adg_gap_analysis.json 2>/dev/null | head -50 >> artifacts/FULL_SUITE_REPORT.md || echo "No gap analysis data" >> artifacts/FULL_SUITE_REPORT.md
-      
+
       - name: Upload full suite report
         uses: actions/upload-artifact@v4
         with:

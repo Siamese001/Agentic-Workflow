@@ -594,6 +594,7 @@ class TestModelBaseClasses:
     def test_prediction_creation(self):
         """Test prediction object creation."""
         from agentic_core.L1_cognition.ml_decision_support.models.base_model import BaseMLModel, PredictionType
+        from agentic_core.L1_cognition.ml_decision_support.config.model_registry import DecisionMode
 
         class MockModel(BaseMLModel):
             def load_model(self):
@@ -655,7 +656,7 @@ class TestDeterminismRequirements:
 
     def test_governance_compliance(self):
         """Test that all components respect governance rules."""
-        from agentic_core.L1_cognition.ml_decision_support.models.route_recommender import L0RouteRecommender
+        from agentic_core.L1_cognition.ml_decision_support.models.l0_route_recommender import L0RouteRecommender
         from agentic_core.L1_cognition.ml_decision_support.config.model_registry import DecisionMode
 
         # Test that models only operate in allowed modes

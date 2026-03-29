@@ -204,6 +204,7 @@ class TestTokenEstimatorPerformance:
 
     def test_compression_performance(self):
         """Test compression performance with large payloads"""
+        from agentic_core.planning.token_estimator import ContextWindowEstimator, ContextSource, TokenEstimate
         estimator = ContextWindowEstimator()
 
         # Create sources that will trigger compression
@@ -335,6 +336,7 @@ class TestTokenEstimatorPerformance:
 
     def test_token_estimation_performance(self):
         """Test raw token estimation performance"""
+        from agentic_core.planning.token_estimator import ContextWindowEstimator
         estimator = ContextWindowEstimator()
 
         # Test different content types and sizes

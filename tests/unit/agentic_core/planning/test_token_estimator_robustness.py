@@ -224,6 +224,7 @@ class TestTokenEstimatorErrorHandling:
 
     def test_malformed_context_sources(self):
         """Test handling of malformed context sources"""
+        from agentic_core.planning.token_estimator import ContextWindowEstimator, ContextSource
         estimator = ContextWindowEstimator()
 
         # Test with None content - ContextSource should handle this gracefully
@@ -245,6 +246,7 @@ class TestTokenEstimatorErrorHandling:
 
     def test_compression_error_handling(self):
         """Test compression error handling"""
+        from agentic_core.planning.token_estimator import ContextWindowEstimator, ContextSource, TokenEstimate
         estimator = ContextWindowEstimator()
 
         # Test compression with malformed sources
@@ -293,6 +295,7 @@ class TestTokenEstimatorErrorHandling:
 
     def test_status_determination_edge_cases(self):
         """Test status determination edge cases"""
+        from agentic_core.planning.token_estimator import ContextWindowEstimator
         estimator = ContextWindowEstimator()
 
         # Test exactly at boundaries
@@ -312,7 +315,7 @@ class TestTokenEstimatorErrorHandling:
 
     def test_decorator_error_handling(self):
         """Test decorator error handling"""
-        from agentic_core.planning.preflight_hook import require_token_budget
+        from agentic_core.planning.preflight_hook import require_token_budget, TokenBudgetExceededError, PlanningPreflightHook
         @require_token_budget(self.hook)
         def test_function(system_prompt, user_prompt, **kwargs):
             return "success"
@@ -451,6 +454,7 @@ class TestTokenEstimatorErrorHandling:
 
     def test_token_estimation_errors(self):
         """Test token estimation error handling"""
+        from agentic_core.planning.token_estimator import ContextWindowEstimator, ContextSource
         estimator = ContextWindowEstimator()
 
         # Test with None content

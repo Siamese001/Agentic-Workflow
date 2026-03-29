@@ -29,7 +29,7 @@ from tools.adg_test_accelerator import (
 __all__ = [
     "ADGIndex",
     "DEFAULT_MAX_DEPTH",
-    "DEFAULT_TOP_N", 
+    "DEFAULT_TOP_N",
     "DEFAULT_WORKERS",
     "MODULE_PREFIX",
     "PROBLEM_FILE_DISPLAY_LIMIT",
