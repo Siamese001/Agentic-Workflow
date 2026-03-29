@@ -276,6 +276,16 @@ repos:
         always_run: true
         require_serial: true
 
+      # -- T10.5: Eager Import Lint — Detect risky module-level imports in tests ----
+      # Blocks test files with eager agentic_core imports that cause collection failures
+      - id: eager-import-lint
+        name: "T10.5: Eager Import Lint — No risky module-scope imports in tests"
+        entry: cmd /c "set PYTHONPATH=.&& python tools/lint_eager_imports.py tests --strict --config config/eager_import_risk.yml"
+        language: system
+        pass_filenames: false
+        always_run: true
+        require_serial: true
+
       # -- T11: MCP Config Sovereignty gate -------------------------------------
       # Validates mcp_config.json: filesystem server present + not disabled,
       # allowedDirectories locked to repo root only, _comment documents sovereign

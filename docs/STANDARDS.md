@@ -103,3 +103,147 @@ diff canonical_tests.txt other_run_tests.txt
 - **Issue**: SWE-1.5 passed individual phases, Opus-4.6 found 48 failures
 - **Root Cause**: Phase-based runs missed 11 directories with `pytest.fail()` calls
 - **Solution**: Canonical runner ensures identical test execution
+
+---
+
+## Test Import Discipline
+
+### The Problem: Collection-Time Import Failures
+
+When pytest collects tests, it imports ALL test files simultaneously in a single Python interpreter. Eager (module-level) imports from heavy internal packages cause:
+
+- **Import conflicts** between test files
+- **Side-effect accumulation** (registry writes, config loading)
+- **Order-sensitive failures** that don't appear in isolated runs
+- **Silent collection errors** that block entire test suites
+
+**Real example:** 262 collection errors found in `tests/unit/agentic_core/` that were invisible when running files individually.
+
+### The Rule: No Side-Effectful Module-Level Imports
+
+**FORBIDDEN in test files:**
+
+```python
+# ❌ FORBIDDEN - Eager imports at module scope
+from agentic_core.L1_cognition.ml_decision_support.config.model_registry import ModelRegistry
+from agentic_core.L4_state.memory.l1_exact_cache import L1ExactCache
+from agentic_core.runtime.lifecycle_trace_contract import ExecutionTrace
+
+# ❌ FORBIDDEN - Module-scope client/registry creation
+registry = ModelRegistry()  # Triggers initialization
+client = L1ExactCache()     # Singleton side effects
+config = load_policy()      # Config hydration at import time
+```
+
+**REQUIRED: Lazy import pattern:**
+
+```python
+# ✅ REQUIRED - Fixture-based lazy imports
+import pytest
+
+@pytest.fixture
+def model_registry():
+    from agentic_core.L1_cognition.ml_decision_support.config.model_registry import ModelRegistry
+    return ModelRegistry()
+
+def test_something(model_registry):
+    registry = model_registry  # Import happens at test runtime, not collection
+    # ... test code
+```
+
+### Risky Import Roots
+
+The following packages require lazy imports in test files:
+
+- `agentic_core` (all subpackages)
+- `apps_exec`, `apps_eval`, `apps_rg`, `apps_lic`, `apps_research`, `apps_rfp`
+- `apps_shared.bootstrap`, `apps_shared.runtime`
+- `system_learning.runtime`
+- `tools.adg`
+
+**Safe imports (no lazy required):**
+- Standard library: `typing`, `pathlib`, `dataclasses`, `pytest`, `unittest`
+- Common third-party: `numpy`, `pandas`, `pydantic`, `yaml`
+
+### Detection & Enforcement
+
+**1. Pre-Commit Hook (Fast feedback):**
+```bash
+# Blocks commit if eager imports detected
+pre-commit run eager-import-lint
+```
+
+**2. CI Collection Gate (Source of truth):**
+```bash
+# Pytest collection must pass with zero errors
+python -m pytest tests/ --collect-only -q
+```
+
+**3. AST Linter (Detailed analysis):**
+```bash
+# Generate detailed report
+python tools/lint_eager_imports.py tests --json report.json --fix-report
+```
+
+**4. ADG Collection Safety (Secondary signal):**
+```bash
+# Structural dependency analysis
+python tools/adg_test_accelerator.py collection-safety --json out.json
+```
+
+### Control Stack Priority
+
+1. **CI collect-only gate** → Hard fail on any collection error
+2. **AST eager import lint** → Detect risky patterns pre-commit
+3. **ADG risk analysis** → Structural/dependency issues
+
+### Remediation Guide
+
+**If the linter flags your import:**
+
+1. **Move to fixture:**
+   ```python
+   # Before
+   from agentic_core.X import HeavyClass
+   
+   # After
+   @pytest.fixture
+   def heavy_class():
+       from agentic_core.X import HeavyClass
+       return HeavyClass
+   ```
+
+2. **Use local import in test function:**
+   ```python
+   def test_something():
+       from agentic_core.X import HeavyClass
+       obj = HeavyClass()
+   ```
+
+3. **Add to fixture parameters:**
+   ```python
+   def test_something(model_registry, heavy_class):
+       # Fixtures handle lazy imports
+       pass
+   ```
+
+### Why This Matters
+
+- **Individual test runs pass** → `pytest test_file.py -v` ✅
+- **Full collection fails** → `pytest tests/ --collect-only` ❌
+
+The failure mode is invisible until you run full-suite collection. These rules ensure collection safety before code reaches CI.
+
+---
+
+## Enforcement Checklist
+
+- [ ] No side-effectful module-level imports in tests
+- [ ] No module-level client creation
+- [ ] No module-level registry writes
+- [ ] No module-level config or policy hydration
+- [ ] Heavy internal imports use fixtures or local imports
+- [ ] Full-suite collection passes: `pytest tests/ --collect-only`
+- [ ] Pre-commit hook passes: `pre-commit run eager-import-lint`
+
+---
