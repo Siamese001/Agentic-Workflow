@@ -31,6 +31,11 @@ from dataclasses import dataclass, field
 from enum import Enum
 from typing import Any
 
+from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_records_execution_trace,
+)
+
 Logger = logging.getLogger(__name__)
 
 class ApprovalStatus(Enum):

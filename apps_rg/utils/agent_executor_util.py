@@ -10,7 +10,7 @@ import logging
 from dataclasses import dataclass, field
 from typing import Any
 
-from apps_shared.utils.observability_clients import create_span, record_exception, set_span_attribute
+from apps_shared.utils.observability_clients_util import create_span, record_exception, set_span_attribute
 from apps_shared.utils.Provider import Provider, get_client, get_instructor_client, get_litellm_completion
 
 from agentic_core.L2_execution.providers import get_clock
@@ -395,6 +395,74 @@ class AgentExecutor:
             return self._execute_google(formatted_messages, model, tools, **kwargs)
         else:
             return self._execute_litellm(formatted_messages, model, tools, **kwargs)
+
+    def execute_via_governed_pipeline(
+        self,
+        messages: list[AgentMessage],
+        system_prompt: str | None = None,
+        tools: list[dict[str, Any]] | None = None,
+        **kwargs,
+    ) -> AgentResponse:
+        """Execute via governed Prompt Lifecycle pipeline (Phase 7).
+
+        Routes execution through CompiledPromptArtifact → execute_artifact().
+        This is the canonical governed path for all LLM calls.
+
+        Args:
+            messages: List of conversation messages
+            system_prompt: Optional system prompt (S0)
+            tools: Optional tool definitions
+            **kwargs: Additional parameters (context, mixins, template_args)
+
+        Returns:
+            AgentResponse with LLM output
+        """
+        import uuid as _uuid  # noqa: PLC0415
+
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "AgentExecutor.execute_via_governed_pipeline"
+        )
+
+        # Import governed adapter
+        from apps_shared.utils.governed_prompt_adapter import GovernedPromptAdapter
+
+        # Build user prompt from messages
+        user_parts = []
+        for msg in messages:
+            if msg.role != "system":
+                user_parts.append(f"{msg.role}: {msg.content}")
+        user_prompt = "\n".join(user_parts)
+
+        # Create adapter
+        adapter = GovernedPromptAdapter(
+            agent_id=f"AgentExecutor.{self.config.provider.value}",
+            provider=self.config.provider.value,
+        )
+
+        # Execute through governed pipeline
+        result = adapter.execute_prompt(
+            user_prompt=user_prompt,
+            system_prompt=system_prompt,
+            mixins=kwargs.get("mixins", ()),
+            context=kwargs.get("context", {}),
+            template_args=kwargs.get("template_args", {}),
+            tools=tools,
+            temperature=self.config.temperature,
+            max_tokens=self.config.max_tokens or 1024,
+            path=kwargs.get("path", "A"),
+        )
+
+        return AgentResponse(
+            content=result.get("content", ""),
+            finish_reason="stop",
+            usage=result.get("usage", {}),
+            metadata={
+                "governed": True,
+                "trace_id": result.get("trace_id"),
+                "provider": result.get("provider"),
+            },
+        )
 
     def _try_execute_via_gateway(
         self,
