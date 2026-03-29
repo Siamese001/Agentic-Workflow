@@ -25,5 +25,6 @@ from agentic_core.L0_routing.config.path_constants import (
 from apps_shared.utils.json_parser_validator_util import JsonParser, ParseResult
 from apps_shared.utils.math_operations_util import MathProcessor, ScoreResult
 from apps_shared.utils.text_processing_validator_util import TextMatch, TextProcessor
+from apps_shared.utils.governed_prompt_adapter import GovernedPromptAdapter
 
-__all__ = ['TextProcessor', 'TextMatch', 'MathProcessor', 'ScoreResult', 'JsonParser', 'ParseResult']
+__all__ = ['TextProcessor', 'TextMatch', 'MathProcessor', 'ScoreResult', 'JsonParser', 'ParseResult', 'GovernedPromptAdapter']

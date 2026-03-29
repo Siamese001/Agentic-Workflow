@@ -35,6 +35,9 @@ try:
 except ImportError:
     OutreachMessageAgent = None  # type: ignore[assignment,misc]
 
+# Add control_plane export
+from apps_lic.engines.control_plane import ControlPlane, PolicyAction
+
 __all__ = [
     "ExecutiveStrategyAgent",
     "get_exec_shadow_audit",
@@ -43,4 +46,6 @@ __all__ = [
     "HOPPipelineExecutor",
     "LICValidationExecutor",
     "OutreachMessageAgent",
+    "ControlPlane",
+    "PolicyAction",
 ]

@@ -136,10 +136,10 @@ except ImportError as e:
             self.total = total or (len(iterable) if iterable else 0)
             self.desc = desc or ""
             self.n = 0
-            
+
         def __iter__(self):
             return self
-            
+
         def __next__(self):
             if self.iterable:
                 try:
@@ -153,13 +153,13 @@ except ImportError as e:
                     raise StopIteration
                 self.n += 1
                 return self.n - 1
-                
+
         def update(self, n=1):
             self.n += n
-            
+
         def set_description(self, desc):
             self.desc = desc
-            
+
         def __enter__(self):
             return self
 
@@ -185,7 +185,7 @@ from agentic_core.L0_routing.scripts._ssot_validation_artifacts import (
 # =============================================================================
 # Per Agentic Retrieval Models v9.md:
 # - L1: Exact cache for identical queries
-# - L2: Semantic cache for similar queries  
+# - L2: Semantic cache for similar queries
 # - L3: Agentic RAG for knowledge retrieval
 # - L4: Agentic action for tool invocation
 # - L5: LLM fallback for generation
@@ -234,19 +234,19 @@ def _retrieve_execution_context(
     state_mgr: Any | None = None,
 ) -> dict[str, Any]:
     """Retrieve execution context using L1-L5 retrieval architecture.
-    
+
     Per Agentic Retrieval Models v9.md - Multi-tier retrieval:
     - L1: Exact cache (hash-based lookup, O(1))
     - L2: Semantic cache (similarity > threshold)
     - L3: Agentic RAG (ChromaDB query)
     - L4: Agentic action (tool invocation)
     - L5: LLM fallback (signal to caller)
-    
+
     Args:
         query_text: The query to retrieve context for
         now_utc: Current timestamp (UTC epoch seconds)
         state_mgr: Optional RuntimeStateManager for stateful retrieval
-        
+
     Returns:
         Dict with keys:
         - tier: str (L1, L2, L3, L4, L5)
@@ -254,10 +254,10 @@ def _retrieve_execution_context(
         - metadata: dict (retrieval metadata)
     """
     import hashlib
-    
+
     # Generate query hash for L1 cache lookup
     query_hash = hashlib.sha256(query_text.encode()).hexdigest()[:16]
-    
+
     # L1: Exact cache lookup
     if query_hash in _L1_EXACT_CACHE:
         cached = _L1_EXACT_CACHE[query_hash]
@@ -272,17 +272,17 @@ def _retrieve_execution_context(
                 "tier": "L1",
             }
         }
-    
+
     # L2: Semantic cache lookup (if available)
     if _ENHANCED_RAG_AVAILABLE and EnhancedRAGRetrievalCache is not None:
         try:
             cache = EnhancedRAGRetrievalCache()
             semantic_result = cache.query(query_text, tier=RetrievalTier.SEMANTIC)
-            
+
             if semantic_result and semantic_result.score >= THRESHOLD:
                 _emit_reads_through("execute_ssot", "l2_semantic_cache", query_hash)
                 return {
-                    "tier": "L2", 
+                    "tier": "L2",
                     "context": semantic_result,
                     "metadata": {
                         "cache_hit": True,
@@ -293,22 +293,22 @@ def _retrieve_execution_context(
                 }
         except Exception as e:
             logging.debug(f"[Retrieval] L2 semantic cache query failed: {e}")
-    
+
     # L3: Agentic RAG query (if available)
     if _ENHANCED_RAG_AVAILABLE and EnhancedRAGRetrievalCache is not None:
         try:
             cache = EnhancedRAGRetrievalCache()
             rag_result = cache.query(query_text, tier=RetrievalTier.RAG)
-            
+
             if rag_result and rag_result.documents:
                 _emit_pulls_context("execute_ssot", "l3_agentic_rag", query_hash)
-                
+
                 # Store in L2 cache for future hits
                 _L2_SEMANTIC_CACHE[query_hash] = {
                     "context": rag_result,
                     "cached_at": now_utc,
                 }
-                
+
                 return {
                     "tier": "L3",
                     "context": rag_result,
@@ -321,12 +321,12 @@ def _retrieve_execution_context(
                 }
         except Exception as e:
             logging.debug(f"[Retrieval] L3 RAG query failed: {e}")
-    
+
     # L4: Agentic action (if retrieval profile supports actions)
     if _RETRIEVAL_PROFILE_AVAILABLE and get_active_retrieval_profile is not None:
         try:
             profile = get_active_retrieval_profile(now_utc)
-            
+
             if profile and hasattr(profile, 'supports_actions') and profile.supports_actions:
                 _emit_routes_through("execute_ssot", "l4_agentic_action", query_hash)
                 return {
@@ -341,7 +341,7 @@ def _retrieve_execution_context(
                 }
         except Exception as e:
             logging.debug(f"[Retrieval] L4 agentic action check failed: {e}")
-    
+
     # L5: Fallback - signal to caller
     _emit_escalates_to_human("execute_ssot", "l5_fallback", "retrieval_gap")
     return {
@@ -363,7 +363,7 @@ def _store_in_retrieval_cache(
     tier: str = "L2",
 ) -> None:
     """Store context in retrieval cache for future L1/L2 hits.
-    
+
     Args:
         query_text: The query text to cache
         context: The context to store
@@ -371,9 +371,9 @@ def _store_in_retrieval_cache(
         tier: Cache tier (L1 for exact, L2 for semantic)
     """
     import hashlib
-    
+
     query_hash = hashlib.sha256(query_text.encode()).hexdigest()[:16]
-    
+
     if tier == "L1":
         _L1_EXACT_CACHE[query_hash] = {
             "context": context,
@@ -390,7 +390,7 @@ def _store_in_retrieval_cache(
 
 def _get_retrieval_telemetry() -> dict[str, Any]:
     """Get retrieval telemetry for L4 observability.
-    
+
     Returns:
         Dict with cache statistics
     """
@@ -818,6 +818,149 @@ from system_learning.types.healing_outcome_intake_types import HealingOutcomeInt
 from system_learning.pipelines.pipeline_factory import build_pipeline_config, build_pipeline_deps
 from system_learning.adapters.system_learning_memory_bridge import get_sl_memory_bridge
 
+# =============================================================================
+# L6 OBSERVABILITY & WORKFLOW OUTCOME INTEGRATION - Apps Parity
+# =============================================================================
+# Per apps_* patterns - L6 observability and workflow outcome integration
+# =============================================================================
+
+# Workflow outcome system learning adapter (per apps_* pattern)
+try:
+    from system_learning.adapters.workflow_outcome_sl_adapter import (
+        WorkflowOutcomeSLAdapter,
+        get_workflow_outcome_sl_adapter,
+        register_with_workflow_bridge,
+    )
+    _WORKFLOW_OUTCOME_ADAPTER_AVAILABLE = True
+except ImportError:
+    _WORKFLOW_OUTCOME_ADAPTER_AVAILABLE = False
+    WorkflowOutcomeSLAdapter = None
+    get_workflow_outcome_sl_adapter = None
+    register_with_workflow_bridge = None
+
+# L6 Observability - AgentOutputContract pattern (per apps_* pattern)
+try:
+    from agentic_core.L6_observability.contracts.agent_output_contract import (
+        AgentOutputContract,
+        wrap_output,
+    )
+    from agentic_core.L6_observability.runtime.output_contract_runtime import (
+        get_current_secret,
+    )
+    _OUTPUT_CONTRACT_AVAILABLE = True
+except ImportError:
+    _OUTPUT_CONTRACT_AVAILABLE = False
+    AgentOutputContract = None
+    wrap_output = None
+    get_current_secret = None
+
+
+def _register_workflow_outcome_adapter() -> None:
+    """Register workflow outcome adapter with system learning - per apps_* pattern."""
+    if not _WORKFLOW_OUTCOME_ADAPTER_AVAILABLE:
+        logging.debug("[SystemLearning] WorkflowOutcomeSLAdapter not available")
+        return
+
+    try:
+        register_with_workflow_bridge()
+        logging.info("[SystemLearning] WorkflowOutcomeSLAdapter registered")
+        _emit_records_telemetry_event("execute_ssot", "workflow_adapter", "registered")
+    except Exception as e:
+        logging.warning("[SystemLearning] Failed to register WorkflowOutcomeSLAdapter: %s", e)
+
+
+def _emit_workflow_outcome(
+    bundle_id: str,
+    trace_id: str,
+    workflow_type: str,
+    success: bool,
+    elapsed_ms: int,
+    agent_sequence: list[str],
+    quality_score: float,
+    outcome_hash: str,
+    metadata: dict,
+) -> None:
+    """Emit workflow outcome to system learning - per apps_* pattern.
+
+    Args:
+        bundle_id: Unique bundle identifier
+        trace_id: Execution trace identifier
+        workflow_type: Type of workflow (e.g., "execute_ssot")
+        success: Whether workflow succeeded
+        elapsed_ms: Execution time in milliseconds
+        agent_sequence: Sequence of agents executed
+        quality_score: Quality score (0.0-1.0)
+        outcome_hash: Deterministic hash of outcome
+        metadata: Additional metadata
+    """
+    if not _WORKFLOW_OUTCOME_ADAPTER_AVAILABLE:
+        logging.debug("[SystemLearning] WorkflowOutcomeSLAdapter not available for outcome emission")
+        return
+
+    try:
+        adapter = get_workflow_outcome_sl_adapter()
+
+        # Create mock outcome object (similar to apps_rg pattern)
+        outcome = type('WorkflowOutcome', (), {
+            'bundle_id': bundle_id,
+            'trace_id': trace_id,
+            'workflow_type': workflow_type,
+            'success': success,
+            'elapsed_ms': elapsed_ms,
+            'agent_sequence': tuple(agent_sequence),
+            'quality_score': quality_score,
+            'outcome_hash': outcome_hash,
+            'metadata': metadata,
+        })()
+
+        adapter.accept(outcome)
+        _emit_records_telemetry_event("execute_ssot", "workflow_outcome", "emitted")
+
+    except Exception as e:
+        logging.warning("[SystemLearning] Failed to emit workflow outcome: %s", e)
+
+
+def execute_contracted(
+    agent_id: str,
+    payload: Any,
+    trace_id: str = "",
+) -> "AgentOutputContract | None":
+    """Wrap execution result in signed AgentOutputContract - per apps_* pattern.
+
+    Use this at call sites that feed L6 observability.
+
+    Args:
+        agent_id: Agent identifier (e.g., "execute_ssot")
+        payload: Execution payload/result
+        trace_id: Optional trace identifier
+
+    Returns:
+        Signed AgentOutputContract or None if not available
+    """
+    if not _OUTPUT_CONTRACT_AVAILABLE:
+        logging.debug("[L6Observability] AgentOutputContract not available")
+        return None
+
+    if not agent_id:
+        raise RuntimeError("agent_id required for L6 observability contract")
+
+    try:
+        contract = wrap_output(
+            agent_id=agent_id,
+            trace_id=trace_id or f"execute_ssot_{int(time.time())}",
+            payload_model=payload,
+            secret=get_current_secret(),
+        )
+        _emit_records_telemetry_event("execute_ssot", "output_contract", "signed")
+        return contract
+    except Exception as e:
+        logging.warning("[L6Observability] Failed to create output contract: %s", e)
+        return None
+
+
+# Register workflow outcome adapter at module load (per apps_* pattern)
+_register_workflow_outcome_adapter()
+
 
 class MetaLearningError(Exception):
     """Exception raised when meta-learning pipeline fails (required path)."""
@@ -826,7 +969,7 @@ class MetaLearningError(Exception):
 
 class MetaLearningResult:
     """Result from meta-learning intake pipeline."""
-    
+
     def __init__(
         self,
         proposals: tuple = (),
@@ -836,7 +979,7 @@ class MetaLearningResult:
         self.proposals = proposals
         self.records_persisted = records_persisted
         self.faiss_vectors_stored = faiss_vectors_stored
-    
+
     @classmethod
     def empty(cls) -> "MetaLearningResult":
         return cls(proposals=(), records_persisted=0, faiss_vectors_stored=0)
@@ -848,36 +991,36 @@ def _fire_meta_learning_intake_required(
     repo_root: Path,
 ) -> MetaLearningResult:
     """REQUIRED version: Wire HealingOutcomeIntakeAdapter and MetaLearningPipeline.
-    
+
     This is the REQUIRED (non-guarded) version of meta-learning intake.
     If this function fails, execute_ssot MUST NOT complete successfully.
-    
+
     Per Meta Learning Pipeline v2.md - 4-stage columnar flow:
     1. Detection: Identify learning surfaces from healing actions
     2. Assessment: Aggregate outcomes via HealingOutcomeAggregator
     3. Integration: Persist to intake store and FAISS index
     4. Synthesis: Generate proposals via meta_learning_pipeline
-    
+
     Args:
         state_mgr: Runtime state manager with healing_actions
         now_utc: Current timestamp (UTC epoch seconds)
         repo_root: Repository root path
-        
+
     Returns:
         MetaLearningResult with proposals and persistence stats
-        
+
     Raises:
         MetaLearningError: If any required step fails
     """
     _emit_records_execution_trace("execute_ssot", "L4_STATE", "meta_learning_intake_start")
-    
+
     # Extract healing actions from state (REQUIRED field)
     healing_actions: list[dict] = state_mgr.state.get("healing_actions", [])
-    
+
     if not healing_actions:
         logging.debug("[MetaLearning] No healing actions to process")
         return MetaLearningResult.empty()
-    
+
     # Step 1: Initialize store and adapter (REQUIRED - no fallback)
     try:
         store = InMemoryHealingOutcomeIntakeStore()
@@ -885,11 +1028,11 @@ def _fire_meta_learning_intake_required(
         _emit_snapshots_state("execute_ssot", "intake_store", "store_initialized")
     except Exception as e:
         raise MetaLearningError(f"Failed to initialize intake store/adapter: {e}") from e
-    
+
     # Step 2: Build aggregator with healing actions
     try:
         aggregator = HealingOutcomeAggregator(window_size=max(len(healing_actions), 1))
-        
+
         for action in healing_actions:
             event = HealingOutcomeEvent(
                 healer_id=action.get("agent", "unknown"),
@@ -900,11 +1043,11 @@ def _fire_meta_learning_intake_required(
                 trace_id=action.get("trace_id", ""),
             )
             aggregator.ingest(event)
-        
+
         _emit_records_healing_outcome("execute_ssot", "aggregator", f"ingested_{len(healing_actions)}")
     except Exception as e:
         raise MetaLearningError(f"Failed to aggregate healing actions: {e}") from e
-    
+
     # Step 3: Build and persist record (REQUIRED)
     try:
         record = adapter.build_record(
@@ -916,7 +1059,7 @@ def _fire_meta_learning_intake_required(
         _emit_stores_embedding("execute_ssot", "intake_record", f"persisted_{store.count()}")
     except Exception as e:
         raise MetaLearningError(f"Failed to build/persist intake record: {e}") from e
-    
+
     # Step 4: Run meta-learning pipeline (REQUIRED)
     try:
         cfg = build_pipeline_config(proposal_only=True)  # Non-mutating proposals only
@@ -924,9 +1067,9 @@ def _fire_meta_learning_intake_required(
             repo_root=repo_root,
             healing_outcome_intake_adapter=adapter,
         )
-        
+
         from system_learning.pipelines.meta_learning_pipeline import run_pipeline as _ml_run_pipeline
-        
+
         proposals = _ml_run_pipeline(
             now_utc=now_utc,
             window_start_utc=now_utc - 3600,
@@ -934,19 +1077,19 @@ def _fire_meta_learning_intake_required(
             cfg=cfg,
             deps=deps,
         )
-        
+
         _emit_orchestrates_workflow("execute_ssot", "meta_learning_pipeline", f"proposals_{len(proposals)}")
     except Exception as e:
         raise MetaLearningError(f"Meta-learning pipeline failed: {e}") from e
-    
+
     # Step 5: Persist proposals to JSONL (REQUIRED)
     try:
         if proposals:
             _prop_path = repo_root / "logs" / "proposals" / "threshold_proposals.jsonl"
             _prop_path.parent.mkdir(parents=True, exist_ok=True)
-            
+
             import json as _json_prop
-            
+
             with open(_prop_path, "a", encoding="utf-8") as _pf:
                 for _p in proposals:
                     _pf.write(
@@ -962,15 +1105,15 @@ def _fire_meta_learning_intake_required(
                         )
                         + "\n"
                     )
-        
+
         _emit_writes_via_uwg("execute_ssot", "proposals", f"written_{len(proposals)}")
     except Exception as e:
         raise MetaLearningError(f"Failed to persist proposals: {e}") from e
-    
+
     # Step 6: Persist phase outcomes to system learning memory bridge (REQUIRED)
     try:
         bridge = get_sl_memory_bridge()
-        
+
         phase_outcomes = {
             "schema_version": 2,
             "source": "execute_ssot_required",
@@ -979,23 +1122,23 @@ def _fire_meta_learning_intake_required(
             "records_persisted": store.count(),
             "timestamp_utc": now_utc,
         }
-        
+
         import json as _json_outcomes
-        
+
         bridge.persist_execute_ssot_phase_outcomes(
             phase_name="execute_ssot",
             outcomes_json=_json_outcomes.dumps(phase_outcomes, sort_keys=True),
             timestamp_utc=now_utc,
             trace_id=f"execute_ssot_{now_utc}",
         )
-        
+
         _emit_records_telemetry_event("execute_ssot", "phase_outcomes", "persisted_to_sl_bridge")
     except Exception as e:
         # Log but don't fail - telemetry is best-effort
         logging.warning("[MetaLearning] Phase outcome persistence failed: %s", e)
-    
+
     _emit_records_execution_trace("execute_ssot", "L4_STATE", "meta_learning_intake_complete")
-    
+
     return MetaLearningResult(
         proposals=proposals,
         records_persisted=store.count(),

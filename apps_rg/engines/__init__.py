@@ -6,6 +6,6 @@ importable directly from their modules, e.g.:
     from apps_rg.reasoning.ATSCompatibilityAgent import ATSCompatibilityAgent
 """
 
-# No eager imports - all modules imported directly to avoid import errors
+from apps_rg.engines.base_rg_engine import BaseRGEngine
 
-__all__ = []
+__all__ = ["BaseRGEngine"]
