@@ -22,7 +22,7 @@ from unittest.mock import MagicMock, patch
 import pytest
 
 # Import test infrastructure
-from conftest_agentic_system import (
+from tests.e2e.conftest_agentic_system import (
     BusCommunicationMonitor,
     BusType,
     DeterminismValidator,

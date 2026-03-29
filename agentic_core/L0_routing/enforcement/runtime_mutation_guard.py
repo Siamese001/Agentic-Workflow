@@ -476,7 +476,7 @@ def test_runtime_mutation_guard() -> bool:
             return False
         uninstall_runtime_mutation_guard()
         return True
-    except Exception as e:
+    except Exception as e:  # guardian: allow-silent-swallow -- test cleanup failure
         Logger.error(f"Runtime mutation guard test failed: {e}")
         uninstall_runtime_mutation_guard()
         return False

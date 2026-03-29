@@ -272,7 +272,7 @@ class BootSequence:
             boot_result["errors"].append(str(e))
             raise
         # guardian: allow-silent-swallow
-        except Exception as e:
+        except (RuntimeError, OSError) as e:  # guardian: allow-specific -- boot sequence failures
             logger.error(f"Boot sequence failed: {e}")
             boot_result["status"] = "failed"
             boot_result["errors"].append(str(e))
