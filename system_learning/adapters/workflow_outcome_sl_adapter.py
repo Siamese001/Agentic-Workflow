@@ -25,7 +25,7 @@ class WorkflowOutcomeSLAdapter:
         self._accepted_count = 0
         self._error_count = 0
 
-    def accept(self, outcome: WorkflowOutcome) -> None:
+    def accept(self, outcome: "WorkflowOutcome") -> None:
         """Accept and persist a workflow outcome.
 
         Args:

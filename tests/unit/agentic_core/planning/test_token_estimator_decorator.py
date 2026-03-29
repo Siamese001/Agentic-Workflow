@@ -11,17 +11,22 @@ import tempfile
 from pathlib import Path
 from typing import Dict, List, Any
 
-from agentic_core.planning.token_estimator import (
-    ContextWindowEstimator, 
-    TokenBudget, 
-    TokenEstimate,
-    ContextSource
-)
-from agentic_core.planning.preflight_hook import (
-    PlanningPreflightHook,
-    TokenBudgetExceededError,
-    require_token_budget
-)
+
+# Lazy imports to avoid collection-time conflicts
+@pytest.fixture
+def token_estimator_classes():
+    from agentic_core.planning.token_estimator import (
+        ContextWindowEstimator, 
+        TokenBudget, 
+        TokenEstimate,
+        ContextSource
+    )
+    from agentic_core.planning.preflight_hook import (
+        PlanningPreflightHook,
+        TokenBudgetExceededError,
+        require_token_budget
+    )
+    return ContextWindowEstimator, TokenBudget, TokenEstimate, ContextSource, PlanningPreflightHook, TokenBudgetExceededError, require_token_budget
 
 
 class TestDecoratorEnforcementIntegration:
@@ -29,6 +34,7 @@ class TestDecoratorEnforcementIntegration:
     
     def setup_method(self):
         """Setup test fixtures"""
+        from agentic_core.planning.preflight_hook import PlanningPreflightHook
         self.temp_dir = Path(tempfile.mkdtemp())
         self.budget_file = self.temp_dir / "decorator_test_budget.json"
         self.hook = PlanningPreflightHook(budget_file=self.budget_file)

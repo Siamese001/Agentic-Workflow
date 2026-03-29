@@ -178,7 +178,7 @@ class RepoSignalService:
     def _json_entry_count(path: Path) -> int:
         try:
             payload = json.loads(path.read_text(encoding="utf-8"))
-        except json.JSONDecodeError:
+        except (json.JSONDecodeError, FileNotFoundError):
             return 0
 
         if isinstance(payload, list):
@@ -189,5 +189,8 @@ class RepoSignalService:
 
     @staticmethod
     def _line_count(path: Path) -> int:
-        with path.open("r", encoding="utf-8", errors="ignore") as fh:
-            return sum(1 for _ in fh)
+        try:
+            with path.open("r", encoding="utf-8", errors="ignore") as fh:
+                return sum(1 for _ in fh)
+        except FileNotFoundError:
+            return 0

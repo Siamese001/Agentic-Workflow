@@ -40,24 +40,29 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-from agentic_core.L5_safety.config.structure_blueprint.ssot import (
-    get_validated_project_root,
-)
-from system_learning.runtime_adg import (
-    FileBackedRuntimeADGStore,
-    InMemoryRuntimeADGStore,
-    L6MetaLearningBridge,
-    RuntimeADGMaterializer,
-    RuntimeADGNode,
-    RuntimeADGEdge,
-    RuntimeADGSnapshot,
-    attributes_to_json,
-    create_runtime_adg_snapshot,
-)
-from system_learning.runtime_adg.auto_persistence import (
-    AutoPersistenceTracingAdapter,
-    get_auto_persistence_tracer,
-)
+
+# Lazy import fixtures to avoid collection-time conflicts
+@pytest.fixture
+def ssot_project_root():
+    from agentic_core.L5_safety.config.structure_blueprint.ssot import get_validated_project_root
+    return get_validated_project_root()
+
+@pytest.fixture
+def runtime_adg_classes():
+    from system_learning.runtime_adg import (
+        FileBackedRuntimeADGStore,
+        InMemoryRuntimeADGStore,
+        L6MetaLearningBridge,
+        RuntimeADGMaterializer,
+        RuntimeADGNode,
+        RuntimeADGEdge,
+        RuntimeADGSnapshot,
+        attributes_to_json,
+        create_runtime_adg_snapshot,
+    )
+    return (FileBackedRuntimeADGStore, InMemoryRuntimeADGStore, L6MetaLearningBridge, 
+            RuntimeADGMaterializer, RuntimeADGNode, RuntimeADGEdge, RuntimeADGSnapshot,
+            attributes_to_json, create_runtime_adg_snapshot)
 
 
 # =============================================================================

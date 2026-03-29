@@ -14,16 +14,19 @@ from pathlib import Path
 from typing import Dict, List, Any
 
 # Ensure test can find modules
-sys.path.insert(0, str(Path(__file__).parent.parent.parent))
+sys.path.insert(0, str(Path(__file__).parent.parent))
 
-from tools.mcp.sequential_thinking_booster import (
-    boost_sequential_thinking,
-    apply_kimi_k2_5_boosting,
-    CRITICAL_TOOLS,
-    CORE_TOOLS,
-    SUPPRESSED_TOOLS,
-    REASONING_TOOLS
-)
+# Lazy import - only import when needed
+def get_sequential_thinking_booster():
+    from tools.mcp.sequential_thinking_booster import (
+        boost_sequential_thinking,
+        apply_kimi_k2_5_boosting,
+        CRITICAL_TOOLS,
+        CORE_TOOLS,
+        SUPPRESSED_TOOLS,
+        REASONING_TOOLS
+    )
+    return boost_sequential_thinking, apply_kimi_k2_5_boosting, CRITICAL_TOOLS, CORE_TOOLS, SUPPRESSED_TOOLS, REASONING_TOOLS
 
 
 class TestSequentialThinkingDominance:

@@ -2,22 +2,28 @@
 
 import pytest
 
-from agentic_core.knowledge.chunking.chunking_modes import (
-    Chunk,
-    ChunkingEngine,
-    FixedTokenChunker,
-    OverlapWindowChunker,
-    SectionAwareChunker,
-    SemanticObjectChunker,
-    chunk_document,
-)
+
+# Lazy imports to avoid collection-time conflicts
+@pytest.fixture
+def chunking_classes():
+    from agentic_core.knowledge.chunking.chunking_modes import (
+        Chunk,
+        ChunkingEngine,
+        FixedTokenChunker,
+        OverlapWindowChunker,
+        SectionAwareChunker,
+        SemanticObjectChunker,
+        chunk_document,
+    )
+    return Chunk, ChunkingEngine, FixedTokenChunker, OverlapWindowChunker, SectionAwareChunker, SemanticObjectChunker, chunk_document
 
 
 class TestChunkingModes:
     """Test chunking strategies."""
     
-    def test_fixed_token_chunker(self):
+    def test_fixed_token_chunker(self, chunking_classes):
         """Test fixed token chunking."""
+        _, _, FixedTokenChunker, _, _, _, _ = chunking_classes
         chunker = FixedTokenChunker(tokens_per_chunk=10, overlap_tokens=2)
         
         text = "word1 word2 word3 word4 word5 word6 word7 word8 word9 word10 word11 word12 word13 word14"

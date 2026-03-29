@@ -6,24 +6,30 @@ import tempfile
 from pathlib import Path
 from unittest.mock import patch, MagicMock
 
-# Import the module we're testing
-import sys
-sys.path.insert(0, str(Path(__file__).parent.parent.parent.parent / "agentic_core" / "L0_routing" / "scripts"))
 
-try:
-    from execute_ssot import main
-    CAN_IMPORT = True
-except ImportError as e:
-    print(f"Cannot import execute_ssot: {e}")
-    CAN_IMPORT = False
+# Lazy import fixture
+@pytest.fixture
+def execute_ssot_main():
+    """Lazily import execute_ssot main function."""
+    import sys
+    sys.path.insert(0, str(Path(__file__).parent.parent.parent.parent / "agentic_core" / "L0_routing" / "scripts"))
+    try:
+        from execute_ssot import main
+        return main, True
+    except ImportError as e:
+        print(f"Cannot import execute_ssot: {e}")
+        return None, False
 
 
 class TestExecuteSsotExceptionHandling:
     """Test exception handling in execute_ssot.py."""
 
-    @pytest.mark.skipif(not CAN_IMPORT, reason="Cannot import execute_ssot")
-    def test_missing_file_error_handling(self):
+    def test_missing_file_error_handling(self, execute_ssot_main):
         """Test proper error handling for missing configuration files."""
+        main, can_import = execute_ssot_main
+        if not can_import:
+            pytest.skip("Cannot import execute_ssot")
+            
         with tempfile.TemporaryDirectory() as temp_dir:
             # Use non-existent config file
             config_path = Path(temp_dir) / "non_existent.json"
@@ -34,9 +40,12 @@ class TestExecuteSsotExceptionHandling:
                 with pytest.raises((FileNotFoundError, SystemExit)):
                     main()
 
-    @pytest.mark.skipif(not CAN_IMPORT, reason="Cannot import execute_ssot")
-    def test_invalid_json_error_handling(self):
+    def test_invalid_json_error_handling(self, execute_ssot_main):
         """Test proper error handling for invalid JSON configuration."""
+        main, can_import = execute_ssot_main
+        if not can_import:
+            pytest.skip("Cannot import execute_ssot")
+            
         with tempfile.TemporaryDirectory() as temp_dir:
             # Create invalid JSON file
             config_path = Path(temp_dir) / "invalid.json"
@@ -48,9 +57,12 @@ class TestExecuteSsotExceptionHandling:
                 with pytest.raises((ValueError, SystemExit)):  # JSON parsing error
                     main()
 
-    @pytest.mark.skipif(not CAN_IMPORT, reason="Cannot import execute_ssot")
-    def test_logging_error_visibility(self):
+    def test_logging_error_visibility(self, execute_ssot_main):
         """Test that errors are properly logged, not silently swallowed."""
+        main, can_import = execute_ssot_main
+        if not can_import:
+            pytest.skip("Cannot import execute_ssot")
+            
         with tempfile.TemporaryDirectory() as temp_dir:
             config_path = Path(temp_dir) / "config.json"
             config_path.write_text('{"pipeline_type": "test"}')

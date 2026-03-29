@@ -16,16 +16,22 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-from agentic_core.L0_routing.scripts.execute_ssot import (
-    AGENT_PIPELINE,
-    run_pipeline,
-)
-from agentic_core.L2_execution.protocol import (
-    PIPELINE_SUBPHASES,
-    SubphaseResult,
-    compute_pipeline_digest,
-    emit_pipeline_digest,
-)
+
+# Lazy imports to avoid collection-time conflicts
+@pytest.fixture
+def execute_ssot_imports():
+    from agentic_core.L0_routing.scripts.execute_ssot import (
+        AGENT_PIPELINE,
+        run_pipeline,
+    )
+    from agentic_core.L2_execution.protocol import (
+        PIPELINE_SUBPHASES,
+        SubphaseResult,
+        compute_pipeline_digest,
+        emit_pipeline_digest,
+    )
+    return AGENT_PIPELINE, run_pipeline, PIPELINE_SUBPHASES, SubphaseResult, compute_pipeline_digest, emit_pipeline_digest
+
 
 pytestmark = [pytest.mark.sovereign_hardening, pytest.mark.ssot]
 

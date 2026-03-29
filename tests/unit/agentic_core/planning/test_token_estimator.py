@@ -9,22 +9,30 @@ import json
 from pathlib import Path
 from unittest.mock import patch, MagicMock
 
-from agentic_core.planning.token_estimator import (
-    ContextWindowEstimator, 
-    TokenBudget, 
-    TokenEstimate,
-    ContextSource
-)
-from agentic_core.planning.preflight_hook import (
-    PlanningPreflightHook,
-    TokenBudgetExceededError
-)
+
+# Lazy imports to avoid collection-time conflicts
+@pytest.fixture
+def token_estimator_classes():
+    from agentic_core.planning.token_estimator import (
+        ContextWindowEstimator, 
+        TokenBudget, 
+        TokenEstimate,
+        ContextSource
+    )
+    from agentic_core.planning.preflight_hook import (
+        PlanningPreflightHook,
+        TokenBudgetExceededError
+    )
+    return ContextWindowEstimator, TokenBudget, TokenEstimate, ContextSource, PlanningPreflightHook, TokenBudgetExceededError
+
 
 class TestContextWindowEstimator:
     """Test the ContextWindowEstimator functionality"""
     
     def setup_method(self):
         """Setup test fixtures"""
+        from agentic_core.planning.token_estimator import ContextWindowEstimator, TokenBudget
+        from agentic_core.planning.preflight_hook import PlanningPreflightHook
         self.estimator = ContextWindowEstimator()
         self.budget = TokenBudget()
     

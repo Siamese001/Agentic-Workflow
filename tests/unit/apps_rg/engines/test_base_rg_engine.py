@@ -32,10 +32,10 @@ class _DummyEngine:
     def get_prompt(self, prompt_id: str) -> str:
         if prompt_id == "missing_prompt_id":
             raise KeyError(f"Prompt {prompt_id} not found")
-        if prompt_id == "hyde_gen":
-            return "Generate a comprehensive 400-word job description"
         if self.knowledge is None:
             return ""
+        if prompt_id == "hyde_gen":
+            return "Generate a comprehensive 400-word job description"
         return f"Prompt for {prompt_id}"
 
     def execute(self, input_data: BaseModel) -> BaseModel:
@@ -51,6 +51,7 @@ def test_module_importable():
 
 def test_get_prompt_happy_path_returns_template_text():
     engine = _DummyEngine()
+    engine.knowledge = {}  # Set knowledge to enable prompt lookup
 
     value = engine.get_prompt("hyde_gen")
 

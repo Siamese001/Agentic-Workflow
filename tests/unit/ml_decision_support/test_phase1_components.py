@@ -13,6 +13,12 @@ from datetime import datetime
 from pathlib import Path
 from unittest.mock import Mock, patch
 
+# Import shared types used across tests
+from agentic_core.L1_cognition.ml_decision_support.config.model_registry import ModelStatus
+from agentic_core.L1_cognition.ml_decision_support.models.base_model import DecisionMode, PredictionType
+from agentic_core.L1_cognition.ml_decision_support.models.l0_route_recommender import L0RouteRecommender
+from agentic_core.L1_cognition.ml_decision_support.inference.shadow_logger import ShadowMode
+
 
 # Lazy import fixtures to avoid collection-time conflicts
 @pytest.fixture
@@ -137,6 +143,7 @@ class TestModelRegistry:
     @pytest.fixture
     def temp_registry(self):
         """Create temporary registry for testing."""
+        from agentic_core.L1_cognition.ml_decision_support.config.model_registry import ModelRegistry
         with tempfile.TemporaryDirectory() as temp_dir:
             registry_path = Path(temp_dir) / "test_registry"
             yield ModelRegistry(registry_path)
@@ -442,6 +449,7 @@ class TestShadowLogger:
     @pytest.fixture
     def temp_logger(self):
         """Create temporary shadow logger for testing."""
+        from agentic_core.L1_cognition.ml_decision_support.inference.shadow_logger import ShadowLogger
         with tempfile.TemporaryDirectory() as temp_dir:
             log_path = Path(temp_dir) / "test_logs"
             yield ShadowLogger(log_path)
