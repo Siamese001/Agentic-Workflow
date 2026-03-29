@@ -17,12 +17,9 @@
   },
   "agentic_core/L0_routing/engines/agentic_router.py": {
     "magic-config": 1,
-    "silent-swallow": 2
+    "silent-swallow": 1
   },
   "agentic_core/L0_routing/engines/execution_orchestrator.py": {
-    "silent-swallow": 2
-  },
-  "agentic_core/L0_routing/engines/intent_embedding_classifier.py": {
     "silent-swallow": 1
   },
   "agentic_core/L0_routing/meta_control/config_store.py": {
