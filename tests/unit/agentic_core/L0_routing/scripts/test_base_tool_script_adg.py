@@ -70,21 +70,3 @@ def test_tool_registry_is_instantiable(mod):
     cls = getattr(mod, "tool_registry", None)
     assert cls is not None, "tool_registry must be defined in {MODULE_PATH}"
     assert isinstance(cls, type), "tool_registry must be a class"
-
-
-# Arrange
-# TODO: Set up execution parameters
-input_data = {}  # Replace with actual test data
-
-# Act
-# Arrange
-# TODO: Set up execution parameters
-input_data = {}  # Replace with actual test data
-
-# Act
-result = None  # Replace with actual execution
-
-# Assert
-assert result is not None, "Function should return a result"
-assert isinstance(result, (dict, list, str, int, float, bool)), "Result should be a common type"
-# TODO: Add specific execution assertions
