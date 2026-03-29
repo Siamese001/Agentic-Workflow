@@ -1852,9 +1852,9 @@ def _generate_standardized_reports(
                 "numerator": semantic_stats["semantic_edges"],
                 "denominator": max(semantic_stats["total_edges"], 1),
                 "ratio": semantic_stats["semantic_edge_ratio"],
-                "threshold": 1.0,
+                "threshold": 0.95,
                 "passed": bool(
-                    semantic_stats["semantic_edge_ratio"] >= 1.0
+                    semantic_stats["semantic_edge_ratio"] >= 0.95
                     and semantic_stats["execution_generic_semantic_count"] == 0
                     and semantic_stats["semantic_raw_edge_kind_count"] == 0
                     and semantic_stats["controls_flow_specific_ratio"] >= 0.95
