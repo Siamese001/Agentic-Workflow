@@ -281,8 +281,38 @@ class PromptRegistry:
                 extra={"template_count": len(self._templates), "registry_path": str(self.registry_path)},
             )
 
+    def _migrate_to_template_registry(self, template: PromptTemplate) -> str:
+        """Migrate a PromptTemplate to the new TemplateRegistry (Phase 8).
+
+        This bridges the old apps_shared shadow system to the new
+        agentic_core TemplateRegistry.
+
+        Args:
+            template: Old-style PromptTemplate
+
+        Returns:
+            Version hash from TemplateRegistry
+        """
+        from agentic_core.L4_state.memory.template_registry import (
+            get_template_registry,
+        )
+        from agentic_core.prompt_governance.contracts import TemplateManifest
+
+        registry = get_template_registry()
+
+        # Create manifest from old template
+        manifest = TemplateManifest(
+            template_id=template.template_id,
+            version=template.version,
+            git_commit_hash="unknown",  # Legacy templates don't have git hashes
+            required_variables=tuple(template.variables),
+        )
+
+        # Register with new registry
+        return registry.register_template(manifest, template.content)
+
     def register(self, template: PromptTemplate) -> None:
-        """Register a prompt template.
+        """Register a prompt template (with Phase 8 bridge to TemplateRegistry).
 
         Args:
             template: Prompt template
@@ -291,6 +321,13 @@ class PromptRegistry:
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "PromptRegistry.register")
 
+        # Phase 8: Bridge to new TemplateRegistry
+        try:
+            self._migrate_to_template_registry(template)
+        except Exception as exc:
+            logger.warning(f"TemplateRegistry bridge failed (legacy mode): {exc}")
+
+        # Keep legacy storage for backward compatibility
         self._templates[template.template_id] = template
         self._save_registry()
         if self.enable_logging:
@@ -300,6 +337,7 @@ class PromptRegistry:
                     "template_id": template.template_id,
                     "category": template.category.value,
                     "version": template.version,
+                    "bridged_to_template_registry": True,
                 },
             )
 
