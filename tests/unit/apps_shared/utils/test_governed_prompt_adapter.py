@@ -6,10 +6,6 @@ Validates the apps_* → execute_artifact() integration path.
 import unittest
 from unittest.mock import MagicMock, patch
 
-import pytest
-
-# guardian: allow-silent-swallow - pytest import collection issue
-pytest.importorskip("apps_shared.utils.governed_prompt_adapter")
 from apps_shared.utils.governed_prompt_adapter import (
     GovernedPromptAdapter,
     create_governed_adapter,

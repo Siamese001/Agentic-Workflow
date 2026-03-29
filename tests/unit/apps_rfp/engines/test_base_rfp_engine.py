@@ -4,8 +4,6 @@ from __future__ import annotations
 import pytest
 from pydantic import BaseModel
 
-# guardian: allow-silent-swallow - pytest import collection issue
-pytest.importorskip("apps_rfp.engines.base_rfp_engine")
 from apps_rfp.engines.base_rfp_engine import BaseRfpEngine
 
 pytestmark = pytest.mark.unit
