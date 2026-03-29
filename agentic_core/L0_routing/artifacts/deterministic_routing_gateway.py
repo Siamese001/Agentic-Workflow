@@ -345,6 +345,12 @@ class DeterministicRoutingGateway:
         if confidence >= threshold:
             return False
         
+        # Lazy import to avoid circular import
+        from agentic_core.L5_safety.hitl.hitl_escalation_activator import (
+            EscalationPriority,
+            get_hitl_escalation_activator,
+        )
+        
         activator = get_hitl_escalation_activator()
         
         def route_review_handler(req: Any) -> str | None:
