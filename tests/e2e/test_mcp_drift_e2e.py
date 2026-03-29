@@ -5,23 +5,19 @@ to Layer 6 observability persistence and alerting.
 """
 
 import json
-import os
 import shutil
 import tempfile
 import time
 from pathlib import Path
-from unittest.mock import MagicMock, patch
 
 import pytest
 
 from agentic_core.adg.runtime import (
-    MCPConfigSnapshot,
     MCPDriftEvent,
     MCPDriftRecorder,
     MCPDriftReport,
     MCPDriftSeverity,
     MCPDriftType,
-    MCPServerState,
 )
 from agentic_core.L6_observability import (
     MCPDriftMonitor,
@@ -157,14 +153,15 @@ class TestMCPDriftRecorderE2E:
 
         # Verify drift detected
         assert report.has_drift is True
-        assert report.total_events == 4  # command, env, capabilities changed + server removed + server added
+        assert report.total_events == 6  # server added/removed + command/args/env/capabilities changed
 
         # Verify severity
         assert report.max_severity == MCPDriftSeverity.CRITICAL  # Server removed
 
         # Check specific events
-        event_types = [e.event_type for e in report.events]
+        event_types = [e.drift_type for e in report.drift_events]
         assert MCPDriftType.COMMAND_CHANGED in event_types
+        assert MCPDriftType.ARGS_CHANGED in event_types
         assert MCPDriftType.ENV_CHANGED in event_types
         assert MCPDriftType.CAPABILITIES_CHANGED in event_types
         assert MCPDriftType.SERVER_REMOVED in event_types
@@ -242,9 +239,9 @@ class TestMCPL6ObservabilityStoreE2E:
         # Create store with custom base dir
         store = MCPL6ObservabilityStore(
             MCPL6PersistenceConfig(
-                base_dir=temp_observability_dir,
+                base_dir=Path(temp_observability_dir),
                 max_snapshots=10,
-                max_drift_reports=10
+                max_reports=10
             )
         )
 
@@ -297,9 +294,9 @@ class TestMCPL6ObservabilityStoreE2E:
 
         store = MCPL6ObservabilityStore(
             MCPL6PersistenceConfig(
-                base_dir=temp_observability_dir,
+                base_dir=Path(temp_observability_dir),
                 max_snapshots=3,
-                max_drift_reports=3
+                max_reports=3
             )
         )
 
@@ -318,7 +315,7 @@ class TestMCPL6ObservabilityStoreE2E:
     def test_store_initialization_creates_dirs(self, temp_observability_dir):
         """Test that store initialization creates necessary directories."""
         store = MCPL6ObservabilityStore(
-            MCPL6PersistenceConfig(base_dir=temp_observability_dir)
+            MCPL6PersistenceConfig(base_dir=Path(temp_observability_dir))
         )
 
         snapshots_dir = Path(temp_observability_dir) / "mcp_snapshots"

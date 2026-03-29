@@ -58,8 +58,9 @@ class MCPL6PersistenceConfig:
     def __post_init__(self):
         """Resolve directories after initialization."""
         if self.base_dir is not None:
-            self.snapshots_dir = self.base_dir / "mcp_snapshots"
-            self.reports_dir = self.base_dir / "mcp_drift_reports"
+            base = Path(self.base_dir) if isinstance(self.base_dir, str) else self.base_dir
+            self.snapshots_dir = base / "mcp_snapshots"
+            self.reports_dir = base / "mcp_drift_reports"
         elif self.snapshots_dir is None:
             self.snapshots_dir = Path("artifacts/observability/mcp_snapshots")
         elif self.reports_dir is None:
@@ -74,16 +75,16 @@ drift alerting integration.
 
     Usage:
         store = MCPL6ObservabilityStore()
-        
+
         # Save snapshot to L6
         store.save_snapshot(snapshot)
-        
+
         # Save drift report
         store.save_drift_report(report)
-        
+
         # Load historical snapshots
         snapshots = store.list_snapshots()
-        
+
         # Get latest for comparison
         latest = store.get_latest_snapshot()
     """
@@ -335,15 +336,15 @@ Integrates with Layer 6 observability for comprehensive monitoring.
 
     Usage:
         monitor = MCPDriftMonitor(config_path=".windsurf/mcp_config.json")
-        
+
         # Start monitoring (captures baseline)
         monitor.start_monitoring()
-        
+
         # Check for drift (call periodically)
         report = monitor.check_drift()
         if report.has_drift:
             handle_drift(report)
-        
+
         # Or use as context manager
         with MCPDriftMonitor(config_path) as monitor:
             # Monitoring active
