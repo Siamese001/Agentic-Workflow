@@ -31,28 +31,28 @@ class RetrievalQuery:
 class RetrievalAdapter:
     """
     Adapter for evidence retrieval requests.
-    
+
     Responsibilities:
     - Package domain retrieval requests
     - Consume existing retrieval outputs
     - Do not become a new retrieval engine
     """
-    
+
     def prepare_evidence_requests(
         self,
         request: UnderwritingRequest
     ) -> List[EvidenceRequest]:
         """
         Prepare evidence requests for retrieval.
-        
+
         Args:
             request: UnderwritingRequest
-            
+
         Returns:
             List of EvidenceRequest objects
         """
         requests = []
-        
+
         # Financial statement evidence
         if request.financials.periods:
             latest = request.financials.periods[-1]
@@ -64,7 +64,7 @@ class RetrievalAdapter:
                 keyword_anchors=["revenue", "sales", "income statement"],
                 field_requirements=["revenue", "period_end"]
             ))
-        
+
         # Debt schedule evidence
         if request.financials.periods:
             latest = request.financials.periods[-1]
@@ -77,7 +77,7 @@ class RetrievalAdapter:
                     keyword_anchors=["debt", "liabilities", "loan"],
                     field_requirements=["lender", "balance", "maturity"]
                 ))
-        
+
         # Collateral evidence
         if request.collateral.estimated_value:
             requests.append(EvidenceRequest(
@@ -88,7 +88,7 @@ class RetrievalAdapter:
                 keyword_anchors=["appraised value", "fair market value", "collateral"],
                 field_requirements=["value", "date", "appraiser"]
             ))
-        
+
         # AR aging evidence
         if request.collateral.collateral_type in ["ar", "mixed"]:
             requests.append(EvidenceRequest(
@@ -99,7 +99,7 @@ class RetrievalAdapter:
                 keyword_anchors=["accounts receivable", "aging", "AR"],
                 field_requirements=["customer", "amount", "days_outstanding"]
             ))
-        
+
         # Guarantor credit evidence
         if request.requested_structure.guarantor_required:
             for owner in request.borrower.ownership:
@@ -112,16 +112,16 @@ class RetrievalAdapter:
                         keyword_anchors=["FICO", "credit score", "credit report"],
                         field_requirements=["fico_score", "delinquencies", "bankruptcies"]
                     ))
-        
+
         return requests
-    
+
     def build_retrieval_queries(
         self,
         request: UnderwritingRequest
     ) -> List[RetrievalQuery]:
         """Build retrieval queries for evidence assembly."""
         queries = []
-        
+
         # Query for financial documents
         if request.documents.financial_statements:
             queries.append(RetrievalQuery(
@@ -130,7 +130,7 @@ class RetrievalAdapter:
                 keywords=["balance sheet", "income statement", "cash flow"],
                 entity_filter=request.borrower.legal_name
             ))
-        
+
         # Query for bank statements
         if request.documents.bank_statements:
             queries.append(RetrievalQuery(
@@ -140,9 +140,9 @@ class RetrievalAdapter:
                 entity_filter=request.borrower.legal_name,
                 time_range="last_12_months"
             ))
-        
+
         return queries
-    
+
     def process_retrieval_results(
         self,
         evidence_requests: List[EvidenceRequest],
@@ -150,7 +150,7 @@ class RetrievalAdapter:
     ) -> Dict[str, Any]:
         """Process retrieval results and match to evidence requests."""
         matched_evidence = {}
-        
+
         for request in evidence_requests:
             # Find matching retrieval result
             for result in retrieval_results:
@@ -161,9 +161,9 @@ class RetrievalAdapter:
                         "confidence": result.get("confidence", 0.8)
                     }
                     break
-        
+
         return matched_evidence
-    
+
     def _matches_request(
         self,
         request: EvidenceRequest,
@@ -172,15 +172,15 @@ class RetrievalAdapter:
         """Check if retrieval result matches evidence request."""
         # Simple matching logic - would be more sophisticated in production
         result_doc_type = result.get("document_type", "")
-        
+
         if request.document_class and request.document_class in result_doc_type:
             return True
-        
+
         # Check keyword overlap
         result_keywords = set(result.get("keywords", []))
         request_keywords = set(request.keyword_anchors)
-        
+
         if result_keywords & request_keywords:  # Intersection
             return True
-        
+
         return False

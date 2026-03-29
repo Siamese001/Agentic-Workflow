@@ -1,7 +1,7 @@
 """
 Borrower Profile Types - Domain contracts for borrower entity information.
 """
-from typing import Optional, List
+from typing import Literal, Optional, List
 from pydantic import BaseModel, Field, validator
 
 

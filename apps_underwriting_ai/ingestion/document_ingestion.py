@@ -23,17 +23,17 @@ class DocumentManifest:
 class DocumentIngestion:
     """
     Registers documents, computes hashes, builds manifests.
-    
+
     Responsibilities:
     - Assign doc_id
     - Compute content hash
     - Preserve source_uri
     - Build document manifest
     """
-    
+
     def __init__(self):
         self._doc_counter = 0
-    
+
     def ingest_document(
         self,
         file_path: Path,
@@ -42,34 +42,34 @@ class DocumentIngestion:
     ) -> DocumentRef:
         """
         Ingest a single document.
-        
+
         Args:
             file_path: Path to document
             doc_type: Document type classification
             extract_text: Whether to attempt text extraction
-            
+
         Returns:
             DocumentRef with metadata
         """
         self._doc_counter += 1
-        
+
         # Compute hash
         content_hash = self._compute_file_hash(file_path)
-        
+
         # Generate doc_id
         doc_id = f"DOC-{datetime.now().strftime('%Y%m%d')}-{self._doc_counter:04d}"
-        
+
         # Attempt text extraction if requested
         extracted_text_available = False
         parsed_fields = {}
-        
+
         if extract_text:
             try:
                 parsed_fields = self._extract_document_fields(file_path, doc_type)
                 extracted_text_available = bool(parsed_fields)
             except Exception:
                 pass
-        
+
         return DocumentRef(
             doc_id=doc_id,
             doc_type=doc_type,
@@ -79,7 +79,7 @@ class DocumentIngestion:
             parsed_structured_fields=parsed_fields,
             document_flags=[]
         )
-    
+
     def ingest_batch(
         self,
         doc_paths: List[Path],
@@ -87,41 +87,41 @@ class DocumentIngestion:
     ) -> DocumentManifest:
         """
         Ingest a batch of documents.
-        
+
         Args:
             doc_paths: List of document paths
             doc_type_map: Optional mapping of filename patterns to doc types
-            
+
         Returns:
             DocumentManifest
         """
         manifest = DocumentManifest()
-        
+
         for path in doc_paths:
             try:
                 # Determine doc type
                 doc_type = self._infer_doc_type(path, doc_type_map)
-                
+
                 # Ingest
                 doc_ref = self.ingest_document(path, doc_type)
                 manifest.documents.append(doc_ref)
-                
+
                 # Update counts
                 manifest.by_type[doc_type] = manifest.by_type.get(doc_type, 0) + 1
-                
+
             except Exception as e:
                 manifest.errors.append(f"Failed to ingest {path}: {str(e)}")
-        
+
         manifest.total_count = len(manifest.documents)
         return manifest
-    
+
     def build_document_package(
         self,
         manifest: DocumentManifest
     ) -> DocumentPackage:
         """Build DocumentPackage from manifest."""
         package = DocumentPackage()
-        
+
         for doc in manifest.documents:
             # Categorize by doc_type
             if doc.doc_type in ['financial_statement', 'financials']:
@@ -144,9 +144,9 @@ class DocumentIngestion:
                 package.appraisals.append(doc)
             elif doc.doc_type in ['management_comment', 'management_comments']:
                 package.management_comments.append(doc)
-        
+
         return package
-    
+
     def _compute_file_hash(self, path: Path) -> str:
         """Compute SHA256 hash of file."""
         h = hashlib.sha256()
@@ -154,17 +154,17 @@ class DocumentIngestion:
             for chunk in iter(lambda: f.read(8192), b''):
                 h.update(chunk)
         return h.hexdigest()[:32]
-    
+
     def _infer_doc_type(self, path: Path, doc_type_map: Optional[Dict[str, str]]) -> str:
         """Infer document type from filename or mapping."""
         filename = path.name.lower()
-        
+
         # Check explicit mapping
         if doc_type_map:
             for pattern, doc_type in doc_type_map.items():
                 if pattern.lower() in filename:
                     return doc_type
-        
+
         # Infer from filename
         if 'financial' in filename or 'fs' in filename:
             return 'financial_statement'
@@ -186,9 +186,9 @@ class DocumentIngestion:
             return 'entity_doc'
         elif 'management' in filename or 'comments' in filename:
             return 'management_comment'
-        
+
         return 'unknown'
-    
+
     def _extract_document_fields(
         self,
         path: Path,

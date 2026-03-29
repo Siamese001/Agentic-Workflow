@@ -48,14 +48,14 @@ class ReconciliationResult:
 class DocumentReconciliationEngine:
     """
     Compares structured values vs parsed document values.
-    
+
     Identifies:
     - Revenue discrepancies
     - Debt amount mismatches
     - Collateral value differences
     - AR/AR aging mismatches
     """
-    
+
     # Variance thresholds
     VARIANCE_THRESHOLDS = {
         "revenue": 0.05,  # 5% variance allowed
@@ -65,55 +65,55 @@ class DocumentReconciliationEngine:
         "ar": 0.05,  # 5% variance allowed
         "ap": 0.05,  # 5% variance allowed
     }
-    
+
     def __init__(self):
         self.fs_parser = FinancialStatementParser()
         self.debt_parser = DebtScheduleParser()
         self.collateral_parser = CollateralSummaryParser()
         self.ar_parser = ARAgingParser()
-    
+
     def reconcile(self, request: UnderwritingRequest) -> ReconciliationResult:
         """
         Perform full document reconciliation.
-        
+
         Args:
             request: UnderwritingRequest with documents
-            
+
         Returns:
             ReconciliationResult with contradictions
         """
         result = ReconciliationResult()
-        
+
         # Reconcile financial statements
         for doc in request.documents.financial_statements:
             if doc.extracted_text_available:
                 parsed = self.fs_parser.parse(doc.source_uri)
                 self._reconcile_financials(result, request, parsed, doc.doc_id)
-        
+
         # Reconcile debt schedule
         for doc in request.documents.debt_schedule:
             if doc.extracted_text_available:
                 parsed = self.debt_parser.parse(doc.source_uri)
                 self._reconcile_debt(result, request, parsed, doc.doc_id)
-        
+
         # Reconcile collateral
         for doc in request.documents.appraisals:
             if doc.extracted_text_available:
                 parsed = self.collateral_parser.parse(doc.source_uri)
                 self._reconcile_collateral(result, request, parsed, doc.doc_id)
-        
+
         # Calculate metrics
         result.total_checked = len(result.contradictions) + result.match_count
         if result.total_checked > 0:
             result.pass_rate = result.match_count / result.total_checked
-        
+
         result.has_critical_issues = any(
-            c.severity == ContradictionSeverity.CRITICAL 
+            c.severity == ContradictionSeverity.CRITICAL
             for c in result.contradictions
         )
-        
+
         return result
-    
+
     def _reconcile_financials(
         self,
         result: ReconciliationResult,
@@ -130,11 +130,11 @@ class DocumentReconciliationEngine:
             ("ar", request.financials.periods[0].ar if request.financials.periods else None, parsed.ar),
             ("ap", request.financials.periods[0].ap if request.financials.periods else None, parsed.ap),
         ]
-        
+
         for field_name, structured_val, parsed_val in fields_to_check:
             if structured_val is not None and parsed_val is not None:
                 self._check_field(result, field_name, structured_val, parsed_val, doc_id)
-    
+
     def _reconcile_debt(
         self,
         result: ReconciliationResult,
@@ -147,7 +147,7 @@ class DocumentReconciliationEngine:
             structured_debt = request.financials.periods[0].total_debt
             if structured_debt:
                 self._check_field(result, "total_debt", structured_debt, parsed.total_current_debt, doc_id)
-    
+
     def _reconcile_collateral(
         self,
         result: ReconciliationResult,
@@ -158,13 +158,13 @@ class DocumentReconciliationEngine:
         """Reconcile collateral values."""
         if parsed.appraised_value and request.collateral.estimated_value:
             self._check_field(
-                result, 
+                result,
                 "collateral_value",
                 request.collateral.estimated_value,
                 parsed.appraised_value,
                 doc_id
             )
-    
+
     def _check_field(
         self,
         result: ReconciliationResult,
@@ -178,9 +178,9 @@ class DocumentReconciliationEngine:
             variance_pct = abs(parsed_val - structured_val) * 100
         else:
             variance_pct = abs(parsed_val - structured_val) / abs(structured_val)
-        
+
         threshold = self.VARIANCE_THRESHOLDS.get(field_name, 0.10)
-        
+
         if variance_pct > threshold:
             # Determine severity
             if variance_pct > 0.50:  # 50% variance
@@ -191,7 +191,7 @@ class DocumentReconciliationEngine:
                 severity = ContradictionSeverity.MODERATE
             else:
                 severity = ContradictionSeverity.MINOR
-            
+
             contradiction = Contradiction(
                 field_name=field_name,
                 structured_value=structured_val,

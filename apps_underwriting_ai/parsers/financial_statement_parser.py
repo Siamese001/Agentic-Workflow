@@ -30,11 +30,11 @@ class ParsedFinancialStatement:
 class FinancialStatementParser:
     """
     Parses financial statement PDFs to extract structured data.
-    
+
     In production, would integrate with document parsing services.
     For now, provides deterministic extraction patterns.
     """
-    
+
     # Common financial statement patterns
     PATTERNS = {
         'revenue': [
@@ -73,30 +73,30 @@ class FinancialStatementParser:
             r'(?:Total Debt|Total Liabilities)[\s:]*[$]?([\d,\.]+)',
         ],
     }
-    
+
     def parse(self, file_path: Path, text_content: Optional[str] = None) -> ParsedFinancialStatement:
         """
         Parse a financial statement document.
-        
+
         Args:
             file_path: Path to document
             text_content: Pre-extracted text content (optional)
-            
+
         Returns:
             ParsedFinancialStatement with extracted fields
         """
         result = ParsedFinancialStatement()
-        
+
         # Get text content
         if text_content is None:
             text_content = self._extract_text(file_path)
-        
+
         if not text_content:
             return result
-        
+
         # Extract period end date
         result.period_end = self._extract_period_end(text_content)
-        
+
         # Extract financial values
         extracted_count = 0
         for field_name, patterns in self.PATTERNS.items():
@@ -106,18 +106,18 @@ class FinancialStatementParser:
                 extracted_count += 1
                 # Store raw excerpt for evidence
                 result.raw_excerpts[field_name] = self._get_excerpt(text_content, patterns[0])
-        
+
         # Calculate confidence based on extraction coverage
         result.confidence = min(1.0, extracted_count / len(self.PATTERNS))
-        
+
         return result
-    
+
     def _extract_text(self, file_path: Path) -> Optional[str]:
         """Extract text from document."""
         # In production, would use OCR or PDF text extraction
         # For now, return placeholder
         return None
-    
+
     def _extract_with_patterns(self, text: str, patterns: List[str]) -> Optional[float]:
         """Extract numeric value using regex patterns."""
         for pattern in patterns:
@@ -130,7 +130,7 @@ class FinancialStatementParser:
                 except (ValueError, IndexError):
                     continue
         return None
-    
+
     def _extract_period_end(self, text: str) -> Optional[str]:
         """Extract period end date from statement."""
         # Common patterns for period dates
@@ -140,7 +140,7 @@ class FinancialStatementParser:
             r'(\d{4}-\d{2}-\d{2})',
             r'(\d{1,2}/\d{1,2}/\d{4})',
         ]
-        
+
         for pattern in date_patterns:
             match = re.search(pattern, text, re.IGNORECASE)
             if match:
@@ -157,7 +157,7 @@ class FinancialStatementParser:
                 except Exception:
                     return date_str
         return None
-    
+
     def _get_excerpt(self, text: str, pattern: str, context_chars: int = 100) -> str:
         """Get text excerpt around pattern match."""
         match = re.search(pattern, text, re.IGNORECASE)

@@ -68,7 +68,7 @@ class ExternalSignals(BaseModel):
 class UnderwritingRequest(BaseModel):
     """
     Primary underwriting request contract.
-    
+
     Represents a complete credit request package for commercial underwriting decision support.
     """
     request_id: str = Field(..., description="Unique request identifier")

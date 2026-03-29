@@ -1,7 +1,7 @@
 """
 Banking Package Types - Domain contracts for banking relationship data.
 """
-from typing import Optional, List
+from typing import Literal, Optional, List
 from pydantic import BaseModel, Field
 
 

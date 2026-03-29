@@ -1,7 +1,7 @@
 """
 Risk Feature Types - Domain contracts for derived risk features.
 """
-from typing import Optional
+from typing import Literal, Optional
 from pydantic import BaseModel, Field
 
 
@@ -37,6 +37,7 @@ class CreditFeatures(BaseModel):
     personal_fico_min: Optional[int] = Field(None, description="Minimum FICO score")
     business_credit_score: Optional[int] = Field(None, description="Business credit score")
     derogatory_event_score: float = Field(0.0, ge=0, le=1, description="Derogatory event risk score")
+    delinquencies_24m: int = Field(0, ge=0, description="Delinquencies in last 24 months")
 
 
 class OperatingRiskFeatures(BaseModel):

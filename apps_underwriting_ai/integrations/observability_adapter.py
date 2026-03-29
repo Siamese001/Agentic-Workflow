@@ -27,7 +27,7 @@ class UnderwritingTelemetry:
 class ObservabilityAdapter:
     """
     Adapter for observability and telemetry.
-    
+
     Emits:
     - request_id
     - product_type
@@ -38,10 +38,10 @@ class ObservabilityAdapter:
     - recommended_decision
     - confidence_score
     - review_required
-    
+
     Does not replace existing L6 observability.
     """
-    
+
     def emit_telemetry(
         self,
         request: UnderwritingRequest,
@@ -50,12 +50,12 @@ class ObservabilityAdapter:
     ) -> UnderwritingTelemetry:
         """
         Emit underwriting-specific telemetry.
-        
+
         Args:
             request: UnderwritingRequest
             memo: DecisionMemo
             metadata: Optional processing metadata
-            
+
         Returns:
             UnderwritingTelemetry
         """
@@ -68,14 +68,14 @@ class ObservabilityAdapter:
         telemetry.confidence_score = memo.confidence_score
         telemetry.review_required = memo.human_review_reason is not None
         telemetry.timestamp = datetime.now().isoformat()
-        
+
         if metadata:
             telemetry.contradiction_count = metadata.get("contradiction_count", 0)
             telemetry.policy_exception_count = metadata.get("policy_exception_count", 0)
             telemetry.duration_ms = metadata.get("duration_ms")
-        
+
         return telemetry
-    
+
     def to_metrics_dict(self, telemetry: UnderwritingTelemetry) -> Dict[str, Any]:
         """Convert telemetry to metrics dictionary for emission."""
         return {

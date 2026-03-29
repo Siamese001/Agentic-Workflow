@@ -9,10 +9,10 @@ from apps_underwriting_ai.types import UnderwritingRequest, DocumentPackage, Doc
 
 class TestDocumentCompleteness(unittest.TestCase):
     """Test cases for document completeness validation."""
-    
+
     def setUp(self):
         self.validator = DocumentCompletenessValidator()
-    
+
     def test_complete_document_package(self):
         """Test that complete package passes."""
         docs = DocumentPackage(
@@ -33,11 +33,11 @@ class TestDocumentCompleteness(unittest.TestCase):
                 )
             ]
         )
-        
+
         # Simplified - would need full request
         # result = self.validator.validate(request)
         # self.assertTrue(result.complete)
-    
+
     def test_incomplete_package(self):
         """Test that incomplete package is flagged."""
         pass  # Implement test

@@ -339,18 +339,18 @@ def _fire_meta_learning_intake(state_mgr: "object", now_utc: int, repo_root: Pat
             state_mgr.state.setdefault("meta_learning", {})["success_rate_store"] = _sr_store.export_state()
         except (ImportError, AttributeError, KeyError) as _sr_err:
             logging.warning("[MetaLearning] Wave1 success_rate_store failed (non-fatal): %s", _sr_err)
-        
+
         # Wave A-4: Emit cognitive dispositions for RCA enrichment
         cognitive_dispositions = state_mgr.state.get("cognitive_dispositions", [])
         if cognitive_dispositions:
             try:
                 from system_learning.adapters.system_learning_memory_bridge import get_sl_memory_bridge
                 bridge = get_sl_memory_bridge()
-                
+
                 # Serialize cognitive dispositions as JSON for RCA analysis
                 import json as _cog_json
                 cog_json = _cog_json.dumps(cognitive_dispositions)
-                
+
                 bridge.persist_cognitive_dispositions(
                     dispositions_json=cog_json,
                     timestamp_utc=now_utc,
@@ -358,7 +358,7 @@ def _fire_meta_learning_intake(state_mgr: "object", now_utc: int, repo_root: Pat
                 )
             except Exception as e:
                 logging.debug("[MetaLearning] Cognitive disposition persistence failed (non-fatal): %s", e)
-        
+
         # Emit ADG behavioral score for routing confidence monitor
         try:
             _adg_territory_score = state_mgr.state.get("adg_territory_score", 0.0)
@@ -621,14 +621,16 @@ def _fire_meta_learning_intake(state_mgr: "object", now_utc: int, repo_root: Pat
                         )
             except (OSError, TypeError) as _prop_err:
                 logging.warning("[MetaLearning] proposal write failed: %s", _prop_err)
-        logging.info("[MetaLearning] meta_learning_pipeline.run_pipeline() completed.")
-    
+            logging.info("[MetaLearning] meta_learning_pipeline.run_pipeline() completed.")
+    except Exception as _e:
+        logging.debug("[MetaLearning] Pipeline run failed (non-fatal): %s", _e)
+
     # Wave B-5: Collect Execute_SSOT phase outcomes for system learning
     try:
         from system_learning.adapters.system_learning_memory_bridge import get_sl_memory_bridge
-        
+
         bridge = get_sl_memory_bridge()
-        
+
         # Collect phase outcomes from state manager
         phase_outcomes = {
             "total_experiences": store.count() if 'store' in locals() else 0,
@@ -641,7 +643,7 @@ def _fire_meta_learning_intake(state_mgr: "object", now_utc: int, repo_root: Pat
             "timestamp_utc": now_utc,
             "trace_id": _tid if '_tid' in locals() else "unknown",
         }
-        
+
         # Persist phase outcomes
         bridge.persist_execute_ssot_phase_outcomes(
             phase_name="execute_ssot",
@@ -649,11 +651,11 @@ def _fire_meta_learning_intake(state_mgr: "object", now_utc: int, repo_root: Pat
             timestamp_utc=now_utc,
             trace_id=_tid if '_tid' in locals() else "unknown",
         )
-        
+
         logging.debug("[MetaLearning] Execute_SSOT phase outcomes persisted to system learning")
     except Exception as e:
         logging.debug("[MetaLearning] Phase outcome persistence failed (non-fatal): %s", e)
-    
+
     # Wave B-6: Serialize repair routes for optimization proposals
     try:
         repair_routes = state_mgr.state.get("repair_routes", [])
@@ -661,7 +663,7 @@ def _fire_meta_learning_intake(state_mgr: "object", now_utc: int, repo_root: Pat
             # Serialize repair routes as JSON for optimization proposal engine
             import json as _repair_json
             repair_routes_json = _repair_json.dumps(repair_routes)
-            
+
             bridge = get_sl_memory_bridge()
             bridge.persist_repair_routes(
                 repair_routes_json=repair_routes_json,

@@ -23,14 +23,14 @@ class CoreHandoffPayload:
 class CoreAdapter:
     """
     Adapter for handoff to agentic_core routing, governance, and execution.
-    
+
     Responsibilities:
     - Package app result into consumable form
     - Separate app-level recommendation from core-level authority
     - Prepare metadata for observability and trace systems
     - Do not duplicate trace_id or policy_hash issuance
     """
-    
+
     def prepare_handoff(
         self,
         request: UnderwritingRequest,
@@ -40,13 +40,13 @@ class CoreAdapter:
     ) -> CoreHandoffPayload:
         """
         Prepare handoff payload for agentic_core.
-        
+
         Args:
             request: Original UnderwritingRequest
             memo: DecisionMemo
             packet: DecisionPacket
             trace: AuditTrace
-            
+
         Returns:
             CoreHandoffPayload
         """
@@ -54,10 +54,10 @@ class CoreAdapter:
         payload.request_id = request.request_id
         payload.domain_recommendation = memo.recommended_decision
         payload.confidence_score = memo.confidence_score
-        
+
         # Convert packet to dict for serialization
         payload.decision_packet = self._packet_to_dict(packet)
-        
+
         # Build audit metadata
         payload.audit_metadata = {
             "derived_features": trace.derived_features.dict() if trace.derived_features else {},
@@ -65,7 +65,7 @@ class CoreAdapter:
             "validators_run": trace.validators_run,
             "human_review_triggered": trace.human_review_triggered,
         }
-        
+
         # Build routing hints
         payload.routing_hints = {
             "product_type": request.product_type,
@@ -74,7 +74,7 @@ class CoreAdapter:
             "risk_grade": trace.derived_features.composite.normalized_risk_grade if trace.derived_features else None,
             "review_required": packet.review_required,
         }
-        
+
         # Build governance context
         payload.governance_context = {
             "policy_version": trace.policy_hash,
@@ -82,9 +82,9 @@ class CoreAdapter:
             "conditions_count": len(memo.conditions_precedent),
             "covenants_count": len(memo.covenants),
         }
-        
+
         return payload
-    
+
     def _packet_to_dict(self, packet: DecisionPacket) -> Dict[str, Any]:
         """Convert DecisionPacket to dictionary."""
         return {
@@ -99,7 +99,7 @@ class CoreAdapter:
             "review_required": packet.review_required,
             "review_reason": packet.review_reason,
         }
-    
+
     def create_domain_request_payload(
         self,
         request: UnderwritingRequest

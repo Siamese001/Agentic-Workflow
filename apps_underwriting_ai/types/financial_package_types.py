@@ -1,7 +1,7 @@
 """
 Financial Package Types - Domain contracts for financial statement data.
 """
-from typing import Optional, List, Dict, Any
+from typing import Literal, Optional, List, Dict, Any
 from pydantic import BaseModel, Field, validator
 
 

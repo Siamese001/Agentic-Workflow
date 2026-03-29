@@ -1,4 +1,4 @@
-"""
+r"""
 Extracted capability module: extracted_training_pipeline
 Source: system_learning\ml_integration\training_pipeline.py
 Extracted: 2026-03-27T06:50:34.075560
@@ -180,7 +180,14 @@ class RandomForestModel(BaseMLModel):
         """Train Random Forest model."""
         try:
             from sklearn.ensemble import RandomForestClassifier
-            from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score, roc_auc_score, confusion_matrix
+            from sklearn.metrics import (
+                accuracy_score,
+                confusion_matrix,
+                f1_score,
+                precision_score,
+                recall_score,
+                roc_auc_score,
+            )
 
             start_time = time.time()
 
@@ -266,8 +273,15 @@ class XGBoostModel(BaseMLModel):
     def train(self, X_train: np.ndarray, y_train: np.ndarray, X_val: np.ndarray, y_val: np.ndarray) -> TrainingMetrics:
         """Train XGBoost model."""
         try:
+            from sklearn.metrics import (
+                accuracy_score,
+                confusion_matrix,
+                f1_score,
+                precision_score,
+                recall_score,
+                roc_auc_score,
+            )
             from xgboost import XGBClassifier
-            from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score, roc_auc_score, confusion_matrix
 
             start_time = time.time()
 
@@ -363,8 +377,15 @@ class NeuralNetworkModel(BaseMLModel):
     def train(self, X_train: np.ndarray, y_train: np.ndarray, X_val: np.ndarray, y_val: np.ndarray) -> TrainingMetrics:
         """Train Neural Network model."""
         try:
+            from sklearn.metrics import (
+                accuracy_score,
+                confusion_matrix,
+                f1_score,
+                precision_score,
+                recall_score,
+                roc_auc_score,
+            )
             from sklearn.neural_network import MLPClassifier
-            from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score, roc_auc_score, confusion_matrix
             from sklearn.preprocessing import StandardScaler
 
             start_time = time.time()
@@ -672,7 +693,14 @@ class MLTrainingPipeline:
             y_pred_proba = model.predict_proba(X_test)[:, 1]
 
             # Calculate test metrics
-            from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score, roc_auc_score, confusion_matrix
+            from sklearn.metrics import (
+                accuracy_score,
+                confusion_matrix,
+                f1_score,
+                precision_score,
+                recall_score,
+                roc_auc_score,
+            )
 
             test_metrics = TrainingMetrics(
                 model_id=f"{model_id}_test",
@@ -891,7 +919,14 @@ def train_anomaly_detection_model(dataset_name: str, model_type: str = "random_f
         """Train Random Forest model."""
         try:
             from sklearn.ensemble import RandomForestClassifier
-            from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score, roc_auc_score, confusion_matrix
+            from sklearn.metrics import (
+                accuracy_score,
+                confusion_matrix,
+                f1_score,
+                precision_score,
+                recall_score,
+                roc_auc_score,
+            )
 
             start_time = time.time()
 
@@ -974,8 +1009,15 @@ def train_anomaly_detection_model(dataset_name: str, model_type: str = "random_f
     def train(self, X_train: np.ndarray, y_train: np.ndarray, X_val: np.ndarray, y_val: np.ndarray) -> TrainingMetrics:
         """Train XGBoost model."""
         try:
+            from sklearn.metrics import (
+                accuracy_score,
+                confusion_matrix,
+                f1_score,
+                precision_score,
+                recall_score,
+                roc_auc_score,
+            )
             from xgboost import XGBClassifier
-            from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score, roc_auc_score, confusion_matrix
 
             start_time = time.time()
 
@@ -1068,8 +1110,15 @@ def train_anomaly_detection_model(dataset_name: str, model_type: str = "random_f
     def train(self, X_train: np.ndarray, y_train: np.ndarray, X_val: np.ndarray, y_val: np.ndarray) -> TrainingMetrics:
         """Train Neural Network model."""
         try:
+            from sklearn.metrics import (
+                accuracy_score,
+                confusion_matrix,
+                f1_score,
+                precision_score,
+                recall_score,
+                roc_auc_score,
+            )
             from sklearn.neural_network import MLPClassifier
-            from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score, roc_auc_score, confusion_matrix
             from sklearn.preprocessing import StandardScaler
 
             start_time = time.time()
@@ -1300,7 +1349,14 @@ def train_anomaly_detection_model(dataset_name: str, model_type: str = "random_f
             y_pred_proba = model.predict_proba(X_test)[:, 1]
 
             # Calculate test metrics
-            from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score, roc_auc_score, confusion_matrix
+            from sklearn.metrics import (
+                accuracy_score,
+                confusion_matrix,
+                f1_score,
+                precision_score,
+                recall_score,
+                roc_auc_score,
+            )
 
             test_metrics = TrainingMetrics(
                 model_id=f"{model_id}_test",

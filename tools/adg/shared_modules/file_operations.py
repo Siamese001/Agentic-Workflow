@@ -1,4 +1,4 @@
-"""
+r"""
 Extracted capability module: file_operations
 Source: agentic_core\L2_execution\UniversalWriteGateway.py
 Extracted: 2026-03-27T06:50:34.181500

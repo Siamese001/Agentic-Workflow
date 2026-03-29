@@ -25,17 +25,17 @@ class ManifestEntry:
 class DocumentManifestBuilder:
     """
     Builds and validates document manifests for underwriting packages.
-    
+
     Tracks:
     - Required vs actual documents
     - Document freshness
     - Completeness scoring
     """
-    
+
     def __init__(self):
         self.entries: List[ManifestEntry] = []
         self.required_docs: Dict[str, bool] = {}
-    
+
     def add_entry(self, doc_ref: DocumentRef, file_path: Path) -> ManifestEntry:
         """Add a document to the manifest."""
         entry = ManifestEntry(
@@ -50,21 +50,21 @@ class DocumentManifestBuilder:
         )
         self.entries.append(entry)
         return entry
-    
+
     def set_required_docs(self, required: Dict[str, bool]) -> None:
         """Set required document types."""
         self.required_docs = required
-    
+
     def check_completeness(self) -> Dict[str, Any]:
         """Check document completeness against requirements."""
         present_types = set(e.doc_type for e in self.entries)
         required_types = set(self.required_docs.keys())
-        
+
         missing = required_types - present_types
         present = required_types & present_types
-        
+
         completeness_pct = len(present) / len(required_types) if required_types else 1.0
-        
+
         return {
             "complete": len(missing) == 0,
             "completeness_pct": completeness_pct,
@@ -73,15 +73,15 @@ class DocumentManifestBuilder:
             "missing_types": list(missing),
             "present_types": list(present)
         }
-    
+
     def get_by_type(self, doc_type: str) -> List[ManifestEntry]:
         """Get all entries of a specific type."""
         return [e for e in self.entries if e.doc_type == doc_type]
-    
+
     def to_document_package(self) -> DocumentPackage:
         """Convert manifest to DocumentPackage."""
         package = DocumentPackage()
-        
+
         for entry in self.entries:
             doc_ref = DocumentRef(
                 doc_id=entry.doc_id,
@@ -92,7 +92,7 @@ class DocumentManifestBuilder:
                 parsed_structured_fields=entry.extracted_fields,
                 document_flags=entry.flags
             )
-            
+
             # Add to appropriate category
             if entry.doc_type == 'financial_statement':
                 package.financial_statements.append(doc_ref)
@@ -114,9 +114,9 @@ class DocumentManifestBuilder:
                 package.appraisals.append(doc_ref)
             elif entry.doc_type == 'management_comment':
                 package.management_comments.append(doc_ref)
-        
+
         return package
-    
+
     def to_dict(self) -> Dict[str, Any]:
         """Serialize manifest to dict."""
         return {

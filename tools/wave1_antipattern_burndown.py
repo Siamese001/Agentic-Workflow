@@ -4,10 +4,10 @@ Wave-based antipattern burndown script.
 Fixes HIGH severity except:Exception and except:bare violations.
 """
 
-import json
 import re
 import sys
 from pathlib import Path
+
 
 def fix_bare_except(content: str, line_no: int) -> str:
     """Fix bare except: to except Exception:"""
@@ -97,33 +97,34 @@ def apply_fixes_to_file(file_path: str, violations: list) -> tuple:
 
     return fixed_count, content if content != original_content else None
 
+
 def main():
-"""Main burndown routine - uses MCP adg_redis to query violations."""
-import subprocess
-import json
+    """Main burndown routine - uses MCP adg_redis to query violations."""
+    import json
+    import subprocess
 
-print("=" * 60)
-print("ANTIPATTERN BURNDOWN - Wave 1 (HIGH Severity)")
-print("=" * 60)
+    print("=" * 60)
+    print("ANTIPATTERN BURNDOWN - Wave 1 (HIGH Severity)")
+    print("=" * 60)
 
-# Try to use the MCP server via subprocess or read from known source
-# First, try to read violations from the evidence module
-try:
-import sys
-sys.path.insert(0, 'c:/Git/Agentic-Workflow')
-    from tools.adg.adg_violation_query import query_violations_by_severity
-    violations = query_violations_by_severity('HIGH')
-except ImportError:
-# Fallback: run adg_violations.py directly
-result = subprocess.run(
-    ['python', '-c', '''
+    # Try to use the MCP server via subprocess or read from known source
+    # First, try to read violations from the evidence module
+    try:
+        import sys
+        sys.path.insert(0, 'c:/Git/Agentic-Workflow')
+        from tools.adg.adg_violation_query import query_violations_by_severity
+        violations = query_violations_by_severity('HIGH')
+    except ImportError:
+        # Fallback: run adg_violations.py directly
+        result = subprocess.run(
+            ['python', '-c', '''
 import sys
 sys.path.insert(0, "c:/Git/Agentic-Workflow")
 from tools.adg.adg_violation_query import query_violations_by_severity
 import json
 v = query_violations_by_severity("HIGH")
 print(json.dumps(v))
-    '''],
+            '''],
             capture_output=True,
             text=True,
             cwd='c:/Git/Agentic-Workflow'
@@ -170,7 +171,7 @@ print(json.dumps(v))
             except Exception as e:
                 print(f"  ❌ Error writing {file_path}: {e}")
         else:
-            print(f"  ℹ️  No fixes applied")
+            print("  ℹ️  No fixes applied")
 
     print()
     print("=" * 60)

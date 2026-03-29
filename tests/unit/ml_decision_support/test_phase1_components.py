@@ -124,7 +124,7 @@ class TestFeatureSchemas:
             "trace_id_hash": "abc123def456"
         }
 
-        is_valid, errors, _ = schema.validate_features(valid_features)
+        is_valid, errors = schema.validate_features(valid_features)
         assert is_valid
         assert len(errors) == 0
 
@@ -473,27 +473,34 @@ class TestShadowLogger:
 
     def test_log_prediction(self, temp_logger):
         """Test logging a prediction."""
-        # Create mock prediction
-        mock_prediction = Mock()
-        mock_prediction.trace_id = "test_trace_123"
-        mock_prediction.replay_key = "test_replay_456"
-        mock_prediction.policy_hash = "policy_hash_789"
-        mock_prediction.model_version = "1.0"
-        mock_prediction.prediction = "Path_A"
-        mock_prediction.confidence = 0.85
-        mock_prediction.decision_mode = DecisionMode.ADVISORY
-        mock_prediction.model_metadata = {"model_name": "test_model"}
+        from agentic_core.L1_cognition.ml_decision_support.models.base_model import ModelPrediction, ModelInput
+        from agentic_core.L1_cognition.ml_decision_support.config.model_registry import DecisionMode
+        from datetime import datetime
+        # Create proper dataclass instances
+        model_prediction = ModelPrediction(
+            prediction="Path_A",
+            confidence=0.85,
+            model_version="1.0",
+            trace_id="test_trace_123",
+            replay_key="test_replay_456",
+            policy_hash="policy_hash_789",
+            decision_mode=DecisionMode.ADVISORY,
+            model_metadata={"model_name": "test_model"}
+        )
 
-        # Create mock input
-        mock_input = Mock()
-        mock_input.features = {"feature1": 0.5, "feature2": 0.3}
-        mock_input.validation_status = "valid"
-        mock_input.validation_errors = []
+        model_input = ModelInput(
+            features={"feature1": 0.5, "feature2": 0.3},
+            feature_provenance={},
+            input_hash="abc123",
+            validation_status="valid",
+            validation_errors=[],
+            preprocessing_applied=[]
+        )
 
         # Log prediction
         log_id = temp_logger.log_prediction(
-            model_input=mock_input,
-            model_prediction=mock_prediction,
+            model_input=model_input,
+            model_prediction=model_prediction,
             logging_mode=ShadowMode.LOG_ONLY
         )
 
@@ -506,21 +513,29 @@ class TestShadowLogger:
 
     def test_comparison_logging(self, temp_logger):
         """Test logging with comparison."""
-        # Create mock prediction and actual decision
-        mock_prediction = Mock()
-        mock_prediction.trace_id = "test_trace_123"
-        mock_prediction.replay_key = "test_replay_456"
-        mock_prediction.policy_hash = "policy_hash_789"
-        mock_prediction.model_version = "1.0"
-        mock_prediction.prediction = "Path_A"
-        mock_prediction.confidence = 0.85
-        mock_prediction.decision_mode = DecisionMode.ADVISORY
-        mock_prediction.model_metadata = {"model_name": "test_model"}
+        from agentic_core.L1_cognition.ml_decision_support.models.base_model import ModelPrediction, ModelInput
+        from agentic_core.L1_cognition.ml_decision_support.config.model_registry import DecisionMode
+        from datetime import datetime
+        # Create proper dataclass instances
+        model_prediction = ModelPrediction(
+            prediction="Path_A",
+            confidence=0.85,
+            model_version="1.0",
+            trace_id="test_trace_123",
+            replay_key="test_replay_456",
+            policy_hash="policy_hash_789",
+            decision_mode=DecisionMode.ADVISORY,
+            model_metadata={"model_name": "test_model"}
+        )
 
-        mock_input = Mock()
-        mock_input.features = {"feature1": 0.5}
-        mock_input.validation_status = "valid"
-        mock_input.validation_errors = []
+        model_input = ModelInput(
+            features={"feature1": 0.5},
+            feature_provenance={},
+            input_hash="abc123",
+            validation_status="valid",
+            validation_errors=[],
+            preprocessing_applied=[]
+        )
 
         actual_decision = {
             "path": "Path_B",
@@ -529,8 +544,8 @@ class TestShadowLogger:
 
         # Log with comparison
         log_id = temp_logger.log_prediction(
-            model_input=mock_input,
-            model_prediction=mock_prediction,
+            model_input=model_input,
+            model_prediction=model_prediction,
             logging_mode=ShadowMode.COMPARE,
             actual_decision=actual_decision
         )

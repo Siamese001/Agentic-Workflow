@@ -36,7 +36,7 @@ industry:
     - "7132"  # Gambling
     - "7211"  # Casino hotels
     - "111"   # Agriculture (some lenders restrict)
-  
+
   high_risk_naics_prefixes:
     - "722"   # Food services
     - "812"   # Personal services

@@ -22,36 +22,36 @@ class ContradictionValidationResult:
 class ContradictionValidator:
     """
     Validates that contradictions are within acceptable limits.
-    
+
     Classifies severity and recommends action:
     - Minor: Accept with note
     - Moderate: May require explanation
     - Major: Consider PEND
     - Critical: ESCALATE or DECLINE
     """
-    
+
     def validate(
         self,
         reconciliation: ReconciliationResult
     ) -> ContradictionValidationResult:
         """
         Validate reconciliation results.
-        
+
         Args:
             reconciliation: ReconciliationResult from DocumentReconciliationEngine
-            
+
         Returns:
             ContradictionValidationResult
         """
         result = ContradictionValidationResult()
-        
+
         # Count by severity
         for contradiction in reconciliation.contradictions:
             if contradiction.severity == ContradictionSeverity.CRITICAL:
                 result.critical_count += 1
             elif contradiction.severity == ContradictionSeverity.MAJOR:
                 result.major_count += 1
-            
+
             # Add to findings
             result.findings.append({
                 "field": contradiction.field_name,
@@ -59,7 +59,7 @@ class ContradictionValidator:
                 "severity": contradiction.severity.value,
                 "explanation": contradiction.explanation
             })
-        
+
         # Determine acceptability
         if result.critical_count > 0:
             result.acceptable = False
@@ -75,5 +75,5 @@ class ContradictionValidator:
         elif reconciliation.pass_rate < 0.7:
             result.acceptable = False
             result.pend_recommended = True
-        
+
         return result

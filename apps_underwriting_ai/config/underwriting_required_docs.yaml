@@ -13,7 +13,7 @@ product_types:
       - management_comments
       - appraisals
       - insurance_certificates
-    
+
   revolver:
     required:
       - financial_statements
@@ -27,7 +27,7 @@ product_types:
       - management_comments
       - appraisals
       - insurance_certificates
-    
+
   equipment_finance:
     required:
       - financial_statements
@@ -38,7 +38,7 @@ product_types:
     optional:
       - debt_schedule
       - management_comments
-    
+
   sba_like:
     required:
       - financial_statements
@@ -56,15 +56,15 @@ decision_type_additions:
   new:
     additional_required:
       - entity_docs
-    
+
   renewal:
     additional_required: []
-    
+
   increase:
     additional_required:
       - updated_financials
       - explanation_for_increase
-    
+
   modification:
     additional_required:
       - explanation_for_modification

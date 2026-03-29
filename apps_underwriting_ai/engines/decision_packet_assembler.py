@@ -37,42 +37,42 @@ class AssemblerInput:
 class DecisionPacketAssembler:
     """
     Assembles final decision outputs from all underwriting components.
-    
+
     Creates:
     - DecisionMemo (human-readable recommendation)
     - DecisionPacket (machine-readable output)
     - AuditTrace (compliance record)
     """
-    
+
     def assemble(
         self,
         input_data: AssemblerInput
     ) -> tuple[DecisionMemo, DecisionPacket, AuditTrace]:
         """
         Assemble all decision outputs.
-        
+
         Args:
             input_data: AssemblerInput with all components
-            
+
         Returns:
             Tuple of (DecisionMemo, DecisionPacket, AuditTrace)
         """
         # Build DecisionMemo
         memo = self._build_decision_memo(input_data)
-        
+
         # Build DecisionPacket
         packet = self._build_decision_packet(input_data)
-        
+
         # Build AuditTrace
         trace = self._build_audit_trace(input_data)
-        
+
         return memo, packet, trace
-    
+
     def _build_decision_memo(self, input_data: AssemblerInput) -> DecisionMemo:
         """Build human-readable decision memo."""
         request = input_data.request
         features = input_data.features
-        
+
         # Build evidence items from register
         evidence_items = []
         if input_data.evidence_register:
@@ -85,7 +85,7 @@ class DecisionPacketAssembler:
                     source_excerpt=entry.supporting_excerpt,
                     confidence=entry.confidence
                 ))
-        
+
         memo = DecisionMemo(
             request_id=request.request_id,
             recommended_decision=input_data.recommended_decision,
@@ -101,13 +101,13 @@ class DecisionPacketAssembler:
             confidence_score=input_data.confidence_score,
             human_review_reason=input_data.human_review_reason
         )
-        
+
         return memo
-    
+
     def _build_decision_packet(self, input_data: AssemblerInput) -> DecisionPacket:
         """Build machine-readable decision packet."""
         request = input_data.request
-        
+
         # Build recommended structure
         recommended_structure = {
             "amount": request.requested_amount if input_data.recommended_decision in ["APPROVE", "APPROVE_WITH_CONDITIONS", "COUNTER_OFFER"] else None,
@@ -117,13 +117,13 @@ class DecisionPacketAssembler:
             "collateral_required": request.requested_structure.collateral_required,
             "guarantor_required": request.requested_structure.guarantor_required,
         }
-        
+
         # Determine if human review is required
         review_required = (
             input_data.recommended_decision == "ESCALATE_TO_HUMAN" or
             input_data.human_review_reason is not None
         )
-        
+
         packet = DecisionPacket(
             request_id=request.request_id,
             decision_state=input_data.recommended_decision,
@@ -135,13 +135,13 @@ class DecisionPacketAssembler:
             review_required=review_required,
             review_reason=input_data.human_review_reason
         )
-        
+
         return packet
-    
+
     def _build_audit_trace(self, input_data: AssemblerInput) -> AuditTrace:
         """Build compliance audit trace."""
         request = input_data.request
-        
+
         # Build evidence references
         evidence_refs = []
         if input_data.evidence_register:
@@ -152,7 +152,7 @@ class DecisionPacketAssembler:
                     "evidence_source": entry.evidence_source,
                     "confidence": entry.confidence
                 })
-        
+
         trace = AuditTrace(
             request_id=request.request_id,
             trace_id=f"trace-{request.request_id}",  # Would be set by core
@@ -165,5 +165,5 @@ class DecisionPacketAssembler:
             human_review_triggered=input_data.human_review_reason is not None,
             determinism_digest=None  # Would be set by core
         )
-        
+
         return trace

@@ -15,7 +15,7 @@ exception_categories:
       - "strong_collateral"
       - "strong_guarantor"
       - "historical_performance"
-    
+
   leverage_above_maximum:
     description: "Debt/EBITDA above policy maximum"
     allowed_range: [3.50, 5.00]
@@ -28,7 +28,7 @@ exception_categories:
       - "asset_backed"
       - "contracted_revenue"
       - "declining_trend_reversal"
-    
+
   fico_below_minimum:
     description: "Personal FICO below policy minimum"
     allowed_range: [620, 680]
@@ -40,7 +40,7 @@ exception_categories:
     mitigants_required:
       - "strong_business_cash_flow"
       - "additional_collateral"
-    
+
   ltv_above_maximum:
     description: "LTV above policy maximum"
     allowed_range: [0.80, 0.90]
@@ -52,7 +52,7 @@ exception_categories:
     mitigants_required:
       - "strong_amortization"
       - "additional_collateral"
-    
+
   ineligible_collateral:
     description: "Collateral type not in eligible list"
     auto_permitted: false
@@ -68,35 +68,35 @@ human_review_triggers:
   dscr_below_1.25:
     description: "DSCR below 1.25x"
     action: "escalate"
-    
+
   debt_to_ebitda_above_3.5:
     description: "Debt/EBITDA above 3.5x"
     action: "escalate"
-    
+
   fico_below_680:
     description: "FICO below 680"
     action: "escalate"
-    
+
   requested_amount_above_5mm:
     description: "Request above $5M"
     action: "escalate"
-    
+
   restricted_industry:
     description: "Borrower in restricted industry"
     action: "escalate"
-    
+
   watchlist_hit:
     description: "Sanctions or watchlist match"
     action: "escalate"
-    
+
   policy_exception_multiple:
     description: "Multiple policy exceptions (>2)"
     action: "escalate"
-    
+
   complex_structure:
     description: "Complex or unusual loan structure"
     action: "escalate"
-    
+
   contradicting_evidence:
     description: "Significant data contradictions"
     action: "pend"

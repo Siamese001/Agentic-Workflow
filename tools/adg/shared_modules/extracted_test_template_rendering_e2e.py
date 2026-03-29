@@ -1,11 +1,11 @@
-"""
+r"""
 Extracted capability module: extracted_test_template_rendering_e2e
 Source: tests\unit\prompt_governance\test_template_rendering_e2e.py
 Extracted: 2026-03-27T06:50:34.045419
 """
 
 def renderer() -> SovereignPromptRenderer:
-    """Real renderer pointed at the canonical templates/ directory."""
+    r"""Real renderer pointed at the canonical templates/ directory."""
     return SovereignPromptRenderer(template_root=TEMPLATES_DIR)
 
 def meta_renderer() -> SovereignPromptRenderer:
@@ -20,16 +20,6 @@ class TestInstructionalTemplateRendering:
     """Every template in templates/ must render without error."""
 
     def test_code_healing(self, renderer: SovereignPromptRenderer):
-        from agentic_core.prompt_governance.core.sovereign_prompt_renderer import (
-            SovereignPromptRenderer,
-            TemplateValidationError,
-        )
-        from agentic_core.prompt_governance.core.template_catalog import (
-            TEMPLATE_CATALOG,
-            TemplateCategory,
-            TemplateStatus,
-            get_templates_for_agent,
-        )
 
         ctx = {
             **_subatomic_context(),
@@ -523,16 +513,6 @@ class TestRendererPathCorrectness:
         assert len(result) > 50
 
     def test_code_healing(self, renderer: SovereignPromptRenderer):
-        from agentic_core.prompt_governance.core.sovereign_prompt_renderer import (
-            SovereignPromptRenderer,
-            TemplateValidationError,
-        )
-        from agentic_core.prompt_governance.core.template_catalog import (
-            TEMPLATE_CATALOG,
-            TemplateCategory,
-            TemplateStatus,
-            get_templates_for_agent,
-        )
 
         ctx = {
             **_subatomic_context(),

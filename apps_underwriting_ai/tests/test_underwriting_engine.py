@@ -26,11 +26,11 @@ from apps_underwriting_ai import (
 
 class TestUnderwritingEngine(unittest.TestCase):
     """Test cases for underwriting engine."""
-    
+
     def setUp(self):
         """Set up test fixtures."""
         self.engine = UnderwritingEngine()
-    
+
     def _create_base_request(self, overrides=None):
         """Create a base underwriting request for testing."""
         request_data = {
@@ -130,33 +130,33 @@ class TestUnderwritingEngine(unittest.TestCase):
                 max_auto_approval_amount=2000000.00
             )
         }
-        
+
         if overrides:
             request_data.update(overrides)
-        
+
         return UnderwritingRequest(**request_data)
-    
+
     def test_approve_strong_credit(self):
         """Test APPROVE recommendation for strong credit."""
         request = self._create_base_request()
         result = self.engine.run(request)
-        
+
         self.assertTrue(result.success)
         self.assertIn(result.decision, ["APPROVE", "APPROVE_WITH_CONDITIONS"])
         self.assertIsNotNone(result.decision_memo)
         self.assertIsNotNone(result.decision_packet)
         self.assertGreater(result.confidence_score, 0.7)
-    
+
     def test_pend_missing_documents(self):
         """Test PEND_FOR_INFORMATION when documents missing."""
         request = self._create_base_request()
         # Set require docs missing flag
         request.decision_constraints.require_human_if_docs_missing = True
-        
+
         result = self.engine.run(request)
         # Should still process - document completeness is advisory
         self.assertTrue(result.success)
-    
+
     def test_decline_prohibited_industry(self):
         """Test DECLINE for restricted industry."""
         request = self._create_base_request({
@@ -183,7 +183,7 @@ class TestUnderwritingEngine(unittest.TestCase):
                 restricted_industries=["7132"]
             )
         })
-        
+
         result = self.engine.run(request)
         self.assertTrue(result.success)
         # Should decline due to restricted industry
@@ -192,18 +192,18 @@ class TestUnderwritingEngine(unittest.TestCase):
 
 class TestScenarios(unittest.TestCase):
     """Test specific underwriting scenarios."""
-    
+
     def setUp(self):
         self.engine = UnderwritingEngine()
-    
+
     def test_approve_with_conditions_weak_dscr(self):
         """Test APPROVE_WITH_CONDITIONS for weak DSCR."""
         pass  # Implement scenario test
-    
+
     def test_counter_offer_high_leverage(self):
         """Test COUNTER_OFFER for high leverage."""
         pass  # Implement scenario test
-    
+
     def test_escalate_high_amount(self):
         """Test ESCALATE_TO_HUMAN for high amount."""
         pass  # Implement scenario test

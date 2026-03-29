@@ -2,7 +2,7 @@
 Execution Adapter - Handles execution handoff to agentic_core.
 """
 from typing import Dict, Any, Optional
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 
 from ..types import UnderwritingRequest
 from ..engines.underwriting_engine import UnderwritingResult
@@ -14,21 +14,21 @@ class ExecutionRequest:
     app_name: str = "apps_underwriting_ai"
     request_id: str = ""
     intent_type: str = "underwriting_decision"
-    payload: Dict[str, Any]
     priority: str = "normal"
     sla_deadline: Optional[str] = None
+    payload: Dict[str, Any] = field(default_factory=dict)
 
 
 class ExecutionAdapter:
     """
     Adapter for execution handoff to agentic_core L2 execution layer.
-    
+
     Responsibilities:
     - Package execution request
     - Set appropriate priority and SLA
     - Prepare for L2 execution authority
     """
-    
+
     def create_execution_request(
         self,
         request: UnderwritingRequest,
@@ -36,11 +36,11 @@ class ExecutionAdapter:
     ) -> ExecutionRequest:
         """
         Create execution request for core handoff.
-        
+
         Args:
             request: Original UnderwritingRequest
             result: UnderwritingResult from engine
-            
+
         Returns:
             ExecutionRequest
         """
@@ -58,7 +58,7 @@ class ExecutionAdapter:
             "audit_trace": result.audit_trace.dict() if result.audit_trace else {},
             "risk_features": result.risk_features.dict() if result.risk_features else {},
         }
-        
+
         # Set priority based on SLA
         if request.decision_constraints.turnaround_sla_hours <= 24:
             exec_request.priority = "high"
@@ -66,14 +66,14 @@ class ExecutionAdapter:
             exec_request.priority = "normal"
         else:
             exec_request.priority = "low"
-        
+
         # Calculate SLA deadline
         from datetime import datetime, timedelta
         deadline = datetime.now() + timedelta(hours=request.decision_constraints.turnaround_sla_hours)
         exec_request.sla_deadline = deadline.isoformat()
-        
+
         return exec_request
-    
+
     def to_execution_payload(self, exec_request: ExecutionRequest) -> Dict[str, Any]:
         """Convert to execution payload format."""
         return {

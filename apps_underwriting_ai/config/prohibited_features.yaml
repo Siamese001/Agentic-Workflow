@@ -29,16 +29,16 @@ prohibited_proxy_indicators:
     - "disadvantaged"
     - "historically_underutilized"
     - "immigrant_owned"
-  
+
   geographic_proxies:
     - "zip_code_risk"  # Can proxy for race/income
     - "census_tract_income"
     - "neighborhood_score"
-  
+
   name_based:
     - "name_ethnicity_score"  # Do not use name to infer ethnicity
     - "name_origin_analysis"
-  
+
   linguistic:
     - "accent_detection"
     - "language_proficiency_score"
@@ -52,13 +52,13 @@ explicitly_permitted_fields:
     - industry_description
     - business_model
     - revenue_concentration
-  
+
   credit_factors:
     - personal_fico  # Credit score is permitted
     - business_credit_score
     - payment_history
     - derogatory_events
-  
+
   financial_metrics:
     - revenue
     - ebitda
@@ -70,11 +70,11 @@ validation_rules:
   check_forbidden_in_rationale: true
   check_forbidden_in_features: true
   block_if_prohibited_detected: true
-  
+
   rationale_review:
     scan_for_keywords: true
     flag_for_human_review: true
-    
+
   feature_derivation:
     audit_feature_sources: true
     ensure_no_prohibited_base: true

@@ -112,44 +112,44 @@ __all__ = [
     "DecisionType",
     "InterestType",
     "DecisionState",
-    
+
     # Borrower types
     "BorrowerProfile",
     "OwnerInfo",
     "EntityType",
-    
+
     # Financial types
     "FinancialPackage",
     "FinancialPeriod",
     "CalculatedMetrics",
     "FiscalType",
-    
+
     # Collateral types
     "CollateralPackage",
     "CollateralType",
     "LienPosition",
-    
+
     # Credit types
     "CreditPackage",
-    
+
     # Banking types
     "BankingPackage",
     "DepositTrend",
-    
+
     # Document types
     "DocumentPackage",
     "DocumentRef",
-    
+
     # Policy types
     "PolicyContext",
     "CollateralRules",
-    
+
     # Relationship types
     "RelationshipContext",
-    
+
     # Constraints types
     "DecisionConstraints",
-    
+
     # Risk feature types
     "RiskFeatures",
     "CapacityFeatures",
@@ -162,7 +162,7 @@ __all__ = [
     "PolicyFeatures",
     "CompositeFeatures",
     "RiskGrade",
-    
+
     # Output types
     "DecisionMemo",
     "EvidenceItem",

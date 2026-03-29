@@ -20,14 +20,14 @@ class StaleDataResult:
 class StaleDataValidator:
     """
     Validates that documents are not stale.
-    
+
     Checks:
     - Financial statement dates
     - Appraisal dates
     - Tax return dates
     - Bank statement dates
     """
-    
+
     # Maximum age in days by document type
     MAX_AGE_DAYS = {
         "financial_statement": 365,
@@ -39,22 +39,22 @@ class StaleDataValidator:
         "appraisal": 365,
         "field_exam": 180,
     }
-    
+
     def validate(
         self,
         request: UnderwritingRequest
     ) -> StaleDataResult:
         """
         Validate document freshness.
-        
+
         Args:
             request: UnderwritingRequest
-            
+
         Returns:
             StaleDataResult
         """
         result = StaleDataResult()
-        
+
         # Check financial periods
         if request.financials.periods:
             latest = request.financials.periods[-1]
@@ -62,19 +62,19 @@ class StaleDataValidator:
                 self._check_date_freshness(
                     result, "financial_statement", latest.period_end
                 )
-        
+
         # Check collateral appraisal
         if request.collateral.appraisal_date:
             self._check_date_freshness(
                 result, "appraisal", request.collateral.appraisal_date
             )
-        
+
         # Check field exam
         if request.collateral.field_exam_date:
             self._check_date_freshness(
                 result, "field_exam", request.collateral.field_exam_date
             )
-        
+
         # Calculate overall staleness score
         if result.stale_items:
             total_weight = sum(
@@ -82,16 +82,16 @@ class StaleDataValidator:
                 for item in result.stale_items
             )
             result.staleness_score = min(1.0, total_weight / 3.0)
-        
+
         # Determine if update is required
         result.requires_update = any(
             item["severity"] == "critical" for item in result.stale_items
         )
-        
+
         result.fresh = len(result.stale_items) == 0
-        
+
         return result
-    
+
     def _check_date_freshness(
         self,
         result: StaleDataResult,
@@ -109,11 +109,11 @@ class StaleDataValidator:
                     continue
             else:
                 return
-            
+
             # Calculate age
             age_days = (datetime.now() - doc_date).days
             max_age = self.MAX_AGE_DAYS.get(doc_type, 365)
-            
+
             # Determine severity
             if age_days > max_age * 1.5:
                 severity = "critical"
@@ -121,7 +121,7 @@ class StaleDataValidator:
                 severity = "warning"
             else:
                 return  # Fresh enough
-            
+
             result.stale_items.append({
                 "document_type": doc_type,
                 "date": date_str,
@@ -129,6 +129,6 @@ class StaleDataValidator:
                 "max_age_days": max_age,
                 "severity": severity
             })
-            
+
         except Exception:
             pass  # Skip if date parsing fails

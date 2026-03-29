@@ -1,4 +1,4 @@
-"""
+r"""
 Extracted capability module: extracted_capability_registry
 Source: agentic_core\L3_orchestration\registry\capability_registry.py
 Extracted: 2026-03-27T06:50:34.188517

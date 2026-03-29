@@ -13,11 +13,11 @@ class EvidenceRegister:
     """Internal evidence register for the underwriting process."""
     request_id: str
     entries: List[EvidenceEntry] = field(default_factory=list)
-    
+
     def add_entry(self, entry: EvidenceEntry) -> None:
         """Add an evidence entry."""
         self.entries.append(entry)
-    
+
     def add_claim(
         self,
         claim_category: str,
@@ -41,7 +41,7 @@ class EvidenceRegister:
         )
         self.entries.append(entry)
         return entry
-    
+
     def get_completeness_pct(self) -> float:
         """Calculate evidence completeness percentage."""
         if not self.entries:
@@ -49,7 +49,7 @@ class EvidenceRegister:
         # Count non-zero confidence entries
         valid_entries = sum(1 for e in self.entries if e.confidence > 0)
         return valid_entries / len(self.entries)
-    
+
     def get_contradiction_count(self) -> int:
         """Count entries with contradicting evidence."""
         return sum(1 for e in self.entries if e.contradicting_evidence)
@@ -58,22 +58,22 @@ class EvidenceRegister:
 class EvidenceRegisterEngine:
     """
     Manages evidence collection and registration throughout underwriting.
-    
+
     Collects:
     - Financial metric evidence
     - Credit bureau evidence
     - Collateral appraisal evidence
     - Policy rule evidence
     """
-    
+
     def __init__(self):
         self._register: Optional[EvidenceRegister] = None
-    
+
     def initialize(self, request_id: str) -> EvidenceRegister:
         """Initialize evidence register for a request."""
         self._register = EvidenceRegister(request_id=request_id)
         return self._register
-    
+
     def collect_financial_evidence(
         self,
         register: EvidenceRegister,
@@ -81,7 +81,7 @@ class EvidenceRegisterEngine:
     ) -> None:
         """Collect evidence from financial package."""
         metrics = request.financials.calculated_metrics
-        
+
         if metrics.dscr_ttm:
             register.add_claim(
                 claim_category="capacity",
@@ -90,7 +90,7 @@ class EvidenceRegisterEngine:
                 evidence_type="structured_metric",
                 confidence=0.9
             )
-        
+
         if metrics.debt_to_ebitda_ttm:
             register.add_claim(
                 claim_category="capacity",
@@ -99,7 +99,7 @@ class EvidenceRegisterEngine:
                 evidence_type="structured_metric",
                 confidence=0.9
             )
-        
+
         if metrics.ebitda_margin_ttm:
             register.add_claim(
                 claim_category="capacity",
@@ -108,13 +108,13 @@ class EvidenceRegisterEngine:
                 evidence_type="structured_metric",
                 confidence=0.9
             )
-        
+
         # Add revenue trend evidence
         if request.financials.periods and len(request.financials.periods) >= 2:
             periods = request.financials.periods
             latest_revenue = periods[-1].revenue
             prior_revenue = periods[-2].revenue if len(periods) > 1 else None
-            
+
             if prior_revenue and prior_revenue > 0:
                 growth = (latest_revenue - prior_revenue) / prior_revenue
                 register.add_claim(
@@ -124,7 +124,7 @@ class EvidenceRegisterEngine:
                     evidence_type="structured_metric",
                     confidence=0.85
                 )
-    
+
     def collect_credit_evidence(
         self,
         register: EvidenceRegister,
@@ -132,7 +132,7 @@ class EvidenceRegisterEngine:
     ) -> None:
         """Collect evidence from credit package."""
         credit = request.credit
-        
+
         if credit.business_bureau_score:
             register.add_claim(
                 claim_category="credit",
@@ -141,7 +141,7 @@ class EvidenceRegisterEngine:
                 evidence_type="structured_metric",
                 confidence=0.95
             )
-        
+
         if credit.personal_fico_scores:
             min_fico = min(credit.personal_fico_scores)
             register.add_claim(
@@ -151,7 +151,7 @@ class EvidenceRegisterEngine:
                 evidence_type="structured_metric",
                 confidence=0.95
             )
-        
+
         if credit.delinquencies_24m > 0:
             register.add_claim(
                 claim_category="credit",
@@ -160,7 +160,7 @@ class EvidenceRegisterEngine:
                 evidence_type="structured_metric",
                 confidence=0.95
             )
-        
+
         if credit.bankruptcies_ever > 0:
             register.add_claim(
                 claim_category="credit",
@@ -169,7 +169,7 @@ class EvidenceRegisterEngine:
                 evidence_type="structured_metric",
                 confidence=1.0
             )
-    
+
     def collect_collateral_evidence(
         self,
         register: EvidenceRegister,
@@ -177,7 +177,7 @@ class EvidenceRegisterEngine:
     ) -> None:
         """Collect evidence from collateral package."""
         collateral = request.collateral
-        
+
         if collateral.estimated_value:
             register.add_claim(
                 claim_category="collateral",
@@ -186,7 +186,7 @@ class EvidenceRegisterEngine:
                 evidence_type="document",
                 confidence=0.8
             )
-        
+
         if collateral.borrowing_base_value:
             register.add_claim(
                 claim_category="collateral",
@@ -195,7 +195,7 @@ class EvidenceRegisterEngine:
                 evidence_type="structured_metric",
                 confidence=0.85
             )
-        
+
         if collateral.appraisal_date:
             register.add_claim(
                 claim_category="collateral",
@@ -204,7 +204,7 @@ class EvidenceRegisterEngine:
                 evidence_type="document",
                 confidence=0.9
             )
-    
+
     def collect_policy_evidence(
         self,
         register: EvidenceRegister,
@@ -213,7 +213,7 @@ class EvidenceRegisterEngine:
     ) -> None:
         """Collect evidence from policy context."""
         policy = request.policy_context
-        
+
         register.add_claim(
             claim_category="policy",
             claim_text=f"Underwriting policy version {policy.policy_version} applied",
@@ -221,7 +221,7 @@ class EvidenceRegisterEngine:
             evidence_type="policy_rule",
             confidence=1.0
         )
-        
+
         if policy_exception_count > 0:
             register.add_claim(
                 claim_category="policy",
@@ -230,7 +230,7 @@ class EvidenceRegisterEngine:
                 evidence_type="policy_rule",
                 confidence=0.95
             )
-        
+
         if policy.min_dscr:
             register.add_claim(
                 claim_category="policy",
@@ -239,7 +239,7 @@ class EvidenceRegisterEngine:
                 evidence_type="policy_rule",
                 confidence=1.0
             )
-    
+
     def collect_relationship_evidence(
         self,
         register: EvidenceRegister,
@@ -247,7 +247,7 @@ class EvidenceRegisterEngine:
     ) -> None:
         """Collect evidence from relationship context."""
         rel = request.relationship_context
-        
+
         if rel.existing_customer:
             tenure_text = f" with {rel.tenure_years:.1f} year tenure" if rel.tenure_years else ""
             register.add_claim(
@@ -257,7 +257,7 @@ class EvidenceRegisterEngine:
                 evidence_type="structured_metric",
                 confidence=0.95
             )
-        
+
         if rel.deposit_relationship:
             register.add_claim(
                 claim_category="relationship",

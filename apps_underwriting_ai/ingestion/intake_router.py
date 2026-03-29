@@ -28,20 +28,20 @@ class IngestionResult:
 class IntakeRouter:
     """
     Routes incoming requests to appropriate ingestion pipeline.
-    
+
     Supports:
     - JSON API payloads
     - CSV extracts
     - XLSX templates
     - Manual dict assembly
     """
-    
+
     def __init__(self):
         self.json_mapper = JSONMapper()
         self.csv_mapper = CSVMapper()
         self.xlsx_mapper = XLSXMapper()
         self.doc_ingestion = DocumentIngestion()
-    
+
     def ingest_json(
         self,
         data: Union[str, Dict[str, Any], Path],
@@ -50,18 +50,18 @@ class IntakeRouter:
     ) -> IngestionResult:
         """
         Ingest from JSON string, dict, or file path.
-        
+
         Args:
             data: JSON string, dict, or Path to JSON file
             request_id: Optional request ID (generated if not provided)
             strict_mode: If True, reject unknown critical fields
-            
+
         Returns:
             IngestionResult with UnderwritingRequest or errors
         """
         warnings = []
         provenance = {"source_type": "json", "strict_mode": strict_mode}
-        
+
         try:
             # Parse input
             if isinstance(data, Path) or (isinstance(data, str) and not data.strip().startswith('{')):
@@ -81,18 +81,18 @@ class IntakeRouter:
                 provenance["source_hash"] = hashlib.sha256(
                     json.dumps(data, sort_keys=True).encode()
                 ).hexdigest()[:16]
-            
+
             # Generate request_id if not provided
             if request_id is None:
                 request_id = f"UW-{datetime.now().strftime('%Y%m%d')}-{provenance['source_hash'][:8]}"
-            
+
             # Map to domain model
             result = self.json_mapper.map_to_request(
                 raw_data,
                 request_id=request_id,
                 strict_mode=strict_mode
             )
-            
+
             if result.errors:
                 return IngestionResult(
                     success=False,
@@ -100,14 +100,14 @@ class IntakeRouter:
                     errors=result.errors,
                     provenance=provenance
                 )
-            
+
             return IngestionResult(
                 success=True,
                 request=result.request,
                 warnings=result.warnings,
                 provenance=provenance
             )
-            
+
         except json.JSONDecodeError as e:
             return IngestionResult(
                 success=False,
@@ -120,7 +120,7 @@ class IntakeRouter:
                 errors=[f"Ingestion error: {str(e)}"],
                 provenance=provenance
             )
-    
+
     def ingest_csv(
         self,
         data: Union[str, Path],
@@ -129,45 +129,45 @@ class IntakeRouter:
     ) -> IngestionResult:
         """
         Ingest from CSV file or string.
-        
+
         Args:
             data: CSV file path or CSV string
             mapping_config: Field name mappings (csv_field -> canonical_field)
             request_id: Optional request ID
-            
+
         Returns:
             IngestionResult
         """
         provenance = {"source_type": "csv"}
-        
+
         try:
             result = self.csv_mapper.map_to_request(
                 data,
                 mapping_config=mapping_config,
                 request_id=request_id
             )
-            
+
             if result.errors:
                 return IngestionResult(
                     success=False,
                     errors=result.errors,
                     provenance=provenance
                 )
-            
+
             return IngestionResult(
                 success=True,
                 request=result.request,
                 warnings=result.warnings,
                 provenance=provenance
             )
-            
+
         except Exception as e:
             return IngestionResult(
                 success=False,
                 errors=[f"CSV ingestion error: {str(e)}"],
                 provenance=provenance
             )
-    
+
     def ingest_xlsx(
         self,
         file_path: Path,
@@ -176,45 +176,45 @@ class IntakeRouter:
     ) -> IngestionResult:
         """
         Ingest from XLSX underwriting template.
-        
+
         Args:
             file_path: Path to XLSX file
             template_type: Template format identifier
             request_id: Optional request ID
-            
+
         Returns:
             IngestionResult
         """
         provenance = {"source_type": "xlsx", "template_type": template_type}
-        
+
         try:
             result = self.xlsx_mapper.map_to_request(
                 file_path,
                 template_type=template_type,
                 request_id=request_id
             )
-            
+
             if result.errors:
                 return IngestionResult(
                     success=False,
                     errors=result.errors,
                     provenance=provenance
                 )
-            
+
             return IngestionResult(
                 success=True,
                 request=result.request,
                 warnings=result.warnings,
                 provenance=provenance
             )
-            
+
         except Exception as e:
             return IngestionResult(
                 success=False,
                 errors=[f"XLSX ingestion error: {str(e)}"],
                 provenance=provenance
             )
-    
+
     def ingest_documents(
         self,
         doc_paths: list[Path],
@@ -222,16 +222,16 @@ class IntakeRouter:
     ) -> Dict[str, Any]:
         """
         Ingest a batch of supporting documents.
-        
+
         Args:
             doc_paths: List of document file paths
             doc_type_map: Optional mapping of filename patterns to doc types
-            
+
         Returns:
             Document manifest
         """
         return self.doc_ingestion.ingest_batch(doc_paths, doc_type_map)
-    
+
     @staticmethod
     def _compute_file_hash(path: Path) -> str:
         """Compute SHA256 hash of file contents."""

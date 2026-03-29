@@ -18,7 +18,7 @@ class ForbiddenCheckResult:
 class ForbiddenFeatureChecker:
     """
     Validates that prohibited attributes are not used in rationale or features.
-    
+
     Blocks direct or proxy use of:
     - Race
     - Religion
@@ -26,7 +26,7 @@ class ForbiddenFeatureChecker:
     - Marital status
     - Protected demographic proxies
     """
-    
+
     # Explicitly forbidden fields
     FORBIDDEN_FIELDS: Set[str] = {
         "race",
@@ -41,7 +41,7 @@ class ForbiddenFeatureChecker:
         "age",  # Age at application (vs years_in_business)
         "veteran_status",
     }
-    
+
     # Proxy indicators that may suggest forbidden attribute use
     PROXY_INDICATORS: Set[str] = {
         "minority_owned",
@@ -52,7 +52,7 @@ class ForbiddenFeatureChecker:
         "ethnic",
         "racial",
     }
-    
+
     # Permitted fields that may sound similar but are allowed
     PERMITTED_FIELDS: Set[str] = {
         "years_in_business",  # Business age, not owner age
@@ -60,32 +60,32 @@ class ForbiddenFeatureChecker:
         "industry_code",  # NAICS, not demographic
         "industry_description",
     }
-    
+
     def check_request(
         self,
         request: UnderwritingRequest
     ) -> ForbiddenCheckResult:
         """
         Check request for forbidden features.
-        
+
         Args:
             request: UnderwritingRequest to validate
-            
+
         Returns:
             ForbiddenCheckResult
         """
         result = ForbiddenCheckResult()
-        
+
         # Check borrower profile for forbidden fields
         self._check_borrower_profile(request, result)
-        
+
         # Check for proxy indicators in all text fields
         self._check_proxy_indicators(request, result)
-        
+
         result.passed = len(result.violations) == 0
-        
+
         return result
-    
+
     def _check_borrower_profile(
         self,
         request: UnderwritingRequest,
@@ -93,10 +93,10 @@ class ForbiddenFeatureChecker:
     ) -> None:
         """Check borrower profile for forbidden fields."""
         borrower = request.borrower
-        
+
         # Convert to dict for checking
         borrower_dict = borrower.dict() if hasattr(borrower, 'dict') else {}
-        
+
         for forbidden in self.FORBIDDEN_FIELDS:
             if forbidden in borrower_dict and borrower_dict[forbidden] is not None:
                 result.violations.append({
@@ -106,7 +106,7 @@ class ForbiddenFeatureChecker:
                     "message": f"Forbidden field '{forbidden}' present in borrower profile"
                 })
                 result.blocked_fields.append(forbidden)
-    
+
     def _check_proxy_indicators(
         self,
         request: UnderwritingRequest,
@@ -115,7 +115,7 @@ class ForbiddenFeatureChecker:
         """Check for proxy indicators in text fields."""
         # Check industry description
         industry_desc = request.borrower.industry_description.lower()
-        
+
         for proxy in self.PROXY_INDICATORS:
             if proxy.lower() in industry_desc:
                 # This is a warning, not a blocking violation
@@ -126,7 +126,7 @@ class ForbiddenFeatureChecker:
                     "severity": "warning",
                     "message": f"Potential demographic proxy '{proxy}' detected in industry description"
                 })
-    
+
     def validate_feature_derivation(
         self,
         features: RiskFeatures,
@@ -134,21 +134,21 @@ class ForbiddenFeatureChecker:
     ) -> ForbiddenCheckResult:
         """
         Validate that feature derivation rationale doesn't use forbidden logic.
-        
+
         Args:
             features: Derived RiskFeatures
             rationale: Feature derivation rationale text
-            
+
         Returns:
             ForbiddenCheckResult
         """
         result = ForbiddenCheckResult()
-        
+
         if not rationale:
             return result
-        
+
         rationale_lower = rationale.lower()
-        
+
         # Check for forbidden terms in rationale
         for forbidden in self.FORBIDDEN_FIELDS:
             if forbidden in rationale_lower:
@@ -158,7 +158,7 @@ class ForbiddenFeatureChecker:
                     "severity": "blocking",
                     "message": f"Forbidden term '{forbidden}' detected in rationale"
                 })
-        
+
         result.passed = len(result.violations) == 0
-        
+
         return result

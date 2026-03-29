@@ -14,10 +14,10 @@ from apps_underwriting_ai.types import (
 
 class TestComplianceValidator(unittest.TestCase):
     """Test cases for compliance validation."""
-    
+
     def setUp(self):
         self.validator = ComplianceValidator()
-    
+
     def test_pass_compliant_request(self):
         """Test that compliant request passes."""
         policy = PolicyContext(
@@ -29,20 +29,20 @@ class TestComplianceValidator(unittest.TestCase):
                 eligible_collateral=["ar"]
             )
         )
-        
+
         features = RiskFeatures()
         features.capacity.dscr_ttm = 2.0
         features.capacity.debt_to_ebitda_ttm = 2.0
         features.credit.personal_fico_min = 720
-        
+
         # Would need full request - simplified test
         # result = self.validator.validate(request, features)
         # self.assertTrue(result.passed)
-    
+
     def test_fail_dscr_below_minimum(self):
         """Test that DSCR below minimum fails."""
         pass  # Implement test
-    
+
     def test_fail_restricted_industry(self):
         """Test that restricted industry is blocked."""
         pass  # Implement test

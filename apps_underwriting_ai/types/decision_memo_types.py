@@ -1,7 +1,7 @@
 """
 Decision Memo Types - Domain contracts for underwriting decision outputs.
 """
-from typing import Optional, List
+from typing import Literal, Optional, List
 from pydantic import BaseModel, Field
 
 from .underwriting_request_types import DecisionState

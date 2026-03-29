@@ -18,10 +18,10 @@ from apps_underwriting_ai.types import (
 
 class TestFeatureDerivation(unittest.TestCase):
     """Test cases for feature derivation."""
-    
+
     def setUp(self):
         self.engine = FeatureDerivationEngine()
-    
+
     def _create_test_request(self):
         """Create a test request."""
         return UnderwritingRequest(
@@ -87,28 +87,28 @@ class TestFeatureDerivation(unittest.TestCase):
             relationship_context={},
             decision_constraints={}
         )
-    
+
     def test_dscr_calculation(self):
         """Test DSCR feature derivation."""
         request = self._create_test_request()
         features = self.engine.derive_features(request, None)
-        
+
         self.assertIsNotNone(features.capacity.dscr_ttm)
         self.assertGreater(features.capacity.dscr_ttm, 0)
-    
+
     def test_leverage_calculation(self):
         """Test leverage feature derivation."""
         request = self._create_test_request()
         features = self.engine.derive_features(request, None)
-        
+
         self.assertIsNotNone(features.capacity.debt_to_ebitda_ttm)
         self.assertGreater(features.capacity.debt_to_ebitda_ttm, 0)
-    
+
     def test_composite_score(self):
         """Test composite risk score derivation."""
         request = self._create_test_request()
         features = self.engine.derive_features(request, None)
-        
+
         self.assertIsNotNone(features.composite.raw_risk_score)
         self.assertGreaterEqual(features.composite.raw_risk_score, 0)
         self.assertLessEqual(features.composite.raw_risk_score, 1)
