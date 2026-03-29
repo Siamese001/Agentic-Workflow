@@ -421,6 +421,25 @@ def _scenario_policy_hash_valid() -> tuple[ScenarioOutcome, float, str]:
         return ScenarioOutcome.FAIL, 0.0, str(exc)
 
 
+def _scenario_policy_hash_invalid() -> tuple[ScenarioOutcome, float, str]:
+    try:
+        from agentic_core.L0_routing.enforcement.policy_hash_enforcer import (
+            PolicyHashEnforcer,
+        )
+
+        enforcer = PolicyHashEnforcer(expected_hash="expected_hash_123", mode="LOG_ONLY")
+        # Provide mismatched hash
+        result = enforcer.validate(b"test_payload", b"mismatched_hash_456")
+
+        if result.passed:
+            return ScenarioOutcome.FAIL, 0.0, "Mismatched hash should have been rejected"
+        return ScenarioOutcome.PASS, 1.0, "Mismatched hash correctly rejected"
+    except ImportError:
+        return ScenarioOutcome.SKIP, _SKIP_SCORE, "agentic_core not available in eval env"
+    except _SCENARIO_EXCEPTIONS as exc:
+        return ScenarioOutcome.FAIL, 0.0, str(exc)
+
+
 def _scenario_missing_hash() -> tuple[ScenarioOutcome, float, str]:
     try:
         from agentic_core.L0_routing.enforcement.policy_hash_enforcer import PolicyHashEnforcer

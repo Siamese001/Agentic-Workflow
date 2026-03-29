@@ -30,7 +30,7 @@ def healer_agent():
 @pytest.fixture
 def repo_root():
     """Return repository root path."""
-    return Path(__file__).parents[7]
+    return Path(__file__).parents[6]
 
 
 @pytest.fixture

@@ -3,6 +3,7 @@ Environment Configuration Schema.
 
 Provides configuration data models for environment variables.
 Phase 3 - Semantic split from environment_util.py (schema vs validation logic).
+Aligned with apps_* pattern with full lifecycle trace contract integration.
 """
 
 from __future__ import annotations
@@ -10,6 +11,31 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 
 from pydantic import BaseModel, ConfigDict, Field
+
+from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_applies_guardrail,
+    _emit_reads_environ,
+    _emit_reads_policy_state,
+    _emit_records_execution_trace,
+    _emit_snapshots_state,
+    _emit_validates_capability,
+    emit_determinism_digest,
+    emit_replay_key,
+)
+
+# P0: Foundation Governance
+_emit_applies_guardrail("p0", "environment_config", "p0_governance")
+_emit_reads_policy_state("p0", "environment_config", "policy_binding")
+_emit_snapshots_state("p0", "environment_config", "state_snapshot")
+
+# P2: Execution Capability
+_emit_reads_environ("p2", "environment_config", "env_read")
+_emit_validates_capability("p2", "environment_config", "capability_check")
+
+# P0: Determinism
+emit_replay_key("p0", "environment_config")
+emit_determinism_digest("p0", "environment_config")
 
 from apps_shared.config.pipeline_constants_config import MAX_RETRIES  # noqa: F401
 

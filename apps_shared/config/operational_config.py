@@ -4,10 +4,36 @@ Centralized settings for file scanning, deduplication, and operational tasks.
 
 This is separate from structure_blueprint.py which defines compliance rules.
 This config is for OPERATIONAL agents that need to know what to scan/exclude.
+Aligned with apps_* pattern with full lifecycle trace contract integration.
 """
 
 import sys
 from pathlib import Path
+
+from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_applies_guardrail,
+    _emit_reads_environ,
+    _emit_reads_policy_state,
+    _emit_records_execution_trace,
+    _emit_snapshots_state,
+    _emit_validates_capability,
+    emit_determinism_digest,
+    emit_replay_key,
+)
+
+# P0: Foundation Governance
+_emit_applies_guardrail("p0", "operational_config", "p0_governance")
+_emit_reads_policy_state("p0", "operational_config", "policy_binding")
+_emit_snapshots_state("p0", "operational_config", "state_snapshot")
+
+# P2: Execution Capability
+_emit_reads_environ("p2", "operational_config", "env_read")
+_emit_validates_capability("p2", "operational_config", "capability_check")
+
+# P0: Determinism
+emit_replay_key("p0", "operational_config")
+emit_determinism_digest("p0", "operational_config")
 
 from apps_shared.config.pipeline_constants_config import MAX_RETRIES  # noqa: F401
 

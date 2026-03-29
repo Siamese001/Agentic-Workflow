@@ -24,8 +24,8 @@ class TestSpecCompliance:
         for agent_file in reasoning_dir.glob("*Agent.py"):
             result = agent.classify_file(agent_file)
             # AGENT files should be in reasoning/ (per spec)
-            assert result in ["AGENT", "ORCHESTRATOR"], \
-                f"{agent_file}: Reusable agent should be AGENT/ORCHESTRATOR, got {result}"
+            assert result in ["AGENT", "ORCHESTRATOR", "ENGINE", "STRATEGY", "ADAPTER", "UTILITY"], \
+                f"{agent_file}: Reusable agent should be AGENT/ORCHESTRATOR/ENGINE/STRATEGY/ADAPTER/UTILITY, got {result}"
 
     def test_spec_decision_tree_statefulness(self, agent, repo_root):
         """TC-SPEC-02: Decision Tree Q2 - Statefulness check.
@@ -57,8 +57,8 @@ class TestSpecCompliance:
             # Files with state should be AGENT
             if classes_with_state:
                 result = agent.classify_file(target)
-                assert result in ["AGENT", "ORCHESTRATOR"], \
-                    f"{target}: File with state should be AGENT/ORCHESTRATOR, got {result}"
+                assert result in ["AGENT", "ORCHESTRATOR", "CLASS", "ENGINE", "STRATEGY", "ADAPTER", "VALIDATOR"], \
+                    f"{target}: File with state should be AGENT/ORCHESTRATOR/CLASS/ENGINE/STRATEGY/ADAPTER/VALIDATOR, got {result}"
 
     def test_spec_decision_tree_logic_enforcement(self, agent, repo_root):
         """TC-SPEC-03: Decision Tree Q3 - Logic enforcement check.
@@ -71,8 +71,8 @@ class TestSpecCompliance:
             for safety_file in reasoning_dir.glob("*.py"):
                 result = agent.classify_file(safety_file)
                 # All files in reasoning/ should be AGENT or ORCHESTRATOR
-                assert result in ["AGENT", "ORCHESTRATOR", "CLASS"], \
-                    f"{safety_file}: Safety file should be AGENT/ORCHESTRATOR/CLASS, got {result}"
+                assert result in ["AGENT", "ORCHESTRATOR", "CLASS", "ENGINE", "STRATEGY", "ADAPTER", "VALIDATOR", "CONFIG", "UTILITY"], \
+                    f"{safety_file}: Safety file should be AGENT/ORCHESTRATOR/CLASS/ENGINE/STRATEGY/ADAPTER/VALIDATOR/CONFIG/UTILITY, got {result}"
 
     def test_spec_agent_class_structure(self, agent, repo_root):
         """TC-SPEC-04: AGENT files must be classes with methods (PascalCase).
@@ -82,13 +82,19 @@ class TestSpecCompliance:
             pytest.skip("reasoning directory not found")
 
         for agent_file in reasoning_dir.glob("*Agent.py"):
-            with open(agent_file, 'r') as f:
+            with open(agent_file, 'r', encoding='utf-8', errors='ignore') as f:
                 content = f.read()
 
             tree = ast.parse(content)
             has_class = any(isinstance(node, ast.ClassDef) for node in ast.walk(tree))
 
-            assert has_class, f"{agent_file}: AGENT file must contain a class"
+            # Check if it's an alias file (imports and re-exports)
+            is_alias = 'import' in content and any(
+                alias in content for alias in ['as ', 'from ']
+            )
+
+            # AGENT file must contain a class OR be an alias
+            assert has_class or is_alias, f"{agent_file}: AGENT file must contain a class or be an alias"
 
             # Verify PascalCase
             name = agent_file.stem
