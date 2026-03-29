@@ -377,7 +377,7 @@ class AgenticRouter:
             _committer = ProposalCommitter()
             _contract = create_and_commit_routing_contract(_rctx)
             _routing_contract_id = _contract.routing_contract_id
-        except Exception as _rce:  # guardian: allow-silent-swallow
+        except RoutingContractError as _rce:  # guardian: allow-specific -- routing contract creation failure
             Logger.warning("agentic_router: routing contract creation failed: %s", _rce)
 
         # P3/L0: Apply capacity-aware routing if multiple candidates exist
