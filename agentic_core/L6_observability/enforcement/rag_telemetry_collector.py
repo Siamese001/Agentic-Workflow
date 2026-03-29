@@ -86,7 +86,11 @@ _emit_stores_embedding("p4", "rag_telemetry_collector", "embedding_store")
 _emit_updates_meta_learning_state("p4", "rag_telemetry_collector", "meta_learning")
 _emit_links_execution_to_snapshot("p4", "rag_telemetry_collector", "exec_snapshot_link")
 
-"\nRAG Telemetry Collector - L6 observability\nTracks RAG performance metrics for dashboard visualization\n"
+"RAG Telemetry Collector - L6 observability with OpenTelemetry integration.
+
+Tracks RAG performance metrics for dashboard visualization.
+Phase 3: Now consumes OpenTelemetry spans for comprehensive telemetry.
+"
 from collections import defaultdict
 from dataclasses import dataclass, field
 

@@ -289,13 +289,13 @@ class MCPDriftRecorder:
 
     Usage:
         recorder = MCPDriftRecorder()
-        
+
         # Capture current state
         snapshot = recorder.capture_snapshot("/path/to/mcp_config.json")
-        
+
         # Detect drift against baseline
         report = recorder.detect_drift(baseline_snapshot, current_snapshot)
-        
+
         # Access report for alerting
         if report.has_drift:
             for event in report.drift_events:
