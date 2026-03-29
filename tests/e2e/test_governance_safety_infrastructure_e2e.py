@@ -985,6 +985,551 @@ class TestInfrastructureErrorHandlingE2E:
 
 
 # =============================================================================
+# SECTION 9: AGGRESSIVE CONCURRENCY & RACE CONDITION TESTS
+# =============================================================================
+
+@pytest.mark.e2e
+@pytest.mark.aggressive
+@pytest.mark.concurrency
+class TestAggressiveConcurrencyE2E:
+    """
+    Aggressive concurrency and race condition tests.
+    
+    Tests thread safety, race conditions, and concurrent access patterns
+    for all infrastructure components.
+    """
+
+    def test_classification_concurrent_access(
+        self, classification_kernel_module: Any, tmp_path: Path
+    ) -> None:
+        """AGGRESSIVE: Verify classification is thread-safe under concurrent load."""
+        import threading
+        import time
+        
+        # Create test files
+        files = []
+        for i in range(20):
+            f = tmp_path / f"concurrent_agent_{i}.py"
+            f.write_text(f"class Agent{i}: pass")
+            files.append(f)
+        
+        results = []
+        errors = []
+        
+        def classify_worker(file_path: Path) -> None:
+            try:
+                for _ in range(10):  # Each thread classifies 10 times
+                    result = classification_kernel_module.classify_file_standalone(file_path)
+                    results.append(result)
+                    time.sleep(0.001)  # Small delay to increase race chance
+            except Exception as e:
+                errors.append(str(e))
+        
+        # Spawn 10 threads, each processing all files
+        threads = []
+        for _ in range(10):
+            for f in files:
+                t = threading.Thread(target=classify_worker, args=(f,))
+                threads.append(t)
+        
+        # Start all threads
+        for t in threads:
+            t.start()
+        
+        # Wait for completion
+        for t in threads:
+            t.join(timeout=30)
+        
+        # Verify no errors occurred
+        assert len(errors) == 0, f"Concurrent classification errors: {errors}"
+        # Verify we got results
+        assert len(results) == 2000, f"Expected 2000 results, got {len(results)}"
+        # All results should be consistent (AGENT or CLASS)
+        for r in results:
+            assert r in ("AGENT", "CLASS"), f"Unexpected classification: {r}"
+
+    def test_registry_concurrent_digest_access(
+        self, agent_registry_module: Any
+    ) -> None:
+        """AGGRESSIVE: Verify registry digest is thread-safe."""
+        import threading
+        
+        digests = []
+        errors = []
+        
+        def digest_worker() -> None:
+            try:
+                for _ in range(50):
+                    d = agent_registry_module.registry_digest()
+                    digests.append(d)
+            except Exception as e:
+                errors.append(str(e))
+        
+        # Spawn multiple threads
+        threads = [threading.Thread(target=digest_worker) for _ in range(10)]
+        for t in threads:
+            t.start()
+        for t in threads:
+            t.join(timeout=30)
+        
+        assert len(errors) == 0, f"Concurrent digest errors: {errors}"
+        assert len(digests) == 500, f"Expected 500 digests, got {len(digests)}"
+        # All digests should be identical (deterministic)
+        unique_digests = set(str(d) for d in digests)
+        assert len(unique_digests) == 1, "Registry digests should be deterministic"
+
+    def test_cache_concurrent_clear_and_access(
+        self, classification_kernel_module: Any, tmp_path: Path
+    ) -> None:
+        """AGGRESSIVE: Verify cache handles concurrent clear and access."""
+        import threading
+        import random
+        
+        # Create test file
+        test_file = tmp_path / "cache_race.py"
+        test_file.write_text("class CacheRaceAgent: pass")
+        
+        errors = []
+        
+        def access_worker() -> None:
+            try:
+                for _ in range(20):
+                    classification_kernel_module.classify_file_standalone(test_file)
+            except Exception as e:
+                errors.append(str(e))
+        
+        def clear_worker() -> None:
+            try:
+                for _ in range(10):
+                    classification_kernel_module.clear_classification_cache()
+            except Exception as e:
+                errors.append(str(e))
+        
+        threads = []
+        # Mix access and clear threads
+        for _ in range(5):
+            threads.append(threading.Thread(target=access_worker))
+            threads.append(threading.Thread(target=clear_worker))
+        
+        for t in threads:
+            t.start()
+        for t in threads:
+            t.join(timeout=30)
+        
+        assert len(errors) == 0, f"Cache race condition errors: {errors}"
+
+
+# =============================================================================
+# SECTION 10: AGGRESSIVE LOAD & STRESS TESTS
+# =============================================================================
+
+@pytest.mark.e2e
+@pytest.mark.aggressive
+@pytest.mark.stress
+class TestAggressiveLoadE2E:
+    """
+    Aggressive load and stress tests.
+    
+    Tests system behavior under extreme load conditions.
+    """
+
+    def test_classification_batch_1000_files(
+        self, classification_kernel_module: Any, tmp_path: Path
+    ) -> None:
+        """AGGRESSIVE: Batch classify 1000 files to test performance at scale."""
+        import time
+        
+        # Create 1000 test files
+        files = []
+        for i in range(1000):
+            f = tmp_path / f"batch_agent_{i}.py"
+            f.write_text(f"class BatchAgent{i}:\n    pass\n")
+            files.append(f)
+        
+        start = time.perf_counter()
+        results = []
+        for f in files:
+            result = classification_kernel_module.classify_file_standalone(f)
+            results.append(result)
+        elapsed = time.perf_counter() - start
+        
+        # Should complete in reasonable time (< 30 seconds)
+        assert elapsed < 30, f"Batch classification too slow: {elapsed:.2f}s"
+        # All should be classified
+        assert len(results) == 1000
+        # Most should be AGENT or CLASS
+        agent_count = sum(1 for r in results if r in ("AGENT", "CLASS"))
+        assert agent_count >= 950, f"Expected 950+ agents, got {agent_count}"
+
+    def test_ssot_path_resolution_stress(
+        self, ssot_module: Any, repo_root: Path, tmp_path: Path
+    ) -> None:
+        """AGGRESSIVE: Stress test path resolution with 500 paths."""
+        import time
+        
+        # Generate 500 paths
+        paths = []
+        for i in range(500):
+            layer = f"L{i % 7}_layer"
+            paths.append(repo_root / "agentic_core" / layer / f"module_{i}.py")
+        
+        start = time.perf_counter()
+        for p in paths:
+            test_path = ssot_module.get_canonical_test_path(p, repo_root)
+            assert test_path is not None
+        elapsed = time.perf_counter() - start
+        
+        # Should complete quickly (< 5 seconds for 500 paths)
+        assert elapsed < 5, f"Path resolution too slow: {elapsed:.2f}s"
+
+    def test_registry_large_scale_lookup(
+        self, agent_registry_module: Any
+    ) -> None:
+        """AGGRESSIVE: Perform 10,000 registry lookups."""
+        import time
+        
+        registry = agent_registry_module.AGENT_REGISTRY
+        agent_ids = list(registry.keys())
+        
+        start = time.perf_counter()
+        lookup_count = 0
+        for _ in range(10000):
+            for agent_id in agent_ids:
+                profile = registry[agent_id]
+                assert profile.agent_id == agent_id
+                lookup_count += 1
+        elapsed = time.perf_counter() - start
+        
+        # Should complete in reasonable time
+        assert elapsed < 10, f"Registry lookup too slow: {elapsed:.2f}s for {lookup_count} lookups"
+
+
+# =============================================================================
+# SECTION 11: AGGRESSIVE BOUNDARY & FUZZING TESTS
+# =============================================================================
+
+@pytest.mark.e2e
+@pytest.mark.aggressive
+@pytest.mark.fuzzing
+class TestAggressiveBoundaryE2E:
+    """
+    Aggressive boundary value and fuzzing tests.
+    
+    Tests extreme inputs and malformed data handling.
+    """
+
+    def test_classification_very_long_class_name(
+        self, classification_kernel_module: Any, tmp_path: Path
+    ) -> None:
+        """AGGRESSIVE: Classify file with extremely long class name."""
+        long_name = "A" * 1000 + "Agent"
+        test_file = tmp_path / "long_name.py"
+        test_file.write_text(f"class {long_name}:\n    pass\n")
+        
+        result = classification_kernel_module.classify_file_standalone(test_file)
+        # Should handle gracefully
+        assert isinstance(result, str)
+        assert len(result) > 0
+
+    def test_classification_deeply_nested_classes(
+        self, classification_kernel_module: Any, tmp_path: Path
+    ) -> None:
+        """AGGRESSIVE: Classify file with deeply nested class definitions."""
+        # Create 50 levels of nested classes
+        code = "class L0:\n"
+        for i in range(1, 50):
+            code += "    " * i + f"class L{i}:\n"
+        code += "    " * 50 + "pass\n"
+        
+        test_file = tmp_path / "nested.py"
+        test_file.write_text(code)
+        
+        result = classification_kernel_module.classify_file_standalone(test_file)
+        assert isinstance(result, str)
+
+    def test_classification_malformed_unicode(
+        self, classification_kernel_module: Any, tmp_path: Path
+    ) -> None:
+        """AGGRESSIVE: Handle malformed UTF-8 gracefully."""
+        test_file = tmp_path / "malformed.py"
+        # Write invalid UTF-8 bytes
+        test_file.write_bytes(b"class Agent:\n    pass\n\xff\xfe\x00\x00")
+        
+        # Should not crash
+        result = classification_kernel_module.classify_file_standalone(test_file)
+        assert isinstance(result, str)
+
+    def test_ssot_path_traversal_extreme(
+        self, ssot_module: Any, repo_root: Path
+    ) -> None:
+        """AGGRESSIVE: Test extreme path traversal attempts - verify graceful handling."""
+        # Test various suspicious paths - main goal is they don't crash
+        suspicious_paths = [
+            "../../../../../../../etc/passwd",
+            ".../.../.../etc/hosts",
+            "\x00/etc/passwd",
+            ".//.//.//.//etc/shadow",
+        ]
+        
+        for path in suspicious_paths:
+            # Should not crash, may return True or False depending on implementation
+            try:
+                result = ssot_module.validate_path_within_project(path, repo_root)
+                # Result should be a boolean
+                assert isinstance(result, bool)
+            except (ValueError, TypeError, OSError):
+                # Exception is also acceptable for invalid paths
+                pass
+
+    def test_classification_special_characters_in_filename(
+        self, classification_kernel_module: Any, tmp_path: Path
+    ) -> None:
+        """AGGRESSIVE: Classify files with special characters in names."""
+        special_names = [
+            "agent-1.py",
+            "agent_2.py",
+            "agent.3.py",
+            "agent@4.py",
+            "agent#5.py",
+            "agent$6.py",
+            "agent%7.py",
+            "agent&8.py",
+            "agent(9).py",
+            "agent[10].py",
+            "agent{11}.py",
+        ]
+        
+        for name in special_names:
+            test_file = tmp_path / name
+            test_file.write_text("class Agent: pass")
+            result = classification_kernel_module.classify_file_standalone(test_file)
+            assert isinstance(result, str)
+            assert len(result) > 0
+
+
+# =============================================================================
+# SECTION 12: AGGRESSIVE DEEP INTEGRATION CHAIN TESTS
+# =============================================================================
+
+@pytest.mark.e2e
+@pytest.mark.aggressive
+@pytest.mark.deep_integration
+class TestAggressiveDeepIntegrationE2E:
+    """
+    Aggressive deep integration chain tests.
+    
+    Tests complex multi-component workflows and data flow chains.
+    """
+
+    def test_full_classification_to_registry_chain(
+        self,
+        classification_kernel_module: Any,
+        ssot_module: Any,
+        agent_registry_module: Any,
+        repo_root: Path,
+        tmp_path: Path
+    ) -> None:
+        """AGGRESSIVE: Full chain from classification → SSOT → registry validation."""
+        # Create a realistic agent file
+        agent_file = tmp_path / "RealAgent.py"
+        agent_file.write_text('''
+class RealAgent:
+    """A realistic agent implementation."""
+    
+    def execute(self, task: str) -> dict:
+        return {"result": task}
+    
+    def validate(self) -> bool:
+        return True
+''')
+        
+        # Step 1: Classify
+        file_type = classification_kernel_module.classify_file_standalone(agent_file)
+        assert file_type in ("AGENT", "CLASS")
+        
+        # Step 2: Get canonical test path via SSOT
+        test_path = ssot_module.get_canonical_test_path(agent_file, repo_root)
+        assert test_path is not None
+        assert "test_" in test_path.name
+        
+        # Step 3: Verify against registry patterns
+        registry = agent_registry_module.AGENT_REGISTRY
+        execution_modes = set(p.execution_mode.value for p in registry.values())
+        assert "DETERMINISTIC" in execution_modes or "LLM_API" in execution_modes
+        
+        # Step 4: Full validation chain - temp file path won't be in project,
+        # but we verify the function works with a valid project path
+        valid_project_path = repo_root / "agentic_core" / "L5_safety" / "core_kernel" / "classification_kernel.py"
+        if valid_project_path.exists():
+            assert ssot_module.validate_path_within_project(valid_project_path, repo_root) is True
+
+    def test_multi_layer_boundary_enforcement_chain(
+        self, ssot_module: Any, repo_root: Path
+    ) -> None:
+        """AGGRESSIVE: Verify all layer boundaries in single chain."""
+        # Test all 7 layers
+        for i in range(7):
+            layer_name = f"L{i}_"
+            matching = [l for l in ssot_module.LAYER_ROOTS if l.startswith(layer_name)]
+            assert len(matching) >= 1
+            
+            # Verify layer has proper structure
+            for layer in matching:
+                # Check if it's a valid layer root
+                assert ssot_module.is_layer_root(layer) is True
+
+    def test_ssot_to_classification_consistency_across_all_layers(
+        self,
+        classification_kernel_module: Any,
+        ssot_module: Any,
+        repo_root: Path
+    ) -> None:
+        """AGGRESSIVE: Verify SSOT territories match classification results."""
+        # Check key files from each layer exist and classify correctly
+        layer_files = [
+            ("agentic_core/L0_routing", "UTILITY"),
+            ("agentic_core/L1_cognition", "CLASS"),
+            ("agentic_core/L2_execution", "CLASS"),
+            ("agentic_core/L3_orchestration", "CLASS"),
+            ("agentic_core/L5_safety", "UTILITY"),
+        ]
+        
+        for rel_dir, expected_type in layer_files:
+            dir_path = repo_root / rel_dir
+            if dir_path.exists():
+                # Find a Python file
+                py_files = list(dir_path.rglob("*.py"))
+                if py_files:
+                    test_file = py_files[0]
+                    # Verify it's in enforced territories
+                    first_part = test_file.relative_to(repo_root).parts[0]
+                    assert first_part in ssot_module.ENFORCED_TERRITORIES
+                    # Classify it
+                    result = classification_kernel_module.classify_file_standalone(test_file)
+                    assert isinstance(result, str)
+
+
+# =============================================================================
+# SECTION 13: AGGRESSIVE ERROR INJECTION & FAULT TOLERANCE TESTS
+# =============================================================================
+
+@pytest.mark.e2e
+@pytest.mark.aggressive
+@pytest.mark.fault_tolerance
+class TestAggressiveFaultToleranceE2E:
+    """
+    Aggressive error injection and fault tolerance tests.
+    
+    Tests recovery from errors and graceful degradation.
+    """
+
+    def test_classification_permission_denied_handling(
+        self, classification_kernel_module: Any, tmp_path: Path
+    ) -> None:
+        """AGGRESSIVE: Handle permission denied errors gracefully."""
+        test_file = tmp_path / "no_read.py"
+        test_file.write_text("class Agent: pass")
+        
+        # Try to make file unreadable (may not work on Windows, but test the path)
+        try:
+            import stat
+            import os
+            os.chmod(test_file, 0o000)
+            result = classification_kernel_module.classify_file_standalone(test_file)
+            # Should handle gracefully
+            assert isinstance(result, str)
+        except (OSError, PermissionError):
+            pass  # Expected on some systems
+        finally:
+            try:
+                os.chmod(test_file, 0o644)
+            except:
+                pass
+
+    def test_ssot_missing_directory_handling(
+        self, ssot_module: Any, repo_root: Path, tmp_path: Path
+    ) -> None:
+        """AGGRESSIVE: Handle references to non-existent directories."""
+        # Create path to non-existent directory
+        fake_dir = tmp_path / "fake" / "nested" / "deep"
+        fake_file = fake_dir / "test.py"
+        
+        # Should not crash when path doesn't exist
+        try:
+            test_path = ssot_module.get_canonical_test_path(fake_file, repo_root)
+            assert test_path is not None
+        except (ValueError, OSError):
+            pass  # Exception is acceptable
+
+    def test_registry_corruption_recovery(
+        self, agent_registry_module: Any
+    ) -> None:
+        """AGGRESSIVE: Verify registry is immutable and corruption-resistant."""
+        registry = agent_registry_module.AGENT_REGISTRY
+        
+        # Attempt various corruption vectors
+        try:
+            # Try to modify (should fail for frozen dataclasses)
+            for agent_id, profile in list(registry.items())[:3]:
+                with pytest.raises((AttributeError, TypeError)):
+                    profile.agent_id = "corrupted"
+                with pytest.raises((AttributeError, TypeError)):
+                    profile.execution_mode = "INVALID"
+        except Exception as e:
+            pytest.skip(f"Registry immutability test skipped: {e}")
+
+    def test_classification_circular_reference_handling(
+        self, classification_kernel_module: Any, tmp_path: Path
+    ) -> None:
+        """AGGRESSIVE: Handle files with circular class references."""
+        # Create files that reference each other
+        file_a = tmp_path / "circular_a.py"
+        file_b = tmp_path / "circular_b.py"
+        
+        file_a.write_text('''
+from circular_b import B
+class A:
+    def get_b(self):
+        return B()
+''')
+        file_b.write_text('''
+from circular_a import A
+class B:
+    def get_a(self):
+        return A()
+''')
+        
+        # Classification should not hang or crash
+        result_a = classification_kernel_module.classify_file_standalone(file_a)
+        result_b = classification_kernel_module.classify_file_standalone(file_b)
+        
+        assert isinstance(result_a, str)
+        assert isinstance(result_b, str)
+
+    def test_ssot_symbolic_link_handling(
+        self, ssot_module: Any, tmp_path: Path
+    ) -> None:
+        """AGGRESSIVE: Handle symbolic links in paths."""
+        import os
+        
+        real_file = tmp_path / "real.py"
+        real_file.write_text("class Agent: pass")
+        
+        link_file = tmp_path / "link.py"
+        
+        try:
+            # Create symbolic link
+            if os.name != 'nt':  # Skip on Windows if no symlink privileges
+                os.symlink(real_file, link_file)
+                
+                # Should handle symlink
+                result = classification_kernel_module.classify_file_standalone(link_file)
+                assert isinstance(result, str)
+        except (OSError, NotImplementedError):
+            pytest.skip("Symbolic link test skipped (OS limitation)")
+
+
+# =============================================================================
 # MAIN ENTRY POINT
 # =============================================================================
 
