@@ -78,6 +78,9 @@ from agentic_core.L5_safety.validators.canonical_truth_validator import (
     validate_canonical_truth,
 )
 
+# Singleton instance for module-level access
+canonical_truth = CanonicalTruthValidator()
+
 __all__ = ["CanonicalTruthValidator", "validate_canonical_truth", "get_canonical_layer", "canonical_truth"]
 
 _emit_emits_metric_event("__init__", "p4obs", "metric_1")
