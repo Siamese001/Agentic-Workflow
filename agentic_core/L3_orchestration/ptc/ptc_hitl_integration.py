@@ -355,7 +355,7 @@ class PTCHITLIntegration:
             if re.search(pattern, code, re.IGNORECASE):
                 detected_patterns.append(f"medium_risk:{pattern}")
         
-        for pattern in self.LOW_RISK_PATTER_PATTERNS:
+        for pattern in self.LOW_RISK_PATTERNS:
             if re.search(pattern, code, re.IGNORECASE):
                 detected_patterns.append(f"low_risk:{pattern}")
         

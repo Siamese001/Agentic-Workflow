@@ -187,8 +187,10 @@ def ptc_safety_manager() -> PTCSafetyGateManager:
 
 @pytest.fixture
 def ptc_enforcer() -> PTCContractEnforcer:
-    """Provide PTC contract enforcer."""
-    return PTCContractEnforcer(secret=b"test-secret-ptc")
+    """Provide PTC contract enforcer with key source injected."""
+    from agentic_core.L2_execution.enforcement.key_source import inject_key_source, TestKeySource
+    inject_key_source(TestKeySource())
+    return PTCContractEnforcer(secret=TestKeySource.TEST_SECRET)
 
 
 @pytest.fixture
@@ -568,14 +570,13 @@ class TestPTCContractEnforcementIntegration:
 
     def test_ptc_enforcer_with_sandbox(self, ptc_enforcer: PTCContractEnforcer) -> None:
         """Test PTC enforcer integration with sandbox execution."""
-        # Create valid envelope
+        # Create valid envelope (auto-signs with injected key)
         envelope = SandboxEnvelope(
             envelope_id="test-env-001",
-            code="print('hello world')",
-            language="python",
-            timeout_seconds=30,
+            tool_name="test_tool",
+            tool_args={"output": "hello world"},
+            instruction_packet_id="test-packet",
         )
-        envelope.sign(ptc_enforcer.secret)
 
         # Pre-execute validation
         ptc_enforcer.pre_execute(envelope)
@@ -598,11 +599,10 @@ class TestPTCContractEnforcementIntegration:
         """Test PTC enforcer byte cap fail-closed."""
         envelope = SandboxEnvelope(
             envelope_id="test-env-002",
-            code="print('x' * 100000)",
-            language="python",
-            timeout_seconds=30,
+            tool_name="test_tool",
+            tool_args={},
+            instruction_packet_id="test-packet",
         )
-        envelope.sign(ptc_enforcer.secret)
 
         ptc_enforcer.pre_execute(envelope)
 

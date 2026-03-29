@@ -118,9 +118,22 @@ def _extract_parent_child_edges(spans: list[dict[str, Any]]) -> list[RuntimeADGE
 
 
 def _extract_temporal_edges(spans: list[dict[str, Any]]) -> list[RuntimeADGEdge]:
+    """Extract temporal sequence edges from spans with validation.
+    
+    Orders spans by timestamp and span_id, then creates edges between consecutive spans.
+    """
     if len(spans) < 2:
         return []
-    ordered = sorted(spans, key=lambda s: (int(s.get("ts_utc", 0)), str(s.get("span_id", ""))))
+    
+    def safe_ts_utc(s: dict[str, Any]) -> int:
+        """Safely extract timestamp, returning 0 for invalid values."""
+        try:
+            val = s.get("ts_utc", 0)
+            return int(val)
+        except (ValueError, TypeError):
+            return 0
+    
+    ordered = sorted(spans, key=lambda s: (safe_ts_utc(s), str(s.get("span_id", ""))))
     edges: list[RuntimeADGEdge] = []
     for prev, curr in zip(ordered, ordered[1:]):
         src_id = str(prev.get("span_id", ""))

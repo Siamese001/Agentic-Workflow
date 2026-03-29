@@ -159,36 +159,64 @@ class FileBackedRuntimeADGStore:
 
 
 def _deserialise_snapshot(payload: bytes) -> RuntimeADGSnapshot:
-    """Reconstruct a RuntimeADGSnapshot from its canonical bytes payload."""
-    meta = json.loads(payload.decode("utf-8"))
-    data: dict[str, Any] = meta.get("data", meta)
-    nodes = tuple(
-        RuntimeADGNode(
-            node_id=str(n["node_id"]),
-            name=str(n["name"]),
-            kind=str(n["kind"]),
-            layer=str(n["layer"]),
-            component=str(n["component"]),
-            started_at_utc=int(n["started_at_utc"]),
-            duration_ms=float(n["duration_ms"]),
-            status=str(n["status"]),
-            attributes_json=str(n["attributes_json"]),
+    """Reconstruct a RuntimeADGSnapshot from its canonical bytes payload.
+    
+    The canonical format uses RS (\x1f) as record separator and GS (\x1e) as group separator:
+    header: trace_id\x1fmission\x1fstarted_at\x1fended_at
+    nodes: node_id\x1ename\x1ekind\x1elayer\x1ecomponent\x1ets\x1eduration\x1estatus\x1eattrs_json
+    edges: src_id\x1edst_id\x1erelation
+    """
+    try:
+        # Split into header and body
+        parts = payload.split(b"\x1f")
+        if len(parts) < 4:
+            raise ValueError("Invalid canonical format: insufficient header fields")
+        
+        trace_id = parts[0].decode("utf-8")
+        mission = parts[1].decode("utf-8")
+        started_at_utc = int(parts[2].decode("utf-8"))
+        ended_at_utc = int(parts[3].decode("utf-8"))
+        
+        # Remaining parts are nodes and edges
+        remaining = parts[4:]
+        
+        nodes: list[RuntimeADGNode] = []
+        edges: list[RuntimeADGEdge] = []
+        
+        for part in remaining:
+            if not part:
+                continue
+            fields = part.split(b"\x1e")
+            
+            if len(fields) == 9:
+                # This is a node: 9 fields
+                nodes.append(RuntimeADGNode(
+                    node_id=fields[0].decode("utf-8"),
+                    name=fields[1].decode("utf-8"),
+                    kind=fields[2].decode("utf-8"),
+                    layer=fields[3].decode("utf-8"),
+                    component=fields[4].decode("utf-8"),
+                    started_at_utc=int(fields[5].decode("utf-8")),
+                    duration_ms=float(fields[6].decode("utf-8")),
+                    status=fields[7].decode("utf-8"),
+                    attributes_json=fields[8].decode("utf-8"),
+                ))
+            elif len(fields) == 3:
+                # This is an edge: 3 fields
+                edges.append(RuntimeADGEdge(
+                    src_id=fields[0].decode("utf-8"),
+                    dst_id=fields[1].decode("utf-8"),
+                    relation=fields[2].decode("utf-8"),
+                ))
+            # Skip unknown field counts
+        
+        return create_runtime_adg_snapshot(
+            trace_id=trace_id,
+            mission=mission,
+            started_at_utc=started_at_utc,
+            ended_at_utc=ended_at_utc,
+            nodes=tuple(nodes),
+            edges=tuple(edges),
         )
-        for n in data.get("nodes", [])
-    )
-    edges = tuple(
-        RuntimeADGEdge(
-            src_id=str(e["src_id"]),
-            dst_id=str(e["dst_id"]),
-            relation=str(e["relation"]),
-        )
-        for e in data.get("edges", [])
-    )
-    return create_runtime_adg_snapshot(
-        trace_id=str(data["trace_id"]),
-        mission=str(data["mission"]),
-        started_at_utc=int(data["started_at_utc"]),
-        ended_at_utc=int(data["ended_at_utc"]),
-        nodes=nodes,
-        edges=edges,
-    )
+    except (ValueError, IndexError, UnicodeDecodeError) as e:
+        raise ValueError(f"Failed to deserialise snapshot: {e}")
