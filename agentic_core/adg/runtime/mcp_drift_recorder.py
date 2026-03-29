@@ -412,7 +412,7 @@ class MCPDriftRecorder:
 
         return snapshot
 
-    def _infer_layer(self, server_name: str, capabilities: list[str]) -> str:
+    def _infer_layer(self, server_name: str, capabilities: list[str] | None) -> str:
         """Infer target layer from server name and capabilities."""
         layer_indicators = {
             "L0": ["routing", "dispatch", "capacity"],
@@ -424,12 +424,15 @@ class MCPDriftRecorder:
             "L6": ["observability", "telemetry", "metric", "dashboard"],
         }
 
+        # Handle None capabilities
+        caps = capabilities or []
+
         # Check server name for layer hints
         name_lower = server_name.lower()
         for layer, indicators in layer_indicators.items():
             if any(ind in name_lower for ind in indicators):
                 return layer
-            if any(ind in cap.lower() for cap in capabilities for ind in indicators):
+            if any(ind in cap.lower() for cap in caps for ind in indicators):
                 return layer
 
         return "L2"  # Default to execution layer
