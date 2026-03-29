@@ -27,6 +27,32 @@ logging.basicConfig(
 )
 
 
+def _assert(condition: bool, message: str) -> None:
+    if not condition:
+        raise AssertionError(message)
+
+
+def _assert_repo_signals(result: object) -> None:
+    repo_signals = getattr(result, "repo_signals", {})
+    _assert(bool(repo_signals), "repo_signals missing from enterprise brief result")
+
+    adg = repo_signals.get("adg", {})
+    tests = repo_signals.get("tests", {})
+    ci = repo_signals.get("ci", {})
+    governance = repo_signals.get("governance", {})
+
+    _assert(adg.get("available") is True, "ADG signal unavailable")
+    _assert(ci.get("workflow_count", 0) > 0, "No workflow definitions discovered")
+    _assert(
+        tests.get("inventory_available") or tests.get("surface_available"),
+        "Neither test inventory nor test surface artifact is available",
+    )
+    _assert(
+        governance.get("denominator_baseline_available") is True,
+        "Governance denominator baseline not detected",
+    )
+
+
 async def test_single_persona_brief():
     """Test brief generation for a single persona."""
     print("\n" + "="*60)
@@ -49,6 +75,11 @@ async def test_single_persona_brief():
         source_content=source_content,
         output_dir="reports/executive/test_output",
     )
+
+    _assert(result.report_path != "", "Report path is empty")
+    _assert(result.manifest_path != "", "Manifest path is empty")
+    _assert(result.generation_results.get("agents_executed", 0) > 0, "No agents executed")
+    _assert_repo_signals(result)
 
     print(f"\n✅ Brief Generation Complete!")
     print(f"   Trace ID: {result.trace_id}")
@@ -107,6 +138,10 @@ async def test_multi_persona_briefs():
     )
 
     result = await orchestrator.process(request)
+
+    _assert(len(result.decompositions) == 3, "Expected decomposition for 3 personas")
+    _assert(len(result.execution_log) > 0, "Execution log should not be empty")
+    _assert_repo_signals(result)
 
     print(f"\n✅ Multi-Persona Briefs Complete!")
     print(f"   Trace ID: {result.trace_id}")
@@ -247,6 +282,7 @@ async def main():
     print("🚀 "*30)
 
     results = []
+    failures: list[str] = []
 
     try:
         # Test 1: Single persona
@@ -269,6 +305,7 @@ async def main():
         print(f"\n❌ Test failed: {exc}")
         import traceback
         traceback.print_exc()
+        failures.append(str(exc))
 
     # Summary
     print("\n" + "="*60)
@@ -281,6 +318,9 @@ async def main():
         print(f"      Trace: {result.trace_id[:16]}")
         print(f"      Quality: {result.avg_quality_score:.0%}")
         print(f"      Artifacts: {getattr(result, 'report_path', 'N/A')}")
+
+    if failures:
+        raise SystemExit(1)
 
     print("\n✨ All tests completed!")
     print("\nTo view generated reports, check: reports/executive/test_output/")

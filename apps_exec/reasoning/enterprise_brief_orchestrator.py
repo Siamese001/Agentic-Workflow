@@ -42,6 +42,7 @@ from apps_exec.engines.brief_retrieval_engine import (
     BriefRetrievalEngine,
     create_retrieval_engine,
 )
+from apps_exec.services.repo_signal_service import RepoSignalService
 from apps_exec.reasoning.brief_orchestrator import (
     MultiAgentBriefEngine,
 )
@@ -67,6 +68,7 @@ class EnterpriseBriefRequest:
     # Configuration
     enable_retrieval: bool = True
     enable_validation: bool = True
+    enable_repo_signals: bool = True
     update_baseline: bool = False
     output_dir: str = "reports/executive/enterprise"
     trace_id: str = ""
@@ -95,6 +97,7 @@ class EnterpriseBriefResult:
     # Retrieved context
     similar_briefs: list[dict[str, Any]] = field(default_factory=list)
     style_benchmarks: dict[str, Any] = field(default_factory=dict)
+    repo_signals: dict[str, Any] = field(default_factory=dict)
 
     # Generation results
     generation_results: dict[str, Any] = field(default_factory=dict)
@@ -128,6 +131,7 @@ class EnterpriseBriefOrchestrator:
     def __init__(self) -> None:
         # Initialize all subsystems
         self.retrieval_engine = create_retrieval_engine()
+        self.repo_signal_service = RepoSignalService()
         self.decomposition_agent = BriefDecompositionAgent()
         self.generation_engine = MultiAgentBriefEngine()
         self.validation_agent = BriefValidationAgent()
@@ -167,6 +171,17 @@ class EnterpriseBriefOrchestrator:
                 self._log_step(trace_id, "RETRIEVE", "complete", details={
                     "similar_found": len(similar),
                     "benchmarks": list(benchmarks.keys()),
+                })
+
+            # === STEP 2B: CONTEXT ENRICHMENT (Repo Signals) ===
+            if request.enable_repo_signals:
+                self._log_step(trace_id, "ENRICH", "start")
+                repo_signals = await self._step_collect_repo_signals()
+                result.repo_signals = repo_signals
+                self._log_step(trace_id, "ENRICH", "complete", details={
+                    "adg_available": bool(repo_signals.get("adg", {}).get("available")),
+                    "workflow_count": repo_signals.get("ci", {}).get("workflow_count", 0),
+                    "test_inventory_entries": repo_signals.get("tests", {}).get("inventory_entries", 0),
                 })
 
             # === STEP 3: GENERATE (L3 Orchestration) ===
@@ -291,6 +306,12 @@ class EnterpriseBriefOrchestrator:
         results = await self.generation_engine.generate_briefs(personas, source_dirs)
 
         return results
+
+    async def _step_collect_repo_signals(self) -> dict[str, Any]:
+        """Step 2B: Collect production-like repo signals."""
+        _emit_records_execution_trace("enterprise", "step_collect_repo_signals", "start")
+        snapshot = self.repo_signal_service.collect()
+        return snapshot.as_dict()
 
     async def _step_validate(
         self,
@@ -440,6 +461,26 @@ Deterministic AI differentiator in market dominated by probabilistic systems. Go
                 lines.append(f"- Gates Passed: {'✅' if gates.get('gates_passed') else '❌'}")
                 lines.append("")
 
+        # Repository operational context
+        if result.repo_signals:
+            lines.append("## Repository Operational Signals")
+            lines.append("")
+            adg = result.repo_signals.get("adg", {})
+            tests = result.repo_signals.get("tests", {})
+            ci = result.repo_signals.get("ci", {})
+            governance = result.repo_signals.get("governance", {})
+
+            lines.append(f"- **ADG Available:** {'✅' if adg.get('available') else '❌'}")
+            lines.append(f"- **ADG Nodes/Edges:** {adg.get('nodes_count', 'N/A')} / {adg.get('edges_count', 'N/A')}")
+            lines.append(f"- **Test Inventory Entries:** {tests.get('inventory_entries', 0)}")
+            lines.append(f"- **Test Surface Entries:** {tests.get('surface_entries', 0)}")
+            lines.append(f"- **Workflow Definitions:** {ci.get('workflow_count', 0)}")
+            lines.append(f"- **CI Validation Log Lines:** {ci.get('ci_validation_lines', 0)}")
+            lines.append(
+                f"- **Governance Baseline:** {'✅' if governance.get('denominator_baseline_available') else '❌'}"
+            )
+            lines.append("")
+
         # Execution lineage
         lines.append("## Execution Lineage")
         lines.append("")
@@ -467,6 +508,7 @@ Deterministic AI differentiator in market dominated by probabilistic systems. Go
                 "gates_passed": sum(1 for g in result.gate_results if g.get("gates_passed")),
                 "avg_quality_score": result.avg_quality_score,
             },
+            "repo_signals": result.repo_signals,
             "execution_log": result.execution_log,
         }
 

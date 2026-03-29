@@ -13,6 +13,7 @@ from apps_exec.services.brief_assembler_service import BriefAssemblerService
 from apps_exec.services.evidence_collector_service import EvidenceCollectorService
 from apps_exec.services.style_validator_service import StyleValidatorService
 from apps_exec.services.artifact_exporter_service import ArtifactExporterService
+from apps_exec.services.repo_signal_service import RepoSignalService
 
 __all__ = [
     "DocumentIngestionService",
@@ -23,4 +24,5 @@ __all__ = [
     "EvidenceCollectorService",
     "StyleValidatorService",
     "ArtifactExporterService",
+    "RepoSignalService",
 ]

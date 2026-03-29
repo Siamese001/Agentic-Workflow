@@ -64,7 +64,11 @@ def cached_adg_scan():
     Eliminates redundant 3-5 minute scans per test session.
     Cache file: tests/.adg_cache.json
     """
-    from agentic_core.adg.extraction.static_scanner import ADGStaticScanner
+    # Delay import to avoid collection-time import conflicts
+    try:
+        from agentic_core.adg.extraction.static_scanner import ADGStaticScanner
+    except ImportError as e:
+        pytest.skip(f"ADG scanner not available: {e}")
 
     cache_path = Path("tests/.adg_cache.json")
     scanner = ADGStaticScanner(repo_root=Path("."), cache_path=cache_path, include_tests=True)
