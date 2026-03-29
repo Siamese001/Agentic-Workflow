@@ -284,7 +284,7 @@ def verify_hierarchy_agent():
         else:
             print(f"❌ Failed to verify HierarchyAgent MRO: {result.get('error')}")
             return None
-    except Exception as e:
+    except (ValueError, TypeError) as e:
         print(f"❌ Failed to verify HierarchyAgent: {e}")
         return None
 

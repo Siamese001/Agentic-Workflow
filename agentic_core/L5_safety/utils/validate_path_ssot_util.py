@@ -257,7 +257,7 @@ def validate_file(file_path: Path) -> list[tuple[int, str, str]]:
                     violations.append((line_num, description, line.strip()))
 
     # guardian: allow-silent-swallow -- path validation fallback; failure logged above
-    except Exception:
+    except (ValueError, TypeError):
         pass
 
     return violations

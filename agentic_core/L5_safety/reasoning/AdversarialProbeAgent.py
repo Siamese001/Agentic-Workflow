@@ -273,7 +273,7 @@ class AdversarialProbeAgent(SovereignBaseAgent):
                 },
             )
             return results
-        except Exception as e:
+        except (ValueError, TypeError) as e:
             logger.error(f"[{self.name}] Error during adversarial probing: {e}")
             return {"agent": self.name, "error": str(e), "probes_executed": results["probes_executed"]}
 

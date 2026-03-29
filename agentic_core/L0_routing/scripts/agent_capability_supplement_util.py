@@ -242,7 +242,7 @@ def extract_capabilities_from_source(source: str, class_node: ast.ClassDef) -> d
         try:
             body_source = ast.unparse(item.body) if hasattr(ast, "unparse") else ""
         # guardian: allow-silent-swallow
-        except Exception:
+        except (ValueError, TypeError):
             body_source = ""
         lower_body = body_source.lower()
         if (

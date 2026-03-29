@@ -301,7 +301,7 @@ class HealingOrchestrationSuite:
                     if k not in ("success", "violations_found", "violations_fixed", "errors")
                 },
             )
-        except Exception as e:
+        except (ValueError, TypeError) as e:
             Logger.error(f"[HealingSuite] Strategy {strategy_name} failed: {e}")
             return HealingResult(
                 strategy_name=strategy_name, success=False, errors=[f"Strategy error: {str(e)}"]

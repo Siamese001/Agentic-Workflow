@@ -318,7 +318,7 @@ class HardenedAntiPatternVisitor(ast.NodeVisitor):
                                 "Use dynamic discovery.",
                             )
                     # guardian: allow-silent-swallow
-                    except Exception:
+                    except (ValueError, TypeError):
                         pass
         self.generic_visit(node)
 

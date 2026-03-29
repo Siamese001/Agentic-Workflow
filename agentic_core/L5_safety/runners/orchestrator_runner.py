@@ -221,7 +221,7 @@ def run_orchestrator_mission(project_root: Path, targets: list[str], execute: bo
     except ImportError as e:
         return {"success": False, "error": f"Import error: {e}", "fallback": True}
     # guardian: allow-silent-swallow
-    except Exception as e:
+    except (ValueError, TypeError) as e:
         return {"success": False, "error": str(e), "fallback": True}
 
 
@@ -245,7 +245,7 @@ def main() -> int:
         print(json.dumps(result, default=str))
         return 0 if result.get("success") else 1
     # guardian: allow-silent-swallow
-    except Exception as e:
+    except (ValueError, TypeError) as e:
         print(json.dumps({"success": False, "error": str(e)}))
         return 1
 

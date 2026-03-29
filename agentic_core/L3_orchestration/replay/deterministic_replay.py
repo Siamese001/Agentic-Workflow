@@ -482,7 +482,7 @@ def replay_and_compare(record: ReplayRecord) -> ComparisonResult:
         except subprocess.TimeoutExpired:
             mismatches.append(f"Command {i + 1}: Timeout during replay")
         # guardian: allow-silent-swallow
-        except Exception as e:
+        except (ValueError, TypeError) as e:
             mismatches.append(f"Command {i + 1}: Exception during replay: {e}")
     return ComparisonResult(
         is_match=len(mismatches) == 0,

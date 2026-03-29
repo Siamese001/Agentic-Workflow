@@ -402,7 +402,7 @@ def emit_safety_audit_record(
             reason=audit.reason,
             timestamp_utc=int(audit.timestamp_utc * 1000) if hasattr(audit, 'timestamp_utc') else 0,
         )
-    except Exception:
+    except (ValueError, TypeError):
         # System learning unavailable - continue without emission
         pass
 

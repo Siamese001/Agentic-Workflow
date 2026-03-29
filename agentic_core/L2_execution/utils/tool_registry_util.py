@@ -263,7 +263,7 @@ class ToolRegistry:
             }
             Logger.info(f"[REGISTRY] SUCCESS: Tool '{tool_name}' registered and verified.")
             return True
-        except Exception as e:
+        except (ValueError, TypeError) as e:
             Logger.error(f"[REGISTRY] ERROR: Failed to register tool '{tool_name}': {e}")
             return False
 

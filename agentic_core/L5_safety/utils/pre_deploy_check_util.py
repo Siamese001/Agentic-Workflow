@@ -207,7 +207,7 @@ def run_e2e_tests() -> bool:
     except subprocess.TimeoutExpired:
         print("❌ ERROR: E2E tests timed out after 5 minutes")
         return False
-    except Exception as e:
+    except (ValueError, TypeError) as e:
         print(f"❌ ERROR: Failed to run E2E tests: {e}")
         return False
 

@@ -346,7 +346,7 @@ class DDDAlignmentAgent(SovereignBaseAgent):
                 "artifacts": [],
                 "errors": [],
             }
-        except Exception as e:
+        except (ValueError, TypeError) as e:
             return {
                 "status": "failed",
                 "details": "Exception during healing",

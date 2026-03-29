@@ -306,7 +306,7 @@ class DependencyPruningStrategy:
             }
 
         # guardian: allow-silent-swallower
-        except Exception as e:
+        except (ValueError, TypeError) as e:
             Logger.error(f"[DependencyPruningStrategy] Healing failed: {e}")
             return {
                 "success": False,
@@ -352,7 +352,7 @@ def register_dependency_healing(project_root: Path | None = None) -> dict[str, A
             orchestrator.register_strategy("dependency_pruning", get_dependency_strategy(project_root))
             registered.append("dependency_pruning")
         # guardian: allow-silent-swallower
-        except Exception as e:
+        except (ValueError, TypeError) as e:
             errors.append(f"dependency_pruning: {e}")
 
         Logger.info(f"[Dependency Integration] Registered {len(registered)} strategies")

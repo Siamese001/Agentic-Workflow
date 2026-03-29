@@ -161,7 +161,7 @@ class GitHealthSensor:
         except FileNotFoundError:    # guardian: File operations should check existence before access    # guardian: File operations should check existence before access    # guardian: File operations should check existence before access    # guardian: File operations should check existence before access    # guardian: File operations should check existence before access
             return -1, "", "Git not found in PATH"
         # guardian: allow-silent-swallow (pre-existing, moved from L0)
-        except Exception as e:
+        except (ValueError, TypeError) as e:
             return -1, "", str(e)
 
     def _check_uncommitted_changes(self) -> DetectionSignal | None:

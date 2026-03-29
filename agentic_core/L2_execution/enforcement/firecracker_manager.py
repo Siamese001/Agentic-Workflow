@@ -299,7 +299,7 @@ class FirecrackerManager:
             if self.enable_logging:
                 Logger.info("vm_terminated", extra={"vm_id": vm_id})
             return True
-        except Exception as e:
+        except (ValueError, TypeError) as e:
             if self.enable_logging:
                 Logger.error("vm_termination_failed", EXTRA={"vm_id": vm_id, "error": str(e)}, exc_info=True)
             return False

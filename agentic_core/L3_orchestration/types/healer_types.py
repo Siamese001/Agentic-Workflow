@@ -235,7 +235,7 @@ class LegacyAgentAdapter:
                     "status": "failed",
                     "errors": [f"Agent {self.name} has no recognized healing method (fix/run/resolve)"],
                 }
-        except Exception as e:
+        except (ValueError, TypeError) as e:
             return {"status": "failed", "errors": [f"Legacy Adapter Error: {str(e)}"]}
 
     def _wrap_legacy_result(self, result: Any) -> dict[str, Any]:

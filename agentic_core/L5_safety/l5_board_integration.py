@@ -251,7 +251,7 @@ class L5BoardBridge:
             Logger.info(f"Exported {len(data)} packages to {path}")
             return True
             
-        except Exception as e:
+        except (ValueError, TypeError) as e:
             Logger.error(f"Failed to export packages: {e}")
             return False
 

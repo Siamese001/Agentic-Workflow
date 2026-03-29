@@ -252,7 +252,7 @@ def flush_and_align() -> Any:
                 print(f"  [✓] Rewired: {py_file.name}")
                 count += 1
         # guardian: allow-silent-swallow
-        except Exception as e:
+        except (ValueError, TypeError) as e:
             print(f"  [!] Failed to process {py_file}: {e}")
     print(f"\n[OK] CONVERGENCE V2 COMPLETE. {count} files rewired.")
     print("    [!] NEXT: Run 'python canon_validator_agentic_v2.py --target agentic_core'")

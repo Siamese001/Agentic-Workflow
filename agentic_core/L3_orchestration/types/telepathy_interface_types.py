@@ -233,7 +233,7 @@ class TelepathyInterface:
                 return None
             LOGGER.info(f"🧠 Telepathic instruction received (Cycle {cycle}): {content[:100]}...")
             return content
-        except Exception as e:
+        except (ValueError, TypeError) as e:
             LOGGER.error(f"Failed to read telepathy instructions: {e}")
             return None
 

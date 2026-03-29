@@ -463,7 +463,7 @@ def _escalate_to_hitl(
             action_name,
             artifact.trace_id,
         )
-    except Exception as _escalation_exc:
+    except (ValueError, TypeError) as _escalation_exc:
         _LOG.error("HUMAN_ESCALATION_ERROR: %s", _escalation_exc)
         # Continue - escalation failure should not block HITL routing
 

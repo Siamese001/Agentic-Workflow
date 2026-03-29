@@ -296,7 +296,7 @@ class CodeToolRunnerCapability:
                     }
             return {"violations_fixed": 0, "violations_found": 1, "errors": 0, "skipped": 1}
         # guardian: allow-silent-swallow
-        except Exception:
+        except (ValueError, TypeError):
             return {"violations_fixed": 0, "violations_found": 1, "errors": 1, "skipped": 0}
 
 

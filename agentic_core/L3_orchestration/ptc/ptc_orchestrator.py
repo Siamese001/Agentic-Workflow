@@ -419,7 +419,7 @@ print(json.dumps(summary))
                     
                     _emit_captures_execution_output(trace_id, tool_id, "success")
                     
-                except Exception as e:
+                except (ValueError, TypeError) as e:
                     raw_results[tool_id] = {
                         "success": False,
                         "error": str(e),
@@ -623,7 +623,7 @@ class PTCSandboxExecutor:
                 try:
                     result = handler({})
                     context.trap_result(tool_id, result)
-                except Exception as e:
+                except (ValueError, TypeError) as e:
                     context.trap_result(tool_id, {"error": str(e)})
         
         # Generate summary

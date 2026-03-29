@@ -226,7 +226,7 @@ def check_gemini_embedder(guardian):
         print(f"✅ Embedding generated: {len(embedding)} dimensions")
         print(f"   Sample values: {embedding[:5]}")
         return True
-    except Exception as e:
+    except (ValueError, TypeError) as e:
         print(f"❌ Embedding generation failed: {e}")
         return False
 

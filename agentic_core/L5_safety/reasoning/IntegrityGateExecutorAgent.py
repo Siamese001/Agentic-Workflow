@@ -739,7 +739,7 @@ class IntegrityGateExecutorAgent(SovereignBaseAgent):
                     except json.JSONDecodeError:
                         skipped += 1
                     # guardian: allow-silent-swallow
-                    except Exception as e:
+                    except (ValueError, TypeError) as e:
                         self.logger.error(f"    Error processing {json_file}: {e}")
                         errors += 1
             self.logger.info(
@@ -783,7 +783,7 @@ class IntegrityGateExecutorAgent(SovereignBaseAgent):
                 "errors": [],
             }
         # guardian: allow-silent-swallow
-        except Exception as e:
+        except (ValueError, TypeError) as e:
             return {
                 "status": "failed",
                 "details": f"IntegrityGateExecutorAgent heal() failed: {str(e)}",

@@ -319,7 +319,7 @@ class GraphAwareIndexer:
                 }],
             )
             return True
-        except Exception as e:
+        except (ValueError, TypeError) as e:
             Logger.error(f"Failed to store in vector DB: {e}")
             return False
     

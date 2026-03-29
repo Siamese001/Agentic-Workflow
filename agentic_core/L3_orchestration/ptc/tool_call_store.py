@@ -304,7 +304,7 @@ class ToolCallStore:
                 if artifact.payload["call"]["tool_id"] == tool_id:
                     return artifact.payload
         # guardian: allow-silent-swallow -- tool call lookup is best-effort; returns None on failure
-        except Exception:  # guardian: allow-silent-swallower -- see above
+        except (ValueError, TypeError):  # guardian: allow-silent-swallower -- see above
             pass
 
         return None
@@ -327,7 +327,7 @@ class ToolCallStore:
             if result.returncode == 0:
                 return result.stdout.strip()
         # guardian: allow-silent-swallow -- tool call lookup is best-effort; returns None on failure
-        except Exception:  # guardian: allow-silent-swallower -- see above
+        except (ValueError, TypeError):  # guardian: allow-silent-swallower -- see above
             pass
 
 

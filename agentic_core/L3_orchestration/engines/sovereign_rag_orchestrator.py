@@ -354,7 +354,7 @@ class SovereignRagOrchestrator(SovereignBaseAgent, IRagProvider):
                 cleaned = planner_helper._clean_json_response(raw)
                 return json.loads(cleaned)
             # guardian: allow-silent-swallow
-            except:
+            except Exception:
                 return {
                     "faithfulness_score": 0.0,
                     "improvement_suggestion": "Critical parsing error. Retry retrieval.",
@@ -726,7 +726,7 @@ class SovereignRagOrchestrator(SovereignBaseAgent, IRagProvider):
                 "errors": [],
             }
         # guardian: allow-silent-swallow
-        except Exception as e:
+        except (ValueError, TypeError) as e:
             return {
                 "status": "failed",
                 "details": f"SovereignRagOrchestrator heal() failed: {str(e)}",

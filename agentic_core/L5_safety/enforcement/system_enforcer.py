@@ -300,7 +300,7 @@ class SystemValidator:
         except SyntaxError as e:    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime
             return f"SyntaxError line {e.lineno}: {e.msg}"
         # guardian: allow-silent-swallow
-        except Exception as e:
+        except (ValueError, TypeError) as e:
             return str(e)
 
     def validate_agent(self, agent: dict) -> ValidationResult:

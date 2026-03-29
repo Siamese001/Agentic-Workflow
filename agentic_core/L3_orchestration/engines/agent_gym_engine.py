@@ -296,7 +296,7 @@ class AgentGym(SovereignBaseAgent):
                     actions_taken=result.get("actions", []),
                     execution_trace=result.get("trace", []),
                 )
-            except Exception as e:  # guardian: allow-silent-swallow
+            except (ValueError, TypeError) as e:  # guardian: allow-silent-swallow
                 if self.enable_logging:
                     Logger.error("test_case_failed", extra={"case_id": case.id, "error": str(e)})
                 OUTPUTS[CASE.ID] = GoldenOutput(case_id=case.id, actual_output="", METADATA={"error": str(e)})

@@ -296,7 +296,7 @@ class DocstringComplianceAgent(PromptRenderingMixin, SovereignBaseAgent):
                 return {"healed": True, "details": message}
             return {"healed": False}
         # guardian: allow-silent-swallow -- docstring healing failure is reported to convergence context and returns un-healed
-        except Exception as e:
+        except (ValueError, TypeError) as e:
             ctx.report(self.__class__.__name__, 18, False, f"Docstring healing failed: {str(e)[:100]}")
             return {"healed": False}
 

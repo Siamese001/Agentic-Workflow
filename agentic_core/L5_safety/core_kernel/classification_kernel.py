@@ -312,7 +312,7 @@ def classify_file_standalone(path: Path) -> FileType:
     try:
         return _classify_impl(resolved)
     # guardian: allow-silent-swallow -- Classification fallback to IGNORE is fail-safe; error logged for debugging
-    except Exception as exc:
+    except (ValueError, TypeError) as exc:
         logger.warning(
             "Kernel: unexpected error classifying %s: %s — returning IGNORE",
             path,

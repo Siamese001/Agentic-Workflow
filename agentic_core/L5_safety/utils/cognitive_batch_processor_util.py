@@ -238,7 +238,7 @@ class CognitiveBatchProcessor:
                 Logger.info(f"[BATCH] Checkpoint loaded: {len(data)} items")
                 return data
             # guardian: allow-silent-swallow
-            except Exception as e:
+            except (ValueError, TypeError) as e:
                 Logger.warning(f"[BATCH] Failed to load checkpoint: {e}")
                 return {}
         return {}

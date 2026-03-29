@@ -230,7 +230,7 @@ class GospelSyncAgent(L0RoutingBase):
                 "artifacts": [],
                 "errors": [],
             }
-        except Exception as e:
+        except (ValueError, TypeError) as e:
             return {
                 "status": "failed",
                 "details": f"GospelSyncAgent heal() failed: {str(e)}",

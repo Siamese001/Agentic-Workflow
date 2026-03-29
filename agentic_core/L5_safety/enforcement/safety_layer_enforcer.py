@@ -233,7 +233,7 @@ class L5SafetyLayer:
                 return False
             LOGGER.info("L5: Action Validated - [SAFE]")
             return True
-        except Exception as e:
+        except (ValueError, TypeError) as e:
             self.blocked_count += 1
             LOGGER.error(f"L5: Validation error - {e}")
             return False

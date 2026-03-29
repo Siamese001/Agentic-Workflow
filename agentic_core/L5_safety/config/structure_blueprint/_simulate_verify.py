@@ -367,7 +367,7 @@ def main() -> int:
             detail = f"clean_invocations={clean_count}, clean_pass={clean_pass}, tampered_invocations={tampered_count}, tampered_detected={tampered_detected}"
             results.append(("SIM7: CI guard self-test (in-memory)", passed, detail))
         # guardian: allow-silent-swallow
-        except Exception as exc:
+        except (ValueError, TypeError) as exc:
             results.append(("SIM7: CI guard self-test (in-memory)", False, str(exc)))
     print("=" * 60)
     print("SIMULATION HARNESS — RESULTS")

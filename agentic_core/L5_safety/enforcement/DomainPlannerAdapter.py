@@ -384,7 +384,7 @@ class DomainPlannerAdapter:
         try:
             raw_result = self._execute_legacy(context, *args, **kwargs)
             self._circuit_breaker.record_success()
-        except Exception as e:
+        except (ValueError, TypeError) as e:
             self._circuit_breaker.record_failure(e)
             return AdapterResult(success=False, error=str(e))
         if not self._validate_output(raw_result, context):
@@ -410,7 +410,7 @@ class DomainPlannerAdapter:
                 data=result,
                 error=result.get("errors", [None])[0] if result.get("errors") else None,
             )
-        except Exception as e:
+        except (ValueError, TypeError) as e:
             self._circuit_breaker.record_failure(e)
             return AdapterResult(success=False, error=str(e))
 

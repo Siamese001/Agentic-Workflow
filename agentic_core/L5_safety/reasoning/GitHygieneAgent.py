@@ -403,7 +403,7 @@ class GitHygieneAgent(SovereignBaseAgent):
                 else:
                     self.logger.info("  Repository hygiene is clean")
             # guardian: allow-silent-swallow
-            except Exception as e:
+            except (ValueError, TypeError) as e:
                 self.logger.error(f"  Error during Git hygiene audit: {e}")
                 errors += 1
             self.logger.info(f"[{agent_name}] Complete: {violations_found} issues, {violations_fixed} fixed")
@@ -444,5 +444,5 @@ class GitHygieneAgent(SovereignBaseAgent):
             else:
                 return {"violations_fixed": 0, "violations_found": 1, "errors": 0, "skipped": 1}
         # guardian: allow-silent-swallow
-        except Exception:
+        except (ValueError, TypeError):
             return {"violations_fixed": 0, "violations_found": 1, "errors": 1, "skipped": 0}

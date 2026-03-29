@@ -440,7 +440,7 @@ class MCPToolServer:
         try:
             result = tool.handler(**effective_args)
             return MCPToolResult(tool_name=name, success=True, result=result)
-        except Exception as e:
+        except (ValueError, TypeError) as e:
             Logger.error(f"Tool execution failed for {name}: {e}")
             return MCPToolResult(tool_name=name, success=False, result=None, error=str(e))
 

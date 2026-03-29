@@ -254,7 +254,7 @@ class CredentialAccessGuard:
                     _bp.behavioral_score,
                 )
         # guardian: allow-silent-swallow
-        except Exception:
+        except (ValueError, TypeError):
             pass
 
     # ------------------------------------------------------------------

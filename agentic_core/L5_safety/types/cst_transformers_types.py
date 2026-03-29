@@ -673,7 +673,7 @@ class SurgicalTypeHintInserter(cst.CSTTransformer):
                 updated_node = updated_node.with_changes(returns=new_returns)
                 self.modifications_made += 1
             # guardian: allow-silent-swallow
-            except Exception:
+            except (ValueError, TypeError):
                 pass
         return updated_node
 

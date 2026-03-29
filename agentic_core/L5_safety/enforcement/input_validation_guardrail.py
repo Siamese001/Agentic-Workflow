@@ -225,7 +225,7 @@ class InputValidationGuardrail(SovereignBaseAgent):
             if not result["valid"]:
                 self.violations_found += 1
             return result
-        except Exception as e:
+        except (ValueError, TypeError) as e:
             logger.error(f"[{self.name}] Validation error: {e}")
             return {
                 "valid": False,

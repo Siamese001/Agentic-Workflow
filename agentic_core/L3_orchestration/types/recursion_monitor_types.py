@@ -556,7 +556,7 @@ class RecursionMonitor:
             try:
                 self.alert_callback(alert)
             # guardian: allow-silent-swallow
-            except Exception as e:
+            except (ValueError, TypeError) as e:
                 Logger.error(f"Alert callback failed: {e}")
         Logger.log(
             logging.CRITICAL if severity == AlertSeverity.CRITICAL else logging.WARNING,

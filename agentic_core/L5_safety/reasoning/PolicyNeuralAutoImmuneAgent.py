@@ -265,7 +265,7 @@ class PolicyNeuralAutoImmuneAgent(NeuralAutoImmuneAgent, SovereignBaseAgent):
                 "artifacts": [],
                 "errors": [],
             }
-        except Exception as e:
+        except (ValueError, TypeError) as e:
             return {
                 "status": "failed",
                 "details": f"PolicyNeuralAutoImmuneAgent heal() failed: {str(e)}",

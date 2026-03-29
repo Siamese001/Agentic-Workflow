@@ -268,7 +268,7 @@ def main():
         class_source, start, end = extract_class_with_context(content, "PatternEnforcerAgent")
         target_file = create_pattern_enforcer_file(class_source)
         print(f"  ✅ Created {target_file} (lines {start}-{end})")
-    except Exception as e:
+    except (ValueError, TypeError) as e:
         print(f"  ❌ Failed: {e}")
         return False
     print(f"\nUpdating {SOURCE_FILE}...")

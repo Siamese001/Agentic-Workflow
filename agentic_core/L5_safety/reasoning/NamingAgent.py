@@ -252,7 +252,7 @@ class NamingAgent(PromptRenderingMixin, SovereignBaseAgent):
                 "suggested_action": f"Review naming conventions for {target}",
                 "confidence": 0.8,
             }
-        except Exception as e:
+        except (ValueError, TypeError) as e:
             return {"status": "error", "error": str(e)}
 
     def __init__(self, *args: Any, **kwargs: Any) -> None:

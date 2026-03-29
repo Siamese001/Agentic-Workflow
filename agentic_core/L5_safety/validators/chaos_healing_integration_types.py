@@ -293,7 +293,7 @@ class ChaosResilienceStrategy:
             }
 
         # guardian: allow-silent-swallower
-        except Exception as e:
+        except (ValueError, TypeError) as e:
             Logger.error(f"[ChaosResilienceStrategy] Healing failed: {e}")
             return {
                 "success": False,
@@ -336,7 +336,7 @@ def register_chaos_healing() -> dict[str, Any]:
             orchestrator.register_strategy("chaos_resilience", get_chaos_strategy())
             registered.append("chaos_resilience")
         # guardian: allow-silent-swallower
-        except Exception as e:
+        except (ValueError, TypeError) as e:
             errors.append(f"chaos_resilience: {e}")
 
         Logger.info(f"[Chaos Integration] Registered {len(registered)} strategies")

@@ -420,7 +420,7 @@ class TitaniumRAGPipeline:
 
             return titanium_results
 
-        except Exception as e:
+        except (ValueError, TypeError) as e:
             Logger.error(f"Retrieval failed: {e}")
             return []
 

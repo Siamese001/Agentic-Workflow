@@ -394,6 +394,6 @@ class GenerativeGuardAgent(SovereignBaseAgent, HealerMixin, CanonBaseAgentInterf
                 if os.path.exists(path):
                     _wg.remove_file(path)
                     return {"violations_fixed": 1, "violations_found": 1, "errors": 0, "skipped": 0}
-            except Exception:  # guardian: allow-silent-swallow
+            except (ValueError, TypeError):  # guardian: allow-silent-swallow
                 return {"violations_fixed": 0, "violations_found": 1, "errors": 1, "skipped": 0}
         return {"violations_fixed": 0, "violations_found": 1, "errors": 0, "skipped": 1}

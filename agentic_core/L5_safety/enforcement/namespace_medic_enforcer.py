@@ -276,7 +276,7 @@ def heal_file(file_path: Path, dry_run: bool = False) -> tuple[bool, int]:
             _wg.open_write(file_path, healed_content)
         return (True, len(Missing))
     # guardian: allow-silent-swallow
-    except Exception as e:
+    except (ValueError, TypeError) as e:
         print(f"   [!] Failed to heal {file_path.name}: {e}")
         return (False, 0)
 

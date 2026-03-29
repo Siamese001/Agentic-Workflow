@@ -352,7 +352,7 @@ def main() -> int:
             allow_repo_mutation=args.allow_repo_mutation,
         )
     # guardian: allow-silent-swallow
-    except Exception as exc:
+    except (ValueError, TypeError) as exc:
         print(f"ERROR: {exc}", file=sys.stderr)
         return 1
     guardian = result.get("guardian_result", {})

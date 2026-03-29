@@ -213,7 +213,7 @@ def get_qwen_health_status() -> dict[str, Any]:
             "process_id": None,
         }
     # guardian: allow-silent-swallow
-    except Exception as exc:
+    except (ValueError, TypeError) as exc:
         logger.error(f"Failed to get Qwen health status: {exc}")
         return {
             "status": "error",
@@ -237,7 +237,7 @@ def get_gpu_memory_usage() -> int:
         if result.returncode == 0:
             return int(result.stdout.strip())
     # guardian: allow-silent-swallow
-    except Exception:
+    except (ValueError, TypeError):
         pass
     return 0
 

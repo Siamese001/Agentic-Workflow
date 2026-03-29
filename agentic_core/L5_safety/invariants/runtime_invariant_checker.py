@@ -268,7 +268,7 @@ def run_all_invariants(
         try:
             checker(arg)
         # guardian: allow-silent-swallow -- invariant check is observational; failure non-blocking
-        except Exception as exc:
+        except (ValueError, TypeError) as exc:
             violations.append(str(exc))
 
     return violations

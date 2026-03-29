@@ -262,7 +262,7 @@ class DynamicSealAgent(SovereignBaseAgent):
                 "artifacts": [],
                 "errors": [],
             }
-        except Exception as e:
+        except (ValueError, TypeError) as e:
             return {
                 "status": "failed",
                 "details": "Exception during healing",
@@ -390,7 +390,7 @@ class DynamicSealAgent(SovereignBaseAgent):
                     violations_sealed=0,
                     success=True,
                 )
-        except Exception as e:
+        except (ValueError, TypeError) as e:
             return SealResult(
                 file_path=str(file_path),
                 violations_found=len(violations),

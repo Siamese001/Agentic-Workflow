@@ -315,7 +315,7 @@ class SSOTScanner:
                     agents.append(metadata)
                     self._cache[str(agent_file)] = metadata
             # guardian: allow-silent-swallow
-            except Exception:
+            except (ValueError, TypeError):
                 # Skip files that can't be parsed
                 continue
 

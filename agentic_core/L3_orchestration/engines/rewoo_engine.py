@@ -263,7 +263,7 @@ class RewooSolver:
             task.status = RewooTaskStatus.COMPLETED
             Logger.info("rewoo_task_done", extra={"task_id": task.task_id, "tool": task.tool_name})
             return result
-        except Exception as exc:  # guardian: allow-silent-swallower
+        except (ValueError, TypeError) as exc:  # guardian: allow-silent-swallower
             task.status = RewooTaskStatus.FAILED
             task.error = str(exc)
             Logger.error("rewoo_task_error", extra={"task_id": task.task_id, "error": str(exc)})

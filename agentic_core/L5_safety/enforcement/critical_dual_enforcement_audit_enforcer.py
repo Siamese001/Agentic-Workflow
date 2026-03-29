@@ -440,6 +440,6 @@ def test_dual_enforcement_audit() -> bool:
             return False
         auditor.audit_critical_requirements()
         return True
-    except Exception as e:
+    except (ValueError, TypeError) as e:
         Logger.error(f"Dual enforcement audit test failed: {e}")
         return False

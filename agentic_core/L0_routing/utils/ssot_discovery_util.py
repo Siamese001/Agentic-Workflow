@@ -262,7 +262,7 @@ def load_agent_discovery(
         return agents
 
     # guardian: allow-silent-swallow -- resilient SSOT discovery; failure logged above
-    except Exception as e:
+    except (ValueError, TypeError) as e:
         Logger.error(f"[SSOT] Failed to load discovery JSON: {e}")
         return []
 

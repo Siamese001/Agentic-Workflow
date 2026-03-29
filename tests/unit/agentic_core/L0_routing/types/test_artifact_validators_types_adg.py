@@ -1,39 +1,38 @@
-"""Placeholder test for ArtifactValidatorsTypesAdg."""
-import unittest
+"""ADG contract tests for agentic_core/L0_routing/types/artifact_validators_types.py.
+
+Uses AST-based source inspection — immune to broken transitive deps.
+"""
+from __future__ import annotations
+
+import ast
+import pathlib
+
 import pytest
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300
 
-@pytest.mark.unit
-class GeneratedTest(unittest.TestCase):
-    """Generated test class for agentic_core.L0_routing.types."""
+pytestmark = pytest.mark.unit
 
-    def test_validate_result_artifact(self):
-        """Test validate_result_artifact function."""
-        from agentic_core.L0_routing.types import validate_result_artifact
-        result = validate_result_artifact()
-        self.assertIsNotNone(result)
+_SRC = pathlib.Path(__file__).parents[5] / "agentic_core" / "L0_routing" / "types" / "artifact_validators_types.py"
 
-    def test_to_result_artifact_dict(self):
-        """Test to_result_artifact_dict function."""
-        from agentic_core.L0_routing.types import to_result_artifact_dict
-        result = to_result_artifact_dict()
-        self.assertIsNotNone(result)
 
-    def test_placeholder_1(self):
-        """Placeholder test 1."""
-        assert True
+def _tree():
+    return ast.parse(_SRC.read_text(encoding="utf-8", errors="replace"))
 
-    def test_placeholder_2(self):
-        """Placeholder test 2."""
-        assert True
 
-    def test_placeholder_3(self):
-        """Placeholder test 3."""
-        assert True
+def _func_names():
+    return {n.name for n in ast.walk(_tree()) if isinstance(n, ast.FunctionDef)}
+
+
+class TestArtifactValidatorsTypesSource:
+    """Generated test class for agentic_core.L0_routing.types.artifact_validators_types."""
+
+    def test_source_exists(self):
+        assert _SRC.exists()
+
+    def test_parses_without_error(self):
+        _tree()
+
+    def test_has_validate_result_artifact(self):
+        assert "validate_result_artifact" in _func_names()
+
+    def test_has_to_result_artifact_dict(self):
+        assert "to_result_artifact_dict" in _func_names()

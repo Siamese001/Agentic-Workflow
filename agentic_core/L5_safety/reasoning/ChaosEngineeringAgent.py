@@ -267,7 +267,7 @@ class ChaosEngineeringAgent(SovereignBaseAgent):
                 },
             )
             return results
-        except Exception as e:
+        except (ValueError, TypeError) as e:
             logger.error(f"[{self.name}] Error during chaos testing: {e}")
             return {"agent": self.name, "error": str(e), "tests_executed": results["tests_executed"]}
 

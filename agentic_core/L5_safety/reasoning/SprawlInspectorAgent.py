@@ -312,7 +312,7 @@ class SprawlInspectorAgent(SovereignBaseAgent):
                 "artifacts": [],
                 "errors": [],
             }
-        except Exception as e:
+        except (ValueError, TypeError) as e:
             return {
                 "status": "failed",
                 "details": f"SprawlInspectorAgent heal() failed: {str(e)}",

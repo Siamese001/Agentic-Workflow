@@ -215,7 +215,7 @@ def force_app_depth() -> Any:
             try:
                 _wg.remove_tree(str(engine_folder))
             # guardian: allow-silent-swallow
-            except Exception:
+            except (ValueError, TypeError):
                 pass
                 print(f"  [✓] ENGINE EXTRICATED: {engine_folder.name} -> Core/L2_execution/P3_engines")
         for item in app_path.iterdir():
@@ -237,7 +237,7 @@ def force_app_depth() -> Any:
             try:
                 _wg.remove_tree(str(layer_folder))
             # guardian: allow-silent-swallow
-            except Exception:
+            except (ValueError, TypeError):
                 pass
             print(f"  [✓] LAYER ANNEXED: {layer_folder.name} -> Core/{target_layer}/P1_core")
         app_p1: Any = app_path / "P1_core"

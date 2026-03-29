@@ -225,7 +225,7 @@ class WebSearchTools:
             )
             return self._parse_mcp_response(result, "web")
         # guardian: allow-silent-swallow
-        except Exception as e:
+        except (ValueError, TypeError) as e:
             Logger.error(f"[L2 WEB SEARCH] MCP call failed: {e}")
             return f"Search Error: {str(e)}"
 
@@ -249,7 +249,7 @@ class WebSearchTools:
             )
             return self._parse_mcp_response(result, "local")
         # guardian: allow-silent-swallow
-        except Exception as e:
+        except (ValueError, TypeError) as e:
             Logger.error(f"[L2 LOCAL SEARCH] MCP call failed: {e}")
             return f"Local search error: {str(e)}"
 

@@ -334,7 +334,7 @@ class ComplexityAnalyzerAgent(SovereignBaseAgent):
             content = file_path.read_text(encoding="utf-8")
             tree = ast.parse(content)
         # guardian: allow-silent-swallow
-        except Exception as e:
+        except (ValueError, TypeError) as e:
             Logger.error(f"Failed to parse {file_path}: {e}")
             return []
 

@@ -1,4 +1,5 @@
 from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+    LayerSegment,
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -61,6 +62,12 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_writes_via_uwg,
     emit_determinism_digest,  # noqa: E402
     emit_replay_key,  # noqa: E402
+)
+
+# Import artifact validators
+from agentic_core.L0_routing.types.artifact_validators_types import (
+    to_result_artifact_dict,
+    validate_result_artifact,
 )
 
 _emit_emits_metric_event("__init__", "p4obs", "metric_1")

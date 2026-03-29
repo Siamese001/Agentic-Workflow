@@ -249,7 +249,7 @@ class ToolInvoker:
                 exit_code = 0
 
         # guardian: allow-silent-swallow
-        except Exception as e:  # guardian: allow-silent-swallower
+        except (ValueError, TypeError) as e:  # guardian: allow-silent-swallower
             # Tool execution failed
             stdout, stderr, truncated = self._process_output(
                 "",

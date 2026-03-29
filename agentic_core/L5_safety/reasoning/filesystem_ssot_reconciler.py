@@ -328,7 +328,7 @@ class FilesystemSSOTReconcilerAgent(AutonomyMixin, SelfDiagnosisMixin, L0Routing
                 "artifacts": [],
                 "errors": [],
             }
-        except Exception as e:  # guardian: allow-silent-swallow
+        except (ValueError, TypeError) as e:  # guardian: allow-silent-swallow
             return {
                 "status": "failed",
                 "details": "Exception during healing",
@@ -1096,7 +1096,7 @@ class FilesystemSSOTReconcilerAgent(AutonomyMixin, SelfDiagnosisMixin, L0Routing
                     f"Blueprint partially synchronized - {len(remaining_drift)} drift items remain"
                 )
             Logger.info(f"[FilesystemSSOTReconcilerAgent] {report['message']}")
-        except Exception as e:  # guardian: allow-silent-swallow
+        except (ValueError, TypeError) as e:  # guardian: allow-silent-swallow
             report["post_heal_status"] = "ERROR"
             report["message"] = f"Post-heal validation error: {e}"
             Logger.error(f"[FilesystemSSOTReconcilerAgent] Post-heal validation failed: {e}")

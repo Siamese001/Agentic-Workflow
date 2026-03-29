@@ -320,7 +320,7 @@ class SafetyStrategy:
                     "execution_time_ms": 0,
                     "error_message": f"{agent_name} has no heal_repository method",
                 }
-        except Exception as e:
+        except (ValueError, TypeError) as e:
             execution_time_ms = (get_clock().now_epoch() - start_time) * 1000
             return {
                 "status": "ERROR",

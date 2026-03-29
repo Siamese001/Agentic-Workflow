@@ -314,7 +314,7 @@ def scan_file_for_ptc_invariants(file_path: Path) -> list[tuple[int, str, str]]:
         violations.append(
             (e.lineno or 0, "PTC_SYNTAX_ERROR", f"Syntax error: {e.msg}")
         )  # guardian: allow-silent-swallower
-    except Exception as e:  # guardian: allow-silent-swallower
+    except (ValueError, TypeError) as e:  # guardian: allow-silent-swallower
         violations.append((0, "PTC_SCAN_ERROR", f"Scan error: {e}"))  # guardian: allow-silent-swallower
 
     return violations

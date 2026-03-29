@@ -357,12 +357,12 @@ class SovereignSandbox:
                     process.terminate()
                     process.wait(timeout=DEFAULT_TIMEOUT)
                 # guardian: allow-silent-swallow
-                except:
+                except Exception:
                     try:
                         process.kill()
                         process.wait()
                     # guardian: allow-silent-swallow
-                    except:
+                    except Exception:
                         pass
 
 

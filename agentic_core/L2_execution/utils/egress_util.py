@@ -229,7 +229,7 @@ class NetworkingUtility:
             Logger.warning(f"P8_BLOCK: Host {host} is not whitelisted")
             return EgressResult(status="FAIL", reason=f"Host {host} not in whitelist", host=host)
         # guardian: allow-silent-swallow
-        except Exception as e:
+        except (ValueError, TypeError) as e:
             Logger.error(f"P8_ERROR: Failed to parse URL {url}: {e}")
             return EgressResult(status="FAIL", reason=f"Parse error: {str(e)}", host="unknown")
 
@@ -304,7 +304,7 @@ class NetworkingUtility:
                 "host": egress_result.host,
             }
         # guardian: allow-silent-swallow
-        except Exception as e:
+        except (ValueError, TypeError) as e:
             Logger.error(f"FETCH_ERROR: Failed to fetch {url}: {e}")
             return {"status": "error", "url": url, "reason": str(e), "host": egress_result.host}
 

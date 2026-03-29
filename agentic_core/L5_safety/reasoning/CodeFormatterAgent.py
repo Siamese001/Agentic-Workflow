@@ -239,7 +239,7 @@ class CodeFormatterAgent(CodeToolRunnerCapability, SovereignBaseAgent):
             if hasattr(self.ctx, "report"):
                 self.ctx.report("CodeFormatterAgent", 0, False, f"Tool Missing: {e.filename}")
         # guardian: allow-silent-swallow
-        except Exception as e:
+        except (ValueError, TypeError) as e:
             if hasattr(self.ctx, "report"):
                 self.ctx.report("CodeFormatterAgent", 0, False, f"Format error: {e}")
         return {"healed": changed}

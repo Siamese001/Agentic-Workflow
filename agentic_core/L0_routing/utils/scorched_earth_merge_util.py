@@ -281,7 +281,7 @@ def scorched_earth_merge() -> Any:
                     shutil.rmtree(item)
                     logging.info(f"[✓] Purged empty unapproved shell: {item.name}")
             # guardian: allow-silent-swallow
-            except Exception:
+            except (ValueError, TypeError):
                 pass
     print("\n--- FINAL ROOT AUDIT ---")
     current_root: Any = [i.name for i in ROOT.iterdir()]

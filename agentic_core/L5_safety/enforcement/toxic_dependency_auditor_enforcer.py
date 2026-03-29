@@ -278,7 +278,7 @@ class ToxicDependencyAuditor(SovereignBaseAgent):
                         if alias.name.startswith(AGENTIC_CORE_DIR):
                             imports.add(alias.name)
         # guardian: allow-silent-swallow
-        except Exception:
+        except (ValueError, TypeError):
             pass
         return imports
 

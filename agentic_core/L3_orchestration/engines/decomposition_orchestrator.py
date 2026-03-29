@@ -470,7 +470,7 @@ class DecompositionOrchestrator(SovereignBaseAgent):
                 "artifacts": [],
                 "errors": [],
             }
-        except Exception as e:
+        except (ValueError, TypeError) as e:
             return {
                 "status": "failed",
                 "details": f"DecompositionOrchestrator heal() failed: {str(e)}",
@@ -543,7 +543,7 @@ class WorkerPool:
             return WorkerResult(
                 task_id=task.task_id, worker_name=task.target_agent, output=output, success=True
             )
-        except Exception as exc:  # guardian: allow-silent-swallower
+        except (ValueError, TypeError) as exc:  # guardian: allow-silent-swallower
             task.status = "failed"
             _logger.error("worker_pool_error", extra={"task": task.task_id, "error": str(exc)})
             return WorkerResult(task_id=task.task_id, worker_name=task.target_agent, error=str(exc))

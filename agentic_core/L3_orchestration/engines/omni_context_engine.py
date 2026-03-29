@@ -220,7 +220,7 @@ class OmniContext(SubAtomicAgent):
                 end_pos = start_pos + len(content)
                 self.index[file_path] = {"start": start_pos, "end": end_pos, "content": content}
             # guardian: allow-silent-swallow
-            except Exception as e:
+            except (ValueError, TypeError) as e:
                 print(f"   [!]  Failed to read {file_path}: {e}")
         self.context_buffer = "\n".join(sections)
 

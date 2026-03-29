@@ -288,7 +288,7 @@ class PromptChainEngine:
             Logger.debug("prompt_chain_step", extra={"step": step.name})
             try:
                 output = await step.fn(context)
-            except Exception as exc:
+            except (ValueError, TypeError) as exc:
                 result.error = f"Step '{step.name}' raised: {exc}"
                 result.steps_failed.append(step.name)
                 Logger.error("prompt_chain_step_error", extra={"step": step.name, "error": str(exc)})

@@ -391,7 +391,7 @@ class CircuitBreaker:
                 success_count=self._success_count,
                 current_backoff=self._current_reset_timeout,
             )
-        except Exception:
+        except (ValueError, TypeError):
             # System learning unavailable - continue without emission
             pass
 

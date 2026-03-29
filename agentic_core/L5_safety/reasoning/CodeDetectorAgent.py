@@ -302,7 +302,7 @@ class CodeDetectorAgent(PromptRenderingMixin, SovereignBaseAgent):
         try:
             content = file_path.read_text(encoding="utf-8")
         # guardian: allow-silent-swallow -- unreadable file is skipped; empty detections returned
-        except Exception:
+        except (ValueError, TypeError):
             return []
         if self._detector_config.enable_dead_code:
             detections.extend(self.detect_dead_code(file_path, content))

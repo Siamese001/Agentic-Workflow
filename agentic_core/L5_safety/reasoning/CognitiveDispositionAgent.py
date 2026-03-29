@@ -256,7 +256,7 @@ class CognitiveDispositionAgent(PromptRenderingMixin, SovereignBaseAgent):
             try:
                 data = json.loads(response["content"])
             # guardian: allow-silent-swallow -- JSON parse fallback strips markdown fences before retry
-            except:  # noqa: E722
+            except Exception:  # noqa: E722
                 text = response["content"].replace("```json", "").replace("```", "").strip()
                 data = json.loads(text)
             decision = DispositionDecision(

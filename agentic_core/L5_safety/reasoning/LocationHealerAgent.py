@@ -430,7 +430,7 @@ class LocationHealerAgent(SovereignBaseAgent):
             _bp = _gbp(file_path, self.project_root)
             _adg_score = _bp.behavioral_score
         # guardian: allow-silent-swallow
-        except Exception:
+        except (ValueError, TypeError):
             pass
 
         message = violation.get("message", "Location violation")

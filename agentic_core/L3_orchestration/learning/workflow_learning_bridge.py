@@ -265,7 +265,7 @@ class WorkflowLearningBridge:
                     outcome.bundle_id,
                 )
             # guardian: allow-silent-swallow
-            except Exception as exc:
+            except (ValueError, TypeError) as exc:
                 logger.error("LEARNING_BRIDGE learner=%s error: %s", name, exc)
 
     def ledger(self) -> list[WorkflowOutcome]:

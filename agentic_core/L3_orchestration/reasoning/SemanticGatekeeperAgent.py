@@ -322,7 +322,7 @@ class SemanticGatekeeperAgent(SovereignBaseAgent):
                 "artifacts": [],
                 "errors": [],
             }
-        except Exception as e:
+        except (ValueError, TypeError) as e:
             return {
                 "status": "failed",
                 "details": f"SemanticGatekeeperAgent heal() failed: {str(e)}",

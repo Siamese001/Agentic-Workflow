@@ -212,7 +212,7 @@ class SubAtomicEngineImpl:
         try:
             return await self.embedding_gateway.get_embedding(text, provider="bge-m3")
         # guardian: allow-silent-swallow
-        except Exception as e:
+        except (ValueError, TypeError) as e:
             Logger.error(f"Embedding failed: {e}")
             return [0.0] * 1024
 
@@ -250,6 +250,6 @@ class SubAtomicEngineImpl:
             )
             return response["content"]
         # guardian: allow-silent-swallow
-        except Exception as e:
+        except (ValueError, TypeError) as e:
             Logger.error(f"Mutation failed: {e}")
             return prompt

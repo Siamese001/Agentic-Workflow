@@ -325,7 +325,7 @@ class HITLEscalationActivator:
                     )
                     break
             # guardian: allow-silent-swallow
-            except Exception as exc:
+            except (ValueError, TypeError) as exc:
                 logger.error("HITL handler error agent=%s: %s", agent, exc)
 
         return req

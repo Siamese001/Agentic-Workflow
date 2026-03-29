@@ -461,7 +461,7 @@ class AdversarialRedTeamerAgent(SovereignBaseAgent, SubAtomicAgent):
                 else "WARNING: Comment-only preservation possible",
             )
         # guardian: allow-silent-swallow
-        except Exception as e:
+        except (ValueError, TypeError) as e:
             Logger.exception(f"Error during functional preservation test {test_id}")
             return RedTeamResult(
                 test_id=test_id,

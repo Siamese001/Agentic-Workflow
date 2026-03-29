@@ -487,7 +487,7 @@ class PascalSovereigntyAgent(SovereignBaseAgent):
                         path.write_text(new_content, encoding="utf-8")
                     count += 1
             # guardian: allow-silent-swallow
-            except Exception:
+            except (ValueError, TypeError):
                 continue
         return count
 
@@ -506,7 +506,7 @@ class PascalSovereigntyAgent(SovereignBaseAgent):
                     if not self.dry_run:
                         return False
             # guardian: allow-silent-swallow
-            except Exception:
+            except (ValueError, TypeError):
                 pass
         return True
 
@@ -628,7 +628,7 @@ class PascalSovereigntyAgent(SovereignBaseAgent):
                 try:
                     temp.unlink()
                 # guardian: allow-silent-swallow
-                except Exception:
+                except (ValueError, TypeError):
                     pass
 
             print(f"  [SUCCESS] {src.name} -> {dest_name}")
@@ -703,7 +703,7 @@ class PascalSovereigntyAgent(SovereignBaseAgent):
 
             return f"{target_name}.py"
         # guardian: allow-silent-swallow
-        except Exception:
+        except (ValueError, TypeError):
             return None
 
     # guardian: allow-type-erasure

@@ -307,7 +307,7 @@ class ProcessGuard:
                 result["terminated"].append(pid)
                 logger.info(f"ProcessGuard: Terminated PID {pid}")
             # guardian: allow-silent-swallow
-            except Exception as e:
+            except (ValueError, TypeError) as e:
                 result["failed"].append(pid)
                 logger.warning(f"ProcessGuard: Failed to terminate PID {pid}: {e}")
         with self._pid_lock:

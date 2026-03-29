@@ -226,7 +226,7 @@ class AutonomousThreatEvolutionAgent(SovereignBaseAgent):
             try:
                 await self._perform_evolution_cycle()
             # guardian: allow-silent-swallow
-            except Exception as e:
+            except (ValueError, TypeError) as e:
                 print(f"   [L5 ERROR] Evolution cycle failed: {e}")
             await asyncio.sleep(self.evolution_interval)
 

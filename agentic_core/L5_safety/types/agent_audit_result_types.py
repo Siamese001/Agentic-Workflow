@@ -218,7 +218,7 @@ def audit_agent_file(py_file: Path, agentic_core: Path) -> list[AgentAuditResult
         content = py_file.read_text(encoding="utf-8", errors="ignore")
         tree = ast.parse(content)
     # guardian: allow-silent-swallow (pre-existing, moved from L0)
-    except Exception:
+    except (ValueError, TypeError):
         return results
     for node in ast.walk(tree):
         if not isinstance(node, ast.ClassDef):

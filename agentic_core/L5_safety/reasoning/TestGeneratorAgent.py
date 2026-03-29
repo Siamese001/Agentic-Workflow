@@ -245,7 +245,7 @@ class TestGeneratorAgent(SovereignBaseAgent):
             tree = ast.parse(source)
         except SyntaxError as e:    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime
             return {"success": False, "error": f"Syntax error: {e}"}
-        except Exception as e:
+        except (ValueError, TypeError) as e:
             return {"success": False, "error": str(e)}
         classes = self._extract_classes(tree)
         if not classes:
@@ -255,7 +255,7 @@ class TestGeneratorAgent(SovereignBaseAgent):
         test_path = self.tests_dir / test_filename
         try:
             _wg.write_text(test_path, test_content, encoding="utf-8")
-        except Exception as e:
+        except (ValueError, TypeError) as e:
             return {"success": False, "error": f"Failed to write test file: {e}"}
         record = {
             "source_file": str(path),

@@ -255,7 +255,7 @@ def forge_fortress() -> Any:
                 try:
                     _wg.remove_dir(old_path)
                 # guardian: allow-silent-swallow
-                except:
+                except Exception:
                     pass
     logging.info("--- FORGE COMPLETE: Sovereign Architecture In Place ---")
 

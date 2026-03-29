@@ -203,7 +203,7 @@ def read_file_content(file_path: Path) -> str:
         with open(file_path, encoding="utf-8") as f:
             return f.read()
     # guardian: allow-silent-swallow
-    except Exception:
+    except (ValueError, TypeError):
         return ""
 
 

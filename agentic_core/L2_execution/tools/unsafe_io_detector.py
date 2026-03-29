@@ -376,7 +376,7 @@ def scan_directory_for_unsafe_patterns(
                 findings = scan_for_unsafe_patterns(content, str(file_path))
                 all_findings.extend(findings)
             # guardian: allow-silent-swallow
-            except Exception:
+            except (ValueError, TypeError):
                 # Skip files that can't be read or parsed
                 continue
 

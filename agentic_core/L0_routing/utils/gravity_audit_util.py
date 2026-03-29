@@ -214,7 +214,7 @@ def audit_gravity() -> Any:
                     ):
                         leaks.append((py_file.relative_to(ROOT), f"From: {node.module}"))
         # guardian: allow-silent-swallow
-        except Exception as e:
+        except (ValueError, TypeError) as e:
             print(f"  [!] Audit Failed for {py_file.name}: {e}")
     if not leaks:
         print("\n[SUCCESS] Gravity is 100% Pure. No downstream leaks detected.")

@@ -406,10 +406,10 @@ class GeminiInvokerAdapter:
                 try:
                     response_text = result.text
                 # guardian: allow-silent-swallow
-                except Exception:
+                except (ValueError, TypeError):
                     response_text = None
         # guardian: allow-silent-swallow
-        except Exception as _exc:
+        except (ValueError, TypeError) as _exc:
             _exc_name = type(_exc).__name__
             if "ContextOverflow" in _exc_name:
                 logger.warning(

@@ -356,7 +356,7 @@ class RecursiveOrchestrator:
 
             return result
 
-        except Exception as e:
+        except (ValueError, TypeError) as e:
             self._metrics.failed_spawns += 1
             Logger.error(f"[SPAWN_ERROR] Failed to spawn {successor_spec.agent_name}: {e}")
             return AgentResult(
@@ -745,7 +745,7 @@ class RecursiveOrchestrator:
                 "artifacts": [],
                 "errors": [],
             }
-        except Exception as e:
+        except (ValueError, TypeError) as e:
             return {
                 "status": "failed",
                 "details": f"RecursiveOrchestrator heal() failed: {str(e)}",
