@@ -185,11 +185,11 @@ class TestTokenEstimatorStressTests:
 
     def test_boundary_conditions(self):
         """Test behavior at exact boundary conditions"""
-        # Test exactly at warning threshold (150K)
-        # Using smaller content to stay under hard limit when tripled
-        boundary_content = 'x' * 100000
-        # 100,000 * 0.44 = 44,000 tokens
-        # Total tokens = 44,000 * 3 + 20,000 overhead = 152,000 (near warning threshold)
+        # Test near warning threshold (197K)
+        # Using content to reach ~197K tokens when tripled
+        boundary_content = 'x' * 140000
+        # 140,000 * 0.44 = 61,600 tokens
+        # Total tokens = 61,600 * 3 + 20,000 overhead = 204,800 (near warning threshold of 197000)
 
         estimate = self.hook.preflight_check(
             plan_step="boundary_warning",
@@ -204,10 +204,10 @@ class TestTokenEstimatorStressTests:
 
         assert estimate.status in ['green', 'yellow']
 
-        # Test just over safe operating cap (170K)
-        over_safe_content = 'x' * 110000
-        # 110,000 * 0.44 = 48,400 tokens
-        # Total = 48,400 * 3 + 20,000 overhead = 165,200 (near safe cap)
+        # Test just over safe operating cap (223K)
+        over_safe_content = 'x' * 170000
+        # 170,000 * 0.44 = 74,800 tokens
+        # Total = 74,800 * 3 + 20,000 overhead = 244,400 (over safe cap of 223000)
 
         estimate = self.hook.preflight_check(
             plan_step="boundary_safe",

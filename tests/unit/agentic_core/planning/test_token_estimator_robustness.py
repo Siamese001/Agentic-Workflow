@@ -293,13 +293,14 @@ class TestTokenEstimatorErrorHandling:
         estimator = ContextWindowEstimator()
 
         # Test exactly at boundaries
+        # WARNING_THRESHOLD = 197000, SAFE_OPERATING_CAP = 223000, HARD_MAX_CONTEXT = 262000
         boundary_tests = [
-            (149999, 'green'),  # Just under warning
-            (150000, 'green'),  # Exactly at warning (still green)
-            (150001, 'yellow'),  # Just over warning
-            (169999, 'yellow'),  # Just under safe cap
-            (170000, 'yellow'),  # Exactly at safe cap (still yellow)
-            (170001, 'red'),     # Just over safe cap
+            (196999, 'green'),   # Just under warning threshold
+            (197000, 'green'),   # Exactly at warning threshold (still green)
+            (197001, 'yellow'),  # Just over warning threshold
+            (222999, 'yellow'),  # Just under safe cap
+            (223000, 'yellow'),  # Exactly at safe cap (still yellow)
+            (223001, 'red'),     # Just over safe cap
         ]
 
         for tokens, expected_status in boundary_tests:

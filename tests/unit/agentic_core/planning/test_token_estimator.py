@@ -70,24 +70,31 @@ class TestContextWindowEstimator:
         assert self.estimator._detect_content_type(diff_content, 'file.patch') == 'diff'
 
     def test_status_action_determination(self):
-        """Test status and action determination"""
-        # Green status
+        """Test status and action determination based on token counts"""
+        # Green status (below WARNING_THRESHOLD of 197000)
         status, action = self.estimator._determine_status_action(140000)
         assert status == 'green'
         assert action == 'proceed'
 
-        # Yellow status
-        status, action = self.estimator._determine_status_action(160000)
+        # Yellow status (between WARNING_THRESHOLD and SAFE_OPERATING_CAP)
+        # WARNING_THRESHOLD = 197000, SAFE_OPERATING_CAP = 223000
+        status, action = self.estimator._determine_status_action(200000)
         assert status == 'yellow'
         assert action == 'compress'
 
-        # Red status
-        status, action = self.estimator._determine_status_action(180000)
+        # Red status (above SAFE_OPERATING_CAP of 223000 but below HARD_MAX of 262000)
+        status, action = self.estimator._determine_status_action(230000)
+        assert status == 'red'
+        assert action == 'block'
+
+        # Red status (above HARD_MAX_CONTEXT of 262000)
+        status, action = self.estimator._determine_status_action(270000)
         assert status == 'red'
         assert action == 'block'
 
     def test_complete_step_estimation(self):
         """Test complete step token estimation"""
+        from agentic_core.planning.token_estimator import TokenEstimate
         # Prepare test data
         plan_step = "Test implementation"
         system_prompt = "You are a helpful assistant."
@@ -210,6 +217,7 @@ INFO: Process completed
 
     def test_duplicate_removal(self):
         """Test duplicate content removal"""
+        from agentic_core.planning.token_estimator import ContextSource
         sources = [
             ContextSource('file', 'same content', 100),
             ContextSource('file', 'same content', 100),
@@ -233,9 +241,10 @@ INFO: Process completed
 
         assert applied is True
 
-def test_log_trimming(self):
+def test_log_trimming():
     """Test log trimming to errors only"""
-    from agentic_core.planning.token_estimator import ContextSource
+    from agentic_core.planning.token_estimator import ContextWindowEstimator, ContextSource
+    estimator = ContextWindowEstimator()
     log_content = '''
 INFO: Starting process
 DEBUG: Loading configuration
@@ -250,28 +259,30 @@ INFO: Process finished
         ContextSource('log', log_content, 200, metadata={'source': 'app.log'})
     ]
 
-    filtered_sources, applied = self.estimator._trim_logs_to_errors(sources)
+    filtered_sources, applied = estimator._trim_logs_to_errors(sources)
 
     assert applied is True
     assert 'ERROR:' in filtered_sources[0].content
     assert 'INFO:' not in filtered_sources[0].content or filtered_sources[0].content.count('INFO:') < log_content.count('INFO:')
 
-def test_retrieval_chunk_reduction(self):
+def test_retrieval_chunk_reduction():
     """Test retrieval chunk reduction"""
-    from agentic_core.planning.token_estimator import ContextSource
+    from agentic_core.planning.token_estimator import ContextWindowEstimator, ContextSource
+    estimator = ContextWindowEstimator()
     many_chunks = [
         ContextSource('retrieval', f'chunk_{i}', 50, metadata={'chunk_id': f'chunk_{i}'})
         for i in range(15)  # 15 chunks > max of 10
     ]
 
-    filtered_sources, applied = self.estimator._reduce_retrieval_chunks(many_chunks)
+    filtered_sources, applied = estimator._reduce_retrieval_chunks(many_chunks)
 
     assert applied is True
     assert len([s for s in filtered_sources if s.source_type == 'retrieval']) == 10
 
-def test_to_dict_serialization(self):
+def test_to_dict_serialization():
     """Test JSON serialization of estimates"""
-    from agentic_core.planning.token_estimator import TokenEstimate
+    from agentic_core.planning.token_estimator import ContextWindowEstimator, TokenEstimate
+    estimator = ContextWindowEstimator()
     estimate = TokenEstimate(
         plan_step="test",
         estimated_input_tokens=50000,
@@ -286,7 +297,7 @@ def test_to_dict_serialization(self):
     )
 
     # Convert to dict
-    estimate_dict = self.estimator.to_dict(estimate)
+    estimate_dict = estimator.to_dict(estimate)
 
     # Verify structure
     assert isinstance(estimate_dict, dict)
