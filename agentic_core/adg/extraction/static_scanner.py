@@ -5808,6 +5808,22 @@ def _sym_of(node: ast.expr) -> str:
         return ".".join(reversed(parts))
     return ""
 
+def _get_call_name(node: ast.expr) -> str:
+    """Extract full call name from AST expression node."""
+    if isinstance(node, ast.Name):
+        return node.id
+    if isinstance(node, ast.Attribute):
+        parts = []
+        cur: ast.expr = node
+        while isinstance(cur, ast.Attribute):
+            parts.append(cur.attr)
+            cur = cur.value
+        if isinstance(cur, ast.Name):
+            parts.append(cur.id)
+        return '.'.join(reversed(parts))
+    return ''
+
+
 
 def _is_property_accessor(node: ast.FunctionDef | ast.AsyncFunctionDef) -> bool:
     """Return True if a function is decorated as a property getter, setter, or deleter."""

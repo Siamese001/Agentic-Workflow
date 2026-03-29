@@ -185,6 +185,9 @@ def temp_ptc_dir(tmp_path: Path) -> Path:
 @pytest.fixture
 def ptc_enforcer() -> PTCContractEnforcer:
     """Provide PTC contract enforcer with test secret."""
+    # Inject key source for SandboxEnvelope
+    from agentic_core.L2_execution.enforcement.key_source import inject_key_source, RotatingKeySource
+    inject_key_source(RotatingKeySource(seed=b"test-secret-for-ptc-enforcer"))
     return PTCContractEnforcer(secret=b"test-secret-for-ptc-enforcer")
 
 
