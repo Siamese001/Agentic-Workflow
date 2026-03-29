@@ -15,6 +15,7 @@ DEFAULT_TIMEOUT = 300  # 5 minutes
 
 import ast
 from pathlib import Path
+from agentic_core.L0_routing.config.path_constants import AGENTIC_CORE_DIR, OPS_SCRIPTS_DIR
 
 
 GRAVITY_PATH = (

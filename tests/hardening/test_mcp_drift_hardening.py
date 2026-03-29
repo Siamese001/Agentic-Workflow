@@ -74,7 +74,7 @@ class TestMCPDriftRecorderHardening:
         # Null server should have empty string defaults
         null_server = snapshot.servers["null_values"]
         assert null_server.command == ""
-        assert null_server.args == []
+        assert null_server.args == ()
 
     def test_unicode_and_special_chars(self, tmp_path):
         """Test handling of unicode and special characters in config."""
@@ -277,25 +277,26 @@ class TestMCPL6ObservabilityStoreHardening:
         """Test handling of disk full scenarios."""
         store = MCPL6ObservabilityStore(MCPL6PersistenceConfig(base_dir=str(tmp_path)))
 
-        recorder = MCPDriftRecorder(agent_id="test")
-
         # Create a minimal valid snapshot
         snapshot = MCPConfigSnapshot(
             snapshot_id="test-snap-123",
             timestamp=time.time(),
+            source_file="/tmp/test.json",
             servers={},
             metadata={}
         )
 
-        # Mock write to simulate disk full
-        original_makedirs = os.makedirs
-        def mock_makedirs(*args, **kwargs):
-            raise OSError(28, "No space left on device")
+        # Mock Path.mkdir to simulate disk full during save
+        original_mkdir = Path.mkdir
+        def mock_mkdir(self, *args, **kwargs):
+            if "snapshots" in str(self) or "test-snap" in str(self):
+                raise OSError(28, "No space left on device")
+            return original_mkdir(self, *args, **kwargs)
 
-        with patch("os.makedirs", side_effect=mock_makedirs):
+        with patch.object(Path, "mkdir", mock_mkdir):
             with pytest.raises(OSError) as exc_info:
                 store.save_snapshot(snapshot)
-            assert "No space left" in str(exc_info.value) or exc_info.value.errno == 28
+            assert exc_info.value.errno == 28
 
     def test_corrupted_snapshot_recovery(self, tmp_path):
         """Test recovery from corrupted snapshot files."""
@@ -334,6 +335,7 @@ class TestMCPL6ObservabilityStoreHardening:
                     snapshot = MCPConfigSnapshot(
                         snapshot_id=f"race-test-{i}-{threading.current_thread().name}",
                         timestamp=time.time(),
+                        source_file=f"/tmp/race-{i}.json",
                         servers={},
                         metadata={}
                     )
@@ -588,10 +590,11 @@ class TestSecurityScenarios:
         recorder = MCPDriftRecorder(agent_id="test")
         snapshot = recorder.capture_snapshot(config_path)
 
-        # XSS payloads should be captured but not executed
+        # XSS payloads should be captured but not executed (capabilities are sorted)
         server = snapshot.servers["xss_test"]
-        assert "<script>" in server.capabilities[0]
-        assert "onerror=" in server.capabilities[1]
+        # Check that XSS payloads exist in capabilities (order may vary due to sorting)
+        assert any("<script>" in cap for cap in server.capabilities)
+        assert any("onerror=" in cap for cap in server.capabilities)
 
     def test_large_hash_collision_resistance(self, tmp_path):
         """Test that different configs produce different hashes."""
@@ -639,6 +642,7 @@ class TestResilienceAndRecovery:
         valid_snapshot = MCPConfigSnapshot(
             snapshot_id="valid-1",
             timestamp=time.time(),
+            source_file="/tmp/valid.json",
             servers={"s1": MCPServerState(
                 name="s1", command="python", args=("s1.py",), env=tuple(),
                 capabilities=("tools",), target_layer="L6",

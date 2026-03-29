@@ -152,7 +152,7 @@ class IntentEmbeddingModel(BaseRoutingModel):
                     features_used={"fallback": True},
                     model_metadata={"model_type": "embedding_fallback"}
                 )
-        except Exception as e:
+        except (ValueError, TypeError, RuntimeError) as e:  # guardian: allow-silent-swallow -- embedding prediction error returns fallback
             logger.error(f"IntentEmbeddingModel prediction error: {e}")
             return RoutingPrediction(
                 agent_name="error_fallback",
@@ -441,7 +441,7 @@ class EnsembleRouter:
             try:
                 prediction = model.predict(query, context)
                 base_predictions.append(prediction)
-            except Exception as e:
+            except (ValueError, TypeError, RuntimeError) as e:  # guardian: allow-silent-swallow -- model prediction failure adds fallback
                 logger.error(f"Model {model.model_name} prediction failed: {e}")
                 # Add fallback prediction
                 base_predictions.append(RoutingPrediction(

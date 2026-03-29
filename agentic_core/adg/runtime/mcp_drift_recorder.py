@@ -375,21 +375,21 @@ class MCPDriftRecorder:
 
         for server_name, server_config in mcp_servers.items():
             # Determine target layer from capabilities or default to L2
-            capabilities = server_config.get("capabilities", [])
+            capabilities = server_config.get("capabilities") or []
             target_layer = self._infer_layer(server_name, capabilities)
 
             # Parse environment variables
-            env_dict = server_config.get("env", {})
+            env_dict = server_config.get("env") or {}
             env_tuple = tuple(f"{k}={v}" for k, v in sorted(env_dict.items()))
 
             server_state = MCPServerState(
                 name=server_name,
                 target_layer=target_layer,
-                command=server_config.get("command", ""),
-                args=tuple(server_config.get("args", [])),
+                command=server_config.get("command") or "",
+                args=tuple(server_config.get("args") or []),
                 env=env_tuple,
                 capabilities=tuple(sorted(capabilities)),
-                disabled=server_config.get("disabled", False),
+                disabled=server_config.get("disabled") or False,
             )
             servers[server_name] = server_state
 

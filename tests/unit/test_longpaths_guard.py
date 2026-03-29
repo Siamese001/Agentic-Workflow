@@ -7,6 +7,8 @@ from pathlib import Path
 
 import pytest
 
+from agentic_core.L0_routing.config.path_constants import L0_ROUTING_DIR
+
 
 EXECUTE_SSOT_PATH = Path(__file__).parent.parent.parent / L0_ROUTING_DIR / "scripts" / "execute_ssot.py"
 
