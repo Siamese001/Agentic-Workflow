@@ -24,7 +24,7 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-from tests.e2e.conftest_agentic_system import (
+from tests.e2e.conftest import (
     BusCommunicationMonitor,
     BusType,
     Layer,
