@@ -240,11 +240,13 @@ class EnterpriseRfpOrchestrator:
         """Step 1: Ingest RFP document."""
         _emit_records_execution_trace("enterprise", "step_ingest", "start")
 
+        # Import at method level to avoid circular imports at module level
+        from apps_rfp.engines.rfp_ingestion_engine import ParsedDocument, Requirement
+
         if request.rfp_document_path:
             parsed = self.ingestion_engine.ingest(request.rfp_document_path)
         elif request.rfp_text:
             # Create mock parsed document from text
-            from apps_rfp.engines.rfp_ingestion_engine import ParsedDocument, Requirement
             parsed = ParsedDocument(
                 source_path="inline_text",
                 file_type="txt",

@@ -1,0 +1,39 @@
+{
+  "trace_id": "9cf30c5b099af61d",
+  "generated_at": "2026-03-29T08:29:30.361775",
+  "sources": [
+    {
+      "type": "rfp_input",
+      "organization": "",
+      "requirements_count": 0
+    },
+    {
+      "type": "past_proposals",
+      "similar_proposals_consulted": 0,
+      "proposals": []
+    },
+    {
+      "type": "decomposition_analysis",
+      "components_identified": 0,
+      "estimated_hours": 0
+    },
+    {
+      "type": "compliance_validation",
+      "validator": "L5_ComplianceValidator",
+      "passed": false,
+      "violations_count": 6
+    }
+  ],
+  "claim_verifications": [
+    {
+      "claim_id": "C002",
+      "confidence": "medium",
+      "has_evidence": true
+    },
+    {
+      "claim_id": "C001",
+      "confidence": "medium",
+      "has_evidence": true
+    }
+  ]
+}
