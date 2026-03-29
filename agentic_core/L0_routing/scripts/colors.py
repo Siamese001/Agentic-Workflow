@@ -304,8 +304,7 @@ def _save_runtime_state(project_root_path: Path):
         assert_no_persistent_write("L0", "write_text")
         state_path.write_text(_json.dumps(_runtime_state, indent=2, default=str), encoding="utf-8")
     # guardian: allow-silent-swallow
-    except Exception:
-        raise
+    except (OSError, IOError) as e:  # guardian: allow-specific -- runtime state save failure silently continues
         pass
 
 
@@ -512,7 +511,7 @@ def main():
             purge_volatile_state()
             print("   [OK] Volatile state purged - SSL fixes will take effect on clean slate")
         # guardian: allow-silent-swallow
-        except Exception as e:
+        except (OSError, ImportError, RuntimeError) as e:  # guardian: allow-specific -- state reset failure non-critical
             print(f"   [!] Reset failed: {e}")
 
     def process_discovery_data(data):
@@ -540,7 +539,7 @@ def main():
             agents = process_discovery_data(discovery_data)
             print(f"   [OK] SSOT Verified: {len(agents)} agents discovered")
         # guardian: allow-silent-swallow
-        except Exception as e:
+        except (OSError, ImportError, RuntimeError) as e:  # guardian: allow-specific -- discovery failure returns empty
             print(f"   [!] Live discovery failed: {e}")
             traceback.print_exc()
             return []
@@ -571,7 +570,7 @@ def main():
             print("   [TARGETS] Exceptions config loaded from agentic_core/config/autonomy_targets.py")
             guardian.generate_compliance_report(context={"target_resolver": get_target})
         # guardian: allow-silent-swallow
-        except Exception as e:
+        except (ImportError, OSError, RuntimeError) as e:  # guardian: allow-specific -- report generation failure non-critical
             print(f"   [!] Report failed: {e}")
             traceback.print_exc()
         return
@@ -654,7 +653,7 @@ def main():
                 if result:
                     print(f"   Result: {result}")
         # guardian: allow-silent-swallow
-        except Exception as e:
+        except (ImportError, AttributeError, RuntimeError) as e:  # guardian: allow-specific -- agent invocation failure exits
             print(f"   [!] Agent invocation failed: {e}")
             traceback.print_exc()
             sys.exit(1)
@@ -701,7 +700,7 @@ def main():
             print(f"   Total violations: {results.get('total_violations', 0)}")
             print(f"   Violations fixed: {results.get('violations_fixed', 0)}")
         # guardian: allow-silent-swallow
-        except Exception as e:
+        except (RuntimeError, OSError, ImportError) as e:  # guardian: allow-specific -- hygiene failure exits
             print(f"\n[!] Hygiene mode failed: {e}")
             traceback.print_exc()
             sys.exit(1)
