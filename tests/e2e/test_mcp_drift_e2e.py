@@ -354,7 +354,7 @@ class TestMCPDriftMonitorE2E:
 
         # Check drift (same config, should be no drift)
         report = monitor.check_drift()
-        assert report is None or not report.has_drift
+        assert not report.has_drift
 
     def test_monitor_detects_drift(self, temp_observability_dir, sample_mcp_config, modified_mcp_config):
         """Test monitor detects drift when config changes."""
@@ -397,7 +397,7 @@ class TestMCPDriftMonitorE2E:
         ) as monitor:
             assert monitor.baseline is not None
             report = monitor.check_drift()
-            assert report is None or not report.has_drift
+            assert not report.has_drift
 
     def test_monitor_update_baseline(self, temp_observability_dir, sample_mcp_config, modified_mcp_config):
         """Test updating baseline after drift detection."""
@@ -427,7 +427,7 @@ class TestMCPDriftMonitorE2E:
 
         # Check drift again - should be no drift now
         report = monitor.check_drift()
-        assert report is None or not report.has_drift
+        assert not report.has_drift
 
 
 class TestIntegrationScenarios:

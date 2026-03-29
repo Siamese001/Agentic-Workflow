@@ -5,6 +5,9 @@ L0 Routing Layer
 Provides routing, capacity governance, and policy enforcement for request routing.
 """
 
+# P1 Core exports
+from agentic_core.L0_routing.P1_core import P1Core, P1RoutingProtocol
+
 # P3/L0 Routing Capacity Governance exports
 from agentic_core.L0_routing.capacity.capacity_aware_router import (
     RoutingCapacityContext,
@@ -207,6 +210,9 @@ _emit_updates_meta_learning_state("p4", "__init__", "meta_learning")
 _emit_links_execution_to_snapshot("p4", "__init__", "exec_snapshot_link")
 
 __all__ = [
+    # P1 Core
+    "P1Core",
+    "P1RoutingProtocol",
     # Capacity Records
     "CapacitySnapshot",
     "RouteCapacityMetrics",

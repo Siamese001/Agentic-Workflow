@@ -9,6 +9,10 @@ from .decorators_util import (
     standard_heal_async,
     timeout,
 )
+from .ssot_discovery_validator import (
+    SSOTDiscoveryValidator,
+    discover_ssot,
+)
 
 __all__ = [
     "standard_heal",
@@ -16,4 +20,6 @@ __all__ = [
     "HEAL_RESULT_SCHEMA",
     "timeout",
     "TimeoutError",
+    "SSOTDiscoveryValidator",
+    "discover_ssot",
 ]

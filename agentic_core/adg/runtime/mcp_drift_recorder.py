@@ -272,6 +272,7 @@ class MCPDriftReport:
 
     def to_dict(self) -> dict[str, Any]:
         return {
+            "report_id": self.report_id,
             "baseline_snapshot_id": self.baseline_snapshot_id,
             "current_snapshot_id": self.current_snapshot_id,
             "baseline_hash": self.baseline_hash,

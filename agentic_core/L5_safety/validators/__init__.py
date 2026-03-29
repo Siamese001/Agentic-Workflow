@@ -72,6 +72,12 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     emit_determinism_digest,  # noqa: E402
     emit_replay_key,  # noqa: E402
 )
+from agentic_core.L5_safety.validators.canonical_truth_validator import (
+    CanonicalTruthValidator,
+    validate_canonical_truth,
+)
+
+__all__ = ["CanonicalTruthValidator", "validate_canonical_truth"]
 
 _emit_emits_metric_event("__init__", "p4obs", "metric_1")
 _emit_emits_metric_event("__init__", "p4obs", "metric_2")
