@@ -70,6 +70,16 @@ from agentic_core.L0_routing.types.artifact_validators_types import (
     validate_result_artifact,
 )
 
+# Import V15 exceptions from zero-dependency module (breaks circular import)
+from agentic_core.L0_routing.types.v15_exceptions import (
+    V15EnforcementError,
+    V15HardFailAbort,
+    V15SoftFailAbort,
+    is_v15_enforced,
+    is_v15_hard_fail,
+    is_v15_soft_fail,
+)
+
 _emit_emits_metric_event("__init__", "p4obs", "metric_1")
 _emit_emits_metric_event("__init__", "p4obs", "metric_2")
 _emit_emits_metric_event("__init__", "p4obs", "metric_3")

@@ -23,7 +23,7 @@ import threading
 import uuid
 from typing import Any, Callable, TypeVar
 
-from agentic_core.L0_routing.types.guardian_contract_types import (
+from agentic_core.L0_routing.types.v15_exceptions import (
     V15EnforcementError,
     is_v15_enforced,
     is_v15_hard_fail,

@@ -30,6 +30,17 @@ from agentic_core.L0_routing.config.path_constants import (
     SOVEREIGN_EXCLUDED_FOLDERS,
 )
 from agentic_core.L0_routing.enforcement.mutation_prohibition import assert_no_persistent_write
+
+# Import V15 exceptions from zero-dependency module (breaks circular import)
+from agentic_core.L0_routing.types.v15_exceptions import (
+    V15EnforcementError,
+    V15HardFailAbort,
+    V15SoftFailAbort,
+    is_v15_enforced,
+    is_v15_hard_fail,
+    is_v15_soft_fail,
+)
+
 from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     LayerSegment,
     _emit_agent_executes_agent,
@@ -188,84 +199,8 @@ _emit_validated_by_safety_plane("p1", "guardian_contract_types", "safety_validat
 _emit_invokes_eval("p1", "guardian_contract_types", "eval_call")
 _emit_proposal_commits_routing("p1", "guardian_contract_types", "routing_commit")
 
-# ---------------------------------------------------------------------------
-# V15 Enforcement Infrastructure
-# ---------------------------------------------------------------------------
-
-
-class V15EnforcementError(RuntimeError):
-    """Raised when a V15 invariant is violated in enforced mode."""
-
-
-def is_v15_enforced() -> bool:
-    """Return True when V15 enforcement is active (fail-closed: default ON).
-
-    Unset / absent env var → True (fail-closed production default).
-    Explicit opt-out: "0", "false", "no", "off" (case-insensitive) → False.
-    Explicit opt-in: "1", "true", "yes", "on", "log", "soft" (case-insensitive) → True.
-    Any other value → ValueError (deterministic misconfig rejection).
-    Use ``is_v15_hard_fail()`` / ``is_v15_soft_fail()`` for mode selection.
-    """
-    import uuid as _uuid  # noqa: PLC0415
-
-    _emit_snapshots_state(str(_uuid.uuid4()), "is_v15_enforced", "state_snapshot")
-    import hashlib as _hashlib  # noqa: PLC0415
-    import uuid as _uuid  # noqa: PLC0415
-
-    _tid = str(_uuid.uuid4())
-    _emit_signs_execution_trace(_tid, _hashlib.sha256(_tid.encode()).hexdigest()[:12], "p0_trace", 0)
-    import uuid as _uuid  # noqa: PLC0415
-
-    _emit_applies_guardrail(str(_uuid.uuid4()), "is_v15_enforced", "p0_governance")
-    raw = os.environ.get("V15_ENFORCEMENT")
-    if raw is None:
-        return True
-    normalized = raw.strip().lower()
-    if normalized in ("0", "false", "no", "off"):
-        return False
-    if normalized in ("1", "true", "yes", "on", "log", "soft"):
-        return True
-    raise ValueError(
-        f"V15_ENFORCEMENT={raw!r} is not a recognized value. "
-        f"Use: 1/true/yes/on/log/soft (enabled) or 0/false/no/off (disabled).",
-    )
-
-
-def is_v15_hard_fail() -> bool:
-    """Return True only when V15_ENFORCEMENT demands hard blocking on violation.
-
-    Hard-fail values: "1", "true", "yes" (case-insensitive).
-    "log" and "soft" return False — violations are logged, not blocked.
-    """
-    return os.environ.get("V15_ENFORCEMENT", "").strip().lower() in ("1", "true", "yes")
-
-
-def is_v15_soft_fail() -> bool:
-    """Return True when V15_ENFORCEMENT is set to SOFT_FAIL mode.
-
-    SOFT_FAIL mode: violations produce a controlled abort (structured failure
-    return via ``V15SoftFailAbort``) without crashing the process.
-    Only the literal value "soft" (case-insensitive) activates this mode.
-    """
-    return os.environ.get("V15_ENFORCEMENT", "").strip().lower() == "soft"
-
-
-class V15SoftFailAbort(Exception):
-    """Raised internally when SOFT_FAIL mode detects a contract violation.
-
-    Caught by V15ExecutionGateway.execute() to produce a structured
-    GatewayResult with success=False instead of crashing the process.
-    """
-
-
-class V15HardFailAbort(Exception):
-    """Raised when HARD_FAIL mode detects a contract violation.
-
-    Single deterministic exception type for all HARD_FAIL aborts.
-    Propagates out of V15ExecutionGateway.execute() uncaught —
-    callers must handle or let the process terminate.
-    """
-
+# V15 Enforcement Infrastructure now imported from v15_exceptions.py (zero-dependency module)
+# This breaks the circular import between guardian_contract_types and enforcement modules.
 
 # ---------------------------------------------------------------------------
 # Enums
