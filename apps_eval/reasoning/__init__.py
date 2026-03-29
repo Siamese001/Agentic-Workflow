@@ -1,0 +1,17 @@
+"""
+apps_eval Reasoning Layer — Evaluation Lab Agents.
+
+Multi-agent ecosystem for test discovery, scenario generation, and quality gating.
+"""
+
+from apps_eval.reasoning.EvalOrchestrator import EvalOrchestrator
+from apps_eval.reasoning.TestDiscoveryAgent import TestDiscoveryAgent
+from apps_eval.reasoning.ScenarioGenerationAgent import ScenarioGenerationAgent
+from apps_eval.reasoning.QualityGateAgent import QualityGateAgent
+
+__all__ = [
+    "EvalOrchestrator",
+    "TestDiscoveryAgent",
+    "ScenarioGenerationAgent",
+    "QualityGateAgent",
+]

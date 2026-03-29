@@ -326,7 +326,7 @@ class ExecutionOrchestrator:
             # ADG scanner: instantiate ProposalCommitter to trigger proposal_commits_routing edge
             _committer = ProposalCommitter()
             create_and_commit_routing_contract(_rctx)
-        except Exception as _rce:  # guardian: allow-silent-swallow
+        except RoutingContractError as _rce:  # routing contract creation failure non-blocking
             Logger.warning("execution_orchestrator: routing contract failed: %s", _rce)
         d0_injections = self.d0_engine.render_d0(payload.d0_injections)
         risk = self.risk_gate.evaluate(payload_like=payload, d0_injections=d0_injections)
@@ -359,8 +359,7 @@ class ExecutionOrchestrator:
                 "changed_files": changed_files,
                 "total_impacted": len(blast),
             }
-        # guardian: allow-silent-swallow
-        except Exception as exc:
+        except (ImportError, RuntimeError) as exc:  # ADG impact analysis unavailable
             Logger.warning("[L0-ORCH] ADG impact analysis unavailable: %s", exc)
             return {
                 "modules": changed_files,

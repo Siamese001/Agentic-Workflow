@@ -402,7 +402,7 @@ class EnsembleRouter:
                     uncertainty_correlation = correlation_matrix[0, 1]
                 else:
                     uncertainty_correlation = 0.0
-            except Exception:  # guardian: allow-silent-swallow -- correlation calculation failure
+            except (ValueError, TypeError):  # correlation calculation failure
                 uncertainty_correlation = 0.0
         else:
             uncertainty_correlation = 0.0

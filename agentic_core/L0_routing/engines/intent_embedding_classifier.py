@@ -270,7 +270,7 @@ class IntentEmbeddingClassifier:
             factory = EmbeddingServiceFactory.get_instance()
             self._embedder = factory
             return self._embedder
-        except Exception as exc:  # guardian: allow-silent-swallow
+        except (ImportError, RuntimeError) as exc:  # embedder initialization failure
             logger.debug("IntentEmbeddingClassifier: embedder unavailable: %s", exc)
             return None
 
@@ -291,7 +291,7 @@ class IntentEmbeddingClassifier:
                     vec = list(result)
                 results.append(vec)
             return results if results else None
-        except Exception as exc:  # guardian: allow-silent-swallow
+        except (ValueError, TypeError, RuntimeError) as exc:  # embedding operation failure
             logger.debug("IntentEmbeddingClassifier: embedding failed: %s", exc)
             return None
 
@@ -397,8 +397,7 @@ class IntentEmbeddingClassifier:
 
             logger.debug("IntentEmbeddingClassifier.classify: best=%r score=%.4f", best_name, best_score)
             return (best_name, max(0.0, min(1.0, best_score)))
-        # guardian: allow-silent-swallow
-        except Exception as exc:
+        except (ValueError, TypeError) as exc:  # classification computation error
             logger.debug("IntentEmbeddingClassifier.classify: exception swallowed: %s", exc)
             return None
 

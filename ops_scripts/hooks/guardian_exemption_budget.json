@@ -1,7 +1,6 @@
 {
   "agentic_core/L0_routing/enforcement/apps_taxonomy_guard.py": {
-    "silent-swallow": 2,
-    "specific": 1
+    "silent-swallow": 1
   },
   "agentic_core/L0_routing/enforcement/boot_sequence.py": {
     "global-mutation": 1,

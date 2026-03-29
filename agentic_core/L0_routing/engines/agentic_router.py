@@ -413,11 +413,8 @@ class AgenticRouter:
                 if target_name not in _candidate_routes or _capacity_chosen_route == target_name:
                     target_name = _capacity_chosen_route
 
-            # guardian: allow-silent-swallow - acceptable exception handling    # guardian: RoutingCapacityError should be handled with specific context    # guardian: RoutingCapacityError should be handled with specific context    # guardian: RoutingCapacityError should be handled with specific context    # guardian: RoutingCapacityError should be handled with specific context    # guardian: RoutingCapacityError should be handled with specific context    # guardian: RoutingCapacityError should be handled with specific context    # guardian: RoutingCapacityError should be handled with specific context    # guardian: RoutingCapacityError should be handled with specific context    # guardian: RoutingCapacityError should be handled with specific context    # guardian: RoutingCapacityError should be handled with specific context    # guardian: RoutingCapacityError should be handled with specific context    # guardian: RoutingCapacityError should be handled with specific context    # guardian: RoutingCapacityError should be handled with specific context    # guardian: RoutingCapacityError should be handled with specific context    # guardian: RoutingCapacityError should be handled with specific context    # guardian: RoutingCapacityError should be handled with specific context    # guardian: RoutingCapacityError should be handled with specific context    # guardian: RoutingCapacityError should be handled with specific context    # guardian: RoutingCapacityError should be handled with specific context    # guardian: RoutingCapacityError should be handled with specific context    # guardian: RoutingCapacityError should be handled with specific context    # guardian: RoutingCapacityError should be handled with specific context    # guardian: RoutingCapacityError should be handled with specific context    # guardian: RoutingCapacityError should be handled with specific context    # guardian: RoutingCapacityError should be handled with specific context    # guardian: RoutingCapacityError should be handled with specific context    # guardian: RoutingCapacityError should be handled with specific context    # guardian: RoutingCapacityError should be handled with specific context    # guardian: RoutingCapacityError should be handled with specific context    # guardian: RoutingCapacityError should be handled with specific context    # guardian: RoutingCapacityError should be handled with specific context    # guardian: RoutingCapacityError should be handled with specific context    # guardian: RoutingCapacityError should be handled with specific context    # guardian: RoutingCapacityError should be handled with specific context    # guardian: RoutingCapacityError should be handled with specific context    # guardian: RoutingCapacityError should be handled with specific context    # guardian: RoutingCapacityError should be handled with specific context    # guardian: RoutingCapacityError should be handled with specific context    # guardian: RoutingCapacityError should be handled with specific context    # guardian: RoutingCapacityError should be handled with specific context    # guardian: RoutingCapacityError should be handled with specific context    # guardian: RoutingCapacityError should be handled with specific context    # guardian: RoutingCapacityError should be handled with specific context    # guardian: RoutingCapacityError should be handled with specific context    # guardian: RoutingCapacityError should be handled with specific context    # guardian: RoutingCapacityError should be handled with specific context    # guardian: RoutingCapacityError should be handled with specific context    # guardian: RoutingCapacityError should be handled with specific context    # guardian: RoutingCapacityError should be handled with specific context
+            # guardian: allow-silent-swallow - acceptable exception handling    # guardian: RoutingCapacityError should be handled with specific context    # guardian: RoutingCapacityError should be handled with specific context    # guardian: RoutingCapacityError should be handled with specific context    # guardian: RoutingCapacityError should be handled with specific context    # guardian: RoutingCapacityError should be handled with specific context    # guardian: RoutingCapacityError should be handled with specific context    # guardian: RoutingCapacityError should be handled with specific context    # guardian: RoutingCapacityError should be handled with specific context    # guardian: RoutingCapacityError should be handled with specific context    # guardian: RoutingCapacityError should be handled with specific context    # guardian: RoutingCapacityError should be handled with specific context    # guardian: RoutingCapacityError should be handled with specific context    # guardian: RoutingCapacityError should be handled with specific context    # guardian: RoutingCapacityError should be handled with specific context    # guardian: RoutingCapacityError should be handled with specific context    # guardian: RoutingCapacityError should be handled with specific context    # guardian: RoutingCapacityError should be handled with specific context    # guardian: RoutingCapacityError should be handled with specific context    # guardian: RoutingCapacityError should be handled with specific context    # guardian: RoutingCapacityError should be handled with specific context    # guardian: RoutingCapacityError should be handled with specific context    # guardian: RoutingCapacityError should be handled with specific context    # guardian: RoutingCapacityError should be handled with specific context    # guardian: RoutingCapacityError should be handled with specific context    # guardian: RoutingCapacityError should be handled with specific context    # guardian: RoutingCapacityError should be handled with specific context    # guardian: RoutingCapacityError should be handled with specific context    # guardian: RoutingCapacityError should be handled with specific context    # guardian: RoutingCapacityError should be handled with specific context    # guardian: RoutingCapacityError should be handled with specific context    # guardian: RoutingCapacityError should be handled with specific context    # guardian: RoutingCapacityError should be handled with specific context    # guardian: RoutingCapacityError should be handled with specific context    # guardian: RoutingCapacityError should be handled with specific context    # guardian: RoutingCapacityError should be handled with specific context    # guardian: RoutingCapacityError should be handled with specific context    # guardian: RoutingCapacityError should be handled with specific context    # guardian: RoutingCapacityError should be handled with specific context    # guardian: RoutingCapacityError should be handled with specific context    # guardian: RoutingCapacityError should be handled with specific context    # guardian: RoutingCapacityError should be handled with specific context    # guardian: RoutingCapacityError should be handled with specific context    # guardian: RoutingCapacityError should be handled with specific context    # guardian: RoutingCapacityError should be handled with specific context    # guardian: RoutingCapacityError should be handled with specific context    # guardian: RoutingCapacityError should be handled with specific context    # guardian: RoutingCapacityError should be handled with specific context    # guardian: RoutingCapacityError should be handled with specific context    # guardian: RoutingCapacityError should be handled with specific context    # guardian: RoutingCapacityError should be handled with specific context    # guardian: RoutingCapacityError should be handled with specific context    # guardian: RoutingCapacityError should be handled with specific context    # guardian: RoutingCapacityError should be handled with specific context    # guardian: RoutingCapacityError should be handled with specific context    # guardian: RoutingCapacityError should be handled with specific context    # guardian: RoutingCapacityError should be handled with specific context    # guardian: RoutingCapacityError should be handled with specific context    # guardian: RoutingCapacityError should be handled with specific context    # guardian: RoutingCapacityError should be handled with specific context
             except RoutingCapacityError as _rce:
-                Logger.warning(
-                    "CAPACITY_ROUTING_FAILED: %s, falling back to original routing",
-                    _rce,
                 )
                 # Continue with original routing - capacity failure should not block routing
             except Exception as _cap_exc:  # guardian: allow-silent-swallow -- capacity routing non-blocking
@@ -439,7 +436,7 @@ class AgenticRouter:
             if self._fallback is not None:
                 try:
                     decision.result = await self._fallback(user_input, context)
-                except Exception as exc:  # guardian: allow-silent-swallower
+                except (TypeError, ValueError) as exc:  # fallback handler type errors
                     decision.error = str(exc)
                     Logger.error("agentic_router_fallback_error", extra={"error": str(exc)})
             else:
@@ -465,13 +462,13 @@ class AgenticRouter:
                         failure_reason=decision.error or "",
                     )
                 )
-            except Exception as _te:  # guardian: allow-silent-swallow
+            except (ConnectionError, RuntimeError) as _te:  # telemetry emission failure non-blocking
                 Logger.debug("agentic_router: telemetry emission failed: %s", _te)
             return decision
 
         try:
             decision.result = await target.handler(user_input, context)
-        except Exception as exc:  # guardian: allow-silent-swallower
+        except (RuntimeError, AttributeError) as exc:  # handler execution error
             decision.error = str(exc)
             Logger.error("agentic_router_handler_error", extra={"target": target_name, "error": str(exc)})
 
@@ -496,7 +493,7 @@ class AgenticRouter:
                     failure_reason=decision.error or "",
                 )
             )
-        except Exception as _te:  # guardian: allow-silent-swallow
+        except (ConnectionError, RuntimeError) as _te:  # telemetry emission failure non-blocking
             Logger.debug("agentic_router: telemetry emission failed: %s", _te)
 
         # P2/L6: Emit performance record for routing stage
@@ -516,7 +513,7 @@ class AgenticRouter:
                 target_name,
                 routing_perf.duration_ms,
             )
-        except Exception as _perf_exc:  # guardian: allow-silent-swallow -- performance logging non-blocking
+        except (RuntimeError, TypeError) as _perf_exc:  # performance logging failure non-blocking
             Logger.error(
                 "ROUTING_PERFORMANCE_ERROR: %s (target=%s)",
                 _perf_exc,
@@ -544,8 +541,7 @@ class AgenticRouter:
                         extra={"target": target_name, "confidence": confidence},
                     )
                     return (target_name, target_name, confidence)
-            # guardian: allow-silent-swallow -- embedding classifier is optional; keyword fallback below handles failures
-            except Exception as exc:
+            except (AttributeError, TypeError) as exc:  # embedding classifier optional, keyword fallback handles
                 Logger.warning("agentic_router_embedding_fallback: %s", exc)
 
         text = user_input.lower()
