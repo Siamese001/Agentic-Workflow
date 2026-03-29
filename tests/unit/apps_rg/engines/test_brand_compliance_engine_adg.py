@@ -6,7 +6,6 @@ import pytest
 pytestmark = pytest.mark.unit
 
 
-
 def test_module_importable():
     """Module brand_compliance_engine must be importable."""
     import apps_rg.engines.brand_compliance_engine  # noqa: F401

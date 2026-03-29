@@ -4,11 +4,6 @@ from __future__ import annotations
 import pytest
 
 
-
-
-
-
-
 class TestBlastRadiusExceeded:
     def test_is_runtime_error(self):
             """Test is_runtime_error runtime behavior."""

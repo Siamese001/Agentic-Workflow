@@ -2,6 +2,5 @@
 from __future__ import annotations
 
 
-
 def test_module_importable():
         """Module root_hygiene_healer must be importable."""

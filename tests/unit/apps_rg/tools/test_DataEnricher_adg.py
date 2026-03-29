@@ -6,7 +6,6 @@ import pytest
 pytestmark = pytest.mark.unit
 
 
-
 def test_module_importable():
     """Module DataEnricher must be importable."""
     import apps_rg.tools.DataEnricher  # noqa: F401

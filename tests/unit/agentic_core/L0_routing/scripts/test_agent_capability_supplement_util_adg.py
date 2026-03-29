@@ -4,7 +4,5 @@ from __future__ import annotations
 import pytest
 
 
-
-
 def test_module_importable():
         """Module agent_capability_supplement_util must be importable."""

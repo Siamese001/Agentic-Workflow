@@ -6,7 +6,6 @@ import pytest
 pytestmark = pytest.mark.unit
 
 
-
 def test_module_importable():
     """Module fix_markdown_fences must be importable."""
     import apps_shared.scripts.fix_markdown_fences  # noqa: F401

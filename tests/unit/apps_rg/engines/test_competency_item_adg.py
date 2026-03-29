@@ -6,7 +6,6 @@ import pytest
 pytestmark = pytest.mark.unit
 
 
-
 def test_module_importable():
     """Module competency_item must be importable."""
     import apps_rg.engines.competency_item  # noqa: F401

@@ -11,7 +11,6 @@ from __future__ import annotations
 import re
 
 
-
 class TestL0RoutingOverrideModelA:
     """Assert LAYER_OVERRIDES['L0_routing'] encodes Model A exactly."""
 

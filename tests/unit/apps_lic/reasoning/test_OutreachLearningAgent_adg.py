@@ -6,7 +6,6 @@ import pytest
 pytestmark = pytest.mark.unit
 
 
-
 def test_module_importable():
     """Module OutreachLearningAgent must be importable."""
     import apps_lic.reasoning.OutreachLearningAgent  # noqa: F401

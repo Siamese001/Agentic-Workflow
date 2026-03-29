@@ -64,19 +64,3 @@ class TestGapClosureArchitectAgent:
 
     def test_no_network_calls_on_import(self):
         pass
-    """Test no_network_calls_on_import runtime behavior."""
-    # Arrange
-    # TODO: Set up execution parameters
-    input_data = {}  # Replace with actual test data
-
-    # Act
-    # TODO: Execute no_network_calls_on_import
-    result = None  # Replace with actual execution
-
-    # Assert
-    assert result is not None, "function should return a result"
-    assert isinstance(result, (dict, list, str, int, float, bool)), "Result should be a common type"
-    # TODO: Add specific execution assertions
-
-if __name__ == "__main__":
-    pytest.main([__file__, "-v"])

@@ -6,7 +6,6 @@ import pytest
 pytestmark = pytest.mark.unit
 
 
-
 def test_module_importable():
     """Module MessageDiversityValidator must be importable."""
     import apps_lic.validators.MessageDiversityValidator  # noqa: F401

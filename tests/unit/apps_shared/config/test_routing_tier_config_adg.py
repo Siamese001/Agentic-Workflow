@@ -6,7 +6,6 @@ import pytest
 pytestmark = pytest.mark.unit
 
 
-
 def test_module_importable():
     """Module routing_tier_config must be importable."""
     import apps_shared.config.routing_tier_config  # noqa: F401

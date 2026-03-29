@@ -2,7 +2,6 @@
 from __future__ import annotations
 
 
-
 def test_module_importable():
     """Module void_compliance_engine must be importable."""
     import apps_rg.engines.void_compliance_engine  # noqa: F401

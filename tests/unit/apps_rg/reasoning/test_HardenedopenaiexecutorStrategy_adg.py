@@ -6,7 +6,6 @@ import pytest
 pytestmark = pytest.mark.unit
 
 
-
 def test_module_importable():
     """Module HardenedopenaiexecutorStrategy must be importable."""
     import apps_rg.reasoning.HardenedopenaiexecutorStrategy  # noqa: F401

@@ -2,7 +2,6 @@
 from __future__ import annotations
 
 
-
 def test_module_importable():
     """Module BaseHealingOrchestrator must be importable."""
     import apps_shared.reasoning.BaseHealingOrchestrator  # noqa: F401

@@ -6,7 +6,6 @@ import pytest
 pytestmark = pytest.mark.unit
 
 
-
 def test_module_importable():
     """Module baggage_propagator_util must be importable."""
     import apps_shared.utils.baggage_propagator_util  # noqa: F401

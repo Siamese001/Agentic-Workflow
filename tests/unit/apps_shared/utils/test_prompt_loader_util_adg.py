@@ -6,7 +6,6 @@ import pytest
 pytestmark = pytest.mark.unit
 
 
-
 def test_module_importable():
     """Module prompt_loader_util must be importable."""
     import apps_shared.utils.prompt_loader_util  # noqa: F401

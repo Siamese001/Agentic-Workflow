@@ -254,7 +254,7 @@ class RoutingOutcomeAdapter:
                 pkg.payload.get("outcome", "UNKNOWN"),
             )
             return True
-        except Exception as exc:  # guardian: allow-silent-swallow
+        except (ValueError, TypeError, RuntimeError) as exc:  # guardian: allow-silent-swallow
             logger.warning("RoutingOutcomeAdapter.emit: failed to enqueue: %s", exc)
             return False
 

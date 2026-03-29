@@ -2,6 +2,5 @@
 from __future__ import annotations
 
 
-
 def test_module_importable():
         """Module approval_contract_types must be importable."""

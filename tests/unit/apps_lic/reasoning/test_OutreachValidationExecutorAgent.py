@@ -11,7 +11,6 @@ import pytest
 pytestmark = pytest.mark.unit
 
 
-
 class TestValidationGateExecutorContract:
     def test_is_class(self):
         from apps_lic.reasoning.OutreachValidationExecutorAgent import (  # noqa: F401

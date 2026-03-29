@@ -4,7 +4,5 @@ from __future__ import annotations
 import pytest
 
 
-
-
 def test_module_importable():
         """Module enforce_length_limits_util must be importable."""

@@ -6,7 +6,6 @@ import pytest
 pytestmark = pytest.mark.unit
 
 
-
 def test_module_importable():
     """Module resume_section_node_types must be importable."""
     import apps_rg.types.resume_section_node_types  # noqa: F401

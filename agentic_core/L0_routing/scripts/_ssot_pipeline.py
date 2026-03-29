@@ -648,7 +648,7 @@ def _emit_adg_pre_run_artifact(repo_root: "Path") -> None:
                     _prio_result.adg_signals_digest,
                 )
             # guardian: allow-silent-swallow
-            except Exception as _gp_exc:
+            except (ValueError, TypeError, RuntimeError) as _gp_exc:
                 payload["warnings"].append(f"GuardianPrioritizer unavailable: {_gp_exc}")
                 _logger_adg.debug("GuardianPrioritizer skipped (non-fatal): %s", _gp_exc)
         else:
@@ -661,7 +661,7 @@ def _emit_adg_pre_run_artifact(repo_root: "Path") -> None:
             report.impacted_test_count,
         )
     # guardian: allow-silent-swallow
-    except Exception as exc:
+    except (ValueError, TypeError, RuntimeError) as exc:
         payload["adg_error"] = str(exc)
         payload["warnings"].append(f"ADG pre-run failed: {exc}")
         _logger_adg.warning("ADG pre-run artifact emission failed: %s", exc)
@@ -669,7 +669,7 @@ def _emit_adg_pre_run_artifact(repo_root: "Path") -> None:
         out_path.write_text(json.dumps(payload, indent=2, sort_keys=True) + "\n", encoding="utf-8")
         _logger_adg.info("ADG pre-run artifact written: %s", out_path)
     # guardian: allow-silent-swallow
-    except Exception as exc:
+    except (ValueError, TypeError, RuntimeError) as exc:
         _logger_adg.warning("ADG pre-run artifact write failed: %s", exc)
 
 

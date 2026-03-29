@@ -6,7 +6,6 @@ import pytest
 pytestmark = pytest.mark.unit
 
 
-
 def test_module_importable():
     """Module migration_executor must be importable."""
     import apps_rg.scripts.migration_executor  # noqa: F401

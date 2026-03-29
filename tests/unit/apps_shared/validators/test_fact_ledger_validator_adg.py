@@ -6,7 +6,6 @@ import pytest
 pytestmark = pytest.mark.unit
 
 
-
 def test_module_importable():
     """Module fact_ledger_validator must be importable."""
     import apps_shared.validators.fact_ledger_validator  # noqa: F401

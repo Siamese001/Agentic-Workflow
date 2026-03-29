@@ -6,7 +6,6 @@ import pytest
 pytestmark = pytest.mark.unit
 
 
-
 def test_module_importable():
     """Module operation_mode_types must be importable."""
     import apps_shared.types.operation_mode_types  # noqa: F401

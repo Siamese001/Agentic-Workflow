@@ -23,11 +23,9 @@ def test_module_importable(mod):
     """Module imports without errors."""
 
 
-
 def test_module_exposes_public_api(mod):
     """Module exposes expected public symbols."""
     public = [n for n in dir(mod) if not n.startswith("_")]
-
 
 
 def test_any_is_instantiable(mod):
@@ -35,13 +33,9 @@ def test_any_is_instantiable(mod):
     cls = getattr(mod, "Any", None)
 
 
-
-
 def test_coveragehealer_is_instantiable(mod):
     """CoverageHealer is accessible and is a type."""
     cls = getattr(mod, "CoverageHealer", None)
-
-
 
 
 def test_coveragevalidator_is_instantiable(mod):
@@ -49,20 +43,14 @@ def test_coveragevalidator_is_instantiable(mod):
     cls = getattr(mod, "CoverageValidator", None)
 
 
-
-
 def test_layersegment_is_instantiable(mod):
     """LayerSegment is accessible and is a type."""
     cls = getattr(mod, "LayerSegment", None)
 
 
-
-
 def test_path_is_instantiable(mod):
     """Path is accessible and is a type."""
     cls = getattr(mod, "Path", None)
-
-
 
 
 # Arrange

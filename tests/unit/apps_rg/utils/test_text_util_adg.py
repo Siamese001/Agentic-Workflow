@@ -6,7 +6,6 @@ import pytest
 pytestmark = pytest.mark.unit
 
 
-
 def test_module_importable():
     """Module text_util must be importable."""
     import apps_rg.utils.text_util  # noqa: F401

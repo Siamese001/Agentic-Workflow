@@ -4,7 +4,5 @@ from __future__ import annotations
 import pytest
 
 
-
-
 def test_module_importable():
         """Module tool_embedding_cache must be importable."""

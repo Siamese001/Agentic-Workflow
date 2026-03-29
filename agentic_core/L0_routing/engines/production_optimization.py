@@ -531,7 +531,7 @@ class PerformanceOptimizer:
                     "latency_improvement": metrics.latency_improvement
                 })
                 
-            except Exception as e:
+            except (ValueError, TypeError, RuntimeError) as e:
                 logger.error(f"Compression with {type(compressor).__name__} failed: {e}")
         
         # Record optimization

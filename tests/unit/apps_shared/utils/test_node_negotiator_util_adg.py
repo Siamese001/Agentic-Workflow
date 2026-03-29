@@ -6,7 +6,6 @@ import pytest
 pytestmark = pytest.mark.unit
 
 
-
 def test_module_importable():
     """Module node_negotiator_util must be importable."""
     import apps_shared.utils.node_negotiator_util  # noqa: F401

@@ -6,7 +6,6 @@ import pytest
 pytestmark = pytest.mark.unit
 
 
-
 def test_module_importable():
     """Module DispatchOutreachToolsAgent must be importable."""
     import apps_lic.reasoning.DispatchOutreachToolsAgent  # noqa: F401

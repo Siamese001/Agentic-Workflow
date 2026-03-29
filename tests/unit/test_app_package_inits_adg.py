@@ -6,7 +6,6 @@ from __future__ import annotations
 import pytest
 
 
-
 class TestAppsLicUtils:
     """apps_lic/utils/__init__.py — fan_in=4."""
 
@@ -22,7 +21,6 @@ class TestAppsLicUtils:
 
     def test_no_import_error_on_reimport(self):
         import importlib
-
 
 
 class TestAppsRgTypes:
@@ -41,7 +39,6 @@ class TestAppsRgTypes:
         import importlib
 
 
-
 class TestL4StateReasoningPackage:
     """agentic_core/L4_state/reasoning/__init__.py — fan_in=3."""
 
@@ -52,7 +49,6 @@ class TestL4StateReasoningPackage:
 
     def test_reasoning_modules_discoverable(self):
         from pathlib import Path
-
 
 
 class TestL4StateUtilsPackage:

@@ -6,7 +6,6 @@ import pytest
 pytestmark = pytest.mark.unit
 
 
-
 def test_module_importable():
     """Module fix_whitespace_in_container must be importable."""
     import apps_shared.scripts.fix_whitespace_in_container  # noqa: F401

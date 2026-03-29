@@ -2,6 +2,5 @@
 from __future__ import annotations
 
 
-
 def test_module_importable():
         """Module system_enforcer must be importable."""

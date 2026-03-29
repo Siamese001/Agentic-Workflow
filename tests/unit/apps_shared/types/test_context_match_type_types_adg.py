@@ -6,7 +6,6 @@ import pytest
 pytestmark = pytest.mark.unit
 
 
-
 def test_module_importable():
     """Module context_match_type_types must be importable."""
     import apps_shared.types.context_match_type_types  # noqa: F401

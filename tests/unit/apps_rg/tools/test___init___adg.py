@@ -6,7 +6,6 @@ import pytest
 pytestmark = pytest.mark.unit
 
 
-
 def test_module_importable():
     """Module tools must be importable."""
     import apps_rg.tools.__init__ as _mod  # noqa: F401

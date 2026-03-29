@@ -4,11 +4,6 @@ from __future__ import annotations
 import pytest
 
 
-
-
-
-
-
 class TestActionVerbs:
     def test_is_dict(self):
             """Test is_dict runtime behavior."""

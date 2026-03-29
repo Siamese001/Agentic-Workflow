@@ -6,7 +6,6 @@ import pytest
 pytestmark = pytest.mark.unit
 
 
-
 def test_module_importable():
     """Module clerk_extractor_util must be importable."""
     import apps_rg.utils.clerk_extractor_util  # noqa: F401

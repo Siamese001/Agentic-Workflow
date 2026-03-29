@@ -6,13 +6,10 @@ from __future__ import annotations
 import pytest
 
 
-
-
 class TestChunkContract:
     def test_is_dataclass(self):
             """Test is_dataclass runtime behavior."""
             """Test field_names_present runtime behavior."""
-
 
 
     """Test field_names_present runtime behavior."""

@@ -6,14 +6,11 @@ from __future__ import annotations
 import pytest
 
 
-
-
 class TestSecurityViolationErrorContract:
     def test_is_class(self):
             """Test is_class runtime behavior."""
             """Test instantiable_or_abstract runtime behavior."""
             """Test is_callable runtime behavior."""
-
 
 
 """Test is_callable runtime behavior."""

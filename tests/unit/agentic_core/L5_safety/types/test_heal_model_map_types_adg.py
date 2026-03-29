@@ -4,7 +4,5 @@ from __future__ import annotations
 import pytest
 
 
-
-
 def test_module_importable():
         """Module heal_model_map_types must be importable."""

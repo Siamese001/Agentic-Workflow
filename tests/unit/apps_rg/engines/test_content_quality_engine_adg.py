@@ -6,7 +6,6 @@ import pytest
 pytestmark = pytest.mark.unit
 
 
-
 def test_module_importable():
     """Module content_quality_engine must be importable."""
     import apps_rg.engines.content_quality_engine  # noqa: F401

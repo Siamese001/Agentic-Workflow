@@ -6,7 +6,6 @@ import pytest
 pytestmark = pytest.mark.unit
 
 
-
 def test_module_importable():
     """Module meta_learning_operator must be importable."""
     import apps_shared.scripts.meta_learning_operator  # noqa: F401

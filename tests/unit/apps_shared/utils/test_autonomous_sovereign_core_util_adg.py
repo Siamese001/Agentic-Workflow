@@ -6,7 +6,6 @@ import pytest
 pytestmark = pytest.mark.unit
 
 
-
 def test_module_importable():
     """Module autonomous_sovereign_core_util must be importable."""
     import apps_shared.utils.autonomous_sovereign_core_util  # noqa: F401

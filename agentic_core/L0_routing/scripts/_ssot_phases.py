@@ -816,7 +816,7 @@ def execute_phase1_discovery_impl(
         state_mgr.state["classification_check_dict"] = _fc_check
         state_mgr.state["classification_file_registry"] = _fc_evidence.get("file_registry", [])
         logger.info(f"FileClassificationHealerAgent early detection: {classification_count} issues found")
-    except Exception as e:  # guardian: allow-silent-swallow
+    except (ValueError, TypeError, RuntimeError) as e:  # guardian: allow-silent-swallow
         logger.error(f"FileClassificationHealerAgent early detection FAILED: {e}\n{traceback.format_exc()}")
         state_mgr.complete_agent("FileClassificationHealerAgent", False, f"Early detection error: {e}")
         _record_healing_action(

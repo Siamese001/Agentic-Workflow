@@ -6,7 +6,6 @@ import pytest
 pytestmark = pytest.mark.unit
 
 
-
 def test_module_importable():
     """Module graph_rag_fusion_util must be importable."""
     import apps_shared.utils.graph_rag_fusion_util  # noqa: F401

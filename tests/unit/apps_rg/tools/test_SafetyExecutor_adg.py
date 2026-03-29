@@ -6,7 +6,6 @@ import pytest
 pytestmark = pytest.mark.unit
 
 
-
 def test_module_importable():
     """Module SafetyExecutor must be importable."""
     import apps_rg.tools.SafetyExecutor  # noqa: F401

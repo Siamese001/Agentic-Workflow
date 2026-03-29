@@ -6,7 +6,6 @@ import pytest
 pytestmark = pytest.mark.unit
 
 
-
 def test_module_importable():
     """Module golden_state_datasets_util must be importable."""
     import apps_shared.utils.golden_state_datasets_util  # noqa: F401

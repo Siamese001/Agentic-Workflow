@@ -2,7 +2,6 @@
 from __future__ import annotations
 
 
-
 def test_module_importable():
     """Module RgReflectionAgent must be importable."""
     import apps_rg.reasoning.RgReflectionAgent  # noqa: F401

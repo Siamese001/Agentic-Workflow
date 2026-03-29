@@ -2,6 +2,5 @@
 from __future__ import annotations
 
 
-
 def test_module_importable():
         """Module gravity_visitor_util must be importable."""

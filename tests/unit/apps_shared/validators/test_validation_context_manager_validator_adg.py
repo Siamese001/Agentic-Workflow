@@ -6,7 +6,6 @@ import pytest
 pytestmark = pytest.mark.unit
 
 
-
 def test_module_importable():
     """Module validation_context_manager_validator must be importable."""
     import apps_shared.validators.validation_context_manager_validator  # noqa: F401

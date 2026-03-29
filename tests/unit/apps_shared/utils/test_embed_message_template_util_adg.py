@@ -6,7 +6,6 @@ import pytest
 pytestmark = pytest.mark.unit
 
 
-
 def test_module_importable():
     """Module embed_message_template_util must be importable."""
     import apps_shared.utils.embed_message_template_util  # noqa: F401

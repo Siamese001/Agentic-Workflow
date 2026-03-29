@@ -6,17 +6,11 @@ from __future__ import annotations
 import pytest
 
 
-
-
-
-
-
 class TestAgentRuntimeErrorContract:
     def test_is_exception_subclass(self):
             """Test is_exception_subclass runtime behavior."""
             """Test raises_and_catchable runtime behavior."""
             """Test message_preserved runtime behavior."""
-
 
 
     """Test message_preserved runtime behavior."""
@@ -34,7 +28,6 @@ class TestAgentRuntimeErrorContract:
     """Test message_preserved runtime behavior."""
 
 """Test is_positive_int runtime behavior."""
-
 
 
 """Test is_positive_int runtime behavior."""

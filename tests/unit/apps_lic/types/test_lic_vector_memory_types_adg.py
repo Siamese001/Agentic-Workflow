@@ -6,7 +6,6 @@ import pytest
 pytestmark = pytest.mark.unit
 
 
-
 def test_module_importable():
     """Module lic_vector_memory_types must be importable."""
     import apps_lic.types.lic_vector_memory_types  # noqa: F401

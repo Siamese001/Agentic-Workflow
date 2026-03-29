@@ -6,7 +6,6 @@ import pytest
 pytestmark = pytest.mark.unit
 
 
-
 def test_module_importable():
     """Module retrieval_grader_util must be importable."""
     import apps_shared.utils.retrieval_grader_util  # noqa: F401

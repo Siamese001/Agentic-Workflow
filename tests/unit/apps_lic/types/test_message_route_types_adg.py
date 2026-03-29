@@ -6,7 +6,6 @@ import pytest
 pytestmark = pytest.mark.unit
 
 
-
 def test_module_importable():
     """Module message_route_types must be importable."""
     import apps_lic.types.message_route_types  # noqa: F401

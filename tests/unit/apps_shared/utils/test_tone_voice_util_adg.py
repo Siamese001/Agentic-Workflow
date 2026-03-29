@@ -6,7 +6,6 @@ import pytest
 pytestmark = pytest.mark.unit
 
 
-
 def test_module_importable():
     """Module tone_voice_util must be importable."""
     import apps_shared.utils.tone_voice_util  # noqa: F401

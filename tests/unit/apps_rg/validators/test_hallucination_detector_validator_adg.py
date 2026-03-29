@@ -6,7 +6,6 @@ import pytest
 pytestmark = pytest.mark.unit
 
 
-
 def test_module_importable():
     """Module hallucination_detector_validator must be importable."""
     import apps_rg.validators.hallucination_detector_validator  # noqa: F401

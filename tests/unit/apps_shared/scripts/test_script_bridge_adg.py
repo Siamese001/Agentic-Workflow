@@ -6,7 +6,6 @@ import pytest
 pytestmark = pytest.mark.unit
 
 
-
 def test_module_importable():
     """Module script_bridge must be importable."""
     import apps_shared.scripts.script_bridge  # noqa: F401

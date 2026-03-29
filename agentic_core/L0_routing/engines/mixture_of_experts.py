@@ -582,7 +582,7 @@ class MixtureOfExperts:
             try:
                 prediction = future.result(timeout=5.0)  # 5 second timeout
                 expert_predictions[expert_id] = prediction
-            except Exception as e:
+            except (ValueError, TypeError, RuntimeError) as e:
                 logger.error(f"Expert {expert_id} prediction failed: {e}")
                 # Create fallback prediction
                 expert = self.experts[expert_id]

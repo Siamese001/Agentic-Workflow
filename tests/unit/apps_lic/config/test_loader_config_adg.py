@@ -6,7 +6,6 @@ import pytest
 pytestmark = pytest.mark.unit
 
 
-
 def test_module_importable():
     """Module loader_config must be importable."""
     import apps_lic.config.loader_config  # noqa: F401

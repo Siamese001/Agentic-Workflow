@@ -489,7 +489,7 @@ class SSOTFolderCleanupAgent(SovereignBaseAgent):
                     updated_count += 1
                     self.stats["imports_updated"] += 1
             # guardian: allow-silent-swallow
-            except Exception as e:
+            except (ValueError, TypeError, RuntimeError) as e:
                 Logger.warning(f"Failed to update imports in {py_file}: {e}")
         return updated_count
 
@@ -711,7 +711,7 @@ class SSOTFolderCleanupAgent(SovereignBaseAgent):
                     if success:
                         return {"violations_fixed": 1, "violations_found": 1, "errors": 0, "skipped": 0}
             # guardian: allow-silent-swallow
-            except Exception as e:
+            except (ValueError, TypeError, RuntimeError) as e:
                 Logger.error(f"[SSOT_CLEANUP] Failed to heal: {e}")
                 return {"violations_fixed": 0, "violations_found": 1, "errors": 1, "skipped": 0}
         return {"violations_fixed": 0, "violations_found": 1, "errors": 0, "skipped": 1}

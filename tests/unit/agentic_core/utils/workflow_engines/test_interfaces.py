@@ -6,8 +6,6 @@ from __future__ import annotations
 import pytest
 
 
-
-
 class TestDocumentContract:
     def test_is_dataclass(self):
             """Test is_dataclass runtime behavior."""

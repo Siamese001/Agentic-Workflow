@@ -2,6 +2,5 @@
 from __future__ import annotations
 
 
-
 def test_module_importable():
         """Module structural_namespace_fence_enforcer must be importable."""

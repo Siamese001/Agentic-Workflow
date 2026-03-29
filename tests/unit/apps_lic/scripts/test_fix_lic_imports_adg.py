@@ -6,7 +6,6 @@ import pytest
 pytestmark = pytest.mark.unit
 
 
-
 def test_module_importable():
     """Module fix_lic_imports must be importable."""
     import apps_lic.scripts.fix_lic_imports  # noqa: F401

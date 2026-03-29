@@ -6,7 +6,6 @@ import pytest
 pytestmark = pytest.mark.unit
 
 
-
 def test_module_importable():
     """Module resume_prompts_validator must be importable."""
     import apps_shared.validators.resume_prompts_validator  # noqa: F401

@@ -23,11 +23,9 @@ def test_module_importable(mod):
     """Module imports without errors."""
 
 
-
 def test_module_exposes_public_api(mod):
     """Module exposes expected public symbols."""
     public = [n for n in dir(mod) if not n.startswith("_")]
-
 
 
 # Arrange

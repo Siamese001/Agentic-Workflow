@@ -6,7 +6,6 @@ import pytest
 pytestmark = pytest.mark.unit
 
 
-
 def test_module_importable():
     """Module rank_message_variants must be importable."""
     import apps_lic.tools.rank_message_variants  # noqa: F401

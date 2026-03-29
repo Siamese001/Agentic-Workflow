@@ -1136,7 +1136,7 @@ def main():
             except OSError as e:
                 log.error(f"[INCREMENTAL] Failed to read JSON ({e}) → falling back to full scan")
                 incremental_mode = False
-            except Exception as e:  # guardian: allow-silent-swallow
+            except (OSError, RuntimeError) as e:  # guardian: allow-silent-swallow
                 log.error(f"[INCREMENTAL] Unexpected error loading JSON ({e}) → falling back to full scan")
                 incremental_mode = False
         else:
@@ -1165,7 +1165,7 @@ def main():
                 log.warning(f"[INCREMENTAL] Manifest validation failed ({e}) → falling back to full scan")
                 incremental_mode = False
                 old_hashes = {}
-            except Exception as e:  # guardian: allow-silent-swallow
+            except (OSError, RuntimeError) as e:  # guardian: allow-silent-swallow
                 log.warning(f"[INCREMENTAL] Manifest error ({e}) → falling back to full scan")
                 incremental_mode = False
                 old_hashes = {}
@@ -1187,7 +1187,7 @@ def main():
                     assert_no_persistent_write("L0", "os.mutate")
                     os.remove(stale_path)
                     log.info(f"[FRESH] Deleted stale {stale_path.name}")
-            except Exception as e:  # guardian: allow-silent-swallow
+            except (OSError, PermissionError) as e:  # guardian: allow-silent-swallow
                 log.warning(f"Could not delete {stale_path.name}: {e}")
     agents = []
     parse_errors = []

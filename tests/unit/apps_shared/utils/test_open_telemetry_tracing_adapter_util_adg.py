@@ -6,7 +6,6 @@ import pytest
 pytestmark = pytest.mark.unit
 
 
-
 def test_module_importable():
     """Module open_telemetry_tracing_adapter_util must be importable."""
     import apps_shared.utils.open_telemetry_tracing_adapter_util  # noqa: F401

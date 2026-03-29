@@ -2,7 +2,6 @@
 from __future__ import annotations
 
 
-
 def test_module_importable():
     """Module ResumeGenerator must be importable."""
     import apps_rg.tools.ResumeGenerator  # noqa: F401

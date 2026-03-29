@@ -277,7 +277,7 @@ class PathRouter:
             _committer = ProposalCommitter()
             _contract = create_and_commit_routing_contract(_rctx)
             _routing_contract_id = _contract.routing_contract_id
-        except Exception as _rce:  # guardian: allow-silent-swallow
+        except (ValueError, TypeError, RuntimeError) as _rce:  # guardian: allow-silent-swallow
             _log.warning("path_router: routing contract creation failed: %s", _rce)
         # P2/L0: emit routing telemetry
         _path_end_tick = _get_clock().now_epoch()
@@ -296,6 +296,6 @@ class PathRouter:
                     routing_end_tick=_path_end_tick,
                 )
             )
-        except Exception as _te:  # guardian: allow-silent-swallow
+        except (ValueError, TypeError, RuntimeError) as _te:  # guardian: allow-silent-swallow
             _log.debug("path_router: telemetry emission failed: %s", _te)
         return chosen

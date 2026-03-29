@@ -6,7 +6,6 @@ import pytest
 pytestmark = pytest.mark.unit
 
 
-
 def test_module_importable():
     """Module optimization_strategy_engine must be importable."""
     import apps_rg.engines.optimization_strategy_engine  # noqa: F401

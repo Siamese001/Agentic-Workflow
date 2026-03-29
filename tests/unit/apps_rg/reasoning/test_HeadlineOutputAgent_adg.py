@@ -6,7 +6,6 @@ import pytest
 pytestmark = pytest.mark.unit
 
 
-
 def test_module_importable():
     """Module HeadlineOutputAgent must be importable."""
     import apps_rg.reasoning.HeadlineOutputAgent  # noqa: F401

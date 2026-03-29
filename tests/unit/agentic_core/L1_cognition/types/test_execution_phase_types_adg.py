@@ -4,11 +4,6 @@ from __future__ import annotations
 import pytest
 
 
-
-
-
-
-
 class TestExecutionPhase:
     def test_is_enum(self):
             """Test is_enum runtime behavior."""

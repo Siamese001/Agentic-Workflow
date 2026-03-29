@@ -6,7 +6,6 @@ import pytest
 pytestmark = pytest.mark.unit
 
 
-
 def test_module_importable():
     """Module cot_util must be importable."""
     import apps_lic.utils.cot_util  # noqa: F401

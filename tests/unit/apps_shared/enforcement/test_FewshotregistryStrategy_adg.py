@@ -6,7 +6,6 @@ import pytest
 pytestmark = pytest.mark.unit
 
 
-
 def test_module_importable():
     """Module FewshotregistryStrategy must be importable."""
     import apps_shared.enforcement.FewshotregistryStrategy  # noqa: F401

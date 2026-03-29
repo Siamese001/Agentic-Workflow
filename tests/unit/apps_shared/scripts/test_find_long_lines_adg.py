@@ -6,7 +6,6 @@ import pytest
 pytestmark = pytest.mark.unit
 
 
-
 def test_module_importable():
     """Module find_long_lines must be importable."""
     import apps_shared.scripts.find_long_lines  # noqa: F401

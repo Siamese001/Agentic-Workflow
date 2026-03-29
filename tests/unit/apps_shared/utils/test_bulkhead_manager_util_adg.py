@@ -6,7 +6,6 @@ import pytest
 pytestmark = pytest.mark.unit
 
 
-
 def test_module_importable():
     """Module bulkhead_manager_util must be importable."""
     import apps_shared.utils.bulkhead_manager_util  # noqa: F401

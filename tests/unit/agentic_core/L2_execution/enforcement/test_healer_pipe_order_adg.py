@@ -4,12 +4,6 @@ from __future__ import annotations
 import pytest
 
 
-
-
-
-
-
-
 class TestEnforceHealerPipeOrder:
     def test_callable(self):
             """Test callable runtime behavior."""

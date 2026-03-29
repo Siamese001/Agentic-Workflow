@@ -6,7 +6,6 @@ import pytest
 pytestmark = pytest.mark.unit
 
 
-
 def test_module_importable():
     """Module EvaluatePersonalizationQuality must be importable."""
     import apps_lic.tools.EvaluatePersonalizationQuality  # noqa: F401

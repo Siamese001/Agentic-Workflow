@@ -6,7 +6,6 @@ import pytest
 pytestmark = pytest.mark.unit
 
 
-
 def test_module_importable():
     """Module weight_adjustment_engine must be importable."""
     import apps_rg.engines.weight_adjustment_engine  # noqa: F401

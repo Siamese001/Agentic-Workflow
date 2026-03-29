@@ -6,7 +6,6 @@ import pytest
 pytestmark = pytest.mark.unit
 
 
-
 def test_module_importable():
     """Module CircuitbreakerStrategy must be importable."""
     import apps_shared.enforcement.CircuitbreakerStrategy  # noqa: F401

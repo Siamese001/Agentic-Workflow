@@ -6,7 +6,6 @@ import pytest
 pytestmark = pytest.mark.unit
 
 
-
 def test_module_importable():
     """Module InfrastructureOrchestrator must be importable."""
     import apps_shared.reasoning.InfrastructureOrchestrator  # noqa: F401

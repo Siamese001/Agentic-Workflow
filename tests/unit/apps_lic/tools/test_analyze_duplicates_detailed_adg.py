@@ -6,7 +6,6 @@ import pytest
 pytestmark = pytest.mark.unit
 
 
-
 def test_module_importable():
     """Module analyze_duplicates_detailed must be importable."""
     import apps_lic.tools.analyze_duplicates_detailed  # noqa: F401

@@ -6,7 +6,6 @@ import pytest
 pytestmark = pytest.mark.unit
 
 
-
 def test_module_importable():
     """Module types must be importable."""
     import apps_shared.types.__init__ as _mod  # noqa: F401

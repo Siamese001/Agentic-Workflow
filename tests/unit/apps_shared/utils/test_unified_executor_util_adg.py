@@ -6,7 +6,6 @@ import pytest
 pytestmark = pytest.mark.unit
 
 
-
 def test_module_importable():
     """Module unified_executor_util must be importable."""
     import apps_shared.utils.unified_executor_util  # noqa: F401

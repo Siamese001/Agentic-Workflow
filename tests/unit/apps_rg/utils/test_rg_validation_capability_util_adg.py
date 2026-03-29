@@ -6,7 +6,6 @@ import pytest
 pytestmark = pytest.mark.unit
 
 
-
 def test_module_importable():
     """Module rg_validation_capability_util must be importable."""
     import apps_rg.utils.rg_validation_capability_util  # noqa: F401

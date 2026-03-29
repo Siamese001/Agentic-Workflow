@@ -11,7 +11,6 @@ import pytest
 pytestmark = pytest.mark.unit
 
 
-
 class TestArchetypeIndicatorsContract:
     def test_is_class(self):
         from apps_lic.config.archetype_indicator_config import (  # noqa: F401

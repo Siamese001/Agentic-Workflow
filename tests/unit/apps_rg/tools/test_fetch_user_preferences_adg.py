@@ -6,7 +6,6 @@ import pytest
 pytestmark = pytest.mark.unit
 
 
-
 def test_module_importable():
     """Module fetch_user_preferences must be importable."""
     import apps_rg.tools.fetch_user_preferences  # noqa: F401

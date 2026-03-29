@@ -6,7 +6,6 @@ import pytest
 pytestmark = pytest.mark.unit
 
 
-
 def test_module_importable():
     """Module input_validator_util must be importable."""
     import apps_shared.utils.input_validator_util  # noqa: F401

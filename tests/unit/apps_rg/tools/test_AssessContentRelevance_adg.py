@@ -6,7 +6,6 @@ import pytest
 pytestmark = pytest.mark.unit
 
 
-
 def test_module_importable():
     """Module AssessContentRelevance must be importable."""
     import apps_rg.tools.AssessContentRelevance  # noqa: F401

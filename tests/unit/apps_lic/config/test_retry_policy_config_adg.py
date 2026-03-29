@@ -6,7 +6,6 @@ import pytest
 pytestmark = pytest.mark.unit
 
 
-
 def test_module_importable():
     """Module retry_policy_config must be importable."""
     import apps_lic.config.retry_policy_config  # noqa: F401

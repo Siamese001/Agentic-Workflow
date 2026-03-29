@@ -631,7 +631,7 @@ class MetaLearningFramework:
                     "performance_improvement": result.performance_after - result.performance_before
                 })
                 
-            except Exception as e:
+            except (ValueError, TypeError, RuntimeError) as e:
                 logger.error(f"Meta-learner {learner_name} failed: {e}")
         
         # Update framework performance

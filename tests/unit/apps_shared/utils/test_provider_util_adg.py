@@ -6,7 +6,6 @@ import pytest
 pytestmark = pytest.mark.unit
 
 
-
 def test_module_importable():
     """Module provider_util must be importable."""
     import apps_shared.utils.provider_util  # noqa: F401

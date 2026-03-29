@@ -6,7 +6,6 @@ import pytest
 pytestmark = pytest.mark.unit
 
 
-
 def test_module_importable():
     """Module reasoning_toggles_config must be importable."""
     import apps_lic.config.reasoning_toggles_config  # noqa: F401

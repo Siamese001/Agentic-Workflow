@@ -11,7 +11,6 @@ import pytest
 pytestmark = pytest.mark.unit
 
 
-
 class TestOutreachEngineContextContract:
     def test_is_class(self):
         from apps_lic.reasoning.OutreachLearningAgent import (  # noqa: F401

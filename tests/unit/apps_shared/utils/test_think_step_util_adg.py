@@ -6,7 +6,6 @@ import pytest
 pytestmark = pytest.mark.unit
 
 
-
 def test_module_importable():
     """Module think_step_util must be importable."""
     import apps_shared.utils.think_step_util  # noqa: F401

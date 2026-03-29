@@ -6,7 +6,6 @@ import pytest
 pytestmark = pytest.mark.unit
 
 
-
 def test_module_importable():
     """Module PersonaPlannerValidator must be importable."""
     import apps_lic.validators.PersonaPlannerValidator  # noqa: F401

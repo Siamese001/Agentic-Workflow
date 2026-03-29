@@ -6,7 +6,6 @@ import pytest
 pytestmark = pytest.mark.unit
 
 
-
 def test_module_importable():
     """Module code_quality_guardrail_types must be importable."""
     import apps_lic.types.code_quality_guardrail_types  # noqa: F401

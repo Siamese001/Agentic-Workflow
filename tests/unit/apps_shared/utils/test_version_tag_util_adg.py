@@ -6,7 +6,6 @@ import pytest
 pytestmark = pytest.mark.unit
 
 
-
 def test_module_importable():
     """Module version_tag_util must be importable."""
     import apps_shared.utils.version_tag_util  # noqa: F401

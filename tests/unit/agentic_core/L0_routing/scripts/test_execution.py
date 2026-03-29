@@ -6,8 +6,6 @@ from __future__ import annotations
 import pytest
 
 
-
-
 class TestExecutionStatusContract:
     def test_is_enum(self):
             """Test is_enum runtime behavior."""
@@ -16,7 +14,6 @@ class TestExecutionStatusContract:
             """Test known_member_pending_exists runtime behavior."""
             """Test is_dataclass runtime behavior."""
             """Test field_names_present runtime behavior."""
-
 
 
     """Test field_names_present runtime behavior."""

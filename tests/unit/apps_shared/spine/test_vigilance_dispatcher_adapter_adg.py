@@ -2,7 +2,6 @@
 from __future__ import annotations
 
 
-
 def test_module_importable():
     """Module vigilance_dispatcher_adapter must be importable."""
     import apps_shared.spine.vigilance_dispatcher_adapter  # noqa: F401

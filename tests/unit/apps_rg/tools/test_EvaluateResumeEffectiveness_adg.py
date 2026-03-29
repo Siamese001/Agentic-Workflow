@@ -6,7 +6,6 @@ import pytest
 pytestmark = pytest.mark.unit
 
 
-
 def test_module_importable():
     """Module EvaluateResumeEffectiveness must be importable."""
     import apps_rg.tools.EvaluateResumeEffectiveness  # noqa: F401

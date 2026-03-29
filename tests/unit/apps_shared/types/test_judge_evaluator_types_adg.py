@@ -2,7 +2,6 @@
 from __future__ import annotations
 
 
-
 def test_module_importable():
     """Module judge_evaluator_types must be importable."""
     import apps_shared.types.judge_evaluator_types  # noqa: F401

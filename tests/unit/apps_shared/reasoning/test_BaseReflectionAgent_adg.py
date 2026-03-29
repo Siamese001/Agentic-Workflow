@@ -2,7 +2,6 @@
 from __future__ import annotations
 
 
-
 def test_module_importable():
     """Module BaseReflectionAgent must be importable."""
     import apps_shared.reasoning.BaseReflectionAgent  # noqa: F401

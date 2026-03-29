@@ -6,7 +6,6 @@ import pytest
 pytestmark = pytest.mark.unit
 
 
-
 def test_module_importable():
     """Module analysis_mixin_util must be importable."""
     import apps_shared.utils.analysis_mixin_util  # noqa: F401

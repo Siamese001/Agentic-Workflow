@@ -6,7 +6,6 @@ import pytest
 pytestmark = pytest.mark.unit
 
 
-
 def test_module_importable():
     """Module golden_state_evaluator_types must be importable."""
     import apps_shared.types.golden_state_evaluator_types  # noqa: F401

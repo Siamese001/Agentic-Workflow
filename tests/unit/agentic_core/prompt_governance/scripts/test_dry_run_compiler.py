@@ -6,13 +6,10 @@ from __future__ import annotations
 import pytest
 
 
-
-
 class TestInitializeJinjaEnvironmentFunction:
     def test_is_callable(self):
             """Test is_callable runtime behavior."""
             """Test is_callable runtime behavior."""
-
 
 
 """Test is_callable runtime behavior."""

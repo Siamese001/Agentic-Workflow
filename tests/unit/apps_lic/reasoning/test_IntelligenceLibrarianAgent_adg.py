@@ -6,7 +6,6 @@ import pytest
 pytestmark = pytest.mark.unit
 
 
-
 def test_module_importable():
     """Module IntelligenceLibrarianAgent must be importable."""
     import apps_lic.reasoning.IntelligenceLibrarianAgent as _mod  # noqa: F401

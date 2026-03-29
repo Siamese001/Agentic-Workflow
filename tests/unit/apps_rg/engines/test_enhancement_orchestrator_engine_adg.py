@@ -6,7 +6,6 @@ import pytest
 pytestmark = pytest.mark.unit
 
 
-
 def test_module_importable():
     """Module enhancement_orchestrator_engine must be importable."""
     import apps_rg.engines.enhancement_orchestrator_engine  # noqa: F401

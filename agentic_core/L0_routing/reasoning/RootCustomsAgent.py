@@ -246,7 +246,7 @@ class ASTAnalyzer:
                 "docstring_markers": self.docstring_markers,
             }
 
-        except Exception as e:
+        except (ValueError, TypeError, RuntimeError) as e:
             return {"error": str(e)}
 
     def _extract_signals(self, tree: ast.AST):
@@ -357,7 +357,7 @@ class RootCustomsAgent(SovereignBaseAgent):
                 content_matches.update(self._analyze_text(content))
 
         # guardian: allow-silent-swallow
-        except Exception as e:
+        except (ValueError, TypeError, RuntimeError) as e:
             content_matches["error"] = str(e)
 
         return content_matches
@@ -739,7 +739,7 @@ class RootCustomsAgent(SovereignBaseAgent):
             print(f"✅ Moved: {source.name} → {decision.destination}/")
             return True
 
-        except Exception as e:
+        except (ValueError, TypeError, RuntimeError) as e:
             print(f"❌ Failed to move {source.name}: {e}")
             return False
 
@@ -895,7 +895,7 @@ class RootCustomsAgent(SovereignBaseAgent):
                     "artifacts": [],
                     "errors": [],
                 }
-        except Exception as e:
+        except (ValueError, TypeError, RuntimeError) as e:
             return {
                 "status": "failed",
                 "details": f"RootCustomsAgent heal() failed: {str(e)}",

@@ -6,7 +6,6 @@ import pytest
 pytestmark = pytest.mark.unit
 
 
-
 def test_module_importable():
     """Module AdjustToneWeights must be importable."""
     import apps_lic.tools.AdjustToneWeights  # noqa: F401

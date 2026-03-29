@@ -6,17 +6,20 @@ import pytest
 pytestmark = pytest.mark.unit
 
 try:
+    from agentic_core.L0_routing.config.path_constants import (
         BATCH_SIZE,
         BUFFER_SIZE,
         DEFAULT_SLEEP,
         MAX_DEPTH,
         MAX_RETRIES,
         THRESHOLD,
+    )
+    from agentic_core.runtime.config.model_tier_config import (
         ModelConfig,
         ModelTier,
         RoutingDecision,
         TaskComplexity,
-
+    )
 except (ValueError, TypeError, RuntimeError) as e:  # guardian: allow-silent-swallow
     ModelTier = None  # type: ignore[assignment,misc]
     TaskComplexity = None  # type: ignore[assignment,misc]
@@ -32,73 +35,61 @@ except (ValueError, TypeError, RuntimeError) as e:  # guardian: allow-silent-swa
 
 class TestModelTier:
     def test_is_enum(self):
-# from agentic_core.runtime.config.model_tier_config import (  # noqa: F401
-            """Test is_enum runtime behavior."""
-            # Arrange
-            # TODO: Set up runtime environment
-            """Test has_members runtime behavior."""
-            # Arrange
-            """Test importable runtime behavior."""
-            # Arrange
-            # TODO: Set up runtime environment
-            runtime_context = {}  # Replace with actual runtime context
+        """Test ModelTier is an enum."""
+        from enum import Enum
+        assert isinstance(ModelTier, type) and issubclass(ModelTier, Enum)
 
-    runtime_context = {}  # Replace with actual runtime context
+    def test_has_members(self):
+        """Test ModelTier has expected members."""
+        assert hasattr(ModelTier, 'LOW')
+        assert hasattr(ModelTier, 'MEDIUM')
+        assert hasattr(ModelTier, 'HIGH')
 
-    # Act
-    # TODO: Execute runtime operation importable
-    runtime_result = None  # Replace with actual runtime operation
+    def test_is_not_none(self):
+        """Test ModelTier is not None."""
+        assert ModelTier is not None
 
-"""Test importable runtime behavior."""
-# Arrange
-# TODO: Set up runtime environment
-runtime_context = {}  # Replace with actual runtime context
 
-# Act
-"""Test importable runtime behavior."""
-# Arrange
-# TODO: Set up runtime environment
-runtime_context = {}  # Replace with actual runtime context
+class TestTaskComplexity:
+    def test_is_enum(self):
+        """Test TaskComplexity is an enum."""
+        from enum import Enum
+        assert isinstance(TaskComplexity, type) and issubclass(TaskComplexity, Enum)
 
-# Act
-"""Test importable runtime behavior."""
-# Arrange
-# TODO: Set up runtime environment
-runtime_context = {}  # Replace with actual runtime context
-"""Test is_not_none runtime behavior."""
-# Arrange
-# TODO: Set up runtime environment
-runtime_context = {}  # Replace with actual runtime context
-"""Test is_not_none runtime behavior."""
-# Arrange
-# TODO: Set up runtime environment
-runtime_context = {}  # Replace with actual runtime context
-"""Test is_not_none runtime behavior."""
-# Arrange
-# TODO: Set up runtime environment
-runtime_context = {}  # Replace with actual runtime context
-"""Test is_not_none runtime behavior."""
-# Arrange
-# TODO: Set up runtime environment
-runtime_context = {}  # Replace with actual runtime context
-"""Test is_not_none runtime behavior."""
-# Arrange
-# TODO: Set up runtime environment
-runtime_context = {}  # Replace with actual runtime context
-"""Test is_not_none runtime behavior."""
-# Arrange
-# TODO: Set up runtime environment
-runtime_context = {}  # Replace with actual runtime context
+    def test_is_not_none(self):
+        """Test TaskComplexity is not None."""
+        assert TaskComplexity is not None
 
-# Act
-# TODO: Execute runtime operation is_not_none
-runtime_result = None  # Replace with actual runtime operation
 
-# Assert
-assert runtime_result is not None, "Runtime operation should produce a result"
-assert hasattr(runtime_result, "__dict__") or isinstance(runtime_result, (dict, list, str, int, float, bool)), "Result should be serializable"
-# TODO: Add runtime-specific assertions
-# Assert
-assert runtime_result is not None, "Runtime operation should produce a result"
-assert hasattr(runtime_result, "__dict__") or isinstance(runtime_result, (dict, list, str, int, float, bool)), "Result should be serializable"
-# TODO: Add runtime-specific assertions
+class TestModelConfig:
+    def test_is_class(self):
+        """Test ModelConfig is a class."""
+        assert isinstance(ModelConfig, type)
+
+    def test_is_not_none(self):
+        """Test ModelConfig is not None."""
+        assert ModelConfig is not None
+
+
+class TestRoutingDecision:
+    def test_is_class(self):
+        """Test RoutingDecision is a class."""
+        assert isinstance(RoutingDecision, type)
+
+    def test_is_not_none(self):
+        """Test RoutingDecision is not None."""
+        assert RoutingDecision is not None
+
+
+class TestConstants:
+    def test_batch_size_is_int(self):
+        """Test BATCH_SIZE is an integer."""
+        assert isinstance(BATCH_SIZE, int)
+
+    def test_buffer_size_is_int(self):
+        """Test BUFFER_SIZE is an integer."""
+        assert isinstance(BUFFER_SIZE, int)
+
+    def test_max_retries_is_int(self):
+        """Test MAX_RETRIES is an integer."""
+        assert isinstance(MAX_RETRIES, int)

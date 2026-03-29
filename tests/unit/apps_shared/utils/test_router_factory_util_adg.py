@@ -6,7 +6,6 @@ import pytest
 pytestmark = pytest.mark.unit
 
 
-
 def test_module_importable():
     """Module router_factory_util must be importable."""
     import apps_shared.utils.router_factory_util  # noqa: F401

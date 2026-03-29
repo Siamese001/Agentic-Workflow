@@ -491,5 +491,5 @@ def _record_healing_action(
             )
     except ImportError as _sl_err:
         logger.debug("[SL] system_learning persist skipped (not available): %s", _sl_err)
-    except Exception as _sl_err:
+    except (ValueError, TypeError, RuntimeError) as _sl_err:
         logger.warning("[SL] system_learning persist failed: %s", _sl_err)

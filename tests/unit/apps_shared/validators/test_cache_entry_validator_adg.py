@@ -6,7 +6,6 @@ import pytest
 pytestmark = pytest.mark.unit
 
 
-
 def test_module_importable():
     """Module cache_entry_validator must be importable."""
     import apps_shared.validators.cache_entry_validator  # noqa: F401

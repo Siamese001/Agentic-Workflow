@@ -6,7 +6,6 @@ import pytest
 pytestmark = pytest.mark.unit
 
 
-
 def test_module_importable():
     """Module format_data_util must be importable."""
     import apps_shared.utils.format_data_util  # noqa: F401

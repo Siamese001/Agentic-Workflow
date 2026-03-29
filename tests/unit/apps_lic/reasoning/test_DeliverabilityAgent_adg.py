@@ -6,7 +6,6 @@ import pytest
 pytestmark = pytest.mark.unit
 
 
-
 def test_module_importable():
     """Module DeliverabilityAgent must be importable."""
     import apps_lic.reasoning.DeliverabilityAgent  # noqa: F401

@@ -6,7 +6,6 @@ import pytest
 pytestmark = pytest.mark.unit
 
 
-
 def test_module_importable():
     """Module prompt_registry_util must be importable."""
     import apps_shared.utils.prompt_registry_util  # noqa: F401

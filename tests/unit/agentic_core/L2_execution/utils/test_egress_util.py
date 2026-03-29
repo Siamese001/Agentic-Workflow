@@ -6,12 +6,9 @@ from __future__ import annotations
 import pytest
 
 
-
-
 class TestEgressResultContract:
     def test_is_dataclass(self):
             """Test is_dataclass runtime behavior."""
-
 
 
     """Test is_class runtime behavior."""

@@ -18,30 +18,30 @@ def _tree():
     return ast.parse(_SRC.read_text(encoding="utf-8", errors="replace"))
 
 
-def _src_text():
-    return _SRC.read_text(encoding="utf-8", errors="replace")
+def _class_names():
+    return {n.name for n in ast.walk(_tree()) if isinstance(n, ast.ClassDef)}
+
+
+def _methods_of(cls_name: str) -> set:
+    tree = _tree()
+    cls = next((n for n in ast.walk(tree) if isinstance(n, ast.ClassDef) and n.name == cls_name), None)
+    if cls is None:
+        return set()
+    return {n.name for n in ast.walk(cls) if isinstance(n, ast.FunctionDef)}
 
 
 class TestFactCheckAgentSource:
     def test_source_exists(self):
-        pass
-    """Test source_exists contract compliance."""
-    # Arrange
-    # TODO: Set up contract test scenario
-    """Test parses_without_error contract compliance."""
-    # Arrange
-    # TODO: Set up contract test scenario
-    """Test mentions_class_name contract compliance."""
-    # Arrange
-    # TODO: Set up contract test scenario
-    test_scenario = {}  # Replace with actual test scenario
+        assert _SRC.exists()
 
-    # Act
-    # TODO: Execute contract test
-    contract_result = None  # Replace with actual contract test
+    def test_parses_without_error(self):
+        _tree()
 
-    # Assert - General Contract
-    assert contract_result is not None, "Contract should produce a result"
-    assert isinstance(contract_result, object), "Result should be an object"
-    # TODO: Add specific contract assertions
-    # assert hasattr(contract_result, "complies"), "Result should indicate compliance"
+    def test_has_fact_check_agent_class(self):
+        assert "FactCheckAgent" in _class_names()
+
+    def test_has_post_init(self):
+        assert "__post_init__" in _methods_of("FactCheckAgent")
+
+    def test_has_execute(self):
+        assert "execute" in _methods_of("FactCheckAgent")

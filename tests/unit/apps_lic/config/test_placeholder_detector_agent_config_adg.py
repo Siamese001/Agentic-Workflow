@@ -6,7 +6,6 @@ import pytest
 pytestmark = pytest.mark.unit
 
 
-
 def test_module_importable():
     """Module placeholder_detector_agent_config must be importable."""
     import apps_lic.config.placeholder_detector_agent_config  # noqa: F401

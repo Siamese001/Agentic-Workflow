@@ -6,7 +6,6 @@ import pytest
 pytestmark = pytest.mark.unit
 
 
-
 def test_module_importable():
     """Module k1_router_types must be importable."""
     import apps_lic.types.k1_router_types  # noqa: F401

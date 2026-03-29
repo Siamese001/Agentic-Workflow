@@ -6,7 +6,6 @@ import pytest
 pytestmark = pytest.mark.unit
 
 
-
 def test_module_importable():
     """Module CampaignBalanceAgent must be importable."""
     import apps_lic.reasoning.CampaignBalanceAgent  # noqa: F401

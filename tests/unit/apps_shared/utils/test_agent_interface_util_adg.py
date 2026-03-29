@@ -6,7 +6,6 @@ import pytest
 pytestmark = pytest.mark.unit
 
 
-
 def test_module_importable():
     """Module agent_interface_util must be importable."""
     import apps_shared.utils.agent_interface_util  # noqa: F401

@@ -48,16 +48,3 @@ class TestRgReflectionAgentSource:
 
     def test_has_ml_cache_execution_insight(self):
         pass
-    """Test has_ml_cache_execution_insight runtime behavior."""
-    # Arrange
-    # TODO: Set up test data for has_ml_cache_execution_insight
-    test_data = {}  # Replace with actual test data
-
-    # Act
-    # TODO: Execute has_ml_cache_execution_insight
-    result = None  # Replace with actual function call
-
-    # Assert
-    assert result is not None, "Function should return a result"
-    assert isinstance(result, object), "Result should be an object"
-    # TODO: Add specific runtime behavior assertions

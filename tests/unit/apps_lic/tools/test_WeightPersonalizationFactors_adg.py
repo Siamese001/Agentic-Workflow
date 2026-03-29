@@ -6,7 +6,6 @@ import pytest
 pytestmark = pytest.mark.unit
 
 
-
 def test_module_importable():
     """Module WeightPersonalizationFactors must be importable."""
     import apps_lic.tools.WeightPersonalizationFactors  # noqa: F401

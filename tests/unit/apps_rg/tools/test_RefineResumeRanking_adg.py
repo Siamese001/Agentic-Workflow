@@ -6,7 +6,6 @@ import pytest
 pytestmark = pytest.mark.unit
 
 
-
 def test_module_importable():
     """Module RefineResumeRanking must be importable."""
     import apps_rg.tools.RefineResumeRanking  # noqa: F401

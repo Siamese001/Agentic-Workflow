@@ -6,7 +6,6 @@ import pytest
 pytestmark = pytest.mark.unit
 
 
-
 def test_module_importable():
     """Module TraceRegistry must be importable."""
     import apps_lic.types.TraceRegistry  # noqa: F401

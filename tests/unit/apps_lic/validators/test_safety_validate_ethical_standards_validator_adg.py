@@ -6,7 +6,6 @@ import pytest
 pytestmark = pytest.mark.unit
 
 
-
 def test_module_importable():
     """Module safety_validate_ethical_standards_validator must be importable."""
     import apps_lic.validators.safety_validate_ethical_standards_validator  # noqa: F401

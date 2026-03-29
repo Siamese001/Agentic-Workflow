@@ -4,11 +4,6 @@ from __future__ import annotations
 import pytest
 
 
-
-
-
-
-
 class TestAnomalySeverity:
     def test_low_value(self):
             """Test low_value runtime behavior."""

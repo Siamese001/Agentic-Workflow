@@ -6,7 +6,6 @@ import pytest
 pytestmark = pytest.mark.unit
 
 
-
 def test_module_importable():
     """Module reflection_engine must be importable."""
     import apps_rg.engines.reflection_engine  # noqa: F401

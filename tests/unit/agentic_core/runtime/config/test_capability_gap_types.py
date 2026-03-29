@@ -6,14 +6,11 @@ from __future__ import annotations
 import pytest
 
 
-
-
 class TestCapabilityGapTypeContract:
     def test_is_enum(self):
             """Test is_enum runtime behavior."""
             """Test has_members runtime behavior."""
             """Test member_values_are_strings_or_ints runtime behavior."""
-
 
 
     """Test member_values_are_strings_or_ints runtime behavior."""

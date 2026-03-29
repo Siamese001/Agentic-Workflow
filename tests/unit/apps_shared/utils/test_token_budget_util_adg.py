@@ -6,7 +6,6 @@ import pytest
 pytestmark = pytest.mark.unit
 
 
-
 def test_module_importable():
     """Module token_budget_util must be importable."""
     import apps_shared.utils.token_budget_util  # noqa: F401

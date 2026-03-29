@@ -4,8 +4,6 @@ from __future__ import annotations
 import pytest
 
 
-
-
 class TestExecutionContracts:
     def test_module_importable(self):
             """Test module_importable runtime behavior."""

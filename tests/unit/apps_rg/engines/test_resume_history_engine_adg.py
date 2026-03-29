@@ -6,7 +6,6 @@ import pytest
 pytestmark = pytest.mark.unit
 
 
-
 def test_module_importable():
     """Module resume_history_engine must be importable."""
     import apps_rg.engines.resume_history_engine  # noqa: F401

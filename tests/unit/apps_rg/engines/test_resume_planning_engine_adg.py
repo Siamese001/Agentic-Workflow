@@ -6,7 +6,6 @@ import pytest
 pytestmark = pytest.mark.unit
 
 
-
 def test_module_importable():
     """Module resume_planning_engine must be importable."""
     import apps_rg.engines.resume_planning_engine  # noqa: F401

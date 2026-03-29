@@ -314,7 +314,7 @@ class RoutePolicyGovernor:
         )
         try:
             create_and_commit_routing_contract(_contract_ctx)
-        except Exception as _rce:  # guardian: allow-silent-swallow
+        except (ValueError, TypeError, RuntimeError) as _rce:  # guardian: allow-silent-swallow
             logger.warning("GOVERNOR routing contract failed: %s", _rce)
         logger.info(
             "GOVERNOR proposal_commits_routing references_policy_hash "

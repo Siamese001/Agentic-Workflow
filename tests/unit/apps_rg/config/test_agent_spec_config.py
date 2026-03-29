@@ -11,7 +11,6 @@ import pytest
 pytestmark = pytest.mark.unit
 
 
-
 class TestAgentSpecContract:
     def test_is_class(self):
         from apps_rg.config.agent_spec_config import (  # noqa: F401
@@ -31,77 +30,85 @@ class TestAgentSpecContract:
         assert isinstance(AgentSpec, type)
 
     def test_instantiable_or_abstract(self):
+        from apps_rg.config.agent_spec_config import AgentSpec
         assert isinstance(AgentSpec, type)
+
 
 class TestOrchestrationTopologyContract:
     def test_is_class(self):
+        from apps_rg.config.agent_spec_config import OrchestrationTopology
         assert isinstance(OrchestrationTopology, type)
 
     def test_has_method_validate_agents_exist(self):
+        from apps_rg.config.agent_spec_config import OrchestrationTopology
         assert callable(getattr(OrchestrationTopology, 'validate_agents_exist', None))
+
 
 class TestClerkExtractionConfigContract:
     def test_is_class(self):
+        from apps_rg.config.agent_spec_config import ClerkExtractionConfig
         assert isinstance(ClerkExtractionConfig, type)
 
     def test_instantiable_or_abstract(self):
+        from apps_rg.config.agent_spec_config import ClerkExtractionConfig
         assert isinstance(ClerkExtractionConfig, type)
+
 
 class TestEnrichmentConfigContract:
     def test_is_class(self):
+        from apps_rg.config.agent_spec_config import EnrichmentConfig
         assert isinstance(EnrichmentConfig, type)
 
     def test_instantiable_or_abstract(self):
+        from apps_rg.config.agent_spec_config import EnrichmentConfig
         assert isinstance(EnrichmentConfig, type)
+
 
 class TestGenerationConfigContract:
     def test_is_class(self):
+        from apps_rg.config.agent_spec_config import GenerationConfig
         assert isinstance(GenerationConfig, type)
 
     def test_instantiable_or_abstract(self):
+        from apps_rg.config.agent_spec_config import GenerationConfig
         assert isinstance(GenerationConfig, type)
+
 
 class TestValidationConfigContract:
     def test_is_class(self):
+        from apps_rg.config.agent_spec_config import ValidationConfig
         assert isinstance(ValidationConfig, type)
 
     def test_instantiable_or_abstract(self):
+        from apps_rg.config.agent_spec_config import ValidationConfig
         assert isinstance(ValidationConfig, type)
+
 
 class TestMaxRetriesConstant:
     def test_is_not_none(self):
-        pass
-    """Test is_not_none contract compliance."""
-    # Arrange
-    # TODO: Set up contract test scenario
-    test_scenario = {}  # Replace with actual test scenario
-    """Test is_not_none contract compliance."""
-    # Arrange
-    # TODO: Set up contract test scenario
-    test_scenario = {}  # Replace with actual test scenario
-    """Test is_not_none contract compliance."""
-    # Arrange
-    # TODO: Set up contract test scenario
-    test_scenario = {}  # Replace with actual test scenario
-    """Test is_not_none contract compliance."""
-    # Arrange
-    # TODO: Set up contract test scenario
-    test_scenario = {}  # Replace with actual test scenario
-    """Test is_not_none contract compliance."""
-    # Arrange
-    # TODO: Set up contract test scenario
-    test_scenario = {}  # Replace with actual test scenario
+        from apps_rg.config.agent_spec_config import MAX_RETRIES
+        assert MAX_RETRIES is not None
 
-    # Act
-    # TODO: Execute contract test
-    contract_result = None  # Replace with actual contract test
 
-    # Assert - General Contract
-    assert contract_result is not None, "Contract should produce a result"
-    assert isinstance(contract_result, object), "Result should be an object"
-    # TODO: Add specific contract assertions
-    # assert hasattr(contract_result, "complies"), "Result should indicate compliance"
-assert contract_result is not None, "Contract should produce a result"
-assert isinstance(contract_result, object), "Result should be an object"
-# TODO: Add specific contract assertions
-# assert hasattr(contract_result, "complies"), "Result should indicate compliance"
+class TestDefaultSleepConstant:
+    def test_is_not_none(self):
+        from apps_rg.config.agent_spec_config import DEFAULT_SLEEP
+        assert DEFAULT_SLEEP is not None
+
+
+class TestThresholdConstant:
+    def test_is_not_none(self):
+        from apps_rg.config.agent_spec_config import THRESHOLD
+        assert THRESHOLD is not None
+
+
+class TestBufferSizeConstant:
+    def test_is_not_none(self):
+        from apps_rg.config.agent_spec_config import BUFFER_SIZE
+        assert BUFFER_SIZE is not None
+
+
+class TestBatchSizeConstant:
+    def test_is_not_none(self):
+        from apps_rg.config.agent_spec_config import BATCH_SIZE
+        assert BATCH_SIZE is not None

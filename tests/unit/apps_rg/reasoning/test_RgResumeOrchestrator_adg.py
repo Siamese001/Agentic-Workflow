@@ -2,7 +2,6 @@
 from __future__ import annotations
 
 
-
 def test_module_importable():
     """Module RgResumeOrchestrator must be importable."""
     import apps_rg.reasoning.RgResumeOrchestrator  # noqa: F401

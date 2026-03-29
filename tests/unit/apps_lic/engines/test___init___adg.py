@@ -2,7 +2,6 @@
 from __future__ import annotations
 
 
-
 def test_module_importable():
     """Module engines must be importable."""
     import apps_lic.engines.__init__ as _mod  # noqa: F401

@@ -6,7 +6,6 @@ import pytest
 pytestmark = pytest.mark.unit
 
 
-
 def test_module_importable():
     """Module meta_control_config_bridge must be importable."""
     import apps_shared.scripts.meta_control_config_bridge  # noqa: F401

@@ -6,7 +6,6 @@ import pytest
 pytestmark = pytest.mark.unit
 
 
-
 def test_module_importable():
     """Module agent_spec_config must be importable."""
     import apps_rg.config.agent_spec_config  # noqa: F401

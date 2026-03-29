@@ -6,7 +6,6 @@ import pytest
 pytestmark = pytest.mark.unit
 
 
-
 def test_module_importable():
     """Module scripts must be importable."""
     import apps_lic.scripts.__init__ as _mod  # noqa: F401

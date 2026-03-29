@@ -6,7 +6,6 @@ import pytest
 pytestmark = pytest.mark.unit
 
 
-
 def test_module_importable():
     """Module update_observability_usage_safety_type must be importable."""
     import apps_shared.scripts.update_observability_usage_safety_type  # noqa: F401

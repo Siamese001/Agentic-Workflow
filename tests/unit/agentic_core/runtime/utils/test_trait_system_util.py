@@ -6,13 +6,10 @@ from __future__ import annotations
 import pytest
 
 
-
-
 class TestTraitContract:
     def test_is_class(self):
             """Test is_class runtime behavior."""
             """Test has_method_apply runtime behavior."""
-
 
 
     """Test has_method_apply runtime behavior."""

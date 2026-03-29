@@ -6,7 +6,6 @@ import pytest
 pytestmark = pytest.mark.unit
 
 
-
 def test_module_importable():
     """Module GoogleSearchClient must be importable."""
     import apps_lic.tools.GoogleSearchClient  # noqa: F401

@@ -4,9 +4,6 @@ from __future__ import annotations
 import pytest
 
 
-
-
-
 class TestStateCheckpoint:
     def test_is_dataclass(self):
             """Test is_dataclass contract compliance."""

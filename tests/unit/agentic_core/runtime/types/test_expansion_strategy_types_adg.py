@@ -4,9 +4,6 @@ from __future__ import annotations
 import pytest
 
 
-
-
-
 class TestExpansionStrategy:
     def test_is_enum(self):
             """Test is_enum runtime behavior."""
@@ -14,7 +11,6 @@ class TestExpansionStrategy:
             """Test four_strategies runtime behavior."""
             """Test is_dataclass runtime behavior."""
             """Test creates runtime behavior."""
-
 
 
     """Test creates runtime behavior."""

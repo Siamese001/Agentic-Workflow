@@ -6,7 +6,6 @@ import pytest
 pytestmark = pytest.mark.unit
 
 
-
 def test_module_importable():
     """Module achievement_prioritizer_engine must be importable."""
     import apps_rg.engines.achievement_prioritizer_engine  # noqa: F401

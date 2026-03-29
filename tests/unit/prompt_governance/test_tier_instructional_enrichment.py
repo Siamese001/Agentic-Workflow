@@ -3,7 +3,6 @@
 import pytest
 
 
-
 class TestEnrichmentTier:
     """Test EnrichmentTier enum."""
 

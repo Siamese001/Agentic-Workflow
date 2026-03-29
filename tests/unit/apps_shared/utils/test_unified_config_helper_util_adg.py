@@ -6,7 +6,6 @@ import pytest
 pytestmark = pytest.mark.unit
 
 
-
 def test_module_importable():
     """Module unified_config_helper_util must be importable."""
     import apps_shared.utils.unified_config_helper_util  # noqa: F401

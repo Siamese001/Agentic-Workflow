@@ -6,7 +6,6 @@ import pytest
 pytestmark = pytest.mark.unit
 
 
-
 def test_module_importable():
     """Module security_config_util must be importable."""
     import apps_shared.utils.security_config_util  # noqa: F401

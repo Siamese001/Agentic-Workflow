@@ -6,7 +6,6 @@ import pytest
 pytestmark = pytest.mark.unit
 
 
-
 def test_module_importable():
     """Module embed_recipient_profile_util must be importable."""
     import apps_shared.utils.embed_recipient_profile_util  # noqa: F401

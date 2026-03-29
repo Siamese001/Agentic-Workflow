@@ -6,7 +6,6 @@ import pytest
 pytestmark = pytest.mark.unit
 
 
-
 def test_module_importable():
     """Module lic_agent_base_util must be importable."""
     import apps_lic.utils.lic_agent_base_util  # noqa: F401

@@ -6,7 +6,6 @@ import pytest
 pytestmark = pytest.mark.unit
 
 
-
 def test_module_importable():
     """Module rank_data_components_plan_type_util must be importable."""
     import apps_shared.utils.rank_data_components_plan_type_util  # noqa: F401

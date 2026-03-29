@@ -6,7 +6,6 @@ import pytest
 pytestmark = pytest.mark.unit
 
 
-
 def test_module_importable():
     """Module SafetyProfile must be importable."""
     import apps_lic.tools.SafetyProfile  # noqa: F401

@@ -291,7 +291,7 @@ def _retrieve_execution_context(
                         "tier": "L2",
                     }
                 }
-        except Exception as e:
+        except (ConnectionError, RuntimeError) as e:
             logging.debug(f"[Retrieval] L2 semantic cache query failed: {e}")
 
     # L3: Agentic RAG query (if available)
@@ -319,7 +319,7 @@ def _retrieve_execution_context(
                         "tier": "L3",
                     }
                 }
-        except Exception as e:
+        except (ConnectionError, RuntimeError) as e:
             logging.debug(f"[Retrieval] L3 RAG query failed: {e}")
 
     # L4: Agentic action (if retrieval profile supports actions)
@@ -339,7 +339,7 @@ def _retrieve_execution_context(
                         "tier": "L4",
                     }
                 }
-        except Exception as e:
+        except (ConnectionError, RuntimeError) as e:
             logging.debug(f"[Retrieval] L4 agentic action check failed: {e}")
 
     # L5: Fallback - signal to caller

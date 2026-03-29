@@ -2,7 +2,6 @@
 from __future__ import annotations
 
 
-
 def test_module_importable():
     """Module RgTemplateOptimizerAgent must be importable."""
     import apps_rg.reasoning.RgTemplateOptimizerAgent  # noqa: F401

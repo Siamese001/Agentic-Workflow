@@ -6,7 +6,6 @@ import pytest
 pytestmark = pytest.mark.unit
 
 
-
 def test_module_importable():
     """Module archetype_indicator_config must be importable."""
     import apps_lic.config.archetype_indicator_config  # noqa: F401

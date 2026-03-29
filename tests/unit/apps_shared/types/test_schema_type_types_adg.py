@@ -6,7 +6,6 @@ import pytest
 pytestmark = pytest.mark.unit
 
 
-
 def test_module_importable():
     """Module schema_type_types must be importable."""
     import apps_shared.types.schema_type_types  # noqa: F401

@@ -6,7 +6,6 @@ import pytest
 pytestmark = pytest.mark.unit
 
 
-
 def test_module_importable():
     """Module sovereign_config_loader_util must be importable."""
     import apps_rg.utils.sovereign_config_loader_util  # noqa: F401

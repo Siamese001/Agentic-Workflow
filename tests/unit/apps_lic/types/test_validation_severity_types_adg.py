@@ -6,7 +6,6 @@ import pytest
 pytestmark = pytest.mark.unit
 
 
-
 def test_module_importable():
     """Module validation_severity_types must be importable."""
     import apps_lic.types.validation_severity_types  # noqa: F401

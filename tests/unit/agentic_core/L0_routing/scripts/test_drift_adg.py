@@ -23,11 +23,9 @@ def test_module_importable(mod):
     """Module imports without errors."""
 
 
-
 def test_module_exposes_public_api(mod):
     """Module exposes expected public symbols."""
     public = [n for n in dir(mod) if not n.startswith("_")]
-
 
 
 def test_driftdetector_is_instantiable(mod):
@@ -35,13 +33,9 @@ def test_driftdetector_is_instantiable(mod):
     cls = getattr(mod, "DriftDetector", None)
 
 
-
-
 def test_layersegment_is_instantiable(mod):
     """LayerSegment is accessible and is a type."""
     cls = getattr(mod, "LayerSegment", None)
-
-
 
 
 # Arrange

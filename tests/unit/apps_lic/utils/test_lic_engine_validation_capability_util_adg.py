@@ -6,7 +6,6 @@ import pytest
 pytestmark = pytest.mark.unit
 
 
-
 class TestLICEngineValidationCapability:
     def test_importable(self):
         from apps_lic.utils.lic_engine_validation_capability_util import LICEngineValidationCapability
@@ -21,16 +20,3 @@ class TestLICEngineValidationCapability:
 
     def test_has_run_validation(self):
         pass
-    """Test has_run_validation runtime behavior."""
-    # Arrange
-    # TODO: Set up execution parameters
-    input_data = {}  # Replace with actual test data
-
-    # Act
-    # TODO: Execute has_run_validation
-    result = None  # Replace with actual execution
-
-    # Assert
-    assert result is not None, "Function should return a result"
-    assert isinstance(result, (dict, list, str, int, float, bool)), "Result should be a common type"
-    # TODO: Add specific execution assertions

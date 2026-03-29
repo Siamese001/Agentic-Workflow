@@ -6,7 +6,6 @@ import pytest
 pytestmark = pytest.mark.unit
 
 
-
 def test_module_importable():
     """Module clean_duplicates_enhanced must be importable."""
     import apps_lic.tools.clean_duplicates_enhanced  # noqa: F401

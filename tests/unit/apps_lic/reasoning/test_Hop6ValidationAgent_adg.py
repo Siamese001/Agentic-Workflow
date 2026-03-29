@@ -6,7 +6,6 @@ import pytest
 pytestmark = pytest.mark.unit
 
 
-
 def test_module_importable():
     """Module Hop6ValidationAgent must be importable."""
     import apps_lic.reasoning.Hop6ValidationAgent  # noqa: F401

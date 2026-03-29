@@ -6,7 +6,6 @@ import pytest
 pytestmark = pytest.mark.unit
 
 
-
 def test_module_importable():
     """Module move_lics2_to_legacy must be importable."""
     import apps_lic.scripts.move_lics2_to_legacy  # noqa: F401

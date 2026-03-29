@@ -6,7 +6,6 @@ import pytest
 pytestmark = pytest.mark.unit
 
 
-
 def test_module_importable():
     """Module async_coordinator_util must be importable."""
     import apps_shared.utils.async_coordinator_util  # noqa: F401

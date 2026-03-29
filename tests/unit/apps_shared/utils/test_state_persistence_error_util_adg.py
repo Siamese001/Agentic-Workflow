@@ -6,7 +6,6 @@ import pytest
 pytestmark = pytest.mark.unit
 
 
-
 def test_module_importable():
     """Module state_persistence_error_util must be importable."""
     import apps_shared.utils.state_persistence_error_util  # noqa: F401

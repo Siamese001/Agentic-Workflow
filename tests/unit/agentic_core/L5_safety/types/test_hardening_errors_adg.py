@@ -5,6 +5,8 @@ Uses AST-based source inspection — immune to broken transitive deps.
 from __future__ import annotations
 import ast
 import pathlib
+import unittest
+
 import pytest
 pytestmark = pytest.mark.unit
 _SRC = pathlib.Path(__file__).parents[5] / 'agentic_core' / 'L5_safety' / 'types' / 'hardening_errors.py'
@@ -18,31 +20,27 @@ def _class_names():
 def _src_text():
     return _SRC.read_text(encoding='utf-8', errors='replace')
 
-class GeneratedTest:
+class GeneratedTest(unittest.TestCase):
     """Generated test class for agentic_core.L5_safety.types."""
 
     def test_ExecutionTraceIntegrityError_init(self):
         """Test ExecutionTraceIntegrityError initialization."""
         from agentic_core.L5_safety.types import ExecutionTraceIntegrityError
         instance = ExecutionTraceIntegrityError()
-        assertIsNotNone(instance)
+        self.assertIsNotNone(instance)
 
     def test_MutationReplayIntegrityViolation_init(self):
         """Test MutationReplayIntegrityViolation initialization."""
         from agentic_core.L5_safety.types import MutationReplayIntegrityViolation
         instance = MutationReplayIntegrityViolation()
-        assertIsNotNone(instance)
+        self.assertIsNotNone(instance)
 
     def test_parses_without_error(self):
         _tree()
 
     def test_has_execution_trace_integrity_error(self):
-        pass
-    'Test has_execution_trace_integrity_error runtime behavior.'
-    error_input = {}
-    with pytest.raises(Exception):
-        pass
-        assert 'C0MutationViolation' in _class_names()
+        """Test has_execution_trace_integrity_error runtime behavior."""
+        assert 'ExecutionTraceIntegrityError' in _class_names()
 
     def test_all_errors_subclass_exception(self):
         import re

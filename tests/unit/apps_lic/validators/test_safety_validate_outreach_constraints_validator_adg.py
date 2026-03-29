@@ -6,7 +6,6 @@ import pytest
 pytestmark = pytest.mark.unit
 
 
-
 def test_module_importable():
     """Module safety_validate_outreach_constraints_validator must be importable."""
     import apps_lic.validators.safety_validate_outreach_constraints_validator  # noqa: F401

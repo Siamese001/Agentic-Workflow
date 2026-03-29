@@ -4,15 +4,9 @@ from __future__ import annotations
 import pytest
 
 
-
-
-
-
-
 class TestInjectionPattern:
     def test_creates_with_defaults(self):
             """Test creates_with_defaults runtime behavior."""
-
 
 
     """Test creates_with_defaults runtime behavior."""
