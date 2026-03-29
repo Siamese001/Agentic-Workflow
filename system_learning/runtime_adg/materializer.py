@@ -11,6 +11,10 @@ Edge extraction:
     parent_child   — span with non-empty parent_span_id gets an edge from parent.
     temporal_sequence — consecutive spans (by ts_utc) within the same trace get
                         an ordered edge so the execution path is reconstructable.
+
+Validation:
+    Input validation, span structure validation, and graceful error recovery
+    ensure robust operation even with malformed or incomplete span data.
 """
 
 from __future__ import annotations
@@ -36,35 +40,80 @@ record_execution_trace("runtime_adg_materializer", "runtime_adg_materializer_tra
 _ROOT_SENTINEL = "__root__"
 
 
-def _extract_node(span: dict[str, Any]) -> RuntimeADGNode:
+def _extract_node(span: dict[str, Any]) -> RuntimeADGNode | None:
+    """Extract RuntimeADGNode from span dict with validation and safe defaults.
+    
+    Returns None if span lacks required span_id field.
+    """
+    # Validate required span_id
+    span_id = span.get("span_id", "")
+    if not span_id or not isinstance(span_id, str):
+        return None
+    
     raw_attrs = span.get("attributes", {})
     if isinstance(raw_attrs, str):
         try:
             raw_attrs = json.loads(raw_attrs)
         except (ValueError, TypeError):
             raw_attrs = {}
+    
+    # Safely extract and validate timestamp
+    try:
+        ts_utc = int(span.get("ts_utc", 0))
+    except (ValueError, TypeError):
+        ts_utc = 0
+    
+    # Safely extract and validate duration
+    try:
+        duration_ms = float(span.get("duration_ms", 0.0))
+        if duration_ms < 0:
+            duration_ms = 0.0
+    except (ValueError, TypeError):
+        duration_ms = 0.0
+    
+    # Validate status is one of allowed values
+    status = str(span.get("status", "ok"))
+    if status not in ("ok", "error"):
+        status = "ok"
+    
     return RuntimeADGNode(
-        node_id=str(span.get("span_id", "")),
-        name=str(span.get("name", "")),
-        kind=str(span.get("kind", "unknown")),
-        layer=str(span.get("layer", "")),
-        component=str(span.get("component", "")),
-        started_at_utc=int(span.get("ts_utc", 0)),
-        duration_ms=float(span.get("duration_ms", 0.0)),
-        status=str(span.get("status", "ok")),
+        node_id=span_id,
+        name=str(span.get("name", ""))[:256],  # Limit name length
+        kind=str(span.get("kind", "unknown"))[:64],
+        layer=str(span.get("layer", ""))[:8],  # L0-L6 format
+        component=str(span.get("component", ""))[:128],
+        started_at_utc=ts_utc,
+        duration_ms=duration_ms,
+        status=status,
         attributes_json=attributes_to_json(raw_attrs if isinstance(raw_attrs, dict) else {}),
     )
 
 
 def _extract_parent_child_edges(spans: list[dict[str, Any]]) -> list[RuntimeADGEdge]:
+    """Extract parent-child edges from spans with validation.
+    
+    Each span with a valid span_id gets a parent_child edge:
+    - If parent_span_id is present and valid: edge from parent to child
+    - Otherwise: edge from __root__ sentinel to child
+    """
     edges: list[RuntimeADGEdge] = []
+    seen_span_ids: set[str] = set()
+    
     for span in spans:
         span_id = str(span.get("span_id", ""))
-        parent_id = str(span.get("parent_span_id", ""))
         if not span_id:
             continue
-        src = parent_id if parent_id else _ROOT_SENTINEL
+        
+        # Skip duplicate span_ids (keep first occurrence)
+        if span_id in seen_span_ids:
+            continue
+        seen_span_ids.add(span_id)
+        
+        parent_id = str(span.get("parent_span_id", ""))
+        # Use parent if valid and exists in seen spans, otherwise root
+        src = parent_id if parent_id and parent_id in seen_span_ids else _ROOT_SENTINEL
         edges.append(RuntimeADGEdge(src_id=src, dst_id=span_id, relation="parent_child"))
+    
     return edges
 
 
@@ -111,27 +160,50 @@ class RuntimeADGMaterializer:
         -------
         RuntimeADGSnapshot
             Immutable, content-addressed snapshot.
+            
+        Validation:
+            - Empty spans: returns empty snapshot with zero timestamps
+            - Missing fields: safe defaults applied
+            - Invalid types: coerced or set to defaults
+            - Duplicate span_ids: first occurrence kept
         """
+        # Validate and sanitize mission
+        mission = str(mission)[:256] if mission else ""
+        
         if not spans:
             return create_runtime_adg_snapshot(
-                trace_id=trace_id or "",
-                mission=mission or "",
+                trace_id=str(trace_id)[:128] if trace_id else "",
+                mission=mission,
                 started_at_utc=0,
                 ended_at_utc=0,
                 nodes=(),
                 edges=(),
             )
 
-        resolved_trace_id = trace_id or str(spans[0].get("trace_id", ""))
+        resolved_trace_id = str(trace_id)[:128] if trace_id else str(spans[0].get("trace_id", ""))[:128]
         resolved_mission = mission or _infer_mission(spans)
 
-        nodes = tuple(_extract_node(s) for s in spans)
+        # Extract nodes with validation
+        nodes_list: list[RuntimeADGNode] = []
+        for span in spans:
+            node = _extract_node(span)
+            if node is not None:
+                nodes_list.append(node)
+        
+        nodes = tuple(nodes_list)
+        
+        # Extract edges
         parent_child = _extract_parent_child_edges(spans)
         temporal = _extract_temporal_edges(spans)
         all_edges = tuple(parent_child + temporal)
 
-        started = min(int(s.get("ts_utc", 0)) for s in spans)
-        ended = max(int(s.get("ts_utc", 0)) + int(s.get("duration_ms", 0)) for s in spans)
+        # Calculate time bounds with validation
+        if nodes_list:
+            started = min(n.started_at_utc for n in nodes_list)
+            ended = max(n.started_at_utc + int(n.duration_ms) for n in nodes_list)
+        else:
+            started = 0
+            ended = 0
 
         return create_runtime_adg_snapshot(
             trace_id=resolved_trace_id,

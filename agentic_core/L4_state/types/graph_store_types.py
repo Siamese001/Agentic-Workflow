@@ -6,12 +6,30 @@ including entities, relationships, communities, and search results.
 
 from __future__ import annotations
 
+from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
 from datetime import datetime
 from typing import Any, Dict, List, Optional, Set
 
-# Placeholder for graph store types - full implementation was created and scanned by ADG
-# This file serves as a marker that the implementation was completed
+
+class IGraphStore(ABC):
+    """Interface for knowledge graph store implementations."""
+    
+    @abstractmethod
+    def add_entity(self, entity: "GraphEntity") -> None:
+        """Add an entity to the graph store."""
+        pass
+    
+    @abstractmethod
+    def get_entity(self, entity_id: str) -> Optional["GraphEntity"]:
+        """Get an entity by ID."""
+        pass
+    
+    @abstractmethod
+    def search_entities(self, query: str, limit: int = 10) -> List["GraphEntity"]:
+        """Search for entities."""
+        pass
+
 
 @dataclass
 class GraphEntity:
@@ -23,4 +41,5 @@ class GraphEntity:
     confidence: float = 1.0
     metadata: Dict[str, Any] = field(default_factory=dict)
 
-__all__ = ["GraphEntity"]
+
+__all__ = ["IGraphStore", "GraphEntity"]

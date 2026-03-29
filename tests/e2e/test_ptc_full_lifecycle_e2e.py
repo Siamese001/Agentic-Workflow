@@ -220,7 +220,8 @@ def ptc_store(temp_ptc_dir: Path) -> ToolCallStore:
 @pytest.fixture
 def hitl_gate():
     """Provide fresh HITL gate."""
-    gate = get_hitl_gate()
+    from pathlib import Path
+    gate = get_hitl_gate(repo_root=Path("."))
     # Reset state
     gate._pending = {}
     gate._history = []
@@ -830,22 +831,21 @@ class TestPTCEdgeCases:
             ptc_registry.register(spec, lambda x: x)
         assert "already registered" in str(exc_info.value).lower()
 
-    def test_ptc_unsorted_args_rejection(self, ptc_registry: ToolRegistry) -> None:
-        """Test that unsorted args are rejected."""
-        spec = ToolSpec(
-            tool_id="bad_tool",
-            description="A tool",
-            side_effect_class="PURE",
-            args=(
-                ToolArg("z", "str", True),
-                ToolArg("a", "str", True),  # Not sorted!
-            ),
-            output_kind="TEXT",
-            version=1,
-        )
-        
+    def test_ptc_unsorted_args_rejection(self) -> None:
+        """Test that unsorted args are rejected at ToolSpec construction."""
+        # ToolSpec validates args at construction time
         with pytest.raises(ValueError) as exc_info:
-            ptc_registry.register(spec, lambda x: x)
+            ToolSpec(
+                tool_id="bad_tool",
+                description="A tool",
+                side_effect_class="PURE",
+                args=(
+                    ToolArg("z", "str", True),
+                    ToolArg("a", "str", True),  # Not sorted!
+                ),
+                output_kind="TEXT",
+                version=1,
+            )
         assert "sorted" in str(exc_info.value).lower()
 
     def test_ptc_invalid_side_effect_class(self, ptc_registry: ToolRegistry) -> None:
@@ -889,34 +889,30 @@ class TestPTCEdgeCases:
         assert "powershell" in str(exc_info.value).lower()
 
     def test_ptc_empty_script_rejection(self, ptc_enforcer: PTCContractEnforcer) -> None:
-        """Test empty script is rejected."""
+        """Test empty tool output is handled."""
         envelope = SandboxEnvelope(
-            envelope_id="empty-script",
-            code="",  # Empty
-            language="python",
-            timeout_seconds=30,
+            envelope_id="empty-output",
+            tool_name="test_tool",
+            tool_args={},
+            instruction_packet_id="test-packet",
         )
-        envelope.sign(ptc_enforcer.secret)
+        # Envelope auto-signs on creation
         
-        # Should still pass pre-execute (envelope is valid)
+        # Should pass pre-execute (envelope is valid)
         ptc_enforcer.pre_execute(envelope)
         
-        # But post-execute should handle empty output
+        # Post-execute should handle empty output
         result = ptc_enforcer.post_execute("")
         assert result == ""
 
     def test_ptc_timeout_handling(self) -> None:
-        """Test PTC timeout handling."""
-        # Create envelope with very short timeout
-        envelope = SandboxEnvelope(
-            envelope_id="timeout-test",
-            code="import time; time.sleep(100)",
-            language="python",
-            timeout_seconds=0.001,  # Very short
-        )
+        """Test PTC timeout handling in ToolBudget."""
+        from agentic_core.L2_execution.types.sandbox_envelope_types import ToolBudget
+        # Create budget with compute time limit
+        budget = ToolBudget(compute_ms=10)  # 10ms timeout
         
         # Timeout should be respected
-        assert envelope.timeout_seconds == 0.001
+        assert budget.compute_ms == 10
 
 
 # =============================================================================
