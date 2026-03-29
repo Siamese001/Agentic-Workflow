@@ -261,6 +261,9 @@ class MCPDriftReport:
         severity_order = [MCPDriftSeverity.INFO, MCPDriftSeverity.WARNING, MCPDriftSeverity.CRITICAL]
         max_idx = max(severity_order.index(e.severity) for e in self.drift_events)
         return severity_order[max_idx]
+
+    @property
+    def total_events(self) -> int:
         """Total number of drift events."""
         return len(self.drift_events)
 
