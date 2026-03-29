@@ -31,6 +31,48 @@ def sha256_bytes(data: bytes) -> str:
     return hashlib.sha256(data).hexdigest()
 
 
+def validate_slot_order(slots: list[dict]) -> tuple[bool, list[str]]:
+    """Validate that slot order values are valid.
+
+    Checks:
+    - All slots have order values
+    - No duplicate order values
+    - Orders form contiguous sequence starting at 0
+
+    Args:
+        slots: List of slot dictionaries with 'order' keys
+
+    Returns:
+        Tuple of (is_valid, error_messages)
+    """
+    errors = []
+
+    if not slots:
+        return True, []
+
+    orders = []
+    for slot in slots:
+        order = slot.get("order")
+        if order is None:
+            errors.append(f"Slot missing order value: {slot}")
+        else:
+            orders.append(order)
+
+    if len(orders) != len(slots):
+        return False, errors
+
+    if len(orders) != len(set(orders)):
+        duplicates = [o for o in orders if orders.count(o) > 1]
+        errors.append(f"Duplicate order values: {set(duplicates)}")
+
+    sorted_orders = sorted(orders)
+    expected = list(range(len(slots)))
+    if sorted_orders != expected:
+        errors.append(f"Orders not contiguous from 0: expected {expected}, got {sorted_orders}")
+
+    return len(errors) == 0, errors
+
+
 def sha256_file(path: Path) -> str:
     return sha256_bytes(path.read_bytes())
 

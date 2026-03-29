@@ -217,19 +217,14 @@ class TestRetentionPolicy:
         assert "20260312T104141Z" not in to_archive
 
     def test_keep_runs_one(self):
-    """Test keep_runs_one runtime behavior."""
-    # Arrange
-    # TODO: Set up execution parameters
-    input_data = {}  # Replace with actual test data
-
-    # Act
-    # TODO: Execute keep_runs_one
-    result = None  # Replace with actual execution
-
-    # Assert
-    assert result is not None, "Function should return a result"
-    assert isinstance(result, (dict, list, str, int, float, bool)), "Result should be a common type"
-    # TODO: Add specific execution assertions
+        """Test keep_runs_one: only keep 1 run."""
+        runs = {
+            "20260312T104141Z": [],
+            "03122026": [],
+        }
+        to_archive = identify_runs_to_archive(runs, keep_runs=1)
+        assert len(to_archive) == 1
+        assert "20260312T104141Z" not in to_archive
 
 
 class TestArchiveMonthDirectory:
@@ -305,37 +300,9 @@ class TestEdgeCases:
         assert sorted_ts == ["01012026", "12312025"]
 
     def test_empty_runs_dict(self):
-    """Test empty_runs_dict runtime behavior."""
-    # Arrange
-    # TODO: Set up execution parameters
-    input_data = {}  # Replace with actual test data
-
-"""Test single_run runtime behavior."""
-# Arrange
-# TODO: Set up execution parameters
-input_data = {}  # Replace with actual test data
-
-# Act
-# TODO: Execute single_run
-result = None  # Replace with actual execution
-
-# Assert
-assert result is not None, "Function should return a result"
-assert isinstance(result, (dict, list, str, int, float, bool)), "Result should be a common type"
-# TODO: Add specific execution assertions
-            "20260311T231210Z": [],
-            "20260312T093508Z": [],
-            "20260312T101941Z": [],
-            "20260312T104141Z": [],
-            "03122026": [],
-        }
-        to_archive = identify_runs_to_archive(runs, keep_runs=1)
-
-        # Should keep only the newest run
-        # 20260312T104141Z is newer than 03122026 (10:41 vs 00:00)
-        assert len(to_archive) == 5
-        assert "20260312T104141Z" not in to_archive
-        assert "03122026" in to_archive  # Midnight is older than 10:41
+        """Empty runs dict returns empty archive list."""
+        to_archive = identify_runs_to_archive({}, keep_runs=5)
+        assert to_archive == []
 
     def test_scenario_after_new_generation(self):
         """Scenario: After generating new run, old ISO run should be archived."""
