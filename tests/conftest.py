@@ -35,6 +35,19 @@ except ImportError:
     # conftest_factories might not be available, that's ok
     pass
 
+try:
+    from .conftest_isolation import (
+        temp_directory,
+        isolated_cwd,
+        clean_env,
+        IsolatedTest,
+        capture_global_state,
+        restore_global_state,
+    )
+except ImportError:
+    # conftest_isolation might not be available, that's ok
+    pass
+
 # Suppress lifecycle trace loggers that emit ~100K lines during import/execution.
 # These overwhelm pytest's capture system causing OSError: Bad file descriptor.
 for _name in ["adg", "lifecycle"]:
