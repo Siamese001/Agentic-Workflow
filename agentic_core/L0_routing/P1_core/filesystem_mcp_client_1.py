@@ -24,7 +24,7 @@ class FilesystemMCPClient:
             if not path.exists():
                 return None
             return path.read_text(encoding="utf-8")
-        except Exception:
+        except (OSError, IOError, UnicodeDecodeError) as e:  # guardian: allow-silent-swallow -- file read failure returns None
             return None
     
     async def write_text(self, file_path: str | Path, content: str) -> bool:
@@ -35,7 +35,7 @@ class FilesystemMCPClient:
                 path = self._base_path / path
             path.write_text(content, encoding="utf-8")
             return True
-        except Exception:
+        except (OSError, IOError, PermissionError) as e:  # guardian: allow-silent-swallow -- file write failure returns False
             return False
     
     async def list_files(self, directory: str | Path | None = None) -> list[str]:
@@ -45,7 +45,7 @@ class FilesystemMCPClient:
             if not path or not path.exists():
                 return []
             return [str(f) for f in path.iterdir() if f.is_file()]
-        except Exception:
+        except (OSError, PermissionError) as e:  # guardian: allow-silent-swallow -- directory list failure returns empty
             return []
 
 
