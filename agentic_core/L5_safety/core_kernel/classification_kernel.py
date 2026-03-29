@@ -307,12 +307,17 @@ def classify_file_standalone(path: Path) -> FileType:
     # Resolve to absolute path for consistent cache keys
     try:
         resolved = path.resolve()
-    except (OSError, ValueError):
-        resolved = path
+    except (OSError, ValueError) as exc:
+        logger.warning(
+            "Kernel: error resolving path %s: %s — returning IGNORE",
+            path,
+            exc,
+        )
+        return "IGNORE"
     try:
         return _classify_impl(resolved)
-    # guardian: allow-silent-swallow -- Classification fallback to IGNORE is fail-safe; error logged for debugging
     except (ValueError, TypeError) as exc:
+        # Classification fallback to IGNORE is fail-safe; error logged for debugging
         logger.warning(
             "Kernel: unexpected error classifying %s: %s — returning IGNORE",
             path,
@@ -323,6 +328,7 @@ def classify_file_standalone(path: Path) -> FileType:
 
 @lru_cache(maxsize=1024)
 def _classify_impl(path: Path) -> FileType:
+    # ... (rest of the code remains the same)
     """Cached implementation of classify_file_standalone."""
     # --- PRIORITY 0: CRITICAL IGNORES ---
     if path.name in _CRITICAL_IGNORES:
