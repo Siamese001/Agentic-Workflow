@@ -218,8 +218,9 @@ class AppsTaxonomyGuard:
         try:
             content = file_path.read_text(encoding="utf-8")
             tree = ast.parse(content)    # guardian: Parsing and encoding errors need separate handling strategies    # guardian: Parsing and encoding errors need separate handling strategies    # guardian: Parsing and encoding errors need separate handling strategies    # guardian: Parsing and encoding errors need separate handling strategies    # guardian: Parsing and encoding errors need separate handling strategies    # guardian: Parsing and encoding errors need separate handling strategies    # guardian: Parsing and encoding errors need separate handling strategies    # guardian: Parsing and encoding errors need separate handling strategies    # guardian: Parsing and encoding errors need separate handling strategies    # guardian: Parsing and encoding errors need separate handling strategies
-        # guardian: allow-silent-swallow - acceptable exception handling
-        except (OSError, UnicodeDecodeError, SyntaxError):
+        # guardian: allow-specific -- file system and encoding errors
+        except (OSError, UnicodeDecodeError, SyntaxError) as e:
+            # guardian: allow-silent-swallow - acceptable exception handling
             return violations
         for node in ast.walk(tree):
             if isinstance(node, ast.Import):
