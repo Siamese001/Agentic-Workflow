@@ -1,5 +1,5 @@
 # Eager Import Risk Registry
-# 
+#
 # This file defines which import roots are considered risky for test files
 # and should be lazy-imported to avoid pytest collection failures.
 #
@@ -20,7 +20,7 @@ risky_roots:
   - agentic_core.L3_orchestration
   - agentic_core.L4_state
   - agentic_core.L5_safety
-  
+
   # App runtime modules - often have singletons
   - apps_exec
   - apps_exec.engines
@@ -31,16 +31,16 @@ risky_roots:
   - apps_lic.runtime
   - apps_research.runtime
   - apps_rfp.runtime
-  
+
   # System learning - heavy ML model loading
   - system_learning.runtime
   - system_learning.adapters.runtime
-  
+
   # ADG tools - can trigger scans
   - tools.adg
   - tools.adg.extraction
   - tools.generate_full_adg
-  
+
   # Integration points - often have client initialization
   - apps_shared.integrations
   - apps_shared.clients
@@ -77,13 +77,13 @@ safe_roots:
   - io
   - csv
   - xml.etree.ElementTree
-  
+
   # Testing framework - safe
   - pytest
   - unittest
   - unittest.mock
   - pytest_mock
-  
+
   # Common third-party - generally safe
   - numpy
   - pandas
@@ -94,11 +94,11 @@ safe_roots:
   - httpx
   - anyio
   - asyncio
-  
+
   # Type-only imports
   - typing_extensions
   - types
-  
+
   # Internal type definitions (not runtime)
   - agentic_core.types
   - apps_shared.types

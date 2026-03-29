@@ -121,7 +121,7 @@ class TestFeatureSchemas:
             "current_load_ratio": 0.3,
             "semantic_similarity_score": 0.6,
             "policy_hash_version": "v1.0",
-            "trace_id_hash": "abc123def456"
+            "trace_id_hash": "abc123def45678901234567890123456"  # 32 chars minimum
         }
 
         is_valid, errors = schema.validate_features(valid_features)
@@ -475,6 +475,7 @@ class TestShadowLogger:
         """Test logging a prediction."""
         from agentic_core.L1_cognition.ml_decision_support.models.base_model import ModelPrediction, ModelInput
         from agentic_core.L1_cognition.ml_decision_support.config.model_registry import DecisionMode
+        from agentic_core.L1_cognition.ml_decision_support.inference.shadow_logger import ShadowMode
         from datetime import datetime
         # Create proper dataclass instances
         model_prediction = ModelPrediction(
@@ -515,6 +516,7 @@ class TestShadowLogger:
         """Test logging with comparison."""
         from agentic_core.L1_cognition.ml_decision_support.models.base_model import ModelPrediction, ModelInput
         from agentic_core.L1_cognition.ml_decision_support.config.model_registry import DecisionMode
+        from agentic_core.L1_cognition.ml_decision_support.inference.shadow_logger import ShadowMode
         from datetime import datetime
         # Create proper dataclass instances
         model_prediction = ModelPrediction(
@@ -561,7 +563,7 @@ class TestModelBaseClasses:
 
     def test_model_input_validation(self):
         """Test model input validation."""
-        from agentic_core.L1_cognition.ml_decision_support.models.base_model import BaseMLModel
+        from agentic_core.L1_cognition.ml_decision_support.models.base_model import BaseMLModel, PredictionType
 
         # Create a mock model
         class MockModel(BaseMLModel):
@@ -591,7 +593,7 @@ class TestModelBaseClasses:
 
     def test_prediction_creation(self):
         """Test prediction object creation."""
-        from agentic_core.L1_cognition.ml_decision_support.models.base_model import BaseMLModel
+        from agentic_core.L1_cognition.ml_decision_support.models.base_model import BaseMLModel, PredictionType
 
         class MockModel(BaseMLModel):
             def load_model(self):
@@ -653,6 +655,9 @@ class TestDeterminismRequirements:
 
     def test_governance_compliance(self):
         """Test that all components respect governance rules."""
+        from agentic_core.L1_cognition.ml_decision_support.models.route_recommender import L0RouteRecommender
+        from agentic_core.L1_cognition.ml_decision_support.config.model_registry import DecisionMode
+
         # Test that models only operate in allowed modes
 
         # L0 should only use advisory or escalated modes

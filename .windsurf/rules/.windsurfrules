@@ -96,18 +96,35 @@ User may explicitly override tier: "this is just a simple fix" → T1. "full ana
 
 ### 1.3 Test Selection & Execution
 
-**Graph-backed test selection:** Test selection MUST be dependency-graph-backed via **`tools/adg/adg_test_selector.py`** (Accelerator #5). For every changed production file, identify tests via: direct test imports, fixture dependency edges, integration entrypoint coverage, registry/factory reachability, CLI-to-function reachability. Filename similarity is not sufficient. No test edge found = coverage gap to fix, not proof no tests are needed.
+**Graph-backed test selection:** Test selection MUST be dependency-graph-backed. Two accelerator tools provide this:
 
-**Canonical test selection command:**
+**A) For changed-file test discovery (Accelerator #5):**
 ```
-# For git diff (changed files since HEAD):
 python tools/adg/adg_test_selector.py --from-diff
-
-# For specific files:
 python tools/adg/adg_test_selector.py <file> [<file> ...]
-
-# Output: exact pytest nodeids ready to run
 ```
+Output: exact pytest nodeids ready to run
+
+**B) For comprehensive test planning (Accelerator #6 — MANDATORY):**
+```
+# Gap analysis — REQUIRED before any refactor
+python tools/adg_test_accelerator.py gap [--top 20] [--layer L5]
+
+# Scoped selection for changed files — REQUIRED pre-test
+python tools/adg_test_accelerator.py scope --changed <file> [--format pytest]
+
+# Collection safety check — REQUIRED after any import changes
+python tools/adg_test_accelerator.py collection-safety [--json report.json]
+
+# Parallel worker groups — REQUIRED for pytest-xdist
+python tools/adg_test_accelerator.py groups --workers 4 --format json
+```
+
+**MANDATORY ACCELERATOR WORKFLOW (T2/T3 changes):**
+1. **Pre-test:** Run `scope` to identify impacted tests from changed files
+2. **Pre-refactor:** Run `gap` to identify coverage gaps in blast radius
+3. **Post-change:** Run `collection-safety` to verify no import regressions
+4. **Execution:** Use `groups` output for `--dist worksteal` partitioning
 
 **NodeID-first testing discipline:** When ADG provides exact test nodeids → run those nodeids first. File-level fallback ONLY when nodeid extraction fails. Directory-level ONLY in final full-suite run. Any fallback MUST be recorded as `## SCOPE_LOSSINESS` in evidence.
 
@@ -155,6 +172,7 @@ Baseline: `tests/_config/test_count_baseline.json`. Count drops = FAIL. xfail in
 | Environment contract | `ops_scripts/ci/check_environment_contract.py` |
 | C0 boundary | `ops_scripts/ci/check_c0_boundary.py` |
 | Critical infrastructure | `ops_scripts/ci/check_utility_silent_swallowers.py` |
+| ADG test acceleration | `tools/adg_test_accelerator.py` | Mandatory for T2/T3; validates test coverage, collection safety, parallel groups |
 | Timeout progress | `ops_scripts/ci/validate_timeout_progress.py`, `ops_scripts/ci/validate_timeout_recovery.py` |
 
 **Single entrypoint:** `python ops_scripts/ci/run_contract_gates.py`
@@ -239,7 +257,16 @@ Commit message footer MUST include: `repair_class: <class>`
 
 ### 2.6 ADG Accelerator Tools, MCP Servers & Memory
 
-**Five accelerator tools** MUST be used as primary defaults for their respective tasks. Bypassing them in favour of raw Redis/grep/full-suite mypy/manual test selection is a §2.3 violation: `adg_antipattern_fixer.py`, `adg_stale_guard.py`, `adg_redis_query.py`, `adg_type_check.py`, `adg_test_selector.py`.
+**Six accelerator tools** MUST be used as primary defaults for their respective tasks. Bypassing them in favour of raw Redis/grep/full-suite mypy/manual test selection is a §2.3 violation: `adg_antipattern_fixer.py`, `adg_stale_guard.py`, `adg_redis_query.py`, `adg_type_check.py`, `adg_test_selector.py`, **`adg_test_accelerator.py`**.
+
+**Accelerator #6 mandatory triggers:**
+| Trigger | Command | Enforcement |
+|---------|---------|-------------|
+| Any production file change | `scope --changed <file>` | T2/T3: required; T0/T1: optional |
+| Refactor planning | `gap --top 30` | Required for >1 file changes |
+| Import changes | `collection-safety --json` | Required if imports modified |
+| Parallel test run | `groups --workers N` | Required for pytest-xdist |
+| Phase completion | `report --out <path>` | Required for evidence artifact |
 
 **Custom MCP servers** (`adg_redis` and `memory`) MUST be green before any refactoring session. Call `adg_status` first on every session. Call `mem_recall_session_start` at session start. Marketplace Redis and memory servers are disabled.
 
@@ -249,7 +276,7 @@ Commit message footer MUST include: `repair_class: <class>`
 
 Query Type → Tool Selection:
 1. "Which files import X?" → ADG Redis: adg_edge_fanin(node, "imports")
-2. "What does file X call?" → ADG Redis: adg_edge_fanout(node, "calls") 
+2. "What does file X call?" → ADG Redis: adg_edge_fanout(node, "calls")
 3. "Which layer is X in?" → ADG Redis: adg_node(id) → layer field
 4. "Does X violate anti-patterns?" → ADG Redis: adg_violations()
 5. "Find all subprocess.run calls" → ADG SQLite: edges WHERE symbol LIKE 'subprocess.run%'
@@ -729,7 +756,7 @@ Every plan MUST include a waves table at the top with the following columns:
 # Run token optimization analysis
 python tools/evidence/_run_token_optimizer_plan.py
 
-# Run wave packing optimization  
+# Run wave packing optimization
 python tools/adg/wave_packer.py
 ```
 

@@ -1,40 +1,27 @@
 """
 Underwriting Request Types - Domain contracts for credit underwriting requests.
 """
-from typing import Optional, List, Dict, Any, Literal
-from pydantic import BaseModel, Field, validator
-from datetime import datetime
 
+from datetime import datetime
+from typing import Literal
+
+from pydantic import BaseModel, Field, validator
+
+from .banking_package_types import BankingPackage
 from .borrower_profile_types import BorrowerProfile
-from .financial_package_types import FinancialPackage
 from .collateral_package_types import CollateralPackage
 from .credit_package_types import CreditPackage
-from .banking_package_types import BankingPackage
+from .decision_constraints_types import DecisionConstraints
 from .document_package_types import DocumentPackage
+from .financial_package_types import FinancialPackage
 from .policy_context_types import PolicyContext
 from .relationship_context_types import RelationshipContext
-from .decision_constraints_types import DecisionConstraints
 
+ProductType = Literal["term_loan", "revolver", "equipment_finance", "sba_like"]
 
-ProductType = Literal[
-    "term_loan",
-    "revolver",
-    "equipment_finance",
-    "sba_like"
-]
+DecisionType = Literal["new", "renewal", "increase", "modification"]
 
-DecisionType = Literal[
-    "new",
-    "renewal",
-    "increase",
-    "modification"
-]
-
-InterestType = Literal[
-    "fixed",
-    "floating",
-    "mixed"
-]
+InterestType = Literal["fixed", "floating", "mixed"]
 
 DecisionState = Literal[
     "APPROVE",
@@ -42,27 +29,29 @@ DecisionState = Literal[
     "COUNTER_OFFER",
     "PEND_FOR_INFORMATION",
     "DECLINE",
-    "ESCALATE_TO_HUMAN"
+    "ESCALATE_TO_HUMAN",
 ]
 
 
 class RequestedStructure(BaseModel):
     """Loan structure requested by borrower."""
-    amortization_months: Optional[int] = Field(None, description="Amortization period in months")
-    interest_type: InterestType = Field(..., description="Fixed, floating, or mixed interest")
-    collateral_required: bool = Field(..., description="Whether collateral is required")
-    guarantor_required: bool = Field(..., description="Whether personal guaranty is required")
+
+    amortization_months: int | None = Field(None, description="Amortization period in months")
+    interest_type: InterestType = Field("floating", description="Fixed, floating, or mixed interest")
+    collateral_required: bool = Field(True, description="Whether collateral is required")
+    guarantor_required: bool = Field(True, description="Whether personal guaranty is required")
 
 
 class ExternalSignals(BaseModel):
     """External market and reputation signals."""
+
     industry_outlook: Literal["positive", "stable", "negative", "unknown"] = Field(
         "unknown", description="Industry outlook from external sources"
     )
-    macro_flags: List[str] = Field(default_factory=list, description="Macroeconomic flags")
-    fraud_or_identity_signals: List[str] = Field(default_factory=list, description="Fraud detection flags")
-    litigation_hits: List[str] = Field(default_factory=list, description="Active litigation flags")
-    news_reputation_flags: List[str] = Field(default_factory=list, description="News/reputation flags")
+    macro_flags: list[str] = Field(default_factory=list, description="Macroeconomic flags")
+    fraud_or_identity_signals: list[str] = Field(default_factory=list, description="Fraud detection flags")
+    litigation_hits: list[str] = Field(default_factory=list, description="Active litigation flags")
+    news_reputation_flags: list[str] = Field(default_factory=list, description="News/reputation flags")
 
 
 class UnderwritingRequest(BaseModel):
@@ -71,6 +60,7 @@ class UnderwritingRequest(BaseModel):
 
     Represents a complete credit request package for commercial underwriting decision support.
     """
+
     request_id: str = Field(..., description="Unique request identifier")
     submission_ts: str = Field(..., description="ISO 8601 timestamp of submission")
     product_type: ProductType = Field(..., description="Type of credit product")
@@ -85,20 +75,24 @@ class UnderwritingRequest(BaseModel):
     banking: BankingPackage = Field(..., description="Banking relationship data")
     documents: DocumentPackage = Field(..., description="Document references and metadata")
     policy_context: PolicyContext = Field(..., description="Applicable policy parameters")
-    external_signals: ExternalSignals = Field(default_factory=ExternalSignals, description="External market signals")
+    external_signals: ExternalSignals = Field(
+        default_factory=ExternalSignals, description="External market signals"
+    )
     relationship_context: RelationshipContext = Field(..., description="Existing relationship context")
-    decision_constraints: DecisionConstraints = Field(..., description="Decision authority and timing constraints")
+    decision_constraints: DecisionConstraints = Field(
+        ..., description="Decision authority and timing constraints"
+    )
 
-    @validator('submission_ts')
+    @validator("submission_ts")
     def validate_timestamp(cls, v):
         """Validate ISO 8601 timestamp format."""
         try:
-            datetime.fromisoformat(v.replace('Z', '+00:00'))
+            datetime.fromisoformat(v.replace("Z", "+00:00"))
             return v
         except ValueError:
             raise ValueError("submission_ts must be valid ISO 8601 format")
 
-    @validator('requested_amount')
+    @validator("requested_amount")
     def validate_positive_amount(cls, v):
         """Ensure requested amount is positive."""
         if v <= 0:
@@ -118,7 +112,7 @@ class UnderwritingRequest(BaseModel):
                     "amortization_months": 60,
                     "interest_type": "floating",
                     "collateral_required": True,
-                    "guarantor_required": True
-                }
+                    "guarantor_required": True,
+                },
             }
         }
