@@ -3,7 +3,13 @@ from __future__ import annotations
 
 import pytest
 
-from apps_lic.engines.control_plane import ControlPlane, PolicyAction
+
+# Lazy import fixture
+@pytest.fixture
+def control_plane():
+    from apps_lic.engines.control_plane import ControlPlane
+    return ControlPlane()
+
 
 pytestmark = pytest.mark.unit
 
@@ -15,9 +21,9 @@ def test_module_importable():
     assert apps_lic.engines.control_plane is not None
 
 
-def test_get_prompt_happy_path_returns_template_text():
+def test_get_prompt_happy_path_returns_template_text(control_plane):
     """Test that get_prompt returns actual template text for known prompt."""
-    cp = ControlPlane()
+    cp = control_plane
 
     value = cp.get_prompt("lic_connection_request")
 
@@ -26,25 +32,25 @@ def test_get_prompt_happy_path_returns_template_text():
     assert "Recipient Profile:" in value  # Template contains required placeholder
 
 
-def test_get_prompt_failure_path_raises_keyerror_for_unknown_prompt():
+def test_get_prompt_failure_path_raises_keyerror_for_unknown_prompt(control_plane):
     """Test that get_prompt raises KeyError for unknown prompt_id."""
-    cp = ControlPlane()
+    cp = control_plane
 
     with pytest.raises(KeyError):
-        cp.get_prompt("missing_prompt_id")
+        cp.get_prompt("nonexistent_prompt_id")
 
 
-def test_get_prompt_edge_path_returns_empty_when_knowledge_absent():
+def test_get_prompt_edge_path_returns_empty_when_knowledge_absent(control_plane):
     """Edge path: get_prompt returns empty string when knowledge absent."""
-    cp = ControlPlane()
+    cp = control_plane
     cp.knowledge = None  # Force unavailable
     with pytest.raises(RuntimeError, match="Knowledge base not available"):
         cp.get_prompt("lic_connection_request")
 
 
-def test_get_node_config_happy_path_returns_config():
+def test_get_node_config_happy_path_returns_config(control_plane):
     """Test that get_node_config returns node configuration."""
-    cp = ControlPlane()
+    cp = control_plane
 
     config = cp.get_node_config("archetype")
 
@@ -52,25 +58,25 @@ def test_get_node_config_happy_path_returns_config():
     assert config.node_id == "archetype"
 
 
-def test_get_node_config_edge_path_returns_none_when_knowledge_absent():
+def test_get_node_config_edge_path_returns_none_when_knowledge_absent(control_plane):
     """Edge path: get_node_config returns None when knowledge absent."""
-    cp = ControlPlane()
+    cp = control_plane
     cp.knowledge = None  # Force unavailable
     with pytest.raises(RuntimeError, match="Knowledge base not available"):
         cp.get_node_config("archetype")
 
 
-def test_get_prompt_none_raises_typeerror():
+def test_get_prompt_none_raises_typeerror(control_plane):
     """Test that get_prompt raises TypeError for None prompt_id."""
-    cp = ControlPlane()
+    cp = control_plane
 
     with pytest.raises(TypeError, match="prompt_id cannot be None"):
         cp.get_prompt(None)
 
 
-def test_get_node_config_none_raises_typeerror():
+def test_get_node_config_none_raises_typeerror(control_plane):
     """Test that get_node_config raises TypeError for None node_id."""
-    cp = ControlPlane()
+    cp = control_plane
 
     with pytest.raises(TypeError, match="node_id cannot be None"):
         cp.get_node_config(None)
@@ -87,9 +93,10 @@ def test_knowledge_base_exports():
     assert len(knowledge_base.list_all_prompts()) > 0
 
 
-def test_control_plane_evaluate_input_detects_pii():
+def test_control_plane_evaluate_input_detects_pii(control_plane):
     """Test that ControlPlane detects PII in input."""
-    cp = ControlPlane()
+    from apps_lic.engines.control_plane import PolicyAction
+    cp = control_plane
 
     result = cp.evaluate_input("My ssn is 123-45-6789")
 
@@ -98,9 +105,10 @@ def test_control_plane_evaluate_input_detects_pii():
     assert "PII detected" in result.errors[0]
 
 
-def test_control_plane_evaluate_input_allows_safe_content():
+def test_control_plane_evaluate_input_allows_safe_content(control_plane):
     """Test that ControlPlane allows safe content."""
-    cp = ControlPlane()
+    from apps_lic.engines.control_plane import PolicyAction
+    cp = control_plane
 
     result = cp.evaluate_input("Hello, this is a safe message.")
 

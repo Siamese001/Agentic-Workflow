@@ -12,17 +12,13 @@ import os
 from pathlib import Path
 from typing import Dict, List, Any
 
-from agentic_core.planning.token_estimator import (
-    ContextWindowEstimator, 
-    TokenBudget, 
-    TokenEstimate,
-    ContextSource
-)
-from agentic_core.planning.preflight_hook import (
-    PlanningPreflightHook,
-    TokenBudgetExceededError,
-    require_token_budget
-)
+
+# Lazy imports to avoid collection-time conflicts
+@pytest.fixture
+def planning_preflight_hook(tmp_path):
+    from agentic_core.planning.preflight_hook import PlanningPreflightHook
+    budget_file = tmp_path / "history_test_budget.json"
+    return PlanningPreflightHook(budget_file=budget_file)
 
 
 class TestBudgetHistoryPersistence:
@@ -30,6 +26,7 @@ class TestBudgetHistoryPersistence:
     
     def setup_method(self):
         """Setup test fixtures"""
+        from agentic_core.planning.preflight_hook import PlanningPreflightHook
         self.temp_dir = Path(tempfile.mkdtemp())
         self.budget_file = self.temp_dir / "history_test_budget.json"
         self.hook = PlanningPreflightHook(budget_file=self.budget_file)

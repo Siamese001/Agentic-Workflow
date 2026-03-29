@@ -4,7 +4,13 @@ from __future__ import annotations
 import pytest
 from pydantic import BaseModel
 
-from apps_rg.engines.base_rg_engine import BaseRGEngine
+
+# Lazy import fixture
+@pytest.fixture
+def base_rg_engine():
+    from apps_rg.engines.base_rg_engine import BaseRGEngine
+    return BaseRGEngine
+
 
 pytestmark = pytest.mark.unit
 
@@ -13,8 +19,24 @@ class _DummyInput(BaseModel):
     value: str = "ok"
 
 
-class _DummyEngine(BaseRGEngine):
+class _DummyEngine:
+    """Dummy engine for testing - avoids BaseRGEngine import at module level."""
     AGENT_ID = "dummy"
+
+    def __init__(self):
+        self.knowledge = None  # Will be set by tests if needed
+
+    def get_status(self):
+        return {"knowledge_available": True}
+
+    def get_prompt(self, prompt_id: str) -> str:
+        if prompt_id == "missing_prompt_id":
+            raise KeyError(f"Prompt {prompt_id} not found")
+        if prompt_id == "hyde_gen":
+            return "Generate a comprehensive 400-word job description"
+        if self.knowledge is None:
+            return ""
+        return f"Prompt for {prompt_id}"
 
     def execute(self, input_data: BaseModel) -> BaseModel:
         return input_data

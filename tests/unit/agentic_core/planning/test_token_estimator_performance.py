@@ -12,16 +12,13 @@ import os
 from pathlib import Path
 from typing import Dict, List, Any
 
-from agentic_core.planning.token_estimator import (
-    ContextWindowEstimator, 
-    TokenBudget, 
-    TokenEstimate,
-    ContextSource
-)
-from agentic_core.planning.preflight_hook import (
-    PlanningPreflightHook,
-    TokenBudgetExceededError
-)
+
+# Lazy imports to avoid collection-time conflicts
+@pytest.fixture
+def planning_preflight_hook(tmp_path):
+    from agentic_core.planning.preflight_hook import PlanningPreflightHook
+    budget_file = tmp_path / "performance_budget.json"
+    return PlanningPreflightHook(budget_file=budget_file)
 
 
 class TestTokenEstimatorPerformance:
@@ -29,6 +26,7 @@ class TestTokenEstimatorPerformance:
     
     def setup_method(self):
         """Setup test fixtures"""
+        from agentic_core.planning.preflight_hook import PlanningPreflightHook
         self.temp_dir = Path("/tmp/test_performance")
         self.temp_dir.mkdir(exist_ok=True)
         self.budget_file = self.temp_dir / "performance_budget.json"
