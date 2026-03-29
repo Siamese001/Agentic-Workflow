@@ -16,7 +16,7 @@ from typing import Any
 from agentic_core.L2_execution.enforcement.guardrail_gate import (
     GuardrailGate,
 )
-from agentic_core.L2_execution.types.instruction_packet_types import InstructionPacket
+from agentic_core.L2_execution.types.l2_instruction_packet import InstructionPacket
 from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     LayerSegment,
     _emit_agent_executes_agent,

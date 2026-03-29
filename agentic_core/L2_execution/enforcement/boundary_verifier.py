@@ -13,7 +13,7 @@ from __future__ import annotations
 import uuid
 
 from agentic_core.L2_execution.enforcement.key_source import get_current_secret
-from agentic_core.L2_execution.types.instruction_packet_types import (
+from agentic_core.L2_execution.types.l2_instruction_packet import (
     InstructionPacket,
     SignatureVerificationError,
 )

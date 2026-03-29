@@ -15,7 +15,7 @@ from __future__ import annotations
 import re
 from dataclasses import dataclass, field
 
-from agentic_core.L2_execution.types.instruction_packet_types import (
+from agentic_core.L2_execution.types.l2_instruction_packet import (
     SignatureVerificationError,
 )
 from agentic_core.L2_execution.types.sandbox_envelope_types import SandboxEnvelope

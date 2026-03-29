@@ -61,9 +61,9 @@ class MCPL6PersistenceConfig:
             base = Path(self.base_dir) if isinstance(self.base_dir, str) else self.base_dir
             self.snapshots_dir = base / "mcp_snapshots"
             self.reports_dir = base / "mcp_drift_reports"
-        elif self.snapshots_dir is None:
+        if self.snapshots_dir is None:
             self.snapshots_dir = Path("artifacts/observability/mcp_snapshots")
-        elif self.reports_dir is None:
+        if self.reports_dir is None:
             self.reports_dir = Path("artifacts/observability/mcp_drift_reports")
 
 
@@ -320,8 +320,10 @@ drift alerting integration.
                 continue
 
         return {
-            "total_reports": total_reports,
+            "total_snapshots": len(self.list_snapshots()),
+            "total_drift_reports": total_reports,
             "reports_with_drift": reports_with_drift,
+            "total_events": total_critical + total_warnings,
             "total_critical_events": total_critical,
             "total_warning_events": total_warnings,
             "drift_rate": reports_with_drift / total_reports if total_reports > 0 else 0,
@@ -418,6 +420,21 @@ Integrates with Layer 6 observability for comprehensive monitoring.
         self._baseline = current
 
         return report
+
+    @property
+    def baseline(self) -> MCPConfigSnapshot | None:
+        """Get the current baseline snapshot."""
+        return self._baseline
+
+    def update_baseline(self) -> MCPConfigSnapshot:
+        """Update baseline to current configuration.
+
+        Returns:
+            The new baseline snapshot
+        """
+        self._baseline = self._recorder.capture_snapshot(self._config_path)
+        self._store.save_snapshot(self._baseline)
+        return self._baseline
 
     def force_baseline_update(self) -> MCPConfigSnapshot:
         """Force update of baseline to current configuration.

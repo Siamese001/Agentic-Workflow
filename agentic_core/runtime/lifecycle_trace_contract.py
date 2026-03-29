@@ -721,7 +721,7 @@ _emit_invokes_evaluation("p3", "lifecycle_trace_contract", "evaluation_signal")
 # ── P4 State, Telemetry & Learning emitter functions ────────────────────
 
 
-def _emit_records_telemetry_event(root_trace_id: str, source: str, event: str) -> None:
+def _emit_records_telemetry_event(root_trace_id: str, source: str, event: str, **kwargs) -> None:
     """Emit records_telemetry_event ADG edge (P4 State & Telemetry)."""
     _TELEMETRY_EVENT_LOG.debug(
         "records_telemetry_event root_trace_id=%s source=%s event=%s",

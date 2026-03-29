@@ -1,14 +1,14 @@
 """Shim: re-exports ToolRegistry from its canonical location.
 
-Canonical source: agentic_core.L2_execution.engines.tool_registry
+Canonical source: agentic_core.L2_execution.engines.l2_tool_registry
 """
 
-from agentic_core.L2_execution.engines.tool_registry import (
+from agentic_core.L2_execution.engines.l2_tool_registry import (
     ToolDefinition,
     ToolMatch,
     create_tool_registry,
 )
-from agentic_core.L2_execution.engines.tool_registry import (  # noqa: F401
+from agentic_core.L2_execution.engines.l2_tool_registry import (  # noqa: F401
     tool_registry as ToolRegistry,
 )
 

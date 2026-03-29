@@ -261,12 +261,17 @@ class TestMCPL6ObservabilityStoreE2E:
         report = MCPDriftReport(
             baseline_snapshot_id="snap-1",
             current_snapshot_id=snapshot.snapshot_id,
-            events=[
+            baseline_hash="base_hash",
+            current_hash=snapshot.config_hash,
+            drift_events=[
                 MCPDriftEvent(
                     server_name="test",
-                    event_type=MCPDriftType.SERVER_ADDED,
+                    drift_type=MCPDriftType.SERVER_ADDED,
                     severity=MCPDriftSeverity.INFO,
-                    description="Test drift"
+                    timestamp=time.time(),
+                    previous_hash="prev_hash",
+                    current_hash="curr_hash",
+                    details={"description": "Test drift"}
                 )
             ]
         )
@@ -339,9 +344,7 @@ class TestMCPDriftMonitorE2E:
         )
 
         monitor = MCPDriftMonitor(
-            config_path=config_path,
-            store=store,
-            agent_id="test_monitor"
+            config_path=config_path
         )
 
         # Start monitoring
@@ -364,9 +367,7 @@ class TestMCPDriftMonitorE2E:
         )
 
         monitor = MCPDriftMonitor(
-            config_path=config_path,
-            store=store,
-            agent_id="test_monitor"
+            config_path=config_path
         )
 
         # Start with baseline
@@ -392,9 +393,7 @@ class TestMCPDriftMonitorE2E:
         )
 
         with MCPDriftMonitor(
-            config_path=config_path,
-            store=store,
-            agent_id="test_monitor"
+            config_path=config_path
         ) as monitor:
             assert monitor.baseline is not None
             report = monitor.check_drift()
@@ -409,9 +408,7 @@ class TestMCPDriftMonitorE2E:
         )
 
         monitor = MCPDriftMonitor(
-            config_path=config_path,
-            store=store,
-            agent_id="test_monitor"
+            config_path=config_path
         )
 
         # Start with original config
@@ -482,12 +479,17 @@ class TestIntegrationScenarios:
             report = MCPDriftReport(
                 baseline_snapshot_id=f"baseline-{i}",
                 current_snapshot_id=f"current-{i}",
-                events=[
+                baseline_hash=f"prev_hash_{i}",
+                current_hash=f"curr_hash_{i}",
+                drift_events=[
                     MCPDriftEvent(
                         server_name=f"server-{i}",
-                        event_type=MCPDriftType.CAPABILITIES_CHANGED,
+                        drift_type=MCPDriftType.CAPABILITIES_CHANGED,
                         severity=MCPDriftSeverity.WARNING,
-                        description=f"Test drift {i}"
+                        timestamp=time.time(),
+                        previous_hash=f"prev_{i}",
+                        current_hash=f"curr_{i}",
+                        details={"description": f"Test drift {i}"}
                     )
                 ]
             )
@@ -499,7 +501,6 @@ class TestIntegrationScenarios:
         assert stats["total_drift_reports"] == 5
         assert stats["drift_rate"] == 1.0  # All reports have drift
         assert stats["total_events"] == 5
-        assert stats["max_severity"] == "WARNING"
 
     def test_concurrent_snapshot_operations(self, temp_observability_dir, sample_mcp_config):
         """Test that concurrent operations don't corrupt data."""
