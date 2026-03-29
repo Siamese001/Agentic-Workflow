@@ -10,10 +10,11 @@ import tempfile
 import os
 from pathlib import Path
 from typing import Dict, List, Any
+from unittest import mock
 
 from agentic_core.planning.token_estimator import (
-    ContextWindowEstimator, 
-    TokenBudget, 
+    ContextWindowEstimator,
+    TokenBudget,
     TokenEstimate,
     ContextSource
 )
@@ -26,20 +27,20 @@ from agentic_core.planning.preflight_hook import (
 
 class TestTokenEstimatorErrorHandling:
     """Error handling and robustness tests"""
-    
+
     def setup_method(self):
         """Setup test fixtures"""
         self.temp_dir = Path(tempfile.mkdtemp())
         self.budget_file = self.temp_dir / "error_test_budget.json"
         self.hook = PlanningPreflightHook(budget_file=self.budget_file)
-    
+
     def teardown_method(self):
         """Cleanup test fixtures"""
         if self.budget_file.exists():
             self.budget_file.unlink()
         if self.temp_dir.exists():
             self.temp_dir.rmdir()
-    
+
     def test_malformed_file_inputs(self):
         """Test handling of malformed file inputs"""
         # Test with None content
@@ -54,7 +55,7 @@ class TestTokenEstimatorErrorHandling:
                 retrieved_context=[],
                 prior_steps=[]
             )
-        
+
         # Test with empty path
         estimate = self.hook.preflight_check(
             plan_step="empty_path",
@@ -67,7 +68,7 @@ class TestTokenEstimatorErrorHandling:
             prior_steps=[]
         )
         assert estimate.estimated_input_tokens >= 0
-        
+
         # Test with missing required fields
         estimate = self.hook.preflight_check(
             plan_step="missing_fields",
@@ -80,7 +81,7 @@ class TestTokenEstimatorErrorHandling:
             prior_steps=[]
         )
         assert estimate.estimated_input_tokens >= 0
-    
+
     def test_unicode_and_encoding_issues(self):
         """Test handling of unicode and encoding issues"""
         # Test with various unicode characters
@@ -93,7 +94,7 @@ class TestTokenEstimatorErrorHandling:
         עברית  # Hebrew
         🚀🛸🌟💫  # Emojis
         """
-        
+
         estimate = self.hook.preflight_check(
             plan_step="unicode_test",
             system_prompt=unicode_content,
@@ -104,15 +105,15 @@ class TestTokenEstimatorErrorHandling:
             retrieved_context=[{"content": unicode_content}],
             prior_steps=[]
         )
-        
+
         assert estimate.estimated_input_tokens > 0
         assert estimate.status == 'green'
-    
+
     def test_extremely_long_strings(self):
         """Test handling of extremely long strings"""
         # Test with very long prompts (but stay under memory limits)
         long_prompt = "x" * 100000  # 100K characters
-        
+
         estimate = self.hook.preflight_check(
             plan_step="long_string",
             system_prompt=long_prompt,
@@ -123,20 +124,20 @@ class TestTokenEstimatorErrorHandling:
             retrieved_context=[],
             prior_steps=[]
         )
-        
+
         assert estimate.estimated_input_tokens > 0
         # Should handle long strings without crashing
         assert estimate.status in ['green', 'yellow', 'red']
-    
+
     def test_corrupted_budget_file(self):
         """Test handling of corrupted budget file"""
         # Create corrupted JSON file
         with open(self.budget_file, 'w') as f:
             f.write("{ invalid json content")
-        
+
         # Should handle corrupted file gracefully
         hook = PlanningPreflightHook(budget_file=self.budget_file)
-        
+
         estimate = hook.preflight_check(
             plan_step="corrupted_file_test",
             system_prompt="Test",
@@ -147,18 +148,29 @@ class TestTokenEstimatorErrorHandling:
             retrieved_context=[],
             prior_steps=[]
         )
-        
+
         assert estimate.estimated_input_tokens >= 0
-    
+
     def test_permission_denied_budget_file(self):
-        """Test handling when budget file is not writable"""
-        # Create file and make it read-only (if possible)
+        """Test handling when budget file is not writable using mocking"""
+        # Create file
         self.budget_file.touch()
-        try:
-            self.budget_file.chmod(0o444)  # Read-only
-            
+
+        # Mock open to simulate permission denied when writing (cross-platform)
+        original_open = open
+        call_count = [0]
+
+        def mock_open_permission_error(filepath, *args, **kwargs):
+            # Simulate permission denied on write attempts to budget file
+            if str(filepath) == str(self.budget_file) and 'w' in str(args):
+                if call_count[0] == 0:
+                    call_count[0] += 1
+                    raise PermissionError(13, "Permission denied", str(filepath))
+            return original_open(filepath, *args, **kwargs)
+
+        with mock.patch("builtins.open", mock_open_permission_error):
             hook = PlanningPreflightHook(budget_file=self.budget_file)
-            
+
             estimate = hook.preflight_check(
                 plan_step="permission_test",
                 system_prompt="Test",
@@ -169,18 +181,10 @@ class TestTokenEstimatorErrorHandling:
                 retrieved_context=[],
                 prior_steps=[]
             )
-            
+
+            # Should handle permission error gracefully
             assert estimate.estimated_input_tokens >= 0
-        except OSError:
-            # Permission changes not supported on this system
-            pass
-        finally:
-            # Restore write permissions for cleanup
-            try:
-                self.budget_file.chmod(0o644)
-            except OSError:
-                pass
-    
+
     def test_empty_and_null_inputs(self):
         """Test handling of empty and null inputs"""
         # Test completely empty inputs
@@ -194,10 +198,10 @@ class TestTokenEstimatorErrorHandling:
             retrieved_context=[],
             prior_steps=[]
         )
-        
+
         assert estimate.estimated_input_tokens >= 0
         assert estimate.status == 'green'
-        
+
         # Test with empty lists
         estimate = self.hook.preflight_check(
             plan_step="empty_lists",
@@ -209,13 +213,13 @@ class TestTokenEstimatorErrorHandling:
             retrieved_context=[],
             prior_steps=[]
         )
-        
+
         assert estimate.estimated_input_tokens > 0
-    
+
     def test_malformed_context_sources(self):
         """Test handling of malformed context sources"""
         estimator = ContextWindowEstimator()
-        
+
         # Test with None content - ContextSource should handle this gracefully
         try:
             source = ContextSource('file', None, 100, metadata={'path': 'test'})
@@ -224,24 +228,24 @@ class TestTokenEstimatorErrorHandling:
         except Exception:
             # If it raises, that's also acceptable
             pass
-        
+
         # Test with negative tokens
         source = ContextSource('file', 'content', -100, metadata={'path': 'test'})
         assert source.tokens == -100  # Should accept but handle gracefully
-        
+
         # Test with missing metadata
         source = ContextSource('file', 'content', 100, metadata={})
         assert source.metadata == {}
-    
+
     def test_compression_error_handling(self):
         """Test compression error handling"""
         estimator = ContextWindowEstimator()
-        
+
         # Test compression with malformed sources
         malformed_sources = [
             ContextSource('file', 'content', 100, metadata={'path': 'test'})
         ]
-        
+
         estimate = TokenEstimate(
             plan_step="error_test",
             estimated_input_tokens=50000,
@@ -253,7 +257,7 @@ class TestTokenEstimatorErrorHandling:
             top_contributors=[],
             recommended_reductions=[]
         )
-        
+
         # Should handle compression errors gracefully
         try:
             compressed_estimate = estimator._apply_compression(estimate, malformed_sources)
@@ -261,7 +265,7 @@ class TestTokenEstimatorErrorHandling:
         except Exception as e:
             # If an error occurs, it should be a reasonable one
             assert isinstance(e, (ValueError, TypeError, AttributeError))
-    
+
     def test_budget_calculation_edge_cases(self):
         """Test budget calculation edge cases"""
         # Test with zero tokens
@@ -275,16 +279,16 @@ class TestTokenEstimatorErrorHandling:
             retrieved_context=[],
             prior_steps=[]
         )
-        
+
         assert estimate.estimated_input_tokens >= 0
         assert estimate.reserved_output_tokens > 0
         assert estimate.safety_buffer_tokens > 0
         assert estimate.total_projected_tokens >= estimate.reserved_output_tokens + estimate.safety_buffer_tokens
-    
+
     def test_status_determination_edge_cases(self):
         """Test status determination edge cases"""
         estimator = ContextWindowEstimator()
-        
+
         # Test exactly at boundaries
         boundary_tests = [
             (149999, 'green'),  # Just under warning
@@ -294,21 +298,21 @@ class TestTokenEstimatorErrorHandling:
             (170000, 'yellow'),  # Exactly at safe cap (still yellow)
             (170001, 'red'),     # Just over safe cap
         ]
-        
+
         for tokens, expected_status in boundary_tests:
             status, action = estimator._determine_status_action(tokens)
             assert status == expected_status, f"Expected {expected_status} for {tokens}, got {status}"
-    
+
     def test_decorator_error_handling(self):
         """Test decorator error handling"""
         @require_token_budget(self.hook)
         def test_function(system_prompt, user_prompt, **kwargs):
             return "success"
-        
+
         # Test with missing required parameters
         with pytest.raises(TypeError):
             test_function()  # Missing required params
-        
+
         # Test with parameters that would cause budget exceeded
         try:
             result = test_function(
@@ -323,12 +327,12 @@ class TestTokenEstimatorErrorHandling:
         except Exception as e:
             # Other errors should be reasonable
             assert isinstance(e, (ValueError, TypeError))
-    
+
     def test_concurrent_access_errors(self):
         """Test error handling under concurrent access simulation"""
         # Simulate rapid successive access
         errors = []
-        
+
         for i in range(50):
             try:
                 estimate = self.hook.preflight_check(
@@ -344,18 +348,18 @@ class TestTokenEstimatorErrorHandling:
                 assert estimate is not None
             except Exception as e:
                 errors.append((i, e))
-        
+
         # Should have minimal errors
         assert len(errors) < 5, f"Too many errors: {len(errors)}"
-        
+
         for i, error in errors:
             print(f"Error in iteration {i}: {error}")
-    
+
     def test_memory_pressure_handling(self):
         """Test behavior under memory pressure"""
         # Create many large estimates to test memory handling
         estimates = []
-        
+
         try:
             for i in range(20):
                 estimate = self.hook.preflight_check(
@@ -375,24 +379,24 @@ class TestTokenEstimatorErrorHandling:
         except Exception as e:
             # Other exceptions should be reasonable
             assert isinstance(e, (ValueError, TypeError, OSError))
-        
+
         # Should have successfully created some estimates
         assert len(estimates) > 0
-        
+
         # All estimates should be valid
         for estimate in estimates:
             assert estimate.estimated_input_tokens >= 0
             assert estimate.status in ['green', 'yellow', 'red']
-    
+
     def test_file_system_errors(self):
         """Test handling of file system errors"""
         # Test with non-existent budget file directory
         non_existent_dir = Path("/tmp/non_existent_dir_12345")
         non_existent_file = non_existent_dir / "budget.json"
-        
+
         try:
             hook = PlanningPreflightHook(budget_file=non_existent_file)
-            
+
             estimate = hook.preflight_check(
                 plan_step="fs_error_test",
                 system_prompt="Test",
@@ -403,7 +407,7 @@ class TestTokenEstimatorErrorHandling:
                 retrieved_context=[],
                 prior_steps=[]
             )
-            
+
             assert estimate.estimated_input_tokens >= 0
         except Exception as e:
             # Should handle file system errors gracefully
@@ -416,7 +420,7 @@ class TestTokenEstimatorErrorHandling:
                     non_existent_dir.rmdir()
             except OSError:
                 pass
-    
+
     def test_data_type_errors(self):
         """Test handling of incorrect data types"""
         # Test with wrong data types in parameters
@@ -435,25 +439,25 @@ class TestTokenEstimatorErrorHandling:
         except Exception as e:
             # Should fail with a reasonable error
             assert isinstance(e, (TypeError, ValueError, AttributeError))
-    
+
     def test_token_estimation_errors(self):
         """Test token estimation error handling"""
         estimator = ContextWindowEstimator()
-        
+
         # Test with None content
         try:
             tokens = estimator._estimate_tokens(None, "text")
             assert tokens >= 0  # Should handle gracefully
         except Exception as e:
             assert isinstance(e, (TypeError, ValueError))
-        
+
         # Test with invalid content type
         try:
             tokens = estimator._estimate_tokens("content", "invalid_type")
             assert tokens >= 0  # Should fall back to default
         except Exception as e:
             assert isinstance(e, (ValueError, AttributeError))
-    
+
     def test_recovery_after_errors(self):
         """Test system recovery after errors"""
         # Cause an error
@@ -470,7 +474,7 @@ class TestTokenEstimatorErrorHandling:
             )
         except Exception:
             pass  # Expected to fail
-        
+
         # System should recover and work normally after error
         estimate = self.hook.preflight_check(
             plan_step="recovery_test",
@@ -482,7 +486,7 @@ class TestTokenEstimatorErrorHandling:
             retrieved_context=[],
             prior_steps=[]
         )
-        
+
         assert estimate.estimated_input_tokens >= 0
         assert estimate.status in ['green', 'yellow', 'red']
 

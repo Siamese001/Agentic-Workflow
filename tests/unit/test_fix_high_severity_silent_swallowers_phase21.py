@@ -144,30 +144,25 @@ class TestHighSeveritySilentSwallowerFixerPhase21:
 
     # Test §1.5: Edge cases - Permission denied files
     def test_permission_denied_files(self, temp_workspace, sample_violations):
-        """Test handling of permission denied files."""
-        # Create a file with restricted permissions
+        """Test handling of permission denied files using mocking."""
+        # Create a file
         restricted_file = temp_workspace / "restricted.py"
         restricted_file.write_text("except ImportError:\n    pass\n")
 
-        # Remove read permissions (on Unix systems)
-        original_mode = restricted_file.stat().st_mode
-        restricted_file.chmod(0o000)
+        # Create violations file
+        violations_file = temp_workspace / "test_violations.json"
+        sample_violations["violations"][0]["file_path"] = str(restricted_file)
+        with open(violations_file, "w") as f:
+            json.dump(sample_violations, f)
 
-        try:
-            violations_file = temp_workspace / "test_violations.json"
-            sample_violations["violations"][0]["file_path"] = str(restricted_file)
-            with open(violations_file, "w") as f:
-                json.dump(sample_violations, f)
-
-            with patch("fix_high_severity_silent_swallowers.PROJECT_ROOT", temp_workspace):
+        # Mock Path.read_text to simulate permission denied (cross-platform)
+        with patch("fix_high_severity_silent_swallowers.PROJECT_ROOT", temp_workspace):
+            with patch("pathlib.Path.read_text", side_effect=PermissionError("Permission denied")):
                 fixer = HighSeveritySilentSwallowerFixer()
 
                 # Should handle permission errors gracefully
                 result = fixer.fix_import_error_violations()
                 assert result["errors"] > 0  # Should record permission errors
-        finally:
-            # Restore permissions for cleanup
-            restricted_file.chmod(original_mode)
 
     # Test §1.5: Edge cases - Unicode file names
     def test_unicode_file_names(self, temp_workspace, sample_violations):

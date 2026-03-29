@@ -9,37 +9,44 @@ import sys
 from pathlib import Path
 
 def setup_seq_thinking_environment():
-    """Setup environment variables to favor sequential thinking."""
+    """Setup environment variables for hardened sequential thinking dominance."""
 
     env_vars = {
-        # Sequential thinking prioritization
+        # Sequential thinking HARDENED prioritization
         'SEQUENTIAL_THINKING_ENABLED': 'true',
-        'SEQUENTIAL_THINKING_PRIORITY': '1',  # Highest priority
+        'SEQUENTIAL_THINKING_PRIORITY': '0',  # ABSOLUTE highest priority
         'SEQUENTIAL_THINKING_AUTO_TRIGGER': 'true',
-        'SEQUENTIAL_THINKING_MIN_COMPLEXITY': 'low',
-        'SEQUENTIAL_THINKING_MAX_THOUGHTS': '15',
-        'SEQUENTIAL_THINKING_TOKEN_BUDGET': '30000',
+        'SEQUENTIAL_THINKING_MIN_COMPLEXITY': 'minimal',  # Trigger on ANY complexity
+        'SEQUENTIAL_THINKING_MAX_THOUGHTS': '25',
+        'SEQUENTIAL_THINKING_TOKEN_BUDGET': '50000',
 
-        # Windsurf tool preferences
+        # Windsurf tool preferences - HARDENED
         'WINDSURF_TOOL_PREFERENCE': 'sequential-thinking',
-        'WINDSURF_MCP_BOOST_MODE': 'enabled',
-        'WINDSURF_REASONING_MODE': 'sequential-first',
+        'WINDSURF_MCP_BOOST_MODE': 'aggressive',
+        'WINDSURF_REASONING_MODE': 'sequential-only',  # NO chat fallback
 
-        # Kimi 2.5 integration
+        # Kimi K2.5 HARDENED integration
         'KIMI25_SEQUENTIAL_THINKING': 'enabled',
-        'KIMI25_REASONING_BOOST': 'high',
-        'KIMI25_TOKEN_ALLOCATION': '0.20',  # 20% of context window
+        'KIMI25_REASONING_BOOST': 'maximum',
+        'KIMI25_TOKEN_ALLOCATION': '0.35',  # 35% of context window for reasoning
         'KIMI25_AUTO_ANALYSIS': 'true',
+        'KIMI_K2_5_DOMINANCE': 'enabled',
 
-        # MCP integration
-        'MCP_SEQUENTIAL_THINKING_BOOST': 'enabled',
-        'MCP_TOOL_ORDERING': 'sequential-priority',
-        'MCP_KIMI25_MODE': 'optimized',
+        # MCP integration - HARDENED
+        'MCP_SEQUENTIAL_THINKING_BOOST': 'aggressive',
+        'MCP_TOOL_ORDERING': 'sequential-dominance',
+        'MCP_KIMI25_MODE': 'hardened',
 
-        # Performance tuning
+        # CASCADE CHAT SUPPRESSION
+        'CASCADE_CHAT_FALLBACK': 'disabled',
+        'CASCADE_CHAT_SUPPRESS_ON_PLANNING': 'true',
+        'CASCADE_CHAT_MIN_COMPLEXITY': 'high',  # Chat only for trivial tasks
+
+        # Performance tuning - HARDENED
         'SEQUENTIAL_THINKING_CACHE_ENABLED': 'true',
         'SEQUENTIAL_THINKING_ASYNC_MODE': 'false',
-        'SEQUENTIAL_THINKING_LOG_LEVEL': 'INFO'
+        'SEQUENTIAL_THINKING_LOG_LEVEL': 'INFO',
+        'SEQUENTIAL_THINKING_AGGRESSIVE_MODE': 'enabled'
     }
 
     print("Setting up sequential thinking environment variables...")
@@ -53,7 +60,9 @@ def setup_seq_thinking_environment():
         'SEQUENTIAL_THINKING_ENABLED',
         'SEQUENTIAL_THINKING_PRIORITY',
         'WINDSURF_TOOL_PREFERENCE',
-        'KIMI25_SEQUENTIAL_THINKING'
+        'KIMI25_SEQUENTIAL_THINKING',
+        'CASCADE_CHAT_FALLBACK',
+        'KIMI_K2_5_DOMINANCE'
     ]
 
     print("\nVerifying critical environment variables:")
@@ -95,32 +104,44 @@ def create_env_file():
     """Create a .env file for persistent environment setup."""
     env_file = Path(__file__).parent / ".seq_thinking_env"
 
-    env_content = """# Sequential Thinking Environment Configuration
-# Source this file to enable sequential thinking prioritization
+    env_content = """# Sequential Thinking Environment Configuration - HARDENED
+# Source this file to enable SEQUENTIAL THINKING DOMINANCE over cascade chat
 
-# Sequential thinking settings
+# Sequential thinking HARDENED settings
 export SEQUENTIAL_THINKING_ENABLED=true
-export SEQUENTIAL_THINKING_PRIORITY=1
+export SEQUENTIAL_THINKING_PRIORITY=0
 export SEQUENTIAL_THINKING_AUTO_TRIGGER=true
-export SEQUENTIAL_THINKING_MIN_COMPLEXITY=low
-export SEQUENTIAL_THINKING_MAX_THOUGHTS=15
-export SEQUENTIAL_THINKING_TOKEN_BUDGET=30000
+export SEQUENTIAL_THINKING_MIN_COMPLEXITY=minimal
+export SEQUENTIAL_THINKING_MAX_THOUGHTS=25
+export SEQUENTIAL_THINKING_TOKEN_BUDGET=50000
 
-# Windsurf tool preferences
+# Windsurf tool preferences - HARDENED
 export WINDSURF_TOOL_PREFERENCE=sequential-thinking
-export WINDSURF_MCP_BOOST_MODE=enabled
-export WINDSURF_REASONING_MODE=sequential-first
+export WINDSURF_MCP_BOOST_MODE=aggressive
+export WINDSURF_REASONING_MODE=sequential-only
 
-# Kimi 2.5 integration
+# Kimi K2.5 HARDENED integration
 export KIMI25_SEQUENTIAL_THINKING=enabled
-export KIMI25_REASONING_BOOST=high
-export KIMI25_TOKEN_ALLOCATION=0.20
+export KIMI25_REASONING_BOOST=maximum
+export KIMI25_TOKEN_ALLOCATION=0.35
 export KIMI25_AUTO_ANALYSIS=true
+export KIMI_K2_5_DOMINANCE=enabled
 
-# MCP integration
-export MCP_SEQUENTIAL_THINKING_BOOST=enabled
-export MCP_TOOL_ORDERING=sequential-priority
-export MCP_KIMI25_MODE=optimized
+# MCP integration - HARDENED
+export MCP_SEQUENTIAL_THINKING_BOOST=aggressive
+export MCP_TOOL_ORDERING=sequential-dominance
+export MCP_KIMI25_MODE=hardened
+
+# CASCADE CHAT SUPPRESSION
+export CASCADE_CHAT_FALLBACK=disabled
+export CASCADE_CHAT_SUPPRESS_ON_PLANNING=true
+export CASCADE_CHAT_MIN_COMPLEXITY=high
+
+# Performance tuning - HARDENED
+export SEQUENTIAL_THINKING_CACHE_ENABLED=true
+export SEQUENTIAL_THINKING_ASYNC_MODE=false
+export SEQUENTIAL_THINKING_LOG_LEVEL=INFO
+export SEQUENTIAL_THINKING_AGGRESSIVE_MODE=enabled
 """
 
     try:

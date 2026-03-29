@@ -1,6 +1,7 @@
 {
   "agentic_core/L0_routing/enforcement/apps_taxonomy_guard.py": {
-    "silent-swallow": 2
+    "silent-swallow": 2,
+    "specific": 1
   },
   "agentic_core/L0_routing/enforcement/boot_sequence.py": {
     "global-mutation": 1,
@@ -214,7 +215,7 @@
     "magic-config": 3
   },
   "agentic_core/L0_routing/scripts/full_agent_discovery.py": {
-    "silent-swallow": 10
+    "silent-swallow": 6
   },
   "agentic_core/L0_routing/scripts/handler.py": {
     "magic-config": 1
@@ -469,14 +470,14 @@
     "magic-config": 1,
     "silent-swallow": 1
   },
+  "agentic_core/L2_execution/engines/l2_tool_registry.py": {
+    "magic-config": 1
+  },
   "agentic_core/L2_execution/engines/resource_predictor.py": {
     "magic-config": 6
   },
   "agentic_core/L2_execution/engines/secure_tools_impl.py": {
     "silent-swallow": 1
-  },
-  "agentic_core/L2_execution/engines/tool_registry.py": {
-    "magic-config": 1
   },
   "agentic_core/L2_execution/engines/validation_orchestrator.py": {
     "magic-config": 1,
@@ -852,9 +853,6 @@
   },
   "agentic_core/L5_safety/config/structure_blueprint/ssot.py": {
     "path-string": 1
-  },
-  "agentic_core/L5_safety/core_kernel/classification_kernel.py": {
-    "silent-swallow": 1
   },
   "agentic_core/L5_safety/enforcement/AdapterBase.py": {
     "silent-swallow": 4
