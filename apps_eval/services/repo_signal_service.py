@@ -9,6 +9,8 @@ from datetime import datetime
 from pathlib import Path
 from typing import Any
 
+from apps_shared.data_adapters import RepoSignalAdapter, RepoSignalSnapshot as SharedRepoSignalSnapshot
+
 
 @dataclass
 class RepoSignalSnapshot:
@@ -30,16 +32,42 @@ class RepoSignalService:
 
     def __init__(self, repo_root: Path | None = None) -> None:
         self.repo_root = repo_root or Path(__file__).resolve().parents[2]
+        self._shared = RepoSignalAdapter(self.repo_root)
 
     def collect(self) -> RepoSignalSnapshot:
-        snapshot = RepoSignalSnapshot(captured_at=datetime.now().isoformat())
-
-        snapshot.adg = self._collect_adg_signals(snapshot)
-        snapshot.tests = self._collect_test_signals(snapshot)
-        snapshot.ci = self._collect_ci_signals(snapshot)
-        snapshot.governance = self._collect_governance_signals(snapshot)
-
+        shared_snapshot = self._shared.collect()
+        snapshot = RepoSignalSnapshot(
+            captured_at=shared_snapshot.captured_at,
+            adg=shared_snapshot.adg,
+            tests=shared_snapshot.tests,
+            ci=shared_snapshot.ci,
+            governance=shared_snapshot.governance,
+            sources=shared_snapshot.provenance,
+        )
+        snapshot.governance["baseline"] = shared_snapshot.baseline
+        snapshot.governance["release_readiness"] = self._compute_release_readiness(shared_snapshot)
         return snapshot
+
+    def _compute_release_readiness(self, shared_snapshot: SharedRepoSignalSnapshot) -> dict[str, Any]:
+        checks = {
+            "adg_available": bool(shared_snapshot.adg.get("available")),
+            "workflow_available": shared_snapshot.ci.get("workflow_count", 0) > 0,
+            "test_signals_available": bool(
+                shared_snapshot.tests.get("inventory_available")
+                or shared_snapshot.tests.get("surface_available")
+            ),
+            "governance_baseline_available": bool(
+                shared_snapshot.governance.get("denominator_baseline_available")
+            ),
+            "baseline_delta_available": bool(shared_snapshot.baseline.get("available")),
+        }
+        score = sum(1 for status in checks.values() if status) / len(checks)
+        verdict = "ready" if score >= 0.8 else "needs_review" if score >= 0.6 else "hold"
+        return {
+            "score": round(score, 3),
+            "verdict": verdict,
+            "checks": checks,
+        }
 
     def _collect_adg_signals(self, snapshot: RepoSignalSnapshot) -> dict[str, Any]:
         candidates = sorted((self.repo_root / "artifacts").glob("**/adg*.sqlite"), key=lambda p: p.stat().st_mtime, reverse=True)
