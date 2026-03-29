@@ -10,8 +10,12 @@ import logging
 from dataclasses import dataclass, field
 from typing import Any
 
-from agentic_core.base_agents.timeout_decorator import timeout
-from apps_rg.utils.RGAgentBase import RGAgentBase
+try:
+    from agentic_core.base_agents.timeout_decorator import timeout
+except ImportError:
+    from agentic_core.utils.timeout_decorator_util import timeout
+from apps_rg.utils.repo_signal_service import RepoSignalService
+from apps_rg.utils.rg_agent_base_util import RGAgentBase
 
 # guardian: allow-silent-degradation -- Qwen vLLM is optional for resume generation; graceful fallback to manual templates
 try:
@@ -210,6 +214,7 @@ class RgResumeOrchestrator(RGAgentBase):
     test_mode: bool = False
     hop_checkpoints: list[dict[str, Any]] = field(default_factory=list)
     qwen_enabled: bool = True
+    enable_repo_signals: bool = True
 
     def __post_init__(self) -> None:
         """Initialize the orchestrator."""
@@ -263,10 +268,20 @@ class RgResumeOrchestrator(RGAgentBase):
         enriched_data = extracted_data
         hop2_results = []
         self._record_hop("HOP-2", hop2_results)
+
+        repo_signals: dict[str, Any] = {}
+        if self.enable_repo_signals:
+            try:
+                repo_signals = RepoSignalService().collect().as_dict()
+                self._record_hop("HOP-ENRICH", [{"passed": True}])
+            except Exception:
+                self._record_hop("HOP-ENRICH", [{"passed": False}])
+
         return {
             "status": "success",
             "enriched_data": enriched_data,
             "checkpoints": [c.get("hop_id") for c in self.hop_checkpoints],
+            "repo_signals": repo_signals,
         }
 
     def _record_hop(self, hop_id: str, results: list = None) -> None:

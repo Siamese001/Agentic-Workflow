@@ -25,10 +25,16 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any, Final
 
-from agentic_core.interfaces.meta_learning import HealingPattern, MetaLearningGuardrails, get_guardrails
-from agentic_core.interfaces.meta_learning import SovereignMetaLearningClient as MetaLearningClient
-from agentic_core.interfaces.meta_learning import get_sovereign_meta_client as get_meta_learning_client
-from apps_shared.utils.AppBase import AppBase
+from agentic_core.L1_cognition.utils.guardrails_util import (
+    MetaLearningGuardrails,
+    get_guardrails,
+)
+from agentic_core.L1_cognition.types.client_types import HealingPattern
+from agentic_core.L1_cognition.engines.meta_client import (
+    MetaLearningClient as MetaLearningClient,
+    get_meta_learning_client as get_meta_learning_client,
+)
+from apps_shared.utils.app_base_util import AppBase
 
 from agentic_core.L0_routing.config import APPS_RG_DIR
 from agentic_core.L0_routing.config.path_constants import APPS_RG_DIR
@@ -75,6 +81,8 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     emit_replay_key,  # noqa: E402
 )
 
+Logger = logging.getLogger(__name__)
+
 _emit_applies_guardrail("p0", "rg_agent_base_util", "p0_governance")
 _emit_reads_policy_state("p0", "rg_agent_base_util", "policy_binding")
 _emit_snapshots_state("p0", "rg_agent_base_util", "state_snapshot")
@@ -101,12 +109,8 @@ _emit_captures_evaluation_metric("p4", "rg_agent_base_util", "eval_metric")
 _emit_stores_embedding("p4", "rg_agent_base_util", "embedding_store")
 _emit_updates_meta_learning_state("p4", "rg_agent_base_util", "meta_learning")
 _emit_links_execution_to_snapshot("p4", "rg_agent_base_util", "exec_snapshot_link")
-try:
-    from agentic_core.mixins.embedding_mixin import EmbeddingMixin
-except ImportError:
-
-    class EmbeddingMixin:
-        pass
+from agentic_core.mixins.semantic_cache_mixin import SemanticCacheMixin
+from agentic_core.mixins.embedding_mixin import EmbeddingMixin
 from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     LayerSegment,
     _emit_agent_executes_agent,
@@ -282,11 +286,12 @@ _emit_reads_through("l4", "rg_agent_base_util", "urg_read_82")
 
 
 @dataclass
-class RGAgentBase(SemanticCacheMixin, EmbeddingMixin, AppBase):
+class RGAgentBase(AppBase):
     """
     RGAgentBase: The Sovereign Foundation for all 'Resume Generation' Agents.
 
-    Inherits from AppBase for unified app-level capabilities.
+    Inherits from AppBase for unified app-level capabilities (includes SemanticCacheMixin,
+    EmbeddingMixin via SovereignBaseAgent inheritance chain).
 
     PHASE 1.1 GUARDRAILS:
     - Integrated MetaLearningGuardrails for security
@@ -328,8 +333,14 @@ class RGAgentBase(SemanticCacheMixin, EmbeddingMixin, AppBase):
 
     def _initialize_meta_client(self) -> None:
         """Initialize MetaLearningClient with RG-specific configuration."""
-        self._meta_client = get_meta_learning_client()
-        Logger.debug(f"[{self.__class__.__name__}] MetaLearningClient initialized")
+        try:
+            self._meta_client = get_meta_learning_client()
+            Logger.debug(f"[{self.__class__.__name__}] MetaLearningClient initialized")
+        except Exception as exc:
+            self._meta_client = None
+            Logger.warning(
+                f"[{self.__class__.__name__}] MetaLearningClient unavailable; proceeding without it: {exc}"
+            )
 
     def store_healing_pattern(self, violation: dict[str, Any], healing_result: dict[str, Any]) -> str | None:
         """
