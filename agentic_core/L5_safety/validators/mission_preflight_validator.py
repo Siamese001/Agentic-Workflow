@@ -279,7 +279,7 @@ class MissionPreflight:
                     f"(score={_bp.behavioral_score:.2f})"
                 )
         # guardian: allow-silent-swallower
-        except Exception:
+        except (ValueError, TypeError):
             pass
         results["adg_antipattern_count"] = _adg_antipattern_count
         self._print_dashboard(results)

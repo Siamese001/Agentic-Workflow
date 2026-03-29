@@ -237,7 +237,7 @@ def has_agent_class(path: Path) -> list:
     _emit_records_execution_trace(_trace_id, LayerSegment.L0_ROUTING, "has_agent_class")
     try:
         tree = ast.parse(path.read_text(encoding="utf-8", errors="ignore"))
-    except Exception:  # guardian: allow-silent-swallow
+    except (ValueError, TypeError):  # guardian: allow-silent-swallow
         return []
     agents = []
     for node in ast.walk(tree):
