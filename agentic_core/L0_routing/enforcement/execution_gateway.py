@@ -544,7 +544,7 @@ class V15ExecutionGateway:
                 error=f"Healing failed with known error: {e}",
                 dedupe_hit=False,
             )
-        except Exception as e:  # guardian: allow-silent-swallow -- critical healing failure logged
+        except (RuntimeError, OSError, ValueError) as e:  # guardian: allow-silent-swallow -- critical healing failure logged
             Logger.critical(f"[V15-GW] Critical healing loop error: {e}")
             return GatewayResult(
                 success=False,
