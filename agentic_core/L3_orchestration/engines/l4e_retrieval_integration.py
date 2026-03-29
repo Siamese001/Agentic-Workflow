@@ -22,11 +22,14 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     LayerSegment,
     _emit_records_execution_trace,
     _emit_pulls_context,
-    _emit_reads_from,
-    _emit_writes_to,
-    _emit_retrieves_via,
-    _emit_scores_groundedness,
-    _emit_generates_prompt,
+    _emit_reads_through,
+    _emit_writes_through,
+    _emit_stores_embedding,
+    _emit_captures_evaluation_metric,
+    _emit_records_learning_event,
+    _emit_updates_routing_strategy,
+    _emit_improves_agent_policy,
+    _emit_feeds_meta_learning,
 )
 from agentic_core.evaluation.retrieval.l4_registries import (
     ParentChildIndexRegistry,
@@ -156,7 +159,7 @@ class ADGEdgeHydrator:
             hydration.pulls_context = self._resolve_pulls_context(source_file)
             
             for ctx in hydration.pulls_context:
-                _emit_pulls_context(_trace_id, chunk_id, ctx.get("source", ""))
+                _emit_stores_embedding(_trace_id, chunk_id, ctx.get("source", ""))
         
         self._hydration_count += 1
         
@@ -260,7 +263,7 @@ class GraphRetrievalEngine:
         _emit_records_execution_trace(
             _trace_id, LayerSegment.L3_ORCHESTRATION, "GraphRetrievalEngine.retrieve"
         )
-        _emit_retrieves_via(_trace_id, "vector", query[:50])
+        _emit_reads_through(_trace_id, "vector", query[:50])
         
         # Step 1: Vector search (4a)
         initial_results = self._vector_search(query, n_results)
@@ -284,7 +287,7 @@ class GraphRetrievalEngine:
         ) / (self._retrieval_count + 1)
         self._retrieval_count += 1
         
-        _emit_generates_prompt(_trace_id, "retrieval_context", f"chunks:{len(contexts)}")
+        _emit_records_learning_event(_trace_id, "prompt_context_generated", f"chunks:{len(contexts)}")
         
         return contexts
     
@@ -426,7 +429,7 @@ class GraphRetrievalEngine:
                     score += 0.15
             
             ctx.groundedness_score = min(1.0, score)
-            _emit_scores_groundedness(f"ctx_{ctx.chunk_id}", ctx.groundedness_score)
+            _emit_captures_evaluation_metric(f"ctx_{ctx.chunk_id}", "groundedness", ctx.groundedness_score)
         
         # Sort by groundedness score
         contexts.sort(key=lambda c: c.groundedness_score, reverse=True)
@@ -447,7 +450,7 @@ class GraphRetrievalEngine:
             Prompt context with formatted chunks and metadata
         """
         _trace_id = f"assemble_{self._retrieval_count}"
-        _emit_generates_prompt(_trace_id, "context_assembly", f"input:{len(contexts)}")
+        _emit_records_learning_event(_trace_id, "context_assembled", f"input:{len(contexts)}")
         
         # Filter by groundedness score
         filtered = [c for c in contexts if c.groundedness_score >= 0.5]

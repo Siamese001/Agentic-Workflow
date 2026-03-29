@@ -21,6 +21,8 @@ from typing import Any, Optional
 from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_records_execution_trace,
     _emit_pulls_context,
+    _emit_reads_through,
+    _emit_writes_through,
 )
 
 Logger = logging.getLogger(__name__)

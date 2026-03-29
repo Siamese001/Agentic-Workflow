@@ -373,6 +373,7 @@ class TestPipelineCGraphHydration:
         assert "parent_1" in chunk_ids or "child_1" in chunk_ids
     
     def test_adg_edge_hydration(
+        self,
         mock_vector_db: MagicMock,
     ) -> None:
         """Test ADG edge hydration during retrieval."""

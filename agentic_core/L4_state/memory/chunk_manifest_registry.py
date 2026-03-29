@@ -32,7 +32,7 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_writes_through,
     _emit_stores_embedding,
     _emit_captures_evaluation_metric,
-    _emit_generates_prompt,
+    _emit_records_learning_event,
 )
 
 Logger = logging.getLogger(__name__)
