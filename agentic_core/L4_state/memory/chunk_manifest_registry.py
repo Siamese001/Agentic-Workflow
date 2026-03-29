@@ -27,8 +27,12 @@ from typing import Any, Optional
 from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     LayerSegment,
     _emit_records_execution_trace,
+    _emit_pulls_context,
+    _emit_reads_through,
+    _emit_writes_through,
     _emit_stores_embedding,
-    _emit_records_learning_event,
+    _emit_captures_evaluation_metric,
+    _emit_generates_prompt,
 )
 
 Logger = logging.getLogger(__name__)
@@ -166,9 +170,7 @@ class ChunkManifestRegistry:
         )
 
         if manifest.fact_vec:
-            _emit_stores_embedding_fact_vec(
-                _trace_id, manifest.chunk_id, manifest.fact_vec_hash
-            )
+            _emit_stores_embedding(_trace_id, manifest.chunk_id, manifest.fact_vec_hash or "")
 
         conn = sqlite3.connect(self.db_path)
         cursor = conn.cursor()

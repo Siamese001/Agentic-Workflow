@@ -26,8 +26,8 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_records_execution_trace,
     _emit_stores_embedding,
     _emit_records_learning_event,
-    _emit_reads_from,
-    _emit_writes_to,
+    _emit_reads_through,
+    _emit_writes_through,
     _emit_pulls_context,
 )
 from agentic_core.evaluation.retrieval.l4_registries import (
@@ -190,9 +190,9 @@ class GraphAwareIndexer:
             
             # Emit ADG edge signals
             for reads_from in edges.reads_from:
-                _emit_reads_from(_trace_id, chunk_id, reads_from)
+                _emit_reads_through(_trace_id, chunk_id, reads_from)
             for writes_to in edges.writes_to:
-                _emit_writes_to(_trace_id, chunk_id, writes_to)
+                _emit_writes_through(_trace_id, chunk_id, writes_to)
             
             # Store in vector DB if available
             if self.vector_db_client and manifest.fact_vec:

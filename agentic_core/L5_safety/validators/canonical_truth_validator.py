@@ -31,4 +31,19 @@ def validate_canonical_truth(key: str, value: Any) -> bool:
     return validator.validate(key, value)
 
 
-__all__ = ["CanonicalTruthValidator", "validate_canonical_truth"]
+def get_canonical_layer(layer_id: str) -> dict[str, Any] | None:
+    """Get canonical layer definition by ID."""
+    # Registry of canonical layers
+    layers: dict[str, dict[str, Any]] = {
+        "L0": {"name": "Routing", "responsibilities": ["request_routing", "capacity_management"]},
+        "L1": {"name": "Cognition", "responsibilities": ["intent_expansion", "context_management"]},
+        "L2": {"name": "Execution", "responsibilities": ["tool_execution", "output_capture"]},
+        "L3": {"name": "Orchestration", "responsibilities": ["workflow_coordination", "agent_dispatch"]},
+        "L4": {"name": "State", "responsibilities": ["persistence", "retrieval", "telemetry"]},
+        "L5": {"name": "Safety", "responsibilities": ["validation", "guardrails", "governance"]},
+        "L6": {"name": "Observability", "responsibilities": ["monitoring", "learning", "meta_feedback"]},
+    }
+    return layers.get(layer_id)
+
+
+__all__ = ["CanonicalTruthValidator", "validate_canonical_truth", "get_canonical_layer"]

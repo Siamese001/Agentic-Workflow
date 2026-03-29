@@ -171,6 +171,8 @@ _emit_proposal_commits_routing("p1", "cache_data_access_get_info_request_init_ut
 Logger: Any = logging.getLogger(__name__)
 module_version: Any = "1.0.0"
 module_author: Any = "Agentic-Workflow Team"
+MODULE_VERSION: str = "1.0.0"
+MODULE_AUTHOR: str = "Agentic-Workflow Team"
 __all__ = []
 
 
@@ -180,6 +182,6 @@ def _initialize_module() -> None:
 
 
 _initialize_module()
-__version__ = ConfigurationService().MODULE_VERSION
-__author__ = ConfigurationService().MODULE_AUTHOR
+__version__ = MODULE_VERSION
+__author__ = MODULE_AUTHOR
 __docformat__ = "restructuredtext en"
