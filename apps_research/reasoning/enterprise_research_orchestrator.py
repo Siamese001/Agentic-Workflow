@@ -22,32 +22,29 @@ from pathlib import Path
 from typing import Any
 
 from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-    LayerSegment,
-    _emit_records_execution_trace,
-    _emit_dispatches_agent,
-    _emit_coordinates_agents,
-    _emit_orchestrates_workflow,
     _emit_applies_guardrail,
-    _emit_validates_agent_capability,
     _emit_captures_pattern,
+    _emit_coordinates_agents,
+    _emit_dispatches_agent,
+    _emit_orchestrates_workflow,
+    _emit_records_execution_trace,
     _emit_stores_embedding,
+)
+from apps_research.engines.research_retrieval_engine import (
+    create_retrieval_engine,
 )
 
 # Import enterprise components
 from apps_research.reasoning.query_decomposition_agent import (
-    QueryDecompositionAgent,
     QueryDecomposition,
-)
-from apps_research.engines.research_retrieval_engine import (
-    ResearchRetrievalEngine,
-    create_retrieval_engine,
+    QueryDecompositionAgent,
 )
 from apps_research.reasoning.research_multi_agent import (
     MultiAgentResearchEngine,
 )
+from apps_research.services.repo_signal_service import RepoSignalService
 from apps_research.validators.research_source_validator import (
     ResearchValidationAgent,
-    SourceGate,
 )
 
 _log = logging.getLogger(__name__)
@@ -65,6 +62,7 @@ class EnterpriseResearchRequest:
     # Configuration
     enable_retrieval: bool = True
     enable_validation: bool = True
+    enable_repo_signals: bool = True
     update_baseline: bool = False
     output_dir: str = "reports/research/enterprise"
     trace_id: str = ""
@@ -93,6 +91,7 @@ class EnterpriseResearchResult:
     # Retrieved context
     similar_research: list[dict[str, Any]] = field(default_factory=list)
     quality_benchmarks: dict[str, Any] = field(default_factory=dict)
+    repo_signals: dict[str, Any] = field(default_factory=dict)
 
     # Generation results
     generation_results: dict[str, Any] = field(default_factory=dict)
@@ -126,6 +125,7 @@ class EnterpriseResearchOrchestrator:
     def __init__(self) -> None:
         # Initialize all subsystems
         self.retrieval_engine = create_retrieval_engine()
+        self.repo_signal_service = RepoSignalService()
         self.decomposition_agent = QueryDecompositionAgent()
         self.generation_engine = MultiAgentResearchEngine()
         self.validation_agent = ResearchValidationAgent()
@@ -152,10 +152,15 @@ class EnterpriseResearchOrchestrator:
             )
             result.query_decomposition = decomposition
             result.execution_plan = exec_plan
-            self._log_step(trace_id, "DECOMPOSE", "complete", details={
-                "components": len(decomposition.components) if decomposition else 0,
-                "estimated_time_ms": exec_plan.get("estimated_time_ms", 0),
-            })
+            self._log_step(
+                trace_id,
+                "DECOMPOSE",
+                "complete",
+                details={
+                    "components": len(decomposition.components) if decomposition else 0,
+                    "estimated_time_ms": exec_plan.get("estimated_time_ms", 0),
+                },
+            )
 
             # === STEP 2: RETRIEVE (L2 Execution/RAG) ===
             if request.enable_retrieval:
@@ -166,10 +171,31 @@ class EnterpriseResearchOrchestrator:
                 )
                 result.similar_research = similar
                 result.quality_benchmarks = benchmarks
-                self._log_step(trace_id, "RETRIEVE", "complete", details={
-                    "similar_found": len(similar),
-                    "benchmarks": list(benchmarks.keys()) if benchmarks else [],
-                })
+                self._log_step(
+                    trace_id,
+                    "RETRIEVE",
+                    "complete",
+                    details={
+                        "similar_found": len(similar),
+                        "benchmarks": list(benchmarks.keys()) if benchmarks else [],
+                    },
+                )
+
+            # === STEP 2B: CONTEXT ENRICHMENT (Repo Signals) ===
+            if request.enable_repo_signals:
+                self._log_step(trace_id, "ENRICH", "start")
+                repo_signals = await self._step_collect_repo_signals()
+                result.repo_signals = repo_signals
+                self._log_step(
+                    trace_id,
+                    "ENRICH",
+                    "complete",
+                    details={
+                        "adg_available": bool(repo_signals.get("adg", {}).get("available")),
+                        "workflow_count": repo_signals.get("ci", {}).get("workflow_count", 0),
+                        "test_inventory_entries": repo_signals.get("tests", {}).get("inventory_entries", 0),
+                    },
+                )
 
             # === STEP 3: GENERATE (L3 Orchestration) ===
             self._log_step(trace_id, "GENERATE", "start")
@@ -178,10 +204,15 @@ class EnterpriseResearchOrchestrator:
                 request.artifact_mode,
             )
             result.generation_results = gen_results
-            self._log_step(trace_id, "GENERATE", "complete", details={
-                "agents_executed": gen_results.get("agents_executed", 0),
-                "quality_score": gen_results.get("quality_score", 0),
-            })
+            self._log_step(
+                trace_id,
+                "GENERATE",
+                "complete",
+                details={
+                    "agents_executed": gen_results.get("agents_executed", 0),
+                    "quality_score": gen_results.get("quality_score", 0),
+                },
+            )
 
             # === STEP 4: VALIDATE (L5 Safety) ===
             if request.enable_validation:
@@ -192,10 +223,15 @@ class EnterpriseResearchOrchestrator:
                 )
                 result.validation_results = validations
                 result.gate_results = gates
-                self._log_step(trace_id, "VALIDATE", "complete", details={
-                    "validations_run": len(validations),
-                    "gates_passed": sum(1 for g in gates if g.get("gates_passed")),
-                })
+                self._log_step(
+                    trace_id,
+                    "VALIDATE",
+                    "complete",
+                    details={
+                        "validations_run": len(validations),
+                        "gates_passed": sum(1 for g in gates if g.get("gates_passed")),
+                    },
+                )
 
             # === STEP 5: EMIT ===
             self._log_step(trace_id, "EMIT", "start")
@@ -207,7 +243,11 @@ class EnterpriseResearchOrchestrator:
             result.total_execution_time_ms = elapsed_ms
 
             # Determine final status
-            all_gates_passed = all(g.get("gates_passed", False) for g in result.gate_results) if result.gate_results else True
+            all_gates_passed = (
+                all(g.get("gates_passed", False) for g in result.gate_results)
+                if result.gate_results
+                else True
+            )
             if all_gates_passed:
                 result.status = "complete"
             elif any(g.get("gates_passed", False) for g in result.gate_results):
@@ -223,7 +263,9 @@ class EnterpriseResearchOrchestrator:
 
             result.execution_log = self._execution_log
 
-            _log.info(f"[EnterpriseResearchOrchestrator] Complete trace={trace_id} status={result.status} time={elapsed_ms}ms")
+            _log.info(
+                f"[EnterpriseResearchOrchestrator] Complete trace={trace_id} status={result.status} time={elapsed_ms}ms"
+            )
             _emit_captures_pattern("enterprise", "EnterpriseResearchOrchestrator", "process_complete")
 
         except Exception as exc:
@@ -266,13 +308,15 @@ class EnterpriseResearchOrchestrator:
 
         similar_list: list[dict[str, Any]] = []
         for art in similar:
-            similar_list.append({
-                "id": art.research_id,
-                "topic": art.topic,
-                "mode": art.artifact_mode,
-                "quality_score": art.quality_score,
-                "similarity": art.similarity_score,
-            })
+            similar_list.append(
+                {
+                    "id": art.research_id,
+                    "topic": art.topic,
+                    "mode": art.artifact_mode,
+                    "quality_score": art.quality_score,
+                    "similarity": art.similarity_score,
+                }
+            )
 
         # Get quality benchmark
         benchmark = self.retrieval_engine.get_quality_benchmark(artifact_mode)
@@ -290,6 +334,12 @@ class EnterpriseResearchOrchestrator:
         results = await self.generation_engine.generate_research(topic, artifact_mode)
 
         return results
+
+    async def _step_collect_repo_signals(self) -> dict[str, Any]:
+        """Step 2B: Collect production-like repo signals."""
+        _emit_records_execution_trace("enterprise", "step_collect_repo_signals", "start")
+        snapshot = self.repo_signal_service.collect()
+        return snapshot.as_dict()
 
     async def _step_validate(
         self,
@@ -395,7 +445,7 @@ Assuming continued momentum, {topic} represents a key opportunity.
         """Write the research report as markdown."""
         lines: list[str] = []
 
-        lines.append(f"# Enterprise Research Generation Report")
+        lines.append("# Enterprise Research Generation Report")
         lines.append(f"**Generated:** {datetime.now().strftime('%Y-%m-%d %H:%M')}")
         lines.append(f"**Trace ID:** `{result.trace_id}`")
         lines.append(f"**Status:** {result.status.upper()}")
@@ -427,7 +477,9 @@ Assuming continued momentum, {topic} represents a key opportunity.
         lines.append("")
         lines.append(f"- **Quality Score:** {result.generation_results.get('quality_score', 0):.0%}")
         lines.append(f"- **Sources Count:** {result.generation_results.get('sources_count', 0)}")
-        lines.append(f"- **Validation Passed:** {'✅' if result.generation_results.get('validation_passed') else '❌'}")
+        lines.append(
+            f"- **Validation Passed:** {'✅' if result.generation_results.get('validation_passed') else '❌'}"
+        )
         lines.append("")
 
         # Validation results
@@ -435,17 +487,41 @@ Assuming continued momentum, {topic} represents a key opportunity.
             lines.append("## Validation Results")
             lines.append("")
             for i, (validation, gates) in enumerate(zip(result.validation_results, result.gate_results)):
-                lines.append(f"**Run {i+1}:**")
+                lines.append(f"**Run {i + 1}:**")
                 lines.append(f"- Quality Score: {validation.get('quality_score', 0):.0%}")
                 lines.append(f"- Source Coverage: {validation.get('source_coverage', 0):.0%}")
                 lines.append(f"- Gates Passed: {'✅' if gates.get('gates_passed') else '❌'}")
                 lines.append("")
 
+        # Repository operational context
+        if result.repo_signals:
+            lines.append("## Repository Operational Signals")
+            lines.append("")
+            adg = result.repo_signals.get("adg", {})
+            tests = result.repo_signals.get("tests", {})
+            ci = result.repo_signals.get("ci", {})
+            governance = result.repo_signals.get("governance", {})
+
+            lines.append(f"- **ADG Available:** {'✅' if adg.get('available') else '❌'}")
+            lines.append(
+                f"- **ADG Nodes/Edges:** {adg.get('nodes_count', 'N/A')} / {adg.get('edges_count', 'N/A')}"
+            )
+            lines.append(f"- **Test Inventory Entries:** {tests.get('inventory_entries', 0)}")
+            lines.append(f"- **Test Surface Entries:** {tests.get('surface_entries', 0)}")
+            lines.append(f"- **Workflow Definitions:** {ci.get('workflow_count', 0)}")
+            lines.append(f"- **CI Validation Log Lines:** {ci.get('ci_validation_lines', 0)}")
+            lines.append(
+                f"- **Governance Baseline:** {'✅' if governance.get('denominator_baseline_available') else '❌'}"
+            )
+            lines.append("")
+
         # Execution lineage
         lines.append("## Execution Lineage")
         lines.append("")
         for entry in result.execution_log:
-            status_icon = "✅" if entry["status"] == "complete" else "⏳" if entry["status"] == "start" else "⚠️"
+            status_icon = (
+                "✅" if entry["status"] == "complete" else "⏳" if entry["status"] == "start" else "⚠️"
+            )
             lines.append(f"{status_icon} **{entry['step']}**: {entry['status']}")
         lines.append("")
 
@@ -468,6 +544,7 @@ Assuming continued momentum, {topic} represents a key opportunity.
                 "gates_passed": sum(1 for g in result.gate_results if g.get("gates_passed")),
                 "avg_quality_score": result.avg_quality_score,
             },
+            "repo_signals": result.repo_signals,
             "execution_log": result.execution_log,
         }
 

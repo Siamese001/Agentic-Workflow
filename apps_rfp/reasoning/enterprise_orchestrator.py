@@ -24,36 +24,33 @@ from pathlib import Path
 from typing import Any
 
 from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-    LayerSegment,
-    _emit_records_execution_trace,
-    _emit_dispatches_agent,
-    _emit_coordinates_agents,
-    _emit_orchestrates_workflow,
     _emit_applies_guardrail,
-    _emit_validates_agent_capability,
     _emit_captures_pattern,
+    _emit_coordinates_agents,
+    _emit_dispatches_agent,
+    _emit_orchestrates_workflow,
+    _emit_records_execution_trace,
     _emit_stores_embedding,
+)
+from apps_rfp.engines.proposal_retrieval_engine import (
+    create_retrieval_engine,
 )
 
 # Import enterprise components
 from apps_rfp.engines.rfp_ingestion_engine import RfpIngestionEngine, extract_rfp_summary
-from apps_rfp.engines.proposal_retrieval_engine import (
-    ProposalRetrievalEngine,
-    create_retrieval_engine,
+from apps_rfp.reasoning.compliance_validator import (
+    ClaimsVerifier,
+    ComplianceValidationResult,
+    ComplianceValidator,
 )
 from apps_rfp.reasoning.requirement_decomposition_agent import (
-    RequirementDecompositionAgent,
     RequirementDecomposition,
+    RequirementDecompositionAgent,
 )
 from apps_rfp.reasoning.section_orchestrator import (
     MultiAgentProposalOrchestrator,
-    SectionType,
 )
-from apps_rfp.reasoning.compliance_validator import (
-    ComplianceValidator,
-    ComplianceValidationResult,
-    ClaimsVerifier,
-)
+from apps_rfp.services.repo_signal_service import RepoSignalService
 
 _log = logging.getLogger(__name__)
 
@@ -76,6 +73,7 @@ class EnterpriseRfpRequest:
     # Configuration
     enable_retrieval: bool = True
     enable_compliance_validation: bool = True
+    enable_repo_signals: bool = True
     output_dir: str = "rfp/enterprise"
     trace_id: str = ""
 
@@ -85,7 +83,9 @@ class EnterpriseRfpRequest:
 
     def _generate_trace_id(self) -> str:
         """Generate unique trace ID."""
-        content = f"{self.rfp_document_path or ''}:{self.problem_statement or ''}:{datetime.now().isoformat()}"
+        content = (
+            f"{self.rfp_document_path or ''}:{self.problem_statement or ''}:{datetime.now().isoformat()}"
+        )
         return hashlib.sha256(content.encode()).hexdigest()[:16]
 
 
@@ -107,6 +107,7 @@ class EnterpriseRfpResult:
     # Retrieved context
     similar_proposals: list[dict[str, Any]] = field(default_factory=list)
     reusable_sections: list[dict[str, Any]] = field(default_factory=list)
+    repo_signals: dict[str, Any] = field(default_factory=dict)
 
     # Generated proposal
     proposal: dict[str, Any] = field(default_factory=dict)
@@ -141,6 +142,7 @@ class EnterpriseRfpOrchestrator:
         # Initialize all subsystems
         self.ingestion_engine = RfpIngestionEngine()
         self.retrieval_engine = create_retrieval_engine()
+        self.repo_signal_service = RepoSignalService()
         self.decomposition_agent = RequirementDecompositionAgent()
         self.proposal_orchestrator = MultiAgentProposalOrchestrator()
         self.compliance_validator = ComplianceValidator()
@@ -164,20 +166,30 @@ class EnterpriseRfpOrchestrator:
             parsed_rfp = await self._step_ingest(request)
             result.parsed_rfp = parsed_rfp
             result.requirements = parsed_rfp.get("requirements", [])
-            self._log_step(trace_id, "INGEST", "complete", details={
-                "requirements_found": len(result.requirements),
-                "organization": parsed_rfp.get("organization"),
-            })
+            self._log_step(
+                trace_id,
+                "INGEST",
+                "complete",
+                details={
+                    "requirements_found": len(result.requirements),
+                    "organization": parsed_rfp.get("organization"),
+                },
+            )
 
             # === STEP 2: DECOMPOSE (L1 Cognition) ===
             self._log_step(trace_id, "DECOMPOSE", "start")
             decompositions, impl_plan = await self._step_decompose(result.requirements)
             result.decompositions = decompositions
             result.implementation_plan = impl_plan
-            self._log_step(trace_id, "DECOMPOSE", "complete", details={
-                "components": impl_plan.get("total_components", 0),
-                "estimated_hours": impl_plan.get("total_estimated_hours", 0),
-            })
+            self._log_step(
+                trace_id,
+                "DECOMPOSE",
+                "complete",
+                details={
+                    "components": impl_plan.get("total_components", 0),
+                    "estimated_hours": impl_plan.get("total_estimated_hours", 0),
+                },
+            )
 
             # === STEP 3: RETRIEVE (L2 Execution/RAG) ===
             if request.enable_retrieval:
@@ -185,20 +197,46 @@ class EnterpriseRfpOrchestrator:
                 similar, reusable = await self._step_retrieve(parsed_rfp, request.industry)
                 result.similar_proposals = similar
                 result.reusable_sections = reusable
-                self._log_step(trace_id, "RETRIEVE", "complete", details={
-                    "similar_found": len(similar),
-                    "reusable_sections": len(reusable),
-                })
+                self._log_step(
+                    trace_id,
+                    "RETRIEVE",
+                    "complete",
+                    details={
+                        "similar_found": len(similar),
+                        "reusable_sections": len(reusable),
+                    },
+                )
+
+            # === STEP 3B: ENRICH (Repo Operational Signals) ===
+            if request.enable_repo_signals:
+                self._log_step(trace_id, "ENRICH", "start")
+                repo_signals = await self._step_collect_repo_signals()
+                result.repo_signals = repo_signals
+                self._log_step(
+                    trace_id,
+                    "ENRICH",
+                    "complete",
+                    details={
+                        "adg_available": bool(repo_signals.get("adg", {}).get("available")),
+                        "workflow_count": repo_signals.get("ci", {}).get("workflow_count", 0),
+                        "test_inventory_entries": repo_signals.get("tests", {}).get("inventory_entries", 0),
+                    },
+                )
 
             # === STEP 4: GENERATE (L3 Orchestration) ===
             self._log_step(trace_id, "GENERATE", "start")
             proposal = await self._step_generate(parsed_rfp, result.decompositions)
             result.proposal = proposal
-            self._log_step(trace_id, "GENERATE", "complete", details={
-                "sections": proposal.get("total_sections", 0),
-                "word_count": proposal.get("total_word_count", 0),
-                "quality_score": proposal.get("average_quality_score", 0),
-            })
+            self._log_step(
+                trace_id,
+                "GENERATE",
+                "complete",
+                details={
+                    "sections": proposal.get("total_sections", 0),
+                    "word_count": proposal.get("total_word_count", 0),
+                    "quality_score": proposal.get("average_quality_score", 0),
+                },
+            )
 
             # === STEP 5: VALIDATE (L5 Safety) ===
             if request.enable_compliance_validation:
@@ -209,11 +247,16 @@ class EnterpriseRfpOrchestrator:
                     result.requirements,
                 )
                 result.compliance_result = asdict(validation)
-                self._log_step(trace_id, "VALIDATE", "complete", details={
-                    "passed": validation.passed,
-                    "violations": len(validation.violations),
-                    "quality_score": validation.quality_score,
-                })
+                self._log_step(
+                    trace_id,
+                    "VALIDATE",
+                    "complete",
+                    details={
+                        "passed": validation.passed,
+                        "violations": len(validation.violations),
+                        "quality_score": validation.quality_score,
+                    },
+                )
 
             # === STEP 6: EMIT ===
             self._log_step(trace_id, "EMIT", "start")
@@ -226,7 +269,9 @@ class EnterpriseRfpOrchestrator:
             result.status = "complete" if result.compliance_result.get("passed", True) else "partial"
             result.execution_log = self._execution_log
 
-            _log.info(f"[EnterpriseRfpOrchestrator] Complete trace={trace_id} status={result.status} time={elapsed_ms}ms")
+            _log.info(
+                f"[EnterpriseRfpOrchestrator] Complete trace={trace_id} status={result.status} time={elapsed_ms}ms"
+            )
             _emit_captures_pattern("enterprise", "EnterpriseRfpOrchestrator", "process_complete")
 
         except Exception as exc:
@@ -253,7 +298,7 @@ class EnterpriseRfpOrchestrator:
                 raw_text=request.rfp_text,
                 title="Inline RFP",
                 requirements=[
-                    Requirement(f"R{i+1:03d}", "general", "mandatory", line)
+                    Requirement(f"R{i + 1:03d}", "general", "mandatory", line)
                     for i, line in enumerate(request.rfp_text.split("\n")[:10])
                     if len(line) > 20
                 ],
@@ -342,6 +387,12 @@ class EnterpriseRfpOrchestrator:
 
         return proposal
 
+    async def _step_collect_repo_signals(self) -> dict[str, Any]:
+        """Step 3B: Collect production-like repo signals."""
+        _emit_records_execution_trace("enterprise", "step_collect_repo_signals", "start")
+        snapshot = self.repo_signal_service.collect()
+        return snapshot.as_dict()
+
     async def _step_validate(
         self,
         proposal: dict[str, Any],
@@ -392,7 +443,7 @@ class EnterpriseRfpOrchestrator:
         """Write the proposal as markdown."""
         lines: list[str] = []
 
-        lines.append(f"# AI Platform Proposal")
+        lines.append("# AI Platform Proposal")
         lines.append(f"**Generated:** {datetime.now().strftime('%Y-%m-%d %H:%M')}")
         lines.append(f"**Trace ID:** `{result.trace_id}`")
         lines.append(f"**Status:** {result.status.upper()}")
@@ -415,8 +466,12 @@ class EnterpriseRfpOrchestrator:
         lines.append("## Implementation Summary")
         lines.append("")
         lines.append(f"- **Estimated Hours:** {result.implementation_plan.get('total_estimated_hours', 0)}")
-        lines.append(f"- **Sprint Estimate:** {result.implementation_plan.get('estimated_sprints', 0)} sprints")
-        lines.append(f"- **High Complexity Items:** {len(result.implementation_plan.get('high_complexity_items', []))}")
+        lines.append(
+            f"- **Sprint Estimate:** {result.implementation_plan.get('estimated_sprints', 0)} sprints"
+        )
+        lines.append(
+            f"- **High Complexity Items:** {len(result.implementation_plan.get('high_complexity_items', []))}"
+        )
         lines.append("")
 
         # Compliance summary
@@ -429,6 +484,28 @@ class EnterpriseRfpOrchestrator:
             lines.append(f"- **Violations:** {len(result.compliance_result.get('violations', []))}")
             lines.append("")
 
+        # Repository operational context
+        if result.repo_signals:
+            lines.append("## Repository Operational Signals")
+            lines.append("")
+            adg = result.repo_signals.get("adg", {})
+            tests = result.repo_signals.get("tests", {})
+            ci = result.repo_signals.get("ci", {})
+            governance = result.repo_signals.get("governance", {})
+
+            lines.append(f"- **ADG Available:** {'✅' if adg.get('available') else '❌'}")
+            lines.append(
+                f"- **ADG Nodes/Edges:** {adg.get('nodes_count', 'N/A')} / {adg.get('edges_count', 'N/A')}"
+            )
+            lines.append(f"- **Test Inventory Entries:** {tests.get('inventory_entries', 0)}")
+            lines.append(f"- **Test Surface Entries:** {tests.get('surface_entries', 0)}")
+            lines.append(f"- **Workflow Definitions:** {ci.get('workflow_count', 0)}")
+            lines.append(f"- **CI Validation Log Lines:** {ci.get('ci_validation_lines', 0)}")
+            lines.append(
+                f"- **Governance Baseline:** {'✅' if governance.get('denominator_baseline_available') else '❌'}"
+            )
+            lines.append("")
+
         path.write_text("\n".join(lines), encoding="utf-8")
 
     def _write_source_register(self, result: EnterpriseRfpResult, path: Path) -> None:
@@ -436,6 +513,7 @@ class EnterpriseRfpOrchestrator:
         register = {
             "trace_id": result.trace_id,
             "generated_at": datetime.now().isoformat(),
+            "repo_signals": result.repo_signals,
             "sources": [
                 {
                     "type": "rfp_input",

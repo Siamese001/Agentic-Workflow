@@ -34,11 +34,37 @@ logging.basicConfig(
 )
 
 
+def _assert(condition: bool, message: str) -> None:
+    if not condition:
+        raise AssertionError(message)
+
+
+def _assert_repo_signals(result: object) -> None:
+    repo_signals = getattr(result, "repo_signals", {})
+    _assert(bool(repo_signals), "repo_signals missing from enterprise RFP result")
+
+    adg = repo_signals.get("adg", {})
+    tests = repo_signals.get("tests", {})
+    ci = repo_signals.get("ci", {})
+    governance = repo_signals.get("governance", {})
+
+    _assert(adg.get("available") is True, "ADG signal unavailable")
+    _assert(ci.get("workflow_count", 0) > 0, "No workflow definitions discovered")
+    _assert(
+        tests.get("inventory_available") or tests.get("surface_available"),
+        "Neither test inventory nor test surface artifact is available",
+    )
+    _assert(
+        governance.get("denominator_baseline_available") is True,
+        "Governance denominator baseline not detected",
+    )
+
+
 async def test_with_sample_rfp():
     """Test with a sample RFP document."""
-    print("\n" + "="*60)
+    print("\n" + "=" * 60)
     print("TEST 1: Process Financial Services RFP Document")
-    print("="*60)
+    print("=" * 60)
 
     rfp_path = Path(__file__).parent / "sample_rfps" / "financial_services_rfp.md"
 
@@ -52,12 +78,17 @@ async def test_with_sample_rfp():
         output_dir="rfp/test_output",
     )
 
-    print(f"\n✅ RFP Processing Complete!")
+    _assert(result.proposal_path != "", "Proposal path is empty")
+    _assert(result.source_register_path != "", "Source register path is empty")
+    _assert(len(result.requirements) > 0, "Expected requirements from sample RFP")
+    _assert_repo_signals(result)
+
+    print("\n✅ RFP Processing Complete!")
     print(f"   Trace ID: {result.trace_id}")
     print(f"   Status: {result.status}")
     print(f"   Proposal Path: {result.proposal_path}")
     print(f"   Source Register: {result.source_register_path}")
-    print(f"\n📊 Metrics:")
+    print("\n📊 Metrics:")
     print(f"   Requirements Found: {len(result.requirements)}")
     print(f"   Components Decomposed: {result.implementation_plan.get('total_components', 0)}")
     print(f"   Similar Proposals Retrieved: {len(result.similar_proposals)}")
@@ -66,7 +97,7 @@ async def test_with_sample_rfp():
     print(f"   Quality Score: {result.proposal.get('average_quality_score', 0):.0%}")
 
     if result.compliance_result:
-        print(f"\n🛡️ Compliance Validation:")
+        print("\n🛡️ Compliance Validation:")
         print(f"   Passed: {result.compliance_result.get('passed', False)}")
         print(f"   Violations: {len(result.compliance_result.get('violations', []))}")
         print(f"   Quality Score: {result.compliance_result.get('quality_score', 0):.0%}")
@@ -76,9 +107,9 @@ async def test_with_sample_rfp():
 
 async def test_with_problem_statement():
     """Test with a simple problem statement."""
-    print("\n" + "="*60)
+    print("\n" + "=" * 60)
     print("TEST 2: Generate Proposal from Problem Statement")
-    print("="*60)
+    print("=" * 60)
 
     problem = """
     We need to automate our document processing workflow which currently takes
@@ -93,7 +124,11 @@ async def test_with_problem_statement():
         output_dir="rfp/test_output",
     )
 
-    print(f"\n✅ Proposal Generation Complete!")
+    _assert(result.proposal_path != "", "Proposal path is empty")
+    _assert(result.source_register_path != "", "Source register path is empty")
+    _assert_repo_signals(result)
+
+    print("\n✅ Proposal Generation Complete!")
     print(f"   Trace ID: {result.trace_id}")
     print(f"   Status: {result.status}")
     print(f"   Proposal Path: {result.proposal_path}")
@@ -103,9 +138,9 @@ async def test_with_problem_statement():
 
 async def test_full_pipeline():
     """Test the full enterprise orchestrator with detailed output."""
-    print("\n" + "="*60)
+    print("\n" + "=" * 60)
     print("TEST 3: Full Enterprise Pipeline")
-    print("="*60)
+    print("=" * 60)
 
     orchestrator = EnterpriseRfpOrchestrator()
 
@@ -123,7 +158,12 @@ async def test_full_pipeline():
 
     result = await orchestrator.process(request)
 
-    print(f"\n📋 Execution Log:")
+    _assert(result.proposal_path != "", "Proposal path is empty")
+    _assert(result.source_register_path != "", "Source register path is empty")
+    _assert(len(result.execution_log) > 0, "Execution log should not be empty")
+    _assert_repo_signals(result)
+
+    print("\n📋 Execution Log:")
     for entry in result.execution_log:
         status_icon = "✅" if entry["status"] == "complete" else "⏳" if entry["status"] == "start" else "⚠️"
         print(f"   {status_icon} {entry['step']}: {entry['status']}")
@@ -131,7 +171,7 @@ async def test_full_pipeline():
             for key, value in entry["details"].items():
                 print(f"      - {key}: {value}")
 
-    print(f"\n📁 Generated Artifacts:")
+    print("\n📁 Generated Artifacts:")
     print(f"   Proposal: {result.proposal_path}")
     print(f"   Source Register: {result.source_register_path}")
     print(f"   Validation Report: {result.validation_report_path}")
@@ -141,11 +181,12 @@ async def test_full_pipeline():
 
 async def main():
     """Run all tests."""
-    print("\n" + "🚀 "*30)
+    print("\n" + "🚀 " * 30)
     print("ENTERPRISE RFP GENERATION SYSTEM - TEST SUITE")
-    print("🚀 "*30)
+    print("🚀 " * 30)
 
     results = []
+    failures: list[str] = []
 
     try:
         # Test 1: Sample RFP document
@@ -163,12 +204,14 @@ async def main():
     except Exception as exc:
         print(f"\n❌ Test failed: {exc}")
         import traceback
+
         traceback.print_exc()
+        failures.append(str(exc))
 
     # Summary
-    print("\n" + "="*60)
+    print("\n" + "=" * 60)
     print("TEST SUMMARY")
-    print("="*60)
+    print("=" * 60)
 
     for name, result in results:
         status = "✅ PASS" if result and result.status == "complete" else "⚠️ PARTIAL" if result else "❌ FAIL"
@@ -176,6 +219,9 @@ async def main():
         if result:
             print(f"      Trace: {result.trace_id[:16]}")
             print(f"      Artifacts: {result.proposal_path}")
+
+    if failures:
+        raise SystemExit(1)
 
     print("\n✨ All tests completed!")
     print("\nTo view generated proposals, check: rfp/test_output/")

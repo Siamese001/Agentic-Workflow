@@ -27,11 +27,37 @@ logging.basicConfig(
 )
 
 
+def _assert(condition: bool, message: str) -> None:
+    if not condition:
+        raise AssertionError(message)
+
+
+def _assert_repo_signals(result: object) -> None:
+    repo_signals = getattr(result, "repo_signals", {})
+    _assert(bool(repo_signals), "repo_signals missing from enterprise research result")
+
+    adg = repo_signals.get("adg", {})
+    tests = repo_signals.get("tests", {})
+    ci = repo_signals.get("ci", {})
+    governance = repo_signals.get("governance", {})
+
+    _assert(adg.get("available") is True, "ADG signal unavailable")
+    _assert(ci.get("workflow_count", 0) > 0, "No workflow definitions discovered")
+    _assert(
+        tests.get("inventory_available") or tests.get("surface_available"),
+        "Neither test inventory nor test surface artifact is available",
+    )
+    _assert(
+        governance.get("denominator_baseline_available") is True,
+        "Governance denominator baseline not detected",
+    )
+
+
 async def test_single_topic_brief():
     """Test research generation for a single topic brief."""
-    print("\n" + "="*60)
+    print("\n" + "=" * 60)
     print("TEST 1: Single Topic Brief Generation")
-    print("="*60)
+    print("=" * 60)
 
     topic = "governance in agentic AI systems"
     mode = "brief"
@@ -43,19 +69,26 @@ async def test_single_topic_brief():
         output_dir="reports/research/test_output",
     )
 
-    print(f"\n✅ Research Generation Complete!")
+    _assert(result.report_path != "", "Report path is empty")
+    _assert(result.manifest_path != "", "Manifest path is empty")
+    _assert(result.generation_results.get("agents_executed", 0) > 0, "No agents executed")
+    _assert_repo_signals(result)
+
+    print("\n✅ Research Generation Complete!")
     print(f"   Trace ID: {result.trace_id}")
     print(f"   Status: {result.status}")
     print(f"   Report Path: {result.report_path}")
 
-    print(f"\n📊 Results:")
+    print("\n📊 Results:")
     if result.query_decomposition:
         print(f"   Components Decomposed: {len(result.query_decomposition.components)}")
     print(f"   Agents Executed: {result.generation_results.get('agents_executed', 0)}")
 
-    print(f"\n🛡️ Validation:")
+    print("\n🛡️ Validation:")
     print(f"   Validations Run: {len(result.validation_results)}")
-    print(f"   Gates Passed: {sum(1 for g in result.gate_results if g.get('gates_passed'))}/{len(result.gate_results)}")
+    print(
+        f"   Gates Passed: {sum(1 for g in result.gate_results if g.get('gates_passed'))}/{len(result.gate_results)}"
+    )
     print(f"   Avg Quality Score: {result.avg_quality_score:.0%}")
 
     return result
@@ -63,9 +96,9 @@ async def test_single_topic_brief():
 
 async def test_comparison_mode():
     """Test research generation in comparison mode."""
-    print("\n" + "="*60)
+    print("\n" + "=" * 60)
     print("TEST 2: Comparison Mode Research")
-    print("="*60)
+    print("=" * 60)
 
     topic = "agentic framework comparison"
     mode = "comparison"
@@ -81,12 +114,15 @@ async def test_comparison_mode():
     )
 
     result = await orchestrator.process(request)
+    _assert(result.query_decomposition is not None, "Query decomposition should be present")
+    _assert(len(result.execution_log) > 0, "Execution log should not be empty")
+    _assert_repo_signals(result)
 
-    print(f"\n✅ Comparison Research Complete!")
+    print("\n✅ Comparison Research Complete!")
     print(f"   Trace ID: {result.trace_id}")
     print(f"   Topic: {result.query_decomposition.original_topic if result.query_decomposition else 'N/A'}")
 
-    print(f"\n📋 Execution Summary:")
+    print("\n📋 Execution Summary:")
     for entry in result.execution_log:
         if entry["status"] == "complete":
             print(f"   ✅ {entry['step']}: {entry['status']}")
@@ -96,9 +132,9 @@ async def test_comparison_mode():
 
 async def test_with_source_retrieval():
     """Test research generation with source retrieval and benchmarking."""
-    print("\n" + "="*60)
+    print("\n" + "=" * 60)
     print("TEST 3: Research with Source Retrieval")
-    print("="*60)
+    print("=" * 60)
 
     orchestrator = EnterpriseResearchOrchestrator()
 
@@ -127,13 +163,18 @@ async def test_with_source_retrieval():
 
     result = await orchestrator.process(request)
 
-    print(f"\n✅ Research with Source Retrieval Complete!")
+    _assert(len(result.similar_research) >= 1, "Expected at least one similar research artifact")
+    _assert_repo_signals(result)
+
+    print("\n✅ Research with Source Retrieval Complete!")
     print(f"   Trace ID: {result.trace_id}")
     print(f"   Similar Research Found: {len(result.similar_research)}")
-    print(f"   Quality Benchmarks: {list(result.quality_benchmarks.keys()) if result.quality_benchmarks else []}")
+    print(
+        f"   Quality Benchmarks: {list(result.quality_benchmarks.keys()) if result.quality_benchmarks else []}"
+    )
 
     if result.quality_benchmarks and "error" not in result.quality_benchmarks:
-        print(f"\n   📊 Quality Benchmark:")
+        print("\n   📊 Quality Benchmark:")
         print(f"      Avg Quality: {result.quality_benchmarks.get('avg_quality_score', 0):.0%}")
         print(f"      Sample Size: {result.quality_benchmarks.get('sample_size', 0)}")
 
@@ -142,9 +183,9 @@ async def test_with_source_retrieval():
 
 async def test_full_enterprise_pipeline():
     """Test the full enterprise pipeline with all features."""
-    print("\n" + "="*60)
+    print("\n" + "=" * 60)
     print("TEST 4: Full Enterprise Pipeline")
-    print("="*60)
+    print("=" * 60)
 
     orchestrator = EnterpriseResearchOrchestrator()
 
@@ -176,7 +217,12 @@ async def test_full_enterprise_pipeline():
 
     result = await orchestrator.process(request)
 
-    print(f"\n📋 Execution Log:")
+    _assert(result.report_path != "", "Report path is empty")
+    _assert(result.manifest_path != "", "Manifest path is empty")
+    _assert(result.generation_results.get("agents_executed", 0) > 0, "No agents executed")
+    _assert_repo_signals(result)
+
+    print("\n📋 Execution Log:")
     for entry in result.execution_log:
         status_icon = "✅" if entry["status"] == "complete" else "⏳" if entry["status"] == "start" else "⚠️"
         print(f"   {status_icon} {entry['step']}: {entry['status']}")
@@ -184,11 +230,11 @@ async def test_full_enterprise_pipeline():
             for key, value in entry["details"].items():
                 print(f"      - {key}: {value}")
 
-    print(f"\n📁 Generated Artifacts:")
+    print("\n📁 Generated Artifacts:")
     print(f"   Report: {result.report_path}")
     print(f"   Manifest: {result.manifest_path}")
 
-    print(f"\n📊 Final Metrics:")
+    print("\n📊 Final Metrics:")
     print(f"   Status: {result.status}")
     print(f"   Execution Time: {result.total_execution_time_ms}ms")
     print(f"   Avg Quality Score: {result.avg_quality_score:.0%}")
@@ -198,9 +244,9 @@ async def test_full_enterprise_pipeline():
 
 async def test_all_artifact_modes():
     """Test all artifact modes."""
-    print("\n" + "="*60)
+    print("\n" + "=" * 60)
     print("TEST 5: All Artifact Modes")
-    print("="*60)
+    print("=" * 60)
 
     modes = ["brief", "comparison", "trend", "position", "thought_leadership"]
     results = []
@@ -214,9 +260,10 @@ async def test_all_artifact_modes():
             output_dir="reports/research/test_output",
         )
         results.append((mode, result))
+        _assert_repo_signals(result)
         print(f"   ✅ {mode}: {result.status}")
 
-    print(f"\n📊 Mode Results:")
+    print("\n📊 Mode Results:")
     for mode, result in results:
         status_icon = "✅" if result.status == "complete" else "⚠️" if result.status == "partial" else "❌"
         print(f"   {status_icon} {mode}: {result.status} (quality: {result.avg_quality_score:.0%})")
@@ -226,11 +273,12 @@ async def test_all_artifact_modes():
 
 async def main():
     """Run all E2E tests."""
-    print("\n" + "🔬 "*30)
+    print("\n" + "🔬 " * 30)
     print("ENTERPRISE RESEARCH GENERATION SYSTEM - E2E TEST SUITE")
-    print("🔬 "*30)
+    print("🔬 " * 30)
 
     results = []
+    failures: list[str] = []
 
     try:
         # Test 1: Single topic brief
@@ -257,19 +305,30 @@ async def main():
     except Exception as exc:
         print(f"\n❌ Test failed: {exc}")
         import traceback
+
         traceback.print_exc()
+        failures.append(str(exc))
 
     # Summary
-    print("\n" + "="*60)
+    print("\n" + "=" * 60)
     print("TEST SUMMARY")
-    print("="*60)
+    print("=" * 60)
 
     for name, result in results:
-        status = "✅ PASS" if result.status == "complete" else "⚠️ PARTIAL" if result.status == "partial" else "❌ FAIL"
+        status = (
+            "✅ PASS"
+            if result.status == "complete"
+            else "⚠️ PARTIAL"
+            if result.status == "partial"
+            else "❌ FAIL"
+        )
         print(f"{status}: {name}")
         print(f"      Trace: {result.trace_id[:16]}")
         print(f"      Quality: {result.avg_quality_score:.0%}")
         print(f"      Artifacts: {getattr(result, 'report_path', 'N/A')}")
+
+    if failures:
+        raise SystemExit(1)
 
     print("\n✨ All tests completed!")
     print("\nTo view generated reports, check: reports/research/test_output/")
