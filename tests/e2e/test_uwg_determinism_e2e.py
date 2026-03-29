@@ -24,7 +24,7 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-from conftest_agentic_system import (
+from tests.e2e.conftest import (
     DeterminismValidator,
     Layer,
     RobustnessResult,

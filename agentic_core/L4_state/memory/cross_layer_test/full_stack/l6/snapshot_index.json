@@ -1,11 +1,11 @@
 {
-  "runtime_adg_1774748025_81f181ea": {
-    "duration_ms": 0,
+  "runtime_adg_1774748104_45b99dda": {
+    "duration_ms": 1,
     "edge_count": 15,
-    "file_path": "agentic_core\\L4_state\\memory\\cross_layer_test\\full_stack\\l6\\runtime_adg_1774748025_81f181ea.json",
+    "file_path": "agentic_core\\L4_state\\memory\\cross_layer_test\\full_stack\\l6\\runtime_adg_1774748104_45b99dda.json",
     "mission": "full-stack-test",
     "node_count": 8,
-    "timestamp": 1774748025,
-    "trace_id": "a806b7d07a2d1142470bef986bee2e4f"
+    "timestamp": 1774748104,
+    "trace_id": "9807b5160799f6b5d0e20914d9a8f72b"
   }
 }

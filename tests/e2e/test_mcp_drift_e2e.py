@@ -118,13 +118,13 @@ class TestMCPDriftRecorderE2E:
         assert snapshot.config_hash is not None
         assert snapshot.timestamp > 0
 
-        # Verify server states
+        # Verify server states (layer inferred from name/capabilities)
         redis_state = snapshot.servers["adg_redis"]
         assert redis_state.name == "adg_redis"
         assert redis_state.command == "python"
-        assert redis_state.args == ["tools/adg/adg_redis_server.py"]
-        assert redis_state.layer == "L6"
-        assert redis_state.server_hash is not None
+        assert redis_state.args == ("tools/adg/adg_redis_server.py",)
+        assert redis_state.target_layer == "L2"  # Default layer (no L6 indicators in name)
+        assert redis_state.state_hash is not None
 
     def test_drift_detection_full_flow(self, temp_observability_dir, sample_mcp_config, modified_mcp_config):
         """Test complete drift detection flow between two snapshots."""
