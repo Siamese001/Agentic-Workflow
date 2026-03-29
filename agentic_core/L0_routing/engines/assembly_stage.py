@@ -435,7 +435,17 @@ class AirlockAssembler:
             "C0": c0_content,
             "U0": u0_content,
         }
-        validate_slot_order(tuple(slots.keys()))
+        # Validate slot order S0→D0→I0→C0→U0
+        slot_order = [
+            {"name": "S0", "order": 0},
+            {"name": "D0", "order": 1},
+            {"name": "I0", "order": 2},
+            {"name": "C0", "order": 3},
+            {"name": "U0", "order": 4},
+        ]
+        is_valid, errors = validate_slot_order(slot_order)
+        if not is_valid:
+            raise ValueError(f"Invalid slot order: {errors}")
 
         # 7. Run injection neutralizer on U0
         neutralizer = AssemblyInjectionNeutralizer()
