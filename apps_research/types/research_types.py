@@ -1,71 +1,4 @@
 """
-_emit_reads_through("l4", "research_types", "urg_read_1")
-_emit_reads_through("l4", "research_types", "urg_read_2")
-_emit_reads_through("l4", "research_types", "urg_read_3")
-_emit_reads_through("l4", "research_types", "urg_read_4")
-_emit_reads_through("l4", "research_types", "urg_read_5")
-_emit_reads_through("l4", "research_types", "urg_read_6")
-_emit_reads_through("l4", "research_types", "urg_read_7")
-_emit_reads_through("l4", "research_types", "urg_read_8")
-_emit_reads_through("l4", "research_types", "urg_read_9")
-_emit_reads_through("l4", "research_types", "urg_read_10")
-_emit_reads_through("l4", "research_types", "urg_read_11")
-_emit_reads_through("l4", "research_types", "urg_read_12")
-_emit_reads_through("l4", "research_types", "urg_read_13")
-_emit_reads_through("l4", "research_types", "urg_read_14")
-_emit_reads_through("l4", "research_types", "urg_read_15")
-_emit_reads_through("l4", "research_types", "urg_read_16")
-_emit_reads_through("l4", "research_types", "urg_read_17")
-_emit_reads_through("l4", "research_types", "urg_read_18")
-_emit_reads_through("l4", "research_types", "urg_read_19")
-_emit_reads_through("l4", "research_types", "urg_read_20")
-_emit_reads_through("l4", "research_types", "urg_read_21")
-_emit_reads_through("l4", "research_types", "urg_read_22")
-_emit_reads_through("l4", "research_types", "urg_read_23")
-_emit_reads_through("l4", "research_types", "urg_read_24")
-_emit_reads_through("l4", "research_types", "urg_read_25")
-_emit_reads_through("l4", "research_types", "urg_read_26")
-_emit_reads_through("l4", "research_types", "urg_read_27")
-_emit_reads_through("l4", "research_types", "urg_read_28")
-_emit_reads_through("l4", "research_types", "urg_read_29")
-_emit_reads_through("l4", "research_types", "urg_read_30")
-_emit_reads_through("l4", "research_types", "urg_read_31")
-_emit_reads_through("l4", "research_types", "urg_read_32")
-_emit_reads_through("l4", "research_types", "urg_read_33")
-_emit_reads_through("l4", "research_types", "urg_read_34")
-_emit_reads_through("l4", "research_types", "urg_read_35")
-_emit_reads_through("l4", "research_types", "urg_read_36")
-_emit_reads_through("l4", "research_types", "urg_read_37")
-_emit_reads_through("l4", "research_types", "urg_read_38")
-_emit_reads_through("l4", "research_types", "urg_read_39")
-_emit_reads_through("l4", "research_types", "urg_read_40")
-_emit_reads_through("l4", "research_types", "urg_read_41")
-_emit_reads_through("l4", "research_types", "urg_read_42")
-_emit_reads_through("l4", "research_types", "urg_read_43")
-_emit_reads_through("l4", "research_types", "urg_read_44")
-_emit_reads_through("l4", "research_types", "urg_read_45")
-_emit_reads_through("l4", "research_types", "urg_read_46")
-_emit_reads_through("l4", "research_types", "urg_read_47")
-_emit_reads_through("l4", "research_types", "urg_read_48")
-_emit_reads_through("l4", "research_types", "urg_read_49")
-_emit_reads_through("l4", "research_types", "urg_read_50")
-_emit_reads_through("l4", "research_types", "urg_read_51")
-_emit_reads_through("l4", "research_types", "urg_read_52")
-_emit_reads_through("l4", "research_types", "urg_read_53")
-_emit_reads_through("l4", "research_types", "urg_read_54")
-_emit_reads_through("l4", "research_types", "urg_read_55")
-_emit_reads_through("l4", "research_types", "urg_read_56")
-_emit_reads_through("l4", "research_types", "urg_read_57")
-_emit_reads_through("l4", "research_types", "urg_read_58")
-_emit_reads_through("l4", "research_types", "urg_read_59")
-_emit_reads_through("l4", "research_types", "urg_read_60")
-_emit_reads_through("l4", "research_types", "urg_read_61")
-_emit_reads_through("l4", "research_types", "urg_read_62")
-_emit_reads_through("l4", "research_types", "urg_read_63")
-_emit_reads_through("l4", "research_types", "urg_read_64")
-_emit_reads_through("l4", "research_types", "urg_read_65")
-_emit_reads_through("l4", "research_types", "urg_read_66")
-_emit_reads_through("l4", "research_types", "urg_read_67")
 apps_research domain types — Autonomous Research Engine.
 
 All types are frozen dataclasses. Every artifact carries provenance.
@@ -126,7 +59,7 @@ class ComparisonRow:
     """One row in a comparison matrix."""
 
     subject: str
-    dimensions: dict[str, str]
+    dimensions: dict[str, str] = field(default_factory=dict)
 
 
 @dataclass(frozen=True)
@@ -146,7 +79,7 @@ class ResearchSection:
 class ResearchRequest:
     """Input contract for a single research run."""
 
-    topic: str
+    topic: str = ""
     mode: ArtifactMode = ArtifactMode.BRIEF
     audience_style: AudienceStyle = AudienceStyle.TECHNICAL
     comparison_subjects: list[str] = field(default_factory=list)
@@ -160,10 +93,10 @@ class ResearchRequest:
 class ResearchResult:
     """Output contract for a single research run."""
 
-    trace_id: str
-    topic: str
-    mode: str
-    status: ResearchStatus
+    trace_id: str = ""
+    topic: str = ""
+    mode: str = ""
+    status: ResearchStatus = ResearchStatus.PENDING
     sections: list[ResearchSection] = field(default_factory=list)
     comparison_matrix: list[ComparisonRow] = field(default_factory=list)
     source_register: list[SourceEntry] = field(default_factory=list)
@@ -183,7 +116,7 @@ class ResearchResult:
 class ResearchRunSummary:
     """Top-level run summary artifact."""
 
-    trace_id: str
+    trace_id: str = ""
     app: str = "apps_research"
     version: str = "1.0.0"
     status: str = "pending"
