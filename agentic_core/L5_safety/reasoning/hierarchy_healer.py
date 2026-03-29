@@ -424,7 +424,7 @@ class HierarchyHealerAgent(SovereignBaseAgent):
                     "errors": [],
                 }
 
-        except Exception as e:
+        except (RuntimeError, OSError) as e:
             Logger.error(f"Heal operation failed: {e}")
             return {
                 "status": "failed",
@@ -573,7 +573,7 @@ class HierarchyHealerAgent(SovereignBaseAgent):
             results["created"].append(rel_label)
             Logger.info(f"   [✓] CREATED: {rel_label}/")
         # guardian: allow-silent-swallow
-        except Exception as e:
+        except (RuntimeError, OSError) as e:
             Logger.error(f"   [!] FAILED: {rel_label}: {e}")
             results["errors"].append(f"Failed to create {rel_label}: {e}")
 
@@ -907,7 +907,7 @@ class HierarchyHealerAgent(SovereignBaseAgent):
             else:
                 Logger.info(f"      [!] SKIP (exists): {py_file.name}")
         # guardian: allow-silent-swallow
-        except Exception as e:
+        except (RuntimeError, OSError) as e:
             results["errors"].append(f"{py_file.name}: {e}")
 
     def _relocate_l3_territory_files(
@@ -1046,7 +1046,7 @@ class HierarchyHealerAgent(SovereignBaseAgent):
             else:
                 Logger.info(f"      [!] SKIP (exists): {py_file.name}")
         # guardian: allow-silent-swallow
-        except Exception as e:
+        except (RuntimeError, OSError) as e:
             results["errors"].append(f"{py_file.name}: {e}")
 
     def _cleanup_empty_folder(self, folder_path: Path, folder_label: str, results: dict[str, Any]) -> None:
@@ -1057,7 +1057,7 @@ class HierarchyHealerAgent(SovereignBaseAgent):
                 Logger.info(f"      [✓] REMOVED empty folder: {folder_label}")
                 results["folders_removed"] += 1
         # guardian: allow-silent-swallow
-        except Exception as e:
+        except (RuntimeError, OSError) as e:
             results["errors"].append(f"Remove {folder_label}: {e}")
 
     # ========================================================================
@@ -1218,7 +1218,7 @@ class HierarchyHealerAgent(SovereignBaseAgent):
                 )
                 return 0
 
-        except Exception as e:
+        except (RuntimeError, OSError) as e:
             # Failsafe: If healing fails, log error
             Logger.error(f"  [ERROR] Healing failed for {rel}: {e}")
             return 0
@@ -1463,7 +1463,7 @@ class HierarchyHealerAgent(SovereignBaseAgent):
                     else:
                         Logger.error(f"      [!] ARCHIVE FAILED: {file_path.name} - {gk_result.error}")
             # guardian: allow-silent-swallow
-            except Exception as e:
+            except (RuntimeError, OSError) as e:
                 errors.append(f"Failed to purge {file_path}: {e}")
 
         if violations_found > 0:
@@ -1704,7 +1704,7 @@ class HierarchyHealerAgent(SovereignBaseAgent):
             return {**parent_result, **metrics}
 
         # guardian: allow-silent-swallow
-        except Exception as e:
+        except (RuntimeError, OSError) as e:
             Logger.error(f"Hierarchy healing failed: {e}")
             return {**parent_result, "errors": parent_result.get("errors", 0) + 1}
         finally:
@@ -1733,7 +1733,7 @@ class HierarchyHealerAgent(SovereignBaseAgent):
                 "confidence": 0.8,
             }
 
-        except Exception as e:
+        except (RuntimeError, OSError) as e:
             return {"status": "error", "error": str(e)}
 
     # ========================================================================
@@ -1911,7 +1911,7 @@ class HierarchyHealerAgent(SovereignBaseAgent):
                         action["error"] = gk_result.error
                         results["errors"].append(f"Failed to move {filename}: {gk_result.error}")
                 # guardian: allow-silent-swallow
-                except Exception as e:
+                except (RuntimeError, OSError) as e:
                     action["error"] = str(e)
                     results["errors"].append(f"Failed to move {filename}: {e}")
 
@@ -2017,7 +2017,7 @@ class HierarchyHealerAgent(SovereignBaseAgent):
                         action["error"] = gk_result.error
                         result["errors"].append(f"Failed to move {src_file}: {gk_result.error}")
                 # guardian: allow-silent-swallow
-                except Exception as e:
+                except (RuntimeError, OSError) as e:
                     action["error"] = str(e)
                     result["errors"].append(f"Failed to move {src_file}: {e}")
 
@@ -2031,7 +2031,7 @@ class HierarchyHealerAgent(SovereignBaseAgent):
                     result["folder_removed"] = True
                     Logger.info(f"   [✓] REMOVED empty folder: {folder_name}/")
             # guardian: allow-silent-swallow
-            except Exception as e:
+            except (RuntimeError, OSError) as e:
                 result["errors"].append(f"Failed to remove {folder_name}/: {e}")
 
         return result
@@ -2077,7 +2077,7 @@ class HierarchyHealerAgent(SovereignBaseAgent):
                 result["handled"] = True
                 Logger.info(f"   [✓] ADDED to .gitignore: {coverage_entry}")
             # guardian: allow-silent-swallow
-            except Exception as e:
+            except (RuntimeError, OSError) as e:
                 action["error"] = str(e)
 
         result["actions"].append(action)

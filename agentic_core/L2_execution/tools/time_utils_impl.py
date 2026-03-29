@@ -203,7 +203,7 @@ class TimeTools:
         except ImportError:
             return "Error: 'pytz' module not installed for timezone operations. Please install it (`pip install pytz`)."
         # guardian: allow-silent-swallow
-        except Exception as e:
+        except (RuntimeError, ValueError) as e:
             return f"Error during fallback import for time tools: {e}"
         try:
             tz = pytz.timezone(timezone)
@@ -212,7 +212,7 @@ class TimeTools:
         except pytz.UnknownTimeZoneError:
             return f"Error: Unknown timezone '{timezone}'. Please provide a valid IANA timezone string."
         # guardian: allow-silent-swallow
-        except Exception as e:
+        except (RuntimeError, ValueError) as e:
             return f"Error getting time with pytz: {e}"
 
     def get_current_time(self, timezone: str = "UTC") -> str:
@@ -245,7 +245,7 @@ class TimeTools:
             Logger.warning("MCP Time client not found, falling back to local time calculation.")
             return self._get_current_time_fallback(timezone)
         # guardian: allow-silent-swallow
-        except Exception as e:
+        except (RuntimeError, ValueError) as e:
             return f"Error with MCP Time client for get_current_time: {e}"
 
     def convert_time(self, source_timezone: str, time: str, target_timezone: str) -> str:
@@ -269,7 +269,7 @@ class TimeTools:
         except ImportError:
             return "Error: MCP Time client not available for time conversion. This functionality requires 'mcp_time_client'."
         # guardian: allow-silent-swallow
-        except Exception as e:
+        except (RuntimeError, ValueError) as e:
             return f"Error with MCP Time client for convert_time: {e}"
 
 

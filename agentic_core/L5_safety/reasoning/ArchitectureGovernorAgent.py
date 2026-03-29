@@ -253,7 +253,7 @@ class ArchitectureGovernorAgent(SovereignBaseAgent):
                     "upward_mutations": _raw.get("upward_mutations", []),
                 }
         # guardian: allow-silent-swallow
-        except Exception:
+        except (RuntimeError, OSError):
             pass
         Logger.info(
             f"ArchitectureGovernorAgent initialized (auto_approve={self.auto_approve}, ci_mode={self.ci_mode})"
@@ -389,7 +389,7 @@ class ArchitectureGovernorAgent(SovereignBaseAgent):
                     "errors": [],
                 }
         # guardian: allow-silent-swallow
-        except Exception as e:
+        except (RuntimeError, OSError) as e:
             Logger.error(f"Heal operation failed: {e}")
             return {
                 "status": "failed",
@@ -546,7 +546,7 @@ class ArchitectureGovernorAgent(SovereignBaseAgent):
                             f"[{agent_name}] SSOT Cleanup reported errors: {cleanup_stats['errors']}"
                         )
                 # guardian: allow-silent-swallow
-                except Exception as e:
+                except (RuntimeError, OSError) as e:
                     Logger.error(f"[{agent_name}] SSOT Cleanup Sub-routine failed: {e}")
             return {
                 "violations_found": violations_found,
@@ -709,7 +709,7 @@ class ArchitectureGovernorAgent(SovereignBaseAgent):
                     }
                     violation_details.append(violation_dict)
         # guardian: allow-silent-swallow
-        except Exception as e:
+        except (RuntimeError, OSError) as e:
             Logger.error(f"Guardian scan failed: {e}")
             total_errors += 1
         return {
@@ -764,7 +764,7 @@ class ArchitectureGovernorAgent(SovereignBaseAgent):
             reason += f" (confidence: {decision.confidence:.2f})"
             return (False, reason)
         # guardian: allow-silent-swallow
-        except Exception as e:
+        except (RuntimeError, OSError) as e:
             Logger.warning(f"Cognitive triage failed, using fallback: {e}")
             return (False, "File outside sovereign territories (cognitive triage unavailable)")
 
@@ -876,7 +876,7 @@ class ArchitectureGovernorAgent(SovereignBaseAgent):
                 Logger.info(f"    [RECOMMENDATION] {fix.fix_type}: {fix.new_import}")
                 return False
         # guardian: allow-silent-swallow
-        except Exception as e:
+        except (RuntimeError, OSError) as e:
             Logger.error(f"    ❌ Gravity repair failed: {e}")
             return False
 
@@ -924,7 +924,7 @@ class ArchitectureGovernorAgent(SovereignBaseAgent):
                         Logger.warning(f"    ⚠️ Rename failed: {result.error}")
                         return False
                 # guardian: allow-silent-swallow
-                except Exception as e:
+                except (RuntimeError, OSError) as e:
                     Logger.error(f"    ❌ Rename failed: {e}")
                     return False
             else:
@@ -1050,7 +1050,7 @@ class ArchitectureGovernorAgent(SovereignBaseAgent):
                 else:
                     Logger.warning(f"  [DEDUP] Failed to archive {file_path.name}: {result.error}")
             # guardian: allow-silent-swallow
-            except Exception as e:
+            except (RuntimeError, OSError) as e:
                 Logger.error(f"  [DEDUP] Error archiving {file_path.name}: {e}")
         return archived_count
 
@@ -1179,7 +1179,7 @@ class ArchitectureGovernorAgent(SovereignBaseAgent):
                         }
                     )
         # guardian: allow-silent-swallow
-        except Exception as e:
+        except (RuntimeError, OSError) as e:
             Logger.error(f"Drift check failed: {e}")
         return violations
 
@@ -1523,6 +1523,6 @@ class ArchitectureGovernorAgent(SovereignBaseAgent):
                 Logger.warning(f"    [COGNITIVE] Unknown action: {decision.action}")
                 return False
         # guardian: allow-silent-swallow
-        except Exception as e:
+        except (RuntimeError, OSError) as e:
             Logger.error(f"    [COGNITIVE] Error processing disposition: {e}")
             return False

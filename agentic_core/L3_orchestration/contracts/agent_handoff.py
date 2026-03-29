@@ -453,7 +453,7 @@ class HandoffDispatcher:
                 handoff.task_id or handoff.handoff_key,
             )
 
-        except Exception as _viz_exc:
+        except (RuntimeError, ValueError) as _viz_exc:
             logger.error("WORKFLOW_VISUALIZATION_ERROR: %s", _viz_exc)
             # Continue - visualization failure should not block execution
 
@@ -470,7 +470,7 @@ class HandoffDispatcher:
                     workflow_status=WorkflowStatus.COMPLETED,
                     trace_context=trace_context,
                 )
-            except Exception as _viz_exc:
+            except (RuntimeError, ValueError) as _viz_exc:
                 logger.error("WORKFLOW_COMPLETION_ERROR: %s", _viz_exc)
 
             logger.info(
@@ -491,7 +491,7 @@ class HandoffDispatcher:
                     workflow_status=WorkflowStatus.FAILED,
                     trace_context=trace_context,
                 )
-            except Exception as _viz_exc:
+            except (RuntimeError, ValueError) as _viz_exc:
                 logger.error("WORKFLOW_FAILURE_ERROR: %s", _viz_exc)
 
             logger.error("HANDOFF_FAILED dst=%s key=%s error=%s", handoff.dst, handoff.handoff_key[:12], exc)

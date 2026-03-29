@@ -364,7 +364,7 @@ class SubatomicHopAgent(SovereignBaseAgent):
                     agent_id="orchestrator_engine",
                 )
             # guardian: allow-silent-swallow
-            except Exception as exc:
+            except (RuntimeError, ValueError) as exc:
                 Logger.warning("[V15] Gateway audit failed (LOG_ONLY): %s", exc)
         trace_id: Any = context.get("trace_id", self.id)
         return await self._run_with_zero_trust(context, trace_id)
@@ -496,7 +496,7 @@ class SubatomicHopAgent(SovereignBaseAgent):
             result = StateAnalysisMixin._check_past_failures([])
             return result["recommendation"]
         # guardian: allow-silent-swallow
-        except Exception:
+        except (RuntimeError, ValueError):
             return "Unable to check past failures"
 
     async def _execute_act_stage(self, plan: AgentPlan, trace_id: str) -> tuple[list, float]:

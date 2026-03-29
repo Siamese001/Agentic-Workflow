@@ -373,7 +373,7 @@ class StructuralEngineerAgent(SovereignBaseAgent, HealerMixin):
             with open(resolved_path, encoding="utf-8") as f:
                 original_code = f.read()
         # guardian: allow-silent-swallow
-        except Exception as e:
+        except (RuntimeError, OSError) as e:
             print(f"      [!] Cannot read {file_path}: {e}")
             return
         violation_details = "\n".join(violations)
@@ -404,7 +404,7 @@ class StructuralEngineerAgent(SovereignBaseAgent, HealerMixin):
                 print(f"      [OK] Round {round_num}: Fixed {Path(file_path).name}")
                 return
             # guardian: allow-silent-swallow
-            except Exception as e:
+            except (RuntimeError, OSError) as e:
                 print(f"      [X] Cannot write {file_path}: {e}")
                 return
         print(f"      [X] Failed to fix {Path(file_path).name} after {max_rounds} rounds")

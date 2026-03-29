@@ -240,7 +240,7 @@ class TieredBatchProcessor:
             try:
                 return json.loads(self.checkpoint_file.read_text(encoding="utf-8"))
             # guardian: allow-silent-swallow
-            except Exception:
+            except (RuntimeError, OSError):
                 return {}
         return {}
 
@@ -270,7 +270,7 @@ class TieredBatchProcessor:
                 self._semantic_cache = SemanticCacheManager(api_key=self.agent.api_key)
                 Logger.info("[TIERED] SemanticCacheManager initialized")
             # guardian: allow-silent-swallow
-            except Exception as e:
+            except (RuntimeError, OSError) as e:
                 Logger.warning(f"[TIERED] SemanticCacheManager unavailable: {e}")
                 self._semantic_cache = None
         return self._semantic_cache
@@ -297,7 +297,7 @@ class TieredBatchProcessor:
             content = self.agent._read_file_safe(Path(file_path))
             return cache.get_cached_decision(content, violation_type)
         # guardian: allow-silent-swallow
-        except Exception as e:
+        except (RuntimeError, OSError) as e:
             Logger.debug(f"[TIERED] cache check failed: {e}")
         return None
 

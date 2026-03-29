@@ -394,7 +394,7 @@ class SafetyExecutorAgent(SovereignBaseAgent):
                         message=f"Safety score {score:.2f} below threshold {self._agent_config.safety_score_threshold}",
                     )
         # guardian: allow-silent-swallow
-        except Exception as e:
+        except (RuntimeError, OSError) as e:
             Logger.error(f"Safety check error: {e}")
         return ExecutionResult(status=ExecutionStatus.ALLOWED, message="Safety checks passed")
 
@@ -413,7 +413,7 @@ class SafetyExecutorAgent(SovereignBaseAgent):
                     else:
                         Logger.warning(f"Non-blocking gate failed: {gate.name}")
             # guardian: allow-silent-swallow
-            except Exception as e:
+            except (RuntimeError, OSError) as e:
                 Logger.error(f"Gate {gate.name} error: {e}")
                 if gate.blocking:
                     return ExecutionResult(
@@ -446,7 +446,7 @@ class SafetyExecutorAgent(SovereignBaseAgent):
                 if score < self._agent_config.safety_score_threshold:
                     return (True, f"Safety score {score:.2f} below threshold")
         # guardian: allow-silent-swallow
-        except Exception as e:
+        except (RuntimeError, OSError) as e:
             Logger.error(f"Check error: {e}")
         return (False, "Input passed safety checks")
 

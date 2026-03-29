@@ -605,7 +605,7 @@ def _run_guardrail(
             metadata={"tool_name": tool_name, "action_class": action_class.value},
         )
         return result.allowed
-    except Exception as exc:
+    except (RuntimeError, OSError) as exc:
         logger.warning("TOOL_SAFETY_CONTRACT guardrail check failed for tool=%s: %s", tool_name, exc)
         # Fail-closed: if guardrail errors, deny
         return False
@@ -641,7 +641,7 @@ def _route_to_human_review(
             },
         )
         queue.enqueue(verdict)
-    except Exception as exc:
+    except (RuntimeError, OSError) as exc:
         logger.warning("TOOL_SAFETY_CONTRACT human_review routing failed: %s", exc)
 
 

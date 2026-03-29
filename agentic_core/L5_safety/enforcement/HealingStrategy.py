@@ -282,7 +282,7 @@ class HealingStrategy:
             if agent:
                 self._agents[agent_name] = agent
             return agent
-        except Exception as e:
+        except (RuntimeError, OSError) as e:
             Logger.error(f"[HealingStrategy] Failed to load {agent_name}: {e}")
             return None
 
@@ -295,7 +295,7 @@ class HealingStrategy:
                 )
 
                 self._dedup_agent = TwoPhaseDeduplicationAgent(project_root=self.project_root)
-            except Exception as e:
+            except (RuntimeError, OSError) as e:
                 Logger.error(f"[HealingStrategy] Failed to load TwoPhaseDeduplicationAgent: {e}")
                 return None
         return self._dedup_agent
@@ -421,7 +421,7 @@ class HealingStrategy:
                 }
             execution_time_ms = (datetime.now() - start_time).total_seconds() * 1000
             return self._normalize_result(result, execution_time_ms)
-        except Exception as e:
+        except (RuntimeError, OSError) as e:
             execution_time_ms = (datetime.now() - start_time).total_seconds() * 1000
             Logger.error(f"[HealingStrategy] Error executing {agent_name}: {e}")
             return {

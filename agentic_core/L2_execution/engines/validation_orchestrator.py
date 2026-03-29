@@ -458,7 +458,7 @@ class ValidationOrchestrator(SovereignBaseAgent):
             Logger.error(f"Healing error for {file_path}, key {violation_key}: {e}", exc_info=True)
             print(f"      [ALERT] Healing error for {Path(file_path).name}: {e}", flush=True)
             return False
-        except Exception as e:
+        except (RuntimeError, ValueError) as e:
             Logger.critical(
                 f"Critical healing error for {file_path}, key {violation_key}: {e}", exc_info=True
             )
@@ -612,7 +612,7 @@ class ValidationOrchestrator(SovereignBaseAgent):
                 "artifacts": [],
                 "errors": [str(e)],
             }
-        except Exception as e:
+        except (RuntimeError, ValueError) as e:
             Logger.critical(f"Critical healing error in CanonBaseAgent.heal(): {e}", exc_info=True)
             return {
                 "status": "failed",

@@ -249,7 +249,7 @@ class OrchestrationHandshakeAgent(SovereignBaseAgent, CoreOrchestrationAgent):
             try:
                 self.redis.set(cache_key, json.dumps(capable), ex=3600)
             # guardian: allow-silent-swallow
-            except Exception:
+            except (RuntimeError, ValueError):
                 pass
         return sorted(capable, key=lambda x: x["confidence"], reverse=True)
 
@@ -358,7 +358,7 @@ class OrchestrationHandshakeAgent(SovereignBaseAgent, CoreOrchestrationAgent):
                     _hil_log_dir = Path(__file__).resolve().parents[2] / "L0_routing" / "logs"
                     _hil_emitter.flush_to_artifacts_dir(_hil_log_dir)
                 # guardian: allow-silent-swallow
-                except Exception as _hil_exc:
+                except (RuntimeError, ValueError) as _hil_exc:
                     import logging as _hil_logging
 
                     _hil_logging.getLogger(__name__).error(
@@ -397,7 +397,7 @@ class OrchestrationHandshakeAgent(SovereignBaseAgent, CoreOrchestrationAgent):
             self.cache_routing_decision(Task, audit)
             return audit
         # guardian: allow-silent-swallow
-        except Exception as e:
+        except (RuntimeError, ValueError) as e:
             return {
                 "status": "delegation_failed",
                 "error": str(e),
@@ -455,7 +455,7 @@ class OrchestrationHandshakeAgent(SovereignBaseAgent, CoreOrchestrationAgent):
                 "errors": [],
             }
         # guardian: allow-silent-swallow
-        except Exception as e:
+        except (RuntimeError, ValueError) as e:
             return {
                 "status": "failed",
                 "details": f"OrchestrationHandshakeAgent heal() failed: {str(e)}",

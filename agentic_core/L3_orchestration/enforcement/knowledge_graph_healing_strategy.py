@@ -295,7 +295,7 @@ class KnowledgeGraphHealingStrategy:
                     f"[L0 KG HEALING] No entities/relations met confidence threshold for {source_id}"
                 )
                 return False
-        except Exception as e:
+        except (RuntimeError, ValueError) as e:
             Logger.error(f"[L0 KG HEALING] KG healing failed for {fix.get('source_id', 'unknown')}: {e}")
             return False
 
@@ -398,7 +398,7 @@ class KnowledgeGraphHealingStrategy:
                 f"[L0 KG HEALING] Extraction complete for {source_id}: {len(entities)} entities, {len(relations)} relations"
             )
             return result
-        except Exception as e:
+        except (RuntimeError, ValueError) as e:
             Logger.error(f"[L0 KG HEALING] Entity/relation extraction failed: {e}")
             return None
 
@@ -435,7 +435,7 @@ class KnowledgeGraphHealingStrategy:
                 f"[L0 KG HEALING] Persistence complete for {source_id}: {len(entities)} entities, {len(relations)} relations"
             )
             return True
-        except Exception as e:
+        except (RuntimeError, ValueError) as e:
             Logger.error(f"[L0 KG HEALING] KG data persistence failed: {e}")
             return False
 

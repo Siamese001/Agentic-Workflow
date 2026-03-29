@@ -493,7 +493,7 @@ def dispatch_healing(
                     success=success,
                 )
             # guardian: allow-silent-swallow
-            except Exception as e:  # guardian: allow-silent-swallower
+            except (RuntimeError, ValueError) as e:  # guardian: allow-silent-swallower
                 logger.warning("outcome_write_back_hook raised — continuing", exc_info=True)
         
         # Emit tier dispatch outcome to system learning
@@ -513,7 +513,7 @@ def dispatch_healing(
                 if pattern_advice is not None and timestamp_utc is not None:
                     _emit_pattern_advice(pattern_advice, healing_input, agent_name, timestamp_utc)
             # guardian: allow-silent-swallow
-            except Exception as e:  # guardian: allow-silent-swallower
+            except (RuntimeError, ValueError) as e:  # guardian: allow-silent-swallower
                 logger.warning("pattern_advisor raised — continuing", exc_info=True)
         # Phase 4: Publish outcome to MetaLearningBus (proposal_only=True)
         if meta_outcome_bus_hook is not None:
@@ -555,7 +555,7 @@ def _emit_outcome(
     try:
         sink.emit(event)
     # guardian: allow-silent-swallow
-    except Exception:  # noqa: BLE001
+    except (RuntimeError, ValueError):  # noqa: BLE001
         logger.debug("outcome_sink.emit failed; swallowed to preserve dispatch path")
 
 
@@ -593,7 +593,7 @@ def _emit_resource_prediction(
             },
         )
     # guardian: allow-silent-swallow
-    except Exception:  # noqa: BLE001  # guardian: allow-silent-swallower
+    except (RuntimeError, ValueError):  # noqa: BLE001  # guardian: allow-silent-swallower
         logger.debug("resource prediction failed; swallowed to preserve dispatch path")
 
 
@@ -654,7 +654,7 @@ def _emit_rollback_refinement(
             },
         )
     # guardian: allow-silent-swallow
-    except Exception:  # noqa: BLE001  # guardian: allow-silent-swallower
+    except (RuntimeError, ValueError):  # noqa: BLE001  # guardian: allow-silent-swallower
         logger.debug("rollback refinement failed; swallowed to preserve dispatch path")
 
 
@@ -691,7 +691,7 @@ def _emit_tier_dispatch_outcome(
             agent_name=agent_name,
             trace_id=healing_input.trace_id,
         )
-    except Exception:
+    except (RuntimeError, ValueError):
         # System learning unavailable - continue without emission
         pass
 
@@ -717,7 +717,7 @@ def _emit_pattern_advice(
             },
         )
     # guardian: allow-silent-swallow
-    except Exception:  # guardian: allow-silent-swallower
+    except (RuntimeError, ValueError):  # guardian: allow-silent-swallower
         logger.debug("pattern advice emission failed; swallowed to preserve dispatch path")
 
 

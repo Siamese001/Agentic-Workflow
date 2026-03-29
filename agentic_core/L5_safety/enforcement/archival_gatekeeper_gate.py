@@ -336,7 +336,7 @@ class ArchivalGatekeeper:
             try:
                 _wg.append_text(self.audit_log_path, json.dumps(result.to_dict()) + "\n")
             # guardian: allow-silent-swallow
-            except Exception as e:
+            except (RuntimeError, OSError) as e:
                 Logger.error(f"[ArchivalGatekeeper] Failed to write audit log: {e}")
             status = "SUCCESS" if result.success else "FAILED"
             Logger.info(
@@ -769,7 +769,7 @@ class ArchivalGatekeeper:
                 except json.JSONDecodeError:
                     continue
         # guardian: allow-silent-swallow
-        except Exception as e:
+        except (RuntimeError, OSError) as e:
             Logger.error(f"[ArchivalGatekeeper] Failed to read audit log: {e}")
         return entries
 

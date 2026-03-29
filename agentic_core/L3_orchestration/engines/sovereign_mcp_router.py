@@ -398,7 +398,7 @@ class SovereignMcpRouter(SovereignBaseAgent):
                         "pruned": cleanup_result.get("pruned_files", []),
                         "insight": "L0 hygiene restored via automated pruning",
                     }
-                except Exception as cleanup_e:
+                except (RuntimeError, ValueError) as cleanup_e:
                     Logger.warning(f"[L0 MCP] Cleanup failed: {cleanup_e} — falling back to diagnostics")
                     diag_result: Any = await self.manager.call_tool("l0_diagnostics", {"scope": "repository"})
                     return {"status": "l0_diagnostics", "tool": "l0_diagnostics", "report": diag_result}
@@ -428,7 +428,7 @@ class SovereignMcpRouter(SovereignBaseAgent):
                         },
                     )
                     return {"status": "l2_deepwiki_qa", "answer": answer.get("response", "")}
-                except Exception as wiki_e:
+                except (RuntimeError, ValueError) as wiki_e:
                     Logger.warning(f"[L2 DEEPWIKI] Wiki access failed: {wiki_e} — falling back to search")
                     try:
                         search_result: Any = await self.manager.call_tool(
@@ -439,7 +439,7 @@ class SovereignMcpRouter(SovereignBaseAgent):
                             },
                         )
                         return {"status": "l2_research", "tool": "brave_search", "results": search_result}
-                    except Exception as search_e:
+                    except (RuntimeError, ValueError) as search_e:
                         Logger.error(f"[L2 EXECUTION] Brave search failed: {search_e}")
                         return {"status": "fallback", "reason": str(search_e)}
             elif key_id == 42:
@@ -447,7 +447,7 @@ class SovereignMcpRouter(SovereignBaseAgent):
                     "fission_write", {"monolith_path": file_path, "files": {}}
                 )
             return {"status": "no_route", "key_id": key_id}
-        except Exception as e:
+        except (RuntimeError, ValueError) as e:
             Logger.error(f"[MCP FAILURE] Tool call failed for Key {key_id}: {e}")
             get_mcp_authority().record_breach(str(e))
             return {"status": "error", "exception": str(e)}

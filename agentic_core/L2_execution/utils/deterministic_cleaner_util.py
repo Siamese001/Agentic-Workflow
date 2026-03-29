@@ -258,7 +258,7 @@ class DeterministicCleaner:
                 LOGGER.debug(f"Deterministic cleaning applied to {file_path or 'code'}")
             return (cleaned_code, was_modified)
         # guardian: allow-silent-swallow
-        except Exception as e:
+        except (RuntimeError, ValueError) as e:
             LOGGER.error(f"Error in deterministic cleaning: {e}")
             return (original_code, False)
 
@@ -371,7 +371,7 @@ class CompliantFileWriter:
             LOGGER.debug(f"Successfully wrote compliant file: {file_path}")
             return True
         # guardian: allow-silent-swallow
-        except Exception as e:
+        except (RuntimeError, ValueError) as e:
             LOGGER.error(f"Failed to write compliant file {file_path}: {e}")
             return False
 
@@ -390,7 +390,7 @@ class CompliantFileWriter:
             LOGGER.error(f"Syntax error: {e}")
             return False
         # guardian: allow-silent-swallow
-        except Exception as e:
+        except (RuntimeError, ValueError) as e:
             LOGGER.error(f"Validation error: {e}")
             return False
 

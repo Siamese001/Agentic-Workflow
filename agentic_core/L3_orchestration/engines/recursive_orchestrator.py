@@ -445,7 +445,7 @@ class RecursiveOrchestrator(SovereignBaseAgent):
                 return hop_spec.get("hop_function")
             return None
         # guardian: allow-silent-swallow
-        except Exception as e:
+        except (RuntimeError, ValueError) as e:
             logger.warning(f"Failed to extract function name for {node_id}: {e}")
             return None
 
@@ -524,7 +524,7 @@ class RecursiveOrchestrator(SovereignBaseAgent):
                     metrics["errors"] = metrics.get("errors", 0) + 1
                     logger.error("DAG ACYCLICITY VIOLATION DETECTED!")
         # guardian: allow-silent-swallow
-        except Exception as e:
+        except (RuntimeError, ValueError) as e:
             logger.error(f"RecursiveOrchestrator healing failed: {e}")
             metrics["errors"] = metrics.get("errors", 0) + 1
         return metrics

@@ -335,7 +335,7 @@ class CodeValidatorAgent(SovereignBaseAgent):
                     ),
                 )
         # guardian: allow-silent-swallow
-        except Exception as e:
+        except (RuntimeError, OSError) as e:
             self.Logger.warning(f"Could not read {file_path}: {e}")
 
         return violations
@@ -386,7 +386,7 @@ class CodeValidatorAgent(SovereignBaseAgent):
                         ),
                     )
         # guardian: allow-silent-swallow
-        except Exception as e:
+        except (RuntimeError, OSError) as e:
             self.Logger.warning(f"Could not read {file_path}: {e}")
 
         return violations
@@ -438,7 +438,7 @@ class CodeValidatorAgent(SovereignBaseAgent):
                             ),
                         )
         # guardian: allow-silent-swallow
-        except Exception as e:
+        except (RuntimeError, OSError) as e:
             self.Logger.warning(f"Could not read {file_path}: {e}")
 
         return violations
@@ -472,7 +472,7 @@ class CodeValidatorAgent(SovereignBaseAgent):
                         ),
                     )
         # guardian: allow-silent-swallow
-        except Exception as e:
+        except (RuntimeError, OSError) as e:
             self.Logger.warning(f"Could not read {file_path}: {e}")
 
         return violations
@@ -642,7 +642,7 @@ class CodeValidatorAgent(SovereignBaseAgent):
             Logger.warning(f"[CODE_VALIDATOR] Syntax violation requires manual fix: {path}")
             return {"violations_fixed": 0, "violations_found": 1, "errors": 0, "skipped": 1}
         # guardian: allow-silent-swallow
-        except Exception as e:
+        except (RuntimeError, OSError) as e:
             Logger.error(f"[CODE_VALIDATOR] Failed to handle syntax violation: {e}")
             return {"violations_fixed": 0, "violations_found": 1, "errors": 1, "skipped": 0}
 
@@ -667,7 +667,7 @@ class CodeValidatorAgent(SovereignBaseAgent):
             Logger.info(f"[CODE_VALIDATOR] Canon healing result: {result}")
             return result
         # guardian: allow-silent-swallow
-        except Exception as e:
+        except (RuntimeError, OSError) as e:
             Logger.error(f"[CODE_VALIDATOR] Failed to heal canon violation: {e}")
             return {"violations_fixed": 0, "violations_found": 1, "errors": 1, "skipped": 0}
 
@@ -691,7 +691,7 @@ class CodeValidatorAgent(SovereignBaseAgent):
             Logger.info(f"[CODE_VALIDATOR] Async healing result: {result}")
             return result
         # guardian: allow-silent-swallow
-        except Exception as e:
+        except (RuntimeError, OSError) as e:
             Logger.error(f"[CODE_VALIDATOR] Failed to heal async violation: {e}")
             return {"violations_fixed": 0, "violations_found": 1, "errors": 1, "skipped": 0}
 
@@ -715,7 +715,7 @@ class CodeValidatorAgent(SovereignBaseAgent):
             Logger.info(f"[CODE_VALIDATOR] Print healing result: {result}")
             return result
         # guardian: allow-silent-swallow
-        except Exception as e:
+        except (RuntimeError, OSError) as e:
             Logger.error(f"[CODE_VALIDATOR] Failed to heal print violation: {e}")
             return {"violations_fixed": 0, "violations_found": 1, "errors": 1, "skipped": 0}
 

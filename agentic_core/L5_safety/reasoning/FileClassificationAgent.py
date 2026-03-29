@@ -1454,7 +1454,7 @@ class FileClassificationHealerAgent(*BASE_CLASSES):
             prof = _adg_idx.profile_for(rel)
             signals = sorted(prof.all_signals)
             return (prof.behavioral_score, signals)
-        except Exception as e:
+        except (RuntimeError, OSError) as e:
             self.logger.debug(f"ADG profile unavailable for {path.name}: {e}")
             return (0.5, [])
 
@@ -4391,7 +4391,7 @@ class FileClassificationHealerAgent(*BASE_CLASSES):
                                 _wg.remove_file(conflict_path)
                                 count += 1
                         # guardian: allow-silent-swallow
-                        except Exception as e:
+                        except (RuntimeError, OSError) as e:
                             print(f"  [ERROR] Cleanup failed for {filename}: {e}")
 
         if count > 0:
@@ -4507,7 +4507,7 @@ class FileClassificationHealerAgent(*BASE_CLASSES):
                         _wg.write_text(path, new_content, encoding="utf-8")
                     count += 1
             # guardian: allow-silent-swallow
-            except Exception as e:
+            except (RuntimeError, OSError) as e:
                 print(f"  [ERROR] Refactoring failed in {path.name}: {e}")
                 continue
         return count
@@ -4670,7 +4670,7 @@ class FileClassificationHealerAgent(*BASE_CLASSES):
                     return False  # Violation NOT resolved — requires manual review
 
             # guardian: allow-silent-swallow
-            except Exception as e:
+            except (RuntimeError, OSError) as e:
                 print(f"  [ERROR] Failed to read {src}: {e}")
                 return False  # [HARDENED] Don't attempt rollback
 
@@ -4715,7 +4715,7 @@ class FileClassificationHealerAgent(*BASE_CLASSES):
             return True
 
         # guardian: allow-silent-swallow
-        except Exception as e:
+        except (RuntimeError, OSError) as e:
             print(f"[ERROR] Rollback failed: {e}")
             print(f"  [CRITICAL] Manual intervention required - file may be at {temp_path}")
 
@@ -5620,7 +5620,7 @@ class FileClassificationHealerAgent(*BASE_CLASSES):
 
             return f"{target_name}.py"
         # guardian: allow-silent-swallow
-        except Exception as e:
+        except (RuntimeError, OSError) as e:
             print(f"[ERROR] Classification failed: {e}")
             return "IGNORE"
 
@@ -5688,7 +5688,7 @@ class FileClassificationHealerAgent(*BASE_CLASSES):
             return {"violations_fixed": 1, "violations_found": 1, "errors": 0, "skipped": 0}
 
         # guardian: allow-silent-swallow
-        except Exception as e:
+        except (RuntimeError, OSError) as e:
             self.logger.error(f"  Error processing {path}: {e}")
             return {"violations_fixed": 0, "violations_found": 1, "errors": 1, "skipped": 0}
 
@@ -5866,7 +5866,7 @@ class FileClassificationHealerAgent(*BASE_CLASSES):
             }
 
         # guardian: allow-silent-swallow
-        except Exception as e:
+        except (RuntimeError, OSError) as e:
             print(f"[ERROR] FileClassificationAgent healing failed: {e}")
             return {"violations_found": 0, "violations_fixed": 0, "errors": 1, "skipped": 0}
         finally:

@@ -343,7 +343,7 @@ class ReportLocationAgent(AtomicExecutionMixin):
             _wg.ensure_dir(backup_path.parent)
             _wg.copy_file(file_path, backup_path)
             return backup_path
-        except Exception as e:
+        except (RuntimeError, OSError) as e:
             Logger.warning(f"[ReportLocationAgent] Backup failed for {file_path}: {e}")
             return None
 
@@ -404,7 +404,7 @@ class ReportLocationAgent(AtomicExecutionMixin):
                 result["status"] = "failed"
                 result["error"] = "Move operation failed"
         # guardian: allow-silent-swallow
-        except Exception as e:
+        except (RuntimeError, OSError) as e:
             result["status"] = "failed"
             result["error"] = str(e)
 

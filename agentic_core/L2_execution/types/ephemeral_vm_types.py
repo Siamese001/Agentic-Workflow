@@ -311,7 +311,7 @@ class EphemeralVm:
             return VmInstance
         except asyncio.TimeoutError:
             return self._handle_timeout(vm_id, timeout, start_time)
-        except Exception as e:  # guardian: allow-silent-swallow
+        except (RuntimeError, ValueError) as e:  # guardian: allow-silent-swallow
             return self._handle_execution_error(vm_id, e, start_time)
         finally:
             await self._teardown_vm(VmInstance, vm_id)
@@ -437,7 +437,7 @@ class EphemeralVm:
             )
         except asyncio.TimeoutError:
             raise
-        except Exception as e:  # guardian: allow-silent-swallow
+        except (RuntimeError, ValueError) as e:  # guardian: allow-silent-swallow
             return ExecutionResult(success=False, output="", error=str(e), exit_code=1)
 
     async def _execute_javascript(self, code: str, timeout: int) -> ExecutionResult:
@@ -466,7 +466,7 @@ class EphemeralVm:
             )
         except asyncio.TimeoutError:
             raise
-        except Exception as e:  # guardian: allow-silent-swallow
+        except (RuntimeError, ValueError) as e:  # guardian: allow-silent-swallow
             return ExecutionResult(success=False, output="", error=str(e), exit_code=1)
 
 

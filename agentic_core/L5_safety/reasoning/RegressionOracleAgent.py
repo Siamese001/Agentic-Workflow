@@ -424,7 +424,7 @@ class RegressionOracleAgent(SovereignBaseAgent):
                 report["message"] = "No regression tests passed"
             Logger.info(f"[RegressionOracleAgent] {report['message']}")
         # guardian: allow-silent-swallow
-        except Exception as e:
+        except (RuntimeError, OSError) as e:
             report["post_heal_status"] = "ERROR"
             report["message"] = f"Post-heal validation error: {e}"
             Logger.error(f"[RegressionOracleAgent] Post-heal validation failed: {e}")
@@ -475,7 +475,7 @@ class RegressionOracleAgent(SovereignBaseAgent):
                     )
                     action["applied"] = not dry_run
             # guardian: allow-silent-swallow
-            except Exception as e:
+            except (RuntimeError, OSError) as e:
                 action["error"] = str(e)
                 Logger.error(f"[RegressionOracleAgent] Cleanup error: {e}")
             actions.append(action)
@@ -555,7 +555,7 @@ class RegressionOracleAgent(SovereignBaseAgent):
                 "errors": [],
             }
         # guardian: allow-silent-swallow
-        except Exception as e:
+        except (RuntimeError, OSError) as e:
             return {
                 "status": "failed",
                 "details": f"RegressionOracleAgent heal() failed: {str(e)}",

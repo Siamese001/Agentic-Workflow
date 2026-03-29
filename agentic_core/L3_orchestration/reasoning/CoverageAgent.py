@@ -318,7 +318,7 @@ class CoverageAgent(SovereignBaseAgent):
             response.raise_for_status()
             data = response.json()
             return data.get("layer_counts", {})
-        except Exception as e:  # guardian: allow-silent-swallow
+        except (RuntimeError, ValueError) as e:  # guardian: allow-silent-swallow
             print(f"[{self.name}] Metrics fetch failed: {e}")
             return None
 
@@ -459,7 +459,7 @@ class CoverageAgent(SovereignBaseAgent):
                 metrics["violations_found"] += 1
             if metrics["violations_found"] == 0:
                 metrics["violations_fixed"] = 1
-        except Exception:  # guardian: allow-silent-swallow
+        except (RuntimeError, ValueError):  # guardian: allow-silent-swallow
             metrics["errors"] += 1
         finally:
             _call_path.discard(agent_name)
@@ -491,7 +491,7 @@ class CoverageAgent(SovereignBaseAgent):
                 "artifacts": [],
                 "errors": [],
             }
-        except Exception as e:  # guardian: allow-silent-swallow
+        except (RuntimeError, ValueError) as e:  # guardian: allow-silent-swallow
             return {
                 "status": "failed",
                 "details": f"CoverageAgent heal() failed: {str(e)}",

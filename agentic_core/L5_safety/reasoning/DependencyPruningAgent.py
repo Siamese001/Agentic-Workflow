@@ -348,7 +348,7 @@ class DependencyPruningAgent(SovereignBaseAgent):
             _bp = _gbp(_src, self.project_root)
             _adg_dead_imports = len(_bp.antipattern_signals)
         # guardian: allow-silent-swallow
-        except Exception:
+        except (RuntimeError, OSError):
             pass
         unused: list[str] = self._find_unused_deptry()
         if not unused:
@@ -390,6 +390,6 @@ class DependencyPruningAgent(SovereignBaseAgent):
                     "skipped": 0,
                 }
             # guardian: allow-silent-swallow
-            except Exception:
+            except (RuntimeError, OSError):
                 return {"violations_fixed": 0, "violations_found": 1, "errors": 1, "skipped": 0}
         return {"violations_fixed": 0, "violations_found": 1, "errors": 0, "skipped": 1}

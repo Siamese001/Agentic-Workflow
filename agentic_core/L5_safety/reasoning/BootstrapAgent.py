@@ -195,7 +195,7 @@ class BootstrapAgent(L0RoutingBase):
             self.cache_set("boot_check", "ok", ttl=5)
             return self.cache_get("boot_check") == "ok"
         # guardian: allow-silent-swallow
-        except Exception:
+        except (RuntimeError, OSError):
             return False
 
     def run_bootstrap(self) -> bool:
@@ -249,7 +249,7 @@ class BootstrapAgent(L0RoutingBase):
                 else:
                     violations_fixed.append(f"Critical file verified: {file_path}")
         # guardian: allow-silent-swallow
-        except Exception as e:
+        except (RuntimeError, OSError) as e:
             errors.append(f"Healing failed: {str(e)}")
         return {
             "violations_found": violations_found,
@@ -286,7 +286,7 @@ class BootstrapAgent(L0RoutingBase):
                 "errors": result.get("errors", []),
             }
         # guardian: allow-silent-swallow
-        except Exception as e:
+        except (RuntimeError, OSError) as e:
             return {
                 "status": "failed",
                 "details": f"BootstrapAgent heal() failed: {str(e)}",

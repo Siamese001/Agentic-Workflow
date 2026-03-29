@@ -597,7 +597,7 @@ class NervousSystemAgent(SovereignBaseAgent):
             emit_determinism_digest(_rtid, f"dd:{_rtid[:16]}")
             return result
         # guardian: allow-silent-swallow
-        except Exception as e:
+        except (RuntimeError, ValueError) as e:
             _rsa.observe_runtime_state("execute_error", stage="error", actor_id="NervousSystemAgent")
             from agentic_core.runtime.execution_trace import get_active_execution_trace  # noqa: PLC0415
 
@@ -766,7 +766,7 @@ class NervousSystemAgent(SovereignBaseAgent):
                 report["message"] = f"Phase {phase_name} post-validation: Partial completion"
             Logger.info(f"[NervousSystemAgent] {report['message']}")
         # guardian: allow-silent-swallow
-        except Exception as e:
+        except (RuntimeError, ValueError) as e:
             report["post_phase_status"] = "ERROR"
             report["message"] = f"Post-phase validation error: {e}"
             Logger.error(f"[NervousSystemAgent] Post-phase validation failed: {e}")
@@ -969,7 +969,7 @@ class NervousSystemAgent(SovereignBaseAgent):
                 "errors": [],
             }
         # guardian: allow-silent-swallow
-        except Exception as e:
+        except (RuntimeError, ValueError) as e:
             return {
                 "status": "failed",
                 "details": f"NervousSystemAgent heal() failed: {str(e)}",

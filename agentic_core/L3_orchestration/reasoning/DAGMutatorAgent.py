@@ -243,7 +243,7 @@ class GraphTransaction:
             self.manager.graph = self.transaction_graph
             Logger.debug("DAG Transaction committed successfully")
         # guardian: allow-silent-swallow
-        except Exception as e:
+        except (RuntimeError, ValueError) as e:
             self.manager.graph = self.original_graph
             Logger.error(f"DAG Transaction validation failed. Rolled back. Error: {e}")
             return False
@@ -591,7 +591,7 @@ class DAGMutatorAgent(SovereignBaseAgent):
                 self._validate_mutation(test_graph, test_mutation)
                 metrics["fixed"] = metrics.get("fixed", 0) + 1
         # guardian: allow-silent-swallow
-        except Exception as e:
+        except (RuntimeError, ValueError) as e:
             Logger.error(f"DAG Mutator healing failed: {e}")
             metrics["errors"] = metrics.get("errors", 0) + 1
         return metrics
@@ -623,7 +623,7 @@ class DAGMutatorAgent(SovereignBaseAgent):
                 "errors": [],
             }
         # guardian: allow-silent-swallow
-        except Exception as e:
+        except (RuntimeError, ValueError) as e:
             return {
                 "status": "failed",
                 "details": f"DAGMutatorAgent heal() failed: {str(e)}",

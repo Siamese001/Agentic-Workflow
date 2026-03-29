@@ -179,7 +179,7 @@ class HybridSearchEngine:
 
             Logger.debug(f"Vector search: {len(results)} results")
 
-        except Exception as e:
+        except (RuntimeError, ValueError) as e:
             Logger.error(f"Vector search failed: {e}")
 
         return results
@@ -222,7 +222,7 @@ class HybridSearchEngine:
 
             Logger.debug(f"Lexical search: {len(results)} results")
 
-        except Exception as e:
+        except (RuntimeError, ValueError) as e:
             Logger.error(f"Lexical search failed: {e}")
 
         return results
@@ -299,7 +299,7 @@ class HybridSearchEngine:
             embedding = asyncio.run(client.get_embedding(guarded))
             return embedding
 
-        except Exception as e:
+        except (RuntimeError, ValueError) as e:
             Logger.error(f"Failed to generate query embedding: {e}")
             return None
 

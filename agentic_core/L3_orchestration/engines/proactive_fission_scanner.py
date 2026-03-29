@@ -224,7 +224,7 @@ class ProactiveFissionScanner:
         try:
             with open(file_path, encoding="utf-8") as f:
                 return len(f.readlines())
-        except Exception as e:
+        except (RuntimeError, ValueError) as e:
             Logger.warning(f"   [!]  Could not read {file_path}: {e}")
             return 0
 
@@ -318,7 +318,7 @@ class ProactiveFissionScanner:
             }
             Logger.info("   [OK] Strategy generated")
             return strategy
-        except Exception as e:
+        except (RuntimeError, ValueError) as e:
             Logger.error(f"   [X] Strategy generation failed: {e}")
             return {"file_path": file_path, "error": str(e)}
 
@@ -365,7 +365,7 @@ class ProactiveFissionScanner:
             )
             Logger.info(f"   [OK] Refactor proposal created: {len(candidates)} files")
             return branch_name
-        except Exception as e:
+        except (RuntimeError, ValueError) as e:
             Logger.error(f"   [X] Failed to create refactor proposal: {e}")
             return None
 

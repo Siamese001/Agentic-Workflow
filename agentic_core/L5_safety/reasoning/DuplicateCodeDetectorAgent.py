@@ -363,7 +363,7 @@ class DuplicateCodeDetectorAgent(AtomicExecutionMixin, SubatomicTestingMixin, He
             if _adg_antipatterns:
                 Logger.info("[ADG] DuplicateCodeDetectorAgent antipatterns=%s", _adg_antipatterns)
         # guardian: allow-silent-swallow
-        except Exception:
+        except (RuntimeError, OSError):
             pass
         results = {
             "whole_file_duplicates": [],
@@ -518,7 +518,7 @@ class DuplicateCodeDetectorAgent(AtomicExecutionMixin, SubatomicTestingMixin, He
                         )
                         archived.append(delete_path_str)
                 # guardian: allow-silent-swallow
-                except Exception as e:
+                except (RuntimeError, OSError) as e:
                     Logger.error(f"Failed to archive {delete_path_str}: {e}")
                     errors.append({"path": delete_path_str, "error": str(e)})
         return {
@@ -556,7 +556,7 @@ class DuplicateCodeDetectorAgent(AtomicExecutionMixin, SubatomicTestingMixin, He
                         Logger.info(f"[DELETED] {delete_path_str}")
                         deleted.append(delete_path_str)
                 # guardian: allow-silent-swallow
-                except Exception as e:
+                except (RuntimeError, OSError) as e:
                     Logger.error(f"Failed to delete {delete_path_str}: {e}")
                     errors.append({"path": delete_path_str, "error": str(e)})
         return {"deleted_count": len(deleted), "deleted_files": deleted, "errors": errors, "dry_run": dry_run}
@@ -573,7 +573,7 @@ class DuplicateCodeDetectorAgent(AtomicExecutionMixin, SubatomicTestingMixin, He
                 norm_tree = self._normalize_ast_tree(tree)
                 return hashlib.sha256(code.encode()).hexdigest()
         # guardian: allow-silent-swallow
-        except Exception:
+        except (RuntimeError, OSError):
             return hashlib.sha256(code.encode()).hexdigest()
 
     def _normalize_ast_tree(self, node: ast.AST) -> str:

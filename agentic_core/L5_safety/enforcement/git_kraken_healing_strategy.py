@@ -279,7 +279,7 @@ class GitKrakenHealingStrategy:
             else:
                 Logger.error("[L0 GITHUB HEALING] Failed to create commit")
                 return False
-        except Exception as e:
+        except (RuntimeError, OSError) as e:
             Logger.error(f"[L0 GITHUB HEALING] Sovereign Git operation failed: {e}")
             return False
 
@@ -301,7 +301,7 @@ class GitKrakenHealingStrategy:
             Logger.warning("[L0 GITHUB HEALING] GitHub MCP integration not yet implemented")
             Logger.warning("[L0 GITHUB HEALING] Requires mcp10_push_files or mcp10_create_or_update_file")
             return None
-        except Exception as e:
+        except (RuntimeError, OSError) as e:
             Logger.error(f"[L0 GITHUB HEALING] Commit creation failed: {e}")
             return None
 
@@ -327,7 +327,7 @@ class GitKrakenHealingStrategy:
             Logger.warning("[L0 GITHUB HEALING] GitHub MCP PR creation not yet implemented")
             Logger.warning("[L0 GITHUB HEALING] Requires mcp10_create_pull_request with owner/repo/head/base")
             return False
-        except Exception as e:
+        except (RuntimeError, OSError) as e:
             Logger.error(f"[L0 GITHUB HEALING] PR creation failed: {e}")
             return False
 

@@ -422,7 +422,7 @@ class LazySeamEnforcer:
             return seams
 
         # guardian: allow-silent-swallow
-        except Exception as e:
+        except (RuntimeError, OSError) as e:
             print(f"Error scanning {file_path}: {e}")
             return []
 

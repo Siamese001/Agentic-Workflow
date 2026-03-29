@@ -249,7 +249,7 @@ def forge_fortress() -> Any:
                     else:
                         logging.warning(f"  [COLLISION] {item.name} exists in target. Manual merge required.")
                 # guardian: allow-silent-swallow
-                except Exception as e:
+                except (RuntimeError, OSError) as e:
                     logging.error(f"  [FAILED] Move {item.name}: {e}")
             if not any(old_path.iterdir()):
                 try:

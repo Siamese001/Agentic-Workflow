@@ -296,7 +296,7 @@ class StructureEnforcerAgent(SovereignBaseAgent):
         try:
             content = file_path.read_text(encoding="utf-8")
         # guardian: allow-silent-swallow
-        except Exception as e:
+        except (RuntimeError, OSError) as e:
             Logger.error(f"Failed to read {file_path}: {e}")
             return violations
         if self._agent_config.enable_gravity:
@@ -472,7 +472,7 @@ class StructureEnforcerAgent(SovereignBaseAgent):
         try:
             content = file_path.read_text(encoding="utf-8")
         # guardian: allow-silent-swallow
-        except Exception as e:
+        except (RuntimeError, OSError) as e:
             result["error"] = str(e)
             return result
         new_content = re.sub(f"\\bclass\\s+{old_name}\\b", f"class {new_name}", content)
@@ -572,7 +572,7 @@ class StructureEnforcerAgent(SovereignBaseAgent):
             else:
                 return {"violations_fixed": 0, "violations_found": 1, "errors": 0, "skipped": 1}
         # guardian: allow-silent-swallow
-        except Exception as e:
+        except (RuntimeError, OSError) as e:
             Logger.error(f"[STRUCTURE_ENFORCER] Failed to heal: {e}")
             return {"violations_fixed": 0, "violations_found": 1, "errors": 1, "skipped": 0}
 

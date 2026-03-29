@@ -428,7 +428,7 @@ class SystemArchitectAgent(SovereignBaseAgent):
                     _adg_antipatterns,
                 )
         # guardian: allow-silent-swallow
-        except Exception:
+        except (RuntimeError, OSError):
             pass
         return {
             "valid": len(circular_dependencies) == 0,

@@ -454,7 +454,7 @@ def rename_symbol(code: str, old_name: str, new_name: str) -> TransformResult:
             operation="rename_symbol",
             changes_made=renamer.changes,
         )
-    except Exception as e:
+    except (RuntimeError, ValueError) as e:
         return TransformResult(
             success=False,
             transformed_code=code,
@@ -616,7 +616,7 @@ def add_decorator(code: str, target_name: str, decorator_name: str) -> Transform
             operation="add_decorator",
             changes_made=modifier.changes,
         )
-    except Exception as e:
+    except (RuntimeError, ValueError) as e:
         return TransformResult(
             success=False,
             transformed_code=code,
@@ -665,7 +665,7 @@ def remove_decorator(code: str, target_name: str, decorator_name: str) -> Transf
             operation="remove_decorator",
             changes_made=modifier.changes,
         )
-    except Exception as e:
+    except (RuntimeError, ValueError) as e:
         return TransformResult(
             success=False,
             transformed_code=code,

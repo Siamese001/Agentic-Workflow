@@ -323,7 +323,7 @@ class RedisSovereignAgent(SovereignBaseAgent):
                 deleted = self.client.delete(*keys)
                 print(f"   [CACHE] Purged {deleted} ghost entries for: {file_path.name}")
         # guardian: allow-silent-swallow
-        except Exception as e:
+        except (RuntimeError, ValueError) as e:
             print(f"   [!] cache invalidation failed for {file_path}: {e}")
 
     # guardian: allow-type-erasure
@@ -406,7 +406,7 @@ class RedisSovereignAgent(SovereignBaseAgent):
                 "errors": [],
             }
         # guardian: allow-silent-swallow
-        except Exception as e:
+        except (RuntimeError, ValueError) as e:
             return {
                 "status": "failed",
                 "details": f"RedisSovereignAgent heal() failed: {str(e)}",

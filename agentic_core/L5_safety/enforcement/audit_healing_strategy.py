@@ -254,7 +254,7 @@ class AuditHealingStrategy:
                 return []
             log_content = await self.fs_client.read_text(str(self.audit_log_path))
         # guardian: allow-silent-swallow
-        except Exception as e:
+        except (RuntimeError, OSError) as e:
             Logger.error(f"[L0 L6 AUDIT HEALING] Failed to read audit log: {e}")
             return []
         gaps = []
@@ -325,7 +325,7 @@ class AuditHealingStrategy:
                 Logger.error("[L0 L6 AUDIT HEALING] Failed to emit corrective event")
                 return False
         # guardian: allow-silent-swallow
-        except Exception as e:
+        except (RuntimeError, OSError) as e:
             Logger.error(f"[L0 L6 AUDIT HEALING] Audit reconstruction failed: {e}")
             return False
 
@@ -343,7 +343,7 @@ class AuditHealingStrategy:
             Logger.info(f"[L0 L6 AUDIT HEALING] Corrective event emitted: {event_data}")
             return True
         # guardian: allow-silent-swallow
-        except Exception as e:
+        except (RuntimeError, OSError) as e:
             Logger.error(f"[L0 L6 AUDIT HEALING] Event emission failed: {e}")
             return False
 

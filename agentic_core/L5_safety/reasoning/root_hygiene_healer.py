@@ -310,7 +310,7 @@ class RootHygieneHealerAgent(SovereignBaseAgent):
 
             return 0  # Success
 
-        except Exception as e:  # guardian: allow-silent-swallow
+        except (RuntimeError, OSError) as e:  # guardian: allow-silent-swallow
             print(f"[ERROR] Root hygiene enforcement failed: {e}")
             self.stats["errors"] += 1
             return 1
@@ -358,7 +358,7 @@ class RootHygieneHealerAgent(SovereignBaseAgent):
                     _wg.remove_file(dup)
                     removed += 1
                     print(f"  [REMOVED] {rel_dup}")
-                except Exception as e:  # guardian: allow-silent-swallow
+                except (RuntimeError, OSError) as e:  # guardian: allow-silent-swallow
                     print(f"  [ERROR] Could not remove {rel_dup}: {e}")
                     self.stats["errors"] += 1
             else:
@@ -414,7 +414,7 @@ class RootHygieneHealerAgent(SovereignBaseAgent):
                         _wg.remove_tree(entry)
                         deleted += 1
                         print(f"  [DELETED] {name}/")
-                    except Exception as e:  # guardian: allow-silent-swallow
+                    except (RuntimeError, OSError) as e:  # guardian: allow-silent-swallow
                         print(f"  [ERROR] Could not delete {name}/: {e}")
                         self.stats["errors"] += 1
                 else:
@@ -465,7 +465,7 @@ class RootHygieneHealerAgent(SovereignBaseAgent):
                             _wg.move_path(str(item), str(target))
                         self.stats["dirs_evacuated"] += 1
 
-                except Exception as e:  # guardian: allow-silent-swallow
+                except (RuntimeError, OSError) as e:  # guardian: allow-silent-swallow
                     print(f"  [ERROR] Could not move {item.name}: {e}")
                     self.stats["errors"] += 1
 
@@ -800,7 +800,7 @@ class RootHygieneHealerAgent(SovereignBaseAgent):
 
             return {"status": "skipped", "reason": f"Unknown hygiene type: {v_type}"}
 
-        except Exception as e:
+        except (RuntimeError, OSError) as e:
             return {"status": "error", "error": str(e)}
 
     @standard_heal
@@ -853,7 +853,7 @@ class RootHygieneHealerAgent(SovereignBaseAgent):
                 "skipped": 0,
             }
 
-        except Exception as e:  # guardian: allow-silent-swallow
+        except (RuntimeError, OSError) as e:  # guardian: allow-silent-swallow
             print(f"[ERROR] RootHygieneAgent healing failed: {e}")
             return {"violations_found": 0, "violations_fixed": 0, "errors": 1, "skipped": 0}
         finally:

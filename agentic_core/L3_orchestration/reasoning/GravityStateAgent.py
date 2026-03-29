@@ -342,7 +342,7 @@ class GravityStateAgent(SovereignBaseAgent):
                     "errors": [],
                 }
 
-        except Exception as e:
+        except (RuntimeError, ValueError) as e:
             self.logger.error(f"Heal operation failed in GravityStateAgent: {e}")
             return {
                 "status": "failed",
@@ -381,7 +381,7 @@ class GravityStateAgent(SovereignBaseAgent):
             with open(self.state_file, encoding="utf-8") as f:
                 return json.load(f)
         # guardian: allow-silent-swallow
-        except Exception as e:
+        except (RuntimeError, ValueError) as e:
             self.logger.error(f"Failed to load state: {e}")
             return self._load_state()  # Return fresh state on error
 
@@ -392,7 +392,7 @@ class GravityStateAgent(SovereignBaseAgent):
             assert_no_persistent_write("L4", "json.dump")  # G-12-1: mutation prohibition guard
             get_write_gateway().write_json(self.state_file, self.state, indent=2)
         # guardian: allow-silent-swallow
-        except Exception as e:
+        except (RuntimeError, ValueError) as e:
             self.logger.error(f"Failed to save state: {e}")
 
     def _normalize_and_hash(self, import_line: str) -> str:
@@ -536,7 +536,7 @@ class GravityStateAgent(SovereignBaseAgent):
             self.logger.info(f"Created checkpoint: {checkpoint_file.name}")
             return str(checkpoint_file)
         # guardian: allow-silent-swallow
-        except Exception as e:
+        except (RuntimeError, ValueError) as e:
             self.logger.error(f"Failed to create checkpoint: {e}")
             return ""
 
@@ -557,7 +557,7 @@ class GravityStateAgent(SovereignBaseAgent):
             self._save_state()
             self.logger.info(f"Rolled back to checkpoint: {checkpoint_file}")
             return True
-        except Exception as e:
+        except (RuntimeError, ValueError) as e:
             self.logger.error(f"Failed to rollback: {e}")
             return False
 

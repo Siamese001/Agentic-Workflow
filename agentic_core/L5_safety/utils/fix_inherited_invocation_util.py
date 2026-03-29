@@ -238,7 +238,7 @@ def add_heal_repository(file_path: Path, class_name: str) -> bool:
     """Add heal_repository method to a class."""
     try:
         source = file_path.read_text(encoding="utf-8")
-    except Exception as e:
+    except (RuntimeError, OSError) as e:
         print(f"  [ERROR] Cannot read {file_path}: {e}")
         return False
     if has_heal_repository(source, class_name):
@@ -262,7 +262,7 @@ def add_heal_repository(file_path: Path, class_name: str) -> bool:
         _wg.write_text(file_path, new_source, encoding="utf-8")
         print(f"  [ADDED] heal_repository to {class_name}")
         return True
-    except Exception as e:
+    except (RuntimeError, OSError) as e:
         print(f"  [ERROR] Cannot write {file_path}: {e}")
         return False
 

@@ -285,7 +285,7 @@ class SovereignHealingEngine:
             else:
                 Logger.warning("[L0 HEALING] No fixes were successfully applied")
                 return {"status": "no_fixes", "applied_fixes": 0, "message": "No fixes could be applied"}
-        except Exception as e:
+        except (RuntimeError, OSError) as e:
             Logger.critical(f"[L0 HEALING] Cycle CRASHED. Rolling back state. Error: {e}")
             self.transaction_manager.rollback()
             return {
@@ -333,7 +333,7 @@ class SovereignHealingEngine:
             else:
                 Logger.warning(f"[L0 HEALING] No fix generated for {file_path}")
                 return False
-        except Exception as e:
+        except (RuntimeError, OSError) as e:
             Logger.error(f"[L0 HEALING] Error applying fix to {file_path}: {e}")
             return False
 
@@ -361,7 +361,7 @@ class SovereignHealingEngine:
             content = re.sub(fix["old_import"], fix["new_import"], content)
             content = re.sub(fix["old_usage"], fix["new_usage"], content)
             return await _wg.write_text(self.fs_client, file_path, content)
-        except Exception as e:
+        except (RuntimeError, OSError) as e:
             Logger.error(f"[L0 HEALING] Error in _exec_replace_import: {e}")
             return False
 
@@ -390,7 +390,7 @@ class SovereignHealingEngine:
                 content = f"{fix['import_path']}\n{content}"
             content = re.sub(f"{fix['sdk']}\\(.*?\\)", f"{fix['new_client']}", content)
             return await _wg.write_text(self.fs_client, file_path, content)
-        except Exception as e:
+        except (RuntimeError, OSError) as e:
             Logger.error(f"[L0 HEALING] Error in _exec_replace_llm: {e}")
             return False
 
@@ -424,7 +424,7 @@ class SovereignHealingEngine:
                 "Path(", f"# TODO: Use {fix['new_client']} for file operations\n# Path("
             )
             return await _wg.write_text(self.fs_client, file_path, content)
-        except Exception as e:
+        except (RuntimeError, OSError) as e:
             Logger.error(f"[L0 HEALING] Error in _exec_replace_io: {e}")
             return False
 

@@ -400,7 +400,7 @@ class TestRigorEnforcer:
 
             return 0
 
-        except Exception as e:
+        except (RuntimeError, OSError) as e:
             print(f"[TEST-RIGOR] Collection failed: {e}")
             return None
 
@@ -445,7 +445,7 @@ class TestRigorEnforcer:
 
             return (passed, failed, skipped)
 
-        except Exception as e:
+        except (RuntimeError, OSError) as e:
             print(f"[TEST-RIGOR] Execution failed: {e}")
             return None
 

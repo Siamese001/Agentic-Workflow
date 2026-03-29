@@ -248,7 +248,7 @@ class VLLMProcessManager:
                 self.process.wait()
                 logger.info("vLLM server force killed")
         # guardian: allow-silent-swallow
-        except Exception as exc:
+        except (RuntimeError, ValueError) as exc:
             logger.error(f"Error stopping vLLM server: {exc}")
         finally:
             self.process = None
@@ -264,7 +264,7 @@ class VLLMProcessManager:
             with _urllib_request.urlopen(f"{self.base_url}/health", timeout=DEFAULT_TIMEOUT) as _resp:  # noqa: S310
                 return _resp.status == 200
         # guardian: allow-silent-swallow
-        except Exception:
+        except (RuntimeError, ValueError):
             return False
 
     def get_memory_usage(self) -> dict:
@@ -282,7 +282,7 @@ class VLLMProcessManager:
                 used, total = map(int, result.stdout.strip().split(", "))
                 return {"used_mb": used, "total_mb": total, "utilization_percent": used / total * 100}
         # guardian: allow-silent-swallow
-        except Exception:
+        except (RuntimeError, ValueError):
             pass
         return {"used_mb": 0, "total_mb": 0, "utilization_percent": 0.0}
 

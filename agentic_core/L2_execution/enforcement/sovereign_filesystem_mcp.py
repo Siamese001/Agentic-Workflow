@@ -253,7 +253,7 @@ class SovereignFilesystemMcp:
                         result = await asyncio.ensure_future(result)
                     return result if isinstance(result, str) else str(result)
             # guardian: allow-silent-swallow
-            except Exception as direct_e:
+            except (RuntimeError, ValueError) as direct_e:
                 Logger.debug(f"[L4 FS] mcp8_read_text_file failed, falling back to manager: {direct_e}")
             result = await self.manager.call_tool("read_file", {"path": safe_path})
             return result.get("content", "") if isinstance(result, dict) else str(result)
@@ -263,7 +263,7 @@ class SovereignFilesystemMcp:
             try:
                 get_mcp_authority().record_breach(f"FS Read Failure: {safe_path}")
             # guardian: allow-silent-swallow
-            except Exception:
+            except (RuntimeError, ValueError):
                 pass
             raise
 
@@ -297,7 +297,7 @@ class SovereignFilesystemMcp:
                         results.append(write_result)
                         continue
                 # guardian: allow-silent-swallow
-                except Exception as direct_e:
+                except (RuntimeError, ValueError) as direct_e:
                     Logger.debug(f"[L4 FS] mcp8_write_file failed, falling back to manager: {direct_e}")
                 result = await self.manager.call_tool("write_file", {"path": path, "content": content})
                 results.append(result)
@@ -316,7 +316,7 @@ class SovereignFilesystemMcp:
                         ),
                     )
             # guardian: allow-silent-swallow
-            except Exception as ledger_e:
+            except (RuntimeError, ValueError) as ledger_e:
                 Logger.warning(f"[L4 FS] Ledger write failed (non-fatal): {ledger_e}")
             return {"status": "fission_complete", "count": len(results)}
         # guardian: allow-silent-swallow
@@ -325,7 +325,7 @@ class SovereignFilesystemMcp:
             try:
                 get_mcp_authority().record_breach(f"Fission Write Failure: {monolith_path}")
             # guardian: allow-silent-swallow
-            except Exception:
+            except (RuntimeError, ValueError):
                 pass
             raise
 
@@ -341,9 +341,9 @@ class SovereignFilesystemMcp:
                 if _cache:
                     _cache.set(self.roots_key, json.dumps(validated), ex=60 * 60 * 24)
             # guardian: allow-silent-swallow
-            except Exception as cache_e:
+            except (RuntimeError, ValueError) as cache_e:
                 Logger.warning(f"[L4 FS] Roots cache write failed (non-fatal): {cache_e}")
             Logger.info(f"[L4 FS] Sovereign roots locked: {validated}")
         # guardian: allow-silent-swallow
-        except Exception as e:
+        except (RuntimeError, ValueError) as e:
             Logger.warning(f"MCP Server does not support dynamic roots: {e}")

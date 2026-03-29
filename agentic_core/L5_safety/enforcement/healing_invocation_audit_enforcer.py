@@ -245,7 +245,7 @@ class HealingInvocationAudit:
                         }
                     )
         # guardian: allow-silent-swallow
-        except Exception as e:
+        except (RuntimeError, OSError) as e:
             print(f"Error during audit: {e}")
         return self.results
 
@@ -258,7 +258,7 @@ class HealingInvocationAudit:
                 if match:
                     return match.group(1)
         # guardian: allow-silent-swallow
-        except Exception:
+        except (RuntimeError, OSError):
             pass
         return file_path.stem
 
@@ -274,7 +274,7 @@ class HealingInvocationAudit:
                     method_body = method_match.group(0)
                     return "super().heal_repository(" in method_body
         # guardian: allow-silent-swallow
-        except Exception:
+        except (RuntimeError, OSError):
             pass
         return False
 

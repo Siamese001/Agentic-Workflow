@@ -256,7 +256,7 @@ class SovereignToolsmith:
             Logger.info(f"Sovereign Toolsmith forged: {tool_path}")
             return tool_path
         # guardian: allow-silent-swallow
-        except Exception as e:
+        except (RuntimeError, OSError) as e:
             Logger.error(f"Failed to forge tool: {e}")
             return None
 
@@ -333,7 +333,7 @@ class SovereignSandbox:
                         process.wait()
                         LOGGER.warning(f"Force killed process {process.pid}")
                 # guardian: allow-silent-swallow
-                except Exception as cleanup_error:
+                except (RuntimeError, OSError) as cleanup_error:
                     LOGGER.error(f"Error cleaning up process {process.pid}: {cleanup_error}")
                 return {
                     "success": False,
@@ -343,7 +343,7 @@ class SovereignSandbox:
                     "execution_time": time.time(),
                 }
         # guardian: allow-silent-swallow
-        except Exception as e:
+        except (RuntimeError, OSError) as e:
             return {
                 "success": False,
                 "stdout": "",
@@ -605,7 +605,7 @@ class SovereignActionPlaneAgent(SovereignBaseAgent, IActionPlane):
                 LOGGER.error(f"Failed to fix syntax error: {e}")
                 return {"success": False, "error": str(e)}
         # guardian: allow-silent-swallow
-        except Exception as e:
+        except (RuntimeError, OSError) as e:
             LOGGER.error(f"Error during tool repair: {e}")
             return {"success": False, "error": str(e)}
 
@@ -650,7 +650,7 @@ class SovereignActionPlaneAgent(SovereignBaseAgent, IActionPlane):
                 success=True, output=output, error="", execution_time=time.time() - start_time
             )
         # guardian: allow-silent-swallow
-        except Exception as e:
+        except (RuntimeError, OSError) as e:
             return ActionResult(
                 success=False, output="", error=str(e), execution_time=time.time() - start_time
             )
@@ -715,7 +715,7 @@ class SovereignActionPlaneAgent(SovereignBaseAgent, IActionPlane):
                 "errors": [],
             }
         # guardian: allow-silent-swallow
-        except Exception as e:
+        except (RuntimeError, OSError) as e:
             return {
                 "status": "failed",
                 "details": f"SovereignActionPlaneAgent heal() failed: {str(e)}",

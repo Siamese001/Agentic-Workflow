@@ -363,7 +363,7 @@ class AntiPatternDetector(ABC):
                                 violation.severity = "hard_block"
                                 violation.metadata["adg_confirmed"] = True
                 # guardian: allow-silent-swallower -- ADG behavioral profile lookup is optional telemetry; failure is non-critical
-                except Exception:
+                except (RuntimeError, OSError):
                     pass
 
             scan_time = (time.time() - start_time) * 1000
@@ -374,7 +374,7 @@ class AntiPatternDetector(ABC):
                 scan_time_ms=scan_time,
             )
 
-        except Exception as e:
+        except (RuntimeError, OSError) as e:
             Logger.error(f"Error scanning {file_path}: {e}")
             return DetectionResult(
                 file_path=file_path,
@@ -446,7 +446,7 @@ class AntiPatternDetector(ABC):
         except SyntaxError as e:
             Logger.warning(f"Syntax error in {file_path}: {e}")
             return None
-        except Exception as e:
+        except (RuntimeError, OSError) as e:
             Logger.error(f"Error reading {file_path}: {e}")
             return None
 

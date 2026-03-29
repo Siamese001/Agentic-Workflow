@@ -557,7 +557,7 @@ class GravityLeakRepairAgent(PromptRenderingMixin, SovereignBaseAgent):
                         self.logger.info(f"[DEFERRED] {fix.file_path.name}: moved import into function scope")
                         return {"status": "fixed", "fix_type": "DEFERRED"}
                     return {"status": "no_change", "fix_type": "DEFERRED"}
-                except Exception as deferred_err:  # guardian: allow-silent-swallow
+                except (RuntimeError, OSError) as deferred_err:  # guardian: allow-silent-swallow
                     self.logger.warning(f"[DEFERRED] Failed for {fix.file_path.name}: {deferred_err}")
                     return self._emit_plan_only(fix)
             if fix.fix_type in ("ABSTRACT", "RELOCATE"):
@@ -589,7 +589,7 @@ class GravityLeakRepairAgent(PromptRenderingMixin, SovereignBaseAgent):
                         try:
                             _wg.remove_file(temp_path)
                         # guardian: allow-silent-swallow -- temp file cleanup failure is non-fatal
-                        except Exception:
+                        except (RuntimeError, OSError):
                             pass
                     self.logger.warning(
                         f"[PLAN-ONLY] old_import too short ({stripped_old!r}), refusing replace to prevent corruption."
@@ -630,7 +630,7 @@ class GravityLeakRepairAgent(PromptRenderingMixin, SovereignBaseAgent):
                         try:
                             _wg.remove_file(temp_path)
                         # guardian: allow-silent-swallow -- temp file cleanup failure is non-fatal
-                        except Exception:
+                        except (RuntimeError, OSError):
                             pass
                     return self._emit_plan_only(fix)
                 raise
@@ -645,7 +645,7 @@ class GravityLeakRepairAgent(PromptRenderingMixin, SovereignBaseAgent):
             self.logger.warning(str(prohibited))    # guardian: GravityRepairProhibitedError should be handled with specific context    # guardian: GravityRepairProhibitedError should be handled with specific context    # guardian: GravityRepairProhibitedError should be handled with specific context    # guardian: GravityRepairProhibitedError should be handled with specific context    # guardian: GravityRepairProhibitedError should be handled with specific context    # guardian: GravityRepairProhibitedError should be handled with specific context    # guardian: GravityRepairProhibitedError should be handled with specific context    # guardian: GravityRepairProhibitedError should be handled with specific context    # guardian: GravityRepairProhibitedError should be handled with specific context    # guardian: GravityRepairProhibitedError should be handled with specific context    # guardian: GravityRepairProhibitedError should be handled with specific context    # guardian: GravityRepairProhibitedError should be handled with specific context    # guardian: GravityRepairProhibitedError should be handled with specific context    # guardian: GravityRepairProhibitedError should be handled with specific context    # guardian: GravityRepairProhibitedError should be handled with specific context    # guardian: GravityRepairProhibitedError should be handled with specific context    # guardian: GravityRepairProhibitedError should be handled with specific context    # guardian: GravityRepairProhibitedError should be handled with specific context    # guardian: GravityRepairProhibitedError should be handled with specific context    # guardian: GravityRepairProhibitedError should be handled with specific context    # guardian: GravityRepairProhibitedError should be handled with specific context    # guardian: GravityRepairProhibitedError should be handled with specific context    # guardian: GravityRepairProhibitedError should be handled with specific context    # guardian: GravityRepairProhibitedError should be handled with specific context    # guardian: GravityRepairProhibitedError should be handled with specific context    # guardian: GravityRepairProhibitedError should be handled with specific context    # guardian: GravityRepairProhibitedError should be handled with specific context    # guardian: GravityRepairProhibitedError should be handled with specific context    # guardian: GravityRepairProhibitedError should be handled with specific context    # guardian: GravityRepairProhibitedError should be handled with specific context    # guardian: GravityRepairProhibitedError should be handled with specific context    # guardian: GravityRepairProhibitedError should be handled with specific context    # guardian: GravityRepairProhibitedError should be handled with specific context    # guardian: GravityRepairProhibitedError should be handled with specific context    # guardian: GravityRepairProhibitedError should be handled with specific context    # guardian: GravityRepairProhibitedError should be handled with specific context    # guardian: GravityRepairProhibitedError should be handled with specific context    # guardian: GravityRepairProhibitedError should be handled with specific context    # guardian: GravityRepairProhibitedError should be handled with specific context    # guardian: GravityRepairProhibitedError should be handled with specific context    # guardian: GravityRepairProhibitedError should be handled with specific context    # guardian: GravityRepairProhibitedError should be handled with specific context    # guardian: GravityRepairProhibitedError should be handled with specific context    # guardian: GravityRepairProhibitedError should be handled with specific context    # guardian: GravityRepairProhibitedError should be handled with specific context    # guardian: GravityRepairProhibitedError should be handled with specific context    # guardian: GravityRepairProhibitedError should be handled with specific context    # guardian: GravityRepairProhibitedError should be handled with specific context    # guardian: GravityRepairProhibitedError should be handled with specific context    # guardian: GravityRepairProhibitedError should be handled with specific context    # guardian: GravityRepairProhibitedError should be handled with specific context    # guardian: GravityRepairProhibitedError should be handled with specific context    # guardian: GravityRepairProhibitedError should be handled with specific context    # guardian: GravityRepairProhibitedError should be handled with specific context    # guardian: GravityRepairProhibitedError should be handled with specific context    # guardian: GravityRepairProhibitedError should be handled with specific context    # guardian: GravityRepairProhibitedError should be handled with specific context    # guardian: GravityRepairProhibitedError should be handled with specific context    # guardian: GravityRepairProhibitedError should be handled with specific context
             return self._emit_plan_only(fix)
         # guardian: allow-silent-swallow -- outer catch-all returns error status dict with error logged
-        except Exception as e:
+        except (RuntimeError, OSError) as e:
             self.logger.error(f"Error applying fix to {fix.file_path}: {e}")
             return {"status": "error", "error": str(e)}
 
@@ -821,7 +821,7 @@ class GravityLeakRepairAgent(PromptRenderingMixin, SovereignBaseAgent):
 
             violations = [v for v in violations if _in_sovereign_scope(v)]
         # guardian: allow-silent-swallow -- StructureEnforcerAgent failure is logged; falls through to empty violations
-        except Exception as e:
+        except (RuntimeError, OSError) as e:
             self.logger.error(f"Failed to get violations from StructureEnforcerAgent: {e}")
             return {
                 "agent": "GravityLeakRepairAgent",
@@ -954,7 +954,7 @@ class GravityLeakRepairAgent(PromptRenderingMixin, SovereignBaseAgent):
                         )
                         return {"violations_fixed": 1, "violations_found": 1, "errors": 0, "skipped": 0}
                 # guardian: allow-silent-swallow -- gravity heal failure returns error count with error logged
-                except Exception as e:
+                except (RuntimeError, OSError) as e:
                     self.logger.error(f"[GRAVITY_LEAK_REPAIR] Failed to heal: {e}")
                     return {"violations_fixed": 0, "violations_found": 1, "errors": 1, "skipped": 0}
             return {"violations_fixed": 0, "violations_found": 1, "errors": 0, "skipped": 1}

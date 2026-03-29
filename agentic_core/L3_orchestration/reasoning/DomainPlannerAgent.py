@@ -361,7 +361,7 @@ class DomainPlannerAgent(L3OrchestrationBase):
                 "artifacts": [],
                 "errors": [],
             }
-        except Exception as e:
+        except (RuntimeError, ValueError) as e:
             return {
                 "status": "failed",
                 "details": f"DomainPlannerAgent heal() failed: {str(e)}",
@@ -469,7 +469,7 @@ class RiskAssessorAgent(SovereignBaseAgent):
                 "artifacts": [],
                 "errors": [],
             }
-        except Exception as e:
+        except (RuntimeError, ValueError) as e:
             return {
                 "status": "failed",
                 "details": f"RiskAssessorAgent heal() failed: {str(e)}",
@@ -578,7 +578,7 @@ class FeasibilityAnalystAgent(SovereignBaseAgent):
                 "artifacts": [],
                 "errors": [],
             }
-        except Exception as e:
+        except (RuntimeError, ValueError) as e:
             return {
                 "status": "failed",
                 "details": f"FeasibilityAnalystAgent heal() failed: {str(e)}",
@@ -719,7 +719,7 @@ class StrategyScenarioSimulatorAgent(SovereignBaseAgent):
                 "artifacts": [],
                 "errors": [],
             }
-        except Exception as e:
+        except (RuntimeError, ValueError) as e:
             return {
                 "status": "failed",
                 "details": f"StrategyScenarioSimulatorAgent heal() failed: {str(e)}",
@@ -880,7 +880,7 @@ class StrategyCoordinatorAgent(SovereignBaseAgent):
                 "artifacts": [],
                 "errors": [],
             }
-        except Exception as e:
+        except (RuntimeError, ValueError) as e:
             return {
                 "status": "failed",
                 "details": f"StrategyCoordinatorAgent heal() failed: {str(e)}",

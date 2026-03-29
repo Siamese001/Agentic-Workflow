@@ -401,7 +401,7 @@ def find_agent_classes(base_path: str) -> list[AgentInfo]:
                             )
                         )
             # guardian: allow-silent-swallow
-            except Exception as e:
+            except (RuntimeError, OSError) as e:
                 print(f"Error reading {py_file}: {e}")
     return agents
 
@@ -432,7 +432,7 @@ def generate_fingerprint(file_path: str, class_name: str) -> tuple[str, str]:
     except SyntaxError as e:    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime
         return ("SYNTAX_ERROR", str(e))
     # guardian: allow-silent-swallow
-    except Exception as e:
+    except (RuntimeError, OSError) as e:
         return ("ERROR", str(e))
 
 

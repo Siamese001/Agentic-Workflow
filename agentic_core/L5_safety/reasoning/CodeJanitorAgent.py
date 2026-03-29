@@ -261,7 +261,7 @@ class CodeJanitorAgent(SubatomicTestingMixin, CanonBaseAgent, MCPHardenedMixin):
             except SyntaxError as e:    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime
                 violations.append(f"{file_path}:{e.lineno}: SyntaxError - {e.msg}")
             # guardian: allow-silent-swallow
-            except Exception as e:
+            except (RuntimeError, OSError) as e:
                 violations.append(f"{file_path}:0: General Error - {e}")
                 continue
         return (len(violations) == 0, violations)
@@ -281,7 +281,7 @@ class CodeJanitorAgent(SubatomicTestingMixin, CanonBaseAgent, MCPHardenedMixin):
                 for line_num, line in enumerate(lines, 1):
                     self._check_line_indentation(file_path, line_num, line, violations)
             # guardian: allow-silent-swallow
-            except Exception as e:
+            except (RuntimeError, OSError) as e:
                 violations.append(f"{file_path}:0: General Error - {e}")
                 continue
         return (len(violations) == 0, violations)
@@ -316,7 +316,7 @@ class CodeJanitorAgent(SubatomicTestingMixin, CanonBaseAgent, MCPHardenedMixin):
                     if line.rstrip("\n\r") != line.rstrip():
                         violations.append(f"{file_path}:{line_num}: Trailing whitespace")
             # guardian: allow-silent-swallow
-            except Exception as e:
+            except (RuntimeError, OSError) as e:
                 violations.append(f"{file_path}:0: General Error - {e}")
                 continue
         return (len(violations) == 0, violations)
@@ -343,7 +343,7 @@ class CodeJanitorAgent(SubatomicTestingMixin, CanonBaseAgent, MCPHardenedMixin):
             for node in ast.walk(tree):
                 self._check_node_naming_convention(file_path, node, violations)
         # guardian: allow-silent-swallow
-        except Exception as e:
+        except (RuntimeError, OSError) as e:
             violations.append(f"{file_path}:0: General Error - {e}")
 
     def check_naming_conventions(self) -> tuple[bool, list[str]]:
@@ -378,7 +378,7 @@ class CodeJanitorAgent(SubatomicTestingMixin, CanonBaseAgent, MCPHardenedMixin):
             with open(file_path, encoding="utf-8") as f:
                 return (f.read(), None)
         # guardian: allow-silent-swallow
-        except Exception as e:
+        except (RuntimeError, OSError) as e:
             return (None, f"Cannot read {file_path}: {e}")
 
     def _write_file_content(self, file_path: str, content: str) -> str | None:
@@ -388,7 +388,7 @@ class CodeJanitorAgent(SubatomicTestingMixin, CanonBaseAgent, MCPHardenedMixin):
                 f.write(content)
             return None
         # guardian: allow-silent-swallow
-        except Exception as e:
+        except (RuntimeError, OSError) as e:
             return f"Cannot write {file_path}: {e}"
 
     # guardian: allow-type-erasure
@@ -455,7 +455,7 @@ class CodeJanitorAgent(SubatomicTestingMixin, CanonBaseAgent, MCPHardenedMixin):
                 report["post_heal_status"] = "FAILED"
                 report["message"] = f"Key {key_id} validation failed"
         # guardian: allow-silent-swallow
-        except Exception as e:
+        except (RuntimeError, OSError) as e:
             report["post_heal_status"] = "ERROR"
             report["message"] = f"Post-heal validation error: {e}"
         return report
@@ -499,7 +499,7 @@ class CodeJanitorAgent(SubatomicTestingMixin, CanonBaseAgent, MCPHardenedMixin):
                     )
                 action["applied"] = not dry_run
             # guardian: allow-silent-swallow
-            except Exception as e:
+            except (RuntimeError, OSError) as e:
                 action["error"] = str(e)
             actions.append(action)
         batch_report = {

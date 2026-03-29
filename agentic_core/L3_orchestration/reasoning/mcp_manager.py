@@ -318,7 +318,7 @@ class MCPConnectionManager:
             Logger.debug(f"[MCPManager] Tool '{tool}' succeeded")
             return result if result is not None else {}
         # guardian: allow-silent-swallow
-        except Exception as e:
+        except (RuntimeError, ValueError) as e:
             Logger.error(f"[MCPManager] Tool '{tool}' failed: {e}")
             return {"error": str(e)}
 
@@ -350,6 +350,6 @@ def load_mcp_config(config_path: str) -> dict[str, Any]:
                 Logger.warning("[MCPManager] PyYAML not installed — falling back to JSON parse")
         return json.loads(text)
     # guardian: allow-silent-swallow
-    except Exception as e:
+    except (RuntimeError, ValueError) as e:
         Logger.warning(f"[MCPManager] Failed to parse config {config_path}: {e} — using defaults")
         return {}

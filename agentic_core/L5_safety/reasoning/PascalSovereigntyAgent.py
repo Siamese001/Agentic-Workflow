@@ -597,7 +597,7 @@ class PascalSovereigntyAgent(SovereignBaseAgent):
                     return True
 
             # guardian: allow-silent-swallow
-            except Exception as e:
+            except (RuntimeError, OSError) as e:
                 print(f"  [ERROR] Failed to resolve collision: {e}")
                 return False
 
@@ -635,7 +635,7 @@ class PascalSovereigntyAgent(SovereignBaseAgent):
             return True
 
         # guardian: allow-silent-swallow
-        except Exception as e:
+        except (RuntimeError, OSError) as e:
             print(f"  [ERROR] Rename failed: {e}")
 
             if temp_path and temp_path.exists():
@@ -643,7 +643,7 @@ class PascalSovereigntyAgent(SovereignBaseAgent):
                     temp_path.rename(src)
                     print(f"  [ROLLBACK] Restored {src.name} from temp")
                 # guardian: allow-silent-swallow
-                except Exception as rollback_error:
+                except (RuntimeError, OSError) as rollback_error:
                     print(f"  [CRITICAL] Rollback failed: {rollback_error}")
                     print(f"  [CRITICAL] Manual intervention required - file may be at {temp_path}")
 
@@ -791,7 +791,7 @@ class PascalSovereigntyAgent(SovereignBaseAgent):
                                     "skipped": 1,
                                 }
                         # guardian: allow-silent-swallow
-                        except Exception as e:
+                        except (RuntimeError, OSError) as e:
                             Logger.error(f"  Error processing {path}: {e}")
                             return {
                                 "violations_fixed": 0,
@@ -862,7 +862,7 @@ class PascalSovereigntyAgent(SovereignBaseAgent):
             }
 
         # guardian: allow-silent-swallow
-        except Exception as e:
+        except (RuntimeError, OSError) as e:
             print(f"[ERROR] PascalSovereigntyAgent healing failed: {e}")
             return {"violations_found": 0, "violations_fixed": 0, "errors": 1, "skipped": 0}
         finally:

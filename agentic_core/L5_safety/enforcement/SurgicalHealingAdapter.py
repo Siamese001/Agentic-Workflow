@@ -278,7 +278,7 @@ class SurgicalHealingAdapter:
             source = file_path.read_text(encoding="utf-8")
             tree = ast.parse(source)
         # guardian: allow-silent-swallow
-        except Exception as exc:
+        except (RuntimeError, OSError) as exc:
             Logger.error("Failed to parse %s: %s", file_path, exc)
             return None
 
@@ -339,7 +339,7 @@ class SurgicalHealingAdapter:
             source = file_path.read_text(encoding="utf-8")
             tree = ast.parse(source)
         # guardian: allow-silent-swallow
-        except Exception as exc:
+        except (RuntimeError, OSError) as exc:
             Logger.error("Failed to parse %s: %s", file_path, exc)
             return None
 
@@ -421,7 +421,7 @@ class SurgicalHealingAdapter:
                 artifacts=raw.get("artifacts", []),
             )
         # guardian: allow-silent-swallow
-        except Exception as exc:
+        except (RuntimeError, OSError) as exc:
             Logger.error("Surgical healing failed: %s", exc)
             return SurgicalHealingResult(
                 status="error",

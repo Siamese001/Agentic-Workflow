@@ -298,7 +298,7 @@ class VectorHealingStrategy:
             else:
                 Logger.error(f"[L0 VECTOR HEALING] Upsert failed for {file_path}: {result}")
                 return False
-        except Exception as e:
+        except (RuntimeError, OSError) as e:
             Logger.error(f"[L0 VECTOR HEALING] Vector healing failed for {fix.get('file', 'unknown')}: {e}")
             return False
 
@@ -322,7 +322,7 @@ class VectorHealingStrategy:
                     return embedding_data
             Logger.error(f"[L0 VECTOR HEALING] Invalid embedding result: {result}")
             return None
-        except Exception as e:
+        except (RuntimeError, OSError) as e:
             Logger.error(f"[L0 VECTOR HEALING] Embedding generation failed: {e}")
             return None
 

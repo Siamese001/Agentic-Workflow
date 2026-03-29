@@ -290,7 +290,7 @@ class GraphRetrievalEngine:
                 try:
                     context = self._create_retrieval_context(result, hydrate_adg)
                     contexts.append(context)
-                except Exception as e:
+                except (RuntimeError, ValueError) as e:
                     Logger.error(f"Failed to create context for {result.get('chunk_id')}: {e}")
                     # Continue with other results (fail-open for individual contexts)
                     continue
@@ -309,7 +309,7 @@ class GraphRetrievalEngine:
             
             return contexts
             
-        except Exception as e:
+        except (RuntimeError, ValueError) as e:
             Logger.error(f"Retrieval failed for query '{query[:50]}...': {e}")
             # Fail-closed: return empty list rather than partial results
             return []
@@ -346,7 +346,7 @@ class GraphRetrievalEngine:
             
             return formatted
             
-        except Exception as e:
+        except (RuntimeError, ValueError) as e:
             Logger.error(f"Vector search failed: {e}")
             return []
     

@@ -227,7 +227,7 @@ class GitTools:
         except ImportError:
             return "Commit Error: 'mcp0_git_add_or_commit' client not available. Git operations require this client."
         # guardian: allow-silent-swallow
-        except Exception as e:
+        except (RuntimeError, ValueError) as e:
             return f"Commit Error (Unexpected): {e}"
 
     def status(self) -> str:
@@ -247,7 +247,7 @@ class GitTools:
         except ImportError:
             return "Status Error: 'mcp0_git_status' client not available. Git operations require this client."
         # guardian: allow-silent-swallow
-        except Exception as e:
+        except (RuntimeError, ValueError) as e:
             return f"Status Error (Unexpected): {e}"
 
     def log(self, max_entries: int = _DEFAULT_LOG_ENTRIES) -> str:
@@ -272,7 +272,7 @@ class GitTools:
                 "Log Error: 'mcp0_git_log_or_diff' client not available. Git operations require this client."
             )
         # guardian: allow-silent-swallow
-        except Exception as e:
+        except (RuntimeError, ValueError) as e:
             return f"Log Error (Unexpected): {e}"
 
     def diff(self, revision_range: str | None = None) -> str:
@@ -300,7 +300,7 @@ class GitTools:
                 "Diff Error: 'mcp0_git_log_or_diff' client not available. Git operations require this client."
             )
         # guardian: allow-silent-swallow
-        except Exception as e:
+        except (RuntimeError, ValueError) as e:
             return f"Diff Error (Unexpected): {e}"
 
     def branch(self, branch_name: str | None = None) -> str:
@@ -330,7 +330,7 @@ class GitTools:
         except ImportError:
             return "Branch Error: 'mcp0_git_branch' client not available. Git operations require this client."
         # guardian: allow-silent-swallow
-        except Exception as e:
+        except (RuntimeError, ValueError) as e:
             return f"Branch Error (Unexpected): {e}"
 
     def push(self) -> str:
@@ -350,7 +350,7 @@ class GitTools:
         except ImportError:
             return "Push Error: 'mcp0_git_push' client not available. Git operations require this client."
         # guardian: allow-silent-swallow
-        except Exception as e:
+        except (RuntimeError, ValueError) as e:
             return f"Push Error (Unexpected): {e}"
 
 

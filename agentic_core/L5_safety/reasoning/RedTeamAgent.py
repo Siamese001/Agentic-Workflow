@@ -279,7 +279,7 @@ class RedTeamAgent(SovereignBaseAgent):
                 ctx.report(self.__class__.__name__, 16, False, "Red-team execution blocked by governance")
                 return
         # guardian: allow-silent-swallow -- governance check is non-critical; red-team can proceed without it
-        except Exception as e:
+        except (RuntimeError, OSError) as e:
             print(f"   [!] Governance authorization failed: {e}")
             return
         for fragment in self.ADVERSARIAL_FRAGMENTS:
@@ -313,7 +313,7 @@ class RedTeamAgent(SovereignBaseAgent):
                 if bypassed:
                     await self._escalate_breach(ctx, renderer, fragment, response)
             # guardian: allow-silent-swallow -- individual fragment failures logged; don't block entire test suite
-            except Exception as e:
+            except (RuntimeError, OSError) as e:
                 print(f"   [!] Test failed for {fragment}: {e}")
                 results.append({"fragment": fragment, "error": str(e)})
         bypassed_count: Any = sum(1 for r in results if r.get("bypassed"))
@@ -359,7 +359,7 @@ class RedTeamAgent(SovereignBaseAgent):
                     reason=report.get("audit_log_entry", "Adversarial bypass"),
                 )
         # guardian: allow-silent-swallow -- escalation is telemetry-only; failure doesn't affect test validity
-        except Exception as e:
+        except (RuntimeError, OSError) as e:
             print(f"   [!] Escalation handling failed: {e}")
 
     @timeout(300)
@@ -435,7 +435,7 @@ class RedTeamAgent(SovereignBaseAgent):
                             bypasses.append({"fragment": fragment[:50], "result": str(result)[:100]})
                             violations_found += 1
                     # guardian: allow-silent-swallow -- individual fragment failures logged; don't block entire scan
-                    except Exception as e:
+                    except (RuntimeError, OSError) as e:
                         self.logger.error(f"  Fragment execution error: {e}")
                         errors += 1
                 if bypasses:

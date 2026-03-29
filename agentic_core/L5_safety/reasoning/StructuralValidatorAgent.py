@@ -300,7 +300,7 @@ class StructuralValidatorAgent(SovereignBaseAgent):
         try:
             content = file_path.read_text(encoding="utf-8")
         # guardian: allow-silent-swallow
-        except Exception as e:
+        except (RuntimeError, OSError) as e:
             Logger.error(f"Failed to read {file_path}: {e}")
             return violations
         if self.config.enable_gravity:
@@ -396,7 +396,7 @@ class StructuralValidatorAgent(SovereignBaseAgent):
             _wg.write_text(file_path, new_content)
             return {"applied": True, "backup": str(backup_path)}
         # guardian: allow-silent-swallow
-        except Exception as e:
+        except (RuntimeError, OSError) as e:
             Logger.error(f"Rename failed: {e}")
             return {"error": str(e)}
 
@@ -436,7 +436,7 @@ class StructuralValidatorAgent(SovereignBaseAgent):
             else:
                 return {"violations_fixed": 0, "violations_found": 1, "errors": 0, "skipped": 1}
         # guardian: allow-silent-swallow
-        except Exception as e:
+        except (RuntimeError, OSError) as e:
             Logger.error(f"[STRUCTURAL_VALIDATOR] Failed to heal: {e}")
             return {"violations_fixed": 0, "violations_found": 1, "errors": 1, "skipped": 0}
 

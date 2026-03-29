@@ -104,7 +104,7 @@ class GPTCacheClient:
         except ImportError:
             Logger.warning("gptcache not installed, using mock implementation")
             self._cache = "mock"
-        except Exception as e:
+        except (RuntimeError, ValueError) as e:
             Logger.error(f"Failed to initialize GPTCache: {e}, using mock")
             self._cache = "mock"
 
@@ -134,7 +134,7 @@ class GPTCacheClient:
 
         except ImportError:
             return self._mock_get(query)
-        except Exception as e:
+        except (RuntimeError, ValueError) as e:
             Logger.error(f"GPTCache get error: {e}")
             return None
 
@@ -153,7 +153,7 @@ class GPTCacheClient:
 
         except ImportError:
             self._mock_set(query, response)
-        except Exception as e:
+        except (RuntimeError, ValueError) as e:
             Logger.error(f"GPTCache set error: {e}")
 
     def _mock_get(self, query: str) -> Optional[str]:
@@ -193,7 +193,7 @@ class GPTCacheClient:
             Logger.info("GPTCache cleared")
         except ImportError:
             pass
-        except Exception as e:
+        except (RuntimeError, ValueError) as e:
             Logger.error(f"Failed to clear GPTCache: {e}")
 
 

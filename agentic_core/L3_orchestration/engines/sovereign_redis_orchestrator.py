@@ -231,7 +231,7 @@ class SovereignRedisOrchestrator(SovereignBaseAgent):
                     return future.result(timeout=5)
             else:
                 return loop.run_until_complete(mcp.call_tool(tool, args))
-        except Exception as e:
+        except (RuntimeError, ValueError) as e:
             import logging
 
             logging.getLogger(__name__).warning(f"[Redis MCP] call_tool('{tool}') failed: {e}")
@@ -378,7 +378,7 @@ class SovereignRedisOrchestrator(SovereignBaseAgent):
                 "artifacts": [],
                 "errors": [],
             }
-        except Exception as e:
+        except (RuntimeError, ValueError) as e:
             return {
                 "status": "failed",
                 "details": f"SovereignRedisOrchestrator heal() failed: {str(e)}",

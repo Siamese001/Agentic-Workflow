@@ -464,7 +464,7 @@ class StateManagementAgent(WriteGovernorMixin, SovereignBaseAgent):
                     "STATE_LIFECYCLE_GOVERNED namespace=%s operation=set_state",
                     state_namespace,
                 )
-            except Exception as _lifecycle_exc:
+            except (RuntimeError, ValueError) as _lifecycle_exc:
                 Logger.error("STATE_LIFECYCLE_ERROR: %s", _lifecycle_exc)
                 # Continue - lifecycle failure should not block state operations
 
@@ -503,7 +503,7 @@ class StateManagementAgent(WriteGovernorMixin, SovereignBaseAgent):
         except ImportError:
             pass
         # guardian: allow-silent-swallow
-        except Exception as e:
+        except (RuntimeError, ValueError) as e:
             Logger.debug(f"[mcp8] Mirror failed for {key}: {e}")
 
     def get_state(self, key: str) -> Any | None:
@@ -528,7 +528,7 @@ class StateManagementAgent(WriteGovernorMixin, SovereignBaseAgent):
                 access_type="read",
                 actor_id="StateManagementAgent",
             )
-        except Exception as _lifecycle_exc:
+        except (RuntimeError, ValueError) as _lifecycle_exc:
             Logger.error("STATE_LIFECYCLE_ERROR: %s", _lifecycle_exc)
             # Continue - lifecycle failure should not block state operations
 
@@ -543,7 +543,7 @@ class StateManagementAgent(WriteGovernorMixin, SovereignBaseAgent):
             try:
                 with open(file_path, encoding="utf-8") as f:
                     return json.load(f)
-            except Exception as e:
+            except (RuntimeError, ValueError) as e:
                 Logger.error(f"Failed to read state {key}: {e}")
                 return None
 
@@ -811,7 +811,7 @@ class StateManagementAgent(WriteGovernorMixin, SovereignBaseAgent):
                         "artifacts": ["manifest.json"],
                         "errors": [],
                     }
-                except Exception as e:
+                except (RuntimeError, ValueError) as e:
                     return {
                         "status": "failed",
                         "details": f"Failed to restore manifest: {str(e)}",
@@ -866,7 +866,7 @@ class StateManagementAgent(WriteGovernorMixin, SovereignBaseAgent):
                                 "artifacts": [],
                                 "errors": [],
                             }
-                    except Exception as e:
+                    except (RuntimeError, ValueError) as e:
                         return {
                             "status": "failed",
                             "details": f"Failed to map ghost file: {str(e)}",
@@ -897,7 +897,7 @@ class StateManagementAgent(WriteGovernorMixin, SovereignBaseAgent):
                     "artifacts": [],
                     "errors": [],
                 }
-        except Exception as e:
+        except (RuntimeError, ValueError) as e:
             Logger.error(f"Heal operation failed in StateManagementAgent: {e}")
             return {
                 "status": "failed",

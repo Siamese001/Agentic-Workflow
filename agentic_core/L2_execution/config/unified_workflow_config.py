@@ -292,7 +292,7 @@ class ReasoningCoordinator(Coordinator):
 
             self.record_execution(True)
             return result
-        except Exception as e:
+        except (RuntimeError, ValueError) as e:
             self.record_execution(False)
             return {
                 "status": "failure",
@@ -328,7 +328,7 @@ class ExecutionCoordinator(Coordinator):
 
             self.record_execution(True)
             return result
-        except Exception as e:
+        except (RuntimeError, ValueError) as e:
             self.record_execution(False)
             return {
                 "status": "failure",
@@ -368,7 +368,7 @@ class SafetyCoordinator(Coordinator):
 
             self.record_execution(True)
             return result
-        except Exception as e:
+        except (RuntimeError, ValueError) as e:
             self.record_execution(False)
             return {
                 "status": "failure",
@@ -405,7 +405,7 @@ class ValidationCoordinator(Coordinator):
 
             self.record_execution(True)
             return result
-        except Exception as e:
+        except (RuntimeError, ValueError) as e:
             self.record_execution(False)
             return {
                 "status": "failure",
@@ -445,7 +445,7 @@ class HealingCoordinator(Coordinator):
 
             self.record_execution(True)
             return result
-        except Exception as e:
+        except (RuntimeError, ValueError) as e:
             self.record_execution(False)
             return {
                 "status": "failure",
@@ -482,7 +482,7 @@ class ObservabilityCoordinator(Coordinator):
 
             self.record_execution(True)
             return result
-        except Exception as e:
+        except (RuntimeError, ValueError) as e:
             self.record_execution(False)
             return {
                 "status": "failure",
@@ -519,7 +519,7 @@ class OptimizationCoordinator(Coordinator):
 
             self.record_execution(True)
             return result
-        except Exception as e:
+        except (RuntimeError, ValueError) as e:
             self.record_execution(False)
             return {
                 "status": "failure",
@@ -548,7 +548,7 @@ class DefaultCoordinator(Coordinator):
 
             self.record_execution(True)
             return result
-        except Exception as e:
+        except (RuntimeError, ValueError) as e:
             self.record_execution(False)
             return {
                 "status": "failure",

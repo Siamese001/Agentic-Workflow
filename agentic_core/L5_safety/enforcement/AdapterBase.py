@@ -404,7 +404,7 @@ class AdapterBase(ABC, Generic[T]):
             self._audit_log.append(entry)
             logger.debug(f"Adapter audit: {entry}")
         # guardian: allow-silent-swallow
-        except Exception as e:
+        except (RuntimeError, OSError) as e:
             logger.error(f"Failed to log audit: {e}")
 
     def execute(self, context: AdapterContext | None = None, *args, **kwargs) -> AdapterResult:
@@ -467,7 +467,7 @@ class AdapterBase(ABC, Generic[T]):
                     audit_trail=audit_trail,
                 )
         # guardian: allow-silent-swallow
-        except Exception as e:
+        except (RuntimeError, OSError) as e:
             logger.error(f"Input validation error: {e}")
             return AdapterResult(success=False, error=f"Input validation error: {e}", audit_trail=audit_trail)
         pre_result = self._pre_execute_hook(context, *args, **kwargs)
@@ -493,7 +493,7 @@ class AdapterBase(ABC, Generic[T]):
                     success=False, data=raw_result, error="Output validation failed", audit_trail=audit_trail
                 )
         # guardian: allow-silent-swallow
-        except Exception as e:
+        except (RuntimeError, OSError) as e:
             logger.error(f"Output validation error: {e}")
             return AdapterResult(
                 success=False, data=raw_result, error=f"Output validation error: {e}", audit_trail=audit_trail

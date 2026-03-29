@@ -406,7 +406,7 @@ def _evaluate_guardrail(
                 ctx.execution_request_id,
                 target_name,
             )
-        except Exception as audit_exc:
+        except (RuntimeError, ValueError) as audit_exc:
             logger.error(
                 "SAFETY_PLANE_UNAVAILABLE_AUDIT_ERROR: %s (req=%s)",
                 audit_exc,
@@ -450,7 +450,7 @@ def _evaluate_guardrail(
             target_name,
             result.verdict.value,
         )
-    except Exception as audit_exc:
+    except (RuntimeError, ValueError) as audit_exc:
         logger.error(
             "SAFETY_PLANE_VALIDATION_AUDIT_ERROR: %s (req=%s)",
             audit_exc,
@@ -555,7 +555,7 @@ def authorize_and_execute(
                 execution_context.execution_request_id,
                 execution_context.action_class.value,
             )
-        except Exception as audit_exc:
+        except (RuntimeError, ValueError) as audit_exc:
             logger.error(
                 "HUMAN_REVIEW_AUDIT_ERROR: %s (req=%s)",
                 audit_exc,
@@ -614,7 +614,7 @@ def authorize_and_execute(
             _tgt,
         )
         # Continue execution - audit failure should not block safety decisions
-    except Exception as audit_exc:
+    except (RuntimeError, ValueError) as audit_exc:
         logger.error(
             "EXECUTION_GUARDRAIL_AUDIT_ERROR: %s (req=%s target=%s)",
             audit_exc,
@@ -646,7 +646,7 @@ def authorize_and_execute(
                 observability_context=obs_context,
                 block_reason=f"Guardrail {outcome.value} for {_tgt}",
             )
-        except Exception as _obs_exc:
+        except (RuntimeError, ValueError) as _obs_exc:
             logger.error("EXECUTION_OBSERVABILITY_BLOCK_ERROR: %s", _obs_exc)
 
         _emit_reenters_safety(bound_ctx, f"GUARDRAIL_{outcome.value}")
@@ -729,7 +729,7 @@ def authorize_and_execute(
                 failure_classification=FailureClassification.TOOL_ERROR,
                 failure_reason=f"Tool contract violation: {type(exc).__name__}",
             )
-        except Exception as _obs_exc:
+        except (RuntimeError, ValueError) as _obs_exc:
             logger.error("EXECUTION_OBSERVABILITY_FAILURE_ERROR: %s", _obs_exc)
 
         _emit_reenters_safety(bound_ctx, f"TYPED_TOOL_CONTRACT_VIOLATION:{type(exc).__name__}")
@@ -750,7 +750,7 @@ def authorize_and_execute(
                 failure_classification=FailureClassification.UNKNOWN_FAILURE,
                 failure_reason=f"Execution error: {type(exc).__name__}",
             )
-        except Exception as _obs_exc:
+        except (RuntimeError, ValueError) as _obs_exc:
             logger.error("EXECUTION_OBSERVABILITY_FAILURE_ERROR: %s", _obs_exc)
 
         _emit_reenters_safety(bound_ctx, f"EXECUTION_ERROR:{type(exc).__name__}")
@@ -803,7 +803,7 @@ def authorize_and_execute(
             _elapsed_ms,
         )
 
-    except Exception as _obs_exc:
+    except (RuntimeError, ValueError) as _obs_exc:
         logger.error(
             "EXECUTION_OBSERVABILITY_ERROR: %s (req=%s)",
             _obs_exc,

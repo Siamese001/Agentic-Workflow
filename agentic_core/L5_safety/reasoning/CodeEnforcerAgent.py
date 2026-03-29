@@ -320,7 +320,7 @@ class CodeEnforcerAgent(SovereignBaseAgent):
         try:
             content = file_path.read_text(encoding="utf-8")
         # guardian: allow-silent-swallow
-        except Exception as e:
+        except (RuntimeError, OSError) as e:
             Logger.error(f"Failed to read {file_path}: {e}")
             return violations
         if self._agent_config.enable_standards:
@@ -517,7 +517,7 @@ class CodeEnforcerAgent(SovereignBaseAgent):
                     )
                     Logger.info(f"SSOT registry synced: {len(self._ssot_registry.get('agents', []))} agents")
                 # guardian: allow-silent-swallow
-                except Exception as e:
+                except (RuntimeError, OSError) as e:
                     Logger.error(f"Failed to sync SSOT registry: {e}")
             return self._ssot_registry
 
@@ -538,7 +538,7 @@ class CodeEnforcerAgent(SovereignBaseAgent):
                 Logger.info("SSOT registry updated")
                 return True
             # guardian: allow-silent-swallow
-            except Exception as e:
+            except (RuntimeError, OSError) as e:
                 Logger.error(f"Failed to update SSOT registry: {e}")
                 return False
 
@@ -600,7 +600,7 @@ class CodeEnforcerAgent(SovereignBaseAgent):
                     Logger.warning(f"[CODE_ENFORCER] Unknown violation type: {violation_type}")
                     return {"violations_fixed": 0, "violations_found": 1, "errors": 0, "skipped": 1}
             # guardian: allow-silent-swallow
-            except Exception as e:
+            except (RuntimeError, OSError) as e:
                 Logger.error(f"[CODE_ENFORCER] Failed to heal: {e}")
                 return {"violations_fixed": 0, "violations_found": 1, "errors": 1, "skipped": 0}
 

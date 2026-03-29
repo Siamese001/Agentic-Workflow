@@ -233,7 +233,7 @@ class FissionManagerAgent(SovereignBaseAgent):
                 return FissionResult(True, reason, new_files, file_path, True)
             return FissionResult(True, reason, {}, file_path, False, "Empty response")
         # guardian: allow-silent-swallow
-        except Exception as e:
+        except (RuntimeError, ValueError) as e:
             Logger.error(f"Fission failed: {e}")
             return FissionResult(True, reason, {}, file_path, False, str(e))
 
@@ -248,7 +248,7 @@ class FissionManagerAgent(SovereignBaseAgent):
                 text = text.split("```")[1].split("```")[0].strip()
             return json.loads(text)
         # guardian: allow-silent-swallow
-        except Exception as e:
+        except (RuntimeError, ValueError) as e:
             Logger.warning(f"Fission parse failed: {e}")
             return {}
 
@@ -280,7 +280,7 @@ class FissionManagerAgent(SovereignBaseAgent):
                 "errors": [],
             }
         # guardian: allow-silent-swallow
-        except Exception as e:
+        except (RuntimeError, ValueError) as e:
             return {
                 "status": "failed",
                 "details": f"FissionManagerAgent heal() failed: {str(e)}",

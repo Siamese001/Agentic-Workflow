@@ -567,7 +567,7 @@ class DagEngineAgent(SovereignBaseAgent):
             if "==" in condition:
                 return self._evaluate_equality_condition(condition, task_results)
             return context.get(condition, False)
-        except Exception as e:
+        except (RuntimeError, ValueError) as e:
             if self.enable_logging:
                 LOGGER.warning("condition_evaluation_failed", extra={"condition": condition, "error": str(e)})
             return False
@@ -682,7 +682,7 @@ class DagEngineAgent(SovereignBaseAgent):
                 "artifacts": [],
                 "errors": [],
             }
-        except Exception as e:
+        except (RuntimeError, ValueError) as e:
             return {
                 "status": "failed",
                 "details": f"DagEngineAgent heal() failed: {str(e)}",

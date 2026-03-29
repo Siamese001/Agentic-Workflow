@@ -375,7 +375,7 @@ class HybridRetriever:
                 print("   [OK] Sovereign local BM25 index loaded")
                 return
             # guardian: allow-silent-swallow
-            except Exception as e:
+            except (RuntimeError, ValueError) as e:
                 print(f"   [!] Local index cache corrupt — rebuilding: {e}")
         await self.rebuild_from_ingestion()
 
@@ -409,7 +409,7 @@ class HybridRetriever:
                 self.index_ready.set()
             print("   [OK] Sovereign local index synchronized")
         # guardian: allow-silent-swallow
-        except Exception as e:
+        except (RuntimeError, ValueError) as e:
             print(f"   [X] Local index rebuild failed: {e}")
 
     async def dense_search(self, query: str, top_k: int = 15) -> list[RetrievalResult]:
@@ -426,7 +426,7 @@ class HybridRetriever:
                 for r in results
             ]
         # guardian: allow-silent-swallow
-        except Exception as e:
+        except (RuntimeError, ValueError) as e:
             print(f"   [!] Dense search failed: {e}")
             return []
 

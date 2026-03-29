@@ -238,7 +238,7 @@ class FileIo:
             return f"Read Error (PDF): Could not read PDF file '{file_path}'. {e}"
         except FileNotFoundError:
             return f"Read Error: File not found at '{file_path}'."
-        except Exception as e:  # guardian: allow-silent-swallow
+        except (RuntimeError, ValueError) as e:  # guardian: allow-silent-swallow
             return f"Read Error (PDF Unexpected): {e}"
 
     def _extract_pdf_pages_text(self, reader, file_path: str) -> str:
@@ -274,7 +274,7 @@ class FileIo:
             return f"Read Error: File not found at '{file_path}'."    # guardian: Encoding errors should specify fallback encoding strategy    # guardian: Encoding errors should specify fallback encoding strategy    # guardian: Encoding errors should specify fallback encoding strategy    # guardian: Encoding errors should specify fallback encoding strategy    # guardian: Encoding errors should specify fallback encoding strategy
         except UnicodeDecodeError:
             return f"Read Error: Could not decode file '{file_path}' with utf-8. Try a different encoding."
-        except Exception as e:  # guardian: allow-silent-swallow
+        except (RuntimeError, ValueError) as e:  # guardian: allow-silent-swallow
             return f"Read Error (Text Unexpected): {e}"
 
     def read_file(self, file_path: str) -> str:
@@ -335,7 +335,7 @@ class FileIo:
             return f"[OK] File saved successfully: {file_path}"
         except OSError as e:    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging
             return f"Save Error (IO): Could not save file '{file_path}'. {e}"
-        except Exception as e:  # guardian: allow-silent-swallow
+        except (RuntimeError, ValueError) as e:  # guardian: allow-silent-swallow
             return f"Save Error (Unexpected): {e}"
 
 

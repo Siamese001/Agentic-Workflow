@@ -258,7 +258,7 @@ class PreCommitSovereignAgent(SovereignBaseAgent, L0RoutingBase):
                         len(validation_result) if isinstance(validation_result, list) else 1
                     )
             # guardian: allow-silent-swallow
-            except Exception as e:
+            except (RuntimeError, OSError) as e:
                 Logger.error(f"Error in validate_sovereignty: {e}")
                 metrics["errors"] += 1
         return {"violations": 0, "fixed": 0, "errors": 0}
@@ -351,7 +351,7 @@ class PreCommitSovereignAgent(SovereignBaseAgent, L0RoutingBase):
         try:
             report = self.validator.validate_all()
         # guardian: allow-silent-swallow
-        except Exception as e:
+        except (RuntimeError, OSError) as e:
             return self._create_error_result(f"Validation error: {str(e)}")
         staged_violations = self._filter_staged_violations(report, staged_files)
         self.violations_found = staged_violations
@@ -435,7 +435,7 @@ class PreCommitSovereignAgent(SovereignBaseAgent, L0RoutingBase):
             print("To bypass the hook (not recommended), use: git commit --no-verify")
             return True
         # guardian: allow-silent-swallow
-        except Exception as e:
+        except (RuntimeError, OSError) as e:
             print(f"Failed to install hook: {e}")
             return False
 
@@ -455,7 +455,7 @@ class PreCommitSovereignAgent(SovereignBaseAgent, L0RoutingBase):
             print("Pre-commit hook removed")
             return True
         # guardian: allow-silent-swallow
-        except Exception as e:
+        except (RuntimeError, OSError) as e:
             print(f"Failed to remove hook: {e}")
             return False
 
@@ -486,7 +486,7 @@ class PreCommitSovereignAgent(SovereignBaseAgent, L0RoutingBase):
                 "errors": [],
             }
         # guardian: allow-silent-swallow
-        except Exception as e:
+        except (RuntimeError, OSError) as e:
             return {
                 "status": "failed",
                 "details": f"PreCommitSovereignAgent heal() failed: {str(e)}",

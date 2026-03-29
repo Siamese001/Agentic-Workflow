@@ -216,7 +216,7 @@ def heal_invalidate_cache(pattern: str = ""):
                     invalidated = await self.cache_invalidate(pattern)
                     log.info(f"cache invalidated for pattern '{pattern}' after heal ({invalidated} keys)")
                 # guardian: allow-silent-swallow
-                except Exception as e:
+                except (RuntimeError, OSError) as e:
                     log.debug(f"cache invalidation failed: {e}")
             return result
 
@@ -258,7 +258,7 @@ def invalidate_on_file_change(file_path_arg: str = "file_path"):
                     await self.cache_invalidate(file_name)
                     log.debug(f"cache invalidated for file: {file_name}")
                 # guardian: allow-silent-swallow
-                except Exception as e:
+                except (RuntimeError, OSError) as e:
                     log.debug(f"File cache invalidation failed: {e}")
             return result
 
@@ -281,6 +281,6 @@ async def invalidate_all_caches(agent) -> int:
         try:
             return await agent.cache_invalidate("")
         # guardian: allow-silent-swallow
-        except Exception as e:
+        except (RuntimeError, OSError) as e:
             log.warning(f"Failed to invalidate all caches: {e}")
     return 0

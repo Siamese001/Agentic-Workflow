@@ -422,7 +422,7 @@ class SSOTRelocator:
                     result.error = gk_result.error
                     logger.error(f"Failed to {action.lower()} {result.source}: {gk_result.error}")
             # guardian: allow-silent-swallow
-            except Exception as e:
+            except (RuntimeError, OSError) as e:
                 result.error = str(e)
                 logger.error(f"Failed to {action.lower()} {result.source}: {e}")
         return result
@@ -473,7 +473,7 @@ class SSOTRelocator:
                     result.error = gk_result.error
                     logger.error(f"Failed to {action.lower()} {result.source}: {gk_result.error}")
             # guardian: allow-silent-swallow
-            except Exception as e:
+            except (RuntimeError, OSError) as e:
                 result.error = str(e)
                 logger.error(f"Failed to {action.lower()} {result.source}: {e}")
         return result
@@ -529,7 +529,7 @@ class SSOTRelocator:
                 result.success = True
                 logger.info(f"FLATTENED: {result.source} -> {result.target}")
             # guardian: allow-silent-swallow
-            except Exception as e:
+            except (RuntimeError, OSError) as e:
                 result.error = str(e)
                 logger.error(f"Failed to flatten {result.source}: {e}")
         return result

@@ -463,7 +463,7 @@ class CodeHealerAgent(
             # 3. Atomic Swap
             os.replace(temp_path, file_path)
             return True
-        except Exception as e:
+        except (RuntimeError, OSError) as e:
             Logger.critical(f"Atomic write failed for {file_path}: {e}")
             # guardian: allow-path-string
             if os.path.exists(temp_path):
@@ -495,7 +495,7 @@ class CodeHealerAgent(
         try:
             content = file_path.read_text(encoding="utf-8")
         # guardian: allow-silent-swallow
-        except Exception as e:
+        except (RuntimeError, OSError) as e:
             Logger.error(f"Failed to read {file_path}: {e}")
             return actions
 
@@ -551,7 +551,7 @@ class CodeHealerAgent(
         try:
             content = file_path.read_text(encoding="utf-8")
         # guardian: allow-silent-swallow
-        except Exception as e:
+        except (RuntimeError, OSError) as e:
             Logger.error(f"Failed to read {file_path}: {e}")
             return actions
 
@@ -654,7 +654,7 @@ class CodeHealerAgent(
         try:
             content = file_path.read_text(encoding="utf-8")
         # guardian: allow-silent-swallow
-        except Exception as e:
+        except (RuntimeError, OSError) as e:
             Logger.error(f"Failed to read {file_path}: {e}")
             return actions
 
@@ -846,7 +846,7 @@ class CodeHealerAgent(
                 "skipped": 0,
             }
         # guardian: allow-silent-swallow
-        except Exception as e:
+        except (RuntimeError, OSError) as e:
             Logger.error(f"[CODE_HEALER] Failed to heal canon violation: {e}")
             return {"violations_fixed": 0, "violations_found": 1, "errors": 1, "skipped": 0}
 
@@ -869,7 +869,7 @@ class CodeHealerAgent(
                 "skipped": 0,
             }
         # guardian: allow-silent-swallow
-        except Exception as e:
+        except (RuntimeError, OSError) as e:
             Logger.error(f"[CODE_HEALER] Failed to heal import violation: {e}")
             return {"violations_fixed": 0, "violations_found": 1, "errors": 1, "skipped": 0}
 
@@ -892,7 +892,7 @@ class CodeHealerAgent(
                 "skipped": 0,
             }
         # guardian: allow-silent-swallow
-        except Exception as e:
+        except (RuntimeError, OSError) as e:
             Logger.error(f"[CODE_HEALER] Failed to heal structural violation: {e}")
             return {"violations_fixed": 0, "violations_found": 1, "errors": 1, "skipped": 0}
 
@@ -908,7 +908,7 @@ class CodeHealerAgent(
             Logger.warning(f"[CODE_HEALER] Syntax violations require manual intervention: {path}")
             return {"violations_fixed": 0, "violations_found": 1, "errors": 0, "skipped": 1}
         # guardian: allow-silent-swallow
-        except Exception as e:
+        except (RuntimeError, OSError) as e:
             Logger.error(f"[CODE_HEALER] Failed to heal syntax violation: {e}")
             return {"violations_fixed": 0, "violations_found": 1, "errors": 1, "skipped": 0}
 

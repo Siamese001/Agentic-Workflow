@@ -328,7 +328,7 @@ class HygieneGuardianAgent(SovereignBaseAgent):
             }
 
         # guardian: allow-silent-swallower
-        except Exception as e:
+        except (RuntimeError, OSError) as e:
             return {
                 "status": "failed",
                 "details": "Exception during healing",
@@ -342,7 +342,7 @@ class HygieneGuardianAgent(SovereignBaseAgent):
             content = file_path.read_text(encoding="utf-8")
             return len(content.strip()) == 0
         # guardian: allow-silent-swallower
-        except Exception:
+        except (RuntimeError, OSError):
             return False
 
     def _is_orphaned_init(self, file_path: Path) -> bool:
@@ -378,7 +378,7 @@ class HygieneGuardianAgent(SovereignBaseAgent):
 
             return debug_lines
         # guardian: allow-silent-swallower
-        except Exception:
+        except (RuntimeError, OSError):
             return []
 
     def _has_commented_code(self, file_path: Path) -> tuple[bool, int]:
@@ -398,7 +398,7 @@ class HygieneGuardianAgent(SovereignBaseAgent):
 
             return False, 0
         # guardian: allow-silent-swallower
-        except Exception:
+        except (RuntimeError, OSError):
             return False, 0
 
     def _has_repeated_filename_parts(self, filename: str) -> tuple[bool, str | None]:
@@ -620,7 +620,7 @@ class HygieneGuardianAgent(SovereignBaseAgent):
                     else:
                         print(f"   [ERROR] Failed to archive {violation.file_path}: {result.error}")
             # guardian: allow-silent-swallower
-            except Exception as e:
+            except (RuntimeError, OSError) as e:
                 print(f"   [ERROR] Failed to fix {violation.file_path}: {e}")
 
         return fixed_count
