@@ -425,7 +425,7 @@ class CoreSynthesisExecutor:
 
             return True
 
-        except Exception as e:
+        except (OSError, IOError, ValueError) as e:  # guardian: allow-specific -- logic merge failure returns False
             print(f"❌ Failed to merge logic into {target_path}: {e}")
             return False
 
@@ -458,7 +458,7 @@ class CoreSynthesisExecutor:
                 shutil.move(str(file_path), str(dest))
                 print(f"🔧 Evicted to utils: {file_path.name}")
                 evicted_count += 1
-            except Exception as e:
+            except (OSError, shutil.Error) as e:  # guardian: allow-specific -- eviction failure continues with others
                 print(f"❌ Failed to evict {file_path.name}: {e}")
                 return False
 
@@ -482,7 +482,7 @@ class CoreSynthesisExecutor:
                         print(f"❌ Circular dependency found in {file_path.name}: {zone}")
                         return False
 
-            except Exception as e:
+            except (OSError, UnicodeDecodeError) as e:  # guardian: allow-specific -- file read error returns False
                 print(f"❌ Error checking {file_path.name}: {e}")
                 return False
 
