@@ -865,7 +865,7 @@ def _register_workflow_outcome_adapter() -> None:
         register_with_workflow_bridge()
         logging.info("[SystemLearning] WorkflowOutcomeSLAdapter registered")
         _emit_records_telemetry_event("execute_ssot", "workflow_adapter", "registered")
-    except Exception as e:
+    except (ValueError, KeyError) as e:
         logging.warning("[SystemLearning] Failed to register WorkflowOutcomeSLAdapter: %s", e)
 
 
@@ -916,7 +916,7 @@ def _emit_workflow_outcome(
         adapter.accept(outcome)
         _emit_records_telemetry_event("execute_ssot", "workflow_outcome", "emitted")
 
-    except Exception as e:
+    except (ValueError, KeyError) as e:
         logging.warning("[SystemLearning] Failed to emit workflow outcome: %s", e)
 
 
@@ -953,7 +953,7 @@ def execute_contracted(
         )
         _emit_records_telemetry_event("execute_ssot", "output_contract", "signed")
         return contract
-    except Exception as e:
+    except (ValueError, TypeError) as e:
         logging.warning("[L6Observability] Failed to create output contract: %s", e)
         return None
 
@@ -1133,7 +1133,7 @@ def _fire_meta_learning_intake_required(
         )
 
         _emit_records_telemetry_event("execute_ssot", "phase_outcomes", "persisted_to_sl_bridge")
-    except Exception as e:
+    except (RuntimeError, OSError) as e:
         # Log but don't fail - telemetry is best-effort
         logging.warning("[MetaLearning] Phase outcome persistence failed: %s", e)
 
@@ -3740,7 +3740,7 @@ def execute_phase1_discovery_impl(agents, territory, decision_engine, state_mgr,
                 _adg_territory_score,
             )
     # guardian: allow-silent-swallow
-    except Exception as _adg_err:
+    except (ValueError, TypeError) as _adg_err:
         logger.debug("[ADG] Behavioral enrichment skipped (non-fatal): %s", _adg_err)
     state_mgr.state["adg_territory_score"] = _adg_territory_score
     # --- end ADG enrichment ---
@@ -3915,7 +3915,7 @@ def execute_phase1_discovery_impl(agents, territory, decision_engine, state_mgr,
         state_mgr.state["classification_file_registry"] = _fc_evidence.get("file_registry", [])
         logger.info(f"FileClassificationAgent early detection: {classification_count} issues found")
     # guardian: allow-silent-swallow
-    except Exception as e:
+    except (ValueError, TypeError) as e:
         logger.error(f"FileClassificationHealerAgent early detection FAILED: {e}\n{traceback.format_exc()}")
         state_mgr.complete_agent("FileClassificationHealerAgent", False, f"Early detection error: {e}")
         _record_healing_action(
@@ -4237,7 +4237,7 @@ def execute_phase4_validation_impl(agents, territory, state_mgr, ctx: "HealConte
             if hasattr(arch_gov, "adg_signals"):
                 arch_gov.adg_signals = _adg_arch_signals
     # guardian: allow-silent-swallow
-    except Exception as _adg_arch_err:
+    except (ValueError, TypeError) as _adg_arch_err:
         logger.debug(
             "[ADG] ArchitectureGovernorAgent signal injection skipped (non-fatal): %s", _adg_arch_err
         )

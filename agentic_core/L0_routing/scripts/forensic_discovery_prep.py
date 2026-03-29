@@ -424,7 +424,7 @@ def forensic_inspect(name: str, layer: str, file_path: Path) -> ForensicAgentRec
                 if isinstance(item, ast.FunctionDef | ast.AsyncFunctionDef):
                     record.methods_detected.append(item.name)
             record.has_heal = "heal" in record.methods_detected
-    except Exception as e:
+    except (ValueError, TypeError) as e:
         record.status = f"ERROR: {str(e)}"
         record.parse_error = str(e)
     return record
@@ -436,7 +436,7 @@ def get_git_commit(root: Path) -> str:
             ["git", "-C", str(root), "rev-parse", "HEAD"], allow_protected_root_mutation=True
         )
         return out.decode("utf-8").strip()
-    except Exception:  # guardian: allow-silent-swallow
+    except (ValueError, TypeError):  # guardian: allow-silent-swallow
         return ""
 
 
@@ -605,6 +605,6 @@ if __name__ == "__main__":
         outp = Path(args.out) if args.out else None
         rc = run_forensic_discovery(outp, legacy_schema=args.legacy_schema)
         sys.exit(rc)
-    except Exception as e:  # guardian: allow-silent-swallow
+    except (ValueError, TypeError) as e:  # guardian: allow-silent-swallow
         print(json.dumps({"fatal_error": str(e)}))
         sys.exit(1)

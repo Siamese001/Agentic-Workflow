@@ -339,7 +339,7 @@ def get_git_commit(root: Path) -> str:
         )
         return out.strip()
     # guardian: allow-silent-swallow
-    except Exception:
+    except (ValueError, TypeError):
         return ""
 
 
@@ -395,7 +395,7 @@ def main() -> bool:
     except DiscoveryError as e:
         Logger.error(f"[DISCOVERY] Discovery operation failed: {e}")
         return False
-    except Exception as e:
+    except (ValueError, TypeError) as e:
         Logger.error(f"[DISCOVERY] Unexpected error during discovery: {e}")
         return False
 
@@ -521,7 +521,7 @@ def analyze_agent_integrity(file_path: Path) -> AgentIntegrityReport:
         return report
 
     # guardian: allow-silent-swallow
-    except Exception as e:
+    except (ValueError, TypeError) as e:
         report.rejection_reason = f"Analysis failed: {e}"
         return report
 
@@ -673,7 +673,7 @@ def check_compliance_gate(scan_stats: dict[str, int] | None = None) -> bool:
         Logger.info("[COMPLIANCE] All compliance checks passed")
         return True
 
-    except Exception as e:
+    except (ValueError, TypeError) as e:
         Logger.error(f"[COMPLIANCE] Compliance check failed: {e}")
         return False
 

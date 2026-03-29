@@ -354,7 +354,7 @@ def parse_python_file(file_path: Path) -> tuple[list[ClassInfo], list[str], list
     except SyntaxError as e:
         return [], [f"SYNTAX_ERROR: {e}"], [], None
     # guardian: allow-silent-swallow
-    except Exception as e:
+    except (ValueError, TypeError) as e:
         return [], [f"PARSE_ERROR: {e}"], [], None
 
 
@@ -694,7 +694,7 @@ def scan_archive_folder(archive_folder: str) -> list[FileAnalysis]:
                 analysis = analyze_file(file_path, _ARCHIVES_DIR_PATH)
                 analyses.append(analysis)
             # guardian: allow-silent-swallow
-            except Exception as e:
+            except (ValueError, TypeError) as e:
                 print(f"ERROR analyzing {file_path}: {e}")
 
     return analyses

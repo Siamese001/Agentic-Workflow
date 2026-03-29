@@ -210,7 +210,7 @@ class CoreSynthesisExecutor:
 
             return {"synthesize": synthesis_files, "archive": archive_files}
         # guardian: allow-silent-swallow
-        except Exception as e:
+        except (ValueError, TypeError) as e:
             print(f"❌ Failed to load synthesis plan: {e}")
             return {"synthesize": [], "archive": []}
 
@@ -277,7 +277,7 @@ class CoreSynthesisExecutor:
                     shutil.move(str(file_path), str(archive_dest))
                     print(f"📦 Archived: {file_info['file_path']}")
                     archived_count += 1
-                except Exception as e:
+                except (ValueError, TypeError) as e:
                     print(f"❌ Failed to archive {file_info['file_path']}: {e}")
                     return False
             else:
@@ -328,7 +328,7 @@ class CoreSynthesisExecutor:
                     else:
                         print(f"⚠️ No extractable logic in {file_info['file_path']}")
 
-                except Exception as e:
+                except (ValueError, TypeError) as e:
                     print(f"❌ Error processing {file_info['file_path']}: {e}")
                     return False
             else:

@@ -227,7 +227,7 @@ def invoke_arch_governor(
         return {"success": False, "error": "Subprocess timed out after 300 seconds"}
     except json.JSONDecodeError as e:
         return {"success": False, "error": f"Failed to parse runner output: {e}"}
-    except Exception as e:
+    except (ValueError, TypeError) as e:
         return {"success": False, "error": str(e)}
 
 
@@ -267,7 +267,7 @@ def invoke_orchestrator_mission(
         return {"success": False, "error": "Subprocess timed out after 600 seconds"}
     except json.JSONDecodeError as e:
         return {"success": False, "error": f"Failed to parse runner output: {e}"}
-    except Exception as e:
+    except (ValueError, TypeError) as e:
         return {"success": False, "error": str(e)}
 
 
@@ -288,7 +288,7 @@ def invoke_agent_roster_validation() -> dict[str, Any]:
         return {"success": False, "error": "Subprocess timed out after 120 seconds"}
     except json.JSONDecodeError as e:
         return {"success": False, "error": f"Failed to parse runner output: {e}"}
-    except Exception as e:
+    except (ValueError, TypeError) as e:
         return {"success": False, "error": str(e)}
 
 
@@ -315,7 +315,7 @@ def invoke_hierarchy_agent(action: str, project_root: Path | None = None) -> dic
         return {"success": False, "error": "Subprocess timed out after 300 seconds"}
     except json.JSONDecodeError as e:
         return {"success": False, "error": f"Failed to parse runner output: {e}"}
-    except Exception as e:
+    except (ValueError, TypeError) as e:
         return {"success": False, "error": str(e)}
 
 
@@ -347,5 +347,5 @@ def invoke_code_validator(
         return {"success": False, "error": "Subprocess timed out after 300 seconds"}
     except json.JSONDecodeError as e:
         return {"success": False, "error": f"Failed to parse runner output: {e}"}
-    except Exception as e:
+    except (ValueError, TypeError) as e:
         return {"success": False, "error": str(e)}

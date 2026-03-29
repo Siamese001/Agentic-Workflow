@@ -361,7 +361,7 @@ def scan_layer_gravity(
         scanner = SSOTScanner(repo_root)
         gravity_agents = scanner.find_gravity_violations()
     # guardian: allow-silent-swallow
-    except Exception:
+    except (ValueError, TypeError):
         return []
 
     violations: list[dict] = []

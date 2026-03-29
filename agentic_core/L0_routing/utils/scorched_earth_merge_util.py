@@ -271,7 +271,7 @@ def scorched_earth_merge() -> Any:
             assert_no_persistent_write("L0", "shutil.mutate")
             shutil.move(str(item), str(dest_path))
         # guardian: allow-silent-swallow
-        except Exception as e:
+        except (ValueError, TypeError) as e:
             logging.error(f"    Failed to move {item.name}: {e}")
     for item in ROOT.iterdir():
         if item.is_dir() and item.name not in APPROVED_ROOT_FOLDERS:
@@ -281,7 +281,7 @@ def scorched_earth_merge() -> Any:
                     shutil.rmtree(item)
                     logging.info(f"[✓] Purged empty unapproved shell: {item.name}")
             # guardian: allow-silent-swallow
-            except:
+            except Exception:
                 pass
     print("\n--- FINAL ROOT AUDIT ---")
     current_root: Any = [i.name for i in ROOT.iterdir()]

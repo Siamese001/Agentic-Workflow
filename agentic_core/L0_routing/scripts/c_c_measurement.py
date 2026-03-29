@@ -208,7 +208,7 @@ class CCMeasurement:
             print(f"Failed to parse radon output: {e}")
             return {}
         # guardian: allow-silent-swallow
-        except Exception as e:
+        except (ValueError, TypeError) as e:
             print(f"Error measuring CC: {e}")
             return {}
 
@@ -312,7 +312,7 @@ class CCMeasurement:
                 json.dump(report, f, indent=2)
             print(f"\nReport saved to: {output_file}")
         # guardian: allow-silent-swallow
-        except Exception as e:
+        except (ValueError, TypeError) as e:
             print(f"Error saving report: {e}")
 
     def compare_reports(self, baseline: dict, current: dict) -> dict:

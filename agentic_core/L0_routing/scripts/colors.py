@@ -732,7 +732,7 @@ def main():
                         spec.loader.exec_module(perf_module)
                         return perf_module.get_performance_analyst(root)
                 # guardian: allow-silent-swallow
-                except:
+                except Exception:
                     pass
                 return None
 
@@ -767,7 +767,7 @@ def main():
                 guardian = get_autonomy_guardian(project_root)
                 gemini_active = hasattr(guardian, "gemini_embedder") and guardian.gemini_embedder is not None
             # guardian: allow-silent-swallow
-            except:
+            except Exception:
                 pass
             _runtime_state.update(
                 {
@@ -822,7 +822,7 @@ def main():
             _save_runtime_state(project_root)
             report_consolidated_summary(consolidated_results, gemini_active)
         # guardian: allow-silent-swallow
-        except Exception as e:
+        except (ValueError, TypeError) as e:
             print(f"   [!] Heal mode failed: {e}")
             traceback.print_exc()
             _add_event("error", f"Heal mode failed: {str(e)[:300]}...")

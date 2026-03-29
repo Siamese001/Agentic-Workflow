@@ -229,7 +229,7 @@ class CoverageHealer:
                 print(f"    ✓ Module verified: {file_path.name}")
                 return True
         # guardian: allow-silent-swallow
-        except Exception as e:
+        except (ValueError, TypeError) as e:
             print(f"    ✗ Healing failed: {e}")
             return False
         return False
@@ -267,7 +267,7 @@ def main():
         print("\n\n⚠️  Remediation interrupted by user")
         sys.exit(1)
     # guardian: allow-silent-swallow
-    except Exception as e:
+    except (ValueError, TypeError) as e:
         print(f"\n\n❌ Remediation failed: {e}")
         import traceback
 

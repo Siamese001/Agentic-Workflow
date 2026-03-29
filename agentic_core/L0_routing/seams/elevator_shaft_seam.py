@@ -125,7 +125,7 @@ def load_context_jit(
         )
         semantic_cache = get_semantic_cache()
         rag_chunks = semantic_cache.query(intent_class, k=5)
-    except Exception:
+    except (ValueError, TypeError):
         rag_chunks = []
 
     # Query BM25 store for keyword matches
@@ -133,7 +133,7 @@ def load_context_jit(
         from agentic_core.L4_state.memory.bm25_store import get_bm25_store
         bm25_store = get_bm25_store()
         bm25_results = bm25_store.query(intent_class, k=5)
-    except Exception:
+    except (ValueError, TypeError):
         bm25_results = []
 
     # Combine and deduplicate results
@@ -164,7 +164,7 @@ def load_context_jit(
         )
         ast_store = get_ast_snapshot_store()
         ast_snapshot = ast_store.get_snapshot(trace_id)
-    except Exception:
+    except (ValueError, TypeError):
         ast_snapshot = None
 
     # Get boundary refs if available
@@ -172,7 +172,7 @@ def load_context_jit(
         from agentic_core.L4_state.memory.boundary_store import get_boundary_store
         boundary_store = get_boundary_store()
         boundary_refs = boundary_store.get_refs_for_intent(intent_class)
-    except Exception:
+    except (ValueError, TypeError):
         boundary_refs = []
 
     return {

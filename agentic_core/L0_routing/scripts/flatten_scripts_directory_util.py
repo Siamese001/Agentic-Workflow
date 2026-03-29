@@ -238,7 +238,7 @@ def flatten_scripts() -> Any:
                 print(f"  [✓] {rel_path} -> {target.relative_to(CORE)}")
                 moved += 1
             # guardian: allow-silent-swallow
-            except Exception as e:
+            except (ValueError, TypeError) as e:
                 print(f"  [X] Failed: {py_file.name} - {e}")
     print("\n[*] Cleaning empty directories...")
     for root, dirs, _files in os.walk(SCRIPTS_DIR, topdown=False):
@@ -250,7 +250,7 @@ def flatten_scripts() -> Any:
                     dir_path.rmdir()
                     print(f"  [✓] Removed: {dir_path.relative_to(CORE)}")
             # guardian: allow-silent-swallow
-            except:
+            except Exception:
                 pass
     print(f"\n[OK] FLATTENING COMPLETE. {moved} files moved to depth-{REQUIRED_DEPTH}.")
 
