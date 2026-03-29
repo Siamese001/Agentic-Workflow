@@ -224,7 +224,7 @@ class TestPTCEndToEndIntegration:
     ) -> None:
         """Test complete PTC workflow with APPROVE decision."""
         script_id = f"ptc-e2e-approve-{uuid.uuid4().hex[:8]}"
-        
+
         # Stage 1: Register tools
         query_spec = ToolSpec(
             tool_id="query_users",
@@ -234,13 +234,13 @@ class TestPTCEndToEndIntegration:
             output_kind="JSON",
             version=1,
         )
-        
+
         def query_handler(args: dict[str, Any]) -> dict[str, Any]:
             return {"users": [{"id": 1, "name": "Alice"}, {"id": 2, "name": "Bob"}], "count": 2}
-        
+
         tool_registry.register(query_spec, query_handler)
         ptc_orchestrator.register_tool("query_users", query_handler)
-        
+
         # Stage 2: Create and parse script
         code = """
 users = query_users()
@@ -248,20 +248,20 @@ summary = {"count": users["count"], "names": [u["name"] for u in users["users"]]
 print(json.dumps(summary))
 """
         plan = ptc_orchestrator.parse_script(script_id, code)
-        
+
         assert len(plan.tools) == 1
         assert "query_users" in plan.tools
-        
+
         # Stage 3: Safety assessment
         assessment = ptc_hitl.assess_script_safety(
             script_id=script_id,
             code=code,
             tools=plan.tools,
         )
-        
+
         assert assessment.risk_level == PTCScriptRiskLevel.LOW
         assert assessment.confidence_score > 0.7
-        
+
         # Stage 4: Safety gates
         gate_results = ptc_safety_manager.evaluate_all_gates(
             script_id=script_id,
@@ -273,21 +273,21 @@ print(json.dumps(summary))
             envelope_signed=True,
             envelope_valid=True,
         )
-        
+
         assert ptc_safety_manager.check_all_passed(gate_results)
         assert not ptc_safety_manager.requires_human_review(gate_results)
-        
+
         # Stage 5: Execute batch
         result = ptc_orchestrator.execute_batch(plan)
-        
+
         assert result.success
         assert "count" in result.summary
         assert result.tokens_saved > 0
-        
+
         # Stage 6: Verify in sandbox
         sandbox = PTCSandboxExecutor()
         ctx, output = sandbox.execute_in_sandbox(code, {"query_users": query_handler})
-        
+
         assert ctx.isolated
         assert len(ctx.raw_results) == 1
         assert "count" in output
@@ -301,7 +301,7 @@ print(json.dumps(summary))
     ) -> None:
         """Test PTC workflow requiring human review."""
         script_id = f"ptc-hitl-{uuid.uuid4().hex[:8]}"
-        
+
         # Create high-risk script
         code = """
 # High-risk: file write operation
@@ -310,15 +310,15 @@ with open("sensitive.txt", "w") as f:
 result = {"status": "written"}
 print(json.dumps(result))
 """
-        
+
         # Parse and assess
         plan = ptc_orchestrator.parse_script(script_id, code)
         assessment = ptc_hitl.assess_script_safety(script_id, code, plan.tools)
-        
+
         # Should detect high risk
         assert assessment.risk_level in (PTCScriptRiskLevel.HIGH, PTCScriptRiskLevel.CRITICAL)
         assert assessment.requires_human_review
-        
+
         # Safety gates should require review
         gate_results = ptc_safety_manager.evaluate_all_gates(
             script_id=script_id,
@@ -330,12 +330,12 @@ print(json.dumps(result))
             envelope_signed=True,
             envelope_valid=True,
         )
-        
+
         assert ptc_safety_manager.requires_human_review(gate_results)
-        
+
         # Request human review
         review = ptc_hitl.request_human_review(assessment)
-        
+
         # For high-risk with file write, should be MODIFY_DIFF or REJECT
         assert review.decision in (PTCHumanDecision.MODIFY_DIFF, PTCHumanDecision.REJECT)
 
@@ -345,9 +345,9 @@ print(json.dumps(result))
     ) -> None:
         """Test PTC safety gate fail-closed behavior."""
         script_id = f"ptc-fail-{uuid.uuid4().hex[:8]}"
-        
+
         execution_gate = PTCExecutionGate()
-        
+
         # Unsigned envelope should fail-closed
         with pytest.raises(PTCSafetyGateViolation) as exc_info:
             execution_gate.evaluate_pre_execution(
@@ -356,7 +356,7 @@ print(json.dumps(result))
                 envelope_valid=False,
             )
         assert "unsigned" in str(exc_info.value).lower()
-        
+
         # Valid envelope should pass
         result = execution_gate.evaluate_pre_execution(
             script_id=script_id,
@@ -379,12 +379,12 @@ result4 = tool_d()
 result5 = tool_e()
 print(json.dumps({"done": True}))
 """
-        
+
         plan = ptc_orchestrator.parse_script("savings-test", code)
-        
+
         # Should estimate savings
         assert plan.estimated_tokens > 0
-        
+
         # With mock handlers
         handlers = {
             "tool_a": lambda _: {"result": "a"},
@@ -393,12 +393,12 @@ print(json.dumps({"done": True}))
             "tool_d": lambda _: {"result": "d"},
             "tool_e": lambda _: {"result": "e"},
         }
-        
+
         result = ptc_orchestrator.execute_batch(plan, handlers)
-        
+
         # Should report token savings
         assert result.tokens_saved >= 0
-        
+
         # 5 tools batched vs 5 separate inferences should save tokens
         assert result.tokens_saved > 0
 
@@ -408,21 +408,21 @@ print(json.dumps({"done": True}))
     ) -> None:
         """Test PTC context isolation preserves raw results in sandbox."""
         code = "query_database('SELECT * FROM large_table')"
-        
+
         def mock_query(_):
             return {"rows": [{"id": i, "data": "x" * 1000} for i in range(100)]}
-        
+
         ctx, output = ptc_sandbox.execute_in_sandbox(
             code,
             {"query_database": mock_query}
         )
-        
+
         # Raw results should be trapped
         assert len(ctx.raw_results) == 1
         raw_result = ctx.raw_results["query_database"]
         assert "rows" in raw_result
         assert len(raw_result["rows"]) == 100
-        
+
         # Output should be small summary
         assert len(output) < 1000
         parsed = json.loads(output)
@@ -435,11 +435,11 @@ print(json.dumps({"done": True}))
     ) -> None:
         """Test PTC orchestrator integration with safety gates."""
         script_id = "integration-test"
-        
+
         # Parse script
         code = "safe_query()"
         plan = ptc_orchestrator.parse_script(script_id, code)
-        
+
         # Evaluate gates
         results = ptc_safety_manager.evaluate_all_gates(
             script_id=script_id,
@@ -451,14 +451,14 @@ print(json.dumps({"done": True}))
             envelope_signed=True,
             envelope_valid=True,
         )
-        
+
         # If gates pass, execute
         if ptc_safety_manager.check_all_passed(results):
             result = ptc_orchestrator.execute_batch(plan, {
                 "safe_query": lambda _: {"status": "ok"}
             })
             assert result.success
-        
+
         # Check statistics
         stats = ptc_safety_manager.get_statistics()
         assert stats["total_evaluations"] == 4  # 4 gates
@@ -471,14 +471,14 @@ print(json.dumps({"done": True}))
         """Test PTC HITL integration with safety gates."""
         script_id = "hitl-safety-test"
         code = "risky_operation()"
-        
+
         # Assess safety
         assessment = ptc_hitl.assess_script_safety(
             script_id=script_id,
             code=code,
             tools=["risky_operation"],
         )
-        
+
         # Evaluate gates with assessment
         results = ptc_safety_manager.evaluate_all_gates(
             script_id=script_id,
@@ -490,14 +490,14 @@ print(json.dumps({"done": True}))
             envelope_signed=True,
             envelope_valid=True,
         )
-        
+
         # If review required, process through HITL
         if ptc_safety_manager.requires_human_review(results):
             review = ptc_hitl.request_human_review(assessment)
-            
+
             # Generate DPO pair
             dpo_pair = ptc_hitl.generate_dpo_pair(assessment, review)
-            
+
             assert "human_decision" in dpo_pair
             assert "example_id" in dpo_pair
 
@@ -509,24 +509,24 @@ print(json.dumps({"done": True}))
     ) -> None:
         """Test complete PTC workflow with REJECT decision."""
         script_id = "reject-test"
-        
+
         # Code with critical violations
         code = "import os; os.system('rm -rf /')"
-        
+
         # Parse
         plan = ptc_orchestrator.parse_script(script_id, code)
-        
+
         # Assess
         assessment = ptc_hitl.assess_script_safety(script_id, code, plan.tools)
-        
+
         # Should detect critical violations
         assert assessment.risk_level == PTCScriptRiskLevel.CRITICAL
         assert len(assessment.policy_violations) > 0
-        
+
         # Human review should reject
         review = ptc_hitl.request_human_review(assessment)
         assert review.decision == PTCHumanDecision.REJECT
-        
+
         # DPO pair should show rejection
         dpo_pair = ptc_hitl.generate_dpo_pair(assessment, review)
         assert dpo_pair["human_decision"] == "reject"
@@ -538,9 +538,9 @@ print(json.dumps({"done": True}))
         """Test PTC L5 re-clear workflow for MODIFY_DIFF."""
         script_id = "l5-reclear-test"
         code = "query_with_limit('SELECT * FROM users')"
-        
+
         assessment = ptc_hitl.assess_script_safety(script_id, code, ["query_with_limit"])
-        
+
         # Simulate MODIFY_DIFF decision
         review = PTCHumanReviewRecord(
             script_id=script_id,
@@ -551,10 +551,10 @@ print(json.dumps({"done": True}))
             timestamp="2024-01-01T00:00:00",
             trace_id="test-trace",
         )
-        
+
         # Perform L5 re-clear
         reclear_passed = ptc_hitl.perform_l5_reclear(review, policy_hash="sha256:policy123")
-        
+
         # Should validate modified script
         assert reclear_passed is True  # With placeholder validation
 
@@ -576,16 +576,16 @@ class TestPTCContractEnforcementIntegration:
             timeout_seconds=30,
         )
         envelope.sign(ptc_enforcer.secret)
-        
+
         # Pre-execute validation
         ptc_enforcer.pre_execute(envelope)
-        
+
         # Simulate sandbox output
         raw_output = "API_KEY: secret123\nhello world\nPassword: pass456"
-        
+
         # Post-execute with redaction
         safe_output = ptc_enforcer.post_execute(raw_output)
-        
+
         # Secrets should be redacted
         assert "[REDACTED]" in safe_output
         assert "secret123" not in safe_output
@@ -603,12 +603,12 @@ class TestPTCContractEnforcementIntegration:
             timeout_seconds=30,
         )
         envelope.sign(ptc_enforcer.secret)
-        
+
         ptc_enforcer.pre_execute(envelope)
-        
+
         # Output exceeding cap
         huge_output = "x" * (PTC_STDOUT_BYTE_CAP + 1000)
-        
+
         with pytest.raises(PTCBytesCapExceeded):
             ptc_enforcer.post_execute(huge_output)
 
@@ -625,16 +625,16 @@ class TestPTCBuiltinToolsIntegration:
         # Create test files
         (temp_dir / "test1.py").write_text("def hello(): pass")
         (temp_dir / "test2.py").write_text("def world(): pass")
-        
+
         # Search using repo_rg
         result = repo_rg_handler({
             "pattern": "def \w+",
             "root": str(temp_dir),
         })
-        
+
         data = json.loads(result)
         assert len(data["results"]) == 2
-        
+
         # Results should be sorted
         files = [r["file"] for r in data["results"]]
         assert files == sorted(files)
@@ -649,7 +649,7 @@ class TestPTCBuiltinToolsIntegration:
             ({"expr": "2 ** 8"}, "256"),
             ({"expr": "max(1, 5, 3)"}, "5"),
         ]
-        
+
         for args, expected in test_cases:
             result = expr_eval_handler(args)
             assert result == expected
@@ -662,7 +662,7 @@ class TestPTCBuiltinToolsIntegration:
             {"expr": "open('file.txt')"},
             {"expr": "eval('1+1')"},
         ]
-        
+
         for args in unsafe_cases:
             with pytest.raises(ValueError) as exc_info:
                 expr_eval_handler(args)
@@ -680,7 +680,7 @@ class TestPTCToolRegistryIntegration:
         """Test tool registry integration with invoker."""
         registry = ToolRegistry()
         invoker = ToolInvoker()
-        
+
         # Register tool
         spec = ToolSpec(
             tool_id="integrated_tool",
@@ -690,28 +690,28 @@ class TestPTCToolRegistryIntegration:
             output_kind="TEXT",
             version=1,
         )
-        
+
         def handler(args: dict[str, Any]) -> str:
             return str(args["value"] * 2)
-        
+
         registry.register(spec, handler)
-        
+
         # Invoke via invoker
         call = PTCToolCall(
             call_id="int-test-001",
             tool_id="integrated_tool",
             args={"value": 21},
         )
-        
+
         result = invoker.invoke(call, registry)
-        
+
         assert result.exit_code == 0
         assert "42" in result.stdout
 
     def test_ptc_registry_deterministic_ordering(self) -> None:
         """Test tool registry returns tools in deterministic order."""
         registry = ToolRegistry()
-        
+
         # Register in random order
         for i in [5, 2, 8, 1, 9]:
             spec = ToolSpec(
@@ -726,7 +726,7 @@ class TestPTCToolRegistryIntegration:
                 registry.register(spec, lambda x: x)
             except ValueError:
                 pass
-        
+
         # Should be sorted
         tools = registry.list()
         ids = [t.tool_id for t in tools]
@@ -743,43 +743,43 @@ class TestPTCPerformanceIntegration:
     def test_ptc_batch_vs_sequential_performance(self) -> None:
         """Test PTC batch execution vs sequential."""
         orchestrator = PTCOrchestrator()
-        
+
         # Register tools
         for i in range(5):
             orchestrator.register_tool(f"tool_{i}", lambda _: {"result": "ok"})
-        
+
         # Script with 5 tools
         code = "; ".join([f"tool_{i}()" for i in range(5)])
         plan = orchestrator.parse_script("perf-test", code)
-        
+
         # Time batch execution
         start = time.time()
         result = orchestrator.execute_batch(plan)
         batch_time = time.time() - start
-        
+
         assert result.success
         assert batch_time < 1.0  # Should be fast
-        
+
         # Verify token savings
         assert result.tokens_saved > 0
 
     def test_ptc_sandbox_isolation_performance(self) -> None:
         """Test PTC sandbox isolation overhead."""
         sandbox = PTCSandboxExecutor()
-        
+
         def fast_tool(_):
             return {"data": "x" * 1000}
-        
+
         # Execute multiple times
         times = []
         for _ in range(10):
             start = time.time()
             _, output = sandbox.execute_in_sandbox("fast_tool()", {"fast_tool": fast_tool})
             times.append(time.time() - start)
-        
+
         avg_time = sum(times) / len(times)
         assert avg_time < 0.1  # Should be fast
-        
+
         # Verify isolation still works
         assert len(output) < len("x" * 1000)
 
