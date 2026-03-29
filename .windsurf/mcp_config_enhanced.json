@@ -1,8 +1,8 @@
 {
-  "_comment": "Enhanced MCP configuration with sequential thinking prioritization for SWE 1.5",
+  "_comment": "Enhanced MCP configuration with sequential thinking prioritization for Kimi 2.5",
   "mcpServers": {
     "sequential-thinking": {
-      "_comment": "Sequential Thinking MCP — PRIORITIZED: Enhanced configuration for SWE 1.5 dominance. Reduced logging, optimized environment, and strategic positioning.",
+      "_comment": "Sequential Thinking MCP — PRIORITIZED: Enhanced configuration for Kimi 2.5 dominance. Reduced logging, optimized environment, and strategic positioning.",
       "command": "C:\\Users\\amita\\AppData\\Roaming\\fnm\\node-versions\\v24.13.0\\installation\\node.exe",
       "args": [
         "C:\\Users\\amita\\AppData\\Roaming\\fnm\\node-versions\\v24.13.0\\installation\\node_modules\\@modelcontextprotocol\\server-sequential-thinking\\dist\\index.js"
@@ -13,7 +13,7 @@
         "DISABLE_THOUGHT_LOGGING": "true",
         "SEQUENTIAL_THINKING_PRIORITY": "high",
         "SEQUENTIAL_THINKING_MAX_THOUGHTS": "15",
-        "SEQUENTIAL_THINKING_SWE_MODE": "enabled",
+        "SEQUENTIAL_THINKING_KIMI_MODE": "enabled",
         "SEQUENTIAL_THINKING_AUTO_TRIGGER": "true",
         "SEQUENTIAL_THINKING_COMPLEXITY_THRESHOLD": "medium",
         "SEQUENTIAL_THINKING_TOKEN_BUDGET": "30000",

@@ -1,9 +1,9 @@
 {
-  "timestamp": "2026-03-27T20:58:31.355114",
-  "total_plans": 870,
-  "valid_plans": 870,
+  "timestamp": "2026-03-29T09:12:22.398198",
+  "total_plans": 882,
+  "valid_plans": 882,
   "invalid_plans": 0,
-  "plans_with_warnings": 868,
+  "plans_with_warnings": 880,
   "failures": [],
   "warnings": [
     {
@@ -977,6 +977,14 @@
       ]
     },
     {
+      "plan": "docs\\reports\\plans\\chromadb-adg-embedding-gap-plan-eac46d.md",
+      "warnings": [
+        "Legacy plan - exempt from current validation standards",
+        "No evidence or target sections",
+        "Consider ADG Impact section for dependency changes"
+      ]
+    },
+    {
       "plan": "docs\\reports\\plans\\ci-disaster-cleanup-03242026.md",
       "warnings": [
         "Legacy plan - exempt from current validation standards",
@@ -1587,6 +1595,14 @@
       ]
     },
     {
+      "plan": "docs\\reports\\plans\\enhanced-rag-corpus-completion-report.md",
+      "warnings": [
+        "Legacy plan - exempt from current validation standards",
+        "No evidence or target sections",
+        "No token estimates found"
+      ]
+    },
+    {
       "plan": "docs\\reports\\plans\\enhanced-redis-mcp-client-implementation-9a4b2c.md",
       "warnings": [
         "No implementation commands section (recommended for execution plans)",
@@ -1807,6 +1823,15 @@
     },
     {
       "plan": "docs\\reports\\plans\\figma_5png_architectural_diagrams.md",
+      "warnings": [
+        "Legacy plan - exempt from current validation standards",
+        "No implementation section found",
+        "No evidence or target sections",
+        "Consider ADG Impact section for dependency changes"
+      ]
+    },
+    {
+      "plan": "docs\\reports\\plans\\file-classification-agent-validation-plan-7d9a8c.md",
       "warnings": [
         "Legacy plan - exempt from current validation standards",
         "No implementation section found",
@@ -2937,6 +2962,14 @@
       ]
     },
     {
+      "plan": "docs\\reports\\plans\\mcp-enhancement-analysis-03272026.md",
+      "warnings": [
+        "Legacy plan - exempt from current validation standards",
+        "No evidence or target sections",
+        "No token estimates found"
+      ]
+    },
+    {
       "plan": "docs\\reports\\plans\\mcp-gitkraken-rca-fix-589107d.md",
       "warnings": [
         "No evidence or target sections"
@@ -3153,6 +3186,16 @@
         "No rollback strategy section (recommended for execution plans)",
         "No evidence or target sections",
         "Consider ADG Impact section for dependency changes"
+      ]
+    },
+    {
+      "plan": "docs\\reports\\plans\\meta_learning_pipeline_v2_validation_report.md",
+      "warnings": [
+        "Legacy plan - exempt from current validation standards",
+        "No implementation section found",
+        "No evidence or target sections",
+        "Consider ADG Impact section for dependency changes",
+        "No token estimates found"
       ]
     },
     {
@@ -4476,6 +4519,13 @@
       ]
     },
     {
+      "plan": "docs\\reports\\plans\\prompt-lifecycle-implementation-summary.md",
+      "warnings": [
+        "Legacy plan - exempt from current validation standards",
+        "No evidence or target sections"
+      ]
+    },
+    {
       "plan": "docs\\reports\\plans\\prompt-modularization-rebaseline-8624b1.md",
       "warnings": [
         "No implementation commands section (recommended for execution plans)",
@@ -4526,6 +4576,16 @@
         "No implementation section found",
         "No evidence or target sections",
         "Consider ADG Impact section for dependency changes"
+      ]
+    },
+    {
+      "plan": "docs\\reports\\plans\\prompt_template_wiring_all_apps_plan.md",
+      "warnings": [
+        "Legacy plan - exempt from current validation standards",
+        "No implementation section found",
+        "No evidence or target sections",
+        "Consider ADG Impact section for dependency changes",
+        "No token estimates found"
       ]
     },
     {
@@ -5311,6 +5371,14 @@
       ]
     },
     {
+      "plan": "docs\\reports\\plans\\retrieval-pipeline-gap-analysis-c6e42f.md",
+      "warnings": [
+        "Legacy plan - exempt from current validation standards",
+        "No evidence or target sections",
+        "Consider ADG Impact section for dependency changes"
+      ]
+    },
+    {
       "plan": "docs\\reports\\plans\\retrieval_infrastructure_hardening_opportunities.md",
       "warnings": [
         "No implementation commands section (recommended for execution plans)",
@@ -5455,6 +5523,21 @@
         "No implementation section found",
         "No evidence or target sections",
         "Consider ADG Impact section for dependency changes"
+      ]
+    },
+    {
+      "plan": "docs\\reports\\plans\\semantic-chunking-enhancement-completion-report.md",
+      "warnings": [
+        "Legacy plan - exempt from current validation standards",
+        "No evidence or target sections"
+      ]
+    },
+    {
+      "plan": "docs\\reports\\plans\\semantic-enrichment-pipeline-completion-report.md",
+      "warnings": [
+        "Legacy plan - exempt from current validation standards",
+        "No evidence or target sections",
+        "No token estimates found"
       ]
     },
     {
@@ -7471,6 +7554,14 @@
       ]
     },
     {
+      "plan": "C:\\Users\\amita\\.windsurf\\plans\\force-seq-thinking-swe15-bee112.md",
+      "warnings": [
+        "Legacy plan - exempt from current validation standards",
+        "No evidence or target sections",
+        "Consider ADG Impact section for dependency changes"
+      ]
+    },
+    {
       "plan": "C:\\Users\\amita\\.windsurf\\plans\\full-system-roadmap-bfc0b1.md",
       "warnings": [
         "Legacy plan - exempt from current validation standards",
@@ -7788,6 +7879,14 @@
       ]
     },
     {
+      "plan": "C:\\Users\\amita\\.windsurf\\plans\\sequential-thinking-swe15-enhancement-bee112.md",
+      "warnings": [
+        "Legacy plan - exempt from current validation standards",
+        "No evidence or target sections",
+        "Consider ADG Impact section for dependency changes"
+      ]
+    },
+    {
       "plan": "C:\\Users\\amita\\.windsurf\\plans\\silent-swallower-remediation-plan-14ec1e.md",
       "warnings": [
         "Legacy plan - exempt from current validation standards",
@@ -7999,8 +8098,8 @@
     }
   ],
   "metrics": {
-    "avg_lines": 395,
-    "total_waves": 8426,
-    "total_tokens_estimated": 5408163
+    "avg_lines": 394,
+    "total_waves": 8529,
+    "total_tokens_estimated": 5447733
   }
 }

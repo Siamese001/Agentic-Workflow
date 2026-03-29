@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Sequential Thinking Booster for SWE 1.5
+Sequential Thinking Booster for Kimi 2.5
 Intercepts and boosts sequential thinking tool selection.
 """
 
@@ -30,17 +30,17 @@ def boost_sequential_thinking(tools_list: List[Dict[str, Any]]) -> List[Dict[str
     # Priority order: sequential thinking -> high priority -> others
     return seq_thinking_tools + high_priority_tools + other_tools
 
-def apply_swe15_boosting(tools_list: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
-    """Apply SWE 1.5 specific boosting rules."""
+def apply_kimi25_boosting(tools_list: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+    """Apply Kimi 2.5 specific boosting rules."""
 
-    # SWE 1.5 prioritized tool categories
-    swe15_categories = [
+    # Kimi 2.5 prioritized tool categories
+    kimi25_categories = [
         'sequential', 'analysis', 'reasoning', 'planning',
         'dependency', 'graph', 'architecture', 'debug'
     ]
 
     boosted = []
-    swe15_tools = []
+    kimi25_tools = []
     core_tools = []
     other_tools = []
 
@@ -48,20 +48,20 @@ def apply_swe15_boosting(tools_list: List[Dict[str, Any]]) -> List[Dict[str, Any
         tool_name = tool.get('name', '').lower()
         tool_desc = tool.get('description', '').lower()
 
-        # Check if tool matches SWE 1.5 categories
-        is_swe15 = any(cat in tool_name or cat in tool_desc for cat in swe15_categories)
+        # Check if tool matches Kimi 2.5 categories
+        is_kimi25 = any(cat in tool_name or cat in tool_desc for cat in kimi25_categories)
 
-        if is_swe15:
-            swe15_tools.append(tool)
+        if is_kimi25:
+            kimi25_tools.append(tool)
         elif tool_name in ['filesystem', 'adg_redis', 'memory']:
             core_tools.append(tool)
         else:
             other_tools.append(tool)
 
-    # Sort SWE 1.5 tools with sequential thinking first
-    swe15_tools.sort(key=lambda t: 0 if 'sequential' in t.get('name', '').lower() else 1)
+    # Sort Kimi 2.5 tools with sequential thinking first
+    kimi25_tools.sort(key=lambda t: 0 if 'sequential' in t.get('name', '').lower() else 1)
 
-    return swe15_tools + core_tools + other_tools
+    return kimi25_tools + core_tools + other_tools
 
 def main():
     """Main booster function."""
@@ -94,8 +94,8 @@ def main():
         # First boost: sequential thinking priority
         boosted_tools = boost_sequential_thinking(tools_list)
 
-        # Second boost: SWE 1.5 specific prioritization
-        boosted_tools = apply_swe15_boosting(boosted_tools)
+        # Second boost: Kimi 2.5 specific prioritization
+        boosted_tools = apply_kimi25_boosting(boosted_tools)
 
         # Count sequential thinking tools
         seq_count = len([t for t in boosted_tools if 'sequential' in t.get('name', '').lower()])
@@ -114,7 +114,7 @@ def main():
     print("\nBoosting Summary:")
     print(f"  Total tools: {len(boosted_tools)}")
     print(f"  Sequential thinking tools: {len([t for t in boosted_tools if 'sequential' in t.get('name', '').lower()])}")
-    print(f"  SWE 1.5 relevant tools: {len([t for t in boosted_tools if any(cat in t.get('name', '').lower() or cat in t.get('description', '').lower() for cat in ['sequential', 'analysis', 'reasoning', 'planning', 'dependency', 'graph', 'architecture', 'debug'])])}")
+    print(f"  Kimi 2.5 relevant tools: {len([t for t in boosted_tools if any(cat in t.get('name', '').lower() or cat in t.get('description', '').lower() for cat in ['sequential', 'analysis', 'reasoning', 'planning', 'dependency', 'graph', 'architecture', 'debug'])])}")
 
 if __name__ == "__main__":
     main()

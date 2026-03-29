@@ -47,39 +47,62 @@ Plan files must follow naming convention.
 - Pre-commit checks format
 - Manual validation available
 
-## Rule: Token Optimizer Mandate
-All plans must use mandated token optimizer infrastructure.
+## Rule: Token Estimator Mandate (Kimi 2.5)
+All plans must use the official Windsurf ContextWindowEstimator for token validation.
 
-### Required Imports:
+### Required Tool:
 ```python
-from tools.evidence._run_token_optimizer_plan import chars, build_legacy_phase, rough_token_estimate, run_plan
-from tools.adg.wave_packer import pack_waves, summarize_wave
+from agentic_core.planning.token_estimator import ContextWindowEstimator, TokenBudget
+
+# Initialize estimator
+estimator = ContextWindowEstimator()
 ```
 
 ### Required Constants:
-- DEFAULT_SHARED_PREFIX_TOKENS = 4000
-- DEFAULT_HISTORY_TOKENS = 2000
-- GENERATION_RESERVE_TOKENS = 25000
-- SAFETY_BUFFER_TOKENS = 5000
+- `HARD_MAX_CONTEXT = 200000` (absolute ceiling)
+- `SAFE_OPERATING_CAP = 170000` (green zone limit)
+- `WARNING_THRESHOLD = 150000` (yellow zone)
+- `DEFAULT_RESERVED_OUTPUT = 12000`
+- `DEFAULT_SAFETY_BUFFER = 8000`
 
-### Enforcement:
-- CI checks for required imports
-- CI validates constant usage
-- CI verifies token estimates
+### Mandatory CI Check:
+```python
+estimate = estimator.estimate_step_tokens(
+    plan_step="Wave N: Description",
+    system_prompt=system_prompt,
+    user_prompt=user_prompt,
+    files=[...],
+    diffs=[...],
+    logs=[...],
+    retrieved_context=[...],
+    prior_steps=[...]
+)
 
-## Rule: SWE 1.5 Context Optimization
-Plans must optimize for SWE 1.5's 200K token context window.
+# Must be GREEN or YELLOW status
+assert estimate.status in ['green', 'yellow'], f"Token budget exceeded: {estimate.total_projected_tokens}"
+```
+
+### Token Estimator Location:
+- **File:** `agentic_core/planning/token_estimator.py`
+- **Class:** `ContextWindowEstimator`
+- **Method:** `estimate_step_tokens()`
+- **Configuration:** `TokenBudget` class with 200K context limits
+
+## Rule: Kimi 2.5 Context Optimization
+Plans must optimize for Kimi 2.5's 200K token context window.
 
 ### Requirements:
 1. Single-turn execution preferred
 2. Sub-waves for organization
-3. Token estimates must be accurate
-4. Total context < 200K tokens
+3. Token estimates must be accurate using ContextWindowEstimator
+4. Total context < 200K tokens (HARD_MAX_CONTEXT)
+5. Must pass CI validation with GREEN/YELLOW status
 
 ### Enforcement:
-- CI calculates total tokens
-- CI flags excessive token usage
-- CI suggests optimizations
+- CI calculates total tokens using `agentic_core/planning/token_estimator.py`
+- CI flags excessive token usage (>150K WARNING_THRESHOLD)
+- CI suggests optimizations via compression policies
+- CI validates token estimates against ContextWindowEstimator output
 
 ## Rule: Evidence Requirements
 Plans must include evidence for all claims.

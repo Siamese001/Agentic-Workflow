@@ -25,16 +25,16 @@ def setup_seq_thinking_environment():
         'WINDSURF_MCP_BOOST_MODE': 'enabled',
         'WINDSURF_REASONING_MODE': 'sequential-first',
 
-        # SWE 1.5 integration
-        'SWE15_SEQUENTIAL_THINKING': 'enabled',
-        'SWE15_REASONING_BOOST': 'high',
-        'SWE15_TOKEN_ALLOCATION': '0.20',  # 20% of context window
-        'SWE15_AUTO_ANALYSIS': 'true',
+        # Kimi 2.5 integration
+        'KIMI25_SEQUENTIAL_THINKING': 'enabled',
+        'KIMI25_REASONING_BOOST': 'high',
+        'KIMI25_TOKEN_ALLOCATION': '0.20',  # 20% of context window
+        'KIMI25_AUTO_ANALYSIS': 'true',
 
         # MCP integration
         'MCP_SEQUENTIAL_THINKING_BOOST': 'enabled',
         'MCP_TOOL_ORDERING': 'sequential-priority',
-        'MCP_SWE15_MODE': 'optimized',
+        'MCP_KIMI25_MODE': 'optimized',
 
         # Performance tuning
         'SEQUENTIAL_THINKING_CACHE_ENABLED': 'true',
@@ -53,7 +53,7 @@ def setup_seq_thinking_environment():
         'SEQUENTIAL_THINKING_ENABLED',
         'SEQUENTIAL_THINKING_PRIORITY',
         'WINDSURF_TOOL_PREFERENCE',
-        'SWE15_SEQUENTIAL_THINKING'
+        'KIMI25_SEQUENTIAL_THINKING'
     ]
 
     print("\nVerifying critical environment variables:")
@@ -82,7 +82,7 @@ def print_env_status():
         'SEQUENTIAL_THINKING_ENABLED',
         'SEQUENTIAL_THINKING_PRIORITY',
         'WINDSURF_TOOL_PREFERENCE',
-        'SWE15_SEQUENTIAL_THINKING',
+        'KIMI25_SEQUENTIAL_THINKING',
         'MCP_SEQUENTIAL_THINKING_BOOST'
     ]
 
@@ -111,16 +111,16 @@ export WINDSURF_TOOL_PREFERENCE=sequential-thinking
 export WINDSURF_MCP_BOOST_MODE=enabled
 export WINDSURF_REASONING_MODE=sequential-first
 
-# SWE 1.5 integration
-export SWE15_SEQUENTIAL_THINKING=enabled
-export SWE15_REASONING_BOOST=high
-export SWE15_TOKEN_ALLOCATION=0.20
-export SWE15_AUTO_ANALYSIS=true
+# Kimi 2.5 integration
+export KIMI25_SEQUENTIAL_THINKING=enabled
+export KIMI25_REASONING_BOOST=high
+export KIMI25_TOKEN_ALLOCATION=0.20
+export KIMI25_AUTO_ANALYSIS=true
 
 # MCP integration
 export MCP_SEQUENTIAL_THINKING_BOOST=enabled
 export MCP_TOOL_ORDERING=sequential-priority
-export MCP_SWE15_MODE=optimized
+export MCP_KIMI25_MODE=optimized
 """
 
     try:

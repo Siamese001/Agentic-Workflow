@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Deploy Sequential Thinking MCP Configuration for SWE 1.5
+Deploy Sequential Thinking MCP Configuration for Kimi 2.5
 
 This script applies all sequential thinking forcing strategies:
 1. Updates MCP configuration
@@ -92,7 +92,7 @@ class SequentialThinkingDeployer:
                     "SEQUENTIAL_THINKING_ENABLED": "true",
                     "SEQUENTIAL_THINKING_PRIORITY": "1",
                     "WINDSURF_TOOL_PREFERENCE": "sequential-thinking",
-                    "SWE15_SEQUENTIAL_THINKING": "enabled",
+                    "KIMI25_SEQUENTIAL_THINKING": "enabled",
                     "MCP_SEQUENTIAL_THINKING_BOOST": "enabled"
                 }
 
@@ -153,7 +153,7 @@ class SequentialThinkingDeployer:
             "SEQUENTIAL_THINKING_ENABLED",
             "SEQUENTIAL_THINKING_PRIORITY",
             "WINDSURF_TOOL_PREFERENCE",
-            "SWE15_SEQUENTIAL_THINKING"
+            "KIMI25_SEQUENTIAL_THINKING"
         ]
 
         all_env_set = True
@@ -264,7 +264,7 @@ Generated: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}
 - SEQUENTIAL_THINKING_ENABLED=true
 - SEQUENTIAL_THINKING_PRIORITY=1
 - WINDSURF_TOOL_PREFERENCE=sequential-thinking
-- SWE15_SEQUENTIAL_THINKING=enabled
+- KIMI25_SEQUENTIAL_THINKING=enabled
 
 ### Tools Deployed
 - sequential_thinking_booster.py
@@ -274,7 +274,7 @@ Generated: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}
 
 ## Next Steps
 1. Restart Windsurf to load new MCP configuration
-2. Test sequential thinking with complex SWE 1.5 tasks
+2. Test sequential thinking with complex Kimi 2.5 tasks
 3. Monitor usage with: python tools/monitoring/mcp_usage_tracker.py --report
 4. Adjust configuration based on usage patterns
 
@@ -335,7 +335,7 @@ cp .backup/sequential_thinking/user_mcp_config_backup.json C:\\Users\\amita\\.co
             print("🎉 Sequential Thinking deployment completed successfully!")
             print("\n📝 Next Steps:")
             print("1. Restart Windsurf to load the new configuration")
-            print("2. Test with a complex SWE 1.5 task")
+            print("2. Test with a complex Kimi 2.5 task")
             print("3. Monitor usage with the provided tools")
         else:
             print("❌ Deployment completed with issues")

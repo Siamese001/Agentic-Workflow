@@ -1,16 +1,16 @@
 # CI Plan Validation Report
-Generated: 2026-03-27T20:58:31.355114
+Generated: 2026-03-29T09:12:22.398198
 
 ## Summary
-- Total Plans: 870
-- Valid Plans: 870 ✅
+- Total Plans: 882
+- Valid Plans: 882 ✅
 - Invalid Plans: 0 ❌
-- Plans with Warnings: 868 ⚠️
+- Plans with Warnings: 880 ⚠️
 
 ## Metrics
-- Average Lines per Plan: 395
-- Total Waves: 8426
-- Total Estimated Tokens: 5,408,163
+- Average Lines per Plan: 394
+- Total Waves: 8529
+- Total Estimated Tokens: 5,447,733
 
 ## Warnings ⚠️
 ### .windsurf\plans\adg-violation-waterfall-hardened-c64079.md
@@ -671,6 +671,11 @@ Generated: 2026-03-27T20:58:31.355114
 - Consider ADG Impact section for dependency changes
 - No token estimates found
 
+### docs\reports\plans\chromadb-adg-embedding-gap-plan-eac46d.md
+- Legacy plan - exempt from current validation standards
+- No evidence or target sections
+- Consider ADG Impact section for dependency changes
+
 ### docs\reports\plans\ci-disaster-cleanup-03242026.md
 - Legacy plan - exempt from current validation standards
 - No implementation section found
@@ -1080,6 +1085,11 @@ Generated: 2026-03-27T20:58:31.355114
 - No evidence or target sections
 - Consider ADG Impact section for dependency changes
 
+### docs\reports\plans\enhanced-rag-corpus-completion-report.md
+- Legacy plan - exempt from current validation standards
+- No evidence or target sections
+- No token estimates found
+
 ### docs\reports\plans\enhanced-redis-mcp-client-implementation-9a4b2c.md
 - No implementation commands section (recommended for execution plans)
 - No rollback strategy section (recommended for execution plans)
@@ -1231,6 +1241,12 @@ Generated: 2026-03-27T20:58:31.355114
 - Consider ADG Impact section for dependency changes
 
 ### docs\reports\plans\figma_5png_architectural_diagrams.md
+- Legacy plan - exempt from current validation standards
+- No implementation section found
+- No evidence or target sections
+- Consider ADG Impact section for dependency changes
+
+### docs\reports\plans\file-classification-agent-validation-plan-7d9a8c.md
 - Legacy plan - exempt from current validation standards
 - No implementation section found
 - No evidence or target sections
@@ -1992,6 +2008,11 @@ Generated: 2026-03-27T20:58:31.355114
 ### docs\reports\plans\mcp-configuration-analysis-414127.md
 - Consider ADG Impact section for dependency changes
 
+### docs\reports\plans\mcp-enhancement-analysis-03272026.md
+- Legacy plan - exempt from current validation standards
+- No evidence or target sections
+- No token estimates found
+
 ### docs\reports\plans\mcp-gitkraken-rca-fix-589107d.md
 - No evidence or target sections
 
@@ -2138,6 +2159,13 @@ Generated: 2026-03-27T20:58:31.355114
 - No rollback strategy section (recommended for execution plans)
 - No evidence or target sections
 - Consider ADG Impact section for dependency changes
+
+### docs\reports\plans\meta_learning_pipeline_v2_validation_report.md
+- Legacy plan - exempt from current validation standards
+- No implementation section found
+- No evidence or target sections
+- Consider ADG Impact section for dependency changes
+- No token estimates found
 
 ### docs\reports\plans\metalearning-repo-current-gap-analysis-decc8a.md
 - No implementation section found
@@ -3033,6 +3061,10 @@ Generated: 2026-03-27T20:58:31.355114
 - No evidence or target sections
 - No token estimates found
 
+### docs\reports\plans\prompt-lifecycle-implementation-summary.md
+- Legacy plan - exempt from current validation standards
+- No evidence or target sections
+
 ### docs\reports\plans\prompt-modularization-rebaseline-8624b1.md
 - No implementation commands section (recommended for execution plans)
 - No evidence or target sections
@@ -3067,6 +3099,13 @@ Generated: 2026-03-27T20:58:31.355114
 - No implementation section found
 - No evidence or target sections
 - Consider ADG Impact section for dependency changes
+
+### docs\reports\plans\prompt_template_wiring_all_apps_plan.md
+- Legacy plan - exempt from current validation standards
+- No implementation section found
+- No evidence or target sections
+- Consider ADG Impact section for dependency changes
+- No token estimates found
 
 ### docs\reports\plans\PROOF_prompt_injections_usage_analysis.md
 - No implementation commands section (recommended for execution plans)
@@ -3583,6 +3622,11 @@ Generated: 2026-03-27T20:58:31.355114
 - No evidence or target sections
 - Consider ADG Impact section for dependency changes
 
+### docs\reports\plans\retrieval-pipeline-gap-analysis-c6e42f.md
+- Legacy plan - exempt from current validation standards
+- No evidence or target sections
+- Consider ADG Impact section for dependency changes
+
 ### docs\reports\plans\retrieval_infrastructure_hardening_opportunities.md
 - No implementation commands section (recommended for execution plans)
 - No rollback strategy section (recommended for execution plans)
@@ -3681,6 +3725,15 @@ Generated: 2026-03-27T20:58:31.355114
 - No implementation section found
 - No evidence or target sections
 - Consider ADG Impact section for dependency changes
+
+### docs\reports\plans\semantic-chunking-enhancement-completion-report.md
+- Legacy plan - exempt from current validation standards
+- No evidence or target sections
+
+### docs\reports\plans\semantic-enrichment-pipeline-completion-report.md
+- Legacy plan - exempt from current validation standards
+- No evidence or target sections
+- No token estimates found
 
 ### docs\reports\plans\semantic_cache_activation_evidence.md
 - Legacy plan - exempt from current validation standards
@@ -5047,6 +5100,11 @@ Generated: 2026-03-27T20:58:31.355114
 - Consider ADG Impact section for dependency changes
 - No token estimates found
 
+### C:\Users\amita\.windsurf\plans\force-seq-thinking-swe15-bee112.md
+- Legacy plan - exempt from current validation standards
+- No evidence or target sections
+- Consider ADG Impact section for dependency changes
+
 ### C:\Users\amita\.windsurf\plans\full-system-roadmap-bfc0b1.md
 - Legacy plan - exempt from current validation standards
 - No implementation section found
@@ -5256,6 +5314,11 @@ Generated: 2026-03-27T20:58:31.355114
 
 ### C:\Users\amita\.windsurf\plans\semantic-gap-remediation-wave-plan-6cc20d.md
 - No implementation section found
+- No evidence or target sections
+- Consider ADG Impact section for dependency changes
+
+### C:\Users\amita\.windsurf\plans\sequential-thinking-swe15-enhancement-bee112.md
+- Legacy plan - exempt from current validation standards
 - No evidence or target sections
 - Consider ADG Impact section for dependency changes
 
