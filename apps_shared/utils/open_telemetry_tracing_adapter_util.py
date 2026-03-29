@@ -764,13 +764,22 @@ _global_tracer: OpenTelemetryTracingAdapter | None = None
 
 
 def get_tracer(
-    service_name: str = "agentic-workflow", enable_console_export: bool = False
+    service_name: str = "agentic-workflow",
+    enable_console_export: bool = False,
+    enable_otlp_grpc: bool = False,
+    enable_otlp_http: bool = False,
+    otlp_grpc_endpoint: str | None = None,
+    otlp_http_endpoint: str | None = None,
 ) -> OpenTelemetryTracingAdapter:
     """Get or create global tracer instance.
 
     Args:
         service_name: Service name
         enable_console_export: Enable console export
+        enable_otlp_grpc: Enable OTLP gRPC exporter
+        enable_otlp_http: Enable OTLP HTTP exporter
+        otlp_grpc_endpoint: Custom OTLP gRPC endpoint
+        otlp_http_endpoint: Custom OTLP HTTP endpoint
 
     Returns:
         OpenTelemetryTracingAdapter instance
@@ -778,7 +787,12 @@ def get_tracer(
     global _global_tracer
     if _global_tracer is None:
         _global_tracer = OpenTelemetryTracingAdapter(
-            service_name=service_name, enable_console_export=enable_console_export
+            service_name=service_name,
+            enable_console_export=enable_console_export,
+            enable_otlp_grpc=enable_otlp_grpc,
+            enable_otlp_http=enable_otlp_http,
+            otlp_grpc_endpoint=otlp_grpc_endpoint,
+            otlp_http_endpoint=otlp_http_endpoint,
         )
     return _global_tracer
 

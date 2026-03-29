@@ -1,5 +1,5 @@
 {
-  "runtime_adg_1774748005_60f9ce6e": {
+  "runtime_adg_1774748025_81f181ea": {
     "component_distribution": {
       "CognitivePlane": 1,
       "DAGEngine": 1,
@@ -12,7 +12,7 @@
     },
     "error_patterns": [],
     "extraction_metadata": {
-      "timestamp": 1774748005,
+      "timestamp": 1774748025,
       "total_nodes": 8
     },
     "layer_distribution": {
@@ -33,44 +33,44 @@
     "timing_patterns": {
       "fast_operations": [
         {
-          "component": "DAGEngine",
-          "duration_ms": 0.0,
-          "node_id": "11b4b3745039caa8"
+          "component": "Tool.record_metric",
+          "duration_ms": 0.541,
+          "node_id": "35f7f854ae4a9fc7"
         },
         {
           "component": "Tool.validate_safety",
           "duration_ms": 0.0,
-          "node_id": "a470627bc7d609df"
+          "node_id": "4b12ba82f7059e9f"
         },
         {
-          "component": "Tool.record_metric",
+          "component": "DAGEngine",
           "duration_ms": 0.0,
-          "node_id": "a6d04fac44fbfc65"
+          "node_id": "9762c3e9b7195193"
         },
         {
           "component": "Tool.read_state",
           "duration_ms": 0.0,
-          "node_id": "b8a810a0bea77604"
-        },
-        {
-          "component": "NervousSystem",
-          "duration_ms": 0.0,
-          "node_id": "c87936aac2d88d7b"
+          "node_id": "9c59a768f9454465"
         },
         {
           "component": "CognitivePlane",
           "duration_ms": 0.0,
-          "node_id": "caef7ce310e83030"
+          "node_id": "aca12bfe156ea16a"
         },
         {
           "component": "Tool.execute_action",
           "duration_ms": 0.0,
-          "node_id": "e4556349f3759e69"
+          "node_id": "cf5f9afba7e34afc"
+        },
+        {
+          "component": "NervousSystem",
+          "duration_ms": 0.541,
+          "node_id": "d0a7eb8cac5b2df9"
         },
         {
           "component": "Tool.route_request",
           "duration_ms": 0.0,
-          "node_id": "ee2d4fff518e804c"
+          "node_id": "e0d7272f5765cdc4"
         }
       ],
       "slow_operations": []
