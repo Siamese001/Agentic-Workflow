@@ -22,9 +22,11 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_dispatches_execution_plan,
     _emit_dispatches_healing_run,
     _emit_escalates_failure,
+    _emit_escalates_to_human,
     _emit_gated_by_confidence,
     _emit_invokes_evaluation,
     _emit_links_execution_to_snapshot,
+    _emit_observes_runtime_state,
     _emit_orchestrates_workflow,
     _emit_reads_policy_state,
     _emit_records_execution_trace,
@@ -37,6 +39,7 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_routes_to_capability,
     _emit_snapshots_state,
     _emit_stores_embedding,
+    _emit_transcripts_response,
     _emit_updates_meta_learning_state,
     _emit_validates_agent_capability,
     _emit_validates_capability,
@@ -44,7 +47,7 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_verifies_policy,
     _emit_writes_via_uwg,
     emit_determinism_digest,
-    emit_replay_key,
+    emit_replay_key
 )
 from agentic_core.prompt_governance.contracts.prompt_bom_types import PromptBOM
 
