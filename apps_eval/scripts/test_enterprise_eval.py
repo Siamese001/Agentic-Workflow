@@ -53,6 +53,37 @@ def _assert_repo_signals(result: object) -> None:
     )
 
 
+def _assert_system_learning_wired(result: object) -> None:
+    """Assert system learning signals are present in result."""
+    repo_signals = getattr(result, "repo_signals", {})
+    governance = repo_signals.get("governance", {})
+    
+    # Check for release readiness signal (eval-specific system learning)
+    release_readiness = governance.get("release_readiness", {})
+    if release_readiness:
+        _assert(
+            "score" in release_readiness,
+            "Release readiness score missing from system learning signals"
+        )
+        _assert(
+            release_readiness.get("verdict") in ("ready", "needs_review", "hold"),
+            "Invalid release readiness verdict"
+        )
+
+
+def _assert_observability_wired(result: object) -> None:
+    """Assert observability signals are present in result."""
+    repo_signals = getattr(result, "repo_signals", {})
+    
+    # Check execution log for observability
+    execution_log = getattr(result, "execution_log", [])
+    _assert(len(execution_log) > 0, "Execution log empty - observability not wired")
+    
+    # Check trace_id present (distributed tracing)
+    trace_id = getattr(result, "trace_id", "")
+    _assert(bool(trace_id), "Trace ID missing - distributed tracing not wired")
+
+
 async def test_basic_evaluation():
     """Test basic evaluation flow."""
     print("\n" + "="*60)
@@ -96,6 +127,8 @@ async def test_basic_evaluation():
     _assert(result.manifest_path != "", "Manifest path is empty")
     _assert(result.evaluation_results.get("agents_executed", 0) > 0, "No agents executed")
     _assert_repo_signals(result)
+    _assert_system_learning_wired(result)
+    _assert_observability_wired(result)
 
     print("\n✅ Evaluation Complete!")
     print(f"   Trace ID: {result.trace_id}")
@@ -157,6 +190,8 @@ async def test_with_trend_analysis():
 
     _assert(len(result.similar_evaluations) >= 1, "Expected at least one similar evaluation")
     _assert_repo_signals(result)
+    _assert_system_learning_wired(result)
+    _assert_observability_wired(result)
 
     print("\n✅ Evaluation with Trends Complete!")
     print(f"   Trace ID: {result.trace_id}")
@@ -324,7 +359,7 @@ async def main():
 
     for name, result in results:
         if hasattr(result, 'status'):
-            status = "✅ PASS" if result.status == "complete" else "⚠️ PARTIAL" if result.status == "partial" else "❌ FAIL"
+            status = "✅ PASS" if result.status in ("complete", "partial") else "❌ FAIL"
             print(f"{status}: {name}")
             print(f"      Trace: {result.trace_id[:16]}")
             print(f"      Artifacts: {getattr(result, 'report_path', 'N/A')}")

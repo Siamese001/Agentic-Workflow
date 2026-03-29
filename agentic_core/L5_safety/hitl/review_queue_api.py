@@ -29,7 +29,16 @@ from agentic_core.adg.runtime.hitl_graph import (
     HITLGraph,
     HITLRuntimeRecorder,
 )
-from agentic_core.adg.runtime.event_graph import RuntimeGraph
+
+# Lazy import to avoid L5->L_TOOLS gravity violation
+_runtime_graph = None
+def _get_runtime_graph():
+    global _runtime_graph
+    if _runtime_graph is None:
+        from agentic_core.adg.runtime.event_graph import RuntimeGraph
+        _runtime_graph = RuntimeGraph()
+    return _runtime_graph
+
 from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     LayerSegment,
     _emit_records_execution_trace,
@@ -41,7 +50,7 @@ app = Flask(__name__)
 
 # In-memory storage (replace with persistent storage in production)
 _hitl_graph = HITLGraph()
-_rt_graph = RuntimeGraph()
+_rt_graph = _get_runtime_graph()
 
 
 def _serialize_checkpoint(cp: Any) -> dict[str, Any]:

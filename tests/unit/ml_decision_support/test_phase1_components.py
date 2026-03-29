@@ -13,48 +13,79 @@ from datetime import datetime
 from pathlib import Path
 from unittest.mock import Mock, patch
 
-# Test the infrastructure components
-from agentic_core.L1_cognition.ml_decision_support.config.model_registry import (
-    ModelRegistry, ModelStatus, DecisionMode, ModelMetadata
-)
-from agentic_core.L1_cognition.ml_decision_support.config.feature_schemas import (
-    FeatureSchemas, FeatureSchema, FeatureType, NullHandling
-)
-from agentic_core.L1_cognition.ml_decision_support.config.threshold_config import (
-    ThresholdConfig, ThresholdType, RollbackTrigger
-)
-from agentic_core.L1_cognition.ml_decision_support.features.base_extractor import (
-    DeterministicFeatureExtractor, FeatureExtractionResult
-)
-from agentic_core.L1_cognition.ml_decision_support.features.l0_features import L0FeatureExtractor
-from agentic_core.L1_cognition.ml_decision_support.features.c0_features import C0FeatureExtractor
-from agentic_core.L1_cognition.ml_decision_support.features.l6_features import L6FeatureExtractor
-from agentic_core.L1_cognition.ml_decision_support.models.base_model import (
-    BaseMLModel, ModelPrediction, ModelInput, PredictionType
-)
-from agentic_core.L1_cognition.ml_decision_support.models.l0_route_recommender import L0RouteRecommender
-from agentic_core.L1_cognition.ml_decision_support.models.c0_reranker import C0RetrievalReranker
-from agentic_core.L1_cognition.ml_decision_support.models.l6_anomaly_detector import L6AnomalyDetector
-from agentic_core.L1_cognition.ml_decision_support.inference.shadow_logger import (
-    ShadowLogger, ShadowMode, ShadowLogEntry
-)
+
+# Lazy import fixtures to avoid collection-time conflicts
+@pytest.fixture
+def model_registry():
+    from agentic_core.L1_cognition.ml_decision_support.config.model_registry import ModelRegistry
+    return ModelRegistry()
+
+@pytest.fixture
+def feature_schemas():
+    from agentic_core.L1_cognition.ml_decision_support.config.feature_schemas import FeatureSchemas
+    return FeatureSchemas()
+
+@pytest.fixture
+def threshold_config():
+    from agentic_core.L1_cognition.ml_decision_support.config.threshold_config import ThresholdConfig
+    return ThresholdConfig()
+
+@pytest.fixture
+def deterministic_feature_extractor():
+    from agentic_core.L1_cognition.ml_decision_support.features.base_extractor import DeterministicFeatureExtractor
+    return DeterministicFeatureExtractor()
+
+@pytest.fixture
+def l0_feature_extractor():
+    from agentic_core.L1_cognition.ml_decision_support.features.l0_features import L0FeatureExtractor
+    return L0FeatureExtractor()
+
+@pytest.fixture
+def c0_feature_extractor():
+    from agentic_core.L1_cognition.ml_decision_support.features.c0_features import C0FeatureExtractor
+    return C0FeatureExtractor()
+
+@pytest.fixture
+def l6_feature_extractor():
+    from agentic_core.L1_cognition.ml_decision_support.features.l6_features import L6FeatureExtractor
+    return L6FeatureExtractor()
+
+@pytest.fixture
+def l0_route_recommender():
+    from agentic_core.L1_cognition.ml_decision_support.models.l0_route_recommender import L0RouteRecommender
+    return L0RouteRecommender()
+
+@pytest.fixture
+def c0_reranker():
+    from agentic_core.L1_cognition.ml_decision_support.models.c0_reranker import C0RetrievalReranker
+    return C0RetrievalReranker()
+
+@pytest.fixture
+def l6_anomaly_detector():
+    from agentic_core.L1_cognition.ml_decision_support.models.l6_anomaly_detector import L6AnomalyDetector
+    return L6AnomalyDetector()
+
+@pytest.fixture
+def shadow_logger():
+    from agentic_core.L1_cognition.ml_decision_support.inference.shadow_logger import ShadowLogger
+    return ShadowLogger()
 
 
 class TestFeatureSchemas:
     """Test feature schema management."""
     
-    def test_builtin_schemas_available(self):
+    def test_builtin_schemas_available(self, feature_schemas):
         """Test that all builtin schemas are available."""
-        schemas = FeatureSchemas()
+        schemas = feature_schemas
         
         # Check that all Phase 1 schemas exist
         assert schemas.get_schema("l0_route_recommender") is not None
         assert schemas.get_schema("c0_retrieval_reranker") is not None
         assert schemas.get_schema("l6_anomaly_detector") is not None
     
-    def test_l0_schema_validation(self):
+    def test_l0_schema_validation(self, feature_schemas):
         """Test L0 route recommender schema validation."""
-        schemas = FeatureSchemas()
+        schemas = feature_schemas
         schema = schemas.get_schema("l0_route_recommender")
         
         # Valid features
@@ -74,9 +105,9 @@ class TestFeatureSchemas:
         assert is_valid
         assert len(errors) == 0
     
-    def test_schema_null_handling(self):
+    def test_schema_null_handling(self, feature_schemas):
         """Test schema null handling policies."""
-        schemas = FeatureSchemas()
+        schemas = feature_schemas
         schema = schemas.get_schema("l6_anomaly_detector")
         
         # Features with null values that should be handled
@@ -216,9 +247,9 @@ class TestModelRegistry:
 class TestFeatureExtractors:
     """Test feature extraction functionality."""
     
-    def test_l0_feature_extraction(self):
+    def test_l0_feature_extraction(self, l0_feature_extractor):
         """Test L0 feature extraction."""
-        extractor = L0FeatureExtractor()
+        extractor = l0_feature_extractor
         
         context = {
             "request": {

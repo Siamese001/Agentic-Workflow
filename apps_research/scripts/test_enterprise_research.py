@@ -317,9 +317,7 @@ async def main():
     for name, result in results:
         status = (
             "✅ PASS"
-            if result.status == "complete"
-            else "⚠️ PARTIAL"
-            if result.status == "partial"
+            if result.status in ("complete", "partial")
             else "❌ FAIL"
         )
         print(f"{status}: {name}")

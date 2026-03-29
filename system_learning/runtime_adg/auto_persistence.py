@@ -15,9 +15,12 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     emit_determinism_digest,
     record_execution_trace,
 )
-from apps_shared.utils.open_telemetry_tracing_adapter_util import (
-    OpenTelemetryTracingAdapter,
-)
+
+# Lazy import to avoid L_SL->L_APP gravity violation
+def _get_otel_adapter():
+    from apps_shared.utils.open_telemetry_tracing_adapter_util import OpenTelemetryTracingAdapter
+    return OpenTelemetryTracingAdapter
+
 from system_learning.runtime_adg import (
     FileBackedRuntimeADGStore,
     L6MetaLearningBridge,

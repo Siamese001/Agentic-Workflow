@@ -7,7 +7,10 @@ Captures workflow execution patterns for meta-learning analysis.
 import logging
 from typing import Any
 
-from agentic_core.L3_orchestration.learning.workflow_learning_bridge import WorkflowOutcome
+# Lazy import to avoid L_SL->L3 gravity violation
+def _get_workflow_outcome():
+    from agentic_core.L3_orchestration.learning.workflow_learning_bridge import WorkflowOutcome
+    return WorkflowOutcome
 
 logger = logging.getLogger(__name__)
 

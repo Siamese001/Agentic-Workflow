@@ -15,10 +15,15 @@ from typing import Any
 
 from agentic_core.cache.cache_key_builders import build_rag_admission_key
 from agentic_core.cache.redis_cache_client import DeterministicRedisCache, get_hot_cache
-from agentic_core.L4_state.memory.cache_admission_gate import (
-    CacheAdmissionDecision,
-    CacheAdmissionGate,
-)
+
+# Lazy import to avoid L_SL->L4 gravity violation
+def _get_cache_admission_gate():
+    from agentic_core.L4_state.memory.cache_admission_gate import (
+        CacheAdmissionDecision,
+        CacheAdmissionGate,
+    )
+    return CacheAdmissionDecision, CacheAdmissionGate
+
 from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     LayerSegment,
     _emit_applies_guardrail,

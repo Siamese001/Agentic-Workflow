@@ -14,22 +14,50 @@ from datetime import datetime, timedelta
 from pathlib import Path
 from unittest.mock import Mock, patch
 
-# Test Phase 3 components
-from agentic_core.L1_cognition.ml_decision_support.features.l4_features import L4FeatureExtractor
-from agentic_core.L1_cognition.ml_decision_support.features.l1_features import L1FeatureExtractor
-from agentic_core.L1_cognition.ml_decision_support.features.c1_features import C1FeatureExtractor
-from agentic_core.L1_cognition.ml_decision_support.models.l4_performance_optimizer import L4PerformanceOptimizer
-from agentic_core.L1_cognition.ml_decision_support.models.l1_capacity_planner import L1CapacityPlanner
-from agentic_core.L1_cognition.ml_decision_support.models.c1_query_optimizer import C1QueryOptimizer
-from agentic_core.L1_cognition.ml_decision_support.models.multi_layer_coordinator import MultiLayerCoordinator
+
+# Lazy import fixtures to avoid collection-time conflicts
+@pytest.fixture
+def l4_feature_extractor():
+    from agentic_core.L1_cognition.ml_decision_support.features.l4_features import L4FeatureExtractor
+    return L4FeatureExtractor()
+
+@pytest.fixture
+def l1_feature_extractor():
+    from agentic_core.L1_cognition.ml_decision_support.features.l1_features import L1FeatureExtractor
+    return L1FeatureExtractor()
+
+@pytest.fixture
+def c1_feature_extractor():
+    from agentic_core.L1_cognition.ml_decision_support.features.c1_features import C1FeatureExtractor
+    return C1FeatureExtractor()
+
+@pytest.fixture
+def l4_performance_optimizer():
+    from agentic_core.L1_cognition.ml_decision_support.models.l4_performance_optimizer import L4PerformanceOptimizer
+    return L4PerformanceOptimizer()
+
+@pytest.fixture
+def l1_capacity_planner():
+    from agentic_core.L1_cognition.ml_decision_support.models.l1_capacity_planner import L1CapacityPlanner
+    return L1CapacityPlanner()
+
+@pytest.fixture
+def c1_query_optimizer():
+    from agentic_core.L1_cognition.ml_decision_support.models.c1_query_optimizer import C1QueryOptimizer
+    return C1QueryOptimizer()
+
+@pytest.fixture
+def multi_layer_coordinator():
+    from agentic_core.L1_cognition.ml_decision_support.models.multi_layer_coordinator import MultiLayerCoordinator
+    return MultiLayerCoordinator()
 
 
 class TestL4FeatureExtractor:
     """Test L4 feature extraction functionality."""
     
-    def test_response_time_trend_extraction(self):
+    def test_response_time_trend_extraction(self, l4_feature_extractor):
         """Test response time trend extraction."""
-        extractor = L4FeatureExtractor()
+        extractor = l4_feature_extractor
         
         context = {
             "performance": {
@@ -50,9 +78,9 @@ class TestL4FeatureExtractor:
         assert "response_time_trend" in result.features
         assert -1.0 <= result.features["response_time_trend"] <= 1.0
     
-    def test_throughput_variance_extraction(self):
+    def test_throughput_variance_extraction(self, l4_feature_extractor):
         """Test throughput variance extraction."""
-        extractor = L4FeatureExtractor()
+        extractor = l4_feature_extractor
         
         context = {
             "performance": {
@@ -73,9 +101,9 @@ class TestL4FeatureExtractor:
         assert "throughput_variance" in result.features
         assert 0.0 <= result.features["throughput_variance"] <= 1.0
     
-    def test_bottleneck_severity_extraction(self):
+    def test_bottleneck_severity_extraction(self, l4_feature_extractor):
         """Test bottleneck severity extraction."""
-        extractor = L4FeatureExtractor()
+        extractor = l4_feature_extractor
         
         context = {
             "performance": {
@@ -100,9 +128,9 @@ class TestL4FeatureExtractor:
         assert "bottleneck_severity" in result.features
         assert 0.0 <= result.features["bottleneck_severity"] <= 1.0
     
-    def test_optimization_potential_extraction(self):
+    def test_optimization_potential_extraction(self, l4_feature_extractor):
         """Test optimization potential extraction."""
-        extractor = L4FeatureExtractor()
+        extractor = l4_feature_extractor
         
         context = {
             "performance": {
@@ -136,9 +164,9 @@ class TestL4FeatureExtractor:
 class TestL1FeatureExtractor:
     """Test L1 feature extraction functionality."""
     
-    def test_traffic_growth_rate_extraction(self):
+    def test_traffic_growth_rate_extraction(self, l1_feature_extractor):
         """Test traffic growth rate extraction."""
-        extractor = L1FeatureExtractor()
+        extractor = l1_feature_extractor
         
         context = {
             "traffic": {
@@ -159,9 +187,9 @@ class TestL1FeatureExtractor:
         assert "traffic_growth_rate" in result.features
         assert -1.0 <= result.features["traffic_growth_rate"] <= 5.0
     
-    def test_demand_volatility_extraction(self):
+    def test_demand_volatility_extraction(self, l1_feature_extractor):
         """Test demand volatility extraction."""
-        extractor = L1FeatureExtractor()
+        extractor = l1_feature_extractor
         
         context = {
             "demand": {
@@ -181,9 +209,9 @@ class TestL1FeatureExtractor:
         assert "demand_volatility" in result.features
         assert 0.0 <= result.features["demand_volatility"] <= 1.0
     
-    def test_current_capacity_utilization_extraction(self):
+    def test_current_capacity_utilization_extraction(self, l1_feature_extractor):
         """Test current capacity utilization extraction."""
-        extractor = L1FeatureExtractor()
+        extractor = l1_feature_extractor
         
         context = {
             "capacity": {
@@ -205,9 +233,9 @@ class TestL1FeatureExtractor:
         assert 0.0 <= result.features["current_capacity_utilization"] <= 1.0
         assert result.features["current_capacity_utilization"] == 0.8
     
-    def test_peak_demand_ratio_extraction(self):
+    def test_peak_demand_ratio_extraction(self, l1_feature_extractor):
         """Test peak demand ratio extraction."""
-        extractor = L1FeatureExtractor()
+        extractor = l1_feature_extractor
         
         context = {
             "demand": {
@@ -353,9 +381,9 @@ class TestL4PerformanceOptimizer:
     """Test L4 performance optimizer model."""
     
     @pytest.fixture
-    def mock_model(self):
+    def mock_model(self, l4_performance_optimizer):
         """Create a mock L4 performance optimizer for testing."""
-        optimizer = L4PerformanceOptimizer()
+        optimizer = l4_performance_optimizer
         
         # Mock the pipeline
         optimizer.pipeline = Mock()
@@ -456,9 +484,9 @@ class TestL1CapacityPlanner:
     """Test L1 capacity planner model."""
     
     @pytest.fixture
-    def mock_model(self):
+    def mock_model(self, l1_capacity_planner):
         """Create a mock L1 capacity planner for testing."""
-        planner = L1CapacityPlanner()
+        planner = l1_capacity_planner
         
         # Mock model weights
         planner.model_weights = np.array([0.1, 0.15, 0.2, 0.15, 0.1, 0.1, 0.1, 0.1])
@@ -687,9 +715,9 @@ class TestMultiLayerCoordinator:
     """Test multi-layer coordinator model."""
     
     @pytest.fixture
-    def mock_model(self):
+    def mock_model(self, multi_layer_coordinator):
         """Create a mock multi-layer coordinator for testing."""
-        coordinator = MultiLayerCoordinator()
+        coordinator = multi_layer_coordinator
         
         # Mock model weights
         coordinator.model_weights = np.array([0.1, 0.15, 0.2, 0.15, 0.1, 0.1, 0.1, 0.1])

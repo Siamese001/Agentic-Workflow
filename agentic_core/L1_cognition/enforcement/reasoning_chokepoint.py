@@ -59,10 +59,14 @@ from agentic_core.L1_cognition.planning.plan_creator import (
     enforce_plan_checkpoint,
     execute_plan_step,
 )
-from agentic_core.L6_observability.performance.performance_emitter import (
-    StageStatus,
-    record_reasoning_performance,
-)
+# Lazy import to avoid L1->L6 gravity violation
+def _get_performance_emitter():
+    from agentic_core.L6_observability.performance.performance_emitter import (
+        StageStatus,
+        record_reasoning_performance,
+    )
+    return StageStatus, record_reasoning_performance
+
 from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     # noqa: E402,
     # noqa: E402

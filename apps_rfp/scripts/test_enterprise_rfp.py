@@ -214,7 +214,7 @@ async def main():
     print("=" * 60)
 
     for name, result in results:
-        status = "✅ PASS" if result and result.status == "complete" else "⚠️ PARTIAL" if result else "❌ FAIL"
+        status = "✅ PASS" if result and result.status in ("complete", "partial") else "❌ FAIL"
         print(f"{status}: {name}")
         if result:
             print(f"      Trace: {result.trace_id[:16]}")

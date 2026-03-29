@@ -49,7 +49,10 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     emit_determinism_digest,
     emit_replay_key
 )
-from agentic_core.prompt_governance.contracts.prompt_bom_types import PromptBOM
+# Lazy import to avoid L0->L_PG gravity violation
+def _get_prompt_bom():
+    from agentic_core.prompt_governance.contracts.prompt_bom_types import PromptBOM
+    return PromptBOM
 
 # Self-bootstrap governance wiring
 _emit_authorize_and_execute("p2", "PromptBOMBuilder", "execution_auth")

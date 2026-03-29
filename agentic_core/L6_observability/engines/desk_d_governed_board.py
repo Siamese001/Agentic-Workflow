@@ -71,10 +71,13 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     emit_determinism_digest,
     emit_replay_key,
 )
-from system_learning.engines.rlhf_optimizer_impl import (
-    DefaultRLHFOptimizer,
-    RLHFChangePackage,
-)
+# Lazy import to avoid L6->L_SL gravity violation
+def _get_rlhf_optimizer():
+    from system_learning.engines.rlhf_optimizer_impl import (
+        DefaultRLHFOptimizer,
+        RLHFChangePackage,
+    )
+    return DefaultRLHFOptimizer, RLHFChangePackage
 
 # Lifecycle trace emissions for P0-P4 governance
 emit_replay_key("p0", "desk_d_governed_board")

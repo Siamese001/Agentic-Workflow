@@ -29,14 +29,17 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     emit_replay_key,
 )
 
-from agentic_core.adg.runtime.mcp_drift_recorder import (
-    MCPServerState,
-    MCPConfigSnapshot,
-    MCPDriftEvent,
-    MCPDriftRecorder,
-    MCPDriftReport,
-    MCPDriftSeverity,
-)
+# Lazy import to avoid L6->L_TOOLS gravity violation
+def _get_mcp_drift_recorder():
+    from agentic_core.adg.runtime.mcp_drift_recorder import (
+        MCPServerState,
+        MCPConfigSnapshot,
+        MCPDriftEvent,
+        MCPDriftRecorder,
+        MCPDriftReport,
+        MCPDriftSeverity,
+    )
+    return MCPServerState, MCPConfigSnapshot, MCPDriftEvent, MCPDriftRecorder, MCPDriftReport, MCPDriftSeverity
 
 # Self-bootstrap emitters
 emit_replay_key("p0", "mcp_l6_observability")

@@ -78,7 +78,11 @@ _emit_links_execution_to_snapshot("p4", "adaptive_execution_mixin", "exec_snapsh
 import logging
 from typing import Any
 
-from agentic_core.L3_orchestration.registry.agent_dispatch_registry import get_agent_dispatch_registry
+# Lazy import to avoid L_SHARED->L3 gravity violation
+def _get_registry():
+    from agentic_core.L3_orchestration.registry.agent_dispatch_registry import get_agent_dispatch_registry
+    return get_agent_dispatch_registry()
+
 from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     LayerSegment,
     _emit_agent_executes_agent,

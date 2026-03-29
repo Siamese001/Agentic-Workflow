@@ -11,15 +11,20 @@ from unittest.mock import patch
 
 import pytest
 
-from tools.adg.hollow_file_cleanup import (
-    HollowFileCleanupAnalyzer,
-    CleanupManifest,
-    FileAnalysis,
-)
+
+# Lazy imports to avoid collection-time conflicts
+def _get_analyzer_classes():
+    from tools.adg.hollow_file_cleanup import (
+        HollowFileCleanupAnalyzer,
+        CleanupManifest,
+        FileAnalysis,
+    )
+    return HollowFileCleanupAnalyzer, CleanupManifest, FileAnalysis
 
 
 def test_analyze_file_hollow():
     """Test analysis of a hollow file."""
+    HollowFileCleanupAnalyzer, CleanupManifest, FileAnalysis = _get_analyzer_classes()
     # Create temporary hollow file
     with tempfile.NamedTemporaryFile(mode='w', suffix='.py', delete=False) as f:
         f.write("""

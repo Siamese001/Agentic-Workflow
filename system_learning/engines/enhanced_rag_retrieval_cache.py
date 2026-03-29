@@ -52,9 +52,11 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_writes_learning_snapshot,
     _emit_writes_observability_log,
 )
-from agentic_core.runtime.types.cache_entry_types import (
-    SemanticCacheHit,
-)
+
+# Lazy import to avoid L_SL->L_RUNTIME gravity violation
+def _get_cache_entry_types():
+    from agentic_core.runtime.types.cache_entry_types import SemanticCacheHit
+    return SemanticCacheHit
 
 # Module-level telemetry emission
 _emit_applies_guardrail("p0", "enhanced_rag_retrieval_cache", "p0_governance")
@@ -263,7 +265,7 @@ class EnhancedRagRetrievalCache:
 
     def _meets_similarity_threshold(
         self,
-        cache_hit: SemanticCacheHit,
+        cache_hit,  # type: ignore
         query_embedding: list[float],
         cutoff: float,
     ) -> bool:

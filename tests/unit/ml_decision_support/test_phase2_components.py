@@ -14,22 +14,50 @@ from datetime import datetime, timedelta
 from pathlib import Path
 from unittest.mock import Mock, patch
 
-# Test Phase 2 components
-from agentic_core.L1_cognition.ml_decision_support.features.l3_features import L3FeatureExtractor
-from agentic_core.L1_cognition.ml_decision_support.features.l5_features import L5FeatureExtractor
-from agentic_core.L1_cognition.ml_decision_support.features.l2_features import L2FeatureExtractor
-from agentic_core.L1_cognition.ml_decision_support.models.l3_branch_ranker import L3BranchRanker
-from agentic_core.L1_cognition.ml_decision_support.models.l5_risk_calibrator import L5RiskCalibrator
-from agentic_core.L1_cognition.ml_decision_support.models.l2_healer_selector import L2HealerSelector
-from agentic_core.L1_cognition.ml_decision_support.models.semantic_cache_classifier import EWMACacheClassifier
+
+# Lazy import fixtures to avoid collection-time conflicts
+@pytest.fixture
+def l3_feature_extractor():
+    from agentic_core.L1_cognition.ml_decision_support.features.l3_features import L3FeatureExtractor
+    return L3FeatureExtractor()
+
+@pytest.fixture
+def l5_feature_extractor():
+    from agentic_core.L1_cognition.ml_decision_support.features.l5_features import L5FeatureExtractor
+    return L5FeatureExtractor()
+
+@pytest.fixture
+def l2_feature_extractor():
+    from agentic_core.L1_cognition.ml_decision_support.features.l2_features import L2FeatureExtractor
+    return L2FeatureExtractor()
+
+@pytest.fixture
+def l3_branch_ranker():
+    from agentic_core.L1_cognition.ml_decision_support.models.l3_branch_ranker import L3BranchRanker
+    return L3BranchRanker()
+
+@pytest.fixture
+def l5_risk_calibrator():
+    from agentic_core.L1_cognition.ml_decision_support.models.l5_risk_calibrator import L5RiskCalibrator
+    return L5RiskCalibrator()
+
+@pytest.fixture
+def l2_healer_selector():
+    from agentic_core.L1_cognition.ml_decision_support.models.l2_healer_selector import L2HealerSelector
+    return L2HealerSelector()
+
+@pytest.fixture
+def ewma_cache_classifier():
+    from agentic_core.L1_cognition.ml_decision_support.models.semantic_cache_classifier import EWMACacheClassifier
+    return EWMACacheClassifier()
 
 
 class TestL3FeatureExtractor:
     """Test L3 feature extraction functionality."""
     
-    def test_branch_complexity_extraction(self):
+    def test_branch_complexity_extraction(self, l3_feature_extractor):
         """Test branch complexity score extraction."""
-        extractor = L3FeatureExtractor()
+        extractor = l3_feature_extractor
         
         context = {
             "branch": {
@@ -71,9 +99,9 @@ class TestL3FeatureExtractor:
         assert "execution_probability" in result.features
         assert "resource_requirement_score" in result.features
     
-    def test_conflict_indicator_extraction(self):
+    def test_conflict_indicator_extraction(self, l3_feature_extractor):
         """Test conflict indicator extraction."""
-        extractor = L3FeatureExtractor()
+        extractor = l3_feature_extractor
         
         context = {
             "branch": {
@@ -106,9 +134,9 @@ class TestL3FeatureExtractor:
         assert "conflict_indicator" in result.features
         assert 0.0 <= result.features["conflict_indicator"] <= 1.0
     
-    def test_escalation_priority_extraction(self):
+    def test_escalation_priority_extraction(self, l3_feature_extractor):
         """Test escalation priority extraction."""
-        extractor = L3FeatureExtractor()
+        extractor = l3_feature_extractor
         
         context = {
             "branch": {
@@ -142,9 +170,9 @@ class TestL3FeatureExtractor:
 class TestL5FeatureExtractor:
     """Test L5 feature extraction functionality."""
     
-    def test_policy_complexity_extraction(self):
+    def test_policy_complexity_extraction(self, l5_feature_extractor):
         """Test policy complexity score extraction."""
-        extractor = L5FeatureExtractor()
+        extractor = l5_feature_extractor
         
         context = {
             "policy": {
@@ -175,9 +203,9 @@ class TestL5FeatureExtractor:
         assert "policy_complexity_score" in result.features
         assert 0.0 <= result.features["policy_complexity_score"] <= 1.0
     
-    def test_compliance_risk_extraction(self):
+    def test_compliance_risk_extraction(self, l5_feature_extractor):
         """Test compliance risk level extraction."""
-        extractor = L5FeatureExtractor()
+        extractor = l5_feature_extractor
         
         context = {
             "policy": {
@@ -213,9 +241,9 @@ class TestL5FeatureExtractor:
         assert "compliance_risk_level" in result.features
         assert 0.0 <= result.features["compliance_risk_level"] <= 1.0
     
-    def test_business_impact_extraction(self):
+    def test_business_impact_extraction(self, l5_feature_extractor):
         """Test business impact score extraction."""
-        extractor = L5FeatureExtractor()
+        extractor = l5_feature_extractor
         
         context = {
             "policy": {
@@ -249,9 +277,9 @@ class TestL5FeatureExtractor:
 class TestL2FeatureExtractor:
     """Test L2 feature extraction functionality."""
     
-    def test_healer_compatibility_extraction(self):
+    def test_healer_compatibility_extraction(self, l2_feature_extractor):
         """Test healer compatibility score extraction."""
-        extractor = L2FeatureExtractor()
+        extractor = l2_feature_extractor
         
         context = {
             "healer": {
@@ -288,9 +316,9 @@ class TestL2FeatureExtractor:
         assert "healer_compatibility_score" in result.features
         assert 0.0 <= result.features["healer_compatibility_score"] <= 1.0
     
-    def test_error_severity_extraction(self):
+    def test_error_severity_extraction(self, l2_feature_extractor):
         """Test error severity score extraction."""
-        extractor = L2FeatureExtractor()
+        extractor = l2_feature_extractor
         
         context = {
             "error": {
@@ -319,9 +347,9 @@ class TestL2FeatureExtractor:
         assert "error_severity_score" in result.features
         assert 0.0 <= result.features["error_severity_score"] <= 1.0
     
-    def test_retry_probability_extraction(self):
+    def test_retry_probability_extraction(self, l2_feature_extractor):
         """Test retry probability extraction."""
-        extractor = L2FeatureExtractor()
+        extractor = l2_feature_extractor
         
         context = {
             "error": {
@@ -358,9 +386,9 @@ class TestL3BranchRanker:
     """Test L3 DAG branch ranker model."""
     
     @pytest.fixture
-    def mock_model(self):
+    def mock_model(self, l3_branch_ranker):
         """Create a mock L3 branch ranker for testing."""
-        ranker = L3BranchRanker()
+        ranker = l3_branch_ranker
         
         # Mock the model
         ranker.model = Mock()
@@ -461,9 +489,9 @@ class TestL5RiskCalibrator:
     """Test L5 risk calibrator model."""
     
     @pytest.fixture
-    def mock_model(self):
+    def mock_model(self, l5_risk_calibrator):
         """Create a mock L5 risk calibrator for testing."""
-        calibrator = L5RiskCalibrator()
+        calibrator = l5_risk_calibrator
         
         # Mock the model
         calibrator.model = Mock()
@@ -562,9 +590,9 @@ class TestL2HealerSelector:
     """Test L2 healer selector model."""
     
     @pytest.fixture
-    def mock_model(self):
+    def mock_model(self, l2_healer_selector):
         """Create a mock L2 healer selector for testing."""
-        selector = L2HealerSelector()
+        selector = l2_healer_selector
         
         # Mock the pipeline
         selector.pipeline = Mock()
@@ -676,9 +704,9 @@ class TestL2HealerSelector:
 class TestEWMACacheClassifier:
     """Test EWMA cache classifier model."""
     
-    def test_cache_entry_update(self):
+    def test_cache_entry_update(self, ewma_cache_classifier):
         """Test cache entry update functionality."""
-        classifier = EWMACacheClassifier()
+        classifier = ewma_cache_classifier
         
         cache_id = "test_cache_123"
         access_event = {
@@ -704,9 +732,9 @@ class TestEWMACacheClassifier:
         assert entry['hit_count'] == 1
         assert entry['content_relevance'] == 0.8
     
-    def test_cache_classification(self):
+    def test_cache_classification(self, ewma_cache_classifier):
         """Test cache entry classification."""
-        classifier = EWMACacheClassifier()
+        classifier = ewma_cache_classifier
         
         cache_id = "test_cache_123"
         
@@ -729,9 +757,9 @@ class TestEWMACacheClassifier:
         assert prediction.confidence >= 0.0
         assert prediction.decision_mode.value in ["advisory", "escalated", "blocked"]
     
-    def test_cache_recommendations(self):
+    def test_cache_recommendations(self, ewma_cache_classifier):
         """Test cache management recommendations."""
-        classifier = EWMACacheClassifier()
+        classifier = ewma_cache_classifier
         
         cache_id = "test_cache_123"
         
@@ -758,9 +786,9 @@ class TestEWMACacheClassifier:
         assert 'priority' in recommendations
         assert isinstance(recommendations['recommendations'], list)
     
-    def test_ewma_score_calculation(self):
+    def test_ewma_score_calculation(self, ewma_cache_classifier):
         """Test EWMA score calculation."""
-        classifier = EWMACacheClassifier()
+        classifier = ewma_cache_classifier
         
         # Test feature vector
         feature_vector = np.array([
@@ -781,9 +809,9 @@ class TestEWMACacheClassifier:
         assert 0.0 <= ewma_score <= 1.0
         assert isinstance(ewma_score, float)
     
-    def test_classification_by_ewma_score(self):
+    def test_classification_by_ewma_score(self, ewma_cache_classifier):
         """Test classification based on EWMA score."""
-        classifier = EWMACacheClassifier()
+        classifier = ewma_cache_classifier
         
         # Test different score ranges
         test_cases = [
@@ -797,9 +825,9 @@ class TestEWMACacheClassifier:
             actual_class = classifier._classify_by_ewma_score(score)
             assert actual_class == expected_class
     
-    def test_feature_extraction_from_entry(self):
+    def test_feature_extraction_from_entry(self, ewma_cache_classifier):
         """Test feature extraction from cache entry."""
-        classifier = EWMACacheClassifier()
+        classifier = ewma_cache_classifier
         
         cache_id = "test_cache_123"
         

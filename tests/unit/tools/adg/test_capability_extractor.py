@@ -14,18 +14,23 @@ from unittest.mock import patch, MagicMock
 import sys
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..")))
 
-# Mock ContextWindowEstimator if not available
-try:
-    from tools.adg.capability_extractor import CapabilityExtractor
-except ImportError as e:
-    if "ContextWindowEstimator" in str(e):
-        # Mock the missing dependency
-        from unittest.mock import MagicMock
-        sys.modules['agentic_core.planning.token_estimator'] = MagicMock()
-        sys.modules['agentic_core.planning.token_estimator'].ContextWindowEstimator = MagicMock
+
+# Lazy import to avoid collection-time conflicts
+@pytest.fixture
+def capability_extractor():
+    """Fixture to lazily import CapabilityExtractor."""
+    try:
         from tools.adg.capability_extractor import CapabilityExtractor
-    else:
-        raise
+    except ImportError as e:
+        if "ContextWindowEstimator" in str(e):
+            # Mock the missing dependency
+            from unittest.mock import MagicMock
+            sys.modules['agentic_core.planning.token_estimator'] = MagicMock()
+            sys.modules['agentic_core.planning.token_estimator'].ContextWindowEstimator = MagicMock
+            from tools.adg.capability_extractor import CapabilityExtractor
+        else:
+            raise
+    return CapabilityExtractor
 
 class TestCapabilityExtractor:
     """Test suite for CapabilityExtractor class."""

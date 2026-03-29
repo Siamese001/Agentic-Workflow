@@ -13,22 +13,50 @@ from datetime import datetime, timedelta
 from pathlib import Path
 from unittest.mock import Mock, patch
 
-# Test Phase 4 components
-from agentic_core.L1_cognition.ml_decision_support.features.advanced_l0_features import AdvancedL0FeatureExtractor
-from agentic_core.L1_cognition.ml_decision_support.features.advanced_c0_features import AdvancedC0FeatureExtractor
-from agentic_core.L1_cognition.ml_decision_support.features.advanced_l6_features import AdvancedL6FeatureExtractor
-from agentic_core.L1_cognition.ml_decision_support.models.advanced_l0_router import AdvancedL0Router
-from agentic_core.L1_cognition.ml_decision_support.models.advanced_c0_reranker import AdvancedC0Reranker
-from agentic_core.L1_cognition.ml_decision_support.models.advanced_l6_detector import AdvancedL6Detector
-from agentic_core.L1_cognition.ml_decision_support.models.unified_inference_engine import UnifiedInferenceEngine, UnifiedInferenceRequest
+
+# Lazy import fixtures to avoid collection-time conflicts
+@pytest.fixture
+def advanced_l0_feature_extractor():
+    from agentic_core.L1_cognition.ml_decision_support.features.advanced_l0_features import AdvancedL0FeatureExtractor
+    return AdvancedL0FeatureExtractor()
+
+@pytest.fixture
+def advanced_c0_feature_extractor():
+    from agentic_core.L1_cognition.ml_decision_support.features.advanced_c0_features import AdvancedC0FeatureExtractor
+    return AdvancedC0FeatureExtractor()
+
+@pytest.fixture
+def advanced_l6_feature_extractor():
+    from agentic_core.L1_cognition.ml_decision_support.features.advanced_l6_features import AdvancedL6FeatureExtractor
+    return AdvancedL6FeatureExtractor()
+
+@pytest.fixture
+def advanced_l0_router():
+    from agentic_core.L1_cognition.ml_decision_support.models.advanced_l0_router import AdvancedL0Router
+    return AdvancedL0Router()
+
+@pytest.fixture
+def advanced_c0_reranker():
+    from agentic_core.L1_cognition.ml_decision_support.models.advanced_c0_reranker import AdvancedC0Reranker
+    return AdvancedC0Reranker()
+
+@pytest.fixture
+def advanced_l6_detector():
+    from agentic_core.L1_cognition.ml_decision_support.models.advanced_l6_detector import AdvancedL6Detector
+    return AdvancedL6Detector()
+
+@pytest.fixture
+def unified_inference_engine():
+    from agentic_core.L1_cognition.ml_decision_support.models.unified_inference_engine import UnifiedInferenceEngine
+    return UnifiedInferenceEngine()
 
 
 class TestAdvancedL0FeatureExtractor:
     """Test advanced L0 feature extraction functionality."""
     
-    def test_semantic_similarity_extraction(self):
+    def test_semantic_similarity_extraction(self, advanced_l0_feature_extractor):
         """Test semantic similarity extraction."""
-        extractor = AdvancedL0FeatureExtractor()
+        extractor = advanced_l0_feature_extractor
         
         context = {
             "routing": {
@@ -52,9 +80,9 @@ class TestAdvancedL0FeatureExtractor:
         assert "semantic_similarity_score" in result.features
         assert 0.0 <= result.features["semantic_similarity_score"] <= 1.0
     
-    def test_intent_confidence_extraction(self):
+    def test_intent_confidence_extraction(self, advanced_l0_feature_extractor):
         """Test intent confidence extraction."""
-        extractor = AdvancedL0FeatureExtractor()
+        extractor = advanced_l0_feature_extractor
         
         context = {
             "routing": {
@@ -78,9 +106,9 @@ class TestAdvancedL0FeatureExtractor:
         assert "intent_confidence" in result.features
         assert 0.0 <= result.features["intent_confidence"] <= 1.0
     
-    def test_context_relevance_extraction(self):
+    def test_context_relevance_extraction(self, advanced_l0_feature_extractor):
         """Test context relevance extraction."""
-        extractor = AdvancedL0FeatureExtractor()
+        extractor = advanced_l0_feature_extractor
         
         context = {
             "routing": {
@@ -106,9 +134,9 @@ class TestAdvancedL0FeatureExtractor:
         assert "context_relevance" in result.features
         assert 0.0 <= result.features["context_relevance"] <= 1.0
     
-    def test_user_preference_extraction(self):
+    def test_user_preference_extraction(self, advanced_l0_feature_extractor):
         """Test user preference extraction."""
-        extractor = AdvancedL0FeatureExtractor()
+        extractor = advanced_l0_feature_extractor
         
         context = {
             "routing": {
@@ -134,9 +162,9 @@ class TestAdvancedL0FeatureExtractor:
         assert "user_preference_score" in result.features
         assert 0.0 <= result.features["user_preference_score"] <= 1.0
     
-    def test_routing_confidence_extraction(self):
+    def test_routing_confidence_extraction(self, advanced_l0_feature_extractor):
         """Test overall routing confidence extraction."""
-        extractor = AdvancedL0FeatureExtractor()
+        extractor = advanced_l0_feature_extractor
         
         context = {
             "routing": {
@@ -165,9 +193,9 @@ class TestAdvancedL0FeatureExtractor:
 class TestAdvancedC0FeatureExtractor:
     """Test advanced C0 feature extraction functionality."""
     
-    def test_embedding_similarity_extraction(self):
+    def test_embedding_similarity_extraction(self, advanced_c0_feature_extractor):
         """Test embedding similarity extraction."""
-        extractor = AdvancedC0FeatureExtractor()
+        extractor = advanced_c0_feature_extractor
         
         context = {
             "reranking": {
@@ -188,9 +216,9 @@ class TestAdvancedC0FeatureExtractor:
         assert "embedding_similarity" in result.features
         assert 0.0 <= result.features["embedding_similarity"] <= 1.0
     
-    def test_attention_score_extraction(self):
+    def test_attention_score_extraction(self, advanced_c0_feature_extractor):
         """Test attention score extraction."""
-        extractor = AdvancedC0FeatureExtractor()
+        extractor = advanced_c0_feature_extractor
         
         context = {
             "reranking": {
@@ -210,9 +238,9 @@ class TestAdvancedC0FeatureExtractor:
         assert "attention_score" in result.features
         assert 0.0 <= result.features["attention_score"] <= 1.0
     
-    def test_document_authority_extraction(self):
+    def test_document_authority_extraction(self, advanced_c0_feature_extractor):
         """Test document authority extraction."""
-        extractor = AdvancedC0FeatureExtractor()
+        extractor = advanced_c0_feature_extractor
         
         context = {
             "reranking": {
@@ -238,9 +266,9 @@ class TestAdvancedC0FeatureExtractor:
         assert "document_authority" in result.features
         assert 0.0 <= result.features["document_authority"] <= 1.0
     
-    def test_reranking_confidence_extraction(self):
+    def test_reranking_confidence_extraction(self, advanced_c0_feature_extractor):
         """Test overall reranking confidence extraction."""
-        extractor = AdvancedC0FeatureExtractor()
+        extractor = advanced_c0_feature_extractor
         
         context = {
             "reranking": {
@@ -272,9 +300,9 @@ class TestAdvancedC0FeatureExtractor:
 class TestAdvancedL6FeatureExtractor:
     """Test advanced L6 feature extraction functionality."""
     
-    def test_behavioral_deviation_extraction(self):
+    def test_behavioral_deviation_extraction(self, advanced_l6_feature_extractor):
         """Test behavioral deviation extraction."""
-        extractor = AdvancedL6FeatureExtractor()
+        extractor = advanced_l6_feature_extractor
         
         context = {
             "anomaly": {
@@ -311,9 +339,9 @@ class TestAdvancedL6FeatureExtractor:
         assert "behavioral_deviation" in result.features
         assert 0.0 <= result.features["behavioral_deviation"] <= 1.0
     
-    def test_system_metric_anomaly_extraction(self):
+    def test_system_metric_anomaly_extraction(self, advanced_l6_feature_extractor):
         """Test system metric anomaly extraction."""
-        extractor = AdvancedL6FeatureExtractor()
+        extractor = advanced_l6_feature_extractor
         
         context = {
             "anomaly": {
@@ -347,9 +375,9 @@ class TestAdvancedL6FeatureExtractor:
         assert "system_metric_anomaly" in result.features
         assert 0.0 <= result.features["system_metric_anomaly"] <= 1.0
     
-    def test_reconstruction_error_extraction(self):
+    def test_reconstruction_error_extraction(self, advanced_l6_feature_extractor):
         """Test reconstruction error extraction."""
-        extractor = AdvancedL6FeatureExtractor()
+        extractor = advanced_l6_feature_extractor
         
         context = {
             "anomaly": {
@@ -376,9 +404,9 @@ class TestAdvancedL6FeatureExtractor:
         assert "reconstruction_error" in result.features
         assert 0.0 <= result.features["reconstruction_error"] <= 1.0
     
-    def test_anomaly_confidence_extraction(self):
+    def test_anomaly_confidence_extraction(self, advanced_l6_feature_extractor):
         """Test overall anomaly confidence extraction."""
-        extractor = AdvancedL6FeatureExtractor()
+        extractor = advanced_l6_feature_extractor
         
         context = {
             "anomaly": {
@@ -411,9 +439,9 @@ class TestAdvancedL0Router:
     """Test advanced L0 router model."""
     
     @pytest.fixture
-    def mock_model(self):
+    def mock_model(self, advanced_l0_router):
         """Create a mock advanced L0 router for testing."""
-        router = AdvancedL0Router()
+        router = advanced_l0_router
         
         # Mock the pipeline
         router.pipeline = Mock()
@@ -551,9 +579,9 @@ class TestAdvancedC0Reranker:
     """Test advanced C0 reranker model."""
     
     @pytest.fixture
-    def mock_model(self):
+    def mock_model(self, advanced_c0_reranker):
         """Create a mock advanced C0 reranker for testing."""
-        reranker = AdvancedC0Reranker()
+        reranker = advanced_c0_reranker
         
         # Mock the pipeline
         reranker.pipeline = Mock()
@@ -707,9 +735,9 @@ class TestAdvancedL6Detector:
     """Test advanced L6 detector model."""
     
     @pytest.fixture
-    def mock_model(self):
+    def mock_model(self, advanced_l6_detector):
         """Create a mock advanced L6 detector for testing."""
-        detector = AdvancedL6Detector()
+        detector = advanced_l6_detector
         
         # Mock the pipeline
         detector.pipeline = Mock()
@@ -861,9 +889,9 @@ class TestUnifiedInferenceEngine:
     """Test unified inference engine."""
     
     @pytest.fixture
-    def mock_engine(self):
+    def mock_engine(self, unified_inference_engine):
         """Create a mock unified inference engine for testing."""
-        engine = UnifiedInferenceEngine()
+        engine = unified_inference_engine
         
         # Mock individual models
         engine.routing_model = Mock()

@@ -11,15 +11,20 @@ from unittest.mock import patch
 
 import pytest
 
-from tools.adg.boilerplate_ratio_report import (
-    BoilerplateRatioAnalyzer,
-    LayerStats,
-    RatioReport,
-)
+
+# Lazy imports to avoid collection-time conflicts
+def _get_analyzer_classes():
+    from tools.adg.boilerplate_ratio_report import (
+        BoilerplateRatioAnalyzer,
+        LayerStats,
+        RatioReport,
+    )
+    return BoilerplateRatioAnalyzer, LayerStats, RatioReport
 
 
 def test_infer_layer_from_path():
     """Test layer inference from file paths."""
+    BoilerplateRatioAnalyzer, LayerStats, RatioReport = _get_analyzer_classes()
     analyzer = BoilerplateRatioAnalyzer(Path("."))
     
     # Test various layer paths

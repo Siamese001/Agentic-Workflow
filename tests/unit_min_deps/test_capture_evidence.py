@@ -6,9 +6,11 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-# Configuration constants
-# Import the module under test via proper package path
-from tools.capture_evidence import capture_command
+
+# Lazy import to avoid collection-time conflicts
+def _get_capture_function():
+    from tools.capture_evidence import capture_command
+    return capture_command
 
 
 @pytest.mark.unit_min_deps
@@ -17,6 +19,7 @@ class TestCaptureEvidence:
 
     def test_powershell_string_abort(self, tmp_path):
         """Test that capture_command aborts if output contains 'powershell' or 'pwsh'."""
+        capture_command = _get_capture_function()
         evidence_file = tmp_path / "evidence.md"
 
         # Mock subprocess.run to return output with "powershell"

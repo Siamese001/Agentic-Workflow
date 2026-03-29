@@ -31,12 +31,15 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     record_execution_trace,
 )
 from agentic_core.mixins.tracing_mixin import TracingMixin, SpanContext
-from apps_shared.utils.open_telemetry_tracing_adapter_util import (
-    get_tracer,
-)
-from system_learning.runtime_adg.auto_persistence import (
-    AutoPersistenceTracingAdapter,
-)
+
+# Lazy imports to avoid L_SHARED->L_SL/L_APP gravity violations
+def _get_tracer():
+    from apps_shared.utils.open_telemetry_tracing_adapter_util import get_tracer
+    return get_tracer()
+
+def _get_auto_persistence_adapter():
+    from system_learning.runtime_adg.auto_persistence import AutoPersistenceTracingAdapter
+    return AutoPersistenceTracingAdapter
 
 emit_determinism_digest("integrated_tracing_mixin", "integrated_tracing_mixin_digest")
 record_execution_trace("integrated_tracing_mixin", "integrated_tracing_mixin_trace")

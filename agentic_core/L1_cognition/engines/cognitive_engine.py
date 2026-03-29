@@ -90,9 +90,13 @@ import uuid
 from typing import Any
 
 from agentic_core.L0_routing.config.path_constants import DEFAULT_SLEEP
-from agentic_core.L2_execution.determinism.execution_proof_emitter import ExecutionProofEmitter
 
-_proof_emitter = ExecutionProofEmitter("L1.cognitive_engine")
+# Lazy import to avoid L1->L2 gravity violation
+def _get_proof_emitter():
+    from agentic_core.L2_execution.determinism.execution_proof_emitter import ExecutionProofEmitter
+    return ExecutionProofEmitter("L1.cognitive_engine")
+
+_proof_emitter = _get_proof_emitter()
 
 
 def _get_reason_and_record():

@@ -99,7 +99,12 @@ _emit_links_execution_to_snapshot("p4", "boot_sequence", "exec_snapshot_link")
 
 # guardian: allow-global-mutation
 sys.path.insert(0, str(Path(__file__).parent.parent.parent.parent))
-from agentic_core.runtime.utils.discovery_util import AgentRegistry
+
+# Lazy import to avoid L0->L_RUNTIME gravity violation
+def _get_agent_registry():
+    from agentic_core.runtime.utils.discovery_util import AgentRegistry
+    return AgentRegistry
+
 from agentic_core.L0_routing.utils.manifest_guardian_util import ManifestGuardian
 # compliance_gate_validator not found - create placeholder
 def check_compliance(agents):
@@ -204,7 +209,7 @@ class BootSequence:
 
     def __init__(self, strict_mode: bool = True):
         self.strict_mode = strict_mode
-        self.registry = AgentRegistry()
+        self.registry = _get_agent_registry()()
         self.discovered_agents = []
         self.compliance_violations = []
 

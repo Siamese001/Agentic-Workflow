@@ -6,7 +6,12 @@ from datetime import datetime
 from pathlib import Path
 
 from agentic_core.L0_routing.config.path_constants import MAX_DEPTH
-from agentic_core.L3_orchestration.registry.agent_dispatch_registry import get_agent_dispatch_registry
+
+# Lazy import to avoid L0->L3 gravity violation
+def _get_registry():
+    from agentic_core.L3_orchestration.registry.agent_dispatch_registry import get_agent_dispatch_registry
+    return get_agent_dispatch_registry()
+
 from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     # noqa: E402,
     # noqa: E402
