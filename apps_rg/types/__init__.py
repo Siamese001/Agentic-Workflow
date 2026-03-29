@@ -1,6 +1,29 @@
 """Types package for apps_rg."""
 
-# Core RG types are defined in individual type modules
-# Import commonly used types for convenience
+from apps_rg.types.rg_types import (
+    ExperienceEntry,
+    ExperienceLevel,
+    ResumeConfig,
+    ResumeFormat,
+    ResumeRequest,
+    ResumeResult,
+    ResumeRunSummary,
+    ResumeSection,
+    ResumeStatus,
+    SkillMatch,
+    TargetIndustry,
+)
 
-__all__ = []
+__all__ = [
+    "ExperienceEntry",
+    "ExperienceLevel",
+    "ResumeConfig",
+    "ResumeFormat",
+    "ResumeRequest",
+    "ResumeResult",
+    "ResumeRunSummary",
+    "ResumeSection",
+    "ResumeStatus",
+    "SkillMatch",
+    "TargetIndustry",
+]
