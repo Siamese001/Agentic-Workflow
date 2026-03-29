@@ -46,4 +46,9 @@ def get_canonical_layer(layer_id: str) -> dict[str, Any] | None:
     return layers.get(layer_id)
 
 
-__all__ = ["CanonicalTruthValidator", "validate_canonical_truth", "get_canonical_layer"]
+def canonical_truth(key: str, value: Any) -> bool:
+    """Validate canonical truth for a given key and value."""
+    return validate_canonical_truth(key, value)
+
+
+__all__ = ["CanonicalTruthValidator", "validate_canonical_truth", "get_canonical_layer", "canonical_truth"]
