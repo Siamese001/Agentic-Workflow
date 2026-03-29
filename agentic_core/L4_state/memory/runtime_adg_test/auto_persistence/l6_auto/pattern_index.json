@@ -1,0 +1,40 @@
+{
+  "runtime_adg_1774747796_fe1403f4": {
+    "component_distribution": {
+      "NervousSystem": 1,
+      "Tool.test_operation": 1
+    },
+    "error_patterns": [],
+    "extraction_metadata": {
+      "timestamp": 1774747796,
+      "total_nodes": 2
+    },
+    "layer_distribution": {
+      "L2_Execu": 1,
+      "L3_Orche": 1
+    },
+    "relation_patterns": {
+      "parent_child": 2,
+      "temporal_sequence": 1
+    },
+    "span_type_distribution": {
+      "orchestrator": 1,
+      "tool": 1
+    },
+    "timing_patterns": {
+      "fast_operations": [
+        {
+          "component": "Tool.test_operation",
+          "duration_ms": 0.0,
+          "node_id": "26087b53ca226cfe"
+        },
+        {
+          "component": "NervousSystem",
+          "duration_ms": 0.502,
+          "node_id": "4b4f8f748914741c"
+        }
+      ],
+      "slow_operations": []
+    }
+  }
+}
