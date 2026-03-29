@@ -165,9 +165,16 @@ class TestRuntimeADGFullPipeline:
         self,
         sample_spans: list[dict[str, Any]],
         materializer: RuntimeADGMaterializer,
-        temp_runtime_adg_dir: Path,
+        l4_store_project_path: Path,
     ) -> None:
         """Test complete pipeline: spans → snapshot → L4 → L6."""
+        import shutil
+        
+        # Clean up any previous test data
+        if l4_store_project_path.exists():
+            shutil.rmtree(l4_store_project_path)
+        l4_store_project_path.mkdir(parents=True, exist_ok=True)
+        
         # Step 1: Materialize snapshot from spans
         snapshot = materializer.materialize(
             sample_spans,
@@ -183,8 +190,8 @@ class TestRuntimeADGFullPipeline:
         assert snapshot.snapshot_id is not None
         assert len(snapshot.snapshot_hash) == 64  # SHA-256 hex
 
-        # Step 2: Persist to L4 (file-backed store)
-        l4_store = FileBackedRuntimeADGStore(temp_runtime_adg_dir / "l4")
+        # Step 2: Persist to L4 (file-backed store with L4-compliant path)
+        l4_store = FileBackedRuntimeADGStore(l4_store_project_path)
         version_id = l4_store.persist(snapshot)
 
         assert version_id is not None
@@ -197,7 +204,7 @@ class TestRuntimeADGFullPipeline:
         assert retrieved.trace_id == snapshot.trace_id
 
         # Step 3: Store in L6 for meta-learning
-        l6_bridge = L6MetaLearningBridge(temp_runtime_adg_dir / "l6")
+        l6_bridge = L6MetaLearningBridge(l4_store_project_path / "l6")
         meta_id = l6_bridge.store_snapshot_for_meta_learning(snapshot)
 
         assert meta_id is not None
@@ -212,10 +219,18 @@ class TestRuntimeADGFullPipeline:
         self,
         sample_spans: list[dict[str, Any]],
         materializer: RuntimeADGMaterializer,
-        temp_runtime_adg_dir: Path,
+        l4_store_project_path: Path,
     ) -> None:
         """Test L4 storage with multiple snapshots and retrieval."""
-        l4_store = FileBackedRuntimeADGStore(temp_runtime_adg_dir / "l4")
+        import shutil
+        
+        # Clean up and set up test directory
+        l4_test_path = l4_store_project_path / "storage_test"
+        if l4_test_path.exists():
+            shutil.rmtree(l4_test_path)
+        l4_test_path.mkdir(parents=True, exist_ok=True)
+        
+        l4_store = FileBackedRuntimeADGStore(l4_test_path)
 
         # Create multiple snapshots
         trace_ids = []
@@ -249,10 +264,18 @@ class TestRuntimeADGFullPipeline:
         self,
         sample_spans: list[dict[str, Any]],
         materializer: RuntimeADGMaterializer,
-        temp_runtime_adg_dir: Path,
+        l4_store_project_path: Path,
     ) -> None:
         """Test L6 meta-learning pattern extraction and analysis."""
-        l6_bridge = L6MetaLearningBridge(temp_runtime_adg_dir / "l6_ml")
+        import shutil
+        
+        # Clean up and set up test directory
+        l6_test_path = l4_store_project_path / "ml_test"
+        if l6_test_path.exists():
+            shutil.rmtree(l6_test_path)
+        l6_test_path.mkdir(parents=True, exist_ok=True)
+        
+        l6_bridge = L6MetaLearningBridge(l6_base_dir=l6_test_path)
 
         # Create snapshot with mixed layer distribution
         mixed_spans = [
@@ -521,10 +544,18 @@ class TestRuntimeADGConcurrency:
     def test_concurrent_snapshot_persistence(
         self,
         materializer: RuntimeADGMaterializer,
-        temp_runtime_adg_dir: Path,
+        l4_store_project_path: Path,
     ) -> None:
         """Test thread-safe concurrent snapshot persistence."""
-        l4_store = FileBackedRuntimeADGStore(temp_runtime_adg_dir / "l4_concurrent")
+        import shutil
+        
+        # Clean up and set up test directory
+        concurrent_test_path = l4_store_project_path / "concurrent_test"
+        if concurrent_test_path.exists():
+            shutil.rmtree(concurrent_test_path)
+        concurrent_test_path.mkdir(parents=True, exist_ok=True)
+        
+        l4_store = FileBackedRuntimeADGStore(concurrent_test_path)
 
         num_threads = 10
         errors: list[Exception] = []
@@ -573,21 +604,31 @@ class TestRuntimeADGPatternExtraction:
     def test_pattern_extraction_accuracy(
         self,
         materializer: RuntimeADGMaterializer,
-        temp_runtime_adg_dir: Path,
+        l4_store_project_path: Path,
     ) -> None:
         """Test accurate pattern extraction from snapshots."""
-        l6_bridge = L6MetaLearningBridge(temp_runtime_adg_dir / "l6_patterns")
+        import shutil
+        
+        # Clean up and set up test directory
+        pattern_test_path = l4_store_project_path / "pattern_test"
+        if pattern_test_path.exists():
+            shutil.rmtree(pattern_test_path)
+        pattern_test_path.mkdir(parents=True, exist_ok=True)
+        
+        l6_bridge = L6MetaLearningBridge(l6_base_dir=pattern_test_path)
 
         # Create snapshot with known patterns
+        base_time = int(time.time() * 1000)
         spans = [
             {
                 "span_id": "slow-001",
                 "trace_id": "trace-patterns",
+                "parent_span_id": "",
                 "name": "slow.operation",
                 "kind": "tool",
                 "layer": "L2",
                 "component": "SlowTool",
-                "ts_utc": int(time.time() * 1000),
+                "ts_utc": base_time,
                 "duration_ms": 2000.0,  # > 1s = slow
                 "status": "ok",
                 "attributes": {},
@@ -595,11 +636,12 @@ class TestRuntimeADGPatternExtraction:
             {
                 "span_id": "fast-001",
                 "trace_id": "trace-patterns",
+                "parent_span_id": "slow-001",
                 "name": "fast.operation",
                 "kind": "tool",
                 "layer": "L2",
                 "component": "FastTool",
-                "ts_utc": int(time.time() * 1000) + 100,
+                "ts_utc": base_time + 100,
                 "duration_ms": 5.0,  # < 10ms = fast
                 "status": "ok",
                 "attributes": {},
@@ -607,11 +649,12 @@ class TestRuntimeADGPatternExtraction:
             {
                 "span_id": "error-001",
                 "trace_id": "trace-patterns",
+                "parent_span_id": "slow-001",
                 "name": "error.operation",
                 "kind": "tool",
                 "layer": "L2",
                 "component": "ErrorTool",
-                "ts_utc": int(time.time() * 1000) + 200,
+                "ts_utc": base_time + 200,
                 "duration_ms": 100.0,
                 "status": "error",
                 "attributes": {},
@@ -638,14 +681,23 @@ class TestRuntimeADGPatternExtraction:
         error_patterns = patterns.get("error_patterns", [])
         assert len(error_patterns) == 1
         assert error_patterns[0]["node_id"] == "error-001"
+        assert error_patterns[0]["node_id"] == "error-001"
 
     def test_evolution_log_integrity(
         self,
         materializer: RuntimeADGMaterializer,
-        temp_runtime_adg_dir: Path,
+        l4_store_project_path: Path,
     ) -> None:
         """Test evolution log maintains integrity across operations."""
-        l6_bridge = L6MetaLearningBridge(temp_runtime_adg_dir / "l6_evolution")
+        import shutil
+        
+        # Clean up and set up test directory
+        evolution_test_path = l4_store_project_path / "evolution_test"
+        if evolution_test_path.exists():
+            shutil.rmtree(evolution_test_path)
+        evolution_test_path.mkdir(parents=True, exist_ok=True)
+        
+        l6_bridge = L6MetaLearningBridge(l6_base_dir=evolution_test_path)
 
         # Store multiple snapshots
         for i in range(5):
@@ -708,10 +760,18 @@ class TestRuntimeADGFailClosed:
         self,
         sample_spans: list[dict[str, Any]],
         materializer: RuntimeADGMaterializer,
-        temp_runtime_adg_dir: Path,
+        l4_store_project_path: Path,
     ) -> None:
         """Test that corrupted snapshot data is handled gracefully."""
-        l4_store = FileBackedRuntimeADGStore(temp_runtime_adg_dir / "l4_corrupt")
+        import shutil
+        
+        # Clean up and set up test directory
+        corrupt_test_path = l4_store_project_path / "corrupt_test"
+        if corrupt_test_path.exists():
+            shutil.rmtree(corrupt_test_path)
+        corrupt_test_path.mkdir(parents=True, exist_ok=True)
+        
+        l4_store = FileBackedRuntimeADGStore(corrupt_test_path)
 
         # Persist valid snapshot
         snapshot = materializer.materialize(sample_spans, mission="corrupt-test")

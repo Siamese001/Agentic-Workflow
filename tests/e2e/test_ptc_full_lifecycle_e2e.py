@@ -883,10 +883,10 @@ class TestPTCEdgeCases:
             args={"command": "pwsh -c 'Get-Date'"},
         )
         
-        # Should reject PowerShell
-        with pytest.raises(ValueError) as exc_info:
-            ptc_invoker.invoke(call, ptc_registry)
-        assert "powershell" in str(exc_info.value).lower()
+        # Should reject PowerShell and return error result (exit_code=1)
+        result = ptc_invoker.invoke(call, ptc_registry)
+        assert result.exit_code == 1
+        assert "powershell" in result.stderr.lower()
 
     def test_ptc_empty_script_rejection(self, ptc_enforcer: PTCContractEnforcer) -> None:
         """Test empty tool output is handled."""
