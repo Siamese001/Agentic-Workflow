@@ -1,3 +1,0 @@
-# Wave 50
-
-COMPLETE
