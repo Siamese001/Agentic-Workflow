@@ -1,39 +1,42 @@
 """
-Test LIC Types.
+Test LIC Pydantic Types.
 """
 import unittest
 
+from pydantic import ValidationError
+
 from apps_lic.types import (
+    CampaignConfig,
+    CampaignRequest,
+    CampaignResult,
+    CampaignRunSummary,
     Draft,
     DraftPackage,
     ValidationResult,
-    check_content_compliance,
-    score_quality,
-    validate_schema_policy,
 )
 
 
 class TestValidationResult(unittest.TestCase):
-    """Test cases for ValidationResult."""
+    """Test cases for ValidationResult Pydantic model."""
 
     def test_validation_passed(self):
         """Test passed validation result."""
         result = ValidationResult(
             passed=True,
-            reasons=(),
+            reasons=[],
             final_draft="test draft",
             attempts=1,
             qa_result={"check": "passed"},
         )
         self.assertTrue(result.passed)
-        self.assertEqual(result.reasons, ())
+        self.assertEqual(result.reasons, [])
         self.assertEqual(result.attempts, 1)
 
     def test_validation_failed(self):
         """Test failed validation result."""
         result = ValidationResult(
             passed=False,
-            reasons=("error1", "error2"),
+            reasons=["error1", "error2"],
             final_draft="bad draft",
             attempts=3,
             qa_result={"check": "failed"},
@@ -42,9 +45,30 @@ class TestValidationResult(unittest.TestCase):
         self.assertEqual(len(result.reasons), 2)
         self.assertEqual(result.attempts, 3)
 
+    def test_attempts_validation(self):
+        """Test attempts must be >= 1."""
+        with self.assertRaises(ValidationError):
+            ValidationResult(passed=True, attempts=0)
+
+    def test_latency_validation(self):
+        """Test latency must be >= 0."""
+        with self.assertRaises(ValidationError):
+            ValidationResult(passed=True, latency_ms=-1)
+
 
 class TestDraft(unittest.TestCase):
-    """Test cases for Draft."""
+    """Test cases for Draft Pydantic model."""
+
+    def test_draft_creation(self):
+        """Test Draft creation."""
+        draft = Draft(
+            subject="Test Subject",
+            body="Test body content",
+            tone="professional",
+        )
+        self.assertEqual(draft.subject, "Test Subject")
+        self.assertEqual(draft.body, "Test body content")
+        self.assertEqual(draft.tone, "professional")
 
     def test_draft_render(self):
         """Test draft render method."""
@@ -56,9 +80,19 @@ class TestDraft(unittest.TestCase):
         self.assertIn("Subject: Test Subject", rendered)
         self.assertIn("Test body content", rendered)
 
+    def test_subject_validation_empty(self):
+        """Test subject cannot be empty."""
+        with self.assertRaises(ValidationError):
+            Draft(subject="", body="Valid body")
+
+    def test_body_validation_empty(self):
+        """Test body cannot be empty."""
+        with self.assertRaises(ValidationError):
+            Draft(subject="Valid subject", body="")
+
 
 class TestDraftPackage(unittest.TestCase):
-    """Test cases for DraftPackage."""
+    """Test cases for DraftPackage Pydantic model."""
 
     def test_draft_package_creation(self):
         """Test DraftPackage creation."""
@@ -66,10 +100,12 @@ class TestDraftPackage(unittest.TestCase):
             draft="Test draft content",
             artifacts={"meta": "data"},
             total_latency_ms=1500,
+            trace_id="trace-001",
         )
         self.assertEqual(package.draft, "Test draft content")
         self.assertEqual(package.artifacts, {"meta": "data"})
         self.assertEqual(package.total_latency_ms, 1500)
+        self.assertEqual(package.trace_id, "trace-001")
 
     def test_with_draft(self):
         """Test with_draft method."""
@@ -83,45 +119,136 @@ class TestDraftPackage(unittest.TestCase):
         self.assertEqual(new_package.artifacts, {"key": "value"})
         self.assertEqual(new_package.total_latency_ms, 1000)
 
+    def test_draft_required(self):
+        """Test draft is required."""
+        with self.assertRaises(ValidationError):
+            DraftPackage(draft="")
 
-class TestValidationFunctions(unittest.TestCase):
-    """Test cases for validation functions."""
 
-    def test_validate_schema_policy_pass(self):
-        """Test schema validation pass."""
-        data = {"name": "Test", "value": 123}
-        schema = {"required": ["name", "value"]}
-        result = validate_schema_policy(data, schema)
-        self.assertTrue(result.passed)
-        self.assertEqual(result.reasons, ())
+class TestCampaignConfig(unittest.TestCase):
+    """Test cases for CampaignConfig Pydantic model."""
 
-    def test_validate_schema_policy_fail(self):
-        """Test schema validation fail."""
-        data = {"name": "Test"}
-        schema = {"required": ["name", "value"]}
-        result = validate_schema_policy(data, schema)
-        self.assertFalse(result.passed)
-        self.assertIn("value", result.reasons)
+    def test_config_defaults(self):
+        """Test config default values."""
+        config = CampaignConfig(
+            name="Test Campaign",
+            target_audience="developers",
+        )
+        self.assertEqual(config.compliance_level, "standard")
+        self.assertEqual(config.max_recipients, 1000)
+        self.assertEqual(config.min_quality_score, 5)
+        self.assertTrue(config.require_approval)
 
-    def test_check_content_compliance_pass(self):
-        """Test content compliance pass."""
-        content = "This is a safe message"
-        prohibited = ["badword", "spam"]
-        result = check_content_compliance(content, prohibited)
-        self.assertTrue(result.passed)
-        self.assertEqual(result.reasons, ())
+    def test_max_recipients_bounds(self):
+        """Test max_recipients bounds."""
+        # Valid
+        config = CampaignConfig(
+            name="Test",
+            target_audience="all",
+            max_recipients=50000,
+        )
+        self.assertEqual(config.max_recipients, 50000)
 
-    def test_check_content_compliance_fail(self):
-        """Test content compliance fail."""
-        content = "This contains badword and spam"
-        prohibited = ["badword", "spam"]
-        result = check_content_compliance(content, prohibited)
-        self.assertFalse(result.passed)
+        # Invalid - too high
+        with self.assertRaises(ValidationError):
+            CampaignConfig(
+                name="Test",
+                target_audience="all",
+                max_recipients=200000,
+            )
 
-    def test_score_quality(self):
-        """Test quality scoring."""
-        score = score_quality("This has value proposition", reflexion=True)
-        self.assertGreater(score, 0)
+    def test_min_quality_score_bounds(self):
+        """Test min_quality_score bounds."""
+        with self.assertRaises(ValidationError):
+            CampaignConfig(
+                name="Test",
+                target_audience="all",
+                min_quality_score=15,
+            )
+
+
+class TestCampaignRequest(unittest.TestCase):
+    """Test cases for CampaignRequest Pydantic model."""
+
+    def test_request_creation(self):
+        """Test request creation."""
+        config = CampaignConfig(name="Test", target_audience="devs")
+        request = CampaignRequest(
+            campaign_id="camp-001",
+            config=config,
+            trace_id="trace-001",
+            dry_run=False,
+        )
+        self.assertEqual(request.campaign_id, "camp-001")
+        self.assertEqual(request.trace_id, "trace-001")
+        self.assertFalse(request.dry_run)
+
+    def test_campaign_id_required(self):
+        """Test campaign_id is required and non-empty."""
+        with self.assertRaises(ValidationError):
+            CampaignRequest(campaign_id="", config=CampaignConfig(name="Test", target_audience="all"))
+
+
+class TestCampaignResult(unittest.TestCase):
+    """Test cases for CampaignResult Pydantic model."""
+
+    def test_result_creation(self):
+        """Test result creation."""
+        result = CampaignResult(
+            campaign_id="camp-001",
+            status="complete",
+            overall_score=8.5,
+        )
+        self.assertEqual(result.campaign_id, "camp-001")
+        self.assertEqual(result.status, "complete")
+        self.assertEqual(result.overall_score, 8.5)
+
+    def test_passed_gate_property(self):
+        """Test passed_gate property."""
+        result_pass = CampaignResult(
+            status="complete",
+            gate_violations=[],
+        )
+        self.assertTrue(result_pass.passed_gate)
+
+        result_fail = CampaignResult(
+            status="complete",
+            gate_violations=["violation"],
+        )
+        self.assertFalse(result_fail.passed_gate)
+
+    def test_overall_score_bounds(self):
+        """Test overall_score bounds."""
+        with self.assertRaises(ValidationError):
+            CampaignResult(overall_score=15)
+
+
+class TestCampaignRunSummary(unittest.TestCase):
+    """Test cases for CampaignRunSummary Pydantic model."""
+
+    def test_summary_creation(self):
+        """Test summary creation."""
+        summary = CampaignRunSummary(
+            trace_id="trace-001",
+            campaign_id="camp-001",
+            status="complete",
+            drafts_generated=5,
+            drafts_validated=5,
+            overall_score=8.5,
+        )
+        self.assertEqual(summary.trace_id, "trace-001")
+        self.assertEqual(summary.app, "apps_lic")
+        self.assertEqual(summary.drafts_generated, 5)
+
+    def test_to_dict(self):
+        """Test to_dict method."""
+        summary = CampaignRunSummary(
+            trace_id="trace-001",
+            overall_score=8.5,
+        )
+        d = summary.to_dict()
+        self.assertEqual(d["trace_id"], "trace-001")
+        self.assertEqual(d["overall_score"], 8.5)
 
 
 if __name__ == "__main__":

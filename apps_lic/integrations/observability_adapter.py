@@ -12,7 +12,7 @@ from __future__ import annotations
 import logging
 from typing import Any
 
-from apps_lic.types import DraftPackage, ValidationResult
+from apps_lic.types import CampaignRequest, CampaignResult, DraftPackage, ValidationResult
 
 _log = logging.getLogger(__name__)
 
@@ -24,6 +24,36 @@ class ObservabilityAdapter:
         self.config = config or {}
         self._metrics: list[dict] = []
 
+    def emit_campaign_start(self, request: CampaignRequest) -> dict[str, Any]:
+        """Emit campaign start event."""
+        event = {
+            "event_type": "campaign_start",
+            "trace_id": request.trace_id,
+            "campaign_id": request.campaign_id,
+            "target_audience": request.config.target_audience,
+            "max_recipients": request.config.max_recipients,
+            "dry_run": request.dry_run,
+            "timestamp": self._timestamp(),
+        }
+        self._metrics.append(event)
+        return event
+
+    def emit_campaign_complete(self, result: CampaignResult) -> dict[str, Any]:
+        """Emit campaign completion event."""
+        event = {
+            "event_type": "campaign_complete",
+            "trace_id": result.trace_id,
+            "campaign_id": result.campaign_id,
+            "status": result.status,
+            "drafts_count": len(result.drafts),
+            "overall_score": result.overall_score,
+            "gate_passed": result.passed_gate,
+            "violations": len(result.gate_violations),
+            "timestamp": self._timestamp(),
+        }
+        self._metrics.append(event)
+        return event
+
     def emit_draft_created(self, draft_package: DraftPackage) -> dict[str, Any]:
         """Emit draft creation event."""
         event = {
@@ -31,6 +61,7 @@ class ObservabilityAdapter:
             "draft_length": len(draft_package.draft),
             "artifacts_count": len(draft_package.artifacts),
             "total_latency_ms": draft_package.total_latency_ms,
+            "trace_id": draft_package.trace_id,
             "timestamp": self._timestamp(),
         }
         self._metrics.append(event)
@@ -43,20 +74,7 @@ class ObservabilityAdapter:
             "passed": result.passed,
             "attempts": result.attempts,
             "reasons_count": len(result.reasons),
-            "timestamp": self._timestamp(),
-        }
-        self._metrics.append(event)
-        return event
-
-    def emit_campaign_complete(
-        self, draft_package: DraftPackage, validation: ValidationResult
-    ) -> dict[str, Any]:
-        """Emit campaign completion event."""
-        event = {
-            "event_type": "campaign_complete",
-            "validation_passed": validation.passed,
-            "draft_length": len(draft_package.draft),
-            "artifacts_count": len(draft_package.artifacts),
+            "latency_ms": result.latency_ms,
             "timestamp": self._timestamp(),
         }
         self._metrics.append(event)
@@ -68,5 +86,5 @@ class ObservabilityAdapter:
 
     def _timestamp(self) -> str:
         """Generate ISO timestamp."""
-        from datetime import datetime
-        return datetime.utcnow().isoformat() + "Z"
+        from datetime import datetime, timezone
+        return datetime.now(timezone.utc).isoformat()
