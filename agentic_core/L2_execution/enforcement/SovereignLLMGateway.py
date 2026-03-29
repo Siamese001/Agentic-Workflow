@@ -286,6 +286,12 @@ class SovereigntyViolation(Exception):
     message: str
 
 
+class ArtifactTamperError(Exception):
+    """Raised when CompiledPromptArtifact signature verification fails."""
+
+    message: str
+
+
 class SovereignLLMGateway:
     """
     Unified LLM Gateway - Single point of truth for all LLM operations.
@@ -666,20 +672,6 @@ class SovereignLLMGateway:
                 last_error = e
 
                 # Update provider health on failure
-                self._update_provider_health(current_provider, False)
-
-                Logger.warning(f"[LLM Gateway] {current_provider} failed: {e}")
-                continue
-
-        Logger.error(f"[LLM Gateway] All providers failed. Last Error: {last_error}")
-        raise SovereigntyViolation(f"All LLM providers failed. Last error: {last_error}")
-
-    def _get_default_model(self, provider: Provider) -> str:
-        if provider == "openai":
-            return self.config.openai_model
-        elif provider == "anthropic":
-            return self.config.anthropic_model
-        elif provider == "google":
             return os.getenv("GEMINI_MODEL", "gemini-3-flash-preview")
         raise ValueError(f"Unknown provider: {provider}")
 

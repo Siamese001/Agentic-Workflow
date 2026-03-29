@@ -2,7 +2,9 @@
 
 from __future__ import annotations
 
+from .compiled_artifact_types import CompiledPromptArtifact
 from .context_contracts import CitationAnchorContract, RetrievalContextContract, TelemetryEnvelopeContract
+from .prompt_bom_types import PromptBOM
 from .slot_contracts import (
     SLOT_ORDER,
     AirlockViolationError,
@@ -12,10 +14,13 @@ from .slot_contracts import (
     SlotS0,
     SlotU0,
 )
+from .template_manifest_types import TemplateManifest
 
 __all__ = [
     "AirlockViolationError",
     "CitationAnchorContract",
+    "CompiledPromptArtifact",
+    "PromptBOM",
     "RetrievalContextContract",
     "SLOT_ORDER",
     "SlotC0",
@@ -24,4 +29,5 @@ __all__ = [
     "SlotS0",
     "SlotU0",
     "TelemetryEnvelopeContract",
+    "TemplateManifest",
 ]

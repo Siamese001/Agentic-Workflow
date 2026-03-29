@@ -117,24 +117,24 @@ _FIXTURE_SNAPSHOT = {
 def fixture_env():
     """Create test fixtures and setup Redis with test data."""
     import tempfile
-    
+
     # Create temp directory
     test_dir = Path(tempfile.mkdtemp(prefix="adg_test_"))
     ts = "test_fixture"
     sqlite_path = test_dir / f"adg_indexed_{ts}.sqlite"
     snapshot_path = test_dir / f"adg_snapshot_{ts}.json"
-    
+
     # Create SQLite database with DDL
     conn = sqlite3.connect(str(sqlite_path))
     conn.executescript(_FIXTURE_DDL)
-    
+
     # Insert nodes
     conn.executemany(
         "INSERT INTO nodes(id, adg_name, entity_type, layer, identity_kind, confidence, resolved_path) "
         "VALUES (?,?,?,?,?,?,?)",
         _FIXTURE_NODES,
     )
-    
+
     # Insert edges
     conn.executemany(
         "INSERT INTO edges(src_id,dst_id,relation_type,edge_kind,source_file,line_no,symbol) "

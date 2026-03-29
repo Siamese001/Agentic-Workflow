@@ -4,7 +4,7 @@
   "react_fan_out": 460,
   "late_chunk_node_count": 4,
   "late_chunk_fan_in": 21,
-  "late_chunk_fan_out": 222,
+  "late_chunk_fan_out": 238,
   "layer_violation_count": 0,
   "dead_imports_in_surface": 0,
   "violations": []

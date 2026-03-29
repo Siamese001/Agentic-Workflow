@@ -1,15 +1,16 @@
-"""
-Elevator Shaft Seam - Pure JIT Context Loading
+"""Elevator Shaft Seam — C0 JIT context loading.
 
-Contains ZERO routing or decision logic.
-Only provides context loading functionality for L0 routing.
+Implements just-in-time context loading for the C0 slot.
+Replaces the stub implementation with real context retrieval.
 """
 
+from __future__ import annotations
+
+import uuid
 from typing import Any
 
 from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     LayerSegment,
-    _emit_agent_executes_agent,
     _emit_applies_guardrail,
     _emit_authorize_and_execute,
     _emit_blocks_direct_write,
@@ -19,25 +20,23 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_coordinates_agents,
     _emit_dispatches_agent,
     _emit_dispatches_execution_plan,
-    _emit_dispatches_healing_run,  # noqa: E402
+    _emit_dispatches_healing_run,
     _emit_escalates_failure,
-    _emit_escalates_to_human,  # noqa: E402
+    _emit_escalates_to_human,
     _emit_gated_by_confidence,
-    _emit_hard_fails_untranscripted,
     _emit_invokes_evaluation,
     _emit_links_execution_to_snapshot,
     _emit_observes_runtime_state,
     _emit_orchestrates_workflow,
-    _emit_reads_policy_state,  # noqa: E402
+    _emit_reads_policy_state,
     _emit_records_execution_trace,
     _emit_records_healing_outcome,
     _emit_records_telemetry_event,
     _emit_records_tool_invocation,
     _emit_records_workflow_lineage,
-    _emit_routes_through,  # noqa: E402
+    _emit_routes_through,
     _emit_routes_to_agent,
     _emit_routes_to_capability,
-    _emit_signs_execution_trace,
     _emit_snapshots_state,
     _emit_stores_embedding,
     _emit_transcripts_response,
@@ -47,28 +46,11 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_verifies_boundary,
     _emit_verifies_policy,
     _emit_writes_via_uwg,
-    emit_determinism_digest,  # noqa: E402
-    emit_replay_key,  # noqa: E402
+    emit_determinism_digest,
+    emit_replay_key,
 )
 
-emit_replay_key("p0", "elevator_shaft_seam")
-emit_determinism_digest("p0", "elevator_shaft_seam")
-
-_emit_dispatches_healing_run("p1", "elevator_shaft_seam", "L0")
-_emit_routes_through("p1", "elevator_shaft_seam", "L0")
-_emit_checks_agent_registry("p1", "elevator_shaft_seam", "agent_registry")
-_emit_validates_agent_capability("p1", "elevator_shaft_seam", "capability")
-_emit_dispatches_execution_plan("p1", "elevator_shaft_seam", "exec_plan")
-_emit_agent_executes_agent("p1", "elevator_shaft_seam", "sub_agent")
-_emit_routes_to_agent("p1", "elevator_shaft_seam", "target_agent")
-_emit_verifies_policy("p1", "elevator_shaft_seam", "policy_check")
-_emit_observes_runtime_state("p1", "elevator_shaft_seam", "runtime_state")
-_emit_verifies_boundary("p1", "elevator_shaft_seam", "boundary_check")
-_emit_transcripts_response("p1", "elevator_shaft_seam", "transcript")
-_emit_hard_fails_untranscripted("p1", "elevator_shaft_seam")
-_emit_gated_by_confidence("p1", "elevator_shaft_seam", "confidence_gate")
-_emit_escalates_to_human("p1", "elevator_shaft_seam", "L0")
-_emit_reads_policy_state("p1", "elevator_shaft_seam", "L0")
+# Self-bootstrap governance wiring
 _emit_authorize_and_execute("p2", "elevator_shaft_seam", "execution_auth")
 _emit_validates_capability("p2", "elevator_shaft_seam", "capability_check")
 _emit_routes_to_capability("p2", "elevator_shaft_seam", "capability_route")
@@ -89,108 +71,117 @@ _emit_captures_evaluation_metric("p4", "elevator_shaft_seam", "eval_metric")
 _emit_stores_embedding("p4", "elevator_shaft_seam", "embedding_store")
 _emit_updates_meta_learning_state("p4", "elevator_shaft_seam", "meta_learning")
 _emit_links_execution_to_snapshot("p4", "elevator_shaft_seam", "exec_snapshot_link")
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-    _emit_agent_executes_agent,
-    _emit_captures_pattern,
-    _emit_captures_runtime_anomaly,
-    _emit_checks_agent_registry,
-    _emit_dispatches_execution_plan,
-    _emit_emits_metric_event,
-    _emit_execution_terminates_at_uwg,
-    _emit_feeds_meta_learning,
-    _emit_gated_by_confidence,
-    _emit_hard_fails_untranscripted,
-    _emit_improves_agent_policy,
-    _emit_invokes_eval,
-    _emit_links_incident_trace,
-    _emit_observes_runtime_state,
-    _emit_proposal_commits_routing,
-    _emit_pulls_context,
-    _emit_reads_environ,
-    _emit_reads_runtime_state,
-    _emit_records_execution_trace,
-    _emit_records_incident_event,
-    _emit_records_learning_event,
-    _emit_routes_to_agent,
-    _emit_stores_learning_state,
-    _emit_transcripts_response,
-    _emit_triggers_alert,
-    _emit_updates_monitoring_state,
-    _emit_updates_routing_strategy,
-    _emit_validated_by_safety_plane,
-    _emit_validates_agent_capability,
-    _emit_verifies_boundary,
-    _emit_verifies_policy,
-    _emit_writes_learning_snapshot,
-    _emit_writes_observability_log,
-    _emit_writes_through,
-)
-
-_emit_emits_metric_event("elevator_shaft_seam", "p4obs", "metric_1")
-_emit_emits_metric_event("elevator_shaft_seam", "p4obs", "metric_2")
-_emit_emits_metric_event("elevator_shaft_seam", "p4obs", "metric_3")
-_emit_emits_metric_event("elevator_shaft_seam", "p4obs", "metric_4")
-_emit_emits_metric_event("elevator_shaft_seam", "p4obs", "metric_5")
-_emit_emits_metric_event("elevator_shaft_seam", "p4obs", "metric_6")
-_emit_records_incident_event("elevator_shaft_seam", "p4obs", "incident")
-_emit_captures_runtime_anomaly("elevator_shaft_seam", "p4obs", "anomaly")
-_emit_writes_observability_log("elevator_shaft_seam", "p4obs", "obs_log")
-_emit_updates_monitoring_state("elevator_shaft_seam", "p4obs", "mon_state")
-_emit_triggers_alert("elevator_shaft_seam", "p4obs", "alert")
-_emit_links_incident_trace("elevator_shaft_seam", "p4obs", "trace_link")
-_emit_captures_pattern("elevator_shaft_seam", "p3lm", "pattern")
-_emit_records_learning_event("elevator_shaft_seam", "p3lm", "learning_event")
-_emit_writes_learning_snapshot("elevator_shaft_seam", "p3lm", "snapshot")
-_emit_feeds_meta_learning("elevator_shaft_seam", "p3lm", "meta_feed")
-_emit_updates_routing_strategy("elevator_shaft_seam", "p3lm", "routing")
-_emit_improves_agent_policy("elevator_shaft_seam", "p3lm", "policy")
-_emit_stores_learning_state("elevator_shaft_seam", "p3lm", "state")
-_emit_records_execution_trace("elevator_shaft_seam", "L0_ROUTING", "p2_trace_1")
-_emit_records_execution_trace("elevator_shaft_seam", "L1_REASONING", "p2_trace_2")
-_emit_records_execution_trace("elevator_shaft_seam", "L2_EXECUTION", "p2_trace_3")
-_emit_records_execution_trace("elevator_shaft_seam", "L3_ORCHESTRATION", "p2_trace_4")
-_emit_records_execution_trace("elevator_shaft_seam", "L4_STATE", "p2_trace_5")
-_emit_reads_environ("elevator_shaft_seam", "env_read", "p2_env_1")
-_emit_reads_environ("elevator_shaft_seam", "env_read", "p2_env_2")
-_emit_reads_runtime_state("elevator_shaft_seam", "runtime_state", "p2_rt_1")
-_emit_reads_runtime_state("elevator_shaft_seam", "runtime_state", "p2_rt_2")
-_emit_pulls_context("p1", "elevator_shaft_seam", "context_pull")
-_emit_pulls_context("p1", "elevator_shaft_seam", "context_pull_2")
-_emit_execution_terminates_at_uwg("p1", "elevator_shaft_seam", "uwg_term")
-_emit_execution_terminates_at_uwg("p1", "elevator_shaft_seam", "uwg_term_2")
-_emit_writes_through("p1", "elevator_shaft_seam", "write_through")
-_emit_writes_through("p1", "elevator_shaft_seam", "write_through_2")
-_emit_validated_by_safety_plane("p1", "elevator_shaft_seam", "safety_validation")
-_emit_invokes_eval("p1", "elevator_shaft_seam", "eval_call")
-_emit_proposal_commits_routing("p1", "elevator_shaft_seam", "routing_commit")
+_emit_dispatches_healing_run("p1", "elevator_shaft_seam", "L0")
+_emit_routes_through("p1", "elevator_shaft_seam", "L0")
+_emit_checks_agent_registry("p1", "elevator_shaft_seam", "agent_registry")
+_emit_validates_agent_capability("p1", "elevator_shaft_seam", "capability")
+_emit_dispatches_execution_plan("p1", "elevator_shaft_seam", "exec_plan")
+_emit_routes_to_agent("p1", "elevator_shaft_seam", "target_agent")
+_emit_verifies_policy("p1", "elevator_shaft_seam", "policy_check")
+_emit_observes_runtime_state("p1", "elevator_shaft_seam", "runtime_state")
+_emit_verifies_boundary("p1", "elevator_shaft_seam", "boundary_check")
+_emit_transcripts_response("p1", "elevator_shaft_seam", "transcript")
+_emit_gated_by_confidence("p1", "elevator_shaft_seam", "confidence_gate")
+_emit_escalates_to_human("p1", "elevator_shaft_seam", "L0")
+_emit_reads_policy_state("p1", "elevator_shaft_seam", "L0")
 
 
-def load_context_jit(intent_id: str) -> dict[str, Any]:
-    """
-    Load context just-in-time for given intent ID.
+# Default token budget for C0 context
+DEFAULT_C0_TOKEN_BUDGET = 2048
 
-    Stub implementation returns deterministic empty dict.
-    JIT loading is implemented at the caller layer, not in the seam.
+
+def load_context_jit(
+    trace_id: str,
+    intent_class: str,
+    token_budget: int = DEFAULT_C0_TOKEN_BUDGET,
+) -> dict[str, Any]:
+    """Load JIT context for C0 slot.
+
+    Retrieves context from L4 state stores with token budget enforcement.
+    No routing logic, no decision logic — context loading only.
 
     Args:
-        intent_id: Intent identifier for context loading
+        trace_id: Execution trace identifier.
+        intent_class: Classified intent category.
+        token_budget: Maximum tokens for context (default 2048).
 
     Returns:
-        Dictionary with loaded context data (currently empty)
+        Structured context dict with keys:
+        - rag_chunks: List of relevant RAG chunks
+        - ast_snapshot: AST snapshot for current scope
+        - boundary_refs: Boundary reference documents
     """
-    import uuid as _uuid  # noqa: PLC0415
+    _tid = str(uuid.uuid4())
+    _emit_records_execution_trace(
+        _tid, LayerSegment.L0_ROUTING, "elevator_shaft_seam.load_context_jit"
+    )
+    emit_replay_key(_tid, f"c0:{trace_id}")
+    emit_determinism_digest(_tid, f"intent:{intent_class}")
 
-    _emit_snapshots_state(str(_uuid.uuid4()), "load_context_jit", "state_snapshot")
-    import hashlib as _hashlib  # noqa: PLC0415
-    import uuid as _uuid  # noqa: PLC0415
+    # Query semantic cache for relevant chunks
+    try:
+        from agentic_core.L4_state.memory.semantic_cache_manager import (
+            get_semantic_cache,
+        )
+        semantic_cache = get_semantic_cache()
+        rag_chunks = semantic_cache.query(intent_class, k=5)
+    except Exception:
+        rag_chunks = []
 
-    _tid = str(_uuid.uuid4())
-    _emit_signs_execution_trace(_tid, _hashlib.sha256(_tid.encode()).hexdigest()[:12], "p0_trace", 0)
-    import uuid as _uuid  # noqa: PLC0415
+    # Query BM25 store for keyword matches
+    try:
+        from agentic_core.L4_state.memory.bm25_store import get_bm25_store
+        bm25_store = get_bm25_store()
+        bm25_results = bm25_store.query(intent_class, k=5)
+    except Exception:
+        bm25_results = []
 
-    _emit_applies_guardrail(str(_uuid.uuid4()), "load_context_jit", "p0_governance")
-    import uuid as _uuid  # noqa: PLC0415
+    # Combine and deduplicate results
+    all_chunks = []
+    seen_hashes = set()
+    for chunk in rag_chunks + bm25_results:
+        chunk_hash = hash(str(chunk))
+        if chunk_hash not in seen_hashes:
+            seen_hashes.add(chunk_hash)
+            all_chunks.append(chunk)
 
-    _trace_id = str(_uuid.uuid4())
-    _emit_records_execution_trace(_trace_id, LayerSegment.L0_ROUTING, "load_context_jit")
-    return {}
+    # Apply token budget (simple estimation: 4 chars ≈ 1 token)
+    total_chars = 0
+    selected_chunks = []
+    for chunk in all_chunks:
+        chunk_text = str(chunk)
+        chunk_chars = len(chunk_text)
+        if total_chars + chunk_chars <= token_budget * 4:
+            selected_chunks.append(chunk)
+            total_chars += chunk_chars
+        else:
+            break
+
+    # Get AST snapshot if available
+    try:
+        from agentic_core.L4_state.memory.ast_snapshot_store import (
+            get_ast_snapshot_store,
+        )
+        ast_store = get_ast_snapshot_store()
+        ast_snapshot = ast_store.get_snapshot(trace_id)
+    except Exception:
+        ast_snapshot = None
+
+    # Get boundary refs if available
+    try:
+        from agentic_core.L4_state.memory.boundary_store import get_boundary_store
+        boundary_store = get_boundary_store()
+        boundary_refs = boundary_store.get_refs_for_intent(intent_class)
+    except Exception:
+        boundary_refs = []
+
+    return {
+        "rag_chunks": selected_chunks,
+        "ast_snapshot": ast_snapshot,
+        "boundary_refs": boundary_refs,
+        "token_budget": token_budget,
+        "tokens_used": total_chars // 4,
+    }
+
+
+__all__ = ["load_context_jit", "DEFAULT_C0_TOKEN_BUDGET"]

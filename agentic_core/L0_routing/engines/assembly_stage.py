@@ -9,10 +9,12 @@ context, and user prompts into a governed payload with deterministic hashing.
 from __future__ import annotations
 
 import hashlib
+import hmac
 import json
 from dataclasses import dataclass
 from typing import Any, Literal
 
+from agentic_core.L0_routing.seams.elevator_shaft_seam import load_context_jit
 from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     LayerSegment,
     _emit_agent_executes_agent,
@@ -56,6 +58,16 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     emit_determinism_digest,
     emit_replay_key,
 )
+from agentic_core.prompt_governance.contracts import PromptBOM
+from agentic_core.prompt_governance.contracts.compiled_artifact_types import (
+    CompiledPromptArtifact,
+)
+from agentic_core.prompt_governance.security.assembly_injection_neutralizer import (
+    AssemblyInjectionNeutralizer,
+)
+from agentic_core.prompt_governance.validation.validate_assembly import validate_slot_order
+
+# Rest of the existing file content continues...
 
 _emit_dispatches_healing_run("p1", "assembly_stage", "L0")
 _emit_routes_through("p1", "assembly_stage", "L0")
@@ -353,3 +365,112 @@ class AirlockAssembler:
             c0_context_source=c0_context_source,
         )
         return payload
+
+    @staticmethod
+    def assemble_from_bom(
+        bom: PromptBOM,
+        secret_key: bytes,
+        d0_fences: tuple[str, ...] = (),
+    ) -> CompiledPromptArtifact:
+        """Assemble CompiledPromptArtifact from PromptBOM.
+
+        This is the canonical entry point for the governed prompt lifecycle.
+        Wires together L4 TemplateRegistry, L0 ElevatorShaft, L_PG validators.
+
+        Slot Assembly Order: S0 → D0 → I0 → C0 → U0
+
+        Args:
+            bom: PromptBOM from PromptBOMBuilder.
+            secret_key: HMAC secret key for artifact signing.
+            d0_fences: Optional D0 injection fences.
+
+        Returns:
+            CompiledPromptArtifact with HMAC-SHA256 signature.
+        """
+        import uuid as _uuid  # noqa: PLC0415
+
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L0_ROUTING, "AirlockAssembler.assemble_from_bom"
+        )
+        emit_replay_key(_trace_id, f"artifact:{bom.trace_id}")
+        emit_determinism_digest(_trace_id, f"path:{bom.path}")
+
+        # 1. Load S0 from TemplateRegistry
+        from agentic_core.L4_state.memory.template_registry import get_template_registry
+        registry = get_template_registry()
+        s0_content = registry.get_s0(bom.system_version_hash)
+
+        # 2. Load I0 mixins
+        i0_parts = []
+        for mixin_id in sorted(bom.mixins_required):
+            mixin_content = registry.get_i0_mixin(mixin_id)
+            i0_parts.append(mixin_content)
+        i0_content = "\n\n".join(i0_parts)
+
+        # 3. Load C0 via ElevatorShaft JIT context loading
+        c0_context = load_context_jit(
+            trace_id=bom.trace_id,
+            intent_class=bom.template_args.get("intent_class", "default"),
+        )
+        c0_content = str(c0_context)
+
+        # 4. Wrap U0
+        u0_content = f"<U0>\n{bom.raw_u0}\n</U0>"
+
+        # 5. Render D0 fences
+        d0_content = ""
+        if d0_fences:
+            d0_lines = ["<D0>"]
+            for fence in sorted(d0_fences):
+                d0_lines.append(f"  {fence}")
+            d0_lines.append("</D0>")
+            d0_content = "\n".join(d0_lines)
+
+        # 6. Validate slot order (S0→D0→I0→C0→U0)
+        slots = {
+            "S0": s0_content,
+            "D0": d0_content,
+            "I0": i0_content,
+            "C0": c0_content,
+            "U0": u0_content,
+        }
+        validate_slot_order(tuple(slots.keys()))
+
+        # 7. Run injection neutralizer on U0
+        neutralizer = AssemblyInjectionNeutralizer()
+        u0_clean = neutralizer.neutralize(u0_content)
+
+        # 8. Assemble final strings
+        system_parts = [p for p in [s0_content, d0_content, i0_content, c0_content] if p]
+        final_system = "\n\n".join(system_parts)
+        final_user = u0_clean
+
+        # 9. Estimate tokens (rough approximation: 4 chars ≈ 1 token)
+        token_estimate = (len(final_system) + len(final_user)) // 4
+
+        # 10. Build artifact and sign
+        artifact = CompiledPromptArtifact(
+            trace_id=bom.trace_id,
+            final_system_string=final_system,
+            final_user_string=final_user,
+            allowed_tools_schema=(),  # Tools configured at gateway level
+            token_estimate=token_estimate,
+            signature="",  # Placeholder, computed below
+        )
+
+        # Compute HMAC-SHA256 signature
+        canonical = json.dumps(artifact.to_dict(), sort_keys=True, separators=(",", ":"))
+        signature = hmac.new(
+            secret_key, canonical.encode("utf-8"), hashlib.sha256
+        ).hexdigest()
+
+        # Return signed artifact
+        return CompiledPromptArtifact(
+            trace_id=artifact.trace_id,
+            final_system_string=artifact.final_system_string,
+            final_user_string=artifact.final_user_string,
+            allowed_tools_schema=artifact.allowed_tools_schema,
+            token_estimate=artifact.token_estimate,
+            signature=signature,
+        )
