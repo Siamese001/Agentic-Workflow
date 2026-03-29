@@ -2,6 +2,12 @@
 
 Connects runtime ADG snapshots to L6 meta-learning state for continuous
 system learning from execution traces.
+
+Validation Gates:
+- Snapshot validation before storage
+- Path traversal protection
+- Index integrity checks
+- Size limits for extracted patterns
 """
 
 from __future__ import annotations
@@ -48,6 +54,10 @@ and system evolution based on execution patterns.
         self._pattern_index_path = self._l6_base_dir / "pattern_index.json"
         self._evolution_log_path = self._l6_base_dir / "evolution_log.jsonl"
 
+        # Maximum sizes for safety
+        self._max_pattern_nodes = 10000  # Limit pattern extraction
+        self._max_snapshot_size_mb = 50  # Limit snapshot file size
+
         self._snapshot_index = self._load_index(self._snapshot_index_path)
         self._pattern_index = self._load_index(self._pattern_index_path)
 
@@ -76,59 +86,97 @@ and system evolution based on execution patterns.
         -------
         str
             Meta-learning storage ID
+
+        Validation:
+            - Snapshot must have valid snapshot_id
+            - Node count must be within limits
+            - File path sanitized to prevent traversal
         """
+        # Validate snapshot
+        if not snapshot.snapshot_id or len(snapshot.snapshot_id) != 64:
+            raise ValueError(f"Invalid snapshot ID: {snapshot.snapshot_id}")
+
+        if len(snapshot.nodes) > self._max_pattern_nodes:
+            raise ValueError(
+                f"Snapshot node count {len(snapshot.nodes)} exceeds limit {self._max_pattern_nodes}"
+            )
+
         timestamp = int(time.time())
         meta_learning_id = f"runtime_adg_{timestamp}_{snapshot.snapshot_id[:8]}"
 
+        # Sanitize ID for filesystem safety
+        safe_id = "".join(c for c in meta_learning_id if c.isalnum() or c in "_-.")
+
         # Store snapshot data
-        snapshot_file = self._l6_base_dir / f"{meta_learning_id}.json"
+        snapshot_file = self._l6_base_dir / f"{safe_id}.json"
+
+        # Validate file path is within base directory (prevent traversal)
+        try:
+            snapshot_file.resolve().relative_to(self._l6_base_dir.resolve())
+        except ValueError:
+            raise ValueError(f"Invalid snapshot file path: {snapshot_file}")
+
         snapshot_data = {
             "meta_learning_id": meta_learning_id,
             "timestamp": timestamp,
-            "trace_id": snapshot.trace_id,
-            "mission": snapshot.mission,
+            "trace_id": snapshot.trace_id[:256] if snapshot.trace_id else "",  # Limit length
+            "mission": snapshot.mission[:256] if snapshot.mission else "",
             "started_at_utc": snapshot.started_at_utc,
             "ended_at_utc": snapshot.ended_at_utc,
-            "duration_ms": snapshot.ended_at_utc - snapshot.started_at_utc,
+            "duration_ms": max(0, snapshot.ended_at_utc - snapshot.started_at_utc),
             "node_count": len(snapshot.nodes),
             "edge_count": len(snapshot.edges),
             "nodes": [
                 {
-                    "node_id": node.node_id,
-                    "name": node.name,
-                    "kind": node.kind,
-                    "layer": node.layer,
-                    "component": node.component,
+                    "node_id": node.node_id[:128] if node.node_id else "",  # Limit length
+                    "name": node.name[:256],
+                    "kind": node.kind[:64],
+                    "layer": node.layer[:8],
+                    "component": node.component[:128],
                     "started_at_utc": node.started_at_utc,
                     "duration_ms": node.duration_ms,
-                    "status": node.status,
+                    "status": node.status[:16] if node.status in ("ok", "error") else "ok",
                     "attributes": json.loads(node.attributes_json) if node.attributes_json else {},
                 }
-                for node in snapshot.nodes
+                for node in snapshot.nodes[:self._max_pattern_nodes]  # Limit node serialization
             ],
             "edges": [
                 {
-                    "src_id": edge.src_id,
-                    "dst_id": edge.dst_id,
-                    "relation": edge.relation,
+                    "src_id": edge.src_id[:128],
+                    "dst_id": edge.dst_id[:128],
+                    "relation": edge.relation[:64] if edge.relation in ("parent_child", "temporal_sequence") else "unknown",
                 }
-                for edge in snapshot.edges
+                for edge in snapshot.edges[:self._max_pattern_nodes * 2]  # Limit edges too
             ],
         }
 
-        snapshot_file.write_text(json.dumps(snapshot_data, indent=2), encoding="utf-8")
+        # Check serialized size
+        serialized = json.dumps(snapshot_data)
+        if len(serialized) > self._max_snapshot_size_mb * 1024 * 1024:
+            raise ValueError(
+                f"Snapshot size {len(serialized) / (1024*1024):.1f}MB exceeds limit {self._max_snapshot_size_mb}MB"
+            )
 
-        # Update snapshot index
+        snapshot_file.write_text(serialized, encoding="utf-8")
+
+        # Update snapshot index with size limit
         project_root = get_validated_project_root()
         self._snapshot_index[meta_learning_id] = {
-            "trace_id": snapshot.trace_id,
+            "trace_id": snapshot.trace_id[:256] if snapshot.trace_id else "",
             "timestamp": timestamp,
-            "mission": snapshot.mission,
+            "mission": snapshot.mission[:256] if snapshot.mission else "",
             "node_count": len(snapshot.nodes),
             "edge_count": len(snapshot.edges),
-            "duration_ms": snapshot.ended_at_utc - snapshot.started_at_utc,
-            "file_path": str(snapshot_file.relative_to(project_root)),
+            "duration_ms": max(0, snapshot.ended_at_utc - snapshot.started_at_utc),
+            "file_path": str(snapshot_file.relative_to(project_root))[:512],  # Limit path length
         }
+
+        # Trim index if too large (keep last 1000 entries)
+        if len(self._snapshot_index) > 1000:
+            oldest_keys = sorted(self._snapshot_index.keys())[:len(self._snapshot_index) - 1000]
+            for key in oldest_keys:
+                del self._snapshot_index[key]
+
         self._save_index(self._snapshot_index_path, self._snapshot_index)
 
         # Extract and store patterns for meta-learning
@@ -137,8 +185,8 @@ and system evolution based on execution patterns.
         # Log evolution event
         self._log_evolution_event("runtime_adg_stored", {
             "meta_learning_id": meta_learning_id,
-            "trace_id": snapshot.trace_id,
-            "mission": snapshot.mission,
+            "trace_id": snapshot.trace_id[:256] if snapshot.trace_id else "",
+            "mission": snapshot.mission[:256] if snapshot.mission else "",
             "node_count": len(snapshot.nodes),
             "edge_count": len(snapshot.edges),
         })
@@ -146,7 +194,8 @@ and system evolution based on execution patterns.
         return meta_learning_id
 
     def _extract_and_store_patterns(self, meta_learning_id: str, snapshot: RuntimeADGSnapshot) -> None:
-        """Extract execution patterns for meta-learning."""
+        """Extract execution patterns for meta-learning with size limits."""
+        # Initialize patterns with size tracking
         patterns = {
             "layer_distribution": {},
             "component_distribution": {},
@@ -157,47 +206,56 @@ and system evolution based on execution patterns.
                 "fast_operations": [],
             },
             "relation_patterns": {},
+            "extraction_metadata": {
+                "total_nodes": len(snapshot.nodes),
+                "timestamp": int(time.time()),
+            },
         }
+
+        # Limits for pattern extraction
+        max_errors = 100
+        max_slow_ops = 100
+        max_fast_ops = 100
 
         # Analyze nodes for patterns
         for node in snapshot.nodes:
             # Layer distribution
-            layer = node.layer
+            layer = node.layer[:8] if node.layer else "unknown"
             patterns["layer_distribution"][layer] = patterns["layer_distribution"].get(layer, 0) + 1
 
             # Component distribution
-            component = node.component
+            component = node.component[:128] if node.component else "unknown"
             patterns["component_distribution"][component] = patterns["component_distribution"].get(component, 0) + 1
 
             # Span type distribution
-            span_type = node.kind
+            span_type = node.kind[:64] if node.kind else "unknown"
             patterns["span_type_distribution"][span_type] = patterns["span_type_distribution"].get(span_type, 0) + 1
 
-            # Error patterns
-            if node.status == "error":
+            # Error patterns (with limit)
+            if node.status == "error" and len(patterns["error_patterns"]) < max_errors:
                 patterns["error_patterns"].append({
-                    "node_id": node.node_id,
+                    "node_id": node.node_id[:128] if node.node_id else "",
                     "component": component,
                     "layer": layer,
                 })
 
-            # Timing patterns
-            if node.duration_ms > 1000:  # > 1 second
+            # Timing patterns (with limits)
+            if node.duration_ms > 1000 and len(patterns["timing_patterns"]["slow_operations"]) < max_slow_ops:
                 patterns["timing_patterns"]["slow_operations"].append({
-                    "node_id": node.node_id,
+                    "node_id": node.node_id[:128] if node.node_id else "",
                     "component": component,
                     "duration_ms": node.duration_ms,
                 })
-            elif node.duration_ms < 10:  # < 10ms
+            elif node.duration_ms < 10 and len(patterns["timing_patterns"]["fast_operations"]) < max_fast_ops:
                 patterns["timing_patterns"]["fast_operations"].append({
-                    "node_id": node.node_id,
+                    "node_id": node.node_id[:128] if node.node_id else "",
                     "component": component,
                     "duration_ms": node.duration_ms,
                 })
 
         # Analyze edges for patterns
         for edge in snapshot.edges:
-            relation = edge.relation
+            relation = edge.relation[:64] if edge.relation else "unknown"
             patterns["relation_patterns"][relation] = patterns["relation_patterns"].get(relation, 0) + 1
 
         # Store patterns
@@ -205,15 +263,36 @@ and system evolution based on execution patterns.
         self._save_index(self._pattern_index_path, self._pattern_index)
 
     def _log_evolution_event(self, event_type: str, data: dict[str, Any]) -> None:
-        """Log system evolution event."""
+        """Log system evolution event with size validation."""
+        # Validate and sanitize event data
+        sanitized_data = {}
+        for key, value in data.items():
+            if isinstance(value, str):
+                sanitized_data[key[:64]] = value[:512]  # Limit string values
+            elif isinstance(value, (int, float, bool)):
+                sanitized_data[key[:64]] = value
+            elif isinstance(value, dict):
+                # Recursively sanitize nested dicts (one level only)
+                sanitized_data[key[:64]] = {
+                    k[:64]: str(v)[:256] if not isinstance(v, (int, float, bool)) else v
+                    for k, v in list(value.items())[:20]  # Limit nested keys
+                }
+            else:
+                sanitized_data[key[:64]] = str(value)[:256]
+
         event = {
             "timestamp": int(time.time()),
-            "event_type": event_type,
-            "data": data,
+            "event_type": str(event_type)[:64],
+            "data": sanitized_data,
         }
 
-        with open(self._evolution_log_path, "a", encoding="utf-8") as f:
-            f.write(json.dumps(event) + "\n")
+        try:
+            with open(self._evolution_log_path, "a", encoding="utf-8") as f:
+                f.write(json.dumps(event, separators=(",", ":")) + "\n")
+        except (OSError, IOError) as e:
+            # Log to stderr if file write fails
+            import sys
+            print(f"Warning: Failed to write evolution log: {e}", file=sys.stderr)
 
     def get_meta_learning_snapshots(self, limit: int = 100) -> list[dict[str, Any]]:
         """Get recent snapshots for meta-learning analysis.

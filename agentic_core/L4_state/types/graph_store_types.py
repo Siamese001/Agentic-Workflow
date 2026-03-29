@@ -14,21 +14,32 @@ from typing import Any, Dict, List, Optional, Set
 
 class IGraphStore(ABC):
     """Interface for knowledge graph store implementations."""
-    
+
     @abstractmethod
     def add_entity(self, entity: "GraphEntity") -> None:
         """Add an entity to the graph store."""
         pass
-    
+
     @abstractmethod
     def get_entity(self, entity_id: str) -> Optional["GraphEntity"]:
         """Get an entity by ID."""
         pass
-    
+
     @abstractmethod
     def search_entities(self, query: str, limit: int = 10) -> List["GraphEntity"]:
         """Search for entities."""
         pass
+
+
+@dataclass
+class GraphCommunity:
+    """Represents a community in the knowledge graph."""
+    id: str
+    name: str
+    description: str = ""
+    entities: List[str] = field(default_factory=list)
+    confidence: float = 1.0
+    metadata: Dict[str, Any] = field(default_factory=dict)
 
 
 @dataclass
@@ -42,4 +53,4 @@ class GraphEntity:
     metadata: Dict[str, Any] = field(default_factory=dict)
 
 
-__all__ = ["IGraphStore", "GraphEntity"]
+__all__ = ["IGraphStore", "GraphEntity", "GraphCommunity"]

@@ -66,10 +66,27 @@ from system_learning.runtime_adg.auto_persistence import (
 
 @pytest.fixture
 def temp_runtime_adg_dir(tmp_path: Path) -> Path:
-    """Provide temporary directory for runtime ADG artifacts."""
+    """Provide temporary directory for runtime ADG artifacts.
+    
+    Note: FileBackedRuntimeADGStore requires paths within project root.
+    Tests using L4 storage should use get_validated_project_root() paths.
+    """
     adg_dir = tmp_path / "runtime_adg"
     adg_dir.mkdir(parents=True, exist_ok=True)
     return adg_dir
+
+
+@pytest.fixture
+def l4_store_project_path() -> Path:
+    """Provide L4-compliant storage path within project root.
+    
+    FileBackedRuntimeADGStore requires paths within L4 sovereign territory.
+    """
+    project_root = get_validated_project_root()
+    # Use a test-specific subdirectory in L4 territory
+    l4_test_dir = project_root / "agentic_core" / "L4_state" / "memory" / "runtime_adg_test"
+    l4_test_dir.mkdir(parents=True, exist_ok=True)
+    return l4_test_dir
 
 
 @pytest.fixture
