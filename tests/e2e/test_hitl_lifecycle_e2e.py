@@ -717,12 +717,12 @@ class TestHITLFullLifecycle:
         
         repo_root = Path.cwd()
         
-        # Test protected paths
+        # Test protected paths (using absolute paths)
         protected_files = [
-            Path("agentic_core/test.py"),
-            Path("apps_rg/test.py"),
-            Path("tests/test.py"),
-            Path("system_learning/test.py"),
+            repo_root / "agentic_core" / "test.py",
+            repo_root / "apps_rg" / "test.py",
+            repo_root / "tests" / "test.py",
+            repo_root / "system_learning" / "test.py",
         ]
         
         for file_path in protected_files:
@@ -730,9 +730,9 @@ class TestHITLFullLifecycle:
         
         # Test non-protected paths
         non_protected = [
-            Path("docs/test.py"),
-            Path("artifacts/test.py"),
-            Path("temp/test.py"),
+            repo_root / "docs" / "test.py",
+            repo_root / "artifacts" / "test.py",
+            repo_root / "temp" / "test.py",
         ]
         
         for file_path in non_protected:
