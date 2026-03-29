@@ -184,7 +184,7 @@ def purge_repository_cache(target_path=None) -> None:
     for f in __import__("pathlib").Path(root).rglob("*.pyc"):
         try:
             f.unlink()
-        except OSError:    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging
+        except OSError:    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging
             pass
 
 
@@ -289,7 +289,7 @@ class PreCommitSovereignAgent(SovereignBaseAgent, L0RoutingBase):
         except subprocess.CalledProcessError as e:
             print(f"Warning: Could not get staged files: {e}")
             return []
-        except FileNotFoundError:    # guardian: File operations should check existence before access    # guardian: File operations should check existence before access    # guardian: File operations should check existence before access    # guardian: File operations should check existence before access    # guardian: File operations should check existence before access
+        except FileNotFoundError:    # guardian: File operations should check existence before access    # guardian: File operations should check existence before access    # guardian: File operations should check existence before access    # guardian: File operations should check existence before access    # guardian: File operations should check existence before access    # guardian: File operations should check existence before access    # guardian: File operations should check existence before access    # guardian: File operations should check existence before access    # guardian: File operations should check existence before access    # guardian: File operations should check existence before access
             print("Warning: Git not found. Skipping pre-commit validation.")
             return []
 

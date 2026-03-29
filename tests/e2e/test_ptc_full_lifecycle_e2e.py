@@ -250,14 +250,14 @@ class TestPTCCoreInfrastructure:
 
     def test_ptc_contract_enforcer_pre_execute_valid(self, ptc_enforcer: PTCContractEnforcer) -> None:
         """Test PTC enforcer accepts valid signed envelope."""
-        # Create valid signed envelope
+        # Create valid signed envelope (auto-signs on creation with injected key)
         envelope = SandboxEnvelope(
             envelope_id="test-envelope-001",
             tool_name="test_tool",
             tool_args={"param": "value"},
             instruction_packet_id="test-packet",
         )
-        envelope.sign(ptc_enforcer.secret)
+        # Envelope auto-signs on creation with get_current_secret()
         
         # Should not raise
         ptc_enforcer.pre_execute(envelope)
@@ -265,13 +265,16 @@ class TestPTCCoreInfrastructure:
 
     def test_ptc_contract_enforcer_pre_execute_unsigned(self, ptc_enforcer: PTCContractEnforcer) -> None:
         """Test PTC enforcer rejects unsigned envelope (fail-closed)."""
-        envelope = SandboxEnvelope(
-            envelope_id="test-envelope-002",
-            tool_name="test_tool",
-            tool_args={},
-            instruction_packet_id="test-packet",
-        )
-        # Don't sign it
+        # Create envelope without auto-signing (using __new__ to bypass __init__)
+        envelope = SandboxEnvelope.__new__(SandboxEnvelope)
+        object.__setattr__(envelope, "envelope_id", "test-envelope-002")
+        object.__setattr__(envelope, "tool_name", "test_tool")
+        object.__setattr__(envelope, "tool_args", {})
+        object.__setattr__(envelope, "instruction_packet_id", "test-packet")
+        object.__setattr__(envelope, "invocation_metadata", {})
+        from agentic_core.L2_execution.types.sandbox_envelope_types import ToolBudget
+        object.__setattr__(envelope, "budget", ToolBudget())
+        object.__setattr__(envelope, "signature", "")  # Empty signature = unsigned
         
         with pytest.raises(PTCUnsignedEnvelopeError) as exc_info:
             ptc_enforcer.pre_execute(envelope)

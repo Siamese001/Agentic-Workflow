@@ -494,7 +494,7 @@ def ast_analysis(code: str, mode: str = "audit_classes") -> dict[str, Any]:
         code: Python source code to analyze
         mode: Analysis mode - "audit_classes", "extract_names", "check_snake_case"
 
-    Returns:
+    Returns:    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime
         Dict with analysis results based on mode
     """
     import ast

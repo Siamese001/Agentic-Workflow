@@ -318,7 +318,7 @@ class V15ExecutionGateway:
         self._enforce_agent_registered(agent_id)
         try:
             return self._execute_with_envelope(execution_input, heal_fn, state_hash_fn, trace_id, **kwargs)
-        # guardian: allow-silent-swallow - acceptable exception handling    # guardian: V15SoftFailAbort should be handled with specific context    # guardian: V15SoftFailAbort should be handled with specific context    # guardian: V15SoftFailAbort should be handled with specific context    # guardian: V15SoftFailAbort should be handled with specific context    # guardian: V15SoftFailAbort should be handled with specific context
+        # guardian: allow-silent-swallow - acceptable exception handling    # guardian: V15SoftFailAbort should be handled with specific context    # guardian: V15SoftFailAbort should be handled with specific context    # guardian: V15SoftFailAbort should be handled with specific context    # guardian: V15SoftFailAbort should be handled with specific context    # guardian: V15SoftFailAbort should be handled with specific context    # guardian: V15SoftFailAbort should be handled with specific context    # guardian: V15SoftFailAbort should be handled with specific context    # guardian: V15SoftFailAbort should be handled with specific context    # guardian: V15SoftFailAbort should be handled with specific context    # guardian: V15SoftFailAbort should be handled with specific context
         except V15SoftFailAbort as sfa:
             Logger.warning("[V15-GW] SOFT_FAIL abort: %s", sfa)
             return GatewayResult(
@@ -500,7 +500,7 @@ class V15ExecutionGateway:
                 semantic_clock=self._clock,
             )
             try:
-                # guardian: allow-silent-swallow - acceptable exception handling    # guardian: StateCommitInvalid should be handled with specific context    # guardian: StateCommitInvalid should be handled with specific context    # guardian: StateCommitInvalid should be handled with specific context    # guardian: StateCommitInvalid should be handled with specific context    # guardian: StateCommitInvalid should be handled with specific context
+                # guardian: allow-silent-swallow - acceptable exception handling    # guardian: StateCommitInvalid should be handled with specific context    # guardian: StateCommitInvalid should be handled with specific context    # guardian: StateCommitInvalid should be handled with specific context    # guardian: StateCommitInvalid should be handled with specific context    # guardian: StateCommitInvalid should be handled with specific context    # guardian: StateCommitInvalid should be handled with specific context    # guardian: StateCommitInvalid should be handled with specific context    # guardian: StateCommitInvalid should be handled with specific context    # guardian: StateCommitInvalid should be handled with specific context    # guardian: StateCommitInvalid should be handled with specific context
                 self._clock.tick(manifest.target_layer, state_commit_valid=True)
             except StateCommitInvalid as sci:
                 error = str(sci)
@@ -564,7 +564,7 @@ class V15ExecutionGateway:
         """Advance pipe to *step*. Mode-aware: LOG_ONLY logs, HARD_FAIL raises."""
         if observed_steps is not None:
             observed_steps.append(step)
-        try:    # guardian: PipeOrderViolation should be handled with specific context    # guardian: PipeOrderViolation should be handled with specific context    # guardian: PipeOrderViolation should be handled with specific context    # guardian: PipeOrderViolation should be handled with specific context    # guardian: PipeOrderViolation should be handled with specific context
+        try:    # guardian: PipeOrderViolation should be handled with specific context    # guardian: PipeOrderViolation should be handled with specific context    # guardian: PipeOrderViolation should be handled with specific context    # guardian: PipeOrderViolation should be handled with specific context    # guardian: PipeOrderViolation should be handled with specific context    # guardian: PipeOrderViolation should be handled with specific context    # guardian: PipeOrderViolation should be handled with specific context    # guardian: PipeOrderViolation should be handled with specific context    # guardian: PipeOrderViolation should be handled with specific context    # guardian: PipeOrderViolation should be handled with specific context
             # guardian: allow-silent-swallow - acceptable exception handling
             pipe.advance(step)
         except PipeOrderViolation as pov:
@@ -583,7 +583,7 @@ class V15ExecutionGateway:
             Logger.warning("[V15-GW] §2.5 pipe order violation (non-blocking): %s", record)
 
     def _policy_check(self, guard: PolicyConfigGuard, current_config: dict[str, Any], trace_id: str) -> None:
-        """Verify policy immutability. Mode-aware: LOG_ONLY logs, HARD_FAIL raises."""    # guardian: PolicyMutationIncident should be handled with specific context    # guardian: PolicyMutationIncident should be handled with specific context    # guardian: PolicyMutationIncident should be handled with specific context    # guardian: PolicyMutationIncident should be handled with specific context    # guardian: PolicyMutationIncident should be handled with specific context
+        """Verify policy immutability. Mode-aware: LOG_ONLY logs, HARD_FAIL raises."""    # guardian: PolicyMutationIncident should be handled with specific context    # guardian: PolicyMutationIncident should be handled with specific context    # guardian: PolicyMutationIncident should be handled with specific context    # guardian: PolicyMutationIncident should be handled with specific context    # guardian: PolicyMutationIncident should be handled with specific context    # guardian: PolicyMutationIncident should be handled with specific context    # guardian: PolicyMutationIncident should be handled with specific context    # guardian: PolicyMutationIncident should be handled with specific context    # guardian: PolicyMutationIncident should be handled with specific context    # guardian: PolicyMutationIncident should be handled with specific context
         # guardian: allow-silent-swallow - acceptable exception handling
         try:
             guard.read_config(current_config)

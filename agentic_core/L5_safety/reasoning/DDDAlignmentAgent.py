@@ -377,7 +377,7 @@ class DDDAlignmentAgent(SovereignBaseAgent):
 
     def _check_file_imports(self, filepath: Path) -> list[DDDViolation]:
         """Check a single file for DDD violations."""
-        violations = []
+        violations = []    # guardian: Parsing and encoding errors need separate handling strategies    # guardian: Parsing and encoding errors need separate handling strategies    # guardian: Parsing and encoding errors need separate handling strategies    # guardian: Parsing and encoding errors need separate handling strategies    # guardian: Parsing and encoding errors need separate handling strategies
         source_context = self._get_file_context(filepath)
         if not source_context:
             return violations

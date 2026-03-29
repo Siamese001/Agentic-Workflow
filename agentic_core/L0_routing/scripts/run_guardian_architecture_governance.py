@@ -301,7 +301,7 @@ def scan_import_compliance(
         try:
             content = fpath.read_text(encoding="utf-8", errors="ignore")
             tree = ast.parse(content, filename=str(fpath))
-        # guardian: allow-silent-swallow - acceptable exception handling    # guardian: Parsing and encoding errors need separate handling strategies    # guardian: Parsing and encoding errors need separate handling strategies    # guardian: Parsing and encoding errors need separate handling strategies    # guardian: Parsing and encoding errors need separate handling strategies    # guardian: Parsing and encoding errors need separate handling strategies
+        # guardian: allow-silent-swallow - acceptable exception handling    # guardian: Parsing and encoding errors need separate handling strategies    # guardian: Parsing and encoding errors need separate handling strategies    # guardian: Parsing and encoding errors need separate handling strategies    # guardian: Parsing and encoding errors need separate handling strategies    # guardian: Parsing and encoding errors need separate handling strategies    # guardian: Parsing and encoding errors need separate handling strategies    # guardian: Parsing and encoding errors need separate handling strategies    # guardian: Parsing and encoding errors need separate handling strategies    # guardian: Parsing and encoding errors need separate handling strategies    # guardian: Parsing and encoding errors need separate handling strategies
         except (SyntaxError, UnicodeDecodeError):
             continue
 

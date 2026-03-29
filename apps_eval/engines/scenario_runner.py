@@ -413,7 +413,7 @@ def _scenario_policy_hash_valid() -> tuple[ScenarioOutcome, float, str]:
         )
 
         enforcer = PolicyHashEnforcer(expected_hash="", mode="LOG_ONLY")
-        return ScenarioOutcome.PASS, 1.0, "PolicyHashEnforcer instantiated successfully"    # guardian: Test exceptions should use proper test assertions    # guardian: Test exceptions should use proper test assertions    # guardian: Test exceptions should use proper test assertions    # guardian: Test exceptions should use proper test assertions    # guardian: Test exceptions should use proper test assertions
+        return ScenarioOutcome.PASS, 1.0, "PolicyHashEnforcer instantiated successfully"    # guardian: Test exceptions should use proper test assertions    # guardian: Test exceptions should use proper test assertions    # guardian: Test exceptions should use proper test assertions    # guardian: Test exceptions should use proper test assertions    # guardian: Test exceptions should use proper test assertions    # guardian: Test exceptions should use proper test assertions    # guardian: Test exceptions should use proper test assertions    # guardian: Test exceptions should use proper test assertions    # guardian: Test exceptions should use proper test assertions    # guardian: Test exceptions should use proper test assertions
     # guardian: allow-silent-swallow - optional dependency
     except ImportError:
         return ScenarioOutcome.SKIP, _SKIP_SCORE, "agentic_core not available in eval env"
@@ -428,11 +428,11 @@ def _scenario_missing_hash() -> tuple[ScenarioOutcome, float, str]:
         enforcer = PolicyHashEnforcer(expected_hash="expected", mode="LOG_ONLY")
         result = enforcer.validate("")
         if not result.passed:
-            return ScenarioOutcome.PASS, 1.0, "Empty hash correctly rejected"    # guardian: PolicyHashViolation should be handled with specific context    # guardian: PolicyHashViolation should be handled with specific context    # guardian: PolicyHashViolation should be handled with specific context    # guardian: PolicyHashViolation should be handled with specific context    # guardian: PolicyHashViolation should be handled with specific context
+            return ScenarioOutcome.PASS, 1.0, "Empty hash correctly rejected"    # guardian: PolicyHashViolation should be handled with specific context    # guardian: PolicyHashViolation should be handled with specific context    # guardian: PolicyHashViolation should be handled with specific context    # guardian: PolicyHashViolation should be handled with specific context    # guardian: PolicyHashViolation should be handled with specific context    # guardian: PolicyHashViolation should be handled with specific context    # guardian: PolicyHashViolation should be handled with specific context    # guardian: PolicyHashViolation should be handled with specific context    # guardian: PolicyHashViolation should be handled with specific context    # guardian: PolicyHashViolation should be handled with specific context
         return ScenarioOutcome.FAIL, 0.0, "Empty hash should be rejected"
     except ImportError:
         return ScenarioOutcome.SKIP, _SKIP_SCORE, "agentic_core not available"
-    except _SCENARIO_EXCEPTIONS as exc:    # guardian: Test exceptions should use proper test assertions    # guardian: Test exceptions should use proper test assertions    # guardian: Test exceptions should use proper test assertions    # guardian: Test exceptions should use proper test assertions    # guardian: Test exceptions should use proper test assertions
+    except _SCENARIO_EXCEPTIONS as exc:    # guardian: Test exceptions should use proper test assertions    # guardian: Test exceptions should use proper test assertions    # guardian: Test exceptions should use proper test assertions    # guardian: Test exceptions should use proper test assertions    # guardian: Test exceptions should use proper test assertions    # guardian: Test exceptions should use proper test assertions    # guardian: Test exceptions should use proper test assertions    # guardian: Test exceptions should use proper test assertions    # guardian: Test exceptions should use proper test assertions    # guardian: Test exceptions should use proper test assertions
         return ScenarioOutcome.FAIL, 0.0, str(exc)
 
 
@@ -447,7 +447,7 @@ def _scenario_nondeterministic_time_call() -> tuple[ScenarioOutcome, float, str]
         import tempfile
 
         with tempfile.NamedTemporaryFile(mode="w", suffix=".py", delete=False) as f:
-            f.write(test_code)    # guardian: Test exceptions should use proper test assertions    # guardian: Test exceptions should use proper test assertions    # guardian: Test exceptions should use proper test assertions    # guardian: Test exceptions should use proper test assertions    # guardian: Test exceptions should use proper test assertions
+            f.write(test_code)    # guardian: Test exceptions should use proper test assertions    # guardian: Test exceptions should use proper test assertions    # guardian: Test exceptions should use proper test assertions    # guardian: Test exceptions should use proper test assertions    # guardian: Test exceptions should use proper test assertions    # guardian: Test exceptions should use proper test assertions    # guardian: Test exceptions should use proper test assertions    # guardian: Test exceptions should use proper test assertions    # guardian: Test exceptions should use proper test assertions    # guardian: Test exceptions should use proper test assertions
             tmp_path = f.name
         try:
             violations = scan_execution_scope_for_nondeterminism(tmp_path)
@@ -473,7 +473,7 @@ def _scenario_allowlisted_call() -> tuple[ScenarioOutcome, float, str]:
         )
         import os
         import tempfile
-    # guardian: Test exceptions should use proper test assertions    # guardian: Test exceptions should use proper test assertions    # guardian: Test exceptions should use proper test assertions    # guardian: Test exceptions should use proper test assertions    # guardian: Test exceptions should use proper test assertions
+    # guardian: Test exceptions should use proper test assertions    # guardian: Test exceptions should use proper test assertions    # guardian: Test exceptions should use proper test assertions    # guardian: Test exceptions should use proper test assertions    # guardian: Test exceptions should use proper test assertions    # guardian: Test exceptions should use proper test assertions    # guardian: Test exceptions should use proper test assertions    # guardian: Test exceptions should use proper test assertions    # guardian: Test exceptions should use proper test assertions    # guardian: Test exceptions should use proper test assertions
         with tempfile.NamedTemporaryFile(mode="w", suffix=".py", delete=False) as f:
             f.write(test_code)
             tmp_path = f.name
@@ -503,7 +503,7 @@ def _scenario_clean_module() -> tuple[ScenarioOutcome, float, str]:
         import tempfile
 
         with tempfile.NamedTemporaryFile(mode="w", suffix=".py", delete=False) as f:
-            f.write(test_code)    # guardian: Test exceptions should use proper test assertions    # guardian: Test exceptions should use proper test assertions    # guardian: Test exceptions should use proper test assertions    # guardian: Test exceptions should use proper test assertions    # guardian: Test exceptions should use proper test assertions
+            f.write(test_code)    # guardian: Test exceptions should use proper test assertions    # guardian: Test exceptions should use proper test assertions    # guardian: Test exceptions should use proper test assertions    # guardian: Test exceptions should use proper test assertions    # guardian: Test exceptions should use proper test assertions    # guardian: Test exceptions should use proper test assertions    # guardian: Test exceptions should use proper test assertions    # guardian: Test exceptions should use proper test assertions    # guardian: Test exceptions should use proper test assertions    # guardian: Test exceptions should use proper test assertions
             tmp_path = f.name
         try:
             violations = scan_execution_scope_for_nondeterminism(tmp_path)
@@ -529,7 +529,7 @@ def _scenario_exec_recruiter_brief() -> tuple[ScenarioOutcome, float, str]:
         if result.status.value in ("dry_run", "complete"):
             return ScenarioOutcome.PASS, 1.0, f"Recruiter brief: status={result.status.value}"
         return ScenarioOutcome.FAIL, 0.0, f"Unexpected status: {result.status.value}"
-    except ImportError as e:    # guardian: Test exceptions should use proper test assertions    # guardian: Test exceptions should use proper test assertions    # guardian: Test exceptions should use proper test assertions    # guardian: Test exceptions should use proper test assertions    # guardian: Test exceptions should use proper test assertions
+    except ImportError as e:    # guardian: Test exceptions should use proper test assertions    # guardian: Test exceptions should use proper test assertions    # guardian: Test exceptions should use proper test assertions    # guardian: Test exceptions should use proper test assertions    # guardian: Test exceptions should use proper test assertions    # guardian: Test exceptions should use proper test assertions    # guardian: Test exceptions should use proper test assertions    # guardian: Test exceptions should use proper test assertions    # guardian: Test exceptions should use proper test assertions    # guardian: Test exceptions should use proper test assertions
         return ScenarioOutcome.SKIP, _SKIP_SCORE, f"apps_exec not available: {e}"
     except _SCENARIO_EXCEPTIONS as exc:
         return ScenarioOutcome.FAIL, 0.0, str(exc)
@@ -546,7 +546,7 @@ def _scenario_exec_cto_brief() -> tuple[ScenarioOutcome, float, str]:
         if result.status.value in ("dry_run", "complete"):
             return ScenarioOutcome.PASS, 1.0, f"CTO brief: status={result.status.value}"
         return ScenarioOutcome.FAIL, 0.0, f"Unexpected status: {result.status.value}"
-    except ImportError as e:    # guardian: Test exceptions should use proper test assertions    # guardian: Test exceptions should use proper test assertions    # guardian: Test exceptions should use proper test assertions    # guardian: Test exceptions should use proper test assertions    # guardian: Test exceptions should use proper test assertions
+    except ImportError as e:    # guardian: Test exceptions should use proper test assertions    # guardian: Test exceptions should use proper test assertions    # guardian: Test exceptions should use proper test assertions    # guardian: Test exceptions should use proper test assertions    # guardian: Test exceptions should use proper test assertions    # guardian: Test exceptions should use proper test assertions    # guardian: Test exceptions should use proper test assertions    # guardian: Test exceptions should use proper test assertions    # guardian: Test exceptions should use proper test assertions    # guardian: Test exceptions should use proper test assertions
         return ScenarioOutcome.SKIP, _SKIP_SCORE, f"apps_exec not available: {e}"
     except _SCENARIO_EXCEPTIONS as exc:
         return ScenarioOutcome.FAIL, 0.0, str(exc)
@@ -563,7 +563,7 @@ def _scenario_exec_dry_run() -> tuple[ScenarioOutcome, float, str]:
         if result.status == BriefStatus.DRY_RUN and len(result.artifact_paths) == 0:
             return ScenarioOutcome.PASS, 1.0, "Dry run: no artifacts emitted"
         return ScenarioOutcome.FAIL, 0.0, f"status={result.status.value} artifacts={result.artifact_paths}"
-    except ImportError as e:    # guardian: Test exceptions should use proper test assertions    # guardian: Test exceptions should use proper test assertions    # guardian: Test exceptions should use proper test assertions    # guardian: Test exceptions should use proper test assertions    # guardian: Test exceptions should use proper test assertions
+    except ImportError as e:    # guardian: Test exceptions should use proper test assertions    # guardian: Test exceptions should use proper test assertions    # guardian: Test exceptions should use proper test assertions    # guardian: Test exceptions should use proper test assertions    # guardian: Test exceptions should use proper test assertions    # guardian: Test exceptions should use proper test assertions    # guardian: Test exceptions should use proper test assertions    # guardian: Test exceptions should use proper test assertions    # guardian: Test exceptions should use proper test assertions    # guardian: Test exceptions should use proper test assertions
         return ScenarioOutcome.SKIP, _SKIP_SCORE, f"apps_exec not available: {e}"
     except _SCENARIO_EXCEPTIONS as exc:
         return ScenarioOutcome.FAIL, 0.0, str(exc)
@@ -580,7 +580,7 @@ def _scenario_single_hop() -> tuple[ScenarioOutcome, float, str]:
         return ScenarioOutcome.FAIL, 0.0, f"Unexpected result: {result}"
     except ImportError as e:
         return ScenarioOutcome.SKIP, _SKIP_SCORE, f"apps_rg not available: {e}"
-    except _SCENARIO_EXCEPTIONS as exc:    # guardian: Test exceptions should use proper test assertions    # guardian: Test exceptions should use proper test assertions    # guardian: Test exceptions should use proper test assertions    # guardian: Test exceptions should use proper test assertions    # guardian: Test exceptions should use proper test assertions
+    except _SCENARIO_EXCEPTIONS as exc:    # guardian: Test exceptions should use proper test assertions    # guardian: Test exceptions should use proper test assertions    # guardian: Test exceptions should use proper test assertions    # guardian: Test exceptions should use proper test assertions    # guardian: Test exceptions should use proper test assertions    # guardian: Test exceptions should use proper test assertions    # guardian: Test exceptions should use proper test assertions    # guardian: Test exceptions should use proper test assertions    # guardian: Test exceptions should use proper test assertions    # guardian: Test exceptions should use proper test assertions
         return ScenarioOutcome.FAIL, 0.0, str(exc)
 
 
@@ -595,7 +595,7 @@ def _scenario_multi_hop_pass() -> tuple[ScenarioOutcome, float, str]:
             return ScenarioOutcome.PASS, 1.0, f"Multi-hop: {len(checkpoints)} checkpoints"
         return ScenarioOutcome.FAIL, 0.4, f"Expected >=2 checkpoints, got {len(checkpoints)}"
     except ImportError as e:
-        return ScenarioOutcome.SKIP, _SKIP_SCORE, f"apps_rg not available: {e}"    # guardian: Test exceptions should use proper test assertions    # guardian: Test exceptions should use proper test assertions    # guardian: Test exceptions should use proper test assertions    # guardian: Test exceptions should use proper test assertions    # guardian: Test exceptions should use proper test assertions
+        return ScenarioOutcome.SKIP, _SKIP_SCORE, f"apps_rg not available: {e}"    # guardian: Test exceptions should use proper test assertions    # guardian: Test exceptions should use proper test assertions    # guardian: Test exceptions should use proper test assertions    # guardian: Test exceptions should use proper test assertions    # guardian: Test exceptions should use proper test assertions    # guardian: Test exceptions should use proper test assertions    # guardian: Test exceptions should use proper test assertions    # guardian: Test exceptions should use proper test assertions    # guardian: Test exceptions should use proper test assertions    # guardian: Test exceptions should use proper test assertions
     except _SCENARIO_EXCEPTIONS as exc:
         return ScenarioOutcome.FAIL, 0.0, str(exc)
 
@@ -611,7 +611,7 @@ def _scenario_signed_output_valid() -> tuple[ScenarioOutcome, float, str]:
         from archives.healing_backups.location_violations.execution_contracts import (
             get_current_secret,
             wrap_output,
-        )    # guardian: Test exceptions should use proper test assertions    # guardian: Test exceptions should use proper test assertions    # guardian: Test exceptions should use proper test assertions    # guardian: Test exceptions should use proper test assertions    # guardian: Test exceptions should use proper test assertions
+        )    # guardian: Test exceptions should use proper test assertions    # guardian: Test exceptions should use proper test assertions    # guardian: Test exceptions should use proper test assertions    # guardian: Test exceptions should use proper test assertions    # guardian: Test exceptions should use proper test assertions    # guardian: Test exceptions should use proper test assertions    # guardian: Test exceptions should use proper test assertions    # guardian: Test exceptions should use proper test assertions    # guardian: Test exceptions should use proper test assertions    # guardian: Test exceptions should use proper test assertions
 
         class _TestModel(BaseModel):
             value: str = "test"
@@ -642,7 +642,7 @@ def _scenario_tampered_signature() -> tuple[ScenarioOutcome, float, str]:
 def _scenario_binary_precision_perfect() -> tuple[ScenarioOutcome, float, str]:
     try:
         from agentic_core.evaluation.metrics.classification import BinaryClassificationMetric
-    # guardian: Test exceptions should use proper test assertions    # guardian: Test exceptions should use proper test assertions    # guardian: Test exceptions should use proper test assertions    # guardian: Test exceptions should use proper test assertions    # guardian: Test exceptions should use proper test assertions
+    # guardian: Test exceptions should use proper test assertions    # guardian: Test exceptions should use proper test assertions    # guardian: Test exceptions should use proper test assertions    # guardian: Test exceptions should use proper test assertions    # guardian: Test exceptions should use proper test assertions    # guardian: Test exceptions should use proper test assertions    # guardian: Test exceptions should use proper test assertions    # guardian: Test exceptions should use proper test assertions    # guardian: Test exceptions should use proper test assertions    # guardian: Test exceptions should use proper test assertions
         metric = BinaryClassificationMetric(positive_label=1, metric="precision")
         preds = [1, 1, 1, 0, 0]
         truth = [1, 1, 1, 1, 0]
@@ -667,7 +667,7 @@ def _scenario_binary_recall_perfect() -> tuple[ScenarioOutcome, float, str]:
         if abs(score - 1.0) < 1e-6:
             return ScenarioOutcome.PASS, 1.0, f"recall={score:.6f} (expected 1.0)"
         return ScenarioOutcome.FAIL, 0.0, f"recall={score:.6f} (expected 1.0)"
-    except ImportError as e:    # guardian: Test exceptions should use proper test assertions    # guardian: Test exceptions should use proper test assertions    # guardian: Test exceptions should use proper test assertions    # guardian: Test exceptions should use proper test assertions    # guardian: Test exceptions should use proper test assertions
+    except ImportError as e:    # guardian: Test exceptions should use proper test assertions    # guardian: Test exceptions should use proper test assertions    # guardian: Test exceptions should use proper test assertions    # guardian: Test exceptions should use proper test assertions    # guardian: Test exceptions should use proper test assertions    # guardian: Test exceptions should use proper test assertions    # guardian: Test exceptions should use proper test assertions    # guardian: Test exceptions should use proper test assertions    # guardian: Test exceptions should use proper test assertions    # guardian: Test exceptions should use proper test assertions
         return ScenarioOutcome.SKIP, _SKIP_SCORE, f"agentic_core.evaluation not available: {e}"
     except _SCENARIO_EXCEPTIONS as exc:
         return ScenarioOutcome.FAIL, 0.0, str(exc)
@@ -684,7 +684,7 @@ def _scenario_binary_f1_harmonic_mean() -> tuple[ScenarioOutcome, float, str]:
         r_metric = BinaryClassificationMetric(positive_label=1, metric="recall")
         f1_metric = F1Score(positive_label=1)
         p = p_metric.compute(preds, truth)
-        r = r_metric.compute(preds, truth)    # guardian: Test exceptions should use proper test assertions    # guardian: Test exceptions should use proper test assertions    # guardian: Test exceptions should use proper test assertions    # guardian: Test exceptions should use proper test assertions    # guardian: Test exceptions should use proper test assertions
+        r = r_metric.compute(preds, truth)    # guardian: Test exceptions should use proper test assertions    # guardian: Test exceptions should use proper test assertions    # guardian: Test exceptions should use proper test assertions    # guardian: Test exceptions should use proper test assertions    # guardian: Test exceptions should use proper test assertions    # guardian: Test exceptions should use proper test assertions    # guardian: Test exceptions should use proper test assertions    # guardian: Test exceptions should use proper test assertions    # guardian: Test exceptions should use proper test assertions    # guardian: Test exceptions should use proper test assertions
         f1 = f1_metric.compute(preds, truth)
         expected_f1 = 2 * p * r / (p + r) if (p + r) > 0 else 0.0
         if abs(f1 - expected_f1) < 1e-5:
@@ -707,7 +707,7 @@ def _scenario_multiclass_macro_f1() -> tuple[ScenarioOutcome, float, str]:
         per_class = metric.per_class_scores(preds, truth)
         expected = sum(v["f1"] for v in per_class.values()) / len(per_class)
         if abs(score - expected) < 1e-5:
-            return ScenarioOutcome.PASS, 1.0, f"macro_f1={score:.6f} == mean of per-class F1"    # guardian: Test exceptions should use proper test assertions    # guardian: Test exceptions should use proper test assertions    # guardian: Test exceptions should use proper test assertions    # guardian: Test exceptions should use proper test assertions    # guardian: Test exceptions should use proper test assertions
+            return ScenarioOutcome.PASS, 1.0, f"macro_f1={score:.6f} == mean of per-class F1"    # guardian: Test exceptions should use proper test assertions    # guardian: Test exceptions should use proper test assertions    # guardian: Test exceptions should use proper test assertions    # guardian: Test exceptions should use proper test assertions    # guardian: Test exceptions should use proper test assertions    # guardian: Test exceptions should use proper test assertions    # guardian: Test exceptions should use proper test assertions    # guardian: Test exceptions should use proper test assertions    # guardian: Test exceptions should use proper test assertions    # guardian: Test exceptions should use proper test assertions
         return ScenarioOutcome.FAIL, 0.0, f"macro_f1={score:.6f} != {expected:.6f}"
     except ImportError as e:
         return ScenarioOutcome.SKIP, _SKIP_SCORE, f"agentic_core.evaluation not available: {e}"
@@ -726,7 +726,7 @@ def _scenario_multiclass_weighted_f1() -> tuple[ScenarioOutcome, float, str]:
         w_score = metric_w.compute(preds, truth)
         m_score = metric_m.compute(preds, truth)
         per_class = metric_w.per_class_scores(preds, truth)
-        total_support = sum(v["support"] for v in per_class.values())    # guardian: Test exceptions should use proper test assertions    # guardian: Test exceptions should use proper test assertions    # guardian: Test exceptions should use proper test assertions    # guardian: Test exceptions should use proper test assertions    # guardian: Test exceptions should use proper test assertions
+        total_support = sum(v["support"] for v in per_class.values())    # guardian: Test exceptions should use proper test assertions    # guardian: Test exceptions should use proper test assertions    # guardian: Test exceptions should use proper test assertions    # guardian: Test exceptions should use proper test assertions    # guardian: Test exceptions should use proper test assertions    # guardian: Test exceptions should use proper test assertions    # guardian: Test exceptions should use proper test assertions    # guardian: Test exceptions should use proper test assertions    # guardian: Test exceptions should use proper test assertions    # guardian: Test exceptions should use proper test assertions
         expected_w = sum(v["f1"] * v["support"] for v in per_class.values()) / total_support
         if abs(w_score - expected_w) < 1e-5 and w_score != m_score:
             return (
@@ -754,7 +754,7 @@ def _scenario_confusion_matrix_invariants() -> tuple[ScenarioOutcome, float, str
         total = cm.total()
         expected_total = len(preds)
         if total != expected_total:
-            return ScenarioOutcome.FAIL, 0.0, f"TP+FP+TN+FN={total} != {expected_total}"    # guardian: Test exceptions should use proper test assertions    # guardian: Test exceptions should use proper test assertions    # guardian: Test exceptions should use proper test assertions    # guardian: Test exceptions should use proper test assertions    # guardian: Test exceptions should use proper test assertions
+            return ScenarioOutcome.FAIL, 0.0, f"TP+FP+TN+FN={total} != {expected_total}"    # guardian: Test exceptions should use proper test assertions    # guardian: Test exceptions should use proper test assertions    # guardian: Test exceptions should use proper test assertions    # guardian: Test exceptions should use proper test assertions    # guardian: Test exceptions should use proper test assertions    # guardian: Test exceptions should use proper test assertions    # guardian: Test exceptions should use proper test assertions    # guardian: Test exceptions should use proper test assertions    # guardian: Test exceptions should use proper test assertions    # guardian: Test exceptions should use proper test assertions
         if cm.tp + cm.fp + cm.tn + cm.fn != total:
             return ScenarioOutcome.FAIL, 0.0, "ConfusionMatrix count invariant violated"
         return (
@@ -779,7 +779,7 @@ _SCENARIO_FN_MAP: dict[str, Any] = {
     "cto_brief": _scenario_exec_cto_brief,
     "dry_run": _scenario_exec_dry_run,
     "single_hop": _scenario_single_hop,
-    "multi_hop_pass": _scenario_multi_hop_pass,    # guardian: Test exceptions should use proper test assertions    # guardian: Test exceptions should use proper test assertions    # guardian: Test exceptions should use proper test assertions    # guardian: Test exceptions should use proper test assertions    # guardian: Test exceptions should use proper test assertions
+    "multi_hop_pass": _scenario_multi_hop_pass,    # guardian: Test exceptions should use proper test assertions    # guardian: Test exceptions should use proper test assertions    # guardian: Test exceptions should use proper test assertions    # guardian: Test exceptions should use proper test assertions    # guardian: Test exceptions should use proper test assertions    # guardian: Test exceptions should use proper test assertions    # guardian: Test exceptions should use proper test assertions    # guardian: Test exceptions should use proper test assertions    # guardian: Test exceptions should use proper test assertions    # guardian: Test exceptions should use proper test assertions
     "multi_hop_gate_fail": _scenario_multi_hop_gate_fail,
     "signed_output_valid": _scenario_signed_output_valid,
     "tampered_signature": _scenario_tampered_signature,

@@ -222,7 +222,7 @@ class UnusedCleanupAgent(CodeToolRunnerCapability, SovereignBaseAgent):
                     "autoflake",
                     "--in-place",
                     "--remove-all-unused-imports",
-                    "--remove-unused-variables",
+                    "--remove-unused-variables",    # guardian: File operations should check existence before access    # guardian: File operations should check existence before access    # guardian: File operations should check existence before access    # guardian: File operations should check existence before access    # guardian: File operations should check existence before access
                     str(file),
                 ],
                 capture_output=True,

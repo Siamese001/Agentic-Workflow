@@ -226,7 +226,7 @@ class GitHygieneAgent(SovereignBaseAgent):
         Args:
             cmd: Git command arguments (without 'git' prefix).
             **kwargs: Additional arguments passed to safe_git_execute.
-
+    # guardian: File operations should check existence before access    # guardian: File operations should check existence before access    # guardian: File operations should check existence before access    # guardian: File operations should check existence before access    # guardian: File operations should check existence before access
         Returns:
             Command stdout if successful, empty string otherwise.
         """
