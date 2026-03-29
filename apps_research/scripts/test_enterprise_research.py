@@ -1,0 +1,279 @@
+"""
+E2E Test Suite for apps_research.enterprise.
+
+Tests the full enterprise research generation pipeline with realistic scenarios.
+"""
+
+from __future__ import annotations
+
+import asyncio
+import logging
+import sys
+from pathlib import Path
+
+# Add repo to path for imports
+repo_root = Path(__file__).parent.parent.parent
+sys.path.insert(0, str(repo_root))
+
+from apps_research.reasoning.enterprise_research_orchestrator import (
+    EnterpriseResearchOrchestrator,
+    EnterpriseResearchRequest,
+    run_enterprise_research,
+)
+
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s [%(levelname)s] %(name)s: %(message)s",
+)
+
+
+async def test_single_topic_brief():
+    """Test research generation for a single topic brief."""
+    print("\n" + "="*60)
+    print("TEST 1: Single Topic Brief Generation")
+    print("="*60)
+
+    topic = "governance in agentic AI systems"
+    mode = "brief"
+
+    result = await run_enterprise_research(
+        topic=topic,
+        artifact_mode=mode,
+        target_audience="technical",
+        output_dir="reports/research/test_output",
+    )
+
+    print(f"\n✅ Research Generation Complete!")
+    print(f"   Trace ID: {result.trace_id}")
+    print(f"   Status: {result.status}")
+    print(f"   Report Path: {result.report_path}")
+
+    print(f"\n📊 Results:")
+    if result.query_decomposition:
+        print(f"   Components Decomposed: {len(result.query_decomposition.components)}")
+    print(f"   Agents Executed: {result.generation_results.get('agents_executed', 0)}")
+
+    print(f"\n🛡️ Validation:")
+    print(f"   Validations Run: {len(result.validation_results)}")
+    print(f"   Gates Passed: {sum(1 for g in result.gate_results if g.get('gates_passed'))}/{len(result.gate_results)}")
+    print(f"   Avg Quality Score: {result.avg_quality_score:.0%}")
+
+    return result
+
+
+async def test_comparison_mode():
+    """Test research generation in comparison mode."""
+    print("\n" + "="*60)
+    print("TEST 2: Comparison Mode Research")
+    print("="*60)
+
+    topic = "agentic framework comparison"
+    mode = "comparison"
+
+    orchestrator = EnterpriseResearchOrchestrator()
+    request = EnterpriseResearchRequest(
+        topic=topic,
+        artifact_mode=mode,
+        target_audience="technical",
+        enable_retrieval=True,
+        enable_validation=True,
+        output_dir="reports/research/test_output",
+    )
+
+    result = await orchestrator.process(request)
+
+    print(f"\n✅ Comparison Research Complete!")
+    print(f"   Trace ID: {result.trace_id}")
+    print(f"   Topic: {result.query_decomposition.original_topic if result.query_decomposition else 'N/A'}")
+
+    print(f"\n📋 Execution Summary:")
+    for entry in result.execution_log:
+        if entry["status"] == "complete":
+            print(f"   ✅ {entry['step']}: {entry['status']}")
+
+    return result
+
+
+async def test_with_source_retrieval():
+    """Test research generation with source retrieval and benchmarking."""
+    print("\n" + "="*60)
+    print("TEST 3: Research with Source Retrieval")
+    print("="*60)
+
+    orchestrator = EnterpriseResearchOrchestrator()
+
+    # Index some historical research first
+    for i in range(3):
+        orchestrator.retrieval_engine.index_research(
+            content=f"Historical research {i} on governance patterns...",
+            topic=f"governance topic {i}",
+            artifact_mode="brief",
+            quality_score=0.82 + i * 0.03,
+            source_count=5 + i,
+            claim_types={
+                "direct_evidence": 4,
+                "interpretation": 2,
+                "analyst_inference": 1,
+            },
+        )
+
+    request = EnterpriseResearchRequest(
+        topic="governance patterns in multi-agent systems",
+        artifact_mode="brief",
+        target_audience="technical",
+        enable_retrieval=True,
+        output_dir="reports/research/test_output",
+    )
+
+    result = await orchestrator.process(request)
+
+    print(f"\n✅ Research with Source Retrieval Complete!")
+    print(f"   Trace ID: {result.trace_id}")
+    print(f"   Similar Research Found: {len(result.similar_research)}")
+    print(f"   Quality Benchmarks: {list(result.quality_benchmarks.keys()) if result.quality_benchmarks else []}")
+
+    if result.quality_benchmarks and "error" not in result.quality_benchmarks:
+        print(f"\n   📊 Quality Benchmark:")
+        print(f"      Avg Quality: {result.quality_benchmarks.get('avg_quality_score', 0):.0%}")
+        print(f"      Sample Size: {result.quality_benchmarks.get('sample_size', 0)}")
+
+    return result
+
+
+async def test_full_enterprise_pipeline():
+    """Test the full enterprise pipeline with all features."""
+    print("\n" + "="*60)
+    print("TEST 4: Full Enterprise Pipeline")
+    print("="*60)
+
+    orchestrator = EnterpriseResearchOrchestrator()
+
+    # Index some past research for benchmarking
+    for mode in ["brief", "comparison", "trend"]:
+        for i in range(2):
+            orchestrator.retrieval_engine.index_research(
+                content=f"Past {mode} research {i}...",
+                topic=f"research topic {mode} {i}",
+                artifact_mode=mode,
+                quality_score=0.80 + i * 0.05,
+                source_count=4 + i,
+                claim_types={
+                    "direct_evidence": 3 + i,
+                    "interpretation": 2,
+                    "analyst_inference": 1,
+                    "assumption": 1,
+                },
+            )
+
+    request = EnterpriseResearchRequest(
+        topic="deterministic execution in agentic AI platforms",
+        artifact_mode="position",
+        target_audience="executive",
+        enable_retrieval=True,
+        enable_validation=True,
+        output_dir="reports/research/test_output",
+    )
+
+    result = await orchestrator.process(request)
+
+    print(f"\n📋 Execution Log:")
+    for entry in result.execution_log:
+        status_icon = "✅" if entry["status"] == "complete" else "⏳" if entry["status"] == "start" else "⚠️"
+        print(f"   {status_icon} {entry['step']}: {entry['status']}")
+        if entry.get("details"):
+            for key, value in entry["details"].items():
+                print(f"      - {key}: {value}")
+
+    print(f"\n📁 Generated Artifacts:")
+    print(f"   Report: {result.report_path}")
+    print(f"   Manifest: {result.manifest_path}")
+
+    print(f"\n📊 Final Metrics:")
+    print(f"   Status: {result.status}")
+    print(f"   Execution Time: {result.total_execution_time_ms}ms")
+    print(f"   Avg Quality Score: {result.avg_quality_score:.0%}")
+
+    return result
+
+
+async def test_all_artifact_modes():
+    """Test all artifact modes."""
+    print("\n" + "="*60)
+    print("TEST 5: All Artifact Modes")
+    print("="*60)
+
+    modes = ["brief", "comparison", "trend", "position", "thought_leadership"]
+    results = []
+
+    for mode in modes:
+        print(f"\n   Testing mode: {mode}...")
+        result = await run_enterprise_research(
+            topic=f"test topic for {mode}",
+            artifact_mode=mode,
+            target_audience="technical",
+            output_dir="reports/research/test_output",
+        )
+        results.append((mode, result))
+        print(f"   ✅ {mode}: {result.status}")
+
+    print(f"\n📊 Mode Results:")
+    for mode, result in results:
+        status_icon = "✅" if result.status == "complete" else "⚠️" if result.status == "partial" else "❌"
+        print(f"   {status_icon} {mode}: {result.status} (quality: {result.avg_quality_score:.0%})")
+
+    return results
+
+
+async def main():
+    """Run all E2E tests."""
+    print("\n" + "🔬 "*30)
+    print("ENTERPRISE RESEARCH GENERATION SYSTEM - E2E TEST SUITE")
+    print("🔬 "*30)
+
+    results = []
+
+    try:
+        # Test 1: Single topic brief
+        result1 = await test_single_topic_brief()
+        results.append(("Single Topic Brief", result1))
+
+        # Test 2: Comparison mode
+        result2 = await test_comparison_mode()
+        results.append(("Comparison Mode", result2))
+
+        # Test 3: Source retrieval
+        result3 = await test_with_source_retrieval()
+        results.append(("Source Retrieval", result3))
+
+        # Test 4: Full pipeline
+        result4 = await test_full_enterprise_pipeline()
+        results.append(("Full Pipeline", result4))
+
+        # Test 5: All modes
+        results5 = await test_all_artifact_modes()
+        for mode, result in results5:
+            results.append((f"Mode: {mode}", result))
+
+    except Exception as exc:
+        print(f"\n❌ Test failed: {exc}")
+        import traceback
+        traceback.print_exc()
+
+    # Summary
+    print("\n" + "="*60)
+    print("TEST SUMMARY")
+    print("="*60)
+
+    for name, result in results:
+        status = "✅ PASS" if result.status == "complete" else "⚠️ PARTIAL" if result.status == "partial" else "❌ FAIL"
+        print(f"{status}: {name}")
+        print(f"      Trace: {result.trace_id[:16]}")
+        print(f"      Quality: {result.avg_quality_score:.0%}")
+        print(f"      Artifacts: {getattr(result, 'report_path', 'N/A')}")
+
+    print("\n✨ All tests completed!")
+    print("\nTo view generated reports, check: reports/research/test_output/")
+
+
+if __name__ == "__main__":
+    asyncio.run(main())
