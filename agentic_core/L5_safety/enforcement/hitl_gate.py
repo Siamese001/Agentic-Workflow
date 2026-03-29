@@ -400,3 +400,42 @@ def get_hitl_gate(
 def clear_gate_cache() -> None:
     """Clear singleton cache (for tests)."""
     _gates.clear()
+
+
+def prompt_for_hitl(
+    operation: str,
+    agent: str,
+    affected_paths: Sequence[Path],
+    reason: str,
+    territory: str = "",
+    extra_context: str = "",
+    *,
+    input_fn: Callable[[str], str] | None = None,
+) -> HitlDecision:
+    """Convenience function for HITL prompt (module-level API).
+
+    Args:
+        operation: Operation type (e.g., "ARCHIVE", "DELETE", "MOVE")
+        agent: Agent name requesting HITL
+        affected_paths: List of paths affected by operation
+        reason: Reason for the operation
+        territory: Optional territory context
+        extra_context: Optional extra context
+        input_fn: Optional input function override (for testing)
+
+    Returns:
+        HitlDecision with user's choice
+    """
+    from pathlib import Path
+
+    repo_root = Path.cwd()
+    gate = get_hitl_gate(repo_root, input_fn=input_fn)
+    req = HitlRequest(
+        agent=agent,
+        operation=operation,
+        affected_paths=affected_paths,
+        reason=reason,
+        territory=territory,
+        extra_context=extra_context,
+    )
+    return gate.request(req)
