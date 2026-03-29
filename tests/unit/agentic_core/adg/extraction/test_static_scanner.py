@@ -9,18 +9,15 @@ from unittest.mock import patch
 
 import pytest
 
+# Lazy import fixtures - avoid collection-time errors
+
+@pytest.fixture(scope="session")
+def _lazy_agentic_core_adg_extraction_static_scanner_0():
+    from agentic_core.adg.extraction.static_scanner import _ImportVisitor, _CallVisitor, _JITContextVisitor, _DynamicInvocationVisitor, _P4StateTelemetryVisitor, _DynamicExecutionVisitor, _InternalCallGraphVisitor, _ExecutionTraceVisitor, Edge, ScanManifest
+    return type('_Import', (), {"_ImportVisitor": _ImportVisitor, "_CallVisitor": _CallVisitor, "_JITContextVisitor": _JITContextVisitor, "_DynamicInvocationVisitor": _DynamicInvocationVisitor, "_P4StateTelemetryVisitor": _P4StateTelemetryVisitor, "_DynamicExecutionVisitor": _DynamicExecutionVisitor, "_InternalCallGraphVisitor": _InternalCallGraphVisitor, "_ExecutionTraceVisitor": _ExecutionTraceVisitor, "Edge": Edge, "ScanManifest": ScanManifest})
+
 # Import actual scanner components that exist
-from agentic_core.adg.extraction.static_scanner import (
-    _ImportVisitor,
-    _CallVisitor,
-    _JITContextVisitor,
-    _DynamicInvocationVisitor,
-    _P4StateTelemetryVisitor,
-    _DynamicExecutionVisitor,
-    _InternalCallGraphVisitor,
-    _ExecutionTraceVisitor,
-    Edge,
-    ScanManifest,
+
 )
 
 

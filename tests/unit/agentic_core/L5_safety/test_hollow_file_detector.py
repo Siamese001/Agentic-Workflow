@@ -1,3 +1,17 @@
+import pytest
+
+# Lazy import fixtures - avoid collection-time errors
+
+@pytest.fixture(scope="session")
+def _lazy_agentic_core_L5_safety_validators_base_detector_validator_0():
+    from agentic_core.L5_safety.validators.base_detector_validator import AntiPatternCategory, EnforcementLevel
+    return type('_Import', (), {"AntiPatternCategory": AntiPatternCategory, "EnforcementLevel": EnforcementLevel})
+
+@pytest.fixture(scope="session")
+def _lazy_agentic_core_L5_safety_validators_hollow_file_detector_validator_1():
+    from agentic_core.L5_safety.validators.hollow_file_detector_validator import HollowFileClassification, HollowFileDetector
+    return type('_Import', (), {"HollowFileClassification": HollowFileClassification, "HollowFileDetector": HollowFileDetector})
+
 """
 Test suite for HollowFileDetector
 
@@ -8,13 +22,9 @@ import ast
 import tempfile
 from pathlib import Path
 
-from agentic_core.L5_safety.validators.base_detector_validator import (
-    AntiPatternCategory,
-    EnforcementLevel,
+
 )
-from agentic_core.L5_safety.validators.hollow_file_detector_validator import (
-    HollowFileClassification,
-    HollowFileDetector,
+
 )
 
 

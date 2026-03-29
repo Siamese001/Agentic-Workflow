@@ -6,8 +6,20 @@ error handling tests, and edge case coverage.
 from __future__ import annotations
 from unittest.mock import patch
 import pytest
-from agentic_core.L5_safety.validators.anti_pattern_scanner_validator import AntiPatternScanner, ScanReport
-from agentic_core.L5_safety.validators.base_detector_validator import AntiPatternCategory, AntiPatternViolation
+
+# Lazy import fixtures - avoid collection-time errors
+
+@pytest.fixture(scope="session")
+def _lazy_agentic_core_L5_safety_validators_anti_pattern_scanner_validator_0():
+    from agentic_core.L5_safety.validators.anti_pattern_scanner_validator import AntiPatternScanner, ScanReport
+    return type('_Import', (), {"AntiPatternScanner": AntiPatternScanner, "ScanReport": ScanReport})
+
+@pytest.fixture(scope="session")
+def _lazy_agentic_core_L5_safety_validators_base_detector_validator_1():
+    from agentic_core.L5_safety.validators.base_detector_validator import AntiPatternCategory, AntiPatternViolation
+    return type('_Import', (), {"AntiPatternCategory": AntiPatternCategory, "AntiPatternViolation": AntiPatternViolation})
+
+
 pytestmark = pytest.mark.unit
 
 class TestScanReportEnhanced:

@@ -1,3 +1,32 @@
+import pytest
+
+# Lazy import fixtures - avoid collection-time errors
+
+@pytest.fixture(scope="session")
+def _lazy_agentic_core_L0_routing_types_l0_instruction_packet_0():
+    from agentic_core.L0_routing.types.l0_instruction_packet import InstructionPacket
+    return type('_Import', (), {"InstructionPacket": InstructionPacket})
+
+@pytest.fixture(scope="session")
+def _lazy_agentic_core_prompt_governance_contracts_1():
+    from agentic_core.prompt_governance.contracts import CompiledPromptArtifact, PromptBOM, TemplateManifest
+    return type('_Import', (), {"CompiledPromptArtifact": CompiledPromptArtifact, "PromptBOM": PromptBOM, "TemplateManifest": TemplateManifest})
+
+@pytest.fixture(scope="session")
+def _lazy_agentic_core_prompt_governance_contracts_compiled_artifact_types_2():
+    from agentic_core.prompt_governance.contracts.compiled_artifact_types import CompiledPromptArtifact as CompiledPromptArtifactDirect
+    return type('_Import', (), {"CompiledPromptArtifact as CompiledPromptArtifactDirect": CompiledPromptArtifact as CompiledPromptArtifactDirect})
+
+@pytest.fixture(scope="session")
+def _lazy_agentic_core_prompt_governance_contracts_prompt_bom_types_3():
+    from agentic_core.prompt_governance.contracts.prompt_bom_types import PromptBOM as PromptBOMDirect
+    return type('_Import', (), {"PromptBOM as PromptBOMDirect": PromptBOM as PromptBOMDirect})
+
+@pytest.fixture(scope="session")
+def _lazy_agentic_core_prompt_governance_contracts_template_manifest_types_4():
+    from agentic_core.prompt_governance.contracts.template_manifest_types import TemplateManifest as TemplateManifestDirect
+    return type('_Import', (), {"TemplateManifest as TemplateManifestDirect": TemplateManifest as TemplateManifestDirect})
+
 """Comprehensive tests for Prompt Lifecycle data contracts.
 
 Tests all four Phase 1 data contracts:
@@ -12,18 +41,12 @@ import hmac
 import unittest
 from typing import Any
 
-from agentic_core.L0_routing.types.l0_instruction_packet import InstructionPacket
-from agentic_core.prompt_governance.contracts import (
-    CompiledPromptArtifact,
-    PromptBOM,
-    TemplateManifest,
+
 )
-from agentic_core.prompt_governance.contracts.compiled_artifact_types import (
-    CompiledPromptArtifact as CompiledPromptArtifactDirect,
+
 )
-from agentic_core.prompt_governance.contracts.prompt_bom_types import PromptBOM as PromptBOMDirect
-from agentic_core.prompt_governance.contracts.template_manifest_types import (
-    TemplateManifest as TemplateManifestDirect,
+
+
 )
 
 

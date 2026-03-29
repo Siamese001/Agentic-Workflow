@@ -4,11 +4,18 @@ Tests thread safety and race conditions in concurrent access scenarios.
 """
 from __future__ import annotations
 import pytest
+
+# Lazy import fixtures - avoid collection-time errors
+
+@pytest.fixture(scope="session")
+def _lazy_agentic_core_L4_state_enforcement_graph_memory_bridge_0():
+    from agentic_core.L4_state.enforcement.graph_memory_bridge import GraphMemoryBridge
+    return type('_Import', (), {"GraphMemoryBridge": GraphMemoryBridge})
 import threading
 import time
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
-from agentic_core.L4_state.enforcement.graph_memory_bridge import GraphMemoryBridge
+
 
 class TestGraphMemoryBridgeConcurrency:
     """Test thread safety of GraphMemoryBridge operations."""

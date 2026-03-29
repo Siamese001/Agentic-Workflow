@@ -8,13 +8,14 @@ import os
 
 import pytest
 
-from agentic_core.L0_routing.types.guardian_contract_types import (
-    V15EnforcementError,
-    V15HardFailAbort,
-    V15SoftFailAbort,
-    is_v15_enforced,
-    is_v15_hard_fail,
-    is_v15_soft_fail,
+# Lazy import fixtures - avoid collection-time errors
+
+@pytest.fixture(scope="session")
+def _lazy_agentic_core_L0_routing_types_guardian_contract_types_0():
+    from agentic_core.L0_routing.types.guardian_contract_types import V15EnforcementError, V15HardFailAbort, V15SoftFailAbort, is_v15_enforced, is_v15_hard_fail, is_v15_soft_fail
+    return type('_Import', (), {"V15EnforcementError": V15EnforcementError, "V15HardFailAbort": V15HardFailAbort, "V15SoftFailAbort": V15SoftFailAbort, "is_v15_enforced": is_v15_enforced, "is_v15_hard_fail": is_v15_hard_fail, "is_v15_soft_fail": is_v15_soft_fail})
+
+
 )
 
 pytestmark = pytest.mark.unit

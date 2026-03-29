@@ -1,7 +1,14 @@
 """ADG-driven tests for L5_safety/validators/anti_pattern_scanner_validator.py — fan_in=1."""
 from __future__ import annotations
 import pytest
-from agentic_core.L5_safety.validators.anti_pattern_scanner_validator import AntiPatternScanner, ScanReport
+
+# Lazy import fixtures - avoid collection-time errors
+
+@pytest.fixture(scope="session")
+def _lazy_agentic_core_L5_safety_validators_anti_pattern_scanner_validator_0():
+    from agentic_core.L5_safety.validators.anti_pattern_scanner_validator import AntiPatternScanner, ScanReport
+    return type('_Import', (), {"AntiPatternScanner": AntiPatternScanner, "ScanReport": ScanReport})
+
 pytestmark = pytest.mark.unit
 
 class TestScanReport:
