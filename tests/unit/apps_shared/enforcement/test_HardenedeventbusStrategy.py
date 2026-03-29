@@ -8,24 +8,25 @@ from __future__ import annotations
 
 import pytest
 
+# Import all classes/constants at module level so they're available to all tests
+from apps_shared.enforcement.HardenedeventbusStrategy import (
+    BATCH_SIZE,
+    BUFFER_SIZE,
+    DEFAULT_SLEEP,
+    MAX_RETRIES,
+    THRESHOLD,
+    HardenedEventBus,
+    get_hardened_event_bus,
+    hardened_event_publisher,
+    publish_hardened_event,
+    subscribe_to_events,
+)
+
 pytestmark = pytest.mark.unit
 
 
 class TestHardenedEventBusContract:
     def test_is_class(self):
-        from apps_shared.enforcement.HardenedeventbusStrategy import (  # noqa: F401
-            BATCH_SIZE,
-            BUFFER_SIZE,
-            DEFAULT_SLEEP,
-            MAX_RETRIES,
-            THRESHOLD,
-            HardenedEventBus,
-            get_hardened_event_bus,
-            hardened_event_publisher,
-            publish_hardened_event,
-            subscribe_to_events,
-        )
-
         assert isinstance(HardenedEventBus, type)
 
     def test_has_method_initialize(self):

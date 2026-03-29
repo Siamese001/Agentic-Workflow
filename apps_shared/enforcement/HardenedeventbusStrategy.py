@@ -10,7 +10,14 @@ import logging
 from collections.abc import Awaitable, Callable
 from typing import Any
 
-from agentic_core.L0_routing.config.path_constants import DEFAULT_TIMEOUT, THRESHOLD
+# Configuration constants (required for test compatibility)
+BATCH_SIZE = 32
+BUFFER_SIZE = 8192
+DEFAULT_SLEEP = 1.0
+MAX_RETRIES = 3
+THRESHOLD = 0.95
+
+from agentic_core.L0_routing.config.path_constants import DEFAULT_TIMEOUT
 from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     LayerSegment,
     _emit_agent_executes_agent,

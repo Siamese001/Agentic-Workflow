@@ -1,91 +1,25 @@
-from __future__ import annotations
+"""
+[PHASE 17/20] Semantic cache Manager - The Collective Hive Mind.
 
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-    # noqa: E402,
-    # noqa: E402
-    _emit_escalates_failure,
-    # noqa: E402
-    _emit_gated_by_confidence,
-    # noqa: E402
-    _emit_records_healing_outcome,
-    # noqa: E402
-    _emit_routes_to_agent,
-    # noqa: E402
-    emit_replay_key,
-    _emit_agent_executes_agent,
-    _emit_authorize_and_execute,
-    _emit_blocks_direct_write,
-    _emit_captures_evaluation_metric,
-    _emit_captures_execution_output,
-    _emit_checks_agent_registry,
-    _emit_coordinates_agents,
-    _emit_dispatches_agent,
-    _emit_dispatches_execution_plan,
-    _emit_dispatches_healing_run,
-    _emit_escalates_to_human,
-    _emit_hard_fails_untranscripted,
-    _emit_invokes_evaluation,
-    _emit_links_execution_to_snapshot,
-    _emit_observes_runtime_state,
-    _emit_orchestrates_workflow,
-    _emit_reads_policy_state,
-    _emit_records_telemetry_event,
-    _emit_records_tool_invocation,
-    _emit_records_workflow_lineage,
-    _emit_routes_through,
-    _emit_routes_to_capability,
-    _emit_signs_execution_trace,
-    _emit_stores_embedding,
-    _emit_transcripts_response,
-    _emit_updates_meta_learning_state,
-    _emit_validates_agent_capability,
-    _emit_validates_capability,
-    _emit_verifies_boundary,
-    _emit_verifies_policy,
-    _emit_writes_via_uwg,
-    emit_determinism_digest
-)
+[PHASE 3 MIGRATION] Canonical Implementation:
+- This is the ONLY SemanticCacheManager in the codebase.
+- All other copies (L5/guardrails, L5/cognition) have been deprecated.
+- Use semantic_cache_mixin.py for agent-level access.
 
-emit_replay_key("p0", "semantic_cache_manager")
-emit_determinism_digest("p0", "semantic_cache_manager")
+Located in L4_state as it manages the persistence and state of agentic memory.
+Provides O(1) exact recall (Redis) and semantic similarity recall (InMemoryVectorStore).
 
-_emit_dispatches_healing_run("p1", "semantic_cache_manager", "L4")
-_emit_routes_through("p1", "semantic_cache_manager", "L4")
-_emit_checks_agent_registry("p1", "semantic_cache_manager", "agent_registry")
-_emit_validates_agent_capability("p1", "semantic_cache_manager", "capability")
-_emit_dispatches_execution_plan("p1", "semantic_cache_manager", "exec_plan")
-_emit_agent_executes_agent("p1", "semantic_cache_manager", "sub_agent")
-_emit_routes_to_agent("p1", "semantic_cache_manager", "target_agent")
-_emit_verifies_policy("p1", "semantic_cache_manager", "policy_check")
-_emit_observes_runtime_state("p1", "semantic_cache_manager", "runtime_state")
-_emit_verifies_boundary("p1", "semantic_cache_manager", "boundary_check")
-_emit_transcripts_response("p1", "semantic_cache_manager", "transcript")
-_emit_hard_fails_untranscripted("p1", "semantic_cache_manager")
-_emit_gated_by_confidence("p1", "semantic_cache_manager", "confidence_gate")
-_emit_escalates_to_human("p1", "semantic_cache_manager", "L4")
-_emit_reads_policy_state("p1", "semantic_cache_manager", "L4")
-_emit_authorize_and_execute("p2", "semantic_cache_manager", "execution_auth")
-_emit_validates_capability("p2", "semantic_cache_manager", "capability_check")
-_emit_routes_to_capability("p2", "semantic_cache_manager", "capability_route")
-_emit_writes_via_uwg("p2", "semantic_cache_manager", "uwg_write")
-_emit_blocks_direct_write("p2", "semantic_cache_manager", "direct_write_block")
-_emit_records_tool_invocation("p2", "semantic_cache_manager", "tool_invocation")
-_emit_captures_execution_output("p2", "semantic_cache_manager", "exec_output")
-_emit_dispatches_agent("p3", "semantic_cache_manager", "agent_dispatch")
-_emit_coordinates_agents("p3", "semantic_cache_manager", "agent_coordination")
-_emit_records_workflow_lineage("p3", "semantic_cache_manager", "workflow_lineage")
-_emit_records_healing_outcome("p3", "semantic_cache_manager", "healing_outcome")
-_emit_escalates_failure("p3", "semantic_cache_manager", "failure_escalation")
-_emit_orchestrates_workflow("p3", "semantic_cache_manager", "workflow_orchestration")
-_emit_dispatches_healing_run("p3", "semantic_cache_manager", "healing_dispatch")
-_emit_invokes_evaluation("p3", "semantic_cache_manager", "evaluation_signal")
-_emit_records_telemetry_event("p4", "semantic_cache_manager", "telemetry_event")
-_emit_captures_evaluation_metric("p4", "semantic_cache_manager", "eval_metric")
-_emit_stores_embedding("p4", "semantic_cache_manager", "embedding_store")
-_emit_updates_meta_learning_state("p4", "semantic_cache_manager", "meta_learning")
-_emit_links_execution_to_snapshot("p4", "semantic_cache_manager", "exec_snapshot_link")
+Phase 17: Initial implementation with Redis + InMemoryVectorStore
+Phase 20: Hardened singleton pattern, thread safety, and connection retries.
+Phase 20+: Configurable compliance, PII sanitization, trace sampling, memory lifecycle.
 
-'\n[PHASE 17/20] Semantic cache Manager - The Collective Hive Mind.\n\n[PHASE 3 MIGRATION] Canonical Implementation:\n- This is the ONLY SemanticCacheManager in the codebase.\n- All other copies (L5/guardrails, L5/cognition) have been deprecated.\n- Use semantic_cache_mixin.py for agent-level access.\n\nLocated in L4_state as it manages the persistence and state of agentic memory.\nProvides O(1) exact recall (Redis) and semantic similarity recall (InMemoryVectorStore).\n\nPhase 17: Initial implementation with Redis + InMemoryVectorStore\nPhase 20: Hardened singleton pattern, thread safety, and connection retries.\nPhase 20+: Configurable compliance, PII sanitization, trace sampling, memory lifecycle.\n\nconfiguration (Environment Variables):\n- HIVE_MIND_STRICT_MODE: "true" (default) raises on infrastructure failure, "false" degrades gracefully\n- HIVE_MIND_TRACE_SAMPLING_RATE: 0.0 to 1.0 (default 1.0) - controls trace capture rate\n- HIVE_MIND_PROMOTION_THRESHOLD: 0.0 to 1.0 (default 0.8) - minimum feedback score for promotion\n\n[SSOT] This is the canonical location for the Hive Mind infrastructure.\n'
+configuration (Environment Variables):
+- HIVE_MIND_STRICT_MODE: "true" (default) raises on infrastructure failure, "false" degrades gracefully
+- HIVE_MIND_TRACE_SAMPLING_RATE: 0.0 to 1.0 (default 1.0) - controls trace capture rate
+- HIVE_MIND_PROMOTION_THRESHOLD: 0.0 to 1.0 (default 0.8) - minimum feedback score for promotion
+
+[SSOT] This is the canonical location for the Hive Mind infrastructure.
+"""
 import hashlib
 import json
 import logging
@@ -313,7 +247,7 @@ class SemanticCacheManager:
         result = cache.recall(context, namespace)
     """
 
-    _instance: SemanticCacheManager | None = None
+    _instance: "SemanticCacheManager | None" = None
     _instance_lock = threading.RLock()
     DEFAULT_STRICT_MODE = True
     DEFAULT_TRACE_SAMPLING_RATE = 1.0

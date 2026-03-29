@@ -23,7 +23,7 @@ class TestRiskLevelTypes(unittest.TestCase):
         # RiskLevel should have standard risk levels
         expected_levels = ["LOW", "MEDIUM", "HIGH", "CRITICAL"]
         for level in expected_levels:
-            self.assertTrue(hasattr(RiskLevel, level) or True)  # Soft check
+            self.assertTrue(hasattr(RiskLevel, level))
 
 
 if __name__ == "__main__":

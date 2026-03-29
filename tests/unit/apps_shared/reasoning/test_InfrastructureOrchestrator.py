@@ -8,24 +8,25 @@ from __future__ import annotations
 
 import pytest
 
+# Import all classes/constants at module level so they're available to all tests
+from apps_shared.reasoning.InfrastructureOrchestrator import (
+    BATCH_SIZE,
+    BUFFER_SIZE,
+    DEFAULT_SLEEP,
+    MAX_RETRIES,
+    THRESHOLD,
+    InfrastructureOrchestrator,
+    execute_task,
+    get_infrastructure_orchestrator,
+    get_system_status,
+    with_infrastructure,
+)
+
 pytestmark = pytest.mark.unit
 
 
 class TestInfrastructureOrchestratorContract:
     def test_is_class(self):
-        from apps_shared.reasoning.InfrastructureOrchestrator import (  # noqa: F401
-            BATCH_SIZE,
-            BUFFER_SIZE,
-            DEFAULT_SLEEP,
-            MAX_RETRIES,
-            THRESHOLD,
-            InfrastructureOrchestrator,
-            execute_task,
-            get_infrastructure_orchestrator,
-            get_system_status,
-            with_infrastructure,
-        )
-
         assert isinstance(InfrastructureOrchestrator, type)
 
     def test_has_method_initialize(self):

@@ -253,18 +253,18 @@ REPORTS_DIR: Final[str] = "reports"
 @lru_cache(maxsize=1)
 def get_apps_directories() -> list[str]:
     """Dynamically discover all apps_* directories in the repository.
-    
+
     Returns:
         List of directory names starting with 'apps_' that exist in the repo.
         Cached for performance.
     """
     project_root = get_validated_project_root()
     apps_dirs = []
-    
+
     for item in project_root.iterdir():
         if item.is_dir() and item.name.startswith("apps_"):
             apps_dirs.append(item.name)
-    
+
     # Sort for deterministic ordering
     return sorted(apps_dirs)
 
@@ -272,7 +272,7 @@ def get_apps_directories() -> list[str]:
 @lru_cache(maxsize=1)
 def get_all_apps_paths() -> list[Path]:
     """Get absolute paths for all apps_* directories.
-    
+
     Returns:
         List of Path objects for all apps_* directories.
         Cached for performance.
@@ -794,6 +794,60 @@ _emit_reads_through("l4", "path_constants", "urg_read_126")
 
 # Export list for __init__.py
 __all__ = [
-    "get_apps_directories",
+    "AGENT_DISCOVERY_JSON",
+    "AGENT_DISCOVERY_MANIFEST_JSON",
+    "AGENTIC_CORE_DIR",
+    "APPS_EVAL_DIR",
+    "APPS_EVAL_SUBFOLDER_MAP",
+    "APPS_EXEC_DIR",
+    "APPS_EXEC_SUBFOLDER_MAP",
+    "APPS_LIC_DIR",
+    "APPS_LIC_SUBFOLDER_MAP",
+    "APPS_RESEARCH_DIR",
+    "APPS_RESEARCH_SUBFOLDER_MAP",
+    "APPS_RFP_DIR",
+    "APPS_RFP_SUBFOLDER_MAP",
+    "APPS_RG_DIR",
+    "APPS_RG_SUBFOLDER_MAP",
+    "APPS_SHARED_DIR",
+    "APPS_SHARED_SUBFOLDER_MAP",
+    "ARCHIVES_DIR",
+    "BATCH_SIZE",
+    "BUFFER_SIZE",
+    "CORE_SUBFOLDER_MAP",
+    "DASHBOARD_DIR",
+    "DEFAULT_SLEEP",
+    "DEFAULT_TIMEOUT",
+    "DEPTH_RULES",
+    "GLOBAL_EXCLUDED_DIRS",
+    "L0_MAINTENANCE_DIR",
+    "L0_ROUTING_DIR",
+    "L1_COGNITION_DIR",
+    "L2_EXECUTION_DIR",
+    "L3_ORCHESTRATION_DIR",
+    "L4_APPROVED_FOLDERS",
+    "L4_STATE_DIR",
+    "L5_SAFETY_DIR",
+    "L6_OBSERVABILITY_DIR",
+    "LAYER_ROOTS",
+    "MAX_DEPTH",
+    "MAX_FILES",
+    "MAX_RETRIES",
+    "OPS_SCRIPTS_DIR",
+    "PROJECT_ROOT_MARKERS",
+    "PROJECT_ROOT_WHITELIST",
+    "ROOT_ALLOWED_PATTERNS",
+    "ROOT_PROTECTED_FILES",
+    "ROOT_WHITELIST",
+    "RUNTIME_STATE_JSON",
+    "SCRIPTS_DIR",
+    "SOVEREIGN_EXCLUDED_FOLDERS",
+    "SYSTEM_LEARNING_DIR",
+    "TESTS_DIR",
+    "TESTS_UNIT_DIR",
+    "THRESHOLD",
+    "TOOLS_DIR",
+    "VARIABLE_DEPTH_SUBFOLDERS",
     "get_all_apps_paths",
+    "get_apps_directories",
 ]

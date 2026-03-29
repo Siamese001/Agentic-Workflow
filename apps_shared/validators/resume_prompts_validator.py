@@ -1,8 +1,15 @@
 import json
 import logging
+from pathlib import Path
 from typing import TYPE_CHECKING
 
-from config.config import DATA_DIR
+from agentic_core.L0_routing.config.path_constants import get_validated_project_root
+
+# Define DATA_DIR using project root
+_DATA_DIR = get_validated_project_root() / "data"
+
+# Emit trace events
+from agentic_core.L_CONTRACTS.lifecycle_trace_contract import _emit_reads_through
 
 _emit_reads_through("l4", "resume_prompts_validator", "urg_read_1")
 _emit_reads_through("l4", "resume_prompts_validator", "urg_read_2")
@@ -93,7 +100,7 @@ if TYPE_CHECKING:
     from apps_shared.rag.hardening.models import MasterResumeIndex, RAGMission, ThematicAnalysis
     from config.config import CompetitiveAnalysisConfig
 try:
-    prompts_path = DATA_DIR / "prompts.json"
+    prompts_path = _DATA_DIR / "prompts.json"
     with open(prompts_path, encoding="utf-8") as f:
         PROMPT_TEMPLATES = json.load(f)
     logging.info(f"Successfully loaded prompts.json from {prompts_path}")

@@ -11,6 +11,13 @@ import asyncio
 import logging
 from typing import Any
 
+# Configuration constants (required for test compatibility)
+BATCH_SIZE = 32
+BUFFER_SIZE = 8192
+DEFAULT_SLEEP = 1.0
+MAX_RETRIES = 3
+THRESHOLD = 0.95
+
 from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     LayerSegment,
     _emit_agent_executes_agent,
