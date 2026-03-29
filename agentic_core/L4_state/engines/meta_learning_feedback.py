@@ -401,12 +401,42 @@ class CompletenessRAGProposer:
             
         Returns:
             CompletenessChangePackage for L5 Board
+            
+        Note:
+            Implements dampening gate: If query_count < 5, returns NO_ACTION
+            to await more observations.
         """
         _trace_id = f"propose_{len(query_batch)}"
         _emit_records_execution_trace(
             _trace_id, LayerSegment.L6_OBSERVABILITY, "CompletenessRAGProposer.analyze_and_propose"
         )
         _emit_feeds_meta_learning(_trace_id, "proposer", f"batch:{len(query_batch)}")
+        
+        # Dampening gate: Low signal volume check
+        if len(query_batch) < 5:
+            Logger.info(f"Dampening gate active: insufficient query volume ({len(query_batch)} < 5)")
+            
+            # Return NO_ACTION change package
+            no_action_proposal = FeedbackProposal(
+                trigger=FeedbackTrigger.NO_ACTION,
+                rationale=f"Insufficient query volume ({len(query_batch)} queries). Minimum threshold is 5. Awaiting more observations.",
+                current_value="active",
+                proposed_value="hold",
+                confidence=0.95,
+                supporting_evidence=[
+                    f"query_count={len(query_batch)}",
+                    "minimum_threshold=5",
+                    "dampening_gate_active",
+                ],
+            )
+            
+            return CompletenessChangePackage(
+                snapshot_id=_trace_id,
+                proposals=[no_action_proposal],
+                aggregate_metrics=EvaluationMetrics(),
+                completeness_analysis=CompletenessAnalysis(),
+                query_count=len(query_batch),
+            )
         
         proposals = []
         

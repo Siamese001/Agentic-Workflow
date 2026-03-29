@@ -251,45 +251,68 @@ class GraphRetrievalEngine:
         """Retrieve with graph-aware expansion and hydration.
         
         Args:
-            query: Search query
+            query: Search query (must be non-empty)
             n_results: Number of initial vector results
-            expansion_depth: Parent-child expansion depth (1-5)
+            expansion_depth: Parent-child expansion depth (1-5, clamped)
             hydrate_adg: Whether to hydrate with ADG edges
             
         Returns:
-            List of graph-retrieval contexts
+            List of graph-retrieval contexts (may be empty on failure)
         """
+        # Input validation
+        if not query or not isinstance(query, str):
+            Logger.error(f"Invalid query: {query!r}")
+            return []
+        
+        # Clamp expansion depth to valid range
+        expansion_depth = max(0, min(expansion_depth, 5))
+        
         _trace_id = f"retrieve_{self._retrieval_count}"
         _emit_records_execution_trace(
             _trace_id, LayerSegment.L3_ORCHESTRATION, "GraphRetrievalEngine.retrieve"
         )
         _emit_reads_through(_trace_id, "vector", query[:50])
         
-        # Step 1: Vector search (4a)
-        initial_results = self._vector_search(query, n_results)
-        
-        # Step 2: Parent-child expansion (4c)
-        expanded_results = self._expand_with_l4e(initial_results, expansion_depth)
-        
-        # Step 3: ADG edge hydration
-        contexts = []
-        for result in expanded_results:
-            context = self._create_retrieval_context(result, hydrate_adg)
-            contexts.append(context)
-        
-        # Step 4: Groundedness scoring
-        contexts = self._score_groundedness(contexts)
-        
-        # Update stats
-        expansion_factor = len(contexts) / max(len(initial_results), 1)
-        self._avg_expansion_factor = (
-            self._avg_expansion_factor * self._retrieval_count + expansion_factor
-        ) / (self._retrieval_count + 1)
-        self._retrieval_count += 1
-        
-        _emit_records_learning_event(_trace_id, "prompt_context_generated", f"chunks:{len(contexts)}")
-        
-        return contexts
+        try:
+            # Step 1: Vector search (4a)
+            initial_results = self._vector_search(query, n_results)
+            
+            if not initial_results:
+                Logger.warning(f"No initial results for query: {query[:50]}...")
+                return []
+            
+            # Step 2: Parent-child expansion (4c)
+            expanded_results = self._expand_with_l4e(initial_results, expansion_depth)
+            
+            # Step 3: ADG edge hydration
+            contexts = []
+            for result in expanded_results:
+                try:
+                    context = self._create_retrieval_context(result, hydrate_adg)
+                    contexts.append(context)
+                except Exception as e:
+                    Logger.error(f"Failed to create context for {result.get('chunk_id')}: {e}")
+                    # Continue with other results (fail-open for individual contexts)
+                    continue
+            
+            # Step 4: Groundedness scoring
+            contexts = self._score_groundedness(contexts)
+            
+            # Update stats
+            expansion_factor = len(contexts) / max(len(initial_results), 1)
+            self._avg_expansion_factor = (
+                self._avg_expansion_factor * self._retrieval_count + expansion_factor
+            ) / (self._retrieval_count + 1)
+            self._retrieval_count += 1
+            
+            _emit_records_learning_event(_trace_id, "prompt_context_generated", f"chunks:{len(contexts)}")
+            
+            return contexts
+            
+        except Exception as e:
+            Logger.error(f"Retrieval failed for query '{query[:50]}...': {e}")
+            # Fail-closed: return empty list rather than partial results
+            return []
     
     def _vector_search(
         self,

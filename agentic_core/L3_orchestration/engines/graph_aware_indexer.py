@@ -122,15 +122,45 @@ class GraphAwareIndexer:
         """Index a document with graph-aware metadata.
         
         Args:
-            doc_id: Document identifier
-            source_path: Source file path
+            doc_id: Document identifier (must be non-empty)
+            source_path: Source file path (must be non-empty)
             chunks: List of chunk dicts with content, metadata
             adg_edges: ADG edge bindings for this document
             embeddings: Pre-computed embeddings for chunks
             
         Returns:
             Indexing result with manifest IDs and edge bindings
+            
+        Raises:
+            ValueError: If doc_id or source_path is empty
         """
+        # Input validation
+        if not doc_id or not isinstance(doc_id, str):
+            raise ValueError(f"Invalid doc_id: {doc_id!r}")
+        if not source_path or not isinstance(source_path, str):
+            raise ValueError(f"Invalid source_path: {source_path!r}")
+        if not isinstance(chunks, list):
+            raise ValueError(f"chunks must be a list, got {type(chunks)}")
+        
+        # Handle empty chunks gracefully
+        if not chunks:
+            Logger.warning(f"No chunks to index for doc_id={doc_id}")
+            return {
+                "doc_id": doc_id,
+                "chunks_indexed": 0,
+                "manifests_created": [],
+                "parent_child_links": [],
+                "adg_edges_bound": (adg_edges or ADGEdgeBinding(chunk_id=f"{doc_id}_doc", source_file=source_path)).to_dict(),
+            }
+        
+        # Validate embeddings length matches chunks
+        if embeddings and len(embeddings) != len(chunks):
+            Logger.warning(
+                f"Embeddings length ({len(embeddings)}) doesn't match chunks ({len(chunks)}). "
+                "Ignoring embeddings."
+            )
+            embeddings = None
+        
         _trace_id = f"graph_index_{doc_id}"
         _emit_records_execution_trace(
             _trace_id, LayerSegment.L4_STATE, "GraphAwareIndexer.index_document"
