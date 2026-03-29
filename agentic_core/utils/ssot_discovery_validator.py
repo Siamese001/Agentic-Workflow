@@ -1,6 +1,8 @@
 """SSOT discovery validator utilities."""
 from __future__ import annotations
 
+import os
+from pathlib import Path
 from typing import Any
 
 
@@ -35,4 +37,12 @@ def discover_ssot(name: str) -> dict[str, Any] | None:
     return validator._sources.get(name)
 
 
-__all__ = ["SSOTDiscoveryValidator", "discover_ssot"]
+def get_python_files(directory: str | Path, pattern: str = "*.py") -> list[str]:
+    """Get Python files from directory matching pattern."""
+    directory = Path(directory)
+    if not directory.exists():
+        return []
+    return [str(f) for f in directory.rglob(pattern) if f.is_file()]
+
+
+__all__ = ["SSOTDiscoveryValidator", "discover_ssot", "get_python_files"]
