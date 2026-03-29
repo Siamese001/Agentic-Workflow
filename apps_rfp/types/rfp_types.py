@@ -1,162 +1,201 @@
 """
 apps_rfp domain types — AI Proposal / RFP Generator.
 
-All types are frozen dataclasses or Pydantic models.
-Every artifact carries provenance metadata.
+All types are Pydantic models with strict validation.
+Every artifact carries provenance. No silent pass — all failures recorded.
 """
 
 from __future__ import annotations
 
-from dataclasses import dataclass, field
-from enum import Enum
-from typing import Any
+from typing import Literal
+
+from pydantic import BaseModel, Field, field_validator
 
 
-class ProposalStatus(str, Enum):
-    PENDING = "pending"
-    GENERATING = "generating"
-    GATE_CHECKING = "gate_checking"
-    COMPLETE = "complete"
-    FAILED = "failed"
-    DRY_RUN = "dry_run"
+ProposalStatus = Literal["pending", "generating", "gate_checking", "complete", "failed", "dry_run"]
+
+ArchitecturePosture = Literal["cloud-first", "hybrid", "sovereign", "regulated"]
+
+RiskSeverity = Literal["LOW", "MEDIUM", "HIGH", "CRITICAL"]
 
 
-class ArchitecturePosture(str, Enum):
-    CLOUD_FIRST = "cloud-first"
-    HYBRID = "hybrid"
-    SOVEREIGN = "sovereign"
-    REGULATED = "regulated"
-
-
-class RiskSeverity(str, Enum):
-    LOW = "LOW"
-    MEDIUM = "MEDIUM"
-    HIGH = "HIGH"
-    CRITICAL = "CRITICAL"
-
-
-@dataclass(frozen=True)
-class RoadmapPhase:
+class RoadmapPhase(BaseModel):
     """A single phase in the implementation roadmap."""
 
-    phase_id: str
-    name: str
-    duration_weeks: int
-    objectives: tuple[str, ...] = field(default_factory=tuple)
-    deliverables: tuple[str, ...] = field(default_factory=tuple)
-    governance_milestone: str = ""
-    measurement_milestone: str = ""
+    phase_id: str = Field(..., min_length=1, description="Unique phase identifier")
+    name: str = Field(..., min_length=1, description="Phase name")
+    duration_weeks: int = Field(..., ge=1, le=52, description="Duration in weeks")
+    objectives: list[str] = Field(default_factory=list, description="Phase objectives")
+    deliverables: list[str] = Field(default_factory=list, description="Phase deliverables")
+    governance_milestone: str = Field("", description="Governance checkpoint")
+    measurement_milestone: str = Field("", description="Success measurement")
+
+    @field_validator("duration_weeks")
+    @classmethod
+    def validate_duration(cls, v):
+        if not 1 <= v <= 52:
+            raise ValueError("duration_weeks must be between 1 and 52")
+        return v
 
 
-@dataclass(frozen=True)
-class RiskItem:
+class RiskItem(BaseModel):
     """A single risk in the risk matrix."""
 
-    risk_id: str
-    category: str
-    description: str
-    severity: RiskSeverity
-    mitigation: str
-    owner: str = "Platform Team"
+    risk_id: str = Field(..., min_length=1, description="Unique risk identifier")
+    category: str = Field(..., min_length=1, description="Risk category")
+    description: str = Field(..., min_length=10, description="Risk description")
+    severity: RiskSeverity = Field(..., description="Risk severity level")
+    mitigation: str = Field(..., min_length=10, description="Mitigation strategy")
+    owner: str = Field("Platform Team", description="Risk owner")
+
+    @field_validator("description")
+    @classmethod
+    def validate_description(cls, v):
+        if len(v.strip()) < 10:
+            raise ValueError("description must be at least 10 characters")
+        return v.strip()
 
 
-@dataclass(frozen=True)
-class AssumptionItem:
+class AssumptionItem(BaseModel):
     """A labeled assumption in the proposal."""
 
-    assumption_id: str
-    statement: str
-    basis: str = "analyst judgment"
-    section_id: str = ""
+    assumption_id: str = Field(..., min_length=1, description="Unique assumption ID")
+    statement: str = Field(..., min_length=5, description="Assumption statement")
+    basis: str = Field("analyst judgment", description="Basis for assumption")
+    section_id: str = Field("", description="Related section ID")
+
+    @field_validator("statement")
+    @classmethod
+    def validate_statement(cls, v):
+        if len(v.strip()) < 5:
+            raise ValueError("statement must be at least 5 characters")
+        return v.strip()
 
 
-@dataclass(frozen=True)
-class ProposalSection:
+class ProposalSection(BaseModel):
     """One section of a generated proposal."""
 
-    section_id: str
-    heading: str
-    body: str
-    is_deterministic: bool = True
-    assumptions: tuple[AssumptionItem, ...] = field(default_factory=tuple)
-    evidence: tuple[str, ...] = field(default_factory=tuple)
-    word_count: int = 0
+    section_id: str = Field(..., min_length=1, description="Unique section ID")
+    heading: str = Field(..., min_length=1, description="Section heading")
+    body: str = Field(..., min_length=50, description="Section body content")
+    is_deterministic: bool = Field(True, description="Whether content is deterministic")
+    assumptions: list[AssumptionItem] = Field(default_factory=list, description="Section assumptions")
+    evidence: list[str] = Field(default_factory=list, description="Supporting evidence")
+    word_count: int = Field(0, ge=0, description="Word count")
+
+    @field_validator("body")
+    @classmethod
+    def validate_body(cls, v):
+        if len(v.strip()) < 50:
+            raise ValueError("body must be at least 50 characters")
+        return v.strip()
 
 
-@dataclass
-class RfpRequest:
+class RfpConfig(BaseModel):
+    """RFP generation configuration."""
+
+    min_quality_score: float = Field(0.7, ge=0, le=1, description="Minimum quality threshold")
+    max_sections: int = Field(10, ge=1, le=50, description="Maximum sections")
+    max_roadmap_phases: int = Field(5, ge=1, le=10, description="Maximum roadmap phases")
+    max_risks: int = Field(20, ge=1, le=50, description="Maximum risks")
+    require_architecture_review: bool = Field(True, description="Require architecture review")
+    require_risk_assessment: bool = Field(True, description="Require risk assessment")
+
+
+class RfpRequest(BaseModel):
     """Input contract for a single RFP proposal generation run."""
 
-    problem_statement: str = ""
-    industry: str = "technology"
-    company_size: str = ""
-    security_requirements: list[str] = field(default_factory=list)
-    architecture_posture: ArchitecturePosture = ArchitecturePosture.CLOUD_FIRST
-    delivery_timeline_weeks: int = 0
-    existing_tooling: list[str] = field(default_factory=list)
-    dry_run: bool = False
-    trace_id: str = ""
-    extra: dict[str, Any] = field(default_factory=dict)
+    problem_statement: str = Field(..., min_length=20, description="Problem to solve")
+    industry: str = Field("technology", min_length=2, description="Industry sector")
+    company_size: str = Field("", description="Company size category")
+    security_requirements: list[str] = Field(default_factory=list, description="Security requirements")
+    architecture_posture: ArchitecturePosture = Field("cloud-first", description="Architecture approach")
+    delivery_timeline_weeks: int = Field(0, ge=0, le=104, description="Delivery timeline")
+    existing_tooling: list[str] = Field(default_factory=list, description="Existing tools")
+    config: RfpConfig = Field(default_factory=RfpConfig, description="RFP configuration")
+    dry_run: bool = Field(False, description="Dry run mode")
+    trace_id: str = Field("", description="Trace identifier")
+
+    @field_validator("problem_statement")
+    @classmethod
+    def validate_problem(cls, v):
+        if len(v.strip()) < 20:
+            raise ValueError("problem_statement must be at least 20 characters")
+        return v.strip()
+
+    @field_validator("delivery_timeline_weeks")
+    @classmethod
+    def validate_timeline(cls, v):
+        if v < 0 or v > 104:
+            raise ValueError("delivery_timeline_weeks must be between 0 and 104")
+        return v
 
 
-@dataclass
-class RfpResult:
+class RfpResult(BaseModel):
     """Output contract for a single RFP proposal generation run."""
 
-    trace_id: str = ""
-    industry: str = ""
-    status: ProposalStatus = ProposalStatus.PENDING
-    sections: list[ProposalSection] = field(default_factory=list)
-    roadmap: list[RoadmapPhase] = field(default_factory=list)
-    risks: list[RiskItem] = field(default_factory=list)
-    assumptions: list[AssumptionItem] = field(default_factory=list)
-    quality_score: float = 0.0
-    gate_violations: list[str] = field(default_factory=list)
-    artifact_paths: list[str] = field(default_factory=list)
-    provenance: dict[str, Any] = field(default_factory=dict)
-    run_summary_path: str = ""
-    error: str = ""
+    trace_id: str = Field("", description="Trace identifier")
+    industry: str = Field("", description="Industry sector")
+    status: ProposalStatus = Field("pending", description="Generation status")
+    sections: list[ProposalSection] = Field(default_factory=list, description="Generated sections")
+    roadmap: list[RoadmapPhase] = Field(default_factory=list, description="Implementation roadmap")
+    risks: list[RiskItem] = Field(default_factory=list, description="Identified risks")
+    assumptions: list[AssumptionItem] = Field(default_factory=list, description="Declared assumptions")
+    quality_score: float = Field(0.0, ge=0, le=1, description="Overall quality score")
+    gate_violations: list[str] = Field(default_factory=list, description="Gate violations")
+    artifact_paths: list[str] = Field(default_factory=list, description="Output artifact paths")
+    provenance: dict = Field(default_factory=dict, description="Provenance metadata")
+    run_summary_path: str = Field("", description="Summary output path")
+    error: str = Field("", description="Error message")
 
     @property
     def passed_gate(self) -> bool:
-        return len(self.gate_violations) == 0 and self.status == ProposalStatus.COMPLETE
+        """Check if RFP passed all gates."""
+        return len(self.gate_violations) == 0 and self.status in ("complete", "dry_run")
+
+    @field_validator("quality_score")
+    @classmethod
+    def validate_quality(cls, v):
+        if not 0 <= v <= 1:
+            raise ValueError("quality_score must be between 0.0 and 1.0")
+        return v
 
 
-@dataclass
-class RfpRunSummary:
+class RfpRunSummary(BaseModel):
     """Top-level run summary artifact."""
 
-    trace_id: str = ""
-    app: str = "apps_rfp"
-    version: str = "1.0.0"
-    status: str = "pending"
-    industry: str = ""
-    sections_generated: int = 0
-    roadmap_phases: int = 0
-    risks_identified: int = 0
-    assumptions_declared: int = 0
-    quality_score: float = 0.0
-    gate_violations: list[str] = field(default_factory=list)
-    artifacts: list[str] = field(default_factory=list)
-    dry_run: bool = False
-    error: str = ""
-    provenance: dict[str, Any] = field(default_factory=dict)
+    trace_id: str = Field("", description="Trace identifier")
+    app: str = Field("apps_rfp", description="Application name")
+    version: str = Field("1.0.0", description="Version")
+    status: str = Field("pending", description="Run status")
+    industry: str = Field("", description="Industry sector")
+    sections_generated: int = Field(0, ge=0, description="Sections generated")
+    roadmap_phases: int = Field(0, ge=0, description="Roadmap phases")
+    risks_identified: int = Field(0, ge=0, description="Risks identified")
+    assumptions_declared: int = Field(0, ge=0, description="Assumptions declared")
+    quality_score: float = Field(0.0, ge=0, le=1, description="Overall quality score")
+    gate_violations: list[str] = Field(default_factory=list, description="Gate violations")
+    artifacts: list[str] = Field(default_factory=list, description="Generated artifacts")
+    dry_run: bool = Field(False, description="Dry run mode")
+    error: str = Field("", description="Error message")
+    provenance: dict = Field(default_factory=dict, description="Provenance metadata")
 
-    def to_dict(self) -> dict[str, Any]:
-        return {
-            "trace_id": self.trace_id,
-            "app": self.app,
-            "version": self.version,
-            "status": self.status,
-            "industry": self.industry,
-            "sections_generated": self.sections_generated,
-            "roadmap_phases": self.roadmap_phases,
-            "risks_identified": self.risks_identified,
-            "assumptions_declared": self.assumptions_declared,
-            "quality_score": self.quality_score,
-            "gate_violations": self.gate_violations,
-            "artifacts": self.artifacts,
-            "dry_run": self.dry_run,
-            "error": self.error,
-            "provenance": self.provenance,
+    def to_dict(self) -> dict:
+        """Export as dictionary."""
+        return self.model_dump()
+
+    class Config:
+        json_schema_extra = {
+            "example": {
+                "trace_id": "RFP-2024-001",
+                "app": "apps_rfp",
+                "version": "1.0.0",
+                "status": "complete",
+                "industry": "technology",
+                "sections_generated": 8,
+                "roadmap_phases": 4,
+                "risks_identified": 12,
+                "assumptions_declared": 5,
+                "quality_score": 0.85,
+            }
         }

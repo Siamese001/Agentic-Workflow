@@ -1,27 +1,29 @@
 """Types package for apps_rfp."""
 
 from apps_rfp.types.rfp_types import (
-    ProposalStatus,
     ArchitecturePosture,
-    RiskSeverity,
-    RoadmapPhase,
-    RiskItem,
     AssumptionItem,
     ProposalSection,
+    ProposalStatus,
+    RfpConfig,
     RfpRequest,
     RfpResult,
     RfpRunSummary,
+    RiskItem,
+    RiskSeverity,
+    RoadmapPhase,
 )
 
 __all__ = [
-    "ProposalStatus",
     "ArchitecturePosture",
-    "RiskSeverity",
-    "RoadmapPhase",
-    "RiskItem",
     "AssumptionItem",
     "ProposalSection",
+    "ProposalStatus",
+    "RfpConfig",
     "RfpRequest",
     "RfpResult",
     "RfpRunSummary",
+    "RiskItem",
+    "RiskSeverity",
+    "RoadmapPhase",
 ]
