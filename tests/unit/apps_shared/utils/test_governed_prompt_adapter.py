@@ -85,7 +85,7 @@ class TestGovernedPromptAdapter(unittest.TestCase):
         """Test system prompt composition."""
         adapter = GovernedPromptAdapter(agent_id="test", provider="openai")
 
-        with patch("apps_shared.utils.governed_prompt_adapter.get_template_registry") as mock_get_registry:
+        with patch("agentic_core.L4_state.memory.template_registry.get_template_registry") as mock_get_registry:
             mock_registry = MagicMock()
             mock_registry.get_i0_mixin.return_value = "Mixin content"
             mock_get_registry.return_value = mock_registry

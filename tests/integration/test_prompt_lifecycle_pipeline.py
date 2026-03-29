@@ -90,7 +90,7 @@ class TestAssemblyStageIntegration(unittest.TestCase):
 
         # Mock the registry to return content
         with patch(
-            "agentic_core.L0_routing.engines.assembly_stage.get_template_registry"
+            "agentic_core.L4_state.memory.template_registry.get_template_registry"
         ) as mock_get_registry:
             mock_registry = MagicMock()
             mock_registry.get_s0.return_value = "System prompt content"
