@@ -249,9 +249,9 @@ class TestPTCCoreInfrastructure:
         # Create valid signed envelope
         envelope = SandboxEnvelope(
             envelope_id="test-envelope-001",
-            code="print('hello')",
-            language="python",
-            timeout_seconds=30,
+            tool_name="test_tool",
+            tool_args={"param": "value"},
+            instruction_packet_id="test-packet",
         )
         envelope.sign(ptc_enforcer.secret)
         
@@ -263,9 +263,9 @@ class TestPTCCoreInfrastructure:
         """Test PTC enforcer rejects unsigned envelope (fail-closed)."""
         envelope = SandboxEnvelope(
             envelope_id="test-envelope-002",
-            code="print('hello')",
-            language="python",
-            timeout_seconds=30,
+            tool_name="test_tool",
+            tool_args={},
+            instruction_packet_id="test-packet",
         )
         # Don't sign it
         

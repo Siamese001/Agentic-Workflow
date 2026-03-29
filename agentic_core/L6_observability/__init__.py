@@ -18,6 +18,11 @@ from agentic_core.L0_routing.config.path_constants import (
 )
 
 # P3/L6 Observability Dashboard exports
+from agentic_core.L6_observability.mcp_drift_store import (
+    MCPDriftMonitor,
+    MCPL6ObservabilityStore,
+    MCPL6PersistenceConfig,
+)
 from agentic_core.L6_observability.dashboard.dashboard_aggregate import (
     CRITICAL,
     DEGRADED,
@@ -306,4 +311,8 @@ __all__ = [
     "median_latency_by_stage",
     "p95_latency_by_stage",
     "degraded_component_flags",
+    # MCP Drift Store exports
+    "MCPL6ObservabilityStore",
+    "MCPL6PersistenceConfig",
+    "MCPDriftMonitor",
 ]

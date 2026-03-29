@@ -41,7 +41,9 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_links_execution_to_snapshot,
     _emit_observes_runtime_state,
     _emit_orchestrates_workflow,
+    _emit_reads_environ,
     _emit_reads_policy_state,
+    _emit_reads_runtime_state,
     _emit_records_execution_trace,
     _emit_records_healing_outcome,
     _emit_records_telemetry_event,
@@ -223,12 +225,13 @@ class PTCOrchestrator:
         orchestrator = PTCOrchestrator()
         
         # Parse and plan
-        plan = orchestrator.parse_script("""
-            users = query_database("SELECT * FROM users")
-            orders = query_database("SELECT * FROM orders WHERE user_id IN (%s)" % users)
-            summary = {"users": len(users), "orders": len(orders)}
-            print(json.dumps(summary))
-        """)
+        code = '''
+users = query_database("SELECT * FROM users")
+orders = query_database("SELECT * FROM orders WHERE user_id IN (%s)" % users)
+summary = {"users": len(users), "orders": len(orders)}
+print(json.dumps(summary))
+'''
+        plan = orchestrator.parse_script("script-001", code)
         
         # Execute with batching
         result = orchestrator.execute_batch(plan)
