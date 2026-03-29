@@ -1,150 +1,157 @@
 """
 apps_research domain types — Autonomous Research Engine.
 
-All types are frozen dataclasses. Every artifact carries provenance.
+All types are Pydantic models with strict validation.
+Every artifact carries provenance metadata.
 """
 
 from __future__ import annotations
 
-from dataclasses import dataclass, field
-from enum import Enum
-from typing import Any
+from typing import Literal
+
+from pydantic import BaseModel, Field, field_validator
 
 
-class ResearchStatus(str, Enum):
-    PENDING = "pending"
-    GENERATING = "generating"
-    GATE_CHECKING = "gate_checking"
-    COMPLETE = "complete"
-    FAILED = "failed"
-    DRY_RUN = "dry_run"
+ResearchStatus = Literal["pending", "generating", "gate_checking", "complete", "failed", "dry_run"]
+
+ArtifactMode = Literal["brief", "comparison", "trend", "position", "thought_leadership"]
+
+ClaimType = Literal["direct_evidence", "interpretation", "analyst_inference", "assumption"]
+
+AudienceStyle = Literal["technical", "executive", "market-facing"]
 
 
-class ArtifactMode(str, Enum):
-    BRIEF = "brief"
-    COMPARISON = "comparison"
-    TREND = "trend"
-    POSITION = "position"
-    THOUGHT_LEADERSHIP = "thought_leadership"
-
-
-class ClaimType(str, Enum):
-    DIRECT_EVIDENCE = "direct_evidence"
-    INTERPRETATION = "interpretation"
-    ANALYST_INFERENCE = "analyst_inference"
-    ASSUMPTION = "assumption"
-
-
-class AudienceStyle(str, Enum):
-    TECHNICAL = "technical"
-    EXECUTIVE = "executive"
-    MARKET_FACING = "market-facing"
-
-
-@dataclass(frozen=True)
-class SourceEntry:
+class SourceEntry(BaseModel):
     """A single entry in the source register."""
 
-    source_id: str
-    title: str
-    claim_type: ClaimType
-    confidence: float
-    summary: str = ""
-    url: str = ""
-    section_id: str = ""
+    source_id: str = Field(..., min_length=1, description="Unique source ID")
+    title: str = Field(..., min_length=1, description="Source title")
+    claim_type: ClaimType = Field("direct_evidence", description="Type of claim")
+    confidence: float = Field(0.5, ge=0, le=1, description="Confidence level")
+    summary: str = Field("", description="Source summary")
+    url: str = Field("", description="Source URL")
+    section_id: str = Field("", description="Related section ID")
 
 
-@dataclass(frozen=True)
-class ComparisonRow:
+class ComparisonRow(BaseModel):
     """One row in a comparison matrix."""
 
-    subject: str
-    dimensions: dict[str, str] = field(default_factory=dict)
+    subject: str = Field(..., min_length=1, description="Subject being compared")
+    dimensions: dict[str, str] = Field(default_factory=dict, description="Comparison dimensions")
 
 
-@dataclass(frozen=True)
-class ResearchSection:
+class ResearchSection(BaseModel):
     """One section of a research artifact."""
 
-    section_id: str
-    heading: str
-    body: str
-    is_deterministic: bool = True
-    claim_type: ClaimType = ClaimType.DIRECT_EVIDENCE
-    sources: tuple[str, ...] = field(default_factory=tuple)
-    word_count: int = 0
+    section_id: str = Field(..., min_length=1, description="Unique section ID")
+    heading: str = Field(..., min_length=1, description="Section heading")
+    body: str = Field(..., min_length=50, description="Section body content")
+    is_deterministic: bool = Field(True, description="Whether content is deterministic")
+    claim_type: ClaimType = Field("direct_evidence", description="Claim type")
+    sources: list[str] = Field(default_factory=list, description="Source references")
+    word_count: int = Field(0, ge=0, description="Word count")
+
+    @field_validator("body")
+    @classmethod
+    def validate_body(cls, v):
+        if len(v.strip()) < 50:
+            raise ValueError("body must be at least 50 characters")
+        return v.strip()
 
 
-@dataclass
-class ResearchRequest:
+class ResearchConfig(BaseModel):
+    """Research generation configuration."""
+
+    min_quality_score: float = Field(0.7, ge=0, le=1, description="Minimum quality threshold")
+    max_sections: int = Field(10, ge=1, le=20, description="Maximum sections")
+    min_sources: int = Field(3, ge=0, description="Minimum sources required")
+    require_evidence_based: bool = Field(True, description="Require evidence-based claims")
+    enforce_claim_type_consistency: bool = Field(True, description="Enforce claim type consistency")
+
+
+class ResearchRequest(BaseModel):
     """Input contract for a single research run."""
 
-    topic: str = ""
-    mode: ArtifactMode = ArtifactMode.BRIEF
-    audience_style: AudienceStyle = AudienceStyle.TECHNICAL
-    comparison_subjects: list[str] = field(default_factory=list)
-    time_horizon: str = ""
-    dry_run: bool = False
-    trace_id: str = ""
-    extra: dict[str, Any] = field(default_factory=dict)
+    topic: str = Field(..., min_length=1, description="Research topic")
+    mode: ArtifactMode = Field("brief", description="Artifact mode")
+    audience_style: AudienceStyle = Field("technical", description="Target audience style")
+    comparison_subjects: list[str] = Field(default_factory=list, description="Subjects for comparison mode")
+    time_horizon: str = Field("", description="Time horizon for analysis")
+    config: ResearchConfig = Field(default_factory=ResearchConfig, description="Research configuration")
+    dry_run: bool = Field(False, description="Dry run mode")
+    trace_id: str = Field("", description="Trace identifier")
+
+    @field_validator("topic")
+    @classmethod
+    def validate_topic(cls, v):
+        if len(v.strip()) < 1:
+            raise ValueError("topic cannot be empty")
+        return v.strip()
 
 
-@dataclass
-class ResearchResult:
+class ResearchResult(BaseModel):
     """Output contract for a single research run."""
 
-    trace_id: str = ""
-    topic: str = ""
-    mode: str = ""
-    status: ResearchStatus = ResearchStatus.PENDING
-    sections: list[ResearchSection] = field(default_factory=list)
-    comparison_matrix: list[ComparisonRow] = field(default_factory=list)
-    source_register: list[SourceEntry] = field(default_factory=list)
-    quality_score: float = 0.0
-    gate_violations: list[str] = field(default_factory=list)
-    artifact_paths: list[str] = field(default_factory=list)
-    provenance: dict[str, Any] = field(default_factory=dict)
-    run_summary_path: str = ""
-    error: str = ""
+    trace_id: str = Field("", description="Trace identifier")
+    topic: str = Field("", description="Research topic")
+    mode: str = Field("", description="Artifact mode")
+    status: ResearchStatus = Field("pending", description="Generation status")
+    sections: list[ResearchSection] = Field(default_factory=list, description="Generated sections")
+    comparison_matrix: list[ComparisonRow] = Field(default_factory=list, description="Comparison matrix")
+    source_register: list[SourceEntry] = Field(default_factory=list, description="Registered sources")
+    quality_score: float = Field(0.0, ge=0, le=1, description="Overall quality score")
+    gate_violations: list[str] = Field(default_factory=list, description="Gate violations")
+    artifact_paths: list[str] = Field(default_factory=list, description="Output artifact paths")
+    provenance: dict = Field(default_factory=dict, description="Provenance metadata")
+    run_summary_path: str = Field("", description="Summary output path")
+    error: str = Field("", description="Error message")
 
     @property
     def passed_gate(self) -> bool:
-        return len(self.gate_violations) == 0 and self.status == ResearchStatus.COMPLETE
+        """Check if research passed all gates."""
+        return len(self.gate_violations) == 0 and self.status in ("complete", "dry_run")
+
+    @field_validator("quality_score")
+    @classmethod
+    def validate_quality(cls, v):
+        if not 0 <= v <= 1:
+            raise ValueError("quality_score must be between 0.0 and 1.0")
+        return v
 
 
-@dataclass
-class ResearchRunSummary:
+class ResearchRunSummary(BaseModel):
     """Top-level run summary artifact."""
 
-    trace_id: str = ""
-    app: str = "apps_research"
-    version: str = "1.0.0"
-    status: str = "pending"
-    topic: str = ""
-    mode: str = ""
-    sections_generated: int = 0
-    sources_registered: int = 0
-    quality_score: float = 0.0
-    gate_violations: list[str] = field(default_factory=list)
-    artifacts: list[str] = field(default_factory=list)
-    dry_run: bool = False
-    error: str = ""
-    provenance: dict[str, Any] = field(default_factory=dict)
+    trace_id: str = Field("", description="Trace identifier")
+    app: str = Field("apps_research", description="Application name")
+    version: str = Field("1.0.0", description="Version")
+    status: str = Field("pending", description="Run status")
+    topic: str = Field("", description="Research topic")
+    mode: str = Field("", description="Artifact mode")
+    sections_generated: int = Field(0, ge=0, description="Sections generated")
+    sources_registered: int = Field(0, ge=0, description="Sources registered")
+    quality_score: float = Field(0.0, ge=0, le=1, description="Overall quality score")
+    gate_violations: list[str] = Field(default_factory=list, description="Gate violations")
+    artifacts: list[str] = Field(default_factory=list, description="Generated artifacts")
+    dry_run: bool = Field(False, description="Dry run mode")
+    error: str = Field("", description="Error message")
+    provenance: dict = Field(default_factory=dict, description="Provenance metadata")
 
-    def to_dict(self) -> dict[str, Any]:
-        return {
-            "trace_id": self.trace_id,
-            "app": self.app,
-            "version": self.version,
-            "status": self.status,
-            "topic": self.topic,
-            "mode": self.mode,
-            "sections_generated": self.sections_generated,
-            "sources_registered": self.sources_registered,
-            "quality_score": self.quality_score,
-            "gate_violations": self.gate_violations,
-            "artifacts": self.artifacts,
-            "dry_run": self.dry_run,
-            "error": self.error,
-            "provenance": self.provenance,
+    def to_dict(self) -> dict:
+        """Export as dictionary."""
+        return self.model_dump()
+
+    class Config:
+        json_schema_extra = {
+            "example": {
+                "trace_id": "RES-2024-001",
+                "app": "apps_research",
+                "version": "1.0.0",
+                "status": "complete",
+                "topic": "AI Governance Trends",
+                "mode": "brief",
+                "sections_generated": 5,
+                "sources_registered": 12,
+                "quality_score": 0.82,
+            }
         }

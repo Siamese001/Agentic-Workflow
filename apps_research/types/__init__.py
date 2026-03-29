@@ -1,27 +1,29 @@
 """Types package for apps_research."""
 
 from apps_research.types.research_types import (
-    ResearchStatus,
     ArtifactMode,
-    ClaimType,
     AudienceStyle,
-    SourceEntry,
+    ClaimType,
     ComparisonRow,
-    ResearchSection,
+    ResearchConfig,
     ResearchRequest,
     ResearchResult,
     ResearchRunSummary,
+    ResearchSection,
+    ResearchStatus,
+    SourceEntry,
 )
 
 __all__ = [
-    "ResearchStatus",
     "ArtifactMode",
-    "ClaimType",
     "AudienceStyle",
-    "SourceEntry",
+    "ClaimType",
     "ComparisonRow",
-    "ResearchSection",
+    "ResearchConfig",
     "ResearchRequest",
     "ResearchResult",
     "ResearchRunSummary",
+    "ResearchSection",
+    "ResearchStatus",
+    "SourceEntry",
 ]

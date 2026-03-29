@@ -1,118 +1,178 @@
 """
-Test Research Types.
+Test Research Pydantic Types.
 """
 import unittest
 
+from pydantic import ValidationError
+
 from apps_research.types import (
-    ResearchStatus,
     ArtifactMode,
-    ClaimType,
     AudienceStyle,
-    SourceEntry,
+    ClaimType,
     ComparisonRow,
-    ResearchSection,
+    ResearchConfig,
     ResearchRequest,
     ResearchResult,
     ResearchRunSummary,
+    ResearchSection,
+    ResearchStatus,
+    SourceEntry,
 )
 
 
-class TestResearchTypes(unittest.TestCase):
-    """Test cases for research types."""
+class TestSourceEntry(unittest.TestCase):
+    """Test cases for SourceEntry Pydantic model."""
 
-    def test_research_status_enum(self):
-        """Test ResearchStatus enum values."""
-        self.assertEqual(ResearchStatus.PENDING.value, "pending")
-        self.assertEqual(ResearchStatus.COMPLETE.value, "complete")
-        self.assertEqual(ResearchStatus.FAILED.value, "failed")
-
-    def test_artifact_mode_enum(self):
-        """Test ArtifactMode enum values."""
-        self.assertEqual(ArtifactMode.BRIEF.value, "brief")
-        self.assertEqual(ArtifactMode.COMPARISON.value, "comparison")
-
-    def test_claim_type_enum(self):
-        """Test ClaimType enum values."""
-        self.assertEqual(ClaimType.DIRECT_EVIDENCE.value, "direct_evidence")
-        self.assertEqual(ClaimType.INTERPRETATION.value, "interpretation")
-
-    def test_audience_style_enum(self):
-        """Test AudienceStyle enum values."""
-        self.assertEqual(AudienceStyle.TECHNICAL.value, "technical")
-        self.assertEqual(AudienceStyle.EXECUTIVE.value, "executive")
-
-    def test_source_entry_creation(self):
-        """Test SourceEntry dataclass creation."""
-        entry = SourceEntry(
+    def test_source_creation(self):
+        """Test source creation."""
+        source = SourceEntry(
             source_id="src-001",
-            title="AI Research Paper",
-            claim_type=ClaimType.DIRECT_EVIDENCE,
-            confidence=0.95,
-            summary="Key findings...",
-            url="https://example.com",
+            title="AI Governance Report 2024",
+            claim_type="direct_evidence",
+            confidence=0.85,
+            url="https://example.com/report",
         )
-        self.assertEqual(entry.source_id, "src-001")
-        self.assertEqual(entry.confidence, 0.95)
+        self.assertEqual(source.source_id, "src-001")
+        self.assertEqual(source.confidence, 0.85)
 
-    def test_comparison_row_creation(self):
-        """Test ComparisonRow dataclass creation."""
+    def test_confidence_bounds(self):
+        """Test confidence bounds."""
+        with self.assertRaises(ValidationError):
+            SourceEntry(source_id="s1", title="Test", confidence=1.5)
+
+
+class TestComparisonRow(unittest.TestCase):
+    """Test cases for ComparisonRow Pydantic model."""
+
+    def test_row_creation(self):
+        """Test row creation."""
         row = ComparisonRow(
-            subject="Subject A",
-            dimensions={"speed": "fast", "cost": "low"},
+            subject="Product A",
+            dimensions={"price": "$100", "features": "10"},
         )
-        self.assertEqual(row.subject, "Subject A")
-        self.assertEqual(row.dimensions["speed"], "fast")
+        self.assertEqual(row.subject, "Product A")
+        self.assertEqual(row.dimensions["price"], "$100")
 
-    def test_research_section_creation(self):
-        """Test ResearchSection dataclass creation."""
+
+class TestResearchSection(unittest.TestCase):
+    """Test cases for ResearchSection Pydantic model."""
+
+    def test_section_creation(self):
+        """Test section creation."""
         section = ResearchSection(
             section_id="sec-001",
-            heading="Introduction",
-            body="Research findings...",
-            word_count=500,
+            heading="Evidence Review",
+            body="This section provides a comprehensive review of evidence that meets the minimum length requirement.",
+            word_count=200,
+            claim_type="direct_evidence",
         )
         self.assertEqual(section.section_id, "sec-001")
-        self.assertTrue(section.is_deterministic)
+        self.assertEqual(section.word_count, 200)
 
-    def test_research_request_defaults(self):
-        """Test ResearchRequest default values."""
-        request = ResearchRequest()
-        self.assertEqual(request.topic, "")
-        self.assertEqual(request.mode, ArtifactMode.BRIEF)
-        self.assertEqual(request.audience_style, AudienceStyle.TECHNICAL)
-        self.assertFalse(request.dry_run)
+    def test_body_validation(self):
+        """Test body minimum length (50 chars)."""
+        with self.assertRaises(ValidationError):
+            ResearchSection(section_id="s1", heading="Test", body="Too short")
 
-    def test_research_result_passed_gate(self):
-        """Test ResearchResult.passed_gate property."""
-        # Complete with no violations should pass
-        result_pass = ResearchResult(
-            trace_id="trace-001",
-            status=ResearchStatus.COMPLETE,
-            gate_violations=[],
+
+class TestResearchConfig(unittest.TestCase):
+    """Test cases for ResearchConfig Pydantic model."""
+
+    def test_config_defaults(self):
+        """Test config default values."""
+        config = ResearchConfig()
+        self.assertEqual(config.min_quality_score, 0.7)
+        self.assertEqual(config.max_sections, 10)
+        self.assertTrue(config.require_evidence_based)
+
+    def test_quality_score_bounds(self):
+        """Test quality score bounds."""
+        with self.assertRaises(ValidationError):
+            ResearchConfig(min_quality_score=1.5)
+
+    def test_max_sections_bounds(self):
+        """Test max sections bounds."""
+        with self.assertRaises(ValidationError):
+            ResearchConfig(max_sections=50)
+
+
+class TestResearchRequest(unittest.TestCase):
+    """Test cases for ResearchRequest Pydantic model."""
+
+    def test_request_creation(self):
+        """Test request creation."""
+        request = ResearchRequest(
+            topic="AI Governance Trends",
+            mode="brief",
+            audience_style="executive",
         )
+        self.assertEqual(request.topic, "AI Governance Trends")
+        self.assertEqual(request.mode, "brief")
+
+    def test_topic_validation(self):
+        """Test topic validation."""
+        with self.assertRaises(ValidationError):
+            ResearchRequest(topic="")
+
+    def test_config_nested(self):
+        """Test nested config."""
+        request = ResearchRequest(
+            topic="Test",
+            config=ResearchConfig(min_quality_score=0.8),
+        )
+        self.assertEqual(request.config.min_quality_score, 0.8)
+
+
+class TestResearchResult(unittest.TestCase):
+    """Test cases for ResearchResult Pydantic model."""
+
+    def test_result_creation(self):
+        """Test result creation."""
+        result = ResearchResult(
+            trace_id="res-001",
+            topic="AI Governance",
+            mode="brief",
+            status="complete",
+            quality_score=0.85,
+        )
+        self.assertEqual(result.trace_id, "res-001")
+        self.assertEqual(result.quality_score, 0.85)
+
+    def test_passed_gate_property(self):
+        """Test passed_gate property."""
+        result_pass = ResearchResult(status="complete", gate_violations=[])
         self.assertTrue(result_pass.passed_gate)
 
-        # With violations should fail
-        result_fail = ResearchResult(
-            trace_id="trace-002",
-            status=ResearchStatus.COMPLETE,
-            gate_violations=["violation-1"],
-        )
+        result_fail = ResearchResult(status="complete", gate_violations=["error"])
         self.assertFalse(result_fail.passed_gate)
 
-    def test_research_run_summary_to_dict(self):
-        """Test ResearchRunSummary.to_dict method."""
+    def test_quality_score_bounds(self):
+        """Test quality score bounds."""
+        with self.assertRaises(ValidationError):
+            ResearchResult(quality_score=1.5)
+
+
+class TestResearchRunSummary(unittest.TestCase):
+    """Test cases for ResearchRunSummary Pydantic model."""
+
+    def test_summary_creation(self):
+        """Test summary creation."""
         summary = ResearchRunSummary(
             trace_id="trace-001",
-            app="apps_research",
-            version="1.0.0",
+            topic="AI Governance",
             status="complete",
-            topic="AI Safety",
-            quality_score=0.92,
+            sections_generated=5,
+            quality_score=0.82,
         )
+        self.assertEqual(summary.trace_id, "trace-001")
+        self.assertEqual(summary.app, "apps_research")
+
+    def test_to_dict(self):
+        """Test to_dict method."""
+        summary = ResearchRunSummary(trace_id="trace-001", quality_score=0.82)
         d = summary.to_dict()
         self.assertEqual(d["trace_id"], "trace-001")
-        self.assertEqual(d["topic"], "AI Safety")
+        self.assertEqual(d["quality_score"], 0.82)
 
 
 if __name__ == "__main__":
