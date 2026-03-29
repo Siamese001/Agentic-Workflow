@@ -20,6 +20,7 @@ from __future__ import annotations
 import hashlib
 import json
 import time
+import uuid
 from dataclasses import dataclass, field
 from enum import Enum
 from pathlib import Path
@@ -251,6 +252,11 @@ class MCPDriftReport:
     def warning_count(self) -> int:
         return sum(1 for e in self.drift_events if e.severity == MCPDriftSeverity.WARNING)
 
+    @property
+    def total_events(self) -> int:
+        """Total number of drift events."""
+        return len(self.drift_events)
+
     def to_dict(self) -> dict[str, Any]:
         return {
             "baseline_snapshot_id": self.baseline_snapshot_id,
@@ -311,8 +317,6 @@ class MCPDriftRecorder:
         Returns:
             MCPConfigSnapshot with current configuration state
         """
-        import uuid  # noqa: PLC0415
-
         config_file = Path(config_path)
         snapshot_id = f"mcp-snap-{uuid.uuid4().hex[:12]}"
         timestamp = time.time()
@@ -426,8 +430,6 @@ class MCPDriftRecorder:
         Returns:
             MCPDriftReport with detected drift events
         """
-        import uuid  # noqa: PLC0415
-
         _trace_id = str(uuid.uuid4())
         _emit_records_telemetry_event(_trace_id, LayerSegment.L6_OBSERVABILITY, "MCPDriftRecorder.detect_drift")
 

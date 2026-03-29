@@ -48,15 +48,22 @@ _emit_records_telemetry_event("mcp_l6", "l6_obs", "persistence_active")
 class MCPL6PersistenceConfig:
     """Configuration for MCP snapshot persistence in L6."""
 
-    snapshots_dir: Path = field(
-        default_factory=lambda: Path("artifacts/observability/mcp_snapshots")
-    )
-    reports_dir: Path = field(
-        default_factory=lambda: Path("artifacts/observability/mcp_drift_reports")
-    )
+    snapshots_dir: Path | None = None
+    reports_dir: Path | None = None
+    base_dir: Path | None = None  # Alternative: set both dirs from base
     max_snapshots: int = 100  # Keep last N snapshots
     max_reports: int = 50     # Keep last N reports
     enable_compression: bool = True
+
+    def __post_init__(self):
+        """Resolve directories after initialization."""
+        if self.base_dir is not None:
+            self.snapshots_dir = self.base_dir / "mcp_snapshots"
+            self.reports_dir = self.base_dir / "mcp_drift_reports"
+        elif self.snapshots_dir is None:
+            self.snapshots_dir = Path("artifacts/observability/mcp_snapshots")
+        elif self.reports_dir is None:
+            self.reports_dir = Path("artifacts/observability/mcp_drift_reports")
 
 
 class MCPL6ObservabilityStore:
