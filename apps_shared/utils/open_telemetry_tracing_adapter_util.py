@@ -308,6 +308,10 @@ class OpenTelemetryTracingAdapter:
         service_name: str = "agentic-workflow",
         enable_console_export: bool = False,
         enable_logging: bool = True,
+        enable_otlp_grpc: bool = False,
+        enable_otlp_http: bool = False,
+        otlp_grpc_endpoint: str | None = None,
+        otlp_http_endpoint: str | None = None,
     ):
         """Initialize tracing adapter.
 
@@ -315,22 +319,72 @@ class OpenTelemetryTracingAdapter:
             service_name: Name of the service for tracing
             enable_console_export: Export spans to console
             enable_logging: Enable logging of span events
+            enable_otlp_grpc: Enable OTLP gRPC exporter for external backends
+            enable_otlp_http: Enable OTLP HTTP exporter for gRPC-blocked environments
+            otlp_grpc_endpoint: Custom OTLP gRPC endpoint (defaults to env var or standard port)
+            otlp_http_endpoint: Custom OTLP HTTP endpoint (defaults to env var or standard port)
         """
         self.service_name = service_name
         self.enable_logging = enable_logging
         self._completed_spans: list[dict[str, Any]] = []
         self._span_stack: list[tuple[str, str]] = []
+        self._active_spans: dict[str, Any] = {}
         if OTEL_AVAILABLE:
             resource = Resource.create({"service.name": service_name})
             provider = TracerProvider(resource=resource)
+            
+            # Console exporter (for debugging)
             if enable_console_export:
                 processor = BatchSpanProcessor(ConsoleSpanExporter())
                 provider.add_span_processor(processor)
+            
+            # OTLP gRPC exporter (for production backends like Jaeger, Tempo, etc.)
+            if enable_otlp_grpc and OTEL_GRPC_EXPORTER_AVAILABLE:
+                try:
+                    import os
+                    endpoint = otlp_grpc_endpoint or os.getenv("OTEL_EXPORTER_OTLP_GRPC_ENDPOINT", "http://localhost:4317")
+                    otlp_exporter = OTLPGrpcExporter(endpoint=endpoint)
+                    otlp_processor = BatchSpanProcessor(
+                        otlp_exporter,
+                        max_queue_size=2048,
+                        max_export_batch_size=512,
+                        schedule_delay_millis=5000,
+                    )
+                    provider.add_span_processor(otlp_processor)
+                    if self.enable_logging:
+                        logger.info("otlp_grpc_exporter_enabled", extra={"endpoint": endpoint})
+                except Exception as e:
+                    if self.enable_logging:
+                        logger.warning("otlp_grpc_exporter_failed", extra={"error": str(e)})
+            
+            # OTLP HTTP exporter (for environments where gRPC is blocked)
+            if enable_otlp_http and OTEL_HTTP_EXPORTER_AVAILABLE:
+                try:
+                    import os
+                    endpoint = otlp_http_endpoint or os.getenv("OTEL_EXPORTER_OTLP_HTTP_ENDPOINT", "http://localhost:4318")
+                    otlp_exporter = OTLPHttpExporter(endpoint=endpoint)
+                    otlp_processor = BatchSpanProcessor(
+                        otlp_exporter,
+                        max_queue_size=2048,
+                        max_export_batch_size=512,
+                        schedule_delay_millis=5000,
+                    )
+                    provider.add_span_processor(otlp_processor)
+                    if self.enable_logging:
+                        logger.info("otlp_http_exporter_enabled", extra={"endpoint": endpoint})
+                except Exception as e:
+                    if self.enable_logging:
+                        logger.warning("otlp_http_exporter_failed", extra={"error": str(e)})
+            
             trace.set_tracer_provider(provider)
             self.tracer = trace.get_tracer(__name__)
             self._enabled = True
             if self.enable_logging:
-                logger.info("opentelemetry_initialized", extra={"service_name": service_name})
+                logger.info("opentelemetry_initialized", extra={
+                    "service_name": service_name,
+                    "grpc_available": OTEL_GRPC_EXPORTER_AVAILABLE,
+                    "http_available": OTEL_HTTP_EXPORTER_AVAILABLE,
+                })
         else:
             self.tracer = None
             self._enabled = False

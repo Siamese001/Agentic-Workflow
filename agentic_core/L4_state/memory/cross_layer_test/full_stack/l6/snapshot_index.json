@@ -1,0 +1,11 @@
+{
+  "runtime_adg_1774748005_60f9ce6e": {
+    "duration_ms": 0,
+    "edge_count": 15,
+    "file_path": "agentic_core\\L4_state\\memory\\cross_layer_test\\full_stack\\l6\\runtime_adg_1774748005_60f9ce6e.json",
+    "mission": "full-stack-test",
+    "node_count": 8,
+    "timestamp": 1774748005,
+    "trace_id": "ca9c6cc1104de084f50ce32f7cb033d0"
+  }
+}
