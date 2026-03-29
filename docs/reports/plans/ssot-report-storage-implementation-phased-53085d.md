@@ -36,7 +36,7 @@ Implement a comprehensive phased approach to ensure all reports are stored in th
 **1.2 Pre-commit Hook Foundation**
 - Create `.pre-commit-config.yaml` entry for `check-report-location`
 - Implement basic validation script in `scripts/hooks/validate_report_location.py`
-- Hook runs in dry-run mode (no moves) for first 48 hours
+- Hook runs in dry-run mode (no moves) for first 
 
 **1.3 Baseline Inventory**
 - Generate comprehensive report location manifest
@@ -119,50 +119,50 @@ Implement a comprehensive phased approach to ensure all reports are stored in th
 ## Sub-Phase Breakdown for Maximum Success
 
 ### **Phase 1 Sub-Phases**
-- **1.1a**: Discovery extension (4 hours)
-- **1.1b**: Pattern matching implementation (2 hours)
-- **1.2a**: Hook foundation (3 hours)
-- **1.2b**: Dry-run validation (3 hours)
-- **1.3a**: Inventory generation (2 hours)
-- **1.3b**: Priority matrix creation (2 hours)
+- **1.1a**: Discovery extension ()
+- **1.1b**: Pattern matching implementation ()
+- **1.2a**: Hook foundation ()
+- **1.2b**: Dry-run validation ()
+- **1.3a**: Inventory generation ()
+- **1.3b**: Priority matrix creation ()
 
 ### **Phase 2 Sub-Phases**
-- **2.1a**: Migration script core (6 hours)
-- **2.1b**: Git-aware moves (4 hours)
-- **2.2a**: Pilot selection (1 hour)
-- **2.2b**: Pilot execution (4 hours)
-- **2.2c**: Pilot validation (3 hours)
-- **3.1a**: Test framework extension (4 hours)
-- **3.1b**: Compliance test creation (4 hours)
+- **2.1a**: Migration script core ()
+- **2.1b**: Git-aware moves ()
+- **2.2a**: Pilot selection ()
+- **2.2b**: Pilot execution ()
+- **2.2c**: Pilot validation ()
+- **3.1a**: Test framework extension ()
+- **3.1b**: Compliance test creation ()
 
 ### **Phase 3 Sub-Phases**
-- **3.1a**: Hook activation (2 hours)
-- **3.1b**: Auto-move enablement (3 hours)
-- **3.1c**: Violation reporting (3 hours)
-- **3.2a**: Bulk migration execution (8 hours)
-- **3.2b**: Migration validation (4 hours)
-- **3.3a**: Reference scanning (4 hours)
-- **3.3b**: Reference updates (4 hours)
+- **3.1a**: Hook activation ()
+- **3.1b**: Auto-move enablement ()
+- **3.1c**: Violation reporting ()
+- **3.2a**: Bulk migration execution ()
+- **3.2b**: Migration validation ()
+- **3.3a**: Reference scanning ()
+- **3.3b**: Reference updates ()
 
 ### **Phase 4 Sub-Phases**
-- **4.1a**: Protocol standardization (3 hours)
-- **4.1b**: Subdirectory organization (2 hours)
-- **4.2a**: Agent audit (4 hours)
-- **4.2b**: Agent updates (8 hours)
-- **4.2c**: Agent testing (4 hours)
-- **4.3a**: CI/CD integration (4 hours)
-- **4.3b**: Dashboard integration (4 hours)
+- **4.1a**: Protocol standardization ()
+- **4.1b**: Subdirectory organization ()
+- **4.2a**: Agent audit ()
+- **4.2b**: Agent updates ()
+- **4.2c**: Agent testing ()
+- **4.3a**: CI/CD integration ()
+- **4.3b**: Dashboard integration ()
 
 ### **Phase 5 Sub-Phases**
-- **5.1a**: Semantic validation (4 hours)
-- **5.1b**: Metadata standards (3 hours)
-- **5.1c**: Quality gates (3 hours)
-- **5.2a**: Rules update (2 hours)
-- **5.2b**: Training materials (4 hours)
-- **5.2c**: Documentation (2 hours)
-- **5.3a**: Metrics implementation (4 hours)
-- **5.3b**: Monitoring setup (3 hours)
-- **5.3c**: Maintenance automation (3 hours)
+- **5.1a**: Semantic validation ()
+- **5.1b**: Metadata standards ()
+- **5.1c**: Quality gates ()
+- **5.2a**: Rules update ()
+- **5.2b**: Training materials ()
+- **5.2c**: Documentation ()
+- **5.3a**: Metrics implementation ()
+- **5.3b**: Monitoring setup ()
+- **5.3c**: Maintenance automation ()
 
 ## Success Criteria by Phase
 

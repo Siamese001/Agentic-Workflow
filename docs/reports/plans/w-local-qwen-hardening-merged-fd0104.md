@@ -168,11 +168,11 @@ class QwenCircuitBreaker:
         self.failure_count += 1
         self.last_failure_time = now
 
-        # 3 consecutive failures within 60 seconds → disable for 5 minutes
+        # 3 consecutive failures within 60 seconds → disable for 
         if self.failure_count >= 3:
             self.circuit_open = True
             self.circuit_open_time = now
-            logger.warning("Qwen circuit breaker OPEN - disabling for 5 minutes")
+            logger.warning("Qwen circuit breaker OPEN - disabling for ")
             return True
 
         return False
@@ -182,7 +182,7 @@ class QwenCircuitBreaker:
         if not self.circuit_open:
             return False
 
-        # Auto-close after 5 minutes
+        # Auto-close after 
         if time.time() - self.circuit_open_time > 300:
             self.circuit_open = False
             self.failure_count = 0

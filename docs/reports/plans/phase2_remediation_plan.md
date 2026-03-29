@@ -155,12 +155,12 @@ Phase 2 addresses 21 systemic naming violations across all app domains, focusing
 
 ## Timeline Estimate
 
-- **Wave 1**: 2-3 hours (systematic renaming)
-- **Wave 2**: 1-2 hours (DUAL-TAG resolution)
-- **Wave 3**: 30 minutes (PASSIVE_AGENT_NAMING)
-- **Validation**: 1-2 hours (testing and verification)
+- **Wave 1**: 2- (systematic renaming)
+- **Wave 2**: 1- (DUAL-TAG resolution)
+- **Wave 3**:  (PASSIVE_AGENT_NAMING)
+- **Validation**: 1- (testing and verification)
 
-**Total Estimated**: 4.5-7.5 hours
+**Total Estimated**: 4.5-
 
 ## Next Steps
 

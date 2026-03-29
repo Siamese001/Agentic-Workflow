@@ -287,7 +287,7 @@ python -m agentic_core.L5_safety.config.structure_blueprint._verify
 **Prevention Measures:**
 1. **SSOT Validation**: Add automated check to prevent new prompt directories
 
-2. **Reference Monitoring**: Alert on orphaned prompt files (>30 days)
+2. **Reference Monitoring**: Alert on orphaned prompt files (>)
 
 3. **Blueprint Enforcement**: CI/CD check for blueprint compliance
 

@@ -458,14 +458,14 @@ python -m apps_comply \
 ## App 4: `apps_onboard` — Employee & System Onboarding Workflow Engine
 
 ### Product Purpose
-Generates structured onboarding programmes for new employees or new system integrations. For people onboarding: role-specific 30-60-90 day plans, stakeholder maps, knowledge transfer checklists. For system onboarding: dependency maps, integration runbooks, rollback procedures. Targets enterprise platform teams and HR automation buyers.
+Generates structured onboarding programmes for new employees or new system integrations. For people onboarding: role-specific 30-60- plans, stakeholder maps, knowledge transfer checklists. For system onboarding: dependency maps, integration runbooks, rollback procedures. Targets enterprise platform teams and HR automation buyers.
 
 ### Reviewer Persona
 Heads of Engineering, HR automation leads, platform engineering managers evaluating workflow automation depth.
 
 ### Domain Rationale (ADG-grounded)
 - `apps_shared/utils/async_coordinator_util.py` (13 KB) — multi-agent coordination patterns applicable to parallel onboarding task generation.
-- `apps_shared/utils/mutation_phase_util.py` (11 KB) — phased mutation / rollback patterns directly map to 30-60-90 day phase model.
+- `apps_shared/utils/mutation_phase_util.py` (11 KB) — phased mutation / rollback patterns directly map to 30-60- phase model.
 - `apps_shared/utils/checkpoint_integrity_error_validator.py` (via validators) — checkpoint-driven progress gates.
 - ADG shows `stamps_work_contract: 13` edges — onboarding engine introduces `WorkContractStamper` as a new consumer.
 - `apps_shared/utils/waterfall_reconciliation_util.py` (9 KB) — reconciliation patterns map to onboarding dependency resolution.
@@ -477,7 +477,7 @@ Heads of Engineering, HR automation leads, platform engineering managers evaluat
 | HOP-1 | `RoleProfileIngestionEngine` | Role spec + org chart → `RoleContext` |
 | HOP-2 | `StakeholderMapEngine` | `RoleContext` → `StakeholderMap` |
 | HOP-3 | `KnowledgeTransferPlanEngine` | `RoleContext` + knowledge base → `KTPlan` |
-| HOP-4 | `PhasedPlanEngine` | `KTPlan` → `OnboardingPlan` (30/60/90 day phases) |
+| HOP-4 | `PhasedPlanEngine` | `KTPlan` → `OnboardingPlan` (30/60/ phases) |
 | HOP-5 | `DependencyRunbookEngine` | System description → `IntegrationRunbook` (system mode) |
 | HOP-6 | `CheckpointGateEngine` | Phase milestones → validated `CheckpointSet` |
 | HOP-7 | `OnboardGateValidator` | All outputs → `GateResult` |

@@ -319,14 +319,14 @@ GuardianSpec(
 
 | Phase | Files | Effort |
 |-------|-------|--------|
-| Phase 1 | ~35 | 1-2 hours |
-| Phase 2 | ~15 | 2-4 hours |
-| Phase 3 | ~75 | 4-8 hours |
-| Phase 4 | ~100+ | 8-16 hours |
-| Phase 5 | 0 | 1-2 hours |
-| Phase 6 | 2-3 | 2-3 hours |
+| Phase 1 | ~35 | 1- |
+| Phase 2 | ~15 | 2- |
+| Phase 3 | ~75 | 4- |
+| Phase 4 | ~100+ | 8- |
+| Phase 5 | 0 | 1- |
+| Phase 6 | 2-3 | 2- |
 
-**Total**: 18-35 hours of focused work
+**Total**: 18- of focused work
 
 ## Recommended Approach
 

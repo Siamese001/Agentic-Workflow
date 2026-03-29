@@ -241,7 +241,7 @@ def _emit_hitl_outcome(self, outcome: HITLOutcome) -> None:
     """Emit HITL outcome to system_learning for confidence recalibration."""
     # Store in Redis with TTL (similar to adg:drift:* pattern)
     # Key: hitl:outcome:<operation_name>:<timestamp>
-    # TTL: 7 days (604800 seconds)
+    # TTL:  (604800 seconds)
     # Value: JSON-serialized HITLOutcome
 ```
 

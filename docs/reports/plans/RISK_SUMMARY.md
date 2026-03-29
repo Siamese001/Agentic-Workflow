@@ -175,12 +175,12 @@ Status: ❌ **HIGH RISK** - Significant hidden failures detected
 
 | Risk Area | Current Level | Target Level | Time to Mitigate | Priority |
 |-----------|---------------|--------------|------------------|----------|
-| Silent Degradation | 🚨 CRITICAL | ✅ LOW | 1 week | 1 |
-| State Isolation | 🔴 HIGH | ✅ LOW | 2 weeks | 2 |
-| Import Suppression | 🔴 HIGH | ✅ LOW | 2 weeks | 3 |
-| Test Quality | ⚠️ MEDIUM | ✅ LOW | 4 weeks | 4 |
-| Coverage Gaps | ⚠️ MEDIUM | ✅ LOW | 4 weeks | 5 |
-| Determinism | ⚠️ MEDIUM | ✅ LOW | 3 weeks | 6 |
+| Silent Degradation | 🚨 CRITICAL | ✅ LOW |  | 1 |
+| State Isolation | 🔴 HIGH | ✅ LOW |  | 2 |
+| Import Suppression | 🔴 HIGH | ✅ LOW |  | 3 |
+| Test Quality | ⚠️ MEDIUM | ✅ LOW |  | 4 |
+| Coverage Gaps | ⚠️ MEDIUM | ✅ LOW |  | 5 |
+| Determinism | ⚠️ MEDIUM | ✅ LOW |  | 6 |
 
 ---
 

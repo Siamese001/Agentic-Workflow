@@ -561,10 +561,10 @@ class MixtureOfExperts:
 
 | Phase | Duration | Key Deliverables | Token Budget |
 |-------|----------|------------------|--------------|
-| 1 | 2 weeks | Calibration layer, monitoring | 50,000 |
-| 2 | 3 weeks | Multi-model system, feedback loop | 80,000 |
-| 3 | 3 weeks | Advanced features, optimization | 70,000 |
-| **Total** | **8 weeks** | **Production-ready ML routing** | **200,000** |
+| 1 |  | Calibration layer, monitoring | 50,000 |
+| 2 |  | Multi-model system, feedback loop | 80,000 |
+| 3 |  | Advanced features, optimization | 70,000 |
+| **Total** | **** | **Production-ready ML routing** | **200,000** |
 
 ## Conclusion
 

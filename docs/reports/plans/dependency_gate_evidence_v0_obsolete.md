@@ -230,7 +230,7 @@ dependencies = [
 - Raise actionable error: "Install with: pip install -e '.[infra]'"
 - Update type hints to use `from __future__ import annotations` or `Any`
 
-**Estimated effort:** 2-3 days for complete implementation + testing
+**Estimated effort:** 2- for complete implementation + testing
 **Estimated benefit:** ~400MB smaller core install, clearer separation of concerns
 
 ---

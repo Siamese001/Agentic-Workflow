@@ -165,8 +165,7 @@ For each new/modified engine, add:
 
 ```
 Week 1: A1 (Rewoo) + A2 (Reflexion)         ← highest gap, zero foundation
-Week 2: B1 (Eval-Optimizer) + C1 (ReACT)    ← wiring + highest-priority Tier 3
-Week 3: B2 (Parallelization) + B3 (Autonomous)
+Week 2: B1 (Eval-Optimizer) + C1 (ReACT)    ← wiring + highest-priority Tier  3: B2 (Parallelization) + B3 (Autonomous)
 Week 4: C2 (Router) + C3 (Prompt Chaining) + C4 (Orch-Worker) + C5 (Plan+Execute)
 Week 5: Phase D tests + architecture invariants for all 10 patterns
 ```

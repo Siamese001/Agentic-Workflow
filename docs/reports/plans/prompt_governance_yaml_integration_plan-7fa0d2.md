@@ -114,11 +114,11 @@ The YAML templates are **production-ready but unused**, while markdown files are
 4. **Testing**: Comprehensive test suite before any deprecation
 
 ## Implementation Timeline
-- **Phase 1**: 2-3 days (YAML loader + core integration)
-- **Phase 2**: 2 days (apps_* bridge)
-- **Phase 3**: 2 days (test coverage)
-- **Phase 4**: 1-2 days (migration + cleanup)
-- **Total**: 7-9 days
+- **Phase 1**: 2- (YAML loader + core integration)
+- **Phase 2**:  (apps_* bridge)
+- **Phase 3**:  (test coverage)
+- **Phase 4**: 1- (migration + cleanup)
+- **Total**: 7-
 
 This plan ensures production-grade YAML templates are fully integrated across both `agentic_core` and `apps_*` while maintaining backward compatibility and comprehensive test coverage.
 

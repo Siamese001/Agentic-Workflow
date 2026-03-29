@@ -144,21 +144,21 @@ The pre-write hooks system will enforce all 10 sections of the Windsurf constitu
 
 ## Implementation Phases
 
-### Phase 1: Critical Gap Skills (25,000 tokens, 4 hours)
+### Phase 1: Critical Gap Skills (25,000 tokens, )
 1. **powershell-guard** - Leverage existing `check_powershell_ban.py`
 2. **repair-gate-validator** - Validate all 5 repair gates before edit
 3. **agent-deletion-guard** - Integrate existing `guard_agent_deletion.py`
 4. **hitl-decision-validator** - Check HITL presentation before multi-option decisions
 5. **guardian-exemption-validator** - Integrate existing `guardian_exemption_gate.py`
 
-### Phase 2: Pre-Write Orchestrator (35,000 tokens, 6 hours)
+### Phase 2: Pre-Write Orchestrator (35,000 tokens, )
 1. Create unified `pre-write-orchestrator` skill
 2. Implement skill dependency resolution
 3. Add comprehensive error reporting
 4. Create skill status dashboard
 5. Implement performance monitoring
 
-### Phase 3: CI Integration (20,000 tokens, 3 hours)
+### Phase 3: CI Integration (20,000 tokens, )
 1. Extend `run_contract_gates.py` for skill validation
 2. Add skill compliance reporting
 3. Implement performance gates

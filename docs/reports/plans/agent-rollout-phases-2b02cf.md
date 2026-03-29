@@ -8,17 +8,17 @@ Detailed breakdown of Phase 7 (169 remaining agents) into actionable phases and 
 
 | Phase | Scope | Agents | Duration | Risk |
 |-------|-------|--------|----------|------|
-| 7A | L5 Safety - Validators | 49 | 2 weeks | MEDIUM |
-| 7B | L5 Safety - Guardrails | 14 | 1 week | HIGH |
-| 7C | L5 Safety - Other | 22 | 1 week | MEDIUM |
-| 7D | Core Layers (L0-L4, L6) | 41 | 2 weeks | LOW |
-| 7E | Domain Apps (apps_rg) | 15 | 1 week | MEDIUM |
-| 7F | Domain Apps (apps_lic) | 28 | 2 weeks | MEDIUM |
-| **Total** | | **169** | **9 weeks** | |
+| 7A | L5 Safety - Validators | 49 | TIME_REMOVED | MEDIUM |
+| 7B | L5 Safety - Guardrails | 14 | TIME_REMOVED | HIGH |
+| 7C | L5 Safety - Other | 22 | TIME_REMOVED | MEDIUM |
+| 7D | Core Layers (L0-L4, L6) | 41 | TIME_REMOVED | LOW |
+| 7E | Domain Apps (apps_rg) | 15 | TIME_REMOVED | MEDIUM |
+| 7F | Domain Apps (apps_lic) | 28 | TIME_REMOVED | MEDIUM |
+| **Total** | | **169** | **TIME_REMOVED** | |
 
 ---
 
-## Phase 7A: L5 Validators (49 agents, 2 weeks)
+## Phase 7A: L5 Validators (49 agents, TIME_REMOVED)
 
 ### 7A.1 Critical Validators (Week 1, Days 1-3)
 **Priority:** P0 - These are referenced throughout the codebase
@@ -58,7 +58,7 @@ Detailed breakdown of Phase 7 (169 remaining agents) into actionable phases and 
 
 ---
 
-## Phase 7B: L5 Guardrails (14 agents, 1 week)
+## Phase 7B: L5 Guardrails (14 agents, TIME_REMOVED)
 
 ### 7B.1 Security Guardrails (Days 1-3)
 **Risk:** HIGH - These have security implications
@@ -83,7 +83,7 @@ Detailed breakdown of Phase 7 (169 remaining agents) into actionable phases and 
 
 ---
 
-## Phase 7C: L5 Other (22 agents, 1 week)
+## Phase 7C: L5 Other (22 agents, TIME_REMOVED)
 
 ### 7C.1 Policy Engine Agents (Days 1-2)
 | Agent | Integration |
@@ -107,7 +107,7 @@ Detailed breakdown of Phase 7 (169 remaining agents) into actionable phases and 
 
 ---
 
-## Phase 7D: Core Layers (41 agents, 2 weeks)
+## Phase 7D: Core Layers (41 agents, TIME_REMOVED)
 
 ### 7D.1 L6 Observability (Week 1, Days 1-2)
 | Agent | Integration |
@@ -156,7 +156,7 @@ Detailed breakdown of Phase 7 (169 remaining agents) into actionable phases and 
 
 ---
 
-## Phase 7E: apps_rg (15 agents, 1 week)
+## Phase 7E: apps_rg (15 agents, TIME_REMOVED)
 
 ### 7E.1 RG Orchestrators (Days 1-2)
 | Agent | Integration |
@@ -183,7 +183,7 @@ Detailed breakdown of Phase 7 (169 remaining agents) into actionable phases and 
 
 ---
 
-## Phase 7F: apps_lic (28 agents, 2 weeks)
+## Phase 7F: apps_lic (28 agents, TIME_REMOVED)
 
 ### 7F.1 HOP Pipeline Agents (Week 1)
 | Agent | Stage | Integration |
@@ -254,7 +254,7 @@ Detailed breakdown of Phase 7 (169 remaining agents) into actionable phases and 
 
 ---
 
-**Estimated Total Duration:** 9 weeks
+**Estimated Total Duration:** TIME_REMOVED
 **Created:** 2026-02-03
 
 ## Findings

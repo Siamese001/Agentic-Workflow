@@ -179,7 +179,7 @@ Based on comprehensive repository analysis of **109 agents** across agentic_core
 ### Mitigation Strategies:
 - **Domain Isolation** - Separate Redis namespaces and Pinecone collections per domain
 - **Strict Similarity Thresholds** - LIC: 0.92, RG: 0.85 (from existing base agents)
-- **Configurable TTL** - Domain-specific expiration (LIC: 2 hours, RG: 1 hour)
+- **Configurable TTL** - Domain-specific expiration (LIC: , RG: )
 - **Healing Cycle Depth Tracking** - Max depth 5 per domain
 - **Cross-Domain Pattern Sharing** - Opt-in sharing with explicit approval
 

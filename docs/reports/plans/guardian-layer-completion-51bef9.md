@@ -148,13 +148,13 @@ Complete the Guardian Layer implementation by moving SSOT validation from pre-co
 
 ## Estimated Time
 
-- Phase 1: 30-45 minutes (identify + fix 11 import failures)
-- Phase 2: 15-20 minutes (create ~12 __init__.py files)
-- Phase 3: 45-60 minutes (rename files + update imports)
-- Phase 4: 20-30 minutes (document or fix gravity issues)
-- Phase 5: 10-15 minutes (test + commit + push)
+- Phase 1: 30- (identify + fix 11 import failures)
+- Phase 2: 15- (create ~12 __init__.py files)
+- Phase 3: 45- (rename files + update imports)
+- Phase 4: 20- (document or fix gravity issues)
+- Phase 5: 10- (test + commit + push)
 
-**Total:** ~2-3 hours
+**Total:** ~2-
 
 ## Notes
 

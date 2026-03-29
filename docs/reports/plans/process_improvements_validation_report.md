@@ -82,7 +82,7 @@
 ### Performance Improvements
 
 **Cache Performance:**
-- Cold run: ~5 minutes (baseline)
+- Cold run: ~ (baseline)
 - Warm run: ~30 seconds (100% cache hit)
 - Improvement: ~10x speedup
 

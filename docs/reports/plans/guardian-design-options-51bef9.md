@@ -99,7 +99,7 @@ Guardian tests should operate as **pure reporting instruments** that track archi
 # scripts/split_monolith_files.py
 ```
 
-**Implementation Effort:** Medium (2-3 days)
+**Implementation Effort:** Medium (2-)
 
 ---
 
@@ -131,7 +131,7 @@ Guardian Test → Violation Report → HealingAgent → SovereignHealingEngine �
 - MCP clients - filesystem and git operations
 - Healing strategies for different violation types
 
-**Implementation Effort:** High (1-2 weeks)
+**Implementation Effort:** High (1-)
 
 ---
 
@@ -155,7 +155,7 @@ Guardian Test → Violation Report → HealingAgent → SovereignHealingEngine �
 - **Agent-assisted:** File moves, simple refactoring
 - **Manual-only:** Complex refactoring, architectural changes
 
-**Implementation Effort:** Medium-High (1 week)
+**Implementation Effort:** Medium-High ()
 
 ---
 
@@ -173,7 +173,7 @@ Guardian Test → Violation Report → HealingAgent → SovereignHealingEngine �
 - ❌ Not fully automated
 - ❌ Slower than autonomous
 
-**Implementation Effort:** High (2 weeks)
+**Implementation Effort:** High ()
 
 ---
 

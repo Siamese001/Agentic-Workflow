@@ -173,7 +173,7 @@ Based on `data/processed/` and agent discovery:
    - Performance benchmarks (local vs Pinecone)
 
 3. **Performance Targets**:
-   - Index build: <5 minutes for 50K chunks
+   - Index build: < for 50K chunks
    - Query latency: <100ms for top-15
    - Memory usage: <500MB during operation
 

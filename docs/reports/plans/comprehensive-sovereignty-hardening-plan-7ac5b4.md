@@ -679,17 +679,17 @@ initialize_sovereignty()
 
 | Phase | Duration | Start Date | End Date | Success Criteria |
 |-------|----------|------------|----------|------------------|
-| Phase 1.1 | 3 days | Week 1 | Week 1 | L3/L4 violations remediated |
-| Phase 1.2 | 4 days | Week 1 | Week 2 | L5 violations remediated |
-| Phase 1.3 | 3 days | Week 2 | Week 2 | L0 violations remediated |
-| Phase 2.1 | 3 days | Week 2 | Week 3 | Runtime sovereignty guards active |
-| Phase 2.2 | 2 days | Week 3 | Week 3 | Adapter registry hardened |
-| Phase 3.1 | 3 days | Week 3 | Week 4 | Write isolation enforced |
-| Phase 3.2 | 2 days | Week 4 | Week 4 | Import policy enhanced |
-| Phase 4.1 | 3 days | Week 4 | Week 5 | Gateway bypass detection active |
-| Phase 4.2 | 2 days | Week 5 | Week 5 | Runtime monitoring installed |
-| Phase 5.1 | 3 days | Week 5 | Week 6 | CI sovereignty enforcement |
-| Phase 5.2 | 2 days | Week 6 | Week 6 | Automated sovereignty tests |
+| Phase 1.1 |  | Week 1 | Week 1 | L3/L4 violations remediated |
+| Phase 1.2 |  | Week 1 | Week 2 | L5 violations remediated |
+| Phase 1.3 |  | Week 2 | Week 2 | L0 violations remediated |
+| Phase 2.1 |  | Week 2 | Week 3 | Runtime sovereignty guards active |
+| Phase 2.2 |  | Week 3 | Week 3 | Adapter registry hardened |
+| Phase 3.1 |  | Week 3 | Week 4 | Write isolation enforced |
+| Phase 3.2 |  | Week 4 | Week 4 | Import policy enhanced |
+| Phase 4.1 |  | Week 4 | Week 5 | Gateway bypass detection active |
+| Phase 4.2 |  | Week 5 | Week 5 | Runtime monitoring installed |
+| Phase 5.1 |  | Week 5 | Week 6 | CI sovereignty enforcement |
+| Phase 5.2 |  | Week 6 | Week 6 | Automated sovereignty tests |
 
 ## Conclusion
 

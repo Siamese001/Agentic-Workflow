@@ -120,8 +120,8 @@ D9. Embedding model change invalidates all indexes: rebuild required before any 
 
 | Index | Retention | Prune Strategy | Governance Layer | Rebuild Required |
 |---|---|---|---|---|
-| `healing_contexts` | 180 days | Drift-based (remove low-use patterns) | L6 → L4 write | Yes |
-| `telemetry_events` | 30 days | Rolling window eviction | L6 observe only | Yes |
+| `healing_contexts` |  | Drift-based (remove low-use patterns) | L6 → L4 write | Yes |
+| `telemetry_events` |  | Rolling window eviction | L6 observe only | Yes |
 | `dpo_pairs` | Permanent (versioned) | None; append-only | L4 content-hash | On new version only |
 
 ---
@@ -204,7 +204,7 @@ class FAISSConfig:
 2. **Prune determinism**: After pruning N vectors, `index_version_hash` changes; re-querying pruned `trace_id`s returns no results.
 3. **Metadata completeness**: Every `current.meta.json` contains `faiss_version`, `build_seed`, `canonicalization_version`, `embedding_model_version`, `embedding_model_checksum`, `index_version_hash`, `vector_count`, `dimension`, `built_at_utc`.
 4. **No concurrent mutation**: Attempting parallel writes raises `IndexWriteLockError`.
-5. **Retention enforcement**: Telemetry embeddings older than 30 days are absent from index after prune cycle.
+5. **Retention enforcement**: Telemetry embeddings older than  are absent from index after prune cycle.
 
 ---
 

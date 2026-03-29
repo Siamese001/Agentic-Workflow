@@ -88,8 +88,8 @@ Tier 2: Cloud  — Pinecone                        — backup + collaboration, <
 ### Retention Lifecycle (Required)
 | Data Type | Retention | Prune Strategy | Governance |
 |---|---|---|---|
-| Healing patterns | 180 days | Drift-based pruning | L6 → L4 write |
-| Telemetry embeddings | 30 days | Rolling window eviction | L6 observe only |
+| Healing patterns |  | Drift-based pruning | L6 → L4 write |
+| Telemetry embeddings |  | Rolling window eviction | L6 observe only |
 | DPO embeddings | Permanent (versioned) | Immutable, version-pinned | L4 content-hash |
 | Config embeddings | Versioned snapshot | Immutable | L4 content-hash |
 
@@ -288,7 +288,7 @@ class LocalEmbeddingPopulationService:
 | FAISS Tier-1 search | <20ms / 1M vectors | IVFPQ + SSD sequential |
 | Hot cache lookup | <5ms | InMemoryVectorCache |
 | Batch embedding | >1000 texts/sec | BatchEmbeddingService (existing) |
-| Index rebuild | <30min | LZ4-compressed offline rebuild |
+| Index rebuild | < | LZ4-compressed offline rebuild |
 | Pinecone fallback | <200ms | Cloud backup only |
 
 ---

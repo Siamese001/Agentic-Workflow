@@ -22,7 +22,7 @@
 
 ## Phase 1: Dependency Resolution & Infrastructure (Waves 1-3)
 
-### Wave 1: Critical Dependencies (3 days)
+### Wave 1: Critical Dependencies ()
 **Objective**: Resolve blocking dependencies preventing imports
 
 **Micro-Wave 1.1: Missing Core Modules**
@@ -43,7 +43,7 @@
 - [ ] Create priority order for dependency resolution
 - [ ] Establish dependency resolution workflow
 
-### Wave 2: L0 Routing Completion (2 days)
+### Wave 2: L0 Routing Completion ()
 **Objective**: Complete L0 routing layer reconstruction
 
 **Micro-Wave 2.1: L0 Enforcement Fix**
@@ -57,7 +57,7 @@
 - [ ] Fix boundary_types and action_capability_config imports
 - [ ] Validate L0 layer completeness (target: 90% success rate)
 
-### Wave 3: Tool Chain Optimization (2 days)
+### Wave 3: Tool Chain Optimization ()
 **Objective**: Optimize import fixing tools for scale
 
 **Micro-Wave 3.1: Automated Import Detection**
@@ -76,7 +76,7 @@
 
 ## Phase 2: Core Layer Completion (Waves 4-6)
 
-### Wave 4: L2 Execution Layer (3 days)
+### Wave 4: L2 Execution Layer ()
 **Objective**: Complete L2 execution layer with working imports
 
 **Micro-Wave 4.1: L2 Core & Engines**
@@ -97,7 +97,7 @@
 - [ ] Test L2 execution pipeline end-to-end
 - [ ] Achieve 85% L2 success rate
 
-### Wave 5: L5 Safety Layer (3 days)
+### Wave 5: L5 Safety Layer ()
 **Objective**: Complete L5 safety layer reconstruction
 
 **Micro-Wave 5.1: L5 Enforcement & Reasoning**
@@ -118,7 +118,7 @@
 - [ ] Test safety plane response mechanisms
 - [ ] Achieve 80% L5 success rate
 
-### Wave 6: Application Layer (2 days)
+### Wave 6: Application Layer ()
 **Objective**: Complete application layer reconstruction
 
 **Micro-Wave 6.1: Apps Pipeline Completion**
@@ -137,7 +137,7 @@
 
 ## Phase 3: Advanced Components (Waves 7-9)
 
-### Wave 7: Governance & ADG (4 days)
+### Wave 7: Governance & ADG ()
 **Objective**: Complete governance and ADG components
 
 **Micro-Wave 7.1: Governance Core**
@@ -164,7 +164,7 @@
 - [ ] Test ADG query operations
 - [ ] Achieve 70% ADG success rate
 
-### Wave 8: System Learning & Tools (3 days)
+### Wave 8: System Learning & Tools ()
 **Objective**: Complete system learning and tool components
 
 **Micro-Wave 8.1: System Learning Core**
@@ -185,7 +185,7 @@
 - [ ] Test tool execution policies
 - [ ] Achieve 75% tool success rate
 
-### Wave 9: Remaining Components (2 days)
+### Wave 9: Remaining Components ()
 **Objective**: Complete all remaining modules
 
 **Micro-Wave 9.1: Cache & Config**
@@ -204,7 +204,7 @@
 
 ## Phase 4: Validation & Hardening (Waves 10-12)
 
-### Wave 10: Integration Testing (3 days)
+### Wave 10: Integration Testing ()
 **Objective**: Comprehensive integration validation
 
 **Micro-Wave 10.1: Cross-Layer Integration**
@@ -225,7 +225,7 @@
 - [ ] Test memory usage and resource management
 - [ ] Optimize critical path performance
 
-### Wave 11: Quality Assurance (2 days)
+### Wave 11: Quality Assurance ()
 **Objective**: Ensure quality and reliability
 
 **Micro-Wave 11.1: Test Coverage Analysis**
@@ -240,7 +240,7 @@
 - [ ] Test recovery mechanisms
 - [ ] Ensure graceful degradation
 
-### Wave 12: Final Hardening (2 days)
+### Wave 12: Final Hardening ()
 **Objective**: Final preparation for production
 
 **Micro-Wave 12.1: Documentation**

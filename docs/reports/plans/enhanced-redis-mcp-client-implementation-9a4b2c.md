@@ -67,7 +67,7 @@ uncovered = client.get_adg_drift_uncovered()  # adg:drift:uncovered LIST
 - ❌ **MCP Tools**: Not available (expected limitation)
 - ✅ **ADG Keys**: 172,095 total keys (updated count)
 - ✅ **Metadata**: Available and accessible
-- ✅ **Freshness**: 0.9 hours old (fresh cache)
+- ✅ **Freshness**:  old (fresh cache)
 
 **Functionality Verification**:
 - ✅ **HASH queries**: `adg:meta` accessible (8,234 nodes, 224,969 edges)
@@ -190,7 +190,7 @@ The Enhanced Redis MCP Client successfully resolves the ADG cache accessibility 
 
 1. **Implementation**: `tools/adg/enhanced_redis_mcp_client.py` (created)
 2. **Verification**: Test run showing successful HASH/SET queries
-3. **Cache State**: 172,095 keys, 0.9 hours fresh, all data types accessible
+3. **Cache State**: 172,095 keys,  fresh, all data types accessible
 4. **Health Check**: Direct Redis available, MCP tools limited as expected
 
 ---

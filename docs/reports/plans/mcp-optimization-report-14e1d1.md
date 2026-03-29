@@ -302,7 +302,7 @@ Removed/Consolidated:
 2. **Create Usage Matrix**: Map tools to functionality
 3. **Identify Removal Candidates**: List non-essential tools
 
-### Short Term (2-4 Weeks)
+### Short Term (2-)
 1. **Implement Rationalization**: Remove redundant Playwright tools
 2. **Add Database MCP**: Integrate PostgreSQL operations
 3. **Create LLM Router MCP**: Centralize AI service calls

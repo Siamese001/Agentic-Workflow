@@ -405,7 +405,7 @@ jobs:
 ## 🎯 **Success Metrics**
 
 1. **Zero Critical Violations**: No HARD_BLOCK violations in main branch
-2. **Rapid Detection**: New violations detected within 5 minutes of commit
+2. **Rapid Detection**: New violations detected within  of commit
 3. **Developer Adoption**: < 10% false positive rate
 4. **System Health**: 100% compliance with Windsurf rules
 5. **Documentation Coverage**: All required documentation present and current

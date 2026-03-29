@@ -74,7 +74,7 @@ All 4 phases completed. Eliminates remaining type/contract drift risks by enforc
 
 **Problem**: Fixed calendar dates create time-bomb failures that require constant updates.
 
-**Fix**: Enforce `review_by` is not in the past AND not more than `TODAY + 180 days`. Keep injected `_TODAY` for deterministic tests.
+**Fix**: Enforce `review_by` is not in the past AND not more than `TODAY + `. Keep injected `_TODAY` for deterministic tests.
 
 **Files changed**:
 

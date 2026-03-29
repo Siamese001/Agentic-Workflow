@@ -33,7 +33,7 @@
 | **Phase 4** | Week 4 | 3 waves | Cross-Cutting Integration | Phase outcomes, repair routes, cache coherence |
 | **Phase 5** | Weeks 5-6 | 2 waves | Advanced Cross-Domain | Pattern sharing, OTel telemetry |
 
-**Total:** 20 waves across 6 weeks, covering 9 domains with 31 signal types (up from 11)
+**Total:** 20 waves across , covering 9 domains with 31 signal types (up from 11)
 
 ### Quick Wins (Wave A - 11 opportunities)
 - RCA ↔ ADG Violation Correlation (#1)

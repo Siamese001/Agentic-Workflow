@@ -234,7 +234,7 @@ lease:{resource_id}                             # L2 coordination leases
 
 **Problems:**
 1. **No namespace isolation** - Mission IDs mixed with global keys
-2. **Inconsistent TTL policies** - Some caches use 7 days, others 10 minutes
+2. **Inconsistent TTL policies** - Some caches use , others 
 3. **No eviction strategy** - LRU not configured, risk of memory bloat
 4. **Missing monitoring** - No hit/miss rate tracking per namespace
 
@@ -439,7 +439,7 @@ class RedisCacheMetrics:
 
 ### Risk 3: Migration Downtime
 **Mitigation**: Blue-green deployment with dual-write period
-**Action**: Run old + new namespaces in parallel for 1 week, then cutover
+**Action**: Run old + new namespaces in parallel for , then cutover
 
 ### Risk 4: Performance Regression
 **Mitigation**: Benchmark before/after with realistic workloads

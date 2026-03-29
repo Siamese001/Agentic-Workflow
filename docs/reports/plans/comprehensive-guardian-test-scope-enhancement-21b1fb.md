@@ -289,7 +289,7 @@ class TestAgentLifecycleCompliance:
 
 ### Quality Metrics
 - Guardian execution time: <30s total aggregation
-- Test suite execution: <5 minutes full run
+- Test suite execution: < full run
 - False positive rate: <5% for all guardians
 - CI pipeline stability: >95% success rate
 

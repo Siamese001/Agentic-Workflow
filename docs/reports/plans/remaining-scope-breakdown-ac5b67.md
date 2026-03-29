@@ -22,7 +22,7 @@
 ## Phase 2C: Final Broken Import Fixes (3 sub-phases)
 
 ### Phase 2C.1: Fix FilesystemSSOTReconcilerAgent
-**Duration:** 30 minutes
+**Duration:** 
 **Risk:** LOW
 **Impact:** HIGH
 
@@ -36,7 +36,7 @@
 **Test:** Run nuclear audit (should reduce to 2 broken imports)
 
 ### Phase 2C.2: Move MockSovereignAgent to Tests
-**Duration:** 20 minutes
+**Duration:** 
 **Risk:** LOW
 **Impact:** MEDIUM
 
@@ -50,7 +50,7 @@
 **Test:** Run nuclear audit (should reduce to 1 broken import)
 
 ### Phase 2C.3: Handle BiasAuditorAgent
-**Duration:** 20 minutes
+**Duration:** 
 **Risk:** LOW
 **Impact:** MEDIUM
 
@@ -66,7 +66,7 @@
 ## Phase 3: Missing heal() Methods (4 sub-phases)
 
 ### Phase 3.1: Core Agent heal() Implementation
-**Duration:** 1 hour
+**Duration:** 
 **Risk:** LOW
 **Impact:** HIGH
 
@@ -90,7 +90,7 @@
 **Test:** Run nuclear audit (should reduce signature mismatches)
 
 ### Phase 3.2: L5 Safety Agents heal() Implementation
-**Duration:** 45 minutes
+**Duration:** 
 **Risk:** LOW
 **Impact:** MEDIUM
 
@@ -110,7 +110,7 @@
 **Test:** Run nuclear audit (continue reducing signature mismatches)
 
 ### Phase 3.3: Workflow Engine Agents heal() Implementation
-**Duration:** 45 minutes
+**Duration:** 
 **Risk:** LOW
 **Impact:** MEDIUM
 
@@ -132,7 +132,7 @@
 **Test:** Run nuclear audit (significant reduction in signature mismatches)
 
 ### Phase 3.4: Remaining Agents heal() Implementation
-**Duration:** 30 minutes
+**Duration:** 
 **Risk:** LOW
 **Impact:** LOW
 
@@ -148,7 +148,7 @@
 ## Phase 4: Namespace Validation (2 sub-phases)
 
 ### Phase 4.1: Fix Namespace Violations
-**Duration:** 1 hour
+**Duration:** 
 **Risk:** MEDIUM
 **Impact:** HIGH
 
@@ -163,7 +163,7 @@
 **Test:** Run nuclear audit (should show 0 namespace violations)
 
 ### Phase 4.2: Validate Namespace Rules
-**Duration:** 30 minutes
+**Duration:** 
 **Risk:** LOW
 **Impact:** MEDIUM
 
@@ -178,7 +178,7 @@
 ## Phase 5: Test Coverage Expansion (3 sub-phases)
 
 ### Phase 5.1: Fix Test Infrastructure
-**Duration:** 2 hours
+**Duration:** 
 **Risk:** MEDIUM
 **Impact:** HIGH
 
@@ -193,7 +193,7 @@
 **Test:** `pytest --collect-only` should collect all tests
 
 ### Phase 5.2: Core Agent Test Coverage
-**Duration:** 3 hours
+**Duration:** 
 **Risk:** MEDIUM
 **Impact:** HIGH
 
@@ -208,7 +208,7 @@
 **Test:** `pytest --cov` should show 50%+ coverage
 
 ### Phase 5.3: Complete Test Coverage
-**Duration:** 2 hours
+**Duration:** 
 **Risk:** MEDIUM
 **Impact:** MEDIUM
 
@@ -225,7 +225,7 @@
 ## Phase 6: Final Validation (2 sub-phases)
 
 ### Phase 6.1: Complete Audit Validation
-**Duration:** 1 hour
+**Duration:** 
 **Risk:** LOW
 **Impact:** HIGH
 
@@ -239,7 +239,7 @@
 **Test:** Perfect audit results
 
 ### Phase 6.2: Integration Testing
-**Duration:** 1 hour
+**Duration:** 
 **Risk:** LOW
 **Impact:** MEDIUM
 
@@ -269,17 +269,17 @@ Each phase must meet:
 
 ## Timeline Estimate
 
-**Total Remaining Duration:** 14-16 hours
-- Phase 2C: 1.5 hours (final import fixes)
-- Phase 3: 3 hours (heal() methods)
-- Phase 4: 1.5 hours (namespace validation)
-- Phase 5: 7 hours (test coverage)
-- Phase 6: 2 hours (final validation)
+**Total Remaining Duration:** 14-
+- Phase 2C:  (final import fixes)
+- Phase 3:  (heal() methods)
+- Phase 4:  (namespace validation)
+- Phase 5:  (test coverage)
+- Phase 6:  (final validation)
 
 **Session Distribution:**
-- Session 1: Phases 2C-3 (4.5 hours)
-- Session 2: Phase 4-5.1 (3.5 hours)
-- Session 3: Phase 5.2-6 (6 hours)
+- Session 1: Phases 2C-3 ()
+- Session 2: Phase 4-5.1 ()
+- Session 3: Phase 5.2-6 ()
 
 ## Next Steps
 

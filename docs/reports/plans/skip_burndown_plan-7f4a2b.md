@@ -146,10 +146,10 @@ python -m pytest --collect-only --tb=no 2>&1 | grep -c "skipped\|SKIP"
 
 ## Timeline
 
-- **Wave 1**: 1-2 hours (exemption logic fixes)
-- **Wave 2**: 2-3 hours (dependency resolution)
-- **Wave 3**: 2-4 hours (skip detection fixes)
-- **Total**: 5-9 hours for complete burndown
+- **Wave 1**: 1- (exemption logic fixes)
+- **Wave 2**: 2- (dependency resolution)
+- **Wave 3**: 2- (skip detection fixes)
+- **Total**: 5- for complete burndown
 
 ## Next Steps
 

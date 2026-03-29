@@ -152,13 +152,13 @@ This plan implements the recommendations from the Agent Deprecation Analysis Rep
 
 ## Timeline Estimate
 
-- **Phase 1:** 2-3 days (StructureHealerAgent)
-- **Phase 2:** 3-4 days (Validator agents)
-- **Phase 3:** 3-4 days (LocationHealerAgent)
-- **Phase 4:** 90 days monitoring
-- **Phase 5:** 2-3 days (final review)
+- **Phase 1:** 2- (StructureHealerAgent)
+- **Phase 2:** 3- (Validator agents)
+- **Phase 3:** 3- (LocationHealerAgent)
+- **Phase 4:**  monitoring
+- **Phase 5:** 2- (final review)
 
-**Total Estimated:** 104-108 days with 90-day monitoring period
+**Total Estimated:** 104- with 90-day monitoring period
 
 ## Success Metrics
 

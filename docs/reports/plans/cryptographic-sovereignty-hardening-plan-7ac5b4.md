@@ -701,7 +701,7 @@ class CapabilityToken:
 
     def _is_valid_timestamp(self) -> bool:
         """Check if token is within valid time window."""
-        # Tokens valid for 1 hour
+        # Tokens valid for 
         return time.time() - self.timestamp < 3600
 
 class CapabilityAuthority:
@@ -967,14 +967,14 @@ jobs:
 
 | Phase | Duration | Start Date | End Date | Success Criteria |
 |-------|----------|------------|----------|------------------|
-| Phase 1.1 | 3 days | Week 1 | Week 1 | Static import analysis active |
-| Phase 1.2 | 2 days | Week 1 | Week 2 | Namespace separation enforced |
-| Phase 2.1 | 2 days | Week 2 | Week 2 | Scoped gateway enforcement |
-| Phase 3.1 | 3 days | Week 2 | Week 3 | Single-writer determinism |
-| Phase 3.2 | 2 days | Week 3 | Week 3 | Double-run verification |
-| Phase 4.1 | 3 days | Week 3 | Week 4 | Capability tokens active |
-| Phase 4.2 | 2 days | Week 4 | Week 4 | Context-bound mutations |
-| Phase 5.1 | 3 days | Week 4 | Week 5 | Comprehensive CI sovereignty |
+| Phase 1.1 |  | Week 1 | Week 1 | Static import analysis active |
+| Phase 1.2 |  | Week 1 | Week 2 | Namespace separation enforced |
+| Phase 2.1 |  | Week 2 | Week 2 | Scoped gateway enforcement |
+| Phase 3.1 |  | Week 2 | Week 3 | Single-writer determinism |
+| Phase 3.2 |  | Week 3 | Week 3 | Double-run verification |
+| Phase 4.1 |  | Week 3 | Week 4 | Capability tokens active |
+| Phase 4.2 |  | Week 4 | Week 4 | Context-bound mutations |
+| Phase 5.1 |  | Week 4 | Week 5 | Comprehensive CI sovereignty |
 
 ## Conclusion
 

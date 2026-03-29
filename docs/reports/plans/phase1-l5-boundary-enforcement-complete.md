@@ -79,7 +79,7 @@ Phase 1 of the hardened L5→L2 signaling plan has been successfully implemented
 - No circular dependencies in signature computation
 
 ### ✅ Expiration Handling
-- Configurable expiration time (default 24 hours)
+- Configurable expiration time (default )
 - Proper ISO format timestamp handling
 - Expired certifications rejected
 

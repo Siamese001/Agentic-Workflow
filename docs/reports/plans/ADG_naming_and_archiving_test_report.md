@@ -243,7 +243,7 @@ print(f"Entities: {len(data['entities'])}")
 ## Performance Metrics
 
 ### ADG Generation Time
-- **Duration:** ~2 minutes
+- **Duration:** ~TIME_REMOVED
 - **Output:** 7 timestamped + 7 LATEST files
 - **Total size:** ~147 MB
 
@@ -336,7 +336,7 @@ The ADG naming streamlining and archiving system is fully functional and ready f
 
 ---
 
-**Test Execution Time:** ~5 minutes
+**Test Execution Time:** ~TIME_REMOVED
 **Total Space Saved:** 2.1 GB
 **Compression Ratio:** 91.6%
 **Files Archived:** 145

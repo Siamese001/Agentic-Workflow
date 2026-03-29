@@ -123,7 +123,7 @@ Based on comprehensive repository analysis of 51+ agents across L0-L6 layers, we
 
 ### Mitigation Strategies:
 - Strict similarity thresholds (minimum 0.85 cosine similarity)
-- Configurable TTL with aggressive expiration (default 1 hour)
+- Configurable TTL with aggressive expiration (default )
 - Healing cycle depth tracking (max depth 5)
 - Comprehensive monitoring and alerting
 

@@ -2,13 +2,13 @@
 
 **Date**: 2026-03-16
 **Current ADG**: `adg_indexed_03162026_1202.sqlite` — 195.27 MB, 960,860 edges, 68,798 nodes
-**Analysis Period**: March 14-16, 2026 (3 days, 12 ADG versions)
+**Analysis Period**: March 14-16, 2026 (TIME_REMOVED, 12 ADG versions)
 
 ---
 
 ## Executive Summary
 
-The ADG database grew **334%** in 3 days (221,242 → 960,860 edges), driven primarily by **systematic lifecycle trace hardening** across P0-P4 runtime dimensions. This is **intentional architectural instrumentation**, not bloat.
+The ADG database grew **334%** in TIME_REMOVED (221,242 → 960,860 edges), driven primarily by **systematic lifecycle trace hardening** across P0-P4 runtime dimensions. This is **intentional architectural instrumentation**, not bloat.
 
 **Key Findings:**
 - **70% of edges are core structural** (imports, calls, exports) — unchanged baseline
@@ -35,7 +35,7 @@ The ADG database grew **334%** in 3 days (221,242 → 960,860 edges), driven pri
 | 03/16 03:21 | 812,613 | +97,313 | +13.6% | P4 observability micro-wave |
 | **03/16 12:02** | **960,860** | **+148,247** | **+18.2%** | **Current (post-apps refactor)** |
 
-**Total Growth**: 221,242 → 960,860 edges (**+334%** in 72 hours)
+**Total Growth**: 221,242 → 960,860 edges (**+334%** in TIME_REMOVED)
 
 ---
 

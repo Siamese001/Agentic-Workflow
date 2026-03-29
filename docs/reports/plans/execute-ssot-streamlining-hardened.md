@@ -66,12 +66,12 @@ Registered as `ObservabilityProbeExecutorAgent`, never dispatched by any phase f
 
 ## Implementation Plan (6 items, ranked value/effort)
 
-### Item 1 — Remove dead `conversational_repair` alias *(30 min, Risk: None)*
+### Item 1 — Remove dead `conversational_repair` alias *(, Risk: None)*
 - Delete `"conversational_repair": ObservabilityProbeExecutorAgent` from `agents` dict
 - Remove from `CANONICAL_ROSTER_KEYS`, `AGENT_DEPENDENCIES`, `EXECUTION_PLAN`
 - Pre-check: `grep -r "conversational_repair"` across codebase to confirm no live dispatch
 
-### Item 2 — Wire `location` directly to `LocationValidatorAgent` *(30 min, Risk: Low)*
+### Item 2 — Wire `location` directly to `LocationValidatorAgent` *(, Risk: Low)*
 - In `_get_l5_agent_roster()`, import and return `LocationValidatorAgent` instead of `LocationAgent`
 - `LocationAgent` shim stays on disk for any external callers — only pipeline entry changes
 - Aligns with the existing `_get_location_validator_agent()` helper already used in Phase 1

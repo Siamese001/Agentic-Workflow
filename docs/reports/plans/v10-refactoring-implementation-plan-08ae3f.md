@@ -55,7 +55,7 @@ python scripts/state_snapshot.py --wave <N> --agent <AgentName>
 | **Guardian Tests** | 23 |
 | **Batch Size** | 5 agents per checkpoint |
 | **Latency Budget** | < 50ms overhead per agent |
-| **Estimated Duration** | 4-6 weeks |
+| **Estimated Duration** | 4- |
 
 ---
 
@@ -64,7 +64,7 @@ python scripts/state_snapshot.py --wave <N> --agent <AgentName>
 > **STRATEGIC PIVOT:** We are modifying source code directly. The `DomainPlannerAdapter` is **DEPRECATED** and will not be used. Direct inheritance provides cleaner MRO and eliminates bridge complexity.
 
 ### Phase 2.1: DomainPlannerAgent Direct Migration
-**Priority**: CRITICAL | **Duration**: 1-2 days
+**Priority**: CRITICAL | **Duration**: 1-
 
 #### 2.1.1 State Snapshot (PRE-REQUISITE)
 - [ ] **Backup databases**: `cp -r data/*.db data/snapshots/wave2/`
@@ -131,7 +131,7 @@ warnings.warn("DomainPlannerAdapter is deprecated. Use DomainPlannerAgent direct
 > **BATCH SIZE: 5 agents per checkpoint** (reduced from 10 for safer rollback granularity)
 
 ### Phase 3.1: Critical Safety Agents - Batch 1 (5 agents)
-**Priority**: HIGH | **Duration**: 2 days
+**Priority**: HIGH | **Duration**: 
 
 #### 3.1.1 VerificationGate Enhancement
 - [ ] Add `AtomicExecutionMixin` for rollback capability (MUST be first in MRO)
@@ -193,7 +193,7 @@ python -m pytest tests/stress/test_atomic_concurrency.py -v --tb=long
 - **Pass Criteria**: Zero data corruption, all threads complete or rollback cleanly
 
 ### Phase 3.2: Critical Safety Agents - Batch 2 (5 agents)
-**Priority**: HIGH | **Duration**: 1-2 days
+**Priority**: HIGH | **Duration**: 1-
 
 Target agents (Batch 2):
 - `FilesystemSSOTReconcilerAgent`
@@ -208,7 +208,7 @@ Target agents (Batch 2):
 - **Checkpoint**: `git tag -a wave3-batch2 -m "Wave 3 Batch 2 complete"`
 
 ### Phase 3.3: Critical Safety Agents - Batch 3 (5 agents)
-**Priority**: HIGH | **Duration**: 1-2 days
+**Priority**: HIGH | **Duration**: 1-
 
 Target agents (Batch 3):
 - `PolicyEnforcerAgent`
@@ -219,7 +219,7 @@ Target agents (Batch 3):
 - **Checkpoint**: `git tag -a wave3-batch3 -m "Wave 3 Batch 3 complete"`
 
 ### Phase 3.4: Remaining L5 Validators (70 agents)
-**Priority**: MEDIUM | **Duration**: 5-7 days
+**Priority**: MEDIUM | **Duration**: 5-
 
 #### 3.4.1 Categorize by Risk Level
 - [ ] HIGH risk (external_touch=true): 5 agents → Priority
@@ -258,7 +258,7 @@ For each **batch of 5 agents**:
 ## WAVE 4: L3 ORCHESTRATION LAYER (10 Agents)
 
 ### Phase 4.1: ContextualRouter Hardening
-**Priority**: HIGH | **Duration**: 2 days
+**Priority**: HIGH | **Duration**: 
 
 #### 4.1.1 CircuitBreaker Integration
 - [ ] Verify `CircuitBreakerMixin` is applied
@@ -291,7 +291,7 @@ Target agents:
 ## WAVE 5: L2 EXECUTION & L1 COGNITION (13 Agents)
 
 ### Phase 5.1: L2 MCP Hardening (6 agents)
-**Priority**: HIGH | **Duration**: 2-3 days
+**Priority**: HIGH | **Duration**: 2-
 
 #### 5.1.1 ToolRegistryAgent
 - [ ] Add `MCPHardenedMixin`
@@ -312,7 +312,7 @@ Target agents:
 - `ErrorRecoveryAgent`
 
 ### Phase 5.2: L1 Cognition Enhancement (7 agents)
-**Priority**: MEDIUM | **Duration**: 2 days
+**Priority**: MEDIUM | **Duration**: 
 
 #### 5.2.1 IntentAgent & PlanningAgent
 - [ ] Verify existing mixins are correct
@@ -329,7 +329,7 @@ Target agents:
 ## WAVE 6: APPS LAYER (43 Agents)
 
 ### Phase 6.1: RG Agents (apps_rg)
-**Priority**: MEDIUM | **Duration**: 3-4 days
+**Priority**: MEDIUM | **Duration**: 3-
 
 #### 6.1.1 Verify SubatomicTestingMixin
 - [ ] All RG agents should have `SubatomicTestingMixin`
@@ -342,7 +342,7 @@ Target agents:
 - **Guardian Check**: `pytest tests/guardian/test_subatomic_compliance.py`
 
 ### Phase 6.2: LIC Agents (apps_lic)
-**Priority**: MEDIUM | **Duration**: 2-3 days
+**Priority**: MEDIUM | **Duration**: 2-
 
 Similar process to Phase 6.1.
 
@@ -351,20 +351,20 @@ Similar process to Phase 6.1.
 ## WAVE 7: REMAINING LAYERS (L0, L4, L6)
 
 ### Phase 7.1: L6 Observability (11 agents)
-**Priority**: LOW | **Duration**: 1-2 days
+**Priority**: LOW | **Duration**: 1-
 
 - [ ] Verify dashboard agents have proper observability
 - [ ] Add `MetricsMixin` where missing
 - [ ] Integrate `TelemetryAgent` with `CircuitBreakerMetrics`
 
 ### Phase 7.2: L4 State (5 agents)
-**Priority**: LOW | **Duration**: 1 day
+**Priority**: LOW | **Duration**: 
 
 - [ ] Verify `LedgerAgent` has audit trail
 - [ ] Add `PersistenceMixin` where needed
 
 ### Phase 7.3: L0 Maintenance (2 agents)
-**Priority**: LOW | **Duration**: 0.5 days
+**Priority**: LOW | **Duration**: 
 
 - [ ] Verify bootstrap sequence is V10 compliant
 - [ ] No additional mixins needed (foundation layer)
@@ -374,7 +374,7 @@ Similar process to Phase 6.1.
 ## WAVE 8: INTEGRATION & REGRESSION TESTING
 
 ### Phase 8.1: Full Guardian Suite
-**Priority**: CRITICAL | **Duration**: 1-2 days
+**Priority**: CRITICAL | **Duration**: 1-
 
 - [ ] `pytest tests/guardian/ -v --tb=long`
 - [ ] All 23 guardian tests must pass

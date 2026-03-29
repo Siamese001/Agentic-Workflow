@@ -163,7 +163,7 @@ The roadmap proceeds through 4 major phases, each with 3-4 focused waves, ensuri
 **Test Strategy**:
 - `tests/ci/test_adg_quality_gates.py`
 - `tests/e2e/test_ci_integration.py`
-- CI time targets: <5 minutes for ADG checks
+- CI time targets: <TIME_REMOVED for ADG checks
 
 ---
 
@@ -296,7 +296,7 @@ The roadmap proceeds through 4 major phases, each with 3-4 focused waves, ensuri
 ## Success Metrics & KPIs
 
 ### Performance Metrics
-- **Scan Time**: Reduce from 5+ minutes to <2 minutes (60% improvement)
+- **Scan Time**: Reduce from 5+ minutes to <TIME_REMOVED (60% improvement)
 - **Memory Usage**: <2GB for 10K+ node graphs
 - **Cache Hit Rate**: 85%+ for incremental scans
 - **Parallel Efficiency**: 3.5x speedup on 4-core systems
@@ -359,10 +359,10 @@ The roadmap proceeds through 4 major phases, each with 3-4 focused waves, ensuri
 - **Documentation**: Interactive documentation platform
 
 ### Timeline
-- **Total Duration**: 24 weeks (6 months)
-- **Phase Duration**: 6 weeks per phase
-- **Wave Duration**: 2 weeks per wave
-- **Buffer Time**: 2 weeks included for contingencies
+- **Total Duration**: TIME_REMOVED (6 months)
+- **Phase Duration**: TIME_REMOVED per phase
+- **Wave Duration**: TIME_REMOVED per wave
+- **Buffer Time**: TIME_REMOVED included for contingencies
 
 ---
 

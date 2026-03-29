@@ -20,7 +20,7 @@
 - **P1 Critical**: 238 files (runtime, L0_routing, L2_execution)
 - **P2 High**: 130 files (L5_safety, governance)
 - **P3 Medium**: 46 files (integration, e2e)
-- **Timeline**: 8-12 weeks for critical files
+- **Timeline**: 8- for critical files
 
 ---
 
@@ -59,7 +59,7 @@
 - **Mock Strategy**: Use comprehensive mocks for external dependencies
 - **Test Patterns**: State-based testing with setup/teardown
 - **Coverage**: Focus on critical paths and error conditions
-- **Estimated Effort**: 2 weeks
+- **Estimated Effort**: 
 
 ### 1.2 L0 Routing Tests (90 files) - IMMEDIATE PRIORITY
 **Why Critical**: Entry point for all system interactions - routing failures affect entire system.
@@ -94,7 +94,7 @@
 - **Test Data**: Standardized routing scenarios and edge cases
 - **Mock Strategy**: Mock downstream services, validate routing logic
 - **Integration**: Test with real routing configuration
-- **Estimated Effort**: 3 weeks
+- **Estimated Effort**: 
 
 ### 1.3 L2 Execution Tests (79 files) - IMMEDIATE PRIORITY
 **Why Critical**: Handles all agent execution - without these, agent operations are unvalidated.
@@ -129,7 +129,7 @@
 - **Agent Mocks**: Comprehensive agent mocking framework
 - **Execution Scenarios**: Standard execution patterns and edge cases
 - **Resource Management**: Test resource cleanup and isolation
-- **Estimated Effort**: 3 weeks
+- **Estimated Effort**: 
 
 ---
 
@@ -153,7 +153,7 @@
 - **Safety Scenarios**: Test safety violations and recoveries
 - **Boundary Testing**: Test safety limits and boundaries
 - **Error Recovery**: Validate error handling and recovery
-- **Estimated Effort**: 2 weeks
+- **Estimated Effort**: 
 
 ### 2.2 Governance Tests (94 files)
 **Why Critical**: System governance ensures compliance and policy enforcement.
@@ -173,7 +173,7 @@
 - **Policy Testing**: Test policy enforcement and compliance
 - **Sovereignty Validation**: Test sovereignty boundaries
 - **Audit Trails**: Validate governance audit functionality
-- **Estimated Effort**: 2 weeks
+- **Estimated Effort**: 
 
 ---
 
@@ -261,7 +261,7 @@
 
 ### Quality Metrics
 - **Defect Detection**: 90%+ of defects caught by tests
-- **Test Execution Time**: < 30 minutes for full suite
+- **Test Execution Time**: <  for full suite
 - **Test Stability**: < 1% flaky test rate
 - **Coverage Quality**: Meaningful test coverage, not just lines
 

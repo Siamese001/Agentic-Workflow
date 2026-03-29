@@ -151,11 +151,11 @@ This plan fixes critical inconsistencies in the FileClassificationAgent through 
 
 ## Timeline Estimation
 
-- **Phase 1:** 30 minutes (critical fixes)
-- **Phase 2:** 2 hours (core logic changes)
-- **Phase 3:** 1 hour (testing and validation)
-- **Phase 4:** 30 minutes (polish)
-- **Total:** 4 hours
+- **Phase 1:**  (critical fixes)
+- **Phase 2:**  (core logic changes)
+- **Phase 3:**  (testing and validation)
+- **Phase 4:**  (polish)
+- **Total:** 
 
 ## Next Steps
 

@@ -239,7 +239,7 @@ from dataclasses import dataclass, field
 
 Logger = logging.getLogger(__name__)
 
-RISK_DECAY_SECONDS: float = 300.0  # Risk decays after 5 minutes of inactivity
+RISK_DECAY_SECONDS: float = 300.0  # Risk decays after  of inactivity
 ESCALATION_THRESHOLD: float = 5.0  # Cumulative risk score to trigger escalation
 
 @dataclass
@@ -334,7 +334,7 @@ class TestSessionInjectionTracker:
         tracker = SessionInjectionTracker()
         tracker.record_signal("s1", "SIG_0", 4.0, turn_index=0)
         # Manually age the signal
-        tracker._sessions["s1"].signals[0].timestamp -= 600  # 10 min ago
+        tracker._sessions["s1"].signals[0].timestamp -= 600  #  ago
         escalated = tracker.record_signal("s1", "SIG_1", 1.0, turn_index=1)
         assert not escalated  # Old signal fully decayed
 

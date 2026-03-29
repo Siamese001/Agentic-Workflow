@@ -61,7 +61,7 @@ All guarantees must anchor to exactly one choke point:
 
 ## Phase 1 — Sovereign Safety Hardening
 **Guarantees**: #1, #2, #4, #7
-**Duration**: 3 weeks
+**Duration**: 
 
 ### Wave 1.1 — Single Determinism Authority Module
 **NEW**: `agentic_core/determinism/digest_authority.py`
@@ -104,7 +104,7 @@ All guarantees must anchor to exactly one choke point:
 
 ## Phase 2 — Deterministic Resource & Context Management
 **Guarantees**: #3, #5, #6, #10, #11
-**Duration**: 4 weeks
+**Duration**: 
 
 ### Wave 2.1 — Deterministic Context Window Optimization (#3)
 **NEW**: `agentic_core/L1_cognition/engines/deterministic_context_optimizer.py`
@@ -143,7 +143,7 @@ All guarantees must anchor to exactly one choke point:
 
 ## Phase 3 — Knowledge Integrity & Memory Protection
 **Guarantees**: #8, #9, #12, #13, #14, #15
-**Duration**: 4 weeks
+**Duration**: 
 
 ### Wave 3.1 — Bounded Task Decomposition (#8)
 **NEW**: `agentic_core/L3_orchestration/engines/bounded_task_decomposer.py`
@@ -188,7 +188,7 @@ All guarantees must anchor to exactly one choke point:
 
 ## Phase 4 — Sovereign Meta-Learning & Embedding Governance
 **Guarantees**: #19, #21, #22, #23, #24, #25
-**Duration**: 3 weeks
+**Duration**: 
 
 ### Wave 4.1 — Monotonic Re-Entrancy with L4 Persistence (#19)
 **NEW**: `agentic_core/L2_execution/healers/monotonic_reentrancy_enforcer.py`
@@ -231,7 +231,7 @@ All guarantees must anchor to exactly one choke point:
 ---
 
 ## Phase 5 — Sovereign Integration & Validation
-**Duration**: 2 weeks
+**Duration**: 
 
 ### Wave 5.1 — Execution Transcript Freezing
 **NEW**: `agentic_core/L2_execution/enforcement/transcript_freezer.py`
@@ -328,12 +328,12 @@ Before declaring 100% sovereign compliance:
 
 | Phase | Focus | Duration |
 |---|---|---|
-| 1 | Sovereign Safety Hardening | 3 weeks |
-| 2 | Deterministic Resource & Context | 4 weeks |
-| 3 | Knowledge Integrity & Memory | 4 weeks |
-| 4 | Meta-Learning & Embedding | 3 weeks |
-| 5 | Integration & Validation | 2 weeks |
-| **Total** | | **16 weeks** |
+| 1 | Sovereign Safety Hardening |  |
+| 2 | Deterministic Resource & Context |  |
+| 3 | Knowledge Integrity & Memory |  |
+| 4 | Meta-Learning & Embedding |  |
+| 5 | Integration & Validation |  |
+| **Total** | | **** |
 
 ---
 

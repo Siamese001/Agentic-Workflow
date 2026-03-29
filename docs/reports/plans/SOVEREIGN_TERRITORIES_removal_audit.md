@@ -195,10 +195,10 @@ def build_sovereign_territories():
 - SSOT validation, healing, and governance will break
 
 **Estimated effort:**
-- Core infrastructure: 2-3 days (complex refactoring)
-- Tests: 1-2 days (pattern replacement + verification)
-- Scripts/utils: 0.5 days (simple updates)
-- **Total: 3.5-5.5 days**
+- Core infrastructure: 2- (complex refactoring)
+- Tests: 1- (pattern replacement + verification)
+- Scripts/utils:  (simple updates)
+- **Total: 3.5-**
 
 ---
 

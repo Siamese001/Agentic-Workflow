@@ -16,7 +16,7 @@ This plan provides a detailed phased approach to enhance the FileClassificationA
 ---
 
 
-## Phase 0: Foundation & Preparation (1 day)
+## Phase 0: Foundation & Preparation ()
 
 ### Sub-phase 0.1: Environment Setup
 - Create feature branch: `feature/file-classification-enhancements`
@@ -36,7 +36,7 @@ This plan provides a detailed phased approach to enhance the FileClassificationA
 - Document rollback procedures
 - Create test data for edge cases
 
-## Phase 1: Core Detection Methods (3 days)
+## Phase 1: Core Detection Methods ()
 
 ### Sub-phase 1.1: Enhanced Agent Detection (Day 1)
 - Implement `_is_true_agent()` method with 5 detection criteria
@@ -60,7 +60,7 @@ This plan provides a detailed phased approach to enhance the FileClassificationA
 - Add tests for async methods and adapter naming
 - Verify detection of async context managers
 
-## Phase 2: Additional Category Detection (3 days)
+## Phase 2: Additional Category Detection ()
 
 ### Sub-phase 2.1: Config & Model Detection (Day 1)
 - Implement `_is_config_class()` for configuration classes
@@ -80,7 +80,7 @@ This plan provides a detailed phased approach to enhance the FileClassificationA
 - Test integration with agent_discovery_full.json
 - Verify layer-based classification hints
 
-## Phase 3: Classification Logic Integration (2 days)
+## Phase 3: Classification Logic Integration ()
 
 ### Sub-phase 3.1: Updated Priority Queue (Day 1)
 - Update `classify_file()` method with new categories
@@ -94,7 +94,7 @@ This plan provides a detailed phased approach to enhance the FileClassificationA
 - Modify reporting methods to display new categories
 - Test with dry-run and execute modes
 
-## Phase 4: Testing & Validation (3 days)
+## Phase 4: Testing & Validation ()
 
 ### Sub-phase 4.1: Unit Test Creation (Day 1)
 - Create test_enhanced_agent_detection.py
@@ -115,7 +115,7 @@ This plan provides a detailed phased approach to enhance the FileClassificationA
 - Test with empty files and syntax errors
 - Test with Unicode and special characters
 
-## Phase 5: Documentation & Deployment (2 days)
+## Phase 5: Documentation & Deployment ()
 
 ### Sub-phase 5.1: Documentation Updates (Day 1)
 - Update docstrings with new categories
@@ -129,7 +129,7 @@ This plan provides a detailed phased approach to enhance the FileClassificationA
 - Prepare release notes
 - Create deployment checklist
 
-## Phase 6: Rollout & Monitoring (2 days)
+## Phase 6: Rollout & Monitoring ()
 
 ### Sub-phase 6.1: Staged Rollout (Day 1)
 - Deploy to test environment first
@@ -178,15 +178,15 @@ This plan provides a detailed phased approach to enhance the FileClassificationA
 
 | Phase | Duration | Key Deliverables |
 |-------|----------|------------------|
-| 0: Foundation | 1 day | Environment setup, baseline metrics |
-| 1: Core Detection | 3 days | Enhanced agent, service, factory, async, adapter detection |
-| 2: Additional Categories | 3 days | Config, model, repository detection, metadata integration |
-| 3: Integration | 2 days | Updated classification logic, new categories |
-| 4: Testing | 3 days | Comprehensive test suite, validation |
-| 5: Documentation | 2 days | Updated docs, migration guide |
-| 6: Rollout | 2 days | Staged deployment, monitoring |
+| 0: Foundation |  | Environment setup, baseline metrics |
+| 1: Core Detection |  | Enhanced agent, service, factory, async, adapter detection |
+| 2: Additional Categories |  | Config, model, repository detection, metadata integration |
+| 3: Integration |  | Updated classification logic, new categories |
+| 4: Testing |  | Comprehensive test suite, validation |
+| 5: Documentation |  | Updated docs, migration guide |
+| 6: Rollout |  | Staged deployment, monitoring |
 
-**Total Duration: 16 days (3.2 weeks)**
+**Total Duration:  ()**
 
 ## Next Steps
 

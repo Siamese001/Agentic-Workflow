@@ -339,7 +339,7 @@ This detailed implementation plan outlines the systematic removal of all canon k
 | Phase 3: Method Cleanup | Week 3 | Clean agent hierarchies |
 | Phase 4: Final Cleanup | Week 4 | Complete deprecation |
 
-**Total Estimated Duration**: 4 weeks
+**Total Estimated Duration**: 
 **Critical Path**: Test framework migration (Phase 2)
 **Success Probability**: 95% with phased approach and rollback strategies
 

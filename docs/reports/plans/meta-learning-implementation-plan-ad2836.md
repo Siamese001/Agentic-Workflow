@@ -315,7 +315,7 @@ This implementation plan provides a phased approach to integrating Redis and Pin
 ## Rollback Strategy
 
 ### Immediate Rollback Triggers
-- Cache hit ratio <40% for 24 hours
+- Cache hit ratio <40% for 
 - System performance degradation >20%
 - Guardrails violations >100/hour
 - Service availability <99%

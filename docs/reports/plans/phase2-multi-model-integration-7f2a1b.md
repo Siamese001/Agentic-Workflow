@@ -17,7 +17,7 @@ This directory contains implementation artifacts for Phase 2 of the ML Models fo
 
 
 ## Phase 2 Overview
-**Duration**: 3 weeks (Days 15-35)
+**Duration**:  (Days 15-35)
 **Token Budget**: 80,000 tokens
 **Focus**: Multi-Model Integration with Contextual Bandits and Ensemble Methods
 

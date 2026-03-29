@@ -90,12 +90,12 @@ python scripts/hooks/validate_report_location.py --fix
 
 ## Corrective Action Plan
 
-### Phase 1: Immediate Fix (5 minutes)
+### Phase 1: Immediate Fix ()
 1. Move plan to `docs/reports/plans/`
 2. Verify location compliance
 3. Update any references
 
-### Phase 2: Process Update (1 hour)
+### Phase 2: Process Update ()
 1. Update planning guidance template
 2. Add SSOT validation to planning workflow
 3. Document new process

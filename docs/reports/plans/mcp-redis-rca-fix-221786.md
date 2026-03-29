@@ -143,7 +143,7 @@ for field, value in node_data.items():
 ## Performance Results
 
 ### Before Fix
-- **Ingestion Time**: >30 minutes (often hung indefinitely)
+- **Ingestion Time**: > (often hung indefinitely)
 - **Success Rate**: 0% (always hung)
 - **Memory Usage**: 1.5GB+ (unbounded)
 - **Progress Reporting**: None
@@ -157,7 +157,7 @@ for field, value in node_data.items():
 - **MCP Timeout**: Eliminated
 
 ### Performance Improvement
-- **Speed**: 20x faster (93s vs >30min)
+- **Speed**: 20x faster (93s vs >)
 - **Reliability**: 100% success rate
 - **Memory**: Controlled usage
 - **User Experience**: Real-time feedback
@@ -168,7 +168,7 @@ for field, value in node_data.items():
 - **Dataset**: 270MB SQLite, 836,686 edges
 - **Redis**: 2GB maxmemory, optimized config
 - **Hardware**: Standard development machine
-- **Timeout**: 600 seconds (10 minutes)
+- **Timeout**: 600 seconds ()
 
 ### Test Coverage
 1. **Basic Redis Connection**: ✅ PASS
@@ -251,7 +251,7 @@ python mcp_redis_wrapper.py status
 
 ### Immediate Benefits
 - ✅ Eliminates MCP Redis hanging completely
-- ✅ 20x performance improvement (93s vs >30min)
+- ✅ 20x performance improvement (93s vs >)
 - ✅ Real-time progress tracking
 - ✅ Managed memory usage
 - ✅ Reliable, consistent operation
@@ -309,7 +309,7 @@ python mcp_redis_wrapper.py status
 The MCP Redis hanging issues have been comprehensively analyzed and fixed. The root causes were identified as massive dataset size, inefficient batch processing, inadequate timeout configuration, and Redis memory issues. The implemented solution provides:
 
 - **100% success rate** for Redis operations
-- **20x performance improvement** (93s vs >30min)
+- **20x performance improvement** (93s vs >)
 - **Real-time progress tracking** during operations
 - **Managed memory usage** with automatic clearing
 - **Robust error handling** with graceful timeouts

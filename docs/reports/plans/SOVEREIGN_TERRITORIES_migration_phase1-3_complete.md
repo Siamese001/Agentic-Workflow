@@ -277,7 +277,7 @@ Test files still using `SOVEREIGN_TERRITORIES`:
 - `tests/integration/agentic_core/L5_safety/reasoning/test_hierarchy_agent_phantom_dir_edge_cases.py` (3 imports)
 - +7 more test files (1 import each)
 
-**Estimated Effort:** 1-2 days
+**Estimated Effort:** 1-
 
 ### Phase 5: Remove SOVEREIGN_TERRITORIES (Future)
 **Status:** NOT STARTED
@@ -288,7 +288,7 @@ After all consumers migrated:
 3. Remove `build_sovereign_territories()` function
 4. Verify zero references via ADG
 
-**Estimated Effort:** 0.5 days
+**Estimated Effort:** 
 
 ---
 

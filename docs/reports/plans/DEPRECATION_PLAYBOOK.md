@@ -134,7 +134,7 @@ The deprecation PR **MUST** include:
 
 ## 5. Post-Deletion Verification
 
-Within 24 hours of merge:
+Within  of merge:
 
 - [ ] Confirm CI pipeline is green on `main`
 - [ ] Confirm `import_health_baseline.json` unresolved count did not increase

@@ -385,14 +385,14 @@ class AgentSpec(BaseModel):
 
 ## Timeline Estimate
 
-- **Phase 1**: 1-2 days (SSOT clarification)
-- **Phase 2**: 1-2 days (Router hardening - mostly preserving existing logic)
-- **Phase 3**: 2-3 days (Qwen provider integration)
-- **Phase 4**: 2-3 days (apps_* agent registry)
-- **Phase 5**: 1-2 days (Deterministic sovereignty - mostly validation)
-- **Phase 6**: 1 day (Audit trail - existing structure preserved)
-- **Phase 7**: 2-3 days (Comprehensive testing)
-- **Total**: 10-16 days
+- **Phase 1**: 1- (SSOT clarification)
+- **Phase 2**: 1- (Router hardening - mostly preserving existing logic)
+- **Phase 3**: 2- (Qwen provider integration)
+- **Phase 4**: 2- (apps_* agent registry)
+- **Phase 5**: 1- (Deterministic sovereignty - mostly validation)
+- **Phase 6**:  (Audit trail - existing structure preserved)
+- **Phase 7**: 2- (Comprehensive testing)
+- **Total**: 10-
 
 This hardened plan preserves the Zero-Loss Architecture while enabling Qwen integration and comprehensive agent coverage through sovereign tier routing.
 

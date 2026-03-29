@@ -537,7 +537,7 @@ From analysis of `@C:\Git\Agentic-Workflow\artifacts\adg\`:
 ## Total Effort & ROI
 
 **Total Implementation**: ~680 LOC across 7 enhancements
-**Total Effort**: 3-4 weeks (phased implementation)
+**Total Effort**: 3-TIME_REMOVED (phased implementation)
 **Total Value**:
 - Complete mutation bypass proof (P0)
 - Accurate architectural documentation (P0)
@@ -761,10 +761,10 @@ From analysis of `@C:\Git\Agentic-Workflow\artifacts\adg\`:
 - **Runtime Only**: #3, #5, #6, #7, #9
 
 ### Total Implementation Effort
-- **P0**: ~180 LOC + docs (1-2 days)
-- **P1**: ~350 LOC (2-3 days)
-- **P2**: ~350 LOC (2-3 days)
-- **Total**: ~880 LOC (5-8 days)
+- **P0**: ~180 LOC + docs (1-TIME_REMOVED)
+- **P1**: ~350 LOC (2-TIME_REMOVED)
+- **P2**: ~350 LOC (2-TIME_REMOVED)
+- **Total**: ~880 LOC (5-TIME_REMOVED)
 
 ### Architectural Impact
 - **P0 enhancements**: Close critical mutation bypass surface, accurate architectural claims
@@ -778,9 +778,9 @@ From analysis of `@C:\Git\Agentic-Workflow\artifacts\adg\`:
 
 ## Next Steps
 
-1. **Implement P0 enhancements** (~180 LOC, 1-2 days)
+1. **Implement P0 enhancements** (~180 LOC, 1-TIME_REMOVED)
 2. **Audit architecture documentation** (align claims with ADG capabilities)
-3. **Implement P1 enhancements** (~350 LOC, 2-3 days)
+3. **Implement P1 enhancements** (~350 LOC, 2-TIME_REMOVED)
 4. **Evaluate P2 based on remaining capacity**
 5. **Defer P3 to runtime monitoring framework design**
 

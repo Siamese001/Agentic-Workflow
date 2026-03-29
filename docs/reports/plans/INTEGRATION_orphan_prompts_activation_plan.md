@@ -34,7 +34,7 @@
 | File | Purpose | Current Status | Integration Target |
 |------|---------|----------------|-------------------|
 | `k11_shadow_audit.yaml` | Shadow audit for executive decisions | ORPHANED | `apps_lic/engines/` |
-| `k12_strategy_roadmap.yaml` | 30-60-90 day execution planning | ORPHANED | `apps_lic/engines/` |
+| `k12_strategy_roadmap.yaml` | 30-60- execution planning | ORPHANED | `apps_lic/engines/` |
 | `k13_interviewer_sim.yaml` | Interviewer profiling & preparation | ORPHANED | `apps_lic/engines/` |
 
 ### 1.2 Outreach Domain Prompts (4 files)
@@ -107,7 +107,7 @@ class ExecutiveStrategyAgent(SovereignBaseAgent):
         self.prompt_loader = PromptLoader()
 
     def generate_strategy_roadmap(self, audit_data: dict) -> str:
-        """Generate 30-60-90 day strategy roadmap."""
+        """Generate 30-60- strategy roadmap."""
         return self.prompt_loader.get_template(
             domain="executive",
             name="k12_strategy_roadmap",
@@ -365,12 +365,12 @@ class ResumeAssemblyAgent(RGAgentBase):
 
 | Phase | Duration | Key Deliverables |
 |-------|----------|------------------|
-| Phase 1: Infrastructure | 2 days | Prompt loading system |
-| Phase 2: Executive Integration | 2 days | ExecutiveStrategyAgent |
-| Phase 3: Outreach Integration | 2 days | OutreachMessageAgent |
-| Phase 4: Resume Integration | 2 days | ResumeAssemblyAgent |
-| Phase 5: Testing & Validation | 2 days | Complete test suite |
-| **TOTAL** | **10 days** | **Full integration** |
+| Phase 1: Infrastructure |  | Prompt loading system |
+| Phase 2: Executive Integration |  | ExecutiveStrategyAgent |
+| Phase 3: Outreach Integration |  | OutreachMessageAgent |
+| Phase 4: Resume Integration |  | ResumeAssemblyAgent |
+| Phase 5: Testing & Validation |  | Complete test suite |
+| **TOTAL** | **** | **Full integration** |
 
 ---
 

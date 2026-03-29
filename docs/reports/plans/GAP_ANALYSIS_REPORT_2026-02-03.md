@@ -31,7 +31,7 @@
 | **P2 (Medium)** | 5 |
 | **P3 (Low)** | 1 |
 | **Gap Type** | **INTEGRATION** (not implementation) |
-| **Estimated Effort** | 1-2 weeks |
+| **Estimated Effort** | 1- |
 
 **Key Finding:** Most target architecture components **ALREADY EXIST** in the codebase as production-ready implementations. The gaps are **integration gaps** - FileClassificationAgent does not use these existing components.
 

@@ -174,13 +174,13 @@ Address the 5 most critical gaps identified in the assessment to achieve "materi
 
 | Phase | Duration | Dependencies | Success Metrics |
 |-------|----------|--------------|----------------|
-| 1 - Critical Reports | 2 hours | None | All 6 reports exist and reconcile |
-| 2 - Boundary Normalization | 4 hours | Phase 1 | Zero unresolved core imports |
-| 3 - Layer Attribution | 3 hours | Phase 1 | Report-DB layer consistency |
-| 4 - Edge Enhancement | 3 hours | Phase 1 | Accurate edge reporting |
-| 5 - Validation | 2 hours | All phases | End-to-end validation passes |
+| 1 - Critical Reports | TIME_REMOVED | None | All 6 reports exist and reconcile |
+| 2 - Boundary Normalization | TIME_REMOVED | Phase 1 | Zero unresolved core imports |
+| 3 - Layer Attribution | TIME_REMOVED | Phase 1 | Report-DB layer consistency |
+| 4 - Edge Enhancement | TIME_REMOVED | Phase 1 | Accurate edge reporting |
+| 5 - Validation | TIME_REMOVED | All phases | End-to-end validation passes |
 
-**Total Estimated Time**: 14 hours
+**Total Estimated Time**: TIME_REMOVED
 
 ## Risk Mitigation
 

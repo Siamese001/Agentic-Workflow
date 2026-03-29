@@ -80,7 +80,7 @@ criticality, and whether it requires human review before passing.
 ## Gap 2: Onboarding Phase & Checkpoint Types
 
 ### Problem
-`apps_onboard` requires typed data structures for phased plans (30/60/90 day), checkpoints with owner+due-date, stakeholder maps, and work-contract stamping. The existing `apps_shared/types/` contains `checkpoint_manager_types.py` (20 KB) and `execution_orchestrator_types.py` but these are infra-level, not domain-level onboarding constructs.
+`apps_onboard` requires typed data structures for phased plans (30/60/), checkpoints with owner+due-date, stakeholder maps, and work-contract stamping. The existing `apps_shared/types/` contains `checkpoint_manager_types.py` (20 KB) and `execution_orchestrator_types.py` but these are infra-level, not domain-level onboarding constructs.
 
 ### ADG Evidence
 - `stamps_work_contract: 13` edges — current consumers are all in `agentic_core`; `apps_onboard` is the first L_APP consumer; the contract-stamper type must live in L_SHARED

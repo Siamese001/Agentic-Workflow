@@ -73,7 +73,7 @@ def deterministic_harness():
 | **Batch Size** | 5 agents per checkpoint |
 | **Wave 6 Batches** | 9 (was 1) |
 | **Latency Budget** | < 50ms overhead per agent |
-| **Estimated Duration** | 4-6 weeks |
+| **Estimated Duration** | 4- |
 
 ---
 
@@ -83,7 +83,7 @@ def deterministic_harness():
 
 ### Phase 2.1: DomainPlannerAgent Direct Migration
 
-**Priority**: CRITICAL | **Duration**: 1-2 days
+**Priority**: CRITICAL | **Duration**: 1-
 
 #### 2.1.1 State Snapshot (PRE-REQUISITE)
 
@@ -163,7 +163,7 @@ warnings.warn("DomainPlannerAdapter is deprecated. Use DomainPlannerAgent direct
 
 ### Phase 3.1: Critical Safety Agents - Batch 1 (5 agents)
 
-**Priority**: HIGH | **Duration**: 2 days
+**Priority**: HIGH | **Duration**: 
 
 #### 3.1.1 VerificationGate Enhancement
 
@@ -235,7 +235,7 @@ python -m pytest tests/stress/test_atomic_concurrency.py -v --tb=long
 
 ### Phase 3.2: Critical Safety Agents - Batch 2 (5 agents)
 
-**Priority**: HIGH | **Duration**: 1-2 days
+**Priority**: HIGH | **Duration**: 1-
 
 Target agents (Batch 2):
 
@@ -252,7 +252,7 @@ Target agents (Batch 2):
 
 ### Phase 3.3: Critical Safety Agents - Batch 3 (5 agents)
 
-**Priority**: HIGH | **Duration**: 1-2 days
+**Priority**: HIGH | **Duration**: 1-
 
 Target agents (Batch 3):
 
@@ -265,7 +265,7 @@ Target agents (Batch 3):
 
 ### Phase 3.4: Remaining L5 Validators (70 agents)
 
-**Priority**: MEDIUM | **Duration**: 5-7 days
+**Priority**: MEDIUM | **Duration**: 5-
 
 #### 3.4.1 Categorize by Risk Level
 
@@ -310,7 +310,7 @@ For each **batch of 5 agents**:
 
 ### Phase 4.1: ContextualRouter Hardening
 
-**Priority**: HIGH | **Duration**: 2 days
+**Priority**: HIGH | **Duration**: 
 
 #### 4.1.1 CircuitBreaker Integration
 
@@ -348,7 +348,7 @@ Target agents:
 
 ### Phase 5.1: L2 MCP Hardening (6 agents)
 
-**Priority**: HIGH | **Duration**: 2-3 days
+**Priority**: HIGH | **Duration**: 2-
 
 #### 5.1.1 ToolRegistryAgent
 
@@ -373,7 +373,7 @@ Target agents:
 
 ### Phase 5.2: L1 Cognition Enhancement (7 agents)
 
-**Priority**: MEDIUM | **Duration**: 2 days
+**Priority**: MEDIUM | **Duration**: 
 
 #### 5.2.1 IntentAgent & PlanningAgent
 
@@ -409,7 +409,7 @@ Target agents:
 
 ### Phase 6.1: RG Agents - Batch 1 (5 agents)
 
-**Priority**: MEDIUM | **Duration**: 0.5 days
+**Priority**: MEDIUM | **Duration**: 
 
 #### 6.1.1 Pre-Batch Protocol
 
@@ -443,7 +443,7 @@ For each agent:
 
 ### Phase 6.2: RG Agents - Batch 2 (5 agents)
 
-**Priority**: MEDIUM | **Duration**: 0.5 days
+**Priority**: MEDIUM | **Duration**: 
 
 - [ ] Same protocol as Phase 6.1
 - [ ] Target next 5 agents from `apps_rg/`
@@ -451,7 +451,7 @@ For each agent:
 
 ### Phase 6.3: RG Agents - Batch 3 (5 agents)
 
-**Priority**: MEDIUM | **Duration**: 0.5 days
+**Priority**: MEDIUM | **Duration**: 
 
 - [ ] Same protocol as Phase 6.1
 - [ ] Target next 5 agents from `apps_rg/`
@@ -459,7 +459,7 @@ For each agent:
 
 ### Phase 6.4: RG Agents - Batch 4 (5 agents)
 
-**Priority**: MEDIUM | **Duration**: 0.5 days
+**Priority**: MEDIUM | **Duration**: 
 
 - [ ] Same protocol as Phase 6.1
 - [ ] Target remaining agents from `apps_rg/`
@@ -467,7 +467,7 @@ For each agent:
 
 ### Phase 6.5: LIC Agents - Batch 5 (5 agents)
 
-**Priority**: MEDIUM | **Duration**: 0.5 days
+**Priority**: MEDIUM | **Duration**: 
 
 - [ ] Same protocol as Phase 6.1
 - [ ] Target first 5 agents from `apps_lic/`
@@ -475,7 +475,7 @@ For each agent:
 
 ### Phase 6.6: LIC Agents - Batch 6 (5 agents)
 
-**Priority**: MEDIUM | **Duration**: 0.5 days
+**Priority**: MEDIUM | **Duration**: 
 
 - [ ] Same protocol as Phase 6.1
 - [ ] Target next 5 agents from `apps_lic/`
@@ -483,7 +483,7 @@ For each agent:
 
 ### Phase 6.7: LIC Agents - Batch 7 (5 agents)
 
-**Priority**: MEDIUM | **Duration**: 0.5 days
+**Priority**: MEDIUM | **Duration**: 
 
 - [ ] Same protocol as Phase 6.1
 - [ ] Target next 5 agents from `apps_lic/`
@@ -491,7 +491,7 @@ For each agent:
 
 ### Phase 6.8: LIC Agents - Batch 8 (5 agents)
 
-**Priority**: MEDIUM | **Duration**: 0.5 days
+**Priority**: MEDIUM | **Duration**: 
 
 - [ ] Same protocol as Phase 6.1
 - [ ] Target next 5 agents from `apps_lic/`
@@ -499,7 +499,7 @@ For each agent:
 
 ### Phase 6.9: Remaining Agents - Batch 9 (3 agents)
 
-**Priority**: MEDIUM | **Duration**: 0.5 days
+**Priority**: MEDIUM | **Duration**: 
 
 - [ ] Same protocol as Phase 6.1
 - [ ] Target remaining 3 agents from both apps
@@ -520,7 +520,7 @@ If ANY batch fails:
 
 ### Phase 7.1: L6 Observability (11 agents)
 
-**Priority**: LOW | **Duration**: 1-2 days
+**Priority**: LOW | **Duration**: 1-
 
 - [ ] Verify dashboard agents have proper observability
 - [ ] Add `MetricsMixin` where missing
@@ -528,14 +528,14 @@ If ANY batch fails:
 
 ### Phase 7.2: L4 State (5 agents)
 
-**Priority**: LOW | **Duration**: 1 day
+**Priority**: LOW | **Duration**: 
 
 - [ ] Verify `LedgerAgent` has audit trail
 - [ ] Add `PersistenceMixin` where needed
 
 ### Phase 7.3: L0 Maintenance (2 agents)
 
-**Priority**: LOW | **Duration**: 0.5 days
+**Priority**: LOW | **Duration**: 
 
 - [ ] Verify bootstrap sequence is V10 compliant
 - [ ] No additional mixins needed (foundation layer)
@@ -546,7 +546,7 @@ If ANY batch fails:
 
 ### Phase 8.1: Full Guardian Suite
 
-**Priority**: CRITICAL | **Duration**: 1-2 days
+**Priority**: CRITICAL | **Duration**: 1-
 
 - [ ] `pytest tests/guardian/ -v --tb=long`
 - [ ] All **24** guardian tests must pass (was 23, +1 MRO Guard)

@@ -297,32 +297,32 @@ __all__ = [
 
 ## Execution Plan
 
-1. **Audit mixin usage** (30 min)
+1. **Audit mixin usage** ()
    - Grep for `vector_search`, `vector_upsert`, `PineconeVectorMixin`
    - Identify active callers
 
-2. **Phase 1: Replace active usages** (2-3 hours)
+2. **Phase 1: Replace active usages** (2-)
    - Fix `sovereign_memory_store.py`
    - Fix `SubAtomicRegistryAgent.py`
    - Fix `interfaces/execution_agents.py`
    - Run targeted tests
 
-3. **Phase 2: Remove mixin** (1-2 hours)
+3. **Phase 2: Remove mixin** (1-)
    - Delete `pinecone_vector_mixin.py`
    - Update `infrastructure_mixin.py`
    - Run full test suite
 
-4. **Phase 3: Delete core agent** (30 min)
+4. **Phase 3: Delete core agent** ()
    - Delete `PineconeSovereignAgent.py`
    - Verify no import errors
    - Run full test suite
 
-5. **Phase 4: Clean up metadata** (1 hour)
+5. **Phase 4: Clean up metadata** ()
    - Delete test files
    - Update metadata files
    - Final verification
 
-**Total estimated time:** 5-7 hours
+**Total estimated time:** 5-
 
 ---
 

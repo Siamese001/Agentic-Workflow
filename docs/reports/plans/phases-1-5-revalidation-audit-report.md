@@ -382,7 +382,7 @@ def test_anomaly_detection_determinism():
 
 **RECOMMENDATION:** Do not deploy to production until all HIGH and CRITICAL severity defects are addressed. The test suite needs significant hardening to provide meaningful validation of system correctness.
 
-**ESTIMATED REMEDIATION TIME:** 2-3 days for critical fixes, 1 week for comprehensive test hardening.
+**ESTIMATED REMEDIATION TIME:** 2- for critical fixes,  for comprehensive test hardening.
 
 ## Rules
 

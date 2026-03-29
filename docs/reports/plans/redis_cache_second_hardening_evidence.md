@@ -120,7 +120,7 @@ existing consumers. Left as-is.
 Root cause: `ttl_seconds=999999999` (31+ years) accepted. Redis allows but
 violates "short TTL" coordination contract for DB1.
 
-Fix: Added `_MAX_TTL_SECONDS = 86400` (24 hours) hard cap enforced in both
+Fix: Added `_MAX_TTL_SECONDS = 86400` () hard cap enforced in both
 `set()` and `acquire_lease()`.
 
 ## Pytest: Architecture Tests

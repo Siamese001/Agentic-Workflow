@@ -852,7 +852,7 @@ class SourceRetriever:
 | Performance optimization (parallel judge calls) | Async batch judging | P2 |
 | Dashboard / report viewer | Markdown report generation | P2 |
 
-**Acceptance**: CI gate blocks PRs that fail critical rubrics. Full-system evaluation runs < 10 minutes.
+**Acceptance**: CI gate blocks PRs that fail critical rubrics. Full-system evaluation runs < .
 
 ### Phase 5: Advanced Features (Week 11+)
 

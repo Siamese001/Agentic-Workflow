@@ -674,7 +674,7 @@ Each phase MUST include in evidence:
 
 ## Implementation Priority Matrix
 
-### High Priority (Waves 1-2) - 6-10 weeks
+### High Priority (Waves 1-2) - 6-
 - Layer sovereignty enforcement with AST-based validation
 - SSOT component integration with cache testing
 - Core control spine with matrix testing
@@ -682,12 +682,12 @@ Each phase MUST include in evidence:
 - Four execution paths with negative controls
 - L3 orchestration with state transition testing
 
-### Medium Priority (Wave 3) - 4-5 weeks
+### Medium Priority (Wave 3) - 4-
 - L4 state management with ACID testing
 - L6 observability with threshold boundary testing
 - Meta-learning pipeline with rollback testing
 
-### Lower Priority (Wave 4) - 3-4 weeks
+### Lower Priority (Wave 4) - 3-
 - Apps_* integration with end-to-end testing
 - Cryptographic integrity with tamper detection
 - Production hardening with determinism guarantees
@@ -769,12 +769,12 @@ Each phase MUST produce evidence file in `docs/reports/plans/` with:
 
 ## Timeline Estimate
 
-- **Wave 1**: 6-10 weeks (Foundation + rigorous testing)
-- **Wave 2**: 4-6 weeks (Execution paths + hostile input testing)
-- **Wave 3**: 4-5 weeks (State & observability + threshold testing)
-- **Wave 4**: 3-4 weeks (Integration + determinism verification)
+- **Wave 1**: 6- (Foundation + rigorous testing)
+- **Wave 2**: 4- (Execution paths + hostile input testing)
+- **Wave 3**: 4- (State & observability + threshold testing)
+- **Wave 4**: 3- (Integration + determinism verification)
 
-**Total Estimated Duration**: 17-25 weeks (increased from 14-19 weeks due to constitutional testing requirements)
+**Total Estimated Duration**: 17- (increased from 14- due to constitutional testing requirements)
 
 ## Resource Requirements
 

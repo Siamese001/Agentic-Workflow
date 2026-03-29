@@ -25,14 +25,14 @@ All plans must pass Windsurf CI validation before commit.
 Plans must be stored in approved locations only.
 
 ### Approved Locations:
-1. `docs/reports/plans/` - Repository plans
-2. `.windsurf/plans/` - Workspace plans
-3. `C:\Users\amita\.windsurf\plans\` - User plans
+1. `docs/reports/plans/` - Repository plans (canonical location for long-lived plans)
+2. `.windsurf/plans/` - Workspace plans (acceptable for active work)
 
 ### Forbidden:
 - Plans in root directory
 - Plans in random subdirectories
 - Plans without .md extension
+- Plans outside repository (e.g., `C:\Users\amita\.windsurf\plans\`)
 
 ## Rule: Plan Naming Convention
 Plan files must follow naming convention.
@@ -47,7 +47,7 @@ Plan files must follow naming convention.
 - Pre-commit checks format
 - Manual validation available
 
-## Rule: Token Estimator Mandate (Kimi 2.5)
+## Rule: Token Estimator Mandate (Kimi K2.5)
 All plans must use the official Windsurf ContextWindowEstimator for token validation.
 
 ### Required Tool:
@@ -58,10 +58,10 @@ from agentic_core.planning.token_estimator import ContextWindowEstimator, TokenB
 estimator = ContextWindowEstimator()
 ```
 
-### Required Constants:
-- `HARD_MAX_CONTEXT = 200000` (absolute ceiling)
-- `SAFE_OPERATING_CAP = 170000` (green zone limit)
-- `WARNING_THRESHOLD = 150000` (yellow zone)
+### Required Constants (Kimi K2.5 - 262K Context Window):
+- `HARD_MAX_CONTEXT = 262000` (absolute ceiling)
+- `SAFE_OPERATING_CAP = 223000` (green zone limit)
+- `WARNING_THRESHOLD = 197000` (yellow zone)
 - `DEFAULT_RESERVED_OUTPUT = 12000`
 - `DEFAULT_SAFETY_BUFFER = 8000`
 
@@ -86,7 +86,7 @@ assert estimate.status in ['green', 'yellow'], f"Token budget exceeded: {estimat
 - **File:** `agentic_core/planning/token_estimator.py`
 - **Class:** `ContextWindowEstimator`
 - **Method:** `estimate_step_tokens()`
-- **Configuration:** `TokenBudget` class with 200K context limits
+- **Configuration:** `TokenBudget` class with 262K context limits (Kimi K2.5)
 
 ## Rule: Kimi 2.5 Context Optimization
 Plans must optimize for Kimi 2.5's 200K token context window.

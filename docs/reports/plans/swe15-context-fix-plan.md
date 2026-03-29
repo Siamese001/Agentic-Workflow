@@ -19,7 +19,7 @@
 - **Context window**: 128K tokens (SWE 1.5 Fast)
 - **Strategy**: Batch processing with parallel file operations
 - **Estimated waves**: 8 waves of 200 files each
-- **Time estimate**: ~2-4 hours total
+- **Time estimate**: ~2- total
 
 ## File Analysis
 

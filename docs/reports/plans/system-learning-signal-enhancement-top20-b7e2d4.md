@@ -142,7 +142,7 @@
 ### #11 — L5_safety: Circuit Breaker State → System Learning Signal
 **Domain:** L5_safety → system_learning | **Value:** Medium-High | **Effort:** Low
 **Gap:** `CircuitBreaker` in `circuit_breaker_gate.py` tracks `CircuitBreakerMetrics` (total_calls, failed_calls, state_transitions, current_backoff) but these metrics are local to each breaker instance. System learning never sees breaker trip patterns.
-**Enhancement:** On each state transition (CLOSED→OPEN, OPEN→HALF_OPEN, HALF_OPEN→CLOSED), emit a `CircuitBreakerEvent` to `SystemLearningMemoryBridge`. Pattern analysis can then detect: "breaker X trips every 3 hours → underlying issue needs deeper healing".
+**Enhancement:** On each state transition (CLOSED→OPEN, OPEN→HALF_OPEN, HALF_OPEN→CLOSED), emit a `CircuitBreakerEvent` to `SystemLearningMemoryBridge`. Pattern analysis can then detect: "breaker X trips every  → underlying issue needs deeper healing".
 **Files:** `agentic_core/L5_safety/enforcement/circuit_breaker_gate.py` — emit event on `_transition_*`, `system_learning/adapters/system_learning_memory_bridge.py` — new `persist_circuit_breaker_event()`
 
 ---

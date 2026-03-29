@@ -1,5 +1,5 @@
 # CI Plan Validation Report
-Generated: 2026-03-29T09:12:22.398198
+Generated: 2026-03-29T09:22:58.644251
 
 ## Summary
 - Total Plans: 882
@@ -10,7 +10,7 @@ Generated: 2026-03-29T09:12:22.398198
 ## Metrics
 - Average Lines per Plan: 394
 - Total Waves: 8529
-- Total Estimated Tokens: 5,447,733
+- Total Estimated Tokens: 5,446,750
 
 ## Warnings ⚠️
 ### .windsurf\plans\adg-violation-waterfall-hardened-c64079.md

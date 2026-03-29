@@ -114,7 +114,7 @@ The process mapping now includes:
 
 **Impact:** L2 healing decisions don't improve over time despite having all the data to learn from
 
-**Effort:** 1 week
+**Effort:** 
 
 **Implementation:**
 ```python
@@ -131,14 +131,14 @@ The process mapping now includes:
 - Shadow router telemetry has nowhere to write
 - **Blocks:** Time-shifted routing (L0 can't read drift signals at Run t+1)
 
-**Effort:** 1 week
+**Effort:** 
 
 #### 3. Time-Shifted Config Propagation (DD4 §161-183)
 **Status:** Still missing
 - No mechanism for L0 to consume L4.C state at Run t+1
 - **Blocks:** Adaptive routing from learned patterns
 
-**Effort:** 1 week
+**Effort:** 
 
 ---
 
@@ -324,7 +324,7 @@ All new implementations must follow:
 
 ## Conclusion
 
-**Progress: 35% → 75% achievable in 14 weeks**
+**Progress: 35% → 75% achievable in **
 
 Phase 5 has delivered a **production-ready L2.3 healing subsystem** with confidence-tier routing, provider adapters, and full governance. The critical missing piece is **wiring healing outcomes to the Meta-Learning Bus** (Phase 6) so the system learns from its own healing decisions.
 

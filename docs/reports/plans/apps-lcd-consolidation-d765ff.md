@@ -99,7 +99,7 @@ apps_{name}/
 
 ---
 
-## Phase 1: Delete Empty Folders (5 min)
+## Phase 1: Delete Empty Folders ()
 
 Delete folders that contain only `__init__.py`:
 - `apps_rg/asset_library/`, `apps_rg/core/`, `apps_rg/system_flow/`
@@ -108,7 +108,7 @@ Delete folders that contain only `__init__.py`:
 
 Also delete empty `apps_lic/config/` and `apps_lic/reasoning/` (only `__init__.py`, real files elsewhere).
 
-## Phase 2: Relocate Misplaced Non-Python Files (5 min)
+## Phase 2: Relocate Misplaced Non-Python Files ()
 
 - `apps_rg/utils/*.md` (5 reports) → `docs/reports/apps_rg/`
 - `apps_lic/reports/*.md` (2 reports) → `docs/reports/apps_lic/`

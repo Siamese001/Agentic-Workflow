@@ -81,29 +81,29 @@ uwg.write(target="redis", key="foo", value="bar")  # Emits edge
 **Wave 5**: Instrument more agent execution paths with `ExecutionTrace`
 - Add trace context managers to uncovered agents
 - Expand trace recording in L2/L3 orchestration layers
-- **Effort**: 3-5 hours, requires careful integration
+- **Effort**: 3-, requires careful integration
 
 **Wave 6**: Refactor state mutations to use UniversalWriteGateway
 - Identify direct Redis/DB writes
 - Wrap with UWG write-through pattern
-- **Effort**: 4-6 hours, high risk of breaking changes
+- **Effort**: 4-, high risk of breaking changes
 
 ### Option 2: Document Current State (Low Effort) ⭐ RECOMMENDED
 - Accept current coverage levels (64 and 98 edges)
 - Document that these edges require infrastructure adoption, not migration
 - Create roadmap for future infrastructure expansion
-- **Effort**: 30 minutes
+- **Effort**: 
 
 ### Option 3: Targeted Expansion (Medium Effort)
 **Wave 5**: Add execution trace to top 10-20 uncovered agents
 - Focus on high-criticality agents (L5 safety, L3 orchestration)
 - Manual instrumentation with ExecutionTrace context managers
-- **Effort**: 2-3 hours
+- **Effort**: 2-
 
 **Wave 6**: Convert top 10-20 state mutation sites to UWG
 - Focus on critical state operations (config writes, cache updates)
 - Manual refactoring to write-through pattern
-- **Effort**: 2-3 hours
+- **Effort**: 2-
 
 ---
 
@@ -116,7 +116,7 @@ uwg.write(target="redis", key="foo", value="bar")  # Emits edge
 | Automation | 100% automated | Requires manual integration |
 | Risk | Low (additive only) | Medium-High (refactoring) |
 | Validation | ADG edge count | Runtime behavior + ADG |
-| Effort per file | ~1 minute | ~15-30 minutes |
+| Effort per file | ~ | ~15- |
 
 ---
 
@@ -148,7 +148,7 @@ uwg.write(target="redis", key="foo", value="bar")  # Emits edge
 3. Validate write-through behavior in tests
 4. Regenerate ADG and verify edge increase
 
-**Estimated Total Effort**: 4-6 hours (vs. Wave 4's 2-3 hours for 490 edges)
+**Estimated Total Effort**: 4- (vs. Wave 4's 2- for 490 edges)
 
 ## Findings
 

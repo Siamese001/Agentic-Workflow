@@ -489,13 +489,13 @@ class QwenVLLMAdapter:
 
 ## Timeline Estimate
 
-- **Phase 1**: 2-3 days (Frozen registry + startup validation)
-- **Phase 2**: 2-3 days (Router sovereignty + deterministic math)
-- **Phase 3**: 2-3 days (Provider protocol + config hashing)
-- **Phase 4**: 2-3 days (apps_* agent registry integration)
-- **Phase 5**: 1-2 days (Structural NO_TIERING enforcement)
-- **Phase 6**: 3-4 days (Comprehensive sovereignty testing)
-- **Total**: 12-18 days
+- **Phase 1**: 2- (Frozen registry + startup validation)
+- **Phase 2**: 2- (Router sovereignty + deterministic math)
+- **Phase 3**: 2- (Provider protocol + config hashing)
+- **Phase 4**: 2- (apps_* agent registry integration)
+- **Phase 5**: 1- (Structural NO_TIERING enforcement)
+- **Phase 6**: 3- (Comprehensive sovereignty testing)
+- **Total**: 12-
 
 This final immutable plan achieves 100% Zero-Loss Architecture compliance with absolute sovereignty guarantees.
 

@@ -97,7 +97,7 @@ class RAGTopKCache:
 ```
 
 **Purpose**: Cache RAG top-k retrieval results to avoid repeated vector searches
-- **TTL**: 10 minutes (configurable)
+- **TTL**:  (configurable)
 - **Key**: Content hash-based
 - **Fallback**: Bounded in-process LRU if Redis unavailable
 
@@ -192,7 +192,7 @@ services:
 
 ### System Learning Scale
 - **RAG Cache**: Typically < 1MB for retrieval caches
-- **TTL**: 10 minutes default for RAG results
+- **TTL**:  default for RAG results
 - **Hit Rate**: High for repeated queries
 - **Fallback**: In-process LRU for resilience
 

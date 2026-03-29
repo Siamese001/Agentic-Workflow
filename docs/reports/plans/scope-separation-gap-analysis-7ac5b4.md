@@ -524,14 +524,14 @@ def test_complete_dependency_flow():
 
 | Phase | Duration | Start Date | End Date | Success Criteria |
 |-------|----------|------------|----------|------------------|
-| Phase 1.1 | 3 days | Week 1 | Week 1 | L3/L4 violations remediated |
-| Phase 1.2 | 4 days | Week 1 | Week 2 | L5 violations remediated |
-| Phase 1.3 | 3 days | Week 2 | Week 2 | L0 violations remediated |
-| Phase 2.1 | 2 days | Week 2 | Week 2 | System learning guards added |
-| Phase 2.2 | 2 days | Week 3 | Week 3 | Read-only validation implemented |
-| Phase 3.1 | 2 days | Week 3 | Week 3 | Tooling boundaries hardened |
-| Phase 4.1 | 3 days | Week 3 | Week 4 | CI enforcement integrated |
-| Phase 4.2 | 2 days | Week 4 | Week 4 | Runtime validation active |
+| Phase 1.1 |  | Week 1 | Week 1 | L3/L4 violations remediated |
+| Phase 1.2 |  | Week 1 | Week 2 | L5 violations remediated |
+| Phase 1.3 |  | Week 2 | Week 2 | L0 violations remediated |
+| Phase 2.1 |  | Week 2 | Week 2 | System learning guards added |
+| Phase 2.2 |  | Week 3 | Week 3 | Read-only validation implemented |
+| Phase 3.1 |  | Week 3 | Week 3 | Tooling boundaries hardened |
+| Phase 4.1 |  | Week 3 | Week 4 | CI enforcement integrated |
+| Phase 4.2 |  | Week 4 | Week 4 | Runtime validation active |
 
 ## Phase 5: Cryptographic Sovereignty Hardening
 
@@ -684,20 +684,20 @@ class ExecutionBoundToken:
 
 | Phase | Duration | Start Date | End Date | Success Criteria |
 |-------|----------|------------|----------|------------------|
-| Phase 1.1 | 3 days | Week 1 | Week 1 | L3/L4 violations remediated |
-| Phase 1.2 | 4 days | Week 1 | Week 2 | L5 violations remediated |
-| Phase 1.3 | 3 days | Week 2 | Week 2 | L0 violations remediated |
-| Phase 2.1 | 2 days | Week 2 | Week 2 | System learning guards added |
-| Phase 2.2 | 2 days | Week 3 | Week 3 | Read-only validation implemented |
-| Phase 3.1 | 2 days | Week 3 | Week 3 | Tooling boundaries hardened |
-| Phase 4.1 | 3 days | Week 3 | Week 4 | CI enforcement integrated |
-| Phase 4.2 | 2 days | Week 4 | Week 4 | Runtime validation active |
-| **Phase 5.1** | **3 days** | **Week 4** | **Week 5** | **Determinism engine corrected** |
-| **Phase 5.2** | **2 days** | **Week 5** | **Week 5** | **Hierarchy config externalized** |
-| **Phase 5.3** | **3 days** | **Week 5** | **Week 6** | **Capability tokens implemented** |
-| **Phase 5.4** | **3 days** | **Week 6** | **Week 6** | **Structural namespace enforced** |
-| **Phase 5.5** | **2 days** | **Week 6** | **Week 6** | **Sovereignty bootstrap active** |
-| **Phase 5.6** | **3 days** | **Week 6** | **Week 7** | **CI cryptographic enforcement** |
+| Phase 1.1 |  | Week 1 | Week 1 | L3/L4 violations remediated |
+| Phase 1.2 |  | Week 1 | Week 2 | L5 violations remediated |
+| Phase 1.3 |  | Week 2 | Week 2 | L0 violations remediated |
+| Phase 2.1 |  | Week 2 | Week 2 | System learning guards added |
+| Phase 2.2 |  | Week 3 | Week 3 | Read-only validation implemented |
+| Phase 3.1 |  | Week 3 | Week 3 | Tooling boundaries hardened |
+| Phase 4.1 |  | Week 3 | Week 4 | CI enforcement integrated |
+| Phase 4.2 |  | Week 4 | Week 4 | Runtime validation active |
+| **Phase 5.1** | **** | **Week 4** | **Week 5** | **Determinism engine corrected** |
+| **Phase 5.2** | **** | **Week 5** | **Week 5** | **Hierarchy config externalized** |
+| **Phase 5.3** | **** | **Week 5** | **Week 6** | **Capability tokens implemented** |
+| **Phase 5.4** | **** | **Week 6** | **Week 6** | **Structural namespace enforced** |
+| **Phase 5.5** | **** | **Week 6** | **Week 6** | **Sovereignty bootstrap active** |
+| **Phase 5.6** | **** | **Week 6** | **Week 7** | **CI cryptographic enforcement** |
 
 ## Conclusion
 

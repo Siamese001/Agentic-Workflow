@@ -47,7 +47,7 @@ PENDING
 
 **#1: AgentDiscoveryCache (Value: HIGH, Effort: LOW)**
 - **Problem**: agent_discovery_full.json (190 agents) parsed on every agent lookup
-- **Solution**: Content-hash keyed cache, 24hr TTL
+- **Solution**: Content-hash keyed cache,  TTL
 - **Impact**: Eliminates repeated file I/O + JSON parsing for agent discovery
 - **Tests**: 13 (happy + non-happy paths)
 
@@ -59,7 +59,7 @@ PENDING
 
 **#3: SchemaValidatorCache (Value: MEDIUM, Effort: LOW)**
 - **Problem**: JSON schema validators recompiled for repeated validation
-- **Solution**: Content-hash keyed by schema definition, 24hr TTL
+- **Solution**: Content-hash keyed by schema definition,  TTL
 - **Impact**: Eliminates repeated schema compilation overhead
 - **Tests**: 6 (happy + non-happy paths)
 
@@ -71,7 +71,7 @@ PENDING
 
 **#5: ConfigFileCache (Value: MEDIUM, Effort: LOW)**
 - **Problem**: YAML/JSON config files parsed repeatedly
-- **Solution**: Path + content-hash keyed, 24hr TTL
+- **Solution**: Path + content-hash keyed,  TTL
 - **Impact**: Eliminates repeated file I/O + parsing for configs
 - **Tests**: 7 (happy + non-happy paths)
 

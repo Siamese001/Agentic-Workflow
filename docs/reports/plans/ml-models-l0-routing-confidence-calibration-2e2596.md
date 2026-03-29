@@ -263,7 +263,7 @@ class RoutingFeedback:
 2. **Accuracy**: >95% routing accuracy with confidence >0.8
 3. **Latency**: <100ms routing decision time
 4. **HITL Efficiency**: <5% human intervention rate
-5. **Adaptability**: <1 week to onboard new agent types
+5. **Adaptability**: < to onboard new agent types
 
 ## Next Steps
 

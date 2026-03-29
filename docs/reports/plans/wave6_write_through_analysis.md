@@ -68,7 +68,7 @@ Like Wave 5 execution trace, `writes_through` edges are **infrastructure-emitted
 | **Edge Type** | `applies_guardrail` | `writes_through` |
 | **How Created** | Guard check function calls | UniversalWriteGateway method calls |
 | **Migration Method** | ✅ AST injection (automated) | ❌ Manual refactoring required |
-| **Effort per File** | ~1 minute | ~20-45 minutes |
+| **Effort per File** | ~ | ~20- |
 | **Risk** | Low (additive) | High (architectural change) |
 | **Pattern** | Decorator/check calls | Centralized write authority |
 
@@ -92,7 +92,7 @@ Like Wave 5 execution trace, `writes_through` edges are **infrastructure-emitted
 
 ### Migration Complexity
 
-**Simple Cases** (15-30 minutes):
+**Simple Cases** (15-):
 ```python
 # Before
 with open("config.json", "w") as f:
@@ -104,7 +104,7 @@ uwg = get_instance()
 uwg.write_through("config.json", data)
 ```
 
-**Complex Cases** (45-90 minutes):
+**Complex Cases** (45-):
 - File append operations
 - Binary file writes
 - Database connections
@@ -117,28 +117,28 @@ uwg.write_through("config.json", data)
 
 ### Option 1: Targeted Manual Expansion
 - **Scope**: Migrate top 20 high-frequency write operations
-- **Effort**: 10-20 hours
+- **Effort**: 10-
 - **Risk**: High (architectural changes)
 - **Coverage**: ~20-30 new edges
 - **ROI**: Low (high effort, limited impact)
 
 ### Option 2: UWG Enhancement ⭐ RECOMMENDED
 - **Scope**: Enhance UWG with convenience methods and better ergonomics
-- **Effort**: 4-6 hours
+- **Effort**: 4-
 - **Risk**: Medium (infrastructure improvement)
 - **Coverage**: Enables future organic adoption
 - **ROI**: High (enables feature-driven expansion)
 
 ### Option 3: Document Current State
 - **Scope**: Accept current 98 edges as representing governed writes
-- **Effort**: 30 minutes
+- **Effort**: 
 - **Risk**: None
 - **Coverage**: 0 new edges
 - **ROI**: High (stability preserved)
 
 ### Option 4: Hybrid Approach
 - **Scope**: UWG enhancement + 5-file pilot migration
-- **Effort**: 6-8 hours
+- **Effort**: 6-
 - **Risk**: Medium
 - **Coverage**: ~5-10 new edges + better infrastructure
 - **ROI**: Medium-High
@@ -191,7 +191,7 @@ class UniversalWriteGateway:
 | **Current Edges** | 64 | 98 |
 | **Pattern** | ExecutionTrace context | UWG method calls |
 | **Infrastructure** | Runtime tracing | Write governance |
-| **Migration Complexity** | Medium (15-30 min/agent) | High (20-90 min/write site) |
+| **Migration Complexity** | Medium (15-/agent) | High (20-/write site) |
 | **Architectural Impact** | Low (observability) | High (mutation authority) |
 | **Recommended Approach** | Document current state | Enhance infrastructure |
 
@@ -202,10 +202,10 @@ class UniversalWriteGateway:
 **Context**: Wave 6 write-through coverage expansion from current 98 edges. Unlike Wave 4 guardrails, this requires migrating direct file operations to use UniversalWriteGateway - an architectural change with high complexity and risk.
 
 **Options**:
-1. **Targeted Manual Expansion**: Migrate top 20 write operations to UWG. High effort (10-20 hours), high architectural risk, provides ~20-30 new edges.
-2. **UWG Enhancement ⭐ RECOMMENDED**: Enhance UWG with convenience methods (write_json, write_text, etc.). Medium effort (4-6 hours), medium risk, enables future organic adoption.
-3. **Document Current State**: Accept 98 edges as representing governed writes. Low effort (30 min), no risk, maintains current stability.
-4. **Hybrid Approach**: UWG enhancement + 5-file pilot migration. Medium-high effort (6-8 hours), medium risk, provides immediate validation.
+1. **Targeted Manual Expansion**: Migrate top 20 write operations to UWG. High effort (10-), high architectural risk, provides ~20-30 new edges.
+2. **UWG Enhancement ⭐ RECOMMENDED**: Enhance UWG with convenience methods (write_json, write_text, etc.). Medium effort (4-), medium risk, enables future organic adoption.
+3. **Document Current State**: Accept 98 edges as representing governed writes. Low effort (), no risk, maintains current stability.
+4. **Hybrid Approach**: UWG enhancement + 5-file pilot migration. Medium-high effort (6-), medium risk, provides immediate validation.
 
 **Trade-offs**: Manual expansion provides coverage but at high architectural risk. UWG enhancement enables organic growth with better ergonomics. Documentation accepts current state but delays governance improvement. Hybrid approach balances validation with infrastructure improvement.
 

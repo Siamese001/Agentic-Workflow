@@ -130,14 +130,14 @@ From commit `ce2fce74d`, only 15 files were modified:
 **This suggests**: Not all 80+ references were migrated. The deletion was premature.
 
 #### 3. **No Deprecation Period**
-The file was marked deprecated on `2026-02-07` and deleted on `2026-03-07` - only **28 days later**.
+The file was marked deprecated on `2026-02-07` and deleted on `2026-03-07` - only ** later**.
 
 **Industry Standard**: Deprecation periods are typically:
 - **Minor breaking change**: 3-6 months
 - **Major breaking change**: 6-12 months
 - **Critical infrastructure**: 12-24 months
 
-**28 days is insufficient** for a component with 80+ references.
+** is insufficient** for a component with 80+ references.
 
 #### 4. **No Reference Scanning**
 No automated check verified that all references were migrated before deletion.
@@ -211,7 +211,7 @@ Blocks deletion of any *Agent.py file unless:
 2. Justification provided (min 50 chars)
 3. Replacement agent specified
 4. Reference scan shows zero references
-5. Deprecation period met (90 days minimum)
+5. Deprecation period met ( minimum)
 """
 
 import re
@@ -472,7 +472,7 @@ def scan_references(agent_name: str) -> dict:
 
 1. **Shims are critical infrastructure** - Don't delete until migration is 100% complete
 2. **Tests should not drive deletions** - Adding to `DELETED_SHIM_NAMES` creates pressure to delete prematurely
-3. **Deprecation periods matter** - 28 days is insufficient for 80+ references
+3. **Deprecation periods matter** -  is insufficient for 80+ references
 4. **Reference scanning is mandatory** - Can't assume migration is complete without verification
 5. **Authorization prevents disasters** - Requiring explicit approval prevents accidental/premature deletions
 

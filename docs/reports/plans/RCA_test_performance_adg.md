@@ -147,7 +147,7 @@ Tests use **97 distinct relation types** — the same full set used for producti
 
 # Implementation Plan: Phases and Waves
 
-## Phase 0: Immediate Performance Recovery (1-2 days)
+## Phase 0: Immediate Performance Recovery (1-)
 
 ### Wave 0.1: Bootstrap Emitter Cleanup (Day 1)
 **Target**: 30 test files with 76–77 emitter imports each
@@ -169,12 +169,12 @@ def cached_adg_scan():
     scanner = ADGStaticScanner(cache_path=Path("tests/.adg_cache.json"))
     return scanner.scan(commit_sha="session-scan")
 ```
-**Expected Impact**: 3-5 minutes saved per test session
+**Expected Impact**: 3- saved per test session
 **Verification**: Test suite runtime before/after
 
 ---
 
-## Phase 1: Scanner Architecture Cleanup (3-5 days)
+## Phase 1: Scanner Architecture Cleanup (3-)
 
 ### Wave 1.1: Test-Only Scan Mode (Day 2-3)
 **Target**: Create `scan_mode="structural_only"` for test files
@@ -209,7 +209,7 @@ def _filter_runtime_only_edges(edges: list[Edge], include_tests: bool, scan_mode
 
 ---
 
-## Phase 2: Test Suite Restructuring (1 week)
+## Phase 2: Test Suite Restructuring ()
 
 ### Wave 2.1: Heavy Test Tagging (Day 5-6)
 **Target**: Tag tests with >1000 edges as `@pytest.mark.slow`
@@ -249,7 +249,7 @@ def adg_scan_mode():
 
 ---
 
-## Phase 3: Infrastructure Optimization (1-2 weeks)
+## Phase 3: Infrastructure Optimization (1-)
 
 ### Wave 3.1: Parallel Test Processing (Week 2)
 **Target**: Run test files in parallel during ADG scanning
@@ -290,7 +290,7 @@ def update_test_adg(changed_files: list[Path]) -> None:
 
 ---
 
-## Phase 4: Long-term Architecture (2-3 weeks)
+## Phase 4: Long-term Architecture (2-)
 
 ### Wave 4.1: Test-Only ADG Schema (Week 3)
 **Target**: Separate ADG schema for test vs production code
@@ -334,7 +334,7 @@ def mock_adg():
 |-------|---------------|---------|--------|
 | Phase 0 | Test collection time | ~60s | <30s |
 | Phase 1 | Test ADG edges | 322,978 | <200,000 |
-| Phase 2 | Fast suite runtime | 5-10 min | <30s |
+| Phase 2 | Fast suite runtime | 5- | <30s |
 | Phase 3 | Parallel scan speedup | 1× | 4× |
 | Phase 4 | Unit test isolation | Full ADG | Mock ADG |
 

@@ -16,33 +16,33 @@ This plan provides specific target files for each sub-phase, breaking down the 1
 ---
 
 
-## Phase 0: Discovery & Preparation (2 days)
+## Phase 0: Discovery & Preparation ()
 
-### 0.1: Baseline Establishment (Day 0 - 4 hours)
+### 0.1: Baseline Establishment (Day 0 - )
 **Target Files**: None (preparation phase)
 **Actions**:
 - Create git tag `ssot-baseline-{timestamp}`
 - Run full test suite and capture results
 - Generate dependency map for all violation files
 
-### 0.2: Risk Assessment (Day 0 - 4 hours)
+### 0.2: Risk Assessment (Day 0 - )
 **Target Files**: Top 50 most imported violation files
 **Sample High-Risk Files**:
 - `agentic_core/config/SovereignConfigManager.py` (CONFIG)
 - `agentic_core/L5_safety/validators/FileClassificationAgent.py` (VALIDATOR)
 - `agentic_core/L3_orchestration/OrchestratorAgent.py` (SCRIPT)
 
-### 0.3: Tooling Preparation (Day 1 - 8 hours)
+### 0.3: Tooling Preparation (Day 1 - )
 **Target Files**: Create new tools
 - `tools/rename_validator.py` - Batch rename validators
 - `tools/rename_config.py` - Batch rename configs
 - `tools/validate_imports.py` - Check for broken imports
 
-### 0.4: Stakeholder Alignment (Day 2 - 4 hours)
+### 0.4: Stakeholder Alignment (Day 2 - )
 **Target Files**: Review plan documents
 - Get approval for Phase 1 start
 
-## Phase 1: Critical Infrastructure (5 days)
+## Phase 1: Critical Infrastructure ()
 
 ### 1.1: VALIDATOR - Safety Layer (Day 3)
 **Target Files** (20 files):
@@ -146,7 +146,7 @@ L6_observability/config/ (8 files)
 └── ...
 ```
 
-## Phase 2: Type System Foundation (3 days)
+## Phase 2: Type System Foundation ()
 
 ### 2.1: Core Types (Day 9)
 **Target Files** (50 most imported types):
@@ -213,7 +213,7 @@ ops_scripts/ (20 types)
 tests/ (29 types)
 ```
 
-## Phase 3: Test Organization (2 days)
+## Phase 3: Test Organization ()
 
 ### 3.1: Critical Tests (Day 12)
 **Target Files** (100 critical test files):
@@ -240,7 +240,7 @@ By directory:
 - tests/unit/ (89 files)
 ```
 
-## Phase 4: Strategy Pattern (2 days)
+## Phase 4: Strategy Pattern ()
 
 ### 4.1: Core Strategies (Day 14)
 **Target Files** (50 core strategies):
@@ -270,7 +270,7 @@ L4_state/validation_context/ (20 strategies)
 L5_safety/guardrails/ (21 strategies)
 ```
 
-## Phase 5: Script Consolidation (3 days)
+## Phase 5: Script Consolidation ()
 
 ### 5.1: Critical Scripts (Day 16)
 **Target Files** (50 critical scripts):

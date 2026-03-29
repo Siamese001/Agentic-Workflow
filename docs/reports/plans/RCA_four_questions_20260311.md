@@ -125,7 +125,7 @@ and `audit_trail_mixin`. These were already deleted in an earlier commit not cap
 
 ---
 
-## RCA Q3 — All critical source files deleted in last 4 days
+## RCA Q3 — All critical source files deleted in last 
 
 ### Legitimate deletions (renames/shims — callers already updated):
 
@@ -153,7 +153,7 @@ and `audit_trail_mixin`. These were already deleted in an earlier commit not cap
 | `421a1f377` 2026-03-08 | `agentic_core/evaluation/schemas/__init__.py` | `__init__` — low impact |
 
 All 4-day deletions outside `L5_safety/reasoning/` are either `__init__.py` stubs or test/docs files.
-**No critical production source files were newly deleted in the last 4 days.**
+**No critical production source files were newly deleted in the last .**
 
 The critical deletions (`SovereignBaseAgent`, `embedding_factory`, mixins) all pre-date the 4-day window.
 

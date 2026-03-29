@@ -34,7 +34,7 @@
 | **L5 Safety Adapters** | ✅ Protocol-compliant |
 | **Domain Integration** | ✅ RG/LIC mixins ready |
 | **Total Tests Passing** | **268** |
-| **Estimated Remaining** | 8-10 weeks (agent rollout) |
+| **Estimated Remaining** | 8- (agent rollout) |
 | **Risk Level** | MEDIUM (foundation de-risks rollout) |
 
 ### Infrastructure Completion Status

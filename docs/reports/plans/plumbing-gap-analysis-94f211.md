@@ -946,13 +946,13 @@ tests/unit/apps_rg/conftest.py                                       (G13 — fi
 
 ### Effort Estimate
 
-- **Phase 1 (P0)**: 2-4 hours (fix broken imports + test collection)
-- **Phase 2 (P1)**: 8-12 hours (wire 4 stubs + L3 orchestrator + tests)
-- **Phase 3 (P2)**: 4-6 hours (implement 2 placeholders + tests)
-- **Phase 4 (P3)**: 12-16 hours (11 integration test files)
-- **Phase 5 (P4)**: 4-6 hours (2 E2E circuit tests)
+- **Phase 1 (P0)**: 2- (fix broken imports + test collection)
+- **Phase 2 (P1)**: 8- (wire 4 stubs + L3 orchestrator + tests)
+- **Phase 3 (P2)**: 4- (implement 2 placeholders + tests)
+- **Phase 4 (P3)**: 12- (11 integration test files)
+- **Phase 5 (P4)**: 4- (2 E2E circuit tests)
 
-**Total**: 30-44 hours of implementation + testing
+**Total**: 30- of implementation + testing
 
 ---
 

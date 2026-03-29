@@ -165,7 +165,7 @@ The guard was **intentionally designed** to prevent this exact problem, but it w
 **Before:**
 - Full ADG scan: ~170,000 dashboard aggregations
 - Each aggregation: ~50-100ms (estimated)
-- Total overhead: **8,500-17,000 seconds** (2.4-4.7 hours!)
+- Total overhead: **8,500-17,000 seconds** (2.4-!)
 
 **After:**
 - Full ADG scan: 0 dashboard aggregations during scan

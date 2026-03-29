@@ -58,7 +58,7 @@ with ExecutionTrace(trace_id=trace_id, operation="agent_execute") as trace:
 ## Decision Rationale
 
 ### Why Option 2 Was Chosen
-1. **Efficiency vs ROI**: Manual instrumentation (15-30 min/agent) vs Wave 4 automation (1 min/file)
+1. **Efficiency vs ROI**: Manual instrumentation (15-/agent) vs Wave 4 automation (/file)
 2. **Current Coverage Represents Reality**: 64 edges show actual ExecutionTrace infrastructure usage
 3. **Feature-Driven Approach**: Expansion should occur naturally during new agent development
 4. **Stability**: No risk to existing functionality by deferring manual changes
@@ -66,10 +66,10 @@ with ExecutionTrace(trace_id=trace_id, operation="agent_execute") as trace:
 ### Opportunity Cost Analysis
 | Approach | Effort | Risk | New Edges | ROI |
 |----------|--------|------|-----------|-----|
-| Manual Expansion | 4-6 hours | Medium-High | ~20-40 | Low |
-| Document Current | 30 min | None | 0 | High |
-| Infrastructure Enhance | 4-6 hours | High | Unknown | Medium |
-| Hybrid Pilot | 1-2 hours | Low | ~5-10 | Medium |
+| Manual Expansion | 4- | Medium-High | ~20-40 | Low |
+| Document Current |  | None | 0 | High |
+| Infrastructure Enhance | 4- | High | Unknown | Medium |
+| Hybrid Pilot | 1- | Low | ~5-10 | Medium |
 
 ---
 
@@ -145,7 +145,7 @@ class SomeAgent:
 |--------|---------------------|--------------------------|
 | Approach | Automated AST injection | Manual instrumentation only |
 | Baseline → Final | 68 → 558 edges (+490) | 64 → 64 edges (maintained) |
-| Time Investment | 2.75 hours | 0.5 hours (analysis + documentation) |
+| Time Investment |  |  (analysis + documentation) |
 | Automation Level | 100% | 0% (infrastructure limitation) |
 | ROI | High (490 edges/2.75h) | High (stability preserved) |
 

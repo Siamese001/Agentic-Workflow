@@ -261,7 +261,7 @@ python -m agentic_core.L5_safety.config.structure_blueprint._verify
 
 **Prevention Measures:**
 1. **Template SSOT**: All templates must live in `data/prompt_governance/` with domain classification
-2. **Reference Monitoring**: Alert on orphaned template files (>30 days)
+2. **Reference Monitoring**: Alert on orphaned template files (>)
 3. **Duplicate Detection**: Automated detection of duplicate content across prompt directories
 4. **Domain Classification**: Clear guidelines for template domain assignment
 

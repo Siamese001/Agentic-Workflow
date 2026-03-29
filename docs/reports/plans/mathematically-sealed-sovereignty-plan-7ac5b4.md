@@ -891,12 +891,12 @@ def get_sovereignty_hashes() -> tuple:
 
 | Phase | Duration | Start Date | End Date | Success Criteria |
 |-------|----------|------------|----------|------------------|
-| Phase 1.1 | 2 days | Week 1 | Week 1 | Deterministic digest computation |
-| Phase 1.2 | 1 day | Week 1 | Week 1 | Externalized hierarchy configuration |
-| Phase 2.1 | 2 days | Week 1 | Week 2 | Execution-bound capability tokens |
-| Phase 2.2 | 1 day | Week 2 | Week 2 | Execution trace management |
-| Phase 3.1 | 2 days | Week 2 | Week 3 | Structural namespace enforcement |
-| Phase 4.1 | 2 days | Week 3 | Week 3 | Sovereignty bootstrap sequence |
+| Phase 1.1 |  | Week 1 | Week 1 | Deterministic digest computation |
+| Phase 1.2 |  | Week 1 | Week 1 | Externalized hierarchy configuration |
+| Phase 2.1 |  | Week 1 | Week 2 | Execution-bound capability tokens |
+| Phase 2.2 |  | Week 2 | Week 2 | Execution trace management |
+| Phase 3.1 |  | Week 2 | Week 3 | Structural namespace enforcement |
+| Phase 4.1 |  | Week 3 | Week 3 | Sovereignty bootstrap sequence |
 
 ## Conclusion
 

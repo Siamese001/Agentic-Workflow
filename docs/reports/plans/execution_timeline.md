@@ -15,7 +15,7 @@
 
 ## Wave Schedule & Dependencies
 
-**Total Duration**: 28 days across 4 phases
+**Total Duration**:  across 4 phases
 **Start Date**: Day 1
 **Target Completion**: Day 28
 

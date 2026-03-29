@@ -18,7 +18,7 @@ This plan splits the comprehensive 172-agent optimization audit into 5 discrete,
 
 ## Phase 1: Configuration Extraction (Cat 4) - Foundation Layer
 **Scope:** 28 agents (16%) with hardcoded configurations
-**Timeline:** 1-2 weeks
+**Timeline:** 1-
 **Impact:** High - Enables all subsequent phases
 
 ### Key Activities:
@@ -38,7 +38,7 @@ This plan splits the comprehensive 172-agent optimization audit into 5 discrete,
 
 ## Phase 2: Shared Middleware Creation (Cat 5) - Infrastructure Layer
 **Scope:** 18 agents (10%) with duplicate boilerplate code
-**Timeline:** 2-3 weeks
+**Timeline:** 2-
 **Impact:** High - Eliminates code duplication across fleet
 
 ### Key Activities:
@@ -58,7 +58,7 @@ This plan splits the comprehensive 172-agent optimization audit into 5 discrete,
 
 ## Phase 3: Script Offload (Cat 1) - Performance Layer
 **Scope:** 38 agents (22%) performing deterministic I/O operations
-**Timeline:** 2-3 weeks
+**Timeline:** 2-
 **Impact:** Medium-High - Improves performance and reduces agent complexity
 
 ### Key Activities:
@@ -78,7 +78,7 @@ This plan splits the comprehensive 172-agent optimization audit into 5 discrete,
 
 ## Phase 4: Native Python Refactoring (Cat 2) - Efficiency Layer
 **Scope:** 41 agents (24%) using simple regex/JSON parsing
-**Timeline:** 2-3 weeks
+**Timeline:** 2-
 **Impact:** Medium - Optimizes simple reasoning operations
 
 ### Key Activities:
@@ -98,7 +98,7 @@ This plan splits the comprehensive 172-agent optimization audit into 5 discrete,
 
 ## Phase 5: LLM Optimization (Cat 3) - Intelligence Layer
 **Scope:** 47 agents (27%) properly using LLM capabilities
-**Timeline:** 3-4 weeks
+**Timeline:** 3-
 **Impact:** Medium - Enhances reasoning efficiency
 
 ### Key Activities:

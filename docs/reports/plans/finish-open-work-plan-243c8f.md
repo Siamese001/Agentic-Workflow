@@ -180,13 +180,13 @@ Close all open threads from the "Refactor Mixin and CI" and "RCA: Dedup Report S
 
 | Phase | Description | Est. Effort | Dependencies |
 | ----- | ----------- | ----------- | ------------ |
-| 1 | Root file evacuation | 15 min | None |
-| 2 | HOP agent migration (9 agents) | 60 min | None |
-| 3 | CI workflow validation | 15 min | None |
-| 4 | Fix test skipping | 30 min | Phase 2 |
-| 5 | Cluster re-assessment | 20 min | Phase 2 |
+| 1 | Root file evacuation |  | None |
+| 2 | HOP agent migration (9 agents) |  | None |
+| 3 | CI workflow validation |  | None |
+| 4 | Fix test skipping |  | Phase 2 |
+| 5 | Cluster re-assessment |  | Phase 2 |
 
-**Total**: ~2.5 hours. Phases 1, 2, 3 are independent and can be done in any order.
+**Total**: ~. Phases 1, 2, 3 are independent and can be done in any order.
 
 ## Violation
 

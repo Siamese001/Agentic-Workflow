@@ -1,7 +1,7 @@
 # Session Summary: Wave 4 & Wave 5 ADG Coverage Expansion
 
 **Date**: 2026-03-14
-**Session Duration**: ~2 hours
+**Session Duration**: ~
 **Status**: ✅ Wave 4 Complete, 📋 Wave 5 Documented
 
 ---
@@ -86,16 +86,16 @@ Waves 5 & 6 target **infrastructure-emitted edges**, not injectable patterns:
 | Edge emission | Guard check calls | Infrastructure method calls |
 | Migration | ✅ AST injection | ❌ Manual instrumentation |
 | Automation | 100% | 0% |
-| Effort/file | ~1 minute | ~15-30 minutes |
+| Effort/file | ~ | ~15- |
 | Risk | Low (additive) | Medium-High (refactoring) |
 
 ### HITL Decision
 
 **Options Presented**:
-- A: Targeted manual expansion (both waves, 4-6 hours)
+- A: Targeted manual expansion (both waves, 4-)
 - B: Document current state ⭐ RECOMMENDED
-- C: Wave 5 only (execution trace, 2-3 hours)
-- D: Wave 6 only (write-through, 2-3 hours)
+- C: Wave 5 only (execution trace, 2-)
+- D: Wave 6 only (write-through, 2-)
 
 **User Selected**: **Option C** (Wave 5 Only)
 
@@ -132,9 +132,9 @@ with ExecutionTrace(trace_id=..., operation="agent_execute") as trace:
 **Status**: Analysis complete, manual expansion deferred
 
 **Rationale**:
-1. Requires manual integration (15-30 min/agent vs 1 min/file for Wave 4)
+1. Requires manual integration (15-/agent vs /file for Wave 4)
 2. Current 64 edges represent actual infrastructure usage
-3. Lower ROI than Wave 4 (490 edges in 2-3 hours)
+3. Lower ROI than Wave 4 (490 edges in 2-)
 4. Not a security/safety concern like guardrails
 5. Better to expand organically with new agent development
 

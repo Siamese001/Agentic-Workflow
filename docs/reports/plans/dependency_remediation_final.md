@@ -174,7 +174,7 @@ The following 6 deps could be moved to infra in a future refactor:
    - Refactor: Guard import or remove module entirely
    - Benefit: Dead code, zero usage in codebase
 
-**Estimated effort:** 2-3 days for complete guardrail implementation + testing
+**Estimated effort:** 2- for complete guardrail implementation + testing
 **Estimated benefit:** -6 core deps, ~150MB smaller core install
 
 ---

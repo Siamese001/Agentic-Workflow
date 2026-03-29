@@ -96,8 +96,8 @@ except (ImportError, AttributeError, RuntimeError) as e:
 ```
 
 **Archive Behavior:**
-- No output = no files older than 7 days (expected)
-- Current artifacts: 03122026 (1 day old), 03132026 (today)
+- No output = no files older than  (expected)
+- Current artifacts: 03122026 ( old), 03132026 (today)
 - Archive will activate when artifacts reach 8+ days old
 
 ## Usage
@@ -122,9 +122,9 @@ _archive_old_artifacts(Path("artifacts/adg"), "03132026", retention_days=3)
 ## Impact
 
 **Disk Space Savings (projected):**
-- Without archiving: ~150 MB/day × 30 days = **4.5 GB/month**
-- With archiving (7-day retention): ~150 MB/day × 7 days = **1.05 GB** (77% reduction)
-- Compressed archives: ~50 MB/day × 23 days = **1.15 GB** (additional storage)
+- Without archiving: ~150 MB/day ×  = **4.5 GB/month**
+- With archiving (7-day retention): ~150 MB/day ×  = **1.05 GB** (77% reduction)
+- Compressed archives: ~50 MB/day ×  = **1.15 GB** (additional storage)
 - **Total savings: ~2.3 GB/month**
 
 **Operational Benefits:**

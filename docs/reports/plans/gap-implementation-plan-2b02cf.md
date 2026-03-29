@@ -345,7 +345,7 @@ The phased approach allows for:
 - Risk mitigation through testing
 - Clear success metrics
 
-Total estimated effort: **8 weeks** for full integration across all 200+ agents.
+Total estimated effort: **** for full integration across all 200+ agents.
 
 ## Gap Register
 

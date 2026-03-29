@@ -582,16 +582,16 @@ adg-diff-check --baseline
 - Comprehensive testing using existing test framework
 - Monitoring and alerting via existing guardian system
 
-## SECTION 6 — QUICK WINS (Under 1 Day)
+## SECTION 6 — QUICK WINS (Under )
 
-1. **CLI Impact Commands** - Use existing AST graph to create `impact-of-change` and `who-uses` commands (0.5 day)
-2. **Pytest Impact Plugin** - Add basic file-based test filtering to pytest using existing change detection (0.5 day)
-3. **Guardian Risk Scoring** - Add simple centrality-based prioritization to existing guardian runner (0.5 day)
-4. **Config Duplication Detection** - Simple string-based scan for duplicate constants across apps_*/agentic_core (0.5 day)
-5. **CI Impact Testing** - Add changed-files detection to existing CI workflows (0.5 day)
-6. **Documentation Generation** - Auto-generate architecture docs from existing graphs (0.5 day)
-7. **Drift Baseline** - Create baseline snapshot of current AST graph and ADG (0.5 day)
-8. **Territory Mapping CLI** - Add command to show symbol territory using structure blueprint (0.5 day)
+1. **CLI Impact Commands** - Use existing AST graph to create `impact-of-change` and `who-uses` commands ()
+2. **Pytest Impact Plugin** - Add basic file-based test filtering to pytest using existing change detection ()
+3. **Guardian Risk Scoring** - Add simple centrality-based prioritization to existing guardian runner ()
+4. **Config Duplication Detection** - Simple string-based scan for duplicate constants across apps_*/agentic_core ()
+5. **CI Impact Testing** - Add changed-files detection to existing CI workflows ()
+6. **Documentation Generation** - Auto-generate architecture docs from existing graphs ()
+7. **Drift Baseline** - Create baseline snapshot of current AST graph and ADG ()
+8. **Territory Mapping CLI** - Add command to show symbol territory using structure blueprint ()
 
 ## SECTION 7 — LONGER TERM OPPORTUNITIES
 

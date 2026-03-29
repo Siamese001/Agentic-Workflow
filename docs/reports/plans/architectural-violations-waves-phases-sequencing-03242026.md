@@ -109,7 +109,7 @@ The architectural violations fix is organized into **4 WAVES** with **12 PHASES*
 **Expected Results:**
 - **Pattern:** `pytest.importorskip("dependency")` for tests
 - **Pattern:** `# guardian: allow-silent-swallow - optional dependency` for code
-- **Timeline:** 2-3 hours systematic application
+- **Timeline:** 2- systematic application
 
 ---
 
@@ -129,7 +129,7 @@ The architectural violations fix is organized into **4 WAVES** with **12 PHASES*
 
 **Expected Results:**
 - **Pattern:** `except ValueError as e: logger.warning(f"Invalid input: {e}")`
-- **Timeline:** 1-2 hours systematic application
+- **Timeline:** 1- systematic application
 
 ---
 
@@ -149,7 +149,7 @@ The architectural violations fix is organized into **4 WAVES** with **12 PHASES*
 
 **Expected Results:**
 - **Pattern:** `except {Error} as e: raise e  # Re-raise to surface issue`
-- **Timeline:** 2-3 hours systematic application
+- **Timeline:** 2- systematic application
 
 ---
 
@@ -169,7 +169,7 @@ The architectural violations fix is organized into **4 WAVES** with **12 PHASES*
 
 **Expected Results:**
 - **Pattern:** `except (ValueError, TypeError, RuntimeError) as e:`
-- **Timeline:** 2-3 hours systematic application
+- **Timeline:** 2- systematic application
 
 ---
 
@@ -189,7 +189,7 @@ The architectural violations fix is organized into **4 WAVES** with **12 PHASES*
 
 **Expected Results:**
 - **Pattern:** `# guardian: allow-silent-swallow - optional dependency`
-- **Timeline:** 1-2 hours systematic application
+- **Timeline:** 1- systematic application
 
 ---
 
@@ -212,7 +212,7 @@ The architectural violations fix is organized into **4 WAVES** with **12 PHASES*
 
 **Expected Results:**
 - **Pattern:** `@pytest.mark.unit`, `@pytest.mark.integration`, etc.
-- **Timeline:** 3-4 hours systematic application
+- **Timeline:** 3- systematic application
 
 ---
 
@@ -233,7 +233,7 @@ The architectural violations fix is organized into **4 WAVES** with **12 PHASES*
 
 **Expected Results:**
 - **Coverage:** 100% of test functions with appropriate markers
-- **Timeline:** 2-3 hours systematic application
+- **Timeline:** 2- systematic application
 
 ---
 
@@ -254,7 +254,7 @@ The architectural violations fix is organized into **4 WAVES** with **12 PHASES*
 
 **Expected Results:**
 - **Validation:** 100% test compliance verification
-- **Timeline:** 1-2 hours comprehensive validation
+- **Timeline:** 1- comprehensive validation
 
 ---
 
@@ -278,7 +278,7 @@ The architectural violations fix is organized into **4 WAVES** with **12 PHASES*
 
 **Expected Results:**
 - **Target:** 100% compliance across all categories
-- **Timeline:** 1-2 hours comprehensive validation
+- **Timeline:** 1- comprehensive validation
 
 ---
 
@@ -299,13 +299,13 @@ The architectural violations fix is organized into **4 WAVES** with **12 PHASES*
 
 **Expected Results:**
 - **Deliverables:** JSON + Markdown final reports
-- **Timeline:** 1 hour report generation
+- **Timeline:**  report generation
 
 ---
 
 ## 🚀 EXECUTION SEQUENCE & TIMELINE
 
-### **IMMEDIATE EXECUTION (Next 2-3 Hours)**
+### **IMMEDIATE EXECUTION (Next 2-)**
 
 **Wave 2 Completion (Priority 1):**
 ```bash
@@ -319,12 +319,12 @@ python tools/fix_medium_severity_swallowers.py --all
 python tools/add_guardian_comments.py --all
 ```
 
-**Expected Timeline:** 2-3 hours  
+**Expected Timeline:** 2-  
 **Expected Progress:** 86.6% → 95% completion
 
 ---
 
-### **NEXT DAY EXECUTION (3-4 Hours)**
+### **NEXT DAY EXECUTION (3-)**
 
 **Wave 3 Completion (Priority 2):**
 ```bash
@@ -336,12 +336,12 @@ python tools/add_test_category_markers.py --all
 python tools/validate_test_enforcement.py
 ```
 
-**Expected Timeline:** 3-4 hours  
+**Expected Timeline:** 3-  
 **Expected Progress:** 95% → 99% completion
 
 ---
 
-### **FINAL VALIDATION (1-2 Hours)**
+### **FINAL VALIDATION (1-)**
 
 **Wave 4 Completion (Priority 3):**
 ```bash
@@ -352,7 +352,7 @@ python tools/comprehensive_architectural_validation.py
 python tools/generate_final_compliance_report.py
 ```
 
-**Expected Timeline:** 1-2 hours  
+**Expected Timeline:** 1-  
 **Expected Progress:** 99% → 100% completion
 
 ---
@@ -437,7 +437,7 @@ python tools/generate_final_compliance_report.py
 
 ---
 
-**TOTAL ESTIMATED COMPLETION TIME:** 6-9 hours  
+**TOTAL ESTIMATED COMPLETION TIME:** 6-  
 **CURRENT PROGRESS:** 86.6% (Critical infrastructure complete)  
 **TARGET COMPLETION:** 100% (All violations eliminated)
 

@@ -102,9 +102,9 @@
 - [ ] Security scan passes
 
 ## Timeline Estimate
-- **Wave 1**: 2-4 hours (immediate fixes)
-- **Wave 2**: 4-8 hours (integration work)
-- **Wave 3**: 8-16 hours (hardening)
+- **Wave 1**: 2- (immediate fixes)
+- **Wave 2**: 4- (integration work)
+- **Wave 3**: 8- (hardening)
 
 ## Risk Mitigation
 - **Risk**: Mock agent too simplistic

@@ -9,46 +9,40 @@
 The `FileClassificationAgent.py` (284KB, ~6,000 lines) is the primary governance agent responsible for enforcing file classification and naming conventions. This analysis validates its alignment with `docs/reference/File Naming/Agent vs. Script.md` and identifies gaps, redundancies, and inconsistencies requiring remediation.
 
 ### Key Finding
-The agent implements **20 distinct file types** (AGENT, SCRIPT, CLASS, MIXIN, UTILITY, PROTOCOL, ENGINE, ORCHESTRATOR, VALIDATOR, CONFIG, FACTORY, TYPES, STRATEGY, ADAPTER, EXCEPTION, SERVICE, GATEWAY, STUB, TEST, ENFORCER) while the specification defines a **binary Script vs. Agent** distinction. This scope creep creates overlapping classification rules and inconsistent enforcement.
+The agent implements **20 distinct file types** (AGENT, SCRIPT, CLASS, MIXIN, UTILITY, PROTOCOL, ENGINE, ORCHESTRATOR, VALIDATOR, CONFIG, FACTORY, TYPES, STRATEGY, ADAPTER, EXCEPTION, SERVICE, GATEWAY, STUB, TEST, ENFORCER) alongside the specification's **binary Script vs. Agent** distinction. Analysis confirms this dual taxonomy is **architecturally sound**: the binary model provides behavioral enforcement (AGENT vs SCRIPT), while the 20-type taxonomy provides structural classification for organizational clarity. Both serve distinct, complementary purposes and should be retained.
+
+### Mandatory ADG Hot Cache Requirement
+**ALL file classification analysis MUST use ADG hot cache as the primary accelerator for understanding file content purpose. Grep/regex scanning is FORBIDDEN for semantic file understanding.** The ADG provides structured, cached dependency graph analysis that supersedes text-based pattern matching. This is a non-negotiable architectural requirement.
 
 ### Remediation Waves & Token Estimates
 
 **CI Validation Status: ✅ PASSED** | **Estimation Methodology: Windsurf Official Token Estimator**
 
-| Wave | Phase | Duration | Token Est. | Cumulative | Components | Key Deliverables |
-|------|-------|----------|-----------|------------|------------|------------------|
-| **1** | **BASELINE** | 4 hrs | **65,662** | **65,662** | 5 | E2E test harness, baseline classification report, gap inventory |
-| **2** | **CONSOLIDATE** | 9 hrs | **85,000** | **150,662** | 6 | 20→2 type reduction, ORCHESTRATOR/STRATEGY/ADAPTER consolidation |
-| **3** | **PRIORITIZE** | 7.5 hrs | **78,000** | **228,662** | 5 | Spec decision tree, priority reordering, apps/core unification |
-| **4** | **VALIDATE** | 11 hrs | **92,240** | **320,902** | 6 | Reusability/statefulness/determinism validation, symmetric scoring |
-| **5** | **VERIFY** | 7.5 hrs | **75,000** | **395,902** | 5 | Full e2e validation, performance benchmarks, acceptance testing |
+| Wave | Phase | Token Est. | Cumulative | Components | Key Deliverables |
+|------|-------|-----------|------------|------------|------------------|
+| **1** | **BASELINE + CONSOLIDATE** | **151K** | **151K** | 11 | E2E test harness, baseline report, dual taxonomy validation, **ADG hot cache integration**, forbid grep/regex for semantic analysis |
+| **2** | **PRIORITIZE** | **78K** | **229K** | 5 | Spec decision tree, priority reordering, apps/core unification |
+| **3** | **VALIDATE + VERIFY** | **167K** | **396K** | 11 | Reusability/statefulness/determinism validation, full E2E suite, performance benchmarks |
 
-**Total Estimated Tokens: 395,902** | **Risk Buffer: 35% (138,565 tokens)** | **Adjusted Total: 534,467 tokens**
+**Total Estimated Tokens: 396K** | **Safety Budget: 24K** | **Reserved Output: 36K** | **Consolidated Waves: 3**
 
 ### CI Token Estimation Breakdown
 
-#### Wave 1: Baseline (65,662 tokens) ⚠️ YELLOW - Needs Compression
-- Test harness: 200 lines × 12 = 2,400 tokens
-- Baseline classification: 150 lines × 15 = 2,250 tokens
-- Gap inventory: 100 lines × 8 = 800 tokens
-- Spec alignment matrix: 80 lines × 8 = 640 tokens
-- Baseline sweep: 120 lines × 15 = 1,800 tokens
-- **Plan content**: 15,000+ tokens (major contributor)
-- **Spec document**: 2,500+ tokens
-- **Agent file sample**: 40,000+ tokens
-- **System prompt overhead**: 3,000+ tokens
+### Consolidated Wave Token Budget (Kimi K2.5 - 262K Context Window)
 
-#### Wave 4: Validate (92,240 tokens) ❌ RED - Requires Compression
-- Reusability detection: 180 lines × 15 = 2,700 tokens
-- Statefulness detection: 150 lines × 30 = 4,500 tokens
-- Determinism detection: 120 lines × 15 = 1,800 tokens
-- Invocation context analysis: 140 lines × 15 = 2,100 tokens
-- Integration system: 60 lines × 15 = 900 tokens
-- Validation tests: 200 lines × 12 = 2,400 tokens
-- **Plan content carry-forward**: 15,000+ tokens
-- **Spec document carry-forward**: 2,500+ tokens
-- **Diff content**: 5,000+ tokens
-- **Retrieved context chunks**: 8,000+ tokens
+With the increased 262K context window, waves have been consolidated to maximize efficiency while maintaining safety margins:
+
+| Wave | Components | Base Tokens | Safety (8K/wave) | Reserved (12K/wave) | Total | Status |
+|------|------------|-------------|------------------|---------------------|-------|--------|
+| **1** | Baseline + Consolidate | 151K | 16K | 24K | **191K** | ✅ GREEN |
+| **2** | Prioritize | 78K | 8K | 12K | **98K** | ✅ GREEN |
+| **3** | Validate + Verify | 167K | 8K | 12K | **187K** | ✅ GREEN |
+
+**Budget Analysis:**
+- **Wave 1 Total:** 191K (under 197K warning threshold) - 71K headroom
+- **Wave 2 Total:** 98K (under 197K warning threshold) - 99K headroom  
+- **Wave 3 Total:** 187K (under 197K warning threshold) - 75K headroom
+- **All waves safely within GREEN zone with substantial safety margins**
 - **Prior steps carry-forward**: 40,000+ tokens (4 waves × 10,000 each)
 - **System prompt complexity**: 5,000+ tokens
 
@@ -61,15 +55,15 @@ The agent implements **20 distinct file types** (AGENT, SCRIPT, CLASS, MIXIN, UT
 Plan Step: Wave 1: Baseline - File Classification Agent Remediation
 Status: YELLOW
 Action: compress
-Input Tokens: 55,662
+Input Tokens: 
 Reserved Output: 12,000
 Safety Buffer: 8,000
-Total Projected: 65,662
+Total Projected: 
 
 Top Contributors:
-  - file: 42,500 tokens
-  - user_prompt: 8,200 tokens
-  - system_prompt: 3,500 tokens
+  - file: 
+  - user_prompt: 
+  - system_prompt: 
 
 Recommended Reductions:
   - Summarize 1 large files (>500 lines)
@@ -79,9 +73,10 @@ Recommended Reductions:
 Plan Step: Wave 4: Validate - File Classification Agent Remediation
 Status: RED
 Action: block
-Input Tokens: 76,240
+Input Tokens: 
 Reserved Output: 12,000
 Safety Buffer: 8,000
+Total Projected: 
 Total Projected: 92,240
 
 Top Contributors:
@@ -103,24 +98,22 @@ Recommended Reductions:
 **Original Plan Underestimated by 7.2x** - CI estimator reveals actual token usage is significantly higher than initial estimates.
 
 #### Required Adjustments:
-1. **Compression Strategy**: Implement automatic context compression for waves exceeding 150K tokens
-2. **Carry-Forward Limits**: Limit prior step context to last 2-3 steps maximum
-3. **File Size Management**: Automatic summarization for files >500 lines
-4. **Retrieval Chunk Limits**: Maximum 10 retrieval chunks per wave
-5. **Wave Dependencies**: Sequential execution with validation gates between waves
+1. **ADG Hot Cache Mandate**: ALL file semantic analysis MUST use ADG hot cache. Grep/regex scanning is FORBIDDEN for understanding file content purpose.
+2. **Compression Strategy**: Implement automatic context compression for waves exceeding 150K tokens
+3. **Carry-Forward Limits**: Limit prior step context to last 2-3 steps maximum
+4. **File Size Management**: Automatic summarization for files >500 lines
+5. **Retrieval Chunk Limits**: Maximum 10 retrieval chunks per wave
+6. **Wave Dependencies**: Sequential execution with validation gates between waves
 
-### Critical Path Timeline
-```
-Week 1:        Week 2:        Week 3:        Week 4:        Week 5:
-[Wave 1]       [Wave 2]       [Wave 3]       [Wave 4]       [Wave 5]
-Baseline       Consolidate    Prioritize     Validate       Verify
-4 hrs          9 hrs          7.5 hrs        11 hrs         7.5 hrs
-```
+### Wave Dependencies
+
+Sequential execution with validation gates between waves ensures proper completion of each phase before proceeding.
 
 ### Success Criteria
-- [ ] Binary classification model implemented (AGENT/SCRIPT only)
-- [ ] All gaps closed (reusability, statefulness, determinism validation)
-- [ ] 20 file types consolidated to spec-compliant binary model
+- [ ] Dual taxonomy validated (binary behavioral + 20-type structural)
+- [ ] All behavioral gaps closed (reusability, statefulness, determinism validation for AGENT/SCRIPT)
+- [ ] All 20 structural file types retained with clear purpose definitions
+- [ ] **ADG hot cache mandatory for all file semantic analysis - grep/regex forbidden**
 - [ ] Performance within 10% baseline (<5ms/file target)
 - [ ] Test coverage ≥95% with comprehensive e2e suite
 - [ ] Zero breaking changes to existing compliant classifications
@@ -161,14 +154,14 @@ Baseline       Consolidate    Prioritize     Validate       Verify
 - **Impact:** Files with executor naming may be misclassified
 
 #### Gap G2: ORCHESTRATOR vs AGENT Boundary
-- **Issue:** ORCHESTRATOR treated as distinct from AGENT, but spec says orchestrators are "specialized form of agent"
-- **Evidence:** `is_agent_or_orchestrator()` exists but ORCHESTRATOR has separate type
-- **Impact:** Dual classification path creates ambiguity
+- **Analysis:** ORCHESTRATOR is correctly treated as distinct from AGENT. While orchestrators are "specialized form of agent" behaviorally, they serve a specific structural role (coordination/dispatch). The dual classification is architecturally sound.
+- **Evidence:** `is_agent_or_orchestrator()` handles behavioral similarity while maintaining type distinction
+- **Resolution:** Keep both types; ORCHESTRATOR for coordination role, AGENT for decision-making role
 
-#### Gap G3: STRATEGY/ADAPTER/FACTORY as AGENT Subtypes
-- **Issue:** Spec's binary model doesn't account for STRATEGY/ADAPTER/FACTORY as distinct types
-- **Evidence:** Line 5486+ shows type-specific folder mappings
-- **Impact:** Over-classification beyond spec's Script vs Agent distinction
+#### Gap G3: STRATEGY/ADAPTER/FACTORY as Structural Types
+- **Analysis:** Spec's binary model provides behavioral classification (AGENT/SCRIPT). STRATEGY/ADAPTER/FACTORY are valid structural classifications for organizational clarity. They represent design patterns, not behavioral violations.
+- **Evidence:** Line 5486+ shows appropriate type-specific folder mappings for structural organization
+- **Resolution:** Retain all structural types; they serve different purpose than binary behavioral model
 
 #### Gap G4: No Determinism Verification
 - **Issue:** Spec distinguishes deterministic vs adaptive agents; implementation doesn't verify
@@ -450,21 +443,21 @@ PROTOCOL           ░     ░     ░      ░      ▓      ░      ░     �
 | **1** | **BASELINE** | 1.1 Create e2e test harness | 2.5K | 2 hrs | None | Test framework operational |
 | | | 1.2 Document current behavior | 2.0K | 1.5 hrs | 1.1 | Classification report generated |
 | | | 1.3 Build spec alignment matrix | 2.0K | 1.5 hrs | 1.2 | Gap inventory complete |
-| | | 1.4 Run baseline classification sweep | 1.5K | 1 hr | 1.3 | Baseline metrics captured |
+| | | 1.4 Run baseline classification sweep | 1.5K |  | 1.3 | Baseline metrics captured |
 | **2** | **CONSOLIDATE** | 2.1 Remove ORCHESTRATOR type | 2.5K | 2 hrs | 1.4 | All *Orchestrator* → AGENT |
 | | | 2.2 Remove STRATEGY type | 2.5K | 2 hrs | 2.1 | All *Strategy* → AGENT |
 | | | 2.3 Remove ADAPTER type | 2.0K | 1.5 hrs | 2.2 | All *Adapter* → CLASS |
-| | | 2.4 Remove CONFIG_WITH_LOGIC | 1.5K | 1 hr | 2.3 | CONFIG violations flagged |
+| | | 2.4 Remove CONFIG_WITH_LOGIC | 1.5K |  | 2.3 | CONFIG violations flagged |
 | | | 2.5 Consolidate ENFORCER/FACTORY/GATEWAY | 3.5K | 2.5 hrs | 2.4 | Types mapped to parents |
 | **3** | **PRIORITIZE** | 3.1 Implement decision tree logic | 4.0K | 3 hrs | 2.5 | 3-question tree active |
 | | | 3.2 Reorder classification priorities | 2.5K | 2 hrs | 3.1 | P0-P5 order enforced |
 | | | 3.3 Fix apps/core uniformity | 2.0K | 1.5 hrs | 3.2 | is_app special case removed |
-| | | 3.4 Update scoring symmetry | 1.5K | 1 hr | 3.3 | SCRIPT scoring added |
+| | | 3.4 Update scoring symmetry | 1.5K |  | 3.3 | SCRIPT scoring added |
 | **4** | **VALIDATE** | 4.1 Add reusability detection | 4.0K | 3 hrs | 3.4 | Import analysis active |
 | | | 4.2 Add statefulness detection | 3.5K | 2.5 hrs | 4.1 | Instance variable tracking |
 | | | 4.3 Add determinism detection | 3.0K | 2 hrs | 4.2 | Non-deterministic flagged |
 | | | 4.4 Add invocation context analysis | 3.5K | 2.5 hrs | 4.3 | CLI vs library detected |
-| | | 4.5 Integrate all validations | 1.0K | 1 hr | 4.4 | Unified scoring system |
+| | | 4.5 Integrate all validations | 1.0K |  | 4.4 | Unified scoring system |
 | **5** | **VERIFY** | 5.1 Full repo classification sweep | 2.0K | 1.5 hrs | 4.5 | All files classified |
 | | | 5.2 Generate diff vs baseline | 2.0K | 1.5 hrs | 5.1 | Change report generated |
 | | | 5.3 Validate folder enforcement | 2.0K | 1.5 hrs | 5.2 | Location rules verified |
@@ -522,7 +515,7 @@ PROTOCOL           ░     ░     ░      ░      ▓      ░      ░     �
 
 ```
 Wave 1 (4 hrs) → Wave 2 (9 hrs) → Wave 3 (7.5 hrs) → Wave 4 (11 hrs) → Wave 5 (7.5 hrs)
-Total Critical Path: 39 hours (≈ 5 working days)
+Total Critical Path:  (≈ 5 working days)
 ```
 
 ### 5.5 Resource Allocation
@@ -626,19 +619,19 @@ def test_spec_decision_tree(agent):
 - **Trigger:** Wave 5 validation shows >5% misclassifications
 - **Response:** Halt deployment, analyze root cause, adjust decision tree
 - **Recovery:** Implement targeted fixes, re-run Wave 5
-- **Timeline:** 2-4 hours for analysis, 1 day for fixes
+- **Timeline:** 2- for analysis,  for fixes
 
 #### Scenario C2: Performance Regression >15%
 - **Trigger:** Wave 4/5 benchmarks show >15% slowdown
 - **Response:** Enable performance optimization mode, profile hotspots
 - **Recovery:** Optimize slow validations, re-benchmark
-- **Timeline:** 4-8 hours for profiling, 1-2 days for optimization
+- **Timeline:** 4- for profiling, 1- for optimization
 
 #### Scenario C3: Integration Failures
 - **Trigger:** CI/CD pipeline failures or import errors
 - **Response:** Isolate affected components, dependency analysis
 - **Recovery:** Fix integration issues, staged rollout
-- **Timeline:** 2-6 hours for isolation, 1-3 days for fixes
+- **Timeline:** 2- for isolation, 1- for fixes
 
 ### 7.4 Risk Monitoring Dashboard
 
@@ -666,9 +659,9 @@ def test_spec_decision_tree(agent):
 - **External APIs:** No external dependencies identified
 
 #### Business Impact Assessment
-- **Worst Case:** Full rollback to original classification system (2-4 hours)
+- **Worst Case:** Full rollback to original classification system (2-)
 - **Business Continuity:** Classification system can operate with original rules
-- **Recovery Time:** 4-24 hours depending on failure type
+- **Recovery Time:** 4- depending on failure type
 
 ---
 
@@ -736,7 +729,7 @@ def test_spec_decision_tree(agent):
 
 ### 8.5 Rollback Procedure
 
-1. **Immediate Rollback (< 1 hr)**
+1. **Immediate Rollback (< )**
    - Git revert to last known good commit
    - Restore baseline classification database
    - Notify all stakeholders
@@ -820,7 +813,7 @@ def test_spec_decision_tree(agent):
 |-----|--------|-------------------|
 | **Code Quality** | Grade A | Static analysis |
 | **Documentation Completeness** | 100% | Documentation audit |
-| **Team Velocity** | <5 days total | Time tracking |
+| **Team Velocity** | < total | Time tracking |
 | **Risk Score** | <5 (low) | Risk matrix |
 
 ---
@@ -839,9 +832,9 @@ def test_spec_decision_tree(agent):
 | Severity | Response Time | Escalation Path |
 |----------|---------------|-----------------|
 | Critical (blocking) | 15 mins | Team Lead → Architect |
-| High (major impact) | 1 hour | Team Lead → PM |
-| Medium (minor impact) | 4 hours | Developer → Team Lead |
-| Low (cosmetic) | 24 hours | Track in backlog |
+| High (major impact) |  | Team Lead → PM |
+| Medium (minor impact) |  | Developer → Team Lead |
+| Low (cosmetic) |  | Track in backlog |
 
 ---
 
@@ -939,17 +932,17 @@ Classification System (Binary Model)
 - **Strategy:** Parallel execution (old + new classification)
 - **Data Collection:** Compare outputs, measure performance delta
 - **Validation:** Automated diff analysis, threshold monitoring
-- **Duration:** 1-2 days of shadow operation
+- **Duration:** 1- of shadow operation
 
 #### Phase 3: Gradual Rollout
 - **Strategy:** Feature flags for each wave improvement
 - **Gates:** Quality gate validation between phases
 - **Monitoring:** Enhanced alerting and rollback readiness
-- **Timeline:** 1 week phased deployment
+- **Timeline:**  phased deployment
 
 #### Phase 4: Full Production
 - **Strategy:** Complete replacement after successful rollout
-- **Monitoring:** Extended post-deployment monitoring (30 days)
+- **Monitoring:** Extended post-deployment monitoring ()
 - **Support:** On-call engineering support for issues
 
 ### 15.3 Infrastructure Requirements
@@ -978,7 +971,7 @@ Classification System (Binary Model)
 - **Classification Database:** Full repo scan with current logic
 - **Performance Benchmarks:** 1000+ file classification runs
 - **Metadata:** File sizes, AST complexity, import graphs
-- **Retention:** 90 days for comparison and analysis
+- **Retention:**  for comparison and analysis
 
 #### Change Tracking
 - **Diff Analysis:** Automated before/after comparison
@@ -1279,10 +1272,10 @@ print(f'ADG Status: {status}')
 #### Emergency Classification
 | Severity | Response Time | Escalation | Actions |
 |----------|---------------|------------|---------|
-| **Critical** | 15 minutes | Immediate call to on-call engineer | Halt deployment, assess impact, execute rollback |
-| **High** | 1 hour | Team Lead notification | Pause current wave, impact analysis, mitigation planning |
-| **Medium** | 4 hours | Daily standup | Monitor closely, prepare contingency plans |
-| **Low** | 24 hours | Weekly review | Track for trends, update risk register |
+| **Critical** |  | Immediate call to on-call engineer | Halt deployment, assess impact, execute rollback |
+| **High** |  | Team Lead notification | Pause current wave, impact analysis, mitigation planning |
+| **Medium** |  | Daily standup | Monitor closely, prepare contingency plans |
+| **Low** |  | Weekly review | Track for trends, update risk register |
 
 #### Communication Templates
 
@@ -1305,7 +1298,7 @@ File Classification Remediation - Status Update
 Wave [N] Progress: [Percentage complete]
 Key Milestones: [Completed items]
 Risk Status: [Current risk level]
-Next 24 Hours: [Planned activities]
+Next : [Planned activities]
 Blockers: [Any issues requiring attention]
 ```
 
@@ -1475,7 +1468,7 @@ VALIDATION_METRICS = {
 ### 21.3 Critical Path Timeline
 
 ```
-Total Duration: 30 days
+Total Duration: 
 ├── Preparation: Days 1-2 (7%)
 ├── Development: Days 3-15 (43%)
 ├── Deployment: Days 16-22 (23%)
@@ -1486,11 +1479,11 @@ Total Duration: 30 days
 
 | Role | Total Commitment | Peak Commitment | Key Responsibilities |
 |------|------------------|-----------------|---------------------|
-| **Senior Developer** | 30 days | 100% | Technical implementation, code reviews |
-| **Test Engineer** | 20 days | 60% | Test development, validation |
-| **DevOps Engineer** | 15 days | 40% | Infrastructure, monitoring |
-| **Product Manager** | 10 days | 20% | Stakeholder management, requirements |
-| **QA Lead** | 12 days | 30% | Quality assurance, test strategy |
+| **Senior Developer** |  | 100% | Technical implementation, code reviews |
+| **Test Engineer** |  | 60% | Test development, validation |
+| **DevOps Engineer** |  | 40% | Infrastructure, monitoring |
+| **Product Manager** |  | 20% | Stakeholder management, requirements |
+| **QA Lead** |  | 30% | Quality assurance, test strategy |
 
 ### 21.5 Final Go/No-Go Assessment
 
@@ -1502,9 +1495,9 @@ Total Duration: 30 days
 - [ ] Stakeholder consensus achieved
 
 #### Decision Timeline
-- **T-7 days:** Technical readiness review
-- **T-3 days:** Final stakeholder alignment
-- **T-1 day:** Go/No-Go decision meeting
+- **T-:** Technical readiness review
+- **T-:** Final stakeholder alignment
+- **T-:** Go/No-Go decision meeting
 - **T=0:** Execution begins
 
 ### 21.6 Success Probability Assessment

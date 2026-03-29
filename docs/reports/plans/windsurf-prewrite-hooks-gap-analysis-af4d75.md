@@ -18,11 +18,11 @@
 
 | Phase | Estimated Tokens | Duration | Notes |
 |-------|------------------|----------|-------|
-| **Phase 1** - Assessment & Inventory | 15,000 | 2 hours | Skills mapping, gap identification |
-| **Phase 2** - Critical Gap Remediation | 25,000 | 4 hours | PowerShell, repair gates, agent deletion |
-| **Phase 3** - Enforcement Implementation | 35,000 | 6 hours | Pre-write hooks, validation logic |
-| **Phase 4** - Testing & Validation | 20,000 | 3 hours | CI integration, end-to-end testing |
-| **Total** | **95,000** | **15 hours** | Across 4 phases |
+| **Phase 1** - Assessment & Inventory | 15,000 |  | Skills mapping, gap identification |
+| **Phase 2** - Critical Gap Remediation | 25,000 |  | PowerShell, repair gates, agent deletion |
+| **Phase 3** - Enforcement Implementation | 35,000 |  | Pre-write hooks, validation logic |
+| **Phase 4** - Testing & Validation | 20,000 |  | CI integration, end-to-end testing |
+| **Total** | **95,000** | **** | Across 4 phases |
 
 ## Executive Summary
 

@@ -261,7 +261,7 @@ namespaces:
 ```
 
 ### Caching Strategy
-- **L1 Cache**: Redis for frequent pattern lookups (TTL: 1 hour)
+- **L1 Cache**: Redis for frequent pattern lookups (TTL: )
 - **L2 Cache**: Pinecone for semantic search (persistent)
 - **L3 Cache**: Local FAISS for high-volume operations (optional)
 

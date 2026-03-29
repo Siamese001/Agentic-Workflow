@@ -713,7 +713,7 @@
 | 4 | B-5 to B-7 | Cross-cutting integration |
 | 5-6 | C-1 to C-2 | Advanced cross-domain patterns |
 
-**Total Duration:** 6 weeks
+**Total Duration:** 
 **Critical Path:** Phase 1 → Phase 2 → Phase 3 → Phase 4 → Phase 5
 **Parallel Opportunities:** Some waves can be overlapped within phases
 

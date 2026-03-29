@@ -48,7 +48,7 @@
 | **Edge Type** | `applies_guardrail` | `records_execution_trace` |
 | **How Created** | Guard check function calls | ExecutionTrace infrastructure calls |
 | **Migration Method** | ✅ AST injection (automated) | ❌ Manual instrumentation required |
-| **Effort per File** | ~1 minute | ~15-30 minutes |
+| **Effort per File** | ~ | ~15- |
 | **Risk** | Low (additive) | Medium (integration complexity) |
 | **Validation** | ADG edge count | Runtime behavior + ADG |
 
@@ -85,20 +85,20 @@ with ExecutionTrace(trace_id=trace_id, operation="agent_execute") as trace:
 - Current 64 edges represent actual ExecutionTrace infrastructure usage
 - Expansion should be feature-driven (e.g., new agent development)
 - Not a security/safety concern like Wave 4 guardrails
-- **Effort**: 0 hours
+- **Effort**: 
 
 ### Option 2: Targeted Manual Expansion
 - Identify 10-20 high-criticality agents without trace
 - Manually add ExecutionTrace instrumentation
 - Focus on L3 orchestration and L5 safety layers
-- **Effort**: 2-3 hours
+- **Effort**: 2-
 - **Risk**: Medium (requires careful integration)
 
 ### Option 3: Infrastructure Enhancement
 - Enhance ExecutionTrace to auto-instrument via decorators
 - Create base class with built-in trace emission
 - Refactor existing agents to inherit from traced base
-- **Effort**: 4-6 hours
+- **Effort**: 4-
 - **Risk**: High (architectural change)
 
 ---
@@ -112,7 +112,7 @@ with ExecutionTrace(trace_id=trace_id, operation="agent_execute") as trace:
 | Delta | +490 (+720%) | 0 |
 | Files migrated | 259 | 0 |
 | Automation | 100% | 0% (manual only) |
-| Time invested | 2-3 hours | Analysis only |
+| Time invested | 2- | Analysis only |
 
 ---
 
@@ -125,7 +125,7 @@ with ExecutionTrace(trace_id=trace_id, operation="agent_execute") as trace:
 **Rationale**:
 1. ExecutionTrace edges require manual integration, not AST injection
 2. Current coverage (64 edges) represents actual infrastructure usage
-3. Expansion effort (2-3 hours) yields lower ROI than Wave 4 (490 edges in 2-3 hours)
+3. Expansion effort (2-) yields lower ROI than Wave 4 (490 edges in 2-)
 4. Execution tracing is not a security/safety concern like guardrails
 5. Better to expand trace coverage when adding new agents/features
 
@@ -150,13 +150,13 @@ with ExecutionTrace(trace_id=trace_id, operation="agent_execute") as trace:
 - [ ] Query `records_execution_trace` edge count
 - [ ] Verify expected increase
 
-**Estimated Effort**: 15-30 minutes per agent × 10-20 agents = 2.5-10 hours
+**Estimated Effort**: 15- per agent × 10-20 agents = 2.5-
 
 ---
 
 ## Conclusion
 
-Wave 5 (execution trace) requires a fundamentally different approach than Wave 4 (guardrails). While Wave 4 achieved 490 new edges via automated AST injection in 2-3 hours, Wave 5 would require manual instrumentation with significantly lower ROI.
+Wave 5 (execution trace) requires a fundamentally different approach than Wave 4 (guardrails). While Wave 4 achieved 490 new edges via automated AST injection in 2-, Wave 5 would require manual instrumentation with significantly lower ROI.
 
 **Recommendation**: Accept current state (64 edges) and expand execution trace coverage organically as new agents are developed or existing agents are refactored.
 

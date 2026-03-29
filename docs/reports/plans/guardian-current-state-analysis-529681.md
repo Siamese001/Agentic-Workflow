@@ -171,7 +171,7 @@ if violations:
 - ✅ Clear purpose: visibility, not enforcement
 - ✅ Developers can focus on fixing real issues
 
-**Effort:** Low (1-2 days to remove all thresholds)
+**Effort:** Low (1- to remove all thresholds)
 
 ### Option B: Implement Hybrid with Remediation (Option 4)
 
@@ -196,7 +196,7 @@ if config.AUTO_FIX_ENABLED:
 - ✅ Configurable per violation type
 - ✅ Gradual rollout possible
 
-**Effort:** Medium-High (1-2 weeks, as outlined in previous plan)
+**Effort:** Medium-High (1-, as outlined in previous plan)
 
 ## Current State Summary Table
 
@@ -217,14 +217,14 @@ if config.AUTO_FIX_ENABLED:
 - Remove all thresholds from remaining tests
 - Make all tests pure reporting
 - Update documentation
-- **Timeline:** 1-2 days
+- **Timeline:** 1-
 - **Risk:** Low
 
 ### Path 2: Implement Hybrid with Auto-Fix (Recommended for Impact)
 - Keep pure reporting
 - Add selective auto-fixing for safe violations
 - Start with missing `__init__.py` files
-- **Timeline:** 1-2 weeks
+- **Timeline:** 1-
 - **Risk:** Medium
 
 ### Path 3: Keep Current Mess (Not Recommended)

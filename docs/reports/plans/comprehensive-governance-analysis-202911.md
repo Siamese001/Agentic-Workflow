@@ -253,7 +253,7 @@ The `docs/` folder contains rich content (506+ files including architecture plan
 ### Governance Metrics
 - **Coverage**: 100% of repository assets under appropriate governance
 - **Automation**: 95% of governance tasks automated
-- **Response Time**: <24 hours for governance violations detection and remediation
+- **Response Time**: < for governance violations detection and remediation
 
 ## Risk Mitigation Strategy
 

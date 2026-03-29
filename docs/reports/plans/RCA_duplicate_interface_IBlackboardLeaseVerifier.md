@@ -90,7 +90,7 @@ All 9 tests in the file pass.  Canonical tests for `IBlackboardLeaseVerifierProt
 ### Symptom
 
 `execute_ssot --heal` stuck at "Phase 2: Reconciling 2 violations across agents..."
-after completing 3 territory scans.  Process killed after ~3 min with no progress.
+after completing 3 territory scans.  Process killed after ~ with no progress.
 
 ### Root Causes (3)
 

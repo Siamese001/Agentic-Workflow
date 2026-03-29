@@ -79,7 +79,7 @@
 - **Critical:** Core sovereign functionality, no alternatives
 - **High Value:** Frequently used, strategic capabilities
 - **Redundant:** Capabilities covered by other MCPs
-- **Dormant:** Zero usage in 30 days
+- **Dormant:** Zero usage in 
 - **Experimental:** Limited use, optional capabilities
 
 **Safety Validation:**
