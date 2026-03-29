@@ -170,7 +170,8 @@ class TestFullStackRequestFlow:
         meta_id = l6_bridge.store_snapshot_for_meta_learning(snapshot)
         assert meta_id is not None
 
-        # Verify layer distribution - layers may be stored as "L0" or "L0_ROUTING" etc.
+        # Verify patterns extracted
+        patterns = l6_bridge.get_execution_patterns(snapshot.trace_id)
         layer_dist = patterns.get("layer_distribution", {})
         # Check for any L0, L1, L2, L3, L4, L5, L6 representation
         assert any("L0" in k for k in layer_dist.keys())
