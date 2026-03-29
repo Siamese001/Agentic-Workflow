@@ -1,0 +1,11 @@
+{
+  "runtime_adg_1774747947_369010a6": {
+    "duration_ms": 0,
+    "edge_count": 9,
+    "file_path": "agentic_core\\L4_state\\memory\\cross_layer_test\\telemetry\\l6\\runtime_adg_1774747947_369010a6.json",
+    "mission": "telemetry-test-001",
+    "node_count": 5,
+    "timestamp": 1774747947,
+    "trace_id": "a1144dba6da174bc6b003ebd4fa66fe5"
+  }
+}
