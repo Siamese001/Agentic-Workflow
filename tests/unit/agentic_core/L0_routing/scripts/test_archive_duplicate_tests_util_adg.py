@@ -106,4 +106,4 @@ def test_main_is_callable(mod):
     # Assert
     assert result is not None, "main_is_callable should return a result"
     assert isinstance(result, (dict, list, str, int, float, bool)), "Result should be a common type"
-    # TODO: Add specific execution assertions
+    

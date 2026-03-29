@@ -551,8 +551,8 @@ class TestSecurityScenarios:
         assert "; rm -rf /" in server.args
         assert "$(whoami)" in server.args
 
-        # Hash should still be computed correctly
-        assert len(snapshot.config_hash) == 64
+        # Hash should still be computed correctly (MD5 is 32 chars)
+        assert len(snapshot.config_hash) == 32
 
     def test_xss_in_capabilities_handling(self, tmp_path):
         """Test handling of XSS attempts in capabilities."""

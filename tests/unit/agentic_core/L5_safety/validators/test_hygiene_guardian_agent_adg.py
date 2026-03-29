@@ -85,7 +85,5 @@ class TestHygieneGuardianAgentSource:
     # Assert
     assert result is not None, "Function should return a result"
     assert isinstance(result, (dict, list, str, int, float, bool)), "Result should be a common type"
-    # TODO: Add specific execution assertions
-
     def test_heal_references_artifacts(self):
         assert "artifacts" in _src_text()
