@@ -234,7 +234,7 @@ def fix_tunnel_violations() -> Any:
                     print(f"  [✓] Removed empty: {dir_path.relative_to(CORE)}")
                     cleaned += 1
             # guardian: allow-silent-swallow
-            except Exception:
+            except (ValueError, TypeError):
                 pass
     print(f"\n[OK] CLEANUP COMPLETE. {cleaned} empty directories removed.")
 

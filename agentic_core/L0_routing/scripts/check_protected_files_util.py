@@ -221,7 +221,7 @@ def get_commit_message() -> str:
             return commit_msg_file.read_text()
         return ""
     # guardian: allow-silent-swallow
-    except Exception:
+    except (ValueError, TypeError):
         return ""
 
 

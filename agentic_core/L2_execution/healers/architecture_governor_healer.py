@@ -257,7 +257,7 @@ def heal_architecture_governance(
             target_territory=territory,
         )
     # guardian: allow-silent-swallow -- healer best-effort recovery; failure logged above
-    except Exception as exc:  # guardian: allow-silent-swallower
+    except (ValueError, TypeError) as exc:  # guardian: allow-silent-swallower
         logger.error("[architecture_governor_healer] heal failed: %s", exc)
         return HealCheckResult(
             check_id=CHECK_ID,

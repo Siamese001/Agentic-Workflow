@@ -220,7 +220,7 @@ def fix_emojis_in_file(file_path: str) -> bool:
             print(f"✓ Fixed: {file_path}")
             return True
         return False
-    except Exception as e:
+    except (ValueError, TypeError) as e:
         print(f"✗ Error fixing {file_path}: {e}")
         return False
 

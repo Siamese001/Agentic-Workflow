@@ -219,7 +219,7 @@ class StructuredEngineAgent(SovereignBaseAgent):
                 tool_calls=[{"name": "example_tool", "args": {}}],
             )
         # guardian: allow-silent-swallow
-        except Exception as e:
+        except (ValueError, TypeError) as e:
             self.log_error(f"Planning failed: {e}")
             return AgentPlan(reasoning="Failure fallback", tool_calls=[])
 

@@ -250,7 +250,7 @@ def flatten_scripts() -> Any:
                     dir_path.rmdir()
                     print(f"  [✓] Removed: {dir_path.relative_to(CORE)}")
             # guardian: allow-silent-swallow
-            except Exception:
+            except (ValueError, TypeError):
                 pass
     print(f"\n[OK] FLATTENING COMPLETE. {moved} files moved to depth-{REQUIRED_DEPTH}.")
 

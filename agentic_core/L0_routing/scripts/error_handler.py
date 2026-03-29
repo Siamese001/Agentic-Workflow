@@ -343,7 +343,7 @@ class UnifiedWorkflowEngine:
             result.metrics["execution_time"] = elapsed
             return result
         # guardian: allow-silent-swallow
-        except Exception as e:
+        except (ValueError, TypeError) as e:
             self.metrics.failed_workflows += 1
             return await self.error_handler.handle_error(e, context, "abort")
         finally:

@@ -249,6 +249,6 @@ async def apply_fission_blueprint(file_path: str, blueprint: dict, fission_mgr: 
             f.write(router_content)
         Logger.info(f"   [✓] Fission complete: {len(created_modules)} sub-modules created")
         return True
-    except Exception as e:
+    except (ValueError, TypeError) as e:
         Logger.error(f"   [X] Fission blueprint application failed: {e}")
         return False

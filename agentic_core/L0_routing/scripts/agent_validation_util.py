@@ -219,7 +219,7 @@ def run_code_deduplication_check() -> tuple[bool, str]:
         print("\n✅ No duplicate filenames detected")
         return (True, "Code deduplication check passed")
     # guardian: allow-silent-swallow
-    except Exception as e:
+    except (ValueError, TypeError) as e:
         return (False, f"Code deduplication check failed: {e}")
 
 
@@ -248,7 +248,7 @@ def run_architecture_governance_check() -> tuple[bool, str]:
         print(f"   Roots scanned: {', '.join(roots_scanned)}")
         return (True, "Architecture governance check passed")
     # guardian: allow-silent-swallow
-    except Exception as e:
+    except (ValueError, TypeError) as e:
         return (False, f"Architecture governance check failed: {e}")
 
 

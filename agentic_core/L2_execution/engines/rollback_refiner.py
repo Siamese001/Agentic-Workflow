@@ -404,6 +404,6 @@ class DefaultDeterministicRollbackRefiner:
                 execution_time_ms=execution_time_ms,
                 timestamp_utc=timestamp_utc,
             )
-        except Exception:
+        except (ValueError, TypeError):
             # System learning unavailable - continue without tracking
             pass

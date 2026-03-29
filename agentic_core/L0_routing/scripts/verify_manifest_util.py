@@ -262,7 +262,7 @@ def main():
         logging.error("Invalid JSON format in report file.")
         sys.exit(1)
     # guardian: allow-silent-swallow
-    except Exception as e:
+    except (ValueError, TypeError) as e:
         logging.critical(f"Analysis failed: {e}")
         sys.exit(1)
 

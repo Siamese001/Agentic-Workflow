@@ -3,10 +3,10 @@
   "fix_timestamp": "2026-03-24T20:05:00Z",
   "violation_type": "LOW",
   "total_low_severity_violations": 1715,
-  "fixes_applied": 1512,
+  "fixes_applied": 1518,
   "errors": 0,
-  "remaining_violations": 203,
-  "completion_percentage": 88.16326530612245,
+  "remaining_violations": 197,
+  "completion_percentage": 88.5131195335277,
   "exception_type_distribution": {
     "TimeoutError": 5,
     "TimeoutException": 1,

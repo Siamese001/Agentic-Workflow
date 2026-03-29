@@ -340,7 +340,7 @@ def static_policy_alignment_check(
             if not check_fn(context):
                 violations.append(f"Rule {rule_id}: alignment violation")
         # guardian: allow-silent-swallow
-        except Exception as exc:
+        except (ValueError, TypeError) as exc:
             violations.append(f"Rule {rule_id}: check error ({exc}) (fail-closed)")
 
     return PolicyAlignmentResult(

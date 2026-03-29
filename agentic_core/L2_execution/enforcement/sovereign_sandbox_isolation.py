@@ -229,7 +229,7 @@ def execute_in_sandbox(
         try:
             result = operation(*args, **kwargs)
             return SandboxResult(success=True, result=result)
-        except Exception as e:
+        except (ValueError, TypeError) as e:
             return SandboxResult(success=False, result=e)
     if transcript is None:
         violation = ReplayNondeterminismViolation(

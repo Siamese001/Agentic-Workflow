@@ -237,7 +237,7 @@ def heal_file_classification(
             target_territory=territory, dry_run=False, auto_approve=True, cached_scan=cached_scan
         )
     # guardian: allow-silent-swallow
-    except Exception as exc:
+    except (ValueError, TypeError) as exc:
         logger.error("[file_classification_healer] heal failed: %s", exc)
         return HealCheckResult(
             check_id=CHECK_ID,

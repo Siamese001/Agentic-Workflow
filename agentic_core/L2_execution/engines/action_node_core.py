@@ -265,7 +265,7 @@ class ActionNodeCore:
         try:
             output: str = self.allowed_tools[tool_key](**params)
             return {"step": step_number, "status": "success", "output": output}
-        except Exception as e:
+        except (ValueError, TypeError) as e:
             Logger.error(f"[X] Tool '{tool_key}' execution failed for step {step_number}: {e}", exc_info=True)
             return {"step": step_number, "status": "error", "output": str(e)}
 

@@ -292,7 +292,7 @@ class SeamAuditLogger:
                 data_json = str(data)
             return hashlib.sha256(data_json.encode()).hexdigest()
         # guardian: allow-silent-swallow
-        except Exception as e:
+        except (ValueError, TypeError) as e:
             Logger.warning(f"Failed to compute hash for data: {e}")
             return hashlib.sha256(str(data).encode()).hexdigest()
 

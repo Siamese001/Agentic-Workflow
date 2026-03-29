@@ -233,7 +233,7 @@ def add_mcp_mixin_to_file(file_path: Path, class_name: str) -> bool:
         assert_no_persistent_write("L0", "write_text")
         file_path.write_text(new_content, encoding="utf-8")
         return True
-    except Exception as e:
+    except (ValueError, TypeError) as e:
         print(f"  [ERROR] {file_path.name}: {e}")
         return False
 

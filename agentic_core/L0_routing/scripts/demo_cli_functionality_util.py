@@ -205,7 +205,7 @@ def demo_cli_functionality():
     try:
         print("⚠️  Skipped: ops_scripts import not allowed from agentic_core (layer boundary)")
     # guardian: allow-silent-swallow
-    except Exception as e:
+    except (ValueError, TypeError) as e:
         print(f"❌ Failed: {e}")
     print("\n" + "=" * 60)
     print("🎉 CLI HARDENING IMPLEMENTATION COMPLETE!")

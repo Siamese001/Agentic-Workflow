@@ -254,7 +254,7 @@ class DebrisHunter:
                 print(f"[DELETED] {path.name}")
                 deleted += 1
             # guardian: allow-silent-swallow
-            except Exception as e:
+            except (ValueError, TypeError) as e:
                 print(f"[ERROR] Could not delete {path.name}: {e}")
 
         print(f"\n✅ Cleanup complete. Deleted {deleted} files.")

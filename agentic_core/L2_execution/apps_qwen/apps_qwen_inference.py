@@ -84,7 +84,7 @@ class AppsQwenInferenceWorker:
 
             return result
 
-        except Exception as e:
+        except (ValueError, TypeError) as e:
             latency_ms = (time.time() - start_time) * 1000
             error_msg = f"Inference failed: {str(e)}"
 

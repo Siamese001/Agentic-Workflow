@@ -238,7 +238,7 @@ def heal_gravity_violations(
         agent = GravityLeakRepairAgent(project_root=repo_root)
         res = agent.heal_violations(violations, dry_run=False)
     # guardian: allow-silent-swallow
-    except Exception as exc:
+    except (ValueError, TypeError) as exc:
         logger.error("[gravity_leak_healer] heal failed: %s", exc)
         return HealCheckResult(
             check_id=CHECK_ID,

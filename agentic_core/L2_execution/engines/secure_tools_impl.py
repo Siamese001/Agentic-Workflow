@@ -370,7 +370,7 @@ class SecureToolsImpl:
             Logger.error(f"Command timed out: {command}")
             return "Command Error: Execution timed out (30s limit)."
         # guardian: allow-silent-swallow
-        except Exception as e:
+        except (ValueError, TypeError) as e:
             Logger.error(f"Command execution failed: {e}")
             return f"Command Error: {str(e)}"
 

@@ -234,7 +234,7 @@ for agent in agents_without_tests:
             print(f"⚠️ Could not find class definition: {class_name} in {agent_path}")
             error_count += 1
     # guardian: allow-silent-swallow
-    except Exception as e:
+    except (ValueError, TypeError) as e:
         print(f"❌ Error processing {agent_path}: {e}")
         error_count += 1
 print(f"\n{'=' * 70}")

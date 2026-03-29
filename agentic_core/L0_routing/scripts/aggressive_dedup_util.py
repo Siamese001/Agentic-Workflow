@@ -212,7 +212,7 @@ def get_all_classes_in_codebase(dirs: list[str]) -> dict[str, list[str]]:
                     if isinstance(node, ast.ClassDef):
                         class_files[node.name].append(str(py_file))
             # guardian: allow-silent-swallow
-            except Exception:
+            except (ValueError, TypeError):
                 pass
 
     return class_files
@@ -249,7 +249,7 @@ def find_redundant_files(dirs: list[str], class_files: dict[str, list[str]]) -> 
                 if all_redundant and len(file_classes) > 0:
                     redundant.append(str(py_file))
             # guardian: allow-silent-swallow
-            except Exception:
+            except (ValueError, TypeError):
                 pass
 
     return redundant
@@ -310,7 +310,7 @@ def find_low_value_files(dirs: list[str]) -> list[str]:
                         continue
 
             # guardian: allow-silent-swallow
-            except Exception:
+            except (ValueError, TypeError):
                 pass
 
     return low_value

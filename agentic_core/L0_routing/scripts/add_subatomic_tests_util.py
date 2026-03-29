@@ -229,7 +229,7 @@ for agent in no_tests:
         else:
             skipped.append(f"{class_name}: No changes needed")
     # guardian: allow-silent-swallow
-    except Exception as e:
+    except (ValueError, TypeError) as e:
         errors.append(f"{class_name}: {str(e)}")
 print("\n=== SUMMARY ===")
 print(f"Modified: {len(modified)}")

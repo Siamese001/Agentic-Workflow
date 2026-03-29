@@ -200,5 +200,5 @@ class DockerSandbox:
         try:
             result: Any = "Execution successful. Output: [SIMULATED_DATA]"
             return {"status": "success", "output": result}
-        except Exception as e:
+        except (ValueError, TypeError) as e:
             return {"status": "error", "message": str(e)}

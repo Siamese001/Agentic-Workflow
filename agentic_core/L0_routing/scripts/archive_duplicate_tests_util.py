@@ -217,7 +217,7 @@ def main():
                 print(f"✅ Archived: {relative_path}")
                 archived += 1
             # guardian: allow-silent-swallow
-            except Exception as e:
+            except (ValueError, TypeError) as e:
                 print(f"❌ Failed to archive {dup}: {e}")
     print(f"\n{'=' * 80}")
     print("ARCHIVAL COMPLETE")

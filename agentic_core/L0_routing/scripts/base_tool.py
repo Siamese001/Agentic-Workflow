@@ -192,7 +192,7 @@ class FunctionalTool(BaseTool):
         try:
             return str(self.func(**kwargs))
         # guardian: allow-silent-swallow
-        except Exception as e:
+        except (ValueError, TypeError) as e:
             return f"Error executing {self.name}: {str(e)}"
 
 

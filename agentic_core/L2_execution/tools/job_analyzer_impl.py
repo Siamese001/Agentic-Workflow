@@ -234,7 +234,7 @@ def analyze(self: Any, JobDescription: str) -> dict[str, Any]:
         else:
             self._generate_with_generic_client(prompt, temperature)
         return self._parse_analysis_response(response)
-    except Exception as e:
+    except (ValueError, TypeError) as e:
         Logger.error(f"Error analyzing job description: {e}")
         return {
             "hard_skills": [],

@@ -280,7 +280,7 @@ class ToolsUseATool:
                     "executor": self.__class__.__name__,
                 },
             )
-        except Exception as e:
+        except (ValueError, TypeError) as e:
             exec_ctx.complete(success=False, error=e)
             return ProcessingResult(success=False, error_message=str(e), ExecutionContext=exec_ctx)
 

@@ -240,7 +240,7 @@ def heal_hierarchy_violations(
             target_territory=territory,
         )
     # guardian: allow-silent-swallow
-    except Exception as exc:
+    except (ValueError, TypeError) as exc:
         logger.error("[hierarchy_agent_healer] heal failed: %s", exc)
         return HealCheckResult(
             check_id=CHECK_ID,

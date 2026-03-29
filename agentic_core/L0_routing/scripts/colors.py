@@ -732,7 +732,7 @@ def main():
                         spec.loader.exec_module(perf_module)
                         return perf_module.get_performance_analyst(root)
                 # guardian: allow-silent-swallow
-                except Exception:
+                except (ValueError, TypeError):
                     pass
                 return None
 
@@ -767,7 +767,7 @@ def main():
                 guardian = get_autonomy_guardian(project_root)
                 gemini_active = hasattr(guardian, "gemini_embedder") and guardian.gemini_embedder is not None
             # guardian: allow-silent-swallow
-            except Exception:
+            except (ValueError, TypeError):
                 pass
             _runtime_state.update(
                 {

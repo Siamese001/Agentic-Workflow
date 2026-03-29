@@ -389,6 +389,6 @@ class DefaultDeterministicResourcePredictor:
                 success=success,
                 timestamp_utc=timestamp_utc,
             )
-        except Exception:
+        except (ValueError, TypeError):
             # System learning unavailable - continue without tracking
             pass
