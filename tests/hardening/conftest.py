@@ -1,4 +1,6 @@
 # Core pytest configuration
+from __future__ import annotations
+
 import pytest
 
 # Standard fixtures for path semantics
@@ -18,25 +20,6 @@ def pytest_configure(config):
     """Configure pytest with custom settings."""
     config.addinivalue_line("markers", "data: marks tests as data-dependent")
 
-# Core pytest configuration
-import pytest
-
-# Standard fixtures for path semantics
-@pytest.fixture
-def test_data_path():
-    """Fixture for test data path."""
-    from pathlib import Path
-    return Path(__file__).parent / "test_data"
-
-@pytest.fixture
-def temp_project_dir(tmp_path):
-    """Fixture for temporary project directory."""
-    return tmp_path / "project"
-
-# Test collection configuration
-def pytest_configure(config):
-    """Configure pytest with custom settings."""
-    config.addinivalue_line("markers", "data: marks tests as data-dependent")
 
 """Hardening suite conftest — zero-skip enforcement gate.
 
@@ -47,10 +30,6 @@ improperly guarded test — both are defects, not acceptable outcomes.
 .windsurfrules §1.1: every line of changed logic MUST be covered.
 .windsurfrules §30: no silent masking.
 """
-
-from __future__ import annotations
-
-import pytest
 
 MAX_RETRIES = 3
 DEFAULT_SLEEP = 1.0
