@@ -1,0 +1,5 @@
+
+    Client ABC experienced increased claim denials in Q4 2025.
+    The denial rate increased from 15% to 32% due to policy changes.
+    Main reasons: missing documentation, coding errors, authorization issues.
+    
