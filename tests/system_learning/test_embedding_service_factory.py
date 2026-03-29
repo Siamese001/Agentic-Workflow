@@ -2,9 +2,14 @@
 from __future__ import annotations
 
 import hashlib  # noqa: F401
+import tempfile
+from pathlib import Path
+from unittest.mock import patch
 
 import pytest
-
+import numpy as np
+import json
+import os
 
 class TestEmbeddingServiceFactory:
     """Test suite for EmbeddingServiceFactory W1 implementation."""
