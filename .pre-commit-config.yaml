@@ -286,6 +286,16 @@ repos:
         always_run: true
         require_serial: true
 
+      # -- T10.6: ADG Preflight — Unified testing accelerator (gap + collection safety) ----
+      # Runs gap analysis and collection safety check using optimized adg_test.py
+      - id: adg-preflight
+        name: "T10.6: ADG Preflight — Gap analysis + collection safety"
+        entry: cmd /c "set PYTHONPATH=.&& python tools/adg/adg_test.py preflight --quick"
+        language: system
+        pass_filenames: false
+        always_run: true
+        require_serial: true
+
       # -- T11: MCP Config Sovereignty gate -------------------------------------
       # Validates mcp_config.json: filesystem server present + not disabled,
       # allowedDirectories locked to repo root only, _comment documents sovereign
