@@ -420,7 +420,7 @@ class AgenticRouter:
                     _rce,
                 )
                 # Continue with original routing - capacity failure should not block routing
-            except Exception as _cap_exc:
+            except Exception as _cap_exc:  # guardian: allow-silent-swallow -- capacity routing non-blocking
                 Logger.error(
                     "CAPACITY_ROUTING_ERROR: %s, falling back to original routing",
                     _cap_exc,
@@ -516,7 +516,7 @@ class AgenticRouter:
                 target_name,
                 routing_perf.duration_ms,
             )
-        except Exception as _perf_exc:
+        except Exception as _perf_exc:  # guardian: allow-silent-swallow -- performance logging non-blocking
             Logger.error(
                 "ROUTING_PERFORMANCE_ERROR: %s (target=%s)",
                 _perf_exc,
