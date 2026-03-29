@@ -713,7 +713,9 @@ class TestHITLFullLifecycle:
     def test_hitl_gate_protected_paths(self) -> None:
         """Test HITL gate protected paths detection."""
         from pathlib import Path
-        gate = get_hitl_gate(repo_root=Path.cwd())
+        from agentic_core.L5_safety.enforcement.hitl_gate import _is_protected
+
+        repo_root = Path.cwd()
 
         # Test protected paths
         protected_files = [
@@ -724,7 +726,7 @@ class TestHITLFullLifecycle:
         ]
 
         for file_path in protected_files:
-            assert gate._is_protected([file_path], Path.cwd()) is True, f"{file_path} should be protected"
+            assert _is_protected([file_path], repo_root) is True, f"{file_path} should be protected"
 
         # Test non-protected paths
         non_protected = [
@@ -734,7 +736,7 @@ class TestHITLFullLifecycle:
         ]
 
         for file_path in non_protected:
-            assert gate._is_protected([file_path], Path.cwd()) is False, f"{file_path} should not be protected"
+            assert _is_protected([file_path], repo_root) is False, f"{file_path} should not be protected"
 
     def test_hitl_invalid_human_decision(self) -> None:
         """Test invalid human decision handling."""
