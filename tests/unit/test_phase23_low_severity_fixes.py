@@ -184,36 +184,30 @@ class TestPhase23LowSeverityFixes:
 
     # Test §1.5: Edge cases - Permission denied files
     def test_permission_denied_files(self, temp_workspace, sample_low_violations):
-        """Test handling of permission denied files."""
+        """Test handling of permission denied files using mocking."""
 
-        # Create a file with restricted permissions
+        # Create a file
         restricted_file = temp_workspace / "restricted.py"
         restricted_file.write_text("try:\n    risky_operation()\nexcept SyntaxError:\n    pass\n")
 
-        # Remove read permissions (on Unix systems)
-        original_mode = restricted_file.stat().st_mode
-        restricted_file.chmod(0o000)
+        # Create violations file
+        violations_file = temp_workspace / "tools" / "silent_swallower_report.json"
+        sample_low_violations['violations'][0]['file_path'] = str(restricted_file)
+        with open(violations_file, 'w') as f:
+            json.dump(sample_low_violations, f)
 
+        # Mock Path.read_text to simulate permission denied (cross-platform)
+        original_cwd = Path.cwd()
         try:
-            violations_file = temp_workspace / "tools" / "silent_swallower_report.json"
-            sample_low_violations['violations'][0]['file_path'] = str(restricted_file)
-            with open(violations_file, 'w') as f:
-                json.dump(sample_low_violations, f)
-
-            # Temporarily change working directory to temp workspace
-            original_cwd = Path.cwd()
-            try:
-                os.chdir(temp_workspace)
+            os.chdir(temp_workspace)
+            with patch('pathlib.Path.read_text', side_effect=PermissionError("Permission denied")):
                 fixer = LowSeveritySilentSwallowerFixer()
 
                 # Should handle permission errors gracefully
                 result = fixer.apply_fixes_to_all_remaining_violations()
                 assert result['errors'] >= 0  # Should record permission errors
-            finally:
-                os.chdir(original_cwd)
         finally:
-            # Restore permissions for cleanup
-            restricted_file.chmod(original_mode)
+            os.chdir(original_cwd)
 
     # Test §1.5: Edge cases - Unicode file names
     def test_unicode_file_names(self, temp_workspace, sample_low_violations):
