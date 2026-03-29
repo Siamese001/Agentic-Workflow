@@ -151,30 +151,25 @@ class TestPhase22MediumSeverityFixes:
 
     # Test §1.5: Edge cases - Permission denied files
     def test_permission_denied_files(self, temp_workspace, sample_medium_violations):
-        """Test handling of permission denied files."""
-        # Create a file with restricted permissions
+        """Test handling of permission denied files using mocking."""
+        # Create a file
         restricted_file = temp_workspace / "restricted.py"
         restricted_file.write_text("try:\n    risky_operation()\nexcept Exception:\n    pass\n")
 
-        # Remove read permissions (on Unix systems)
-        original_mode = restricted_file.stat().st_mode
-        restricted_file.chmod(0o000)
+        # Create violations file
+        violations_file = temp_workspace / "tools" / "silent_swallower_report.json"
+        sample_medium_violations['violations'][0]['file_path'] = str(restricted_file)
+        with open(violations_file, 'w') as f:
+            json.dump(sample_medium_violations, f)
 
-        try:
-            violations_file = temp_workspace / "tools" / "silent_swallower_report.json"  # Use correct file name
-            sample_medium_violations['violations'][0]['file_path'] = str(restricted_file)
-            with open(violations_file, 'w') as f:
-                json.dump(sample_medium_violations, f)
-
-            with patch('fix_medium_severity_swallowers.PROJECT_ROOT', str(temp_workspace)):
+        # Mock Path.read_text to simulate permission denied (cross-platform)
+        with patch('fix_medium_severity_swallowers.PROJECT_ROOT', str(temp_workspace)):
+            with patch('pathlib.Path.read_text', side_effect=PermissionError("Permission denied")):
                 fixer = MediumSeveritySwallowerFixer()
 
                 # Should handle permission errors gracefully
                 result = fixer.apply_fixes_to_all_remaining_violations()
                 assert result['errors'] >= 0  # Should record permission errors
-        finally:
-            # Restore permissions for cleanup
-            restricted_file.chmod(original_mode)
 
     # Test §1.5: Edge cases - Unicode file names
     def test_unicode_file_names(self, temp_workspace, sample_medium_violations):
