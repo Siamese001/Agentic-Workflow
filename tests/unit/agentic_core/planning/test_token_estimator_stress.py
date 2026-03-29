@@ -30,32 +30,34 @@ def planning_preflight_hook():
 
 class TestTokenEstimatorStressTests:
     """Stress tests for extreme scenarios and edge cases"""
-    
+
     def setup_method(self):
         """Setup test fixtures"""
-        from agentic_core.planning.token_estimator import ContextWindowEstimator, TokenBudget
+        from agentic_core.planning.token_estimator import ContextWindowEstimator, TokenBudget, ContextSource
+        from agentic_core.planning.preflight_hook import PlanningPreflightHook, TokenBudgetExceededError
         self.estimator = ContextWindowEstimator()
         self.budget = TokenBudget()
         self.temp_dir = Path("/tmp/test_stress")
         self.temp_dir.mkdir(exist_ok=True)
         self.budget_file = self.temp_dir / "stress_test_budget.json"
         self.hook = PlanningPreflightHook(budget_file=self.budget_file)
-    
+
     def teardown_method(self):
         """Cleanup test fixtures"""
         if self.budget_file.exists():
             self.budget_file.unlink()
         if self.temp_dir.exists():
             self.temp_dir.rmdir()
-    
+
     def test_extreme_large_file_compression(self):
         """Test compression with extremely large files"""
+        from agentic_core.planning.token_estimator import ContextSource
         # Create a massive file with many lines (1MB+)
         massive_content = '\n'.join(f'line_{i}: x' * 100 for i in range(15000))  # 15000 lines
         massive_sources = [
             ContextSource('file', massive_content, 525000, metadata={'path': 'massive.py', 'lines': 15000})
         ]
-        
+
         # Should trigger large file summarization
         compressed_sources, applied = self.estimator._summarize_large_files(massive_sources)
         assert applied == True
@@ -64,9 +66,10 @@ class TestTokenEstimatorStressTests:
         assert len(compressed_sources[0].content) < len(massive_content)
         # Verify it's actually compressed (much smaller)
         assert len(compressed_sources[0].content) < 50000  # Should be under 50K after compression
-    
+
     def test_massive_log_trimming(self):
         """Test log trimming with massive log files"""
+        from agentic_core.planning.token_estimator import ContextSource
         # Create a massive log with many errors
         log_lines = []
         for i in range(10000):
@@ -80,25 +83,26 @@ class TestTokenEstimatorStressTests:
                 f"ValueError: Item {i} failed"
             ])
         massive_log = '\n'.join(log_lines)
-        
+
         log_sources = [
             ContextSource('log', massive_log, 100000, metadata={'source': 'massive.log'})
         ]
-        
+
         compressed_sources, applied = self.estimator._trim_logs_to_errors(log_sources)
         assert applied == True
         assert compressed_sources[0].content.count('ERROR:') < massive_log.count('ERROR:')
         assert compressed_sources[0].content.count('INFO:') < massive_log.count('INFO:')
         # Verify compression was applied (content should be significantly smaller)
         assert len(compressed_sources[0].content) < 50000  # More lenient threshold
-    
+
     def test_extreme_retrieval_chunk_reduction(self):
         """Test retrieval chunk reduction with hundreds of chunks"""
+        from agentic_core.planning.token_estimator import ContextSource
         many_chunks = [
             ContextSource('retrieval', f'chunk_{i}' * 100, 50, metadata={'chunk_id': f'chunk_{i}'})
             for i in range(100)  # 100 chunks, way over the max of 10
         ]
-        
+
         compressed_sources, applied = self.estimator._reduce_retrieval_chunks(many_chunks)
         assert applied == True
         remaining_chunks = [s for s in compressed_sources if s.source_type == 'retrieval']
@@ -106,22 +110,24 @@ class TestTokenEstimatorStressTests:
         # Should keep first 10 chunks (most relevant)
         for i in range(10):
             assert f'chunk_{i}' in remaining_chunks[i].content
-    
+
     def test_massive_duplicate_removal(self):
         """Test duplicate removal with many duplicates"""
+        from agentic_core.planning.token_estimator import ContextSource
         duplicate_content = "duplicate content " * 100
         many_duplicates = [
             ContextSource('file', duplicate_content, 1000, metadata={'path': 'duplicate.py'})
             for i in range(50)  # 50 identical sources for the same file
         ]
-        
+
         compressed_sources, applied = self.estimator._remove_duplicates(many_duplicates)
         assert applied == True
         assert len(compressed_sources) == 1  # Should keep only one
         assert compressed_sources[0].content == duplicate_content
-    
+
     def test_extreme_content_mix_compression(self):
         """Test compression with extreme mix of all content types"""
+        from agentic_core.planning.token_estimator import ContextSource, TokenEstimate
         extreme_sources = [
             # Massive file
             ContextSource('file', 'x' * 2000000, 700000, metadata={'path': 'huge.py', 'lines': 20000}),
@@ -137,7 +143,7 @@ class TestTokenEstimatorStressTests:
             *[ContextSource('file', f'cache_{i}', 50, metadata={'path': f'.cache/cache_{i}'})
               for i in range(30)]
         ]
-        
+
         # Apply full compression pipeline with smaller initial estimate
         estimate = TokenEstimate(
             plan_step="extreme_test",
@@ -150,20 +156,21 @@ class TestTokenEstimatorStressTests:
             top_contributors=[],
             recommended_reductions=[]
         )
-        
+
         compressed_estimate = self.estimator._apply_compression(estimate, extreme_sources)
-        
+
         # Should have applied multiple compression policies
         assert len(compressed_estimate.compression_applied) > 0
         # Should have reduced tokens significantly or at least attempted compression
-        assert (compressed_estimate.total_projected_tokens < estimate.total_projected_tokens or 
+        assert (compressed_estimate.total_projected_tokens < estimate.total_projected_tokens or
                 len(compressed_estimate.compression_applied) > 0)
-    
+
     def test_hard_limit_violation_extreme(self):
-        """Test hard limit violation with extreme content"""
+        """Test that extreme content raises TokenBudgetExceededError"""
+        from agentic_core.planning.preflight_hook import TokenBudgetExceededError
         # Create content that will definitely exceed 200K hard limit
         extreme_content = 'x' * 5000000  # 5M characters
-        
+
         with pytest.raises(TokenBudgetExceededError):
             self.hook.preflight_check(
                 plan_step="extreme_violation",
@@ -175,15 +182,15 @@ class TestTokenEstimatorStressTests:
                 retrieved_context=[{"content": extreme_content}] * 50,
                 prior_steps=[extreme_content] * 20
             )
-    
+
     def test_boundary_conditions(self):
         """Test behavior at exact boundary conditions"""
         # Test exactly at warning threshold (150K)
         # Using smaller content to stay under hard limit when tripled
-        boundary_content = 'x' * 100000  
+        boundary_content = 'x' * 100000
         # 100,000 * 0.44 = 44,000 tokens
         # Total tokens = 44,000 * 3 + 20,000 overhead = 152,000 (near warning threshold)
-        
+
         estimate = self.hook.preflight_check(
             plan_step="boundary_warning",
             system_prompt=boundary_content,
@@ -194,14 +201,14 @@ class TestTokenEstimatorStressTests:
             retrieved_context=[],
             prior_steps=[]
         )
-        
+
         assert estimate.status in ['green', 'yellow']
-        
+
         # Test just over safe operating cap (170K)
         over_safe_content = 'x' * 110000
         # 110,000 * 0.44 = 48,400 tokens
         # Total = 48,400 * 3 + 20,000 overhead = 165,200 (near safe cap)
-        
+
         estimate = self.hook.preflight_check(
             plan_step="boundary_safe",
             system_prompt=over_safe_content,
@@ -212,9 +219,9 @@ class TestTokenEstimatorStressTests:
             retrieved_context=[],
             prior_steps=[]
         )
-        
+
         assert estimate.status in ['yellow', 'red']  # Should be over safe cap
-    
+
     def test_empty_and_minimal_content(self):
         """Test behavior with empty and minimal content"""
         # Test completely empty
@@ -228,11 +235,11 @@ class TestTokenEstimatorStressTests:
             retrieved_context=[],
             prior_steps=[]
         )
-        
+
         assert estimate.estimated_input_tokens >= 0
         assert estimate.status == 'green'
         assert estimate.action == 'proceed'
-        
+
         # Test minimal content
         estimate = self.hook.preflight_check(
             plan_step="minimal_test",
@@ -244,11 +251,11 @@ class TestTokenEstimatorStressTests:
             retrieved_context=[],
             prior_steps=[]
         )
-        
+
         assert estimate.estimated_input_tokens > 0
         assert estimate.status == 'green'
         assert estimate.action == 'proceed'
-    
+
     def test_unicode_and_special_characters(self):
         """Test token estimation with various character encodings"""
         unicode_content = """
@@ -260,7 +267,7 @@ class TestTokenEstimatorStressTests:
         עברית  # Hebrew
         🚀🛸🌟💫⭐✨🌙☀️🌈🔥💧❄️⚡🌊🗻🏔️🌋🏕️🏖️🏜️🏙️🏘️🏚️🏛️🏗️🏭🏢🏬🏣🏤🏥🏦🏧🏨🏪🏫🏬🏭🏮🏯🏰🏱️🏳️🏴‍☠️🏴‍☠️🏳️‍🌈🏳️‍⚧️🏴‍☠️🏴‍☠️  # Emojis
         """
-        
+
         estimate = self.hook.preflight_check(
             plan_step="unicode_test",
             system_prompt=unicode_content,
@@ -271,11 +278,11 @@ class TestTokenEstimatorStressTests:
             retrieved_context=[],
             prior_steps=[]
         )
-        
+
         assert estimate.estimated_input_tokens > 0
         assert estimate.status == 'green'
         # Should handle Unicode without errors
-    
+
     def test_performance_with_large_payloads(self):
         """Test performance with very large payloads"""
         # Create large payload but stay under hard limit
@@ -283,9 +290,9 @@ class TestTokenEstimatorStressTests:
         for i in range(20):  # Reduced from 100 to stay under limit
             content = f'file_{i}_content ' * 1000  # ~10KB per file
             large_files.append({"path": f"large_{i}.py", "content": content})
-        
+
         start_time = time.time()
-        
+
         estimate = self.hook.preflight_check(
             plan_step="performance_test",
             system_prompt="System prompt " * 100,
@@ -296,17 +303,17 @@ class TestTokenEstimatorStressTests:
             retrieved_context=[{"content": f"context_{i}" * 100} for i in range(5)],
             prior_steps=[f"step_{i}" * 100 for i in range(3)]
         )
-        
+
         end_time = time.time()
         execution_time = end_time - start_time
-        
+
         # Should complete within reasonable time (under 5 seconds)
         assert execution_time < 5.0
         assert estimate.estimated_input_tokens > 0
-        
+
         print(f"Performance test completed in {execution_time:.2f}s")
         print(f"Estimated tokens: {estimate.estimated_input_tokens:,}")
-    
+
     def test_memory_usage_with_many_steps(self):
         """Test memory usage with many consecutive steps"""
         # Run many steps to check for memory leaks
@@ -321,17 +328,17 @@ class TestTokenEstimatorStressTests:
                 retrieved_context=[],
                 prior_steps=[]
             )
-            
+
             assert estimate.estimated_input_tokens > 0
-        
+
         # Check budget history
         summary = self.hook.get_budget_summary()
         assert summary['total_steps'] == 100
         assert summary['average_tokens_per_step'] > 0
-        
+
         print(f"Memory test: {summary['total_steps']} steps completed")
         print(f"Average tokens per step: {summary['average_tokens_per_step']:.0f}")
-    
+
     def test_concurrent_access_simulation(self):
         """Test simulated concurrent access to budget history"""
         # Simulate multiple "concurrent" operations
@@ -348,23 +355,23 @@ class TestTokenEstimatorStressTests:
                 prior_steps=[]
             )
             estimates.append(estimate)
-        
+
         # All should be recorded
         summary = self.hook.get_budget_summary()
         assert summary['total_steps'] >= 20
-        
+
         # All estimates should be valid
         for estimate in estimates:
             assert estimate.estimated_input_tokens > 0
             assert estimate.status in ['green', 'yellow', 'red']
-    
+
     def test_error_recovery_and_robustness(self):
         """Test error handling and recovery scenarios"""
         # Test with malformed file data - filter out None content
         malformed_files = [
             {"path": "normal.py", "content": "normal content"}  # Only normal file
         ]
-        
+
         # Should handle gracefully
         estimate = self.hook.preflight_check(
             plan_step="malformed_test",
@@ -376,13 +383,13 @@ class TestTokenEstimatorStressTests:
             retrieved_context=[],
             prior_steps=[]
         )
-        
+
         assert estimate.estimated_input_tokens >= 0
         assert estimate.status in ['green', 'yellow', 'red']
-        
+
         # Test with extremely long strings but stay under limit
         very_long_prompt = "x" * 100000  # 100K character prompt
-        
+
         estimate = self.hook.preflight_check(
             plan_step="long_prompt_test",
             system_prompt=very_long_prompt,
@@ -393,7 +400,7 @@ class TestTokenEstimatorStressTests:
             retrieved_context=[],
             prior_steps=[]
         )
-        
+
         assert estimate.estimated_input_tokens > 0
         # Should handle long strings without crashing
 

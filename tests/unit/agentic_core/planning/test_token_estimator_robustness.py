@@ -12,6 +12,10 @@ from pathlib import Path
 from typing import Dict, List, Any
 from unittest import mock
 
+# Import estimator classes and exceptions for robustness tests
+from agentic_core.planning.token_estimator import ContextWindowEstimator, ContextSource, TokenEstimate
+from agentic_core.planning.preflight_hook import TokenBudgetExceededError
+
 
 # Lazy imports to avoid collection-time conflicts
 @pytest.fixture
@@ -133,6 +137,7 @@ class TestTokenEstimatorErrorHandling:
             f.write("{ invalid json content")
 
         # Should handle corrupted file gracefully
+        from agentic_core.planning.preflight_hook import PlanningPreflightHook
         hook = PlanningPreflightHook(budget_file=self.budget_file)
 
         estimate = hook.preflight_check(
@@ -166,6 +171,7 @@ class TestTokenEstimatorErrorHandling:
             return original_open(filepath, *args, **kwargs)
 
         with mock.patch("builtins.open", mock_open_permission_error):
+            from agentic_core.planning.preflight_hook import PlanningPreflightHook
             hook = PlanningPreflightHook(budget_file=self.budget_file)
 
             estimate = hook.preflight_check(
@@ -302,6 +308,7 @@ class TestTokenEstimatorErrorHandling:
 
     def test_decorator_error_handling(self):
         """Test decorator error handling"""
+        from agentic_core.planning.preflight_hook import require_token_budget
         @require_token_budget(self.hook)
         def test_function(system_prompt, user_prompt, **kwargs):
             return "success"
@@ -392,6 +399,7 @@ class TestTokenEstimatorErrorHandling:
         non_existent_file = non_existent_dir / "budget.json"
 
         try:
+            from agentic_core.planning.preflight_hook import PlanningPreflightHook
             hook = PlanningPreflightHook(budget_file=non_existent_file)
 
             estimate = hook.preflight_check(

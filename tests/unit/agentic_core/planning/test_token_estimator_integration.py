@@ -11,6 +11,9 @@ import time
 from pathlib import Path
 from typing import Dict, List, Any
 
+# Import token budget decorator for integration tests
+from agentic_core.planning.preflight_hook import require_token_budget, TokenBudgetExceededError
+
 
 # Lazy imports to avoid collection-time conflicts
 @pytest.fixture
@@ -22,7 +25,7 @@ def planning_preflight_hook(tmp_path):
 
 class TestTokenEstimatorIntegration:
     """Integration tests for real planning scenarios"""
-    
+
     def setup_method(self):
         """Setup test fixtures"""
         from agentic_core.planning.preflight_hook import PlanningPreflightHook
@@ -30,14 +33,14 @@ class TestTokenEstimatorIntegration:
         self.temp_dir.mkdir(exist_ok=True)
         self.budget_file = self.temp_dir / "integration_budget.json"
         self.hook = PlanningPreflightHook(budget_file=self.budget_file)
-    
+
     def teardown_method(self):
         """Cleanup test fixtures"""
         if self.budget_file.exists():
             self.budget_file.unlink()
         if self.temp_dir.exists():
             self.temp_dir.rmdir()
-    
+
     def test_real_planning_scenario_feature_development(self):
         """Test a realistic feature development planning scenario"""
         # Simulate a real feature development workflow
@@ -89,7 +92,7 @@ class TestTokenEstimatorIntegration:
                 'prior_steps': ['requirements_analysis completed', 'design_architecture completed']
             }
         ]
-        
+
         # Execute all planning steps
         results = []
         for step in planning_steps:
@@ -103,27 +106,27 @@ class TestTokenEstimatorIntegration:
                 retrieved_context=step.get('retrieved_context', []),
                 prior_steps=step.get('prior_steps', [])
             )
-            
+
             results.append(estimate)
-            
+
             # Verify each step is within budget
             assert estimate.total_projected_tokens < 200000
             assert estimate.status in ['green', 'yellow']
-            
+
             print(f"Step {step['name']}: {estimate.total_projected_tokens:,} tokens ({estimate.status})")
-        
+
         # Verify overall results
         assert len(results) == 3
         total_tokens = sum(r.total_projected_tokens for r in results)
         assert total_tokens < 600000  # All steps combined should be reasonable
-        
+
         # Check budget history
         summary = self.hook.get_budget_summary()
         assert summary['total_steps'] == 3
         assert summary['average_tokens_per_step'] > 0
-        
+
         print(f"Integration test completed: {summary['total_steps']} steps, {total_tokens:,} total tokens")
-    
+
     def test_bug_fix_scenario(self):
         """Test a bug fix planning scenario with logs and debugging"""
         bug_fix_steps = [
@@ -137,16 +140,16 @@ class TestTokenEstimatorIntegration:
 def process_user_data(user_id):
     """Process user data with potential issues"""
     user = get_user_from_db(user_id)
-    
+
     # Potential null reference
     profile = user.profile
     preferences = profile.preferences
-    
+
     # Process preferences without null checks
     for pref in preferences:
         if pref.type == 'notification':
             send_notification(pref.value)
-    
+
     return True
 
 def get_user_from_db(user_id):
@@ -190,16 +193,16 @@ AttributeError: 'NoneType' object has no attribute 'preferences'
 def process_user_data(user_id):
     """Process user data with potential issues"""
     user = get_user_from_db(user_id)
-    
+
     # Potential null reference
     profile = user.profile
     preferences = profile.preferences
-    
+
     # Process preferences without null checks
     for pref in preferences:
         if pref.type == 'notification':
             send_notification(pref.value)
-    
+
     return True
 
 def get_user_from_db(user_id):
@@ -215,35 +218,35 @@ diff --git a/buggy_code.py b/buggy_code.py
  def process_user_data(user_id):
      """Process user data with potential issues"""
      user = get_user_from_db(user_id)
-+    
++
 +    # Handle null user
 +    if user is None:
 +        logger.error(f"User {user_id} not found")
 +        return False
-     
+
      # Potential null reference
      profile = user.profile
 +    if profile is None:
 +        logger.warning(f"User {user_id} has no profile")
 +        return True
-+    
++
      preferences = profile.preferences
 +    if preferences is None:
 +        logger.warning(f"User {user_id} has no preferences")
 +        return True
-     
+
      # Process preferences without null checks
      for pref in preferences:
          if pref.type == 'notification':
              send_notification(pref.value)
-     
+
      return True
 ''' * 20}
                 ],
                 'prior_steps': ['bug_analysis completed - identified null reference issue']
             }
         ]
-        
+
         # Execute bug fix scenario
         for step in bug_fix_steps:
             estimate = self.hook.preflight_check(
@@ -256,13 +259,13 @@ diff --git a/buggy_code.py b/buggy_code.py
                 retrieved_context=step.get('retrieved_context', []),
                 prior_steps=step.get('prior_steps', [])
             )
-            
+
             # Verify budget compliance
             assert estimate.total_projected_tokens < 200000
             assert estimate.action in ['proceed', 'compress']
-            
+
             print(f"Bug fix step {step['name']}: {estimate.total_projected_tokens:,} tokens")
-    
+
     def test_api_refactoring_scenario(self):
         """Test API refactoring with many files and complex diffs"""
         api_refactor_steps = [
@@ -313,7 +316,7 @@ class User(db.Model):
     name = db.Column(db.String(100))
     email = db.Column(db.String(120))
     password = db.Column(db.String(120))  # Plain text!
-    
+
     def to_dict(self):
         return {'id': self.id, 'name': self.name, 'email': self.email}
 ''' * 50}
@@ -369,7 +372,7 @@ api/
                 'prior_steps': ['legacy_analysis completed - identified monolithic structure']
             }
         ]
-        
+
         # Execute API refactoring scenario
         for step in api_refactor_steps:
             estimate = self.hook.preflight_check(
@@ -382,30 +385,30 @@ api/
                 retrieved_context=step.get('retrieved_context', []),
                 prior_steps=step.get('prior_steps', [])
             )
-            
+
             # Verify budget compliance
             assert estimate.total_projected_tokens < 200000
             assert estimate.status in ['green', 'yellow']
-            
+
             print(f"API refactor step {step['name']}: {estimate.total_projected_tokens:,} tokens")
-    
+
     def test_decorator_integration(self):
         """Test decorator integration with real workflow functions"""
         @require_token_budget(self.hook)
         def analyze_requirements(system_prompt, user_prompt, files, **kwargs):
             """Simulated requirements analysis function"""
             return {"status": "completed", "recommendations": ["Use JWT", "Add rate limiting"]}
-        
+
         @require_token_budget(self.hook)
         def design_architecture(system_prompt, user_prompt, files, diffs, **kwargs):
             """Simulated architecture design function"""
             return {"status": "completed", "components": ["Auth Service", "Token Store"]}
-        
+
         @require_token_budget(self.hook)
         def plan_implementation(system_prompt, user_prompt, files, **kwargs):
             """Simulated implementation planning function"""
             return {"status": "completed", "tasks": ["Create models", "Implement routes"]}
-        
+
         # Test decorator enforcement
         result1 = analyze_requirements(
             system_prompt="Analyze auth requirements",
@@ -413,7 +416,7 @@ api/
             files=[{"path": "requirements.md", "content": "Authentication requirements..." * 100}]
         )
         assert result1["status"] == "completed"
-        
+
         result2 = design_architecture(
             system_prompt="Design auth system",
             user_prompt="Create the architecture",
@@ -421,19 +424,19 @@ api/
             diffs=[{"path": "changes.md", "content": "Proposed changes..." * 30}]
         )
         assert result2["status"] == "completed"
-        
+
         result3 = plan_implementation(
             system_prompt="Plan implementation",
             user_prompt="Create implementation plan",
             files=[{"path": "plan.md", "content": "Implementation plan..." * 80}]
         )
         assert result3["status"] == "completed"
-        
+
         # Verify budget history
         summary = self.hook.get_budget_summary()
         assert summary['total_steps'] >= 3
         assert all(status in ['green', 'yellow'] for status in summary['status_distribution'].keys())
-    
+
     def test_budget_persistence_across_sessions(self):
         """Test budget history persistence across multiple sessions"""
         # Session 1: Add some estimates
@@ -448,18 +451,19 @@ api/
                 retrieved_context=[],
                 prior_steps=[]
             )
-        
+
         summary1 = self.hook.get_budget_summary()
         assert summary1['total_steps'] == 5
-        
+
         # Simulate session restart - create new hook with same file
+        from agentic_core.planning.preflight_hook import PlanningPreflightHook
         new_hook = PlanningPreflightHook(budget_file=self.budget_file)
         summary2 = new_hook.get_budget_summary()
-        
+
         # Should have persisted the history
         assert summary2['total_steps'] == 5
         assert summary2['average_tokens_per_step'] == summary1['average_tokens_per_step']
-        
+
         # Session 2: Add more estimates
         for i in range(3):
             new_hook.preflight_check(
@@ -472,17 +476,17 @@ api/
                 retrieved_context=[],
                 prior_steps=[]
             )
-        
+
         final_summary = new_hook.get_budget_summary()
         assert final_summary['total_steps'] == 8  # 5 + 3
-        
+
         print(f"Persistence test: {final_summary['total_steps']} steps across sessions")
-    
+
     def test_concurrent_planning_simulation(self):
         """Test simulated concurrent planning operations"""
         # Simulate multiple planning operations happening concurrently
         operations = []
-        
+
         for i in range(10):
             estimate = self.hook.preflight_check(
                 plan_step=f"concurrent_op_{i}",
@@ -495,22 +499,22 @@ api/
                 prior_steps=[]
             )
             operations.append(estimate)
-        
+
         # All operations should be recorded
         summary = self.hook.get_budget_summary()
         assert summary['total_steps'] >= 10
-        
+
         # All estimates should be valid
         for op in operations:
             assert op.total_projected_tokens < 200000
             assert op.status in ['green', 'yellow']
-        
+
         # Check for any budget violations
         violations = [op for op in operations if op.status == 'red']
         assert len(violations) == 0, f"Found {len(violations)} budget violations"
-        
+
         print(f"Concurrent operations test: {len(operations)} operations completed successfully")
-    
+
     def test_extreme_scenario_many_files(self):
         """Test scenario with many files (like a large codebase analysis)"""
         # Simulate analyzing a large codebase with many files
@@ -522,12 +526,12 @@ class Module{i}:
     def __init__(self):
         self.name = "module_{i}"
         self.version = "1.0.{i}"
-    
+
     def process(self, data):
         # Processing logic for module {i}
         result = data * i
         return result
-    
+
     def validate(self, input_data):
         # Validation logic for module {i}
         if not input_data:
@@ -541,12 +545,12 @@ def helper_function_{i}(param):
 def constant_value_{i}():
     return i * 42
 """ * 10  # Multiply to make files larger
-            
+
             many_files.append({
                 "path": f"modules/module_{i}.py",
                 "content": content
             })
-        
+
         # Test with many files
         estimate = self.hook.preflight_check(
             plan_step="large_codebase_analysis",
@@ -561,17 +565,17 @@ def constant_value_{i}():
             ],
             prior_steps=[]
         )
-        
+
         # Should handle many files gracefully
         assert estimate.total_projected_tokens < 200000
         assert estimate.status in ['green', 'yellow', 'red']
-        
+
         # Should show files as major contributor
         file_contributors = [c for c in estimate.top_contributors if c['type'] == 'file']
         assert len(file_contributors) > 0
-        
+
         print(f"Large codebase test: {len(many_files)} files, {estimate.total_projected_tokens:,} tokens")
-    
+
     def test_memory_efficiency_with_large_history(self):
         """Test memory efficiency with large budget history"""
         # Add many steps to budget history
@@ -586,20 +590,20 @@ def constant_value_{i}():
                 retrieved_context=[],
                 prior_steps=[]
             )
-        
+
         # Check that history is managed efficiently
         summary = self.hook.get_budget_summary()
         assert summary['total_steps'] == 100
-        
+
         # Should still be able to compute statistics efficiently
         assert summary['average_tokens_per_step'] > 0
         assert len(summary['status_distribution']) > 0
-        
+
         # Test history clearing
         self.hook.clear_history()
         cleared_summary = self.hook.get_budget_summary()
         assert cleared_summary['total_steps'] == 0
-        
+
         print(f"Memory efficiency test: {summary['total_steps']} steps managed efficiently")
 
 
