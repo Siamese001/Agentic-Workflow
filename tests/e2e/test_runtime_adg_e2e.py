@@ -681,7 +681,6 @@ class TestRuntimeADGPatternExtraction:
         error_patterns = patterns.get("error_patterns", [])
         assert len(error_patterns) == 1
         assert error_patterns[0]["node_id"] == "error-001"
-        assert error_patterns[0]["node_id"] == "error-001"
 
     def test_evolution_log_integrity(
         self,
