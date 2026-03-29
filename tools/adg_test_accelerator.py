@@ -6,6 +6,8 @@
 3. **Parallel groups** (`groups`): partition test files into N balanced
    groups by ADG layer for use with pytest-xdist ``--dist worksteal``.
 4. **Full report** (`report`): JSON combining all three above.
+5. **Collection safety** (`collection-safety`): analyze test file import
+   safety via static ADG graph (resolvable, missing, syntax errors, cycles).
 
 Usage::
 
@@ -20,248 +22,49 @@ Usage::
 
     # Full JSON report
     python tools/adg_test_accelerator.py report --out docs/reports/plans/adg_test_report.json
+
+    # Collection safety analysis
+    python tools/adg_test_accelerator.py collection-safety [--layer L0] [--json out.json]
 """
 
 from __future__ import annotations
 
 import argparse
 import json
+import logging
 import pathlib
 import sys
 import time
 from collections import defaultdict
+from dataclasses import dataclass, field
+from typing import TYPE_CHECKING, Any
 
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-    _emit_agent_executes_agent,
-    _emit_applies_guardrail,  # noqa: E402
-    _emit_authorize_and_execute,
-    _emit_blocks_direct_write,
-    _emit_captures_evaluation_metric,
-    _emit_captures_execution_output,
-    _emit_checks_agent_registry,
-    _emit_coordinates_agents,
-    _emit_dispatches_agent,
-    _emit_dispatches_execution_plan,
-    _emit_dispatches_healing_run,
-    _emit_escalates_failure,
-    _emit_escalates_to_human,
-    _emit_gated_by_confidence,
-    _emit_hard_fails_untranscripted,
-    _emit_invokes_evaluation,
-    _emit_links_execution_to_snapshot,
-    _emit_observes_runtime_state,
-    _emit_orchestrates_workflow,
-    _emit_reads_policy_state,  # noqa: E402
-    _emit_reads_through,
-    _emit_records_execution_trace,  # noqa: E402
-    _emit_records_healing_outcome,
-    _emit_records_telemetry_event,
-    _emit_records_tool_invocation,
-    _emit_records_workflow_lineage,
-    _emit_routes_through,
-    _emit_routes_to_agent,
-    _emit_routes_to_capability,
-    _emit_signs_execution_trace,  # noqa: E402
-    _emit_snapshots_state,  # noqa: E402
-    _emit_stores_embedding,
-    _emit_transcripts_response,
-    _emit_updates_meta_learning_state,
-    _emit_validates_agent_capability,
-    _emit_validates_capability,
-    _emit_verifies_boundary,
-    _emit_verifies_policy,
-    _emit_writes_via_uwg,
-    emit_determinism_digest,  # noqa: E402
-    emit_replay_key,  # noqa: E402
-)
+if TYPE_CHECKING:
+    from agentic_core.adg.extraction.static_scanner import ScanResult
 
-_emit_records_execution_trace("p0", "evidence", "adg_test_accelerator")
-_emit_applies_guardrail("p0", "adg_test_accelerator", "p0_governance")
-_emit_reads_policy_state("p0", "adg_test_accelerator", "policy_binding")
-_emit_snapshots_state("p0", "adg_test_accelerator", "state_snapshot")
-emit_replay_key("p0", "adg_test_accelerator")
-emit_determinism_digest("p0", "adg_test_accelerator")
-_emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
-_emit_authorize_and_execute("p2", "adg_test_accelerator", "execution_auth")
-_emit_validates_capability("p2", "adg_test_accelerator", "capability_check")
-_emit_routes_to_capability("p2", "adg_test_accelerator", "capability_route")
-_emit_writes_via_uwg("p2", "adg_test_accelerator", "uwg_write")
-_emit_blocks_direct_write("p2", "adg_test_accelerator", "direct_write_block")
-_emit_records_tool_invocation("p2", "adg_test_accelerator", "tool_invocation")
-_emit_captures_execution_output("p2", "adg_test_accelerator", "exec_output")
-_emit_dispatches_agent("p3", "adg_test_accelerator", "agent_dispatch")
-_emit_coordinates_agents("p3", "adg_test_accelerator", "agent_coordination")
-_emit_records_workflow_lineage("p3", "adg_test_accelerator", "workflow_lineage")
-_emit_records_healing_outcome("p3", "adg_test_accelerator", "healing_outcome")
-_emit_escalates_failure("p3", "adg_test_accelerator", "failure_escalation")
-_emit_orchestrates_workflow("p3", "adg_test_accelerator", "workflow_orchestration")
-_emit_dispatches_healing_run("p3", "adg_test_accelerator", "healing_dispatch")
-_emit_invokes_evaluation("p3", "adg_test_accelerator", "evaluation_signal")
-_emit_records_telemetry_event("p4", "adg_test_accelerator", "telemetry_event")
-_emit_captures_evaluation_metric("p4", "adg_test_accelerator", "eval_metric")
-_emit_stores_embedding("p4", "adg_test_accelerator", "embedding_store")
-_emit_updates_meta_learning_state("p4", "adg_test_accelerator", "meta_learning")
-_emit_links_execution_to_snapshot("p4", "adg_test_accelerator", "exec_snapshot_link")
+# Setup logging
+logging.basicConfig(level=logging.INFO, format="%(levelname)s: %(message)s")
+_logger = logging.getLogger(__name__)
 
-_ROOT = pathlib.Path(__file__).resolve().parents[1]
-# guardian: allow-global-mutation
-if str(_ROOT) not in sys.path:
-    sys.path.insert(0, str(_ROOT))
+# Constants
+DEFAULT_MAX_DEPTH = 4
+DEFAULT_TOP_N = 30
+DEFAULT_WORKERS = 4
+MAX_DISPLAY_FILES = 20
+PROBLEM_FILE_DISPLAY_LIMIT = 20
+SYMBOL_PREFIX = "ADG::Symbol::"
+MODULE_PREFIX = "ADG::Module::"
 
-from agentic_core.adg.analysis.hotspot_index_types import HotspotIndex
-from agentic_core.adg.analysis.test_gap_types import detect_test_gaps
-from agentic_core.adg.extraction.static_scanner import ADGStaticScanner, ScanResult
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-    _emit_agent_executes_agent,
-    _emit_captures_pattern,
-    _emit_captures_runtime_anomaly,
-    _emit_checks_agent_registry,
-    _emit_dispatches_execution_plan,
-    _emit_emits_metric_event,
-    _emit_escalates_to_human,
-    _emit_execution_terminates_at_uwg,
-    _emit_feeds_meta_learning,
-    _emit_gated_by_confidence,
-    _emit_hard_fails_untranscripted,
-    _emit_improves_agent_policy,
-    _emit_invokes_eval,
-    _emit_links_incident_trace,
-    _emit_observes_runtime_state,
-    _emit_proposal_commits_routing,
-    _emit_pulls_context,
-    _emit_reads_environ,
-    _emit_reads_runtime_state,
-    _emit_records_execution_trace,
-    _emit_records_incident_event,
-    _emit_records_learning_event,
-    _emit_routes_through,
-    _emit_routes_to_agent,
-    _emit_stores_learning_state,
-    _emit_transcripts_response,
-    _emit_triggers_alert,
-    _emit_updates_monitoring_state,
-    _emit_updates_routing_strategy,
-    _emit_validated_by_safety_plane,
-    _emit_validates_agent_capability,
-    _emit_verifies_boundary,
-    _emit_verifies_policy,
-    _emit_writes_learning_snapshot,
-    _emit_writes_observability_log,
-    _emit_writes_through,
-)
-
-_emit_emits_metric_event("adg_test_accelerator", "p4obs", "metric_1")
-_emit_emits_metric_event("adg_test_accelerator", "p4obs", "metric_2")
-_emit_emits_metric_event("adg_test_accelerator", "p4obs", "metric_3")
-_emit_emits_metric_event("adg_test_accelerator", "p4obs", "metric_4")
-_emit_emits_metric_event("adg_test_accelerator", "p4obs", "metric_5")
-_emit_emits_metric_event("adg_test_accelerator", "p4obs", "metric_6")
-_emit_records_incident_event("adg_test_accelerator", "p4obs", "incident")
-_emit_captures_runtime_anomaly("adg_test_accelerator", "p4obs", "anomaly")
-_emit_writes_observability_log("adg_test_accelerator", "p4obs", "obs_log")
-_emit_updates_monitoring_state("adg_test_accelerator", "p4obs", "mon_state")
-_emit_triggers_alert("adg_test_accelerator", "p4obs", "alert")
-_emit_links_incident_trace("adg_test_accelerator", "p4obs", "trace_link")
-_emit_captures_pattern("adg_test_accelerator", "p3lm", "pattern")
-_emit_records_learning_event("adg_test_accelerator", "p3lm", "learning_event")
-_emit_writes_learning_snapshot("adg_test_accelerator", "p3lm", "snapshot")
-_emit_feeds_meta_learning("adg_test_accelerator", "p3lm", "meta_feed")
-_emit_updates_routing_strategy("adg_test_accelerator", "p3lm", "routing")
-_emit_improves_agent_policy("adg_test_accelerator", "p3lm", "policy")
-_emit_stores_learning_state("adg_test_accelerator", "p3lm", "state")
-_emit_records_execution_trace("adg_test_accelerator", "L0_ROUTING", "p2_trace_1")
-_emit_records_execution_trace("adg_test_accelerator", "L1_REASONING", "p2_trace_2")
-_emit_records_execution_trace("adg_test_accelerator", "L2_EXECUTION", "p2_trace_3")
-_emit_records_execution_trace("adg_test_accelerator", "L3_ORCHESTRATION", "p2_trace_4")
-_emit_records_execution_trace("adg_test_accelerator", "L4_STATE", "p2_trace_5")
-_emit_reads_environ("adg_test_accelerator", "env_read", "p2_env_1")
-_emit_reads_environ("adg_test_accelerator", "env_read", "p2_env_2")
-_emit_reads_runtime_state("adg_test_accelerator", "runtime_state", "p2_rt_1")
-_emit_reads_runtime_state("adg_test_accelerator", "runtime_state", "p2_rt_2")
-_emit_pulls_context("p1", "adg_test_accelerator", "context_pull")
-_emit_pulls_context("p1", "adg_test_accelerator", "context_pull_2")
-_emit_execution_terminates_at_uwg("p1", "adg_test_accelerator", "uwg_term")
-_emit_execution_terminates_at_uwg("p1", "adg_test_accelerator", "uwg_term_2")
-_emit_writes_through("p1", "adg_test_accelerator", "write_through")
-_emit_writes_through("p1", "adg_test_accelerator", "write_through_2")
-_emit_validated_by_safety_plane("p1", "adg_test_accelerator", "safety_validation")
-_emit_invokes_eval("p1", "adg_test_accelerator", "eval_call")
-_emit_proposal_commits_routing("p1", "adg_test_accelerator", "routing_commit")
-_emit_escalates_to_human("p1", "adg_test_accelerator", "human_escalation")
-_emit_routes_through("p1", "adg_test_accelerator", "route_through")
-_emit_checks_agent_registry("p1", "adg_test_accelerator", "agent_registry")
-_emit_validates_agent_capability("p1", "adg_test_accelerator", "capability")
-_emit_dispatches_execution_plan("p1", "adg_test_accelerator", "exec_plan")
-_emit_agent_executes_agent("p1", "adg_test_accelerator", "sub_agent")
-_emit_routes_to_agent("p1", "adg_test_accelerator", "target_agent")
-_emit_verifies_policy("p1", "adg_test_accelerator", "policy_check")
-_emit_observes_runtime_state("p1", "adg_test_accelerator", "runtime_state")
-_emit_verifies_boundary("p1", "adg_test_accelerator", "boundary_check")
-_emit_transcripts_response("p1", "adg_test_accelerator", "transcript")
-_emit_hard_fails_untranscripted("p1", "adg_test_accelerator")
-_emit_gated_by_confidence("p1", "adg_test_accelerator", "confidence_gate")
-_emit_reads_through("l4", "adg_test_accelerator", "urg_read_1")
-_emit_reads_through("l4", "adg_test_accelerator", "urg_read_2")
-_emit_reads_through("l4", "adg_test_accelerator", "urg_read_3")
-_emit_reads_through("l4", "adg_test_accelerator", "urg_read_4")
-_emit_reads_through("l4", "adg_test_accelerator", "urg_read_5")
-_emit_reads_through("l4", "adg_test_accelerator", "urg_read_6")
-_emit_reads_through("l4", "adg_test_accelerator", "urg_read_7")
-_emit_reads_through("l4", "adg_test_accelerator", "urg_read_8")
-_emit_reads_through("l4", "adg_test_accelerator", "urg_read_9")
-_emit_reads_through("l4", "adg_test_accelerator", "urg_read_10")
-_emit_reads_through("l4", "adg_test_accelerator", "urg_read_11")
-_emit_reads_through("l4", "adg_test_accelerator", "urg_read_12")
-_emit_reads_through("l4", "adg_test_accelerator", "urg_read_13")
-_emit_reads_through("l4", "adg_test_accelerator", "urg_read_14")
-_emit_reads_through("l4", "adg_test_accelerator", "urg_read_15")
-_emit_reads_through("l4", "adg_test_accelerator", "urg_read_16")
-_emit_reads_through("l4", "adg_test_accelerator", "urg_read_17")
-_emit_reads_through("l4", "adg_test_accelerator", "urg_read_18")
-_emit_reads_through("l4", "adg_test_accelerator", "urg_read_19")
-_emit_reads_through("l4", "adg_test_accelerator", "urg_read_20")
-_emit_reads_through("l4", "adg_test_accelerator", "urg_read_21")
-_emit_reads_through("l4", "adg_test_accelerator", "urg_read_22")
-_emit_reads_through("l4", "adg_test_accelerator", "urg_read_23")
-_emit_reads_through("l4", "adg_test_accelerator", "urg_read_24")
-_emit_reads_through("l4", "adg_test_accelerator", "urg_read_25")
-_emit_reads_through("l4", "adg_test_accelerator", "urg_read_26")
-_emit_reads_through("l4", "adg_test_accelerator", "urg_read_27")
-_emit_reads_through("l4", "adg_test_accelerator", "urg_read_28")
-_emit_reads_through("l4", "adg_test_accelerator", "urg_read_29")
-_emit_reads_through("l4", "adg_test_accelerator", "urg_read_30")
-_emit_reads_through("l4", "adg_test_accelerator", "urg_read_31")
-_emit_reads_through("l4", "adg_test_accelerator", "urg_read_32")
-_emit_reads_through("l4", "adg_test_accelerator", "urg_read_33")
-_emit_reads_through("l4", "adg_test_accelerator", "urg_read_34")
-_emit_reads_through("l4", "adg_test_accelerator", "urg_read_35")
-_emit_reads_through("l4", "adg_test_accelerator", "urg_read_36")
-_emit_reads_through("l4", "adg_test_accelerator", "urg_read_37")
-_emit_reads_through("l4", "adg_test_accelerator", "urg_read_38")
-_emit_reads_through("l4", "adg_test_accelerator", "urg_read_39")
-_emit_reads_through("l4", "adg_test_accelerator", "urg_read_40")
-_emit_reads_through("l4", "adg_test_accelerator", "urg_read_41")
-_emit_reads_through("l4", "adg_test_accelerator", "urg_read_42")
-_emit_reads_through("l4", "adg_test_accelerator", "urg_read_43")
-_emit_reads_through("l4", "adg_test_accelerator", "urg_read_44")
-_emit_reads_through("l4", "adg_test_accelerator", "urg_read_45")
-_emit_reads_through("l4", "adg_test_accelerator", "urg_read_46")
-_emit_reads_through("l4", "adg_test_accelerator", "urg_read_47")
-_emit_reads_through("l4", "adg_test_accelerator", "urg_read_48")
-_emit_reads_through("l4", "adg_test_accelerator", "urg_read_49")
-_emit_reads_through("l4", "adg_test_accelerator", "urg_read_50")
-_emit_reads_through("l4", "adg_test_accelerator", "urg_read_51")
-_emit_reads_through("l4", "adg_test_accelerator", "urg_read_52")
-
-_SYMBOL_PREFIX = "ADG::Symbol::"
-_MODULE_PREFIX = "ADG::Module::"
-
-_PRODUCTION_EXCLUDES = ("tests/", "ops_scripts/", "tools/", ".py.bak")
+_PRODUCTION_EXCLUDES = frozenset(("tests/", "ops_scripts/", "tools/", ".py.bak"))
 
 
 def _is_production(path: str) -> bool:
+    """Check if path represents a production module (not test/ops/tool)."""
     norm = path.replace("\\", "/")
-    return not any(norm.startswith(e) or norm.endswith(e) for e in _PRODUCTION_EXCLUDES)
+    return not any(
+        norm.startswith(exclude) or norm.endswith(exclude)
+        for exclude in _PRODUCTION_EXCLUDES
+    )
 
 
 def _symbol_to_path(sym: str) -> str:
@@ -271,9 +74,20 @@ def _symbol_to_path(sym: str) -> str:
 
 def _module_adg_to_path(adg_name: str) -> str:
     """Strip ADG::Module:: prefix."""
-    if adg_name.startswith(_MODULE_PREFIX):
-        return adg_name[len(_MODULE_PREFIX) :]
+    if adg_name.startswith(MODULE_PREFIX):
+        return adg_name[len(MODULE_PREFIX) :]
     return adg_name
+
+
+@dataclass(frozen=True)
+class Config:
+    """Configuration constants for ADG Test Accelerator."""
+
+    max_depth: int = DEFAULT_MAX_DEPTH
+    top_n: int = DEFAULT_TOP_N
+    workers: int = DEFAULT_WORKERS
+    max_display_files: int = MAX_DISPLAY_FILES
+    problem_file_limit: int = PROBLEM_FILE_DISPLAY_LIMIT
 
 
 # ---------------------------------------------------------------------------
@@ -307,9 +121,9 @@ class ADGIndex:
 
             if rel == "covers":
                 to_name = edge.to_name
-                if to_name.startswith(_SYMBOL_PREFIX):
-                    prod_path = _symbol_to_path(to_name[len(_SYMBOL_PREFIX) :])
-                elif to_name.startswith(_MODULE_PREFIX):
+                if to_name.startswith(SYMBOL_PREFIX):
+                    prod_path = _symbol_to_path(to_name[len(SYMBOL_PREFIX) :])
+                elif to_name.startswith(MODULE_PREFIX):
                     prod_path = _module_adg_to_path(to_name)
                 else:
                     continue
@@ -325,9 +139,18 @@ class ADGIndex:
                 self.imports[frm].add(to)
                 self.imported_by[to].add(frm)
 
-    # guardian: allow-magic-config
-    def transitive_importers(self, module_path: str, max_depth: int = 4) -> set[str]:
-        """Return all modules that (transitively) import module_path."""
+    def transitive_importers(
+        self, module_path: str, max_depth: int = DEFAULT_MAX_DEPTH
+    ) -> set[str]:
+        """Return all modules that (transitively) import module_path.
+
+        Args:
+            module_path: The module path to find importers for
+            max_depth: Maximum depth for transitive search (default: 4)
+
+        Returns:
+            Set of module paths that import the given module
+        """
         visited: set[str] = set()
         queue = [module_path]
         depth = 0
@@ -359,8 +182,6 @@ class ADGIndex:
         norm = test_path.replace("\\", "/")
         for prods in [self.test_to_prods.get(norm, set())]:
             for prod in prods:
-                from agentic_core.adg.schema_util import module_path_to_layer
-
                 layer = module_path_to_layer(prod)
                 if layer and layer != "unknown":
                     return layer
@@ -376,15 +197,29 @@ class ADGIndex:
 # ---------------------------------------------------------------------------
 
 
-def cmd_gap(args: argparse.Namespace, idx: ADGIndex) -> None:
-    """Print uncovered production modules ranked by fan-in."""
-    report = detect_test_gaps(idx.result, hotspot_index=idx.hotspot)
+def cmd_gap(args: argparse.Namespace, idx: ADGIndex) -> int:
+    """Print uncovered production modules ranked by fan-in.
+
+    Args:
+        args: Parsed command line arguments
+        idx: Pre-built ADG index
+
+    Returns:
+        Exit code (0 for success)
+    """
+    try:
+        report = detect_test_gaps(idx.result, hotspot_index=idx.hotspot)
+    except Exception as e:
+        _logger.error(f"Failed to detect test gaps: {e}")
+        return 1
+
     entries = report.uncovered_modules
     if args.layer:
         entries = [e for e in entries if e.layer == args.layer]
 
-    # Re-sort by fan-in descending
-    entries = sorted(entries, key=lambda e: -e.fan_in)[: args.top]
+    # Validate and apply top limit
+    top_n = max(1, getattr(args, 'top', DEFAULT_TOP_N))
+    entries = sorted(entries, key=lambda e: -e.fan_in)[:top_n]
 
     print(f"Coverage rate : {report.coverage_rate:.1%}")
     print(f"Total production modules : {report.total_production_modules}")
@@ -401,18 +236,36 @@ def cmd_gap(args: argparse.Namespace, idx: ADGIndex) -> None:
     for layer, count in sorted(report.gap_by_layer.items()):
         print(f"  {layer}: {count}")
 
+    return 0
 
-def cmd_scope(args: argparse.Namespace, idx: ADGIndex) -> None:
-    """Emit test files that cover the changed modules (one per line)."""
+
+def cmd_scope(args: argparse.Namespace, idx: ADGIndex) -> int:
+    """Emit test files that cover the changed modules (one per line).
+
+    Args:
+        args: Parsed command line arguments
+        idx: Pre-built ADG index
+
+    Returns:
+        Exit code (0 for success, 1 if no tests found)
+    """
     changed = [c.strip() for c in args.changed if c.strip()]
     if not changed and args.stdin:
-        changed = [l.strip() for l in sys.stdin if l.strip()]
+        try:
+            changed = [l.strip() for l in sys.stdin if l.strip()]
+        except KeyboardInterrupt:
+            _logger.info("Interrupted by user")
+            return 130
 
     if not changed:
-        print("No changed files specified.", file=sys.stderr)
-        sys.exit(1)
+        _logger.error("No changed files specified.")
+        return 1
 
-    tests = idx.tests_for_changed(changed)
+    try:
+        tests = idx.tests_for_changed(changed)
+    except Exception as e:
+        _logger.error(f"Failed to determine tests for changed files: {e}")
+        return 1
 
     if args.format == "pytest":
         # Space-separated for use as: pytest $(python ... scope ...)
@@ -426,11 +279,14 @@ def cmd_scope(args: argparse.Namespace, idx: ADGIndex) -> None:
             print(t)
 
     if not tests:
-        print(f"# No ADG coverage signal found for: {changed}", file=sys.stderr)
-        print("# Run full suite (no scoping possible)", file=sys.stderr)
+        _logger.warning(f"No ADG coverage signal found for: {changed}")
+        _logger.warning("Run full suite (no scoping possible)")
+        return 1
+
+    return 0
 
 
-def cmd_collection_safety(args: argparse.Namespace, idx: ADGIndex) -> None:
+def cmd_collection_safety(args: argparse.Namespace, idx: ADGIndex) -> int:
     """Analyze test file collection safety via ADG import graph.
 
     Queries existing ADGIndex.imports and ADG data to classify each test file:
@@ -441,9 +297,16 @@ def cmd_collection_safety(args: argparse.Namespace, idx: ADGIndex) -> None:
     - STALE_PATH: Module exists but filesystem path differs from ADG path
 
     Maps to PyTest Lifecycle triage:
-    - Check 1.1 (MISSING) → production_bug_fix
-    - Check 1.2 (STALE_PATH) → stale_reference_fix
-    - Neither → ANTI_PATTERN → BLOCKED
+    - Check 1.1 (MISSING) -> production_bug_fix
+    - Check 1.2 (STALE_PATH) -> stale_reference_fix
+    - Neither -> ANTI_PATTERN -> BLOCKED
+
+    Args:
+        args: Parsed command line arguments
+        idx: Pre-built ADG index
+
+    Returns:
+        Exit code (0 for success)
     """
     from pathlib import Path
 
@@ -462,6 +325,10 @@ def cmd_collection_safety(args: argparse.Namespace, idx: ADGIndex) -> None:
             if "tests/" in e.source_file.replace("\\", "/")
         }
     )
+
+    if not test_files:
+        _logger.warning("No test files found in ADG scan")
+        return 0
 
     # Filter by layer if requested
     if args.layer:
@@ -567,10 +434,14 @@ def cmd_collection_safety(args: argparse.Namespace, idx: ADGIndex) -> None:
 
     # Output
     if args.json:
-        out_path = Path(args.json)
-        out_path.parent.mkdir(parents=True, exist_ok=True)
-        out_path.write_text(json.dumps(report, indent=2), encoding="utf-8")
-        print(f"Collection safety report written to: {out_path}", file=sys.stderr)
+        try:
+            out_path = Path(args.json)
+            out_path.parent.mkdir(parents=True, exist_ok=True)
+            out_path.write_text(json.dumps(report, indent=2), encoding="utf-8")
+            _logger.info(f"Collection safety report written to: {out_path}")
+        except (OSError, IOError) as e:
+            _logger.error(f"Failed to write report: {e}")
+            return 1
     else:
         # Summary output
         print("Collection Safety Analysis")
@@ -593,17 +464,28 @@ def cmd_collection_safety(args: argparse.Namespace, idx: ADGIndex) -> None:
         problematic = [f for f in file_reports if not f["collection_safe"]]
         if problematic:
             print("Problematic files (collection-fatal):")
-            for f in problematic[:20]:  # Show first 20
+            display_limit = min(len(problematic), PROBLEM_FILE_DISPLAY_LIMIT)
+            for f in problematic[:display_limit]:
                 print(f"  {f['file']} [{f['status']}] -> {f['triage_category']}")
                 for issue in f["issues"]:
                     print(f"    {issue}")
-            if len(problematic) > 20:
-                print(f"  ... and {len(problematic) - 20} more")
+            if len(problematic) > PROBLEM_FILE_DISPLAY_LIMIT:
+                print(f"  ... and {len(problematic) - PROBLEM_FILE_DISPLAY_LIMIT} more")
+
+    return 0
 
 
-def cmd_groups(args: argparse.Namespace, idx: ADGIndex) -> None:
-    """Partition test files into N balanced groups by layer."""
-    n = args.workers
+def cmd_groups(args: argparse.Namespace, idx: ADGIndex) -> int:
+    """Partition test files into N balanced groups by layer.
+
+    Args:
+        args: Parsed command line arguments
+        idx: Pre-built ADG index
+
+    Returns:
+        Exit code (0 for success)
+    """
+    n = max(1, args.workers)  # Ensure at least 1 worker
 
     # Collect all test files from result
     all_test_files: list[str] = sorted(
@@ -613,6 +495,11 @@ def cmd_groups(args: argparse.Namespace, idx: ADGIndex) -> None:
             if "tests/" in e.source_file.replace("\\", "/")
         }
     )
+
+    if not all_test_files:
+        _logger.warning("No test files found")
+        print(json.dumps({"workers": [], "total_files": 0, "layers": {}}) if args.format == "json" else "No test files found")
+        return 0
 
     # Group by layer
     by_layer: dict[str, list[str]] = defaultdict(list)
@@ -630,7 +517,7 @@ def cmd_groups(args: argparse.Namespace, idx: ADGIndex) -> None:
         worker_sizes[target] += len(by_layer[layer])
 
     if args.format == "json":
-        out = {
+        out: dict[str, Any] = {
             f"worker_{i}": {
                 "files": workers[i],
                 "count": len(workers[i]),
@@ -646,12 +533,26 @@ def cmd_groups(args: argparse.Namespace, idx: ADGIndex) -> None:
             for f in group:
                 print(f"  {f}")
 
+    return 0
 
-def cmd_report(args: argparse.Namespace, idx: ADGIndex) -> None:
-    """Write a full JSON report combining gap analysis and layer breakdown."""
+
+def cmd_report(args: argparse.Namespace, idx: ADGIndex) -> int:
+    """Write a full JSON report combining gap analysis and layer breakdown.
+
+    Args:
+        args: Parsed command line arguments
+        idx: Pre-built ADG index
+
+    Returns:
+        Exit code (0 for success, 1 for error)
+    """
     from agentic_core.adg.analysis.test_gap_types import detect_test_gaps
 
-    report = detect_test_gaps(idx.result, hotspot_index=idx.hotspot)
+    try:
+        report = detect_test_gaps(idx.result, hotspot_index=idx.hotspot)
+    except Exception as e:
+        _logger.error(f"Failed to detect test gaps: {e}")
+        return 1
 
     # Build coverage map
     covered_by: dict[str, list[str]] = {}
@@ -670,7 +571,7 @@ def cmd_report(args: argparse.Namespace, idx: ADGIndex) -> None:
     for tf in all_test_files:
         layer_counts[idx.layer_of(tf)] += 1
 
-    out = {
+    out: dict[str, Any] = {
         "meta": {
             "scanner_version": idx.result.manifest.scanner_version,
             "schema_version": idx.result.manifest.schema_version,
@@ -684,13 +585,18 @@ def cmd_report(args: argparse.Namespace, idx: ADGIndex) -> None:
         "highest_risk_gaps": [e.to_dict() for e in report.highest_risk_gaps[:30]],
     }
 
-    out_path = pathlib.Path(args.out)
-    out_path.parent.mkdir(parents=True, exist_ok=True)
-    out_path.write_text(json.dumps(out, indent=2, sort_keys=True), encoding="utf-8")
-    print(f"Report written to: {out_path}")
-    print(f"Coverage rate    : {report.coverage_rate:.1%}")
-    print(f"Uncovered modules: {len(report.uncovered_modules)}/{report.total_production_modules}")
-    print(f"Syntax errors    : {idx.result.manifest.syntax_error_count}")
+    try:
+        out_path = pathlib.Path(args.out)
+        out_path.parent.mkdir(parents=True, exist_ok=True)
+        out_path.write_text(json.dumps(out, indent=2, sort_keys=True), encoding="utf-8")
+        print(f"Report written to: {out_path}")
+        print(f"Coverage rate    : {report.coverage_rate:.1%}")
+        print(f"Uncovered modules: {len(report.uncovered_modules)}/{report.total_production_modules}")
+        print(f"Syntax errors    : {idx.result.manifest.syntax_error_count}")
+        return 0
+    except (OSError, IOError) as e:
+        _logger.error(f"Failed to write report: {e}")
+        return 1
 
 
 # ---------------------------------------------------------------------------
@@ -737,34 +643,48 @@ def _build_parser() -> argparse.ArgumentParser:
     return p
 
 
-def main() -> None:
+def main() -> int:
+    """Main entry point with proper exit code handling.
+
+    Returns:
+        Exit code (0 for success, non-zero for errors)
+    """
     parser = _build_parser()
     args = parser.parse_args()
 
     include_tests = not args.no_tests
     t0 = time.time()
-    print(f"[ADG] Scanning (include_tests={include_tests})...", file=sys.stderr)
-    scanner = ADGStaticScanner(include_tests=include_tests)
-    result = scanner.scan()
-    print(
-        f"[ADG] Scan done in {time.time() - t0:.1f}s — "
-        f"{len(result.modules)} modules, {len(result.edges)} edges",
-        file=sys.stderr,
+    _logger.info(f"Scanning (include_tests={include_tests})...")
+
+    try:
+        scanner = ADGStaticScanner(include_tests=include_tests)
+        result = scanner.scan()
+    except Exception as e:
+        _logger.error(f"ADG scan failed: {e}")
+        return 1
+
+    _logger.info(
+        f"Scan done in {time.time() - t0:.1f}s — "
+        f"{len(result.modules)} modules, {len(result.edges)} edges"
     )
 
     idx = ADGIndex(result)
 
-    if args.command == "gap":
-        cmd_gap(args, idx)
-    elif args.command == "scope":
-        cmd_scope(args, idx)
-    elif args.command == "groups":
-        cmd_groups(args, idx)
-    elif args.command == "report":
-        cmd_report(args, idx)
-    elif args.command == "collection-safety":
-        cmd_collection_safety(args, idx)
+    command_map = {
+        "gap": cmd_gap,
+        "scope": cmd_scope,
+        "groups": cmd_groups,
+        "report": cmd_report,
+        "collection-safety": cmd_collection_safety,
+    }
+
+    cmd_func = command_map.get(args.command)
+    if cmd_func is None:
+        _logger.error(f"Unknown command: {args.command}")
+        return 1
+
+    return cmd_func(args, idx)
 
 
 if __name__ == "__main__":
-    main()
+    sys.exit(main())
