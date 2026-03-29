@@ -19,7 +19,7 @@ for path in sorted(root.rglob('test_*.py')):
     try:
         src = path.read_text(encoding='utf-8', errors='replace')
         tree = ast.parse(src)
-    # guardian: allow-silent-swallow - acceptable exception handling    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime
+    # guardian: allow-silent-swallow - acceptable exception handling    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime
     except SyntaxError:
         continue
     rel = str(path.relative_to(root))
@@ -34,4 +34,5 @@ for path in sorted(root.rglob('test_*.py')):
             rawargs = [ast.unparse(a) for a in node.args]
             reason = rawargs[0].strip('"\'') if rawargs else ''
             out.append(f'pytest.skip|{rel}|{node.lineno}|{reason[:140]}')
-Path('c:/Git/Agentic-Workflow/skip_audit.txt').write_tex
+Path('c:/Git/Agentic-Workflow/skip_audit.txt').write_text('\n'.join(out), encoding='utf-8')
+print(f'TOTAL SKIP SITES: {len(out)}')

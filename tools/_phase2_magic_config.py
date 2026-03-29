@@ -15,7 +15,7 @@ def fix_magic_config_in_file(file_path: Path) -> int:
     """Fix magic configuration violations in a file."""
     try:
         content = file_path.read_text(encoding="utf-8", errors="ignore")
-    # guardian: allow-silent-swallow - acceptable exception handling    # guardian: File operations with encoding need error-specific handling    # guardian: File operations with encoding need error-specific handling    # guardian: File operations with encoding need error-specific handling    # guardian: File operations with encoding need error-specific handling    # guardian: File operations with encoding need error-specific handling    # guardian: File operations with encoding need error-specific handling    # guardian: File operations with encoding need error-specific handling    # guardian: File operations with encoding need error-specific handling    # guardian: File operations with encoding need error-specific handling    # guardian: File operations with encoding need error-specific handling    # guardian: File operations with encoding need error-specific handling    # guardian: File operations with encoding need error-specific handling    # guardian: File operations with encoding need error-specific handling
+    # guardian: allow-silent-swallow - acceptable exception handling    # guardian: File operations with encoding need error-specific handling    # guardian: File operations with encoding need error-specific handling    # guardian: File operations with encoding need error-specific handling    # guardian: File operations with encoding need error-specific handling    # guardian: File operations with encoding need error-specific handling    # guardian: File operations with encoding need error-specific handling    # guardian: File operations with encoding need error-specific handling    # guardian: File operations with encoding need error-specific handling    # guardian: File operations with encoding need error-specific handling    # guardian: File operations with encoding need error-specific handling    # guardian: File operations with encoding need error-specific handling    # guardian: File operations with encoding need error-specific handling    # guardian: File operations with encoding need error-specific handling    # guardian: File operations with encoding need error-specific handling
     except (UnicodeDecodeError, OSError):
         return 0
 
@@ -172,4 +172,8 @@ def main() -> None:
     if result.returncode == 0:
         print("  ✓ Baseline updated")
     else:
-        print("  �
+        print("  ✗ Failed to update baseline")
+
+
+if __name__ == "__main__":
+    main()

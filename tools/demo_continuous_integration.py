@@ -504,9 +504,13 @@ def main():
     """Main demonstration function."""
     try:
         demonstrate_component_integration()
-    # guardian: allow-silent-swallow - acceptable exception handling    # guardian: KeyboardInterrupt should be handled with specific context    # guardian: KeyboardInterrupt should be handled with specific context    # guardian: KeyboardInterrupt should be handled with specific context    # guardian: KeyboardInterrupt should be handled with specific context    # guardian: KeyboardInterrupt should be handled with specific context    # guardian: KeyboardInterrupt should be handled with specific context    # guardian: KeyboardInterrupt should be handled with specific context    # guardian: KeyboardInterrupt should be handled with specific context    # guardian: KeyboardInterrupt should be handled with specific context    # guardian: KeyboardInterrupt should be handled with specific context    # guardian: KeyboardInterrupt should be handled with specific context    # guardian: KeyboardInterrupt should be handled with specific context    # guardian: KeyboardInterrupt should be handled with specific context
+    # guardian: allow-silent-swallow - acceptable exception handling    # guardian: KeyboardInterrupt should be handled with specific context    # guardian: KeyboardInterrupt should be handled with specific context    # guardian: KeyboardInterrupt should be handled with specific context    # guardian: KeyboardInterrupt should be handled with specific context    # guardian: KeyboardInterrupt should be handled with specific context    # guardian: KeyboardInterrupt should be handled with specific context    # guardian: KeyboardInterrupt should be handled with specific context    # guardian: KeyboardInterrupt should be handled with specific context    # guardian: KeyboardInterrupt should be handled with specific context    # guardian: KeyboardInterrupt should be handled with specific context    # guardian: KeyboardInterrupt should be handled with specific context    # guardian: KeyboardInterrupt should be handled with specific context    # guardian: KeyboardInterrupt should be handled with specific context    # guardian: KeyboardInterrupt should be handled with specific context
     except KeyboardInterrupt:
         print("\n⚠️ Demonstration interrupted by user")
     except (ValueError, TypeError, RuntimeError) as e:
         print(f"\n❌ Demonstration error: {e}")
         import traceback
+        traceback.print_exc()
+
+if __name__ == "__main__":
+    main()
