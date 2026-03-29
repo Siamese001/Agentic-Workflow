@@ -5,6 +5,7 @@ These tests verify the complete flow from intent to LLM execution.
 
 import hashlib
 import hmac
+import json
 import unittest
 from typing import Any
 from unittest.mock import AsyncMock, MagicMock, patch
@@ -92,6 +93,7 @@ class TestE2ESmoke(unittest.TestCase):
         secret_key = b"my-secret-key"
 
         # Create an artifact
+        # Create artifact without signature first
         artifact = CompiledPromptArtifact(
             trace_id="trace-123",
             final_system_string="System prompt",
@@ -101,13 +103,19 @@ class TestE2ESmoke(unittest.TestCase):
             signature="",  # Will compute below
         )
 
-        # Compute signature manually
-        canonical = str(artifact.to_dict())
+        # Compute signature using the same canonical format as verify_signature
+        canonical = str({
+            "trace_id": "trace-123",
+            "final_system_string": "System prompt",
+            "final_user_string": "User prompt",
+            "allowed_tools_schema": tuple(sorted([], key=lambda x: str(x))),
+            "token_estimate": 50,
+        })
         signature = hmac.new(
             secret_key, canonical.encode("utf-8"), hashlib.sha256
         ).hexdigest()
 
-        # Create new artifact with signature
+        # Create final artifact with signature
         signed_artifact = CompiledPromptArtifact(
             trace_id="trace-123",
             final_system_string="System prompt",

@@ -55,8 +55,14 @@ class TestPromptTaxonomyArchitecture(unittest.TestCase):
             signature="",
         )
 
-        # Compute signature manually
-        canonical = str(artifact.to_dict())
+        # Compute signature manually using same format as verify_signature
+        canonical = str({
+            "trace_id": "trace-123",
+            "final_system_string": "System",
+            "final_user_string": "User",
+            "allowed_tools_schema": tuple(sorted([], key=lambda x: str(x))),
+            "token_estimate": 100,
+        })
         expected_sig = hmac.new(
             secret_key, canonical.encode("utf-8"), hashlib.sha256
         ).hexdigest()
