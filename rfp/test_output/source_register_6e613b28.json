@@ -1,0 +1,94 @@
+{
+  "trace_id": "6e613b28d07b78d5",
+  "generated_at": "2026-03-29T10:36:52.124646",
+  "repo_signals": {
+    "captured_at": "2026-03-29T10:36:52.082864",
+    "adg": {
+      "available": true,
+      "sqlite_path": "C:\\Git\\Agentic-Workflow\\artifacts\\adg\\adg_indexed_03292026_0923.sqlite",
+      "sqlite_size_bytes": 238084096,
+      "sqlite_mtime": "2026-03-29T09:42:39.371264",
+      "nodes_count": 187441,
+      "edges_count": 718308
+    },
+    "tests": {
+      "inventory_available": true,
+      "surface_available": true,
+      "inventory_entries": 3096,
+      "surface_entries": 5
+    },
+    "ci": {
+      "workflow_count": 33,
+      "ci_validation_lines": 6924
+    },
+    "governance": {
+      "denominator_baseline_available": true,
+      "locked_denominators": {},
+      "baseline": {
+        "available": false,
+        "current": {
+          "nodes_count": 187441,
+          "edges_count": 718308,
+          "workflow_count": 33,
+          "inventory_entries": 3096
+        },
+        "delta": {}
+      },
+      "delivery_proof": {
+        "contracts_count": 1,
+        "k8s_specs_count": 9,
+        "manifest_count": 3,
+        "adg_report_count": 1,
+        "validation_artifacts": 2,
+        "requirement_confidence": 1.0
+      }
+    },
+    "sources": {
+      "adg_sqlite": "C:\\Git\\Agentic-Workflow\\artifacts\\adg\\adg_indexed_03292026_0923.sqlite",
+      "test_inventory": "C:\\Git\\Agentic-Workflow\\artifacts\\test_inventory.json",
+      "test_surface_inventory": "C:\\Git\\Agentic-Workflow\\artifacts\\test_surface_inventory.json",
+      "workflows_dir": "C:\\Git\\Agentic-Workflow\\.github\\workflows",
+      "ci_validation_log": "C:\\Git\\Agentic-Workflow\\artifacts\\ci_validation_after_fix.txt",
+      "governance_baseline": "C:\\Git\\Agentic-Workflow\\artifacts\\governance\\post_denominator_baseline.json",
+      "contracts_dir": "C:\\Git\\Agentic-Workflow\\docs\\contracts",
+      "k8s_dir": "C:\\Git\\Agentic-Workflow\\k8s",
+      "manifests_dir": "C:\\Git\\Agentic-Workflow\\data\\manifests",
+      "adg_reports_dir": "C:\\Git\\Agentic-Workflow\\reports\\adg"
+    }
+  },
+  "sources": [
+    {
+      "type": "rfp_input",
+      "organization": "",
+      "requirements_count": 0
+    },
+    {
+      "type": "past_proposals",
+      "similar_proposals_consulted": 0,
+      "proposals": []
+    },
+    {
+      "type": "decomposition_analysis",
+      "components_identified": 0,
+      "estimated_hours": 0
+    },
+    {
+      "type": "compliance_validation",
+      "validator": "L5_ComplianceValidator",
+      "passed": false,
+      "violations_count": 6
+    }
+  ],
+  "claim_verifications": [
+    {
+      "claim_id": "C002",
+      "confidence": "medium",
+      "has_evidence": true
+    },
+    {
+      "claim_id": "C001",
+      "confidence": "medium",
+      "has_evidence": true
+    }
+  ]
+}

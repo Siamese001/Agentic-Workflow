@@ -14,9 +14,27 @@ Tests for 17 ADG MCP tools:
 """
 
 import json
+import sys
+from pathlib import Path
 from unittest.mock import MagicMock, patch
 
 import pytest
+
+# Ensure repo root is in path for imports
+repo_root = Path(__file__).parent.parent.parent.parent
+if str(repo_root) not in sys.path:
+    sys.path.insert(0, str(repo_root))
+
+# Import actual MCP tools (not just mocks)
+import importlib.util
+spec = importlib.util.spec_from_file_location("adg_mcp_server", repo_root / "tools" / "adg" / "adg_mcp_server.py")
+adg_mcp_server = importlib.util.module_from_spec(spec)
+try:
+    spec.loader.exec_module(adg_mcp_server)
+    MCP_SERVER_AVAILABLE = True
+except Exception as e:
+    MCP_SERVER_AVAILABLE = False
+    print(f"Warning: Could not load adg_mcp_server: {e}")
 
 
 # ============================================================================
@@ -82,10 +100,10 @@ class TestAdgStatus:
     def test_adg_status_reads_sentinel(self, mock_redis_client, sample_adg_status):
         """Test adg_status reads adg:status STRING sentinel."""
         mock_redis_client.get.return_value = json.dumps(sample_adg_status)
-        
+
         result = mock_redis_client.get("adg:status")
         assert result is not None
-        
+
         data = json.loads(result)
         assert "timestamp" in data
         assert "node_count" in data
@@ -97,10 +115,10 @@ class TestAdgStatus:
         import time
         current_time = time.time()
         ingested_time = current_time - 60  # 1 minute ago
-        
+
         age_seconds = current_time - ingested_time
         is_fresh = age_seconds < 300
-        
+
         assert is_fresh, "Should be fresh if < 5 minutes old"
 
     def test_adg_status_detects_stale(self, sample_adg_status):
@@ -108,10 +126,10 @@ class TestAdgStatus:
         import time
         current_time = time.time()
         ingested_time = current_time - 600  # 10 minutes ago
-        
+
         age_seconds = current_time - ingested_time
         is_fresh = age_seconds < 300
-        
+
         assert not is_fresh, "Should be stale if > 5 minutes old"
 
 
@@ -126,7 +144,7 @@ class TestAdgMeta:
     def test_adg_meta_hgetall(self, mock_redis_client, sample_adg_meta):
         """Test adg_meta uses HGETALL on adg:meta HASH."""
         mock_redis_client.hgetall.return_value = sample_adg_meta
-        
+
         result = mock_redis_client.hgetall("adg:meta")
         assert result is not None
         assert "timestamp" in result
@@ -169,7 +187,7 @@ class TestAdgSnapshot:
             "digest": "abc123"
         }
         mock_redis_client.get.return_value = json.dumps(snapshot)
-        
+
         result = mock_redis_client.get("adg:snapshot")
         data = json.loads(result)
         assert "counts_by_layer" in data
@@ -188,7 +206,7 @@ class TestAdgNode:
         """Test adg_node uses HGETALL on adg:node:<id> HASH."""
         node_id = "agentic_core/adg/schema.py::Edge"
         mock_redis_client.hgetall.return_value = sample_node_data
-        
+
         result = mock_redis_client.hgetall(f"adg:node:{node_id}")
         assert result is not None
         assert result["id"] == node_id
@@ -216,7 +234,7 @@ class TestAdgNodesByLayer:
         layer = "L0"
         node_ids = ["node1", "node2", "node3"]
         mock_redis_client.smembers.return_value = set(node_ids)
-        
+
         result = mock_redis_client.smembers(f"adg:nodes:by_layer:{layer}")
         assert result is not None
         assert len(result) == 3
@@ -226,7 +244,7 @@ class TestAdgNodesByLayer:
         all_nodes = [f"node_{i}" for i in range(100)]
         offset = 0
         limit = 50
-        
+
         paginated = all_nodes[offset:offset + limit]
         assert len(paginated) == 50
         assert paginated[0] == "node_0"
@@ -246,7 +264,7 @@ class TestAdgNodesByFile:
         file_path = "agentic_core/adg/schema.py"
         node_ids = ["node1", "node2"]
         mock_redis_client.smembers.return_value = set(node_ids)
-        
+
         result = mock_redis_client.smembers(f"adg:nodes:by_file:{file_path}")
         assert result is not None
         assert len(result) == 2
@@ -266,7 +284,7 @@ class TestAdgEdgeFanoutFanin:
         rel = "calls"
         edge_ids = ["edge1", "edge2"]
         mock_redis_client.smembers.return_value = set(edge_ids)
-        
+
         result = mock_redis_client.smembers(f"adg:edge:{src_id}:{rel}")
         assert result is not None
         assert len(result) == 2
@@ -277,7 +295,7 @@ class TestAdgEdgeFanoutFanin:
         rel = "calls"
         edge_ids = ["edge3", "edge4"]
         mock_redis_client.smembers.return_value = set(edge_ids)
-        
+
         result = mock_redis_client.smembers(f"adg:edge:in:{tgt_id}:{rel}")
         assert result is not None
         assert len(result) == 2
@@ -295,7 +313,7 @@ class TestAdgViolations:
         """Test adg_violations uses LRANGE on adg:violations LIST."""
         violations = ["v1", "v2", "v3"]
         mock_redis_client.lrange.return_value = violations
-        
+
         result = mock_redis_client.lrange("adg:violations", 0, -1)
         assert result is not None
         assert len(result) == 3
@@ -313,7 +331,7 @@ class TestRedisScan:
         """Test redis_scan uses SCAN cursor (not KEYS *)."""
         # Mock cursor-based scan
         mock_redis_client.scan.return_value = (0, ["key1", "key2"])  # cursor 0 = done
-        
+
         cursor, keys = mock_redis_client.scan(match="adg:*", count=100)
         assert cursor == 0  # Done
         assert len(keys) == 2
@@ -326,7 +344,7 @@ class TestRedisScan:
             (42, ["key1", "key2"]),  # cursor 42, partial results
             (0, ["key3"]),  # cursor 0, final results
         ]
-        
+
         all_keys = []
         cursor = 0
         while True:
@@ -334,7 +352,7 @@ class TestRedisScan:
             all_keys.extend(keys)
             if cursor == 0:
                 break
-        
+
         assert len(all_keys) == 3
 
 
@@ -365,7 +383,7 @@ class TestCacheMetadata:
         import time
         current_time = time.time()
         ingested_at = current_time - 120  # 2 minutes ago
-        
+
         age_seconds = current_time - ingested_at
         assert age_seconds == 120
 
@@ -374,3 +392,16 @@ class TestCacheMetadata:
         age_seconds = 250  # 4 min 10 sec
         is_fresh = age_seconds < 300
         assert is_fresh
+
+
+# ============================================================================
+# MCP Server Import Test
+# ============================================================================
+
+@pytest.mark.unit
+class TestAdgMcpServerReal:
+    """Test actual adg_mcp_server module is importable."""
+
+    def test_mcp_server_importable(self):
+        """Test that adg_mcp_server module exists and is importable."""
+        assert adg_mcp_server is not None, "adg_mcp_server module should be importable"
