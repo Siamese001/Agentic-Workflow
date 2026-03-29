@@ -1,0 +1,117 @@
+{
+  "runtime_adg_1774747578_21bd2742": {
+    "component_distribution": {
+      "EvolutionTool": 1
+    },
+    "error_patterns": [],
+    "extraction_metadata": {
+      "timestamp": 1774747578,
+      "total_nodes": 1
+    },
+    "layer_distribution": {
+      "L2": 1
+    },
+    "relation_patterns": {
+      "parent_child": 1
+    },
+    "span_type_distribution": {
+      "tool": 1
+    },
+    "timing_patterns": {
+      "fast_operations": [],
+      "slow_operations": []
+    }
+  },
+  "runtime_adg_1774747578_3957cd8c": {
+    "component_distribution": {
+      "EvolutionTool": 1
+    },
+    "error_patterns": [],
+    "extraction_metadata": {
+      "timestamp": 1774747578,
+      "total_nodes": 1
+    },
+    "layer_distribution": {
+      "L2": 1
+    },
+    "relation_patterns": {
+      "parent_child": 1
+    },
+    "span_type_distribution": {
+      "tool": 1
+    },
+    "timing_patterns": {
+      "fast_operations": [],
+      "slow_operations": []
+    }
+  },
+  "runtime_adg_1774747578_62813ce0": {
+    "component_distribution": {
+      "EvolutionTool": 1
+    },
+    "error_patterns": [],
+    "extraction_metadata": {
+      "timestamp": 1774747578,
+      "total_nodes": 1
+    },
+    "layer_distribution": {
+      "L2": 1
+    },
+    "relation_patterns": {
+      "parent_child": 1
+    },
+    "span_type_distribution": {
+      "tool": 1
+    },
+    "timing_patterns": {
+      "fast_operations": [],
+      "slow_operations": []
+    }
+  },
+  "runtime_adg_1774747578_e1dde5cf": {
+    "component_distribution": {
+      "EvolutionTool": 1
+    },
+    "error_patterns": [],
+    "extraction_metadata": {
+      "timestamp": 1774747578,
+      "total_nodes": 1
+    },
+    "layer_distribution": {
+      "L2": 1
+    },
+    "relation_patterns": {
+      "parent_child": 1
+    },
+    "span_type_distribution": {
+      "tool": 1
+    },
+    "timing_patterns": {
+      "fast_operations": [],
+      "slow_operations": []
+    }
+  },
+  "runtime_adg_1774747578_f1f84db2": {
+    "component_distribution": {
+      "EvolutionTool": 1
+    },
+    "error_patterns": [],
+    "extraction_metadata": {
+      "timestamp": 1774747578,
+      "total_nodes": 1
+    },
+    "layer_distribution": {
+      "L2": 1
+    },
+    "relation_patterns": {
+      "parent_child": 1
+    },
+    "span_type_distribution": {
+      "tool": 1
+    },
+    "timing_patterns": {
+      "fast_operations": [],
+      "slow_operations": []
+    }
+  }
+}
