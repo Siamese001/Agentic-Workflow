@@ -236,16 +236,17 @@ class LayerBoundaryValidator:
     """Validate layer boundary enforcement (sovereignty rules)."""
 
     # Layer gravity: lower index = lower layer, can only import from lower indices
+    # Order from v12: U0 → L1 → L0 → L3 → L5 → L2 → L6 → L4
     LAYER_ORDER = [Layer.U0, Layer.L1, Layer.L0, Layer.L3, Layer.L5, Layer.L2, Layer.L6, Layer.L4]
 
     # Hard constraints from v12
     HARD_RULES = {
-        Layer.L2: {"can_mutate": [Layer.L4], "cannot_mutate": [Layer.L5, Layer.L0], "description": "Execute only"},
-        Layer.L4: {"can_mutate": [], "cannot_mutate": [Layer.L5, Layer.L0, Layer.L2], "description": "Store only"},
-        Layer.L5: {"can_mutate": [], "cannot_mutate": [Layer.L0, Layer.L2, Layer.L4], "description": "Certify only"},
-        Layer.L6: {"can_mutate": [], "cannot_mutate": [Layer.L0, Layer.L2, Layer.L4, Layer.L5], "description": "Observe only"},
-        Layer.L0: {"can_mutate": [], "cannot_mutate": [Layer.L5, Layer.L2, Layer.L4], "description": "Route only"},
-        Layer.L3: {"can_mutate": [], "cannot_mutate": [Layer.L5, Layer.L0], "description": "Orchestrate only"},
+        Layer.L2: {"can_mutate": [Layer.L4], "cannot_mutate": [Layer.L5, Layer.L0, Layer.L3, Layer.L6, Layer.L1], "description": "Execute only"},
+        Layer.L4: {"can_mutate": [], "cannot_mutate": [Layer.L5, Layer.L0, Layer.L2, Layer.L3, Layer.L6, Layer.L1], "description": "Store only"},
+        Layer.L5: {"can_mutate": [], "cannot_mutate": [Layer.L0, Layer.L2, Layer.L4, Layer.L3, Layer.L6, Layer.L1], "description": "Certify only"},
+        Layer.L6: {"can_mutate": [], "cannot_mutate": [Layer.L0, Layer.L2, Layer.L4, Layer.L5, Layer.L3, Layer.L1], "description": "Observe only"},
+        Layer.L0: {"can_mutate": [], "cannot_mutate": [Layer.L5, Layer.L2, Layer.L4, Layer.L3, Layer.L6, Layer.L1], "description": "Route only"},
+        Layer.L3: {"can_mutate": [], "cannot_mutate": [Layer.L5, Layer.L0, Layer.L2, Layer.L4, Layer.L6, Layer.L1], "description": "Orchestrate only"},
     }
 
     @classmethod

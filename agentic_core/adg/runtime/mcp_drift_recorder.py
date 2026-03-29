@@ -265,6 +265,11 @@ class MCPDriftReport:
         """Total number of drift events."""
         return len(self.drift_events)
 
+    @property
+    def timestamp(self) -> float:
+        """Alias for detected_at for compatibility."""
+        return self.detected_at
+
     def to_dict(self) -> dict[str, Any]:
         return {
             "baseline_snapshot_id": self.baseline_snapshot_id,

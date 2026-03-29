@@ -27,9 +27,7 @@ from pathlib import Path
 from typing import Any, Dict, List, Optional
 from unittest.mock import MagicMock, patch
 
-import pytest
-
-from conftest_agentic_system import (
+from tests.e2e.conftest import (
     BusCommunicationMonitor,
     BusType,
     DeterminismValidator,
@@ -41,6 +39,8 @@ from conftest_agentic_system import (
     get_final_report,
     record_test_result,
 )
+
+import pytest
 
 
 # =============================================================================
