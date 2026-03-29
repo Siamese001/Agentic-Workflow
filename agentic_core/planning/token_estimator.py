@@ -1,5 +1,5 @@
 """
-Context Window Estimator for SWE 1.5
+Context Window Estimator for Kimi 2.5
 
 Deterministic token estimation for planning phases and waves.
 Ensures every step stays safely within the 200K context window.
@@ -21,7 +21,7 @@ logger = logging.getLogger(__name__)
 
 @dataclass
 class TokenBudget:
-    """Token budget configuration for SWE 1.5"""
+    """Token budget configuration for Kimi 2.5"""
     HARD_MAX_CONTEXT: int = 200000
     SAFE_OPERATING_CAP: int = 170000
     WARNING_THRESHOLD: int = 150000
@@ -69,16 +69,16 @@ class TokenEstimate:
 class ContextWindowEstimator:
     """
     Deterministic context window estimator for SWE 1.5
-    
+
     Estimates tokens from the actual assembled payload before each model call.
     Uses conservative approximation with high bias to avoid underestimation.
     """
-    
+
     def __init__(self, budget: Optional[TokenBudget] = None):
         self.budget = budget or TokenBudget()
         self.compression_policies = self._init_compression_policies()
         self._error_pattern = re.compile(r'(?i)(error|traceback|exception|failed)')
-        
+
         # Conservative token estimation rates (chars -> tokens, biased high)
         self.token_rates = {
             'code': 0.35,  # ~3 chars per token for code
@@ -97,7 +97,7 @@ class ContextWindowEstimator:
             'retrieval': 4,
             'prior_step': 4,
         }
-    
+
     def _init_compression_policies(self) -> Dict[str, Any]:
         """Initialize compression policies for different content types"""
         return {
@@ -116,8 +116,8 @@ class ContextWindowEstimator:
             'file_summary_threshold': 1000,  # lines
             'duplicate_detection': True
         }
-    
-    def estimate_step_tokens(self, 
+
+    def estimate_step_tokens(self,
                            plan_step: str,
                            system_prompt: str,
                            user_prompt: str,
@@ -130,7 +130,7 @@ class ContextWindowEstimator:
                            safety_buffer: Optional[int] = None) -> TokenEstimate:
         """
         Estimate tokens for a complete plan step payload
-        
+
         Args:
             plan_step: Name/description of the plan step
             system_prompt: System and scaffold prompt content
@@ -142,7 +142,7 @@ class ContextWindowEstimator:
             prior_steps: List of prior step contents to carry forward
             reserved_output: Reserved output tokens (uses default if None)
             safety_buffer: Safety buffer tokens (uses default if None)
-            
+
         Returns:
             TokenEstimate with detailed breakdown and recommendations
         """
@@ -152,7 +152,7 @@ class ContextWindowEstimator:
         logs = logs or []
         retrieved_context = retrieved_context or []
         prior_steps = prior_steps or []
-        
+
         # Use defaults if not provided
         reserved_output = (
             self.budget.DEFAULT_RESERVED_OUTPUT
@@ -166,19 +166,19 @@ class ContextWindowEstimator:
         )
         if reserved_output < 0 or safety_buffer < 0:
             raise ValueError("reserved_output and safety_buffer must be >= 0")
-        
+
         # Collect all context sources
         sources = []
-        
+
         # Add system prompts
         if system_prompt:
             sources.append(ContextSource(
-                'system_prompt', 
+                'system_prompt',
                 system_prompt,
                 self._estimate_source_tokens('system_prompt', system_prompt, 'system'),
                 metadata={'type': 'system'}
             ))
-        
+
         # Add user prompt
         if user_prompt:
             sources.append(ContextSource(
@@ -187,7 +187,7 @@ class ContextWindowEstimator:
                 self._estimate_source_tokens('user_prompt', user_prompt, 'text'),
                 metadata={'type': 'prompt'}
             ))
-        
+
         # Add files
         for file_info in files:
             content = file_info.get('content', '')
@@ -203,7 +203,7 @@ class ContextWindowEstimator:
                     'lines': len(content.splitlines())
                 }
             ))
-        
+
         # Add diffs
         for diff_info in diffs:
             content = diff_info.get('content', '')
@@ -218,7 +218,7 @@ class ContextWindowEstimator:
                     'hunks': content.count('@@')
                 }
             ))
-        
+
         # Add logs
         for log_info in logs:
             content = log_info.get('content', '')
@@ -232,7 +232,7 @@ class ContextWindowEstimator:
                     'has_errors': bool(self._error_pattern.search(content))
                 }
             ))
-        
+
         # Add retrieved context
         for ctx_info in retrieved_context:
             content = ctx_info.get('content', '')
@@ -246,7 +246,7 @@ class ContextWindowEstimator:
                     'overlap': ctx_info.get('overlap', False)
                 }
             ))
-        
+
         # Add prior steps
         for i, step_content in enumerate(prior_steps):
             if step_content:
@@ -256,22 +256,22 @@ class ContextWindowEstimator:
                     self._estimate_source_tokens('prior_step', step_content, 'text'),
                     metadata={'step_index': i}
                 ))
-        
+
         # Calculate totals
         input_tokens = sum(s.tokens for s in sources)
         total_projected = input_tokens + reserved_output + safety_buffer
-        
+
         # Determine status and action
         status, action = self._determine_status_action(total_projected)
-        
+
         # Get top contributors
         top_contributors = self._get_top_contributors(sources)
-        
+
         # Generate recommendations
         recommended_reductions = self._generate_recommendations(
             sources, status, total_projected
         )
-        
+
         # Create estimate
         estimate = TokenEstimate(
             plan_step=plan_step,
@@ -284,31 +284,31 @@ class ContextWindowEstimator:
             top_contributors=top_contributors,
             recommended_reductions=recommended_reductions
         )
-        
+
         # Apply compression if needed
         if action in ['compress', 'block']:
             estimate = self._apply_compression(estimate, sources)
-        
+
         return estimate
-    
+
     def _estimate_tokens(self, text: str, content_type: str) -> int:
         """
         Estimate tokens for text content
-        
+
         Uses conservative rates biased high to avoid underestimation.
         """
         if not text:
             return 0
-        
+
         # Get appropriate token rate
         rate = self.token_rates.get(content_type, self.token_rates['text'])
-        
+
         # Apply conservative multiplier (bias high)
         conservative_multiplier = 1.1
-        
+
         # Calculate estimated tokens
         estimated = math.ceil(len(text) * rate * conservative_multiplier)
-        
+
         # Minimum of 1 token for non-empty content
         return max(1, estimated)
 
@@ -323,11 +323,11 @@ class ContextWindowEstimator:
             if line.startswith(prefix) and not line.startswith(prefix * 3):
                 count += 1
         return count
-    
+
     def _detect_content_type(self, content: str, file_path: str) -> str:
         """Detect content type based on file path and content"""
         path_lower = file_path.lower()
-        
+
         # Check file extension
         if path_lower.endswith(('.py', '.js', '.ts', '.java', '.cpp', '.c')):
             return 'code'
@@ -339,7 +339,7 @@ class ContextWindowEstimator:
             return 'log'
         else:
             return 'text'
-    
+
     def _determine_status_action(self, total_tokens: int) -> Tuple[str, str]:
         """Determine status and action based on token count"""
         if total_tokens > self.budget.HARD_MAX_CONTEXT:
@@ -350,147 +350,147 @@ class ContextWindowEstimator:
             return 'yellow', 'compress'
         else:
             return 'red', 'block'
-    
+
     def _get_top_contributors(self, sources: List[ContextSource]) -> List[Dict[str, Any]]:
         """Get top contributors to token count"""
         # Group by source type
         type_totals = {}
         for source in sources:
             type_totals[source.source_type] = type_totals.get(source.source_type, 0) + source.tokens
-        
+
         # Sort by token count
         sorted_contributors = sorted(
             type_totals.items(),
             key=lambda x: x[1],
             reverse=True
         )
-        
+
         # Return top contributors
         return [
             {"type": ctype, "tokens": tokens}
             for ctype, tokens in sorted_contributors[:5]
         ]
-    
-    def _generate_recommendations(self, 
+
+    def _generate_recommendations(self,
                                 sources: List[ContextSource],
                                 status: str,
                                 total_tokens: int) -> List[str]:
         """Generate reduction recommendations based on analysis"""
         recommendations = []
-        
+
         if status == 'green':
             return recommendations
-        
+
         # Analyze sources for reduction opportunities
         type_totals = {}
         for source in sources:
             type_totals[source.source_type] = type_totals.get(source.source_type, 0) + source.tokens
-        
+
         # Check for large files
         large_files = [
-            s for s in sources 
+            s for s in sources
             if s.source_type == 'file' and s.metadata.get('lines', 0) > 500
         ]
         if large_files:
             recommendations.append(f"Summarize {len(large_files)} large files (>500 lines)")
-        
+
         # Check for verbose logs
         log_sources = [s for s in sources if s.source_type == 'log']
         if log_sources:
             total_log_lines = sum(s.metadata.get('lines', 0) for s in log_sources)
             if total_log_lines > 100:
                 recommendations.append(f"Trim logs to errors only ({total_log_lines} lines)")
-        
+
         # Check for duplicates
         if len([s for s in sources if s.source_type == 'file']) > 10:
             recommendations.append("Remove duplicate or similar file content")
-        
+
         # Check for retrieval chunks
         retrieval_sources = [s for s in sources if s.source_type == 'retrieval']
         if len(retrieval_sources) > 15:
             recommendations.append(f"Reduce retrieval chunks ({len(retrieval_sources)} → 10)")
-        
+
         # Check for diff + file both present
         file_paths = {s.metadata.get('path', '') for s in sources if s.source_type == 'file'}
         diff_paths = {s.metadata.get('path', '') for s in sources if s.source_type == 'diff'}
         overlap = file_paths & diff_paths
         if overlap:
             recommendations.append(f"Use diff OR full file for {len(overlap)} files, not both")
-        
+
         # Check prior steps
         prior_steps = [s for s in sources if s.source_type == 'prior_step']
         if len(prior_steps) > 3:
             recommendations.append("Reduce prior step carry-forward (keep only last 2-3)")
-        
+
         # General recommendation based on how far over budget
         if total_tokens > self.budget.SAFE_OPERATING_CAP:
-            recommendations.append("Critical: Reduce context by at least " + 
+            recommendations.append("Critical: Reduce context by at least " +
                                  f"{total_tokens - self.budget.SAFE_OPERATING_CAP} tokens")
         elif total_tokens > self.budget.WARNING_THRESHOLD:
-            recommendations.append("Moderate: Reduce context by " + 
+            recommendations.append("Moderate: Reduce context by " +
                                  f"{total_tokens - self.budget.WARNING_THRESHOLD} tokens")
-        
+
         return recommendations
-    
-    def _apply_compression(self, 
-                          estimate: TokenEstimate, 
+
+    def _apply_compression(self,
+                          estimate: TokenEstimate,
                           sources: List[ContextSource]) -> TokenEstimate:
         """Apply compression policies to reduce token count"""
         compressed_sources = copy.deepcopy(sources)
         compression_applied = []
-        
+
         # Apply compression in order
         for policy in self.compression_policies['compression_order']:
             if estimate.total_projected_tokens <= self.budget.WARNING_THRESHOLD:
                 break
-            
+
             if policy == 'remove_duplicates':
                 compressed_sources, applied = self._remove_duplicates(compressed_sources)
                 if applied:
                     compression_applied.append('removed_duplicates')
-            
+
             elif policy == 'trim_retry_history':
                 compressed_sources, applied = self._trim_retry_history(compressed_sources)
                 if applied:
                     compression_applied.append('trimmed_retry_history')
-            
+
             elif policy == 'summarize_files':
                 compressed_sources, applied = self._summarize_large_files(compressed_sources)
                 if applied:
                     compression_applied.append('summarized_large_files')
-            
+
             elif policy == 'trim_logs_to_errors':
                 compressed_sources, applied = self._trim_logs_to_errors(compressed_sources)
                 if applied:
                     compression_applied.append('trimmed_logs_to_errors')
-            
+
             elif policy == 'reduce_retrieval_chunks':
                 compressed_sources, applied = self._reduce_retrieval_chunks(compressed_sources)
                 if applied:
                     compression_applied.append('reduced_retrieval_chunks')
-            
+
             elif policy == 'diff_or_file_not_both':
                 compressed_sources, applied = self._prefer_diff_over_file(compressed_sources)
                 if applied:
                     compression_applied.append('preferred_diff_over_file')
-            
+
             elif policy == 'drop_low_relevance_files':
                 compressed_sources, applied = self._drop_low_relevance_files(compressed_sources)
                 if applied:
                     compression_applied.append('dropped_low_relevance_files')
-            
+
             # Recalculate totals
             new_input_tokens = sum(s.tokens for s in compressed_sources)
             estimate.estimated_input_tokens = new_input_tokens
-            estimate.total_projected_tokens = (new_input_tokens + 
-                                              estimate.reserved_output_tokens + 
+            estimate.total_projected_tokens = (new_input_tokens +
+                                              estimate.reserved_output_tokens +
                                               estimate.safety_buffer_tokens)
-            
+
             # Update status and action
             estimate.status, estimate.action = self._determine_status_action(
                 estimate.total_projected_tokens
             )
-        
+
         estimate.compression_applied = compression_applied
         estimate.top_contributors = self._get_top_contributors(compressed_sources)
         estimate.recommended_reductions = self._generate_recommendations(
@@ -499,12 +499,12 @@ class ContextWindowEstimator:
             estimate.total_projected_tokens
         )
         return estimate
-    
+
     def _remove_duplicates(self, sources: List[ContextSource]) -> Tuple[List[ContextSource], bool]:
         """Remove duplicate content"""
         seen_content = set()
         filtered_sources = []
-        
+
         for source in sources:
             content_hash = source.content_fingerprint()
             identity = (
@@ -516,9 +516,9 @@ class ContextWindowEstimator:
             if identity not in seen_content:
                 seen_content.add(identity)
                 filtered_sources.append(source)
-        
+
         return filtered_sources, len(filtered_sources) < len(sources)
-    
+
     def _trim_retry_history(self, sources: List[ContextSource]) -> Tuple[List[ContextSource], bool]:
         """Trim retry history in logs"""
         trimmed = False
@@ -530,18 +530,18 @@ class ContextWindowEstimator:
                     source.content = '\n'.join(lines[-self.compression_policies['max_retry_history'] * 10:])
                     source.tokens = self._estimate_tokens(source.content, 'log')
                     trimmed = True
-        
+
         return sources, trimmed
-    
+
     def _summarize_large_files(self, sources: List[ContextSource]) -> Tuple[List[ContextSource], bool]:
         """Summarize large files"""
         summarized = False
         threshold = self.compression_policies['file_summary_threshold']
-        
+
         for source in sources:
-            if (source.source_type == 'file' and 
+            if (source.source_type == 'file' and
                 source.metadata.get('lines', 0) > threshold):
-                
+
                 # Create summary
                 lines = source.content.splitlines()
                 summary = f"# File: {source.metadata.get('path', 'unknown')}\n"
@@ -549,7 +549,7 @@ class ContextWindowEstimator:
                 summary += f"# Size: {len(source.content)} chars\n"
                 summary += "# Summary: Large file truncated for token budget\n"
                 summary += "# Key sections:\n"
-                
+
                 # Keep first 20 lines and last 20 lines
                 if len(lines) > 40:
                     summary += "\n".join(lines[:20])
@@ -557,52 +557,52 @@ class ContextWindowEstimator:
                     summary += "\n".join(lines[-20:])
                 else:
                     summary = source.content  # Keep as-is if not too large
-                
+
                 source.content = summary
                 source.tokens = self._estimate_tokens(summary, 'text')
                 source.compressed = True
                 summarized = True
-        
+
         return sources, summarized
-    
+
     def _trim_logs_to_errors(self, sources: List[ContextSource]) -> Tuple[List[ContextSource], bool]:
         """Trim logs to show only errors"""
         trimmed = False
-        
+
         for source in sources:
             if source.source_type == 'log':
                 lines = source.content.splitlines()
-                
+
                 # Fast pre-check to avoid processing if no errors exist
                 if not self._error_pattern.search(source.content):
                     continue
-                
+
                 trimmed_lines = []
                 for i, line in enumerate(lines):
                     if self._error_pattern.search(line):
                         start = max(0, i - 2)
                         end = min(len(lines), i + 3)
                         trimmed_lines.extend(lines[start:end])
-                
+
                 if trimmed_lines:
                     unique_lines = list(dict.fromkeys(trimmed_lines))
                     if len(unique_lines) > self.compression_policies['max_log_lines']:
                         unique_lines = unique_lines[:self.compression_policies['max_log_lines']]
-                    
+
                     source.content = '\n'.join(unique_lines)
                     source.tokens = self._estimate_tokens(source.content, 'log')
                     trimmed = True
-        
+
         return sources, trimmed
-    
+
     def _reduce_retrieval_chunks(self, sources: List[ContextSource]) -> Tuple[List[ContextSource], bool]:
         """Reduce number of retrieval chunks"""
         retrieval_sources = [s for s in sources if s.source_type == 'retrieval']
         max_chunks = self.compression_policies['max_retrieval_chunks']
-        
+
         if len(retrieval_sources) <= max_chunks:
             return sources, False
-        
+
         # Keep highest scoring chunks (assuming first ones are most relevant)
         ranked = sorted(
             retrieval_sources,
@@ -614,20 +614,20 @@ class ContextWindowEstimator:
         )
         kept_chunks = ranked[:max_chunks]
         kept_ids = {id(s) for s in kept_chunks}
-        
+
         # Remove removed chunks from sources
         filtered_sources = [
             s for s in sources
             if s.source_type != 'retrieval' or id(s) in kept_ids
         ]
-        
+
         return filtered_sources, True
-    
+
     def _prefer_diff_over_file(self, sources: List[ContextSource]) -> Tuple[List[ContextSource], bool]:
         """Prefer diff over full file when both present"""
         file_paths = {}
         diff_paths = {}
-        
+
         # Index files and diffs by path
         for i, source in enumerate(sources):
             path = source.metadata.get('path', '')
@@ -635,43 +635,43 @@ class ContextWindowEstimator:
                 file_paths[path] = i
             elif source.source_type == 'diff':
                 diff_paths[path] = i
-        
+
         # Find overlaps and remove files
         overlap_paths = {p for p in set(file_paths.keys()) & set(diff_paths.keys()) if p}
         if overlap_paths:
             # Remove full files, keep diffs
             filtered_sources = [
-                s for s in sources 
+                s for s in sources
                 if not (s.source_type == 'file' and s.metadata.get('path', '') in overlap_paths)
             ]
             return filtered_sources, True
-        
+
         return sources, False
-    
+
     def _drop_low_relevance_files(self, sources: List[ContextSource]) -> Tuple[List[ContextSource], bool]:
         """Drop low relevance files (generated files, lock files, etc.)"""
         low_relevance_patterns = [
-            '.lock', '.log', '.tmp', '.cache', '__pycache__', 
+            '.lock', '.log', '.tmp', '.cache', '__pycache__',
             'node_modules', '.git', 'package-lock.json', 'yarn.lock'
         ]
-        
+
         filtered_sources = []
         dropped = False
-        
+
         for source in sources:
             if source.source_type == 'file':
                 path = source.metadata.get('path', '').lower()
                 is_low_relevance = any(pattern in path for pattern in low_relevance_patterns)
-                
+
                 if not is_low_relevance:
                     filtered_sources.append(source)
                 else:
                     dropped = True
             else:
                 filtered_sources.append(source)
-        
+
         return filtered_sources, dropped
-    
+
     def to_dict(self, estimate: TokenEstimate) -> Dict[str, Any]:
         """Convert estimate to dictionary for JSON serialization"""
         return {
@@ -686,7 +686,7 @@ class ContextWindowEstimator:
             'recommended_reductions': estimate.recommended_reductions,
             'compression_applied': estimate.compression_applied
         }
-    
+
     def print_report(self, estimate: TokenEstimate) -> None:
         """Print a formatted token budget report"""
         status_colors = {
@@ -695,9 +695,9 @@ class ContextWindowEstimator:
             'red': '\033[91m'     # Bright red
         }
         reset_color = '\033[0m'
-        
+
         color = status_colors.get(estimate.status, '')
-        
+
         print(f"\n{color}=== Token Budget Report ==={reset_color}")
         print(f"Plan Step: {estimate.plan_step}")
         print(f"Status: {color}{estimate.status.upper()}{reset_color}")
@@ -706,21 +706,21 @@ class ContextWindowEstimator:
         print(f"Reserved Output: {estimate.reserved_output_tokens:,}")
         print(f"Safety Buffer: {estimate.safety_buffer_tokens:,}")
         print(f"Total Projected: {color}{estimate.total_projected_tokens:,}{reset_color}")
-        
+
         print(f"\nTop Contributors:")
         for contributor in estimate.top_contributors:
             print(f"  - {contributor['type']}: {contributor['tokens']:,} tokens")
-        
+
         if estimate.recommended_reductions:
             print(f"\nRecommended Reductions:")
             for reduction in estimate.recommended_reductions:
                 print(f"  - {reduction}")
-        
+
         if estimate.compression_applied:
             print(f"\nCompression Applied:")
             for compression in estimate.compression_applied:
                 print(f"  - {compression}")
-        
+
         print("=" * 30)
 
     def estimate_with_breakdown(

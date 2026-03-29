@@ -2,7 +2,7 @@
 Planning Module for Token Budget Management
 
 This module provides deterministic token budget estimation and enforcement
-for SWE 1.5 planning phases and waves.
+for Kimi 2.5 planning phases and waves.
 
 Components:
 - ContextWindowEstimator: Core token estimation engine
@@ -11,10 +11,10 @@ Components:
 
 Usage:
     from agentic_core.planning import ContextWindowEstimator, PlanningPreflightHook
-    
+
     # Initialize hook
     hook = PlanningPreflightHook()
-    
+
     # Check budget before step
     estimate = hook.preflight_check(
         plan_step="my_step",
@@ -26,7 +26,7 @@ Usage:
         retrieved_context=retrieved_chunks,
         prior_steps=prior_contents
     )
-    
+
     # Proceed based on estimate.action
 """
 
@@ -49,7 +49,7 @@ __all__ = [
     'TokenBudget',
     'TokenEstimate',
     'ContextSource',
-    
+
     # Integration layer
     'PlanningPreflightHook',
     'TokenBudgetExceededError',
@@ -59,4 +59,4 @@ __all__ = [
 # Version information
 __version__ = '1.0.0'
 __author__ = 'Agentic Workflow Team'
-__description__ = 'Token budget management for SWE 1.5 planning'
+__description__ = 'Token budget management for Kimi 2.5 planning'

@@ -1,5 +1,5 @@
 """
-Sequential Thinking Enhanced Planning Workflow for SWE 1.5
+Sequential Thinking Enhanced Planning Workflow for Kimi 2.5
 
 This workflow integrates sequential thinking MCP calls into the planning process
 to improve reasoning quality and structured problem decomposition.
