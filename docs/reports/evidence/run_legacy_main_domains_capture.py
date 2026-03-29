@@ -59,7 +59,7 @@ exc_text = ""
 
 try:
     _legacy_main(["--domains"])
-except SystemExit as e:    # guardian: SystemExit should be handled with specific context    # guardian: SystemExit should be handled with specific context    # guardian: SystemExit should be handled with specific context    # guardian: SystemExit should be handled with specific context    # guardian: SystemExit should be handled with specific context    # guardian: SystemExit should be handled with specific context    # guardian: SystemExit should be handled with specific context    # guardian: SystemExit should be handled with specific context    # guardian: SystemExit should be handled with specific context    # guardian: SystemExit should be handled with specific context
+except SystemExit as e:    # guardian: SystemExit should be handled with specific context    # guardian: SystemExit should be handled with specific context    # guardian: SystemExit should be handled with specific context    # guardian: SystemExit should be handled with specific context    # guardian: SystemExit should be handled with specific context    # guardian: SystemExit should be handled with specific context    # guardian: SystemExit should be handled with specific context    # guardian: SystemExit should be handled with specific context    # guardian: SystemExit should be handled with specific context    # guardian: SystemExit should be handled with specific context    # guardian: SystemExit should be handled with specific context    # guardian: SystemExit should be handled with specific context
     exit_code = e.code if e.code is not None else 0
     if exit_code != 0:
         exit_status = f"EXIT_{exit_code}"

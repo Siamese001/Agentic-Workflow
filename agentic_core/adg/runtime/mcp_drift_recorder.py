@@ -154,9 +154,7 @@ class MCPConfigSnapshot:
     @property
     def config_hash(self) -> str:
         """Deterministic hash of entire MCP configuration."""
-        server_hashes = sorted(
-            f"{name}:{state.state_hash}" for name, state in self.servers.items()
-        )
+        server_hashes = sorted(f"{name}:{state.state_hash}" for name, state in self.servers.items())
         content = f"{self.source_file}:{server_hashes}"
         return hashlib.sha256(content.encode()).hexdigest()[:32]
 
@@ -333,7 +331,9 @@ class MCPDriftRecorder:
 
         # Emit runtime ADG edge: this recorder captures MCP state
         _trace_id = str(uuid.uuid4())
-        _emit_records_telemetry_event(_trace_id, LayerSegment.L6_OBSERVABILITY, "MCPDriftRecorder.capture_snapshot")
+        _emit_records_telemetry_event(
+            _trace_id, LayerSegment.L6_OBSERVABILITY, "MCPDriftRecorder.capture_snapshot"
+        )
 
         if not config_file.exists():
             # Return empty snapshot with error metadata
@@ -428,9 +428,7 @@ class MCPDriftRecorder:
 
         return "L2"  # Default to execution layer
 
-    def detect_drift(
-        self, baseline: MCPConfigSnapshot, current: MCPConfigSnapshot
-    ) -> MCPDriftReport:
+    def detect_drift(self, baseline: MCPConfigSnapshot, current: MCPConfigSnapshot) -> MCPDriftReport:
         """Detect configuration drift between two snapshots.
 
         Args:
@@ -441,7 +439,9 @@ class MCPDriftRecorder:
             MCPDriftReport with detected drift events
         """
         _trace_id = str(uuid.uuid4())
-        _emit_records_telemetry_event(_trace_id, LayerSegment.L6_OBSERVABILITY, "MCPDriftRecorder.detect_drift")
+        _emit_records_telemetry_event(
+            _trace_id, LayerSegment.L6_OBSERVABILITY, "MCPDriftRecorder.detect_drift"
+        )
 
         events: list[MCPDriftEvent] = []
 
@@ -607,11 +607,6 @@ __all__ = [
     "MCPServerState",
     "MCPConfigSnapshot",
     "MCPDriftEvent",
-    "MCPDriftReport",
-    "MCPDriftRecorder",
-    "MCPDriftSeverity",
-    "MCPDriftType",
-]
     "MCPDriftReport",
     "MCPDriftRecorder",
     "MCPDriftSeverity",

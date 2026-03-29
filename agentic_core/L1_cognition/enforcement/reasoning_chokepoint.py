@@ -375,7 +375,7 @@ def reason_and_record(
             goal_payload=str(prompt_payload)[:200],  # Truncate for goal
             evidence_bundle=retrieved_context,
             planning_policy=planning_policy,
-        )    # guardian: ReasoningPlanError should be handled with specific context    # guardian: ReasoningPlanError should be handled with specific context    # guardian: ReasoningPlanError should be handled with specific context    # guardian: ReasoningPlanError should be handled with specific context    # guardian: ReasoningPlanError should be handled with specific context
+        )    # guardian: ReasoningPlanError should be handled with specific context    # guardian: ReasoningPlanError should be handled with specific context    # guardian: ReasoningPlanError should be handled with specific context    # guardian: ReasoningPlanError should be handled with specific context    # guardian: ReasoningPlanError should be handled with specific context    # guardian: ReasoningPlanError should be handled with specific context    # guardian: ReasoningPlanError should be handled with specific context
 
         logger.debug(
             "REASONING_PLAN_CREATED plan_id=%s run_id=%s trace_id=%s",
@@ -510,7 +510,7 @@ def reason_and_record(
             relevance=1.0,
             consistency=1.0,
             policy_compliance=1.0 if reasoning_context.policy_hash else 0.0,
-            coherence=1.0,    # guardian: OrphanReasoningEvaluationError should be handled with specific context    # guardian: OrphanReasoningEvaluationError should be handled with specific context    # guardian: OrphanReasoningEvaluationError should be handled with specific context    # guardian: OrphanReasoningEvaluationError should be handled with specific context    # guardian: OrphanReasoningEvaluationError should be handled with specific context
+            coherence=1.0,    # guardian: OrphanReasoningEvaluationError should be handled with specific context    # guardian: OrphanReasoningEvaluationError should be handled with specific context    # guardian: OrphanReasoningEvaluationError should be handled with specific context    # guardian: OrphanReasoningEvaluationError should be handled with specific context    # guardian: OrphanReasoningEvaluationError should be handled with specific context    # guardian: OrphanReasoningEvaluationError should be handled with specific context    # guardian: OrphanReasoningEvaluationError should be handled with specific context
             actionability=1.0,
         )
         evaluate_reasoning_step_from_trace(

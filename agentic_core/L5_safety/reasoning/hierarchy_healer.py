@@ -1343,7 +1343,7 @@ class HierarchyHealerAgent(SovereignBaseAgent):
         # Then check if this directory is now empty
         remaining = [
             p
-            for p in path.iterdir()    # guardian: Multiple exceptions (OSError, RuntimeError) need specific handling    # guardian: Multiple exceptions (OSError, RuntimeError) need specific handling    # guardian: Multiple exceptions (OSError, RuntimeError) need specific handling    # guardian: Multiple exceptions (OSError, RuntimeError) need specific handling    # guardian: Multiple exceptions (OSError, RuntimeError) need specific handling
+            for p in path.iterdir()    # guardian: Multiple exceptions (OSError, RuntimeError) need specific handling    # guardian: Multiple exceptions (OSError, RuntimeError) need specific handling    # guardian: Multiple exceptions (OSError, RuntimeError) need specific handling    # guardian: Multiple exceptions (OSError, RuntimeError) need specific handling    # guardian: Multiple exceptions (OSError, RuntimeError) need specific handling    # guardian: Multiple exceptions (OSError, RuntimeError) need specific handling    # guardian: Multiple exceptions (OSError, RuntimeError) need specific handling
             if p.name not in {"__pycache__", "__init__.py", ".gitkeep"} and not p.name.startswith(".")
         ]
 
@@ -1352,7 +1352,7 @@ class HierarchyHealerAgent(SovereignBaseAgent):
             init_file = path / "__init__.py"
             if init_file.exists():    # guardian: Multiple exceptions (OSError, RuntimeError) need specific handling    # guardian: Multiple exceptions (OSError, RuntimeError) need specific handling    # guardian: Multiple exceptions (OSError, RuntimeError) need specific handling    # guardian: Multiple exceptions (OSError, RuntimeError) need specific handling    # guardian: Multiple exceptions (OSError, RuntimeError) need specific handling
                 self.gatekeeper.safe_delete(init_file, self.agent_name, "Empty folder cleanup - __init__.py")
-    # guardian: Multiple exceptions (OSError, RuntimeError) need specific handling    # guardian: Multiple exceptions (OSError, RuntimeError) need specific handling    # guardian: Multiple exceptions (OSError, RuntimeError) need specific handling    # guardian: Multiple exceptions (OSError, RuntimeError) need specific handling    # guardian: Multiple exceptions (OSError, RuntimeError) need specific handling
+    # guardian: Multiple exceptions (OSError, RuntimeError) need specific handling    # guardian: Multiple exceptions (OSError, RuntimeError) need specific handling    # guardian: Multiple exceptions (OSError, RuntimeError) need specific handling    # guardian: Multiple exceptions (OSError, RuntimeError) need specific handling    # guardian: Multiple exceptions (OSError, RuntimeError) need specific handling    # guardian: Multiple exceptions (OSError, RuntimeError) need specific handling    # guardian: Multiple exceptions (OSError, RuntimeError) need specific handling
             pycache = path / "__pycache__"
             if pycache.exists():
                 try:
@@ -1499,7 +1499,7 @@ class HierarchyHealerAgent(SovereignBaseAgent):
                 return
 
             insert_idx = 0
-            for i, line in enumerate(lines):    # guardian: File operations with encoding need error-specific handling    # guardian: File operations with encoding need error-specific handling    # guardian: File operations with encoding need error-specific handling    # guardian: File operations with encoding need error-specific handling    # guardian: File operations with encoding need error-specific handling
+            for i, line in enumerate(lines):    # guardian: File operations with encoding need error-specific handling    # guardian: File operations with encoding need error-specific handling    # guardian: File operations with encoding need error-specific handling    # guardian: File operations with encoding need error-specific handling    # guardian: File operations with encoding need error-specific handling    # guardian: File operations with encoding need error-specific handling    # guardian: File operations with encoding need error-specific handling
                 stripped = line.strip()
                 if stripped and not stripped.startswith("#"):
                     insert_idx = i

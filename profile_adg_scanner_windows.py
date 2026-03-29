@@ -68,7 +68,7 @@ def profile_scanner_windows():
 
         return result
 
-    # guardian: allow-silent-swallow - acceptable exception handling    # guardian: TimeoutException should be handled with specific context    # guardian: TimeoutException should be handled with specific context    # guardian: TimeoutException should be handled with specific context    # guardian: TimeoutException should be handled with specific context    # guardian: TimeoutException should be handled with specific context    # guardian: TimeoutException should be handled with specific context    # guardian: TimeoutException should be handled with specific context    # guardian: TimeoutException should be handled with specific context    # guardian: TimeoutException should be handled with specific context    # guardian: TimeoutException should be handled with specific context
+    # guardian: allow-silent-swallow - acceptable exception handling    # guardian: TimeoutException should be handled with specific context    # guardian: TimeoutException should be handled with specific context    # guardian: TimeoutException should be handled with specific context    # guardian: TimeoutException should be handled with specific context    # guardian: TimeoutException should be handled with specific context    # guardian: TimeoutException should be handled with specific context    # guardian: TimeoutException should be handled with specific context    # guardian: TimeoutException should be handled with specific context    # guardian: TimeoutException should be handled with specific context    # guardian: TimeoutException should be handled with specific context    # guardian: TimeoutException should be handled with specific context    # guardian: TimeoutException should be handled with specific context    # guardian: TimeoutException should be handled with specific context
     except TimeoutException as e:
         print(f"⏰ TIMEOUT: {e}")
         print("  Scanner appears to be hanging. Investigating...")
@@ -158,6 +158,4 @@ if __name__ == "__main__":
     result = profile_scanner_windows()
     if result is None:
         print("\n❌ Profiling failed due to hang/error")
-        sys.exit(1)
-    else:
-        print("\n✅ Profiling completed successfully")
+        sys.exi

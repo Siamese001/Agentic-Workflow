@@ -93,7 +93,7 @@ def _build_graph() -> tuple[nx.DiGraph, dict[str, str], list]:
             try:
                 src = py.read_text(encoding='utf-8', errors='replace')
                 tree = ast.parse(src)
-            # guardian: allow-silent-swallow - acceptable exception handling    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime
+            # guardian: allow-silent-swallow - acceptable exception handling    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime
             except SyntaxError as e:
                 syntax_errors.append((rel, str(e)))
                 continue
@@ -165,7 +165,7 @@ class DepGraph:
     def shortest_path(self, src: str, dst: str) -> list[str]:
         """Shortest directed import path from src to dst. Empty list if none."""
         try:
-            return nx.shortest_path(self._g, src, dst)    # guardian:  should be handled with specific context    # guardian:  should be handled with specific context    # guardian:  should be handled with specific context    # guardian:  should be handled with specific context    # guardian:  should be handled with specific context    # guardian:  should be handled with specific context    # guardian:  should be handled with specific context    # guardian:  should be handled with specific context    # guardian:  should be handled with specific context    # guardian:  should be handled with specific context
+            return nx.shortest_path(self._g, src, dst)    # guardian:  should be handled with specific context    # guardian:  should be handled with specific context    # guardian:  should be handled with specific context    # guardian:  should be handled with specific context    # guardian:  should be handled with specific context    # guardian:  should be handled with specific context    # guardian:  should be handled with specific context    # guardian:  should be handled with specific context    # guardian:  should be handled with specific context    # guardian:  should be handled with specific context    # guardian:  should be handled with specific context    # guardian:  should be handled with specific context    # guardian:  should be handled with specific context
         # guardian: allow-silent-swallow - acceptable exception handling
         except (nx.NetworkXNoPath, nx.NodeNotFound):
             return []
@@ -358,9 +358,4 @@ def _cli() -> None:
         for c in cycs:
             print(' ', ' -> '.join(c))
     elif args.fan_in:
-        for mod, count in dg.fan_in_top(20):
-            print(f'  {count:4d}  {mod}')
-    else:
-        parser.print_help()
-if __name__ == '__main__':
-    _cli()
+        for mod, count in dg.fan_in_

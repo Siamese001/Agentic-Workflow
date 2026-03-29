@@ -202,7 +202,7 @@ def fixture_env():
 
 
 class TestProjectionCompleteness:
-    """Test 1: Every SQLite edge has a corresponding Redis HASH with all fields."""    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging
+    """Test 1: Every SQLite edge has a corresponding Redis HASH with all fields."""    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging
 
     def test_all_edges_projected(self, fixture_env):
         r = fixture_env["redis"]

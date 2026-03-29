@@ -359,7 +359,7 @@ class EmbeddingSovereignAgent(RedisCacheMixin, SovereignBaseAgent):
             content,
             target_name="EmbeddingSovereignAgent.get_embedding",
         )
-        start = get_clock().now_epoch()    # guardian: Too many exception types - consider refactoring into separate handlers    # guardian: Too many exception types - consider refactoring into separate handlers    # guardian: Too many exception types - consider refactoring into separate handlers    # guardian: Too many exception types - consider refactoring into separate handlers    # guardian: Too many exception types - consider refactoring into separate handlers
+        start = get_clock().now_epoch()    # guardian: Too many exception types - consider refactoring into separate handlers    # guardian: Too many exception types - consider refactoring into separate handlers    # guardian: Too many exception types - consider refactoring into separate handlers    # guardian: Too many exception types - consider refactoring into separate handlers    # guardian: Too many exception types - consider refactoring into separate handlers    # guardian: Too many exception types - consider refactoring into separate handlers    # guardian: Too many exception types - consider refactoring into separate handlers
         cache_key = f"{self._cache_prefix}:{provider}:{self._content_hash(content)}"
         if use_cache:
             try:
@@ -376,7 +376,7 @@ class EmbeddingSovereignAgent(RedisCacheMixin, SovereignBaseAgent):
             elif provider == "openai":
                 embedding = await self._get_openai_embedding(content)
             elif provider == "bge-m3":
-                embedding = await self._get_bge_m3_embedding(content)    # guardian: Too many exception types - consider refactoring into separate handlers    # guardian: Too many exception types - consider refactoring into separate handlers    # guardian: Too many exception types - consider refactoring into separate handlers    # guardian: Too many exception types - consider refactoring into separate handlers    # guardian: Too many exception types - consider refactoring into separate handlers
+                embedding = await self._get_bge_m3_embedding(content)    # guardian: Too many exception types - consider refactoring into separate handlers    # guardian: Too many exception types - consider refactoring into separate handlers    # guardian: Too many exception types - consider refactoring into separate handlers    # guardian: Too many exception types - consider refactoring into separate handlers    # guardian: Too many exception types - consider refactoring into separate handlers    # guardian: Too many exception types - consider refactoring into separate handlers    # guardian: Too many exception types - consider refactoring into separate handlers
             else:
                 raise ValueError(f"Unknown provider: {provider}")
             expected_dim = self.EXPECTED_DIMENSIONS.get(provider)
@@ -477,7 +477,7 @@ class EmbeddingSovereignAgent(RedisCacheMixin, SovereignBaseAgent):
                 Logger.warning("OPENAI_API_KEY missing for OpenAI embeddings")
             try:
                 test_key = f"{self._cache_prefix}:test"
-                if hasattr(self, "cache_set") and hasattr(self, "cache_get"):    # guardian: Too many exception types - consider refactoring into separate handlers    # guardian: Too many exception types - consider refactoring into separate handlers    # guardian: Too many exception types - consider refactoring into separate handlers    # guardian: Too many exception types - consider refactoring into separate handlers    # guardian: Too many exception types - consider refactoring into separate handlers
+                if hasattr(self, "cache_set") and hasattr(self, "cache_get"):    # guardian: Too many exception types - consider refactoring into separate handlers    # guardian: Too many exception types - consider refactoring into separate handlers    # guardian: Too many exception types - consider refactoring into separate handlers    # guardian: Too many exception types - consider refactoring into separate handlers    # guardian: Too many exception types - consider refactoring into separate handlers    # guardian: Too many exception types - consider refactoring into separate handlers    # guardian: Too many exception types - consider refactoring into separate handlers
                     self.cache_set(test_key, "test_value", ttl=60)
                     cached = self.cache_get(test_key)
                     if cached != "test_value":
