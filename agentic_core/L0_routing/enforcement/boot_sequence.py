@@ -109,7 +109,7 @@ def check_compliance(agents):
         if not agents:
             return []
         return []
-    except Exception as e:  # guardian: allow-silent-swallow -- compliance check failure non-critical
+    except TypeError as e:  # agents parameter not iterable
         # Log error but don't fail boot sequence
         import logging
         logging.getLogger(__name__).warning(f"Compliance check failed: {e}")
@@ -253,7 +253,7 @@ class BootSequence:
                     raise RuntimeError(f"Compliance violations detected: {self.compliance_violations}")
                 else:
                     logger.warning(
-                        f"⚠️  Continuing with {len(self.compliance_violations)} compliance violations."    # guardian: SystemExit should be handled with specific context    # guardian: SystemExit should be handled with specific context    # guardian: SystemExit should be handled with specific context    # guardian: SystemExit should be handled with specific context    # guardian: SystemExit should be handled with specific context
+                        f"⚠️  Continuing with {len(self.compliance_violations)} compliance violations."    # guardian: SystemExit should be handled with specific context    # guardian: SystemExit should be handled with specific context    # guardian: SystemExit should be handled with specific context    # guardian: SystemExit should be handled with specific context    # guardian: SystemExit should be handled with specific context    # guardian: SystemExit should be handled with specific context    # guardian: SystemExit should be handled with specific context    # guardian: SystemExit should be handled with specific context    # guardian: SystemExit should be handled with specific context    # guardian: SystemExit should be handled with specific context    # guardian: SystemExit should be handled with specific context    # guardian: SystemExit should be handled with specific context    # guardian: SystemExit should be handled with specific context    # guardian: SystemExit should be handled with specific context    # guardian: SystemExit should be handled with specific context    # guardian: SystemExit should be handled with specific context    # guardian: SystemExit should be handled with specific context    # guardian: SystemExit should be handled with specific context    # guardian: SystemExit should be handled with specific context    # guardian: SystemExit should be handled with specific context
                     )
             else:
                 logger.info("✅ All agents pass compliance validation.")

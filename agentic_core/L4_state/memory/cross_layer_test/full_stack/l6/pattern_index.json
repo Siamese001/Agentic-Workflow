@@ -1,5 +1,5 @@
 {
-  "runtime_adg_1774777240_3b737374": {
+  "runtime_adg_1774777869_d850266b": {
     "component_distribution": {
       "CognitivePlane": 1,
       "DAGEngine": 1,
@@ -12,7 +12,7 @@
     },
     "error_patterns": [],
     "extraction_metadata": {
-      "timestamp": 1774777240,
+      "timestamp": 1774777869,
       "total_nodes": 8
     },
     "layer_distribution": {
@@ -34,7 +34,7 @@
       "fast_operations": [
         {
           "component": "Tool.validate_safety",
-          "duration_ms": 1.0,
+          "duration_ms": 0.0,
           "node_id": "42d6cb5c6ed4e94b"
         },
         {
@@ -53,8 +53,13 @@
           "node_id": "6facaa5090e5e945"
         },
         {
+          "component": "Tool.record_metric",
+          "duration_ms": 0.0,
+          "node_id": "a091250e8fe46024"
+        },
+        {
           "component": "NervousSystem",
-          "duration_ms": 1.0,
+          "duration_ms": 0.0,
           "node_id": "daea58ba4c73a942"
         },
         {
@@ -66,11 +71,6 @@
           "component": "Tool.route_request",
           "duration_ms": 0.0,
           "node_id": "ee8971105e503a67"
-        },
-        {
-          "component": "Tool.record_metric",
-          "duration_ms": 0.0,
-          "node_id": "a091250e8fe46024"
         }
       ],
       "slow_operations": []
