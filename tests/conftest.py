@@ -29,24 +29,24 @@ from pathlib import Path
 
 import pytest  # noqa: E402
 
-try:
-    from .conftest_factories import *
-except ImportError:
-    # conftest_factories might not be available, that's ok
-    pass
-
-try:
-    from .conftest_isolation import (
-        temp_directory,
-        isolated_cwd,
-        clean_env,
-        IsolatedTest,
-        capture_global_state,
-        restore_global_state,
-    )
-except ImportError:
-    # conftest_isolation might not be available, that's ok
-    pass
+# NOTE: Disabled imports due to collection-time import conflicts
+# Tests needing these fixtures should import directly
+# try:
+#     from .conftest_factories import *
+# except ImportError:
+#     pass
+#
+# try:
+#     from .conftest_isolation import (
+#         temp_directory,
+#         isolated_cwd,
+#         clean_env,
+#         IsolatedTest,
+#         capture_global_state,
+#         restore_global_state,
+#     )
+# except ImportError:
+#     pass
 
 # Suppress lifecycle trace loggers that emit ~100K lines during import/execution.
 # These overwhelm pytest's capture system causing OSError: Bad file descriptor.
@@ -56,33 +56,8 @@ for _name in ["adg", "lifecycle"]:
     _lg.propagate = False
 
 
-# Phase 0.2: Session-scoped ADG fixture to eliminate redundant scans
-@pytest.fixture(scope="session")
-def cached_adg_scan():
-    """Pre-computed ADG scan shared across all test modules.
-
-    Eliminates redundant 3-5 minute scans per test session.
-    Cache file: tests/.adg_cache.json
-    """
-    # Delay import to avoid collection-time import conflicts
-    try:
-        from agentic_core.adg.extraction.static_scanner import ADGStaticScanner
-    except ImportError as e:
-        pytest.skip(f"ADG scanner not available: {e}")
-
-    cache_path = Path("tests/.adg_cache.json")
-    scanner = ADGStaticScanner(repo_root=Path("."), cache_path=cache_path, include_tests=True)
-
-    # Use a consistent commit SHA for cache hits across sessions
-    result = scanner.scan(commit_sha="phase0-session-scan")
-
-    print("\n=== ADG Session Cache ===")
-    print(f"Cache file: {cache_path}")
-    print(f"Nodes: {len(result.nodes)}")
-    print(f"Edges: {len(result.edges)}")
-    print(f"Digest: {result.digest[:16]}...")
-
-    return result
+# NOTE: cached_adg_scan fixture removed due to import conflicts during full collection.
+# Tests needing ADG scan should import ADGStaticScanner directly or use test-local fixtures.
 
 
 # Shared fixtures for test reconstruction

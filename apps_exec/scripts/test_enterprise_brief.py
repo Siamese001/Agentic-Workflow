@@ -55,9 +55,9 @@ def _assert_repo_signals(result: object) -> None:
 
 async def test_single_persona_brief():
     """Test brief generation for a single persona."""
-    print("\n" + "="*60)
+    print("\n" + "=" * 60)
     print("TEST 1: Single Persona Brief Generation")
-    print("="*60)
+    print("=" * 60)
 
     personas = ["recruiter"]
     source_content = """
@@ -81,19 +81,21 @@ async def test_single_persona_brief():
     _assert(result.generation_results.get("agents_executed", 0) > 0, "No agents executed")
     _assert_repo_signals(result)
 
-    print(f"\n✅ Brief Generation Complete!")
+    print("\n✅ Brief Generation Complete!")
     print(f"   Trace ID: {result.trace_id}")
     print(f"   Status: {result.status}")
     print(f"   Report Path: {result.report_path}")
 
-    print(f"\n📊 Results:")
+    print("\n📊 Results:")
     print(f"   Personas Decomposed: {len(result.decompositions)}")
     print(f"   Total Sections: {result.production_plan.get('total_sections', 0)}")
     print(f"   Agents Executed: {result.generation_results.get('agents_executed', 0)}")
 
-    print(f"\n🛡️ Validation:")
+    print("\n🛡️ Validation:")
     print(f"   Validations Run: {len(result.validation_results)}")
-    print(f"   Gates Passed: {sum(1 for g in result.gate_results if g.get('gates_passed'))}/{len(result.gate_results)}")
+    print(
+        f"   Gates Passed: {sum(1 for g in result.gate_results if g.get('gates_passed'))}/{len(result.gate_results)}"
+    )
     print(f"   Avg Quality Score: {result.avg_quality_score:.0%}")
 
     return result
@@ -101,26 +103,26 @@ async def test_single_persona_brief():
 
 async def test_multi_persona_briefs():
     """Test brief generation for multiple personas."""
-    print("\n" + "="*60)
+    print("\n" + "=" * 60)
     print("TEST 2: Multi-Persona Brief Generation")
-    print("="*60)
+    print("=" * 60)
 
     personas = ["recruiter", "cto", "board"]
     source_content = """
     Enterprise AI Platform with the following characteristics:
-    
+
     Architecture:
     - Layered agentic architecture (L0-L6)
     - Deterministic execution via lifecycle contracts
     - Static analysis enforcement (pre-commit hooks)
     - Quality gates across 5 dimensions
-    
+
     Capabilities:
     - Multi-agent orchestration with dependency management
     - Evidence-grounded brief generation
     - Full traceability and auditability
     - Enterprise-grade governance
-    
+
     Performance:
     - 10ms policy validation latency
     - 95% test coverage
@@ -143,11 +145,11 @@ async def test_multi_persona_briefs():
     _assert(len(result.execution_log) > 0, "Execution log should not be empty")
     _assert_repo_signals(result)
 
-    print(f"\n✅ Multi-Persona Briefs Complete!")
+    print("\n✅ Multi-Persona Briefs Complete!")
     print(f"   Trace ID: {result.trace_id}")
     print(f"   Personas: {', '.join(d.audience_persona for d in result.decompositions)}")
 
-    print(f"\n📋 Execution Summary:")
+    print("\n📋 Execution Summary:")
     for entry in result.execution_log:
         if entry["status"] == "complete":
             print(f"   ✅ {entry['step']}: {entry['status']}")
@@ -157,9 +159,9 @@ async def test_multi_persona_briefs():
 
 async def test_with_style_retrieval():
     """Test brief generation with style retrieval and benchmarking."""
-    print("\n" + "="*60)
+    print("\n" + "=" * 60)
     print("TEST 3: Brief Generation with Style Retrieval")
-    print("="*60)
+    print("=" * 60)
 
     orchestrator = EnterpriseBriefOrchestrator()
 
@@ -186,7 +188,10 @@ async def test_with_style_retrieval():
 
     result = await orchestrator.process(request)
 
-    print(f"\n✅ Brief with Style Retrieval Complete!")
+    _assert(len(result.similar_briefs) >= 1, "Expected at least one similar brief")
+    _assert_repo_signals(result)
+
+    print("\n✅ Brief with Style Retrieval Complete!")
     print(f"   Trace ID: {result.trace_id}")
     print(f"   Similar Briefs Found: {len(result.similar_briefs)}")
     print(f"   Style Benchmarks: {list(result.style_benchmarks.keys())}")
@@ -203,9 +208,9 @@ async def test_with_style_retrieval():
 
 async def test_full_enterprise_pipeline():
     """Test the full enterprise pipeline with all features."""
-    print("\n" + "="*60)
+    print("\n" + "=" * 60)
     print("TEST 4: Full Enterprise Pipeline")
-    print("="*60)
+    print("=" * 60)
 
     orchestrator = EnterpriseBriefOrchestrator()
 
@@ -228,19 +233,19 @@ async def test_full_enterprise_pipeline():
         target_personas=["recruiter", "cto", "svp_eng", "board"],
         source_content="""
         Comprehensive platform documentation including:
-        
+
         Technical Architecture:
         - Layered design with 7 layers (L0-L6)
         - Clear separation of concerns
         - Deterministic execution model
         - Full observability and traceability
-        
+
         Governance & Quality:
         - Static analysis at commit time
         - 5-dimensional quality scorecard
         - Automated regression detection
         - Compliance validation (L5)
-        
+
         Performance Metrics:
         - 10ms policy validation
         - 95% test coverage
@@ -255,7 +260,12 @@ async def test_full_enterprise_pipeline():
 
     result = await orchestrator.process(request)
 
-    print(f"\n📋 Execution Log:")
+    _assert(result.report_path != "", "Report path is empty")
+    _assert(result.manifest_path != "", "Manifest path is empty")
+    _assert(result.generation_results.get("agents_executed", 0) > 0, "No agents executed")
+    _assert_repo_signals(result)
+
+    print("\n📋 Execution Log:")
     for entry in result.execution_log:
         status_icon = "✅" if entry["status"] == "complete" else "⏳" if entry["status"] == "start" else "⚠️"
         print(f"   {status_icon} {entry['step']}: {entry['status']}")
@@ -263,11 +273,11 @@ async def test_full_enterprise_pipeline():
             for key, value in entry["details"].items():
                 print(f"      - {key}: {value}")
 
-    print(f"\n📁 Generated Artifacts:")
+    print("\n📁 Generated Artifacts:")
     print(f"   Report: {result.report_path}")
     print(f"   Manifest: {result.manifest_path}")
 
-    print(f"\n📊 Final Metrics:")
+    print("\n📊 Final Metrics:")
     print(f"   Status: {result.status}")
     print(f"   Execution Time: {result.total_execution_time_ms}ms")
     print(f"   Avg Quality Score: {result.avg_quality_score:.0%}")
@@ -277,9 +287,9 @@ async def test_full_enterprise_pipeline():
 
 async def main():
     """Run all E2E tests."""
-    print("\n" + "🚀 "*30)
+    print("\n" + "🚀 " * 30)
     print("ENTERPRISE BRIEF GENERATION SYSTEM - E2E TEST SUITE")
-    print("🚀 "*30)
+    print("🚀 " * 30)
 
     results = []
     failures: list[str] = []
@@ -304,16 +314,23 @@ async def main():
     except Exception as exc:
         print(f"\n❌ Test failed: {exc}")
         import traceback
+
         traceback.print_exc()
         failures.append(str(exc))
 
     # Summary
-    print("\n" + "="*60)
+    print("\n" + "=" * 60)
     print("TEST SUMMARY")
-    print("="*60)
+    print("=" * 60)
 
     for name, result in results:
-        status = "✅ PASS" if result.status == "complete" else "⚠️ PARTIAL" if result.status == "partial" else "❌ FAIL"
+        status = (
+            "✅ PASS"
+            if result.status == "complete"
+            else "⚠️ PARTIAL"
+            if result.status == "partial"
+            else "❌ FAIL"
+        )
         print(f"{status}: {name}")
         print(f"      Trace: {result.trace_id[:16]}")
         print(f"      Quality: {result.avg_quality_score:.0%}")
