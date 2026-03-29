@@ -69,3 +69,32 @@ def neutralize_prompt(
         injection_detected=bool(detected_patterns),
         detection_patterns=sorted(detected_patterns),
     )
+
+
+class AssemblyInjectionNeutralizer:
+    """Wrapper class for assembly-level prompt injection neutralization.
+
+    Provides a class-based interface for the neutralize_prompt function,
+    allowing it to be instantiated and configured with custom patterns.
+    """
+
+    def __init__(
+        self, patterns: Sequence[InjectionPattern] | None = None
+    ) -> None:
+        """Initialize with optional custom patterns.
+
+        Args:
+            patterns: Custom injection patterns. If None, uses DEFAULT_PATTERNS.
+        """
+        self.patterns = patterns if patterns is not None else DEFAULT_PATTERNS
+
+    def neutralize(self, prompt: str) -> NeutralizationResult:
+        """Neutralize a prompt using configured patterns.
+
+        Args:
+            prompt: The raw prompt to sanitize.
+
+        Returns:
+            NeutralizationResult with sanitized prompt and detection info.
+        """
+        return neutralize_prompt(prompt, self.patterns)
