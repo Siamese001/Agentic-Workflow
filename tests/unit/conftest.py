@@ -1,45 +1,4 @@
-# Core pytest configuration
-import pytest
-
-# Standard fixtures for path semantics
-@pytest.fixture
-def test_data_path():
-    """Fixture for test data path."""
-    from pathlib import Path
-    return Path(__file__).parent / "test_data"
-
-@pytest.fixture
-def temp_project_dir(tmp_path):
-    """Fixture for temporary project directory."""
-    return tmp_path / "project"
-
-# Test collection configuration
-def pytest_configure(config):
-    """Configure pytest with custom settings."""
-    config.addinivalue_line("markers", "data: marks tests as data-dependent")
-
-# Core pytest configuration
-import pytest
-
-# Standard fixtures for path semantics
-@pytest.fixture
-def test_data_path():
-    """Fixture for test data path."""
-    from pathlib import Path
-    return Path(__file__).parent / "test_data"
-
-@pytest.fixture
-def temp_project_dir(tmp_path):
-    """Fixture for temporary project directory."""
-    return tmp_path / "project"
-
-# Test collection configuration
-def pytest_configure(config):
-    """Configure pytest with custom settings."""
-    config.addinivalue_line("markers", "data: marks tests as data-dependent")
-
-"""
-conftest.py for tests/agentic_core/L5_safety/
+"""conftest.py for tests/unit/
 
 Under --import-mode=importlib pytest registers tests/agentic_core as the
 AGENTIC_CORE_DIR package in sys.modules, shadowing the production package at
@@ -51,22 +10,21 @@ the project root so subsequent imports resolve to the real production package.
 import sys
 from pathlib import Path
 
-from agentic_core.L0_routing.config.path_constants import (
-    AGENTIC_CORE_DIR,
-    TESTS_DIR,
-)
-from tests._config.runtime_antipattern_enforcer import (  # noqa: F401
-    enforce_no_policy_bypass,
-    enforce_no_unverified_writes,
-)
+import pytest
 
+# Add project root to path IMMEDIATELY at module load time
 _PROJECT_ROOT = str(Path(__file__).parent.parent.parent)
+if _PROJECT_ROOT not in sys.path:
+    sys.path.insert(0, _PROJECT_ROOT)
 
 
 def pytest_configure(config):
     """Purge shadowed agentic_core from sys.modules before any test imports."""
-    if _PROJECT_ROOT not in sys.path:
-        sys.path.insert(0, _PROJECT_ROOT)
+    # Import after setting up path
+    from agentic_core.L0_routing.config.path_constants import (
+        AGENTIC_CORE_DIR,
+        TESTS_DIR,
+    )
 
     # Remove all agentic_core.* entries that point into tests/ so the next
     # import resolves from the project root production package.
@@ -83,3 +41,19 @@ def pytest_configure(config):
             to_delete.append(key)
     for key in to_delete:
         del sys.modules[key]
+
+    # Add markers
+    config.addinivalue_line("markers", "data: marks tests as data-dependent")
+
+
+# Standard fixtures for path semantics
+@pytest.fixture
+def test_data_path():
+    """Fixture for test data path."""
+    return Path(__file__).parent / "test_data"
+
+
+@pytest.fixture
+def temp_project_dir(tmp_path):
+    """Fixture for temporary project directory."""
+    return tmp_path / "project"

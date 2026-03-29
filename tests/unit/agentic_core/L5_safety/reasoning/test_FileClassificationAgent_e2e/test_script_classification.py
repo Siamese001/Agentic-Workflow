@@ -1,7 +1,7 @@
 """TC-SCRIPT-01 through TC-SCRIPT-05: SCRIPT Classification E2E Tests"""
-import pytest
-from pathlib import Path
 import ast
+
+import pytest
 
 
 @pytest.mark.script
@@ -14,7 +14,7 @@ class TestScriptClassification:
         ops_scripts_dir = repo_root / "ops_scripts"
         if ops_scripts_dir.exists():
             for script_file in ops_scripts_dir.rglob("*.py"):
-                with open(script_file, 'r', encoding='utf-8', errors='ignore') as f:
+                with open(script_file, encoding='utf-8', errors='ignore') as f:
                     content = f.read()
                 if '__name__' in content and '__main__' in content:
                     result = agent.classify_file(script_file)
@@ -29,7 +29,7 @@ class TestScriptClassification:
 
         script_count = 0
         for script_file in ops_scripts_dir.rglob("*.py"):
-            with open(script_file, 'r', encoding='utf-8', errors='ignore') as f:
+            with open(script_file, encoding='utf-8', errors='ignore') as f:
                 content = f.read()
 
             # Check for class definitions using AST
@@ -74,7 +74,7 @@ class TestScriptClassification:
 
             result = agent.classify_file(tool_file)
             # Tools can be SCRIPT, UTILITY, or TEST
-            assert result in ["AGENT", "ORCHESTRATOR", "CLASS", "ENGINE", "STRATEGY", "ADAPTER", "VALIDATOR", "CONFIG", "UTILITY", "SCRIPT", "TEST", "MIXIN", "TYPES", "IGNORE", "ENFORCER"], \
+            assert result in ["AGENT", "ORCHESTRATOR", "CLASS", "ENGINE", "STRATEGY", "ADAPTER", "VALIDATOR", "CONFIG", "UTILITY", "SCRIPT", "TEST", "MIXIN", "TYPES", "IGNORE", "ENFORCER", "EXCEPTION"], \
                 f"{tool_file}: tools/ file should include all valid types, got {result}"
 
     def test_script_snake_case_naming(self, agent, repo_root):

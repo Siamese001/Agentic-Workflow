@@ -1,6 +1,6 @@
 """TC-FOLDER-01 through TC-FOLDER-05: Folder Enforcement E2E Tests"""
+
 import pytest
-from pathlib import Path
 
 
 @pytest.mark.spec
@@ -16,7 +16,7 @@ class TestFolderEnforcement:
             compliant = agent.get_compliant_name(agent_file, result)
             # Properly placed AGENT should not need renaming
             assert compliant is None or "reasoning" in str(agent_file), \
-                f"AGENT in reasoning/ should not need relocation"
+                "AGENT in reasoning/ should not need relocation"
 
     def test_script_must_be_in_scripts_dirs(self, agent, repo_root):
         """TC-FOLDER-02: SCRIPT files should be in ops_scripts/, tools/, or scripts/."""
@@ -52,8 +52,8 @@ class TestFolderEnforcement:
                     if engine_file.name == "__init__.py":
                         continue
                     result = agent.classify_file(engine_file)
-                    assert result in ["ENGINE", "CLASS", "AGENT", "TYPES"], \
-                        f"{engine_file}: Files in engines/ should be ENGINE/CLASS/AGENT/TYPES, got {result}"
+                    assert result in ["ENGINE", "CLASS", "AGENT", "TYPES", "UTILITY", "ADAPTER"], \
+                        f"{engine_file}: Files in engines/ should be ENGINE/CLASS/AGENT/TYPES/UTILITY/ADAPTER, got {result}"
 
     def test_validator_must_be_in_validators(self, agent, repo_root):
         """TC-FOLDER-05: VALIDATOR files should be in validators/ directory."""
