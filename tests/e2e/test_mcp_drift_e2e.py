@@ -364,12 +364,14 @@ class TestMCPDriftMonitorE2E:
         with open(config_path, "w") as f:
             json.dump(sample_mcp_config, f)
 
+        # Create fresh store to ensure isolation
         store = MCPL6ObservabilityStore(
             MCPL6PersistenceConfig(base_dir=temp_observability_dir)
         )
 
         monitor = MCPDriftMonitor(
-            config_path=config_path
+            config_path=config_path,
+            store=store
         )
 
         # Start with baseline
@@ -390,12 +392,14 @@ class TestMCPDriftMonitorE2E:
         with open(config_path, "w") as f:
             json.dump(sample_mcp_config, f)
 
+        # Create fresh store to ensure isolation
         store = MCPL6ObservabilityStore(
             MCPL6PersistenceConfig(base_dir=temp_observability_dir)
         )
 
         with MCPDriftMonitor(
-            config_path=config_path
+            config_path=config_path,
+            store=store
         ) as monitor:
             assert monitor.baseline is not None
             report = monitor.check_drift()
@@ -405,12 +409,14 @@ class TestMCPDriftMonitorE2E:
         """Test updating baseline after drift detection."""
         config_path = Path(temp_observability_dir) / "mcp_config.json"
 
+        # Create fresh store to ensure isolation
         store = MCPL6ObservabilityStore(
             MCPL6PersistenceConfig(base_dir=temp_observability_dir)
         )
 
         monitor = MCPDriftMonitor(
-            config_path=config_path
+            config_path=config_path,
+            store=store
         )
 
         # Start with original config
