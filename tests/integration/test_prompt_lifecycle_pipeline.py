@@ -11,7 +11,7 @@ from unittest.mock import MagicMock, patch
 
 from agentic_core.L0_routing.engines.assembly_stage import AirlockAssembler
 from agentic_core.L0_routing.engines.prompt_bom_builder import PromptBOMBuilder
-from agentic_core.L0_routing.types.instruction_packet_types import InstructionPacket
+from agentic_core.L0_routing.types.l0_instruction_packet import InstructionPacket
 from agentic_core.prompt_governance.contracts import (
     CompiledPromptArtifact,
     PromptBOM,

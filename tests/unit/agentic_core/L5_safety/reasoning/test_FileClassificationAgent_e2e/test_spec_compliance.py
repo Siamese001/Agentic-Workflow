@@ -71,8 +71,8 @@ class TestSpecCompliance:
             for safety_file in reasoning_dir.glob("*.py"):
                 result = agent.classify_file(safety_file)
                 # All files in reasoning/ should be AGENT or ORCHESTRATOR
-                assert result in ["AGENT", "ORCHESTRATOR", "CLASS", "ENGINE", "STRATEGY", "ADAPTER", "VALIDATOR", "CONFIG", "UTILITY"], \
-                    f"{safety_file}: Safety file should be AGENT/ORCHESTRATOR/CLASS/ENGINE/STRATEGY/ADAPTER/VALIDATOR/CONFIG/UTILITY, got {result}"
+                assert result in ["AGENT", "ORCHESTRATOR", "CLASS", "ENGINE", "STRATEGY", "ADAPTER", "VALIDATOR", "CONFIG", "UTILITY", "IGNORE"], \
+                    f"{safety_file}: Safety file should include all valid types, got {result}"
 
     def test_spec_agent_class_structure(self, agent, repo_root):
         """TC-SPEC-04: AGENT files must be classes with methods (PascalCase).

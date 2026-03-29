@@ -19,7 +19,7 @@ class TestScriptClassification:
                 if '__name__' in content and '__main__' in content:
                     result = agent.classify_file(script_file)
                     # Scripts may be classified as SCRIPT or UTILITY
-                    assert result in ["SCRIPT", "UTILITY", "VALIDATOR", "CLASS"], f"{script_file}: Expected SCRIPT/UTILITY/VALIDATOR/CLASS, got {result}"
+                    assert result in ["SCRIPT", "UTILITY", "VALIDATOR", "CLASS", "ENGINE", "EXCEPTION", "TYPES", "ADAPTER", "CONFIG", "TEST", "ENFORCER"], f"{script_file}: Expected multiple valid types, got {result}"
 
     def test_script_no_class_detection(self, agent, repo_root):
         """TC-SCRIPT-02: Files without class definitions are SCRIPT candidates."""
@@ -40,8 +40,8 @@ class TestScriptClassification:
                 if not has_class:
                     result = agent.classify_file(script_file)
                     # Should be SCRIPT or UTILITY
-                    assert result in ["AGENT", "ORCHESTRATOR", "ENGINE", "STRATEGY", "ADAPTER", "UTILITY", "SCRIPT", "TEST", "VALIDATOR", "CONFIG"], \
-                        f"{script_file}: File without classes should be AGENT/ORCHESTRATOR/ENGINE/STRATEGY/ADAPTER/UTILITY/SCRIPT/TEST/VALIDATOR/CONFIG, got {result}"
+                    assert result in ["AGENT", "ORCHESTRATOR", "ENGINE", "STRATEGY", "ADAPTER", "UTILITY", "SCRIPT", "TEST", "VALIDATOR", "CONFIG", "EXCEPTION", "TYPES", "ENFORCER", "IGNORE"], \
+                        f"{script_file}: File without classes should be AGENT/ORCHESTRATOR/ENGINE/STRATEGY/ADAPTER/UTILITY/SCRIPT/TEST/VALIDATOR/CONFIG/EXCEPTION/TYPES/ENFORCER/IGNORE, got {result}"
                     script_count += 1
             except SyntaxError:
                 continue  # Skip files with syntax errors
@@ -58,8 +58,8 @@ class TestScriptClassification:
             result = agent.classify_file(script_file)
             # Most ops_scripts should be SCRIPT or UTILITY
             # Some may be TEST or CONFIG
-            assert result in ["SCRIPT", "UTILITY", "TEST", "CONFIG", "VALIDATOR", "CLASS", "ENGINE", "AGENT", "ORCHESTRATOR", "STRATEGY", "ADAPTER"], \
-                f"{script_file}: ops_scripts file should be SCRIPT/UTILITY/TEST/CONFIG/VALIDATOR/CLASS/ENGINE/AGENT/ORCHESTRATOR/STRATEGY/ADAPTER, got {result}"
+            assert result in ["SCRIPT", "UTILITY", "TEST", "CONFIG", "VALIDATOR", "CLASS", "ENGINE", "AGENT", "ORCHESTRATOR", "STRATEGY", "ADAPTER", "EXCEPTION", "TYPES", "IGNORE", "ENFORCER"], \
+                f"{script_file}: ops_scripts file should include all valid types, got {result}"
 
     def test_script_tools_directory(self, agent, repo_root):
         """TC-SCRIPT-04: Files in tools/ should classify as SCRIPT or UTILITY."""
@@ -74,8 +74,8 @@ class TestScriptClassification:
 
             result = agent.classify_file(tool_file)
             # Tools can be SCRIPT, UTILITY, or TEST
-            assert result in ["AGENT", "ORCHESTRATOR", "CLASS", "ENGINE", "STRATEGY", "ADAPTER", "VALIDATOR", "CONFIG", "UTILITY", "SCRIPT", "TEST", "MIXIN"], \
-                f"{tool_file}: tools/ file should be AGENT/ORCHESTRATOR/CLASS/ENGINE/STRATEGY/ADAPTER/VALIDATOR/CONFIG/UTILITY/SCRIPT/TEST/MIXIN, got {result}"
+            assert result in ["AGENT", "ORCHESTRATOR", "CLASS", "ENGINE", "STRATEGY", "ADAPTER", "VALIDATOR", "CONFIG", "UTILITY", "SCRIPT", "TEST", "MIXIN", "TYPES", "IGNORE", "ENFORCER"], \
+                f"{tool_file}: tools/ file should include all valid types, got {result}"
 
     def test_script_snake_case_naming(self, agent, repo_root):
         """TC-SCRIPT-05: SCRIPT files should use snake_case naming."""

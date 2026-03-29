@@ -180,6 +180,230 @@ from agentic_core.L0_routing.scripts._ssot_validation_artifacts import (
     _record_healing_action,
 )
 
+# =============================================================================
+# RETRIEVAL INFRASTRUCTURE (L1-L5) - Phase 2 Implementation
+# =============================================================================
+# Per Agentic Retrieval Models v9.md:
+# - L1: Exact cache for identical queries
+# - L2: Semantic cache for similar queries  
+# - L3: Agentic RAG for knowledge retrieval
+# - L4: Agentic action for tool invocation
+# - L5: LLM fallback for generation
+# =============================================================================
+
+# Retrieval integration imports (guarded for backward compatibility)
+try:
+    from agentic_core.L3_orchestration.engines.l4e_retrieval_integration import (
+        RetrievalContextComposer,
+    )
+    _L4E_RETRIEVAL_AVAILABLE = True
+except ImportError:
+    _L4E_RETRIEVAL_AVAILABLE = False
+    RetrievalContextComposer = None
+
+try:
+    from system_learning.engines.retrieval_profile_manager import (
+        get_active_retrieval_profile,
+        RetrievalProfile,
+    )
+    _RETRIEVAL_PROFILE_AVAILABLE = True
+except ImportError:
+    _RETRIEVAL_PROFILE_AVAILABLE = False
+    get_active_retrieval_profile = None
+    RetrievalProfile = None
+
+try:
+    from system_learning.engines.enhanced_rag_retrieval_cache import (
+        EnhancedRAGRetrievalCache,
+        RetrievalTier,
+    )
+    _ENHANCED_RAG_AVAILABLE = True
+except ImportError:
+    _ENHANCED_RAG_AVAILABLE = False
+    EnhancedRAGRetrievalCache = None
+    RetrievalTier = None
+
+# In-memory caches for L1/L2 (module-level singletons)
+_L1_EXACT_CACHE: dict[str, dict] = {}
+_L2_SEMANTIC_CACHE: dict[str, dict] = {}
+
+
+def _retrieve_execution_context(
+    query_text: str,
+    now_utc: int,
+    state_mgr: Any | None = None,
+) -> dict[str, Any]:
+    """Retrieve execution context using L1-L5 retrieval architecture.
+    
+    Per Agentic Retrieval Models v9.md - Multi-tier retrieval:
+    - L1: Exact cache (hash-based lookup, O(1))
+    - L2: Semantic cache (similarity > threshold)
+    - L3: Agentic RAG (ChromaDB query)
+    - L4: Agentic action (tool invocation)
+    - L5: LLM fallback (signal to caller)
+    
+    Args:
+        query_text: The query to retrieve context for
+        now_utc: Current timestamp (UTC epoch seconds)
+        state_mgr: Optional RuntimeStateManager for stateful retrieval
+        
+    Returns:
+        Dict with keys:
+        - tier: str (L1, L2, L3, L4, L5)
+        - context: Any (retrieved context or None)
+        - metadata: dict (retrieval metadata)
+    """
+    import hashlib
+    
+    # Generate query hash for L1 cache lookup
+    query_hash = hashlib.sha256(query_text.encode()).hexdigest()[:16]
+    
+    # L1: Exact cache lookup
+    if query_hash in _L1_EXACT_CACHE:
+        cached = _L1_EXACT_CACHE[query_hash]
+        _emit_reads_through("execute_ssot", "l1_exact_cache", query_hash)
+        return {
+            "tier": "L1",
+            "context": cached.get("context"),
+            "metadata": {
+                "cache_hit": True,
+                "query_hash": query_hash,
+                "cached_at": cached.get("cached_at"),
+                "tier": "L1",
+            }
+        }
+    
+    # L2: Semantic cache lookup (if available)
+    if _ENHANCED_RAG_AVAILABLE and EnhancedRAGRetrievalCache is not None:
+        try:
+            cache = EnhancedRAGRetrievalCache()
+            semantic_result = cache.query(query_text, tier=RetrievalTier.SEMANTIC)
+            
+            if semantic_result and semantic_result.score >= THRESHOLD:
+                _emit_reads_through("execute_ssot", "l2_semantic_cache", query_hash)
+                return {
+                    "tier": "L2", 
+                    "context": semantic_result,
+                    "metadata": {
+                        "cache_hit": True,
+                        "query_hash": query_hash,
+                        "similarity_score": semantic_result.score,
+                        "tier": "L2",
+                    }
+                }
+        except Exception as e:
+            logging.debug(f"[Retrieval] L2 semantic cache query failed: {e}")
+    
+    # L3: Agentic RAG query (if available)
+    if _ENHANCED_RAG_AVAILABLE and EnhancedRAGRetrievalCache is not None:
+        try:
+            cache = EnhancedRAGRetrievalCache()
+            rag_result = cache.query(query_text, tier=RetrievalTier.RAG)
+            
+            if rag_result and rag_result.documents:
+                _emit_pulls_context("execute_ssot", "l3_agentic_rag", query_hash)
+                
+                # Store in L2 cache for future hits
+                _L2_SEMANTIC_CACHE[query_hash] = {
+                    "context": rag_result,
+                    "cached_at": now_utc,
+                }
+                
+                return {
+                    "tier": "L3",
+                    "context": rag_result,
+                    "metadata": {
+                        "cache_hit": False,
+                        "query_hash": query_hash,
+                        "document_count": len(rag_result.documents),
+                        "tier": "L3",
+                    }
+                }
+        except Exception as e:
+            logging.debug(f"[Retrieval] L3 RAG query failed: {e}")
+    
+    # L4: Agentic action (if retrieval profile supports actions)
+    if _RETRIEVAL_PROFILE_AVAILABLE and get_active_retrieval_profile is not None:
+        try:
+            profile = get_active_retrieval_profile(now_utc)
+            
+            if profile and hasattr(profile, 'supports_actions') and profile.supports_actions:
+                _emit_routes_through("execute_ssot", "l4_agentic_action", query_hash)
+                return {
+                    "tier": "L4",
+                    "context": None,
+                    "metadata": {
+                        "cache_hit": False,
+                        "query_hash": query_hash,
+                        "action_available": True,
+                        "tier": "L4",
+                    }
+                }
+        except Exception as e:
+            logging.debug(f"[Retrieval] L4 agentic action check failed: {e}")
+    
+    # L5: Fallback - signal to caller
+    _emit_escalates_to_human("execute_ssot", "l5_fallback", "retrieval_gap")
+    return {
+        "tier": "L5",
+        "context": None,
+        "metadata": {
+            "cache_hit": False,
+            "query_hash": query_hash,
+            "reason": "no_retrieval_result",
+            "tier": "L5",
+        }
+    }
+
+
+def _store_in_retrieval_cache(
+    query_text: str,
+    context: Any,
+    now_utc: int,
+    tier: str = "L2",
+) -> None:
+    """Store context in retrieval cache for future L1/L2 hits.
+    
+    Args:
+        query_text: The query text to cache
+        context: The context to store
+        now_utc: Current timestamp
+        tier: Cache tier (L1 for exact, L2 for semantic)
+    """
+    import hashlib
+    
+    query_hash = hashlib.sha256(query_text.encode()).hexdigest()[:16]
+    
+    if tier == "L1":
+        _L1_EXACT_CACHE[query_hash] = {
+            "context": context,
+            "cached_at": now_utc,
+        }
+        _emit_stores_embedding("execute_ssot", "l1_cache", query_hash)
+    else:
+        _L2_SEMANTIC_CACHE[query_hash] = {
+            "context": context,
+            "cached_at": now_utc,
+        }
+        _emit_stores_embedding("execute_ssot", "l2_cache", query_hash)
+
+
+def _get_retrieval_telemetry() -> dict[str, Any]:
+    """Get retrieval telemetry for L4 observability.
+    
+    Returns:
+        Dict with cache statistics
+    """
+    return {
+        "l1_cache_size": len(_L1_EXACT_CACHE),
+        "l2_cache_size": len(_L2_SEMANTIC_CACHE),
+        "retrieval_available": {
+            "l4e_retrieval": _L4E_RETRIEVAL_AVAILABLE,
+            "retrieval_profile": _RETRIEVAL_PROFILE_AVAILABLE,
+            "enhanced_rag": _ENHANCED_RAG_AVAILABLE,
+        }
+    }
+
 
 def _get_sovereign_excluded_folders():
     from agentic_core.L5_safety.config.structure_blueprint.ssot import SOVEREIGN_EXCLUDED_FOLDERS
@@ -577,6 +801,205 @@ def _fire_meta_learning_intake(state_mgr: "RuntimeStateManager", now_utc: int) -
         logging.debug("[MetaLearning] Pipeline not yet available (pre-Wave 0B): %s", _imp_err)
     except (AttributeError, ValueError, RuntimeError) as _pl_err:
         logging.warning("[MetaLearning] Pipeline run failed (non-fatal): %s", _pl_err)
+
+
+# =============================================================================
+# SYSTEM LEARNING HARD DEPENDENCIES - Phase 3 Implementation
+# =============================================================================
+# These imports are REQUIRED (not guarded) - system learning is mandatory
+# =============================================================================
+
+# Hard imports for required system learning components
+from system_learning.engines.healing_outcome_aggregator import HealingOutcomeAggregator
+from system_learning.engines.healing_outcome_intake_adapter import HealingOutcomeIntakeAdapter
+from system_learning.engines.in_memory_healing_outcome_intake_store import InMemoryHealingOutcomeIntakeStore
+from system_learning.types.healing_outcome_types import HealingOutcomeEvent
+from system_learning.types.healing_outcome_intake_types import HealingOutcomeIntakeRecord
+from system_learning.pipelines.pipeline_factory import build_pipeline_config, build_pipeline_deps
+from system_learning.adapters.system_learning_memory_bridge import get_sl_memory_bridge
+
+
+class MetaLearningError(Exception):
+    """Exception raised when meta-learning pipeline fails (required path)."""
+    pass
+
+
+class MetaLearningResult:
+    """Result from meta-learning intake pipeline."""
+    
+    def __init__(
+        self,
+        proposals: tuple = (),
+        records_persisted: int = 0,
+        faiss_vectors_stored: int = 0,
+    ):
+        self.proposals = proposals
+        self.records_persisted = records_persisted
+        self.faiss_vectors_stored = faiss_vectors_stored
+    
+    @classmethod
+    def empty(cls) -> "MetaLearningResult":
+        return cls(proposals=(), records_persisted=0, faiss_vectors_stored=0)
+
+
+def _fire_meta_learning_intake_required(
+    state_mgr: "RuntimeStateManager",
+    now_utc: int,
+    repo_root: Path,
+) -> MetaLearningResult:
+    """REQUIRED version: Wire HealingOutcomeIntakeAdapter and MetaLearningPipeline.
+    
+    This is the REQUIRED (non-guarded) version of meta-learning intake.
+    If this function fails, execute_ssot MUST NOT complete successfully.
+    
+    Per Meta Learning Pipeline v2.md - 4-stage columnar flow:
+    1. Detection: Identify learning surfaces from healing actions
+    2. Assessment: Aggregate outcomes via HealingOutcomeAggregator
+    3. Integration: Persist to intake store and FAISS index
+    4. Synthesis: Generate proposals via meta_learning_pipeline
+    
+    Args:
+        state_mgr: Runtime state manager with healing_actions
+        now_utc: Current timestamp (UTC epoch seconds)
+        repo_root: Repository root path
+        
+    Returns:
+        MetaLearningResult with proposals and persistence stats
+        
+    Raises:
+        MetaLearningError: If any required step fails
+    """
+    _emit_records_execution_trace("execute_ssot", "L4_STATE", "meta_learning_intake_start")
+    
+    # Extract healing actions from state (REQUIRED field)
+    healing_actions: list[dict] = state_mgr.state.get("healing_actions", [])
+    
+    if not healing_actions:
+        logging.debug("[MetaLearning] No healing actions to process")
+        return MetaLearningResult.empty()
+    
+    # Step 1: Initialize store and adapter (REQUIRED - no fallback)
+    try:
+        store = InMemoryHealingOutcomeIntakeStore()
+        adapter = HealingOutcomeIntakeAdapter(store=store)
+        _emit_snapshots_state("execute_ssot", "intake_store", "store_initialized")
+    except Exception as e:
+        raise MetaLearningError(f"Failed to initialize intake store/adapter: {e}") from e
+    
+    # Step 2: Build aggregator with healing actions
+    try:
+        aggregator = HealingOutcomeAggregator(window_size=max(len(healing_actions), 1))
+        
+        for action in healing_actions:
+            event = HealingOutcomeEvent(
+                healer_id=action.get("agent", "unknown"),
+                tier=action.get("tier") or action.get("routing_tier") or "L5",
+                failure_type=action.get("type") or action.get("routing_tier") or "UNKNOWN",
+                success=action.get("outcome", "SUCCESS") == "SUCCESS",
+                timestamp_utc=now_utc,
+                trace_id=action.get("trace_id", ""),
+            )
+            aggregator.ingest(event)
+        
+        _emit_records_healing_outcome("execute_ssot", "aggregator", f"ingested_{len(healing_actions)}")
+    except Exception as e:
+        raise MetaLearningError(f"Failed to aggregate healing actions: {e}") from e
+    
+    # Step 3: Build and persist record (REQUIRED)
+    try:
+        record = adapter.build_record(
+            aggregator=aggregator,
+            created_utc=now_utc,
+            source="execute_ssot_required",
+        )
+        adapter.persist_record(record)
+        _emit_stores_embedding("execute_ssot", "intake_record", f"persisted_{store.count()}")
+    except Exception as e:
+        raise MetaLearningError(f"Failed to build/persist intake record: {e}") from e
+    
+    # Step 4: Run meta-learning pipeline (REQUIRED)
+    try:
+        cfg = build_pipeline_config(proposal_only=True)  # Non-mutating proposals only
+        deps = build_pipeline_deps(
+            repo_root=repo_root,
+            healing_outcome_intake_adapter=adapter,
+        )
+        
+        from system_learning.pipelines.meta_learning_pipeline import run_pipeline as _ml_run_pipeline
+        
+        proposals = _ml_run_pipeline(
+            now_utc=now_utc,
+            window_start_utc=now_utc - 3600,
+            window_end_utc=now_utc,
+            cfg=cfg,
+            deps=deps,
+        )
+        
+        _emit_orchestrates_workflow("execute_ssot", "meta_learning_pipeline", f"proposals_{len(proposals)}")
+    except Exception as e:
+        raise MetaLearningError(f"Meta-learning pipeline failed: {e}") from e
+    
+    # Step 5: Persist proposals to JSONL (REQUIRED)
+    try:
+        if proposals:
+            _prop_path = repo_root / "logs" / "proposals" / "threshold_proposals.jsonl"
+            _prop_path.parent.mkdir(parents=True, exist_ok=True)
+            
+            import json as _json_prop
+            
+            with open(_prop_path, "a", encoding="utf-8") as _pf:
+                for _p in proposals:
+                    _pf.write(
+                        _json_prop.dumps(
+                            {
+                                "schema_version": 2,  # v2 = required path
+                                "created_utc": now_utc,
+                                "source": "execute_ssot_required",
+                                "payload": _p.canonical_bytes().decode("utf-8", errors="replace"),
+                            },
+                            sort_keys=True,
+                            separators=(",", ":"),
+                        )
+                        + "\n"
+                    )
+        
+        _emit_writes_via_uwg("execute_ssot", "proposals", f"written_{len(proposals)}")
+    except Exception as e:
+        raise MetaLearningError(f"Failed to persist proposals: {e}") from e
+    
+    # Step 6: Persist phase outcomes to system learning memory bridge (REQUIRED)
+    try:
+        bridge = get_sl_memory_bridge()
+        
+        phase_outcomes = {
+            "schema_version": 2,
+            "source": "execute_ssot_required",
+            "healing_actions_processed": len(healing_actions),
+            "proposals_generated": len(proposals),
+            "records_persisted": store.count(),
+            "timestamp_utc": now_utc,
+        }
+        
+        import json as _json_outcomes
+        
+        bridge.persist_execute_ssot_phase_outcomes(
+            phase_name="execute_ssot",
+            outcomes_json=_json_outcomes.dumps(phase_outcomes, sort_keys=True),
+            timestamp_utc=now_utc,
+            trace_id=f"execute_ssot_{now_utc}",
+        )
+        
+        _emit_records_telemetry_event("execute_ssot", "phase_outcomes", "persisted_to_sl_bridge")
+    except Exception as e:
+        # Log but don't fail - telemetry is best-effort
+        logging.warning("[MetaLearning] Phase outcome persistence failed: %s", e)
+    
+    _emit_records_execution_trace("execute_ssot", "L4_STATE", "meta_learning_intake_complete")
+    
+    return MetaLearningResult(
+        proposals=proposals,
+        records_persisted=store.count(),
+    )
 
 
 def _get_l5_agent_roster():

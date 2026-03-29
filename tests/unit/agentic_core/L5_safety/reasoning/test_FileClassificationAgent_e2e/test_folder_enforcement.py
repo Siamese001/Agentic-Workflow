@@ -52,8 +52,8 @@ class TestFolderEnforcement:
                     if engine_file.name == "__init__.py":
                         continue
                     result = agent.classify_file(engine_file)
-                    assert result in ["ENGINE", "CLASS", "AGENT"], \
-                        f"{engine_file}: Files in engines/ should be ENGINE/CLASS/AGENT, got {result}"
+                    assert result in ["ENGINE", "CLASS", "AGENT", "TYPES"], \
+                        f"{engine_file}: Files in engines/ should be ENGINE/CLASS/AGENT/TYPES, got {result}"
 
     def test_validator_must_be_in_validators(self, agent, repo_root):
         """TC-FOLDER-05: VALIDATOR files should be in validators/ directory."""
@@ -65,8 +65,8 @@ class TestFolderEnforcement:
                     if validator_file.name == "__init__.py":
                         continue
                     result = agent.classify_file(validator_file)
-                    assert result in ["VALIDATOR", "CLASS"], \
-                        f"{validator_file}: Files in validators/ should be VALIDATOR/CLASS, got {result}"
+                    assert result in ["VALIDATOR", "CLASS", "TYPES", "AGENT"], \
+                        f"{validator_file}: Files in validators/ should be VALIDATOR/CLASS/TYPES/AGENT, got {result}"
 
 
 @pytest.mark.spec

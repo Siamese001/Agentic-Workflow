@@ -12,7 +12,7 @@ import hmac
 import unittest
 from typing import Any
 
-from agentic_core.L0_routing.types.instruction_packet_types import InstructionPacket
+from agentic_core.L0_routing.types.l0_instruction_packet import InstructionPacket
 from agentic_core.prompt_governance.contracts import (
     CompiledPromptArtifact,
     PromptBOM,
