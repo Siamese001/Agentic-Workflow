@@ -61,8 +61,6 @@ class TestGovernanceAgentSource:
     # TODO: Set up test data for has_module_level_heal_function
     test_data = {}  # Replace with actual test data
 
-    def test_placeholder_execution(mod):
-    """Placeholder test for execution validation."""
     # Arrange
     input_data = {}  # Replace with actual test data
 
