@@ -357,6 +357,17 @@ class MCPDriftRecorder:
         try:
             with open(config_file, encoding="utf-8") as f:
                 config_data = json.load(f)
+        except (PermissionError, OSError) as e:
+            snapshot = MCPConfigSnapshot(
+                snapshot_id=snapshot_id,
+                timestamp=timestamp,
+                source_file=str(config_file),
+                servers={},
+                metadata={"error": f"Permission denied: {e}", "path": str(config_file)},
+            )
+            self._snapshots.append(snapshot)
+            _emit_captures_runtime_anomaly("mcp_drift", "l6_obs", "permission_denied")
+            return snapshot
         except json.JSONDecodeError as e:
             snapshot = MCPConfigSnapshot(
                 snapshot_id=snapshot_id,

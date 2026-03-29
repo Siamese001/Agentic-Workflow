@@ -77,6 +77,16 @@ User may explicitly override tier: "this is just a simple fix" → T1. "full ana
 
 **Mock discipline:** Mocks ONLY for: external services that cannot run locally, hardware interfaces, filesystem permissions in CI. Mocks MUST NOT bypass validation, signature checks, routing gates, replay enforcement, or side-effect guards.
 
+**Permission Testing Guidelines (Cross-Platform):**
+- **NO platform-specific skips** — `@pytest.mark.skipif(os.name == 'nt')` or `pytest.skip("Unix only")` are FORBIDDEN for permission tests
+- **Use mocking for permission errors** — Mock `builtins.open`, `pathlib.Path.mkdir`, or `os.chmod` to simulate permission denied scenarios
+- **Verify graceful error handling** — Tests should verify that implementation returns error metadata (e.g., `{"error": "Permission denied"}`) rather than crashing
+- **Cross-platform permission simulation:**
+  - File read permission denied: `patch("builtins.open", side_effect=PermissionError(13, "Permission denied"))`
+  - Directory creation denied: `patch.object(Path, "mkdir", side_effect=PermissionError(13, "Permission denied"))`
+  - Disk full simulation: `patch.object(Path, "mkdir", side_effect=OSError(28, "No space left on device"))`
+- **Required assertions:** Verify that error metadata contains permission-related keywords; verify system continues operating after permission errors; verify recovery works after permissions are restored
+
 **Ingress-path rule:** Tests MUST target the real entrypoint or enforcement choke point. Test doubles MUST NOT bypass validation, routing gates, replay enforcement, or side-effect guards.
 
 **Three quality gates (enforced in priority order):**
