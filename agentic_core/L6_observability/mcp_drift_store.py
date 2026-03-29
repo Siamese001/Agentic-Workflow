@@ -416,9 +416,6 @@ Integrates with Layer 6 observability for comprehensive monitoring.
         report = self._recorder.detect_drift(self._baseline, current)
         self._store.save_drift_report(report)
 
-        # Update baseline to current for next check
-        self._baseline = current
-
         return report
 
     @property
