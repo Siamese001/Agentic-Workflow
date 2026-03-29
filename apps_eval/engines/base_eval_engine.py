@@ -8,7 +8,7 @@ Mirrors apps_exec BaseExecEngine pattern with eval-specific contracts.
 from __future__ import annotations
 
 import logging
-from abc import ABCMeta, abstractmethod
+from abc import ABC, abstractmethod
 from typing import Any
 
 try:
