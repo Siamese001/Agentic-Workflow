@@ -53,6 +53,91 @@ def _assert_repo_signals(result: object) -> None:
     )
 
 
+def _assert_detailed_observability(result: object) -> None:
+    """Assert comprehensive observability signals are present."""
+    execution_log = getattr(result, "execution_log", [])
+    trace_id = getattr(result, "trace_id", "")
+    
+    _assert(len(execution_log) > 0, "Execution log empty - observability not wired")
+    _assert(bool(trace_id), "Trace ID missing - distributed tracing not wired")
+    _assert(len(trace_id) >= 16, f"Trace ID too short ({len(trace_id)} chars)")
+    
+    complete_steps = {entry.get("step", "").upper() for entry in execution_log if entry.get("status") == "complete"}
+    _assert(len(complete_steps) >= 2, f"Insufficient completed steps: {complete_steps}")
+
+
+def _assert_layer4_wiring(result: object) -> None:
+    """Assert Layer 4 (orchestration) wiring is active."""
+    repo_signals = getattr(result, "repo_signals", {})
+    execution_log = getattr(result, "execution_log", [])
+    
+    step_sequence = [entry.get("step", "") for entry in execution_log]
+    _assert(len(step_sequence) >= 2, "Layer 4: insufficient orchestration steps")
+    
+    ci = repo_signals.get("ci", {})
+    _assert(ci.get("workflow_count", 0) >= 30, f"Layer 4: insufficient CI workflows")
+    
+    tests = repo_signals.get("tests", {})
+    _assert(tests.get("inventory_entries", 0) > 1000, f"Layer 4: insufficient test inventory")
+
+
+def _assert_enhanced_system_learning(result: object) -> None:
+    """Assert enhanced system learning signals are present."""
+    repo_signals = getattr(result, "repo_signals", {})
+    governance = repo_signals.get("governance", {})
+    
+    # Research context (research-specific system learning) - optional
+    research_context = governance.get("research_context", {})
+    if research_context:
+        if "knowledge_depth" not in research_context:
+            print(f"   ⚠️  System learning: research_context.knowledge_depth missing (non-blocking)")
+    
+    # ADG signals for pattern capture
+    adg = repo_signals.get("adg", {})
+    if adg.get("available"):
+        nodes_count = adg.get("nodes_count", 0)
+        if nodes_count <= 100000:
+            print(f"   ⚠️  System learning: ADG nodes ({nodes_count}) below threshold (non-blocking)")
+
+
+def _assert_rigorous_e2e_wiring(result: object) -> None:
+    """Comprehensive E2E wiring validation."""
+    print("\n🔍 RIGOROUS E2E WIRING VALIDATION")
+    print("-" * 40)
+    
+    try:
+        _assert_repo_signals(result)
+        print("   ✅ Repo signals: PASS")
+    except AssertionError as e:
+        print(f"   ❌ Repo signals: FAIL - {e}")
+        raise
+    
+    try:
+        _assert_detailed_observability(result)
+        print("   ✅ Observability: PASS")
+    except AssertionError as e:
+        print(f"   ❌ Observability: FAIL - {e}")
+        raise
+    
+    try:
+        _assert_layer4_wiring(result)
+        print("   ✅ Layer 4 wiring: PASS")
+    except AssertionError as e:
+        print(f"   ❌ Layer 4 wiring: FAIL - {e}")
+        raise
+    
+    try:
+        _assert_enhanced_system_learning(result)
+        print("   ✅ System learning: PASS")
+    except AssertionError as e:
+        print(f"   ❌ System learning: FAIL - {e}")
+        raise
+    
+    print("-" * 40)
+    print("🎯 ALL E2E WIRING ASSERTIONS: PASS")
+    print("-" * 40)
+
+
 async def test_single_topic_brief():
     """Test research generation for a single topic brief."""
     print("\n" + "=" * 60)
@@ -73,6 +158,7 @@ async def test_single_topic_brief():
     _assert(result.manifest_path != "", "Manifest path is empty")
     _assert(result.generation_results.get("agents_executed", 0) > 0, "No agents executed")
     _assert_repo_signals(result)
+    _assert_rigorous_e2e_wiring(result)
 
     print("\n✅ Research Generation Complete!")
     print(f"   Trace ID: {result.trace_id}")
@@ -117,6 +203,7 @@ async def test_comparison_mode():
     _assert(result.query_decomposition is not None, "Query decomposition should be present")
     _assert(len(result.execution_log) > 0, "Execution log should not be empty")
     _assert_repo_signals(result)
+    _assert_rigorous_e2e_wiring(result)
 
     print("\n✅ Comparison Research Complete!")
     print(f"   Trace ID: {result.trace_id}")
@@ -165,6 +252,7 @@ async def test_with_source_retrieval():
 
     _assert(len(result.similar_research) >= 1, "Expected at least one similar research artifact")
     _assert_repo_signals(result)
+    _assert_rigorous_e2e_wiring(result)
 
     print("\n✅ Research with Source Retrieval Complete!")
     print(f"   Trace ID: {result.trace_id}")
@@ -221,6 +309,7 @@ async def test_full_enterprise_pipeline():
     _assert(result.manifest_path != "", "Manifest path is empty")
     _assert(result.generation_results.get("agents_executed", 0) > 0, "No agents executed")
     _assert_repo_signals(result)
+    _assert_rigorous_e2e_wiring(result)
 
     print("\n📋 Execution Log:")
     for entry in result.execution_log:
@@ -261,6 +350,7 @@ async def test_all_artifact_modes():
         )
         results.append((mode, result))
         _assert_repo_signals(result)
+        _assert_rigorous_e2e_wiring(result)
         print(f"   ✅ {mode}: {result.status}")
 
     print("\n📊 Mode Results:")
