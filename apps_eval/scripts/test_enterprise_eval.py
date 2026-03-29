@@ -27,6 +27,32 @@ logging.basicConfig(
 )
 
 
+def _assert(condition: bool, message: str) -> None:
+    if not condition:
+        raise AssertionError(message)
+
+
+def _assert_repo_signals(result: object) -> None:
+    repo_signals = getattr(result, "repo_signals", {})
+    _assert(bool(repo_signals), "repo_signals missing from enterprise result")
+
+    adg = repo_signals.get("adg", {})
+    tests = repo_signals.get("tests", {})
+    ci = repo_signals.get("ci", {})
+    governance = repo_signals.get("governance", {})
+
+    _assert(adg.get("available") is True, "ADG signal unavailable")
+    _assert(ci.get("workflow_count", 0) > 0, "No workflow definitions discovered")
+    _assert(
+        tests.get("inventory_available") or tests.get("surface_available"),
+        "Neither test inventory nor test surface artifact is available",
+    )
+    _assert(
+        governance.get("denominator_baseline_available") is True,
+        "Governance denominator baseline not detected",
+    )
+
+
 async def test_basic_evaluation():
     """Test basic evaluation flow."""
     print("\n" + "="*60)
@@ -66,17 +92,22 @@ async def test_basic_evaluation():
         output_dir="eval/test_output",
     )
 
-    print(f"\n✅ Evaluation Complete!")
+    _assert(result.report_path != "", "Report path is empty")
+    _assert(result.manifest_path != "", "Manifest path is empty")
+    _assert(result.evaluation_results.get("agents_executed", 0) > 0, "No agents executed")
+    _assert_repo_signals(result)
+
+    print("\n✅ Evaluation Complete!")
     print(f"   Trace ID: {result.trace_id}")
     print(f"   Status: {result.status}")
     print(f"   Report Path: {result.report_path}")
 
-    print(f"\n📊 Results:")
+    print("\n📊 Results:")
     print(f"   Components Decomposed: {result.test_plan.get('total_components', 0)}")
     print(f"   Agents Executed: {result.evaluation_results.get('agents_executed', 0)}")
     print(f"   Overall Score: {result.evaluation_results.get('overall_score', 0):.0%}")
 
-    print(f"\n🛡️ Validation:")
+    print("\n🛡️ Validation:")
     print(f"   Validation Passed: {result.validation_result.get('passed', False)}")
     print(f"   Gates Passed: {result.gate_result.get('gates_passed', False)}")
     print(f"   Quality Score: {result.validation_result.get('quality_score', 0):.0%}")
@@ -124,13 +155,16 @@ async def test_with_trend_analysis():
 
     result = await orchestrator.process(request)
 
-    print(f"\n✅ Evaluation with Trends Complete!")
+    _assert(len(result.similar_evaluations) >= 1, "Expected at least one similar evaluation")
+    _assert_repo_signals(result)
+
+    print("\n✅ Evaluation with Trends Complete!")
     print(f"   Trace ID: {result.trace_id}")
     print(f"   Similar Evaluations Found: {len(result.similar_evaluations)}")
     print(f"   Trends Analyzed: {len(result.trend_analysis)}")
 
     if result.trend_analysis:
-        print(f"\n📈 Trends:")
+        print("\n📈 Trends:")
         for dim, trend in result.trend_analysis.items():
             print(f"   {dim}: {trend['direction']} (slope: {trend['slope']:.3f})")
 
@@ -192,7 +226,7 @@ async def test_full_pipeline():
 
     result = await orchestrator.process(request)
 
-    print(f"\n📋 Execution Log:")
+    print("\n📋 Execution Log:")
     for entry in result.execution_log:
         status_icon = "✅" if entry["status"] == "complete" else "⏳" if entry["status"] == "start" else "⚠️"
         print(f"   {status_icon} {entry['step']}: {entry['status']}")
@@ -200,7 +234,7 @@ async def test_full_pipeline():
             for key, value in entry["details"].items():
                 print(f"      - {key}: {value}")
 
-    print(f"\n📁 Generated Artifacts:")
+    print("\n📁 Generated Artifacts:")
     print(f"   Report: {result.report_path}")
     print(f"   Manifest: {result.manifest_path}")
 
@@ -234,17 +268,19 @@ async def test_regression_detection():
         threshold=0.05,
     )
 
-    print(f"\n✅ Regression Analysis Complete!")
+    _assert(len(signals) >= 1, "Expected regression signals for reduced score sample")
+
+    print("\n✅ Regression Analysis Complete!")
     print(f"   Baseline Score: {baseline['overall_score']:.0%}")
     print(f"   Current Score: {current['overall_score']:.0%}")
     print(f"   Delta: {current['overall_score'] - baseline['overall_score']:.0%}")
 
     if signals:
-        print(f"\n⚠️  Regression Signals Detected:")
+        print("\n⚠️  Regression Signals Detected:")
         for sig in signals:
             print(f"   - {sig['type']}: {sig['dimension']} ({sig['severity']})")
     else:
-        print(f"\n✅ No regression signals detected")
+        print("\n✅ No regression signals detected")
 
     return {"signals": signals, "regression_detected": len(signals) > 0}
 
@@ -256,6 +292,7 @@ async def main():
     print("🚀 "*30)
 
     results = []
+    failures: list[str] = []
 
     try:
         # Test 1: Basic evaluation
@@ -278,6 +315,7 @@ async def main():
         print(f"\n❌ Test failed: {exc}")
         import traceback
         traceback.print_exc()
+        failures.append(str(exc))
 
     # Summary
     print("\n" + "="*60)
@@ -293,6 +331,9 @@ async def main():
         else:
             status = "✅ PASS" if result.get('regression_detected') else "✅ PASS"
             print(f"{status}: {name}")
+
+    if failures:
+        raise SystemExit(1)
 
     print("\n✨ All tests completed!")
     print("\nTo view generated reports, check: eval/test_output/")

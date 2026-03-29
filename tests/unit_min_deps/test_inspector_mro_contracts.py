@@ -50,85 +50,41 @@ class TestSubatomicTestingMixinInMRO:
 
     @pytest.mark.parametrize("module_path,class_name", INSPECTOR_SPECS, ids=[s[1] for s in INSPECTOR_SPECS])
     def test_subatomic_in_mro(self, module_path: str, class_name: str) -> None:
-        pass
-    """Test subatomic_in_mro contract compliance."""
-    # Arrange
-    # TODO: Set up contract parties and terms
-    contract_terms = {}  # Replace with actual contract terms
-
-    # Act
-    # TODO: Execute contract operations
-    contract_result = None  # Replace with actual contract operation
-
-    # Assert - Core Contract
-    assert contract_result is not None, "Contract operation should produce a result"
-    assert isinstance(contract_result, dict), "Contract result should be structured"
-    # TODO: Add specific contract assertions
-    # assert contract_result.get("enforced", False), "Contract terms should be enforced"
+        """Test subatomic_in_mro contract compliance."""
+        cls = _import_class(module_path, class_name)
+        from agentic_core.L5_safety.testing.subatomic_testing_mixin import SubatomicTestingMixin
+        assert SubatomicTestingMixin in cls.__mro__, f"{class_name} missing SubatomicTestingMixin"
 
     @pytest.mark.parametrize("module_path,class_name", INSPECTOR_SPECS, ids=[s[1] for s in INSPECTOR_SPECS])
     def test_subatomic_not_direct_base(self, module_path: str, class_name: str) -> None:
-        pass
-    """Test subatomic_not_direct_base contract compliance."""
-    # Arrange
-    # TODO: Set up contract parties and terms
-    contract_terms = {}  # Replace with actual contract terms
+        """Test subatomic_not_direct_base contract compliance."""
+        cls = _import_class(module_path, class_name)
+        from agentic_core.L5_safety.testing.subatomic_testing_mixin import SubatomicTestingMixin
+        assert SubatomicTestingMixin not in cls.__bases__, f"{class_name} should not list SubatomicTestingMixin as direct base"
 
-    # Act
-    # TODO: Execute contract operations
-    contract_result = None  # Replace with actual contract operation
 
-    # Assert - Core Contract
-    assert contract_result is not None, "Contract operation should produce a result"
-    assert isinstance(contract_result, dict), "Contract result should be structured"
-    # TODO: Add specific contract assertions
-    # assert contract_result.get("enforced", False), "Contract terms should be enforced"
 class TestNoDuplicatesInMRO:
     """Every class must appear exactly once in the MRO chain."""
 
     @pytest.mark.parametrize("module_path,class_name", INSPECTOR_SPECS, ids=[s[1] for s in INSPECTOR_SPECS])
     def test_no_mro_duplicates(self, module_path: str, class_name: str) -> None:
-        pass
-    """Test no_mro_duplicates contract compliance."""
-    # Arrange
-    # TODO: Set up contract parties and terms
-    contract_terms = {}  # Replace with actual contract terms
-
-    # Act
-    # TODO: Execute contract operations
-    contract_result = None  # Replace with actual contract operation
-
-    # Assert - Core Contract
-    assert contract_result is not None, "Contract operation should produce a result"
-    assert isinstance(contract_result, dict), "Contract result should be structured"
-    # TODO: Add specific contract assertions
-    # assert contract_result.get("enforced", False), "Contract terms should be enforced"
+        """Test no_mro_duplicates contract compliance."""
+        cls = _import_class(module_path, class_name)
+        mro = cls.__mro__
+        assert len(mro) == len(set(mro)), f"{class_name} has duplicate classes in MRO"
 
 
 class TestSovereignBaseAgentMRO:
     """SovereignBaseAgent must provide SubatomicTestingMixin and ConfigMixin to subclasses."""
 
     def test_sovereign_has_subatomic_testing_mixin(self) -> None:
-        pass
-    """Test sovereign_has_subatomic_testing_mixin contract compliance."""
-    # Arrange
-    # TODO: Set up contract parties and terms
-    contract_terms = {}  # Replace with actual contract terms
+        """Test that SovereignBaseAgent has SubatomicTestingMixin in MRO."""
+        from agentic_core.L5_safety.governance.sovereign_base_agent import SovereignBaseAgent
+        from agentic_core.L5_safety.testing.subatomic_testing_mixin import SubatomicTestingMixin
+        assert SubatomicTestingMixin in SovereignBaseAgent.__mro__, "SovereignBaseAgent missing SubatomicTestingMixin"
 
-    # Act
-    # TODO: Execute contract operations
-    contract_result = None  # Replace with actual contract operation
-    """Test sovereign_has_config_mixin contract compliance."""
-    # Arrange
-    # TODO: Set up contract parties and terms
-    contract_terms = {}  # Replace with actual contract terms
-
-    # Act
-    # TODO: Execute contract operations
-    contract_result = None  # Replace with actual contract operation
-
-    # Assert - Core Contract
-    assert contract_result is not None, "Contract operation should produce a result"
-    assert isinstance(contract_result, dict), "Contract result should be structured"
-    # TODO: Add specific contract assertions
-    # assert contract_result.get("enforced", False), "Contract terms should be enforced"
+    def test_sovereign_has_config_mixin(self) -> None:
+        """Test that SovereignBaseAgent has ConfigMixin in MRO."""
+        from agentic_core.L5_safety.governance.sovereign_base_agent import SovereignBaseAgent
+        from agentic_core.L5_safety.config.config_mixin import ConfigMixin
+        assert ConfigMixin in SovereignBaseAgent.__mro__, "SovereignBaseAgent missing ConfigMixin"

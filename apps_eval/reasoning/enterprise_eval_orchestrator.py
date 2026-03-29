@@ -22,29 +22,27 @@ from pathlib import Path
 from typing import Any
 
 from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-    LayerSegment,
-    _emit_records_execution_trace,
-    _emit_dispatches_agent,
-    _emit_coordinates_agents,
-    _emit_orchestrates_workflow,
     _emit_applies_guardrail,
-    _emit_validates_agent_capability,
     _emit_captures_pattern,
+    _emit_coordinates_agents,
+    _emit_dispatches_agent,
+    _emit_orchestrates_workflow,
+    _emit_records_execution_trace,
     _emit_stores_embedding,
+)
+from apps_eval.engines.evaluation_retrieval_engine import (
+    create_retrieval_engine,
 )
 
 # Import enterprise components
 from apps_eval.reasoning.criteria_decomposition_agent import (
-    CriteriaDecompositionAgent,
     CriteriaDecomposition,
-)
-from apps_eval.engines.evaluation_retrieval_engine import (
-    EvaluationRetrievalEngine,
-    create_retrieval_engine,
+    CriteriaDecompositionAgent,
 )
 from apps_eval.reasoning.evaluation_orchestrator import (
     MultiAgentEvaluationEngine,
 )
+from apps_eval.services.repo_signal_service import RepoSignalService
 from apps_eval.validators.evaluation_validator import (
     EvaluationValidator,
     ScoringGate,
@@ -68,6 +66,7 @@ class EnterpriseEvalRequest:
     # Configuration
     enable_retrieval: bool = True
     enable_validation: bool = True
+    enable_repo_signals: bool = True
     update_baseline: bool = False
     output_dir: str = "eval/enterprise"
     trace_id: str = ""
@@ -96,6 +95,7 @@ class EnterpriseEvalResult:
     # Retrieved context
     similar_evaluations: list[dict[str, Any]] = field(default_factory=list)
     trend_analysis: dict[str, Any] = field(default_factory=dict)
+    repo_signals: dict[str, Any] = field(default_factory=dict)
 
     # Evaluation results
     evaluation_results: dict[str, Any] = field(default_factory=dict)
@@ -129,6 +129,7 @@ class EnterpriseEvalOrchestrator:
     def __init__(self) -> None:
         # Initialize all subsystems
         self.retrieval_engine = create_retrieval_engine()
+        self.repo_signal_service = RepoSignalService()
         self.decomposition_agent = CriteriaDecompositionAgent()
         self.evaluation_engine = MultiAgentEvaluationEngine()
         self.validator = EvaluationValidator()
@@ -167,6 +168,17 @@ class EnterpriseEvalOrchestrator:
                 self._log_step(trace_id, "RETRIEVE", "complete", details={
                     "similar_found": len(similar),
                     "trends_analyzed": len(trends),
+                })
+
+            # === STEP 2B: CONTEXT ENRICHMENT (Repo Signals) ===
+            if request.enable_repo_signals:
+                self._log_step(trace_id, "ENRICH", "start")
+                repo_signals = await self._step_collect_repo_signals()
+                result.repo_signals = repo_signals
+                self._log_step(trace_id, "ENRICH", "complete", details={
+                    "adg_available": bool(repo_signals.get("adg", {}).get("available")),
+                    "workflow_count": repo_signals.get("ci", {}).get("workflow_count", 0),
+                    "test_inventory_entries": repo_signals.get("tests", {}).get("inventory_entries", 0),
                 })
 
             # === STEP 3: EXECUTE (L3 Orchestration) ===
@@ -299,6 +311,12 @@ class EnterpriseEvalOrchestrator:
 
         return results
 
+    async def _step_collect_repo_signals(self) -> dict[str, Any]:
+        """Step 2B: Collect production-like repo signals."""
+        _emit_records_execution_trace("enterprise", "step_collect_repo_signals", "start")
+        snapshot = self.repo_signal_service.collect()
+        return snapshot.as_dict()
+
     async def _step_validate(
         self,
         eval_results: dict[str, Any],
@@ -350,7 +368,7 @@ class EnterpriseEvalOrchestrator:
         """Write the evaluation report as markdown."""
         lines: list[str] = []
 
-        lines.append(f"# Enterprise Evaluation Report")
+        lines.append("# Enterprise Evaluation Report")
         lines.append(f"**Generated:** {datetime.now().strftime('%Y-%m-%d %H:%M')}")
         lines.append(f"**Trace ID:** `{result.trace_id}`")
         lines.append(f"**Status:** {result.status.upper()}")
@@ -397,6 +415,26 @@ class EnterpriseEvalOrchestrator:
             lines.append(f"- **Anomaly Flags:** {len(result.validation_result.get('anomaly_flags', []))}")
             lines.append("")
 
+        # Repository operational context
+        if result.repo_signals:
+            lines.append("## Repository Operational Signals")
+            lines.append("")
+            adg = result.repo_signals.get("adg", {})
+            tests = result.repo_signals.get("tests", {})
+            ci = result.repo_signals.get("ci", {})
+            governance = result.repo_signals.get("governance", {})
+
+            lines.append(f"- **ADG Available:** {'✅' if adg.get('available') else '❌'}")
+            lines.append(f"- **ADG Nodes/Edges:** {adg.get('nodes_count', 'N/A')} / {adg.get('edges_count', 'N/A')}")
+            lines.append(f"- **Test Inventory Entries:** {tests.get('inventory_entries', 0)}")
+            lines.append(f"- **Test Surface Entries:** {tests.get('surface_entries', 0)}")
+            lines.append(f"- **Workflow Definitions:** {ci.get('workflow_count', 0)}")
+            lines.append(f"- **CI Validation Log Lines:** {ci.get('ci_validation_lines', 0)}")
+            lines.append(
+                f"- **Governance Baseline:** {'✅' if governance.get('denominator_baseline_available') else '❌'}"
+            )
+            lines.append("")
+
         # Execution lineage
         lines.append("## Execution Lineage")
         lines.append("")
@@ -425,6 +463,7 @@ class EnterpriseEvalOrchestrator:
                 "violation_count": len(result.validation_result.get("violations", [])),
             },
             "gate_result": result.gate_result,
+            "repo_signals": result.repo_signals,
             "execution_log": result.execution_log,
         }
 
