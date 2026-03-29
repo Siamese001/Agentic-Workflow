@@ -245,7 +245,7 @@ class TestMCPDriftRecorderHardening:
 
         # Should detect env change even with nested structure
         assert report.has_drift is True
-        assert any(e.event_type == MCPDriftType.ENV_CHANGED for e in report.events)
+        assert any(e.drift_type == MCPDriftType.ENV_CHANGED for e in report.drift_events)
 
 
 class TestMCPL6ObservabilityStoreHardening:
@@ -280,8 +280,7 @@ class TestMCPL6ObservabilityStoreHardening:
             snapshot_id="test-snap-123",
             timestamp=time.time(),
             servers={},
-            active_servers=[],
-            server_count=0,
+            metadata={},
             config_hash="a" * 64
         )
 
@@ -333,8 +332,7 @@ class TestMCPL6ObservabilityStoreHardening:
                         snapshot_id=f"race-test-{i}-{threading.current_thread().name}",
                         timestamp=time.time(),
                         servers={},
-                        active_servers=[],
-                        server_count=0,
+                        metadata={},
                         config_hash="a" * 64
                     )
                     store.save_snapshot(snapshot)
@@ -401,8 +399,7 @@ class TestMCPDriftMonitorHardening:
 
         monitor = MCPDriftMonitor(
             config_path=tmp_path / "nonexistent.json",
-            store=store,
-            agent_id="test"
+            store=store
         )
 
         # Should raise error when starting with missing config
@@ -425,7 +422,7 @@ class TestMCPDriftMonitorHardening:
             }}}, f)
 
         store = MCPL6ObservabilityStore(MCPL6PersistenceConfig(base_dir=str(tmp_path)))
-        monitor = MCPDriftMonitor(config_path=config_path, store=store, agent_id="test")
+        monitor = MCPDriftMonitor(config_path=config_path, store=store)
 
         # Start monitoring
         monitor.start_monitoring()
@@ -449,7 +446,7 @@ class TestMCPDriftMonitorHardening:
 
         try:
             store = MCPL6ObservabilityStore(MCPL6PersistenceConfig(base_dir=str(tmp_path)))
-            monitor = MCPDriftMonitor(config_path=config_path, store=store, agent_id="test")
+            monitor = MCPDriftMonitor(config_path=config_path, store=store)
 
             with pytest.raises((PermissionError, IOError)):
                 monitor.start_monitoring()
@@ -471,7 +468,7 @@ class TestMCPDriftMonitorHardening:
             }}}, f)
 
         store = MCPL6ObservabilityStore(MCPL6PersistenceConfig(base_dir=str(tmp_path)))
-        monitor = MCPDriftMonitor(config_path=config_path, store=store, agent_id="test")
+        monitor = MCPDriftMonitor(config_path=config_path, store=store)
 
         # Start with valid config
         monitor.start_monitoring()
@@ -489,7 +486,7 @@ class TestMCPDriftMonitorHardening:
         config_path = tmp_path / "rapid.json"
 
         store = MCPL6ObservabilityStore(MCPL6PersistenceConfig(base_dir=str(tmp_path)))
-        monitor = MCPDriftMonitor(config_path=config_path, store=store, agent_id="test")
+        monitor = MCPDriftMonitor(config_path=config_path, store=store)
 
         # Start monitoring
         with open(config_path, "w") as f:
@@ -635,12 +632,11 @@ class TestResilienceAndRecovery:
             snapshot_id="valid-1",
             timestamp=time.time(),
             servers={"s1": MCPServerState(
-                name="s1", command="python", args=["s1.py"], env={},
-                capabilities=["tools"], deployment_mode="local", layer="L6",
-                enabled=True, server_hash="hash1"
+                name="s1", command="python", args=("s1.py",), env=tuple(),
+                capabilities=("tools",), target_layer="L6",
+                disabled=False, state_hash="hash1"
             )},
-            active_servers=["s1"],
-            server_count=1,
+            metadata={},
             config_hash="a" * 64
         )
 
@@ -659,7 +655,7 @@ class TestResilienceAndRecovery:
             json.dump({"mcpServers": {}}, f)
 
         store = MCPL6ObservabilityStore(MCPL6PersistenceConfig(base_dir=str(tmp_path)))
-        monitor = MCPDriftMonitor(config_path=config_path, store=store, agent_id="test")
+        monitor = MCPDriftMonitor(config_path=config_path, store=store)
 
         # Start monitoring
         monitor.start_monitoring()
