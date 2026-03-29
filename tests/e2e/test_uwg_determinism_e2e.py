@@ -27,6 +27,7 @@ import pytest
 from tests.e2e.conftest import (
     DeterminismValidator,
     Layer,
+    LayerBoundaryValidator,
     RobustnessResult,
     TestExecutionContext,
     record_test_result,

@@ -1,6 +1,7 @@
 """G-16-26: Telemetry consumer for System Learning telemetry integration.
 
 Read-only slice builder producing deterministic telemetry slices.
+Supports both legacy TelemetryStore and new OpenTelemetry span ingestion.
 
 Invariants:
   - No wall-clock, no env, no randomness
@@ -283,3 +284,69 @@ def consume_telemetry(
         window_end_utc=window_end_utc,
         events=tuple(sorted_events),
     )
+
+
+def ingest_otel_spans(
+    store: TelemetryStore,
+    spans: list[dict[str, Any]],
+) -> int:
+    """Ingest OpenTelemetry spans into telemetry store.
+    
+    Phase 2: Bridges OpenTelemetry spans to System Learning telemetry.
+    Converts span data to telemetry events for meta-learning analysis.
+    
+    Parameters
+    ----------
+    store : TelemetryStore
+        Telemetry store with span ingestion capability.
+    spans : list[dict[str, Any]]
+        OpenTelemetry span dictionaries from tracing adapter.
+        
+    Returns
+    -------
+    int
+        Number of spans ingested successfully.
+    """
+    if not spans:
+        return 0
+    
+    # Check if store supports span ingestion
+    if hasattr(store, 'ingest_spans'):
+        count = store.ingest_spans(spans)
+        _emit_records_telemetry_event(
+            "telemetry_consumer", "L4_STATE", "otel_span_ingestion",
+            ingested_count=count
+        )
+        return count
+    
+    # Fallback: stores without native span support
+    return 0
+
+
+def create_telemetry_consumer_with_otel(
+    max_buffer_size: int = 10000,
+) -> tuple[TelemetryStore, Any]:
+    """Create telemetry consumer with OpenTelemetry span store.
+    
+    Phase 2: Factory for creating integrated OTel + System Learning setup.
+    
+    Parameters
+    ----------
+    max_buffer_size : int
+        Maximum spans to retain in telemetry store buffer.
+        
+    Returns
+    -------
+    tuple[TelemetryStore, Any]
+        Telemetry store and consumer function ready for OTel integration.
+    """
+    from system_learning.stores import OpenTelemetrySpanStore
+    
+    store = OpenTelemetrySpanStore(max_buffer_size=max_buffer_size)
+    
+    _emit_records_telemetry_event(
+        "telemetry_consumer", "L4_STATE", "otel_consumer_created",
+        max_buffer_size=max_buffer_size
+    )
+    
+    return store, consume_telemetry

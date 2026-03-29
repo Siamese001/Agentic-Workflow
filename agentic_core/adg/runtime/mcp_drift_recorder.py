@@ -239,6 +239,7 @@ class MCPDriftReport:
     current_hash: str
     drift_events: list[MCPDriftEvent] = field(default_factory=list)
     detected_at: float = field(default_factory=time.time)
+    report_id: str = field(default_factory=lambda: f"mcp-drift-{uuid.uuid4().hex[:12]}")
 
     @property
     def has_drift(self) -> bool:
@@ -253,7 +254,13 @@ class MCPDriftReport:
         return sum(1 for e in self.drift_events if e.severity == MCPDriftSeverity.WARNING)
 
     @property
-    def total_events(self) -> int:
+    def max_severity(self) -> MCPDriftSeverity:
+        """Maximum severity among all drift events."""
+        if not self.drift_events:
+            return MCPDriftSeverity.INFO
+        severity_order = [MCPDriftSeverity.INFO, MCPDriftSeverity.WARNING, MCPDriftSeverity.CRITICAL]
+        max_idx = max(severity_order.index(e.severity) for e in self.drift_events)
+        return severity_order[max_idx]
         """Total number of drift events."""
         return len(self.drift_events)
 

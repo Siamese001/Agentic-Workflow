@@ -204,22 +204,30 @@ class TestMCPDriftRecorderE2E:
         assert snapshot.config_hash is not None  # Should still have hash
 
     def test_drift_with_missing_file(self, temp_observability_dir):
-        """Test handling of missing config file."""
-        recorder = MCPDriftRecorder(agent_id="test_agent")
+        """Test handling of missing config file - returns snapshot with error metadata."""
+        recorder = MCPDriftRecorder(agent_id="test")
 
-        with pytest.raises((FileNotFoundError, IOError)):
-            recorder.capture_snapshot(Path(temp_observability_dir) / "nonexistent.json")
+        # Should return snapshot with error metadata, not raise exception
+        snapshot = recorder.capture_snapshot(Path(temp_observability_dir) / "nonexistent.json")
+        assert snapshot is not None
+        assert "error" in snapshot.metadata
+        assert "not found" in snapshot.metadata["error"].lower()
+        assert snapshot.server_count == 0
 
     def test_drift_with_invalid_json(self, temp_observability_dir):
-        """Test handling of invalid JSON."""
+        """Test handling of invalid JSON - returns snapshot with error metadata."""
         config_path = Path(temp_observability_dir) / "invalid.json"
         with open(config_path, "w") as f:
             f.write("not valid json {{{")
 
-        recorder = MCPDriftRecorder(agent_id="test_agent")
+        recorder = MCPDriftRecorder(agent_id="test")
 
-        with pytest.raises(json.JSONDecodeError):
-            recorder.capture_snapshot(config_path)
+        # Should return snapshot with error metadata, not raise exception
+        snapshot = recorder.capture_snapshot(config_path)
+        assert snapshot is not None
+        assert "error" in snapshot.metadata
+        assert "parse" in snapshot.metadata["error"].lower() or "json" in snapshot.metadata["error"].lower()
+        assert snapshot.server_count == 0
 
 
 class TestMCPL6ObservabilityStoreE2E:
