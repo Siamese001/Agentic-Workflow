@@ -5,9 +5,11 @@ Tests for real-world planning scenarios, integration with planning workflows,
 and end-to-end functionality.
 """
 
-from pathlib import Path
-
 import pytest
+import json
+import time
+from pathlib import Path
+from typing import Dict, List, Any
 
 
 # Lazy imports to avoid collection-time conflicts
@@ -393,8 +395,10 @@ api/
 
             print(f"API refactor step {step['name']}: {estimate.total_projected_tokens:,} tokens")
 
-    def test_decorator_integration(self):
+    def test_decorator_integration(self, token_estimator_classes):
         """Test decorator integration with real workflow functions"""
+        require_token_budget, _ = token_estimator_classes
+        
         @require_token_budget(self.hook)
         def analyze_requirements(system_prompt, user_prompt, files, **kwargs):
             """Simulated requirements analysis function"""

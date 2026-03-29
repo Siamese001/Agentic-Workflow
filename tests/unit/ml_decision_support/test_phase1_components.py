@@ -5,11 +5,13 @@ Tests infrastructure, feature extractors, models, and inference components
 to ensure deterministic behavior, governance compliance, and reliability.
 """
 
-import tempfile
-from pathlib import Path
-from unittest.mock import Mock
-
 import pytest
+import tempfile
+import json
+import numpy as np
+from datetime import datetime
+from pathlib import Path
+from unittest.mock import Mock, patch
 
 
 # Lazy import fixtures to avoid collection-time conflicts
@@ -163,7 +165,7 @@ class TestModelRegistry:
             registry_path = Path(temp_dir) / "test_registry"
             yield ModelRegistry(registry_path)
 
-    def test_register_model(self, temp_registry):
+    def test_register_model(self, temp_registry, model_status):
         """Test model registration."""
         # Create a dummy model file
         with tempfile.NamedTemporaryFile(suffix='.pkl', delete=False) as f:
@@ -189,12 +191,12 @@ class TestModelRegistry:
             record = temp_registry.get_model(model_id)
             assert record is not None
             assert record.metadata.model_name == "test_model"
-            assert record.metadata.status == ModelStatus.DEVELOPMENT
+            assert record.metadata.status == model_status.DEVELOPMENT
 
         finally:
             model_path.unlink()
 
-    def test_promote_model(self, temp_registry):
+    def test_promote_model(self, temp_registry, model_status, decision_mode):
         """Test model promotion workflow."""
         # Register a model first
         with tempfile.NamedTemporaryFile(suffix='.pkl', delete=False) as f:
@@ -213,11 +215,11 @@ class TestModelRegistry:
                 created_by="test_user"
             )
 
-            # Promote to candidate
+            # Promote to candidate (SHADOW_ONLY -> ADVISORY is valid transition)
             success = temp_registry.promote_model(
                 model_id=model_id,
-                target_status=ModelStatus.CANDIDATE,
-                target_decision_mode=DecisionMode.SHADOW_ONLY,
+                target_status=model_status.CANDIDATE,
+                target_decision_mode=decision_mode.ADVISORY,
                 promoted_by="test_user",
                 justification="Ready for testing"
             )
@@ -226,13 +228,13 @@ class TestModelRegistry:
 
             # Verify promotion
             record = temp_registry.get_model(model_id)
-            assert record.metadata.status == ModelStatus.CANDIDATE
-            assert record.metadata.decision_mode == DecisionMode.SHADOW_ONLY
+            assert record.metadata.status == model_status.CANDIDATE
+            assert record.metadata.decision_mode == decision_mode.ADVISORY
 
         finally:
             model_path.unlink()
 
-    def test_invalid_promotion_path(self, temp_registry):
+    def test_invalid_promotion_path(self, temp_registry, model_status, decision_mode):
         """Test that invalid promotion paths are rejected."""
         # Register a model
         with tempfile.NamedTemporaryFile(suffix='.pkl', delete=False) as f:
@@ -254,8 +256,8 @@ class TestModelRegistry:
             # Try invalid promotion (development to production directly)
             success = temp_registry.promote_model(
                 model_id=model_id,
-                target_status=ModelStatus.PRODUCTION,
-                target_decision_mode=DecisionMode.ADVISORY,
+                target_status=model_status.PRODUCTION,
+                target_decision_mode=decision_mode.ADVISORY,
                 promoted_by="test_user",
                 justification="Invalid promotion"
             )
