@@ -10,9 +10,6 @@ import logging
 from dataclasses import dataclass, field
 from typing import Any
 
-from apps_shared.utils.observability_clients_util import create_span, record_exception, set_span_attribute
-from apps_shared.utils.Provider import Provider, get_client, get_instructor_client, get_litellm_completion
-
 from agentic_core.L2_execution.providers import get_clock
 from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     LayerSegment,
@@ -54,6 +51,13 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_verifies_boundary,
     _emit_verifies_policy,
     _emit_writes_via_uwg,
+)
+from apps_shared.utils.observability_clients_util import create_span, record_exception, set_span_attribute
+from apps_shared.utils.provider_util import (
+    Provider,
+    get_client,
+    get_instructor_client,
+    get_litellm_completion,
 )
 
 _emit_reads_policy_state("p0", "agent_executor_util", "policy_binding")

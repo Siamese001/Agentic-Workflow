@@ -693,15 +693,22 @@ class TestHITLFullLifecycle:
         escalated2 = agent.escalate(request.request_id)
         assert escalated2.current_escalation_level == 2
 
-        # Reject at final level
-        rejected = agent.reject(request.request_id, "director", "Too risky")
+        # After max escalation reached, escalate raises error
+        with pytest.raises(ValueError) as exc_info:
+            agent.escalate(request.request_id)  # Already at max
+        assert "maximum" in str(exc_info.value).lower() or "escalation level reached" in str(exc_info.value).lower()
+
+        # Create new request for rejection test
+        request2 = agent.create_approval_request("critical_operation")
+        # Reject immediately (without escalation)
+        rejected = agent.reject(request2.request_id, "director", "Too risky")
         assert rejected.status == ApprovalStatus.REJECTED
         assert rejected.resolved_by == "director"
 
-        # Verify max escalation reached
+        # Verify can't reject already rejected
         with pytest.raises(ValueError) as exc_info:
-            agent.escalate(request.request_id)  # Already rejected
-        assert "not found" in str(exc_info.value).lower() or "resolved" in str(exc_info.value).lower()
+            agent.reject(request2.request_id, "director", "Still risky")
+        assert "already resolved" in str(exc_info.value).lower()
 
     def test_hitl_gate_protected_paths(self) -> None:
         """Test HITL gate protected paths detection."""
