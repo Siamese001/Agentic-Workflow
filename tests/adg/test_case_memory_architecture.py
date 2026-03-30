@@ -68,6 +68,12 @@ class _FakeBridge:
         self.entities: list[dict] = []
         self.relations: list[tuple[str, str, str]] = []
 
+    def create_entity(self, entity_type: str, properties: dict) -> str:
+        """Create an entity and return its ID."""
+        entity_id = f"entity_{len(self.entities)}"
+        self.entities.append({"id": entity_id, "type": entity_type, **properties})
+        return entity_id
+
     def create_agent_entity(self, agent_name, agent_type=None, observations=None):
         self.entities.append({"name": agent_name, "type": agent_type, "obs": observations})
         return True
@@ -81,6 +87,10 @@ class _FakeBridge:
 
     def get_statistics(self):
         return {}
+
+    def commit(self):
+        """Commit pending changes."""
+        pass
 
 
 class TestCaseLibrary:

@@ -48,13 +48,17 @@ class GraphNeighborhoodMemory:
         self._bridge.commit()
         return True
 
-    def record_healer_success(self, entity_name: str, healer_name: str) -> bool:
+    def upsert_card(self, card: MemoryCard) -> bool:
+        """Alias for upsert for test compatibility."""
+        return self.upsert(card)
+
+    def record_healer_success(self, *, adg_entity_name: str, healer_name: str) -> bool:
         """Record a successful healing for an entity."""
-        if not entity_name:
+        if not adg_entity_name:
             return False
 
-        key = f"memory:{entity_name}"
-        existing = self._cache.get(entity_name)
+        key = f"memory:{adg_entity_name}"
+        existing = self._cache.get(adg_entity_name)
 
         if existing:
             # Create new card with updated history
@@ -67,19 +71,19 @@ class GraphNeighborhoodMemory:
                 policy_touchpoints=list(existing.policy_touchpoints),
                 embedding_snapshot=existing.embedding_snapshot,
             )
-            self._cache[entity_name] = new_card
+            self._cache[adg_entity_name] = new_card
             self._bridge.put(key, new_card.to_dict())
             self._bridge.commit()
 
         return True
 
-    def record_policy_touchpoint(self, entity_name: str, policy_ref: str) -> bool:
+    def record_policy_touchpoint(self, *, adg_entity_name: str, policy_ref: str) -> bool:
         """Record a policy touchpoint for an entity."""
-        if not entity_name:
+        if not adg_entity_name:
             return False
 
-        key = f"memory:{entity_name}"
-        existing = self._cache.get(entity_name)
+        key = f"memory:{adg_entity_name}"
+        existing = self._cache.get(adg_entity_name)
 
         if existing:
             # Create new card with updated touchpoints
@@ -92,7 +96,7 @@ class GraphNeighborhoodMemory:
                 policy_touchpoints=new_touchpoints,
                 embedding_snapshot=existing.embedding_snapshot,
             )
-            self._cache[entity_name] = new_card
+            self._cache[adg_entity_name] = new_card
             self._bridge.put(key, new_card.to_dict())
             self._bridge.commit()
 
@@ -101,3 +105,7 @@ class GraphNeighborhoodMemory:
     def get(self, entity_name: str) -> MemoryCard | None:
         """Retrieve a memory card by entity name."""
         return self._cache.get(entity_name)
+
+    def get_card(self, entity_name: str) -> MemoryCard | None:
+        """Alias for get for test compatibility."""
+        return self.get(entity_name)
