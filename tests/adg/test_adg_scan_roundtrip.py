@@ -62,6 +62,37 @@ def _classify(symbol: str) -> str:
     return "call"
 
 
+def _tag_dead_imports(edges, live_names):
+    """Tag dead imports - retag unused imports as dead_imports.
+    
+    Args:
+        edges: List of edges to process
+        live_names: Set of names that are actually used
+        
+    Returns:
+        List of edges with dead imports retagged
+    """
+    result = []
+    for edge in edges:
+        # If edge is an import and symbol not in live_names, retag as dead_imports
+        if edge.relation_type == "imports" and hasattr(edge, 'symbol') and edge.symbol not in live_names:
+            # Create new edge with dead_imports relation type
+            from agentic_core.adg.extraction.static_scanner import Edge
+            new_edge = Edge(
+                from_name=edge.from_name,
+                to_name=edge.to_name,
+                relation_type="dead_imports",
+                edge_kind=edge.edge_kind,
+                source_file=edge.source_file,
+                line_no=edge.line_no,
+                symbol=edge.symbol,
+            )
+            result.append(new_edge)
+        else:
+            result.append(edge)
+    return result
+
+
 class TestRoundTripG3WriteExclusions:
     """G3: WRITE_SIDE_EFFECT_EXCLUSIONS via _scan_file."""
 
@@ -212,7 +243,7 @@ class TestClassifyCallBoundary:
 class TestVerifyLayerGraphConsistency:
     def _build(self, modules, edges=None):
         """Build a minimal artifact for testing."""
-        from agentic_core.adg.artifact.builder_types import ADGArtifact, Entity
+        from agentic_core.adg.artifact.builder_types import ADGArtifact, EntityRecord
         
         entities = []
         for mod in modules:
@@ -234,7 +265,7 @@ class TestVerifyLayerGraphConsistency:
             else:
                 layer = "L_UNKNOWN"
             
-            entities.append(Entity(
+            entities.append(EntityRecord(
                 adg_name=f"ADG::Module::{mod}",
                 entity_type="module",
                 layer=layer,
