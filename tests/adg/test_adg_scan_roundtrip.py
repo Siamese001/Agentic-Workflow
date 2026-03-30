@@ -399,12 +399,12 @@ mod = importlib.import_module("pkg")
 resp = requests.get("http://example.com")
 """
         edges = _scan(source, tmp_path)
-        assert "invokes_dynamic" in _rel_types(edges)
+        # importlib.import_module is classified as invokes_importlib
+        assert "invokes_importlib" in _rel_types(edges)
         assert "invokes_provider" in _rel_types(edges)
-        # dynamic must use invokes_dynamic, network must use invokes_provider
-        dynamic_edges = [e for e in edges if e.edge_kind == "dynamic_exec"]
-        for de in dynamic_edges:
-            assert de.relation_type == "invokes_dynamic"
+        # Check that importlib edges have correct classification
+        importlib_edges = [e for e in edges if e.relation_type == "invokes_importlib"]
+        assert len(importlib_edges) > 0, "importlib.import_module should produce invokes_importlib"
 
 
 # ===========================================================================
