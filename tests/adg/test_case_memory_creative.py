@@ -4,6 +4,8 @@ from __future__ import annotations
 
 import pytest
 
+pytestmark = pytest.mark.serial
+
 hypothesis = pytest.importorskip("hypothesis", reason="hypothesis not installed")
 from hypothesis import given, settings  # noqa: E402
 from hypothesis import strategies as st

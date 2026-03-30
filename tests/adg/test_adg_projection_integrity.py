@@ -38,6 +38,8 @@ from pathlib import Path
 
 import pytest
 
+pytestmark = pytest.mark.serial
+
 # Lazy imports - loaded in fixture to avoid collection-time errors
 def _get_lifecycle_emitters():
     from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (

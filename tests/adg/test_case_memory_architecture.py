@@ -16,6 +16,8 @@ import os
 
 import pytest
 
+pytestmark = pytest.mark.serial
+
 from agentic_core.cache.redis_coordination_fabric import RedisCoordinationFabric
 from agentic_core.L4_state.memory.cache_admission_gate import CacheAdmissionGate
 
