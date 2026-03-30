@@ -72,8 +72,13 @@ def _make_selector(nodes_by_file, fan_in_covers, nodes):
 
 class TestSelectTestsSuccess:
     def test_empty_file_list_returns_empty(self):
-        result = sel.select_tests(["agentic_core/L0_routing/router.py"])
-        assert result == ["tests/unit/test_router.py"]
+        sel = _make_selector(
+            nodes_by_file={},
+            fan_in_covers={},
+            nodes={},
+        )
+        result = sel.select_tests([])
+        assert result == []
 
     def test_single_file_multiple_covers_returns_all(self):
         sel = _make_selector(
