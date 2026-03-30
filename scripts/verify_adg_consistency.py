@@ -1,0 +1,114 @@
+#!/usr/bin/env python3
+"""ADG Consistency Verification — Validate SQLite integrity and metrics."""
+
+from __future__ import annotations
+
+import sqlite3
+from pathlib import Path
+from typing import Any
+
+
+class ADGConsistencyVerifier:
+    """Verifier for ADG SQLite database consistency."""
+
+    def __init__(self, adg_dir: Path):
+        self.adg_dir = Path(adg_dir)
+        self.db_path = self._find_sqlite_db()
+        self.issues: list[str] = []
+
+    def _find_sqlite_db(self) -> Path | None:
+        """Find the SQLite database file in the ADG directory."""
+        if not self.adg_dir.exists():
+            return None
+        for pattern in ["*.sqlite", "*.db"]:
+            files = list(self.adg_dir.glob(pattern))
+            if files:
+                return files[0]
+        return None
+
+    def _verify_foreign_key_integrity(self) -> tuple[bool, list[str]]:
+        """Verify foreign key relationships between nodes and edges."""
+        if not self.db_path or not self.db_path.exists():
+            return False, ["No SQLite database found"]
+
+        conn = sqlite3.connect(self.db_path)
+        c = conn.cursor()
+
+        # Check for orphaned edges (src_id or dst_id not in nodes)
+        c.execute("""
+            SELECT COUNT(*) FROM edges e
+            LEFT JOIN nodes n1 ON e.src_id = n1.id
+            LEFT JOIN nodes n2 ON e.dst_id = n2.id
+            WHERE n1.id IS NULL OR n2.id IS NULL
+        """)
+        orphaned = c.fetchone()[0]
+        conn.close()
+
+        if orphaned > 0:
+            return False, [f"{orphaned} orphaned edges found"]
+        return True, []
+
+    def _verify_relation_type_consistency(self) -> tuple[bool, list[str]]:
+        """Verify all edges have valid relation types."""
+        if not self.db_path or not self.db_path.exists():
+            return False, ["No SQLite database found"]
+
+        conn = sqlite3.connect(self.db_path)
+        c = conn.cursor()
+
+        # Check for edges with NULL or empty relation_type
+        c.execute("""
+            SELECT COUNT(*) FROM edges
+            WHERE relation_type IS NULL OR relation_type = ''
+        """)
+        invalid = c.fetchone()[0]
+        conn.close()
+
+        if invalid > 0:
+            return False, [f"{invalid} edges with invalid relation_type"]
+        return True, []
+
+    def _verify_count_integrity(self) -> tuple[bool, list[str]]:
+        """Verify counts in meta table match actual counts."""
+        if not self.db_path or not self.db_path.exists():
+            return False, ["No SQLite database found"]
+
+        conn = sqlite3.connect(self.db_path)
+        c = conn.cursor()
+
+        # Get actual counts
+        c.execute("SELECT COUNT(*) FROM nodes")
+        actual_nodes = c.fetchone()[0]
+        c.execute("SELECT COUNT(*) FROM edges")
+        actual_edges = c.fetchone()[0]
+
+        # Get meta counts
+        c.execute("SELECT value FROM meta WHERE key = 'total_nodes'")
+        meta_nodes_row = c.fetchone()
+        c.execute("SELECT value FROM meta WHERE key = 'total_edges'")
+        meta_edges_row = c.fetchone()
+
+        conn.close()
+
+        issues = []
+        if meta_nodes_row and int(meta_nodes_row[0]) != actual_nodes:
+            issues.append(f"Node count mismatch: meta={meta_nodes_row[0]}, actual={actual_nodes}")
+        if meta_edges_row and int(meta_edges_row[0]) != actual_edges:
+            issues.append(f"Edge count mismatch: meta={meta_edges_row[0]}, actual={actual_edges}")
+
+        return len(issues) == 0, issues
+
+    def verify_all(self) -> tuple[bool, list[str]]:
+        """Run all consistency checks."""
+        checks = [
+            self._verify_foreign_key_integrity,
+            self._verify_relation_type_consistency,
+            self._verify_count_integrity,
+        ]
+
+        all_issues = []
+        for check in checks:
+            passed, issues = check()
+            all_issues.extend(issues)
+
+        return len(all_issues) == 0, all_issues
