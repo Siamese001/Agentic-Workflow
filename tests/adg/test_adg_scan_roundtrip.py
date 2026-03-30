@@ -269,9 +269,12 @@ class TestVerifyLayerGraphConsistency:
                 adg_name=f"ADG::Module::{mod}",
                 entity_type="module",
                 layer=layer,
+                identity_kind="structural",
+                confidence="HIGH",
+                resolved_path=mod,
             ))
         
-        return ADGArtifact(entities=entities, edges=edges or [])
+        return ADGArtifact(entities=entities, relations=edges or [])
 
     def test_clean_map_returns_empty(self):
         # Empty map returns empty list of errors
@@ -411,8 +414,45 @@ resp = requests.get("http://example.com")
 
 class TestTagDeadImports:
     def _make_import_edge(self, symbol: str):
-        pass
+        """Create a mock import edge for testing."""
+        from agentic_core.adg.extraction.static_scanner import Edge
+        return Edge(
+            from_name="test_module.py",
+            to_name=symbol,
+            relation_type="imports",
+            edge_kind="import",
+            source_file="test_module.py",
+            line_no=1,
+            symbol=symbol,
+        )
 
-    def test_dead_name_retagged(self):
+    def _make_call_edge(self, symbol: str):
+        """Create a mock call edge for testing."""
+        from agentic_core.adg.extraction.static_scanner import Edge
+        return Edge(
+            from_name="test_module.py",
+            to_name=symbol,
+            relation_type="calls",
+            edge_kind="call",
+            source_file="test_module.py",
+            line_no=2,
+            symbol=symbol,
+        )
+
+    def test_dead_import_retagged(self):
+        """Unused imports should be retagged as dead_imports."""
+        import_edge = self._make_import_edge("unused_module")
+        result = _tag_dead_imports([import_edge], {"foo"})  # foo is live, unused_module is dead
+        assert result[0].relation_type == "dead_imports", "Unused import should be retagged as dead_imports"
+
+    def test_live_import_not_retagged(self):
+        """Used imports should not be retagged."""
+        import_edge = self._make_import_edge("used_module")
+        result = _tag_dead_imports([import_edge], {"used_module"})  # used_module is live
+        assert result[0].relation_type == "imports", "Used import should not be retagged"
+
+    def test_call_edge_not_retagged(self):
+        """Non-import edges should not be retagged."""
+        call_edge = self._make_call_edge("foo")
         result = _tag_dead_imports([call_edge], {"foo"})
         assert result[0].relation_type == "calls", "Non-import edges must not be retagged"
