@@ -2,6 +2,11 @@
 
 Delegates evaluate_input/evaluate_output to GovernanceShieldAgent.
 Wired into LicSpineAdapter before/after ExecutionOrchestrator.execute().
+
+OpenTelemetry Integration:
+- Uses AppsTracingMixin for explicit span instrumentation
+- Emits execution traces for ADG registration
+- Supports distributed trace propagation
 """
 
 from __future__ import annotations
@@ -10,6 +15,12 @@ import logging
 from dataclasses import dataclass, field
 from enum import Enum
 from typing import Any
+
+try:
+    from apps_shared.mixins.apps_tracing_mixin import AppsTracingMixin
+    APPS_TRACING_AVAILABLE = True
+except ImportError:
+    APPS_TRACING_AVAILABLE = False
 
 from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
@@ -215,14 +226,20 @@ _PII_PATTERNS = (
 )
 
 
-class ControlPlane:
+class ControlPlane(AppsTracingMixin if APPS_TRACING_AVAILABLE else object):
     """Centralized Control Plane for safety policy enforcement.
 
     Delegates all evaluation to GovernanceShieldAgent.
     Gate A: evaluate_input(pii_content) → PolicyAction != ALLOW
+    
+    OpenTelemetry:
+        Emits spans for all evaluation operations with PII/shield metadata.
     """
 
     def __init__(self, policy: dict[str, Any] | None = None) -> None:
+        # Initialize tracing mixin first
+        super().__init__()
+        
         self._policy = policy or {}
         self._decision_count = 0
         self._block_count = 0
@@ -249,11 +266,24 @@ class ControlPlane:
         """Evaluate input content before processing.
 
         Returns PolicyDecision with action != ALLOW when PII or safety violations found.
+        
+        OpenTelemetry:
+            Emits 'ControlPlane.evaluate_input' span with PII detection metadata.
         """
+        if APPS_TRACING_AVAILABLE:
+            with self.start_validation_span("input", {"content_length": len(content), "context_keys": list(context.keys()) if context else []}):
+                return self._evaluate(content, context, is_input=True)
         return self._evaluate(content, context, is_input=True)
 
     def evaluate_output(self, content: str, context: dict[str, Any] | None = None) -> PolicyDecision:
-        """Evaluate output content before delivery."""
+        """Evaluate output content before delivery.
+        
+        OpenTelemetry:
+            Emits 'ControlPlane.evaluate_output' span with PII detection metadata.
+        """
+        if APPS_TRACING_AVAILABLE:
+            with self.start_validation_span("output", {"content_length": len(content), "context_keys": list(context.keys()) if context else []}):
+                return self._evaluate(content, context, is_input=False)
         return self._evaluate(content, context, is_input=False)
 
     def _evaluate(self, content: str, context: dict[str, Any] | None, is_input: bool) -> PolicyDecision:
