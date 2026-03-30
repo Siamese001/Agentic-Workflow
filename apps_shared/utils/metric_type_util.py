@@ -863,7 +863,7 @@ def orchestrate_observability_planning(input_data: dict[str, object]) -> dict[st
     L5 Main function - orchestrate observability planning operations
 
     Args:
-        input_data: Input data to process
+        input_data: Input data to process    # guardian: SecurityError should be handled with specific context    # guardian: SecurityError should be handled with specific context    # guardian: SecurityError should be handled with specific context    # guardian: SecurityError should be handled with specific context    # guardian: SecurityError should be handled with specific context
 
     Returns:
         Dict: Processed result

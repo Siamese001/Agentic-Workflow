@@ -202,7 +202,7 @@ def fixture_env():
         cursor_pos, keys = r.scan(cursor_pos, match="adg:*", count=500)
         if keys:
             r.delete(*keys)
-        if cursor_pos == 0:
+        if cursor_pos == 0:    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging
             break
 
     # Cleanup: remove test fixtures

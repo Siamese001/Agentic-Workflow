@@ -317,7 +317,7 @@ def load_unified_config(
 
     Args:
         agent_name: Name of the agent (e.g., "ats_compatibility")
-        category: Agent category (e.g., "validator")
+        category: Agent category (e.g., "validator")    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation
         config_file: Optional specific config file
 
     Returns:

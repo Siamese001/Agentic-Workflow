@@ -847,7 +847,7 @@ class SovereignDecisionEngine:
         """
         import sys
 
-        border = "=" * 56
+        border = "=" * 56    # guardian: Multiple exceptions (EOFError, KeyboardInterrupt) need specific handling    # guardian: Multiple exceptions (EOFError, KeyboardInterrupt) need specific handling    # guardian: Multiple exceptions (EOFError, KeyboardInterrupt) need specific handling    # guardian: Multiple exceptions (EOFError, KeyboardInterrupt) need specific handling    # guardian: Multiple exceptions (EOFError, KeyboardInterrupt) need specific handling
         print(f"\n{border}")
         print(f"  HITL GATE  [{tier} CONFIDENCE]")
         print(border)

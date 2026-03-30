@@ -375,7 +375,7 @@ def reason_and_record(
         )
 
         reasoning_plan = create_reasoning_plan(
-            reasoning_context=plan_context,
+            reasoning_context=plan_context,    # guardian: ReasoningPlanError should be handled with specific context    # guardian: ReasoningPlanError should be handled with specific context    # guardian: ReasoningPlanError should be handled with specific context    # guardian: ReasoningPlanError should be handled with specific context    # guardian: ReasoningPlanError should be handled with specific context
             goal_payload=str(prompt_payload)[:200],  # Truncate for goal
             evidence_bundle=retrieved_context,
             planning_policy=planning_policy,
@@ -510,7 +510,7 @@ def reason_and_record(
 
     # 10. P2/L1: Evaluate reasoning step — bind evaluation to completed trace
     try:
-        _rubric = ReasoningEvaluationRubric(
+        _rubric = ReasoningEvaluationRubric(    # guardian: OrphanReasoningEvaluationError should be handled with specific context    # guardian: OrphanReasoningEvaluationError should be handled with specific context    # guardian: OrphanReasoningEvaluationError should be handled with specific context    # guardian: OrphanReasoningEvaluationError should be handled with specific context    # guardian: OrphanReasoningEvaluationError should be handled with specific context
             relevance=1.0,
             consistency=1.0,
             policy_compliance=1.0 if reasoning_context.policy_hash else 0.0,
