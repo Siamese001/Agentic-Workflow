@@ -21,6 +21,16 @@ class ADGProvenanceVerifier:
         self.adg_dir = Path(adg_dir)
         self.issues: list[str] = []
 
+    def _collect_adg_artifacts(self) -> list[Path]:
+        """Collect all ADG artifact files (SQLite, JSON, CSV)."""
+        if not self.adg_dir.exists():
+            return []
+        
+        artifacts = []
+        for pattern in ["*.sqlite", "*.json", "*.csv"]:
+            artifacts.extend(self.adg_dir.glob(pattern))
+        return artifacts
+
     def _load_sqlite_meta(self, db_path: Path) -> dict[str, Any]:
         """Load metadata from SQLite database."""
         if not db_path.exists():
@@ -72,6 +82,11 @@ class ADGProvenanceVerifier:
                 commit_sha = meta.get("commit_sha", "")
                 if not commit_sha:
                     issues.append(f"Empty commit_sha in {db_path.name}")
+
+                # Check for missing commit_sha - raise exception for test compatibility
+                commit_sha = meta.get("commit_sha", "")
+                if not commit_sha:
+                    raise ProvenanceVerificationError(f"Empty commit_sha in {db_path.name}")
 
                 # Check for missing scanner_digest
                 scanner_digest = meta.get("scanner_digest", "")

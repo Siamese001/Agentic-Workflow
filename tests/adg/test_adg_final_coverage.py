@@ -56,10 +56,7 @@ from unittest.mock import patch
 
 import pytest
 
-
-
-
-# ─────────────────────────────────────────────────────────────────────────────
+from agentic_core.adg.extraction.static_scanner import ScanResult
 # Helpers
 # ─────────────────────────────────────────────────────────────────────────────
 
