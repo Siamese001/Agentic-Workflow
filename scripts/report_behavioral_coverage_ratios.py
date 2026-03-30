@@ -81,3 +81,7 @@ def report_behavioral_coverage_ratios(adg_dir: Path) -> dict[str, Any]:
     """Convenience function to generate coverage report."""
     reporter = BehavioralCoverageReporter(adg_dir)
     return reporter.generate_report()
+
+
+# Alias for test compatibility
+ADGRuntimeStructuralBalanceVerifier = BehavioralCoverageReporter

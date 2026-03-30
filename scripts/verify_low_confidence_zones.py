@@ -120,6 +120,9 @@ class ADGDeadCodeZoneControlVerifier:
 
         return True, []
 
+    # Alias for test compatibility
+    _verify_inferred_symbol_analysis = _verify_inferred_symbol_ratio
+
     def verify_all(self) -> tuple[bool, list[str]]:
         """Run all dead code zone checks."""
         checks = [

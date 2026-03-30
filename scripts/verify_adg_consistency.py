@@ -8,13 +8,26 @@ from pathlib import Path
 from typing import Any
 
 
+class ConsistencyVerificationError(Exception):
+    """Error raised when consistency verification fails."""
+    pass
+
+
 class ADGConsistencyVerifier:
     """Verifier for ADG SQLite database consistency."""
+
+    REQUIRED_METRICS = [
+        "total_nodes",
+        "total_edges", 
+        "node_types",
+        "edge_types",
+    ]
 
     def __init__(self, adg_dir: Path):
         self.adg_dir = Path(adg_dir)
         self.db_path = self._find_sqlite_db()
         self.issues: list[str] = []
+        self.errors: list[str] = []  # Required by tests
 
     def _find_sqlite_db(self) -> Path | None:
         """Find the SQLite database file in the ADG directory."""

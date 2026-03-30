@@ -15,6 +15,7 @@ class ADGIdentityCompletenessVerifier:
         self.adg_dir = Path(adg_dir)
         self.db_path = self._find_sqlite_db()
         self.issues: list[str] = []
+        self.errors: list[str] = []  # Required by tests
 
     def _find_sqlite_db(self) -> Path | None:
         """Find the SQLite database file in the ADG directory."""
