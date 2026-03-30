@@ -1,0 +1,47 @@
+{
+    "recommendations": [
+        {
+            "id": "qwtel.sqlite-viewer",
+            "name": "SQLite Viewer",
+            "description": "View and query SQLite databases directly in VS Code. Essential for ADG .sqlite files.",
+            "required": true
+        },
+        {
+            "id": "tintinweb.graphviz-interactive-preview",
+            "name": "Graphviz Interactive Preview",
+            "description": "Render DOT graph files interactively. For ADG dependency graph visualization.",
+            "required": true
+        },
+        {
+            "id": "AykutSarac.jsoncrack-vscode",
+            "name": "JSON Crack",
+            "description": "Visualize JSON data as interactive graphs. For ChromaDB metadata and embeddings.",
+            "required": true
+        },
+        {
+            "id": "GrapeCity.gc-excelviewer",
+            "name": "Excel Viewer",
+            "description": "View CSV and Excel files as tables. For quick data inspection.",
+            "required": false
+        },
+        {
+            "id": "mechatroner.rainbow-csv",
+            "name": "Rainbow CSV",
+            "description": "Color-coded CSV files with inline data preview.",
+            "required": false
+        },
+        {
+            "id": "ms-toolsai.jupyter",
+            "name": "Jupyter",
+            "description": "Interactive notebooks for Python visualization with matplotlib/plotly.",
+            "required": true
+        },
+        {
+            "id": "ms-python.python",
+            "name": "Python",
+            "description": "Python language support with IntelliSense.",
+            "required": true
+        }
+    ],
+    "unwantedRecommendations": []
+}
