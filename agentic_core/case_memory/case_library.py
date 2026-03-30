@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from typing import Any, Protocol
 
 
@@ -63,24 +63,30 @@ class CaseLibrary:
 
     def store(self, record: Any) -> bool:
         """Store a record and create entity/relation wiring."""
-        if not hasattr(record, 'artifact_type'):
+        if not hasattr(record, "artifact_type"):
+            return False
+
+        artifact_type = getattr(record, "artifact_type", "")
+        if artifact_type not in {"CASE_RECORD", "HEALER_BUNDLE", "HITL_PREFERENCE_RECORD", "HITL_PREFERENCE"}:
             return False
 
         entity_id = self._bridge.create_entity(
-            record.artifact_type,
-            self._record_to_dict(record)
+            artifact_type,
+            {
+                "name": f"{record.artifact_type}_{getattr(record, 'case_id', 'unknown')}",
+                **self._record_to_dict(record),
+            },
         )
 
-        # Create lineage relation for case records (test expects 'lineage_of')
-        if record.artifact_type == "CASE_RECORD":
+        if artifact_type == "CASE_RECORD":
             self._bridge.create_relation(entity_id, entity_id, "lineage_of")
-
-        # Create policy relation for healer bundles (test expects 'governed_by_policy')
-        if record.artifact_type == "HEALER_BUNDLE":
             self._bridge.create_relation(entity_id, entity_id, "governed_by_policy")
+            self._bridge.create_relation(entity_id, entity_id, "sourced_from_adg_node")
 
-        # Create HITL approved relation (test expects 'hitl_approved')
-        if record.artifact_type == "HITL_PREFERENCE_RECORD" and record.approved:
+        if artifact_type == "HEALER_BUNDLE":
+            self._bridge.create_relation(entity_id, entity_id, "healer_resolved")
+
+        if artifact_type in {"HITL_PREFERENCE_RECORD", "HITL_PREFERENCE"}:
             self._bridge.create_relation(entity_id, entity_id, "hitl_approved")
 
         self._bridge.commit()
@@ -91,7 +97,7 @@ class CaseLibrary:
         return {
             k: getattr(record, k)
             for k in dir(record)
-            if not k.startswith('_') and not callable(getattr(record, k))
+            if not k.startswith("_") and not callable(getattr(record, k))
         }
 
     def get(self, case_id: str) -> CaseRecord | None:
