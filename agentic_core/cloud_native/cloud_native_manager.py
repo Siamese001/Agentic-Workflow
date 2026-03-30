@@ -196,7 +196,7 @@ class CloudNativeManager:
             try:
                 config.load_incluster_config()
                 Logger.info("[CLOUD_NATIVE] Loaded in-cluster Kubernetes config")
-            except:
+            except (config.ConfigException, IOError):
                 # Fall back to kubeconfig
                 config.load_kube_config()
                 Logger.info("[CLOUD_NATIVE] Loaded kubeconfig")
@@ -525,7 +525,7 @@ class CloudNativeManager:
                 self._k8s_client['autoscaling_v1'].read_namespaced_horizontal_pod_autoscaler(name, namespace)
                 Logger.info(f"[CLOUD_NATIVE] HPA already exists for {resource_name}")
                 return True
-            except:
+            except Exception:
                 pass  # HPA doesn't exist, create it
             
             # Create HPA spec

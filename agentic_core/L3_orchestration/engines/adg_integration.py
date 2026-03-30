@@ -188,9 +188,21 @@ class ADGQueryClient:
     def _get_connection(self) -> sqlite3.Connection:
         """Get or create SQLite connection with row factory."""
         if self._connection is None:
-            self._connection = sqlite3.connect(self.adg_db_path)
-            self._connection.row_factory = sqlite3.Row
+            try:
+                self._connection = sqlite3.connect(self.adg_db_path)
+                self._connection.row_factory = sqlite3.Row
+            except sqlite3.Error as e:
+                raise ConnectionError(f"Failed to connect to ADG database {self.adg_db_path}: {e}") from e
         return self._connection
+
+    def __enter__(self) -> "ADGQueryClient":
+        """Context manager entry."""
+        return self
+
+    def __exit__(self, exc_type, exc_val, exc_tb) -> None:
+        """Context manager exit - ensure connection closes."""
+        self.close()
+        return None
 
     def get_nodes_for_file(self, file_path: str) -> list[ADGNode]:
         """Get ADG nodes for a specific file.
@@ -252,7 +264,13 @@ class ADGQueryClient:
 
         Returns:
             List of ADG edges
+
+        Raises:
+            ValueError: If direction is not 'out', 'in', or 'both'
         """
+        if direction not in ("out", "in", "both"):
+            raise ValueError(f"Invalid direction: {direction}. Must be 'out', 'in', or 'both'")
+
         conn = self._get_connection()
         cursor = conn.cursor()
 
@@ -383,12 +401,18 @@ class ADGQueryClient:
 
         Args:
             root_node_id: Starting node ID
-            max_depth: Maximum traversal depth
+            max_depth: Maximum traversal depth (must be >= 1)
             relation_types: Optional list of relation types to follow
 
         Returns:
             ImpactAnalysisResult with affected nodes and paths
+
+        Raises:
+            ValueError: If max_depth < 1
         """
+        if max_depth < 1:
+            raise ValueError(f"max_depth must be >= 1, got {max_depth}")
+
         conn = self._get_connection()
 
         visited: set[str] = set()
@@ -607,10 +631,15 @@ class ADGQueryClient:
         }
 
     def close(self) -> None:
-        """Close database connection."""
+        """Close database connection. Idempotent - safe to call multiple times."""
         if self._connection:
-            self._connection.close()
-            self._connection = None
+            try:
+                self._connection.close()
+            except sqlite3.Error:
+                # Connection may already be closed
+                pass
+            finally:
+                self._connection = None
 
 
 class GraphRAGADGIntegration:

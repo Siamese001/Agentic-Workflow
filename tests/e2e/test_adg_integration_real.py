@@ -404,6 +404,38 @@ class TestRealADE2E:
         ids_2 = {n.node_id for n in nodes_2}
         assert ids_1 == ids_2
 
+    def test_direction_validation(self, adg_client):
+        """Verify direction parameter validation rejects invalid values."""
+        with pytest.raises(ValueError, match="Invalid direction"):
+            adg_client.get_edges_for_node("12345", direction="invalid")
+
+    def test_max_depth_validation(self, adg_client):
+        """Verify max_depth validation rejects negative and zero values."""
+        with pytest.raises(ValueError, match="max_depth must be >= 1"):
+            adg_client.analyze_impact("12345", max_depth=0)
+        with pytest.raises(ValueError, match="max_depth must be >= 1"):
+            adg_client.analyze_impact("12345", max_depth=-1)
+
+    def test_context_manager(self):
+        """Verify context manager properly closes connection."""
+        from agentic_core.L3_orchestration.engines.adg_integration import ADGQueryClient
+
+        with ADGQueryClient() as client:
+            # Should work within context
+            topology = client.get_graph_topology()
+            assert topology["node_count"] > 0
+
+        # Connection should be closed after exiting context
+
+    def test_idempotent_close(self, adg_client):
+        """Verify close() can be called multiple times without error."""
+        # First close should work
+        adg_client.close()
+        # Second close should be idempotent (no error)
+        adg_client.close()
+        # Third close should also be safe
+        adg_client.close()
+
 
 # =============================================================================
 # Cleanup
