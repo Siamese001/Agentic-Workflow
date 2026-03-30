@@ -223,6 +223,114 @@ class TestADGSQLiteBatchInserter:
             count = cursor.fetchone()[0]
             assert count == 100
             conn.close()
+    
+    def test_batch_insert_failure_path(self):
+        """Test batch insert failure with invalid data."""
+        with tempfile.TemporaryDirectory() as tmpdir:
+            db_path = Path(tmpdir) / "test.db"
+            
+            conn = sqlite3.connect(str(db_path))
+            conn.execute("""
+                CREATE TABLE edges (
+                    id INTEGER PRIMARY KEY,
+                    src_id TEXT NOT NULL,
+                    dst_id TEXT NOT NULL,
+                    relation_type TEXT,
+                    edge_kind TEXT,
+                    source_file TEXT,
+                    line_no INTEGER,
+                    symbol TEXT
+                )
+            """)
+            conn.commit()
+            conn.close()
+            
+            # Test with invalid data (NULL constraint violation)
+            with pytest.raises(Exception):
+                with ADGSQLiteBatchInserter(str(db_path), batch_size=5) as inserter:
+                    inserter.add_edge({
+                        "src_id": None,  # Invalid: NOT NULL constraint
+                        "dst_id": "valid_dst",
+                        "relation_type": "calls",
+                        "edge_kind": "static",
+                        "source_file": "test.py",
+                        "line_no": 1,
+                        "symbol": "test_func",
+                    })
+                    # Force flush by adding more edges
+                    for i in range(5):
+                        inserter.add_edge({
+                            "src_id": f"src_{i}",
+                            "dst_id": f"dst_{i}",
+                            "relation_type": "calls",
+                            "edge_kind": "static",
+                            "source_file": f"file_{i}.py",
+                            "line_no": i,
+                            "symbol": f"func_{i}",
+                        })
+    
+    def test_edge_validation_boundary_cases(self):
+        """Test edge validation with boundary cases."""
+        with tempfile.TemporaryDirectory() as tmpdir:
+            db_path = Path(tmpdir) / "test.db"
+            
+            conn = sqlite3.connect(str(db_path))
+            conn.execute("""
+                CREATE TABLE edges (
+                    id INTEGER PRIMARY KEY,
+                    src_id TEXT,
+                    dst_id TEXT,
+                    relation_type TEXT,
+                    edge_kind TEXT,
+                    source_file TEXT,
+                    line_no INTEGER,
+                    symbol TEXT
+                )
+            """)
+            conn.commit()
+            conn.close()
+            
+            with ADGSQLiteBatchInserter(str(db_path), batch_size=3) as inserter:
+                # Test empty strings
+                inserter.add_edge({
+                    "src_id": "",
+                    "dst_id": "",
+                    "relation_type": "",
+                    "edge_kind": "",
+                    "source_file": "",
+                    "line_no": 0,
+                    "symbol": "",
+                })
+                
+                # Test very long strings
+                long_str = "x" * 1000
+                inserter.add_edge({
+                    "src_id": long_str,
+                    "dst_id": long_str,
+                    "relation_type": long_str,
+                    "edge_kind": long_str,
+                    "source_file": long_str,
+                    "line_no": 999999,
+                    "symbol": long_str,
+                })
+                
+                # Test negative line numbers
+                inserter.add_edge({
+                    "src_id": "test",
+                    "dst_id": "test2",
+                    "relation_type": "calls",
+                    "edge_kind": "static",
+                    "source_file": "test.py",
+                    "line_no": -1,
+                    "symbol": "func",
+                })
+            
+            # Verify all were inserted
+            conn = sqlite3.connect(str(db_path))
+            cursor = conn.execute("SELECT COUNT(*) FROM edges")
+            count = cursor.fetchone()[0]
+            assert count == 3
+            conn.close()
 
 
 class TestADGEdgeBatchProcessor:
@@ -240,6 +348,32 @@ class TestADGEdgeBatchProcessor:
         metrics = processor.get_metrics()
         assert metrics["total_items"] == 50
         assert metrics["total_batches"] == 5  # 50 / 10 = 5 batches
+    
+    def test_process_edges_boundary_cases(self):
+        """Test edge processing with boundary cases."""
+        processor = ADGEdgeBatchProcessor(batch_size=3)
+        
+        # Test empty edge list
+        results = processor.process([])
+        assert results == []
+        
+        # Test single edge
+        results = processor.process([{"src_id": "a", "dst_id": "b"}])
+        assert len(results) == 1
+        
+        # Test edges with missing fields
+        edges = [
+            {"src_id": "a"},  # Missing dst_id
+            {"dst_id": "b"},  # Missing src_id
+            {},  # Empty edge
+            {"src_id": "c", "dst_id": "d", "extra": "field"},  # Extra field
+        ]
+        results = processor.process(edges)
+        assert len(results) == 4
+        
+        # Verify metrics
+        metrics = processor.get_metrics()
+        assert metrics["total_items"] == 5  # 1 + 4 from boundary tests
     
     def test_parallel_processing(self):
         """Test parallel edge processing."""

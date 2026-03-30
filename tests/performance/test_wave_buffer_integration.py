@@ -324,6 +324,34 @@ class TestErrorHandling:
             assert len(success_results) == 1
             assert len(failed_results) == 1
             assert "File not found" in failed_results[0].error
+    
+    def test_batch_processor_state_reset(self):
+        """Test batch processor state reset between operations."""
+        processor = BatchProcessor(
+            processor_func=lambda x: x * 2,
+            batch_size=3,
+        )
+        
+        # First batch
+        items1 = [1, 2, 3]
+        results1 = processor.process(items1)
+        assert results1 == [2, 4, 6]
+        
+        # Check metrics after first batch
+        metrics1 = processor.get_metrics()
+        assert metrics1["total_items"] == 3
+        
+        # Second batch - should reset counters
+        items2 = [4, 5, 6]
+        results2 = processor.process(items2)
+        assert results2 == [8, 10, 12]
+        
+        # Check cumulative metrics
+        metrics2 = processor.get_metrics()
+        assert metrics2["total_items"] == 6  # Cumulative
+        
+        # Verify no state leakage
+        assert results1 != results2
 
 
 if __name__ == "__main__":

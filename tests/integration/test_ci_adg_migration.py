@@ -90,6 +90,7 @@ class TestADGQueryBridgeReal:
     def adg_bridge_with_test_db(self, test_adg_db):
         """Create ADGQueryBridge with test database (no mocking)."""
         try:
+            # Use absolute import to avoid tests/tools conflict
             from tools.adg.adg_query_bridge import ADGQueryBridge
 
             # Create bridge with test database path
@@ -287,8 +288,8 @@ class TestADGBridgeRealIntegration:
         conn.commit()
         conn.close()
 
-        # Use real ADG bridge
-        from tools.adg.adg_query_bridge import ADGQueryBridge
+        # Use absolute import to avoid tests/tools conflict
+        from tools.adg import ADGQueryBridge
 
         # Create bridge with test DB
         bridge = ADGQueryBridge.__new__(ADGQueryBridge)
@@ -326,7 +327,8 @@ class TestADGBridgeRealIntegration:
         conn.commit()
         conn.close()
 
-        from tools.adg.adg_query_bridge import ADGQueryBridge
+        # Use absolute import to avoid tests/tools conflict
+        from tools.adg import ADGQueryBridge
 
         bridge = ADGQueryBridge.__new__(ADGQueryBridge)
         bridge.conn = sqlite3.connect(str(db_path))
