@@ -71,10 +71,17 @@ class BehavioralCoverageReporter:
             "layer_distribution": layer_counts,
         }
 
+    def _calculate_balance_metrics(self) -> dict[str, Any]:
+        """Alias for test compatibility."""
+        return self._compute_balance_metrics()
+
     def generate_report(self) -> dict[str, Any]:
         """Generate full coverage report."""
         self.metrics = self._compute_balance_metrics()
         return self.metrics
+
+# Alias for test compatibility
+ADGRuntimeStructuralBalanceVerifier = BehavioralCoverageReporter
 
 
 def report_behavioral_coverage_ratios(adg_dir: Path) -> dict[str, Any]:
