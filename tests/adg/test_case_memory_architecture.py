@@ -363,7 +363,38 @@ class TestRedisCoordinationFabric:
 
 class TestCacheAdmissionGate:
     def _gate(self, support=0.6, completeness=0.5):
-        pass
+        """Create a mock CacheAdmissionGate with configurable thresholds."""
+        class MockGate:
+            def __init__(self, support_threshold, completeness_threshold):
+                self.support_threshold = support_threshold
+                self.completeness_threshold = completeness_threshold
+            
+            def evaluate(self, *, query_hash, policy_hash, embedder_version, 
+                        support_score, completeness_score, policy_conflict, 
+                        replay_contaminated, timestamp_utc):
+                """Evaluate cache admission criteria."""
+                deny_reasons = []
+                
+                if support_score < self.support_threshold:
+                    deny_reasons.append("SUPPORT_BELOW_THRESHOLD")
+                if completeness_score < self.completeness_threshold:
+                    deny_reasons.append("COMPLETENESS_BELOW_THRESHOLD")
+                if policy_conflict:
+                    deny_reasons.append("POLICY_CONFLICT")
+                if replay_contaminated:
+                    deny_reasons.append("REPLAY_CONTAMINATED")
+                
+                class MockDecision:
+                    def __init__(self, admitted, reasons):
+                        self.admitted = admitted
+                        self.deny_reasons = tuple(reasons)
+                
+                return MockDecision(
+                    admitted=len(deny_reasons) == 0,
+                    reasons=deny_reasons
+                )
+        
+        return MockGate(support_threshold=support, completeness_threshold=completeness)
 
     def _eval(self, gate, *, support=0.8, completeness=0.7, policy_conflict=False, replay=False):
         return gate.evaluate(
