@@ -55,10 +55,11 @@ class ADGConsistencyVerifier:
                 return files[0]
         return None
 
-    def _verify_foreign_key_integrity(self) -> tuple[bool, list[str]]:
+    def _verify_foreign_key_integrity(self) -> None:
         """Verify foreign key relationships between nodes and edges."""
         if not self.db_path or not self.db_path.exists():
-            return False, ["No SQLite database found"]
+            self.errors.append("No SQLite database found")
+            return
 
         conn = sqlite3.connect(self.db_path)
         c = conn.cursor()
@@ -74,13 +75,13 @@ class ADGConsistencyVerifier:
         conn.close()
 
         if orphaned > 0:
-            return False, [f"{orphaned} orphaned edges found"]
-        return True, []
+            self.errors.append(f"{orphaned} orphaned edges found")
 
-    def _verify_relation_type_consistency(self) -> tuple[bool, list[str]]:
+    def _verify_relation_type_consistency(self) -> None:
         """Verify all edges have valid relation types."""
         if not self.db_path or not self.db_path.exists():
-            return False, ["No SQLite database found"]
+            self.errors.append("No SQLite database found")
+            return
 
         conn = sqlite3.connect(self.db_path)
         c = conn.cursor()
@@ -94,8 +95,7 @@ class ADGConsistencyVerifier:
         conn.close()
 
         if invalid > 0:
-            return False, [f"{invalid} edges with invalid relation_type"]
-        return True, []
+            self.errors.append(f"{invalid} edges with invalid relation_type")
 
     def _verify_count_integrity(self) -> tuple[bool, list[str]]:
         """Verify counts in meta table match actual counts."""
@@ -129,15 +129,13 @@ class ADGConsistencyVerifier:
 
     def verify_all(self) -> tuple[bool, list[str]]:
         """Run all consistency checks."""
-        checks = [
-            self._verify_foreign_key_integrity,
-            self._verify_relation_type_consistency,
-            self._verify_count_integrity,
-        ]
-
-        all_issues = []
-        for check in checks:
-            passed, issues = check()
-            all_issues.extend(issues)
+        # Run checks that populate errors directly
+        self._verify_foreign_key_integrity()
+        self._verify_relation_type_consistency()
+        
+        # Run check that returns tuple
+        passed, issues = self._verify_count_integrity()
+        
+        all_issues = list(self.errors) + list(issues)
 
         return len(all_issues) == 0, all_issues
