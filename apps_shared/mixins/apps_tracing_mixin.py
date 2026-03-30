@@ -210,7 +210,7 @@ class AppsTracingMixin:
                     _emit_records_telemetry_event(
                         self._service_name,
                         span_name,
-                        {"duration_ms": duration_ms}
+                        f"span_completed_duration_ms={duration_ms:.2f}"
                     )
                 except Exception:
                     pass

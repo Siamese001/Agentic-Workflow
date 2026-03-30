@@ -273,7 +273,8 @@ class ControlPlane(AppsTracingMixin if APPS_TRACING_AVAILABLE else object):
         if APPS_TRACING_AVAILABLE:
             with self.start_validation_span("input", {"content_length": len(content), "context_keys": list(context.keys()) if context else []}):
                 return self._evaluate(content, context, is_input=True)
-        return self._evaluate(content, context, is_input=True)
+        else:
+            return self._evaluate(content, context, is_input=True)
 
     def evaluate_output(self, content: str, context: dict[str, Any] | None = None) -> PolicyDecision:
         """Evaluate output content before delivery.
@@ -284,7 +285,8 @@ class ControlPlane(AppsTracingMixin if APPS_TRACING_AVAILABLE else object):
         if APPS_TRACING_AVAILABLE:
             with self.start_validation_span("output", {"content_length": len(content), "context_keys": list(context.keys()) if context else []}):
                 return self._evaluate(content, context, is_input=False)
-        return self._evaluate(content, context, is_input=False)
+        else:
+            return self._evaluate(content, context, is_input=False)
 
     def _evaluate(self, content: str, context: dict[str, Any] | None, is_input: bool) -> PolicyDecision:
         """Core evaluation: delegates to GovernanceShieldAgent, then PII check."""
