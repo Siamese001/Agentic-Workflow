@@ -16,10 +16,16 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     record_execution_trace,
 )
 
-# Lazy import to avoid L_SL->L_APP gravity violation
-def _get_otel_adapter():
+# Import OpenTelemetryTracingAdapter at module level for inheritance
+try:
     from apps_shared.utils.open_telemetry_tracing_adapter_util import OpenTelemetryTracingAdapter
-    return OpenTelemetryTracingAdapter
+    OTEL_ADAPTER_AVAILABLE = True
+except ImportError:
+    OTEL_ADAPTER_AVAILABLE = False
+    # Create a dummy base class if not available
+    class OpenTelemetryTracingAdapter:  # type: ignore[no-redef]
+        """Dummy base class when OpenTelemetry is not available."""
+        pass
 
 from system_learning.runtime_adg import (
     FileBackedRuntimeADGStore,

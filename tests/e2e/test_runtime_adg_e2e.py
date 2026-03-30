@@ -27,18 +27,36 @@ Reference: system_learning/runtime_adg/, .windsurfrules §1 Testing & Evidence
 
 from __future__ import annotations
 
-import hashlib
 import json
-import os
-import threading
 import time
-import uuid
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
 from typing import Any
-from unittest.mock import MagicMock, patch
 
 import pytest
+
+# Module-level imports for test classes
+try:
+    from system_learning.runtime_adg import (
+        FileBackedRuntimeADGStore,
+        InMemoryRuntimeADGStore,
+        L6MetaLearningBridge,
+        RuntimeADGEdge,
+        RuntimeADGMaterializer,
+        RuntimeADGNode,
+        RuntimeADGSnapshot,
+        attributes_to_json,
+        create_runtime_adg_snapshot,
+    )
+    RUNTIME_ADG_AVAILABLE = True
+except ImportError:
+    RUNTIME_ADG_AVAILABLE = False
+
+try:
+    from system_learning.runtime_adg.auto_persistence import AutoPersistenceTracingAdapter
+    AUTO_PERSISTENCE_AVAILABLE = True
+except ImportError:
+    AUTO_PERSISTENCE_AVAILABLE = False
 
 
 # Lazy import fixtures to avoid collection-time conflicts
@@ -53,14 +71,14 @@ def runtime_adg_classes():
         FileBackedRuntimeADGStore,
         InMemoryRuntimeADGStore,
         L6MetaLearningBridge,
+        RuntimeADGEdge,
         RuntimeADGMaterializer,
         RuntimeADGNode,
-        RuntimeADGEdge,
         RuntimeADGSnapshot,
         attributes_to_json,
         create_runtime_adg_snapshot,
     )
-    return (FileBackedRuntimeADGStore, InMemoryRuntimeADGStore, L6MetaLearningBridge, 
+    return (FileBackedRuntimeADGStore, InMemoryRuntimeADGStore, L6MetaLearningBridge,
             RuntimeADGMaterializer, RuntimeADGNode, RuntimeADGEdge, RuntimeADGSnapshot,
             attributes_to_json, create_runtime_adg_snapshot)
 
@@ -82,12 +100,12 @@ def temp_runtime_adg_dir(tmp_path: Path) -> Path:
 
 
 @pytest.fixture
-def l4_store_project_path() -> Path:
+def l4_store_project_path(ssot_project_root) -> Path:
     """Provide L4-compliant storage path within project root.
 
     FileBackedRuntimeADGStore requires paths within L4 sovereign territory.
     """
-    project_root = get_validated_project_root()
+    project_root = ssot_project_root
     # Use a test-specific subdirectory in L4 territory
     l4_test_dir = project_root / "agentic_core" / "L4_state" / "memory" / "runtime_adg_test"
     l4_test_dir.mkdir(parents=True, exist_ok=True)
@@ -142,21 +160,21 @@ def sample_spans() -> list[dict[str, Any]]:
 
 
 @pytest.fixture
-def materializer(runtime_adg_classes) -> "RuntimeADGMaterializer":
+def materializer(runtime_adg_classes) -> RuntimeADGMaterializer:
     """Provide fresh RuntimeADGMaterializer instance."""
     _, _, _, RuntimeADGMaterializer, _, _, _, _, _ = runtime_adg_classes
     return RuntimeADGMaterializer()
 
 
 @pytest.fixture
-def in_memory_store(runtime_adg_classes) -> "InMemoryRuntimeADGStore":
+def in_memory_store(runtime_adg_classes) -> InMemoryRuntimeADGStore:
     """Provide fresh in-memory store."""
     _, InMemoryRuntimeADGStore, _, _, _, _, _, _, _ = runtime_adg_classes
     return InMemoryRuntimeADGStore()
 
 
 @pytest.fixture
-def l6_bridge(temp_runtime_adg_dir: Path, runtime_adg_classes) -> "L6MetaLearningBridge":
+def l6_bridge(temp_runtime_adg_dir: Path, runtime_adg_classes) -> L6MetaLearningBridge:
     """Provide fresh L6 meta-learning bridge."""
     _, _, L6MetaLearningBridge, _, _, _, _, _, _ = runtime_adg_classes
     return L6MetaLearningBridge(l6_base_dir=temp_runtime_adg_dir / "l6")

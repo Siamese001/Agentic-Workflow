@@ -12,13 +12,9 @@ to external backend export and system learning consumption.
 
 from __future__ import annotations
 
-import json
 import os
-import tempfile
 import time
-from pathlib import Path
 from typing import Any
-from unittest.mock import MagicMock, patch
 
 import pytest
 
@@ -26,7 +22,10 @@ import pytest
 
 @pytest.fixture(scope="session")
 def _lazy_agentic_core_L6_observability_enforcement_rag_telemetry_collector_0():
-    from agentic_core.L6_observability.enforcement.rag_telemetry_collector import RagTelemetryCollector, RagMetrics
+    from agentic_core.L6_observability.enforcement.rag_telemetry_collector import (
+        RagMetrics,
+        RagTelemetryCollector,
+    )
     return type('_Import', (), {"RagTelemetryCollector": RagTelemetryCollector, "RagMetrics": RagMetrics})
 
 # Phase 1: OpenTelemetry imports
@@ -56,14 +55,24 @@ from apps_shared.utils.open_telemetry_tracing_adapter_util import (
     get_tracer,
     reset_tracer,
 )
+from system_learning.engines.telemetry_consumer import (
+    create_telemetry_consumer_with_otel,
+    ingest_otel_spans,
+)
 from system_learning.stores.otel_telemetry_store import (
     OpenTelemetrySpanStore,
     create_otel_telemetry_store,
 )
-from system_learning.engines.telemetry_consumer import (
-    ingest_otel_spans,
-    create_telemetry_consumer_with_otel,
-)
+
+# Import Rag telemetry components with fallback
+try:
+    from agentic_core.L6_observability.enforcement.rag_telemetry_collector import (
+        RagMetrics,
+        RagTelemetryCollector,
+    )
+    RAG_TELEMETRY_AVAILABLE = True
+except ImportError:
+    RAG_TELEMETRY_AVAILABLE = False
 
 from apps_shared.utils.agentic_span_processor import (
     AgenticSpanProcessor,
@@ -72,7 +81,6 @@ from apps_shared.utils.agentic_span_processor import (
     create_execution_telemetry_processor,
     create_orchestration_telemetry_processor,
 )
-
 
 # =============================================================================
 # Phase 1 E2E Tests: OTLP Exporter Configuration
@@ -94,9 +102,9 @@ class TestPhase1OtlpExporterConfiguration:
         """Test that OTLP gRPC exporter can be configured with custom endpoint."""
         if not OTEL_GRPC_AVAILABLE:
             pytest.skip("OTLP gRPC exporter not available")
-        
+
         custom_endpoint = "http://localhost:5555"
-        
+
         # Create tracer with OTLP gRPC enabled
         tracer = OpenTelemetryTracingAdapter(
             service_name="test-service",
@@ -105,7 +113,7 @@ class TestPhase1OtlpExporterConfiguration:
             enable_otlp_http=False,
             otlp_grpc_endpoint=custom_endpoint,
         )
-        
+
         # Verify tracer is enabled
         assert tracer.is_enabled()
         assert tracer.service_name == "test-service"
@@ -114,9 +122,9 @@ class TestPhase1OtlpExporterConfiguration:
         """Test that OTLP HTTP exporter can be configured with custom endpoint."""
         if not OTEL_HTTP_AVAILABLE:
             pytest.skip("OTLP HTTP exporter not available")
-        
+
         custom_endpoint = "http://localhost:6666"
-        
+
         # Create tracer with OTLP HTTP enabled
         tracer = OpenTelemetryTracingAdapter(
             service_name="test-service",
@@ -125,7 +133,7 @@ class TestPhase1OtlpExporterConfiguration:
             enable_otlp_http=True,
             otlp_http_endpoint=custom_endpoint,
         )
-        
+
         # Verify tracer is enabled
         assert tracer.is_enabled()
 
@@ -134,7 +142,7 @@ class TestPhase1OtlpExporterConfiguration:
         # Set environment variables
         os.environ["OTEL_EXPORTER_OTLP_GRPC_ENDPOINT"] = "http://jaeger:4317"
         os.environ["OTEL_EXPORTER_OTLP_HTTP_ENDPOINT"] = "http://tempo:4318"
-        
+
         try:
             # Create tracer - should pick up env vars
             tracer = OpenTelemetryTracingAdapter(
@@ -142,7 +150,7 @@ class TestPhase1OtlpExporterConfiguration:
                 enable_otlp_grpc=OTEL_GRPC_AVAILABLE,
                 enable_otlp_http=OTEL_HTTP_AVAILABLE,
             )
-            
+
             assert tracer.is_enabled()
         finally:
             # Clean up environment
@@ -157,7 +165,7 @@ class TestPhase1OtlpExporterConfiguration:
             enable_otlp_grpc=OTEL_GRPC_AVAILABLE,
             enable_otlp_http=OTEL_HTTP_AVAILABLE,
         )
-        
+
         assert tracer.is_enabled()
 
     def test_tracer_span_generation_with_exporters(self):
@@ -168,11 +176,11 @@ class TestPhase1OtlpExporterConfiguration:
             enable_otlp_grpc=False,  # Don't actually export in tests
             enable_otlp_http=False,
         )
-        
+
         # Generate a span
         with tracer.trace_orchestrator("test-mission", metadata={"test": "value"}):
             pass
-        
+
         # Drain and verify spans
         spans = tracer.drain_completed_spans()
         assert len(spans) == 1
@@ -182,14 +190,14 @@ class TestPhase1OtlpExporterConfiguration:
     def test_get_tracer_factory_with_otlp_options(self):
         """Test that get_tracer() factory exposes OTLP configuration."""
         reset_tracer()
-        
+
         tracer = get_tracer(
             service_name="factory-test",
             enable_console_export=False,
             enable_otlp_grpc=False,
             enable_otlp_http=False,
         )
-        
+
         assert tracer is not None
         assert tracer.is_enabled() == OTEL_AVAILABLE
 
@@ -205,14 +213,14 @@ class TestPhase2TelemetryConsumerWiring:
     def test_opentelemetry_span_store_creation(self):
         """Test that OpenTelemetrySpanStore can be created and configured."""
         store = create_otel_telemetry_store(max_buffer_size=5000)
-        
+
         assert isinstance(store, OpenTelemetrySpanStore)
         assert store._max_buffer_size == 5000
 
     def test_span_ingestion_into_store(self):
         """Test that spans can be ingested into the telemetry store."""
         store = OpenTelemetrySpanStore(max_buffer_size=100)
-        
+
         # Create test spans
         test_spans = [
             {
@@ -237,7 +245,7 @@ class TestPhase2TelemetryConsumerWiring:
                 "status": "ok",
             },
         ]
-        
+
         # Ingest spans
         count = store.ingest_spans(test_spans)
         assert count == 2
@@ -246,7 +254,7 @@ class TestPhase2TelemetryConsumerWiring:
     def test_span_buffer_eviction(self):
         """Test that old spans are evicted when buffer exceeds max size."""
         store = OpenTelemetrySpanStore(max_buffer_size=5)
-        
+
         # Add more spans than buffer can hold
         for i in range(10):
             store.ingest_spans([{
@@ -256,14 +264,14 @@ class TestPhase2TelemetryConsumerWiring:
                 "name": f"test.span.{i}",
                 "kind": "test",
             }])
-        
+
         # Buffer should only hold max_buffer_size spans
         assert store.get_span_count() == 5
 
     def test_read_events_by_time_window(self):
         """Test that events can be read by time window."""
         store = OpenTelemetrySpanStore()
-        
+
         # Ingest spans at different times
         for i in range(5):
             store.ingest_spans([{
@@ -273,31 +281,31 @@ class TestPhase2TelemetryConsumerWiring:
                 "name": f"test.span.{i}",
                 "kind": "test",
             }])
-        
+
         # Read events within window
         events = store.read_events(
             window_start_utc=1700000000000,
             window_end_utc=1700000003000,  # Should get first 4 spans
         )
-        
+
         assert len(events) == 4
 
     def test_telemetry_consumer_with_otel_factory(self):
         """Test that factory creates integrated OTel + consumer setup."""
         store, consumer = create_telemetry_consumer_with_otel(max_buffer_size=100)
-        
+
         assert isinstance(store, OpenTelemetrySpanStore)
         assert callable(consumer)
 
     def test_ingest_otel_spans_function(self):
         """Test that ingest_otel_spans bridges OTel to telemetry store."""
         store = OpenTelemetrySpanStore()
-        
+
         test_spans = [
             {"ts_utc": 1700000000000, "trace_id": "t1", "span_id": "s1", "name": "span1", "kind": "test"},
             {"ts_utc": 1700000001000, "trace_id": "t1", "span_id": "s2", "name": "span2", "kind": "test"},
         ]
-        
+
         count = ingest_otel_spans(store, test_spans)
         assert count == 2
         assert store.get_span_count() == 2
@@ -309,25 +317,25 @@ class TestPhase2TelemetryConsumerWiring:
             service_name="pipeline-test",
             enable_console_export=False,
         )
-        
+
         with tracer.trace_orchestrator("pipeline-mission"):
             with tracer.trace_cognitive("pipeline-task"):
                 pass
-        
+
         spans = tracer.drain_completed_spans()
         assert len(spans) == 2
-        
+
         # Step 2: Ingest into telemetry store
         store = OpenTelemetrySpanStore()
         ingest_otel_spans(store, spans)
         assert store.get_span_count() == 2
-        
+
         # Step 3: Consume events by time window
         events = store.read_events(
             window_start_utc=0,
             window_end_utc=9999999999999,
         )
-        
+
         assert len(events) == 2
         # Verify event structure
         for event in events:
@@ -349,10 +357,10 @@ class TestPhase3L6ObservabilityIntegration:
     def test_rag_telemetry_collector_otel_span_consumption(self):
         """Test that RagTelemetryCollector can consume OTel spans."""
         collector = RagTelemetryCollector()
-        
+
         # Reset metrics
         collector.metrics = RagMetrics()
-        
+
         # Create RAG-related OTel spans
         rag_spans = [
             {
@@ -378,11 +386,11 @@ class TestPhase3L6ObservabilityIntegration:
                 },
             },
         ]
-        
+
         # Consume spans
         processed = collector.consume_otel_spans(rag_spans)
         assert processed == 2
-        
+
         # Verify metrics were updated
         assert collector.metrics.total_queries == 2
         assert collector.metrics.cache_hits == 1
@@ -393,7 +401,7 @@ class TestPhase3L6ObservabilityIntegration:
         """Test that all RAG metrics are correctly extracted from spans."""
         collector = RagTelemetryCollector()
         collector.metrics = RagMetrics()
-        
+
         span = {
             "name": "rag.query",
             "attributes": {
@@ -405,10 +413,10 @@ class TestPhase3L6ObservabilityIntegration:
                 "rag.namespace": "custom-namespace",
             },
         }
-        
+
         processed = collector.consume_otel_spans([span])
         assert processed == 1
-        
+
         # Verify all metrics
         metrics = collector.get_metrics()
         assert metrics.total_queries == 1
@@ -420,7 +428,7 @@ class TestPhase3L6ObservabilityIntegration:
         """Test that non-RAG spans are not processed."""
         collector = RagTelemetryCollector()
         collector.metrics = RagMetrics()
-        
+
         # Mix of RAG and non-RAG spans
         spans = [
             {"name": "rag.retrieve", "attributes": {"rag.operation": "retrieval"}},
@@ -428,7 +436,7 @@ class TestPhase3L6ObservabilityIntegration:
             {"name": "database.query", "attributes": {"sql.table": "users"}},
             {"name": "embedding.encode", "attributes": {}},
         ]
-        
+
         processed = collector.consume_otel_spans(spans)
         assert processed == 2  # Only RAG spans processed
 
@@ -436,7 +444,7 @@ class TestPhase3L6ObservabilityIntegration:
         """Test that RagTelemetryCollector maintains singleton behavior."""
         collector1 = RagTelemetryCollector()
         collector2 = RagTelemetryCollector()
-        
+
         assert collector1 is collector2
 
     def test_full_telemetry_pipeline_to_l6(self):
@@ -446,7 +454,7 @@ class TestPhase3L6ObservabilityIntegration:
             service_name="l6-pipeline-test",
             enable_console_export=False,
         )
-        
+
         # Simulate RAG operation with metadata
         with tracer.trace_orchestrator("rag-pipeline-mission"):
             # Add span with RAG attributes
@@ -459,21 +467,21 @@ class TestPhase3L6ObservabilityIntegration:
                 "rag.faithfulness_score": 0.88,
             }):
                 pass
-        
+
         spans = tracer.drain_completed_spans()
-        
+
         # Step 2: Process through telemetry store
         store = OpenTelemetrySpanStore()
         ingest_otel_spans(store, spans)
-        
+
         # Step 3: Consume by RAG collector
         collector = RagTelemetryCollector()
         collector.metrics = RagMetrics()
-        
+
         # Get latest spans from store
         latest_spans = store.get_latest_spans(count=100)
         processed = collector.consume_otel_spans(latest_spans)
-        
+
         # Verify pipeline worked end-to-end
         assert processed >= 0  # May process RAG spans if found
 
@@ -492,21 +500,21 @@ class TestPhase4AdvancedSpanProcessors:
             layer_filter={"L1_Cognition", "L2_Execution"},
             component_filter={"CognitivePlane"},
         )
-        
+
         assert processor._layer_filter == {"L1_Cognition", "L2_Execution"}
         assert processor._component_filter == {"CognitivePlane"}
 
     def test_layer_filtering(self):
         """Test that spans are filtered by layer correctly."""
         processor = AgenticSpanProcessor(layer_filter={"L1_Cognition"})
-        
+
         # Test span in filtered layer
         cognitive_span = {
             "attributes": {"layer": "L1_Cognition", "component": "Test"},
         }
         result = processor.process_span(cognitive_span)
         assert result is not None
-        
+
         # Test span outside filtered layer
         execution_span = {
             "attributes": {"layer": "L2_Execution", "component": "Test"},
@@ -517,14 +525,14 @@ class TestPhase4AdvancedSpanProcessors:
     def test_component_filtering(self):
         """Test that spans are filtered by component correctly."""
         processor = AgenticSpanProcessor(component_filter={"ReActEngine"})
-        
+
         # Test span in filtered component
         react_span = {
             "attributes": {"layer": "L1_Cognition", "component": "ReActEngine"},
         }
         result = processor.process_span(react_span)
         assert result is not None
-        
+
         # Test span outside filtered component
         other_span = {
             "attributes": {"layer": "L1_Cognition", "component": "OtherEngine"},
@@ -535,15 +543,15 @@ class TestPhase4AdvancedSpanProcessors:
     def test_runtime_adg_span_enricher(self):
         """Test that RuntimeADGSpanEnricher adds graph correlation."""
         enricher = RuntimeADGSpanEnricher(snapshot_id="test-snapshot-123")
-        
+
         span = {
             "span_id": "span-abc",
             "parent_span_id": "parent-xyz",
             "attributes": {},
         }
-        
+
         enriched = enricher.enrich(span)
-        
+
         # Verify enrichment
         assert enriched["attributes"]["runtime_adg.snapshot_id"] == "test-snapshot-123"
         assert enriched["attributes"]["runtime_adg.node_id"] == "node_span-abc"
@@ -552,37 +560,37 @@ class TestPhase4AdvancedSpanProcessors:
     def test_custom_enricher_pipeline(self):
         """Test custom enrichers are applied in pipeline."""
         processor = AgenticSpanProcessor()
-        
+
         # Add custom enricher
         def add_custom_attr(span: dict[str, Any]) -> dict[str, Any]:
             if "attributes" not in span:
                 span["attributes"] = {}
             span["attributes"]["custom.enriched"] = True
             return span
-        
+
         processor.add_enricher(add_custom_attr)
-        
+
         # Process span
         span = {"attributes": {"layer": "L1"}}
         result = processor.process_span(span)
-        
+
         assert result["attributes"]["custom.enriched"] is True
 
     def test_custom_filter_pipeline(self):
         """Test custom filters are applied in pipeline."""
         processor = AgenticSpanProcessor()
-        
+
         # Add custom filter that rejects "test" spans
         def reject_test_spans(span: dict[str, Any]) -> bool:
             name = span.get("name", "")
             return "test" not in name.lower()
-        
+
         processor.add_filter(reject_test_spans)
-        
+
         # Test span that passes filter
         good_span = {"name": "production.span", "attributes": {}}
         assert processor.process_span(good_span) is not None
-        
+
         # Test span that fails filter
         test_span = {"name": "test.span", "attributes": {}}
         assert processor.process_span(test_span) is None
@@ -590,47 +598,47 @@ class TestPhase4AdvancedSpanProcessors:
     def test_batch_span_processing(self):
         """Test batch processing of multiple spans."""
         processor = AgenticSpanProcessor(layer_filter={"L1_Cognition"})
-        
+
         spans = [
             {"attributes": {"layer": "L1_Cognition"}},
             {"attributes": {"layer": "L2_Execution"}},
             {"attributes": {"layer": "L1_Cognition"}},
             {"attributes": {"layer": "L3_Orchestration"}},
         ]
-        
+
         processed = processor.process_spans(spans)
-        
+
         # Only L1_Cognition spans should pass
         assert len(processed) == 2
 
     def test_cognitive_telemetry_processor_factory(self):
         """Test cognitive layer processor factory."""
         processor = create_cognitive_telemetry_processor()
-        
+
         # Should filter to L1_Cognition only
         cognitive_span = {"attributes": {"layer": "L1_Cognition"}}
         assert processor.process_span(cognitive_span) is not None
-        
+
         execution_span = {"attributes": {"layer": "L2_Execution"}}
         assert processor.process_span(execution_span) is None
 
     def test_execution_telemetry_processor_factory(self):
         """Test execution layer processor factory."""
         processor = create_execution_telemetry_processor()
-        
+
         execution_span = {"attributes": {"layer": "L2_Execution"}}
         assert processor.process_span(execution_span) is not None
-        
+
         cognitive_span = {"attributes": {"layer": "L1_Cognition"}}
         assert processor.process_span(cognitive_span) is None
 
     def test_orchestration_telemetry_processor_factory(self):
         """Test orchestration layer processor factory."""
         processor = create_orchestration_telemetry_processor()
-        
+
         orchestration_span = {"attributes": {"layer": "L3_Orchestration"}}
         assert processor.process_span(orchestration_span) is not None
-        
+
         cognitive_span = {"attributes": {"layer": "L1_Cognition"}}
         assert processor.process_span(cognitive_span) is None
 
@@ -638,11 +646,11 @@ class TestPhase4AdvancedSpanProcessors:
         """E2E: Filter → Enrich → Process pipeline."""
         # Create processor with layer filter
         processor = AgenticSpanProcessor(layer_filter={"L1_Cognition", "L2_Execution"})
-        
+
         # Add Runtime ADG enrichment
         enricher = RuntimeADGSpanEnricher(snapshot_id="e2e-snapshot")
         processor.add_enricher(enricher.enrich)
-        
+
         # Process spans
         spans = [
             {
@@ -661,12 +669,12 @@ class TestPhase4AdvancedSpanProcessors:
                 "attributes": {"layer": "L3_Orchestration"},
             },
         ]
-        
+
         processed = processor.process_spans(spans)
-        
+
         # Only L1 and L2 spans should be processed
         assert len(processed) == 2
-        
+
         # Verify enrichment was applied
         for span in processed:
             assert "runtime_adg.snapshot_id" in span["attributes"]
@@ -688,7 +696,7 @@ class TestCrossPhaseIntegration:
             service_name="full-pipeline-test",
             enable_console_export=False,
         )
-        
+
         # Generate spans
         with tracer.trace_orchestrator("full-pipeline-mission"):
             with tracer.trace_cognitive("full-pipeline-task", metadata={
@@ -697,31 +705,31 @@ class TestCrossPhaseIntegration:
                 "rag.doc_count": 10,
             }):
                 pass
-        
+
         spans = tracer.drain_completed_spans()
         assert len(spans) >= 2
-        
+
         # Phase 2: Store and consumer
         store = OpenTelemetrySpanStore()
         ingest_otel_spans(store, spans)
-        
+
         # Phase 3: L6 consumption
         collector = RagTelemetryCollector()
         collector.metrics = RagMetrics()
         latest_spans = store.get_latest_spans(count=100)
         collector.consume_otel_spans(latest_spans)
-        
+
         # Phase 4: Processor pipeline
         processor = create_cognitive_telemetry_processor()
         processed = processor.process_spans(latest_spans)
-        
+
         # Verify pipeline completed
         assert store.get_span_count() > 0
 
     def test_deterministic_telemetry_slice_creation(self):
         """Test that telemetry slices are created deterministically."""
         store = OpenTelemetrySpanStore()
-        
+
         # Ingest spans
         for i in range(5):
             store.ingest_spans([{
@@ -731,23 +739,23 @@ class TestCrossPhaseIntegration:
                 "name": f"span-{i}",
                 "kind": "test",
             }])
-        
+
         # Read events
         events1 = store.read_events(1700000000000, 1700000009999)
         events2 = store.read_events(1700000000000, 1700000009999)
-        
+
         # Should be identical (deterministic)
         assert events1 == events2
 
     def test_concurrent_span_processing(self):
         """Test that span store handles concurrent access safely."""
         store = OpenTelemetrySpanStore(max_buffer_size=1000)
-        
+
         import threading
         import time
-        
+
         errors = []
-        
+
         def ingest_worker(worker_id: int):
             try:
                 for i in range(50):
@@ -761,18 +769,18 @@ class TestCrossPhaseIntegration:
                     time.sleep(0.001)  # Small delay
             except Exception as e:
                 errors.append(e)
-        
+
         # Start multiple threads
         threads = []
         for i in range(5):
             t = threading.Thread(target=ingest_worker, args=(i,))
             threads.append(t)
             t.start()
-        
+
         # Wait for completion
         for t in threads:
             t.join()
-        
+
         # Should have no errors
         assert len(errors) == 0
         # Should have spans (may be evicted due to buffer size)
@@ -790,7 +798,7 @@ class TestErrorHandlingAndEdgeCases:
     def test_empty_span_list_handling(self):
         """Test that empty span lists are handled gracefully."""
         store = OpenTelemetrySpanStore()
-        
+
         count = store.ingest_spans([])
         assert count == 0
         assert store.get_span_count() == 0
@@ -798,14 +806,14 @@ class TestErrorHandlingAndEdgeCases:
     def test_invalid_span_data_handling(self):
         """Test that invalid span data is handled gracefully."""
         store = OpenTelemetrySpanStore()
-        
+
         # Spans with missing required fields
         invalid_spans = [
             {},  # Empty span
             {"ts_utc": "not-a-number"},  # Wrong type
             {"ts_utc": None},  # None value
         ]
-        
+
         # Should not raise exception
         count = store.ingest_spans(invalid_spans)
         assert count == 3  # All ingested even if invalid
@@ -813,11 +821,11 @@ class TestErrorHandlingAndEdgeCases:
     def test_store_clear_buffer(self):
         """Test that buffer can be cleared."""
         store = OpenTelemetrySpanStore()
-        
+
         # Add spans
         store.ingest_spans([{"ts_utc": 1, "name": "test"}])
         assert store.get_span_count() == 1
-        
+
         # Clear
         cleared = store.clear_buffer()
         assert cleared == 1
@@ -826,19 +834,19 @@ class TestErrorHandlingAndEdgeCases:
     def test_span_processor_with_empty_spans(self):
         """Test that span processor handles empty span list."""
         processor = AgenticSpanProcessor()
-        
+
         processed = processor.process_spans([])
         assert processed == []
 
     def test_span_processor_with_all_filtered(self):
         """Test that processor handles case where all spans are filtered."""
         processor = AgenticSpanProcessor(layer_filter={"NonExistentLayer"})
-        
+
         spans = [
             {"attributes": {"layer": "L1_Cognition"}},
             {"attributes": {"layer": "L2_Execution"}},
         ]
-        
+
         processed = processor.process_spans(spans)
         assert processed == []
 
@@ -855,7 +863,7 @@ class TestPerformanceE2E:
     def test_large_span_batch_processing(self):
         """Test processing of large span batches."""
         store = OpenTelemetrySpanStore(max_buffer_size=10000)
-        
+
         # Generate large batch
         large_batch = [
             {
@@ -868,23 +876,23 @@ class TestPerformanceE2E:
             }
             for i in range(5000)
         ]
-        
+
         # Process
         start = time.time()
         count = store.ingest_spans(large_batch)
         duration = time.time() - start
-        
+
         assert count == 5000
         assert duration < 5.0  # Should complete in under 5 seconds
 
     def test_span_processor_performance(self):
         """Test span processor performance with large batches."""
         processor = AgenticSpanProcessor(layer_filter={"L1_Cognition", "L2_Execution"})
-        
+
         # Add enricher
         enricher = RuntimeADGSpanEnricher()
         processor.add_enricher(enricher.enrich)
-        
+
         # Generate batch
         spans = [
             {
@@ -895,12 +903,12 @@ class TestPerformanceE2E:
             }
             for i in range(1000)
         ]
-        
+
         # Process
         start = time.time()
         processed = processor.process_spans(spans)
         duration = time.time() - start
-        
+
         assert len(processed) == 1000
         assert duration < 2.0  # Should complete in under 2 seconds
 
