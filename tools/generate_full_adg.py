@@ -130,6 +130,12 @@ from agentic_core.adg.extraction.static_scanner import (
     _TypeSurfaceCollector,
 )
 from agentic_core.adg.schema_util import canonical_name
+
+# Wave 1: CPU Optimization Imports
+from agentic_core.L2_execution.optimization.cpu_optimizer import AMDCPUOptimizer
+from agentic_core.L2_execution.optimization.batch_processor import BatchProcessor
+from agentic_core.L2_execution.optimization.parallel_file_processor import ParallelFileProcessor
+
 from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
@@ -2006,12 +2012,52 @@ def _generate_standardized_reports(
 
 
 def main() -> None:
+    """Main entry point with CLI argument parsing."""
+    import argparse
+
+    parser = argparse.ArgumentParser(
+        description="Generate full ADG with entities and relations",
+        formatter_class=argparse.RawDescriptionHelpFormatter
+    )
+    parser.add_argument(
+        '--force', action='store_true',
+        help='Force regeneration even if cache exists'
+    )
+    # Wave 1: CPU Optimization CLI Flags
+    parser.add_argument(
+        '--parallel', action='store_true',
+        help='Enable parallel processing (Wave 2+)'
+    )
+    parser.add_argument(
+        '--workers', type=int, default=None,
+        help='Number of worker processes (default: auto)'
+    )
+    parser.add_argument(
+        '--cpu-affinity', action='store_true',
+        help='Enable CPU affinity for AMD processors (Wave 5)'
+    )
+    parser.add_argument(
+        '--batch-size', type=int, default=100,
+        help='Batch size for file processing (default: 100)'
+    )
+
+    args = parser.parse_args()
+
     # Timestamp in US Eastern time, format MMDDYYYY_HHMM (military time)
     est = timezone(timedelta(hours=-4))  # EDT (UTC-4); DST active Mar-Nov in US Eastern
     now_est = datetime.now(est)
     ts = now_est.strftime("%m%d%Y_%H%M")  # e.g., 03132026_0512
     adg_artifacts_dir = ROOT / "artifacts" / "adg"
-    generate_full_adg(adg_artifacts_dir, ts)
+
+    print(f"[ADG] Starting generation with timestamp: {ts}")
+    print(f"[ADG] Parallel mode: {args.parallel}")
+    if args.parallel:
+        print(f"[ADG] Workers: {args.workers or 'auto'}")
+        print(f"[ADG] CPU affinity: {args.cpu_affinity}")
+        print(f"[ADG] Batch size: {args.batch_size}")
+
+    # Pass args to generate_full_adg for future waves
+    generate_full_adg(adg_artifacts_dir, ts, parallel=args.parallel)
 
 
 if __name__ == "__main__":
