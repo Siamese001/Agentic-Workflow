@@ -312,8 +312,8 @@ class TestExecuteSsotRetrievalHooks:
 
     def test_semantic_cache_query_capability(self):
         """Verify semantic cache query capability exists."""
-        from system_learning.engines.enhanced_rag_retrieval_cache import EnhancedRAGRetrievalCache
-        assert EnhancedRAGRetrievalCache is not None
+        from system_learning.engines.enhanced_rag_retrieval_cache import EnhancedRagRetrievalCache
+        assert EnhancedRagRetrievalCache is not None
 
     def test_execute_ssot_has_retrieval_hooks(self):
         """Verify execute_ssot.py has retrieval integration hooks."""

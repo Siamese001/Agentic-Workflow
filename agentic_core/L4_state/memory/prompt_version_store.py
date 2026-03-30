@@ -166,6 +166,13 @@ _emit_validated_by_safety_plane("p1", "prompt_version_store", "safety_validation
 _emit_invokes_eval("p1", "prompt_version_store", "eval_call")
 _emit_proposal_commits_routing("p1", "prompt_version_store", "routing_commit")
 
+
+__all__ = [
+    "PromptVersionStore",
+    "get_version_store",
+]
+
+
 _versions: dict[str, str] = {}
 
 
@@ -247,3 +254,15 @@ class PromptVersionStore:
     def clear(self) -> None:
         """Clear all stored versions. For tests only."""
         _versions.clear()
+
+
+# Module-level singleton
+_global_store: PromptVersionStore | None = None
+
+
+def get_version_store() -> PromptVersionStore:
+    """Get or create the global PromptVersionStore singleton."""
+    global _global_store
+    if _global_store is None:
+        _global_store = PromptVersionStore()
+    return _global_store

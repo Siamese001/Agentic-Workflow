@@ -19,8 +19,12 @@ from pathlib import Path
 
 import pytest
 
-# Add paths for testing
-REPO_ROOT = Path(__file__).parent.parent.parent.parent
+# Add paths for testing - robust resolution
+_FILE_PATH = Path(__file__).resolve()
+# Walk up to find repo root (contains ops_scripts directory)
+REPO_ROOT = _FILE_PATH.parent.parent.parent
+while REPO_ROOT.name != "Agentic-Workflow" and REPO_ROOT.parent != REPO_ROOT:
+    REPO_ROOT = REPO_ROOT.parent
 CI_SCRIPTS_DIR = REPO_ROOT / "ops_scripts" / "ci"
 TOOLS_DIR = REPO_ROOT / "tools" / "adg"
 

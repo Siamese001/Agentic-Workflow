@@ -651,12 +651,74 @@ def search(
 
 
 __all__ = [
-    "GraphRetrievalEngine",
-    "ADGEdgeHydrator",
     "ADGEdgeHydration",
+    "ADGEdgeHydrator",
     "GraphRetrievalContext",
+    "GraphRetrievalEngine",
     "RetrievalWithGraphIntegration",
+    "RetrievalContextComposer",
     "get_global_engine",
     "get_global_integration",
     "search",
 ]
+
+
+class RetrievalContextComposer:
+    """Composes retrieval context from multiple sources for L4E integration.
+
+    Combines vector search results, ADG edge hydration, and parent-child
+    expansion into a unified context for prompt assembly.
+    """
+
+    def __init__(self, retrieval_engine: Optional[GraphRetrievalEngine] = None):
+        """Initialize context composer.
+
+        Args:
+            retrieval_engine: Graph retrieval engine instance
+        """
+        self.engine = retrieval_engine or get_global_engine()
+
+    def compose(
+        self,
+        query: str,
+        n_results: int = 5,
+        expansion_depth: int = 3,
+        max_tokens: int = 4000,
+    ) -> dict[str, Any]:
+        """Compose retrieval context from query.
+
+        Args:
+            query: Search query
+            n_results: Number of vector results
+            expansion_depth: Parent-child expansion depth
+            max_tokens: Maximum tokens for context
+
+        Returns:
+            Composed context with chunks, metadata, and stats
+        """
+        # Retrieve with graph awareness
+        contexts = self.engine.retrieve(
+            query=query,
+            n_results=n_results,
+            expansion_depth=expansion_depth,
+            hydrate_adg=True,
+        )
+
+        # Assemble prompt context
+        prompt_context = self.engine.assemble_prompt_context(contexts, max_tokens)
+
+        return {
+            "query": query,
+            "contexts": [ctx.to_prompt_context() for ctx in contexts],
+            "prompt_context": prompt_context,
+            "stats": {
+                "total_contexts": len(contexts),
+                "vector_results": sum(1 for c in contexts if c.source == "vector"),
+                "expanded_results": sum(1 for c in contexts if c.expansion_depth > 0),
+                "avg_groundedness": sum(c.groundedness_score for c in contexts) / max(len(contexts), 1),
+            },
+        }
+
+    def get_stats(self) -> dict[str, Any]:
+        """Get composer statistics."""
+        return self.engine.get_stats()

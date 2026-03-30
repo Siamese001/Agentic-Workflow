@@ -358,23 +358,25 @@ class TestNegativeControl:
     def test_negative_control_changes_digest(self, execute_ssot_imports):
         from agentic_core.L2_execution.protocol import compute_pipeline_digest
 
-        # Run with tamper flag off
-        results_clean = {"agent": type('R', (), {
-            'subphases': {'pre_commit': None, 'validate': None, 'execute': None, 'heal': None},
-            'has_error': False,
-            'gated': False
-        })()}
+        # Run with tamper flag off - using correct signature
+        digest_clean = compute_pipeline_digest(
+            pipeline_order=["agent1", "agent2"],
+            adapter_keys=["key1", "key2"],
+            territory="test_territory",
+            heal=True,
+            enable_llm=False,
+            tamper_token="0",
+        )
 
-        digest_clean = compute_pipeline_digest(results_clean)
-
-        # Run with tamper flag on (simulated by different input)
-        results_tampered = {"agent": type('R', (), {
-            'subphases': {'pre_commit': None, 'validate': None, 'execute': None, 'heal': None},
-            'has_error': False,
-            'gated': True  # Different state
-        })()}
-
-        digest_tampered = compute_pipeline_digest(results_tampered)
+        # Run with tamper flag on - using correct signature with different tamper_token
+        digest_tampered = compute_pipeline_digest(
+            pipeline_order=["agent1", "agent2"],
+            adapter_keys=["key1", "key2"],
+            territory="test_territory",
+            heal=True,
+            enable_llm=False,
+            tamper_token="1",  # Different tamper token
+        )
 
         # Digests should be different
         assert digest_clean != digest_tampered, "Tampered state should produce different digest"
