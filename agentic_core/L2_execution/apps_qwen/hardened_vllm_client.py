@@ -67,14 +67,14 @@ class HardeningMetrics:
     latency_p50_ms: float = 0.0
     latency_p99_ms: float = 0.0
     _latencies: list[float] = field(default_factory=list)
-    
+
     def record_latency(self, latency_ms: float) -> None:
         """Record latency for percentile calculation."""
         self._latencies.append(latency_ms)
         # Keep last 1000 samples
         if len(self._latencies) > 1000:
             self._latencies = self._latencies[-1000:]
-        
+
         # Update percentiles
         if self._latencies:
             sorted_lat = sorted(self._latencies)
@@ -86,7 +86,7 @@ class HardeningMetrics:
 
 class CircuitBreaker:
     """Circuit breaker for failure isolation."""
-    
+
     def __init__(self, config: CircuitBreakerConfig):
         self.config = config
         self.state = CircuitState.CLOSED
@@ -95,7 +95,7 @@ class CircuitBreaker:
         self.last_failure_time: Optional[float] = None
         self.half_open_calls = 0
         self._lock = asyncio.Lock()
-    
+
     async def call(self, operation: Callable[[], Any]) -> Any:
         """Execute operation with circuit breaker protection."""
         async with self._lock:
@@ -107,12 +107,12 @@ class CircuitBreaker:
                     logger.info("Circuit breaker entering HALF_OPEN state")
                 else:
                     raise CircuitBreakerOpenError("Circuit breaker is OPEN")
-            
+
             if self.state == CircuitState.HALF_OPEN:
                 if self.half_open_calls >= self.config.half_open_max_calls:
                     raise CircuitBreakerOpenError("Circuit breaker HALF_OPEN limit reached")
                 self.half_open_calls += 1
-        
+
         # Execute operation outside lock
         try:
             result = await operation()
@@ -121,13 +121,13 @@ class CircuitBreaker:
         except Exception as e:
             await self._record_failure()
             raise
-    
+
     def _should_attempt_reset(self) -> bool:
         """Check if enough time has passed to try recovery."""
         if self.last_failure_time is None:
             return True
         return (time.time() - self.last_failure_time) >= self.config.recovery_timeout_sec
-    
+
     async def _record_success(self) -> None:
         async with self._lock:
             if self.state == CircuitState.HALF_OPEN:
@@ -138,12 +138,12 @@ class CircuitBreaker:
                     logger.info("Circuit breaker CLOSED - service recovered")
             else:
                 self.failure_count = max(0, self.failure_count - 1)
-    
+
     async def _record_failure(self) -> None:
         async with self._lock:
             self.failure_count += 1
             self.last_failure_time = time.time()
-            
+
             if self.state == CircuitState.HALF_OPEN:
                 self.state = CircuitState.OPEN
                 logger.warning("Circuit breaker OPEN - recovery failed")
@@ -159,7 +159,7 @@ class CircuitBreakerOpenError(Exception):
 
 class HardenedVLLMClient:
     """Hardened vLLM client with retry, circuit breaker, and OOM handling."""
-    
+
     def __init__(
         self,
         base_client: OptimizedVLLMClient,
@@ -172,17 +172,17 @@ class HardenedVLLMClient:
         self.metrics = HardeningMetrics()
         self._degraded_mode = False
         self._min_batch_size = 1
-    
+
     async def infer(self, request: VLLMRequest) -> VLLMResponse:
         """Execute inference with full hardening."""
         self.metrics.requests_total += 1
-        
+
         try:
             # Try with circuit breaker
             response = await self.circuit.call(
                 lambda: self._infer_with_retry(request)
             )
-            
+
             if response.success:
                 self.metrics.requests_success += 1
                 self.metrics.record_latency(response.latency_ms)
@@ -191,9 +191,9 @@ class HardenedVLLMClient:
                 # Check for OOM
                 if self._is_oom_error(response.error_message):
                     await self._handle_oom()
-            
+
             return response
-            
+
         except CircuitBreakerOpenError:
             self.metrics.requests_circuit_blocked += 1
             return VLLMResponse(
@@ -214,28 +214,28 @@ class HardenedVLLMClient:
                 latency_ms=0.0,
                 error_message=f"Unexpected error: {e}",
             )
-    
+
     async def _infer_with_retry(self, request: VLLMRequest) -> VLLMResponse:
         """Execute inference with retry logic."""
         last_error: Optional[Exception] = None
-        
+
         for attempt in range(self.retry_config.max_retries + 1):
             try:
                 response = await self.base_client.infer(request)
-                
+
                 # Don't retry on success or client errors (4xx)
                 if response.success or self._is_client_error(response.error_message):
                     return response
-                
+
                 # Retryable error
                 last_error = Exception(response.error_message)
-                
+
                 if attempt < self.retry_config.max_retries:
                     delay = self._calculate_delay(attempt)
                     self.metrics.requests_retried += 1
                     logger.warning(f"Retry {attempt + 1}/{self.retry_config.max_retries} after {delay:.1f}s: {response.error_message}")
                     await asyncio.sleep(delay)
-                    
+
             except Exception as e:
                 last_error = e
                 if attempt < self.retry_config.max_retries:
@@ -243,7 +243,7 @@ class HardenedVLLMClient:
                     self.metrics.requests_retried += 1
                     logger.warning(f"Retry {attempt + 1}/{self.retry_config.max_retries} after {delay:.1f}s: {e}")
                     await asyncio.sleep(delay)
-        
+
         # All retries exhausted
         return VLLMResponse(
             success=False,
@@ -253,21 +253,21 @@ class HardenedVLLMClient:
             latency_ms=0.0,
             error_message=f"Max retries exceeded: {last_error}",
         )
-    
+
     def _calculate_delay(self, attempt: int) -> float:
         """Calculate retry delay with exponential backoff and jitter."""
         delay = self.retry_config.base_delay_sec * (
             self.retry_config.exponential_base ** attempt
         )
         delay = min(delay, self.retry_config.max_delay_sec)
-        
+
         if self.retry_config.jitter:
             # Add ±25% jitter
             jitter = delay * 0.25 * (2 * random.random() - 1)
             delay += jitter
-        
+
         return delay
-    
+
     def _is_client_error(self, error_message: Optional[str]) -> bool:
         """Check if error is a client error (don't retry)."""
         if not error_message:
@@ -281,7 +281,7 @@ class HardenedVLLMClient:
         ]
         error_lower = error_message.lower()
         return any(indicator in error_lower for indicator in client_indicators)
-    
+
     def _is_oom_error(self, error_message: Optional[str]) -> bool:
         """Check if error is GPU OOM."""
         if not error_message:
@@ -295,22 +295,22 @@ class HardenedVLLMClient:
         ]
         error_lower = error_message.lower()
         return any(indicator in error_lower for indicator in oom_indicators)
-    
+
     async def _handle_oom(self) -> None:
         """Handle GPU OOM by reducing batch sizes."""
         self.metrics.gpu_oom_events += 1
-        
+
         if not self._degraded_mode:
             self._degraded_mode = True
             logger.warning("Entering degraded mode due to GPU OOM")
-        
+
         # Reduce batch size on the base client
         if hasattr(self.base_client, 'batch_size'):
             old_batch = self.base_client.batch_size
             new_batch = max(self._min_batch_size, old_batch // 2)
             self.base_client.batch_size = new_batch
             logger.warning(f"Reduced batch size: {old_batch} -> {new_batch}")
-    
+
     def get_metrics(self) -> dict[str, Any]:
         """Get hardening metrics."""
         return {
@@ -328,11 +328,11 @@ class HardenedVLLMClient:
             "latency_p50_ms": self.metrics.latency_p50_ms,
             "latency_p99_ms": self.metrics.latency_p99_ms,
         }
-    
+
     async def health_check(self) -> dict[str, Any]:
         """Health check including hardening status."""
         base_health = await self.base_client.health_check()
-        
+
         return {
             **base_health,
             "circuit_state": self.circuit.state.name,

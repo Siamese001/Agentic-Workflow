@@ -39,24 +39,24 @@ class GPURecommendation:
 
 class GPUMemoryMonitor:
     """Monitors GPU memory and provides dynamic optimization recommendations.
-    
+
     Monitors:
     - Total/used/free VRAM
     - GPU utilization
     - Memory pressure thresholds
-    
+
     Provides:
     - Dynamic batch size adjustment
     - Concurrency limit tuning
     - Throttling recommendations
     """
-    
+
     # Memory pressure thresholds (percentages)
     THRESHOLD_LOW = 50.0      # Normal operation
     THRESHOLD_MEDIUM = 75.0   # Reduce batch sizes
     THRESHOLD_HIGH = 85.0     # Throttle new requests
     THRESHOLD_CRITICAL = 95.0 # Emergency cooldown
-    
+
     def __init__(
         self,
         check_interval_sec: float = 5.0,
@@ -70,26 +70,26 @@ class GPUMemoryMonitor:
         self.max_batch_size = max_batch_size
         self.min_concurrent = min_concurrent
         self.max_concurrent = max_concurrent
-        
+
         self._history: list[GPUMemoryInfo] = []
         self._max_history_len = 100
         self._callbacks: list[Callable[[GPUMemoryInfo], None]] = []
         self._monitor_task: Optional[asyncio.Task] = None
         self._running = False
-        
+
     def start(self) -> None:
         """Start background monitoring."""
         if not self._running:
             self._running = True
             self._monitor_task = asyncio.create_task(self._monitor_loop())
             logger.info("GPU memory monitor started")
-    
+
     def stop(self) -> None:
         """Stop background monitoring."""
         self._running = False
         if self._monitor_task:
             self._monitor_task.cancel()
-    
+
     async def _monitor_loop(self) -> None:
         """Background monitoring loop."""
         while self._running:
@@ -99,27 +99,27 @@ class GPUMemoryMonitor:
                     self._history.append(info)
                     if len(self._history) > self._max_history_len:
                         self._history.pop(0)
-                    
+
                     # Notify callbacks
                     for callback in self._callbacks:
                         try:
                             callback(info)
                         except Exception as e:
                             logger.error("GPU monitor callback error: %s", e)
-                
+
                 await asyncio.sleep(self.check_interval_sec)
-                
+
             except asyncio.CancelledError:
                 break
             except Exception as e:
                 logger.error("GPU monitor loop error: %s", e)
                 await asyncio.sleep(self.check_interval_sec)
-    
+
     def _get_gpu_memory(self) -> Optional[GPUMemoryInfo]:
         """Get current GPU memory info via nvidia-smi."""
         try:
             import subprocess
-            
+
             # Query memory info
             result = subprocess.run(
                 [
@@ -131,7 +131,7 @@ class GPUMemoryMonitor:
                 text=True,
                 timeout=5,
             )
-            
+
             if result.returncode == 0:
                 parts = result.stdout.strip().split(",")
                 if len(parts) >= 4:
@@ -139,7 +139,7 @@ class GPUMemoryMonitor:
                     used = float(parts[1].strip())
                     free = float(parts[2].strip())
                     util = float(parts[3].strip())
-                    
+
                     return GPUMemoryInfo(
                         total_mb=total,
                         used_mb=used,
@@ -149,19 +149,19 @@ class GPUMemoryMonitor:
                     )
         except Exception as e:
             logger.debug("Failed to get GPU memory: %s", e)
-        
+
         return None
-    
+
     def get_current_memory(self) -> Optional[GPUMemoryInfo]:
         """Get current GPU memory snapshot."""
         if self._history:
             return self._history[-1]
         return self._get_gpu_memory()
-    
+
     def get_recommendations(self) -> GPURecommendation:
         """Get optimization recommendations based on current GPU state."""
         info = self.get_current_memory()
-        
+
         if not info:
             # No GPU info available, use conservative defaults
             return GPURecommendation(
@@ -171,9 +171,9 @@ class GPUMemoryMonitor:
                 should_cooldown=False,
                 free_mb=0,
             )
-        
+
         used_percent = (info.used_mb / info.total_mb) * 100 if info.total_mb > 0 else 0
-        
+
         # Determine batch size based on memory pressure
         if used_percent >= self.THRESHOLD_CRITICAL:
             batch_size = self.min_batch_size
@@ -195,7 +195,7 @@ class GPUMemoryMonitor:
             max_concurrent = self.max_concurrent
             should_throttle = False
             should_cooldown = False
-        
+
         return GPURecommendation(
             batch_size=batch_size,
             max_concurrent=max_concurrent,
@@ -203,25 +203,25 @@ class GPUMemoryMonitor:
             should_cooldown=should_cooldown,
             free_mb=info.free_mb,
         )
-    
+
     def register_callback(self, callback: Callable[[GPUMemoryInfo], None]) -> None:
         """Register callback for memory updates."""
         self._callbacks.append(callback)
-    
+
     def unregister_callback(self, callback: Callable[[GPUMemoryInfo], None]) -> None:
         """Unregister callback."""
         if callback in self._callbacks:
             self._callbacks.remove(callback)
-    
+
     def get_metrics(self) -> dict[str, Any]:
         """Get monitoring metrics."""
         if not self._history:
             return {"status": "no_data"}
-        
+
         recent = self._history[-10:]  # Last 10 samples
         avg_util = sum(i.utilization_percent for i in recent) / len(recent)
         avg_free = sum(i.free_mb for i in recent) / len(recent)
-        
+
         return {
             "status": "active" if self._running else "inactive",
             "samples_collected": len(self._history),

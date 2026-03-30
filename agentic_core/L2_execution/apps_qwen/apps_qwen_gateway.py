@@ -54,7 +54,7 @@ class AppsQwenResponse:
 
 class AppsQwenGateway:
     """Optimized gateway for apps Qwen inference.
-    
+
     Features:
     - Connection pooling with HTTP keep-alive
     - Request batching for throughput
@@ -98,7 +98,7 @@ class AppsQwenGateway:
 
     async def infer(self, request: AppsQwenRequest) -> AppsQwenResponse:
         """Perform Qwen inference for apps request.
-        
+
         Args:
             request: Apps Qwen request with prompt and parameters
 
@@ -106,7 +106,7 @@ class AppsQwenGateway:
             AppsQwenResponse with inference result
         """
         start_time = time.time()
-        
+
         try:
             await self._ensure_initialized()
             _emit_routes_to_agent(request.app_name, request.app_name, "apps_qwen_gateway")
@@ -183,7 +183,7 @@ class AppsQwenGateway:
         request: AppsQwenRequest
     ) -> float:
         """Calculate confidence score based on response characteristics.
-        
+
         Factors:
         - Response length appropriateness
         - Token efficiency
@@ -191,28 +191,28 @@ class AppsQwenGateway:
         """
         if not vllm_response.success:
             return 0.0
-        
+
         confidence = 0.85  # Base confidence
-        
+
         text = vllm_response.text or ""
-        
+
         # Penalize very short responses (likely errors)
         if len(text.strip()) < 10:
             confidence -= 0.2
-        
+
         # Penalize error keywords
         error_indicators = ["error", "failed", "unable to", "cannot", "sorry"]
         text_lower = text.lower()
         for indicator in error_indicators:
             if indicator in text_lower:
                 confidence -= 0.1
-        
+
         # Boost for good token efficiency
         if vllm_response.tokens_used > 0:
             chars_per_token = len(text) / vllm_response.tokens_used
             if 2.0 <= chars_per_token <= 6.0:  # Reasonable range
                 confidence += 0.05
-        
+
         # Clamp to valid range
         return max(0.0, min(1.0, confidence))
 
@@ -221,15 +221,15 @@ class AppsQwenGateway:
         requests: list[AppsQwenRequest]
     ) -> list[AppsQwenResponse]:
         """Perform batch inference for multiple requests.
-        
+
         Args:
             requests: List of AppsQwenRequest
-            
+
         Returns:
             List of AppsQwenResponse (order preserved)
         """
         await self._ensure_initialized()
-        
+
         # Convert to VLLM requests
         vllm_requests = [
             VLLMRequest(
@@ -240,10 +240,10 @@ class AppsQwenGateway:
             )
             for i, req in enumerate(requests)
         ]
-        
+
         # Execute batch
         vllm_responses = await self._vllm_client.infer_batch(vllm_requests)
-        
+
         # Convert back to AppsQwenResponse
         results = []
         for req, vllm_resp in zip(requests, vllm_responses):
@@ -268,27 +268,27 @@ class AppsQwenGateway:
                     cached=vllm_resp.cached,
                     tokens_used=vllm_resp.tokens_used,
                 ))
-        
+
         return results
 
     def health_check(self) -> Dict[str, Any]:
         """Perform health check on gateway.
-        
+
         Returns:
             Health status dictionary
         """
         _emit_records_execution_trace("apps_qwen_gateway", "L2_EXECUTION", "health_check")
-        
+
         if not self._initialized or not self._vllm_client:
             return {
                 "status": "not_initialized",
                 "healthy": False,
                 "model_id": self.model_id,
             }
-        
+
         # Get metrics from vLLM client
         metrics = self._vllm_client.get_metrics()
-        
+
         return {
             "status": "healthy" if metrics else "degraded",
             "healthy": bool(metrics),
@@ -301,10 +301,10 @@ class AppsQwenGateway:
     async def async_health_check(self) -> Dict[str, Any]:
         """Async health check that queries vLLM server."""
         await self._ensure_initialized()
-        
+
         vllm_health = await self._vllm_client.health_check()
         metrics = self._vllm_client.get_metrics()
-        
+
         return {
             **vllm_health,
             "metrics": metrics,

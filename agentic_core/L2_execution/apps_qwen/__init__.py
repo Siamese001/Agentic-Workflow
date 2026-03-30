@@ -9,7 +9,7 @@ Provides high-performance Qwen v2.5 inference capabilities with:
 
 Usage:
     from agentic_core.L2_execution.apps_qwen import AppsQwenGateway, AppsQwenRequest
-    
+
     gateway = AppsQwenGateway()
     request = AppsQwenRequest(
         app_name="my_app",
