@@ -19,10 +19,18 @@ def _get_agent_dispatch_registry() -> Any:
     """Lazy load L3 agent dispatch registry to avoid layer boundary violation."""
     global _agent_dispatch_registry_cache
     if _agent_dispatch_registry_cache is None:
-        from agentic_core.L3_orchestration.registry.agent_dispatch_registry import (
-            get_agent_dispatch_registry as _get_reg,
-        )
-        _agent_dispatch_registry_cache = _get_reg()
+        try:
+            from agentic_core.L3_orchestration.registry.agent_dispatch_registry import (
+                get_agent_dispatch_registry as _get_reg,
+            )
+            _agent_dispatch_registry_cache = _get_reg()
+        except ImportError as e:
+            logger.warning(f"L3 agent dispatch registry not available: {e}")
+            # Return a no-op registry that allows the code to continue
+            class _NoOpRegistry:
+                def dispatch(self, *args, **kwargs):
+                    raise RuntimeError("Agent dispatch registry not available")
+            _agent_dispatch_registry_cache = _NoOpRegistry()
     return _agent_dispatch_registry_cache
 
 from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (

@@ -214,13 +214,22 @@ _perf_emitter_cache: dict[str, Any] = {}
 def _get_perf_emitter() -> tuple[Any, Any, Any]:
     """Lazy load L6 performance emitter to avoid layer boundary violation."""
     if "record_fn" not in _perf_emitter_cache:
-        from agentic_core.L6_observability.performance.performance_emitter import (
-            StageStatus,
-            record_routing_performance,
-        )
-        _perf_emitter_cache["record_fn"] = record_routing_performance
-        _perf_emitter_cache["status_error"] = StageStatus.ERROR
-        _perf_emitter_cache["status_success"] = StageStatus.SUCCESS
+        try:
+            from agentic_core.L6_observability.performance.performance_emitter import (
+                StageStatus,
+                record_routing_performance,
+            )
+            _perf_emitter_cache["record_fn"] = record_routing_performance
+            _perf_emitter_cache["status_error"] = StageStatus.ERROR
+            _perf_emitter_cache["status_success"] = StageStatus.SUCCESS
+        except ImportError as e:
+            Logger.warning(f"L6 performance emitter not available: {e}")
+            # Return no-op functions
+            def _noop(*args, **kwargs):
+                pass
+            _perf_emitter_cache["record_fn"] = _noop
+            _perf_emitter_cache["status_error"] = None
+            _perf_emitter_cache["status_success"] = None
     return (
         _perf_emitter_cache["record_fn"],
         _perf_emitter_cache["status_error"],

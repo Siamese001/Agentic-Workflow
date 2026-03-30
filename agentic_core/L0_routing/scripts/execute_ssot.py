@@ -50,8 +50,17 @@ _clock_cache = None
 def _get_clock():
     global _clock_cache
     if _clock_cache is None:
-        from agentic_core.L2_execution.providers import get_clock as _get_clock_impl
-        _clock_cache = _get_clock_impl()
+        try:
+            from agentic_core.L2_execution.providers import get_clock as _get_clock_impl
+            _clock_cache = _get_clock_impl()
+        except ImportError as e:
+            logging.warning(f"L2 clock provider not available: {e}")
+            # Return a minimal clock implementation
+            import time
+            class _MinimalClock:
+                def now_epoch(self):
+                    return time.time()
+            _clock_cache = _MinimalClock()
     return _clock_cache
 from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
