@@ -26,6 +26,7 @@ class ADGConsistencyVerifier:
     def __init__(self, adg_dir: Path):
         self.adg_dir = Path(adg_dir)
         self.db_path = self._find_sqlite_db()
+        self.sqlite_path = self.db_path  # Alias for test compatibility
         self.issues: list[str] = []
         self.errors: list[str] = []  # Required by tests
 
