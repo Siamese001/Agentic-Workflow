@@ -524,9 +524,7 @@ class ADGQueryClient:
             List of resolved context edges with metadata
         """
         _trace_id = f"pulls_context_{chunk_id}"
-        _emit_records_execution_trace(
-            _trace_id, "L4_STATE", "ADGQueryClient.resolve_pulls_context"
-        )
+        _emit_records_execution_trace(_trace_id, "L4_STATE", "ADGQueryClient.resolve_pulls_context")
 
         resolved = []
         for source in context_sources:
@@ -534,14 +532,16 @@ class ADGQueryClient:
             node = self.get_node_by_symbol(source)
 
             _emit_pulls_context(_trace_id, chunk_id, source)
-            resolved.append({
-                "chunk_id": chunk_id,
-                "source": source,
-                "relation": "pulls_context",
-                "confidence": 1.0 if node else 0.5,
-                "adg_node_id": node.node_id if node else None,
-                "found_in_adg": node is not None,
-            })
+            resolved.append(
+                {
+                    "chunk_id": chunk_id,
+                    "source": source,
+                    "relation": "pulls_context",
+                    "confidence": 1.0 if node else 0.5,
+                    "adg_node_id": node.node_id if node else None,
+                    "found_in_adg": node is not None,
+                }
+            )
 
         return resolved
 
@@ -747,15 +747,17 @@ class GraphRAGADGIntegration:
             for affected in impact.affected_nodes:
                 all_affected.add(affected.file_path)
 
-            all_edges.extend([
-                {
-                    "src": e.src_id,
-                    "dst": e.dst_id,
-                    "relation": e.relation_type,
-                    "symbol": e.symbol,
-                }
-                for e in impact.affected_edges
-            ])
+            all_edges.extend(
+                [
+                    {
+                        "src": e.src_id,
+                        "dst": e.dst_id,
+                        "relation": e.relation_type,
+                        "symbol": e.symbol,
+                    }
+                    for e in impact.affected_edges
+                ]
+            )
 
         return {
             "source_file": file_path,
@@ -857,9 +859,7 @@ def get_global_adg_integration() -> GraphRAGADGIntegration:
     """Get or create global ADG integration."""
     global _global_adg_integration
     if _global_adg_integration is None:
-        _global_adg_integration = GraphRAGADGIntegration(
-            adg_client=get_global_adg_client()
-        )
+        _global_adg_integration = GraphRAGADGIntegration(adg_client=get_global_adg_client())
     return _global_adg_integration
 
 

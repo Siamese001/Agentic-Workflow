@@ -23,7 +23,7 @@ import pytest
 
 
 @dataclass
-class TestEvidence:
+class EvidenceRecord:
     """Evidence record for deterministic test verification."""
 
     test_name: str
@@ -48,16 +48,16 @@ class EvidenceCollector:
     """Collects evidence during test execution for determinism verification."""
 
     def __init__(self):
-        self.evidence: list[TestEvidence] = []
-        self._current: TestEvidence | None = None
+        self.evidence: list[EvidenceRecord] = []
+        self._current: EvidenceRecord | None = None
 
     def start_test(self, test_name: str, inputs: dict[str, Any]) -> None:
         """Start collecting evidence for a test."""
-        inputs_hash = hashlib.sha256(
-            json.dumps(inputs, sort_keys=True, default=str).encode()
-        ).hexdigest()[:16]
+        inputs_hash = hashlib.sha256(json.dumps(inputs, sort_keys=True, default=str).encode()).hexdigest()[
+            :16
+        ]
 
-        self._current = TestEvidence(
+        self._current = EvidenceRecord(
             test_name=test_name,
             timestamp=time.time(),
             inputs_hash=inputs_hash,
@@ -75,14 +75,14 @@ class EvidenceCollector:
         if self._current:
             self._current.artifacts[name] = value
 
-    def end_test(self, outputs: dict[str, Any]) -> TestEvidence:
+    def end_test(self, outputs: dict[str, Any]) -> EvidenceRecord:
         """End evidence collection and finalize."""
         if not self._current:
             raise RuntimeError("No test in progress")
 
-        outputs_hash = hashlib.sha256(
-            json.dumps(outputs, sort_keys=True, default=str).encode()
-        ).hexdigest()[:16]
+        outputs_hash = hashlib.sha256(json.dumps(outputs, sort_keys=True, default=str).encode()).hexdigest()[
+            :16
+        ]
 
         self._current.outputs_hash = outputs_hash
         self._current.execution_trace.append(f"end:{self._current.test_name}")
@@ -107,14 +107,28 @@ class EvidenceCollector:
 evidence_collector = EvidenceCollector()
 
 
-def _store_evidence_to_file(evidence: TestEvidence) -> None:
+def _store_evidence_to_file(evidence: EvidenceRecord) -> None:
     """Store evidence to a file for later analysis."""
     evidence_dir = Path("artifacts/evidence/adg_integration")
     evidence_dir.mkdir(parents=True, exist_ok=True)
 
+    def serialize(obj: Any) -> Any:
+        """JSON serializer for non-standard types."""
+        from dataclasses import asdict
+
+        from agentic_core.L3_orchestration.engines.adg_integration import ADGEdge, ADGNode
+
+        if isinstance(obj, (ADGNode, ADGEdge)):
+            return asdict(obj)
+        if isinstance(obj, (set, frozenset)):
+            return list(obj)
+        if hasattr(obj, "__dataclass_fields__"):
+            return asdict(obj)
+        raise TypeError(f"Object of type {type(obj).__name__} is not JSON serializable")
+
     evidence_file = evidence_dir / f"{evidence.test_name}_{int(evidence.timestamp)}.json"
     with open(evidence_file, "w") as f:
-        json.dump(evidence.to_dict(), f, indent=2)
+        json.dump(evidence.to_dict(), f, indent=2, default=serialize)
 
 
 # =============================================================================
@@ -223,8 +237,8 @@ class TestFanAnalysis:
         """Analyze fan-in/fan-out for a known symbol."""
         test_name = "fan_analysis_known_symbol"
 
-        # Use a symbol we know exists (ADG uses :: separator)
-        symbol = "agentic_core.L3_orchestration.engines.dag_manager::DAGManager"
+        # Use a symbol we know exists (full ADG::Symbol:: prefix required)
+        symbol = "ADG::Symbol::agentic_core.L3_orchestration.engines.dag_manager::DAGManager"
         inputs = {"symbol_name": symbol}
 
         evidence_collector.start_test(test_name, inputs)
@@ -333,9 +347,7 @@ class TestRealADE2E:
 
     def test_nodes_for_real_file(self, adg_client):
         """Get nodes for a real file in the repo."""
-        nodes = adg_client.get_nodes_for_file(
-            "agentic_core/L3_orchestration/engines/dag_manager.py"
-        )
+        nodes = adg_client.get_nodes_for_file("agentic_core/L3_orchestration/engines/dag_manager.py")
 
         # Should find nodes (this file exists and has code)
         assert isinstance(nodes, list)
@@ -350,9 +362,7 @@ class TestRealADE2E:
     def test_edges_for_node(self, adg_client):
         """Get edges for a node."""
         # First get a node
-        nodes = adg_client.get_nodes_for_file(
-            "agentic_core/L3_orchestration/engines/dag_manager.py"
-        )
+        nodes = adg_client.get_nodes_for_file("agentic_core/L3_orchestration/engines/dag_manager.py")
 
         if nodes:
             node = nodes[0]
@@ -369,9 +379,7 @@ class TestRealADE2E:
 
     def test_fanout_analysis(self, adg_client):
         """Perform fan-out analysis on a real node."""
-        nodes = adg_client.get_nodes_for_file(
-            "agentic_core/L3_orchestration/engines/dag_manager.py"
-        )
+        nodes = adg_client.get_nodes_for_file("agentic_core/L3_orchestration/engines/dag_manager.py")
 
         if nodes:
             fanout = adg_client.get_fanout_edges(nodes[0].node_id)
