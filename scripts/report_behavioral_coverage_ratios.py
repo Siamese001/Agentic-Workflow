@@ -62,18 +62,92 @@ class BehavioralCoverageReporter:
         conn.close()
 
         total = structural + runtime
+        balance_score = min(structural, runtime) / max(structural, runtime) if max(structural, runtime) > 0 else 0
         return {
             "structural_edges": structural,
             "runtime_edges": runtime,
             "total_edges": total,
             "structural_ratio": structural / total if total > 0 else 0,
             "runtime_ratio": runtime / total if total > 0 else 0,
+            "balance_score": balance_score,
             "layer_distribution": layer_counts,
         }
 
     def _calculate_balance_metrics(self) -> dict[str, Any]:
         """Alias for test compatibility."""
         return self._compute_balance_metrics()
+
+    def _verify_runtime_semantic_edge_detection(self) -> dict[str, Any]:
+        """Verify runtime semantic edge detection."""
+        result = {"total_runtime_edges": 0, "edge_types": {}}
+        
+        if not self.db_path or not self.db_path.exists():
+            return result
+
+        conn = sqlite3.connect(self.db_path)
+        c = conn.cursor()
+
+        runtime_types = [
+            'records_execution_trace', 'applies_guardrail',
+            'emits_replay_key', 'snapshots_state'
+        ]
+        
+        for rel_type in runtime_types:
+            c.execute("""
+                SELECT COUNT(*) FROM edges WHERE relation_type = ?
+            """, (rel_type,))
+            count = c.fetchone()[0]
+            result["edge_types"][rel_type] = count
+            result["total_runtime_edges"] += count
+
+        conn.close()
+        return result
+
+    def _verify_structural_edge_detection(self) -> dict[str, Any]:
+        """Verify structural edge detection."""
+        result = {"total_structural_edges": 0, "edge_types": {}}
+        
+        if not self.db_path or not self.db_path.exists():
+            return result
+
+        conn = sqlite3.connect(self.db_path)
+        c = conn.cursor()
+
+        structural_types = ['imports', 'exports', 'defines', 'calls']
+        
+        for rel_type in structural_types:
+            c.execute("""
+                SELECT COUNT(*) FROM edges WHERE relation_type = ?
+            """, (rel_type,))
+            count = c.fetchone()[0]
+            result["edge_types"][rel_type] = count
+            result["total_structural_edges"] += count
+
+        conn.close()
+        return result
+
+    def _verify_layer_balance_analysis(self) -> dict[str, Any]:
+        """Verify layer balance analysis."""
+        result = {"layer_balance": {}, "total_modules": 0}
+        
+        if not self.db_path or not self.db_path.exists():
+            return result
+
+        conn = sqlite3.connect(self.db_path)
+        c = conn.cursor()
+
+        c.execute("""
+            SELECT layer, COUNT(*) FROM nodes 
+            WHERE entity_type = 'module'
+            GROUP BY layer
+        """)
+        for row in c.fetchall():
+            layer, count = row
+            result["layer_balance"][layer] = count
+            result["total_modules"] += count
+
+        conn.close()
+        return result
 
     def generate_report(self) -> dict[str, Any]:
         """Generate full coverage report."""
