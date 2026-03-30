@@ -16,10 +16,8 @@ import os
 
 import pytest
 
-
-
-
-os.environ.setdefault("REDIS_CACHE_STRICT_HASH_VALIDATION", "0")
+from agentic_core.cache.redis_coordination_fabric import RedisCoordinationFabric
+from agentic_core.L4_state.memory.cache_admission_gate import CacheAdmissionGate
 
 # ---------------------------------------------------------------------------
 # Shared fixtures
