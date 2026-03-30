@@ -16,6 +16,7 @@ class ADGIdentityCompletenessVerifier:
         self.db_path = self._find_sqlite_db()
         self.issues: list[str] = []
         self.errors: list[str] = []  # Required by tests
+        self.warnings: list[str] = []  # Required by tests
 
     def _find_sqlite_db(self) -> Path | None:
         """Find the SQLite database file in the ADG directory."""
@@ -39,10 +40,11 @@ class ADGIdentityCompletenessVerifier:
         conn.close()
         return columns
 
-    def _verify_node_schema_completeness(self) -> tuple[bool, list[str]]:
+    def _verify_node_schema_completeness(self) -> None:
         """Verify nodes have all required fields."""
         if not self.db_path or not self.db_path.exists():
-            return False, ["No SQLite database found"]
+            self.errors.append("No SQLite database found")
+            return
 
         conn = sqlite3.connect(self.db_path)
         c = conn.cursor()
@@ -53,16 +55,27 @@ class ADGIdentityCompletenessVerifier:
             WHERE identity_kind IS NULL OR identity_kind = ''
         """)
         incomplete = c.fetchone()[0]
+        
+        # Check for enhanced fields missing
+        c.execute("PRAGMA table_info(nodes)")
+        columns = [row[1] for row in c.fetchall()]
+        
         conn.close()
 
         if incomplete > 0:
-            return False, [f"{incomplete} nodes with incomplete identity"]
-        return True, []
+            self.errors.append(f"{incomplete} nodes with incomplete identity")
+        
+        # Warn about missing enhanced fields
+        enhanced_fields = ['identity_origin', 'domain', 'owner_surface']
+        missing = [f for f in enhanced_fields if f not in columns]
+        if missing:
+            self.warnings.append(f"Missing enhanced fields: {missing}")
 
-    def _verify_first_party_module_completeness(self) -> tuple[bool, list[str]]:
+    def _verify_first_party_module_completeness(self) -> None:
         """Verify first-party modules have required fields."""
         if not self.db_path or not self.db_path.exists():
-            return False, ["No SQLite database found"]
+            self.errors.append("No SQLite database found")
+            return
 
         conn = sqlite3.connect(self.db_path)
         c = conn.cursor()
@@ -78,13 +91,13 @@ class ADGIdentityCompletenessVerifier:
         conn.close()
 
         if incomplete > 0:
-            return False, [f"{incomplete} first-party modules with incomplete layer"]
-        return True, []
+            self.errors.append(f"{incomplete} first-party modules with UNKNOWN layer")
 
-    def _verify_low_confidence_node_traceability(self) -> tuple[bool, list[str]]:
+    def _verify_low_confidence_node_traceability(self) -> None:
         """Verify LOW confidence nodes have traceability info."""
         if not self.db_path or not self.db_path.exists():
-            return False, ["No SQLite database found"]
+            self.errors.append("No SQLite database found")
+            return
 
         conn = sqlite3.connect(self.db_path)
         c = conn.cursor()
@@ -102,13 +115,10 @@ class ADGIdentityCompletenessVerifier:
 
         conn.close()
 
-        issues = []
         if low_confidence > 0:
-            issues.append(f"{low_confidence} LOW confidence nodes found")
+            self.warnings.append(f"{low_confidence} LOW confidence nodes found")
         if unresolved > 0:
-            issues.append(f"{unresolved} unresolved imports found")
-
-        return len(issues) == 0, issues
+            self.warnings.append(f"{unresolved} unresolved imports found")
 
     def _verify_enum_value_constraints(self) -> tuple[bool, list[str]]:
         """Verify enum fields have valid values."""

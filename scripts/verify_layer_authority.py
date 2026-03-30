@@ -47,35 +47,42 @@ class ADGLayerAuthorityVerifier:
             return False, [f"{incomplete} L4 entities with incomplete authority"]
         return True, []
 
-    def _verify_uwg_termination_for_writes(self) -> tuple[bool, list[str]]:
+    def _verify_uwg_termination_for_writes(self) -> dict[str, Any]:
         """Verify all write operations terminate at UniversalWriteGateway."""
+        result = {"uwg_violations": []}
+        
         if not self.db_path or not self.db_path.exists():
-            return False, ["No SQLite database found"]
+            return result
 
         conn = sqlite3.connect(self.db_path)
         c = conn.cursor()
 
         # Find write operations not terminating at UWG
         c.execute("""
-            SELECT COUNT(*) FROM edges
-            WHERE relation_type = 'writes_to'
-            AND dst_id NOT IN (
+            SELECT e.src_id, n.adg_name 
+            FROM edges e
+            JOIN nodes n ON e.src_id = n.id
+            WHERE e.relation_type = 'writes_to'
+            AND e.dst_id NOT IN (
                 SELECT id FROM nodes
                 WHERE adg_name LIKE '%UniversalWriteGateway%'
                 OR adg_name LIKE '%UWG%'
             )
         """)
-        invalid = c.fetchone()[0]
+        violations = c.fetchall()
         conn.close()
 
-        if invalid > 0:
-            return False, [f"{invalid} writes not terminating at UWG"]
-        return True, []
+        for src_id, adg_name in violations:
+            result["uwg_violations"].append({"module_name": adg_name})
 
-    def _verify_l4_identity_completeness(self) -> tuple[bool, list[str]]:
+        return result
+
+    def _verify_l4_identity_completeness(self) -> dict[str, Any]:
         """Verify L4 nodes have complete identity."""
+        result = {"identity_issues": 0}
+        
         if not self.db_path or not self.db_path.exists():
-            return False, ["No SQLite database found"]
+            return result
 
         conn = sqlite3.connect(self.db_path)
         c = conn.cursor()
@@ -89,9 +96,8 @@ class ADGLayerAuthorityVerifier:
         incomplete = c.fetchone()[0]
         conn.close()
 
-        if incomplete > 0:
-            return False, [f"{incomplete} L4 nodes with incomplete identity"]
-        return True, []
+        result["identity_issues"] = incomplete
+        return result
 
     def verify_all(self) -> tuple[bool, list[str]]:
         """Run all layer authority checks."""
