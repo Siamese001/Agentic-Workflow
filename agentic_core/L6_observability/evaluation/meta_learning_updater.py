@@ -165,9 +165,17 @@ class MetaLearningUpdater:
         Returns:
             Updated meta-learning state
             
+        Raises:
+            ValueError: If score is negative or eval_type is empty
+            
         Emits ADG edges:
             - updates_meta_learning_state (P4)
         """
+        if score < 0:
+            raise ValueError(f"Score must be non-negative, got {score}")
+        if not eval_type or not eval_type.strip():
+            raise ValueError("Evaluation type cannot be empty")
+            
         _emit_updates_meta_learning_state("p4", "meta_learning_updater", eval_type)
         
         if timestamp is None:

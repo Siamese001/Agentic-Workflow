@@ -346,6 +346,35 @@ class TestIntegration:
         # All signals should have quality scores
         assert all(0.0 <= s.signal_quality <= 1.0 for s in enriched_signals)
 
+    def test_negative_score_rejected(self):
+        """Test negative score raises ValueError."""
+        enricher = LearningSignalEnricher()
+        
+        with pytest.raises(ValueError, match="Score must be non-negative"):
+            enricher.enrich_signal(
+                signal={"test": "data"},
+                evaluation_type="test",
+                score=-0.5,
+            )
+
+    def test_empty_evaluation_type_rejected(self):
+        """Test empty evaluation_type raises ValueError."""
+        enricher = LearningSignalEnricher()
+        
+        with pytest.raises(ValueError, match="Evaluation type cannot be empty"):
+            enricher.enrich_signal(
+                signal={"test": "data"},
+                evaluation_type="",
+                score=0.85,
+            )
+        
+        with pytest.raises(ValueError, match="Evaluation type cannot be empty"):
+            enricher.enrich_signal(
+                signal={"test": "data"},
+                evaluation_type="   ",
+                score=0.85,
+            )
+
 
 if __name__ == "__main__":
     pytest.main([__file__, "-v"])

@@ -95,6 +95,34 @@ class TestMetaLearningUpdater:
         assert state.total_updates == 0
         assert state.convergence_state == ConvergenceState.NOT_STARTED
 
+    def test_negative_score_rejected(self):
+        """Test negative score raises ValueError."""
+        updater = MetaLearningUpdater()
+        
+        with pytest.raises(ValueError, match="Score must be non-negative"):
+            updater.update_from_evaluation("test", -0.5)
+
+    def test_empty_eval_type_rejected(self):
+        """Test empty eval_type raises ValueError."""
+        updater = MetaLearningUpdater()
+        
+        with pytest.raises(ValueError, match="Evaluation type cannot be empty"):
+            updater.update_from_evaluation("", 0.85)
+        
+        with pytest.raises(ValueError, match="Evaluation type cannot be empty"):
+            updater.update_from_evaluation("   ", 0.85)
+
+    def test_degrading_convergence_state(self):
+        """Test convergence detection for degrading scores."""
+        updater = MetaLearningUpdater()
+        
+        # Add degrading scores
+        for i in range(25):
+            updater.update_from_evaluation("test", 0.9 - i * 0.02, time.time() + i)
+        
+        state = updater.get_current_state()
+        assert state.convergence_state in [ConvergenceState.DEGRADING, ConvergenceState.IMPROVING]
+
 
 class TestGlobalInstance:
     """Test global instance management."""

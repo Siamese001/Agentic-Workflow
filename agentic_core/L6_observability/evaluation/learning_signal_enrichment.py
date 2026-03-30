@@ -194,9 +194,17 @@ class LearningSignalEnricher:
         Returns:
             EnrichedLearningSignal or None if filtered (duplicate/low quality)
 
+        Raises:
+            ValueError: If score is negative or evaluation_type is empty
+
         Emits ADG edges:
             - updates_meta_learning_state (P4)
         """
+        if score < 0:
+            raise ValueError(f"Score must be non-negative, got {score}")
+        if not evaluation_type or not evaluation_type.strip():
+            raise ValueError("Evaluation type cannot be empty")
+            
         _emit_updates_meta_learning_state("p4", "learning_signal_enrichment", evaluation_type)
 
         if timestamp_utc is None:
