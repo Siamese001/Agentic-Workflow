@@ -231,7 +231,7 @@ class ControlPlane(AppsTracingMixin if APPS_TRACING_AVAILABLE else object):
 
     Delegates all evaluation to GovernanceShieldAgent.
     Gate A: evaluate_input(pii_content) → PolicyAction != ALLOW
-    
+
     OpenTelemetry:
         Emits spans for all evaluation operations with PII/shield metadata.
     """
@@ -239,7 +239,7 @@ class ControlPlane(AppsTracingMixin if APPS_TRACING_AVAILABLE else object):
     def __init__(self, policy: dict[str, Any] | None = None) -> None:
         # Initialize tracing mixin first
         super().__init__()
-        
+
         self._policy = policy or {}
         self._decision_count = 0
         self._block_count = 0
@@ -266,7 +266,7 @@ class ControlPlane(AppsTracingMixin if APPS_TRACING_AVAILABLE else object):
         """Evaluate input content before processing.
 
         Returns PolicyDecision with action != ALLOW when PII or safety violations found.
-        
+
         OpenTelemetry:
             Emits 'ControlPlane.evaluate_input' span with PII detection metadata.
         """
@@ -278,7 +278,7 @@ class ControlPlane(AppsTracingMixin if APPS_TRACING_AVAILABLE else object):
 
     def evaluate_output(self, content: str, context: dict[str, Any] | None = None) -> PolicyDecision:
         """Evaluate output content before delivery.
-        
+
         OpenTelemetry:
             Emits 'ControlPlane.evaluate_output' span with PII detection metadata.
         """
@@ -308,7 +308,7 @@ class ControlPlane(AppsTracingMixin if APPS_TRACING_AVAILABLE else object):
                 is_safe=False,
                 warnings=warnings,
                 errors=errors,
-                metadata={"is_input": is_input, "decision_id": self._decision_count, "pii": detected_pii},
+                metadata={"is_input": is_input, "decision_id": self._decision_count, "pii": detected_pii, "context_keys": list(context.keys()) if context else []},
             )
         if self._shield is not None:
             try:
@@ -326,6 +326,7 @@ class ControlPlane(AppsTracingMixin if APPS_TRACING_AVAILABLE else object):
                                 "is_input": is_input,
                                 "decision_id": self._decision_count,
                                 "shield": shield_result,
+                                "context_keys": list(context.keys()) if context else [],
                             },
                         )
                     if shield_result.get("warnings"):
@@ -339,12 +340,12 @@ class ControlPlane(AppsTracingMixin if APPS_TRACING_AVAILABLE else object):
             is_safe=True,
             warnings=warnings,
             errors=errors,
-            metadata={"is_input": is_input, "decision_id": self._decision_count},
+            metadata={"is_input": is_input, "decision_id": self._decision_count, "context_keys": list(context.keys()) if context else []},
         )
 
     def get_prompt(self, prompt_id: str) -> str:
         """Get prompt from knowledge base.
-        
+
         Raises:
             TypeError: If prompt_id is None
             KeyError: If prompt_id not found in knowledge base
@@ -355,12 +356,12 @@ class ControlPlane(AppsTracingMixin if APPS_TRACING_AVAILABLE else object):
         if not self.knowledge:
             raise RuntimeError("Knowledge base not available")
         from apps_lic.config.knowledge_base import get_prompt
-        
+
         return get_prompt(prompt_id)
 
     def get_node_config(self, node_id: str) -> Any:
         """Get K-node configuration from knowledge base.
-        
+
         Raises:
             TypeError: If node_id is None
             KeyError: If node_id not found in knowledge base
@@ -371,7 +372,7 @@ class ControlPlane(AppsTracingMixin if APPS_TRACING_AVAILABLE else object):
         if not self.knowledge:
             raise RuntimeError("Knowledge base not available")
         from apps_lic.config.knowledge_base import get_node_config
-        
+
         return get_node_config(node_id)
 
     def get_stats(self) -> dict[str, Any]:

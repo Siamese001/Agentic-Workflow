@@ -10,7 +10,7 @@ BRIDGING:
 
 USAGE:
     from apps_shared.mixins.apps_tracing_mixin import AppsTracingMixin
-    
+
     class MyAgent(AppsTracingMixin):
         def execute(self, request):
             with self.start_agent_span("execute", {"request_id": request.id}):
@@ -59,16 +59,16 @@ logger = logging.getLogger(__name__)
 
 class AppsTracingMixin:
     """OpenTelemetry tracing mixin for apps_* agent modules.
-    
+
     Provides explicit span instrumentation that bridges with agentic_core
     infrastructure for comprehensive distributed tracing.
-    
+
     FEATURES:
     - Explicit OTel span creation for agent operations
     - Automatic bridging to TracingMixin (if available)
     - ADG lifecycle trace contract emission
     - Graceful degradation when OTel unavailable
-    
+
     SPAN TYPES:
     - AGENT_EXECUTE: Agent execution spans
     - AGENT_REASON: Agent reasoning spans
@@ -82,7 +82,7 @@ class AppsTracingMixin:
         self._apps_tracer: Any = None
         self._apps_tracing_enabled = False
         self._service_name = getattr(self, '__class__.__name__', 'unknown_agent')
-        
+
         # Initialize OpenTelemetry tracer
         self._init_apps_tracer()
 
@@ -91,7 +91,7 @@ class AppsTracingMixin:
         if not OTEL_AVAILABLE:
             logger.debug(f"[{self._service_name}] OpenTelemetry not available")
             return
-        
+
         try:
             # Get or create tracer for this agent
             self._apps_tracer = trace.get_tracer(
@@ -111,22 +111,22 @@ class AppsTracingMixin:
         span_kind: str = "AGENT_EXECUTE"
     ) -> Generator[SpanContext | dict, None, None]:
         """Start an agent operation span with OTel instrumentation.
-        
+
         Args:
             operation: Name of the operation (e.g., "execute", "reason", "validate")
             attributes: Additional span attributes
             span_kind: Type of span (AGENT_EXECUTE, AGENT_REASON, AGENT_CALL_TOOL, AGENT_VALIDATE)
-            
+
         Yields:
             Span context (SpanContext if available, else dict)
-            
+
         Usage:
             with self.start_agent_span("execute", {"request_id": "123"}):
                 result = self.process(request)
         """
         span_name = f"{self._service_name}.{operation}"
         start_time = time.time()
-        
+
         # Emit lifecycle trace for ADG registration
         if LIFECYCLE_AVAILABLE:
             try:
@@ -137,7 +137,7 @@ class AppsTracingMixin:
                 )
             except Exception:
                 pass  # Silent degradation
-        
+
         # Create OpenTelemetry span if available
         otel_span = None
         if self._apps_tracing_enabled and self._apps_tracer:
@@ -151,20 +151,20 @@ class AppsTracingMixin:
                 }
                 if attributes:
                     span_attrs.update(attributes)
-                
+
                 # Start OTel span
                 otel_span = self._apps_tracer.start_span(
                     name=span_name,
                     attributes=span_attrs
                 )
-                
+
                 # Set span status to OK initially
                 otel_span.set_status(Status(StatusCode.OK))
-                
+
             except Exception as e:
                 logger.debug(f"[{self._service_name}] Failed to create OTel span: {e}")
                 otel_span = None
-        
+
         # Create fallback span context
         if AGENTIC_CORE_AVAILABLE:
             ctx = SpanContext(
@@ -182,14 +182,14 @@ class AppsTracingMixin:
                 "operation_name": operation,
                 "attributes": attributes or {}
             }
-        
+
         try:
             yield ctx
-            
+
             # Mark span as successful
             if otel_span:
                 otel_span.set_status(Status(StatusCode.OK))
-                
+
         except Exception as e:
             # Mark span as error
             if otel_span:
@@ -199,11 +199,11 @@ class AppsTracingMixin:
         finally:
             # End span
             duration_ms = (time.time() - start_time) * 1000
-            
+
             if otel_span:
                 otel_span.set_attribute("duration_ms", duration_ms)
                 otel_span.end()
-            
+
             # Emit telemetry event
             if LIFECYCLE_AVAILABLE:
                 try:
@@ -214,7 +214,7 @@ class AppsTracingMixin:
                     )
                 except Exception:
                     pass
-            
+
             logger.debug(f"[{self._service_name}] Span {span_name} completed in {duration_ms:.2f}ms")
 
     def start_reasoning_span(
@@ -223,11 +223,11 @@ class AppsTracingMixin:
         attributes: dict[str, Any] | None = None
     ) -> Generator[SpanContext | dict, None, None]:
         """Start a reasoning-specific span.
-        
+
         Args:
             reasoning_type: Type of reasoning (e.g., "planning", "analysis", "synthesis")
             attributes: Additional span attributes
-            
+
         Usage:
             with self.start_reasoning_span("planning"):
                 plan = self.create_plan()
@@ -243,11 +243,11 @@ class AppsTracingMixin:
         attributes: dict[str, Any] | None = None
     ) -> Generator[SpanContext | dict, None, None]:
         """Start a tool invocation span.
-        
+
         Args:
             tool_name: Name of the tool being called
             attributes: Additional span attributes
-            
+
         Usage:
             with self.start_tool_span("search", {"query": "example"}):
                 results = self.call_search_tool(query)
@@ -263,11 +263,11 @@ class AppsTracingMixin:
         attributes: dict[str, Any] | None = None
     ) -> Generator[SpanContext | dict, None, None]:
         """Start a validation span.
-        
+
         Args:
             validation_type: Type of validation (e.g., "output", "safety", "quality")
             attributes: Additional span attributes
-            
+
         Usage:
             with self.start_validation_span("safety"):
                 self.validate_output_safety(content)
@@ -299,4 +299,4 @@ class AppsTracingMixin:
         }
 
 
-__all__ = ["AppsTracingMixin", "OTEL_AVAILABLE", "AGENTIC_CORE_AVAILABLE"]
+__all__ = ["AppsTracingMixin", "OTEL_AVAILABLE", "AGENTIC_CORE_AVAILABLE", "LIFECYCLE_AVAILABLE"]
