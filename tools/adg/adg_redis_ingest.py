@@ -48,6 +48,13 @@ from collections import defaultdict
 
 import redis
 
+# CPU Optimization Imports
+from agentic_core.L2_execution.optimization.cpu_optimizer import (
+    CPUConfig,
+    get_cpu_optimizer,
+    shutdown_cpu_optimizer,
+)
+
 # ---------------------------------------------------------------------------
 # Config
 # ---------------------------------------------------------------------------
@@ -55,7 +62,7 @@ ADG_DIR = r"c:\Git\Agentic-Workflow\artifacts\adg"
 REDIS_HOST = "localhost"
 REDIS_PORT = 6379
 REDIS_DB = 0
-BATCH_SIZE = 500
+BATCH_SIZE = 1000  # Optimized from 500 for better throughput
 DIGEST_SPOT_CHECK_SIZE = 200
 
 # ---------------------------------------------------------------------------
@@ -216,7 +223,14 @@ def _spot_check_projection(
 # ---------------------------------------------------------------------------
 
 
-def ingest(force: bool = False) -> None:
+def ingest(force: bool = False, parallel: bool = True) -> None:
+    # CPU Optimizer initialization for Redis ingest
+    cpu_config = CPUConfig(use_processes=False, batch_size=BATCH_SIZE)
+    optimizer = get_cpu_optimizer(cpu_config)
+    ingest_start = time.time()
+    print(f"[cpu] Workers available: {optimizer.get_optimal_workers()} "
+          f"(AMD={optimizer._is_amd})")
+
     sqlite_path = get_latest_sqlite(ADG_DIR)
     snapshot_path = get_latest_snapshot(ADG_DIR)
     sqlite_mtime = os.path.getmtime(sqlite_path)
@@ -385,9 +399,10 @@ def ingest(force: bool = False) -> None:
                 pipe.execute()
                 print(f"[redis] {len(rows)} violations stored (ID-based, from {vtable})")
 
-    # ── Module context precomputation ──
+    # ── Module context precomputation (CPU-optimized) ──
     mod_ctx_count = len(mod_neighbors)
     if mod_neighbors:
+        ctx_start = time.time()
         print(f"[context] precomputing module context for {mod_ctx_count} modules ...")
         pipe = r.pipeline(transaction=False)
         batch = 0
@@ -411,7 +426,7 @@ def ingest(force: bool = False) -> None:
                 batch = 0
         if batch:
             pipe.execute()
-        print(f"[context] module context done ({mod_ctx_count} modules)")
+        print(f"[context] module context done ({mod_ctx_count} modules, {time.time() - ctx_start:.2f}s)")
 
     # ── Snapshot JSON ──
     with open(snapshot_path, encoding="utf-8") as f:
@@ -488,7 +503,9 @@ def ingest(force: bool = False) -> None:
         sys.exit(1)
 
     conn.close()
-    print("[done] ADG -> Redis ingest complete (zero-loss projection verified)")
+    ingest_elapsed = time.time() - ingest_start
+    print(f"[done] ADG -> Redis ingest complete (zero-loss projection verified, {ingest_elapsed:.2f}s)")
+    shutdown_cpu_optimizer()
 
 
 if __name__ == "__main__":

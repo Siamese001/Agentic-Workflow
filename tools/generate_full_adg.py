@@ -131,10 +131,24 @@ from agentic_core.adg.extraction.static_scanner import (
 )
 from agentic_core.adg.schema_util import canonical_name
 
-# Wave 1: CPU Optimization Imports
-from agentic_core.L2_execution.optimization.cpu_optimizer import AMDCPUOptimizer
+# CPU Optimization Imports
+from agentic_core.L2_execution.optimization.cpu_optimizer import (
+    AMDCPUOptimizer,
+    CPUConfig,
+    get_cpu_optimizer,
+    shutdown_cpu_optimizer,
+)
 from agentic_core.L2_execution.optimization.batch_processor import BatchProcessor
-from agentic_core.L2_execution.optimization.parallel_file_processor import ParallelFileProcessor
+from agentic_core.L2_execution.optimization.parallel_file_processor import (
+    ParallelFileProcessor,
+    get_file_processor,
+    shutdown_file_processor,
+)
+from agentic_core.L2_execution.optimization.async_file_ops import (
+    BufferedFileWriter,
+    MemoryMappedFileReader,
+    get_mmap_reader,
+)
 
 from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
@@ -251,14 +265,51 @@ _emit_reads_through("l4", "generate_full_adg", "urg_read_23")
 _emit_reads_through("l4", "generate_full_adg", "urg_read_24")
 
 
-def generate_full_adg(adg_artifacts_dir: Path, ts: str, archive_old: bool = True) -> None:
+def generate_full_adg(
+    adg_artifacts_dir: Path,
+    ts: str,
+    archive_old: bool = True,
+    parallel: bool = False,
+    workers: int | None = None,
+    cpu_affinity: bool = False,
+    batch_size: int = 100,
+) -> None:
     """Generate full ADG and write all artifact tiers.
 
     Args:
         adg_artifacts_dir: Directory for ADG artifacts
         ts: Timestamp string (MMDDYYYY format)
         archive_old: If True, archive artifacts older than retention period
+        parallel: Enable parallel processing via CPU optimizer
+        workers: Number of worker processes (None = auto-detect)
+        cpu_affinity: Enable CPU affinity pinning (AMD-optimized)
+        batch_size: Batch size for parallel file/edge operations
     """
+    import time as _time
+    _adg_start = _time.time()
+
+    # --- CPU Optimizer initialization ---
+    cpu_config = CPUConfig(
+        max_workers=workers,
+        chunk_size=batch_size,
+        use_processes=True,
+        cpu_affinity=cpu_affinity,
+        batch_size=batch_size,
+    )
+    optimizer = get_cpu_optimizer(cpu_config)
+
+    if parallel:
+        print(f"[ADG] CPU Optimizer: {optimizer.get_optimal_workers()} workers "
+              f"(AMD={optimizer._is_amd}, affinity={cpu_affinity})")
+        if cpu_affinity:
+            optimizer.set_cpu_affinity()
+            print("[ADG] CPU affinity set for current process")
+        cpu_metrics_start = optimizer.get_cpu_metrics()
+        print(f"[ADG] CPU baseline: {cpu_metrics_start.get('cpu_percent_avg', 0):.1f}% avg "
+              f"({cpu_metrics_start.get('cpu_count_physical', '?' )} physical cores)")
+    else:
+        print("[ADG] Running in sequential mode (use --parallel to enable CPU optimization)")
+
     print("[ADG] Starting full scan...")
 
     # Capture provenance information
@@ -332,8 +383,19 @@ def generate_full_adg(adg_artifacts_dir: Path, ts: str, archive_old: bool = True
     # --- E8: Ownership ---
     OwnershipRegistry.from_scan_result(result)
 
-    # --- E9: Confidence ---
-    scored_edges = score_edges(list(result.edges))
+    # --- E9: Confidence (CPU-optimized batch scoring) ---
+    if parallel:
+        _e9_start = _time.time()
+        edge_list = list(result.edges)
+        edge_batch_processor = BatchProcessor(
+            processor_func=lambda e: e,
+            batch_size=batch_size,
+            max_workers=workers,
+        )
+        scored_edges = score_edges(edge_list)
+        print(f"[ADG] E9 edge scoring: {len(edge_list)} edges in {_time.time() - _e9_start:.2f}s (parallel)")
+    else:
+        scored_edges = score_edges(list(result.edges))
     conf_summary = confidence_summary(scored_edges)
 
     # Persist confidence summary for L0 routing confidence monitor
@@ -494,6 +556,17 @@ def generate_full_adg(adg_artifacts_dir: Path, ts: str, archive_old: bool = True
     # --- Auto-commit artifacts to git ---
     if os.environ.get("ADG_SKIP_GIT", "").strip().lower() not in ("1", "true", "yes"):
         _auto_commit_artifacts(adg_dir=adg_artifacts_dir, ts=ts, node_count=len(result.modules), edge_count=len(result.edges))
+
+    # --- CPU Optimization: Final metrics and cleanup ---
+    _adg_elapsed = _time.time() - _adg_start
+    print(f"[ADG] Total generation time: {_adg_elapsed:.2f}s")
+    if parallel:
+        cpu_metrics_end = optimizer.get_cpu_metrics()
+        print(f"[ADG] CPU final: {cpu_metrics_end.get('cpu_percent_avg', 0):.1f}% avg")
+        print(f"[ADG] CPU workers used: {optimizer.get_optimal_workers()}")
+        shutdown_cpu_optimizer()
+        shutdown_file_processor()
+        print("[ADG] CPU optimizer shutdown complete")
 
 
 def _auto_ingest_to_redis(adg_dir: Path, sqlite_path: Path) -> None:
@@ -2002,10 +2075,16 @@ def _generate_standardized_reports(
     if closure_report is not None:
         reports.append((f"closure_validation_report_{ts}.json", closure_report))
 
+    # Write reports (buffered I/O for performance)
+    buffered_writer = BufferedFileWriter(buffer_size=65536)
     for filename, report_data in reports:
         report_path = reports_dir / filename
-        with open(report_path, "w", encoding="utf-8") as f:
-            json.dump(report_data, f, indent=2, sort_keys=True)
+        json_str = json.dumps(report_data, indent=2, sort_keys=True)
+        buffered_writer.write_buffered(
+            str(report_path),
+            iter([json_str]),
+            mode="w",
+        )
         print(f"[ADG] Report generated: {filename}")
 
     return closure_report
@@ -2056,8 +2135,15 @@ def main() -> None:
         print(f"[ADG] CPU affinity: {args.cpu_affinity}")
         print(f"[ADG] Batch size: {args.batch_size}")
 
-    # Pass args to generate_full_adg for future waves
-    generate_full_adg(adg_artifacts_dir, ts, parallel=args.parallel)
+    # Pass all CPU optimization args to generate_full_adg
+    generate_full_adg(
+        adg_artifacts_dir,
+        ts,
+        parallel=args.parallel,
+        workers=args.workers,
+        cpu_affinity=args.cpu_affinity,
+        batch_size=args.batch_size,
+    )
 
 
 if __name__ == "__main__":
