@@ -59,13 +59,18 @@ class ADGNode:
     @classmethod
     def from_row(cls, row: sqlite3.Row) -> "ADGNode":
         """Create ADGNode from SQLite row."""
+        # Confidence is a string enum: 'HIGH', 'MEDIUM', 'LOW'
+        confidence_map = {"HIGH": 1.0, "MEDIUM": 0.5, "LOW": 0.25}
+        conf_str = row["confidence"] or "HIGH"
+        confidence = confidence_map.get(conf_str, 0.5)
+
         return cls(
             node_id=str(row["id"]),
             entity_type=row["entity_type"] or "unknown",
             layer=row["layer"] or "unknown",
             file_path=row["resolved_path"] or "",
             symbol_name=row["adg_name"] or "",
-            confidence=float(row["confidence"]) if row["confidence"] else 1.0,
+            confidence=confidence,
             precision_type=row["precision_type"],
             type_surface=row["type_surface"],
             enclosing_symbol=row["enclosing_symbol"],

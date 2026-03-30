@@ -223,8 +223,8 @@ class TestFanAnalysis:
         """Analyze fan-in/fan-out for a known symbol."""
         test_name = "fan_analysis_known_symbol"
 
-        # Use a symbol we know exists
-        symbol = "agentic_core.L3_orchestration.engines.dag_manager.DAGManager"
+        # Use a symbol we know exists (ADG uses :: separator)
+        symbol = "agentic_core.L3_orchestration.engines.dag_manager::DAGManager"
         inputs = {"symbol_name": symbol}
 
         evidence_collector.start_test(test_name, inputs)

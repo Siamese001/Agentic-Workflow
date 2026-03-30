@@ -24,6 +24,14 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_stores_embedding,
 )
 
+# Lazy import for optional S3 dependencies
+try:
+    import botocore.exceptions
+    _HAS_BOTOCORE = True
+except ImportError:
+    _HAS_BOTOCORE = False
+    botocore = None  # type: ignore
+
 Logger = logging.getLogger(__name__)
 
 
@@ -263,7 +271,11 @@ class PostgresBackend(StorageBackend):
             conn.close()
             return exists
             
-        except:
+        except psycopg2.Error as e:
+            Logger.debug(f"Postgres exists check failed: {e}")
+            return False
+        except Exception as e:
+            Logger.error(f"Postgres exists check failed: {e}")
             return False
     
     def delete(self, artifact_id: str) -> bool:
@@ -281,7 +293,11 @@ class PostgresBackend(StorageBackend):
             conn.close()
             return deleted
             
-        except:
+        except psycopg2.Error as e:
+            Logger.debug(f"Postgres delete failed: {e}")
+            return False
+        except Exception as e:
+            Logger.error(f"Postgres delete failed: {e}")
             return False
 
 
@@ -358,7 +374,14 @@ class S3Backend(StorageBackend):
             s3 = self._get_s3_client()
             s3.head_object(Bucket=self.bucket, Key=key)
             return True
-        except:
+        except botocore.exceptions.ClientError as e:
+            if e.response['Error']['Code'] == '404':
+                return False
+            else:
+                Logger.debug(f"S3 exists check failed: {e}")
+                return False
+        except Exception as e:
+            Logger.error(f"S3 exists check failed: {e}")
             return False
     
     def delete(self, artifact_id: str) -> bool:
@@ -368,7 +391,14 @@ class S3Backend(StorageBackend):
             s3 = self._get_s3_client()
             s3.delete_object(Bucket=self.bucket, Key=key)
             return True
-        except:
+        except botocore.exceptions.ClientError as e:
+            if e.response['Error']['Code'] == '404':
+                return False
+            else:
+                Logger.debug(f"S3 delete failed: {e}")
+                return False
+        except Exception as e:
+            Logger.error(f"S3 delete failed: {e}")
             return False
 
 
