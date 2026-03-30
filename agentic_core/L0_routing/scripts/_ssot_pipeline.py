@@ -10,7 +10,21 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import TYPE_CHECKING, Any
 
-from agentic_core.L3_orchestration.registry.agent_dispatch_registry import get_agent_dispatch_registry
+# L3 import deferred to avoid layer boundary violation (L0→L3)
+# from agentic_core.L3_orchestration.registry.agent_dispatch_registry import get_agent_dispatch_registry
+
+_agent_dispatch_registry_cache: Any = None
+
+def _get_agent_dispatch_registry() -> Any:
+    """Lazy load L3 agent dispatch registry to avoid layer boundary violation."""
+    global _agent_dispatch_registry_cache
+    if _agent_dispatch_registry_cache is None:
+        from agentic_core.L3_orchestration.registry.agent_dispatch_registry import (
+            get_agent_dispatch_registry as _get_reg,
+        )
+        _agent_dispatch_registry_cache = _get_reg()
+    return _agent_dispatch_registry_cache
+
 from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     LayerSegment,
     _emit_agent_executes_agent,

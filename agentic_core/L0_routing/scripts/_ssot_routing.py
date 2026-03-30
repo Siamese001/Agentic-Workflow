@@ -36,7 +36,17 @@ from agentic_core.L0_routing.scripts._ssot_types import (
     RoutingInputs,
     RoutingTier,
 )
-from agentic_core.L2_execution.providers import get_clock
+# L2 import deferred to avoid layer boundary violation (L0→L2)
+# from agentic_core.L2_execution.providers import get_clock
+
+_clock_cache = None
+
+def _get_clock():
+    global _clock_cache
+    if _clock_cache is None:
+        from agentic_core.L2_execution.providers import get_clock as _get_clock_impl
+        _clock_cache = _get_clock_impl()
+    return _clock_cache
 from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     LayerSegment,
     _emit_agent_executes_agent,

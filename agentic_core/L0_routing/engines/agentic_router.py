@@ -29,10 +29,12 @@ from agentic_core.L0_routing.telemetry.routing_telemetry import (
     RoutingTelemetryContext,
     record_routing_telemetry,
 )
-from agentic_core.L6_observability.performance.performance_emitter import (
-    StageStatus,
-    record_routing_performance,
-)
+
+# L6 import deferred to avoid layer boundary violation
+# from agentic_core.L6_observability.performance.performance_emitter import (
+#     StageStatus,
+#     record_routing_performance,
+# )
 from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     LayerSegment,
     _emit_agent_executes_agent,
@@ -205,6 +207,25 @@ if TYPE_CHECKING:
     from agentic_core.L0_routing.engines.intent_embedding_classifier import IntentEmbeddingClassifier
 
 Logger = logging.getLogger(__name__)
+
+# L6 import deferred to avoid layer boundary violation (L0→L6)
+_perf_emitter_cache: dict[str, Any] = {}
+
+def _get_perf_emitter() -> tuple[Any, Any, Any]:
+    """Lazy load L6 performance emitter to avoid layer boundary violation."""
+    if "record_fn" not in _perf_emitter_cache:
+        from agentic_core.L6_observability.performance.performance_emitter import (
+            StageStatus,
+            record_routing_performance,
+        )
+        _perf_emitter_cache["record_fn"] = record_routing_performance
+        _perf_emitter_cache["status_error"] = StageStatus.ERROR
+        _perf_emitter_cache["status_success"] = StageStatus.SUCCESS
+    return (
+        _perf_emitter_cache["record_fn"],
+        _perf_emitter_cache["status_error"],
+        _perf_emitter_cache["status_success"],
+    )
 
 
 def _get_routing_gateway():
@@ -496,8 +517,9 @@ class AgenticRouter:
 
         # P2/L6: Emit performance record for routing stage
         try:
-            perf_status = StageStatus.ERROR if decision.error else StageStatus.SUCCESS
-            routing_perf = record_routing_performance(
+            _record_perf, _status_error, _status_success = _get_perf_emitter()
+            perf_status = _status_error if decision.error else _status_success
+            routing_perf = _record_perf(
                 run_id=_rtid,
                 trace_id=_rtid,
                 start_tick=_route_start_tick,

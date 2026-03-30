@@ -114,19 +114,19 @@ class GraphRetrievalContext:
 
 
 class ADGEdgeHydrator:
-    """Hydrates retrieval results with ADG graph edges.
+    """Hydrates retrieval results with REAL ADG graph edges from SQLite.
 
     Queries the ADG graph to resolve reads_from, writes_to, and
     pulls_context edges for retrieved chunks.
     """
 
-    def __init__(self, adg_client: Optional[Any] = None):
+    def __init__(self, adg_client: Optional[ADGQueryClient] = None):
         """Initialize ADG edge hydrator.
 
         Args:
-            adg_client: ADG client for querying the graph
+            adg_client: ADG client for querying the graph. If None, uses global.
         """
-        self.adg_client = adg_client
+        self.adg_client = adg_client or get_global_adg_client()
         self._hydration_count = 0
         self._avg_hydration_time_ms = 0.0
 
@@ -135,14 +135,14 @@ class ADGEdgeHydrator:
         chunk_id: str,
         source_file: Optional[str] = None,
     ) -> ADGEdgeHydration:
-        """Hydrate a chunk with ADG edges.
+        """Hydrate a chunk with REAL ADG edges.
 
         Args:
             chunk_id: Chunk identifier
             source_file: Optional source file for edge lookup
 
         Returns:
-            ADGEdgeHydration with resolved edges
+            ADGEdgeHydration with resolved edges from SQLite ADG
         """
         _trace_id = f"hydrate_{chunk_id}"
         _emit_records_execution_trace(
@@ -151,17 +151,15 @@ class ADGEdgeHydrator:
 
         hydration = ADGEdgeHydration(chunk_id=chunk_id)
 
-        # In production, query ADG for edges
-        # For now, create placeholder edges based on conventions
         if source_file:
-            # Resolve reads_from edges (entities this chunk reads from)
+            # Resolve REAL ADG edges from SQLite
             hydration.reads_from = self._resolve_reads_from(source_file)
-
-            # Resolve writes_to edges (entities this chunk writes to)
             hydration.writes_to = self._resolve_writes_to(source_file)
-
-            # Resolve pulls_context edges (context sources)
             hydration.pulls_context = self._resolve_pulls_context(source_file)
+
+            # Collect ADG node IDs
+            nodes = self.adg_client.get_nodes_for_file(source_file)
+            hydration.adg_node_ids = [n.node_id for n in nodes]
 
             for ctx in hydration.pulls_context:
                 _emit_stores_embedding(_trace_id, chunk_id, ctx.get("source", ""))
@@ -191,25 +189,60 @@ class ADGEdgeHydrator:
         return results
 
     def _resolve_reads_from(self, source_file: str) -> list[dict[str, Any]]:
-        """Resolve reads_from edges for a source file."""
-        # Placeholder: In production, query ADG for:
-        # SELECT src_id, dst_id FROM edges
-        # WHERE relation_type = 'reads_from' AND source_file = ?
-        return []
+        """Resolve reads_from edges for a source file from REAL ADG."""
+        nodes = self.adg_client.get_nodes_for_file(source_file)
+        reads_from = []
+
+        for node in nodes:
+            edges = self.adg_client.get_edges_for_node(
+                node.node_id, relation_type="reads_from", direction="out"
+            )
+            for edge in edges:
+                reads_from.append({
+                    "symbol": edge.symbol,
+                    "source_node": node.symbol_name,
+                    "target_node_id": edge.dst_id,
+                    "relation": edge.relation_type,
+                    "line_no": edge.line_no,
+                })
+
+        return reads_from
 
     def _resolve_writes_to(self, source_file: str) -> list[dict[str, Any]]:
-        """Resolve writes_to edges for a source file."""
-        # Placeholder: In production, query ADG for:
-        # SELECT src_id, dst_id FROM edges
-        # WHERE relation_type = 'writes_to' AND source_file = ?
-        return []
+        """Resolve writes_to edges for a source file from REAL ADG."""
+        nodes = self.adg_client.get_nodes_for_file(source_file)
+        writes_to = []
+
+        for node in nodes:
+            edges = self.adg_client.get_edges_for_node(
+                node.node_id, relation_type="writes_to", direction="out"
+            )
+            for edge in edges:
+                writes_to.append({
+                    "symbol": edge.symbol,
+                    "source_node": node.symbol_name,
+                    "target_node_id": edge.dst_id,
+                    "relation": edge.relation_type,
+                    "line_no": edge.line_no,
+                })
+
+        return writes_to
 
     def _resolve_pulls_context(self, source_file: str) -> list[dict[str, Any]]:
-        """Resolve pulls_context edges for a source file."""
-        # Placeholder: In production, query ADG for:
-        # SELECT src_id, dst_id FROM edges
-        # WHERE relation_type = 'pulls_context' AND source_file = ?
-        return []
+        """Resolve pulls_context edges for a source file from REAL ADG."""
+        nodes = self.adg_client.get_nodes_for_file(source_file)
+        pulls_context = []
+
+        for node in nodes:
+            # pulls_context is based on nodes in the file
+            pulls_context.append({
+                "source": node.symbol_name,
+                "node_id": node.node_id,
+                "entity_type": node.entity_type,
+                "layer": node.layer,
+            })
+
+        return pulls_context
 
 
 class GraphRetrievalEngine:
