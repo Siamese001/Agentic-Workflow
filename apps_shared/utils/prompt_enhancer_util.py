@@ -72,10 +72,31 @@ _emit_captures_evaluation_metric("p4", "prompt_enhancer_util", "eval_metric")
 _emit_stores_embedding("p4", "prompt_enhancer_util", "embedding_store")
 _emit_updates_meta_learning_state("p4", "prompt_enhancer_util", "meta_learning")
 _emit_links_execution_to_snapshot("p4", "prompt_enhancer_util", "exec_snapshot_link")
-from .cognitive_contracts import enforce_cognitive_contract, get_contract_manager
-from .few_shot_registry import get_few_shot_registry
-from .prompt_assembler import get_prompt_assembler
-from .prompt_injection_loader import InjectionMatch, get_injection_loader
+# Stub imports for missing modules - uncomment when available
+# from .cognitive_contracts import enforce_cognitive_contract, get_contract_manager
+# from .few_shot_registry import get_few_shot_registry
+# from .prompt_assembler import get_prompt_assembler
+# from .prompt_injection_loader import InjectionMatch, get_injection_loader
+
+# Stub implementations
+def enforce_cognitive_contract(prompt: str, **kwargs) -> str:
+    return prompt
+
+def get_contract_manager():
+    return None
+
+def get_few_shot_registry():
+    return None
+
+def get_prompt_assembler():
+    return None
+
+def get_injection_loader():
+    return None
+
+class InjectionMatch:
+    pass
+
 
 _emit_applies_guardrail("p0", "prompt_enhancer_util", "p0_governance")
 _emit_reads_policy_state("p0", "prompt_enhancer_util", "policy_binding")

@@ -17,6 +17,7 @@ from typing import Any
 from pydantic import BaseModel, Field, validator
 
 from agentic_core.interfaces.path_constants import DEFAULT_SLEEP
+from apps_shared.utils.subatomic_hop_util import HopState, MicroStage, SubatomicHop
 from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     LayerSegment,
     _emit_agent_executes_agent,

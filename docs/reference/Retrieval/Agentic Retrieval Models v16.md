@@ -1,4 +1,4 @@
-# UNIFIED ARCHITECTURAL SPEC: AGENTIC RETRIEVAL & RAG PIPELINES (v16.5 - FULL SINGLE-PANE INTEGRATION)
+# UNIFIED ARCHITECTURAL SPEC: AGENTIC RETRIEVAL & RAG PIPELINES (v16.13 - BRAND ALIGNED INFRASTRUCTURE)
 
 +=========================================================================================================================================================================================+
 |                                                                ⚙️ SYSTEM ARCHITECTURE & MACRO TOPOLOGY: THE FOUR PIPELINES                                                              |
@@ -74,77 +74,85 @@
 | ROLE:   Retains final routing authority based on budget and exact thresholds. Retrieval NEVER decides execution.                                                                        |
 | OUTPUT: Places Dual-Rail payload {text, 🔵 intent_vec} onto the bus and triggers the execution layer.                                                                                   |
 ===========================================================================================================================================================================================
-                            [ DUAL-RAIL SIGNAL ROUTING BUS, MEMORY INVARIANTS & DATA CONTRACTS ]
-[RAW_TEXT]  ───────┬──────────────────────────────────┬──────────────────────────────────┬──────────────────────────────────┬──────────────────────────────────┐
-                   │                                  │                                  │                                  │                                  │
-[🔵 intent] ───────┼──────────────────────────────────┼──────────────────────────────────┼──────────────────────────────────┼──────────────────────────────────┤
-                   │                                  │                                  │                                  │                                  │
-                   ▼ (Text)                           ▼ (🔵intent)                       ▼ (🔵intent vs 🟠fact)             ▼ (Text)                           ▼ (Text)
-+----------------------------------+----------------------------------+----------------------------------+----------------------------------+----------------------------------+
-| ⚡ 1. LAYER 1: EXACT CACHE       | 🧠 2. LAYER 2: SEMANTIC CACHE    | 📚 3. LAYER 3: AGENTIC RAG (C0)| 🛠️ 4. LAYER 4: AGENTIC ACTION    | 🔮 5. LAYER 5: LLM FALLBACK      |
-+----------------------------------+----------------------------------+----------------------------------+----------------------------------+----------------------------------+
-| 🏛️ ANALOGY: Skip vector math;    | 🏛️ ANALOGY: Compare new slip     | 🏛️ ANALOGY: Walk slip (🔵intent)| 🏛️ ANALOGY: Escalate to an       | 🏛️ ANALOGY: Answer directly      |
-| lookup exact text call number.   | (🔵intent) vs old slips (🔵intent)| to Master Archive to find book  | active specialist (Text only).   | from internal reading matrix.    |
-+----------------------------------+----------------------------------+----------------------------------+----------------------------------+----------------------------------+
-| SIGNAL: Hash(raw_text)           | SIGNAL: 🔵intent vs 🔵intent     | SIGNAL: 🔵 intent vs 🟠 fact     | SIGNAL: [raw_text + schemas]     | SIGNAL: raw_text (No vector)     |
-| LOGIC:  Exact Match / O(1) Hash  | LOGIC:  Embed Sim (>0.95)        | LOGIC:  Concept Sim (Top-K)      | LOGIC:  Dynamic Tool Selection   | LOGIC:  Next-Token Prediction    |
-| PAYLOAD:Strings, hashes, JSON    | PAYLOAD:🔵 intent vs 🔵 intent     | PAYLOAD:🔵 intent vs 🟠 fact     | PAYLOAD:API reqs, JSON, code     | PAYLOAD:Sys Prompt vs Weights    |
-| EMBED:  NO embeddings used       | EMBED:  Required (External BGE)  | EMBED:  Required (External BGE)  | EMBED:  Bypassed                 | EMBED:  Internal Matrix Used     |
-| INFRA:  Redis (RAM-first cache)  | INFRA:  GPTCache backed by Redis | INFRA:  FAISS / Master Archive   | INFRA:  Local Process Heap       | INFRA:  Token Embedding Matrix   |
-| STORE:  key=SHA256, val=response | STORE:  [🔵intent_vec] (queries) | STORE:  [🟠fact_vec] (documents) | STORE:  App Memory (Exec state)  | STORE:  Static Parametric Mem    |
-| VECTORS:NO vectors stored        | VECTORS:NEVER reads Vector DB    | VECTORS:NEVER writes to Redis    | VECTORS:NO vectors processed     | VECTORS:Internal mapped coords   |
-| TRUTH:  Ephemeral / NOT Truth    | TRUTH:  Evictable / Can be Stale | TRUTH:  ONLY Auth. Knowledge Ret.| TRUTH:  SQLite=Canonical Truth   | TRUTH:  Parametric Truth         |
-| PROFILE:Ultra-Low / Zero Cost    | PROFILE:Med Latency / Low Cost   | PROFILE:High Latency / High Cost | PROFILE:Variable / High Cost     | PROFILE:Variable / Med Cost      |
-| FAILURE:Cache Misses/Stale Data  | FAILURE:False Positives          | FAILURE:Missing Intent Expansions| FAILURE:Infinite Loops / Failure | FAILURE:Hallucination / Outdated |
-| CONTRCT:[1] CacheHit             | CONTRCT:[5] SemanticMatch        | CONTRCT:[13]RagQuery, [18]Cmp    | CONTRCT:[22]EnrichedManifest     | CONTRCT:[40] FallbackGen         |
-|                                  |                                  |         [14]RagResult, [19]Supp  |         [25]ChangePackage, [30]  |                                  |
-+----------------------------------+----------------------------------+----------------------------------+----------------------------------+----------------------------------+
-| [ L0 DISPATCHER CONTROL FLOW ]   | [ L0 DISPATCHER CONTROL FLOW ]   | [ L0 DISPATCHER CONTROL FLOW ]   | [ L0 DISPATCHER CONTROL FLOW ]   | [ L0 DISPATCHER CONTROL FLOW ]   |
-| EVAL: Exact Call Number?         | EVAL: Familiar Request?          | EVAL: 🟠 fact_vec in FAISS DB?   | EVAL: External Action?           | EVAL: No External Matches?       |
-| ├─ [HIT]  -> Execute & Return    | ├─ [HIT]  -> Execute & Return    | ├─ [HIT]  -> Execute & Return    | ├─ [HIT]  -> Execute & Return    | ├─ [HIT]  -> Execute & Return    |
-| └─ [MISS] -> Trigger Layer 2 ───>| └─ [MISS] -> Trigger Layer 3 ───>| └─ [MISS] -> Trigger Layer 4 ───>| └─ [MISS] -> Trigger Layer 5 ───>| └─ [FAIL] -> System Exception    |
-+----------------------------------+----------------------------------+----------------------------------+----------------------------------+----------------------------------+
-| INTERNAL MECHANICS:              | INTERNAL MECHANICS:              | INTERNAL MECHANICS:              | INTERNAL MECHANICS:              | INTERNAL MECHANICS:              |
-| ┌──────────────────────────────┐ | ┌──────────────────────────────┐ | ┌──────────────────────────────┐ | ┌──────────────────────────────┐ | ┌──────────────────────────────┐ |
-| │ 1. Redis SHA-256 Exact Match │ | │ 1. Cosine Sim > 0.95         │ | │ 1. Match: 🔵intent vs 🟠fact │ | │ 1. LangGraph Orchestration   │ | │ 1. System Prompt Inject      │ |
-| └──────────────┬───────────────┘ | └──────────────┬───────────────┘ | │  [PARALLEL 4a+4b: Concurrnt] │ | └──────────────┬───────────────┘ | └──────────────┬───────────────┘ |
-|                ▼                 |                ▼                 | └──────────────┬───────────────┘ |                ▼                 |                ▼                 |
-| ┌──────────────────────────────┐ | ┌──────────────────────────────┐ |                ▼                 | ┌──────────────────────────────┐ | ┌──────────────────────────────┐ |
-| │ 2. RAG Priming Phase:        │ | │ 2. GPTCache (via Redis)      │ | ┌──────────────────────────────┐ | │ 2. Tool Auth / Sandbox Bind  │ | │ 2. Token Embedding Matrix    │ |
-| │  > Seed Pack Lookup          │ | │  > Fetch cached intent       │ | │ 2. Parent-Child Expansion    │ | └──────────────┬───────────────┘ | │  (vocab_size × hidden_dim)   │ |
-| │  > Hydrate via KG (P1)       │ | │  > Skip RAG execution        │ | │  [ITERATIVE 4c: Recursive]   │ |                ▼                 | │  Maps to base shelf coords   │ |
-| │  > Emit Intent + C0 (P4)     │ | └──────────────┬───────────────┘ | └──────────────┬───────────────┘ | ┌──────────────────────────────┐ | └──────────────┬───────────────┘ |
-| └──────────────┬───────────────┘ |                ▼                 |                ▼                 | │ 3. Exec Telemetry & Parse    │ |                ▼                 |
-|                ▼                 | ┌──────────────────────────────┐ | ┌──────────────────────────────┐ | └──────────────┬───────────────┘ | ┌──────────────────────────────┐ |
-| ┌──────────────────────────────┐ | │ 3. LRU Eviction Protocol     │ | │ 3. Score & Rerank (4d + 4e)  │ |                ▼                 | │ 3. Transformer Attention     │ |
-| │ 3. TTL Validation Check      │ | └──────────────┬───────────────┘ | │  [COND 4d: Adapt Weights]    │ | ┌──────────────────────────────┐ | │  (Contextual Reading Room)   │ |
-| └──────────────────────────────┘ |                ▼                 | └──────────────┬───────────────┘ | │ 4. Sync Canonical Store      │ | └──────────────┬───────────────┘ |
-|                                  | ┌──────────────────────────────┐ |                ▼                 | └──────────────────────────────┘ |                ▼                 |
-|                                  | │ 4. Zero-Token Return         │ | ┌──────────────────────────────┐ |                                  | ┌──────────────────────────────┐ |
-|                                  | └──────────────────────────────┘ | │ 4. Assembly: High-Signal C0  │ |                                  | │ 4. Output Token Generation   │ |
-|                                  |                                  | └──────────────────────────────┘ |                                  | └──────────────────────────────┘ |
-+----------------------------------+----------------------------------+----------------------------------+----------------------------------+----------------------------------+
-|                                  |                                  | 🛡️ RAG INTEGRITY HUB: SOVEREIGNTY INVARIANTS                        |                                  |
-|                                  |                                  | (Write-once, content-hash indexed, NEVER authorizes execution.      |                                  |
-|                                  |                                  | NO route_mode, safety_threshold, or execution_tier.)                |                                  |
-+----------------------------------+----------------------------------+----------------------------------+----------------------------------+----------------------------------+
-|                                  |                                  | [ L3: AGENTIC RAG (READS) ]      | [ L4/L6: TELEMETRY (WRITES) ]    |                                  |
-|                                  |                                  |   ┌──────────────────────────┐   |   ┌──────────────────────────┐   |                                  |
-|                                  |                                  |   │ 1. ChunkManifest (L4D)   │   |   │ 3. RetrievalEval (L4F)   │   |                                  |
-|                                  |                                  |   ├──────────────────────────┤   |   ├──────────────────────────┤   |                                  |
-|                                  |                                  |   │ DOM: Ingest/Substrate    │   |   │ DOM: Execution Quality   │   |                                  |
-|                                  |                                  |   │ KEY: chunk_id(SHA-256)   │   |   │ KEY: trace_id/query_hash │   |                                  |
-|                                  |                                  |   │ DAT: [22]EnrichedManifst │   |   │ DAT: [19]SuppAnswerCheck │   |                                  |
-|                                  |                                  |   └──────────┬───────────────┘   |   └──────────┬───────────────┘   |                                  |
-|                                  |                                  |              │                   |              │                   |                                  |
-|                                  |                                  |   ┌──────────▼───────────────┐   |   ┌──────────▼───────────────┐   |                                  |
-|                                  |                                  |   │ 2. ParentChildIdx (L4E)  │   |   │ 4. CompletnessSnap (L4G) │   |                                  |
-|                                  |                                  |   ├──────────────────────────┤   |   ├──────────────────────────┤   |                                  |
-|                                  |                                  |   │ DOM: Graph & Relatnships │   |   │ DOM: Ctx Health/Support  │   |                                  |
-|                                  |                                  |   │ KEY: parent_id/child_id  │   |   │ KEY: trace_id/snap_hash  │   |                                  |
-|                                  |                                  |   │ DAT: ADG Edges           │   |   │ DAT: [18] ContextComp    │   |                                  |
-|                                  |                                  |   └──────────────────────────┘   |   └──────────────────────────┘   |                                  |
-+----------------------------------+----------------------------------+----------------------------------+----------------------------------+----------------------------------+
+                                                           [ DUAL-RAIL SIGNAL ROUTING BUS, MEMORY INVARIANTS & DATA CONTRACTS ]
+[RAW_TEXT]  ───────────┬──────────────────────────────────┬──────────────────────────────────┬──────────────────────────────────┬──────────────────────────────────┐
+                       │                                  │                                  │                                  │                                  │
+[🔵 intent] ───────────┼──────────────────────────────────┼──────────────────────────────────┼──────────────────────────────────┼──────────────────────────────────┤
+                       │                                  │                                  │                                  │                                  │
+                       ▼ (Text)                           ▼ (🔵intent)                       ▼ (🔵intent vs 🟠fact)             ▼ (Text)                           ▼ (Text)
++==========+==================================+==================================+==================================+==================================+==================================+
+| EXEC TIER| 🟥 1. LAYER 1: EXACT CACHE       | 🧠 2. LAYER 2: SEMANTIC CACHE    | 📚 3. LAYER 3: AGENTIC RAG (C0)  | 🛠️ 4. LAYER 4: AGENTIC ACTION    | 🔮 5. LAYER 5: LLM FALLBACK      |
++==========+==================================+==================================+==================================+==================================+==================================+
+| ANALOGY  | Skip vector math;                | Compare new slip                 | Walk slip (🔵intent)             | Escalate to an                   | Answer directly                  |
+|          | lookup exact text call number.   | (🔵intent) vs old (🔵intent)       | to Master Archive to find book   | active specialist (Text only).   | from internal reading matrix.    |
++==========+==================================+==================================+==================================+==================================+==================================+
+| 🎯 CORE EXECUTION INVARIANTS (HIGH SIGNAL)                                                                                                                                              |
++==========+==================================+==================================+==================================+==================================+==================================+
+| EMBED    | NO embeddings used               | Required (External BGE)          | Required (External BGE)          | Bypassed                         | Internal Matrix Used             |
+| LOGIC    | Exact Match / O(1) Hash          | Embed Sim (>0.95)                | Concept Sim (Top-K)              | Dynamic Tool Selection           | Next-Token Prediction            |
+| INFRA    | Redis (RAM-first cache)          | GPTCache backed by Redis         | FAISS / Master Archive           | Local Process Heap               | Token Embedding Matrix           |
+| STORE    | key=SHA256, val=response         | [🔵intent_vec] (queries)         | [🟠fact_vec] (documents)         | App Memory (Exec state)          | Static Parametric Mem            |
+| VECTORS  | NO vectors stored                | NEVER reads Vector DB            | NEVER writes to Redis            | NO vectors processed             | Internal mapped coords           |
++==========+==================================+==================================+==================================+==================================+==================================+
+| 📉 SECONDARY METADATA (LOWER SIGNAL)                                                                                                                                                    |
++----------+----------------------------------+----------------------------------+----------------------------------+----------------------------------+----------------------------------+
+| SIGNAL   | Hash(raw_text)                   | 🔵intent vs 🔵intent             | 🔵 intent vs 🟠 fact             | [raw_text + schemas]             | raw_text (No vector)             |
+| PAYLOAD  | Strings, hashes, JSON            | 🔵 intent vs 🔵 intent           | 🔵 intent vs 🟠 fact             | API reqs, JSON, code             | Sys Prompt vs Weights            |
+| TRUTH    | Ephemeral / NOT Truth            | Evictable / Can be Stale         | ONLY Auth. Knowledge Ret.        | SQLite=Canonical Truth           | Parametric Truth                 |
+| PROFILE  | Ultra-Low / Zero Cost            | Med Latency / Low Cost           | High Latency / High Cost         | Variable / High Cost             | Variable / Med Cost              |
+| FAILURE  | Cache Misses/Stale Data          | False Positives                  | Missing Intent Expansions        | Infinite Loops / Failure         | Hallucination / Outdated         |
+| CONTRCT  | [1] CacheHit                     | [5] SemanticMatch                | [13]RagQuery, [18]Cmp            | [22]EnrichedManifest             | [40] FallbackGen                 |
+|          |                                  |                                  | [14]RagResult, [19]Supp          | [25]ChangePackage, [30]          |                                  |
++==========+==================================+==================================+==================================+==================================+==================================+
+| CONTROL  | [ L0 DISPATCHER CONTROL FLOW ]   | [ L0 DISPATCHER CONTROL FLOW ]   | [ L0 DISPATCHER CONTROL FLOW ]   | [ L0 DISPATCHER CONTROL FLOW ]   | [ L0 DISPATCHER CONTROL FLOW ]   |
+| FLOW     | EVAL: Exact Call Number?         | EVAL: Familiar Request?          | EVAL: 🟠 fact_vec in FAISS DB?   | EVAL: External Action?           | EVAL: No External Matches?       |
+|          | ├─ [HIT]  -> Execute & Return    | ├─ [HIT]  -> Execute & Return    | ├─ [HIT]  -> Execute & Return    | ├─ [HIT]  -> Execute & Return    | ├─ [HIT]  -> Execute & Return    |
+|          | └─ [MISS] -> Trigger Layer 2 ───>| └─ [MISS] -> Trigger Layer 3 ───>| └─ [MISS] -> Trigger Layer 4 ───>| └─ [MISS] -> Trigger Layer 5 ───>| └─ [FAIL] -> System Exception    |
++==========+==================================+==================================+==================================+==================================+==================================+
+| INTERNAL | ┌──────────────────────────────┐ | ┌──────────────────────────────┐ | ┌──────────────────────────────┐ | ┌──────────────────────────────┐ | ┌──────────────────────────────┐ |
+| SEQUENCE | │ 1. [🟥 Redis] SHA-256 Exact  │ | │ 1. [🧠 BGE-M3] Ext API Call  │ | │ 1. [📚 FAISS] Match 🔵vs🟠  │ | │ 1. [🛠️ Heap] LangGraph Orch.│ | │ 1. [🛠️ Heap] Prompt Inject  │ |
+|          | │  ├─ Hash raw input string    │ | │  ├─ Pass discrete tokens     │ | │  ├─ 4a: FAISS Vector Search  │ | │  ├─ Parse routing payload    │ | │  ├─ Load L5 persona rules    │ |
+|          | │  └─ Lookup O(1) dictionary   │ | │  └─ Yield 🔵 intent_vec      │ | │  └─ 4b: BM25 Keyword Search  │ | │  └─ Init execution state     │ | │  └─ Bind raw_text input      │ |
+|          | └──────────────┬───────────────┘ | └──────────────┬───────────────┘ | └──────────────┬───────────────┘ | └──────────────┬───────────────┘ | └──────────────┬───────────────┘ |
+|          |                ▼                 |                ▼                 |                ▼                 |                ▼                 |                ▼                 |
+|          | ┌──────────────────────────────┐ | ┌──────────────────────────────┐ | ┌──────────────────────────────┐ | ┌──────────────────────────────┐ | ┌──────────────────────────────┐ |
+|          | │ 2. [🟥 Redis] Auth & TTL    │ | │ 2. [🧠 GPTCache] Similarity │ | │ 2. [🗃️ SQLite] Expand ADG   │ | │ 2. [🛠️ Heap] Auth/Sandbox   │ | │ 2. [🔮 Matrix] Embed Node   │ |
+|          | │  ├─ Check staleness limits   │ | │  ├─ Compare 🔵 vs cached 🔵  │ | │  ├─ 4c: Traverse ADG Edges   │ | │  ├─ Check L5 policy rules    │ | │  ├─ vocab_size x hidden_dim  │ |
+|          | │  └─ Verify user clearance    │ | │  └─ Cosine Sim > 0.95        │ | │  └─ Fetch surrounding chunks │ | │  └─ Mount isolated env       │ | │  └─ Map to base shelf coords │ |
+|          | └──────────────┬───────────────┘ | └──────────────┬───────────────┘ | └──────────────┬───────────────┘ | └──────────────┬───────────────┘ | └──────────────┬───────────────┘ |
+|          |                ▼                 |                ▼                 |                ▼                 |                ▼                 |                ▼                 |
+|          | ┌──────────────────────────────┐ | ┌──────────────────────────────┐ | ┌──────────────────────────────┐ | ┌──────────────────────────────┐ | ┌──────────────────────────────┐ |
+|          | │ 3. [🟥 Redis] Hydrate Output│ | │ 3. [🟥 Redis] LRU Eviction  │ | │ 3. [🛠️ Heap] Score & Rerank │ | │ 3. [🛠️ Heap] Exec Telemetry │ | │ 3. [🔮 Matrix] Attention    │ |
+|          | │  ├─ Extract cached string    │ | │  ├─ LRU protocol update      │ | │  ├─ 4d: Cross-Encoder Score  │ | │  ├─ Run python/API steps     │ | │  ├─ Multi-head processing    │ |
+|          | │  └─ Bypass all LLM steps     │ | │  └─ Confirm data freshness   │ | │  └─ 4e: MMR Diversity Filter │ | │  └─ Capture stdout/stderr    │ | │  └─ Parametric synthesis     │ |
+|          | └──────────────┬───────────────┘ | └──────────────┬───────────────┘ | └──────────────┬───────────────┘ | └──────────────┬───────────────┘ | └──────────────┬───────────────┘ |
+|          |                ▼                 |                ▼                 |                ▼                 |                ▼                 |                ▼                 |
+|          | ┌──────────────────────────────┐ | ┌──────────────────────────────┐ | ┌──────────────────────────────┐ | ┌──────────────────────────────┐ | ┌──────────────────────────────┐ |
+|          | │ 4. [🛠️ Heap] Zero-Token Ret.│ | │ 4. [🛠️ Heap] Low-Token Ret. │ | │ 4. [🗃️ SQLite] Sync & Build │ | │ 4. [🗃️ SQLite] Canonical L4 │ | │ 4. [🔮 Matrix] Generate Out │ |
+|          | │  ├─ Route direct to output   │ | │  ├─ Fetch text from Redis    │ | │  ├─ Trim to token budget     │ | │  ├─ Write L4 SQLite records  │ | │  ├─ Sample next token        │ |
+|          | │  └─ Close execution thread   │ | │  └─ Route direct to output   │ | │  └─ Hydrate final context    │ | │  └─ Emit completion signal   │ | │  └─ Stream final response    │ |
+|          | └──────────────────────────────┘ | └──────────────────────────────┘ | └──────────────────────────────┘ | └──────────────────────────────┘ | └──────────────────────────────┘ |
++==========+==================================+==================================+==================================+==================================+==================================+
+| SOVEREIGN|                                  |                                  | 🛡️ RAG INTEGRITY HUB: SOVEREIGNTY INVARIANTS (L4 CANONICAL TRUTH)                                      |
+| TELEMETRY|                                  |                                  | (Write-once, content-hash indexed, NEVER authorizes execution. NO route_mode, safety_threshold, etc)     |
++----------+----------------------------------+----------------------------------+----------------------------------+----------------------------------+----------------------------------+
+| WRITE    |                                  |                                  |  [ KNOWLEDGE SUBSTRATE (GRAPH) ] |  [ EXECUTION TELEMETRY (EVAL) ]  |                                  |
+| PATH     |                                  |                                  |  ┌────────────────────────────┐  |  ┌────────────────────────────┐  |                                  |
+|          |                                  |                                  |  │ 1. ChunkManifest (L4D)     │  |  │ 3. RetrievalEval (L4F)     │  |                                  |
+|          |                                  |                                  |  ├────────────────────────────┤  |  ├────────────────────────────┤  |                                  |
+|          |                                  |                                  |  │ Catl: Master chunk library │  |  │ Eval: Search grader (MRR)  │  |                                  |
+|          |                                  |                                  |  │ Look: SHA-256 Text Hash    │  |  │ Look: Qry Hash + Trace ID  │  |                                  |
+|          |                                  |                                  |  │ Data: Enriched JSON Schema │  |  │ Data: Prec/Recall metrics  │  |                                  |
+|          |                                  |                                  |  └─────────────┬──────────────┘  |  └─────────────┬──────────────┘  |                                  |
+|          |                                  |                                  |                │                 |                │                 |                                  |
+|          |                                  |                                  |  ┌─────────────▼──────────────┐  |  ┌─────────────▼──────────────┐  |                                  |
+|          |                                  |                                  |  │ 2. ParentChildIdx (L4E)    │  |  │ 4. CompletnessSnap (L4G)   │  |                                  |
+|          |                                  |                                  |  ├────────────────────────────┤  |  ├────────────────────────────┤  |                                  |
+|          |                                  |                                  |  │ Catl: GraphRAG routing map │  |  │ Eval: Final answer grader  │  |                                  |
+|          |                                  |                                  |  │ Look: Parent & Child IDs   │  |  │ Look: Context window hash  │  |                                  |
+|          |                                  |                                  |  │ Data: Context graph edges  │  |  │ Data: Health/support score │  |                                  |
+|          |                                  |                                  |  └────────────────────────────┘  |  └────────────────────────────┘  |                                  |
++==========+==================================+==================================+==================================+==================================+==================================+
 
 ===========================================================================================================================================================================================
 🔄 PIPELINE D: META-LEARNING FEEDBACK LOOP (OFFLINE POST-RUNTIME DECISION TREE)

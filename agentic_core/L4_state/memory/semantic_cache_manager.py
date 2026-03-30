@@ -256,7 +256,7 @@ class SemanticCacheManager:
     DEFAULT_LONG_TERM_TTL = 86400 * 7
 
     @classmethod
-    def get_instance(cls, api_key: str | None = None) -> SemanticCacheManager:
+    def get_instance(cls, api_key: str | None = None) -> "SemanticCacheManager":
         """
         Get the singleton instance of SemanticCacheManager.
 
@@ -277,7 +277,7 @@ class SemanticCacheManager:
             return cls._instance
 
     @classmethod
-    def _create_instance(cls, api_key: str | None = None) -> SemanticCacheManager:
+    def _create_instance(cls, api_key: str | None = None) -> "SemanticCacheManager":
         """Internal factory method for creating the singleton."""
         instance = object.__new__(cls)
         instance._initialize(api_key)

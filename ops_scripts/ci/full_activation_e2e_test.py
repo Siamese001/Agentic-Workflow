@@ -146,6 +146,11 @@ except Exception as e:
 # Test 6: ADG Redis MCP Server
 print('\n[TEST 6] ADG REDIS MCP SERVER')
 try:
+    # Add repo root to path for tools import
+    repo_root = Path(__file__).parent.parent.parent
+    if str(repo_root) not in sys.path:
+        sys.path.insert(0, str(repo_root))
+    
     from tools.adg import adg_mcp_server
 
     print('    ✓ Import: SUCCESS')

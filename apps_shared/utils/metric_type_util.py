@@ -288,6 +288,24 @@ _emit_reads_through("l4", "metric_type_util", "urg_read_112")
 
 logger = logging.getLogger(__name__)
 
+# Stub classes for L5 architecture - defined before use
+@dataclass
+class OrchestrateObservabilityPlanningOrchestratorResult:
+    """L5 Result type for observability planning orchestration."""
+    success: bool
+    data: dict[str, Any]
+    safety_validated: bool
+    timestamp: str
+    errors: list[str] = field(default_factory=list)
+
+
+@dataclass
+class OrchestrateObservabilityPlanningOrchestratorConstraints:
+    """L5 Constraints for observability planning orchestration."""
+    safety_level: str = "strict"
+    max_input_size: int = 1000000
+    allowed_patterns: list[str] = field(default_factory=list)
+
 
 class MetricType(Enum):
     """Types of metrics for observability."""

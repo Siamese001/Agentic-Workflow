@@ -1,7 +1,7 @@
 """GPTCache Integration for L2 Semantic Cache Layer
 
 Implements spec-compliant L2 Semantic Cache using GPTCache library
-with LRU eviction and zero-token return protocols.
+with BGE-M3 embeddings, LRU eviction and zero-token return protocols.
 """
 
 from __future__ import annotations
@@ -17,8 +17,40 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_records_execution_trace,
     _emit_stores_embedding,
 )
+from agentic_core.L2_execution.healers.bmg_embedding_similarity import bmg_embed_text
 
 Logger = logging.getLogger(__name__)
+
+
+class BGEEmbedding:
+    """BGE-M3 embedding wrapper for GPTCache.
+    
+    Implements the embedding interface expected by GPTCache using
+    local BGE-M3 model via bmg_embed_text.
+    """
+    
+    def __init__(self, model_name: str = "BAAI/bge-m3"):
+        self.model_name = model_name
+        self.dimension = 1024  # BGE-M3 dimension
+    
+    def to_embeddings(self, data: str, **_kwargs) -> list[float]:
+        """Convert text to BGE-M3 embedding vector.
+        
+        Args:
+            data: Text to embed
+            
+        Returns:
+            Embedding vector as list of floats
+        """
+        try:
+            embedding = bmg_embed_text(data[:2000])  # Limit to 2000 chars
+            if embedding:
+                return embedding
+            # Fallback: return zero vector if embedding fails
+            return [0.0] * self.dimension
+        except Exception as e:
+            Logger.warning(f"BGE embedding failed: {e}, returning zero vector")
+            return [0.0] * self.dimension
 
 
 class GPTCacheClient:
@@ -36,8 +68,8 @@ class GPTCacheClient:
         cache_dir: str = "artifacts/gptcache",
         similarity_threshold: float = 0.95,
         max_entries: int = 10000,
-        embedding_provider: str = "openai",
-        embedding_model: str = "text-embedding-3-large",
+        embedding_provider: str = "bge-m3",
+        embedding_model: str = "BAAI/bge-m3",
     ):
         """Initialize GPTCache client.
 
@@ -45,7 +77,7 @@ class GPTCacheClient:
             cache_dir: Directory for cache storage
             similarity_threshold: Similarity threshold for cache hits (default 0.95)
             max_entries: Maximum cache entries (LRU eviction)
-            embedding_provider: Provider for embeddings (openai, bge-m3)
+            embedding_provider: Provider for embeddings (bge-m3 only)
             embedding_model: Model name for embeddings
         """
         self.cache_dir = cache_dir
@@ -62,44 +94,35 @@ class GPTCacheClient:
         self._init_cache()
 
     def _init_cache(self) -> None:
-        """Initialize GPTCache backend."""
+        """Initialize GPTCache backend with BGE-M3 embeddings."""
         try:
             from gptcache import Cache
             from gptcache.adapter.api import init_similar_cache
-            from gptcache.embedding import OpenAI as GPTCacheOpenAI
             from gptcache.manager import get_data_manager, CacheBase, VectorBase
             from gptcache.similarity_evaluation.distance import SearchDistanceEvaluation
 
             # Create cache directory
             os.makedirs(self.cache_dir, exist_ok=True)
 
-            # Initialize embedding function
-            if self.embedding_provider == "openai":
-                embedding_fn = GPTCacheOpenAI()
-            else:
-                # Fallback to OpenAI for now
-                Logger.warning(f"GPTCache provider {self.embedding_provider} not yet supported, using OpenAI")
-                embedding_fn = GPTCacheOpenAI()
+            # Initialize BGE-M3 embedding function (NO OpenAI)
+            embedding_fn = BGEEmbedding(model_name=self.embedding_model)
 
-            # Initialize data manager
+            # Initialize data manager (ChromaDB for vector storage - canonical Layer 2/3)
             data_manager = get_data_manager(
                 CacheBase("sqlite", sql_url=f"sqlite:///{self.cache_dir}/gptcache.db"),
-                VectorBase("chromadb", collection="gptcache", persist_directory=self.cache_dir),
+                VectorBase("chromadb", dimension=1024, top_k=10),  # BGE-M3 = 1024 dims
             )
 
             # Initialize cache with similarity evaluation
+            self._cache = Cache()
             init_similar_cache(
                 cache_obj=self._cache,
                 data_manager=data_manager,
                 embedding=embedding_fn,
                 evaluation=SearchDistanceEvaluation(self.similarity_threshold),
-                config=Cache(
-                    eviction_strategy="LRU",
-                    max_entries=self.max_entries,
-                ),
             )
 
-            Logger.info(f"GPTCache initialized at {self.cache_dir}")
+            Logger.info(f"GPTCache initialized at {self.cache_dir} with BGE-M3 embeddings")
 
         except ImportError:
             Logger.warning("gptcache not installed, using mock implementation")

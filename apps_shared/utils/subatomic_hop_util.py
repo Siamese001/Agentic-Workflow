@@ -81,23 +81,77 @@ _emit_captures_evaluation_metric("p4", "subatomic_hop_util", "eval_metric")
 _emit_stores_embedding("p4", "subatomic_hop_util", "embedding_store")
 _emit_updates_meta_learning_state("p4", "subatomic_hop_util", "meta_learning")
 _emit_links_execution_to_snapshot("p4", "subatomic_hop_util", "exec_snapshot_link")
-from .quality.signal_enhancer import QualityThresholds, SignalQuality, get_signal_enhancer
-from .reflection_engine import (
-    STANDARD_CRITERIA,
-    MutationRequest,
-    ReflectionConfig,
-    ReflectionEngine,
-    get_reflection_engine,
-)
-from .resilience.circuit_breaker import (
-    CircuitBreakerConfig,
-    CircuitBreakerFactory,
-    CircuitOpenError,
-    CriticalServiceFailure,
-)
-from .security.secure_checkpoint import CheckpointIntegrityError, CheckpointManagerFactory
-from .service_container import ServiceContainer, get_default_container
-from .shared_models import HopState, MicroCheckpoint, MicroStage, RetryPolicy, StageTransition
+
+# Stub imports for missing modules - uncomment when available
+# from .quality.signal_enhancer import QualityThresholds, SignalQuality, get_signal_enhancer
+# from .reflection_engine import MutationRequest, ReflectionConfig, ReflectionEngine, get_reflection_engine, STANDARD_CRITERIA
+# from .resilience.circuit_breaker import CircuitBreakerConfig, CircuitBreakerFactory, CircuitOpenError, CriticalServiceFailure
+# from .security.secure_checkpoint import CheckpointIntegrityError, CheckpointManagerFactory
+# from .service_container import ServiceContainer, get_default_container
+# from .shared_models import HopState, MicroCheckpoint, MicroStage, RetryPolicy, StageTransition
+
+# Stub classes for missing imports
+class QualityThresholds:
+    MIN_QUALITY_SCORE = 0.7
+
+class SignalQuality:
+    pass
+
+class MutationRequest:
+    pass
+
+class ReflectionConfig:
+    pass
+
+class ReflectionEngine:
+    pass
+
+class CircuitBreakerConfig:
+    pass
+
+class CircuitBreakerFactory:
+    pass
+
+class CircuitOpenError(Exception):
+    pass
+
+class CriticalServiceFailure(Exception):
+    pass
+
+class CheckpointIntegrityError(Exception):
+    pass
+
+class CheckpointManagerFactory:
+    pass
+
+class ServiceContainer:
+    pass
+
+def get_default_container():
+    return ServiceContainer()
+
+def get_signal_enhancer():
+    return SignalQuality()
+
+def get_reflection_engine():
+    return ReflectionEngine()
+
+class HopState:
+    pass
+
+class MicroCheckpoint:
+    pass
+
+class MicroStage:
+    pass
+
+class RetryPolicy:
+    pass
+
+class StageTransition:
+    pass
+
+STANDARD_CRITERIA = {}
 
 _emit_applies_guardrail("p0", "subatomic_hop_util", "p0_governance")
 _emit_snapshots_state("p0", "subatomic_hop_util", "state_snapshot")

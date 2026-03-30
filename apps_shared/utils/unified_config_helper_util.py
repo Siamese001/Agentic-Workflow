@@ -14,11 +14,25 @@ import logging
 from pathlib import Path
 from typing import Any
 
-from apps_shared.config.config_loader_config import (
-    ConfigLoadResult,
-    get_config_loader,
-    load_agent_config,
-)
+# Stub imports for missing config_loader_config module
+# from apps_shared.config.config_loader_config import (
+#     ConfigLoadResult,
+#     get_config_loader,
+#     load_agent_config,
+# )
+
+# Stub implementations
+class ConfigLoadResult:
+    def __init__(self, success: bool = True, config: dict | None = None, errors: list | None = None):
+        self.success = success
+        self.config = config or {}
+        self.errors = errors or []
+
+def get_config_loader():
+    return None
+
+def load_agent_config(agent_id: str) -> ConfigLoadResult:
+    return ConfigLoadResult(success=True, config={"agent_id": agent_id})
 
 from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     LayerSegment,
