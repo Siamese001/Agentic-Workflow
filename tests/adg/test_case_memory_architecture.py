@@ -85,7 +85,44 @@ class _FakeBridge:
 
 class TestCaseLibrary:
     def _lib(self):
-        pass
+        """Return CaseLibrary with fake bridge."""
+        from agentic_core.case_memory.case_library import CaseLibrary
+        bridge = _FakeBridge()
+        return CaseLibrary(bridge=bridge), bridge
+
+    def _case_record(self):
+        """Create a test case record."""
+        from dataclasses import dataclass
+        
+        @dataclass
+        class CaseRecord:
+            artifact_type = "CASE_RECORD"
+            case_id = _FAKE_HASH
+            timestamp_utc = _TS
+            
+        return CaseRecord()
+
+    def _healer_bundle(self):
+        """Create a test healer bundle."""
+        from dataclasses import dataclass
+        
+        @dataclass
+        class HealerBundle:
+            artifact_type = "HEALER_BUNDLE"
+            case_id = _FAKE_HASH
+            
+        return HealerBundle()
+
+    def _hitl_record(self):
+        """Create a test HITL record."""
+        from dataclasses import dataclass
+        
+        @dataclass
+        class HITLRecord:
+            artifact_type = "HITL_PREFERENCE"
+            case_id = _FAKE_HASH
+            
+        return HITLRecord()
 
     def test_store_case_record_creates_entity(self):
         lib, bridge = self._lib()
@@ -114,11 +151,15 @@ class TestCaseLibrary:
         assert "sourced_from_adg_node" in rel_types
 
     def test_store_healer_bundle_creates_healer_resolved(self):
+        lib, bridge = self._lib()
+        bundle = self._healer_bundle()
         lib.store(bundle)
         rel_types = [r[2] for r in bridge.relations]
         assert "healer_resolved" in rel_types
 
     def test_store_hitl_approve_creates_hitl_approved(self):
+        lib, bridge = self._lib()
+        rec = self._hitl_record()
         lib.store(rec)
         rel_types = [r[2] for r in bridge.relations]
         assert "hitl_approved" in rel_types
@@ -139,12 +180,21 @@ class TestCaseLibrary:
 
 class TestGraphNeighborhoodMemory:
     def _mem(self):
-
+        """Return GraphNeighborhoodMemory with fake bridge."""
+        from agentic_core.case_memory.graph_neighborhood_memory import GraphNeighborhoodMemory
         bridge = _FakeBridge()
         return GraphNeighborhoodMemory(bridge=bridge), bridge
 
     def _card(self, name="ADG::Module::foo", layer="L2"):
-        pass
+        """Create a test memory card."""
+        from agentic_core.case_memory.memory_card import MemoryCard
+        from dataclasses import field
+        
+        return MemoryCard(
+            adg_entity_name=name,
+            layer=layer,
+            last_updated_utc=_TS,
+        )
 
     def test_upsert_stores_entity(self):
         mem, bridge = self._mem()
@@ -162,10 +212,18 @@ class TestGraphNeighborhoodMemory:
         assert len(bridge.entities) == count_before
 
     def test_upsert_changed_card_writes_again(self):
+        mem, bridge = self._mem()
+        card1 = self._card()
+        mem.upsert_card(card1)
+        count_before = len(bridge.entities)
+        card2 = self._card()
+        card2.common_healers = ["Healer1"]
         mem.upsert_card(card2)
         assert len(bridge.entities) > count_before
 
     def test_empty_entity_name_returns_false(self):
+        mem, bridge = self._mem()
+        ok = mem.upsert_card(self._card())
         assert ok is True
         card = mem.get_card("ADG::Module::foo")
         assert "POLICY_VIOLATION" in card.common_failure_families
