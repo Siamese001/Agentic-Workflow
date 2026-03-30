@@ -684,14 +684,14 @@ class TestL4Normalization:
     """L4 persistence layer normalization."""
 
     def test_unknown_layer_in_l4_path(self, factory, adg_dir_with):
-        """Modules in L4 path with UNKNOWN layer MUST fail."""
+        """L4 nodes must not contain UNKNOWN layer modules."""
         db_path = factory.l4_unknown_layer()
         adg_dir = adg_dir_with(db_path)
 
         from scripts.verify_l4_normalization import ADGL4NormalizationVerifier
 
         verifier = ADGL4NormalizationVerifier(adg_dir)
-        result = verifier._verify_l4_layer_classification()
+        result = verifier._verify_l4_path_integrity()
 
         # The mystery.py module has UNKNOWN layer — it should NOT appear in L4 nodes
         # But the store.py should appear with layer L4

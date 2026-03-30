@@ -68,6 +68,31 @@ class ADGL4NormalizationVerifier:
             return False, [f"{unresolved} L4 entities with unresolved identity"]
         return True, []
 
+    def _verify_l4_path_integrity(self) -> dict[str, Any]:
+        """Verify L4 path integrity - check for L_UNKNOWN in L4 paths."""
+        result = {"l4_nodes": [], "unknown_layer_nodes": []}
+        
+        if not self.db_path or not self.db_path.exists():
+            return result
+
+        conn = sqlite3.connect(self.db_path)
+        c = conn.cursor()
+
+        # Get all L4 path nodes
+        c.execute("""
+            SELECT adg_name, layer, resolved_path FROM nodes
+            WHERE resolved_path LIKE '%L4%'
+        """)
+        for row in c.fetchall():
+            adg_name, layer, resolved_path = row
+            node_info = {"name": adg_name, "layer": layer, "path": resolved_path}
+            result["l4_nodes"].append(node_info)
+            if layer == 'L_UNKNOWN':
+                result["unknown_layer_nodes"].append(node_info)
+
+        conn.close()
+        return result
+
     def verify_all(self) -> tuple[bool, list[str]]:
         """Run all L4 normalization checks."""
         checks = [
