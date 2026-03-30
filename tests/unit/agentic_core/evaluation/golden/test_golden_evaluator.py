@@ -271,11 +271,12 @@ class TestGoldenDatasetEvaluatorIntegration:
             actual_output="The current weather in San Francisco shows a temperature of 65°F with partly cloudy conditions.",
         )
 
-        # Should match TC001
-        if results:
-            result = results[0]
-            assert result.case_id == "TC001"
-            assert result.dataset_name == "test_cases"
+        # Must match TC001 - assert results exist
+        assert len(results) >= 1, "Expected at least one matching test case result"
+        result = results[0]
+        assert result.case_id == "TC001"
+        assert result.dataset_name == "test_cases"
+        assert result.passed is True, "Expected test case to pass with provided output"
 
     def test_real_retrieval_ground_truth(self):
         """Test evaluation against real retrieval_ground_truth.jsonl."""
@@ -287,6 +288,8 @@ class TestGoldenDatasetEvaluatorIntegration:
             generated_answer="The UniversalWriteGateway enforces Single mutation authority, write permissions, and requires signed instruction packets.",
         )
 
-        if results:
-            result = results[0]
-            assert result.case_id == "RGT001"
+        # Must match RGT001 - assert results exist
+        assert len(results) >= 1, "Expected at least one matching retrieval ground truth result"
+        result = results[0]
+        assert result.case_id == "RGT001"
+        assert result.passed is True, "Expected retrieval evaluation to pass"
