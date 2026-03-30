@@ -28,10 +28,13 @@ class ADGLayerAuthorityVerifier:
                 return files[0]
         return None
 
-    def _verify_layer_authority_compliance(self) -> tuple[bool, list[str]]:
+    def _verify_layer_authority_compliance(self) -> dict[str, Any]:
         """Verify L4 entities have proper authority constraints."""
+        result = {"compliant": True, "violation_count": 0, "issues": []}
+        
         if not self.db_path or not self.db_path.exists():
-            return False, ["No SQLite database found"]
+            result["issues"].append("No SQLite database found")
+            return result
 
         conn = sqlite3.connect(self.db_path)
         c = conn.cursor()
@@ -46,8 +49,11 @@ class ADGLayerAuthorityVerifier:
         conn.close()
 
         if incomplete > 0:
-            return False, [f"{incomplete} L4 entities with incomplete authority"]
-        return True, []
+            result["compliant"] = False
+            result["violation_count"] = incomplete
+            result["issues"].append(f"{incomplete} L4 entities with incomplete authority")
+        
+        return result
 
     def _verify_uwg_termination_for_writes(self) -> dict[str, Any]:
         """Verify all write operations terminate at Universal Write Gateway."""
@@ -110,24 +116,9 @@ class ADGLayerAuthorityVerifier:
         """Run all layer authority checks."""
         all_issues: list[str] = []
 
-        # Check 1: returns tuple[bool, list[str]]
-        passed, issues = self._verify_layer_authority_compliance()
-        all_issues.extend(issues)
-
-        # Check 2: returns dict with 'uwg_violations' key
-        result = self._verify_uwg_termination_for_writes()
-        all_issues.extend([f"UWG violation: {v['module_name']}" for v in result.get('uwg_violations', [])])
-
-        # Check 3: returns dict with 'identity_issues' key
-        result = self._verify_l4_identity_completeness()
-        if result.get('identity_issues', 0) > 0:
-            all_issues.append(f"{result['identity_issues']} L4 nodes with incomplete identity")
-        if result.get('issues', []):
-            all_issues.extend(result['issues'])
-
-        # Check 1: returns tuple[bool, list[str]]
-        passed, issues = self._verify_layer_authority_compliance()
-        all_issues.extend(issues)
+        # Check 1: returns dict with compliance info
+        result = self._verify_layer_authority_compliance()
+        all_issues.extend(result.get("issues", []))
 
         # Check 2: returns dict with 'uwg_violations' key
         result = self._verify_uwg_termination_for_writes()
