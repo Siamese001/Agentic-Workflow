@@ -26,10 +26,10 @@ class ADGDeadCodeZoneControlVerifier:
                 return files[0]
         return None
 
-    def _verify_dead_import_detection(self) -> tuple[bool, list[str]]:
+    def _verify_dead_import_detection(self) -> dict[str, Any]:
         """Verify dead imports are detected and tagged."""
         if not self.db_path or not self.db_path.exists():
-            return False, ["No SQLite database found"]
+            return {"total_dead_imports": 0, "unresolved_symbols": []}
 
         conn = sqlite3.connect(self.db_path)
         c = conn.cursor()
@@ -40,15 +40,21 @@ class ADGDeadCodeZoneControlVerifier:
             WHERE relation_type = 'dead_imports'
         """)
         dead_imports = c.fetchone()[0]
+
+        # Get unresolved symbols
+        c.execute("""
+            SELECT DISTINCT symbol FROM edges
+            WHERE relation_type = 'unresolved_import'
+        """)
+        unresolved = [row[0] for row in c.fetchall()]
         conn.close()
 
-        # Note: Having dead imports is OK, they should just be tagged
-        return True, []
+        return {"total_dead_imports": dead_imports, "unresolved_symbols": unresolved}
 
-    def _verify_low_confidence_zone_analysis(self) -> tuple[bool, list[str]]:
+    def _verify_low_confidence_zone_analysis(self) -> dict[str, Any]:
         """Verify low confidence nodes are analyzed."""
         if not self.db_path or not self.db_path.exists():
-            return False, ["No SQLite database found"]
+            return {"total_low_confidence": 0, "inferred_symbol_ratio": 0.0}
 
         conn = sqlite3.connect(self.db_path)
         c = conn.cursor()
@@ -67,20 +73,19 @@ class ADGDeadCodeZoneControlVerifier:
         """)
         inferred = c.fetchone()[0]
 
+        # Total nodes for ratio calculation
+        c.execute("SELECT COUNT(*) FROM nodes")
+        total = c.fetchone()[0]
         conn.close()
 
-        issues = []
-        if low_confidence > 100:  # Arbitrary threshold
-            issues.append(f"{low_confidence} LOW confidence nodes (high)")
-        if inferred > 100:
-            issues.append(f"{inferred} inferred nodes (high)")
+        inferred_ratio = inferred / total if total > 0 else 0.0
 
-        return len(issues) == 0, issues
+        return {"total_low_confidence": low_confidence, "inferred_symbol_ratio": inferred_ratio}
 
-    def _verify_unresolved_import_analysis(self) -> tuple[bool, list[str]]:
+    def _verify_unresolved_import_analysis(self) -> dict[str, Any]:
         """Verify unresolved imports are tracked."""
         if not self.db_path or not self.db_path.exists():
-            return False, ["No SQLite database found"]
+            return {"total_unresolved_imports": 0, "high_unresolved_count": False}
 
         conn = sqlite3.connect(self.db_path)
         c = conn.cursor()
@@ -93,14 +98,12 @@ class ADGDeadCodeZoneControlVerifier:
         unresolved = c.fetchone()[0]
         conn.close()
 
-        if unresolved > 1000:  # Arbitrary threshold
-            return False, [f"{unresolved} unresolved imports (high)"]
-        return True, []
+        return {"total_unresolved_imports": unresolved, "high_unresolved_count": unresolved > 1000}
 
-    def _verify_inferred_symbol_ratio(self) -> tuple[bool, list[str]]:
+    def _verify_inferred_symbol_ratio(self) -> dict[str, Any]:
         """Verify ratio of inferred symbols is bounded."""
         if not self.db_path or not self.db_path.exists():
-            return False, ["No SQLite database found"]
+            return {"inferred_symbol_ratio": 0.0, "high_ratio": False}
 
         conn = sqlite3.connect(self.db_path)
         c = conn.cursor()
@@ -113,28 +116,30 @@ class ADGDeadCodeZoneControlVerifier:
 
         conn.close()
 
-        if total > 0:
-            ratio = inferred / total
-            if ratio > 0.5:  # More than 50% inferred is concerning
-                return False, [f"Inferred symbol ratio {ratio:.1%} is high"]
-
-        return True, []
+        ratio = inferred / total if total > 0 else 0.0
+        return {"inferred_symbol_ratio": ratio, "high_ratio": ratio > 0.5}
 
     # Alias for test compatibility
     _verify_inferred_symbol_analysis = _verify_inferred_symbol_ratio
 
     def verify_all(self) -> tuple[bool, list[str]]:
         """Run all dead code zone checks."""
-        checks = [
-            self._verify_dead_import_detection,
-            self._verify_low_confidence_zone_analysis,
-            self._verify_unresolved_import_analysis,
-            self._verify_inferred_symbol_ratio,
-        ]
+        # Run checks that return dicts and extract issues
+        dead_import_result = self._verify_dead_import_detection()
+        low_conf_result = self._verify_low_confidence_zone_analysis()
+        unresolved_result = self._verify_unresolved_import_analysis()
+        inferred_result = self._verify_inferred_symbol_ratio()
 
-        all_issues = []
-        for check in checks:
-            passed, issues = check()
-            all_issues.extend(issues)
+        all_issues: list[str] = []
+        
+        # Check for issues in results
+        if dead_import_result.get("total_dead_imports", 0) > 1000:
+            all_issues.append(f"{dead_import_result['total_dead_imports']} dead imports detected")
+        if low_conf_result.get("total_low_confidence", 0) > 1000:
+            all_issues.append(f"{low_conf_result['total_low_confidence']} low confidence nodes")
+        if unresolved_result.get("high_unresolved_count", False):
+            all_issues.append(f"{unresolved_result['total_unresolved_imports']} unresolved imports")
+        if inferred_result.get("high_ratio", False):
+            all_issues.append(f"Inferred symbol ratio {inferred_result['inferred_symbol_ratio']:.1%} is high")
 
         return len(all_issues) == 0, all_issues

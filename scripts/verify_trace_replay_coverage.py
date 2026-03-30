@@ -52,9 +52,14 @@ class ADGTraceReplayCoverageVerifier:
         result["modules_without_trace"] = modules_without_trace
         return result
 
-    def _analyze_execution_surface_coverage(self) -> dict[str, Any]:
-        """Analyze execution surface coverage metrics."""
+    def _analyze_execution_surface_coverage(
+        self, module_id: str, has_trace: bool, has_replay: bool
+    ) -> dict[str, Any]:
+        """Analyze execution surface coverage metrics for a specific module."""
         result = {
+            "module_id": module_id,
+            "has_trace": has_trace,
+            "has_replay": has_replay,
             "execution_surfaces": {},
             "total_modules": 0,
         }

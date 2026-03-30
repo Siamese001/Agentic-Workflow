@@ -117,5 +117,22 @@ class ADGLayerAuthorityVerifier:
         result = self._verify_l4_identity_completeness()
         if result.get('identity_issues', 0) > 0:
             all_issues.append(f"{result['identity_issues']} L4 nodes with incomplete identity")
+        if result.get('issues', []):
+            all_issues.extend(result['issues'])
+
+        # Check 1: returns tuple[bool, list[str]]
+        passed, issues = self._verify_layer_authority_compliance()
+        all_issues.extend(issues)
+        
+        # Check 2: returns dict with 'uwg_violations' key
+        result = self._verify_uwg_termination_for_writes()
+        all_issues.extend([f"UWG violation: {v['module_name']}" for v in result.get('uwg_violations', [])])
+        
+        # Check 3: returns dict with 'identity_issues' key
+        result = self._verify_l4_identity_completeness()
+        if result.get('identity_issues', 0) > 0:
+            all_issues.append(f"{result['identity_issues']} L4 nodes with incomplete identity")
+        if result.get('issues', []):
+            all_issues.extend(result['issues'])
 
         return len(all_issues) == 0, all_issues
