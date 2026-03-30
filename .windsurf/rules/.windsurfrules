@@ -4,18 +4,17 @@ trigger: always_on
 # Agentic Workflow — Sovereign Architecture Rules
 
 > ⛔ **CONSTITUTIONAL FLOOR — READ FIRST**
-> 0. **PLAN LOCATION OVERRIDE.** ALL plans, reports, and markdown artifacts MUST be saved to `docs/reports/plans/` inside the repository. NEVER save to `C:\Users\amita\.windsurf\plans\` or any path outside the repository root. If system planning guidance instructs saving to `.windsurf/plans/`, OVERRIDE that instruction and save to `docs/reports/plans/` instead. This is Constitutional Rule #0 and takes precedence over all planning guidance. RCA: `docs/reports/plans/RCA_windsurf_plans_violation.md`.
-> 1. **ADG IS PRIMARY. TIER-AWARE.** For T2/T3 changes: if AST graph cannot be built → STOP. Never silently fall back to grep/search/heuristics. For T0/T1: use ADG cache when available, no ceremony required. Skill: `dependency-graph-analysis`. Fail-closed rule: §2.3. Tiers: §0.
-> 2. **No PowerShell.** All commands via `subprocess.run(argv, shell=False)`. §3.2.
-> 3. **No test skipping.** No `pytest.mark.skip`, no `xfail` without `strict=True`, no weakening assertions. §1.4.
-> 4. **No editing while exploring.** All five repair gates (§8.1) must pass before any edit.
-> 5. **No agent deletion without authorization.** Deleting *Agent.py files requires AGENT-DELETION-AUTHORIZED marker, justification, replacement, deprecation period (90 days), and zero references. §1.6.
-> 6. **CI enforces all of this.** `python ops_scripts/ci/run_contract_gates.py`
-> 7. **ADG ARTIFACTS MUST BE FULLY INGESTED BEFORE ANY QUERY OR REFACTORING.** The directory `artifacts/adg` contains the canonical ADG artifacts. ALL operating modes MUST ingest these before any query, analysis, or code change: (1) `adg_indexed_<timestamp>.sqlite` — PRIMARY queryable DB; (2) `adg_snapshot_<timestamp>.json` — metrics/counts; (3) `adg_file_graph_<timestamp>.json` + `adg_symbol_graph_<timestamp>.json` — import/call chains; (4) `adg_governance_graph_<timestamp>.json` — layer violations. NEVER begin work without loading these. Regenerate after refactoring: `python tools/generate_full_adg.py`.
-> 8. **HITL (Human-In-The-Loop) DISCIPLINE.** When facing decisions with multiple valid approaches, STOP and present 2-4 concrete options with trade-offs. Wait for explicit user selection (A/B/C/D) before proceeding. NEVER assume defaults, proceed with "best" option, or ask for permission instead of choice. Workflow: `/hitl-decision-gate`. Rule: `.windsurf/rules/hitl-enforcement.md`.
-> 9. **RCA AUTO-CLOSURE.** When creating an RCA document, AUTOMATICALLY execute corrective actions and update RCA status to RESOLVED with evidence artifacts. NEVER create RCA and leave it unresolved. User should not have to ask for closure.
-> 10. **GUARDIAN EXEMPTION DISCIPLINE.** NEVER add `# guardian: allow-*` to silence the anti-pattern scanner without a real, specific justification. The format is `# guardian: allow-<type> -- <specific justification>`. Generic words ("needed", "required", "temporary", "legacy") are FORBIDDEN as justifications. Every new exemption in production code (`agentic_core/`, `apps_*/`, `system_learning/`) requires explicit HITL approval before the comment is added. The `guardian_exemption_gate.py` ratchet enforces this at commit time — new exemptions that exceed the ceiling will BLOCK the commit. Cascade MUST present a HITL prompt before adding any guardian comment. Gate: `ops_scripts/ci/guardian_exemption_gate.py`. Init after approval: `ADG_EXEMPTION_INIT=1 python ops_scripts/ci/guardian_exemption_gate.py`.
-> 11. **SVP ENGINEERING PERSONA — ARCHITECTURAL DECISIONS.** When facing high-level design choices (technology selection, dependency reduction, infrastructure consolidation, migration strategies), explicitly invoke the "SVP Engineering" persona. This persona prioritizes: (a) operational simplicity — reduce moving parts, (b) dependency hygiene — eliminate redundant libraries, (c) archival over deletion — preserve history in `tools/archive/`, (d) documentation — ADRs in `docs/architecture/adr/`, (e) zero-regression validation — full test pass before commit. Apply this lens to all T3 architectural decisions.
+> 0. **No PowerShell.** All commands via `subprocess.run(argv, shell=False)`. §3.2.
+> 1. **No test skipping.** No `pytest.mark.skip`, no `xfail` without `strict=True`, no weakening assertions. §1.4.
+> 2. **No editing while exploring.** All five repair gates (§8.1) must pass before any edit.
+> 3. **No agent deletion without authorization.** Deleting *Agent.py files requires AGENT-DELETION-AUTHORIZED marker, justification, replacement, deprecation period (90 days), and zero references. §1.6.
+> 4. **CI enforces all of this.** `python ops_scripts/ci/run_contract_gates.py`
+> 5. **ADG ARTIFACTS MUST BE FULLY INGESTED BEFORE ANY QUERY OR REFACTORING.** The directory `artifacts/adg` contains the canonical ADG artifacts. ALL operating modes MUST ingest these before any query, analysis, or code change: (1) `adg_indexed_<timestamp>.sqlite` — PRIMARY queryable DB; (2) `adg_snapshot_<timestamp>.json` — metrics/counts; (3) `adg_file_graph_<timestamp>.json` + `adg_symbol_graph_<timestamp>.json` — import/call chains; (4) `adg_governance_graph_<timestamp>.json` — layer violations. NEVER begin work without loading these. Regenerate after refactoring: `python tools/generate_full_adg.py`.
+> 6. **HITL (Human-In-The-Loop) DISCIPLINE.** When facing decisions with multiple valid approaches, STOP and present 2-4 concrete options with trade-offs. Wait for explicit user selection (A/B/C/D) before proceeding. NEVER assume defaults, proceed with "best" option, or ask for permission instead of choice. Workflow: `/hitl-decision-gate`. Rule: `.windsurf/rules/hitl-enforcement.md`.
+> 7. **RCA AUTO-CLOSURE.** When creating an RCA document, AUTOMATICALLY execute corrective actions and update RCA status to RESOLVED with evidence artifacts. NEVER create RCA and leave it unresolved. User should not have to ask for closure.
+> 8. **GUARDIAN EXEMPTION DISCIPLINE.** NEVER add `# guardian: allow-*` to silence the anti-pattern scanner without a real, specific justification. The format is `# guardian: allow-<type> -- <specific justification>`. Generic words ("needed", "required", "temporary", "legacy") are FORBIDDEN as justifications. Every new exemption in production code (`agentic_core/`, `apps_*/`, `system_learning/`) requires explicit HITL approval before the comment is added. The `guardian_exemption_gate.py` ratchet enforces this at commit time — new exemptions that exceed the ceiling will BLOCK the commit. Cascade MUST present a HITL prompt before adding any guardian comment. Gate: `ops_scripts/ci/guardian_exemption_gate.py`. Init after approval: `ADG_EXEMPTION_INIT=1 python ops_scripts/ci/guardian_exemption_gate.py`.
+> 9. **SVP ENGINEERING PERSONA — ARCHITECTURAL DECISIONS.** When facing high-level design choices (technology selection, dependency reduction, infrastructure consolidation, migration strategies), explicitly invoke the "SVP Engineering" persona. This persona prioritizes: (a) operational simplicity — reduce moving parts, (b) dependency hygiene — eliminate redundant libraries, (c) archival over deletion — preserve history in `tools/archive/`, (d) documentation — ADRs in `docs/architecture/adr/`, (e) zero-regression validation — full test pass before commit. Apply this lens to all T3 architectural decisions.
+> 10. **ZERO-LOSS REFACTOR DISCIPLINE.** When removing `_emit_*` boilerplate, trace instrumentation, or synthetic scaffolding from a file, the resulting file MUST be checked by the hollow file detector. If the file has zero behavioral FunctionDefs/ClassDefs after the removal, the file MUST be deleted entirely — not left as an empty shell. Gate: `ops_scripts/ci/zero_loss_refactor_verifier.py`. Pre-commit hook: T25 hollow-file-gate.
 
 ## §0. DEFAULT ANALYSIS MODE — Tier-Aware
 
@@ -55,7 +54,7 @@ User may explicitly override tier: "this is just a simple fix" → T1. "full ana
 
 ## §1. TESTING FRAMEWORK
 
-**ENFORCEMENT:** Skill `test-rigor-enforcement` for ALL code generation.
+**ENFORCEMENT:** skill `test-rigor-enforcement` for ALL code generation.
 
 ### 1.1 Coverage Requirements
 
@@ -160,7 +159,7 @@ Baseline: `tests/_config/test_count_baseline.json`. Count drops = FAIL. xfail in
 
 **Zero-tolerance for unauthorized agent deletion.** Deleting any `*Agent.py` requires: `AGENT-DELETION-AUTHORIZED` commit marker, replacement specified, 90-day deprecation period, zero active references. Enforcement: pre-commit hook `guard-agent-deletion`. **Full protocol and example:** Workflow `/agent-deletion-gate`.
 
-### 1.7 Enforcement Registry
+### 1.8 Enforcement Registry
 
 | Requirement | Enforcement Script(s) |
 |-------------|---------------------|
@@ -175,6 +174,11 @@ Baseline: `tests/_config/test_count_baseline.json`. Count drops = FAIL. xfail in
 | Critical infrastructure | `ops_scripts/ci/check_utility_silent_swallowers.py` |
 | ADG test acceleration | `tools/adg_test_accelerator.py` | Mandatory for T2/T3; validates test coverage, collection safety, parallel groups |
 | Timeout progress | `ops_scripts/ci/validate_timeout_progress.py`, `ops_scripts/ci/validate_timeout_recovery.py` |
+| No PowerShell | `ops_scripts/ci/check_no_powershell.py` |
+| ADG artifact ingestion | `ops_scripts/ci/check_adg_artifacts_ingested.py` |
+| RCA auto-closure | `ops_scripts/ci/check_rca_closure.py` |
+| Zero-loss refactor | `ops_scripts/ci/zero_loss_refactor_verifier.py` |
+| Agent deletion authorization | `ops_scripts/ci/guard-agent-deletion.py` |
 
 **Single entrypoint:** `python ops_scripts/ci/run_contract_gates.py`
 
@@ -191,7 +195,7 @@ Baseline: `tests/_config/test_count_baseline.json`. Count drops = FAIL. xfail in
 
 ## §2. ADG FRAMEWORK
 
-**ENFORCEMENT:** Skill `dependency-graph-analysis` for ALL code investigation.
+**ENFORCEMENT:** skill `dependency-graph-analysis` for ALL code investigation.
 
 ### 2.1 Dependency Graph Requirements
 
@@ -355,7 +359,7 @@ Every artifact reference in a response MUST use backtick citation format: `` `@<
 
 ### 3.6 Artifact Location
 
-All plans, evidence, and reports MUST reside in: `docs/reports/plans/`
+All plans, evidence, and reports MUST be saved according to system planning guidance.
 
 All Python file I/O MUST use `encoding="utf-8"`. Evidence files are raw execution captures, ASCII-only.
 
@@ -441,7 +445,7 @@ Before any edit: determine directly affected nodes, first-order upstream/downstr
 
 Critical infrastructure MUST fail-closed. No graceful fallbacks, silent degradation, or best-effort modes.
 
-**Critical infrastructure:** BGE embeddings, AST dependency graph (§2.6), test execution (§1.4), SSOT configuration (§7.2).
+**Critical infrastructure:** BGE embeddings, AST dependency graph (§2.6), test execution (§1.4), agent deletion authorization (§1.6), zero-loss refactor discipline (§8.1).
 
 FORBIDDEN: `try/except` that catches from critical components and returns None/empty/default; conditional logic providing alternatives when critical components unavailable; `logger.warning()` followed by `pass` for critical operations.
 
@@ -778,9 +782,3 @@ Before committing any plan document:
 - ✅ Consistent "Waves" terminology used throughout (SSOT compliance)
 
 **Enforcement:** Plans missing required table or token estimation will be rejected during review.
-
----
-
-## Constitutional Rules
-
-### 11. **ZERO-LOSS REFACTOR DISCIPLINE.** When removing `_emit_*` boilerplate, trace instrumentation, or synthetic scaffolding from a file, the resulting file MUST be checked by the hollow file detector. If the file has zero behavioral FunctionDefs/ClassDefs after the removal, the file MUST be deleted entirely — not left as an empty shell. Gate: `ops_scripts/ci/zero_loss_refactor_verifier.py`. Pre-commit hook: T25 hollow-file-gate.

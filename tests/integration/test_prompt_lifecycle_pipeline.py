@@ -132,7 +132,7 @@ class TestPromptBOMBuilder(unittest.TestCase):
 
         builder = PromptBOMBuilder()
         store = InMemoryVersionStore()
-        
+
         # Patch global function
         import agentic_core.L0_routing.engines.prompt_bom_builder as builder_module
         original_get_store = builder_module._get_version_store
@@ -149,7 +149,7 @@ class TestPromptBOMBuilder(unittest.TestCase):
 
         # Mixins should be sorted
         self.assertEqual(bom.mixins_required, ("alpha", "beta", "zebra"))
-        
+
         # Restore original
         builder_module._get_version_store = original_get_store
 
