@@ -9,7 +9,7 @@ import logging
 import random
 import time
 from dataclasses import dataclass, field
-from datetime import datetime
+from datetime import datetime, timezone
 from enum import Enum
 from typing import Any
 
@@ -382,7 +382,7 @@ class RetryPolicy:
                     attempt=attempt + 1,
                     delay=0.0,
                     exception=None,
-                    timestamp=datetime.utcnow(),
+                    timestamp=datetime.now(timezone.utc),
                     success=True,
                 )
                 attempts_history.append(attempt_info)
@@ -412,7 +412,7 @@ class RetryPolicy:
                     attempt=attempt + 1,
                     delay=delay,
                     exception=e,
-                    timestamp=datetime.utcnow(),
+                    timestamp=datetime.now(timezone.utc),
                     success=False,
                 )
                 attempts_history.append(attempt_info)

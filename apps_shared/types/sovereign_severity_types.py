@@ -626,7 +626,7 @@ InjectionPattern = injection_pattern
 CORE_CONTRACTS_REGISTRY = {}
 
 import uuid
-from datetime import datetime
+from datetime import datetime, timezone
 
 
 class thermal_profile(str, Enum):
@@ -658,7 +658,7 @@ class hard_state:
     file_paths: dict[str, str] = field(default_factory=dict)
     schemas: dict[str, str] = field(default_factory=dict)
     execution_trace: list[dict[str, Any]] = field(default_factory=list)
-    created_at: datetime = field(default_factory=datetime.utcnow)
+    created_at: datetime = field(default_factory=lambda: datetime.now(timezone.utc))
 
     def add_trace(self, event: str, data: dict[str, Any]) -> HardState:
         """Add an event to the execution trace (returns new instance)."""
@@ -666,7 +666,7 @@ class hard_state:
 
         _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, f"HardState.add_trace:{event}")
         new_trace = self.execution_trace + [
-            {"event": event, "timestamp": datetime.utcnow().isoformat(), "data": data}
+            {"event": event, "timestamp": datetime.now(timezone.utc).isoformat(), "data": data}
         ]
         return HardState(
             execution_id=self.execution_id,
@@ -711,7 +711,7 @@ class soft_state:
                 "key": key,
                 "old_value": old_value,
                 "new_value": new_value,
-                "timestamp": datetime.utcnow().isoformat(),
+                "timestamp": datetime.now(timezone.utc).isoformat(),
             }
         )
 
@@ -776,7 +776,7 @@ class signed_claim:
 
     def __post_init__(self):
         if self.verified_at is None:
-            self.verified_at = datetime.utcnow()
+            self.verified_at = datetime.now(timezone.utc)
 
 SignedClaim = signed_claim
 
@@ -791,15 +791,15 @@ class signal_context(BaseModel):
     thermal_config: ThermalConfig = Field(default_factory=ThermalConfig)
     signed_claims: list[signed_claim] = Field(default_factory=list)
     context_version: str = "1.0.0"
-    created_at: datetime = Field(default_factory=datetime.utcnow)
-    last_modified: datetime = Field(default_factory=datetime.utcnow)
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    last_modified: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
 
     class Config:
         arbitrary_types_allowed = True
 
     def update_timestamp(self) -> None:
         """Update the last modified timestamp."""
-        self.last_modified = datetime.utcnow()
+        self.last_modified = datetime.now(timezone.utc)
 
     def add_signed_claim(
         self, claim: str, source: str, confidence: float, evidence: str | None = None
@@ -1875,20 +1875,20 @@ class immutable_staging_buffer:
 
     def with_data(self, new_data: dict[str, Any]) -> ImmutableStagingBuffer:
         """Return a new buffer with updated data."""
-        from datetime import datetime
+        from datetime import datetime, timezone
 
         return ImmutableStagingBuffer(
             _data={**self.data, **new_data},
             _version=self.version + 1,
-            _timestamp=datetime.utcnow().isoformat(),
+            _timestamp=datetime.now(timezone.utc).isoformat(),
             _checksum=None,
         )
 
     def clear(self) -> ImmutableStagingBuffer:
         """Return a new empty buffer."""
-        from datetime import datetime
+        from datetime import datetime, timezone
 
-        return ImmutableStagingBuffer(_version=self.version + 1, _timestamp=datetime.utcnow().isoformat())
+        return ImmutableStagingBuffer(_version=self.version + 1, _timestamp=datetime.now(timezone.utc).isoformat())
 
 ImmutableStagingBuffer = immutable_staging_buffer
 
@@ -3372,7 +3372,7 @@ class thinking_step(sovereign_base_model_types):
     step_id: int
     thought: str
     action: str
-    timestamp: str = field(default_factory=lambda: datetime.utcnow().isoformat())
+    timestamp: str = field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
 
 ThinkingStep = thinking_step
 
@@ -3384,7 +3384,7 @@ class revision_step(sovereign_base_model_types):
     original_step: int
     revised_thought: str
     reason: str
-    timestamp: str = field(default_factory=lambda: datetime.utcnow().isoformat())
+    timestamp: str = field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
 
 RevisionStep = revision_step
 

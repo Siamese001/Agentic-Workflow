@@ -231,7 +231,7 @@ def get_file_versions(component_id: str) -> str:
     """Mock for Figma MCP: Get file version history."""
     from datetime import datetime, timedelta
 
-    now: Any = datetime.utcnow()
+    now: Any = datetime.now(timezone.utc)
     versions: Any = [
         {
             "id": "v1.0.0",

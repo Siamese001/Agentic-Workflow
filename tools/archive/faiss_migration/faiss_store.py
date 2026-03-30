@@ -288,28 +288,28 @@ class FaissVectorStore:
             del self._id_to_idx[doc_id]
 
         return True
-    
+
     def delete_document(self, doc_id: str) -> bool:
         """Alias for delete method."""
         return self.delete(doc_id)
-    
+
     def get_document(self, doc_id: str) -> Optional[VectorDocument]:
         """Get a document by ID.
-        
+
         Args:
             doc_id: Document ID
-            
+
         Returns:
             VectorDocument if found
         """
         return self._documents.get(doc_id)
-    
+
     def _normalize_vector(self, vector: np.ndarray) -> np.ndarray:
         """Normalize vector to unit length.
-        
+
         Args:
             vector: Input vector
-            
+
         Returns:
             Normalized vector
         """

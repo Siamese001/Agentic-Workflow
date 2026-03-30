@@ -10,7 +10,7 @@ import time
 import uuid
 from collections.abc import Callable
 from dataclasses import dataclass, field
-from datetime import datetime
+from datetime import datetime, timezone
 from enum import Enum
 from typing import Any
 
@@ -531,7 +531,7 @@ class ObservabilityExecutionAdapter:
                 "trace_data": {
                     "operation": operation,
                     "component": component,
-                    "timestamp": datetime.utcnow().isoformat(),
+                    "timestamp": datetime.now(timezone.utc).isoformat(),
                 },
                 "metrics": {"trace_duration": 0.1, "trace_depth": 3},
             }
@@ -545,7 +545,7 @@ class ObservabilityExecutionAdapter:
                     "name": metric_name,
                     "value": value,
                     "tags": tags,
-                    "timestamp": datetime.utcnow().isoformat(),
+                    "timestamp": datetime.now(timezone.utc).isoformat(),
                 },
                 "metrics": {"metric_collection_time": 0.05},
             }
@@ -559,7 +559,7 @@ class ObservabilityExecutionAdapter:
                     "level": level,
                     "message": message,
                     "context": context,
-                    "timestamp": datetime.utcnow().isoformat(),
+                    "timestamp": datetime.now(timezone.utc).isoformat(),
                 },
                 "metrics": {"log_size": len(message), "log_processing_time": 0.02},
             }
@@ -573,7 +573,7 @@ class ObservabilityExecutionAdapter:
                     "type": event_type,
                     "source": source,
                     "data": data,
-                    "timestamp": datetime.utcnow().isoformat(),
+                    "timestamp": datetime.now(timezone.utc).isoformat(),
                 },
                 "metrics": {"event_processing_time": 0.03},
             }
@@ -586,7 +586,7 @@ class ObservabilityExecutionAdapter:
                     "target": target,
                     "duration": duration,
                     "samples": 100,
-                    "timestamp": datetime.utcnow().isoformat(),
+                    "timestamp": datetime.now(timezone.utc).isoformat(),
                 },
                 "metrics": {"profile_overhead": 0.01, "samples_collected": 100},
             }

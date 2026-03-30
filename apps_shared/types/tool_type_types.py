@@ -9,7 +9,7 @@ import logging
 import time
 from collections.abc import Callable
 from dataclasses import dataclass, field
-from datetime import datetime
+from datetime import datetime, timezone
 from enum import Enum
 from typing import Any
 
@@ -669,8 +669,8 @@ class ObservabilityToolExecutor:
             return {
                 "output": {
                     "metrics": [
-                        {"name": "cpu_usage", "value": 45.2, "timestamp": datetime.utcnow().isoformat()},
-                        {"name": "memory_usage", "value": 67.8, "timestamp": datetime.utcnow().isoformat()},
+                        {"name": "cpu_usage", "value": 45.2, "timestamp": datetime.now(timezone.utc).isoformat()},
+                        {"name": "memory_usage", "value": 67.8, "timestamp": datetime.now(timezone.utc).isoformat()},
                     ]
                 },
                 "metrics": {"metrics_collected": 2, "processing_time": 0.05},
@@ -698,12 +698,12 @@ class ObservabilityToolExecutor:
                         {
                             "message": "Application started",
                             "level": "info",
-                            "timestamp": datetime.utcnow().isoformat(),
+                            "timestamp": datetime.now(timezone.utc).isoformat(),
                         },
                         {
                             "message": "Error processing request",
                             "level": "error",
-                            "timestamp": datetime.utcnow().isoformat(),
+                            "timestamp": datetime.now(timezone.utc).isoformat(),
                         },
                     ],
                     "summary": {"total_logs": 2, "error_count": 1},

@@ -10,7 +10,7 @@ import logging
 import time
 from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
-from datetime import datetime
+from datetime import datetime, timezone
 from enum import Enum
 from typing import Any
 
@@ -300,7 +300,7 @@ class BulkheadHealthChecker(HealthChecker):
                 component_type=self.component_type,
                 status=status,
                 message=message,
-                timestamp=datetime.utcnow(),
+                timestamp=datetime.now(timezone.utc),
                 metrics=metrics,
             )
         # guardian: allow-silent-swallow
@@ -310,7 +310,7 @@ class BulkheadHealthChecker(HealthChecker):
                 component_type=self.component_type,
                 status=HealthStatus.CRITICAL,
                 message=f"Health check failed: {e}",
-                timestamp=datetime.utcnow(),
+                timestamp=datetime.now(timezone.utc),
             )
 
     @property
@@ -370,7 +370,7 @@ class CircuitBreakerHealthChecker(HealthChecker):
                 component_type=self.component_type,
                 status=status,
                 message=message,
-                timestamp=datetime.utcnow(),
+                timestamp=datetime.now(timezone.utc),
                 metrics={
                     "total_circuits": len(all_stats),
                     "open_circuits": len(open_circuits),
@@ -386,7 +386,7 @@ class CircuitBreakerHealthChecker(HealthChecker):
                 component_type=self.component_type,
                 status=HealthStatus.CRITICAL,
                 message=f"Health check failed: {e}",
-                timestamp=datetime.utcnow(),
+                timestamp=datetime.now(timezone.utc),
             )
 
     @property
@@ -439,7 +439,7 @@ class DeadLetterQueueHealthChecker(HealthChecker):
                 component_type=self.component_type,
                 status=status,
                 message=message,
-                timestamp=datetime.utcnow(),
+                timestamp=datetime.now(timezone.utc),
                 metrics=health,
             )
         # guardian: allow-silent-swallow
@@ -449,7 +449,7 @@ class DeadLetterQueueHealthChecker(HealthChecker):
                 component_type=self.component_type,
                 status=HealthStatus.CRITICAL,
                 message=f"Health check failed: {e}",
-                timestamp=datetime.utcnow(),
+                timestamp=datetime.now(timezone.utc),
             )
 
     @property
@@ -498,7 +498,7 @@ class CheckpointManagerHealthChecker(HealthChecker):
                 component_type=self.component_type,
                 status=status,
                 message=message,
-                timestamp=datetime.utcnow(),
+                timestamp=datetime.now(timezone.utc),
                 metrics=stats,
             )
         # guardian: allow-silent-swallow
@@ -508,7 +508,7 @@ class CheckpointManagerHealthChecker(HealthChecker):
                 component_type=self.component_type,
                 status=HealthStatus.CRITICAL,
                 message=f"Health check failed: {e}",
-                timestamp=datetime.utcnow(),
+                timestamp=datetime.now(timezone.utc),
             )
 
     @property
@@ -576,7 +576,7 @@ class HealthCheckRegistry:
                             component_type=ComponentType.CUSTOM,
                             status=HealthStatus.CRITICAL,
                             message=f"Health check error: {result}",
-                            timestamp=datetime.utcnow(),
+                            timestamp=datetime.now(timezone.utc),
                         )
                         results.append(error_result)
                         critical_issues.append(str(result))
@@ -595,11 +595,11 @@ class HealthCheckRegistry:
                             HealthStatus.UNHEALTHY,
                         ]:
                             overall_status = HealthStatus.DEGRADED
-            self._last_check = datetime.utcnow()
+            self._last_check = datetime.now(timezone.utc)
             self._last_results = {r.component_name: r for r in results}
             response = {
                 "status": overall_status.value,
-                "timestamp": self._last_check.isoformat(),
+                "timestamp": (self._last_check or datetime.now(timezone.utc)).isoformat(),
                 "components": [r.to_dict() for r in results],
                 "summary": {
                     "total_components": len(results),
@@ -632,7 +632,7 @@ class HealthCheckRegistry:
                 component_type=checker.component_type,
                 status=HealthStatus.CRITICAL,
                 message=f"Health check failed: {e}",
-                timestamp=datetime.utcnow(),
+                timestamp=datetime.now(timezone.utc),
             )
 
     async def check_component(self, component_name: str) -> HealthCheckResult | None:
