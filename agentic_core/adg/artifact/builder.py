@@ -243,6 +243,7 @@ class RelationRecord:
     source_file: str
     line_no: int
     symbol: str = ""
+    semantic_type: str = ""
 
     def to_dict(self) -> dict:
         return {
@@ -253,6 +254,7 @@ class RelationRecord:
             "source_file": self.source_file,
             "line_no": self.line_no,
             "symbol": self.symbol,
+            "semantic_type": self.semantic_type,
         }
 
 
