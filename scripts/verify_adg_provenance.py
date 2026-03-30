@@ -24,11 +24,15 @@ class ADGProvenanceVerifier:
     def _collect_adg_artifacts(self) -> list[Path]:
         """Collect all ADG artifact files (SQLite, JSON, CSV)."""
         if not self.adg_dir.exists():
-            return []
+            raise ProvenanceVerificationError(f"No artifacts found in {self.adg_dir}")
         
         artifacts = []
         for pattern in ["*.sqlite", "*.json", "*.csv"]:
             artifacts.extend(self.adg_dir.glob(pattern))
+        
+        if not artifacts:
+            raise ProvenanceVerificationError(f"No artifacts found in {self.adg_dir}")
+        
         return artifacts
 
     def _load_sqlite_meta(self, db_path: Path) -> dict[str, Any]:
@@ -75,25 +79,16 @@ class ADGProvenanceVerifier:
         issues = []
 
         for db_path in db_files:
-            try:
-                meta = self._load_sqlite_meta(db_path)
+            meta = self._load_sqlite_meta(db_path)
 
-                # Check for empty commit_sha
-                commit_sha = meta.get("commit_sha", "")
-                if not commit_sha:
-                    issues.append(f"Empty commit_sha in {db_path.name}")
+            # Check for empty commit_sha - raise exception for test compatibility
+            commit_sha = meta.get("commit_sha", "")
+            if not commit_sha:
+                raise ProvenanceVerificationError(f"Empty commit_sha in {db_path.name}")
 
-                # Check for missing commit_sha - raise exception for test compatibility
-                commit_sha = meta.get("commit_sha", "")
-                if not commit_sha:
-                    raise ProvenanceVerificationError(f"Empty commit_sha in {db_path.name}")
-
-                # Check for missing scanner_digest
-                scanner_digest = meta.get("scanner_digest", "")
-                if not scanner_digest:
-                    issues.append(f"Missing scanner_digest in {db_path.name}")
-
-            except ProvenanceVerificationError as e:
-                issues.append(str(e))
+            # Check for missing scanner_digest
+            scanner_digest = meta.get("scanner_digest", "")
+            if not scanner_digest:
+                issues.append(f"Missing scanner_digest in {db_path.name}")
 
         return len(issues) == 0, issues
