@@ -84,7 +84,7 @@ class ADGIdentityCompletenessVerifier:
         c.execute("""
             SELECT COUNT(*) FROM nodes
             WHERE entity_type = 'module'
-            AND (layer IS NULL OR layer = '' OR layer = 'L_UNKNOWN')
+            AND (layer IS NULL OR layer = '' OR layer = 'L_UNKNOWN' OR layer = 'UNKNOWN')
             AND resolved_path NOT LIKE '%site-packages%'
         """)
         incomplete = c.fetchone()[0]
@@ -153,16 +153,14 @@ class ADGIdentityCompletenessVerifier:
 
     def verify_all(self) -> tuple[bool, list[str]]:
         """Run all identity completeness checks."""
-        checks = [
-            self._verify_node_schema_completeness,
-            self._verify_first_party_module_completeness,
-            self._verify_low_confidence_node_traceability,
-            self._verify_enum_value_constraints,
-        ]
-
-        all_issues = []
-        for check in checks:
-            passed, issues = check()
-            all_issues.extend(issues)
+        # Run checks that populate errors/warnings directly
+        self._verify_node_schema_completeness()
+        self._verify_first_party_module_completeness()
+        self._verify_low_confidence_node_traceability()
+        
+        # Run check that returns tuple
+        passed, issues = self._verify_enum_value_constraints()
+        
+        all_issues = list(self.errors) + list(self.warnings) + list(issues)
 
         return len(all_issues) == 0, all_issues
