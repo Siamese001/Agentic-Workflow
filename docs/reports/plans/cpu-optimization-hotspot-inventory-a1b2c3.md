@@ -148,6 +148,38 @@
 
 ---
 
+## AFTER Measurements (commit 85e4a87f13)
+
+| Wave | Change | Before | After | Speedup |
+|------|--------|--------|-------|---------|
+| E | orjson in scan_cache.py load()/save() | json.dumps=49.7s | orjson.dumps=0.38s | **131x** on serialization |
+| H | _EDGE_SORT_KEY fast sort key | sorted() 25s (13-field __lt__) | sorted() 5.1s | **4.9x** on sort |
+| G | Batch post-scan edge merges | 3x sorted()+digest | 1x sorted()+digest | 3x fewer re-sorts |
+| F | Remove redundant sort in canonical_edge_text | sorted(self.edges) per digest | direct iteration | eliminates 4x redundant sorts |
+| D | lru_cache on module_path_to_layer | 12.35s (1.5M calls) | <0.1s (cache hits) | **>100x** on layer lookup |
+| B | _EDGE_FIELD_NAMES pre-computed | 5.63s (per-call set()) | 3.23s | **1.7x** on deserialization |
+| A | ADG_SKIP_SELF_TEST env gate | 4.9s always | 0s when env=1 | **eliminates** self-test cost |
+| A | orjson in generate_full_adg.py | 20.9ms/iter JSON | 2.8ms/iter orjson | **7.5x** on report gen |
+
+**Overall ADG cached scan: 50.0s → 19.8s (2.5x speedup, skip_self_test=1)**
+**Overall ADG cached scan: 50.0s → ~25s (with self-test, default mode)**
+
+### Correctness Verification
+- 424/424 ADG tests passed after all waves
+- Pre-existing failures: 183 (unchanged before/after)
+- Edge count preserved: 728k (same modules, same graph structure)
+- Digest computation preserved (determinism maintained)
+
+### Remaining Bottlenecks (not yet optimized)
+| Bottleneck | Cost | Notes |
+|------------|------|-------|
+| `_edge_from_dict` 732k calls | 3.2s | Per-file cache deserialization; needs schema change to avoid |
+| `sorted(filenames)` in file walk | ~5s | Necessary for determinism; unavoidable |
+| `Edge.__hash__` for set() dedup | 0.66s | Inherent to frozenset dedup; acceptable |
+| `canonical_edge_text` (3 calls) | 1.3s | SHA-256 digest over 728k-line string |
+
+---
+
 ## Non-Negotiable Invariants
 - No changes to governance, safety, replay, UWG, or determinism paths
 - All optimizations must produce byte-identical ADG artifacts (digest-verified)
