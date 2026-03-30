@@ -197,8 +197,8 @@ class TestBuilderStructuralMetrics:
 
     def test_layer_violation_count_incremented(self):
         """Two module-to-module import edges across forbidden layers -> violation counted."""
-        from_path = "agentic_core/L5_safety/guardian.py"
-        to_path = "agentic_core/L0_routing/router.py"
+        from_path = "agentic_core/L0_routing/router.py"  # L0
+        to_path = "agentic_core/L5_safety/guardian.py"   # L5 - L0 importing from L5 is FORBIDDEN
         edge = Edge(
             from_name=canonical_name("Module", from_path),
             relation_type="imports",
@@ -206,7 +206,7 @@ class TestBuilderStructuralMetrics:
             edge_kind="import",
             source_file=from_path,
             line_no=1,
-            symbol="router",
+            symbol="guardian",
         )
         result = ScanResult(
             edges=[edge],
