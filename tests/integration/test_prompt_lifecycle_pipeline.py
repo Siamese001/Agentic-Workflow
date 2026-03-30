@@ -284,7 +284,7 @@ class TestIntegrationSmoke(unittest.TestCase):
     def test_in_memory_template_registry_works(self) -> None:
         """Test our in-memory template registry implementation."""
         registry = InMemoryTemplateRegistry()
-        registry.register_template("test", "content")
+        registry.register_template("s0_test", "content")
         self.assertEqual(registry.get_s0("test"), "content")
 
 
