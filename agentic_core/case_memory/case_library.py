@@ -71,15 +71,15 @@ class CaseLibrary:
             self._record_to_dict(record)
         )
 
-        # Create lineage relation for case records
+        # Create lineage relation for case records (test expects 'lineage_of')
         if record.artifact_type == "CASE_RECORD":
-            self._bridge.create_relation(entity_id, entity_id, "lineage")
+            self._bridge.create_relation(entity_id, entity_id, "lineage_of")
 
-        # Create policy relation for healer bundles
+        # Create policy relation for healer bundles (test expects 'governed_by_policy')
         if record.artifact_type == "HEALER_BUNDLE":
-            self._bridge.create_relation(entity_id, entity_id, "healer_resolved")
+            self._bridge.create_relation(entity_id, entity_id, "governed_by_policy")
 
-        # Create HITL approved relation
+        # Create HITL approved relation (test expects 'hitl_approved')
         if record.artifact_type == "HITL_PREFERENCE_RECORD" and record.approved:
             self._bridge.create_relation(entity_id, entity_id, "hitl_approved")
 
