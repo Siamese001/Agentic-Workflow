@@ -404,7 +404,13 @@ def run_pipeline(
 
     Returns dict mapping agent_id -> AgentRunResult.
     """
-    from agentic_core.L2_execution.protocol import AgentRunResult, SubphaseResult
+    from agentic_core.L2_execution.protocol import (
+        AgentRunResult,
+        SubphaseResult,
+    )
+    from agentic_core.L3_orchestration.registry.agent_dispatch_registry import (
+        get_agent_dispatch_registry,
+    )
 
     _emit_pipeline_digest(adapters, territory, ctx)
     import dataclasses as _dc2

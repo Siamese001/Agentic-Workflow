@@ -57,14 +57,14 @@ class TestDecisionEngine:
         self._high_confidence = high_confidence
         self._score = score
 
-    def calculate_healing_confidence(self, violations):
+    def calculate_healing_confidence(self, *args, **kwargs):
         class Result:
             def __init__(self, is_high_confidence, score):
                 self.is_high_confidence = is_high_confidence
                 self.score = score
         return Result(self._high_confidence, self._score)
 
-    def should_proceed_with_healing(self, confidence_result):
+    def should_proceed_with_healing(self, *args, **kwargs):
         if self._high_confidence:
             return (True, "high-confidence")
         return (False, "low-confidence")
@@ -78,6 +78,14 @@ class TestStateManager:
 
     def update_agent(self, agent, status):
         self.update_agent_calls.append((agent, status))
+
+    def complete_agent(self, agent, status, result=None):
+        """Mark agent as complete."""
+        self.update_agent_calls.append((agent, f"complete:{status}", result))
+
+    def skip_agent(self, agent, reason):
+        """Mark agent as skipped."""
+        self.update_agent_calls.append((agent, f"skip:{reason}"))
 
 
 # ---------------------------------------------------------------------------
@@ -180,14 +188,18 @@ class TestAllSubphasesPresent:
     """Every AgentRunResult must have exactly the four subphase keys."""
 
     def test_all_four_slots_populated(self, ctx, high_confidence_engine, state_mgr, execute_ssot_imports):
-        from unittest.mock import patch
+        from unittest.mock import patch, MagicMock
 
-        AGENT_PIPELINE, run_pipeline, PIPELINE_SUBPHASES, SubphaseResult = execute_ssot_imports[:4]
+        # Mock get_agent_dispatch_registry which is used internally by run_pipeline
+        with patch("agentic_core.L3_orchestration.registry.agent_dispatch_registry.get_agent_dispatch_registry") as mock_registry, \
+             patch("agentic_core.L0_routing.scripts.execute_ssot._emit_pipeline_digest"):
+            mock_registry.return_value = MagicMock()
+            
+            AGENT_PIPELINE, run_pipeline, PIPELINE_SUBPHASES, SubphaseResult = execute_ssot_imports[:4]
 
-        adapter = CleanAdapter()
-        adapters = {"reconciler": adapter}
+            adapter = CleanAdapter()
+            adapters = {"reconciler": adapter}
 
-        with patch("agentic_core.L0_routing.scripts.execute_ssot._emit_pipeline_digest"):
             results = run_pipeline(
                 adapters=adapters,
                 territory="test_territory",
@@ -196,9 +208,9 @@ class TestAllSubphasesPresent:
                 ctx=ctx,
             )
 
-        assert "reconciler" in results
-        run_result = results["reconciler"]
-        assert set(run_result.subphases.keys()) == set(PIPELINE_SUBPHASES)
+            assert "reconciler" in results
+            run_result = results["reconciler"]
+            assert set(run_result.subphases.keys()) == set(PIPELINE_SUBPHASES)
 
     def test_subphase_keys_match_pipeline_constant(self, execute_ssot_imports):
         _, _, PIPELINE_SUBPHASES, _ = execute_ssot_imports[:4]
@@ -228,16 +240,20 @@ class TestGatePreventsUpdateAgentForMutating:
     """When confidence gate fires, update_agent must NOT be called for execute/heal."""
 
     def _run_with_gate_blocked(self, ctx, state_mgr, execute_ssot_imports):
-        from unittest.mock import patch
+        from unittest.mock import patch, MagicMock
 
-        AGENT_PIPELINE, run_pipeline, PIPELINE_SUBPHASES, SubphaseResult = execute_ssot_imports[:4]
+        # Mock get_agent_dispatch_registry which is used internally by run_pipeline
+        with patch("agentic_core.L3_orchestration.registry.agent_dispatch_registry.get_agent_dispatch_registry") as mock_registry, \
+             patch("agentic_core.L0_routing.scripts.execute_ssot._emit_pipeline_digest"):
+            mock_registry.return_value = MagicMock()
+            
+            AGENT_PIPELINE, run_pipeline, PIPELINE_SUBPHASES, SubphaseResult = execute_ssot_imports[:4]
 
-        adapter = ViolatingAdapter()
-        decision_engine = TestDecisionEngine(high_confidence=False, score=0.2)
+            adapter = ViolatingAdapter()
+            decision_engine = TestDecisionEngine(high_confidence=False, score=0.2)
 
-        adapters = {"reconciler": adapter}
+            adapters = {"reconciler": adapter}
 
-        with patch("agentic_core.L0_routing.scripts.execute_ssot._emit_pipeline_digest"):
             results = run_pipeline(
                 adapters=adapters,
                 territory="test_territory",
@@ -245,7 +261,7 @@ class TestGatePreventsUpdateAgentForMutating:
                 state_mgr=state_mgr,
                 ctx=ctx,
             )
-        return results
+            return results
 
     def test_gated_flag_set(self, ctx, state_mgr, execute_ssot_imports):
         results = self._run_with_gate_blocked(ctx, state_mgr, execute_ssot_imports)
@@ -257,12 +273,14 @@ class TestGatePreventsUpdateAgentForMutating:
 
     def test_update_agent_not_called_for_execute(self, ctx, state_mgr, execute_ssot_imports):
         self._run_with_gate_blocked(ctx, state_mgr, execute_ssot_imports)
-        for agent, status in state_mgr.update_agent_calls:
+        for call in state_mgr.update_agent_calls:
+            agent, status = call[0], call[1]
             assert status != "execute", f"update_agent('execute') called for {agent}"
 
     def test_update_agent_not_called_for_heal(self, ctx, state_mgr, execute_ssot_imports):
         self._run_with_gate_blocked(ctx, state_mgr, execute_ssot_imports)
-        for agent, status in state_mgr.update_agent_calls:
+        for call in state_mgr.update_agent_calls:
+            agent, status = call[0], call[1]
             assert status != "heal", f"update_agent('heal') called for {agent}"
 
 
@@ -278,14 +296,18 @@ class TestScanModeReadOnly:
         assert scan_ctx.heal is False
 
     def test_scan_mode_does_not_execute(self, scan_ctx, high_confidence_engine, state_mgr, execute_ssot_imports):
-        from unittest.mock import patch
+        from unittest.mock import patch, MagicMock
 
-        AGENT_PIPELINE, run_pipeline, PIPELINE_SUBPHASES, SubphaseResult = execute_ssot_imports[:4]
+        # Mock get_agent_dispatch_registry which is used internally by run_pipeline
+        with patch("agentic_core.L3_orchestration.registry.agent_dispatch_registry.get_agent_dispatch_registry") as mock_registry, \
+             patch("agentic_core.L0_routing.scripts.execute_ssot._emit_pipeline_digest"):
+            mock_registry.return_value = MagicMock()
+            
+            AGENT_PIPELINE, run_pipeline, PIPELINE_SUBPHASES, SubphaseResult = execute_ssot_imports[:4]
 
-        adapter = CleanAdapter()
-        adapters = {"reconciler": adapter}
+            adapter = CleanAdapter()
+            adapters = {"reconciler": adapter}
 
-        with patch("agentic_core.L0_routing.scripts.execute_ssot._emit_pipeline_digest"):
             results = run_pipeline(
                 adapters=adapters,
                 territory="test_territory",
@@ -294,9 +316,9 @@ class TestScanModeReadOnly:
                 ctx=scan_ctx,
             )
 
-        # In scan mode, execute should not be called (or should be gated)
-        run_result = results["reconciler"]
-        assert run_result.subphases["execute"].skipped is True or run_result.gated
+            # In scan mode, execute should not be called (or should be gated)
+            run_result = results["reconciler"]
+            assert run_result.subphases["execute"].skipped is True or run_result.gated
 
 
 # ---------------------------------------------------------------------------
@@ -326,14 +348,18 @@ class TestFailClosedOnException:
             return SubphaseResult()
 
     def test_exception_in_validate_fails_closed(self, ctx, high_confidence_engine, state_mgr, execute_ssot_imports):
-        from unittest.mock import patch
+        from unittest.mock import patch, MagicMock
 
-        AGENT_PIPELINE, run_pipeline, PIPELINE_SUBPHASES, SubphaseResult = execute_ssot_imports[:4]
+        # Mock get_agent_dispatch_registry which is used internally by run_pipeline
+        with patch("agentic_core.L3_orchestration.registry.agent_dispatch_registry.get_agent_dispatch_registry") as mock_registry, \
+             patch("agentic_core.L0_routing.scripts.execute_ssot._emit_pipeline_digest"):
+            mock_registry.return_value = MagicMock()
+            
+            AGENT_PIPELINE, run_pipeline, PIPELINE_SUBPHASES, SubphaseResult = execute_ssot_imports[:4]
 
-        adapter = self.ExceptionAdapter()
-        adapters = {"reconciler": adapter}
+            adapter = self.ExceptionAdapter()
+            adapters = {"reconciler": adapter}
 
-        with patch("agentic_core.L0_routing.scripts.execute_ssot._emit_pipeline_digest"):
             results = run_pipeline(
                 adapters=adapters,
                 territory="test_territory",
@@ -342,9 +368,9 @@ class TestFailClosedOnException:
                 ctx=ctx,
             )
 
-        # Should have error result
-        run_result = results["reconciler"]
-        assert run_result.subphases["validate"].has_error is True or run_result.has_error
+            # Should have error result
+            run_result = results["reconciler"]
+            assert run_result.subphases["validate"].has_error is True or run_result.has_error
 
 
 # ---------------------------------------------------------------------------

@@ -198,6 +198,13 @@ class AgentRunResult:
     violations_total: int = 0
     mutations_applied: int = 0
 
+    @property
+    def has_error(self) -> bool:
+        """True if any error occurred during execution."""
+        return self.error is not None or any(
+            sp.error is not None for sp in self.subphases.values()
+        )
+
 
 @runtime_checkable
 class L2AgentProtocol(Protocol):
