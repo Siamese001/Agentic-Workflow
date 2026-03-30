@@ -88,6 +88,19 @@ class _FakeBridge:
     def get_statistics(self):
         return {}
 
+    def put(self, key: str, value: dict) -> bool:
+        """Store value by key."""
+        # Store as entity for tracking
+        self.entities.append({"key": key, **value})
+        return True
+
+    def get(self, key: str) -> dict | None:
+        """Get value by key."""
+        for entity in self.entities:
+            if entity.get("key") == key:
+                return entity
+        return None
+
     def commit(self):
         """Commit pending changes."""
         pass
