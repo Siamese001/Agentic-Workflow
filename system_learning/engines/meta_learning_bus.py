@@ -319,11 +319,13 @@ def _build_commit_id(
     validation_result_id: str,
     timestamp_utc: int,
 ) -> str:
-    canonical = deterministic_json({
-        "proposal_id": proposal_id,
-        "timestamp_utc": timestamp_utc,
-        "validation_result_id": validation_result_id,
-    })
+    canonical = deterministic_json(
+        {
+            "proposal_id": proposal_id,
+            "timestamp_utc": timestamp_utc,
+            "validation_result_id": validation_result_id,
+        }
+    )
     return hashlib.sha256(canonical.encode("utf-8")).hexdigest()
 
 
@@ -336,29 +338,23 @@ def _build_optimization_commit(
     change_spec_dict = dict(proposal.change_spec)
 
     affected_rules: tuple[str, ...] = tuple(
-        sorted(
-            v for k, v in proposal.change_spec
-            if k in ("routing_rule", "rule_id", "rule_ref")
-        )
+        sorted(v for k, v in proposal.change_spec if k in ("routing_rule", "rule_id", "rule_ref"))
     ) or (f"rule:{proposal.proposed_change_type}",)
 
-    affected_routes: tuple[str, ...] = tuple(
-        sorted(
-            v for k, v in proposal.change_spec
-            if k in ("dominant_route", "route")
-        )
-    ) or ()
-
-    affected_retrieval: tuple[str, ...] = tuple(
-        sorted(
-            v for k, v in proposal.change_spec
-            if k in ("dominant_retrieval_pattern", "retrieval_policy")
-        )
-    ) or ()
-
-    commit_id = _build_commit_id(
-        proposal.proposal_id, result.result_id, timestamp_utc
+    affected_routes: tuple[str, ...] = (
+        tuple(sorted(v for k, v in proposal.change_spec if k in ("dominant_route", "route"))) or ()
     )
+
+    affected_retrieval: tuple[str, ...] = (
+        tuple(
+            sorted(
+                v for k, v in proposal.change_spec if k in ("dominant_retrieval_pattern", "retrieval_policy")
+            )
+        )
+        or ()
+    )
+
+    commit_id = _build_commit_id(proposal.proposal_id, result.result_id, timestamp_utc)
 
     return OptimizationCommit(
         commit_id=commit_id,
@@ -422,16 +418,41 @@ class MetaLearningBus:
         self._extractor = TraceFeatureExtractor()
         self._cluster_engine = RCAClusterEngine(self._config.rca_config)
         self._reward_model = GovernanceRewardModel(self._config.reward_config)
-        self._proposal_engine = OptimizationProposalEngine(
-            self._config.proposal_config
-        )
-        self._validation_engine = ProposalValidationEngine(
-            self._config.validation_config
-        )
+        self._proposal_engine = OptimizationProposalEngine(self._config.proposal_config)
+        self._validation_engine = ProposalValidationEngine(self._config.validation_config)
+
+        # Wave 1.1.2: Evaluation signal storage for learning integration
+        self._evaluation_signals: list[Any] = []
 
     # ------------------------------------------------------------------
     # Public API
     # ------------------------------------------------------------------
+
+    def consume_evaluation_signal(self, eval_signal: Any) -> None:
+        """Consume evaluation signal from L6 evaluation spine.
+
+        Implements BUS P (Preference: Eval → ML) receiver endpoint.
+        Stores evaluation signals for use in learning pipeline.
+
+        Args:
+            eval_signal: LearningEvent from evaluation_learning_bridge
+
+        Emits ADG edges:
+            - records_learning_event (signal captured)
+        """
+        _trace_id = str(uuid.uuid4())
+        _emit_records_learning_event(
+            "meta_learning_bus",
+            "p3lm",
+            f"eval_signal_{_trace_id[:8]}",
+        )
+
+        self._evaluation_signals.append(eval_signal)
+        logger.info(
+            "META_LEARNING_BUS consumed eval signal: kind=%s score=%.3f",
+            getattr(eval_signal, "eval_kind", "unknown"),
+            getattr(eval_signal, "eval_score", 0.0),
+        )
 
     def process_traces(
         self,
@@ -464,7 +485,9 @@ class MetaLearningBus:
         """
 
         _trace_id = str(uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "MetaLearningBus.process_traces")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "MetaLearningBus.process_traces"
+        )
         adg_relations: list[tuple[str, str, str]] = []
 
         # Stage 1 — Feature extraction
@@ -584,11 +607,13 @@ class MetaLearningBus:
                 record = TraceFeatureRecord.from_bundle(bundle)
                 records.append(record)
                 # Emit: trace → triggered_telemetry → feature_record
-                adg_relations.append((
-                    bundle.adg_entity_name,
-                    _ADG_TRIGGERED_TELEMETRY,
-                    f"ADG::TraceFeatureRecord::{record.record_id[:12]}",
-                ))
+                adg_relations.append(
+                    (
+                        bundle.adg_entity_name,
+                        _ADG_TRIGGERED_TELEMETRY,
+                        f"ADG::TraceFeatureRecord::{record.record_id[:12]}",
+                    )
+                )
             except Exception as exc:  # guardian: allow-silent-swallow
                 logger.warning(
                     "meta_learning_bus: record promotion failed",
@@ -604,23 +629,25 @@ class MetaLearningBus:
         adg_relations: list[tuple[str, str, str]],
     ) -> list[RCACluster]:
         try:
-            clusters = self._cluster_engine.cluster(
-                records, timestamp_utc, negative_seeds=negative_seeds
-            )
+            clusters = self._cluster_engine.cluster(records, timestamp_utc, negative_seeds=negative_seeds)
             for cluster in clusters:
                 # Emit: each member record → chunks_into → cluster
                 for trace_id in cluster.member_trace_ids:
-                    adg_relations.append((
-                        f"ADG::TraceFeatureRecord::{trace_id[:12]}",
-                        _ADG_CHUNKS_INTO,
-                        cluster.adg_cluster_node,
-                    ))
+                    adg_relations.append(
+                        (
+                            f"ADG::TraceFeatureRecord::{trace_id[:12]}",
+                            _ADG_CHUNKS_INTO,
+                            cluster.adg_cluster_node,
+                        )
+                    )
                 # Emit: cluster → stores_embedding → cluster node
-                adg_relations.append((
-                    cluster.adg_cluster_node,
-                    _ADG_STORES_EMBEDDING,
-                    cluster.adg_cluster_node,
-                ))
+                adg_relations.append(
+                    (
+                        cluster.adg_cluster_node,
+                        _ADG_STORES_EMBEDDING,
+                        cluster.adg_cluster_node,
+                    )
+                )
             return clusters
         except Exception as exc:  # guardian: allow-silent-swallow
             logger.warning(
@@ -657,9 +684,7 @@ class MetaLearningBus:
         # Build signals map: proposal_id → signals
         # (all signals apply to all proposals at this stage;
         # a more sophisticated bus could filter by affected component)
-        signals_map: dict[str, list[GovernanceRewardSignal]] = {
-            p.proposal_id: signals for p in proposals
-        }
+        signals_map: dict[str, list[GovernanceRewardSignal]] = {p.proposal_id: signals for p in proposals}
 
         scores = self._reward_model.score_batch(proposals, signals_map, timestamp_utc)
         annotated = self._reward_model.annotate_proposals(proposals, scores, timestamp_utc)
@@ -674,11 +699,13 @@ class MetaLearningBus:
                 rejected.append(proposal.proposal_id)
                 continue
             # Emit: proposal → scored_by_reward → reward score node
-            adg_relations.append((
-                f"ADG::Proposal::{proposal.proposal_id[:12]}",
-                _ADG_SCORED_BY_REWARD,
-                f"ADG::RewardScore::{gs.score_id[:12]}",
-            ))
+            adg_relations.append(
+                (
+                    f"ADG::Proposal::{proposal.proposal_id[:12]}",
+                    _ADG_SCORED_BY_REWARD,
+                    f"ADG::RewardScore::{gs.score_id[:12]}",
+                )
+            )
             if gs.aggregate_score >= self._config.reward_threshold:
                 passing.append(proposal)
             else:
@@ -738,16 +765,16 @@ class MetaLearningBus:
                     or proposal.reward_score >= self._config.commit_reward_threshold
                 )
                 if reward_ok:
-                    commit = _build_optimization_commit(
-                        proposal, result, timestamp_utc
-                    )
+                    commit = _build_optimization_commit(proposal, result, timestamp_utc)
                     commits.append(commit)
                     # Emit: proposal → proposal_commits_optimization → commit
-                    adg_relations.append((
-                        f"ADG::Proposal::{proposal.proposal_id[:12]}",
-                        _ADG_PROPOSAL_COMMITS,
-                        f"ADG::OptimizationCommit::{commit.commit_id[:12]}",
-                    ))
+                    adg_relations.append(
+                        (
+                            f"ADG::Proposal::{proposal.proposal_id[:12]}",
+                            _ADG_PROPOSAL_COMMITS,
+                            f"ADG::OptimizationCommit::{commit.commit_id[:12]}",
+                        )
+                    )
                     logger.info(
                         "meta_learning_bus: optimization commit produced",
                         extra={
@@ -797,15 +824,15 @@ class MetaLearningBus:
             replay_stab = 0.0 if bundle.final_outcome_class == "REPLAY_FAILURE" else 1.0
             guard_clean = 0.7 if bundle.guardrails_applied else 1.0
             mut_correct = 0.5 if bundle.mutation_presence else 1.0
-            human_approval: bool | None = (
-                True if bundle.final_outcome_class == "HUMAN_OVERRIDE" else None
-            )
+            human_approval: bool | None = True if bundle.final_outcome_class == "HUMAN_OVERRIDE" else None
 
             signal_id = hashlib.sha256(
-                deterministic_json({
-                    "trace_id": bundle.trace_id,
-                    "timestamp_utc": timestamp_utc,
-                }).encode("utf-8")
+                deterministic_json(
+                    {
+                        "trace_id": bundle.trace_id,
+                        "timestamp_utc": timestamp_utc,
+                    }
+                ).encode("utf-8")
             ).hexdigest()
 
             try:

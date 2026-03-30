@@ -23,7 +23,6 @@ from agentic_core.L6_observability.evaluation.evaluation_record import (
     EvaluationStage,
     evaluate_and_attach,
 )
-from agentic_core.runtime.execution_trace import get_active_execution_trace
 from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     LayerSegment,
     _emit_agent_executes_agent,
@@ -67,6 +66,7 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     emit_determinism_digest,  # noqa: E402
     emit_replay_key,  # noqa: E402
 )
+from agentic_core.runtime.execution_trace import get_active_execution_trace
 
 emit_replay_key("p0", "evaluation_signal_integrator")
 emit_determinism_digest("p0", "evaluation_signal_integrator")
@@ -185,14 +185,26 @@ logger = logging.getLogger(__name__)
 
 
 class EvalSignalKind(str, Enum):
-    """Classification of an evaluation signal."""
+    """Classification of an evaluation signal.
 
+    Wave 1.2: Expanded from 6 to 12 evaluation types to support RAG quality metrics.
+    """
+
+    # Original 6 types
     QUALITY_SCORE = "quality_score"
     LATENCY = "latency"
     ACCURACY = "accuracy"
     SAFETY_VERDICT = "safety_verdict"
     HALLUCINATION_FLAG = "hallucination_flag"
     COST = "cost"
+
+    # Wave 1.2: New RAG evaluation types
+    FAITHFULNESS = "faithfulness"  # Answer grounded in retrieved context
+    GROUNDEDNESS = "groundedness"  # Answer supported by evidence
+    ANSWER_RELEVANCY = "answer_relevancy"  # Answer addresses user query
+    CONTEXT_PRECISION = "context_precision"  # Retrieved chunks relevant to query
+    CONTEXT_RECALL = "context_recall"  # All relevant info retrieved
+    REGRESSION_DELTA = "regression_delta"  # Performance vs baseline
 
 
 @dataclass(frozen=True)
