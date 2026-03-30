@@ -53,15 +53,58 @@ class ADGTraceReplayCoverageVerifier:
         return result
 
     def _analyze_execution_surface_coverage(
-        self, module_id: str, has_trace: bool, has_replay: bool
+        self, module_id: int, adg_name: str
     ) -> dict[str, Any]:
         """Analyze execution surface coverage metrics for a specific module."""
         result = {
             "module_id": module_id,
-            "has_trace": has_trace,
-            "has_replay": has_replay,
+            "adg_name": adg_name,
+            "has_trace": False,
+            "has_replay_key": False,
+            "has_writes": False,
             "execution_surfaces": {},
+        }
+
+        if not self.db_path or not self.db_path.exists():
+            return result
+
+        conn = sqlite3.connect(self.db_path)
+        c = conn.cursor()
+
+        # Check per-module trace/replay/write edges
+        c.execute("""
+            SELECT relation_type, COUNT(*) FROM edges
+            WHERE src_id = ?
+            AND relation_type IN (
+                'records_execution_trace', 'emits_replay_key',
+                'signs_execution_trace', 'writes_to'
+            )
+            GROUP BY relation_type
+        """, (module_id,))
+        for row in c.fetchall():
+            rel_type, count = row
+            result["execution_surfaces"][rel_type] = count
+            if rel_type == "records_execution_trace" and count > 0:
+                result["has_trace"] = True
+            elif rel_type == "emits_replay_key" and count > 0:
+                result["has_replay_key"] = True
+            elif rel_type == "writes_to" and count > 0:
+                result["has_writes"] = True
+
+        conn.close()
+        return result
+
+    def _verify_critical_execution_surfaces(self) -> dict[str, Any]:
+        """Verify critical execution surfaces have coverage."""
+        result = {
             "total_modules": 0,
+            "traced_modules": [],
+            "signed_modules": [],
+            "replay_key_modules": [],
+            "critical_failures": [],
+            "hard_fail_modules": [],
+            "coverage_results": {},
+            "complete_coverage": False,
         }
         
         if not self.db_path or not self.db_path.exists():
@@ -70,41 +113,36 @@ class ADGTraceReplayCoverageVerifier:
         conn = sqlite3.connect(self.db_path)
         c = conn.cursor()
 
+        # Get modules with trace edges
+        c.execute("""
+            SELECT DISTINCT n.adg_name FROM edges e
+            JOIN nodes n ON e.src_id = n.id
+            WHERE e.relation_type = 'records_execution_trace'
+        """)
+        result["traced_modules"] = [row[0] for row in c.fetchall()]
+
+        # Get modules with signed trace edges
+        c.execute("""
+            SELECT DISTINCT n.adg_name FROM edges e
+            JOIN nodes n ON e.src_id = n.id
+            WHERE e.relation_type = 'signs_execution_trace'
+        """)
+        result["signed_modules"] = [row[0] for row in c.fetchall()]
+
+        # Get modules with replay key edges
+        c.execute("""
+            SELECT DISTINCT n.adg_name FROM edges e
+            JOIN nodes n ON e.src_id = n.id
+            WHERE e.relation_type = 'emits_replay_key'
+        """)
+        result["replay_key_modules"] = [row[0] for row in c.fetchall()]
+
         # Count total modules
         c.execute("SELECT COUNT(*) FROM nodes WHERE entity_type = 'module'")
         result["total_modules"] = c.fetchone()[0]
 
-        # Get execution surface coverage
-        c.execute("""
-            SELECT relation_type, COUNT(*) FROM edges
-            WHERE relation_type IN ('records_execution_trace', 'emits_replay_key', 'signs_execution_trace')
-            GROUP BY relation_type
-        """)
-        for row in c.fetchall():
-            result["execution_surfaces"][row[0]] = row[1]
-
-        conn.close()
-        return result
-
-    def _verify_critical_execution_surfaces(self) -> dict[str, Any]:
-        """Verify critical execution surfaces have coverage."""
-        result = {"total_modules": 0, "with_trace": 0, "with_replay": 0}
-        
-        if not self.db_path or not self.db_path.exists():
-            return result
-
-        conn = sqlite3.connect(self.db_path)
-        c = conn.cursor()
-
-        # Count modules with both trace and replay keys
-        c.execute("SELECT COUNT(DISTINCT src_id) FROM edges WHERE relation_type = 'records_execution_trace'")
-        result["with_trace"] = c.fetchone()[0]
-
-        c.execute("SELECT COUNT(DISTINCT src_id) FROM edges WHERE relation_type = 'emits_replay_key'")
-        result["with_replay"] = c.fetchone()[0]
-
-        c.execute("SELECT COUNT(*) FROM nodes WHERE entity_type = 'module'")
-        result["total_modules"] = c.fetchone()[0]
+        # Determine complete coverage (modules with both trace and replay)
+        result["complete_coverage"] = len(result["traced_modules"]) > 0 and len(result["replay_key_modules"]) > 0
 
         conn.close()
         return result

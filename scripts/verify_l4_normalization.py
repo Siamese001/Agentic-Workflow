@@ -47,10 +47,13 @@ class ADGL4NormalizationVerifier:
             return False, [f"{unknown_in_l4} L4 path nodes have L_UNKNOWN layer"]
         return True, []
 
-    def _verify_l4_identity_resolution(self) -> tuple[bool, list[str]]:
+    def _verify_l4_identity_resolution(self) -> dict[str, Any]:
         """Verify L4 identities are properly resolved."""
+        result = {"identity_issues": 0, "issues": []}
+        
         if not self.db_path or not self.db_path.exists():
-            return False, ["No SQLite database found"]
+            result["issues"].append("No SQLite database found")
+            return result
 
         conn = sqlite3.connect(self.db_path)
         c = conn.cursor()
@@ -64,9 +67,11 @@ class ADGL4NormalizationVerifier:
         unresolved = c.fetchone()[0]
         conn.close()
 
+        result["identity_issues"] = unresolved
         if unresolved > 0:
-            return False, [f"{unresolved} L4 entities with unresolved identity"]
-        return True, []
+            result["issues"].append(f"{unresolved} L4 entities with unresolved identity")
+        
+        return result
 
     def _verify_l4_path_integrity(self) -> dict[str, Any]:
         """Verify L4 path integrity - check for L_UNKNOWN in L4 paths."""
@@ -95,14 +100,14 @@ class ADGL4NormalizationVerifier:
 
     def verify_all(self) -> tuple[bool, list[str]]:
         """Run all L4 normalization checks."""
-        checks = [
-            self._verify_l4_layer_classification,
-            self._verify_l4_identity_resolution,
-        ]
+        all_issues: list[str] = []
 
-        all_issues = []
-        for check in checks:
-            passed, issues = check()
-            all_issues.extend(issues)
+        # Check 1: returns tuple[bool, list[str]]
+        passed, issues = self._verify_l4_layer_classification()
+        all_issues.extend(issues)
+
+        # Check 2: returns dict with 'identity_issues' key
+        result = self._verify_l4_identity_resolution()
+        all_issues.extend(result.get("issues", []))
 
         return len(all_issues) == 0, all_issues

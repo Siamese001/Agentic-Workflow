@@ -29,30 +29,56 @@ class ADGLayerAuthorityVerifier:
         return None
 
     def _verify_layer_authority_compliance(self) -> dict[str, Any]:
-        """Verify L4 entities have proper authority constraints."""
+        """Verify layer gravity rules — lower layers must not import from higher layers."""
         result = {"compliant": True, "violation_count": 0, "issues": []}
-        
+
         if not self.db_path or not self.db_path.exists():
             result["issues"].append("No SQLite database found")
             return result
 
+        # Layer ordering for gravity check (lower index = lower layer)
+        layer_order = {"L0": 0, "L1": 1, "L2": 2, "L3": 3, "L4": 4, "L5": 5, "L6": 6}
+
         conn = sqlite3.connect(self.db_path)
         c = conn.cursor()
 
-        # Check for L4 entities without proper authority
+        # Find edges where source layer < dest layer (upward dependency = violation)
+        # Also flag any edge to/from L_RUNTIME from numbered layers
         c.execute("""
-            SELECT COUNT(*) FROM nodes
-            WHERE layer = 'L4'
-            AND (identity_kind IS NULL OR identity_kind = '')
+            SELECT src.layer AS src_layer, dst.layer AS dst_layer,
+                   src.adg_name AS src_name, dst.adg_name AS dst_name,
+                   e.relation_type
+            FROM edges e
+            JOIN nodes src ON e.src_id = src.id
+            JOIN nodes dst ON e.dst_id = dst.id
+            WHERE src.entity_type = 'module' AND dst.entity_type = 'module'
         """)
-        incomplete = c.fetchone()[0]
+        violations = 0
+        for row in c.fetchall():
+            src_layer, dst_layer, src_name, dst_name, rel_type = row
+            src_ord = layer_order.get(src_layer)
+            dst_ord = layer_order.get(dst_layer)
+
+            if src_ord is not None and dst_ord is not None:
+                # Upward dependency: lower layer importing from higher layer
+                if src_ord < dst_ord:
+                    violations += 1
+                    result["issues"].append(
+                        f"{src_layer}->{dst_layer} violation: {src_name} -> {dst_name} ({rel_type})"
+                    )
+            elif src_ord is not None and dst_layer in ("L_RUNTIME",):
+                # Numbered layer directly calling runtime = violation
+                violations += 1
+                result["issues"].append(
+                    f"{src_layer}->{dst_layer} violation: {src_name} -> {dst_name} ({rel_type})"
+                )
+
         conn.close()
 
-        if incomplete > 0:
+        if violations > 0:
             result["compliant"] = False
-            result["violation_count"] = incomplete
-            result["issues"].append(f"{incomplete} L4 entities with incomplete authority")
-        
+            result["violation_count"] = violations
+
         return result
 
     def _verify_uwg_termination_for_writes(self) -> dict[str, Any]:

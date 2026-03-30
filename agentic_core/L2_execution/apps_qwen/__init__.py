@@ -1,43 +1,103 @@
-"""Apps Qwen Package.
+"""Apps Qwen Package - Optimized vLLM Integration for Applications Layer.
 
-Apps-tier Qwen v2.5 vLLM integration package.
-Provides clean separation from healing pipeline while leveraging existing infrastructure.
+Provides high-performance Qwen v2.5 inference capabilities with:
+- Connection pooling and HTTP keep-alive
+- Request batching for throughput optimization
+- Response caching for identical prompts
+- Dynamic GPU memory monitoring
+- Async concurrency controls
+
+Usage:
+    from agentic_core.L2_execution.apps_qwen import AppsQwenGateway, AppsQwenRequest
+    
+    gateway = AppsQwenGateway()
+    request = AppsQwenRequest(
+        app_name="my_app",
+        prompt="What is 2+2?",
+        max_tokens=100,
+        temperature=0.1,
+    )
+    response = await gateway.infer(request)
+    print(response.response)
 """
 
-from .apps_qwen_config import (
-    AppsQwenConfig,
-    AppsQwenModelConfig,
-    AppsQwenPromptConfig,
-)
-from .apps_qwen_gateway import (
+from __future__ import annotations
+
+# Core gateway and request/response types
+from agentic_core.L2_execution.apps_qwen.apps_qwen_gateway import (
     AppsQwenGateway,
     AppsQwenRequest,
     AppsQwenResponse,
-    apps_qwen_gateway,
-)
-from .apps_qwen_inference import AppsQwenInferenceWorker
-from .apps_qwen_telemetry import (
-    AppsQwenTelemetry,
-    AppsQwenMetric,
-    AppsQwenSessionMetrics,
-    apps_qwen_telemetry,
+    get_apps_qwen_gateway,
+    close_apps_qwen_gateway,
 )
 
+# Optimized vLLM client
+from agentic_core.L2_execution.apps_qwen.optimized_vllm_client import (
+    OptimizedVLLMClient,
+    VLLMRequest,
+    VLLMResponse,
+    get_vllm_client,
+    close_vllm_client,
+)
+
+# Hardened vLLM client
+from agentic_core.L2_execution.apps_qwen.hardened_vllm_client import (
+    HardenedVLLMClient,
+    CircuitBreaker,
+    CircuitBreakerConfig,
+    RetryConfig,
+    HardeningMetrics,
+    CircuitState,
+    CircuitBreakerOpenError,
+)
+
+# GPU memory monitoring
+from agentic_core.L2_execution.apps_qwen.gpu_memory_monitor import (
+    GPUMemoryInfo,
+    GPURecommendation,
+    GPUMemoryMonitor,
+    get_gpu_monitor,
+    stop_gpu_monitor,
+)
+
+# Configuration
+from agentic_core.L2_execution.apps_qwen.apps_qwen_config import AppsQwenConfig
+
+# Telemetry
+from agentic_core.L2_execution.apps_qwen.apps_qwen_telemetry import apps_qwen_telemetry
+
+__version__ = "1.0.0"
+
 __all__ = [
-    # Configuration
-    "AppsQwenConfig",
-    "AppsQwenModelConfig",
-    "AppsQwenPromptConfig",
     # Gateway
     "AppsQwenGateway",
     "AppsQwenRequest",
     "AppsQwenResponse",
-    "apps_qwen_gateway",
-    # Inference
-    "AppsQwenInferenceWorker",
+    "get_apps_qwen_gateway",
+    "close_apps_qwen_gateway",
+    # Optimized vLLM Client
+    "OptimizedVLLMClient",
+    "VLLMRequest",
+    "VLLMResponse",
+    "get_vllm_client",
+    "close_vllm_client",
+    # Hardened vLLM Client
+    "HardenedVLLMClient",
+    "CircuitBreaker",
+    "CircuitBreakerConfig",
+    "RetryConfig",
+    "HardeningMetrics",
+    "CircuitState",
+    "CircuitBreakerOpenError",
+    # GPU Monitoring
+    "GPUMemoryInfo",
+    "GPURecommendation",
+    "GPUMemoryMonitor",
+    "get_gpu_monitor",
+    "stop_gpu_monitor",
+    # Configuration
+    "AppsQwenConfig",
     # Telemetry
-    "AppsQwenTelemetry",
-    "AppsQwenMetric",
-    "AppsQwenSessionMetrics",
     "apps_qwen_telemetry",
 ]
