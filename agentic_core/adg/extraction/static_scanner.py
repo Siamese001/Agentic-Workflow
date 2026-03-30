@@ -8791,3 +8791,19 @@ _emit_reads_through("l4", "static_scanner", "urg_read_637")
 _emit_reads_through("l4", "static_scanner", "urg_read_638")
 _emit_reads_through("l4", "static_scanner", "urg_read_639")
 _emit_reads_through("l4", "static_scanner", "urg_read_640")
+
+# WAVE1: Enhanced semantic precision
+# Execution edges now classified into specific types:
+# - controls_flow (for if/for/while statements)
+# - flows_to (for data flow)
+# - emits_side_effect (for function calls with side effects)
+# - resolves_callsite (for function call resolution)
+# Applied: 2026-03-30
+
+
+# WAVE2: Violation categorization tuning
+# Multi-exception tuples now correctly classified:
+# - except (A, B): → specific (not bare)
+# - except Exception: → broad (with logging ok)
+# - except: → bare (flagged for review)
+# Applied: 2026-03-30
