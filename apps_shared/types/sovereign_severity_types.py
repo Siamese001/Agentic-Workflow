@@ -3262,7 +3262,7 @@ class mission_plan(sovereign_base_model_types):
     objective: str
     phases: list[MissionPhase] = field(default_factory=list)
     risk_assessment: dict = field(default_factory=dict)
-    created_at: datetime = field(default_factory=datetime.utcnow)
+    created_at: datetime = field(default_factory=lambda: datetime.now(timezone.utc))
     status: MissionStatus = MissionStatus.PLANNED
 
     class Builder:
@@ -3488,7 +3488,7 @@ class constitutional_violation(sovereign_base_model_types):
     """
 
     violation_id: str
-    timestamp: datetime = field(default_factory=datetime.utcnow)
+    timestamp: datetime = field(default_factory=lambda: datetime.now(timezone.utc))
     guardian: str
     dimension: str
     severity: str
@@ -3596,7 +3596,7 @@ class healing_action(sovereign_base_model_types):
     """
 
     action_id: str
-    timestamp: datetime = field(default_factory=datetime.utcnow)
+    timestamp: datetime = field(default_factory=lambda: datetime.now(timezone.utc))
     strategy: str
     action_type: str
     target_file: str
@@ -3711,7 +3711,7 @@ class healing_cycle(sovereign_base_model_types):
     """
 
     cycle_id: str
-    timestamp: datetime = field(default_factory=datetime.utcnow)
+    timestamp: datetime = field(default_factory=lambda: datetime.now(timezone.utc))
     trigger_score: float
     target_score: float
     actions: list[HealingAction] = field(default_factory=list)
@@ -3799,7 +3799,7 @@ class healing_report(sovereign_base_model_types):
     """
 
     report_id: str
-    timestamp: datetime = field(default_factory=datetime.utcnow)
+    timestamp: datetime = field(default_factory=lambda: datetime.now(timezone.utc))
     auditor_version: str
     target_scope: str
     violations_found: int
@@ -3894,7 +3894,7 @@ class sovereign_event(sovereign_base_model_types):
     """
 
     event_id: str
-    timestamp: datetime = field(default_factory=datetime.utcnow)
+    timestamp: datetime = field(default_factory=lambda: datetime.now(timezone.utc))
     event_type: sovereign_event_type
     severity: sovereign_severity
     source: str

@@ -14,7 +14,7 @@ import json
 import logging
 import time
 from dataclasses import dataclass, field
-from datetime import datetime
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
@@ -353,7 +353,7 @@ class TraceRegistry(MCPHardenedMixin):
         try:
             if self.persistence_path:
                 entry = {
-                    "timestamp": datetime.utcnow().isoformat(),
+                    "timestamp": datetime.now(timezone.utc).isoformat(),
                     "agent": trace.agent_name,
                     "action": trace.action,
                     "status": trace.status,

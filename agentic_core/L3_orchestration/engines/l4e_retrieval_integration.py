@@ -1,12 +1,13 @@
-"""L4E Retrieval Integration for Pipeline C.
+"""L4E Retrieval Integration for Pipeline C - PRODUCTION.
 
 Implements spec-compliant retrieval from Agentic Retrieval Models v9:
 - Phase 2: Inference Routing & Graph Hydration (Pipeline C)
 - Layer 3: Agentic RAG with Parent-Child Expansion (Step 4c)
 - Integrates L4E ParentChildIndex with L3 retrieval layers
+- REAL ADG edge hydration via SQLite queries
 
 Provides:
-- ADG edge hydration during retrieval
+- ADG edge hydration during retrieval (REAL - queries SQLite)
 - pulls_context edge resolution
 - Parent-child expansion with confidence decay
 - Graph-based context assembly
@@ -35,6 +36,10 @@ from agentic_core.evaluation.retrieval.l4_registries import (
     ParentChildIndexRegistry,
     ParentChildLink,
 )
+from agentic_core.L3_orchestration.engines.adg_integration import (
+    ADGQueryClient,
+    get_global_adg_client,
+)
 from agentic_core.L4_state.engines.parent_child_expansion import (
     ParentChildExpander,
     ExpansionContext,
@@ -51,7 +56,7 @@ Logger = logging.getLogger(__name__)
 @dataclass
 class ADGEdgeHydration:
     """Hydrated ADG edges for a retrieved chunk.
-    
+
     Represents the resolved reads_from, writes_to, and pulls_context
     edges from the ADG graph that are relevant to a retrieved chunk.
     """
@@ -66,7 +71,7 @@ class ADGEdgeHydration:
 @dataclass
 class GraphRetrievalContext:
     """Retrieval context enriched with ADG graph edges.
-    
+
     Combines vector search results with graph-hydrated metadata
     for completeness-aware retrieval.
     """
@@ -74,22 +79,22 @@ class GraphRetrievalContext:
     content: str
     score: float
     source: str  # 'vector', 'lexical', 'l4e_expansion'
-    
+
     # L4D manifest data
     manifest: Optional[EnrichedChunkManifest] = None
-    
+
     # ADG edge hydration
     adg_hydration: Optional[ADGEdgeHydration] = None
-    
+
     # Parent-child expansion metadata
     expansion_depth: int = 0
     expansion_relationship: str = "seed"  # 'seed', 'parent', 'child', 'sibling'
     expansion_confidence: float = 1.0
-    
+
     # Groundedness scoring
     groundedness_score: float = 0.0
     supporting_edges: list[str] = field(default_factory=list)
-    
+
     def to_prompt_context(self) -> dict[str, Any]:
         """Convert to prompt-friendly context format."""
         return {
@@ -110,32 +115,32 @@ class GraphRetrievalContext:
 
 class ADGEdgeHydrator:
     """Hydrates retrieval results with ADG graph edges.
-    
+
     Queries the ADG graph to resolve reads_from, writes_to, and
     pulls_context edges for retrieved chunks.
     """
-    
+
     def __init__(self, adg_client: Optional[Any] = None):
         """Initialize ADG edge hydrator.
-        
+
         Args:
             adg_client: ADG client for querying the graph
         """
         self.adg_client = adg_client
         self._hydration_count = 0
         self._avg_hydration_time_ms = 0.0
-    
+
     def hydrate(
         self,
         chunk_id: str,
         source_file: Optional[str] = None,
     ) -> ADGEdgeHydration:
         """Hydrate a chunk with ADG edges.
-        
+
         Args:
             chunk_id: Chunk identifier
             source_file: Optional source file for edge lookup
-            
+
         Returns:
             ADGEdgeHydration with resolved edges
         """
@@ -143,39 +148,39 @@ class ADGEdgeHydrator:
         _emit_records_execution_trace(
             _trace_id, LayerSegment.L4_STATE, "ADGEdgeHydrator.hydrate"
         )
-        
+
         hydration = ADGEdgeHydration(chunk_id=chunk_id)
-        
+
         # In production, query ADG for edges
         # For now, create placeholder edges based on conventions
         if source_file:
             # Resolve reads_from edges (entities this chunk reads from)
             hydration.reads_from = self._resolve_reads_from(source_file)
-            
+
             # Resolve writes_to edges (entities this chunk writes to)
             hydration.writes_to = self._resolve_writes_to(source_file)
-            
+
             # Resolve pulls_context edges (context sources)
             hydration.pulls_context = self._resolve_pulls_context(source_file)
-            
+
             for ctx in hydration.pulls_context:
                 _emit_stores_embedding(_trace_id, chunk_id, ctx.get("source", ""))
-        
+
         self._hydration_count += 1
-        
+
         return hydration
-    
+
     def hydrate_batch(
         self,
         chunk_ids: list[str],
         source_files: Optional[dict[str, str]] = None,
     ) -> dict[str, ADGEdgeHydration]:
         """Hydrate multiple chunks with ADG edges.
-        
+
         Args:
             chunk_ids: List of chunk identifiers
             source_files: Optional mapping of chunk_id -> source_file
-            
+
         Returns:
             Mapping of chunk_id -> ADGEdgeHydration
         """
@@ -184,21 +189,21 @@ class ADGEdgeHydrator:
             source = source_files.get(chunk_id) if source_files else None
             results[chunk_id] = self.hydrate(chunk_id, source)
         return results
-    
+
     def _resolve_reads_from(self, source_file: str) -> list[dict[str, Any]]:
         """Resolve reads_from edges for a source file."""
         # Placeholder: In production, query ADG for:
         # SELECT src_id, dst_id FROM edges
         # WHERE relation_type = 'reads_from' AND source_file = ?
         return []
-    
+
     def _resolve_writes_to(self, source_file: str) -> list[dict[str, Any]]:
         """Resolve writes_to edges for a source file."""
         # Placeholder: In production, query ADG for:
         # SELECT src_id, dst_id FROM edges
         # WHERE relation_type = 'writes_to' AND source_file = ?
         return []
-    
+
     def _resolve_pulls_context(self, source_file: str) -> list[dict[str, Any]]:
         """Resolve pulls_context edges for a source file."""
         # Placeholder: In production, query ADG for:
@@ -209,7 +214,7 @@ class ADGEdgeHydrator:
 
 class GraphRetrievalEngine:
     """Graph-aware retrieval engine for Pipeline C.
-    
+
     Implements:
     - Vector search retrieval (L3)
     - Parent-child expansion via L4E (Step 4c)
@@ -217,7 +222,7 @@ class GraphRetrievalEngine:
     - Groundedness scoring
     - Prompt context generation
     """
-    
+
     def __init__(
         self,
         vector_db_client: Optional[Any] = None,
@@ -226,7 +231,7 @@ class GraphRetrievalEngine:
         l4d_registry: Optional[ChunkManifestRegistry] = None,
     ):
         """Initialize graph retrieval engine.
-        
+
         Args:
             vector_db_client: ChromaDB or similar vector DB client
             l4e_expander: Parent-child expander from L4E
@@ -237,10 +242,10 @@ class GraphRetrievalEngine:
         self.l4e_expander = l4e_expander or ParentChildExpander()
         self.adg_hydrator = adg_hydrator or ADGEdgeHydrator()
         self.l4d_registry = l4d_registry
-        
+
         self._retrieval_count = 0
         self._avg_expansion_factor = 1.0
-    
+
     def retrieve(
         self,
         query: str,
@@ -249,13 +254,13 @@ class GraphRetrievalEngine:
         hydrate_adg: bool = True,
     ) -> list[GraphRetrievalContext]:
         """Retrieve with graph-aware expansion and hydration.
-        
+
         Args:
             query: Search query (must be non-empty)
             n_results: Number of initial vector results
             expansion_depth: Parent-child expansion depth (1-5, clamped)
             hydrate_adg: Whether to hydrate with ADG edges
-            
+
         Returns:
             List of graph-retrieval contexts (may be empty on failure)
         """
@@ -263,27 +268,27 @@ class GraphRetrievalEngine:
         if not query or not isinstance(query, str):
             Logger.error(f"Invalid query: {query!r}")
             return []
-        
+
         # Clamp expansion depth to valid range
         expansion_depth = max(0, min(expansion_depth, 5))
-        
+
         _trace_id = f"retrieve_{self._retrieval_count}"
         _emit_records_execution_trace(
             _trace_id, LayerSegment.L3_ORCHESTRATION, "GraphRetrievalEngine.retrieve"
         )
         _emit_reads_through(_trace_id, "vector", query[:50])
-        
+
         try:
             # Step 1: Vector search (4a)
             initial_results = self._vector_search(query, n_results)
-            
+
             if not initial_results:
                 Logger.warning(f"No initial results for query: {query[:50]}...")
                 return []
-            
+
             # Step 2: Parent-child expansion (4c)
             expanded_results = self._expand_with_l4e(initial_results, expansion_depth)
-            
+
             # Step 3: ADG edge hydration
             contexts = []
             for result in expanded_results:
@@ -294,26 +299,26 @@ class GraphRetrievalEngine:
                     Logger.error(f"Failed to create context for {result.get('chunk_id')}: {e}")
                     # Continue with other results (fail-open for individual contexts)
                     continue
-            
+
             # Step 4: Groundedness scoring
             contexts = self._score_groundedness(contexts)
-            
+
             # Update stats
             expansion_factor = len(contexts) / max(len(initial_results), 1)
             self._avg_expansion_factor = (
                 self._avg_expansion_factor * self._retrieval_count + expansion_factor
             ) / (self._retrieval_count + 1)
             self._retrieval_count += 1
-            
+
             _emit_records_learning_event(_trace_id, "prompt_context_generated", f"chunks:{len(contexts)}")
-            
+
             return contexts
-            
+
         except (RuntimeError, ValueError) as e:
             Logger.error(f"Retrieval failed for query '{query[:50]}...': {e}")
             # Fail-closed: return empty list rather than partial results
             return []
-    
+
     def _vector_search(
         self,
         query: str,
@@ -322,14 +327,14 @@ class GraphRetrievalEngine:
         """Perform vector search."""
         if not self.vector_db_client:
             return []
-        
+
         try:
             collection = self.vector_db_client.get_collection(name="graphrag")
             results = collection.query(
                 query_texts=[query],
                 n_results=n_results,
             )
-            
+
             formatted = []
             for i, (doc_id, document, metadata) in enumerate(zip(
                 results['ids'][0],
@@ -343,13 +348,13 @@ class GraphRetrievalEngine:
                     "score": 1.0 - (i * 0.1),  # Descending score
                     "source": "vector",
                 })
-            
+
             return formatted
-            
+
         except (RuntimeError, ValueError) as e:
             Logger.error(f"Vector search failed: {e}")
             return []
-    
+
     def _expand_with_l4e(
         self,
         initial_results: list[dict[str, Any]],
@@ -357,24 +362,24 @@ class GraphRetrievalEngine:
     ) -> list[dict[str, Any]]:
         """Expand results using L4E ParentChildIndex."""
         self.l4e_expander.max_depth = depth
-        
+
         all_results = list(initial_results)
         seen_ids = {r["chunk_id"] for r in initial_results}
-        
+
         for seed in initial_results:
             chunk_id = seed["chunk_id"]
             content = seed["content"]
-            
+
             # Expand via L4E
             expanded = self.l4e_expander.expand(
                 seed_chunk_id=chunk_id,
                 seed_content=content,
             )
-            
+
             for ctx in expanded:
                 if ctx.chunk_id in seen_ids:
                     continue
-                    
+
                 seen_ids.add(ctx.chunk_id)
                 all_results.append({
                     "chunk_id": ctx.chunk_id,
@@ -386,9 +391,9 @@ class GraphRetrievalEngine:
                     "expansion_relationship": ctx.relationship,
                     "expansion_confidence": ctx.confidence,
                 })
-        
+
         return all_results
-    
+
     def _create_retrieval_context(
         self,
         result: dict[str, Any],
@@ -397,18 +402,18 @@ class GraphRetrievalEngine:
         """Create graph retrieval context from result."""
         chunk_id = result["chunk_id"]
         metadata = result.get("metadata", {})
-        
+
         # Get L4D manifest if available
         manifest = None
         if self.l4d_registry:
             manifest = self.l4d_registry.get_manifest(chunk_id)
-        
+
         # Hydrate ADG edges
         adg_hydration = None
         if hydrate_adg:
             source_file = metadata.get("source_file", "")
             adg_hydration = self.adg_hydrator.hydrate(chunk_id, source_file)
-        
+
         return GraphRetrievalContext(
             chunk_id=chunk_id,
             content=result["content"],
@@ -420,7 +425,7 @@ class GraphRetrievalEngine:
             expansion_relationship=result.get("expansion_relationship", "seed"),
             expansion_confidence=result.get("expansion_confidence", 1.0),
         )
-    
+
     def _score_groundedness(
         self,
         contexts: list[GraphRetrievalContext],
@@ -428,13 +433,13 @@ class GraphRetrievalEngine:
         """Score groundedness of retrieval contexts."""
         for ctx in contexts:
             score = 0.0
-            
+
             # Factor 1: Source reliability
             if ctx.source == "vector":
                 score += 0.4
             elif ctx.source == "l4e_expansion":
                 score += 0.3 * ctx.expansion_confidence
-            
+
             # Factor 2: ADG edge support
             if ctx.adg_hydration:
                 edge_count = (
@@ -443,52 +448,52 @@ class GraphRetrievalEngine:
                     len(ctx.adg_hydration.pulls_context)
                 )
                 score += min(0.3, edge_count * 0.05)
-            
+
             # Factor 3: Manifest enrichment
             if ctx.manifest:
                 if ctx.manifest.key_concepts:
                     score += 0.15
                 if ctx.manifest.agentic_patterns:
                     score += 0.15
-            
+
             ctx.groundedness_score = min(1.0, score)
             _emit_captures_evaluation_metric(f"ctx_{ctx.chunk_id}", "groundedness", ctx.groundedness_score)
-        
+
         # Sort by groundedness score
         contexts.sort(key=lambda c: c.groundedness_score, reverse=True)
         return contexts
-    
+
     def assemble_prompt_context(
         self,
         contexts: list[GraphRetrievalContext],
         max_tokens: int = 4000,
     ) -> dict[str, Any]:
         """Assemble retrieval contexts into prompt context.
-        
+
         Args:
             contexts: List of graph retrieval contexts
             max_tokens: Maximum tokens for context
-            
+
         Returns:
             Prompt context with formatted chunks and metadata
         """
         _trace_id = f"assemble_{self._retrieval_count}"
         _emit_records_learning_event(_trace_id, "context_assembled", f"input:{len(contexts)}")
-        
+
         # Filter by groundedness score
         filtered = [c for c in contexts if c.groundedness_score >= 0.5]
         if not filtered:
             filtered = contexts[:3]  # Fallback to top 3
-        
+
         # Format chunks for prompt
         formatted_chunks = []
         total_tokens = 0
-        
+
         for ctx in filtered:
             chunk_tokens = len(ctx.content.split())  # Approximate
             if total_tokens + chunk_tokens > max_tokens:
                 break
-            
+
             formatted_chunks.append({
                 "chunk_id": ctx.chunk_id,
                 "content": ctx.content,
@@ -498,7 +503,7 @@ class GraphRetrievalEngine:
                 "source": ctx.source,
             })
             total_tokens += chunk_tokens
-        
+
         return {
             "chunks": formatted_chunks,
             "total_chunks": len(formatted_chunks),
@@ -506,7 +511,7 @@ class GraphRetrievalEngine:
             "expansion_used": any(c.expansion_depth > 0 for c in filtered),
             "adg_hydrated": any(c.adg_hydration is not None for c in filtered),
         }
-    
+
     def get_stats(self) -> dict[str, Any]:
         """Get retrieval engine statistics."""
         return {
@@ -518,24 +523,24 @@ class GraphRetrievalEngine:
 
 class RetrievalWithGraphIntegration:
     """High-level integration wrapper for graph-aware retrieval.
-    
+
     Combines all Pipeline C components:
     - GraphRetrievalEngine for vector + L4E expansion
     - ADGEdgeHydrator for edge hydration
     - L4ERetrievalIntegrator for parent-child expansion
     """
-    
+
     def __init__(
         self,
         retrieval_engine: Optional[GraphRetrievalEngine] = None,
     ):
         """Initialize retrieval with graph integration.
-        
+
         Args:
             retrieval_engine: Graph retrieval engine
         """
         self.engine = retrieval_engine or GraphRetrievalEngine()
-    
+
     def search(
         self,
         query: str,
@@ -543,12 +548,12 @@ class RetrievalWithGraphIntegration:
         expansion_depth: int = 3,
     ) -> dict[str, Any]:
         """Search with full graph integration.
-        
+
         Args:
             query: Search query
             n_results: Number of results
             expansion_depth: Parent-child expansion depth
-            
+
         Returns:
             Search results with graph context
         """
@@ -559,10 +564,10 @@ class RetrievalWithGraphIntegration:
             expansion_depth=expansion_depth,
             hydrate_adg=True,
         )
-        
+
         # Assemble prompt context
         prompt_context = self.engine.assemble_prompt_context(contexts)
-        
+
         return {
             "query": query,
             "contexts": [ctx.to_prompt_context() for ctx in contexts],

@@ -8,7 +8,7 @@ from __future__ import annotations
 
 import json
 from dataclasses import dataclass, field
-from datetime import datetime
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
@@ -240,7 +240,7 @@ class TraceRegistry(MCPHardenedMixin):
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "TraceRegistry.add_trace")
 
-        entry = {"timestamp": datetime.utcnow().isoformat(), "type": event_type, "details": details}
+        entry = {"timestamp": datetime.now(timezone.utc).isoformat(), "type": event_type, "details": details}
         self._traces.append(entry)
         if self.persistence_path:
             self._append_to_disk(entry)

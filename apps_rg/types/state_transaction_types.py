@@ -13,7 +13,7 @@ from __future__ import annotations
 import copy
 import logging
 from dataclasses import dataclass, field
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Any, TypeVar
 
 from apps_rg.utils.mixins import HealerMixin, MCPHardenedMixin
@@ -256,7 +256,7 @@ class ImmutableStagingBuffer(MCPHardenedMixin, HealerMixin):
         self._history.append(
             StateTransaction(
                 key=key,
-                timestamp=datetime.utcnow().timestamp(),
+                timestamp=datetime.now(timezone.utc).timestamp(),
                 source_agent=source_agent,
                 value_hash=hash(str(snapshot))
                 if isinstance(snapshot, str | int | float | tuple | frozenset)

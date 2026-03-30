@@ -495,7 +495,7 @@ class FileCheckpointStorage(CheckpointStorageBackend):
         """
         try:
             count = 0
-            cutoff = datetime.utcnow() - older_than
+            cutoff = datetime.now(timezone.utc) - older_than
             for subdir in self.storage_path.iterdir():
                 if subdir.is_dir() and len(subdir.name) == 2:
                     for file in subdir.glob("*.json"):
@@ -736,7 +736,7 @@ class MemoryCheckpointStorage(CheckpointStorageBackend):
             Number of checkpoints cleaned up
         """
         async with self._lock:
-            cutoff = datetime.utcnow() - older_than
+            cutoff = datetime.now(timezone.utc) - older_than
             to_remove = []
             for trace_id, envelope in self.checkpoints.items():
                 if envelope.updated_at < cutoff:
