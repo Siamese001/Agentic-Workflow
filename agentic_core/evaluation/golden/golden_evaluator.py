@@ -133,7 +133,11 @@ class GoldenDatasetEvaluator:
                 else:
                     data = self._load_json(full_path)
                 self._datasets[name] = data
-                record_count = len(data) if isinstance(data, list) else len(data.get("test_cases", data.get("examples", [])))
+                record_count = (
+                    len(data)
+                    if isinstance(data, list)
+                    else len(data.get("test_cases", data.get("examples", [])))
+                )
                 Logger.info(f"Loaded golden dataset: {name} ({record_count} records)")
             except Exception as e:
                 Logger.error(f"Failed to load {name}: {e}")

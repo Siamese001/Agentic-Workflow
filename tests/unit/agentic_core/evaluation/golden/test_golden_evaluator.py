@@ -29,9 +29,9 @@ def sample_test_cases(tmp_path: Path) -> Path:
                 "expected_output": {
                     "type": "weather_report",
                     "contains": ["temperature", "San Francisco"],
-                    "min_length": 50
+                    "min_length": 50,
                 },
-                "quality_criteria": {"accuracy": 0.9}
+                "quality_criteria": {"accuracy": 0.9},
             },
             {
                 "id": "TC002",
@@ -41,11 +41,11 @@ def sample_test_cases(tmp_path: Path) -> Path:
                 "expected_output": {
                     "type": "stock_info",
                     "contains": ["AAPL", "price", "market cap"],
-                    "min_length": 30
+                    "min_length": 30,
                 },
-                "quality_criteria": {"accuracy": 0.8}
-            }
-        ]
+                "quality_criteria": {"accuracy": 0.8},
+            },
+        ],
     }
     path = tmp_path / "test_cases.json"
     with open(path, "w") as f:
@@ -63,7 +63,7 @@ def sample_retrieval_ground_truth(tmp_path: Path) -> Path:
             "expected_document_ids": ["doc_001"],
             "expected_answer_spans": ["Single mutation authority", "write permissions"],
             "expected_top_k_rank": 1,
-            "minimum_recall_at_3": 1.0
+            "minimum_recall_at_3": 1.0,
         }
     ]
     path = tmp_path / "retrieval_ground_truth.jsonl"
@@ -147,7 +147,7 @@ class TestGoldenDatasetEvaluator:
         result = results[0]
         assert result.case_id == "TC002"
         assert result.passed is False  # Missing "market cap"
-        assert result.match_score == 2/3  # 2 of 3 spans found
+        assert result.match_score == 2 / 3  # 2 of 3 spans found
         assert "market cap" in result.missing_spans
 
     def test_evaluate_no_matching_query(self, sample_test_cases: Path):
