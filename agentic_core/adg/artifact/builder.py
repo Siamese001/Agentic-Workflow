@@ -592,6 +592,20 @@ class ADGArtifactBuilder:
                         )
                     )
                     existing_adg.add(adg_target)
+                else:
+                    # External symbols (not in gateway allowlist) become EXTERNAL_MODULE
+                    artifact.entities.append(
+                        EntityRecord(
+                            adg_name=adg_target,
+                            entity_type="external_module",
+                            layer="UNKNOWN",
+                            identity_kind="external_symbol",
+                            confidence="HIGH",
+                            resolved_path="",
+                            observations=[f"external:{dot_name}"],
+                        )
+                    )
+                    existing_adg.add(adg_target)
                     continue
                 # G10: provider symbols get entity_type=provider
                 base = dot_name.split(".")[0]
