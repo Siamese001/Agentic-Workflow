@@ -28,6 +28,10 @@ while REPO_ROOT.name != "Agentic-Workflow" and REPO_ROOT.parent != REPO_ROOT:
 CI_SCRIPTS_DIR = REPO_ROOT / "ops_scripts" / "ci"
 TOOLS_DIR = REPO_ROOT / "tools" / "adg"
 
+# Add repo root to sys.path for imports
+if str(REPO_ROOT) not in sys.path:
+    sys.path.insert(0, str(REPO_ROOT))
+
 
 class TestADGQueryBridgeReal:
     """Test ADGQueryBridge with real SQLite database (no mocking)."""
@@ -199,7 +203,7 @@ NEW_CONSTANT = "value"  # Should be flagged if not in SSOT
 
         # Verify script is executable Python
         assert script_path.suffix == ".py"
-        content = script_path.read_text()
+        content = script_path.read_text(encoding='utf-8')
         assert "subprocess" in content.lower()
 
     def test_validate_import_dependencies_script_exists(self, test_repo_dir):
@@ -352,7 +356,7 @@ class TestScriptOutputValidation:
 
         for script in scripts:
             if script.exists():
-                content = script.read_text()
+                content = script.read_text(encoding='utf-8')
                 # Check for JSON output patterns
                 assert "json" in content.lower() or "print" in content.lower(), \
                     f"{script.name} should produce output"

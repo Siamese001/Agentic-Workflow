@@ -324,7 +324,7 @@ def analyze_failures(
 
 
 def analyze_failures_and_persist(
-    snapshot_id: str, audit_slice: bytes, window_start_utc: int, window_end_utc: int
+    snapshot_id: str, audit_slice: bytes, window_start_utc: int, window_end_utc: int, violation_file_set: set[str] | None = None
 ) -> object:
     """Analyze failures and persist findings to Memory MCP.
 

@@ -50,7 +50,7 @@ class ParallelFileProcessor:
         self,
         max_workers: int | None = None,
         chunk_size: int = 50,
-        use_processes: bool = True,
+        use_processes: bool = False,  # Default to threads for file I/O
     ):
         self.config = CPUConfig(
             max_workers=max_workers,

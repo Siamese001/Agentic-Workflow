@@ -30,6 +30,7 @@ from agentic_core.L2_execution.optimization import (
     compute_file_hash,
     BatchProcessor,
     JSONBatchProcessor,
+    FileHashBatchProcessor,
 )
 
 
@@ -397,8 +398,14 @@ class TestBatchProcessor:
     
     def test_batch_metrics(self):
         """Test batch metrics collection."""
+        import time
+        
+        def slow_identity(x):
+            time.sleep(0.001)  # 1ms delay for measurable timing
+            return x
+        
         processor = BatchProcessor(
-            processor_func=lambda x: x,
+            processor_func=slow_identity,
             batch_size=2,
         )
         
@@ -447,15 +454,19 @@ class TestBatchProcessor:
     
     def test_batch_processor_parallel(self):
         """Test parallel batch processing."""
-        def slow_process(x):
-            time.sleep(0.01)  # Simulate work
+        # Use threads to avoid pickling issues on Windows
+        from agentic_core.L2_execution.optimization import CPUConfig
+        
+        def square(x):
             return x * 2
         
         processor = BatchProcessor(
-            processor_func=slow_process,
+            processor_func=square,
             batch_size=3,
             max_workers=2,
         )
+        # Override to use threads for this test
+        processor.optimizer = AMDCPUOptimizer(CPUConfig(use_processes=False))
         
         items = list(range(6))
         results = processor.process_parallel(items)

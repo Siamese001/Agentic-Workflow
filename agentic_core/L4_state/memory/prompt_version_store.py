@@ -251,6 +251,17 @@ class PromptVersionStore:
         """Return all stored version IDs."""
         return list(_versions.keys())
 
+    def get_current_system_hash(self) -> str:
+        """Return a deterministic hash representing the current system state.
+
+        This is used for cache invalidation and change detection.
+        Returns a SHA-256 hex digest of all stored versions.
+        """
+        import hashlib
+        sorted_versions = sorted(_versions.keys())
+        combined = "|".join(sorted_versions)
+        return hashlib.sha256(combined.encode("utf-8")).hexdigest()
+
     def clear(self) -> None:
         """Clear all stored versions. For tests only."""
         _versions.clear()
