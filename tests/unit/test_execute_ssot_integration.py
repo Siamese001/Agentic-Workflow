@@ -207,11 +207,11 @@ class TestExecuteSsotMetaLearningIntakeReal:
             "_fire_meta_learning_intake function not found"
 
     def test_fire_meta_learning_intake_handles_empty_state(self, tmp_path):
-        """Test intake handles empty healing actions gracefully - skip on dependency issues."""
+        """Test intake handles empty healing actions gracefully."""
         import agentic_core.L0_routing.scripts.execute_ssot as ssot_module
 
-        if not hasattr(ssot_module, '_fire_meta_learning_intake'):
-            pytest.skip("_fire_meta_learning_intake not available")
+        assert hasattr(ssot_module, '_fire_meta_learning_intake'), \
+            "_fire_meta_learning_intake function not found"
 
         # Create minimal state object (not mock) with required attributes
         class MinimalState:
@@ -223,40 +223,34 @@ class TestExecuteSsotMetaLearningIntakeReal:
 
         state = MinimalState()
 
-        # Should not raise even with empty actions
-        # Note: Real implementation has complex dependencies that may fail
-        # This test verifies the function exists and can be called
+        # Test that function can be called - if dependencies fail, that's a real bug
+        # No pytest.skip allowed per windsurf rules
         try:
             result = ssot_module._fire_meta_learning_intake(state, 1234567890)
             # Success - function worked
         except (ImportError, TypeError) as e:
-            # Expected - dependencies not fully available in test environment
-            pytest.skip(f"System learning dependencies not available: {e}")
+            # Dependencies not available - this is a real issue, not a skip reason
+            pytest.fail(f"System learning dependencies not available: {e}")
         except Exception as e:
-            # Accept other dependency errors
-            if any(x in str(e).lower() for x in ["module", "import", "unexpected keyword"]):
-                pytest.skip(f"Dependency issue: {e}")
-            raise
+            # Other errors should fail the test
+            pytest.fail(f"Meta learning intake failed: {e}")
 
     def test_fire_meta_learning_intake_integration_or_skip(self, tmp_path):
-        """Test intake integration - skip if dependencies unavailable (no mocks)."""
+        """Test intake integration with real dependencies."""
         import agentic_core.L0_routing.scripts.execute_ssot as ssot_module
 
-        if not hasattr(ssot_module, '_fire_meta_learning_intake'):
-            pytest.skip("_fire_meta_learning_intake not available")
+        assert hasattr(ssot_module, '_fire_meta_learning_intake'), \
+            "_fire_meta_learning_intake not available"
 
         # Try to import system learning components
         try:
             from system_learning.engines.healing_outcome_aggregator import HealingOutcomeAggregator
             from system_learning.engines.healing_outcome_intake_adapter import HealingOutcomeIntakeAdapter
             HAS_DEPS = True
-        except ImportError:
-            HAS_DEPS = False
+        except ImportError as e:
+            pytest.fail(f"System learning modules not available: {e}")
 
-        if not HAS_DEPS:
-            pytest.skip("System learning modules not available - skipping integration test")
-
-        # If we get here, use real components (no mocking)
+        # Use real components (no mocking)
         class RealState:
             def __init__(self):
                 self.state = {
@@ -276,17 +270,11 @@ class TestExecuteSsotMetaLearningIntakeReal:
 
         state = RealState()
 
-        # Call with real dependencies
-        # Note: Real implementation has complex dependencies that may fail
+        # Call with real dependencies - if it fails, it's a real bug
         try:
             result = ssot_module._fire_meta_learning_intake(state, 1234567890)
             # Verify function completed without error
-        except (ImportError, TypeError) as e:
-            # Expected - complex dependencies not fully available
-            pytest.skip(f"Dependency configuration issue: {e}")
         except Exception as e:
-            if any(x in str(e).lower() for x in ["unexpected keyword", "missing", "not found"]):
-                pytest.skip(f"Dependency configuration issue: {e}")
             pytest.fail(f"Integration test failed: {e}")
 
     def test_faiss_vector_generation_path_exists(self):
@@ -295,8 +283,8 @@ class TestExecuteSsotMetaLearningIntakeReal:
 
         import agentic_core.L0_routing.scripts.execute_ssot as ssot_module
 
-        if not hasattr(ssot_module, '_fire_meta_learning_intake'):
-            pytest.skip("_fire_meta_learning_intake not available")
+        assert hasattr(ssot_module, '_fire_meta_learning_intake'), \
+            "_fire_meta_learning_intake not found"
 
         src = inspect.getsource(ssot_module._fire_meta_learning_intake)
 
@@ -312,29 +300,20 @@ class TestExecuteSsotRetrievalHooks:
 
     def test_retrieval_profile_manager_import(self):
         """Verify execute_ssot.py can import retrieval profile manager."""
-        try:
-            from system_learning.engines.retrieval_profile_manager import get_active_retrieval_profile
-            assert callable(get_active_retrieval_profile)
-        except ImportError as e:
-            pytest.skip(f"Retrieval profile manager not available: {e}")
+        from system_learning.engines.retrieval_profile_manager import get_active_retrieval_profile
+        assert callable(get_active_retrieval_profile)
 
     def test_l4e_retrieval_integration_import(self):
         """Verify L4E retrieval integration can be imported."""
-        try:
-            from agentic_core.L3_orchestration.engines.l4e_retrieval_integration import (
-                RetrievalContextComposer,
-            )
-            assert RetrievalContextComposer is not None
-        except ImportError as e:
-            pytest.skip(f"L4E retrieval integration not available: {e}")
+        from agentic_core.L3_orchestration.engines.l4e_retrieval_integration import (
+            RetrievalContextComposer,
+        )
+        assert RetrievalContextComposer is not None
 
     def test_semantic_cache_query_capability(self):
         """Verify semantic cache query capability exists."""
-        try:
-            from system_learning.engines.enhanced_rag_retrieval_cache import EnhancedRAGRetrievalCache
-            assert EnhancedRAGRetrievalCache is not None
-        except ImportError as e:
-            pytest.skip(f"Enhanced RAG retrieval cache not available: {e}")
+        from system_learning.engines.enhanced_rag_retrieval_cache import EnhancedRAGRetrievalCache
+        assert EnhancedRAGRetrievalCache is not None
 
     def test_execute_ssot_has_retrieval_hooks(self):
         """Verify execute_ssot.py has retrieval integration hooks."""
@@ -362,19 +341,13 @@ class TestExecuteSsotEntrypoint:
 
     def test_entrypoint_imports_execute_ssot(self):
         """Verify entrypoint imports execute_ssot module."""
-        try:
-            from agentic_core.L0_routing.scripts import execute_ssot_entrypoint
-            assert hasattr(execute_ssot_entrypoint, 'main') or 'execute_ssot' in str(execute_ssot_entrypoint)
-        except ImportError as e:
-            pytest.skip(f"Entrypoint not importable: {e}")
+        from agentic_core.L0_routing.scripts import execute_ssot_entrypoint
+        assert hasattr(execute_ssot_entrypoint, 'main') or 'execute_ssot' in str(execute_ssot_entrypoint)
 
     def test_entrypoint_has_main_function(self):
         """Verify entrypoint has main() function."""
-        try:
-            from agentic_core.L0_routing.scripts import execute_ssot_entrypoint
-            assert hasattr(execute_ssot_entrypoint, 'main'), "Entrypoint missing main() function"
-        except ImportError:
-            pytest.skip("Entrypoint not available")
+        from agentic_core.L0_routing.scripts import execute_ssot_entrypoint
+        assert hasattr(execute_ssot_entrypoint, 'main'), "Entrypoint missing main() function"
 
 
 if __name__ == "__main__":

@@ -251,10 +251,14 @@ class TestGraphNeighborhoodMemory:
         assert _FAKE_HASH in card.policy_touchpoints
 
     def test_memory_card_to_dict_sorted(self):
+        mem, bridge = self._mem()
+        card = self._card()
         d = card.to_dict()
         assert list(d.keys()) == sorted(d.keys())
 
     def test_memory_card_stable_hash_deterministic(self):
+        mem, bridge = self._mem()
+        card = self._card()
         assert card.stable_hash() == card.stable_hash()
 
 

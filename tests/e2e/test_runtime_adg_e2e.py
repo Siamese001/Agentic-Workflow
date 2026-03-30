@@ -142,20 +142,23 @@ def sample_spans() -> list[dict[str, Any]]:
 
 
 @pytest.fixture
-def materializer() -> RuntimeADGMaterializer:
+def materializer(runtime_adg_classes) -> "RuntimeADGMaterializer":
     """Provide fresh RuntimeADGMaterializer instance."""
+    _, _, _, RuntimeADGMaterializer, _, _, _, _, _ = runtime_adg_classes
     return RuntimeADGMaterializer()
 
 
 @pytest.fixture
-def in_memory_store() -> InMemoryRuntimeADGStore:
+def in_memory_store(runtime_adg_classes) -> "InMemoryRuntimeADGStore":
     """Provide fresh in-memory store."""
+    _, InMemoryRuntimeADGStore, _, _, _, _, _, _, _ = runtime_adg_classes
     return InMemoryRuntimeADGStore()
 
 
 @pytest.fixture
-def l6_bridge(temp_runtime_adg_dir: Path) -> L6MetaLearningBridge:
+def l6_bridge(temp_runtime_adg_dir: Path, runtime_adg_classes) -> "L6MetaLearningBridge":
     """Provide fresh L6 meta-learning bridge."""
+    _, _, L6MetaLearningBridge, _, _, _, _, _, _ = runtime_adg_classes
     return L6MetaLearningBridge(l6_base_dir=temp_runtime_adg_dir / "l6")
 
 

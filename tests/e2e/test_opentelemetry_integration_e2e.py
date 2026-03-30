@@ -65,7 +65,6 @@ from system_learning.engines.telemetry_consumer import (
     create_telemetry_consumer_with_otel,
 )
 
-)
 from apps_shared.utils.agentic_span_processor import (
     AgenticSpanProcessor,
     RuntimeADGSpanEnricher,

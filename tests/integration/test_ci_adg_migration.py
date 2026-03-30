@@ -190,8 +190,8 @@ NEW_CONSTANT = "value"  # Should be flagged if not in SSOT
         """Test that timeout progress validation script exists."""
         script_path = CI_SCRIPTS_DIR / "validate_timeout_progress.py"
 
-        if not script_path.exists():
-            pytest.skip("validate_timeout_progress.py not found")
+        assert script_path.exists(), \
+            f"validate_timeout_progress.py not found at {script_path}"
 
         # Verify script is executable Python
         assert script_path.suffix == ".py"
@@ -202,8 +202,8 @@ NEW_CONSTANT = "value"  # Should be flagged if not in SSOT
         """Test that import dependencies validation script exists."""
         script_path = CI_SCRIPTS_DIR / "validate_import_dependencies.py"
 
-        if not script_path.exists():
-            pytest.skip("validate_import_dependencies.py not found")
+        assert script_path.exists(), \
+            f"validate_import_dependencies.py not found at {script_path}"
 
         assert script_path.suffix == ".py"
 
@@ -211,8 +211,8 @@ NEW_CONSTANT = "value"  # Should be flagged if not in SSOT
         """Test that layer violations validation script exists."""
         script_path = CI_SCRIPTS_DIR / "validate_layer_violations.py"
 
-        if not script_path.exists():
-            pytest.skip("validate_layer_violations.py not found")
+        assert script_path.exists(), \
+            f"validate_layer_violations.py not found at {script_path}"
 
         assert script_path.suffix == ".py"
 
@@ -220,8 +220,8 @@ NEW_CONSTANT = "value"  # Should be flagged if not in SSOT
         """Test timeout detection on real test files (no mocks)."""
         script_path = CI_SCRIPTS_DIR / "validate_timeout_progress.py"
 
-        if not script_path.exists():
-            pytest.skip("validate_timeout_progress.py not found")
+        assert script_path.exists(), \
+            f"validate_timeout_progress.py not found at {script_path}"
 
         # Run script on test file
         result = subprocess.run(
@@ -240,8 +240,8 @@ NEW_CONSTANT = "value"  # Should be flagged if not in SSOT
         """Test import detection on real test files (no mocks)."""
         script_path = CI_SCRIPTS_DIR / "validate_import_dependencies.py"
 
-        if not script_path.exists():
-            pytest.skip("validate_import_dependencies.py not found")
+        assert script_path.exists(), \
+            f"validate_import_dependencies.py not found at {script_path}"
 
         result = subprocess.run(
             [sys.executable, str(script_path), str(test_repo_dir)],
@@ -279,27 +279,23 @@ class TestADGBridgeRealIntegration:
         conn.commit()
         conn.close()
 
-        # Try to use real ADG bridge
-        try:
-            from tools.adg.adg_query_bridge import ADGQueryBridge
+        # Use real ADG bridge
+        from tools.adg.adg_query_bridge import ADGQueryBridge
 
-            # Create bridge with test DB
-            bridge = ADGQueryBridge.__new__(ADGQueryBridge)
-            bridge.conn = sqlite3.connect(str(db_path))
-            bridge.conn.row_factory = sqlite3.Row
+        # Create bridge with test DB
+        bridge = ADGQueryBridge.__new__(ADGQueryBridge)
+        bridge.conn = sqlite3.connect(str(db_path))
+        bridge.conn.row_factory = sqlite3.Row
 
-            # Query nodes
-            cursor = bridge.conn.cursor()
-            cursor.execute("SELECT * FROM nodes WHERE layer = ?", ("L2",))
-            rows = cursor.fetchall()
+        # Query nodes
+        cursor = bridge.conn.cursor()
+        cursor.execute("SELECT * FROM nodes WHERE layer = ?", ("L2",))
+        rows = cursor.fetchall()
 
-            assert len(rows) == 1
-            assert rows[0]["adg_name"] == "test_func"
+        assert len(rows) == 1
+        assert rows[0]["adg_name"] == "test_func"
 
-            bridge.conn.close()
-
-        except ImportError as e:
-            pytest.skip(f"ADGQueryBridge not available: {e}")
+        bridge.conn.close()
 
     def test_adg_bridge_can_query_edges(self, tmp_path):
         """Test ADGQueryBridge can query edges from real database."""
@@ -322,25 +318,21 @@ class TestADGBridgeRealIntegration:
         conn.commit()
         conn.close()
 
-        try:
-            from tools.adg.adg_query_bridge import ADGQueryBridge
+        from tools.adg.adg_query_bridge import ADGQueryBridge
 
-            bridge = ADGQueryBridge.__new__(ADGQueryBridge)
-            bridge.conn = sqlite3.connect(str(db_path))
-            bridge.conn.row_factory = sqlite3.Row
+        bridge = ADGQueryBridge.__new__(ADGQueryBridge)
+        bridge.conn = sqlite3.connect(str(db_path))
+        bridge.conn.row_factory = sqlite3.Row
 
-            cursor = bridge.conn.cursor()
-            cursor.execute("SELECT * FROM edges WHERE relation_type = ?", ("calls",))
-            rows = cursor.fetchall()
+        cursor = bridge.conn.cursor()
+        cursor.execute("SELECT * FROM edges WHERE relation_type = ?", ("calls",))
+        rows = cursor.fetchall()
 
-            assert len(rows) == 1
-            assert rows[0]["src_id"] == 1
-            assert rows[0]["dst_id"] == 2
+        assert len(rows) == 1
+        assert rows[0]["src_id"] == 1
+        assert rows[0]["dst_id"] == 2
 
-            bridge.conn.close()
-
-        except ImportError as e:
-            pytest.skip(f"ADGQueryBridge not available: {e}")
+        bridge.conn.close()
 
 
 class TestScriptOutputValidation:
