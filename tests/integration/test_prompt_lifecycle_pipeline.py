@@ -88,7 +88,7 @@ class TestPromptBOMBuilder(unittest.TestCase):
 
     def test_build_from_packet_with_real_store(self) -> None:
         """Test building PromptBOM from InstructionPacket using real version store."""
-        from agentic_core.L0_routing.engines.prompt_bom_builder import PromptBOMBuilder
+        from agentic_core.L0_routing.engines.prompt_bom_builder import PromptBOMBuilder, _get_version_store
         from agentic_core.L0_routing.types.l0_instruction_packet import InstructionPacket
         from agentic_core.prompt_governance.contracts import PromptBOM
 
@@ -97,11 +97,10 @@ class TestPromptBOMBuilder(unittest.TestCase):
         store = InMemoryVersionStore()
         store.set_system_hash("system-hash-123")
 
-        # Monkey-patch the version store getter for this test
-        original_get_store = getattr(
-            builder, '_get_version_store', lambda: None
-        )
-        builder._get_version_store = lambda: store
+        # Monkey-patch the global version store function for this test
+        import agentic_core.L0_routing.engines.prompt_bom_builder as builder_module
+        original_get_store = builder_module._get_version_store
+        builder_module._get_version_store = lambda: store
 
         packet = InstructionPacket(
             trace_id="trace-123",
@@ -123,7 +122,7 @@ class TestPromptBOMBuilder(unittest.TestCase):
         self.assertEqual(bom.raw_u0, "Test user input")
 
         # Restore original
-        builder._get_version_store = original_get_store
+        builder_module._get_version_store = original_get_store
 
     def test_build_mixins_sorted(self) -> None:
         """Test that mixins are sorted in output using real store."""
@@ -133,7 +132,11 @@ class TestPromptBOMBuilder(unittest.TestCase):
 
         builder = PromptBOMBuilder()
         store = InMemoryVersionStore()
-        builder._get_version_store = lambda: store
+        
+        # Patch global function
+        import agentic_core.L0_routing.engines.prompt_bom_builder as builder_module
+        original_get_store = builder_module._get_version_store
+        builder_module._get_version_store = lambda: store
 
         packet = InstructionPacket(
             trace_id="trace-123",
@@ -146,6 +149,9 @@ class TestPromptBOMBuilder(unittest.TestCase):
 
         # Mixins should be sorted
         self.assertEqual(bom.mixins_required, ("alpha", "beta", "zebra"))
+        
+        # Restore original
+        builder_module._get_version_store = original_get_store
 
 
 class TestAssemblyStageIntegration(unittest.TestCase):

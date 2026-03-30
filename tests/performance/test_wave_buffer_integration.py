@@ -86,7 +86,15 @@ class TestCPUOptimizationIntegration:
             db_path = Path(tmpdir) / "results.db"
             conn = sqlite3.connect(str(db_path))
             conn.execute("""
-                CREATE TABLE results (id INTEGER PRIMARY KEY, line_count INTEGER, doubled INTEGER)
+                CREATE TABLE nodes (
+                    id INTEGER PRIMARY KEY,
+                    adg_name TEXT UNIQUE,
+                    entity_type TEXT,
+                    layer TEXT,
+                    identity_kind TEXT,
+                    confidence REAL,
+                    resolved_path TEXT
+                )
             """)
             conn.commit()
             conn.close()
@@ -153,9 +161,18 @@ class TestCPUOptimizationIntegration:
             conn = sqlite3.connect(str(db_path))
             conn.executescript("""
                 CREATE TABLE nodes (id INTEGER PRIMARY KEY, adg_name TEXT, layer TEXT);
-                CREATE TABLE edges (id INTEGER PRIMARY KEY, src_id TEXT, dst_id TEXT);
+                CREATE TABLE edges (
+                    id INTEGER PRIMARY KEY,
+                    src_id TEXT,
+                    dst_id TEXT,
+                    relation_type TEXT,
+                    edge_kind TEXT,
+                    source_file TEXT,
+                    line_no INTEGER,
+                    symbol TEXT
+                );
                 INSERT INTO nodes VALUES (1, 'node1', 'L0'), (2, 'node2', 'L1');
-                INSERT INTO edges VALUES (1, 'node1', 'node2');
+                INSERT INTO edges VALUES (1, 'node1', 'node2', 'calls', 'static', 'file.py', 10, 'func');
             """)
             conn.commit()
             conn.close()
@@ -300,8 +317,13 @@ class TestErrorHandling:
             )
             
             assert len(results) == 2
-            assert results[0].success is True
-            assert results[1].success is False
+            # Check both results regardless of order
+            success_results = [r for r in results if r.success]
+            failed_results = [r for r in results if not r.success]
+            
+            assert len(success_results) == 1
+            assert len(failed_results) == 1
+            assert "File not found" in failed_results[0].error
 
 
 if __name__ == "__main__":

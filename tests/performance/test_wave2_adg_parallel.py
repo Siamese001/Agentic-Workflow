@@ -98,7 +98,11 @@ class TestADGSQLiteBatchInserter:
                     id INTEGER PRIMARY KEY,
                     src_id TEXT,
                     dst_id TEXT,
-                    relation_type TEXT
+                    relation_type TEXT,
+                    edge_kind TEXT,
+                    source_file TEXT,
+                    line_no INTEGER,
+                    symbol TEXT
                 )
             """)
             conn.commit()
@@ -111,6 +115,10 @@ class TestADGSQLiteBatchInserter:
                         "src_id": f"src_{i}",
                         "dst_id": f"dst_{i}",
                         "relation_type": "calls",
+                        "edge_kind": "static",
+                        "source_file": f"file_{i}.py",
+                        "line_no": i,
+                        "symbol": f"func_{i}",
                     })
             
             # Verify insertion
@@ -127,7 +135,16 @@ class TestADGSQLiteBatchInserter:
             
             conn = sqlite3.connect(str(db_path))
             conn.execute("""
-                CREATE TABLE edges (id INTEGER PRIMARY KEY, src_id TEXT)
+                CREATE TABLE edges (
+                    id INTEGER PRIMARY KEY,
+                    src_id TEXT,
+                    dst_id TEXT,
+                    relation_type TEXT,
+                    edge_kind TEXT,
+                    source_file TEXT,
+                    line_no INTEGER,
+                    symbol TEXT
+                )
             """)
             conn.commit()
             conn.close()
@@ -135,7 +152,15 @@ class TestADGSQLiteBatchInserter:
             with ADGSQLiteBatchInserter(str(db_path), batch_size=5) as inserter:
                 # Add 3 edges (below batch size)
                 for i in range(3):
-                    inserter.add_edge({"src_id": f"src_{i}"})
+                    inserter.add_edge({
+                        "src_id": f"src_{i}",
+                        "dst_id": f"dst_{i}",
+                        "relation_type": "calls",
+                        "edge_kind": "static",
+                        "source_file": f"file_{i}.py",
+                        "line_no": i,
+                        "symbol": f"func_{i}",
+                    })
                 
                 # Should be buffered, not yet inserted
                 stats = inserter.get_stats()
@@ -143,7 +168,15 @@ class TestADGSQLiteBatchInserter:
                 
                 # Add 2 more (triggers flush)
                 for i in range(3, 5):
-                    inserter.add_edge({"src_id": f"src_{i}"})
+                    inserter.add_edge({
+                        "src_id": f"src_{i}",
+                        "dst_id": f"dst_{i}",
+                        "relation_type": "calls",
+                        "edge_kind": "static",
+                        "source_file": f"file_{i}.py",
+                        "line_no": i,
+                        "symbol": f"func_{i}",
+                    })
                 
                 stats = inserter.get_stats()
                 assert stats["total_inserted"] == 5
@@ -155,12 +188,32 @@ class TestADGSQLiteBatchInserter:
             
             conn = sqlite3.connect(str(db_path))
             conn.execute("""
-                CREATE TABLE edges (id INTEGER PRIMARY KEY, src_id TEXT)
+                CREATE TABLE edges (
+                    id INTEGER PRIMARY KEY,
+                    src_id TEXT,
+                    dst_id TEXT,
+                    relation_type TEXT,
+                    edge_kind TEXT,
+                    source_file TEXT,
+                    line_no INTEGER,
+                    symbol TEXT
+                )
             """)
             conn.commit()
             conn.close()
             
-            edges = [{"src_id": f"src_{i}"} for i in range(100)]
+            edges = [
+                {
+                    "src_id": f"src_{i}",
+                    "dst_id": f"dst_{i}",
+                    "relation_type": "calls",
+                    "edge_kind": "static",
+                    "source_file": f"file_{i}.py",
+                    "line_no": i,
+                    "symbol": f"func_{i}",
+                }
+                for i in range(100)
+            ]
             
             with ADGSQLiteBatchInserter(str(db_path), batch_size=25) as inserter:
                 inserter.add_edges_batch(edges)

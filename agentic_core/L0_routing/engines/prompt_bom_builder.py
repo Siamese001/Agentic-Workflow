@@ -109,7 +109,7 @@ class PromptBOMBuilder:
         raw_u0: str,
         raw_c0: dict[str, Any] | None = None,
         template_args: dict[str, Any] | None = None,
-    ) -> PromptBOM:
+    ) -> "PromptBOM":
         """Build PromptBOM from instruction packet.
 
         Args:
@@ -121,6 +121,7 @@ class PromptBOMBuilder:
         Returns:
             Immutable PromptBOM for Assembly Stage.
         """
+        PromptBOM = _get_prompt_bom()
         trace_id = str(uuid.uuid4())
         _emit_records_execution_trace(
             trace_id, LayerSegment.L0_ROUTING, "PromptBOMBuilder.build"
