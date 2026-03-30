@@ -34,13 +34,13 @@ class ADGConsistencyVerifier:
         """Execute a SQL query and return the integer result."""
         if not self.db_path or not self.db_path.exists():
             return 0
-        
+
         conn = sqlite3.connect(self.db_path)
         c = conn.cursor()
         c.execute(sql_query)
         result = c.fetchone()
         conn.close()
-        
+
         if result and result[0] is not None:
             return int(result[0])
         return 0
@@ -95,7 +95,7 @@ class ADGConsistencyVerifier:
         conn.close()
 
         if invalid > 0:
-            self.errors.append(f"{invalid} edges with invalid relation_type")
+            self.errors.append(f"{invalid} edges with empty or null relation_type")
 
     def _verify_count_integrity(self) -> tuple[bool, list[str]]:
         """Verify counts in meta table match actual counts."""
@@ -132,10 +132,10 @@ class ADGConsistencyVerifier:
         # Run checks that populate errors directly
         self._verify_foreign_key_integrity()
         self._verify_relation_type_consistency()
-        
+
         # Run check that returns tuple
         passed, issues = self._verify_count_integrity()
-        
+
         all_issues = list(self.errors) + list(issues)
 
         return len(all_issues) == 0, all_issues

@@ -50,9 +50,9 @@ class ADGLayerAuthorityVerifier:
         return True, []
 
     def _verify_uwg_termination_for_writes(self) -> dict[str, Any]:
-        """Verify all write operations terminate at UniversalWriteGateway."""
+        """Verify all write operations terminate at Universal Write Gateway."""
         result = {"uwg_violations": []}
-        
+
         if not self.db_path or not self.db_path.exists():
             return result
 
@@ -60,8 +60,9 @@ class ADGLayerAuthorityVerifier:
         c = conn.cursor()
 
         # Find write operations not terminating at UWG
+        # Also check if source has execution_terminates_at_uwg edge (properly guarded)
         c.execute("""
-            SELECT e.src_id, n.adg_name 
+            SELECT e.src_id, n.adg_name
             FROM edges e
             JOIN nodes n ON e.src_id = n.id
             WHERE e.relation_type = 'writes_to'
@@ -69,6 +70,10 @@ class ADGLayerAuthorityVerifier:
                 SELECT id FROM nodes
                 WHERE adg_name LIKE '%UniversalWriteGateway%'
                 OR adg_name LIKE '%UWG%'
+            )
+            AND e.src_id NOT IN (
+                SELECT src_id FROM edges
+                WHERE relation_type = 'execution_terminates_at_uwg'
             )
         """)
         violations = c.fetchall()
@@ -82,7 +87,7 @@ class ADGLayerAuthorityVerifier:
     def _verify_l4_identity_completeness(self) -> dict[str, Any]:
         """Verify L4 nodes have complete identity."""
         result = {"identity_issues": 0}
-        
+
         if not self.db_path or not self.db_path.exists():
             return result
 
@@ -104,15 +109,15 @@ class ADGLayerAuthorityVerifier:
     def verify_all(self) -> tuple[bool, list[str]]:
         """Run all layer authority checks."""
         all_issues: list[str] = []
-        
+
         # Check 1: returns tuple[bool, list[str]]
         passed, issues = self._verify_layer_authority_compliance()
         all_issues.extend(issues)
-        
+
         # Check 2: returns dict with 'uwg_violations' key
         result = self._verify_uwg_termination_for_writes()
         all_issues.extend([f"UWG violation: {v['module_name']}" for v in result.get('uwg_violations', [])])
-        
+
         # Check 3: returns dict with 'identity_issues' key
         result = self._verify_l4_identity_completeness()
         if result.get('identity_issues', 0) > 0:
@@ -123,11 +128,11 @@ class ADGLayerAuthorityVerifier:
         # Check 1: returns tuple[bool, list[str]]
         passed, issues = self._verify_layer_authority_compliance()
         all_issues.extend(issues)
-        
+
         # Check 2: returns dict with 'uwg_violations' key
         result = self._verify_uwg_termination_for_writes()
         all_issues.extend([f"UWG violation: {v['module_name']}" for v in result.get('uwg_violations', [])])
-        
+
         # Check 3: returns dict with 'identity_issues' key
         result = self._verify_l4_identity_completeness()
         if result.get('identity_issues', 0) > 0:
