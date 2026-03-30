@@ -15,6 +15,8 @@ class ADGLayerAuthorityVerifier:
         self.adg_dir = Path(adg_dir)
         self.db_path = self._find_sqlite_db()
         self.issues: list[str] = []
+        self.errors: list[str] = []  # Required by tests
+        self.warnings: list[str] = []  # Required by tests
 
     def _find_sqlite_db(self) -> Path | None:
         """Find the SQLite database file in the ADG directory."""
@@ -101,15 +103,19 @@ class ADGLayerAuthorityVerifier:
 
     def verify_all(self) -> tuple[bool, list[str]]:
         """Run all layer authority checks."""
-        checks = [
-            self._verify_layer_authority_compliance,
-            self._verify_uwg_termination_for_writes,
-            self._verify_l4_identity_completeness,
-        ]
-
-        all_issues = []
-        for check in checks:
-            passed, issues = check()
-            all_issues.extend(issues)
+        all_issues: list[str] = []
+        
+        # Check 1: returns tuple[bool, list[str]]
+        passed, issues = self._verify_layer_authority_compliance()
+        all_issues.extend(issues)
+        
+        # Check 2: returns dict with 'uwg_violations' key
+        result = self._verify_uwg_termination_for_writes()
+        all_issues.extend([f"UWG violation: {v['module_name']}" for v in result.get('uwg_violations', [])])
+        
+        # Check 3: returns dict with 'identity_issues' key
+        result = self._verify_l4_identity_completeness()
+        if result.get('identity_issues', 0) > 0:
+            all_issues.append(f"{result['identity_issues']} L4 nodes with incomplete identity")
 
         return len(all_issues) == 0, all_issues
