@@ -30,6 +30,14 @@ from __future__ import annotations
 import hashlib
 import json
 import logging
+
+try:
+    import orjson as _orjson
+
+    _ORJSON_AVAILABLE = True
+except ImportError:
+    _orjson = None  # type: ignore[assignment]
+    _ORJSON_AVAILABLE = False
 from dataclasses import asdict, dataclass
 from pathlib import Path
 from typing import TYPE_CHECKING
@@ -239,7 +247,8 @@ class ScanCache:
         if not cache_path.exists():
             return cls()
         try:
-            raw = json.loads(cache_path.read_text(encoding="utf-8"))
+            _raw_bytes = cache_path.read_bytes()
+            raw = _orjson.loads(_raw_bytes) if _ORJSON_AVAILABLE else json.loads(_raw_bytes.decode("utf-8"))
             if raw.get("version") != CACHE_VERSION:
                 logger.debug("ScanCache version mismatch — discarding stale cache")
                 return cls()
@@ -273,7 +282,10 @@ class ScanCache:
         }
         tmp = cache_path.with_suffix(".tmp")
         try:
-            tmp.write_text(json.dumps(payload, indent=2), encoding="utf-8")
+            if _ORJSON_AVAILABLE:
+                tmp.write_bytes(_orjson.dumps(payload, option=_orjson.OPT_INDENT_2))
+            else:
+                tmp.write_text(json.dumps(payload, indent=2), encoding="utf-8")
             tmp.replace(cache_path)
         # guardian: allow-silent-swallow -- Cache write failure is non-critical; scan can continue without persistence
         except Exception as exc:

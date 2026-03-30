@@ -90,11 +90,11 @@ from agentic_core.adg.schema_util import (
     # G23-G27 (gap): new proof-edge frozensets
     NONDETERMINISM_WALL_CLOCK_SYMBOLS,
     ORCHESTRATION_ROUTE_SYMBOLS,
+    P1_CHECKS_AGENT_REGISTRY_SYMBOLS,
+    P1_DISPATCHES_EXECUTION_PLAN_SYMBOLS,
     # P1 orchestration symbols
     P1_ROUTES_TO_AGENT_SYMBOLS,
-    P1_DISPATCHES_EXECUTION_PLAN_SYMBOLS,
     P1_VALIDATES_AGENT_CAPABILITY_SYMBOLS,
-    P1_CHECKS_AGENT_REGISTRY_SYMBOLS,
     PATH_CONTROL_CLASSES,
     PATH_REROUTE_METHODS,
     POLICY_HASH_METHODS,
@@ -425,10 +425,7 @@ def _get_visitors_for_mode(scan_mode: str, file_path: str) -> list[str]:
 
 
 def _get_cache_aware_scan_mode(
-    cache_path: Path | None,
-    repo_root: Path,
-    include_tests: bool = True,
-    force_mode: str | None = None
+    cache_path: Path | None, repo_root: Path, include_tests: bool = True, force_mode: str | None = None
 ) -> str:
     """Determine optimal scan mode based on cache state and file changes.
 
@@ -456,7 +453,8 @@ def _get_cache_aware_scan_mode(
     # Analyze cache state
     try:
         import json
-        with open(cache_path, 'r') as f:
+
+        with open(cache_path) as f:
             cache_data = json.load(f)
 
         cache_stats = cache_data.get("stats", {})
@@ -486,9 +484,7 @@ def _get_cache_aware_scan_mode(
 
 
 def _should_use_incremental_scan(
-    cache_path: Path | None,
-    repo_root: Path,
-    changed_files: list[str] | None = None
+    cache_path: Path | None, repo_root: Path, changed_files: list[str] | None = None
 ) -> bool:
     """Determine if incremental scanning should be used.
 
@@ -507,7 +503,8 @@ def _should_use_incremental_scan(
 
     try:
         import json
-        with open(cache_path, 'r') as f:
+
+        with open(cache_path) as f:
             cache_data = json.load(f)
 
         cache_stats = cache_data.get("stats", {})
@@ -518,9 +515,7 @@ def _should_use_incremental_scan(
         # 1. High cache hit rate (>85%)
         # 2. Substantial cache (>2000 entries)
         # 3. Small number of changes (<100 files)
-        if (hit_rate > 0.85 and
-            total_entries > 2000 and
-            (changed_files is None or len(changed_files) < 100)):
+        if hit_rate > 0.85 and total_entries > 2000 and (changed_files is None or len(changed_files) < 100):
             return True
 
         return False
@@ -553,42 +548,29 @@ def _get_selective_visitors(file_path: str) -> list[str]:
     selective_visitors = core_visitors.copy()
 
     # Add call/write visitors for core business logic
-    if any(indicator in file_path for indicator in [
-        "agentic_core/", "apps_", "tools/", "ops_", "system_learning/"
-    ]):
+    if any(
+        indicator in file_path
+        for indicator in ["agentic_core/", "apps_", "tools/", "ops_", "system_learning/"]
+    ):
         selective_visitors.extend(["call", "attribute", "composition"])
 
     # Add governance visitors for security/safety critical files
-    if any(indicator in file_path for indicator in [
-        "safety_", "security_", "audit_", "policy_", "governance_"
-    ]):
-        selective_visitors.extend([
-            "governance", "safety_enforcement", "boundary_verification"
-        ])
+    if any(
+        indicator in file_path for indicator in ["safety_", "security_", "audit_", "policy_", "governance_"]
+    ):
+        selective_visitors.extend(["governance", "safety_enforcement", "boundary_verification"])
 
     # Add execution visitors for orchestration files
-    if any(indicator in file_path for indicator in [
-        "orchestration", "workflow", "execution_", "runtime_"
-    ]):
-        selective_visitors.extend([
-            "dynamic_execution", "internal_call_graph", "execution_semantic"
-        ])
+    if any(indicator in file_path for indicator in ["orchestration", "workflow", "execution_", "runtime_"]):
+        selective_visitors.extend(["dynamic_execution", "internal_call_graph", "execution_semantic"])
 
     # Add learning visitors for AI/ML components
-    if any(indicator in file_path for indicator in [
-        "learning_", "ai_", "ml_", "model_", "embedding_"
-    ]):
-        selective_visitors.extend([
-            "embedding_pipeline", "learning_provenance", "p3_learning_maturity"
-        ])
+    if any(indicator in file_path for indicator in ["learning_", "ai_", "ml_", "model_", "embedding_"]):
+        selective_visitors.extend(["embedding_pipeline", "learning_provenance", "p3_learning_maturity"])
 
     # Add observability visitors for monitoring components
-    if any(indicator in file_path for indicator in [
-        "observability", "telemetry", "metrics_", "monitoring_"
-    ]):
-        selective_visitors.extend([
-            "p4_observability_governance", "execution_trace_proof"
-        ])
+    if any(indicator in file_path for indicator in ["observability", "telemetry", "metrics_", "monitoring_"]):
+        selective_visitors.extend(["p4_observability_governance", "execution_trace_proof"])
 
     return selective_visitors
 
@@ -633,7 +615,8 @@ def _filter_runtime_only_edges(edges: list[Edge], include_tests: bool, scan_mode
     elif include_tests and scan_mode == "structural_only":
         # Structural-only mode with tests - filter runtime-only edges from test files only
         return [
-            edge for edge in edges
+            edge
+            for edge in edges
             if not edge.source_file.startswith("tests/") or not _is_runtime_only_relation(edge.relation_type)
         ]
     elif include_tests and scan_mode == "selective":
@@ -690,24 +673,27 @@ def _should_keep_runtime_edge(edge: Edge) -> bool:
         True if the edge should be kept
     """
     # Keep runtime edges from core infrastructure files
-    if any(indicator in edge.source_file for indicator in [
-        "agentic_core/", "apps_", "tools/", "ops_"
-    ]):
+    if any(indicator in edge.source_file for indicator in ["agentic_core/", "apps_", "tools/", "ops_"]):
         return True
 
     # Keep critical governance runtime edges
     if edge.relation_type in [
-        "applies_guardrail", "verifies_policy", "validated_by_safety_plane",
-        "execution_terminates_at_uwg", "records_execution_trace"
+        "applies_guardrail",
+        "verifies_policy",
+        "validated_by_safety_plane",
+        "execution_terminates_at_uwg",
+        "records_execution_trace",
     ]:
         return True
 
     # Keep learning and observability runtime edges from non-test files
-    if (not edge.source_file.startswith("tests/") and
-        edge.relation_type in [
-            "captures_pattern", "records_learning_event", "emits_metric_event",
-            "stores_embedding", "retrieves_via"
-        ]):
+    if not edge.source_file.startswith("tests/") and edge.relation_type in [
+        "captures_pattern",
+        "records_learning_event",
+        "emits_metric_event",
+        "stores_embedding",
+        "retrieves_via",
+    ]:
         return True
 
     # Skip other runtime edges (especially from test files)
@@ -904,7 +890,7 @@ class ScanResult:
         )
 
         lines = []
-        for e in sorted(self.edges):  # S7: sort before digest
+        for e in self.edges:  # S7: edges already sorted at assignment (sorted(set(...)))
             lines.append(
                 f"{e.from_name}|{e.relation_type}|{e.to_name}|{e.edge_kind}"
                 f"|{e.source_file}|{e.line_no}|{e.symbol}"
@@ -964,9 +950,14 @@ class ScanResult:
         print(f"ADG-DETERMINISM-DIGEST: {self.digest}")
 
 
+# Wave B: pre-compute field names once at module load time (not per call)
+_EDGE_FIELD_NAMES: frozenset[str] = frozenset(f.name for f in fields(Edge))
+# Wave H: fast sort key — avoids 13-field dataclass __lt__ comparison on 728k edges
+_EDGE_SORT_KEY = lambda e: (e.from_name, e.relation_type, e.to_name, e.source_file, e.line_no)  # noqa: E731
+
+
 def _edge_from_dict(data: dict) -> Edge:
-    edge_field_names = {f.name for f in fields(Edge)}
-    return Edge(**{k: v for k, v in data.items() if k in edge_field_names})
+    return Edge(**{k: v for k, v in data.items() if k in _EDGE_FIELD_NAMES})
 
 
 def _empty_surface_evidence() -> dict[str, int]:
@@ -2741,7 +2732,9 @@ class _ExecutionTraceVisitor(ast.NodeVisitor):
                 cur = cur.value
             if isinstance(cur, ast.Name):
                 parts.append(cur.id)
-            return ".".join(reversed(parts))    # guardian: StopIteration should be handled with specific context    # guardian: StopIteration should be handled with specific context    # guardian: StopIteration should be handled with specific context    # guardian: StopIteration should be handled with specific context    # guardian: StopIteration should be handled with specific context    # guardian: StopIteration should be handled with specific context    # guardian: StopIteration should be handled with specific context    # guardian: StopIteration should be handled with specific context    # guardian: StopIteration should be handled with specific context    # guardian: StopIteration should be handled with specific context    # guardian: StopIteration should be handled with specific context    # guardian: StopIteration should be handled with specific context    # guardian: StopIteration should be handled with specific context    # guardian: StopIteration should be handled with specific context    # guardian: StopIteration should be handled with specific context    # guardian: StopIteration should be handled with specific context    # guardian: StopIteration should be handled with specific context    # guardian: StopIteration should be handled with specific context    # guardian: StopIteration should be handled with specific context    # guardian: StopIteration should be handled with specific context    # guardian: StopIteration should be handled with specific context    # guardian: StopIteration should be handled with specific context    # guardian: StopIteration should be handled with specific context    # guardian: StopIteration should be handled with specific context    # guardian: StopIteration should be handled with specific context    # guardian: StopIteration should be handled with specific context    # guardian: StopIteration should be handled with specific context    # guardian: StopIteration should be handled with specific context    # guardian: StopIteration should be handled with specific context    # guardian: StopIteration should be handled with specific context    # guardian: StopIteration should be handled with specific context    # guardian: StopIteration should be handled with specific context    # guardian: StopIteration should be handled with specific context    # guardian: StopIteration should be handled with specific context    # guardian: StopIteration should be handled with specific context    # guardian: StopIteration should be handled with specific context    # guardian: StopIteration should be handled with specific context    # guardian: StopIteration should be handled with specific context    # guardian: StopIteration should be handled with specific context    # guardian: StopIteration should be handled with specific context    # guardian: StopIteration should be handled with specific context    # guardian: StopIteration should be handled with specific context    # guardian: StopIteration should be handled with specific context    # guardian: StopIteration should be handled with specific context    # guardian: StopIteration should be handled with specific context    # guardian: StopIteration should be handled with specific context    # guardian: StopIteration should be handled with specific context    # guardian: StopIteration should be handled with specific context    # guardian: StopIteration should be handled with specific context    # guardian: StopIteration should be handled with specific context    # guardian: StopIteration should be handled with specific context    # guardian: StopIteration should be handled with specific context    # guardian: StopIteration should be handled with specific context    # guardian: StopIteration should be handled with specific context    # guardian: StopIteration should be handled with specific context    # guardian: StopIteration should be handled with specific context    # guardian: StopIteration should be handled with specific context    # guardian: StopIteration should be handled with specific context    # guardian: StopIteration should be handled with specific context    # guardian: StopIteration should be handled with specific context    # guardian: StopIteration should be handled with specific context    # guardian: StopIteration should be handled with specific context    # guardian: StopIteration should be handled with specific context    # guardian: StopIteration should be handled with specific context    # guardian: StopIteration should be handled with specific context    # guardian: StopIteration should be handled with specific context    # guardian: StopIteration should be handled with specific context    # guardian: StopIteration should be handled with specific context    # guardian: StopIteration should be handled with specific context    # guardian: StopIteration should be handled with specific context    # guardian: StopIteration should be handled with specific context    # guardian: StopIteration should be handled with specific context    # guardian: StopIteration should be handled with specific context    # guardian: StopIteration should be handled with specific context    # guardian: StopIteration should be handled with specific context    # guardian: StopIteration should be handled with specific context    # guardian: StopIteration should be handled with specific context    # guardian: StopIteration should be handled with specific context    # guardian: StopIteration should be handled with specific context    # guardian: StopIteration should be handled with specific context    # guardian: StopIteration should be handled with specific context    # guardian: StopIteration should be handled with specific context    # guardian: StopIteration should be handled with specific context    # guardian: StopIteration should be handled with specific context    # guardian: StopIteration should be handled with specific context    # guardian: StopIteration should be handled with specific context    # guardian: StopIteration should be handled with specific context    # guardian: StopIteration should be handled with specific context    # guardian: StopIteration should be handled with specific context    # guardian: StopIteration should be handled with specific context    # guardian: StopIteration should be handled with specific context    # guardian: StopIteration should be handled with specific context    # guardian: StopIteration should be handled with specific context    # guardian: StopIteration should be handled with specific context    # guardian: StopIteration should be handled with specific context    # guardian: StopIteration should be handled with specific context    # guardian: StopIteration should be handled with specific context    # guardian: StopIteration should be handled with specific context    # guardian: StopIteration should be handled with specific context    # guardian: StopIteration should be handled with specific context    # guardian: StopIteration should be handled with specific context    # guardian: StopIteration should be handled with specific context    # guardian: StopIteration should be handled with specific context    # guardian: StopIteration should be handled with specific context
+            return ".".join(
+                reversed(parts)
+            )  # guardian: StopIteration should be handled with specific context    # guardian: StopIteration should be handled with specific context    # guardian: StopIteration should be handled with specific context    # guardian: StopIteration should be handled with specific context    # guardian: StopIteration should be handled with specific context    # guardian: StopIteration should be handled with specific context    # guardian: StopIteration should be handled with specific context    # guardian: StopIteration should be handled with specific context    # guardian: StopIteration should be handled with specific context    # guardian: StopIteration should be handled with specific context    # guardian: StopIteration should be handled with specific context    # guardian: StopIteration should be handled with specific context    # guardian: StopIteration should be handled with specific context    # guardian: StopIteration should be handled with specific context    # guardian: StopIteration should be handled with specific context    # guardian: StopIteration should be handled with specific context    # guardian: StopIteration should be handled with specific context    # guardian: StopIteration should be handled with specific context    # guardian: StopIteration should be handled with specific context    # guardian: StopIteration should be handled with specific context    # guardian: StopIteration should be handled with specific context    # guardian: StopIteration should be handled with specific context    # guardian: StopIteration should be handled with specific context    # guardian: StopIteration should be handled with specific context    # guardian: StopIteration should be handled with specific context    # guardian: StopIteration should be handled with specific context    # guardian: StopIteration should be handled with specific context    # guardian: StopIteration should be handled with specific context    # guardian: StopIteration should be handled with specific context    # guardian: StopIteration should be handled with specific context    # guardian: StopIteration should be handled with specific context    # guardian: StopIteration should be handled with specific context    # guardian: StopIteration should be handled with specific context    # guardian: StopIteration should be handled with specific context    # guardian: StopIteration should be handled with specific context    # guardian: StopIteration should be handled with specific context    # guardian: StopIteration should be handled with specific context    # guardian: StopIteration should be handled with specific context    # guardian: StopIteration should be handled with specific context    # guardian: StopIteration should be handled with specific context    # guardian: StopIteration should be handled with specific context    # guardian: StopIteration should be handled with specific context    # guardian: StopIteration should be handled with specific context    # guardian: StopIteration should be handled with specific context    # guardian: StopIteration should be handled with specific context    # guardian: StopIteration should be handled with specific context    # guardian: StopIteration should be handled with specific context    # guardian: StopIteration should be handled with specific context    # guardian: StopIteration should be handled with specific context    # guardian: StopIteration should be handled with specific context    # guardian: StopIteration should be handled with specific context    # guardian: StopIteration should be handled with specific context    # guardian: StopIteration should be handled with specific context    # guardian: StopIteration should be handled with specific context    # guardian: StopIteration should be handled with specific context    # guardian: StopIteration should be handled with specific context    # guardian: StopIteration should be handled with specific context    # guardian: StopIteration should be handled with specific context    # guardian: StopIteration should be handled with specific context    # guardian: StopIteration should be handled with specific context    # guardian: StopIteration should be handled with specific context    # guardian: StopIteration should be handled with specific context    # guardian: StopIteration should be handled with specific context    # guardian: StopIteration should be handled with specific context    # guardian: StopIteration should be handled with specific context    # guardian: StopIteration should be handled with specific context    # guardian: StopIteration should be handled with specific context    # guardian: StopIteration should be handled with specific context    # guardian: StopIteration should be handled with specific context    # guardian: StopIteration should be handled with specific context    # guardian: StopIteration should be handled with specific context    # guardian: StopIteration should be handled with specific context    # guardian: StopIteration should be handled with specific context    # guardian: StopIteration should be handled with specific context    # guardian: StopIteration should be handled with specific context    # guardian: StopIteration should be handled with specific context    # guardian: StopIteration should be handled with specific context    # guardian: StopIteration should be handled with specific context    # guardian: StopIteration should be handled with specific context    # guardian: StopIteration should be handled with specific context    # guardian: StopIteration should be handled with specific context    # guardian: StopIteration should be handled with specific context    # guardian: StopIteration should be handled with specific context    # guardian: StopIteration should be handled with specific context    # guardian: StopIteration should be handled with specific context    # guardian: StopIteration should be handled with specific context    # guardian: StopIteration should be handled with specific context    # guardian: StopIteration should be handled with specific context    # guardian: StopIteration should be handled with specific context    # guardian: StopIteration should be handled with specific context    # guardian: StopIteration should be handled with specific context    # guardian: StopIteration should be handled with specific context    # guardian: StopIteration should be handled with specific context    # guardian: StopIteration should be handled with specific context    # guardian: StopIteration should be handled with specific context    # guardian: StopIteration should be handled with specific context    # guardian: StopIteration should be handled with specific context    # guardian: StopIteration should be handled with specific context    # guardian: StopIteration should be handled with specific context    # guardian: StopIteration should be handled with specific context    # guardian: StopIteration should be handled with specific context    # guardian: StopIteration should be handled with specific context    # guardian: StopIteration should be handled with specific context    # guardian: StopIteration should be handled with specific context
         return ""
 
 
@@ -4607,7 +4600,7 @@ class _HollowFileAnnotator(ast.NodeVisitor):
         """Analyze function definition."""
         # Check if function has non-trivial body
         if self._has_behavioral_body(node.body):
-            if node.name.startswith('_emit_'):
+            if node.name.startswith("_emit_"):
                 # Module-level emit calls are boilerplate
                 self.boilerplate_statements += 1
             else:
@@ -4617,7 +4610,7 @@ class _HollowFileAnnotator(ast.NodeVisitor):
     def visit_AsyncFunctionDef(self, node: ast.AsyncFunctionDef):
         """Analyze async function definition."""
         if self._has_behavioral_body(node.body):
-            if node.name.startswith('_emit_'):
+            if node.name.startswith("_emit_"):
                 self.boilerplate_statements += 1
             else:
                 self.behavioral_functions += 1
@@ -4630,7 +4623,7 @@ class _HollowFileAnnotator(ast.NodeVisitor):
         for item in node.body:
             if isinstance(item, (ast.FunctionDef, ast.AsyncFunctionDef)):
                 if self._has_behavioral_body([item]):
-                    if not item.name.startswith('_emit_'):
+                    if not item.name.startswith("_emit_"):
                         behavioral_methods += 1
 
         if behavioral_methods > 0:
@@ -4643,9 +4636,11 @@ class _HollowFileAnnotator(ast.NodeVisitor):
         if isinstance(node.value, ast.Constant) and isinstance(node.value.value, str):
             # Module-level string literals (likely docstrings or comments)
             self.string_literals += 1
-        elif (isinstance(node.value, ast.Call) and
-              isinstance(node.value.func, ast.Name) and
-              node.value.func.id.startswith('_emit_')):
+        elif (
+            isinstance(node.value, ast.Call)
+            and isinstance(node.value.func, ast.Name)
+            and node.value.func.id.startswith("_emit_")
+        ):
             # Module-level emit calls
             self.boilerplate_statements += 1
         return node
@@ -4663,10 +4658,12 @@ class _HollowFileAnnotator(ast.NodeVisitor):
             elif isinstance(stmt, ast.Expr) and isinstance(stmt.value, ast.Constant):
                 if stmt.value.value == Ellipsis:
                     return False
-            elif (isinstance(stmt, ast.Raise) and
-                  isinstance(stmt.exc, ast.Call) and
-                  isinstance(stmt.exc.func, ast.Name) and
-                  stmt.exc.func.id == 'NotImplementedError'):
+            elif (
+                isinstance(stmt, ast.Raise)
+                and isinstance(stmt.exc, ast.Call)
+                and isinstance(stmt.exc.func, ast.Name)
+                and stmt.exc.func.id == "NotImplementedError"
+            ):
                 return False
 
         # Look for actual behavioral statements
@@ -4689,7 +4686,7 @@ class _HollowFileAnnotator(ast.NodeVisitor):
         elif isinstance(stmt, ast.Expr) and isinstance(stmt.value, ast.Call):
             # Function call - check if it's not just an emit
             call = stmt.value
-            if not (isinstance(call.func, ast.Name) and call.func.id.startswith('_emit_')):
+            if not (isinstance(call.func, ast.Name) and call.func.id.startswith("_emit_")):
                 return True
         elif isinstance(stmt, ast.With):
             return True
@@ -5394,10 +5391,12 @@ class _P1OrchestrationVisitor(ast.NodeVisitor):
 
     def _emit_p1_edge(self, node: ast.AST, relation: str, symbol: str) -> None:
         """Emit a P1 orchestration edge."""
-        line_no = getattr(node, "lineno", 1)    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime
+        line_no = getattr(
+            node, "lineno", 1
+        )  # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime
         target_adg = f"ADG::P1Orchestration::{symbol}"
         self.edges.append(
-            Edge(    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging
+            Edge(  # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging
                 from_name=self.module_adg_name,
                 to_name=target_adg,
                 relation_type=relation,
@@ -5450,10 +5449,10 @@ class _P2ExecutionCapabilityVisitor(ast.NodeVisitor):
         self.edges.append(
             Edge(
                 from_name=self.module_adg_name,
-                relation_type=relation,    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime
+                relation_type=relation,  # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime
                 to_name=canonical_name("Symbol", sym),
                 edge_kind=edge_kind,
-                source_file=self.source_file,    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging
+                source_file=self.source_file,  # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging
                 line_no=line_no,
                 symbol=sym,
             )
@@ -5808,6 +5807,7 @@ def _sym_of(node: ast.expr) -> str:
         return ".".join(reversed(parts))
     return ""
 
+
 def _get_call_name(node: ast.expr) -> str:
     """Extract full call name from AST expression node."""
     if isinstance(node, ast.Name):
@@ -5820,9 +5820,8 @@ def _get_call_name(node: ast.expr) -> str:
             cur = cur.value
         if isinstance(cur, ast.Name):
             parts.append(cur.id)
-        return '.'.join(reversed(parts))
-    return ''
-
+        return ".".join(reversed(parts))
+    return ""
 
 
 def _is_property_accessor(node: ast.FunctionDef | ast.AsyncFunctionDef) -> bool:
@@ -6354,7 +6353,9 @@ def _scan_file(
         #            dispatches_execution_plan, validates_agent_capability, checks_agent_registry)
         p1_orch_visitor = _P1OrchestrationGovernanceVisitor(module_adg, rel)
         p1_orch_visitor.visit(tree)
-        edges.extend(p1_orch_visitor.edges)    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime
+        edges.extend(
+            p1_orch_visitor.edges
+        )  # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime
 
         # G26 (gap): L5 validation proof edges (validated_by_registry, validated_by_safety_plane,
         #            validated_by_llm_gateway, execution_terminates_at_uwg, references_policy_hash)
@@ -6440,7 +6441,7 @@ def _scan_file(
     surface_evidence = {}
 
     # Store hollow file metadata in surface_evidence for later processing
-    if visitors_to_run == "full" and hasattr(hollow_annotator, 'is_hollow'):
+    if visitors_to_run == "full" and hasattr(hollow_annotator, "is_hollow"):
         surface_evidence["is_hollow"] = hollow_annotator.is_hollow
         surface_evidence["boilerplate_ratio"] = hollow_annotator.boilerplate_ratio
 
@@ -7161,18 +7162,15 @@ class ADGStaticScanner:
 
         # Phase 1.3: Cache-aware mode selection
         if self.scan_mode == "auto":
-            self.scan_mode = _get_cache_aware_scan_mode(
-                self.cache_path,
-                self.repo_root,
-                self.include_tests
-            )
+            self.scan_mode = _get_cache_aware_scan_mode(self.cache_path, self.repo_root, self.include_tests)
 
         cache = ScanCache.load(self.cache_path) if self.cache_path else ScanCache()
 
+        _skip_self_test = os.environ.get("ADG_SKIP_SELF_TEST", "").strip().lower() in ("1", "true", "yes")
         manifest = ScanManifest(
             python_ast_version=f"{sys.version_info.major}.{sys.version_info.minor}",
             tests_included=self.include_tests,
-            scanner_self_test_passed=run_scanner_self_test(),  # S1
+            scanner_self_test_passed=(False if _skip_self_test else run_scanner_self_test()),  # S1
             scan_mode=self.scan_mode,  # Phase 1.3: record selected mode
         )
 
@@ -7233,7 +7231,7 @@ class ADGStaticScanner:
         if manifest.parsed_module_count == 0:
             logger.error("ADG FATAL: zero files parsed — scan aborted")
 
-        result.edges = sorted(set(all_edges))  # S7: sorted for determinism
+        result.edges = sorted(set(all_edges), key=_EDGE_SORT_KEY)  # S7: sorted for determinism
         result.modules = sorted(modules_seen)
         result.syntax_errors = syntax_errors
         result.type_surface_map = all_type_surface
@@ -7245,14 +7243,18 @@ class ADGStaticScanner:
         # For now, initialize empty maps - they'll be populated as files are scanned
         result.compute_digest()
 
+        # GV / Phase 3d / E5: batch all post-scan edge additions — sort ONCE at the end
+        _post_scan_edge_set: set = set(result.edges)
+
         # GV: Layer violation post-scan pass
         violation_edges = _emit_layer_violation_edges(result)
         if violation_edges:
             violation_edges, violation_stamp_stats = _stamp_semantic_types_with_stats(violation_edges)
             _merge_surface_evidence(surface_evidence_totals, violation_stamp_stats)
-            result.edges = sorted(set(result.edges) | set(violation_edges))
-            result.compute_digest()
+            _post_scan_edge_set |= set(violation_edges)
 
+        # Propagation eligibility needs the violation edges present
+        result.edges = sorted(_post_scan_edge_set, key=_EDGE_SORT_KEY)  # temp sort for eligibility check
         propagation_evidence = _violation_propagation_eligibility(result)
         manifest.violation_propagation_eligible_count = propagation_evidence[
             "violation_propagation_eligible_count"
@@ -7266,16 +7268,18 @@ class ADGStaticScanner:
         if propagation_edges:
             propagation_edges, propagation_stamp_stats = _stamp_semantic_types_with_stats(propagation_edges)
             _merge_surface_evidence(surface_evidence_totals, propagation_stamp_stats)
-            result.edges = sorted(set(result.edges) | set(propagation_edges))
-            result.compute_digest()
+            _post_scan_edge_set |= set(propagation_edges)
 
         # E5: Cyclic dependency detection post-scan pass
         cycle_edges = _detect_cycles(result)
         if cycle_edges:
             cycle_edges, cycle_stamp_stats = _stamp_semantic_types_with_stats(cycle_edges)
             _merge_surface_evidence(surface_evidence_totals, cycle_stamp_stats)
-            result.edges = sorted(set(result.edges) | set(cycle_edges))
-            result.compute_digest()
+            _post_scan_edge_set |= set(cycle_edges)
+
+        # Single sort + digest for all post-scan additions
+        result.edges = sorted(_post_scan_edge_set, key=_EDGE_SORT_KEY)
+        result.compute_digest()
 
         # W1b: Key-based dedup after all post-scan passes
         # Removes edges with same (from_name, relation_type, to_name, line_no)
@@ -7414,7 +7418,7 @@ class ADGStaticScanner:
             all_edges.extend(file_edges)
             all_type_surface.update(file_type_map)
 
-        result.edges = sorted(set(all_edges))  # S7
+        result.edges = sorted(set(all_edges), key=_EDGE_SORT_KEY)  # S7
         result.modules = sorted(modules_seen)
         result.type_surface_map = all_type_surface
         result.compute_digest()

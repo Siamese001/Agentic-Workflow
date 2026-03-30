@@ -19,6 +19,7 @@ Naming convention:
 
 from __future__ import annotations
 
+from functools import lru_cache
 from typing import Literal
 
 from agentic_core.L_CONTRACTS.lifecycle_trace_contract import _emit_reads_through
@@ -637,6 +638,7 @@ def verify_layer_graph_consistency(module_layer_map: dict[str, str]) -> list[str
     return errors
 
 
+@lru_cache(maxsize=8192)
 def module_path_to_layer(rel_path: str) -> str:
     """Map a repo-relative module path (forward slashes) to a layer label."""
     norm = rel_path.replace("\\", "/")
