@@ -1,29 +1,29 @@
-"""Placeholder test for ReadFileArgsValidator."""
+"""Test ReadFileArgsValidator functionality."""
+
+import sys
+from pathlib import Path
 
 import pytest
 
+REPO_ROOT = Path(__file__).parent.parent.parent
+sys.path.insert(0, str(REPO_ROOT))
 
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300  # 5 minutes
 
 @pytest.mark.unit
 class TestReadFileArgsValidator:
     """Test ReadFileArgsValidator functionality."""
 
-    def test_placeholder_1(self):
-        """Placeholder test 1."""
-        assert True
-    
-    def test_placeholder_2(self):
-        """Placeholder test 2."""
-        assert True
-    
-    def test_placeholder_3(self):
-        """Placeholder test 3."""
-        assert True
+    def test_read_file_args_validator_imports(self):
+        """Test read_file_args_validator module imports."""
+        from agentic_core import read_file_args_validator
+        assert read_file_args_validator is not None
+
+    def test_read_file_args_validator_class(self):
+        """Test ReadFileArgsValidator class exists."""
+        from agentic_core import ReadFileArgsValidator
+        assert ReadFileArgsValidator is not None
+
+    def test_read_file_args_validator_callable(self):
+        """Test read_file_args_validator functions are callable."""
+        from agentic_core import validate_read_file_args_validator
+        assert callable(validate_read_file_args_validator)

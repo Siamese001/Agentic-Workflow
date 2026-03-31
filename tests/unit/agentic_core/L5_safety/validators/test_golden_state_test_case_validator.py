@@ -1,29 +1,29 @@
-"""Placeholder test for GoldenStateTestCaseValidator."""
+"""Test GoldenStateCaseValidator functionality."""
+
+import sys
+from pathlib import Path
 
 import pytest
 
+REPO_ROOT = Path(__file__).parent.parent.parent
+sys.path.insert(0, str(REPO_ROOT))
 
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300  # 5 minutes
 
 @pytest.mark.unit
-class TestGoldenStateTestCaseValidator:
-    """Test GoldenStateTestCaseValidator functionality."""
+class TestGoldenStateCaseValidator:
+    """Test GoldenStateCaseValidator functionality."""
 
-    def test_placeholder_1(self):
-        """Placeholder test 1."""
-        assert True
-    
-    def test_placeholder_2(self):
-        """Placeholder test 2."""
-        assert True
-    
-    def test_placeholder_3(self):
-        """Placeholder test 3."""
-        assert True
+    def test_golden_state_case_validator_imports(self):
+        """Test golden_state_case_validator module imports."""
+        from agentic_core import golden_state_case_validator
+        assert golden_state_case_validator is not None
+
+    def test_golden_state_case_validator_class(self):
+        """Test GoldenStateCaseValidator class exists."""
+        from agentic_core import GoldenStateCaseValidator
+        assert GoldenStateCaseValidator is not None
+
+    def test_golden_state_case_validator_callable(self):
+        """Test golden_state_case_validator functions are callable."""
+        from agentic_core import validate_golden_state_case_validator
+        assert callable(validate_golden_state_case_validator)

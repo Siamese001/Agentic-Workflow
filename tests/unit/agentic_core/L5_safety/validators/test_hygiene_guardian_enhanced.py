@@ -1,29 +1,29 @@
-"""Placeholder test for HygieneGuardianEnhanced."""
+"""Test HygieneGuardianEnhanced functionality."""
+
+import sys
+from pathlib import Path
 
 import pytest
 
+REPO_ROOT = Path(__file__).parent.parent.parent
+sys.path.insert(0, str(REPO_ROOT))
 
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300  # 5 minutes
 
 @pytest.mark.unit
 class TestHygieneGuardianEnhanced:
     """Test HygieneGuardianEnhanced functionality."""
 
-    def test_placeholder_1(self):
-        """Placeholder test 1."""
-        assert True
-    
-    def test_placeholder_2(self):
-        """Placeholder test 2."""
-        assert True
-    
-    def test_placeholder_3(self):
-        """Placeholder test 3."""
-        assert True
+    def test_hygiene_guardian_enhanced_imports(self):
+        """Test hygiene_guardian_enhanced module imports."""
+        from agentic_core import hygiene_guardian_enhanced
+        assert hygiene_guardian_enhanced is not None
+
+    def test_hygiene_guardian_enhanced_class(self):
+        """Test HygieneGuardianEnhanced class exists."""
+        from agentic_core import HygieneGuardianEnhanced
+        assert HygieneGuardianEnhanced is not None
+
+    def test_hygiene_guardian_enhanced_callable(self):
+        """Test hygiene_guardian_enhanced functions are callable."""
+        from agentic_core import validate_hygiene_guardian_enhanced
+        assert callable(validate_hygiene_guardian_enhanced)
