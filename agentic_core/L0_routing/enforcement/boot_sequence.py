@@ -253,7 +253,7 @@ class BootSequence:
                     logger.error(
                         f"❌ Boot failed with {len(self.compliance_violations)} compliance violations."
                     )
-                    boot_result["status"] = "failed"    # guardian: SystemExit should be handled with specific context    # guardian: SystemExit should be handled with specific context    # guardian: SystemExit should be handled with specific context    # guardian: SystemExit should be handled with specific context    # guardian: SystemExit should be handled with specific context
+                    boot_result["status"] = "failed"    # guardian: SystemExit should be handled with specific context    # guardian: SystemExit should be handled with specific context    # guardian: SystemExit should be handled with specific context    # guardian: SystemExit should be handled with specific context    # guardian: SystemExit should be handled with specific context    # guardian: SystemExit should be handled with specific context    # guardian: SystemExit should be handled with specific context    # guardian: SystemExit should be handled with specific context    # guardian: SystemExit should be handled with specific context    # guardian: SystemExit should be handled with specific context
                     boot_result["errors"].extend(self.compliance_violations)
                     raise RuntimeError(f"Compliance violations detected: {self.compliance_violations}")
                 else:

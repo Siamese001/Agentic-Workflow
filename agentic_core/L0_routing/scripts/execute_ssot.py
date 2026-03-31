@@ -818,7 +818,7 @@ def _fire_meta_learning_intake(state_mgr: "RuntimeStateManager", now_utc: int) -
                                 separators=(",", ":"),
                             )
                             + "\n"
-                        )    # guardian: File operations should check existence before access    # guardian: File operations should check existence before access    # guardian: File operations should check existence before access    # guardian: File operations should check existence before access    # guardian: File operations should check existence before access
+                        )    # guardian: File operations should check existence before access    # guardian: File operations should check existence before access    # guardian: File operations should check existence before access    # guardian: File operations should check existence before access    # guardian: File operations should check existence before access    # guardian: File operations should check existence before access    # guardian: File operations should check existence before access    # guardian: File operations should check existence before access    # guardian: File operations should check existence before access    # guardian: File operations should check existence before access
             except (OSError, TypeError) as _prop_err:
                 logging.warning("[MetaLearning] proposal write failed: %s", _prop_err)
         logging.info("[MetaLearning] meta_learning_pipeline.run_pipeline() completed.")
@@ -1343,7 +1343,7 @@ def run_fence_self_check() -> None:
         write_gateway = _get_write_gateway()
         for func_name in ["write_text", "write_bytes"]:
             func = getattr(write_gateway, func_name, None)
-            if func is None:    # guardian: Multiple exceptions (OSError, SyntaxError) need specific handling    # guardian: Multiple exceptions (OSError, SyntaxError) need specific handling    # guardian: Multiple exceptions (OSError, SyntaxError) need specific handling    # guardian: Multiple exceptions (OSError, SyntaxError) need specific handling    # guardian: Multiple exceptions (OSError, SyntaxError) need specific handling
+            if func is None:    # guardian: Multiple exceptions (OSError, SyntaxError) need specific handling    # guardian: Multiple exceptions (OSError, SyntaxError) need specific handling    # guardian: Multiple exceptions (OSError, SyntaxError) need specific handling    # guardian: Multiple exceptions (OSError, SyntaxError) need specific handling    # guardian: Multiple exceptions (OSError, SyntaxError) need specific handling    # guardian: Multiple exceptions (OSError, SyntaxError) need specific handling    # guardian: Multiple exceptions (OSError, SyntaxError) need specific handling    # guardian: Multiple exceptions (OSError, SyntaxError) need specific handling    # guardian: Multiple exceptions (OSError, SyntaxError) need specific handling    # guardian: Multiple exceptions (OSError, SyntaxError) need specific handling
                 failed_checks.append("write_gateway_enforces_protected_root")
                 break
             sig = inspect.signature(func)
@@ -1573,7 +1573,7 @@ from agentic_core.L0_routing.config.path_constants import (
     AGENTIC_CORE_DIR,
     APPS_LIC_DIR,
     APPS_RG_DIR,
-    APPS_SHARED_DIR,    # guardian: File operations with encoding need error-specific handling    # guardian: File operations with encoding need error-specific handling    # guardian: File operations with encoding need error-specific handling    # guardian: File operations with encoding need error-specific handling    # guardian: File operations with encoding need error-specific handling
+    APPS_SHARED_DIR,    # guardian: File operations with encoding need error-specific handling    # guardian: File operations with encoding need error-specific handling    # guardian: File operations with encoding need error-specific handling    # guardian: File operations with encoding need error-specific handling    # guardian: File operations with encoding need error-specific handling    # guardian: File operations with encoding need error-specific handling    # guardian: File operations with encoding need error-specific handling    # guardian: File operations with encoding need error-specific handling    # guardian: File operations with encoding need error-specific handling    # guardian: File operations with encoding need error-specific handling
     ARCHIVES_DIR,
     OPS_SCRIPTS_DIR,
     TESTS_DIR,
@@ -2260,7 +2260,7 @@ class HealContext:
         if getattr(args, "dry_run", False):
             warnings.warn(
                 "--dry-run is deprecated. Omit --heal for scan-only mode.", DeprecationWarning, stacklevel=2
-            )    # guardian: Multiple exceptions (EOFError, KeyboardInterrupt) need specific handling    # guardian: Multiple exceptions (EOFError, KeyboardInterrupt) need specific handling    # guardian: Multiple exceptions (EOFError, KeyboardInterrupt) need specific handling    # guardian: Multiple exceptions (EOFError, KeyboardInterrupt) need specific handling    # guardian: Multiple exceptions (EOFError, KeyboardInterrupt) need specific handling
+            )    # guardian: Multiple exceptions (EOFError, KeyboardInterrupt) need specific handling    # guardian: Multiple exceptions (EOFError, KeyboardInterrupt) need specific handling    # guardian: Multiple exceptions (EOFError, KeyboardInterrupt) need specific handling    # guardian: Multiple exceptions (EOFError, KeyboardInterrupt) need specific handling    # guardian: Multiple exceptions (EOFError, KeyboardInterrupt) need specific handling    # guardian: Multiple exceptions (EOFError, KeyboardInterrupt) need specific handling    # guardian: Multiple exceptions (EOFError, KeyboardInterrupt) need specific handling    # guardian: Multiple exceptions (EOFError, KeyboardInterrupt) need specific handling    # guardian: Multiple exceptions (EOFError, KeyboardInterrupt) need specific handling    # guardian: Multiple exceptions (EOFError, KeyboardInterrupt) need specific handling
         if getattr(args, "manual", False):
             warnings.warn(
                 "--manual is deprecated. Autonomous mode is always active.", DeprecationWarning, stacklevel=2
@@ -2391,7 +2391,7 @@ class SovereignDecisionEngine:
         INFERENCE_SCRIPT = str(
             Path(__file__).parent.parent.parent / "L2_execution" / "healers" / "qwen_vllm_inference.py"
         )
-        MODEL_PATH = "/home/amita/models/Qwen2.5-14B-Instruct-AWQ"    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging
+        MODEL_PATH = "/home/amita/models/Qwen2.5-14B-Instruct-AWQ"    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging
 
         # guardian: allow-type-erasure
         def _arbiter(
@@ -2597,7 +2597,7 @@ class SovereignDecisionEngine:
             return "TEST_FILE_MISPLACED"
         if "sovereign" in msg_lower:
             return "SOVEREIGN_VIOLATION"
-        return "STRUCTURAL_VIOLATION"    # guardian: FuturesTimeoutError should be handled with specific context    # guardian: FuturesTimeoutError should be handled with specific context    # guardian: FuturesTimeoutError should be handled with specific context    # guardian: FuturesTimeoutError should be handled with specific context    # guardian: FuturesTimeoutError should be handled with specific context
+        return "STRUCTURAL_VIOLATION"    # guardian: FuturesTimeoutError should be handled with specific context    # guardian: FuturesTimeoutError should be handled with specific context    # guardian: FuturesTimeoutError should be handled with specific context    # guardian: FuturesTimeoutError should be handled with specific context    # guardian: FuturesTimeoutError should be handled with specific context    # guardian: FuturesTimeoutError should be handled with specific context    # guardian: FuturesTimeoutError should be handled with specific context    # guardian: FuturesTimeoutError should be handled with specific context    # guardian: FuturesTimeoutError should be handled with specific context    # guardian: FuturesTimeoutError should be handled with specific context
 
     # guardian: allow-magic-config
     def _check_healing_budget(self, agent_name: str, depth: int = 0, max_depth: int = 3) -> tuple[bool, str]:
@@ -2860,7 +2860,7 @@ class SovereignDecisionEngine:
         print(f"  HITL GATE  [{tier} CONFIDENCE]")
         print(border)
         print(f"  Agent     : {agent_name}")
-        print(f"  Confidence: {confidence.value:.2f}  ({tier})")    # guardian: Permission errors should validate access before operation    # guardian: Permission errors should validate access before operation    # guardian: Permission errors should validate access before operation    # guardian: Permission errors should validate access before operation    # guardian: Permission errors should validate access before operation
+        print(f"  Confidence: {confidence.value:.2f}  ({tier})")    # guardian: Permission errors should validate access before operation    # guardian: Permission errors should validate access before operation    # guardian: Permission errors should validate access before operation    # guardian: Permission errors should validate access before operation    # guardian: Permission errors should validate access before operation    # guardian: Permission errors should validate access before operation    # guardian: Permission errors should validate access before operation    # guardian: Permission errors should validate access before operation    # guardian: Permission errors should validate access before operation    # guardian: Permission errors should validate access before operation
         print(f"  Reasoning : {confidence.reasoning}")
         print(border)
         print("  [Y] Approve healing    [N] Reject    [D] Defer to report")
@@ -2871,7 +2871,7 @@ class SovereignDecisionEngine:
             reason = f"HITL-DEFER (non-interactive, {confidence.value:.2f})"
             print(f"  Non-interactive environment — auto-DEFER: {agent_name}")
             # guardian: allow-silent-swallow - acceptable exception handling
-            print(border + "\n")    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging
+            print(border + "\n")    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging
             return (False, reason)
         try:
             raw = input("  Choice [Y/N/D]: ").strip().upper()
@@ -2881,7 +2881,7 @@ class SovereignDecisionEngine:
         if raw == "Y":
             return (True, f"HITL-APPROVED ({confidence.value:.2f})")
         elif raw == "N":
-            return (False, f"HITL-REJECTED ({confidence.value:.2f})")    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging
+            return (False, f"HITL-REJECTED ({confidence.value:.2f})")    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging
         else:
             return (False, f"HITL-DEFER ({confidence.value:.2f})")
 
@@ -3204,7 +3204,7 @@ def execute_phase2_reconciliation(
                 _territory_posix = Path(territory).as_posix() + "/"
                 _uwg.grant_write_permission(_territory_posix)
                 _HEAL_TIMEOUT_S = int(os.environ.get("HEAL_TIMEOUT_SECONDS", "300"))
-                with ThreadPoolExecutor(max_workers=1) as _pool:    # guardian: Multiple exceptions (EOFError, KeyboardInterrupt) need specific handling    # guardian: Multiple exceptions (EOFError, KeyboardInterrupt) need specific handling    # guardian: Multiple exceptions (EOFError, KeyboardInterrupt) need specific handling    # guardian: Multiple exceptions (EOFError, KeyboardInterrupt) need specific handling    # guardian: Multiple exceptions (EOFError, KeyboardInterrupt) need specific handling
+                with ThreadPoolExecutor(max_workers=1) as _pool:    # guardian: Multiple exceptions (EOFError, KeyboardInterrupt) need specific handling    # guardian: Multiple exceptions (EOFError, KeyboardInterrupt) need specific handling    # guardian: Multiple exceptions (EOFError, KeyboardInterrupt) need specific handling    # guardian: Multiple exceptions (EOFError, KeyboardInterrupt) need specific handling    # guardian: Multiple exceptions (EOFError, KeyboardInterrupt) need specific handling    # guardian: Multiple exceptions (EOFError, KeyboardInterrupt) need specific handling    # guardian: Multiple exceptions (EOFError, KeyboardInterrupt) need specific handling    # guardian: Multiple exceptions (EOFError, KeyboardInterrupt) need specific handling    # guardian: Multiple exceptions (EOFError, KeyboardInterrupt) need specific handling    # guardian: Multiple exceptions (EOFError, KeyboardInterrupt) need specific handling
                     _future = _pool.submit(
                         agent_instance.heal_repository,
                         # guardian: allow-silent-swallow - optional timeout handling
@@ -4110,7 +4110,7 @@ def execute_phase3_alignment_impl(agents, territory, decision_engine, state_mgr,
             routing_tier="DETERMINISTIC",
             routing_score=1.0,
             confidence=1.0,
-            fix_summary=f"No hierarchy violations in {territory}",    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging
+            fix_summary=f"No hierarchy violations in {territory}",    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging
             outcome="SUCCESS",
         )
     return None
@@ -5309,7 +5309,7 @@ def _print_run_manifest(state_mgr: "RuntimeStateManager", targets: list[str]) ->
         if agent in completed and agent not in failed_agents:
             print(f"  ✓  {agent}")
         elif agent in failed_agents:
-            print(f"  ✗  {agent}  [FAILED: {failed_agents[agent]}]")    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging
+            print(f"  ✗  {agent}  [FAILED: {failed_agents[agent]}]")    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging
             gaps += 1
         elif agent in skipped_agents:
             print(f"  ⚠  {agent}  [SKIPPED: {skipped_agents[agent]}]")
@@ -6493,7 +6493,7 @@ def _write_failure_forensics(
                 "fix_summary": action.get("fix_summary", ""),
                 "remediation": action.get("remediation", ""),
             }
-        )    # guardian: SystemExit should be handled with specific context    # guardian: SystemExit should be handled with specific context    # guardian: SystemExit should be handled with specific context    # guardian: SystemExit should be handled with specific context    # guardian: SystemExit should be handled with specific context
+        )    # guardian: SystemExit should be handled with specific context    # guardian: SystemExit should be handled with specific context    # guardian: SystemExit should be handled with specific context    # guardian: SystemExit should be handled with specific context    # guardian: SystemExit should be handled with specific context    # guardian: SystemExit should be handled with specific context    # guardian: SystemExit should be handled with specific context    # guardian: SystemExit should be handled with specific context    # guardian: SystemExit should be handled with specific context    # guardian: SystemExit should be handled with specific context
     misrouted_agents = []
     for action in healing_actions:
         outcome = str(action.get("outcome", "")).upper()
@@ -6521,7 +6521,7 @@ def _write_failure_forensics(
                         "threshold_deterministic": 0.75,
                         "threshold_qwen": 0.4,
                         "selected_tier": "DETERMINISTIC",
-                        "calibration_error": calib_det.get("calibration_error"),    # guardian: SystemExit should be handled with specific context    # guardian: SystemExit should be handled with specific context    # guardian: SystemExit should be handled with specific context    # guardian: SystemExit should be handled with specific context    # guardian: SystemExit should be handled with specific context    # guardian: SystemExit should be handled with specific context    # guardian: SystemExit should be handled with specific context    # guardian: SystemExit should be handled with specific context    # guardian: SystemExit should be handled with specific context    # guardian: SystemExit should be handled with specific context    # guardian: SystemExit should be handled with specific context    # guardian: SystemExit should be handled with specific context    # guardian: SystemExit should be handled with specific context    # guardian: SystemExit should be handled with specific context    # guardian: SystemExit should be handled with specific context    # guardian: SystemExit should be handled with specific context    # guardian: SystemExit should be handled with specific context    # guardian: SystemExit should be handled with specific context    # guardian: SystemExit should be handled with specific context    # guardian: SystemExit should be handled with specific context    # guardian: SystemExit should be handled with specific context    # guardian: SystemExit should be handled with specific context    # guardian: SystemExit should be handled with specific context    # guardian: SystemExit should be handled with specific context    # guardian: SystemExit should be handled with specific context    # guardian: SystemExit should be handled with specific context    # guardian: SystemExit should be handled with specific context    # guardian: SystemExit should be handled with specific context    # guardian: SystemExit should be handled with specific context    # guardian: SystemExit should be handled with specific context    # guardian: SystemExit should be handled with specific context    # guardian: SystemExit should be handled with specific context    # guardian: SystemExit should be handled with specific context    # guardian: SystemExit should be handled with specific context    # guardian: SystemExit should be handled with specific context    # guardian: SystemExit should be handled with specific context    # guardian: SystemExit should be handled with specific context    # guardian: SystemExit should be handled with specific context    # guardian: SystemExit should be handled with specific context    # guardian: SystemExit should be handled with specific context    # guardian: SystemExit should be handled with specific context    # guardian: SystemExit should be handled with specific context    # guardian: SystemExit should be handled with specific context    # guardian: SystemExit should be handled with specific context    # guardian: SystemExit should be handled with specific context    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation
+                        "calibration_error": calib_det.get("calibration_error"),    # guardian: SystemExit should be handled with specific context    # guardian: SystemExit should be handled with specific context    # guardian: SystemExit should be handled with specific context    # guardian: SystemExit should be handled with specific context    # guardian: SystemExit should be handled with specific context    # guardian: SystemExit should be handled with specific context    # guardian: SystemExit should be handled with specific context    # guardian: SystemExit should be handled with specific context    # guardian: SystemExit should be handled with specific context    # guardian: SystemExit should be handled with specific context    # guardian: SystemExit should be handled with specific context    # guardian: SystemExit should be handled with specific context    # guardian: SystemExit should be handled with specific context    # guardian: SystemExit should be handled with specific context    # guardian: SystemExit should be handled with specific context    # guardian: SystemExit should be handled with specific context    # guardian: SystemExit should be handled with specific context    # guardian: SystemExit should be handled with specific context    # guardian: SystemExit should be handled with specific context    # guardian: SystemExit should be handled with specific context    # guardian: SystemExit should be handled with specific context    # guardian: SystemExit should be handled with specific context    # guardian: SystemExit should be handled with specific context    # guardian: SystemExit should be handled with specific context    # guardian: SystemExit should be handled with specific context    # guardian: SystemExit should be handled with specific context    # guardian: SystemExit should be handled with specific context    # guardian: SystemExit should be handled with specific context    # guardian: SystemExit should be handled with specific context    # guardian: SystemExit should be handled with specific context    # guardian: SystemExit should be handled with specific context    # guardian: SystemExit should be handled with specific context    # guardian: SystemExit should be handled with specific context    # guardian: SystemExit should be handled with specific context    # guardian: SystemExit should be handled with specific context    # guardian: SystemExit should be handled with specific context    # guardian: SystemExit should be handled with specific context    # guardian: SystemExit should be handled with specific context    # guardian: SystemExit should be handled with specific context    # guardian: SystemExit should be handled with specific context    # guardian: SystemExit should be handled with specific context    # guardian: SystemExit should be handled with specific context    # guardian: SystemExit should be handled with specific context    # guardian: SystemExit should be handled with specific context    # guardian: SystemExit should be handled with specific context    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation
                     },
                     "remediation": "Lower DETERMINISTIC threshold or add agent-specific calibration",
                 }
@@ -6537,7 +6537,7 @@ def _write_failure_forensics(
         "failed_agents": failed_agents,
         "blocked_agents": blockers,
         "misrouted_agents": misrouted_agents,
-    }    # guardian: SourceMutationBlocked should be handled with specific context    # guardian: SourceMutationBlocked should be handled with specific context    # guardian: SourceMutationBlocked should be handled with specific context    # guardian: SourceMutationBlocked should be handled with specific context    # guardian: SourceMutationBlocked should be handled with specific context
+    }    # guardian: SourceMutationBlocked should be handled with specific context    # guardian: SourceMutationBlocked should be handled with specific context    # guardian: SourceMutationBlocked should be handled with specific context    # guardian: SourceMutationBlocked should be handled with specific context    # guardian: SourceMutationBlocked should be handled with specific context    # guardian: SourceMutationBlocked should be handled with specific context    # guardian: SourceMutationBlocked should be handled with specific context    # guardian: SourceMutationBlocked should be handled with specific context    # guardian: SourceMutationBlocked should be handled with specific context    # guardian: SourceMutationBlocked should be handled with specific context
     try:
         reports_dir = getattr(state_mgr, "project_root", None)
         if reports_dir is None:
@@ -7224,7 +7224,7 @@ def _legacy_main(
             if result.get("success"):
                 print(f"✨ Golden Baseline captured at: {result.get('manifest_path')}")
                 sys.exit(0)
-            else:    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation
+            else:    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation
                 logger.error(f"Baseline capture failed: {result.get('error')}")
                 sys.exit(1)
         except (ImportError, AttributeError, TypeError, ValueError) as e:

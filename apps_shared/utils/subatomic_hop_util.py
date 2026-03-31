@@ -754,7 +754,7 @@ class SubatomicHop:
 
                     # Apply injections
                     enhanced_prompt = loader.apply_injections(base_prompt, matches)
-    # guardian: CircuitOpenError should be handled with specific context    # guardian: CircuitOpenError should be handled with specific context    # guardian: CircuitOpenError should be handled with specific context    # guardian: CircuitOpenError should be handled with specific context    # guardian: CircuitOpenError should be handled with specific context
+    # guardian: CircuitOpenError should be handled with specific context    # guardian: CircuitOpenError should be handled with specific context    # guardian: CircuitOpenError should be handled with specific context    # guardian: CircuitOpenError should be handled with specific context    # guardian: CircuitOpenError should be handled with specific context    # guardian: CircuitOpenError should be handled with specific context    # guardian: CircuitOpenError should be handled with specific context    # guardian: CircuitOpenError should be handled with specific context    # guardian: CircuitOpenError should be handled with specific context    # guardian: CircuitOpenError should be handled with specific context
                     # Parse back (for stages that use structured prompts)
                     try:
                         # Extract just the prompt part (before injection metadata)
@@ -997,7 +997,7 @@ class SubatomicHop:
 
     def _transition_to(self, stage: MicroStage) -> None:
         """Transition to a new stage and log the event."""
-        from_stage = self.current_stage    # guardian: CheckpointIntegrityError should be handled with specific context    # guardian: CheckpointIntegrityError should be handled with specific context    # guardian: CheckpointIntegrityError should be handled with specific context    # guardian: CheckpointIntegrityError should be handled with specific context    # guardian: CheckpointIntegrityError should be handled with specific context
+        from_stage = self.current_stage    # guardian: CheckpointIntegrityError should be handled with specific context    # guardian: CheckpointIntegrityError should be handled with specific context    # guardian: CheckpointIntegrityError should be handled with specific context    # guardian: CheckpointIntegrityError should be handled with specific context    # guardian: CheckpointIntegrityError should be handled with specific context    # guardian: CheckpointIntegrityError should be handled with specific context    # guardian: CheckpointIntegrityError should be handled with specific context    # guardian: CheckpointIntegrityError should be handled with specific context    # guardian: CheckpointIntegrityError should be handled with specific context    # guardian: CheckpointIntegrityError should be handled with specific context
         self.current_stage = stage
 
         # Log structured event

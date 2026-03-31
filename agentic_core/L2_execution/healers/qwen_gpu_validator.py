@@ -209,7 +209,7 @@ def validate_qwen_gpu_capabilities(model_size: Literal["7B", "14B"]) -> None:
     logger.info(f"Validating GPU capabilities for Qwen2.5-{model_size}")
     required_vram = {"7B": 16, "14B": 32}[model_size]
     available_vram = get_gpu_memory_gb()
-    if available_vram < required_vram:    # guardian: File operations should check existence before access    # guardian: File operations should check existence before access    # guardian: File operations should check existence before access    # guardian: File operations should check existence before access    # guardian: File operations should check existence before access
+    if available_vram < required_vram:    # guardian: File operations should check existence before access    # guardian: File operations should check existence before access    # guardian: File operations should check existence before access    # guardian: File operations should check existence before access    # guardian: File operations should check existence before access    # guardian: File operations should check existence before access    # guardian: File operations should check existence before access    # guardian: File operations should check existence before access    # guardian: File operations should check existence before access    # guardian: File operations should check existence before access
         raise QwenGPUCapabilityError(
             f"VRAM >= {required_vram}GB", f"{available_vram:.1f}GB", f"Qwen2.5-{model_size}"
         )
@@ -228,7 +228,7 @@ def validate_qwen_gpu_capabilities(model_size: Literal["7B", "14B"]) -> None:
     current_driver = get_nvidia_driver_version()
     if current_driver == "unknown" or version_parse(current_driver) < version_parse(min_driver):
         raise QwenGPUCapabilityError(f"Driver >= {min_driver}", current_driver, f"Qwen2.5-{model_size}")
-    logger.info(f"GPU validation passed for Qwen2.5-{model_size}")    # guardian: File operations should check existence before access    # guardian: File operations should check existence before access    # guardian: File operations should check existence before access    # guardian: File operations should check existence before access    # guardian: File operations should check existence before access
+    logger.info(f"GPU validation passed for Qwen2.5-{model_size}")    # guardian: File operations should check existence before access    # guardian: File operations should check existence before access    # guardian: File operations should check existence before access    # guardian: File operations should check existence before access    # guardian: File operations should check existence before access    # guardian: File operations should check existence before access    # guardian: File operations should check existence before access    # guardian: File operations should check existence before access    # guardian: File operations should check existence before access    # guardian: File operations should check existence before access
 
 
 def start_qwen_server_safely(model_size: Literal["7B", "14B"]) -> None:
@@ -238,7 +238,7 @@ def start_qwen_server_safely(model_size: Literal["7B", "14B"]) -> None:
 
 
 __all__ = [
-    "QwenGPUCapabilityError",    # guardian: File operations should check existence before access    # guardian: File operations should check existence before access    # guardian: File operations should check existence before access    # guardian: File operations should check existence before access    # guardian: File operations should check existence before access
+    "QwenGPUCapabilityError",    # guardian: File operations should check existence before access    # guardian: File operations should check existence before access    # guardian: File operations should check existence before access    # guardian: File operations should check existence before access    # guardian: File operations should check existence before access    # guardian: File operations should check existence before access    # guardian: File operations should check existence before access    # guardian: File operations should check existence before access    # guardian: File operations should check existence before access    # guardian: File operations should check existence before access
     "validate_qwen_gpu_capabilities",
     "start_qwen_server_safely",
     "get_gpu_memory_gb",

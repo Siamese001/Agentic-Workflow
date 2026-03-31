@@ -451,7 +451,7 @@ def generate_full_adg(
         if len(seed_files) >= 5:
             break
     if not seed_files:
-        seed_files = list(result.modules[:5])
+        seed_files = list(result.modules[:5])    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation
     impact_report = predict_impact(result, seed_files)
     imp_summary = impact_summary(impact_report)
 
@@ -809,11 +809,11 @@ def _extract_timestamp(filename: str) -> str | None:
         return ts
     return None
 
-
+    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging
 def _parse_timestamp(ts: str) -> datetime:
     """Parse timestamp string to datetime.
 
-    Args:
+    Args:    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging
         ts: Timestamp string — "03122026_0512" (MMDDYYYY_HHMM), "03122026" (MMDDYYYY),
             "20260310" (YYYYMMDD legacy), or "20260311T160257Z" (ISO legacy)
 
@@ -871,10 +871,10 @@ def _archive_old_artifacts(adg_dir: Path, current_ts: str, keep_runs: int = 1) -
 
             # Extract timestamp (handles both regular artifacts and zip files)
             if path.name.startswith("adg_run_") and path.suffix == ".zip":
-                # Extract timestamp from zip filename: adg_run_03132026_0512.zip
+                # Extract timestamp from zip filename: adg_run_03132026_0512.zip    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime
                 ts = path.stem.replace("adg_run_", "")
             else:
-                ts = _extract_timestamp(path.name)
+                ts = _extract_timestamp(path.name)    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging
 
             if ts:
                 runs[ts].append(path)
@@ -1166,7 +1166,7 @@ def _violation_propagation_stats(conn: sqlite3.Connection) -> dict[str, int | fl
     importers_of: dict[str, set[str]] = defaultdict(set)
     violating_modules: set[str] = set()
 
-    for src_name, relation_type, dst_name in rows:
+    for src_name, relation_type, dst_name in rows:    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging
         if relation_type == "imports" and src_name.startswith("ADG::Module::"):
             for prefix in _key_prefixes(_symbol_to_module_key(dst_name)):
                 importers_of[prefix].add(src_name)
@@ -1181,7 +1181,7 @@ def _violation_propagation_stats(conn: sqlite3.Connection) -> dict[str, int | fl
         visited: set[str] = {violating_module}
         frontier = {
             importer
-            for importer in importers_of.get(violating_key, set())
+            for importer in importers_of.get(violating_key, set())    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging
             if importer not in violating_modules and importer not in visited
         }
         visited |= frontier
@@ -1190,7 +1190,7 @@ def _violation_propagation_stats(conn: sqlite3.Connection) -> dict[str, int | fl
         for _depth in range(2, 4):
             next_frontier: set[str] = set()
             for node in frontier:
-                node_key = _module_to_key(node)
+                node_key = _module_to_key(node)    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging
                 for importer in importers_of.get(node_key, set()):
                     if importer not in visited:
                         visited.add(importer)
@@ -1207,7 +1207,7 @@ def _violation_propagation_stats(conn: sqlite3.Connection) -> dict[str, int | fl
             "SELECT symbol, COUNT(*) FROM edges WHERE relation_type='violation_propagates_through' GROUP BY symbol"
         ).fetchall()
     )
-    return {
+    return {    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging
         "eligible_edge_count": eligible_edge_count,
         "eligible_target_module_count": len(eligible_module_targets),
         "actual_edge_count": actual_edge_count,
@@ -1307,7 +1307,7 @@ def _cleanup_validation_files(adg_dir: Path, current_ts: str) -> None:
 
     # Remove non-timestamped report files (legacy cleanup)
     for report_file in adg_dir.glob("*_report.json"):
-        # Skip if it has a timestamp (format: *_report_MMDDYYYY_HHMM.json)
+        # Skip if it has a timestamp (format: *_report_MMDDYYYY_HHMM.json)    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging
         if "_" in report_file.stem and len(report_file.stem.split("_")) >= 3:
             # Check if the last part looks like a timestamp
             last_part = report_file.stem.split("_")[-1]
@@ -1349,7 +1349,7 @@ def _cleanup_validation_files(adg_dir: Path, current_ts: str) -> None:
                 except OSError as e:
                     print(f"[ADG] Cleanup: error removing {val_file.name}: {e}")
 
-    if cleaned_count > 0:
+    if cleaned_count > 0:    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging
         print(f"[ADG] Cleanup: removed {cleaned_count} old validation/manifest files")
 
 
