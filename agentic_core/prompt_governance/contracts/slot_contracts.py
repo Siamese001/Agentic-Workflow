@@ -74,7 +74,14 @@ class SlotH0:
     requires_reentry: bool = True
 
 
-SLOT_ORDER: tuple[str, ...] = ("S0", "D0", "M0", "I0", "E0", "C0", "Y0", "U0", "H0")
+@dataclass(frozen=True)
+class SlotR0:
+    """OUTPUT FORMAT slot — SCHEMA authority. Response schema, format constraints, structural requirements."""
+
+    content: str
+
+
+SLOT_ORDER: tuple[str, ...] = ("S0", "D0", "M0", "I0", "E0", "C0", "Y0", "U0", "H0", "R0")
 
 
 class SlotOrderViolation(Exception):
