@@ -274,10 +274,21 @@ class IdentityNormalizer:
         self._known_files: frozenset[str] | None = None
 
     # Directories to skip during file discovery (I/O optimization)
-    _WALK_EXCLUDE_DIRS: frozenset[str] = frozenset({
-        ".git", "__pycache__", ".backup", "node_modules", ".mypy_cache",
-        ".pytest_cache", ".tox", ".venv", "venv", ".eggs", ".ruff_cache",
-    })
+    _WALK_EXCLUDE_DIRS: frozenset[str] = frozenset(
+        {
+            ".git",
+            "__pycache__",
+            ".backup",
+            "node_modules",
+            ".mypy_cache",
+            ".pytest_cache",
+            ".tox",
+            ".venv",
+            "venv",
+            ".eggs",
+            ".ruff_cache",
+        }
+    )
 
     def _get_known_files(self) -> frozenset[str]:
         """Build a forward-slash repo-relative path set for all .py files.
