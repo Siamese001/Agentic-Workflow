@@ -1,29 +1,29 @@
-"""Placeholder test for EnforcementModeTransitionMatrix."""
+"""Test EnforcementModeTransitionMatrix functionality."""
+
+import sys
+from pathlib import Path
 
 import pytest
 
+REPO_ROOT = Path(__file__).parent.parent.parent
+sys.path.insert(0, str(REPO_ROOT))
 
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300  # 5 minutes
 
 @pytest.mark.unit
 class TestEnforcementModeTransitionMatrix:
     """Test EnforcementModeTransitionMatrix functionality."""
 
-    def test_placeholder_1(self):
-        """Placeholder test 1."""
-        assert True
-    
-    def test_placeholder_2(self):
-        """Placeholder test 2."""
-        assert True
-    
-    def test_placeholder_3(self):
-        """Placeholder test 3."""
-        assert True
+    def test_enforcement_mode_transition_matrix_imports(self):
+        """Test enforcement_mode_transition_matrix module imports."""
+        from agentic_core import enforcement_mode_transition_matrix
+        assert enforcement_mode_transition_matrix is not None
+
+    def test_enforcement_mode_transition_matrix_class(self):
+        """Test EnforcementModeTransitionMatrix class exists."""
+        from agentic_core import EnforcementModeTransitionMatrix
+        assert EnforcementModeTransitionMatrix is not None
+
+    def test_enforcement_mode_transition_matrix_callable(self):
+        """Test enforcement_mode_transition_matrix functions are callable."""
+        from agentic_core import validate_enforcement_mode_transition_matrix
+        assert callable(validate_enforcement_mode_transition_matrix)

@@ -1,29 +1,29 @@
-"""Placeholder test for MeceNamingCompliance."""
+"""Test MeceNamingCompliance functionality."""
+
+import sys
+from pathlib import Path
 
 import pytest
 
+REPO_ROOT = Path(__file__).parent.parent.parent
+sys.path.insert(0, str(REPO_ROOT))
 
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300  # 5 minutes
 
 @pytest.mark.unit
 class TestMeceNamingCompliance:
     """Test MeceNamingCompliance functionality."""
 
-    def test_placeholder_1(self):
-        """Placeholder test 1."""
-        assert True
-    
-    def test_placeholder_2(self):
-        """Placeholder test 2."""
-        assert True
-    
-    def test_placeholder_3(self):
-        """Placeholder test 3."""
-        assert True
+    def test_mece_naming_compliance_imports(self):
+        """Test mece_naming_compliance module imports."""
+        from agentic_core import mece_naming_compliance
+        assert mece_naming_compliance is not None
+
+    def test_mece_naming_compliance_class(self):
+        """Test MeceNamingCompliance class exists."""
+        from agentic_core import MeceNamingCompliance
+        assert MeceNamingCompliance is not None
+
+    def test_mece_naming_compliance_callable(self):
+        """Test mece_naming_compliance functions are callable."""
+        from agentic_core import validate_mece_naming_compliance
+        assert callable(validate_mece_naming_compliance)

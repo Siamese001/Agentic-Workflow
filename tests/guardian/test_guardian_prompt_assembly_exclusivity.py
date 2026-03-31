@@ -1,29 +1,29 @@
-"""Placeholder test for GuardianPromptAssemblyExclusivity."""
+"""Test GuardianPromptAssemblyExclusivity functionality."""
+
+import sys
+from pathlib import Path
 
 import pytest
 
+REPO_ROOT = Path(__file__).parent.parent.parent
+sys.path.insert(0, str(REPO_ROOT))
 
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300  # 5 minutes
 
 @pytest.mark.unit
 class TestGuardianPromptAssemblyExclusivity:
     """Test GuardianPromptAssemblyExclusivity functionality."""
 
-    def test_placeholder_1(self):
-        """Placeholder test 1."""
-        assert True
-    
-    def test_placeholder_2(self):
-        """Placeholder test 2."""
-        assert True
-    
-    def test_placeholder_3(self):
-        """Placeholder test 3."""
-        assert True
+    def test_guardian_prompt_assembly_exclusivity_imports(self):
+        """Test guardian_prompt_assembly_exclusivity module imports."""
+        from agentic_core import guardian_prompt_assembly_exclusivity
+        assert guardian_prompt_assembly_exclusivity is not None
+
+    def test_guardian_prompt_assembly_exclusivity_class(self):
+        """Test GuardianPromptAssemblyExclusivity class exists."""
+        from agentic_core import GuardianPromptAssemblyExclusivity
+        assert GuardianPromptAssemblyExclusivity is not None
+
+    def test_guardian_prompt_assembly_exclusivity_callable(self):
+        """Test guardian_prompt_assembly_exclusivity functions are callable."""
+        from agentic_core import validate_guardian_prompt_assembly_exclusivity
+        assert callable(validate_guardian_prompt_assembly_exclusivity)

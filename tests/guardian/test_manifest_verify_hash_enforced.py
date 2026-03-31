@@ -1,29 +1,29 @@
-"""Placeholder test for ManifestVerifyHashEnforced."""
+"""Test ManifestVerifyHashEnforced functionality."""
+
+import sys
+from pathlib import Path
 
 import pytest
 
+REPO_ROOT = Path(__file__).parent.parent.parent
+sys.path.insert(0, str(REPO_ROOT))
 
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300  # 5 minutes
 
 @pytest.mark.unit
 class TestManifestVerifyHashEnforced:
     """Test ManifestVerifyHashEnforced functionality."""
 
-    def test_placeholder_1(self):
-        """Placeholder test 1."""
-        assert True
-    
-    def test_placeholder_2(self):
-        """Placeholder test 2."""
-        assert True
-    
-    def test_placeholder_3(self):
-        """Placeholder test 3."""
-        assert True
+    def test_manifest_verify_hash_enforced_imports(self):
+        """Test manifest_verify_hash_enforced module imports."""
+        from agentic_core import manifest_verify_hash_enforced
+        assert manifest_verify_hash_enforced is not None
+
+    def test_manifest_verify_hash_enforced_class(self):
+        """Test ManifestVerifyHashEnforced class exists."""
+        from agentic_core import ManifestVerifyHashEnforced
+        assert ManifestVerifyHashEnforced is not None
+
+    def test_manifest_verify_hash_enforced_callable(self):
+        """Test manifest_verify_hash_enforced functions are callable."""
+        from agentic_core import validate_manifest_verify_hash_enforced
+        assert callable(validate_manifest_verify_hash_enforced)

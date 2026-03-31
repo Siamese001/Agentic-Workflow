@@ -1,29 +1,29 @@
-"""Placeholder test for GovernanceEscalationContracts."""
+"""Test GovernanceEscalationContracts functionality."""
+
+import sys
+from pathlib import Path
 
 import pytest
 
+REPO_ROOT = Path(__file__).parent.parent.parent
+sys.path.insert(0, str(REPO_ROOT))
 
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300  # 5 minutes
 
 @pytest.mark.unit
 class TestGovernanceEscalationContracts:
     """Test GovernanceEscalationContracts functionality."""
 
-    def test_placeholder_1(self):
-        """Placeholder test 1."""
-        assert True
-    
-    def test_placeholder_2(self):
-        """Placeholder test 2."""
-        assert True
-    
-    def test_placeholder_3(self):
-        """Placeholder test 3."""
-        assert True
+    def test_governance_escalation_contracts_imports(self):
+        """Test governance_escalation_contracts module imports."""
+        from agentic_core import governance_escalation_contracts
+        assert governance_escalation_contracts is not None
+
+    def test_governance_escalation_contracts_class(self):
+        """Test GovernanceEscalationContracts class exists."""
+        from agentic_core import GovernanceEscalationContracts
+        assert GovernanceEscalationContracts is not None
+
+    def test_governance_escalation_contracts_callable(self):
+        """Test governance_escalation_contracts functions are callable."""
+        from agentic_core import validate_governance_escalation_contracts
+        assert callable(validate_governance_escalation_contracts)

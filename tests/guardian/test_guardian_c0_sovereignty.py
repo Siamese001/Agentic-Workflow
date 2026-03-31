@@ -1,29 +1,29 @@
-"""Placeholder test for GuardianC0Sovereignty."""
+"""Test GuardianC0Sovereignty functionality."""
+
+import sys
+from pathlib import Path
 
 import pytest
 
+REPO_ROOT = Path(__file__).parent.parent.parent
+sys.path.insert(0, str(REPO_ROOT))
 
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300  # 5 minutes
 
 @pytest.mark.unit
 class TestGuardianC0Sovereignty:
     """Test GuardianC0Sovereignty functionality."""
 
-    def test_placeholder_1(self):
-        """Placeholder test 1."""
-        assert True
-    
-    def test_placeholder_2(self):
-        """Placeholder test 2."""
-        assert True
-    
-    def test_placeholder_3(self):
-        """Placeholder test 3."""
-        assert True
+    def test_guardian_c0_sovereignty_imports(self):
+        """Test guardian_c0_sovereignty module imports."""
+        from agentic_core import guardian_c0_sovereignty
+        assert guardian_c0_sovereignty is not None
+
+    def test_guardian_c0_sovereignty_class(self):
+        """Test GuardianC0Sovereignty class exists."""
+        from agentic_core import GuardianC0Sovereignty
+        assert GuardianC0Sovereignty is not None
+
+    def test_guardian_c0_sovereignty_callable(self):
+        """Test guardian_c0_sovereignty functions are callable."""
+        from agentic_core import validate_guardian_c0_sovereignty
+        assert callable(validate_guardian_c0_sovereignty)

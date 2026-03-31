@@ -1,29 +1,29 @@
-"""Placeholder test for ScannerGovernance."""
+"""Test ScannerGovernance functionality."""
+
+import sys
+from pathlib import Path
 
 import pytest
 
+REPO_ROOT = Path(__file__).parent.parent.parent
+sys.path.insert(0, str(REPO_ROOT))
 
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300  # 5 minutes
 
 @pytest.mark.unit
 class TestScannerGovernance:
     """Test ScannerGovernance functionality."""
 
-    def test_placeholder_1(self):
-        """Placeholder test 1."""
-        assert True
-    
-    def test_placeholder_2(self):
-        """Placeholder test 2."""
-        assert True
-    
-    def test_placeholder_3(self):
-        """Placeholder test 3."""
-        assert True
+    def test_scanner_governance_imports(self):
+        """Test scanner_governance module imports."""
+        from agentic_core import scanner_governance
+        assert scanner_governance is not None
+
+    def test_scanner_governance_class(self):
+        """Test ScannerGovernance class exists."""
+        from agentic_core import ScannerGovernance
+        assert ScannerGovernance is not None
+
+    def test_scanner_governance_callable(self):
+        """Test scanner_governance functions are callable."""
+        from agentic_core import validate_scanner_governance
+        assert callable(validate_scanner_governance)
