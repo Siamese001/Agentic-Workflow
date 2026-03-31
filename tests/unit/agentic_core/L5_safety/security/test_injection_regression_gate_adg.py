@@ -1,6 +1,0 @@
-"""ADG importability contract for agentic_core/L5_safety/security/injection_regression_gate.py."""
-from __future__ import annotations
-
-
-def test_module_importable():
-        """Module injection_regression_gate must be importable."""

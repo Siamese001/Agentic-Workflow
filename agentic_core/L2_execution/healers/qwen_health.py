@@ -254,5 +254,20 @@ class MockVLLMProcessManager:
         return False
 
 
+def get_gpu_memory_info():
+    """Get GPU memory information for vLLM health checks."""
+    try:
+        import torch
+        if torch.cuda.is_available():
+            return {
+                "allocated": torch.cuda.memory_allocated(),
+                "reserved": torch.cuda.memory_reserved(),
+                "total": torch.cuda.get_device_properties(0).total_memory,
+            }
+    except ImportError:
+        pass
+    return {"allocated": 0, "reserved": 0, "total": 0}
+
+
 vllm_process_manager = MockVLLMProcessManager()
-__all__ = ["get_qwen_health_status", "get_gpu_memory_usage", "vllm_process_manager"]
+__all__ = ["get_qwen_health_status", "get_gpu_memory_usage", "get_gpu_memory_info", "vllm_process_manager"]

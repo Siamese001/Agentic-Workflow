@@ -224,42 +224,12 @@ _ROADMAP_TEMPLATES: dict[str, dict] = {
 }
 
 _RISK_TEMPLATES: list[dict] = [
-    {
-        "category": "technical_complexity",
-        "description": "Integration with legacy systems may require custom adapters",
-        "severity": RiskSeverity.MEDIUM,
-        "mitigation": "Phased integration approach with API abstraction layer",
-    },
-    {
-        "category": "data_quality",
-        "description": "Inconsistent data quality may degrade retrieval accuracy",
-        "severity": RiskSeverity.HIGH,
-        "mitigation": "Data quality gates enforced at ingestion; reject on schema mismatch",
-    },
-    {
-        "category": "regulatory_compliance",
-        "description": "Regulatory requirements may constrain model selection or data residency",
-        "severity": RiskSeverity.HIGH,
-        "mitigation": "Sovereign deployment mode; data residency controls in L0 routing",
-    },
-    {
-        "category": "change_management",
-        "description": "Stakeholder adoption may lag technical delivery",
-        "severity": RiskSeverity.MEDIUM,
-        "mitigation": "Dedicated change management workstream; champion network",
-    },
-    {
-        "category": "model_drift",
-        "description": "Model behavior may shift over time without controlled retraining",
-        "severity": RiskSeverity.HIGH,
-        "mitigation": "Drift detection engine; automatic human escalation on threshold breach",
-    },
-    {
-        "category": "integration_risk",
-        "description": "Third-party API dependencies may introduce latency or availability risk",
-        "severity": RiskSeverity.MEDIUM,
-        "mitigation": "Circuit breaker pattern; graceful degradation to cached responses",
-    },
+    {"category": "technical_complexity", "description": "Integration with legacy systems may require custom adapters", "severity": "MEDIUM", "mitigation": "Phased integration approach with API abstraction layer"},
+    {"category": "data_quality", "description": "Inconsistent data quality may degrade retrieval accuracy", "severity": "HIGH", "mitigation": "Data quality gates enforced at ingestion; reject on schema mismatch"},
+    {"category": "regulatory_compliance", "description": "Regulatory requirements may constrain model selection or data residency", "severity": "HIGH", "mitigation": "Sovereign deployment mode; data residency controls in L0 routing"},
+    {"category": "change_management", "description": "Stakeholder adoption may lag technical delivery", "severity": "MEDIUM", "mitigation": "Dedicated change management workstream; champion network"},
+    {"category": "model_drift", "description": "Model behavior may shift over time without controlled retraining", "severity": "HIGH", "mitigation": "Drift detection engine; automatic human escalation on threshold breach"},
+    {"category": "integration_risk", "description": "Third-party API dependencies may introduce latency or availability risk", "severity": "MEDIUM", "mitigation": "Circuit breaker pattern; graceful degradation to cached responses"},
 ]
 
 
