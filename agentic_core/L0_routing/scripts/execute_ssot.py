@@ -824,28 +824,12 @@ def _fire_meta_learning_intake(state_mgr: "RuntimeStateManager", now_utc: int) -
         logging.info("[MetaLearning] meta_learning_pipeline.run_pipeline() completed.")
     except ImportError as _imp_err:
         logging.debug("[MetaLearning] Pipeline not yet available (pre-Wave 0B): %s", _imp_err)
-    except (AttributeError, ValueError, RuntimeError) as _pl_err:
-        logging.warning("[MetaLearning] Pipeline run failed (non-fatal): %s", _pl_err)
-
-
 # =============================================================================
-# SYSTEM LEARNING HARD DEPENDENCIES - Phase 3 Implementation
+# SYSTEM LEARNING LAZY IMPORTS - Phase 3 Implementation
 # =============================================================================
-# These imports are REQUIRED (not guarded) - system learning is mandatory
-# =============================================================================
-
-# Hard imports for required system learning components
-from system_learning.engines.healing_outcome_aggregator import HealingOutcomeAggregator
-from system_learning.engines.healing_outcome_intake_adapter import HealingOutcomeIntakeAdapter
-from system_learning.engines.in_memory_healing_outcome_intake_store import InMemoryHealingOutcomeIntakeStore
-from system_learning.types.healing_outcome_types import HealingOutcomeEvent
-from system_learning.types.healing_outcome_intake_types import HealingOutcomeIntakeRecord
-from system_learning.pipelines.pipeline_factory import build_pipeline_config, build_pipeline_deps
-# Lazy import to avoid L0->L_SL gravity violation
-def _get_sl_memory_bridge():
-    from system_learning.adapters.system_learning_memory_bridge import get_sl_memory_bridge
-    return get_sl_memory_bridge()
-
+# All system_learning imports are lazy (inside functions) to avoid L0→L_SL
+# layer gravity violation. See _fire_meta_learning_intake() and
+# _fire_meta_learning_intake_required() for usage.
 # =============================================================================    # guardian: File operations should check existence before access    # guardian: File operations should check existence before access    # guardian: File operations should check existence before access    # guardian: File operations should check existence before access    # guardian: File operations should check existence before access    # guardian: File operations should check existence before access    # guardian: File operations should check existence before access    # guardian: File operations should check existence before access    # guardian: File operations should check existence before access    # guardian: File operations should check existence before access    # guardian: File operations should check existence before access    # guardian: File operations should check existence before access    # guardian: File operations should check existence before access    # guardian: File operations should check existence before access    # guardian: File operations should check existence before access    # guardian: File operations should check existence before access    # guardian: File operations should check existence before access    # guardian: File operations should check existence before access    # guardian: File operations should check existence before access    # guardian: File operations should check existence before access    # guardian: File operations should check existence before access    # guardian: File operations should check existence before access    # guardian: File operations should check existence before access    # guardian: File operations should check existence before access    # guardian: File operations should check existence before access    # guardian: File operations should check existence before access    # guardian: File operations should check existence before access    # guardian: File operations should check existence before access    # guardian: File operations should check existence before access    # guardian: File operations should check existence before access    # guardian: File operations should check existence before access    # guardian: File operations should check existence before access    # guardian: File operations should check existence before access    # guardian: File operations should check existence before access    # guardian: File operations should check existence before access    # guardian: File operations should check existence before access    # guardian: File operations should check existence before access    # guardian: File operations should check existence before access    # guardian: File operations should check existence before access    # guardian: File operations should check existence before access    # guardian: File operations should check existence before access    # guardian: File operations should check existence before access    # guardian: File operations should check existence before access    # guardian: File operations should check existence before access    # guardian: File operations should check existence before access
 # L6 OBSERVABILITY & WORKFLOW OUTCOME INTEGRATION - Apps Parity
 # =============================================================================
