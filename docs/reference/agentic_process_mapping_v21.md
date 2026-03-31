@@ -4,50 +4,51 @@
 =========================================================================================================================================================================================================================================================
 
 [ REAL-TIME CONTROL & SAFETY MANIFOLD (BUS C, D, E) ]
-    <──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┐
-    │ [ BUS E: ESCALATE (Anomaly triggers HITL) ]                                                                                                                                                      │
-    │ * Analogy: Fire Alarm forcing Librarian to review.                                                                                                                                               │
-    │                                                                                                                                                                                                  │
-    │                      <───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┤
-    │                      │ [ BUS D: DENY (Forced re-entry to L1) ]                                                                                                                                   │
-    │                      │ * Analogy: Security Desk denying entry / sending back.                                                                                                                    │
-    │                      │                                                                                                                                                                           │
-    │                      │                      <────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┤
-    │                      │                      │ [ BUS C: CONTROL (Real-time reroute) ]                                                                                                             │
-    │                      │                      │ * Analogy: Circulation Dir. intercepts.                                                                                                            │
-    ▼                      ▼                      ▼                                                                                                                                                    │
-┌────────┐             ┌────────┐             ┌────────┐             ┌────────┐             ┌────────┐             ┌────────┐             ┌────────────┐             ┌────────┐             ┌────┴───┐             ┌────────────────┐             ┌────────┐
-│   U0   │─raw_query──>│   L1   │─intent_vec─>│   L0   │──[R-ROUTE]─>│   L3   │──[MODE]────>│   L5   │────────────>│   L2   │────────────>│ Eval Spine │────────────>│ G-Gate │────────────>│   L6   │────────────>│   L4 Archive   │────────────>│   ML   │
-└────────┘             └───┬──▲─┘      🔵     └───┬────┘             └────┬───┘             └────────┘             └────────┘             └──────┬─────┘             └────────┘             └────┬───┘             │  ┌──────────┐  │             └────┬───┘
-┌────────┐                 │  │                   │                       │                                                                      │                                               │                   │  │   UWG    │  │                  │
-│  APPS  │─────────────────┘  │                   │                       │                                                                      │                                               │                   │  └─────▲────┘  │                  │
-└────────┘                    │                   │                       │                                                                      │                                               │                   └────────┼───────┘                  │
-                              │                   ├─[R4: ACTION]──────────┼─> [MODE GAMMA: Sequence DAG] ────────────────────────────────────────┼───────────────────────────────────────────────┼──────────────────────────┤                          │
-                              │                   ├─[R5: FALLBACK]────────┼─> [MODE DELTA: Freeze for Human] ────────────────────────────────────┼───────────────────────────────────────────────┼──────────────────────────┤                          │
-                              │                   ├─[R1: EXACT CACHE ]────┼─> [MODE ALPHA: Read-Only Fast Path] ─────────────────────────────────┼───────────────────────────────────────────────> (To L6)                  │                          │
-                              │                   ├─[R2: SEM. CACHE  ]────┼─> [MODE ALPHA: Read-Only Fast Path] ─────────────────────────────────┼───────────────────────────────────────────────> (To L6)                  │                          │
-                              │                   └─[R3: AGENTIC RAG ]────┼─> [MODE BETA: Context Check]                                         │                                               │                          │                          │
-                              │                                           │                                                                      │                                               │                          │                          │
-                              │                                           ▼                                                                      │                                               │                          │                          │
-                              │                                       ┌────────┐                                                                 │                                               │                          │                          │
-                              └<──────────────────────(Context back)──┤   C0   │                                                                 │                                               │                          │                          │
-                                                                      └────────┘                                                                 │                                               │                          │                          │
-                                                                      ┌────────────────────────────────┐                                         │                                               │                          │                          │
-                                                                      │ 1. Accept Query Payload        │                                         │                                               │                          │                          │
-                                                                      │ 2. Vector & Lexical Search     │       [ POST-EXECUTION & SYSTEM LEARNING MANIFOLD (BUS T, P, U) ]                       │                          │                          │
-                                                                      │ 3. Score Fusion (RRF)          │                                                                                         │                          │                          │
-                                                                      │ 4. Cross-Encoder Rerank        │       [ BUS P: PREFERENCE (DPO/Grades) ]                                                │                          │                          │
-                                                                      │ 5. Context Build               │       * Analogy: Suggestion box to Board.                                               │                          │                          │
-                                                                      │ 6. Completeness Check          │       └─────────────────────────────────────────────────────────────────────────────────┼──────────────────────────┼──────────────────────────> │
-                                                                      └────────────────────────────────┘                                                                                         │                          │                          │
-                                                                                                               [ BUS T: TELEMETRY (Logs to L4) ]                                                 │                          │                          │
-                                                                                                               * Analogy: Turnstile counters.                                                    │                          │                          │
-                                                                                                               └─────────────────────────────────────────────────────────────────────────────────> │                          │                          │
-                                                                                                                                                                                                                            │                          │
-                                                                                                                                                                                                 [ BUS U: UPDATES (ML rules to UWG) ]                  │
-                                                                                                                                                                                                 * Analogy: Official printing press.                   │
-                                 <──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┴──────────────────────────┘
-                                 (System Evolution Loop: Updates prime L1 for next run)
+    <────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┐
+    │ [ BUS E: ESCALATE (Anomaly triggers HITL) ]                                                                                                                                            │
+    │ * Analogy: Fire Alarm forcing Librarian to review.                                                                                                                                     │
+    │                                                                                                                                                                                        │
+    │                      <───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┤
+    │                      │ [ BUS D: DENY (Forced re-entry to L1) ]                                                                                                                         │
+    │                      │ * Analogy: Security Desk denying entry / sending back.                                                                                                          │
+    │                      │                                                                                                                                                                 │
+    │                      │                      <────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┤
+    │                      │                      │ [ BUS C: CONTROL (Real-time reroute) ]                                                                                                   │
+    │                      │                      │ * Analogy: Circulation Dir. intercepts.                                                                                                  │
+    ▼                      ▼                      ▼                                                                                                                                          │
+┌───┴────┐             ┌───┴────┐             ┌───┴────┐             ┌────────┐             ┌────────┐             ┌────────┐             ┌────────────┐           ┌────────┐             ┌────┴───┐             ┌────────────────┐             ┌────────┐
+│   U0   │─raw_query──>│   L1   │─intent_vec─>│   L0   │──[R-ROUTE]─>│   L3   │──[MODE]────>│   L5   │────────────>│   L2   │───────────> │ Eval Spine │─────────> │ G-Gate │────────────>│   L6   │──────────>  │   L4 Archive   │────────────>│   ML   │
+└────────┘             └─┬──▲─▲─┘             └───┬────┘             └───┬────┘             └────────┘             └────────┘             └─────┬──────┘           └────────┘             └───┬────┘             │  ┌──────────┐  │             └───┬────┘
+                         │  │ │                   │                      │                                                                      │                                             │                  │  │   UWG    │  │                 │
+┌────────┐               │  │ │                   ├─[R4: ACTION]─────────┼─> [MODE GAMMA: Sequence DAG]                                         │                                             │                  │  └─────▲────┘  │                 │
+│  APPS  │───────────────┘  │ │                   ├─[R5: FALLBACK]───────┼─> [MODE DELTA: Freeze for Human]                                     │                                             │                  └────────┼───────┘                 │
+└────────┘                  │ │                   ├─[R1: EXACT CACHE ]───┼─> [MODE ALPHA: Read-Only Fast Path] ─────────────────────────────────┼─────────────────────────────────────────────┤                           │                           │
+                            │ │                   ├─[R2: SEM. CACHE  ]───┼─> [MODE ALPHA: Read-Only Fast Path] ─────────────────────────────────┼─────────────────────────────────────────────┤                           │                           │
+                            │ │                   └─[R3: AGENTIC RAG ]───┴─> [MODE BETA: Context Check]                                         │                                             │                           │                           │
+                            │ │                                                              │                                                  │                                             │                           │                           │
+                            │ │                                                              ▼                                                  │                                             │                           │                           │
+                            │ │                                                          ┌────────┐                                             │                                             │                           │                           │
+                            │ └<───────────────────────────────────────────(Context back)┤   C0   │                                             │                                             │                           │                           │
+                            │                                                            └────────┘                                             │                                             │                           │                           │
+                            │                                                            ┌────────────────────────────────┐                     │                                             │                           │                           │
+                            │                                                            │ 1. Accept Query Payload        │   [ POST-EXECUTION & SYSTEM LEARNING MANIFOLD (BUS T, P, U) ]     │                           │                           │
+                            │                                                            │ 2. Vector & Lexical Search     │                                                                   │                           │                           │
+                            │                                                            │ 3. Score Fusion (RRF)          │     [ BUS P: PREFERENCE (DPO/Grades) ]                            │                           │                           │
+                            │                                                            │ 4. Cross-Encoder Rerank        │     * Analogy: Suggestion box to Board.                           │                           │                           │
+                            │                                                            │ 5. Context Build               │     └──────────────────────────────────────────┼──────────────────┼───────────────────────┤
+                            │                                                            │ 6. Completeness Check          │                                                                   │                           │                           │
+                            │                                                            └────────────────────────────────┘     [ BUS T: TELEMETRY (Logs to L4) ]                             │                           │                           │
+                            │                                                                                                   * Analogy: Turnstile counters.                                │                           │                           │
+                            │                                                                                                   └──────────────────────────────────────────┤                           │
+                            │                                                                                                                                                                                             │                           │
+                            │                                                                                                                                                                                             │  [ BUS U: UPDATES ]       │
+                            │                                                                                                                                                                                             │  * Analogy: Press.        │
+                            │                                                                                                                                                                                             ├<────────────────────────┘
+                            │  [ SYSTEM EVOLUTION LOOP ]                                                                                                                                                                  │
+                            │  • Commits learned DPO patterns to Semantic Store.                                                                                                                                          │
+                            │  • Adjusts ToolBudgets and orchestration limits.                                                                                                                                            │
+                            │  • Primes L1 reasoning engine for future runs.                                                                                                                                              │
+                            └<────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┘
 
  [ LIFECYCLE NODE LEGEND: THE LIBRARY PERSONAS & STRICT STANDING INSTRUCTIONS ]
  [1] APPS: Domain Patrons. Zero authority. Submits requests.
@@ -133,7 +134,7 @@
   │  [Compile selected_tools] ───────> │ Transforms distilled intent into vector   │ ──>       
   │  [Preserve raw_query] ───────────> └───────────────────────────────────────────┘                                  │
   └───────────────────────────────────────────────────────────────────┬───────────────────────────────────────────────┘
-                                                                      │ (Yields: 🔵 intent_vec)
+                                                                      │ (Yields: intent_vec)
 ======================================================================│==================================================
                                                                       ▼
 
@@ -156,13 +157,13 @@
 |            | └─ [MISS]─→ Layer 2 ──>        | └─ [MISS]─→ Layer 3 ──>        | └─ [MISS]─→ Layer 4 ──>        | └─ [MISS]─→ Layer 5 ──>        | └─ [FAIL]─→ Exception |
 +============+================================+================================+================================+================================+=======================+
                                                                                                   │
-                                                                                                  | 🔵 intent_vec
+                                                                                                  | intent_vec
                                                                                                   ▼
 ┌──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┐
     │ C0 RAG PIPELINE (INFORMATIONAL CONTEXT ASSEMBLY)                                                                                               ┌───────────────────────────────────────────┐ │
     │ [!] C0 IS AN EPHEMERAL ASSEMBLY PROCESS (NOT A SYSTEM LAYER)                                                                                   │ SYSTEM METRICS (GLOBAL LEDGER)            │ │
     │ C0 is a transient retrieval process invoked by L1 after L0 routes to R3. It assembles context only and has ZERO authority.                     ├───────────────────────────────────────────┤ │
-    │ C0 consumes the Dual-Rail payload { TEXT: raw_query, INTENT: 🔵 intent_vec } and reads ONLY from L4 / Vector DB.                               │ C0 Retrieval Metrics                      │ │
+    │ C0 consumes the Dual-Rail payload { TEXT: raw_query, INTENT: intent_vec } and reads ONLY from L4 / Vector DB.                                  │ C0 Retrieval Metrics                      │ │
     │ It NEVER creates canonical knowledge, NEVER writes to Redis, and NEVER writes back to L4.                                                      │ - Precision@K | - Recall@K                │ │
     │                                                                                                                                                │ - Completeness | - Supported Answer Rate  │ │
     │ L4H DEFINITION & LATENCY PROFILE:                                                                                                              └───────────────────────────────────────────┘ │
@@ -175,15 +176,15 @@
     │          ▼                                                ┌───────────────────────────────────────────────────────────────┐                                                                  │
     │  ┌─────────────────────────┐                              │ [ FROM L4 ARCHIVE / VECTOR DB ]                               │                                                                  │
     │  │ 1. ACCEPT QUERY PAYLOAD │                              │ [PULL] C0 reads ONLY from L4 | Deep archive lookup            │                                                                  │
-    │  │ raw_query + 🔵intent_vec│                              │ Cannot modify catalog        | Cannot write back              │                                                                  │
+    │  │ raw_query + intent_vec  │                              │ Cannot modify catalog        | Cannot write back              │                                                                  │
     │  │ (precomputed upstream)  │                              └──────────────┬────────────────────────────────────────────────┘                                                                  │
     │  └──────────┬──────────────┘                                             │                                                                                                                   │
     │             │                                                            ▼                                                                                                                   │
     │             ▼                                                                                                                                                                                │
     │  ┌─────────────────────────────┐                                                                                                                                                             │
     │  │ 2a. VECTOR SEARCH           │──┐                                                                                                                                                          │
-    │  │ 🔵 intent_vec (semantic     │  │   ┌─────────────────────────────┐   ┌─────────────────────────┐   ┌─────────────────────────┐   ┌─────────────────────────┐   ┌────────────────────────┐ │
-    │  │ intent) vs 🟠 fact_vec      │  ├──>│ 3. SCORE FUSION (RRF)       │──>│ 4. CROSS-ENCODER RERANK │──>│ 5. CONTEXT BUILD        │──>│ 6. COMPLETENESS CHECK   │──>│ [OUT] C0 -> L1         │ │
+    │  │ intent_vec (semantic        │  │   ┌─────────────────────────────┐   ┌─────────────────────────┐   ┌─────────────────────────┐   ┌─────────────────────────┐   ┌────────────────────────┐ │
+    │  │ intent) vs fact_vec         │  ├──>│ 3. SCORE FUSION (RRF)       │──>│ 4. CROSS-ENCODER RERANK │──>│ 5. CONTEXT BUILD        │──>│ 6. COMPLETENESS CHECK   │──>│ [OUT] C0 -> L1         │ │
     │  │ (embedded knowledge in DB)  │  │   │ RRF fuses BOTH lanes →      │   │ Q vs Doc deep scoring   │   │ Chunk stitching         │   │ Coverage validation     │   │ Curated context bundle │ │
     │  │ FAISS / ANN index           │  │   │ hybrid retrieval (semantic  │   │ Precision ordering      │   │ Parent-child expansion  │   │ Answerability scoring   │   │ Enables synthesis      │ │
     │  │ Retrieves Top-K_vec         │  │   │ + lexical).                 │   │ Yields Top-N_final      │   │ Sibling windowing       │   │ Reject / augment if gap │   │ No execution authority │ │

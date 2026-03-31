@@ -29,7 +29,8 @@ def main() -> int:
         for f in sorted(PLANS_DIR.rglob("*.md")):
             try:
                 content = f.read_text(encoding="utf-8", errors="replace")
-            except Exception:
+            except (IOError, OSError, UnicodeDecodeError) as e:
+                warnings.append(f"C2-WARN: Could not read {f}: {e}")
                 continue
             # Only check files that look like phase evidence (have a ## Scope section)
             if "## Scope" in content and "## FACT_CLASSIFICATION" not in content:
@@ -68,7 +69,8 @@ def main() -> int:
         for f in sorted(PLANS_DIR.rglob("*.md")):
             try:
                 content = f.read_text(encoding="utf-8", errors="replace")
-            except Exception:
+            except (IOError, OSError, UnicodeDecodeError) as e:
+                warnings.append(f"C3-WARN: Could not read {f}: {e}")
                 continue
             # Only flag in non-final phase evidence (heuristic: no "Phase 7" or "final" in title)
             first_line = content.split("\n")[0].lower()
@@ -151,7 +153,7 @@ def main() -> int:
     try:
         result = subprocess.run(
             ["git", "log", "--oneline", "-20", "--format=%H %s"],
-            capture_output=True, text=True, timeout=15
+            capture_output=True, text=True, timeout=15, check=False
         )
         if result.returncode == 0:
             production_dirs = {"agentic_core", "apps_rg", "apps_lic", "apps_shared", "system_learning"}
@@ -169,7 +171,7 @@ def main() -> int:
                         # Check if commit touches production dirs
                         diff_result = subprocess.run(
                             ["git", "diff-tree", "--no-commit-id", "-r", "--name-only", sha],
-                            capture_output=True, text=True, timeout=10
+                            capture_output=True, text=True, timeout=10, check=False
                         )
                         if diff_result.returncode == 0:
                             touched = diff_result.stdout.strip().split("\n")
@@ -182,7 +184,7 @@ def main() -> int:
                                     f"C9-WARN: Commit {sha[:8]} ('{msg[:60]}') touches production code "
                                     f"but has no 'repair_class:' footer (§14.8, §22.1)"
                                 )
-    except Exception as e:
+    except (subprocess.SubprocessError, OSError) as e:
         warnings.append(f"C9-WARN: Could not check commit messages: {e}")
 
     # ── Condition 5: FAILURE_CAPTURE section missing from repair phase evidence ─
@@ -190,7 +192,8 @@ def main() -> int:
         for f in sorted(PLANS_DIR.rglob("*.md")):
             try:
                 content = f.read_text(encoding="utf-8", errors="replace")
-            except Exception:
+            except (IOError, OSError, UnicodeDecodeError) as e:
+                warnings.append(f"C5-WARN: Could not read {f}: {e}")
                 continue
             first_line = content.split("\n")[0].lower()
             # Only check repair phase evidence (heuristic: phase 3, 4, 5, 6 or "repair" in title)
