@@ -1,11 +1,11 @@
 {
-  "runtime_adg_1774917444_b335e672": {
+  "runtime_adg_1774997336_cbe0d352": {
     "duration_ms": 100,
     "edge_count": 5,
-    "file_path": "agentic_core\\L4_state\\memory\\runtime_adg_test\\l6\\runtime_adg_1774917444_b335e672.json",
+    "file_path": "agentic_core\\L4_state\\memory\\runtime_adg_test\\l6\\runtime_adg_1774997336_cbe0d352.json",
     "mission": "test-mission",
     "node_count": 3,
-    "timestamp": 1774917444,
+    "timestamp": 1774997336,
     "trace_id": "trace-001"
   }
 }

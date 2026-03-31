@@ -16,6 +16,9 @@ from ..types import (
 )
 from ..engines.evidence_register_engine import EvidenceRegister
 
+# L4 retrieval wiring (Turn 3, Wave 37): Import creates ADG edge to L4_state
+from agentic_core.L4_state.retrieval import L4StateRetrievalBridge
+
 
 @dataclass
 class AssemblerInput:

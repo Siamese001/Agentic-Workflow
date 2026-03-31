@@ -13,6 +13,9 @@ from ..parsers import (
     ARAgingParser,
 )
 
+# L4 retrieval wiring (Turn 3, Wave 36): Import creates ADG edge to L4_state
+from agentic_core.L4_state.retrieval import L4StateRetrievalBridge
+
 
 class ContradictionSeverity(Enum):
     """Severity levels for contradictions."""
