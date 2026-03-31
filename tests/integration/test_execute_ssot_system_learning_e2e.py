@@ -166,7 +166,7 @@ class TestExecuteSsotMetaLearningPipeline:
     @pytest.mark.skip(reason="Requires full system learning stack with stores and adapters")
     def test_pipeline_generates_proposals(self):
         """Verify meta-learning pipeline generates proposals with real data."""
-        pytest.skip("Full integration test requires complete system learning stack")
+        pass
 
 
 class TestExecuteSsotRequiredIntakeFunction:
@@ -229,7 +229,7 @@ class TestExecuteSsotRequiredIntakeFunction:
     @pytest.mark.skip(reason="Requires full system learning stack and real adapters")
     def test_required_function_with_healing_actions(self):
         """Verify required function processes healing actions."""
-        pytest.skip("Full integration test requires complete system learning stack")
+        pass
 
 
 class TestExecuteSsotSystemLearningBridge:
@@ -260,7 +260,7 @@ class TestExecuteSsotSystemLearningBridge:
     @pytest.mark.skip(reason="Requires running system learning memory service")
     def test_phase_outcomes_persisted(self):
         """Verify execute_ssot phase outcomes persisted to SL bridge."""
-        pytest.skip("Requires running system learning memory service")
+        pass
 
 
 class TestExecuteSsotWorkflowOutcomeAdapter:
@@ -344,7 +344,7 @@ class TestExecuteSsotCrossRepoContext:
     @pytest.mark.skip(reason="Requires external repository access")
     def test_cross_repo_context_import(self):
         """Verify cross-repo learning context can be imported."""
-        pytest.skip("Requires external repository access")
+        pass
 
 
 class TestExecuteSsotHardDependencies:
