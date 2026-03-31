@@ -60,6 +60,25 @@ jobs:
         env:
           PYTHONPATH: .
 
+      - name: Install MCP test dependencies
+        run: pip install fakeredis --quiet 2>/dev/null || true
+
+      - name: MCP Server Contract Gate (Layer 1 static + Layer 4 regressions)
+        run: |
+          python -m pytest tests/adg/test_adg_mcp_server_contracts.py \
+            -k "TestStaticStructuralContracts or TestKnownBugRegressions or TestResponseShapeContracts" \
+            -v --no-header --tb=short
+        env:
+          PYTHONPATH: .
+
+      - name: MCP Server Integration Gate (Layer 3 — requires Redis db=15)
+        run: |
+          python -m pytest tests/adg/test_adg_mcp_server_contracts.py::TestAllToolsRespond \
+            -v --no-header --tb=short
+        env:
+          PYTHONPATH: .
+          ADG_REDIS_URL: redis://localhost:6379/15
+
       - name: M1 — Determinism Gate (warn mode until W4 exit)
         run: |
           python -c "
