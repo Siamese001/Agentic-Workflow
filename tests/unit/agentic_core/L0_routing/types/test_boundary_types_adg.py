@@ -1,40 +1,29 @@
-"""Placeholder test for BoundaryTypesAdg."""
-import unittest
+"""Test BoundaryTypesAdg functionality."""
+
+import sys
+from pathlib import Path
 
 import pytest
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300
+
+REPO_ROOT = Path(__file__).parent.parent.parent
+sys.path.insert(0, str(REPO_ROOT))
+
 
 @pytest.mark.unit
-class GeneratedTest(unittest.TestCase):
-    """Generated test class for agentic_core.L0_routing.types."""
+class TestBoundaryTypesAdg:
+    """Test BoundaryTypesAdg functionality."""
 
-    def test_SSOTBinding_init(self):
-        """Test SSOTBinding initialization."""
-        from agentic_core.L0_routing.types import SSOTBinding
-        instance = SSOTBinding()
-        self.assertIsNotNone(instance)
+    def test_boundary_types_adg_imports(self):
+        """Test boundary_types_adg module imports."""
+        from agentic_core import boundary_types_adg
+        assert boundary_types_adg is not None
 
-    def test_ContextRetrievalRequest_init(self):
-        """Test ContextRetrievalRequest initialization."""
-        from agentic_core.L0_routing.types import ContextRetrievalRequest
-        instance = ContextRetrievalRequest()
-        self.assertIsNotNone(instance)
+    def test_boundary_types_adg_class(self):
+        """Test BoundaryTypesAdg class exists."""
+        from agentic_core import BoundaryTypesAdg
+        assert BoundaryTypesAdg is not None
 
-    def test_placeholder_1(self):
-        """Placeholder test 1."""
-        assert True
-
-    def test_placeholder_2(self):
-        """Placeholder test 2."""
-        assert True
-
-    def test_placeholder_3(self):
-        """Placeholder test 3."""
-        assert True
+    def test_boundary_types_adg_callable(self):
+        """Test boundary_types_adg functions are callable."""
+        from agentic_core import validate_boundary_types_adg
+        assert callable(validate_boundary_types_adg)

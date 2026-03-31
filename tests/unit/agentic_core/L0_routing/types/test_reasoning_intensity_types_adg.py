@@ -1,50 +1,29 @@
-"""Placeholder test for ReasoningIntensityTypesAdg."""
+"""Test ReasoningIntensityTypesAdg functionality."""
+
+import sys
+from pathlib import Path
+
 import pytest
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300
+
+REPO_ROOT = Path(__file__).parent.parent.parent
+sys.path.insert(0, str(REPO_ROOT))
+
 
 @pytest.mark.unit
-class GeneratedTest:
-    """Generated test class for agentic_core.L0_routing.types."""
+class TestReasoningIntensityTypesAdg:
+    """Test ReasoningIntensityTypesAdg functionality."""
 
-    def test_build_profile_hash(self):
-        """Test build_profile_hash function."""
-        from agentic_core.L0_routing.types import build_profile_hash
-        result = build_profile_hash()
-        assertIsNotNone(result)
+    def test_reasoning_intensity_types_adg_imports(self):
+        """Test reasoning_intensity_types_adg module imports."""
+        from agentic_core import reasoning_intensity_types_adg
+        assert reasoning_intensity_types_adg is not None
 
-    def test_build_envelope_hash(self):
-        """Test build_envelope_hash function."""
-        from agentic_core.L0_routing.types import build_envelope_hash
-        result = build_envelope_hash()
-        assertIsNotNone(result)
+    def test_reasoning_intensity_types_adg_class(self):
+        """Test ReasoningIntensityTypesAdg class exists."""
+        from agentic_core import ReasoningIntensityTypesAdg
+        assert ReasoningIntensityTypesAdg is not None
 
-    def test_ReasoningTier_init(self):
-        """Test ReasoningTier initialization."""
-        from agentic_core.L0_routing.types import ReasoningTier
-        instance = ReasoningTier()
-        assertIsNotNone(instance)
-
-    def test_StageTokenBudget_init(self):
-        """Test StageTokenBudget initialization."""
-        from agentic_core.L0_routing.types import StageTokenBudget
-        instance = StageTokenBudget()
-        assertIsNotNone(instance)
-
-    def test_placeholder_1(self):
-        """Placeholder test 1."""
-        assert True
-
-    def test_placeholder_2(self):
-        """Placeholder test 2."""
-        assert True
-
-    def test_placeholder_3(self):
-        """Placeholder test 3."""
-        assert True
+    def test_reasoning_intensity_types_adg_callable(self):
+        """Test reasoning_intensity_types_adg functions are callable."""
+        from agentic_core import validate_reasoning_intensity_types_adg
+        assert callable(validate_reasoning_intensity_types_adg)

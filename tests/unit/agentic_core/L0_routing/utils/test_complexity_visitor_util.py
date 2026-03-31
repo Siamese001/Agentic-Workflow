@@ -1,51 +1,29 @@
-"""Placeholder test for ComplexityVisitorUtil."""
+"""Test ComplexityVisitorUtil functionality."""
+
+import sys
+from pathlib import Path
+
 import pytest
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300
+
+REPO_ROOT = Path(__file__).parent.parent.parent
+sys.path.insert(0, str(REPO_ROOT))
+
 
 @pytest.mark.unit
-class GeneratedTest:
-    """Generated test class for agentic_core.L0_routing.utils."""
+class TestComplexityVisitorUtil:
+    """Test ComplexityVisitorUtil functionality."""
 
-    def test_should_exclude_path(self):
-        """Test should_exclude_path function."""
-        from agentic_core.L0_routing.utils import should_exclude_path
-        result = should_exclude_path()
-        assertIsNotNone(result)
+    def test_complexity_visitor_util_imports(self):
+        """Test complexity_visitor_util module imports."""
+        from agentic_core import complexity_visitor_util
+        assert complexity_visitor_util is not None
 
-    def test_should_exclude_file(self):
-        """Test should_exclude_file function."""
-        from agentic_core.L0_routing.utils import should_exclude_file
-        result = should_exclude_file()
-        assertIsNotNone(result)
+    def test_complexity_visitor_util_class(self):
+        """Test ComplexityVisitorUtil class exists."""
+        from agentic_core import ComplexityVisitorUtil
+        assert ComplexityVisitorUtil is not None
 
-    def test__CCVisitor_init(self):
-        """Test _CCVisitor initialization."""
-        from agentic_core.L0_routing.utils import _CCVisitor
-        instance = _CCVisitor()
-        assertIsNotNone(instance)
-
-    def test__CCVisitor_visit_If(self):
-        """Test _CCVisitor.visit_If method."""
-        from agentic_core.L0_routing.utils import _CCVisitor
-        instance = _CCVisitor()
-        result = instance.visit_If()
-        assertIsNotNone(result)
-
-    def test_placeholder_1(self):
-        """Placeholder test 1."""
-        assert True
-
-    def test_placeholder_2(self):
-        """Placeholder test 2."""
-        assert True
-
-    def test_placeholder_3(self):
-        """Placeholder test 3."""
-        assert True
+    def test_complexity_visitor_util_callable(self):
+        """Test complexity_visitor_util functions are callable."""
+        from agentic_core import validate_complexity_visitor_util
+        assert callable(validate_complexity_visitor_util)

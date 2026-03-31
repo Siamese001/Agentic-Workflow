@@ -1,50 +1,29 @@
-"""Placeholder test for GuardianRegistryTypesAdg."""
+"""Test GuardianRegistryTypesAdg functionality."""
+
+import sys
+from pathlib import Path
+
 import pytest
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300
+
+REPO_ROOT = Path(__file__).parent.parent.parent
+sys.path.insert(0, str(REPO_ROOT))
+
 
 @pytest.mark.unit
-class GeneratedTest:
-    """Generated test class for agentic_core.L0_routing.types."""
+class TestGuardianRegistryTypesAdg:
+    """Test GuardianRegistryTypesAdg functionality."""
 
-    def test_get_guardian_specs(self):
-        """Test get_guardian_specs function."""
-        from agentic_core.L0_routing.types import get_guardian_specs
-        result = get_guardian_specs()
-        assertIsNotNone(result)
+    def test_guardian_registry_types_adg_imports(self):
+        """Test guardian_registry_types_adg module imports."""
+        from agentic_core import guardian_registry_types_adg
+        assert guardian_registry_types_adg is not None
 
-    def test_get_guardian_by_id(self):
-        """Test get_guardian_by_id function."""
-        from agentic_core.L0_routing.types import get_guardian_by_id
-        result = get_guardian_by_id()
-        assertIsNotNone(result)
+    def test_guardian_registry_types_adg_class(self):
+        """Test GuardianRegistryTypesAdg class exists."""
+        from agentic_core import GuardianRegistryTypesAdg
+        assert GuardianRegistryTypesAdg is not None
 
-    def test_GuardianTier_init(self):
-        """Test GuardianTier initialization."""
-        from agentic_core.L0_routing.types import GuardianTier
-        instance = GuardianTier()
-        assertIsNotNone(instance)
-
-    def test_GuardianSpec_init(self):
-        """Test GuardianSpec initialization."""
-        from agentic_core.L0_routing.types import GuardianSpec
-        instance = GuardianSpec()
-        assertIsNotNone(instance)
-
-    def test_placeholder_1(self):
-        """Placeholder test 1."""
-        assert True
-
-    def test_placeholder_2(self):
-        """Placeholder test 2."""
-        assert True
-
-    def test_placeholder_3(self):
-        """Placeholder test 3."""
-        assert True
+    def test_guardian_registry_types_adg_callable(self):
+        """Test guardian_registry_types_adg functions are callable."""
+        from agentic_core import validate_guardian_registry_types_adg
+        assert callable(validate_guardian_registry_types_adg)

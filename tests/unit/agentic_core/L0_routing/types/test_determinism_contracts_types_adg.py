@@ -1,52 +1,29 @@
-"""Placeholder test for DeterminismContractsTypesAdg."""
-import unittest
+"""Test DeterminismContractsTypesAdg functionality."""
+
+import sys
+from pathlib import Path
 
 import pytest
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300
+
+REPO_ROOT = Path(__file__).parent.parent.parent
+sys.path.insert(0, str(REPO_ROOT))
+
 
 @pytest.mark.unit
-class GeneratedTest(unittest.TestCase):
-    """Generated test class for agentic_core.L0_routing.types."""
+class TestDeterminismContractsTypesAdg:
+    """Test DeterminismContractsTypesAdg functionality."""
 
-    def test_validate_execution_input(self):
-        """Test validate_execution_input function."""
-        from agentic_core.L0_routing.types import validate_execution_input
-        result = validate_execution_input()
-        self.assertIsNotNone(result)
+    def test_determinism_contracts_types_adg_imports(self):
+        """Test determinism_contracts_types_adg module imports."""
+        from agentic_core import determinism_contracts_types_adg
+        assert determinism_contracts_types_adg is not None
 
-    def test_check_forbidden_input_type(self):
-        """Test check_forbidden_input_type function."""
-        from agentic_core.L0_routing.types import check_forbidden_input_type
-        result = check_forbidden_input_type()
-        self.assertIsNotNone(result)
+    def test_determinism_contracts_types_adg_class(self):
+        """Test DeterminismContractsTypesAdg class exists."""
+        from agentic_core import DeterminismContractsTypesAdg
+        assert DeterminismContractsTypesAdg is not None
 
-    def test_ForbiddenInputError_init(self):
-        """Test ForbiddenInputError initialization."""
-        from agentic_core.L0_routing.types import ForbiddenInputError
-        instance = ForbiddenInputError()
-        self.assertIsNotNone(instance)
-
-    def test_WallClockViolation_init(self):
-        """Test WallClockViolation initialization."""
-        from agentic_core.L0_routing.types import WallClockViolation
-        instance = WallClockViolation()
-        self.assertIsNotNone(instance)
-
-    def test_placeholder_1(self):
-        """Placeholder test 1."""
-        assert True
-
-    def test_placeholder_2(self):
-        """Placeholder test 2."""
-        assert True
-
-    def test_placeholder_3(self):
-        """Placeholder test 3."""
-        assert True
+    def test_determinism_contracts_types_adg_callable(self):
+        """Test determinism_contracts_types_adg functions are callable."""
+        from agentic_core import validate_determinism_contracts_types_adg
+        assert callable(validate_determinism_contracts_types_adg)

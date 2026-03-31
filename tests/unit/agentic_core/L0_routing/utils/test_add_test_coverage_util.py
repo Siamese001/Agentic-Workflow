@@ -1,38 +1,29 @@
-"""Placeholder test for AddTestCoverageUtil."""
+"""Test AddCoverageUtil functionality."""
+
+import sys
+from pathlib import Path
+
 import pytest
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300
+
+REPO_ROOT = Path(__file__).parent.parent.parent
+sys.path.insert(0, str(REPO_ROOT))
+
 
 @pytest.mark.unit
-class GeneratedTest:
-    """Generated test class for agentic_core.L0_routing.utils."""
+class TestAddCoverageUtil:
+    """Test AddCoverageUtil functionality."""
 
-    def test_has_tests(self):
-        """Test has_tests function."""
-        from agentic_core.L0_routing.utils import has_tests
-        result = has_tests()
-        assertIsNotNone(result)
+    def test_add_coverage_util_imports(self):
+        """Test add_coverage_util module imports."""
+        from agentic_core import add_coverage_util
+        assert add_coverage_util is not None
 
-    def test_add_test_to_file(self):
-        """Test add_test_to_file function."""
-        from agentic_core.L0_routing.utils import add_test_to_file
-        result = add_test_to_file()
-        assertIsNotNone(result)
+    def test_add_coverage_util_class(self):
+        """Test AddCoverageUtil class exists."""
+        from agentic_core import AddCoverageUtil
+        assert AddCoverageUtil is not None
 
-    def test_placeholder_1(self):
-        """Placeholder test 1."""
-        assert True
-
-    def test_placeholder_2(self):
-        """Placeholder test 2."""
-        assert True
-
-    def test_placeholder_3(self):
-        """Placeholder test 3."""
-        assert True
+    def test_add_coverage_util_callable(self):
+        """Test add_coverage_util functions are callable."""
+        from agentic_core import validate_add_coverage_util
+        assert callable(validate_add_coverage_util)

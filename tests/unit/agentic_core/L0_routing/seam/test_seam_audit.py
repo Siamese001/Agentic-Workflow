@@ -1,29 +1,29 @@
-"""Placeholder test for SeamAudit."""
+"""Test SeamAudit functionality."""
+
+import sys
+from pathlib import Path
 
 import pytest
 
+REPO_ROOT = Path(__file__).parent.parent.parent
+sys.path.insert(0, str(REPO_ROOT))
 
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300  # 5 minutes
 
 @pytest.mark.unit
 class TestSeamAudit:
     """Test SeamAudit functionality."""
 
-    def test_placeholder_1(self):
-        """Placeholder test 1."""
-        assert True
-    
-    def test_placeholder_2(self):
-        """Placeholder test 2."""
-        assert True
-    
-    def test_placeholder_3(self):
-        """Placeholder test 3."""
-        assert True
+    def test_seam_audit_imports(self):
+        """Test seam_audit module imports."""
+        from agentic_core import seam_audit
+        assert seam_audit is not None
+
+    def test_seam_audit_class(self):
+        """Test SeamAudit class exists."""
+        from agentic_core import SeamAudit
+        assert SeamAudit is not None
+
+    def test_seam_audit_callable(self):
+        """Test seam_audit functions are callable."""
+        from agentic_core import validate_seam_audit
+        assert callable(validate_seam_audit)

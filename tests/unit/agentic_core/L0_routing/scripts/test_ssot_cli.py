@@ -1,29 +1,29 @@
-"""Placeholder test for SsotCli."""
+"""Test SsotCli functionality."""
+
+import sys
+from pathlib import Path
 
 import pytest
 
+REPO_ROOT = Path(__file__).parent.parent.parent
+sys.path.insert(0, str(REPO_ROOT))
 
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300  # 5 minutes
 
 @pytest.mark.unit
 class TestSsotCli:
     """Test SsotCli functionality."""
 
-    def test_placeholder_1(self):
-        """Placeholder test 1."""
-        assert True
-    
-    def test_placeholder_2(self):
-        """Placeholder test 2."""
-        assert True
-    
-    def test_placeholder_3(self):
-        """Placeholder test 3."""
-        assert True
+    def test_ssot_cli_imports(self):
+        """Test ssot_cli module imports."""
+        from agentic_core import ssot_cli
+        assert ssot_cli is not None
+
+    def test_ssot_cli_class(self):
+        """Test SsotCli class exists."""
+        from agentic_core import SsotCli
+        assert SsotCli is not None
+
+    def test_ssot_cli_callable(self):
+        """Test ssot_cli functions are callable."""
+        from agentic_core import validate_ssot_cli
+        assert callable(validate_ssot_cli)

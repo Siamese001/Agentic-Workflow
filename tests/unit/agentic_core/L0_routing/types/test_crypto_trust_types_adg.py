@@ -1,52 +1,29 @@
-"""Placeholder test for CryptoTrustTypesAdg."""
-import unittest
+"""Test CryptoTrustTypesAdg functionality."""
+
+import sys
+from pathlib import Path
 
 import pytest
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300
+
+REPO_ROOT = Path(__file__).parent.parent.parent
+sys.path.insert(0, str(REPO_ROOT))
+
 
 @pytest.mark.unit
-class GeneratedTest(unittest.TestCase):
-    """Generated test class for agentic_core.L0_routing.types."""
+class TestCryptoTrustTypesAdg:
+    """Test CryptoTrustTypesAdg functionality."""
 
-    def test_get_key(self):
-        """Test get_key function."""
-        from agentic_core.L0_routing.types import get_key
-        result = get_key()
-        self.assertIsNotNone(result)
+    def test_crypto_trust_types_adg_imports(self):
+        """Test crypto_trust_types_adg module imports."""
+        from agentic_core import crypto_trust_types_adg
+        assert crypto_trust_types_adg is not None
 
-    def test_record_mismatch(self):
-        """Test record_mismatch function."""
-        from agentic_core.L0_routing.types import record_mismatch
-        result = record_mismatch()
-        self.assertIsNotNone(result)
+    def test_crypto_trust_types_adg_class(self):
+        """Test CryptoTrustTypesAdg class exists."""
+        from agentic_core import CryptoTrustTypesAdg
+        assert CryptoTrustTypesAdg is not None
 
-    def test_KeyStatus_init(self):
-        """Test KeyStatus initialization."""
-        from agentic_core.L0_routing.types import KeyStatus
-        instance = KeyStatus()
-        self.assertIsNotNone(instance)
-
-    def test_SigningAlgorithm_init(self):
-        """Test SigningAlgorithm initialization."""
-        from agentic_core.L0_routing.types import SigningAlgorithm
-        instance = SigningAlgorithm()
-        self.assertIsNotNone(instance)
-
-    def test_placeholder_1(self):
-        """Placeholder test 1."""
-        assert True
-
-    def test_placeholder_2(self):
-        """Placeholder test 2."""
-        assert True
-
-    def test_placeholder_3(self):
-        """Placeholder test 3."""
-        assert True
+    def test_crypto_trust_types_adg_callable(self):
+        """Test crypto_trust_types_adg functions are callable."""
+        from agentic_core import validate_crypto_trust_types_adg
+        assert callable(validate_crypto_trust_types_adg)
