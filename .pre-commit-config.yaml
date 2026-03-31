@@ -205,6 +205,16 @@ repos:
   # ============================================================================
   - repo: local
     hooks:
+      # -- T-1: Pre-Commit Summary Initialization --------------------------------
+      # Clears temp issue collection before governance hooks run.
+      - id: pre-commit-summary-init
+        name: "T-1: Pre-Commit Summary Initialization"
+        entry: python ops_scripts/ci/pre_commit_summary_reporter.py --init
+        language: system
+        pass_filenames: false
+        always_run: true
+        require_serial: true
+
       # -- T5: Wave 0 ADG CI Delta Gates (M1-M6) ----------------------------------
       # Six delta gates from Plan Hardening Addendum. Warn mode by default;
       # flip to enforce via: python ops_scripts/ci/_adg_ci_gates.py --set-enforce M1,M2,M3
@@ -226,7 +236,7 @@ repos:
       # AST parse with --changed-only: cheap. Must run before burndown.
       - id: hollow-file-gate
         name: "T6: Hollow File Gate — AST Semantic Verification"
-        entry: cmd /c "set PYTHONPATH=.&& python ops_scripts/ci/hollow_file_gate.py --changed-only"
+        entry: cmd /c "set PYTHONPATH=.&& set PRE_COMMIT_ISSUES_DIR=%TEMP%/pre-commit-issues&& python ops_scripts/ci/hollow_file_gate.py --changed-only --json-output %TEMP%/pre-commit-issues/hollow_file_gate.jsonl"
         language: system
         pass_filenames: false
         always_run: true
@@ -331,7 +341,7 @@ repos:
       # Init:  ADG_EXEMPTION_INIT=1 python ops_scripts/ci/guardian_exemption_gate.py
       - id: guardian-exemption-gate
         name: "T12: Guardian Exemption Quality Ratchet"
-        entry: cmd /c "set PYTHONPATH=.&& python ops_scripts/ci/guardian_exemption_gate.py"
+        entry: cmd /c "set PYTHONPATH=.&& set ADG_EXEMPTION_JSON_OUTPUT=%TEMP%/pre-commit-issues/guardian_exemption_gate.jsonl&& python ops_scripts/ci/guardian_exemption_gate.py"
         language: system
         pass_filenames: false
         always_run: true
@@ -342,7 +352,7 @@ repos:
       # Rule 2 (existing counts may only decrease). Supersedes check_anti_patterns.py.
       - id: adg-burndown-gate
         name: "T13: ADG Anti-Pattern Burndown Ratchet"
-        entry: cmd /c "set PYTHONPATH=.&& python ops_scripts/ci/adg_burndown_gate.py"
+        entry: cmd /c "set PYTHONPATH=.&& set ADG_BURNDOWN_JSON_OUTPUT=%TEMP%/pre-commit-issues/adg_burndown_gate.jsonl&& python ops_scripts/ci/adg_burndown_gate.py"
         language: system
         pass_filenames: false
         always_run: true
@@ -355,7 +365,7 @@ repos:
       # Exempt an entire file with: # adg-<type>-ban: skip-file (first 5 lines)
       - id: adg-python-ban-gate
         name: "T14: ADG Python Ban Gate — no grep/mypy/pytest as ADG substitutes"
-        entry: cmd /c "set PYTHONPATH=.&& python ops_scripts/ci/adg_python_ban_gate.py --staged"
+        entry: cmd /c "set PYTHONPATH=.&& set PRE_COMMIT_ISSUES_DIR=%TEMP%/pre-commit-issues&& python ops_scripts/ci/adg_python_ban_gate.py --staged --json-output %TEMP%/pre-commit-issues/adg_python_ban_gate.jsonl"
         language: system
         pass_filenames: false
         always_run: false
@@ -368,7 +378,7 @@ repos:
       # Exempt a line with: # guardian: allow-grep-yaml -- <justification>
       - id: adg-yaml-grep-ban-gate
         name: "T15: ADG YAML Grep-Ban Gate — no grep/rg in GitHub Actions run: steps"
-        entry: cmd /c "set PYTHONPATH=.&& python ops_scripts/ci/adg_yaml_grep_ban_gate.py --staged"
+        entry: cmd /c "set PYTHONPATH=.&& set PRE_COMMIT_ISSUES_DIR=%TEMP%/pre-commit-issues&& python ops_scripts/ci/adg_yaml_grep_ban_gate.py --staged --json-output %TEMP%/pre-commit-issues/adg_yaml_grep_ban_gate.jsonl"
         language: system
         pass_filenames: false
         always_run: false
@@ -465,6 +475,19 @@ repos:
       - id: purge-cache
         name: "T20: Pycache Purge (Final Cleanup)"
         entry: python ops_scripts/maintenance/purge_cache.py --quiet --all
+        language: system
+        pass_filenames: false
+        always_run: true
+        require_serial: true
+
+      # ---- SUMMARY REPORT (T21 — displays after all hooks) ----------------------
+
+      # -- T21: Pre-Commit Summary Report ----------------------------------------
+      # Aggregates issues from all governance hooks and displays formatted table.
+      # Runs after all hooks to ensure complete issue collection.
+      - id: pre-commit-summary-report
+        name: "T21: Pre-Commit Governance Summary Report"
+        entry: python ops_scripts/ci/pre_commit_summary_reporter.py --report
         language: system
         pass_filenames: false
         always_run: true
