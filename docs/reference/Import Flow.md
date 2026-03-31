@@ -1,80 +1,75 @@
 ==================================================================================================================================================
-                                     AGENTIC SYSTEM — HARDENED STRUCTURAL STACK & RUNTIME SEAM
-                                          (A+++++ ZERO-LOSS WIDESCREEN ASCII OVERWRITE)
+                                     AGENTIC SYSTEM — TOPOLOGICAL DEPENDENCY GRAPH
+                                        (ZERO-LOSS ARCHITECTURAL RE-ALIGNMENT)
 ==================================================================================================================================================
 
-[ THE STATIC DEPENDENCY STACK ]                                          [ THE ELEVATOR SHAFT: RUNTIME SEAM ]
-(Downward Static Imports: L6 -> L0)                                      (Upward Inversion: L0 -> L5 at Runtime)
-+---------------------------------------+                                +---------------------------------------------------------------+
-| APPS (ROOF)                           |                                | DEFINITION: Lives in L0 Foundation. Connects L0 ⇄ L5          |
-| - apps_* (CLI / UI / Services)        |                                | via Runtime Bridge. NO STATIC L0 -> L5 IMPORT EXISTS.         |
-+---------------------------------------+                                |                                                               |
-    | (imports)                                                          | ✅ ALLOWED: Interfaces, Schemas, ABCs, Protocols              |
-    v                                                                    | ❌ FORBIDDEN: Policy Logic, Side Effects, Static Upward Moves |
-+---------------------------------------+                                +---------------------------------------------------------------+
-| L6: OBSERVABILITY / TELEMETRY         |                                               ^
-| - Passive Signal Classification       |                                               |
-+---------------------------------------+                                               | (The Elevator Ride: Runtime Bridge)
-    | (imports)                                                                         |
-    v                                                                    +---------------------------------------------------------------+
-+---------------------------------------+                                | L0 ROUTING LOADER                                             |
-| L5: SAFETY / GOVERNANCE               | <================================ [def load_structure_blueprint():]                              |
-| - structure_blueprint_impl            |                                |     [import L5.structure_blueprint_impl]                      |
-+---------------------------------------+                                +---------------------------------------------------------------+
-    | (imports)                                                                         ^
-    v                                                                                   |
-+---------------------------------------+                                               |
-| L4: STATE / KNOWLEDGE / RAG           |                                               |
-| - Retrieval & Drift State             |                                               |
-+---------------------------------------+                                               |
-    | (imports)                                                                         |
-    v                                                                                   |
-+---------------------------------------+                                               |
-| L3: ORCHESTRATION / SUPERVISION       |                                               |
-| - AtomicExecutionMixin                |                                               |
-+---------------------------------------+                                               |
-    | (imports)                                                                         |
-    v                                                                                   |
-+---------------------------------------+                                               |
-| L2: EXECUTION / TOOLS / SANDBOX       |                                               |
-| - High-Res AST Mutation Env           |                                               |
-+---------------------------------------+                                               |
-    | (imports)                                                                         |
-    v                                                                                   |
-+---------------------------------------+                                               |
-| L1: COGNITION / REASONING             |                                               |
-| - Cognitive Reasoning Base            |                                               |
-+---------------------------------------+                                               |
-    | (imports)                                                                         |
-    v                                                                                   |
-+---------------------------------------+                                               |
-| L0: ROUTING / FOUNDATION              | ----------------------------------------------+
-| - ZERO Static Upward Imports          |
-| - Primitives & Base Types             |
-+---------------------------------------+
+[ THE OMNIVORES — ABSOLUTE TOP ] (Outside the application lifecycle. Import everything, imported by nothing.)
+==================================================================================================================================================
+     +--------------------------------------------------+       +--------------------------------------------------+
+     | L_OPS (ops_scripts/)                             |       | L_TEST (tests/)                                  |
+     | Imports: ALL LAYERS                              |       | Imports: ALL LAYERS                              |
+     | Never imported by production code                |       | Never imported by production code                |
+     +--------------------------------------------------+       +--------------------------------------------------+
+                                          |
+                                          v
+[ THE APPLICATION ROOF ] (Entry point. Orchestrates the core but is not the core.)
+==================================================================================================================================================
+                         +--------------------------------------------------+
+                         | L_APP (apps_*) — CLI / UI / Services             |
+                         | Can import: L0-L6, L_SHARED, L_SL                |
+                         +--------------------------------------------------+
+                                          | (imports down)
+                                          v
+[ THE CORE GRAVITY PILLAR ] (Strict downward static imports)        [ THE SPECIALIZED SATELLITES ] (Utility Sidecars)
+==================================================================================================================================================
+                         +--------------------------------+
+                         | L6: OBSERVABILITY / TELEMETRY  |
+                         | Passive Signal Classification  |
+                         +--------------------------------+
+                                          |
+                                          v                             +--------------------------------+
+                         +--------------------------------+ <========== | L_PG (prompt_gov/)             |
+                         | L5: SAFETY / GOVERNANCE        |             | Highly privileged.             |
+                         | structure_blueprint_impl       |             | Imports: L0-L5, L_RUNTIME, L4  |
+                         +--------------------------------+             +--------------------------------+
+                                          |
+                                          v                             +--------------------------------+
+                         +--------------------------------+ ==========> | L_TOOLS (tools/, adg/)         |
+                         | L4: STATE / KNOWLEDGE / RAG    | (Exception) | ADG/Analysis tooling.          |
+                         | Retrieval & Drift State        | ==========> | Imports: L0-L5, L_SHARED, L_SL |
+                         +--------------------------------+             +--------------------------------+
+                                          |
+                                          v                             +--------------------------------+
+                         +--------------------------------+ <========== | L_RUNTIME (runtime/)           |
+                         | L3: ORCHESTRATION / SUPERVISION|             | Bootstrap assembler.           |
+                         | AtomicExecutionMixin           |             | Imports: L0-L5, L_SHARED       |
+                         +--------------------------------+             +--------------------------------+
+                                          |
+                                          v                             +--------------------------------+
+                         +--------------------------------+ <========== | L_SL (system_learning)         |
+                         | L2: EXECUTION / TOOLS / SANDBOX|             | Feedback loop.                 |
+                         | High-Res AST Mutation Env      |             | Imports: L0-L2, L5, L_SHARED   |
+                         +--------------------------------+             +--------------------------------+
+                                          |
+                                          v                             +--------------------------------+
+                         +--------------------------------+ <========== | L_SHARED (utils, mixins)       |
+                         | L1: COGNITION / REASONING      |             | Cross-cutting utilities.       |
+                         | Cognitive Reasoning Base       |             | Imports: L0,L1,L2,L5,L_APP,    |
+                         +--------------------------------+             |          L_RUNTIME             |
+                                          |                             +--------------------------------+
+                                          v
+                         +--------------------------------+
+                         | L0: ROUTING / FOUNDATION       |
+                         | ZERO Static Upward Imports     |
+                         | Runtime Seam: Lazy-import L5   |
+                         +--------------------------------+
 
 ==================================================================================================================================================
-[ THE MIXIN BUNDLE: [[SovereignBaseAgent]] ]                             [ RESOLUTION SYMMETRY: L2 VALIDATOR <-> HEALER ]
-(The Master Subclass for Concrete Agents)                                (High-Res AST Surgery Loop)
-+---------------------------------------+                                +---------------------------------------------------------------+
-| FOUNDATION MIXINS (L0/L1)             |                                | [L2.1: VALIDATOR] (High-Res AST Analysis)                     |
-| • Config / LLM / Embedding            |                                | - Deep Inheritance / Decorator Checks                         |
-| • Audit Trail / Golden Context        |                                | - Node-Level Inference                                        |
-+---------------------------------------+                                +---------------------------------------------------------------+
-    |                                                                                   |
-    v                                                                                   | (Surgical Manifest: Node IDs + AST Snippets)
-+---------------------------------------+                                               v
-| SAFETY & HEALING MIXINS (L2/L5)       |                                +---------------------------------------------------------------+
-| • Validator / Runtime Safety          |                                | [L2.2: HEALER] (High-Res AST Surgery)                         |
-| • Healing Strategy / Meta-Learning    |                                | - Node-Level Mutation (Zero-Loss Fixes)                       |
-| • Subatomic Testing                   |                                | - Context-Aware Insertion (Preserves Formatting)              |
-+---------------------------------------+                                +---------------------------------------------------------------+
-
+                                             RESOLVED ARCHITECTURAL RULES
 ==================================================================================================================================================
-                                             ARCHITECTURAL INTEGRITY GUARANTEES
-==================================================================================================================================================
-| 1. CORE PRIMACY: MRO determines class lookup (agentic_core -> apps_search -> apps_turbo -> apps_security).                |
-| 2. ZERO-LOSS HEALING: The Healer uses AST Tree Structures to avoid fragile regex/text-based fixes.                                   |
-| 3. INVERSION OF CONTROL: The Elevator Shaft (L0) imports L5 ONLY at runtime to prevent illegal static circular dependencies.        |
-| 4. BUNDLE ANCHOR: [[SovereignBaseAgent]] guarantees all agents inherit atomicity, safety, and healing capabilities.                 |
+| 1. ABSOLUTE TOP: L_OPS and L_TEST sit entirely above the system. They are the manipulators, not part of the runtime.           |
+| 2. CORE GRAVITY: L6 down to L0 forms the unbreakable spine. Gravity only flows downward.                                       |
+| 3. SATELLITE PLUG-INS: Satellites do not orbit randomly; they act as distinct, horizontal utility belts for specific layers.   |
+| 4. THE ELEVATOR SHAFT: L0 remains at the absolute bottom, utilizing a lazy runtime import to reach L5 without cyclic breaks.   |
+| 5. RUNTIME FLOOR: L3 is the architectural floor for L_RUNTIME; layers below it are primitive engine parts.                     |
 ==================================================================================================================================================
