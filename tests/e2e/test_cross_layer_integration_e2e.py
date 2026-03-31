@@ -34,7 +34,6 @@ def _lazy_agentic_core_L5_safety_config_structure_blueprint_ssot_0():
     return type('_Import', (), {"get_validated_project_root": get_validated_project_root})
 
 
-)
 from apps_shared.utils.open_telemetry_tracing_adapter_util import (
     OpenTelemetryTracingAdapter,
     SpanType,
@@ -51,9 +50,11 @@ from system_learning.runtime_adg import (
 # =============================================================================
 
 @pytest.fixture
-def cross_layer_project_path() -> Path:
+def cross_layer_project_path(
+    _lazy_agentic_core_L5_safety_config_structure_blueprint_ssot_0,
+) -> Path:
     """Provide L4-compliant path for cross-layer test artifacts."""
-    project_root = get_validated_project_root()
+    project_root = _lazy_agentic_core_L5_safety_config_structure_blueprint_ssot_0.get_validated_project_root()
     test_dir = project_root / "agentic_core" / "L4_state" / "memory" / "cross_layer_test"
     test_dir.mkdir(parents=True, exist_ok=True)
     return test_dir
