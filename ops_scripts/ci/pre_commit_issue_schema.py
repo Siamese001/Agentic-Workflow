@@ -134,6 +134,7 @@ class IssueCollection:
         if not path.exists():
             return collection
 
+        malformed_count = 0
         with open(path, encoding="utf-8") as f:
             for line in f:
                 line = line.strip()
@@ -142,7 +143,15 @@ class IssueCollection:
                         issue = PreCommitIssue.from_json(line)
                         collection.add(issue)
                     except json.JSONDecodeError:
+                        malformed_count += 1
                         continue
+
+        if malformed_count > 0:
+            import sys
+            print(
+                f"[pre-commit-summary] WARNING: {malformed_count} malformed JSON lines skipped in {path}",
+                file=sys.stderr,
+            )
 
         return collection
 
