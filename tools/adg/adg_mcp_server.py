@@ -366,7 +366,10 @@ def adg_nodes_by_file(file_path: str) -> dict[str, Any]:
 
 @mcp.tool()
 def adg_edge_fanout(
-    src_id: str, relation_type: str, resolve: bool = True, limit: int = 200,
+    src_id: str,
+    relation_type: str,
+    resolve: bool = True,
+    limit: int = 200,
 ) -> dict[str, Any]:
     """Get all outgoing edges from a node (SMEMBERS adg:edge:<src>:<rel>).
 
@@ -427,7 +430,10 @@ def adg_edge_fanout(
 
 @mcp.tool()
 def adg_edge_fanin(
-    tgt_id: str, relation_type: str, resolve: bool = True, limit: int = 200,
+    tgt_id: str,
+    relation_type: str,
+    resolve: bool = True,
+    limit: int = 200,
 ) -> dict[str, Any]:
     """Get all incoming edges to a node (SMEMBERS adg:edge:in:<tgt>:<rel>).
 
@@ -486,19 +492,39 @@ def adg_edge_fanin(
 
 
 @mcp.tool()
-def adg_violations() -> dict[str, Any]:
-    """Get all ADG anti-pattern violations from the hot cache (LRANGE adg:violations).
+def adg_violations(
+    limit: int = 200,
+    offset: int = 0,
+    category: str = "",
+    severity: str = "",
+) -> dict[str, Any]:
+    """Get ADG anti-pattern violations from the hot cache (LRANGE adg:violations).
 
     v2: adg:violations LIST stores violation IDs. Full metadata is in
     adg:violation:<id> HASHes, resolved via pipeline.
 
-    Returns list of violation dicts: file_path, category, line_number, evidence.
+    Args:
+        limit:    Max violations to return (default 200, max 500). Use pagination
+                  to avoid payload hangs — the full list can be 5000+ entries.
+        offset:   Start index into the violations list (default 0).
+        category: Optional filter — e.g. 'violates', 'antipattern'. Empty = all.
+        severity: Optional filter — e.g. 'CRITICAL', 'HIGH', 'MEDIUM', 'LOW'. Empty = all.
+
+    Returns list of violation dicts: id, file_path, category, severity, evidence, line_no.
     NOTE: adg:violations is a LIST — mcp9_get returns WRONGTYPE on it.
     """
+    _MAX_LIMIT = 500
+    limit = min(max(1, limit), _MAX_LIMIT)
+
     try:
-        vid_list = _redis().lrange("adg:violations", 0, -1)
-        if not vid_list:
-            return _ok({"count": 0, "violations": []})
+        total_count = _redis().llen("adg:violations")
+        if total_count == 0:
+            return _ok({"total": 0, "offset": offset, "limit": limit, "count": 0, "violations": []})
+
+        # Fetch a window — if filtering, over-fetch to fill limit after filtering
+        fetch_end = offset + (limit * 4 if (category or severity) else limit) - 1
+        fetch_end = min(fetch_end, total_count - 1)
+        vid_list = _redis().lrange("adg:violations", offset, fetch_end)
 
         pipe = _redis().pipeline(transaction=False)
         for vid in vid_list:
@@ -508,14 +534,33 @@ def adg_violations() -> dict[str, Any]:
         violations = []
         for vid, detail in zip(vid_list, results):
             if detail:
-                violations.append(detail)
+                row = {
+                    k.decode() if isinstance(k, bytes) else k: v.decode() if isinstance(v, bytes) else v
+                    for k, v in detail.items()
+                }
+                if category and row.get("category", "") != category:
+                    continue
+                if severity and row.get("severity", "").upper() != severity.upper():
+                    continue
+                violations.append(row)
             else:
-                # Backward compat: try parsing vid as JSON (old v1 format)
                 try:
-                    violations.append(json.loads(vid))
+                    parsed = json.loads(vid)
+                    violations.append(parsed)
                 except (json.JSONDecodeError, TypeError):
-                    violations.append({"id": vid, "raw": True})
-        return _ok({"count": len(violations), "violations": violations})
+                    violations.append({"id": vid.decode() if isinstance(vid, bytes) else vid, "raw": True})
+            if len(violations) >= limit:
+                break
+
+        return _ok(
+            {
+                "total": total_count,
+                "offset": offset,
+                "limit": limit,
+                "count": len(violations),
+                "violations": violations,
+            }
+        )
     except _redis_lib.RedisError as exc:
         return _err(f"Redis unavailable: {exc}")
 
@@ -694,6 +739,8 @@ def adg_assert_fresh() -> dict[str, Any]:
         )
 
     # guardian: File operations should check existence before access    # guardian: File operations should check existence before access    # guardian: File operations should check existence before access    # guardian: File operations should check existence before access    # guardian: File operations should check existence before access    # guardian: File operations should check existence before access    # guardian: File operations should check existence before access    # guardian: File operations should check existence before access    # guardian: File operations should check existence before access    # guardian: File operations should check existence before access
+
+
 # ---------------------------------------------------------------------------
 # Tier 2 — General Redis tools (type-aware, improved over marketplace server)
 # ---------------------------------------------------------------------------

@@ -27,6 +27,7 @@ from __future__ import annotations
 
 import sys
 from pathlib import Path
+
 # Add repo root to path for tools.adg imports
 _repo_root = Path(__file__).parent.parent.parent
 sys.path.insert(0, str(_repo_root))
@@ -40,13 +41,16 @@ import pytest
 
 pytestmark = pytest.mark.serial
 
+
 # Lazy imports - loaded in fixture to avoid collection-time errors
 def _get_lifecycle_emitters():
     from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
         _emit_applies_guardrail,
         _emit_records_execution_trace,
     )
+
     return _emit_applies_guardrail, _emit_records_execution_trace
+
 
 # ---------------------------------------------------------------------------
 # Skip if redis is not available
@@ -202,9 +206,11 @@ def fixture_env():
     cursor_pos = 0
     while True:
         cursor_pos, keys = r.scan(cursor_pos, match="adg:*", count=500)
-        if keys:    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging
+        if keys:  # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging
             r.delete(*keys)
-        if cursor_pos == 0:    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging
+        if (
+            cursor_pos == 0
+        ):  # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging
             break
 
     # Cleanup: remove test fixtures
@@ -220,7 +226,7 @@ def fixture_env():
 
 
 class TestProjectionCompleteness:
-    """Test 1: Every SQLite edge has a corresponding Redis HASH with all fields."""    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging
+    """Test 1: Every SQLite edge has a corresponding Redis HASH with all fields."""  # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging
 
     def test_all_edges_projected(self, fixture_env):
         r = fixture_env["redis"]
@@ -245,7 +251,9 @@ class TestProjectionCompleteness:
             assert redis_hash["line_no"] == str(row["line_no"])
             assert redis_hash["symbol"] == str(row["symbol"])
 
-    def test_all_nodes_projected(self, fixture_env):    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging
+    def test_all_nodes_projected(
+        self, fixture_env
+    ):  # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging
         r = fixture_env["redis"]
         for node in _FIXTURE_NODES:
             node_id = str(node[0])
@@ -265,10 +273,17 @@ class TestMetadataIntegrity:
         assert meta, "adg:meta not found"
 
         required = [
-            "sqlite_path", "sqlite_mtime", "timestamp", "ingested_at",
-            "node_count", "edge_count", "digest",
-            "sqlite_digest", "redis_digest",
-            "violation_count", "module_context_count",
+            "sqlite_path",
+            "sqlite_mtime",
+            "timestamp",
+            "ingested_at",
+            "node_count",
+            "edge_count",
+            "digest",
+            "sqlite_digest",
+            "redis_digest",
+            "violation_count",
+            "module_context_count",
         ]
         for field in required:
             assert field in meta, f"Missing adg:meta field: {field}"
@@ -277,8 +292,7 @@ class TestMetadataIntegrity:
         r = fixture_env["redis"]
         meta = r.hgetall("adg:meta")
         assert meta["sqlite_digest"] == meta["redis_digest"], (
-            f"Digest mismatch: sqlite={meta['sqlite_digest'][:16]} "
-            f"redis={meta['redis_digest'][:16]}"
+            f"Digest mismatch: sqlite={meta['sqlite_digest'][:16]} redis={meta['redis_digest'][:16]}"
         )
 
     def test_status_sentinel_coherent(self, fixture_env):
@@ -309,9 +323,7 @@ class TestAdjacencyConsistency:
         cur.execute("SELECT id, src_id, relation_type FROM edges")
         for edge_id, src_id, rel in cur.fetchall():
             members = r.smembers(f"adg:edge:{src_id}:{rel}")
-            assert str(edge_id) in members, (
-                f"edge_id={edge_id} not in adg:edge:{src_id}:{rel}"
-            )
+            assert str(edge_id) in members, f"edge_id={edge_id} not in adg:edge:{src_id}:{rel}"
         conn.close()
 
     def test_fanin_sets_contain_edge_ids(self, fixture_env):
@@ -321,9 +333,7 @@ class TestAdjacencyConsistency:
         cur.execute("SELECT id, dst_id, relation_type FROM edges")
         for edge_id, dst_id, rel in cur.fetchall():
             members = r.smembers(f"adg:edge:in:{dst_id}:{rel}")
-            assert str(edge_id) in members, (
-                f"edge_id={edge_id} not in adg:edge:in:{dst_id}:{rel}"
-            )
+            assert str(edge_id) in members, f"edge_id={edge_id} not in adg:edge:in:{dst_id}:{rel}"
         conn.close()
 
     def test_edge_ids_resolve_to_detail(self, fixture_env):
@@ -418,3 +428,56 @@ class TestViolationsIdProjection:
             assert "category" in detail or "relation_type" in detail, (
                 f"Violation {vid} missing category field"
             )
+
+
+# ---------------------------------------------------------------------------
+# Real-repo gate: live ADG must have zero untriaged layer-boundary violations
+# ---------------------------------------------------------------------------
+_LIVE_REDIS_OK = False
+try:
+    _live_r = redis.Redis(host="localhost", port=6379, db=0, socket_timeout=3)
+    _live_r.ping()
+    _LIVE_REDIS_OK = True
+except Exception:
+    pass
+
+
+@pytest.mark.skipif(not _LIVE_REDIS_OK, reason="Live Redis (db=0) not reachable")
+class TestLiveRepoZeroLayerViolations:
+    """Test 7: Real repo must have ZERO untriaged category='violates' violations.
+
+    This is the gate test that was missing — existing tests only verify that
+    violations are *detected* in synthetic fixtures, not that the real repo is clean.
+
+    RCA: docs/reports/plans/RCA_adg_tests_pass_import_errors_persist.md
+    """
+
+    def test_zero_gv_violates_in_live_adg(self):
+        """Layer boundary violations (category='violates') must be zero in the live repo."""
+        r = redis.Redis(host="localhost", port=6379, db=0, socket_timeout=5, decode_responses=True)
+        total = r.llen("adg:violations")
+        if total == 0:
+            return  # No violations at all — clean
+
+        # Scan all violations for category='violates'
+        violates = []
+        batch_size = 500
+        for start in range(0, total, batch_size):
+            end = min(start + batch_size - 1, total - 1)
+            vids = r.lrange("adg:violations", start, end)
+            pipe = r.pipeline(transaction=False)
+            for vid in vids:
+                pipe.hgetall(f"adg:violation:{vid}")
+            results = pipe.execute()
+            for detail in results:
+                if detail and detail.get("category") == "violates":
+                    violates.append(detail)
+
+        violation_summary = [
+            f"  [{v.get('id')}] {v.get('evidence')} @ {v.get('file_path')}:{v.get('line_no')}"
+            for v in violates
+        ]
+        assert len(violates) == 0, (
+            f"Found {len(violates)} untriaged layer boundary violation(s) in live ADG.\n"
+            "These must be fixed or triaged before this gate passes.\n" + "\n".join(violation_summary)
+        )
