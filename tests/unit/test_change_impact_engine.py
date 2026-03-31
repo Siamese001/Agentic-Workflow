@@ -1,29 +1,29 @@
-"""Placeholder test for ChangeImpactEngine."""
+"""Test ChangeImpactEngine functionality."""
+
+import sys
+from pathlib import Path
 
 import pytest
 
+REPO_ROOT = Path(__file__).parent.parent.parent
+sys.path.insert(0, str(REPO_ROOT))
 
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300  # 5 minutes
 
 @pytest.mark.unit
 class TestChangeImpactEngine:
     """Test ChangeImpactEngine functionality."""
 
-    def test_placeholder_1(self):
-        """Placeholder test 1."""
-        assert True
-    
-    def test_placeholder_2(self):
-        """Placeholder test 2."""
-        assert True
-    
-    def test_placeholder_3(self):
-        """Placeholder test 3."""
-        assert True
+    def test_change_impact_imports(self):
+        """Test change impact module imports."""
+        from agentic_core import change_impact_engine
+        assert change_impact_engine is not None
+
+    def test_change_impact_engine_class(self):
+        """Test change impact engine class exists."""
+        from agentic_core.change_impact_engine import ChangeImpactEngine
+        assert ChangeImpactEngine is not None
+
+    def test_analyze_change_impact(self):
+        """Test analyze change impact function."""
+        from agentic_core.change_impact_engine import analyze_change_impact
+        assert callable(analyze_change_impact)
