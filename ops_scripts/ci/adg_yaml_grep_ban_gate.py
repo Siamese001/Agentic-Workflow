@@ -83,7 +83,7 @@ def scan_file(path: Path) -> list[tuple[int, str]]:
     violations: list[tuple[int, str]] = []
     try:
         lines = path.read_text(encoding="utf-8", errors="replace").splitlines()
-    except OSError as exc:    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging
+    except OSError as exc:
         print(f"WARNING: could not read {path}: {exc}", file=sys.stderr)
         return violations
 
@@ -166,8 +166,16 @@ def _get_staged_yaml_files(root: Path) -> list[Path]:
     ]
 
 
-def _cli() -> None:
+def _cli() -> int:
     import argparse
+    import sys
+
+    # Add project root for schema imports
+    project_root = Path(__file__).resolve().parents[2]
+    if str(project_root) not in sys.path:
+        sys.path.insert(0, str(project_root))
+
+    from ops_scripts.ci.pre_commit_issue_schema import PreCommitIssue, SeverityLevel
 
     parser = argparse.ArgumentParser(
         prog="adg_yaml_grep_ban_gate",
@@ -180,6 +188,11 @@ def _cli() -> None:
         action="store_true",
         dest="all_yaml",
         help="Scan all YAML workflow files tracked by git",
+    )
+    parser.add_argument(
+        "--json-output",
+        metavar="PATH",
+        help="Write structured issues to JSON lines file",
     )
     args = parser.parse_args()
 
@@ -194,13 +207,37 @@ def _cli() -> None:
 
     if not paths:
         print("OK: no YAML workflow files to scan.")
-        sys.exit(0)
+        return 0
 
     violations = scan_files(paths)
 
+    # Build structured issues for JSON output
+    json_issues = []
+    for path, vs in violations.items():
+        for line_no, line_text in vs:
+            issue = PreCommitIssue(
+                hook_id="adg-yaml-grep-ban-gate",
+                hook_name="ADG YAML Grep Ban",
+                severity=SeverityLevel.CRITICAL,
+                file_path=str(path.relative_to(ROOT)),
+                line_number=line_no,
+                message="Grep/rg found in GitHub Actions run step",
+                explanation="Use ADG accelerators or Python scripts instead of grep in CI workflows. Shell grep lacks semantic awareness.",
+                issue_type="yaml_grep_ban",
+            )
+            json_issues.append(issue)
+
+    # Write JSON output if requested
+    if args.json_output and json_issues:
+        output_path = Path(args.json_output)
+        output_path.parent.mkdir(parents=True, exist_ok=True)
+        with open(output_path, "w", encoding="utf-8") as f:
+            for issue in json_issues:
+                f.write(issue.to_json() + "\n")
+
     if not violations:
         print(f"OK: no yaml-grep-ban violations in {len(paths)} workflow file(s).")
-        sys.exit(0)
+        return 0
 
     total = sum(len(vs) for vs in violations.values())
     print(f"\nFAIL: {total} yaml-grep-ban violation(s) in {len(violations)} workflow file(s).", file=sys.stderr)
@@ -212,8 +249,8 @@ def _cli() -> None:
             rel = path.relative_to(ROOT) if path.is_absolute() else path
             print(f"  {rel}:{line_no}: {line.strip()}", file=sys.stderr)
 
-    sys.exit(1)
+    return 1
 
 
 if __name__ == "__main__":
-    _cli()
+    sys.exit(_cli())

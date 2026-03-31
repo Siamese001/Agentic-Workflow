@@ -145,11 +145,22 @@ def main() -> int:
     parser.add_argument("--base", default="HEAD~1", help="Base ref for determining changed files")
     parser.add_argument("--baseline-path", default="ops_scripts/ci/hollow_file_baseline.json",
                        help="Path to baseline file")
+    parser.add_argument(
+        "--json-output",
+        metavar="PATH",
+        help="Write structured issues to JSON lines file",
+    )
 
     args = parser.parse_args()
 
     baseline_path = project_root / args.baseline_path
     baseline = load_baseline(baseline_path)
+
+    # Add project root for schema imports (for JSON output)
+    if str(project_root) not in sys.path:
+        sys.path.insert(0, str(project_root))
+
+    from ops_scripts.ci.pre_commit_issue_schema import PreCommitIssue, SeverityLevel
 
     # Initialize scanner
     scanner = AntiPatternScanner(project_root, enforcement_level=EnforcementLevel.HARD_BLOCK)
@@ -235,6 +246,38 @@ def main() -> int:
                     became_hollow_files.append((file_path, violation))
 
             violations.append((file_path, violation))
+
+    # Build structured issues for JSON output
+    json_issues = []
+    for file_path, violation in violations:
+        rel_path = str(file_path.relative_to(project_root))
+        is_new = (file_path, violation) in new_hollow_files
+        is_became_hollow = (file_path, violation) in became_hollow_files
+
+        # Determine severity based on status
+        if is_new or is_became_hollow:
+            sev = SeverityLevel.HIGH
+        else:
+            sev = SeverityLevel.MEDIUM
+
+        issue = PreCommitIssue(
+            hook_id="hollow-file-gate",
+            hook_name="Hollow File Detection",
+            severity=sev,
+            file_path=rel_path,
+            message=f"Hollow file: {violation.get('metadata', {}).get('classification', 'unknown')}",
+            explanation="Files should contain meaningful behavioral logic. Empty or placeholder files increase maintenance burden.",
+            issue_type="hollow_file",
+        )
+        json_issues.append(issue)
+
+    # Write JSON output if requested
+    if args.json_output and json_issues:
+        output_path = Path(args.json_output)
+        output_path.parent.mkdir(parents=True, exist_ok=True)
+        with open(output_path, "w", encoding="utf-8") as f:
+            for issue in json_issues:
+                f.write(issue.to_json() + "\n")
 
     # Report results
     if violations:

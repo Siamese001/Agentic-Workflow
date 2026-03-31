@@ -529,6 +529,20 @@ def run_gate() -> int:
 
     dry_run = os.environ.get("ADG_BURNDOWN_DRY_RUN") == "1"
     init_mode = os.environ.get("ADG_BURNDOWN_INIT") == "1"
+    json_output = os.environ.get("ADG_BURNDOWN_JSON_OUTPUT", "").strip() or None
+
+    # Allow --json-output override via command line
+    import argparse
+    _arg_parser = argparse.ArgumentParser()
+    _arg_parser.add_argument("--json-output", metavar="PATH", help="Write structured issues to JSON lines file")
+    _args, _ = _arg_parser.parse_known_args()
+    if _args.json_output:
+        json_output = _args.json_output
+
+    # Add project root for schema imports
+    if str(PROJECT_ROOT) not in sys.path:
+        sys.path.insert(0, str(PROJECT_ROOT))
+    from ops_scripts.ci.pre_commit_issue_schema import PreCommitIssue, SeverityLevel
 
     # Single scan — used by all enforcement rules
     python_files = _collect_all_python_files()
@@ -631,6 +645,32 @@ def run_gate() -> int:
             "'# guardian: allow-<pattern>' to whitelist intentional exceptions."
         )
         print("         Each file+category ceiling may only decrease between commits.\n")
+
+    # Build structured issues for JSON output
+    json_issues = []
+    for rel_path, cat, allowed, actual in violations:
+        is_new = allowed == 0
+        severity = SeverityLevel.CRITICAL if is_new else SeverityLevel.HIGH
+        issue = PreCommitIssue(
+            hook_id="adg-burndown-gate",
+            hook_name="ADG Anti-Pattern Burndown",
+            severity=severity,
+            file_path=rel_path,
+            message=f"Anti-pattern: {cat} (count={actual}, allowed={allowed})",
+            explanation=f"Anti-pattern counts may only decrease. New categories blocked immediately. Category: {cat}",
+            issue_type=f"anti_pattern_{cat}",
+        )
+        json_issues.append(issue)
+
+    # Write JSON output if requested
+    if json_output and json_issues:
+        output_path = Path(json_output)
+        output_path.parent.mkdir(parents=True, exist_ok=True)
+        with open(output_path, "w", encoding="utf-8") as f:
+            for issue in json_issues:
+                f.write(issue.to_json() + "\n")
+
+    if violations:
         return 1
 
     return 0

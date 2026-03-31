@@ -612,6 +612,20 @@ def main() -> int:  # noqa: C901
     bypass = os.getenv("ADG_EXEMPTION_BYPASS", "").strip() == "1"
     dry_run = os.getenv("ADG_EXEMPTION_DRY_RUN", "").strip() == "1"
     init_mode = os.getenv("ADG_EXEMPTION_INIT", "").strip() == "1"
+    json_output = os.getenv("ADG_EXEMPTION_JSON_OUTPUT", "").strip() or None
+
+    # Allow --json-output override via command line
+    import argparse
+    _arg_parser = argparse.ArgumentParser()
+    _arg_parser.add_argument("--json-output", metavar="PATH", help="Write structured issues to JSON lines file")
+    _args, _ = _arg_parser.parse_known_args()
+    if _args.json_output:
+        json_output = _args.json_output
+
+    # Add project root for schema imports
+    if str(PROJECT_ROOT) not in sys.path:
+        sys.path.insert(0, str(PROJECT_ROOT))
+    from ops_scripts.ci.pre_commit_issue_schema import PreCommitIssue, SeverityLevel
 
     if bypass:
         print("[guardian-exemption-gate] BYPASS active — skipping gate", file=sys.stderr)
@@ -724,6 +738,41 @@ def main() -> int:  # noqa: C901
         print("  2. Add `# guardian: allow-<type> -- <specific justification>`")
         print("  3. Re-init: ADG_EXEMPTION_INIT=1 python ops_scripts/ci/guardian_exemption_gate.py")
         print()
+
+    # Build structured issues for JSON output
+    json_issues = []
+    for rel_path, lineno, raw, reason in rule1_failures:
+        issue = PreCommitIssue(
+            hook_id="guardian-exemption-gate",
+            hook_name="Guardian Exemption Quality",
+            severity=SeverityLevel.HIGH,
+            file_path=rel_path,
+            line_number=lineno,
+            message="Guardian exemption lacks valid justification",
+            explanation=f"Every guardian exemption must have a specific justification. Issue: {reason}",
+            issue_type="exemption_justification",
+        )
+        json_issues.append(issue)
+
+    for rel_path, etype, allowed, actual in ratchet_violations:
+        issue = PreCommitIssue(
+            hook_id="guardian-exemption-gate",
+            hook_name="Guardian Exemption Quality",
+            severity=SeverityLevel.HIGH,
+            file_path=rel_path,
+            message=f"Ratchet ceiling exceeded for {etype}",
+            explanation=f"Exemption counts may only decrease. Ceiling was {allowed}, now {actual}.",
+            issue_type="exemption_ratchet",
+        )
+        json_issues.append(issue)
+
+    # Write JSON output if requested
+    if json_output and json_issues:
+        output_path = Path(json_output)
+        output_path.parent.mkdir(parents=True, exist_ok=True)
+        with open(output_path, "w", encoding="utf-8") as f:
+            for issue in json_issues:
+                f.write(issue.to_json() + "\n")
 
     if passed:
         new_ratchet, improved = _tighten_ratchet(ratchet, current_counts)

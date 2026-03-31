@@ -249,8 +249,17 @@ def _get_all_tracked_py_files(root: Path) -> List[Path]:
     return [root / f for f in r.stdout.splitlines() if f.endswith(".py")]
 
 
-def _cli() -> None:
+def _cli() -> int:
     import argparse
+    import os
+    import sys
+
+    # Add project root for schema imports
+    project_root = Path(__file__).resolve().parents[2]
+    if str(project_root) not in sys.path:
+        sys.path.insert(0, str(project_root))
+
+    from ops_scripts.ci.pre_commit_issue_schema import PreCommitIssue, SeverityLevel
 
     parser = argparse.ArgumentParser(
         prog="adg_python_ban_gate",
@@ -280,6 +289,11 @@ def _cli() -> None:
         default=["grep", "mypy", "pytest"],
         help="Which checks to run (default: all)",
     )
+    parser.add_argument(
+        "--json-output",
+        metavar="PATH",
+        help="Write structured issues to JSON lines file",
+    )
     args = parser.parse_args()
 
     if args.files:
@@ -299,27 +313,51 @@ def _cli() -> None:
         for check in args.checks:
             total_violations += len(file_violations.get(check, []))
 
+    # Build structured issues for JSON output
+    json_issues = []
+    check_names = {
+        "grep": "ADG Python Ban — Grep/Ripgrep",
+        "mypy": "ADG Python Ban — Mypy Direct Invocation",
+        "pytest": "ADG Python Ban — Pytest Direct Invocation",
+    }
+    explanations = {
+        "grep": "Use ADG Redis MCP tools (grep_search) instead of subprocess grep. Grep misses semantic relationships.",
+        "mypy": "Use adg_type_check.py instead of invoking mypy directly. Direct mypy invocation bypasses ADG type analysis.",
+        "pytest": "Use adg_test_selector.py instead of broad pytest. Broad pytest runs cause test deselection issues.",
+    }
+
+    for file_path, file_violations in violations.items():
+        for check in args.checks:
+            for line_no, line_text in file_violations.get(check, []):
+                issue = PreCommitIssue(
+                    hook_id="adg-python-ban-gate",
+                    hook_name=check_names.get(check, "ADG Python Ban"),
+                    severity=SeverityLevel.CRITICAL,
+                    file_path=str(file_path.relative_to(ROOT)),
+                    line_number=line_no,
+                    message=f"Banned pattern: {check} via subprocess/os.system",
+                    explanation=explanations.get(check, "Use ADG tools instead of direct tool invocation."),
+                    issue_type=f"adg_{check}_ban",
+                )
+                json_issues.append(issue)
+
+    # Write JSON output if requested
+    if args.json_output and json_issues:
+        output_path = Path(args.json_output)
+        output_path.parent.mkdir(parents=True, exist_ok=True)
+        with open(output_path, "w", encoding="utf-8") as f:
+            for issue in json_issues:
+                f.write(issue.to_json() + "\n")
+
     if total_violations == 0:
         print(f"OK: no {', '.join(args.checks)}-ban violations in {len(paths)} file(s).")
-        sys.exit(0)
+        return 0
 
     # Report violations
-    print(f"\nFAIL: {total_violations} {', '.join(args.checks)}-ban violation(s) in {len(violations)} file(s).", file=sys.stderr)
-    print("Use ADG accelerators instead of banned tools:", file=sys.stderr)
-
-    if "grep" in args.checks:
-        print("  Symbol search:  python tools/adg/adg_redis_query.py search-nodes <term>", file=sys.stderr)
-        print("  File search:    python tools/adg/adg_redis_query.py search-files <term>", file=sys.stderr)
-        print("  Exemption:      # guardian: allow-grep -- <justification>", file=sys.stderr)
-
-    if "mypy" in args.checks:
-        print("  Type check:     python tools/adg/adg_type_check.py --from-diff", file=sys.stderr)
-        print("  Exemption:      # guardian: allow-mypy -- <justification>", file=sys.stderr)
-
-    if "pytest" in args.checks:
-        print("  Test selection: python tools/adg/adg_test_selector.py --from-diff", file=sys.stderr)
-        print("  Exemption:      # guardian: allow-pytest -- <justification>", file=sys.stderr)
-
+    print(f"\nFAIL: {total_violations} banned pattern(s) in {len(violations)} file(s).", file=sys.stderr)
+    print("Do not use grep/mypy/pytest as ADG substitutes.", file=sys.stderr)
+    print("  Exemption: # guardian: allow-<type> -- <justification>", file=sys.stderr)
+    print("  File-level: # adg-<type>-ban: skip-file (first 5 lines)", file=sys.stderr)
     print("", file=sys.stderr)
 
     for path, file_violations in sorted(violations.items()):
