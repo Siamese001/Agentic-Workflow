@@ -16,6 +16,12 @@ from agentic_core.L2_execution.retrieval import SemanticEnrichmentBridge
 # L3 retrieval wiring (Turn 2, Wave 20): Import creates ADG edge to L3_orchestration
 from agentic_core.L3_orchestration.retrieval import ContextRetrievalOrchestrator
 
+# L4 retrieval wiring (Turn 3, Wave 26): Import creates ADG edge to L4_state
+from agentic_core.L4_state.retrieval import L4StateRetrievalBridge
+
+# L5 retrieval wiring (Turn 3, Wave 33): Import creates ADG edge to L5_safety
+from agentic_core.L5_safety.retrieval import RetrievalSafetyGate
+
 
 @dataclass
 class ExecutionRequest:

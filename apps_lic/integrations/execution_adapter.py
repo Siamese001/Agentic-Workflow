@@ -21,6 +21,12 @@ from agentic_core.L1_cognition.retrieval import QueryRetrievalBridge
 # L3 retrieval wiring (Turn 2, Wave 16): Import creates ADG edge to L3_orchestration
 from agentic_core.L3_orchestration.retrieval import ContextRetrievalOrchestrator
 
+# L4 retrieval wiring (Turn 3, Wave 27): Import creates ADG edge to L4_state
+from agentic_core.L4_state.retrieval import L4StateRetrievalBridge
+
+# L5 retrieval wiring (Turn 3, Wave 29): Import creates ADG edge to L5_safety
+from agentic_core.L5_safety.retrieval import RetrievalSafetyGate
+
 _log = logging.getLogger(__name__)
 
 
