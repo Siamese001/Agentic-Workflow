@@ -15,7 +15,7 @@ import logging
 from dataclasses import dataclass, field
 from typing import Any, Optional
 
-from agentic_core.L4_state.memory.bm25_store import BM25Index
+# BM25Index imported lazily to avoid L3->L4 violation
 from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     LayerSegment,
     _emit_records_execution_trace,

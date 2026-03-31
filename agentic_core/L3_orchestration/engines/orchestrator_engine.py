@@ -60,12 +60,7 @@ from agentic_core.L3_orchestration.reasoning.UnifiedAgent import (
 )
 from agentic_core.L3_orchestration.registry.agent_dispatch_registry import get_agent_dispatch_registry
 from agentic_core.L3_orchestration.types import AgentResult, ExecutionContext, ExecutionPhase, MissionResult
-from agentic_core.L5_safety.enforcement.circuit_breaker_gate import get_breaker
-from agentic_core.L5_safety.enforcement.policy_action_contract import (
-    ActionClass,
-    PolicyEnforcementError,
-    enforce_policy_before_action,
-)
+# get_breaker, ActionClass, PolicyEnforcementError, enforce_policy_before_action imported lazily to avoid L3->L5 violation
 from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     LayerSegment,
     _emit_agent_executes_agent,

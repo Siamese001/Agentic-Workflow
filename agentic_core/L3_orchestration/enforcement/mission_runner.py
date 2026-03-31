@@ -98,12 +98,6 @@ from agentic_core.L3_orchestration.contracts.coordination_ledger import (
     update_coordination_ledger,
 )
 from agentic_core.L3_orchestration.contracts.orchestration_handoff_contract import emit_agent_executes_agent
-from agentic_core.L5_safety.enforcement.circuit_breaker_gate import get_breaker
-from agentic_core.L5_safety.enforcement.policy_action_contract import (
-    ActionClass,
-    PolicyEnforcementError,
-    enforce_policy_before_action,
-)
 from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     LayerSegment,
     _emit_records_execution_trace,

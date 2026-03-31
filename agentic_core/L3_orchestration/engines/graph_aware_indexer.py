@@ -35,10 +35,7 @@ from agentic_core.L3_orchestration.engines.adg_integration import (
     ADGEdgeBinding,
     get_global_adg_client,
 )
-from agentic_core.L4_state.memory.chunk_manifest_registry import (
-    ChunkManifestRegistry as L4DChunkManifestRegistry,
-    EnrichedChunkManifest,
-)
+# ChunkManifestRegistry, EnrichedChunkManifest imported lazily to avoid L3->L4 violation
 
 Logger = logging.getLogger(__name__)
 

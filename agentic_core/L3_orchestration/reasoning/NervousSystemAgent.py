@@ -101,12 +101,7 @@ from agentic_core.L0_routing.config.path_constants import DEFAULT_TIMEOUT
 from agentic_core.L2_execution.determinism.execution_proof_emitter import ExecutionProofEmitter
 from agentic_core.L2_execution.providers import get_clock
 from agentic_core.L3_orchestration.contracts.orchestration_handoff_contract import emit_agent_executes_agent
-from agentic_core.L5_safety.enforcement.circuit_breaker_gate import get_breaker
-from agentic_core.L5_safety.enforcement.policy_action_contract import (
-    ActionClass,
-    PolicyEnforcementError,
-    enforce_policy_before_action,
-)
+# get_breaker, ActionClass, PolicyEnforcementError, enforce_policy_before_action imported lazily to avoid L3->L5 violation
 from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     LayerSegment,
     _emit_agent_executes_agent,

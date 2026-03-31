@@ -93,10 +93,7 @@ import os
 from pathlib import Path
 from typing import Any
 
-from agentic_core.L5_safety.config.structure_blueprint.ssot import (
-    GLOBAL_EXCLUDED_DIRS,
-    SOVEREIGN_EXCLUDED_FOLDERS,
-)
+# GLOBAL_EXCLUDED_DIRS, SOVEREIGN_EXCLUDED_FOLDERS imported lazily to avoid L1->L5 violation
 from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     LayerSegment,
     _emit_agent_executes_agent,

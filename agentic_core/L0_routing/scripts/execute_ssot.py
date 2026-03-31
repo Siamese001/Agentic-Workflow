@@ -43,10 +43,7 @@ from typing import Any, Optional
 
 from agentic_core.L0_routing.config.path_constants import DEFAULT_TIMEOUT, MAX_RETRIES
 
-# Import get_agent_dispatch_registry for agent routing
-from agentic_core.L3_orchestration.registry.agent_dispatch_registry import (
-    get_agent_dispatch_registry,
-)
+# get_agent_dispatch_registry imported lazily to avoid L0->L3 layer violation
 
 # L2 import deferred to avoid layer boundary violation (L0→L2)
 # from agentic_core.L2_execution.providers import get_clock

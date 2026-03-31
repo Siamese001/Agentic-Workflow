@@ -102,14 +102,8 @@ from agentic_core.utils.ssot_discovery_validator import get_data_files
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 from agentic_core.L2_execution.determinism.execution_proof_emitter import ExecutionProofEmitter
 from agentic_core.L2_execution.enforcement.write_governor_mixin import WriteGovernorMixin
-from agentic_core.L4_state.lifecycle.lifecycle_policy_applier import (
-    apply_simple_lifecycle_policy,
-)
-from agentic_core.L5_safety.enforcement.policy_action_contract import (
-    ActionClass,
-    PolicyEnforcementError,
-    enforce_policy_before_action,
-)
+# apply_simple_lifecycle_policy, ActionClass, PolicyEnforcementError, enforce_policy_before_action
+# imported lazily to avoid L3->L4 and L3->L5 violations
 from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     LayerSegment,
     _emit_agent_executes_agent,

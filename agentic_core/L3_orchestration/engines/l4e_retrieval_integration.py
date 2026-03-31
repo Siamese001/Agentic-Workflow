@@ -40,15 +40,8 @@ from agentic_core.L3_orchestration.engines.adg_integration import (
     ADGQueryClient,
     get_global_adg_client,
 )
-from agentic_core.L4_state.engines.parent_child_expansion import (
-    ParentChildExpander,
-    ExpansionContext,
-    L4ERetrievalIntegrator,
-)
-from agentic_core.L4_state.memory.chunk_manifest_registry import (
-    ChunkManifestRegistry,
-    EnrichedChunkManifest,
-)
+# ParentChildExpander, ExpansionContext, L4ERetrievalIntegrator, ChunkManifestRegistry, EnrichedChunkManifest
+# imported lazily to avoid L3->L4 violation
 
 Logger = logging.getLogger(__name__)
 

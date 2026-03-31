@@ -344,19 +344,19 @@ def scan_file(file_path: Path) -> list[str]:
 def _scan_file_with_adg(file_path: Path, source_layer: str, tree: ast.AST) -> list[str]:
     """Scan file using ADG for layer validation."""
     violations = []
-    
+
     try:
         bridge = ADGQueryBridge()
-        
+
         # Get imports from ADG for this file
         file_rel_path = str(file_path.relative_to(get_validated_project_root()))
         imports = _extract_imported_modules(tree)
-        
+
         # For each import, validate layer constraints using ADG
         for lineno, mod in imports:
             # Get the target layer from ADG
             target_layer = _get_layer_from_adg(bridge, mod)
-            
+
             if target_layer:
                 # Check layer inversion using ADG layer data
                 if source_layer in _LAYER_RULES:
@@ -378,12 +378,12 @@ def _scan_file_with_adg(file_path: Path, source_layer: str, tree: ast.AST) -> li
         else:
             # If no layer found in ADG, fall back to AST validation
             violations.extend(_validate_import_with_ast(file_path, source_layer, lineno, mod))
-            
+
     except Exception as e:
         warnings.warn(f"ADG scan failed: {e}")
         # Fall back to AST
         violations.extend(_scan_file_with_ast(file_path, source_layer, tree))
-        
+
     return violations
 
 
@@ -395,7 +395,7 @@ def _get_layer_from_adg(bridge: ADGQueryBridge, module_name: str) -> str | None:
         for layer in ["L0", "L1", "L2", "L3", "L4", "L5", "L6"]:
             nodes = bridge.nodes_in_layer(layer)
             for node in nodes:
-                if (module_name in node.label or 
+                if (module_name in node.label or
                     module_name in str(node.file_path) or
                     node.label.endswith(module_name)):
                     return layer
@@ -407,7 +407,7 @@ def _get_layer_from_adg(bridge: ADGQueryBridge, module_name: str) -> str | None:
 def _validate_import_with_ast(file_path: Path, source_layer: str, lineno: int, mod: str) -> list[str]:
     """Fallback AST-based validation for a single import."""
     violations = []
-    
+
     # Check layer inversion for agentic_core layers
     if source_layer in _LAYER_RULES:
         forbidden = _LAYER_RULES[source_layer]
@@ -425,14 +425,14 @@ def _validate_import_with_ast(file_path: Path, source_layer: str, lineno: int, m
                 f"apps_* direct L* import — {source_layer} imports {mod} "
                 f"(use agentic_core.interfaces shims)"
             )
-    
+
     return violations
 
 
 def _scan_file_with_ast(file_path: Path, source_layer: str, tree: ast.AST) -> list[str]:
     """Original AST-based scanning as fallback."""
     violations = []
-    
+
     imports = _extract_imported_modules(tree)
 
     # Check layer inversion for agentic_core layers

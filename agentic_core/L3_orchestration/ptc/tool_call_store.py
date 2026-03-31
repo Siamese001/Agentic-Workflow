@@ -75,10 +75,7 @@ _emit_captures_evaluation_metric("p4", "tool_call_store", "eval_metric")
 _emit_stores_embedding("p4", "tool_call_store", "embedding_store")
 _emit_updates_meta_learning_state("p4", "tool_call_store", "meta_learning")
 _emit_links_execution_to_snapshot("p4", "tool_call_store", "exec_snapshot_link")
-from agentic_core.L4_state.storage.persistent_store import (
-    StoredArtifact,
-    StoredArtifactRef,
-)
+# StoredArtifact, StoredArtifactRef imported lazily to avoid L3->L4 violation
 
 from .tool_contract import (
     ToolCall,

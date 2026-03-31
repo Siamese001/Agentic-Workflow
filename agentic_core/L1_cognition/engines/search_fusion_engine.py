@@ -8,7 +8,10 @@ from __future__ import annotations
 
 import math
 from datetime import datetime
-from typing import Any, Dict, List, Optional, Set, Tuple
+from typing import TYPE_CHECKING, Any, Dict, List, Optional, Set, Tuple
+
+if TYPE_CHECKING:
+    from agentic_core.L4_state.types.graph_store_types import IGraphStore
 
 from agentic_core.L1_cognition.config.graphrag_config import get_config
 from agentic_core.L1_cognition.engines.drift_search_engine import create_drift_search_engine
@@ -22,7 +25,6 @@ from agentic_core.L1_cognition.types.search_types import (
     SearchQuery,
     SearchResponse,
 )
-from agentic_core.L4_state.types.graph_store_types import IGraphStore
 from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     LayerSegment,
     _emit_agent_executes_agent,

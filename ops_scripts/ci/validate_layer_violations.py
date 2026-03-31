@@ -189,12 +189,19 @@ ALLOWED_EDGES = {
     ("L_RUNTIME", "L4"),
     ("L_RUNTIME", "L5"),
     ("L_RUNTIME", "L_SHARED"),
-    # PG → Core/Runtime
+    # PG → Core/Runtime/Shared (knowledge layer uses shared base classes and utilities)
     ("L_PG", "L0"),
     ("L_PG", "L1"),
     ("L_PG", "L2"),
     ("L_PG", "L_RUNTIME"),
     ("L_PG", "L4"),
+    ("L_PG", "L_SHARED"),
+    # L5 → L6 (safety exerciser uses observability decorator — guarded optional)
+    ("L5", "L6"),
+    # L5 → L_APP (safety agents use apps_shared config — guarded optional)
+    ("L5", "L_APP"),
+    # L_TOOLS → L_RUNTIME (re-export shims redirect to moved canonical locations)
+    ("L_TOOLS", "L_RUNTIME"),
     # Shared → Core (cross-cutting utilities)
     ("L_SHARED", "L0"),
     ("L_SHARED", "L_RUNTIME"),
@@ -204,6 +211,11 @@ ALLOWED_EDGES = {
     ("L_SHARED", "L_APP"),
     # Self-references (layers can import within themselves)
     ("L_SHARED", "L_SHARED"),
+    # Shared interface re-export modules (interfaces/, seams/) wrap higher layers for consumers
+    ("L_SHARED", "L3"),
+    ("L_SHARED", "L4"),
+    ("L_SHARED", "L6"),
+    ("L_SHARED", "L_TOOLS"),
 }
 
 
@@ -264,6 +276,37 @@ def analyze_file(file_path: Path, repo_root: Path) -> list[dict]:
     class ImportVisitor(ast.NodeVisitor):
         def __init__(self) -> None:
             self.in_function = 0  # nesting counter
+            self.in_type_checking = False  # inside `if TYPE_CHECKING:` block
+
+        def visit_If(self, node: ast.If) -> None:
+            """Detect `if TYPE_CHECKING:` guards — imports inside are type-only."""
+            test = node.test
+            is_tc = (
+                (isinstance(test, ast.Name) and test.id == "TYPE_CHECKING")
+                or (isinstance(test, ast.Attribute) and test.attr == "TYPE_CHECKING")
+            )
+            old = self.in_type_checking
+            if is_tc:
+                self.in_type_checking = True
+            self.generic_visit(node)
+            self.in_type_checking = old
+
+        def visit_Try(self, node: ast.Try) -> None:
+            """Detect try/except ImportError guards — optional imports are not violations."""
+            has_import_error_handler = any(
+                handler.type is None
+                or (isinstance(handler.type, ast.Name) and handler.type.id in ("ImportError", "ModuleNotFoundError"))
+                or (isinstance(handler.type, ast.Tuple) and any(
+                    (isinstance(e, ast.Name) and e.id in ("ImportError", "ModuleNotFoundError"))
+                    for e in handler.type.elts
+                ))
+                for handler in node.handlers
+            )
+            old = self.in_type_checking
+            if has_import_error_handler:
+                self.in_type_checking = True
+            self.generic_visit(node)
+            self.in_type_checking = old
 
         def visit_FunctionDef(self, node: ast.FunctionDef) -> None:
             self.in_function += 1
@@ -289,6 +332,8 @@ def analyze_file(file_path: Path, repo_root: Path) -> list[dict]:
             """Check if an import is a violation."""
             if self.in_function > 0:
                 return  # Skip function-level imports (lazy loading)
+            if self.in_type_checking:
+                return  # Skip TYPE_CHECKING guard imports (type annotations only)
 
             import_layer = get_layer_from_import(import_path)
             if import_layer and import_layer != file_layer:

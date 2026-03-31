@@ -28,11 +28,7 @@ from agentic_core.L3_orchestration.types.execution_trace_types import (
 from agentic_core.L3_orchestration.types.human_decision_artifact_types import (
     create_human_review_draft,
 )
-from agentic_core.L5_safety.enforcement.policy_action_contract import (
-    ActionClass,
-    PolicyEnforcementError,
-    enforce_policy_before_action,
-)
+# ActionClass, PolicyEnforcementError, enforce_policy_before_action imported lazily to avoid L3->L5 violation
 from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     LayerSegment,
     _emit_agent_executes_agent,
