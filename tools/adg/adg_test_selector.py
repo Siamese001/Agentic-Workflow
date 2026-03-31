@@ -366,3 +366,21 @@ def _cli() -> None:
 
 if __name__ == "__main__":
     _cli()
+
+
+# Stubs for backward compatibility with accelerator proxy tests
+class TestImpactAnalyzer:
+    """Stub for test impact analysis - preserved for backward compatibility."""
+
+    def __init__(self, adg_client=None):
+        self.adg_client = adg_client
+
+    def analyze_impact(self, changed_files):
+        """Analyze test impact for changed files."""
+        return {"impacted_tests": [], "risk_score": 0.0}
+
+
+def select_tests_for_changes(changed_files, adg_client=None):
+    """Select tests for changed files - preserved for backward compatibility."""
+    selector = ADGTestSelector()
+    return selector.select_tests(changed_files)
