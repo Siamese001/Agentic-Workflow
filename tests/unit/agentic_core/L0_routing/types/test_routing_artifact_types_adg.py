@@ -84,14 +84,3 @@ def test_layersegment_is_instantiable(mod):
     cls = getattr(mod, "LayerSegment", None)
     assert cls is not None, "LayerSegment must be defined in {MODULE_PATH}"
     assert isinstance(cls, type), "LayerSegment must be a class"
-
-
-# Arrange
-    input_data = {}  # Replace with actual test data
-
-    # Act
-    result = {}  # Placeholder - replace with actual execution
-
-    # Assert
-    assert result is not None, "Function should return a result"
-    assert isinstance(result, (dict, list, str, int, float, bool)), "Result should be a common type"
