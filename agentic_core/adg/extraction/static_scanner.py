@@ -8844,7 +8844,7 @@ _emit_reads_through("l4", "static_scanner", "urg_read_640")
 
 
 class _RetrievalWiringVisitor(ast.NodeVisitor):
-    """G35 (gap): Retrieval wiring graph — L1-L5 retrieval bridge edge extraction.
+    """G35 (gap): Retrieval wiring graph - L1-L5 retrieval bridge edge extraction.
 
     Emits:
       module --retrieves_from_store--> ADG::Symbol::<retrieval_bridge>
