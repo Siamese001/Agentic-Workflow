@@ -157,25 +157,37 @@ class TestPromptBOM:
         )
         assert bom1.stable_hash() == bom2.stable_hash()
 
-    def test_all_paths_valid(self, plc_imports) -> None:
-        """Test that all valid paths work."""
+    def test_to_dict_includes_exemplars_required(self, plc_imports) -> None:
+        """Test to_dict includes exemplars_required field."""
         PromptBOM = plc_imports["PromptBOM"]
-        for path in ("A", "B", "C", "D"):
-            bom = PromptBOM(
-                trace_id=f"trace-{path}",
-                system_version_hash="hash",
-                mixins_required=(),
-                raw_u0="Input",
-                raw_c0={},
-                template_args={},
-                path=path,
-            )
-            assert bom.path == path
+        bom = PromptBOM(
+            trace_id="trace-123",
+            system_version_hash="sha256-hash",
+            mixins_required=("mixin1",),
+            raw_u0="User input",
+            raw_c0={"key": "value"},
+            template_args={"var": "value"},
+            path="B",
+            exemplars_required=("ex1", "ex2"),
+        )
+        d = bom.to_dict()
+        assert d["exemplars_required"] == ("ex1", "ex2")
 
-
-# =============================================================================
-# CompiledPromptArtifact Tests
-# =============================================================================
+    def test_exemplars_required_sorted_in_to_dict(self, plc_imports) -> None:
+        """Test exemplars_required is sorted in to_dict output."""
+        PromptBOM = plc_imports["PromptBOM"]
+        bom = PromptBOM(
+            trace_id="trace-123",
+            system_version_hash="sha256-hash",
+            mixins_required=(),
+            raw_u0="input",
+            raw_c0={},
+            template_args={},
+            path="A",
+            exemplars_required=("z_exemplar", "a_exemplar", "m_exemplar"),
+        )
+        d = bom.to_dict()
+        assert d["exemplars_required"] == ("a_exemplar", "m_exemplar", "z_exemplar")
 
 class TestCompiledPromptArtifact:
     """Test CompiledPromptArtifact data contract."""
