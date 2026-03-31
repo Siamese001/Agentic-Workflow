@@ -1,29 +1,29 @@
-"""Placeholder test for AdgExceptionHardeningE2E."""
+"""Test AdgExceptionHardeningE2E functionality."""
+
+import sys
+from pathlib import Path
 
 import pytest
 
+REPO_ROOT = Path(__file__).parent.parent.parent
+sys.path.insert(0, str(REPO_ROOT))
 
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300  # 5 minutes
 
 @pytest.mark.unit
 class TestAdgExceptionHardeningE2E:
     """Test AdgExceptionHardeningE2E functionality."""
 
-    def test_placeholder_1(self):
-        """Placeholder test 1."""
-        assert True
-    
-    def test_placeholder_2(self):
-        """Placeholder test 2."""
-        assert True
-    
-    def test_placeholder_3(self):
-        """Placeholder test 3."""
-        assert True
+    def test_exception_hardening_imports(self):
+        """Test exception hardening module imports."""
+        from tests import exception_hardening
+        assert exception_hardening is not None
+
+    def test_exception_hardening_runner(self):
+        """Test exception hardening runner exists."""
+        from tests.exception_hardening import E2EHardeningRunner
+        assert E2EHardeningRunner is not None
+
+    def test_run_exception_tests(self):
+        """Test run exception tests function."""
+        from tests.exception_hardening import run_exception_tests
+        assert callable(run_exception_tests)
