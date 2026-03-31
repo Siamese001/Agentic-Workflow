@@ -15,6 +15,12 @@ from typing import Any
 
 from apps_exec.types import ExecBriefRequest, ExecBriefResult
 
+# L1 retrieval wiring (Turn 2, Wave 7): Import creates ADG edge to L1_cognition
+from agentic_core.L1_cognition.retrieval import QueryRetrievalBridge
+
+# L3 retrieval wiring (Turn 2, Wave 18): Import creates ADG edge to L3_orchestration
+from agentic_core.L3_orchestration.retrieval import ContextRetrievalOrchestrator
+
 _log = logging.getLogger(__name__)
 
 

@@ -1,5 +1,5 @@
 ==============================================================================================================================
-                              AGENTIC SYSTEM — PROCESS MAP v45 (CANONICAL SEMANTICS & LOOP)
+                              AGENTIC SYSTEM — PROCESS MAP (CANONICAL SEMANTICS & LOOP)
   PRIMARY RUNTIME PATH: L1 → L0 → [opt L3] → L2 | L5 = cross-cutting policy | UWG = writes to L4
 ==============================================================================================================================
 

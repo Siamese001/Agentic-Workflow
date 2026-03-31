@@ -7,6 +7,15 @@ from dataclasses import dataclass, field
 from ..types import UnderwritingRequest
 from ..engines.underwriting_engine import UnderwritingResult
 
+# L1 retrieval wiring (Turn 2, Wave 11): Import creates ADG edge to L1_cognition
+from agentic_core.L1_cognition.retrieval import QueryRetrievalBridge
+
+# L2 retrieval wiring (Turn 2, Wave 13): Import creates ADG edge to L2_execution
+from agentic_core.L2_execution.retrieval import SemanticEnrichmentBridge
+
+# L3 retrieval wiring (Turn 2, Wave 20): Import creates ADG edge to L3_orchestration
+from agentic_core.L3_orchestration.retrieval import ContextRetrievalOrchestrator
+
 
 @dataclass
 class ExecutionRequest:

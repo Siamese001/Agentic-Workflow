@@ -24,6 +24,9 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     emit_replay_key,
 )
 
+# L1 retrieval wiring (Turn 2, Wave 10): Import creates ADG edge to L1_cognition
+from agentic_core.L1_cognition.retrieval import QueryRetrievalBridge
+
 # P0: Foundation Governance
 _emit_applies_guardrail("p0", "environment_config", "p0_governance")
 _emit_reads_policy_state("p0", "environment_config", "policy_binding")
