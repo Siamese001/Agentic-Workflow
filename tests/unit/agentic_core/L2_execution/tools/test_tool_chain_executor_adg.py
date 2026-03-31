@@ -1,51 +1,29 @@
-"""Placeholder test for ToolChainExecutorAdg."""
+"""Test ToolChainExecutorAdg functionality."""
+
+import sys
+from pathlib import Path
+
 import pytest
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300
+
+REPO_ROOT = Path(__file__).parent.parent.parent
+sys.path.insert(0, str(REPO_ROOT))
+
 
 @pytest.mark.unit
-class GeneratedTest:
-    """Generated test class for agentic_core.L2_execution.tools."""
+class TestToolChainExecutorAdg:
+    """Test ToolChainExecutorAdg functionality."""
 
-    def test_create_processor(self):
-        """Test create_processor function."""
-        from agentic_core.L2_execution.tools import create_processor
-        result = create_processor()
-        assertIsNotNone(result)
+    def test_tool_chain_executor_adg_imports(self):
+        """Test tool_chain_executor_adg module imports."""
+        from agentic_core import tool_chain_executor_adg
+        assert tool_chain_executor_adg is not None
 
-    def test_validate_module_config(self):
-        """Test validate_module_config function."""
-        from agentic_core.L2_execution.tools import validate_module_config
-        result = validate_module_config()
-        assertIsNotNone(result)
+    def test_tool_chain_executor_adg_class(self):
+        """Test ToolChainExecutorAdg class exists."""
+        from agentic_core import ToolChainExecutorAdg
+        assert ToolChainExecutorAdg is not None
 
-    def test_ToolsUseATool_init(self):
-        """Test ToolsUseATool initialization."""
-        from agentic_core.L2_execution.tools import ToolsUseATool
-        instance = ToolsUseATool()
-        assertIsNotNone(instance)
-
-    def test_ToolsUseATool_process(self):
-        """Test ToolsUseATool.process method."""
-        from agentic_core.L2_execution.tools import ToolsUseATool
-        instance = ToolsUseATool()
-        result = instance.process()
-        assertIsNotNone(result)
-
-    def test_placeholder_1(self):
-        """Placeholder test 1."""
-        assert True
-
-    def test_placeholder_2(self):
-        """Placeholder test 2."""
-        assert True
-
-    def test_placeholder_3(self):
-        """Placeholder test 3."""
-        assert True
+    def test_tool_chain_executor_adg_callable(self):
+        """Test tool_chain_executor_adg functions are callable."""
+        from agentic_core import validate_tool_chain_executor_adg
+        assert callable(validate_tool_chain_executor_adg)

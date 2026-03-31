@@ -1,44 +1,29 @@
-"""Placeholder test for ContentRelevanceImplAdg."""
+"""Test ContentRelevanceImplAdg functionality."""
+
+import sys
+from pathlib import Path
+
 import pytest
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300
+
+REPO_ROOT = Path(__file__).parent.parent.parent
+sys.path.insert(0, str(REPO_ROOT))
+
 
 @pytest.mark.unit
-class GeneratedTest:
-    """Generated test class for agentic_core.L2_execution.tools."""
+class TestContentRelevanceImplAdg:
+    """Test ContentRelevanceImplAdg functionality."""
 
-    def test_score(self):
-        """Test score function."""
-        from agentic_core.L2_execution.tools import score
-        result = score()
-        assertIsNotNone(result)
+    def test_content_relevance_impl_adg_imports(self):
+        """Test content_relevance_impl_adg module imports."""
+        from agentic_core import content_relevance_impl_adg
+        assert content_relevance_impl_adg is not None
 
-    def test_compute_score(self):
-        """Test compute_score function."""
-        from agentic_core.L2_execution.tools import compute_score
-        result = compute_score()
-        assertIsNotNone(result)
+    def test_content_relevance_impl_adg_class(self):
+        """Test ContentRelevanceImplAdg class exists."""
+        from agentic_core import ContentRelevanceImplAdg
+        assert ContentRelevanceImplAdg is not None
 
-    def test_AssessContentRelevance_init(self):
-        """Test AssessContentRelevance initialization."""
-        from agentic_core.L2_execution.tools import AssessContentRelevance
-        instance = AssessContentRelevance()
-        assertIsNotNone(instance)
-
-    def test_placeholder_1(self):
-        """Placeholder test 1."""
-        assert True
-
-    def test_placeholder_2(self):
-        """Placeholder test 2."""
-        assert True
-
-    def test_placeholder_3(self):
-        """Placeholder test 3."""
-        assert True
+    def test_content_relevance_impl_adg_callable(self):
+        """Test content_relevance_impl_adg functions are callable."""
+        from agentic_core import validate_content_relevance_impl_adg
+        assert callable(validate_content_relevance_impl_adg)

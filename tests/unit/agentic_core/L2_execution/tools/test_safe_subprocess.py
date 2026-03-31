@@ -1,38 +1,29 @@
-"""Placeholder test for SafeSubprocess."""
+"""Test SafeSubprocess functionality."""
+
+import sys
+from pathlib import Path
+
 import pytest
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300
+
+REPO_ROOT = Path(__file__).parent.parent.parent
+sys.path.insert(0, str(REPO_ROOT))
+
 
 @pytest.mark.unit
-class GeneratedTest:
-    """Generated test class for agentic_core.L2_execution.tools."""
+class TestSafeSubprocess:
+    """Test SafeSubprocess functionality."""
 
-    def test_safe_subprocess_run(self):
-        """Test safe_subprocess_run function."""
-        from agentic_core.L2_execution.tools import safe_subprocess_run
-        result = safe_subprocess_run()
-        assertIsNotNone(result)
+    def test_safe_subprocess_imports(self):
+        """Test safe_subprocess module imports."""
+        from agentic_core import safe_subprocess
+        assert safe_subprocess is not None
 
-    def test_safe_subprocess_call(self):
-        """Test safe_subprocess_call function."""
-        from agentic_core.L2_execution.tools import safe_subprocess_call
-        result = safe_subprocess_call()
-        assertIsNotNone(result)
+    def test_safe_subprocess_class(self):
+        """Test SafeSubprocess class exists."""
+        from agentic_core import SafeSubprocess
+        assert SafeSubprocess is not None
 
-    def test_placeholder_1(self):
-        """Placeholder test 1."""
-        assert True
-
-    def test_placeholder_2(self):
-        """Placeholder test 2."""
-        assert True
-
-    def test_placeholder_3(self):
-        """Placeholder test 3."""
-        assert True
+    def test_safe_subprocess_callable(self):
+        """Test safe_subprocess functions are callable."""
+        from agentic_core import validate_safe_subprocess
+        assert callable(validate_safe_subprocess)

@@ -1,29 +1,29 @@
-"""Placeholder test for AgentOutputContract."""
+"""Test AgentOutputContract functionality."""
+
+import sys
+from pathlib import Path
 
 import pytest
 
+REPO_ROOT = Path(__file__).parent.parent.parent
+sys.path.insert(0, str(REPO_ROOT))
 
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300  # 5 minutes
 
 @pytest.mark.unit
 class TestAgentOutputContract:
     """Test AgentOutputContract functionality."""
 
-    def test_placeholder_1(self):
-        """Placeholder test 1."""
-        assert True
-    
-    def test_placeholder_2(self):
-        """Placeholder test 2."""
-        assert True
-    
-    def test_placeholder_3(self):
-        """Placeholder test 3."""
-        assert True
+    def test_agent_output_contract_imports(self):
+        """Test agent_output_contract module imports."""
+        from agentic_core import agent_output_contract
+        assert agent_output_contract is not None
+
+    def test_agent_output_contract_class(self):
+        """Test AgentOutputContract class exists."""
+        from agentic_core import AgentOutputContract
+        assert AgentOutputContract is not None
+
+    def test_agent_output_contract_callable(self):
+        """Test agent_output_contract functions are callable."""
+        from agentic_core import validate_agent_output_contract
+        assert callable(validate_agent_output_contract)

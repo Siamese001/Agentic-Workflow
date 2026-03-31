@@ -1,44 +1,29 @@
-"""Placeholder test for JobAnalyzerImplAdg."""
+"""Test JobAnalyzerImplAdg functionality."""
+
+import sys
+from pathlib import Path
+
 import pytest
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300
+
+REPO_ROOT = Path(__file__).parent.parent.parent
+sys.path.insert(0, str(REPO_ROOT))
+
 
 @pytest.mark.unit
-class GeneratedTest:
-    """Generated test class for agentic_core.L2_execution.tools."""
+class TestJobAnalyzerImplAdg:
+    """Test JobAnalyzerImplAdg functionality."""
 
-    def test_analyze(self):
-        """Test analyze function."""
-        from agentic_core.L2_execution.tools import analyze
-        result = analyze()
-        assertIsNotNone(result)
+    def test_job_analyzer_impl_adg_imports(self):
+        """Test job_analyzer_impl_adg module imports."""
+        from agentic_core import job_analyzer_impl_adg
+        assert job_analyzer_impl_adg is not None
 
-    def test_extract_keywords(self):
-        """Test extract_keywords function."""
-        from agentic_core.L2_execution.tools import extract_keywords
-        result = extract_keywords()
-        assertIsNotNone(result)
+    def test_job_analyzer_impl_adg_class(self):
+        """Test JobAnalyzerImplAdg class exists."""
+        from agentic_core import JobAnalyzerImplAdg
+        assert JobAnalyzerImplAdg is not None
 
-    def test_JobAnalyzer_init(self):
-        """Test JobAnalyzer initialization."""
-        from agentic_core.L2_execution.tools import JobAnalyzer
-        instance = JobAnalyzer()
-        assertIsNotNone(instance)
-
-    def test_placeholder_1(self):
-        """Placeholder test 1."""
-        assert True
-
-    def test_placeholder_2(self):
-        """Placeholder test 2."""
-        assert True
-
-    def test_placeholder_3(self):
-        """Placeholder test 3."""
-        assert True
+    def test_job_analyzer_impl_adg_callable(self):
+        """Test job_analyzer_impl_adg functions are callable."""
+        from agentic_core import validate_job_analyzer_impl_adg
+        assert callable(validate_job_analyzer_impl_adg)

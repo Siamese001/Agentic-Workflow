@@ -1,57 +1,29 @@
-"""Placeholder test for UnsafeIoDetectorAdg."""
+"""Test UnsafeIoDetectorAdg functionality."""
+
+import sys
+from pathlib import Path
+
 import pytest
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300
+
+REPO_ROOT = Path(__file__).parent.parent.parent
+sys.path.insert(0, str(REPO_ROOT))
+
 
 @pytest.mark.unit
-class GeneratedTest:
-    """Generated test class for agentic_core.L2_execution.tools."""
+class TestUnsafeIoDetectorAdg:
+    """Test UnsafeIoDetectorAdg functionality."""
 
-    def test_scan_for_unsafe_patterns(self):
-        """Test scan_for_unsafe_patterns function."""
-        from agentic_core.L2_execution.tools import scan_for_unsafe_patterns
-        result = scan_for_unsafe_patterns()
-        assertIsNotNone(result)
+    def test_unsafe_io_detector_adg_imports(self):
+        """Test unsafe_io_detector_adg module imports."""
+        from agentic_core import unsafe_io_detector_adg
+        assert unsafe_io_detector_adg is not None
 
-    def test_scan_directory_for_unsafe_patterns(self):
-        """Test scan_directory_for_unsafe_patterns function."""
-        from agentic_core.L2_execution.tools import scan_directory_for_unsafe_patterns
-        result = scan_directory_for_unsafe_patterns()
-        assertIsNotNone(result)
+    def test_unsafe_io_detector_adg_class(self):
+        """Test UnsafeIoDetectorAdg class exists."""
+        from agentic_core import UnsafeIoDetectorAdg
+        assert UnsafeIoDetectorAdg is not None
 
-    def test_UnsafePattern_init(self):
-        """Test UnsafePattern initialization."""
-        from agentic_core.L2_execution.tools import UnsafePattern
-        instance = UnsafePattern()
-        assertIsNotNone(instance)
-
-    def test_UnsafePatternVisitor_init(self):
-        """Test UnsafePatternVisitor initialization."""
-        from agentic_core.L2_execution.tools import UnsafePatternVisitor
-        instance = UnsafePatternVisitor()
-        assertIsNotNone(instance)
-
-    def test_UnsafePatternVisitor_visit_Call(self):
-        """Test UnsafePatternVisitor.visit_Call method."""
-        from agentic_core.L2_execution.tools import UnsafePatternVisitor
-        instance = UnsafePatternVisitor()
-        result = instance.visit_Call()
-        assertIsNotNone(result)
-
-    def test_placeholder_1(self):
-        """Placeholder test 1."""
-        assert True
-
-    def test_placeholder_2(self):
-        """Placeholder test 2."""
-        assert True
-
-    def test_placeholder_3(self):
-        """Placeholder test 3."""
-        assert True
+    def test_unsafe_io_detector_adg_callable(self):
+        """Test unsafe_io_detector_adg functions are callable."""
+        from agentic_core import validate_unsafe_io_detector_adg
+        assert callable(validate_unsafe_io_detector_adg)
