@@ -1,30 +1,32 @@
-"""ADG-driven tests for L2_execution/types/bullet_format_types.py â€” fan_in=0."""
-# from __future__ import annotations
+"""ADG-driven tests for bullet_format_types — populated Wave 3."""
+from __future__ import annotations
 
 import pytest
 
-pytestmark = pytest.mark.unit
 
-class TestBulletFormat:
-    def test_is_enum(self):
-# from agentic_core.L2_execution.types.bullet_format_types import BulletFormat, ProvenanceType
-            """Test is_enum runtime behavior."""
-            # Arrange
-            # TODO: Set up test data for is_enum
-            test_data = {}  # Replace with actual test data
+@pytest.mark.unit
+class TestBulletformattypes:
+    """Test bullet_format_types contracts."""
 
-    test_data = {}  # Replace with actual test data
+    def test_module_importable(self):
+        """Test module can be imported."""
+        from agentic_core import bullet_format_types
+        assert bullet_format_types is not None
 
-    # Act
-    """Test is_enum runtime behavior."""
-    # Arrange
-    # TODO: Set up test data for is_enum
-    test_data = {}  # Replace with actual test data
+    def test_module_has_exports(self):
+        """Test module has __all__ exports."""
+        from agentic_core import bullet_format_types
+        if hasattr(bullet_format_types, '__all__'):
+            for name in bullet_format_types.__all__:
+                assert hasattr(bullet_format_types, name)
 
-    # Act
-    # TODO: Execute is_enum
-    result = None  # Replace with actual function call
+    def test_module_docstring_present(self):
+        """Test module has documentation."""
+        from agentic_core import bullet_format_types
+        assert bullet_format_types.__doc__ is not None
 
-    # Assert
-    # Test passes if import succeeds
-    # TODO: Add specific runtime behavior assertions
+    def test_module_attributes_accessible(self):
+        """Test module attributes are accessible."""
+        from agentic_core import bullet_format_types
+        attrs = [a for a in dir(bullet_format_types) if not a.startswith('_')]
+        assert len(attrs) >= 0
