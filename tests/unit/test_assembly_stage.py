@@ -1,29 +1,29 @@
-"""Placeholder test for AssemblyStage."""
+"""Test AssemblyStage functionality."""
+
+import sys
+from pathlib import Path
 
 import pytest
 
+REPO_ROOT = Path(__file__).parent.parent.parent
+sys.path.insert(0, str(REPO_ROOT))
 
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300  # 5 minutes
 
 @pytest.mark.unit
 class TestAssemblyStage:
     """Test AssemblyStage functionality."""
 
-    def test_placeholder_1(self):
-        """Placeholder test 1."""
-        assert True
-    
-    def test_placeholder_2(self):
-        """Placeholder test 2."""
-        assert True
-    
-    def test_placeholder_3(self):
-        """Placeholder test 3."""
-        assert True
+    def test_assembly_stage_imports(self):
+        """Test assembly stage module imports."""
+        from agentic_core import assembly_stage
+        assert assembly_stage is not None
+
+    def test_assembly_stage_class(self):
+        """Test assembly stage class exists."""
+        from agentic_core.assembly_stage import AssemblyStage
+        assert AssemblyStage is not None
+
+    def test_validate_stage(self):
+        """Test validate stage function."""
+        from agentic_core.assembly_stage import validate_stage
+        assert callable(validate_stage)
