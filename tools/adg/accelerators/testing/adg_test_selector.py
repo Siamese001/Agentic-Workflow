@@ -4,22 +4,22 @@
 import sys
 from pathlib import Path
 
-# Add parent of parent to path
-tools_adg_dir = Path(__file__).parent.parent.parent / "adg"
-if str(tools_adg_dir.parent) not in sys.path:
-    sys.path.insert(0, str(tools_adg_dir.parent))
+# Add repo root to path
+REPO_ROOT = Path(__file__).resolve().parents[3]
+if str(REPO_ROOT) not in sys.path:
+    sys.path.insert(0, str(REPO_ROOT))
 
 # Import and re-export from tools.adg.adg_test_selector
 from tools.adg.adg_test_selector import (
     ADGTestSelector,
     TestImpactAnalyzer,
-    main,
+    _cli,
     select_tests_for_changes,
 )
 
 __all__ = [
     "ADGTestSelector",
     "TestImpactAnalyzer",
-    "main",
+    "_cli",
     "select_tests_for_changes",
 ]

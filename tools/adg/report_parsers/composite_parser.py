@@ -1,9 +1,11 @@
-"""Composite parser that aggregates all report parsers."""
+"""Composite parser that aggregates all ADG report parsers."""
 
 from __future__ import annotations
 
 from pathlib import Path
 from typing import Any
+
+from tools.adg.repair.types import FixCategory
 
 from .base_parser import BaseReportParser
 from .boundary_parser import BoundaryReportParser
@@ -15,19 +17,15 @@ from .mutation_parser import MutationReportParser
 from .provenance_parser import ProvenanceReportParser
 
 
-class CompositeReportParser:
-    """Composite parser that loads and parses all ADG reports.
+class CompositeReportParser(BaseReportParser):
+    """Composite parser that extracts deficiencies from all report types.
 
-    This class provides a unified interface for extracting deficiencies
-    from all available ADG report types.
-
-    Usage:
-        parser = CompositeReportParser(
-            adg_dir=Path("artifacts/adg"),
-            timestamp="03122026_0512"
-        )
-        all_deficiencies = parser.extract_all_deficiencies()
+    Aggregates all individual report parsers to provide a unified interface
+    for deficiency extraction across all ADG reports.
     """
+
+    report_name = "Composite ADG Report"
+    report_filename_pattern = "*_report_*.json"
 
     def __init__(self, adg_dir: Path, timestamp: str):
         """Initialize the composite parser.
@@ -36,8 +34,7 @@ class CompositeReportParser:
             adg_dir: Directory containing ADG artifacts
             timestamp: ADG timestamp (MMDDYYYY_HHMM format)
         """
-        self.adg_dir = Path(adg_dir)
-        self.timestamp = timestamp
+        super().__init__(adg_dir, timestamp)
 
         # Initialize all individual parsers
         self.parsers: list[BaseReportParser] = [
@@ -50,68 +47,65 @@ class CompositeReportParser:
             MutationReportParser(adg_dir, timestamp),
         ]
 
-    def load_all(self) -> dict[str, dict[str, Any] | None]:
-        """Load all available reports.
+    def _get_report_path(self) -> Path | None:
+        """Composite parser doesn't have a single report path."""
+        return None
+
+    def is_available(self) -> bool:
+        """Check if any reports are available."""
+        return any(p.is_available() for p in self.parsers)
+
+    def get_summary(self) -> dict[str, Any]:
+        """Get summary from all available parsers.
 
         Returns:
-            Dictionary mapping report names to loaded data
+            Dictionary with composite summary
         """
-        results = {}
+        available = sum(1 for p in self.parsers if p.is_available())
 
+        summaries = {}
         for parser in self.parsers:
-            data = parser.load()
-            if data is not None:
-                results[parser.report_name] = data
+            if parser.is_available():
+                summaries[parser.report_name] = parser.get_summary()
 
-        return results
+        return {
+            "report_name": self.report_name,
+            "available": available > 0,
+            "total_reports": len(self.parsers),
+            "available_reports": available,
+            "individual_summaries": summaries,
+        }
 
-    def extract_all_deficiencies(self) -> list[dict[str, Any]]:
+    def extract_deficiencies(self) -> list[dict[str, Any]]:
         """Extract deficiencies from all available reports.
 
         Returns:
-            Combined list of all deficiencies from all reports
+            Combined list of all deficiencies
         """
-        all_deficiencies = []
+        all_deficiencies: list[dict[str, Any]] = []
 
         for parser in self.parsers:
-            try:
-                deficiencies = parser.extract_deficiencies()
-                all_deficiencies.extend(deficiencies)
-            except Exception as e:
-                print(f"[{parser.report_name}] Failed to extract deficiencies: {e}")
+            if parser.is_available():
+                try:
+                    deficiencies = parser.extract_deficiencies()
+                    all_deficiencies.extend(deficiencies)
+                except Exception as e:
+                    # Log error but continue with other parsers
+                    print(f"[CompositeParser] Error from {parser.report_name}: {e}")
 
         return all_deficiencies
 
-    def get_summary(self) -> dict[str, Any]:
-        """Get a summary of all report parsing.
-
-        Returns:
-            Dictionary with summary information
-        """
-        summaries = {}
-        available_count = 0
-
-        for parser in self.parsers:
-            summary = parser.get_summary()
-            summaries[parser.report_name] = summary
-            if summary.get("available", False):
-                available_count += 1
-
-        return {
-            "timestamp": self.timestamp,
-            "adg_dir": str(self.adg_dir),
-            "total_reports": len(self.parsers),
-            "available_reports": available_count,
-            "report_summaries": summaries,
-        }
+    def extract_all_deficiencies(self) -> list[dict[str, Any]]:
+        """Alias for extract_deficiencies()."""
+        return self.extract_deficiencies()
 
     def get_deficiency_counts_by_category(self) -> dict[str, int]:
-        """Get counts of deficiencies by category.
+        """Count deficiencies by category.
 
         Returns:
-            Dictionary mapping category to count
+            Dictionary with counts for each FixCategory
         """
-        deficiencies = self.extract_all_deficiencies()
+        deficiencies = self.extract_deficiencies()
 
         counts = {
             "auto_fix": 0,
@@ -119,9 +113,16 @@ class CompositeReportParser:
             "block_fix": 0,
         }
 
-        for deficiency in deficiencies:
-            category = deficiency.get("category", "suggest_fix")
-            if category in counts:
-                counts[category] += 1
+        for d in deficiencies:
+            cat = d.get("category", FixCategory.SUGGEST_FIX)
+            if hasattr(cat, "value"):
+                cat = cat.value
+
+            if cat == "auto_fix" or str(cat).endswith("AUTO_FIX"):
+                counts["auto_fix"] += 1
+            elif cat == "suggest_fix" or str(cat).endswith("SUGGEST_FIX"):
+                counts["suggest_fix"] += 1
+            elif cat == "block_fix" or str(cat).endswith("BLOCK_FIX"):
+                counts["block_fix"] += 1
 
         return counts
