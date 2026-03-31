@@ -110,7 +110,6 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
-from agentic_core.utils.fs_util import calculate_file_hash
 
 _emit_emits_metric_event("detect_template_drift", "p4obs", "metric_1")
 _emit_emits_metric_event("detect_template_drift", "p4obs", "metric_2")
@@ -190,6 +189,8 @@ def detect_template_drift(registry_path: Path, base_dir: Path) -> tuple[list[dic
     Returns:
         Tuple of (synchronized_entries, drifted_entries)
     """
+    from agentic_core.utils.fs_util import calculate_file_hash
+
     registry = load_registry(registry_path)
     synchronized = []
     drifted = []
@@ -260,6 +261,74 @@ def detect_and_return_drift(registry_path: Path, base_dir: Path):
         Tuple of (synchronized, drifted) lists
     """
     return detect_template_drift(registry_path, base_dir)
+
+
+def synchronize_registry_hashes(registry_path: Path, base_dir: Path) -> dict:
+    """
+    Synchronize registry content hashes with actual template files.
+
+    Returns:
+        Dict with synchronization statistics
+    """
+    from agentic_core.utils.fs_util import calculate_file_hash
+
+    registry = load_registry(registry_path)
+    synchronized = []
+    drifted = []
+    prompts = registry.get("prompts", {})
+    for template_name, prompt_versions in prompts.items():
+        for prompt_data in prompt_versions:
+            if not prompt_data.get("active", False):
+                continue
+            template_path = base_dir / "templates" / template_name
+            if not template_path.exists():
+                drifted.append(
+                    {
+                        "prompt_id": template_name,
+                        "template_path": str(template_path.relative_to(base_dir)),
+                        "issue": "Template file missing",
+                        "registry_hash": prompt_data.get("content_hash", "N/A"),
+                        "disk_hash": "MISSING",
+                        "status": "DRIFT",
+                    }
+                )
+                continue
+            disk_hash = calculate_file_hash(template_path)
+            registry_hash = prompt_data.get("content_hash", "")
+            if not registry_hash:
+                drifted.append(
+                    {
+                        "prompt_id": template_name,
+                        "template_path": str(template_path.relative_to(base_dir)),
+                        "issue": "No content hash in registry",
+                        "registry_hash": "MISSING",
+                        "disk_hash": disk_hash,
+                        "status": "DRIFT",
+                    }
+                )
+                continue
+            if disk_hash != registry_hash:
+                drifted.append(
+                    {
+                        "prompt_id": template_name,
+                        "template_path": str(template_path.relative_to(base_dir)),
+                        "issue": "Content hash mismatch - template modified without registry update",
+                        "registry_hash": registry_hash,
+                        "disk_hash": disk_hash,
+                        "status": "DRIFT",
+                    }
+                )
+            else:
+                synchronized.append(
+                    {
+                        "prompt_id": template_name,
+                        "template_path": str(template_path.relative_to(base_dir)),
+                        "registry_hash": registry_hash,
+                        "disk_hash": disk_hash,
+                        "status": "SYNCHRONIZED",
+                    }
+                )
+    return {"synchronized": synchronized, "drifted": drifted}
 
 
 def main():

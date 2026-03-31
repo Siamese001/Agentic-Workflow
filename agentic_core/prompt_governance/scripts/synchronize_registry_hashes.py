@@ -72,7 +72,6 @@ _emit_captures_evaluation_metric("p4", "synchronize_registry_hashes", "eval_metr
 _emit_stores_embedding("p4", "synchronize_registry_hashes", "embedding_store")
 _emit_updates_meta_learning_state("p4", "synchronize_registry_hashes", "meta_learning")
 _emit_links_execution_to_snapshot("p4", "synchronize_registry_hashes", "exec_snapshot_link")
-from agentic_core.utils.fs_util import calculate_file_hash
 
 _emit_records_execution_trace("p0", "evidence", "synchronize_registry_hashes")
 _emit_applies_guardrail("p0", "synchronize_registry_hashes", "p0_governance")
@@ -202,6 +201,8 @@ def synchronize_registry_hashes(registry_path: Path, base_dir: Path) -> dict:
     Returns:
         Dict with synchronization statistics
     """
+    from agentic_core.utils.fs_util import calculate_file_hash
+
     registry = load_registry(registry_path)
     prompts = registry.get("prompts", {})
     updated_count = 0
