@@ -1,29 +1,29 @@
-"""Placeholder test for ToolEnforcementTypesAdg."""
+"""Test ToolEnforcementTypesAdg functionality."""
+
+import sys
+from pathlib import Path
 
 import pytest
 
+REPO_ROOT = Path(__file__).parent.parent.parent
+sys.path.insert(0, str(REPO_ROOT))
 
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300  # 5 minutes
 
 @pytest.mark.unit
 class TestToolEnforcementTypesAdg:
     """Test ToolEnforcementTypesAdg functionality."""
 
-    def test_placeholder_1(self):
-        """Placeholder test 1."""
-        assert True
-    
-    def test_placeholder_2(self):
-        """Placeholder test 2."""
-        assert True
-    
-    def test_placeholder_3(self):
-        """Placeholder test 3."""
-        assert True
+    def test_tool_enforcement_types_adg_imports(self):
+        """Test tool_enforcement_types_adg module imports."""
+        from agentic_core import tool_enforcement_types_adg
+        assert tool_enforcement_types_adg is not None
+
+    def test_tool_enforcement_types_adg_class(self):
+        """Test ToolEnforcementTypesAdg class exists."""
+        from agentic_core import ToolEnforcementTypesAdg
+        assert ToolEnforcementTypesAdg is not None
+
+    def test_tool_enforcement_types_adg_callable(self):
+        """Test tool_enforcement_types_adg functions are callable."""
+        from agentic_core import validate_tool_enforcement_types_adg
+        assert callable(validate_tool_enforcement_types_adg)
