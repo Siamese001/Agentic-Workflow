@@ -1,29 +1,29 @@
-"""Placeholder test for SilentDegradationDetector."""
+"""Test SilentDegradationDetector functionality."""
+
+import sys
+from pathlib import Path
 
 import pytest
 
+REPO_ROOT = Path(__file__).parent.parent.parent
+sys.path.insert(0, str(REPO_ROOT))
 
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300  # 5 minutes
 
 @pytest.mark.unit
 class TestSilentDegradationDetector:
     """Test SilentDegradationDetector functionality."""
 
-    def test_placeholder_1(self):
-        """Placeholder test 1."""
-        assert True
-    
-    def test_placeholder_2(self):
-        """Placeholder test 2."""
-        assert True
-    
-    def test_placeholder_3(self):
-        """Placeholder test 3."""
-        assert True
+    def test_silent_degradation_detector_imports(self):
+        """Test silent_degradation_detector module imports."""
+        from agentic_core import silent_degradation_detector
+        assert silent_degradation_detector is not None
+
+    def test_silent_degradation_detector_class(self):
+        """Test SilentDegradationDetector class exists."""
+        from agentic_core import SilentDegradationDetector
+        assert SilentDegradationDetector is not None
+
+    def test_silent_degradation_detector_callable(self):
+        """Test silent_degradation_detector functions are callable."""
+        from agentic_core import validate_silent_degradation_detector
+        assert callable(validate_silent_degradation_detector)

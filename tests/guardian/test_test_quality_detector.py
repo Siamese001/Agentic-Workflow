@@ -1,29 +1,29 @@
-"""Placeholder test for TestQualityDetector."""
+"""Test QualityDetector functionality."""
+
+import sys
+from pathlib import Path
 
 import pytest
 
+REPO_ROOT = Path(__file__).parent.parent.parent
+sys.path.insert(0, str(REPO_ROOT))
 
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300  # 5 minutes
 
 @pytest.mark.unit
-class TestTestQualityDetector:
-    """Test TestQualityDetector functionality."""
+class TestQualityDetector:
+    """Test QualityDetector functionality."""
 
-    def test_placeholder_1(self):
-        """Placeholder test 1."""
-        assert True
-    
-    def test_placeholder_2(self):
-        """Placeholder test 2."""
-        assert True
-    
-    def test_placeholder_3(self):
-        """Placeholder test 3."""
-        assert True
+    def test_quality_detector_imports(self):
+        """Test quality_detector module imports."""
+        from agentic_core import quality_detector
+        assert quality_detector is not None
+
+    def test_quality_detector_class(self):
+        """Test QualityDetector class exists."""
+        from agentic_core import QualityDetector
+        assert QualityDetector is not None
+
+    def test_quality_detector_callable(self):
+        """Test quality_detector functions are callable."""
+        from agentic_core import validate_quality_detector
+        assert callable(validate_quality_detector)

@@ -1,29 +1,29 @@
-"""Placeholder test for StructureHealers."""
+"""Test StructureHealers functionality."""
+
+import sys
+from pathlib import Path
 
 import pytest
 
+REPO_ROOT = Path(__file__).parent.parent.parent
+sys.path.insert(0, str(REPO_ROOT))
 
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300  # 5 minutes
 
 @pytest.mark.unit
 class TestStructureHealers:
     """Test StructureHealers functionality."""
 
-    def test_placeholder_1(self):
-        """Placeholder test 1."""
-        assert True
-    
-    def test_placeholder_2(self):
-        """Placeholder test 2."""
-        assert True
-    
-    def test_placeholder_3(self):
-        """Placeholder test 3."""
-        assert True
+    def test_structure_healers_imports(self):
+        """Test structure_healers module imports."""
+        from agentic_core import structure_healers
+        assert structure_healers is not None
+
+    def test_structure_healers_class(self):
+        """Test StructureHealers class exists."""
+        from agentic_core import StructureHealers
+        assert StructureHealers is not None
+
+    def test_structure_healers_callable(self):
+        """Test structure_healers functions are callable."""
+        from agentic_core import validate_structure_healers
+        assert callable(validate_structure_healers)
