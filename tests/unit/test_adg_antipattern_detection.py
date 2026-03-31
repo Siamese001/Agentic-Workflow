@@ -1,29 +1,29 @@
-"""Placeholder test for AdgAntipatternDetection."""
+"""Test AdgAntipatternDetection functionality."""
+
+import sys
+from pathlib import Path
 
 import pytest
 
+REPO_ROOT = Path(__file__).parent.parent.parent
+sys.path.insert(0, str(REPO_ROOT))
 
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300  # 5 minutes
 
 @pytest.mark.unit
 class TestAdgAntipatternDetection:
     """Test AdgAntipatternDetection functionality."""
 
-    def test_placeholder_1(self):
-        """Placeholder test 1."""
-        assert True
-    
-    def test_placeholder_2(self):
-        """Placeholder test 2."""
-        assert True
-    
-    def test_placeholder_3(self):
-        """Placeholder test 3."""
-        assert True
+    def test_adg_antipattern_imports(self):
+        """Test ADG antipattern module imports."""
+        from tools.adg import antipattern_detection
+        assert antipattern_detection is not None
+
+    def test_antipattern_detector_class(self):
+        """Test antipattern detector class exists."""
+        from tools.adg.antipattern_detection import AntipatternDetector
+        assert AntipatternDetector is not None
+
+    def test_detect_antipatterns_function(self):
+        """Test detect antipatterns function."""
+        from tools.adg.antipattern_detection import detect_antipatterns
+        assert callable(detect_antipatterns)

@@ -1,29 +1,30 @@
-"""Placeholder test for AdgArtifactBuilder."""
+"""Test AdgCliCommands functionality."""
+
+import sys
+from pathlib import Path
 
 import pytest
 
+REPO_ROOT = Path(__file__).parent.parent.parent
+sys.path.insert(0, str(REPO_ROOT))
 
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300  # 5 minutes
 
 @pytest.mark.unit
-class TestAdgArtifactBuilder:
-    """Test AdgArtifactBuilder functionality."""
+class TestAdgCliCommands:
+    """Test AdgCliCommands functionality."""
 
-    def test_placeholder_1(self):
-        """Placeholder test 1."""
-        assert True
-    
-    def test_placeholder_2(self):
-        """Placeholder test 2."""
-        assert True
-    
-    def test_placeholder_3(self):
-        """Placeholder test 3."""
-        assert True
+    def test_adg_cli_imports(self):
+        """Test ADG CLI module imports."""
+        from tools.adg import cli_commands
+        assert cli_commands is not None
+
+    def test_cli_command_class(self):
+        """Test CLI command class exists."""
+        from tools.adg.cli_commands import CLICommand
+        assert CLICommand is not None
+
+    def test_execute_cli_command(self):
+        """Test execute CLI command function."""
+        from tools.adg.cli_commands import execute_command
+        assert callable(execute_command)
+        assert callable(build_artifact)
