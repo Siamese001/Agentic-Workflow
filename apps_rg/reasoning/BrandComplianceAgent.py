@@ -4,6 +4,6 @@ This file is a backward-compatibility shim.
 Import the canonical executor directly for new code.
 """
 
-from apps_rg.engines.RGValidationExecutor import RGValidationExecutor as BrandComplianceAgent
+from apps_rg.reasoning.RGValidationExecutor import RGValidationExecutor as BrandComplianceAgent
 
 __all__ = ["BrandComplianceAgent"]

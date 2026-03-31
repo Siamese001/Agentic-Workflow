@@ -14,16 +14,31 @@ class TestSafetyDetectorAgentAdg:
     """Test SafetyDetectorAgentAdg functionality."""
 
     def test_safety_detector_agent_adg_imports(self):
-        """Test safety_detector_agent_adg module imports."""
-        from agentic_core import safety_detector_agent_adg
-        assert safety_detector_agent_adg is not None
+        """Test SafetyDetectorAgent module imports as module type."""
+        import types
+
+        from agentic_core.L5_safety.reasoning import SafetyDetectorAgent as agent_module
+
+        assert agent_module is not None
+        assert isinstance(agent_module, types.ModuleType)
 
     def test_safety_detector_agent_adg_class(self):
-        """Test SafetyDetectorAgentAdg class exists."""
-        from agentic_core import SafetyDetectorAgentAdg
-        assert SafetyDetectorAgentAdg is not None
+        """Test SafetyDetectorAgent class exists and can be instantiated."""
+        from agentic_core.L5_safety.reasoning.SafetyDetectorAgent import SafetyDetectorAgent
+
+        assert SafetyDetectorAgent is not None
+        # Test instantiation with default config
+        agent = SafetyDetectorAgent()
+        assert agent is not None
+        assert hasattr(agent, "detect_all")
+        assert hasattr(agent, "is_safe")
 
     def test_safety_detector_agent_adg_callable(self):
-        """Test safety_detector_agent_adg functions are callable."""
-        from agentic_core import validate_safety_detector_agent_adg
-        assert callable(validate_safety_detector_agent_adg)
+        """Test SafetyDetectorAgent methods are callable."""
+        from agentic_core.L5_safety.reasoning.SafetyDetectorAgent import SafetyDetectorAgent
+
+        agent = SafetyDetectorAgent()
+        assert callable(agent.detect_all)
+        assert callable(agent.detect_injection)
+        assert callable(agent.is_safe)
+        assert callable(agent.get_safety_score)
