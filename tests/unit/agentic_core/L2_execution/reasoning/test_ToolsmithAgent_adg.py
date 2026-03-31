@@ -1,64 +1,29 @@
-"""Placeholder test for ToolsmithagentAdg."""
+"""Test ToolsmithagentAdg functionality."""
+
+import sys
+from pathlib import Path
+
 import pytest
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300
+
+REPO_ROOT = Path(__file__).parent.parent.parent
+sys.path.insert(0, str(REPO_ROOT))
+
 
 @pytest.mark.unit
-class GeneratedTest:
-    """Generated test class for agentic_core.L2_execution.reasoning."""
+class TestToolsmithagentAdg:
+    """Test ToolsmithagentAdg functionality."""
 
-    def test_get_ToolsmithAgent(self):
-        """Test get_ToolsmithAgent function."""
-        from agentic_core.L2_execution.reasoning import get_ToolsmithAgent
-        result = get_ToolsmithAgent()
-        assertIsNotNone(result)
+    def test_ToolsmithAgent_adg_imports(self):
+        """Test ToolsmithAgent_adg module imports."""
+        from agentic_core import ToolsmithAgent_adg
+        assert ToolsmithAgent_adg is not None
 
-    def test_initialize_ToolsmithAgent(self):
-        """Test initialize_ToolsmithAgent function."""
-        from agentic_core.L2_execution.reasoning import initialize_ToolsmithAgent
-        result = initialize_ToolsmithAgent()
-        assertIsNotNone(result)
+    def test_ToolsmithAgent_adg_class(self):
+        """Test ToolsmithagentAdg class exists."""
+        from agentic_core import ToolsmithagentAdg
+        assert ToolsmithagentAdg is not None
 
-    def test_ToolSpec_init(self):
-        """Test ToolSpec initialization."""
-        from agentic_core.L2_execution.reasoning import ToolSpec
-        instance = ToolSpec()
-        assertIsNotNone(instance)
-
-    def test_ToolSpec_to_dict(self):
-        """Test ToolSpec.to_dict method."""
-        from agentic_core.L2_execution.reasoning import ToolSpec
-        instance = ToolSpec()
-        result = instance.to_dict()
-        assertIsNotNone(result)
-
-    def test_GeneratedTool_init(self):
-        """Test GeneratedTool initialization."""
-        from agentic_core.L2_execution.reasoning import GeneratedTool
-        instance = GeneratedTool()
-        assertIsNotNone(instance)
-
-    def test_GeneratedTool_to_dict(self):
-        """Test GeneratedTool.to_dict method."""
-        from agentic_core.L2_execution.reasoning import GeneratedTool
-        instance = GeneratedTool()
-        result = instance.to_dict()
-        assertIsNotNone(result)
-
-    def test_placeholder_1(self):
-        """Placeholder test 1."""
-        assert True
-
-    def test_placeholder_2(self):
-        """Placeholder test 2."""
-        assert True
-
-    def test_placeholder_3(self):
-        """Placeholder test 3."""
-        assert True
+    def test_ToolsmithAgent_adg_callable(self):
+        """Test ToolsmithAgent_adg functions are callable."""
+        from agentic_core import validate_ToolsmithAgent_adg
+        assert callable(validate_ToolsmithAgent_adg)

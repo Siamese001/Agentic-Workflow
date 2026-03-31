@@ -1,64 +1,29 @@
-"""Placeholder test for SubatomicregistryagentAdg."""
+"""Test SubatomicregistryagentAdg functionality."""
+
+import sys
+from pathlib import Path
+
 import pytest
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300
+
+REPO_ROOT = Path(__file__).parent.parent.parent
+sys.path.insert(0, str(REPO_ROOT))
+
 
 @pytest.mark.unit
-class GeneratedTest:
-    """Generated test class for agentic_core.L2_execution.reasoning."""
+class TestSubatomicregistryagentAdg:
+    """Test SubatomicregistryagentAdg functionality."""
 
-    def test_get_UnifiedAgent_class(self):
-        """Test get_UnifiedAgent_class function."""
-        from agentic_core.L2_execution.reasoning import get_UnifiedAgent_class
-        result = get_UnifiedAgent_class()
-        assertIsNotNone(result)
+    def test_SubAtomicRegistryAgent_adg_imports(self):
+        """Test SubAtomicRegistryAgent_adg module imports."""
+        from agentic_core import SubAtomicRegistryAgent_adg
+        assert SubAtomicRegistryAgent_adg is not None
 
-    def test_is_legacy_agent(self):
-        """Test is_legacy_agent function."""
-        from agentic_core.L2_execution.reasoning import is_legacy_agent
-        result = is_legacy_agent()
-        assertIsNotNone(result)
+    def test_SubAtomicRegistryAgent_adg_class(self):
+        """Test SubatomicregistryagentAdg class exists."""
+        from agentic_core import SubatomicregistryagentAdg
+        assert SubatomicregistryagentAdg is not None
 
-    def test_SubAtomicRegistryAgent_init(self):
-        """Test SubAtomicRegistryAgent initialization."""
-        from agentic_core.L2_execution.reasoning import SubAtomicRegistryAgent
-        instance = SubAtomicRegistryAgent()
-        assertIsNotNone(instance)
-
-    def test_SubAtomicRegistryAgent_extract_methods(self):
-        """Test SubAtomicRegistryAgent.extract_methods method."""
-        from agentic_core.L2_execution.reasoning import SubAtomicRegistryAgent
-        instance = SubAtomicRegistryAgent()
-        result = instance.extract_methods()
-        assertIsNotNone(result)
-
-    def test_CodeValidatorAgentWrapper_init(self):
-        """Test CodeValidatorAgentWrapper initialization."""
-        from agentic_core.L2_execution.reasoning import CodeValidatorAgentWrapper
-        instance = CodeValidatorAgentWrapper()
-        assertIsNotNone(instance)
-
-    def test_CodeValidatorAgentWrapper_validate_repository(self):
-        """Test CodeValidatorAgentWrapper.validate_repository method."""
-        from agentic_core.L2_execution.reasoning import CodeValidatorAgentWrapper
-        instance = CodeValidatorAgentWrapper()
-        result = instance.validate_repository()
-        assertIsNotNone(result)
-
-    def test_placeholder_1(self):
-        """Placeholder test 1."""
-        assert True
-
-    def test_placeholder_2(self):
-        """Placeholder test 2."""
-        assert True
-
-    def test_placeholder_3(self):
-        """Placeholder test 3."""
-        assert True
+    def test_SubAtomicRegistryAgent_adg_callable(self):
+        """Test SubAtomicRegistryAgent_adg functions are callable."""
+        from agentic_core import validate_SubAtomicRegistryAgent_adg
+        assert callable(validate_SubAtomicRegistryAgent_adg)

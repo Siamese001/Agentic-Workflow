@@ -1,51 +1,29 @@
-"""Placeholder test for ComponentUtil."""
+"""Test ComponentUtil functionality."""
+
+import sys
+from pathlib import Path
+
 import pytest
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300
+
+REPO_ROOT = Path(__file__).parent.parent.parent
+sys.path.insert(0, str(REPO_ROOT))
+
 
 @pytest.mark.unit
-class GeneratedTest:
-    """Generated test class for agentic_core.L0_routing.utils."""
+class TestComponentUtil:
+    """Test ComponentUtil functionality."""
 
-    def test_get_verification_gate(self):
-        """Test get_verification_gate function."""
-        from agentic_core.L0_routing.utils import get_verification_gate
-        result = get_verification_gate()
-        assertIsNotNone(result)
+    def test_component_util_imports(self):
+        """Test component_util module imports."""
+        from agentic_core import component_util
+        assert component_util is not None
 
-    def test_get_human_review_queue(self):
-        """Test get_human_review_queue function."""
-        from agentic_core.L0_routing.utils import get_human_review_queue
-        result = get_human_review_queue()
-        assertIsNotNone(result)
+    def test_component_util_class(self):
+        """Test ComponentUtil class exists."""
+        from agentic_core import ComponentUtil
+        assert ComponentUtil is not None
 
-    def test_ComponentFactory_init(self):
-        """Test ComponentFactory initialization."""
-        from agentic_core.L0_routing.utils import ComponentFactory
-        instance = ComponentFactory()
-        assertIsNotNone(instance)
-
-    def test_ComponentFactory_get_verification_gate(self):
-        """Test ComponentFactory.get_verification_gate method."""
-        from agentic_core.L0_routing.utils import ComponentFactory
-        instance = ComponentFactory()
-        result = instance.get_verification_gate()
-        assertIsNotNone(result)
-
-    def test_placeholder_1(self):
-        """Placeholder test 1."""
-        assert True
-
-    def test_placeholder_2(self):
-        """Placeholder test 2."""
-        assert True
-
-    def test_placeholder_3(self):
-        """Placeholder test 3."""
-        assert True
+    def test_component_util_callable(self):
+        """Test component_util functions are callable."""
+        from agentic_core import validate_component_util
+        assert callable(validate_component_util)

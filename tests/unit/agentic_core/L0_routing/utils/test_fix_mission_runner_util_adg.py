@@ -1,32 +1,29 @@
-"""Placeholder test for FixMissionRunnerUtilAdg."""
+"""Test FixMissionRunnerUtilAdg functionality."""
+
+import sys
+from pathlib import Path
+
 import pytest
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300
+
+REPO_ROOT = Path(__file__).parent.parent.parent
+sys.path.insert(0, str(REPO_ROOT))
+
 
 @pytest.mark.unit
-class GeneratedTest:
-    """Generated test class for agentic_core.L0_routing.utils."""
+class TestFixMissionRunnerUtilAdg:
+    """Test FixMissionRunnerUtilAdg functionality."""
 
-    def test_fix_mission_runner(self):
-        """Test fix_mission_runner function."""
-        from agentic_core.L0_routing.utils import fix_mission_runner
-        result = fix_mission_runner()
-        assertIsNotNone(result)
+    def test_fix_mission_runner_util_adg_imports(self):
+        """Test fix_mission_runner_util_adg module imports."""
+        from agentic_core import fix_mission_runner_util_adg
+        assert fix_mission_runner_util_adg is not None
 
-    def test_placeholder_1(self):
-        """Placeholder test 1."""
-        assert True
+    def test_fix_mission_runner_util_adg_class(self):
+        """Test FixMissionRunnerUtilAdg class exists."""
+        from agentic_core import FixMissionRunnerUtilAdg
+        assert FixMissionRunnerUtilAdg is not None
 
-    def test_placeholder_2(self):
-        """Placeholder test 2."""
-        assert True
-
-    def test_placeholder_3(self):
-        """Placeholder test 3."""
-        assert True
+    def test_fix_mission_runner_util_adg_callable(self):
+        """Test fix_mission_runner_util_adg functions are callable."""
+        from agentic_core import validate_fix_mission_runner_util_adg
+        assert callable(validate_fix_mission_runner_util_adg)

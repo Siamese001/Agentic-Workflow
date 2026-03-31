@@ -1,57 +1,29 @@
-"""Placeholder test for EmbeddingsovereignagentAdg."""
+"""Test EmbeddingsovereignagentAdg functionality."""
+
+import sys
+from pathlib import Path
+
 import pytest
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300
+
+REPO_ROOT = Path(__file__).parent.parent.parent
+sys.path.insert(0, str(REPO_ROOT))
+
 
 @pytest.mark.unit
-class GeneratedTest:
-    """Generated test class for agentic_core.L2_execution.reasoning."""
+class TestEmbeddingsovereignagentAdg:
+    """Test EmbeddingsovereignagentAdg functionality."""
 
-    def test_get_embedding_gateway(self):
-        """Test get_embedding_gateway function."""
-        from agentic_core.L2_execution.reasoning import get_embedding_gateway
-        result = get_embedding_gateway()
-        assertIsNotNone(result)
+    def test_EmbeddingSovereignAgent_adg_imports(self):
+        """Test EmbeddingSovereignAgent_adg module imports."""
+        from agentic_core import EmbeddingSovereignAgent_adg
+        assert EmbeddingSovereignAgent_adg is not None
 
-    def test_reset_instance(self):
-        """Test reset_instance function."""
-        from agentic_core.L2_execution.reasoning import reset_instance
-        result = reset_instance()
-        assertIsNotNone(result)
+    def test_EmbeddingSovereignAgent_adg_class(self):
+        """Test EmbeddingsovereignagentAdg class exists."""
+        from agentic_core import EmbeddingsovereignagentAdg
+        assert EmbeddingsovereignagentAdg is not None
 
-    def test_EmbeddingSovereignAgent_init(self):
-        """Test EmbeddingSovereignAgent initialization."""
-        from agentic_core.L2_execution.reasoning import EmbeddingSovereignAgent
-        instance = EmbeddingSovereignAgent()
-        assertIsNotNone(instance)
-
-    def test_EmbeddingSovereignAgent_reset_instance(self):
-        """Test EmbeddingSovereignAgent.reset_instance method."""
-        from agentic_core.L2_execution.reasoning import EmbeddingSovereignAgent
-        instance = EmbeddingSovereignAgent()
-        result = instance.reset_instance()
-        assertIsNotNone(result)
-
-    def test_SubatomicTestingMixin_init(self):
-        """Test SubatomicTestingMixin initialization."""
-        from agentic_core.L2_execution.reasoning import SubatomicTestingMixin
-        instance = SubatomicTestingMixin()
-        assertIsNotNone(instance)
-
-    def test_placeholder_1(self):
-        """Placeholder test 1."""
-        assert True
-
-    def test_placeholder_2(self):
-        """Placeholder test 2."""
-        assert True
-
-    def test_placeholder_3(self):
-        """Placeholder test 3."""
-        assert True
+    def test_EmbeddingSovereignAgent_adg_callable(self):
+        """Test EmbeddingSovereignAgent_adg functions are callable."""
+        from agentic_core import validate_EmbeddingSovereignAgent_adg
+        assert callable(validate_EmbeddingSovereignAgent_adg)

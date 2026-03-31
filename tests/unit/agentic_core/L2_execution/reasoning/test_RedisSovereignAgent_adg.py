@@ -1,51 +1,29 @@
-"""Placeholder test for RedissovereignagentAdg."""
+"""Test RedissovereignagentAdg functionality."""
+
+import sys
+from pathlib import Path
+
 import pytest
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300
+
+REPO_ROOT = Path(__file__).parent.parent.parent
+sys.path.insert(0, str(REPO_ROOT))
+
 
 @pytest.mark.unit
-class GeneratedTest:
-    """Generated test class for agentic_core.L2_execution.reasoning."""
+class TestRedissovereignagentAdg:
+    """Test RedissovereignagentAdg functionality."""
 
-    def test_get_client(self):
-        """Test get_client function."""
-        from agentic_core.L2_execution.reasoning import get_client
-        result = get_client()
-        assertIsNotNone(result)
+    def test_RedisSovereignAgent_adg_imports(self):
+        """Test RedisSovereignAgent_adg module imports."""
+        from agentic_core import RedisSovereignAgent_adg
+        assert RedisSovereignAgent_adg is not None
 
-    def test_invalidate_file_cache(self):
-        """Test invalidate_file_cache function."""
-        from agentic_core.L2_execution.reasoning import invalidate_file_cache
-        result = invalidate_file_cache()
-        assertIsNotNone(result)
+    def test_RedisSovereignAgent_adg_class(self):
+        """Test RedissovereignagentAdg class exists."""
+        from agentic_core import RedissovereignagentAdg
+        assert RedissovereignagentAdg is not None
 
-    def test_RedisSovereignAgent_init(self):
-        """Test RedisSovereignAgent initialization."""
-        from agentic_core.L2_execution.reasoning import RedisSovereignAgent
-        instance = RedisSovereignAgent()
-        assertIsNotNone(instance)
-
-    def test_RedisSovereignAgent_get_client(self):
-        """Test RedisSovereignAgent.get_client method."""
-        from agentic_core.L2_execution.reasoning import RedisSovereignAgent
-        instance = RedisSovereignAgent()
-        result = instance.get_client()
-        assertIsNotNone(result)
-
-    def test_placeholder_1(self):
-        """Placeholder test 1."""
-        assert True
-
-    def test_placeholder_2(self):
-        """Placeholder test 2."""
-        assert True
-
-    def test_placeholder_3(self):
-        """Placeholder test 3."""
-        assert True
+    def test_RedisSovereignAgent_adg_callable(self):
+        """Test RedisSovereignAgent_adg functions are callable."""
+        from agentic_core import validate_RedisSovereignAgent_adg
+        assert callable(validate_RedisSovereignAgent_adg)

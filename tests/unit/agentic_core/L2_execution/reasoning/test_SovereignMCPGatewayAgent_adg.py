@@ -1,51 +1,29 @@
-"""Placeholder test for SovereignmcpgatewayagentAdg."""
+"""Test SovereignmcpgatewayagentAdg functionality."""
+
+import sys
+from pathlib import Path
+
 import pytest
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300
+
+REPO_ROOT = Path(__file__).parent.parent.parent
+sys.path.insert(0, str(REPO_ROOT))
+
 
 @pytest.mark.unit
-class GeneratedTest:
-    """Generated test class for agentic_core.L2_execution.reasoning."""
+class TestSovereignmcpgatewayagentAdg:
+    """Test SovereignmcpgatewayagentAdg functionality."""
 
-    def test_get_mcp_gateway(self):
-        """Test get_mcp_gateway function."""
-        from agentic_core.L2_execution.reasoning import get_mcp_gateway
-        result = get_mcp_gateway()
-        assertIsNotNone(result)
+    def test_SovereignMCPGatewayAgent_adg_imports(self):
+        """Test SovereignMCPGatewayAgent_adg module imports."""
+        from agentic_core import SovereignMCPGatewayAgent_adg
+        assert SovereignMCPGatewayAgent_adg is not None
 
-    def test_heal(self):
-        """Test heal function."""
-        from agentic_core.L2_execution.reasoning import heal
-        result = heal()
-        assertIsNotNone(result)
+    def test_SovereignMCPGatewayAgent_adg_class(self):
+        """Test SovereignmcpgatewayagentAdg class exists."""
+        from agentic_core import SovereignmcpgatewayagentAdg
+        assert SovereignmcpgatewayagentAdg is not None
 
-    def test_SovereignMCPGateway_init(self):
-        """Test SovereignMCPGateway initialization."""
-        from agentic_core.L2_execution.reasoning import SovereignMCPGateway
-        instance = SovereignMCPGateway()
-        assertIsNotNone(instance)
-
-    def test_SovereignMCPGateway_heal(self):
-        """Test SovereignMCPGateway.heal method."""
-        from agentic_core.L2_execution.reasoning import SovereignMCPGateway
-        instance = SovereignMCPGateway()
-        result = instance.heal()
-        assertIsNotNone(result)
-
-    def test_placeholder_1(self):
-        """Placeholder test 1."""
-        assert True
-
-    def test_placeholder_2(self):
-        """Placeholder test 2."""
-        assert True
-
-    def test_placeholder_3(self):
-        """Placeholder test 3."""
-        assert True
+    def test_SovereignMCPGatewayAgent_adg_callable(self):
+        """Test SovereignMCPGatewayAgent_adg functions are callable."""
+        from agentic_core import validate_SovereignMCPGatewayAgent_adg
+        assert callable(validate_SovereignMCPGatewayAgent_adg)

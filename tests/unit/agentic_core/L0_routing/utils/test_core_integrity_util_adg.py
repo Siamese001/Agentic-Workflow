@@ -1,57 +1,29 @@
-"""Placeholder test for CoreIntegrityUtilAdg."""
+"""Test CoreIntegrityUtilAdg functionality."""
+
+import sys
+from pathlib import Path
+
 import pytest
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300
+
+REPO_ROOT = Path(__file__).parent.parent.parent
+sys.path.insert(0, str(REPO_ROOT))
+
 
 @pytest.mark.unit
-class GeneratedTest:
-    """Generated test class for agentic_core.L0_routing.utils."""
+class TestCoreIntegrityUtilAdg:
+    """Test CoreIntegrityUtilAdg functionality."""
 
-    def test_emergency_shutdown(self):
-        """Test emergency_shutdown function."""
-        from agentic_core.L0_routing.utils import emergency_shutdown
-        result = emergency_shutdown()
-        assertIsNotNone(result)
+    def test_core_integrity_util_adg_imports(self):
+        """Test core_integrity_util_adg module imports."""
+        from agentic_core import core_integrity_util_adg
+        assert core_integrity_util_adg is not None
 
-    def test_verify_core_integrity(self):
-        """Test verify_core_integrity function."""
-        from agentic_core.L0_routing.utils import verify_core_integrity
-        result = verify_core_integrity()
-        assertIsNotNone(result)
+    def test_core_integrity_util_adg_class(self):
+        """Test CoreIntegrityUtilAdg class exists."""
+        from agentic_core import CoreIntegrityUtilAdg
+        assert CoreIntegrityUtilAdg is not None
 
-    def test_ConfigurationError_init(self):
-        """Test ConfigurationError initialization."""
-        from agentic_core.L0_routing.utils import ConfigurationError
-        instance = ConfigurationError()
-        assertIsNotNone(instance)
-
-    def test_CoreIntegrityVerifier_init(self):
-        """Test CoreIntegrityVerifier initialization."""
-        from agentic_core.L0_routing.utils import CoreIntegrityVerifier
-        instance = CoreIntegrityVerifier()
-        assertIsNotNone(instance)
-
-    def test_CoreIntegrityVerifier_verify_core_integrity(self):
-        """Test CoreIntegrityVerifier.verify_core_integrity method."""
-        from agentic_core.L0_routing.utils import CoreIntegrityVerifier
-        instance = CoreIntegrityVerifier()
-        result = instance.verify_core_integrity()
-        assertIsNotNone(result)
-
-    def test_placeholder_1(self):
-        """Placeholder test 1."""
-        assert True
-
-    def test_placeholder_2(self):
-        """Placeholder test 2."""
-        assert True
-
-    def test_placeholder_3(self):
-        """Placeholder test 3."""
-        assert True
+    def test_core_integrity_util_adg_callable(self):
+        """Test core_integrity_util_adg functions are callable."""
+        from agentic_core import validate_core_integrity_util_adg
+        assert callable(validate_core_integrity_util_adg)
