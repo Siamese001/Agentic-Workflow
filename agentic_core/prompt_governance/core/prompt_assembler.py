@@ -83,20 +83,6 @@ from typing import Any
 from pydantic import BaseModel
 
 from agentic_core.L4_state.memory.runtime_models import InjectionMatch
-from agentic_core.prompt_governance.contracts.slot_contracts import (
-    SLOT_ORDER,
-    SlotC0,
-    SlotD0,
-    SlotI0,
-    SlotS0,
-    SlotU0,
-    validate_slot_order,
-)
-from agentic_core.prompt_governance.security.validators.output_schema_validator import (
-    validate_against_schema,
-    validate_context_contract,
-    validate_healer_reentry,
-)
 from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     LayerSegment,
     _emit_agent_executes_agent,
@@ -135,6 +121,21 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_writes_learning_snapshot,
     _emit_writes_observability_log,
     _emit_writes_through,
+)
+from agentic_core.prompt_governance.contracts.slot_contracts import (
+    SLOT_ORDER,
+    SlotC0,
+    SlotD0,
+    SlotE0,
+    SlotI0,
+    SlotS0,
+    SlotU0,
+    validate_slot_order,
+)
+from agentic_core.prompt_governance.security.validators.output_schema_validator import (
+    validate_against_schema,
+    validate_context_contract,
+    validate_healer_reentry,
 )
 
 _emit_emits_metric_event("prompt_assembler", "p4obs", "metric_1")
@@ -311,7 +312,7 @@ class PromptTemplate(BaseModel):
 class PromptAssembler:
     """Assembles prompts with XML semantic fencing."""
 
-    DEFAULT_TEMPLATE = "<SLOT_S0>\nYou are {role}. Your objective is {objective}.\n</SLOT_S0>\n\n<SLOT_D0>\n{directives}\n{negative_constraints}\n</SLOT_D0>\n\n<SLOT_I0>\n<!-- Instructional capability context -->\n</SLOT_I0>\n\n<SLOT_C0>\n{context_data}\n</SLOT_C0>\n\n<SLOT_U0>\n{examples}\n</SLOT_U0>\n\n<OUTPUT_FORMAT>\n{output_format}\n</OUTPUT_FORMAT>"
+    DEFAULT_TEMPLATE = "<SLOT_S0>\nYou are {role}. Your objective is {objective}.\n</SLOT_S0>\n\n<SLOT_D0>\n{directives}\n{negative_constraints}\n</SLOT_D0>\n\n<SLOT_I0>\n<!-- Instructional capability context -->\n</SLOT_I0>\n\n<SLOT_E0>\n{exemplars}\n</SLOT_E0>\n\n<SLOT_C0>\n{context_data}\n</SLOT_C0>\n\n<SLOT_U0>\n{examples}\n</SLOT_U0>\n\n<OUTPUT_FORMAT>\n{output_format}\n</OUTPUT_FORMAT>"
 
     def __init__(self, template: str | None = None, legacy_mode: bool = False):
         """Initialize the prompt assembler.
@@ -332,9 +333,9 @@ class PromptAssembler:
         """Load custom XML templates from file."""
         template_dir = Path("./templates/prompts")
         template_dir.mkdir(parents=True, exist_ok=True)
-        from agentic_core.utils.ssot_discovery_validator import get_data_files
+        from agentic_core.utils.ssot_discovery_validator import get_python_files
 
-        xml_files = list(get_data_files(template_dir, extensions=[".xml"]))
+        xml_files = list(get_python_files(template_dir, pattern="*.xml"))
         for file_path in xml_files:
             try:
                 with open(file_path, encoding="utf-8") as f:
@@ -357,6 +358,7 @@ class PromptAssembler:
         injections: list[InjectionMatch],
         negative_constraints: list[str] | None = None,
         examples: str | None = None,
+        exemplars: str | None = None,
         output_schema: dict[str, Any] | None = None,
         template_name: str | None = None,
         metadata: dict[str, Any] | None = None,
@@ -412,6 +414,7 @@ class PromptAssembler:
             "S0": SlotS0(content=f"{role}: {objective}"),
             "D0": SlotD0(content=_healer_directive or "directives", authority="BINDING"),
             "I0": SlotI0(content="instructional"),
+            "E0": SlotE0(content=exemplars or "<!-- No exemplars provided -->"),
             "C0": SlotC0(content=_normalized),
             "U0": SlotU0(content=str(context_data)),
         }
@@ -448,6 +451,10 @@ class PromptAssembler:
             if examples:
                 InputSanitizer.validate_injection_safety("examples", examples)
                 sanitized_examples = InputSanitizer.sanitize_xml_content(examples)
+            sanitized_exemplars = None
+            if exemplars:
+                InputSanitizer.validate_injection_safety("exemplars", exemplars)
+                sanitized_exemplars = InputSanitizer.sanitize_xml_content(exemplars)
             sanitized_schema = None
             if output_schema:
                 sanitized_schema = InputSanitizer.sanitize_json_content(output_schema)
@@ -475,9 +482,10 @@ class PromptAssembler:
             directives=directives,
             negative_constraints=negative_str,
             examples=sanitized_examples if sanitized_examples else "",
+            exemplars=sanitized_exemplars if sanitized_exemplars else "",
             output_format=output_format,
         )
-        expected_tags = ["SLOT_S0", "SLOT_D0", "SLOT_I0", "SLOT_C0", "SLOT_U0", "OUTPUT_FORMAT"]
+        expected_tags = ["SLOT_S0", "SLOT_D0", "SLOT_I0", "SLOT_E0", "SLOT_C0", "SLOT_U0", "OUTPUT_FORMAT"]
         try:
             InputSanitizer.validate_template_integrity(prompt, expected_tags)
         except SecurityIntegrityError as e:    # guardian: SecurityIntegrityError should be handled with specific context    # guardian: SecurityIntegrityError should be handled with specific context    # guardian: SecurityIntegrityError should be handled with specific context    # guardian: SecurityIntegrityError should be handled with specific context    # guardian: SecurityIntegrityError should be handled with specific context    # guardian: SecurityIntegrityError should be handled with specific context    # guardian: SecurityIntegrityError should be handled with specific context    # guardian: SecurityIntegrityError should be handled with specific context    # guardian: SecurityIntegrityError should be handled with specific context    # guardian: SecurityIntegrityError should be handled with specific context    # guardian: SecurityIntegrityError should be handled with specific context    # guardian: SecurityIntegrityError should be handled with specific context    # guardian: SecurityIntegrityError should be handled with specific context    # guardian: SecurityIntegrityError should be handled with specific context    # guardian: SecurityIntegrityError should be handled with specific context    # guardian: SecurityIntegrityError should be handled with specific context    # guardian: SecurityIntegrityError should be handled with specific context    # guardian: SecurityIntegrityError should be handled with specific context    # guardian: SecurityIntegrityError should be handled with specific context    # guardian: SecurityIntegrityError should be handled with specific context    # guardian: SecurityIntegrityError should be handled with specific context    # guardian: SecurityIntegrityError should be handled with specific context    # guardian: SecurityIntegrityError should be handled with specific context    # guardian: SecurityIntegrityError should be handled with specific context    # guardian: SecurityIntegrityError should be handled with specific context    # guardian: SecurityIntegrityError should be handled with specific context    # guardian: SecurityIntegrityError should be handled with specific context    # guardian: SecurityIntegrityError should be handled with specific context    # guardian: SecurityIntegrityError should be handled with specific context    # guardian: SecurityIntegrityError should be handled with specific context    # guardian: SecurityIntegrityError should be handled with specific context    # guardian: SecurityIntegrityError should be handled with specific context    # guardian: SecurityIntegrityError should be handled with specific context    # guardian: SecurityIntegrityError should be handled with specific context    # guardian: SecurityIntegrityError should be handled with specific context    # guardian: SecurityIntegrityError should be handled with specific context    # guardian: SecurityIntegrityError should be handled with specific context    # guardian: SecurityIntegrityError should be handled with specific context    # guardian: SecurityIntegrityError should be handled with specific context    # guardian: SecurityIntegrityError should be handled with specific context    # guardian: SecurityIntegrityError should be handled with specific context    # guardian: SecurityIntegrityError should be handled with specific context    # guardian: SecurityIntegrityError should be handled with specific context    # guardian: SecurityIntegrityError should be handled with specific context    # guardian: SecurityIntegrityError should be handled with specific context    # guardian: SecurityIntegrityError should be handled with specific context    # guardian: SecurityIntegrityError should be handled with specific context    # guardian: SecurityIntegrityError should be handled with specific context    # guardian: SecurityIntegrityError should be handled with specific context    # guardian: SecurityIntegrityError should be handled with specific context    # guardian: SecurityIntegrityError should be handled with specific context    # guardian: SecurityIntegrityError should be handled with specific context    # guardian: SecurityIntegrityError should be handled with specific context    # guardian: SecurityIntegrityError should be handled with specific context    # guardian: SecurityIntegrityError should be handled with specific context    # guardian: SecurityIntegrityError should be handled with specific context    # guardian: SecurityIntegrityError should be handled with specific context    # guardian: SecurityIntegrityError should be handled with specific context    # guardian: SecurityIntegrityError should be handled with specific context    # guardian: SecurityIntegrityError should be handled with specific context    # guardian: SecurityIntegrityError should be handled with specific context    # guardian: SecurityIntegrityError should be handled with specific context    # guardian: SecurityIntegrityError should be handled with specific context    # guardian: SecurityIntegrityError should be handled with specific context    # guardian: SecurityIntegrityError should be handled with specific context    # guardian: SecurityIntegrityError should be handled with specific context    # guardian: SecurityIntegrityError should be handled with specific context    # guardian: SecurityIntegrityError should be handled with specific context    # guardian: SecurityIntegrityError should be handled with specific context    # guardian: SecurityIntegrityError should be handled with specific context    # guardian: SecurityIntegrityError should be handled with specific context    # guardian: SecurityIntegrityError should be handled with specific context    # guardian: SecurityIntegrityError should be handled with specific context    # guardian: SecurityIntegrityError should be handled with specific context    # guardian: SecurityIntegrityError should be handled with specific context    # guardian: SecurityIntegrityError should be handled with specific context    # guardian: SecurityIntegrityError should be handled with specific context    # guardian: SecurityIntegrityError should be handled with specific context    # guardian: SecurityIntegrityError should be handled with specific context    # guardian: SecurityIntegrityError should be handled with specific context    # guardian: SecurityIntegrityError should be handled with specific context    # guardian: SecurityIntegrityError should be handled with specific context    # guardian: SecurityIntegrityError should be handled with specific context    # guardian: SecurityIntegrityError should be handled with specific context    # guardian: SecurityIntegrityError should be handled with specific context    # guardian: SecurityIntegrityError should be handled with specific context    # guardian: SecurityIntegrityError should be handled with specific context    # guardian: SecurityIntegrityError should be handled with specific context    # guardian: SecurityIntegrityError should be handled with specific context    # guardian: SecurityIntegrityError should be handled with specific context    # guardian: SecurityIntegrityError should be handled with specific context    # guardian: SecurityIntegrityError should be handled with specific context    # guardian: SecurityIntegrityError should be handled with specific context    # guardian: SecurityIntegrityError should be handled with specific context    # guardian: SecurityIntegrityError should be handled with specific context    # guardian: SecurityIntegrityError should be handled with specific context    # guardian: SecurityIntegrityError should be handled with specific context    # guardian: SecurityIntegrityError should be handled with specific context    # guardian: SecurityIntegrityError should be handled with specific context    # guardian: SecurityIntegrityError should be handled with specific context    # guardian: SecurityIntegrityError should be handled with specific context    # guardian: SecurityIntegrityError should be handled with specific context    # guardian: SecurityIntegrityError should be handled with specific context    # guardian: SecurityIntegrityError should be handled with specific context    # guardian: SecurityIntegrityError should be handled with specific context    # guardian: SecurityIntegrityError should be handled with specific context    # guardian: SecurityIntegrityError should be handled with specific context    # guardian: SecurityIntegrityError should be handled with specific context    # guardian: SecurityIntegrityError should be handled with specific context    # guardian: SecurityIntegrityError should be handled with specific context    # guardian: SecurityIntegrityError should be handled with specific context    # guardian: SecurityIntegrityError should be handled with specific context    # guardian: SecurityIntegrityError should be handled with specific context    # guardian: SecurityIntegrityError should be handled with specific context

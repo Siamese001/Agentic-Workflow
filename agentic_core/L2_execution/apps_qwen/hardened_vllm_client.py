@@ -118,7 +118,7 @@ class CircuitBreaker:
             result = await operation()
             await self._record_success()
             return result
-        except Exception as e:
+        except Exception as _:
             await self._record_failure()
             raise
 
@@ -132,11 +132,13 @@ class CircuitBreaker:
         async with self._lock:
             if self.state == CircuitState.HALF_OPEN:
                 self.success_count += 1
+                logger.info("Half-open success: %d/%d", self.success_count, self.config.success_threshold)
                 if self.success_count >= self.config.success_threshold:
                     self.state = CircuitState.CLOSED
                     self.failure_count = 0
+                    self.half_open_calls = 0
                     logger.info("Circuit breaker CLOSED - service recovered")
-            else:
+            elif self.state == CircuitState.CLOSED:
                 self.failure_count = max(0, self.failure_count - 1)
 
     async def _record_failure(self) -> None:
@@ -149,12 +151,11 @@ class CircuitBreaker:
                 logger.warning("Circuit breaker OPEN - recovery failed")
             elif self.failure_count >= self.config.failure_threshold:
                 self.state = CircuitState.OPEN
-                logger.warning(f"Circuit breaker OPEN - {self.failure_count} failures")
+                logger.warning("Circuit breaker OPEN - %d failures", self.failure_count)
 
 
 class CircuitBreakerOpenError(Exception):
     """Raised when circuit breaker is open."""
-    pass
 
 
 class HardenedVLLMClient:
@@ -204,7 +205,7 @@ class HardenedVLLMClient:
                 latency_ms=0.0,
                 error_message="Circuit breaker open - service unavailable",
             )
-        except Exception as e:
+        except (OSError, RuntimeError) as e:
             self.metrics.requests_failed += 1
             return VLLMResponse(
                 success=False,
@@ -227,21 +228,24 @@ class HardenedVLLMClient:
                 if response.success or self._is_client_error(response.error_message):
                     return response
 
-                # Retryable error
+                # Retryable error - treat as failure for circuit breaker
                 last_error = Exception(response.error_message)
+                await self.circuit._record_failure()
 
                 if attempt < self.retry_config.max_retries:
                     delay = self._calculate_delay(attempt)
                     self.metrics.requests_retried += 1
-                    logger.warning(f"Retry {attempt + 1}/{self.retry_config.max_retries} after {delay:.1f}s: {response.error_message}")
+                    logger.warning("Retry %d/%d after %.1fs: %s", attempt + 1, self.retry_config.max_retries, delay, response.error_message)
                     await asyncio.sleep(delay)
 
-            except Exception as e:
+            except (OSError, RuntimeError) as e:
                 last_error = e
+                # Record failure for circuit breaker
+                await self.circuit._record_failure()
                 if attempt < self.retry_config.max_retries:
                     delay = self._calculate_delay(attempt)
                     self.metrics.requests_retried += 1
-                    logger.warning(f"Retry {attempt + 1}/{self.retry_config.max_retries} after {delay:.1f}s: {e}")
+                    logger.warning("Retry %d/%d after %.1fs: %s", attempt + 1, self.retry_config.max_retries, delay, e)
                     await asyncio.sleep(delay)
 
         # All retries exhausted
@@ -309,7 +313,7 @@ class HardenedVLLMClient:
             old_batch = self.base_client.batch_size
             new_batch = max(self._min_batch_size, old_batch // 2)
             self.base_client.batch_size = new_batch
-            logger.warning(f"Reduced batch size: {old_batch} -> {new_batch}")
+            logger.warning("Reduced batch size: %d -> %d", old_batch, new_batch)
 
     def get_metrics(self) -> dict[str, Any]:
         """Get hardening metrics."""

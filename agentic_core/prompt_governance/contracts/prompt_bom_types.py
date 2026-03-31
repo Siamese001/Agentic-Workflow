@@ -28,7 +28,6 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_observes_runtime_state,
     _emit_orchestrates_workflow,
     _emit_reads_policy_state,
-    _emit_records_execution_trace,
     _emit_records_healing_outcome,
     _emit_records_telemetry_event,
     _emit_records_tool_invocation,
@@ -102,6 +101,8 @@ class PromptBOM:
         SHA-256 hash of S0 system prompt version.
     mixins_required : tuple[str, ...]
         Sorted tuple of I0 mixin IDs required.
+    exemplars_required : tuple[str, ...]
+        Sorted tuple of E0 exemplar IDs required (Golden Context, few-shot).
     raw_u0 : str
         Raw user input (U0 slot content).
     raw_c0 : dict[str, Any]
@@ -119,6 +120,7 @@ class PromptBOM:
     raw_c0: dict[str, Any]
     template_args: dict[str, Any]
     path: Literal["A", "B", "C", "D"]
+    exemplars_required: tuple[str, ...] = ()
 
     def __post_init__(self) -> None:
         if not self.trace_id:
@@ -134,6 +136,7 @@ class PromptBOM:
             "trace_id": self.trace_id,
             "system_version_hash": self.system_version_hash,
             "mixins_required": tuple(sorted(self.mixins_required)),
+            "exemplars_required": tuple(sorted(self.exemplars_required)),
             "raw_u0": self.raw_u0,
             "raw_c0": dict(self.raw_c0),
             "template_args": dict(self.template_args),

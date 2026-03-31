@@ -45,7 +45,36 @@ class SlotU0:
     content: str
 
 
-SLOT_ORDER: tuple[str, ...] = ("S0", "D0", "I0", "C0", "U0")
+@dataclass(frozen=True)
+class SlotE0:
+    """EXEMPLARS slot — GUIDING authority. Golden Context, few-shot examples, best-in-class patterns."""
+
+    content: str
+
+
+@dataclass(frozen=True)
+class SlotM0:
+    """META-COGNITIVE slot — PRIVATE authority. Chain-of-Thought, Tree-of-Thought internal reasoning."""
+
+    content: str
+
+
+@dataclass(frozen=True)
+class SlotY0:
+    """SYNTHESIS slot — ANALYTIC authority. Pattern analysis, telemetry summarization, meta-learning proposals."""
+
+    content: dict
+
+
+@dataclass(frozen=True)
+class SlotH0:
+    """HEALING PROPOSAL slot — PROPOSED authority. L2.3 healing corrections with re-entry validation required."""
+
+    content: str
+    requires_reentry: bool = True
+
+
+SLOT_ORDER: tuple[str, ...] = ("S0", "D0", "M0", "I0", "E0", "C0", "Y0", "U0", "H0")
 
 
 class SlotOrderViolation(Exception):

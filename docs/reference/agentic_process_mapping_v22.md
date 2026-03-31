@@ -1,92 +1,65 @@
 ========================================================================================================================
-                               AGENTIC SYSTEM — PROCESS MAP v29 (PHYSICAL FEEDBACK LOCK)
+                               AGENTIC SYSTEM — PROCESS MAP v40 (BOX LOCK & ALIGNMENT)
    LAYER SOVEREIGNTY: L0 (Gate) → L1 (Cognition) → L3 (Orch) → L5 (Gov) → L2 (Exec) | UWG = ONLY WRITE PATH TO L4
 ========================================================================================================================
 
-[ REAL-TIME CONTROL & SAFETY MANIFOLD (BUS C, D, E) ] —————————————————————————————————————————┐
-    ▲                                                                                          │
-    │  [ BUS E: ESCALATE (Anomaly → HITL) ] <──────────────────────────────────────────────────┤
-    │  [ BUS D: DENY     (Violations → L1) ] <─────────────────────────────────────────────────┤
-    │  [ BUS C: CONTROL  (Reroute/Throttling) ] <──────────────────────────────────────────────┤
-    ▼                                                                                          │
-┌────────┐       ┌──────────────┐      [L0 HIT: CACHED FAST-PATH]                              │
-│   U0   │──────>│      L0      │──────────────────────────────────────────┐                   │
-│ Query  │       │  FAST GATE   │                                          │                   │
-└────────┘       └──────┬───────┘                                          │                   │
-                        │                                                  │                   │
-                        │ [MISS: COGNITION]                                │                   │
-                        ▼                                                  │                   │
-              ┌──────────────────┐      ┌──────────────┐                   │                   │
-    ┌────────>│      L1          │ <──> │      C0      │                   │                   │
-    │ (Feed)  │  COGNITION       │      │   CONTEXT    │                   │                   │
-    │         └──────┬───────────┘      └──────────────┘                   │                   │
-    │                │                                                     │                   │
-    │            [PLAN]                                                    │                   │
-    │                │                                                     │                   │
-    │                ▼                                                     │                   │
-    │         ┌──────────────┐      [ORCHESTRATED MODES]                   │                   │
-    │         │      L3      │─────── CONTEXT-AWARE EXECUTION ─────────────>│                   │
-    │         │ ORCHESTRATOR │─────── WORKFLOW ORCHESTRATION ──────────────>│                   │
-    │         └──────┬───────┘─────── HUMAN APPROVAL (HITL) ───────────────>│                   │
-    │                │                                                     │                   │
-    │        [POLICY REVIEW]                                               │                   │
-    │                │                                                     │                   │
-    │                ▼                                                     │                   │
-    │         ┌──────────────┐                                             │                   │
-    │         │      L5      │<────────────────────────────────────────────┘                   │
-    │         │  GOVERNANCE  │      [UNIVERSAL GOVERNED EXIT PATH]                               │
-    │         └──────┬───────┘                                                                 │
-    │                │                                                                         │
-    │        [SAFE EXECUTION]                                                                  │
-    │                │                                                                         │
-    │                ▼                                                                         │
-    │         ┌──────────────┐      ┌──────────────┐      ┌──────────────┐      ┌──────────────┐   │
-    │         │      L2      │─────>│  EVAL SPINE  │─────>│    G-Gate    │─────>│      L6      │   │
-    │         │  EXECUTION   │      │(Verification)│      │ (Enforcement)│      │    OUTPUT    │   │
-    │         └──────────────┘      └──────────────┘      └──────────────┘      └──────┬───────┘   │
-    │                                                                                  │           │
-    │                                                                                  ▼           │
-    │ [ SYSTEM EVOLUTION LOOP ] <── [ ML TRAINING ] <── [ L4 ARCHIVE ] <───────────────┘           │
-    │   (BUS T, P, U INTEGRATED)                                                                   │
-    │   • Commits learned DPO paths                                                                │
-    │   • Updates L5 Policy rules                                                                  │
-    └───• Primes L0 Cache ─────────────────────────────────────────────────────────────────────────┘
-        • Primes L0 Cache for recurrent high-value queries.
+[ REAL-TIME CONTROL & SAFETY MANIFOLD (BUS E, D, C) ] —————————————————————————————————————————————————————————┐
+    ▲                                                                                                          │
+    │  [ BUS E: ESCALATE (Anomaly) ] <─────────────────────────────────────────────────────────────────────────┤
+    │  [ BUS D: DENY     (Policy)  ] <─────────────────────────────────────────────────────────────────────────┤
+    │  [ BUS C: CONTROL  (Routing) ] <─────────────────────────────────────────────────────────────────────────┤
+    ▼                                                                                                          │
+                                                                                                               │
+┌──────────────────┐        ┌──────────────────┐                                                               │
+│        U0        │───────>│        L0        │──────── [L0 HIT: **FAST BYPASS**] ──────────┐                 │
+│      QUERY       │ `Input` │    FAST GATE     │                                            │                 │
+└──────────────────┘        └────────┬─────────┘                                            │                 │
+                                     │                                                      │                 │
+                           [MISS: **REASONING**]                                            │                 │
+                                     │                                                      │                 │
+┌──────────────────┐        ┌────────▼─────────┐        ┌──────────────────┐                │                 │
+│       APPS       │───────>│        L1        │ <────> │        C0        │                │                 │
+│     TRIGGER      │  `App`  │    COGNITION     │`Context`│     CONTEXT      │                │                 │
+└──────────────────┘        └────────┬─────────┘        └──────────────────┘                │                 │
+                                     │                                                      │                 │
+                                 [**PLAN**]                                                 │                 │
+                                     │                                                      │                 │
+                            ┌────────▼─────────┐        [**MODAL ORCHESTRATION**]           │                 │
+                            │        L3        │──────── CONTEXT-AWARE EXEC   [**Data**] ──>│                 │
+                            │   ORCHESTRATOR   │──────── WORKFLOW ORCHESTRATION [**Tools**] ─>│                 │
+                            └────────┬─────────┘──────── HUMAN APPROVAL (HITL) [**Auth**] ──>│                 │
+                                     │                                                      │                 │
+                                [**GOVERN**]                                                │                 │
+                                     │                                                      │                 │
+                            ┌────────▼─────────┐                                            │                 │
+                            │        L5        │ <──────────────────────────────────────────┘                 │
+                            │    GOVERNANCE    │        [UNIVERSAL EXIT SPINE]                                │
+                            └────────┬─────────┘                                                              │
+                                     │                                                                        │
+                               [**EXECUTE**]                                                                  │
+                                     │                                                                        │
+                            ┌────────▼─────────┐        ┌──────────────────┐        ┌──────────────────┐      │
+                            │        L2        │───────>│    EVAL SPINE    │───────>│      G-GATE      │      │
+                            │    EXECUTION     │`Verify`│  (Verification)  │`Enforce`│   (Enforcement)  │      │
+                            └────────┬─────────┘        └────────┬─────────┘        └────────┬─────────┘      │
+                                     │                           │                           │                │
+                                     └───────────────────────────┴─── [**DELIVER**] ─────────▼                │
+                                                                                    ┌──────────────────┐      │
+                                                                                    │        L6        │      │
+                                                                                    │  OBSERVABILITY   │      │
+                                                                                    └────────┬─────────┘      │
+                                                                                             │        │       │
+[ POST-EXECUTION EVOLUTION MANIFOLD (BUS T, P, U) ] <────────────────────────────────── [**LOG**] ─────┘       │
+    │                                                                                                         │
+    │  [ BUS T: TELEMETRY  (Performance/Cost) ]                                                               │
+    │  [ BUS P: PREFERENCE (User Feedback/DPO) ]                                                              │
+    │  [ BUS U: UPDATES    (Unified Write Gate)]                                                              │
+    │                                                                                                         │
+    └─> • Commits learned DPO paths (**Semantic Memory**)                                                     │
+        • Updates L5 Policy rules (**Governance Tuning**)                                                     │
+        • Primes L0 Cache (**Performance Optimization**) ─────────────────────────────────────────────────────┘
 
-
- [ LIFECYCLE NODE LEGEND: THE LIBRARY PERSONAS & STRICT STANDING INSTRUCTIONS ]
- [1] APPS: Domain Patrons. Zero authority. Submits requests.
- [2] L1:   Research Librarian. Thinks, plans, calls C0. NO execution authority.
- [3] L0:   Dispatcher. Sole routing authority. Skips C0 if hit.
- [4] L3:   Shift Supervisor. DAG sequencer. NO tool execution.
- [5] L5:   Security Commandant. Blocks hostile logic. NO routing control.
- [6] L2:   Conservation Lab. Blindly executes tools. CANNOT change rules.
- [7] Eval: Grading Committee (Eval Spine). Scores outcomes post-execution ONLY.
- [G] G-Gate: Golden Eval Gate. Shadow-mode regression comparison. Read-only.
- [8] L6:   Turnstile Observer. Sole time authority. NO mutation power.
- [9] L4:   Head Archivist. Holds canonical state. NO decision authority.
- [!] UWG:  Master Clerk (Nested in L4). THE EXCLUSIVE WRITE GATEWAY. Direct DB/FS writes are forbidden.
- [10] ML:  Meta-Learning Board. Offline offline learning. NO live edits.
 =========================================================================================================================================================================================================================================================
-
-========================================================================================================================================================================================================================================================
-[0] 🏛 GLOBAL ARCHITECTURE INVARIANTS, LAWS, & MACRO TOPOLOGY
-========================================================================================================================================================================================================================================================
- [ TERMINOLOGY SSOT ]
- • "Evaluation Spine" = ONLY valid term for post-L2 scoring ("Evaluation" alone is deprecated).
- • "System Outcome Metrics" = Metric set produced by Spine.  |  "U0" = Raw User Intent.  |  "C0" = Context Assembly/RAG.
- • "L4H (Hot Cache)" = Redis Exact Match Gate. ("Redis L1" is STRICTLY FORBIDDEN to protect L1 Reasoning Engine sovereignty).
- • PRE-ROUTING FLOW:  [ U0 ] ─→ [ L1 ] ─→ [ C0 ] ─→ [ L4 ]  (Observed by L6) ──> Authority begins at L0.
-
- [ THE 10 GOVERNANCE INVARIANTS ]
- ┌─────────────────────────── AUTHORITY ───────────────────────────┬──────────────────────────── COGNITION & ROUTING ────────────────────────────┐
- │ 1. L2 touches books  (sole execution authority)                 │ 4. L1 decides what to look for (reasoning authority)                        │
- │ 2. L4 stores books   (sole state authority)                     │ 5. C0 assembles what is looked at (context assembly)                        │
- │ 3. UWG writes        (sole mutation authority)                  │ 6. L0 decides where work goes (routing authority)                           │
- ├────────────────────────── VERIFICATION & MLOPS ─────────────────┴─────────────────────────────────────────────────────────────────────────────┤
- │ 7. L5 decides if work is allowed (policy)   |   8. Eval Spine judges qualitative outcomes     |   9. G-Gate diffs against golden baselines    │
- │ 10. L6 verifies what happened (observe only/telemetry logging)                                                                                │
- └───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┘
 
 ========================================================================================================================================================================================================================================================
 [1] 🧰 APPS (INTENT) — DOMAIN APPS & SHARED TYPE SYSTEM
