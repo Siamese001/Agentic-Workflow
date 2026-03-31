@@ -1,32 +1,29 @@
-"""Placeholder test file - syntax fixed."""
+"""Test ADG search enhancements functionality."""
 
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300
+import sys
+from pathlib import Path
 
-import unittest
+import pytest
+
+REPO_ROOT = Path(__file__).parent.parent.parent
+sys.path.insert(0, str(REPO_ROOT))
 
 
-class PlaceholderTest(unittest.TestCase):
-    """Placeholder test class."""
-    
-    def test_placeholder_1(self):
-        """Placeholder test method 1."""
-        self.assertTrue(True)
-    
-    def test_placeholder_2(self):
-        """Placeholder test method 2."""
-        self.assertEqual(1 + 1, 2)
-    
-    def test_placeholder_3(self):
-        """Placeholder test method 3."""
-        self.assertTrue(True)
+@pytest.mark.unit
+class TestAdgSearchEnhancements:
+    """Test ADG search enhancements functionality."""
 
+    def test_search_enhancements_imports(self):
+        """Test search enhancements module imports."""
+        from tools.adg import adg_redis_query
+        assert adg_redis_query is not None
 
-if __name__ == '__main__':
-    unittest.main()
+    def test_adg_search_function_exists(self):
+        """Test ADG search function exists."""
+        from tools.adg.adg_redis_query import search_nodes
+        assert callable(search_nodes)
+
+    def test_adg_query_bridge_exists(self):
+        """Test ADG query bridge exists."""
+        from tools.adg.adg_query_bridge import query_bridge
+        assert callable(query_bridge)

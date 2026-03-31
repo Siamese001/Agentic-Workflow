@@ -1,32 +1,29 @@
-"""Placeholder test file - syntax fixed."""
+"""Test BGE embedding registry functionality."""
 
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300
+import sys
+from pathlib import Path
 
-import unittest
+import pytest
+
+REPO_ROOT = Path(__file__).parent.parent.parent
+sys.path.insert(0, str(REPO_ROOT))
 
 
-class PlaceholderTest(unittest.TestCase):
-    """Placeholder test class."""
-    
-    def test_placeholder_1(self):
-        """Placeholder test method 1."""
-        self.assertTrue(True)
-    
-    def test_placeholder_2(self):
-        """Placeholder test method 2."""
-        self.assertEqual(1 + 1, 2)
-    
-    def test_placeholder_3(self):
-        """Placeholder test method 3."""
-        self.assertTrue(True)
+@pytest.mark.unit
+class TestBgeEmbeddingRegistry:
+    """Test BGE embedding registry functionality."""
 
+    def test_bge_registry_imports(self):
+        """Test BGE registry module imports."""
+        from system_learning.embedding import registry
+        assert registry is not None
 
-if __name__ == '__main__':
-    unittest.main()
+    def test_bge_registry_exists(self):
+        """Test BGE embedding registry exists."""
+        from system_learning.embedding.registry import EMBEDDING_REGISTRY
+        assert isinstance(EMBEDDING_REGISTRY, dict)
+
+    def test_bge_register_function(self):
+        """Test BGE register function."""
+        from system_learning.embedding.registry import register_embedder
+        assert callable(register_embedder)

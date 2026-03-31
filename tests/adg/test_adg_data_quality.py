@@ -1,31 +1,55 @@
-"""Placeholder test file - syntax fixed."""
+"""Test ADG data quality functionality."""
 
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300
+import sys
+from pathlib import Path
 
-import unittest
+import pytest
+
+REPO_ROOT = Path(__file__).parent.parent.parent
+sys.path.insert(0, str(REPO_ROOT))
 
 
-class PlaceholderTest(unittest.TestCase):
-    """Placeholder test class."""
-    
-    def test_placeholder_1(self):
-        """Placeholder test method 1."""
-        self.assertTrue(True)
-    
-    def test_placeholder_2(self):
-        """Placeholder test method 2."""
-        self.assertEqual(1 + 1, 2)
-    
-    def test_placeholder_3(self):
-        """Placeholder test method 3."""
-        self.assertTrue(True)
+@pytest.mark.unit
+class TestAdgDataQuality:
+    """Test ADG data quality functionality."""
+
+    def test_adg_schema_validation_exists(self):
+        """Test ADG schema validation module exists."""
+        from agentic_core.adg.schema import validate_node, validate_edge
+
+        assert callable(validate_node)
+        assert callable(validate_edge)
+
+    def test_adg_data_quality_checks_exist(self):
+        """Test ADG data quality check functions exist."""
+        from tools.adg.adg_lifecycle import check_data_quality
+
+        assert callable(check_data_quality)
+
+    def test_adg_duplicate_detection_exists(self):
+        """Test ADG duplicate detection exists."""
+        from tools.adg.adg_lifecycle import detect_duplicates
+
+        assert callable(detect_duplicates)
+
+    def test_adg_orphan_detection_exists(self):
+        """Test ADG orphan node detection exists."""
+        from tools.adg.adg_lifecycle import detect_orphan_nodes
+
+        assert callable(detect_orphan_nodes)
+
+    def test_adg_integrity_check_exists(self):
+        """Test ADG integrity check exists."""
+        from tools.adg.adg_lifecycle import verify_integrity
+
+        assert callable(verify_integrity)
+
+    def test_adg_validation_rules_defined(self):
+        """Test ADG validation rules are defined."""
+        from agentic_core.adg.schema import VALIDATION_RULES
+
+        assert isinstance(VALIDATION_RULES, dict)
+        assert len(VALIDATION_RULES) > 0
 
 
 if __name__ == '__main__':

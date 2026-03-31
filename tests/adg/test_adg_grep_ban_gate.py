@@ -1,32 +1,34 @@
-"""Placeholder test file - syntax fixed."""
+"""Test ADG grep ban gate functionality."""
 
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300
+import sys
+from pathlib import Path
 
-import unittest
+import pytest
+
+REPO_ROOT = Path(__file__).parent.parent.parent
+sys.path.insert(0, str(REPO_ROOT))
 
 
-class PlaceholderTest(unittest.TestCase):
-    """Placeholder test class."""
-    
-    def test_placeholder_1(self):
-        """Placeholder test method 1."""
-        self.assertTrue(True)
-    
-    def test_placeholder_2(self):
-        """Placeholder test method 2."""
-        self.assertEqual(1 + 1, 2)
-    
-    def test_placeholder_3(self):
-        """Placeholder test method 3."""
-        self.assertTrue(True)
+@pytest.mark.unit
+class TestAdgGrepBanGate:
+    """Test ADG grep ban gate functionality."""
 
+    def test_grep_ban_gate_imports(self):
+        """Test grep ban gate module imports."""
+        from ops_scripts.ci import _adg_ci_gates
+        assert _adg_ci_gates is not None
 
-if __name__ == '__main__':
-    unittest.main()
+    def test_adg_grep_patterns_defined(self):
+        """Test ADG grep ban patterns are defined."""
+        from ops_scripts.ci._adg_ci_gates import BANNED_PATTERNS
+        assert isinstance(BANNED_PATTERNS, (list, tuple, set))
+
+    def test_adg_grep_check_function(self):
+        """Test ADG grep check function exists."""
+        from ops_scripts.ci._adg_ci_gates import check_banned_patterns
+        assert callable(check_banned_patterns)
+
+    def test_adg_grep_scan_function(self):
+        """Test ADG grep scan function exists."""
+        from ops_scripts.ci._adg_ci_gates import scan_for_banned
+        assert callable(scan_for_banned)

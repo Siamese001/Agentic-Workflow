@@ -1,32 +1,29 @@
-"""Placeholder test file - syntax fixed."""
+"""Test BGE embedding embedders functionality."""
 
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300
+import sys
+from pathlib import Path
 
-import unittest
+import pytest
+
+REPO_ROOT = Path(__file__).parent.parent.parent
+sys.path.insert(0, str(REPO_ROOT))
 
 
-class PlaceholderTest(unittest.TestCase):
-    """Placeholder test class."""
-    
-    def test_placeholder_1(self):
-        """Placeholder test method 1."""
-        self.assertTrue(True)
-    
-    def test_placeholder_2(self):
-        """Placeholder test method 2."""
-        self.assertEqual(1 + 1, 2)
-    
-    def test_placeholder_3(self):
-        """Placeholder test method 3."""
-        self.assertTrue(True)
+@pytest.mark.unit
+class TestBgeEmbeddingEmbedders:
+    """Test BGE embedding embedders functionality."""
 
+    def test_bge_embedders_imports(self):
+        """Test BGE embedders module imports."""
+        from system_learning.embedding import embedders
+        assert embedders is not None
 
-if __name__ == '__main__':
-    unittest.main()
+    def test_bge_embedder_class_exists(self):
+        """Test BGE embedder class exists."""
+        from system_learning.embedding.embedders import BGEEmbedder
+        assert BGEEmbedder is not None
+
+    def test_bge_embedding_function(self):
+        """Test BGE embedding function."""
+        from system_learning.embedding.embedders import embed_text
+        assert callable(embed_text)

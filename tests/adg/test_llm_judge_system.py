@@ -1,32 +1,29 @@
-"""Placeholder test file - syntax fixed."""
+"""Test LLM judge system functionality."""
 
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300
+import sys
+from pathlib import Path
 
-import unittest
+import pytest
+
+REPO_ROOT = Path(__file__).parent.parent.parent
+sys.path.insert(0, str(REPO_ROOT))
 
 
-class PlaceholderTest(unittest.TestCase):
-    """Placeholder test class."""
-    
-    def test_placeholder_1(self):
-        """Placeholder test method 1."""
-        self.assertTrue(True)
-    
-    def test_placeholder_2(self):
-        """Placeholder test method 2."""
-        self.assertEqual(1 + 1, 2)
-    
-    def test_placeholder_3(self):
-        """Placeholder test method 3."""
-        self.assertTrue(True)
+@pytest.mark.unit
+class TestLlmJudgeSystem:
+    """Test LLM judge system functionality."""
 
+    def test_llm_judge_imports(self):
+        """Test LLM judge module imports."""
+        from system_learning.confidence import llm_judge
+        assert llm_judge is not None
 
-if __name__ == '__main__':
-    unittest.main()
+    def test_llm_judge_evaluate_function(self):
+        """Test LLM judge evaluate function."""
+        from system_learning.confidence.llm_judge import evaluate
+        assert callable(evaluate)
+
+    def test_llm_judge_score_function(self):
+        """Test LLM judge score function."""
+        from system_learning.confidence.llm_judge import score_output
+        assert callable(score_output)

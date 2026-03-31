@@ -1,32 +1,34 @@
-"""Placeholder test file - syntax fixed."""
+"""Test ADG hardening scripts functionality."""
 
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300
+import sys
+from pathlib import Path
 
-import unittest
+import pytest
+
+REPO_ROOT = Path(__file__).parent.parent.parent
+sys.path.insert(0, str(REPO_ROOT))
 
 
-class PlaceholderTest(unittest.TestCase):
-    """Placeholder test class."""
-    
-    def test_placeholder_1(self):
-        """Placeholder test method 1."""
-        self.assertTrue(True)
-    
-    def test_placeholder_2(self):
-        """Placeholder test method 2."""
-        self.assertEqual(1 + 1, 2)
-    
-    def test_placeholder_3(self):
-        """Placeholder test method 3."""
-        self.assertTrue(True)
+@pytest.mark.unit
+class TestAdgHardeningScripts:
+    """Test ADG hardening scripts functionality."""
 
+    def test_p0_batch_wirer_script_exists(self):
+        """Test P0 batch wirer script exists."""
+        script = REPO_ROOT / "tools" / "p0_batch_wirer.py"
+        assert script.exists()
 
-if __name__ == '__main__':
-    unittest.main()
+    def test_p1_batch_wire_script_exists(self):
+        """Test P1 batch wire script exists."""
+        script = REPO_ROOT / "tools" / "p1_batch_wire.py"
+        assert script.exists()
+
+    def test_adg_harden_script_exists(self):
+        """Test ADG harden script exists."""
+        script = REPO_ROOT / "tools" / "adg" / "adg_harden.py"
+        assert script.exists()
+
+    def test_accelerator_hardening_dir_exists(self):
+        """Test accelerator hardening directory exists."""
+        hardening_dir = REPO_ROOT / "tools" / "adg" / "accelerators" / "hardening"
+        assert hardening_dir.exists()

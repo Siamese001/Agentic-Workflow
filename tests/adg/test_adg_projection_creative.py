@@ -1,32 +1,29 @@
-"""Placeholder test file - syntax fixed."""
+"""Test ADG projection creative functionality."""
 
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300
+import sys
+from pathlib import Path
 
-import unittest
+import pytest
+
+REPO_ROOT = Path(__file__).parent.parent.parent
+sys.path.insert(0, str(REPO_ROOT))
 
 
-class PlaceholderTest(unittest.TestCase):
-    """Placeholder test class."""
-    
-    def test_placeholder_1(self):
-        """Placeholder test method 1."""
-        self.assertTrue(True)
-    
-    def test_placeholder_2(self):
-        """Placeholder test method 2."""
-        self.assertEqual(1 + 1, 2)
-    
-    def test_placeholder_3(self):
-        """Placeholder test method 3."""
-        self.assertTrue(True)
+@pytest.mark.unit
+class TestAdgProjectionCreative:
+    """Test ADG projection creative functionality."""
 
+    def test_projection_creative_imports(self):
+        """Test projection creative module imports."""
+        from tools.adg import adg_redis_query
+        assert adg_redis_query is not None
 
-if __name__ == '__main__':
-    unittest.main()
+    def test_adg_redis_projection_exists(self):
+        """Test ADG Redis projection exists."""
+        from tools.adg.adg_redis_query import project_to_redis
+        assert callable(project_to_redis)
+
+    def test_adg_sqlite_projection_exists(self):
+        """Test ADG SQLite projection exists."""
+        from tools.adg.adg_redis_query import project_to_sqlite
+        assert callable(project_to_sqlite)

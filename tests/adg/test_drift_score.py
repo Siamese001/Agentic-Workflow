@@ -1,32 +1,29 @@
-"""Placeholder test file - syntax fixed."""
+"""Test drift score functionality."""
 
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300
+import sys
+from pathlib import Path
 
-import unittest
+import pytest
+
+REPO_ROOT = Path(__file__).parent.parent.parent
+sys.path.insert(0, str(REPO_ROOT))
 
 
-class PlaceholderTest(unittest.TestCase):
-    """Placeholder test class."""
-    
-    def test_placeholder_1(self):
-        """Placeholder test method 1."""
-        self.assertTrue(True)
-    
-    def test_placeholder_2(self):
-        """Placeholder test method 2."""
-        self.assertEqual(1 + 1, 2)
-    
-    def test_placeholder_3(self):
-        """Placeholder test method 3."""
-        self.assertTrue(True)
+@pytest.mark.unit
+class TestDriftScore:
+    """Test drift score functionality."""
 
+    def test_drift_score_imports(self):
+        """Test drift score module imports."""
+        from tools.adg import drift_score
+        assert drift_score is not None
 
-if __name__ == '__main__':
-    unittest.main()
+    def test_drift_score_calculate_function(self):
+        """Test drift score calculate function."""
+        from tools.adg.drift_score import calculate_drift
+        assert callable(calculate_drift)
+
+    def test_drift_score_compare_function(self):
+        """Test drift score compare function."""
+        from tools.adg.drift_score import compare_artifacts
+        assert callable(compare_artifacts)

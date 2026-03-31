@@ -1,32 +1,29 @@
-"""Placeholder test file - syntax fixed."""
+"""Test LLM judge Gemini e2e novel functionality."""
 
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300
+import sys
+from pathlib import Path
 
-import unittest
+import pytest
+
+REPO_ROOT = Path(__file__).parent.parent.parent
+sys.path.insert(0, str(REPO_ROOT))
 
 
-class PlaceholderTest(unittest.TestCase):
-    """Placeholder test class."""
-    
-    def test_placeholder_1(self):
-        """Placeholder test method 1."""
-        self.assertTrue(True)
-    
-    def test_placeholder_2(self):
-        """Placeholder test method 2."""
-        self.assertEqual(1 + 1, 2)
-    
-    def test_placeholder_3(self):
-        """Placeholder test method 3."""
-        self.assertTrue(True)
+@pytest.mark.unit
+class TestLlmJudgeGeminiE2ENovel:
+    """Test LLM judge Gemini e2e novel functionality."""
 
+    def test_llm_judge_gemini_e2e_imports(self):
+        """Test LLM judge Gemini e2e module imports."""
+        from system_learning.confidence import gemini_judge
+        assert gemini_judge is not None
 
-if __name__ == '__main__':
-    unittest.main()
+    def test_gemini_e2e_judge_class(self):
+        """Test Gemini e2e judge class exists."""
+        from system_learning.confidence.gemini_judge import GeminiE2EJudge
+        assert GeminiE2EJudge is not None
+
+    def test_gemini_e2e_evaluate_function(self):
+        """Test Gemini e2e evaluate function."""
+        from system_learning.confidence.gemini_judge import evaluate_e2e
+        assert callable(evaluate_e2e)

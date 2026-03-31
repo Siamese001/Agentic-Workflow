@@ -1,32 +1,29 @@
-"""Placeholder test file - syntax fixed."""
+"""Test policy guardrail embedder functionality."""
 
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300
+import sys
+from pathlib import Path
 
-import unittest
+import pytest
+
+REPO_ROOT = Path(__file__).parent.parent.parent
+sys.path.insert(0, str(REPO_ROOT))
 
 
-class PlaceholderTest(unittest.TestCase):
-    """Placeholder test class."""
-    
-    def test_placeholder_1(self):
-        """Placeholder test method 1."""
-        self.assertTrue(True)
-    
-    def test_placeholder_2(self):
-        """Placeholder test method 2."""
-        self.assertEqual(1 + 1, 2)
-    
-    def test_placeholder_3(self):
-        """Placeholder test method 3."""
-        self.assertTrue(True)
+@pytest.mark.unit
+class TestPolicyGuardrailEmbedder:
+    """Test policy guardrail embedder functionality."""
 
+    def test_policy_guardrail_embedder_imports(self):
+        """Test policy guardrail embedder module imports."""
+        from system_learning.embedding import policy_embedder
+        assert policy_embedder is not None
 
-if __name__ == '__main__':
-    unittest.main()
+    def test_policy_embedder_class(self):
+        """Test policy embedder class exists."""
+        from system_learning.embedding.policy_embedder import PolicyGuardrailEmbedder
+        assert PolicyGuardrailEmbedder is not None
+
+    def test_policy_embed_function(self):
+        """Test policy embed function."""
+        from system_learning.embedding.policy_embedder import embed_policy
+        assert callable(embed_policy)

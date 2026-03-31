@@ -1,32 +1,29 @@
-"""Placeholder test file - syntax fixed."""
+"""Test memory MCP adapter functionality."""
 
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300
+import sys
+from pathlib import Path
 
-import unittest
+import pytest
+
+REPO_ROOT = Path(__file__).parent.parent.parent
+sys.path.insert(0, str(REPO_ROOT))
 
 
-class PlaceholderTest(unittest.TestCase):
-    """Placeholder test class."""
-    
-    def test_placeholder_1(self):
-        """Placeholder test method 1."""
-        self.assertTrue(True)
-    
-    def test_placeholder_2(self):
-        """Placeholder test method 2."""
-        self.assertEqual(1 + 1, 2)
-    
-    def test_placeholder_3(self):
-        """Placeholder test method 3."""
-        self.assertTrue(True)
+@pytest.mark.unit
+class TestMemoryMcpAdapter:
+    """Test memory MCP adapter functionality."""
 
+    def test_memory_mcp_adapter_imports(self):
+        """Test memory MCP adapter module imports."""
+        from system_learning.memory import mcp_adapter
+        assert mcp_adapter is not None
 
-if __name__ == '__main__':
-    unittest.main()
+    def test_memory_mcp_adapter_class(self):
+        """Test memory MCP adapter class exists."""
+        from system_learning.memory.mcp_adapter import MemoryMCPAdapter
+        assert MemoryMCPAdapter is not None
+
+    def test_memory_mcp_connect_function(self):
+        """Test memory MCP connect function."""
+        from system_learning.memory.mcp_adapter import connect_to_mcp
+        assert callable(connect_to_mcp)

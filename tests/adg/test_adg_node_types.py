@@ -1,29 +1,32 @@
-"""Placeholder test for ADG node types."""
+"""Test ADG node types functionality."""
+
+import sys
+from pathlib import Path
 
 import pytest
 
+REPO_ROOT = Path(__file__).parent.parent.parent
+sys.path.insert(0, str(REPO_ROOT))
 
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300  # 5 minutes
 
 @pytest.mark.unit
 class TestAdgNodeTypes:
     """Test ADG node types functionality."""
 
-    def test_placeholder_1(self):
-        """Placeholder test 1."""
-        assert True
+    def test_node_types_imports(self):
+        """Test node types module imports."""
+        from agentic_core.adg.schema import NodeType
+        assert NodeType is not None
 
-    def test_placeholder_2(self):
-        """Placeholder test 2."""
-        assert True
+    def test_adg_schema_has_node_types(self):
+        """Test ADG schema has node types defined."""
+        from agentic_core.adg.schema import NODE_TYPES
+        assert isinstance(NODE_TYPES, (list, tuple, set))
+        assert len(NODE_TYPES) > 0
 
-    def test_placeholder_3(self):
-        """Placeholder test 3."""
-        assert True
+    def test_node_type_has_required_types(self):
+        """Test node type has required types."""
+        from agentic_core.adg.schema import NODE_TYPES
+        required = ["module", "class", "function", "method"]
+        for rt in required:
+            assert any(rt in str(nt).lower() for nt in NODE_TYPES)

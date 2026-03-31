@@ -1,32 +1,29 @@
-"""Placeholder test file - syntax fixed."""
+"""Test ADG stale guard functionality."""
 
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300
+import sys
+from pathlib import Path
 
-import unittest
+import pytest
+
+REPO_ROOT = Path(__file__).parent.parent.parent
+sys.path.insert(0, str(REPO_ROOT))
 
 
-class PlaceholderTest(unittest.TestCase):
-    """Placeholder test class."""
-    
-    def test_placeholder_1(self):
-        """Placeholder test method 1."""
-        self.assertTrue(True)
-    
-    def test_placeholder_2(self):
-        """Placeholder test method 2."""
-        self.assertEqual(1 + 1, 2)
-    
-    def test_placeholder_3(self):
-        """Placeholder test method 3."""
-        self.assertTrue(True)
+@pytest.mark.unit
+class TestAdgStaleGuard:
+    """Test ADG stale guard functionality."""
 
+    def test_stale_guard_imports(self):
+        """Test stale guard module imports."""
+        from tools.adg import adg_stale_guard
+        assert adg_stale_guard is not None
 
-if __name__ == '__main__':
-    unittest.main()
+    def test_stale_guard_script_exists(self):
+        """Test stale guard script exists."""
+        script = REPO_ROOT / "tools" / "adg" / "adg_stale_guard.py"
+        assert script.exists()
+
+    def test_stale_guard_cli_function(self):
+        """Test stale guard CLI function."""
+        from tools.adg.adg_stale_guard import main
+        assert callable(main)

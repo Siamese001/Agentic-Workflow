@@ -1,32 +1,29 @@
-"""Placeholder test file - syntax fixed."""
+"""Test meta learning bus creative functionality."""
 
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300
+import sys
+from pathlib import Path
 
-import unittest
+import pytest
+
+REPO_ROOT = Path(__file__).parent.parent.parent
+sys.path.insert(0, str(REPO_ROOT))
 
 
-class PlaceholderTest(unittest.TestCase):
-    """Placeholder test class."""
-    
-    def test_placeholder_1(self):
-        """Placeholder test method 1."""
-        self.assertTrue(True)
-    
-    def test_placeholder_2(self):
-        """Placeholder test method 2."""
-        self.assertEqual(1 + 1, 2)
-    
-    def test_placeholder_3(self):
-        """Placeholder test method 3."""
-        self.assertTrue(True)
+@pytest.mark.unit
+class TestMetaLearningBusCreative:
+    """Test meta learning bus creative functionality."""
 
+    def test_meta_learning_creative_imports(self):
+        """Test meta learning creative module imports."""
+        from system_learning.meta_learning import creative
+        assert creative is not None
 
-if __name__ == '__main__':
-    unittest.main()
+    def test_meta_learning_creative_strategy(self):
+        """Test meta learning creative strategy exists."""
+        from system_learning.meta_learning.creative import CreativeStrategy
+        assert CreativeStrategy is not None
+
+    def test_meta_learning_apply_creative(self):
+        """Test meta learning apply creative function."""
+        from system_learning.meta_learning.creative import apply_creative_strategy
+        assert callable(apply_creative_strategy)

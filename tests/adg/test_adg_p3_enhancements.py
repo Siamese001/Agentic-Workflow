@@ -1,32 +1,29 @@
-"""Placeholder test file - syntax fixed."""
+"""Test ADG P3 enhancements functionality."""
 
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300
+import sys
+from pathlib import Path
 
-import unittest
+import pytest
+
+REPO_ROOT = Path(__file__).parent.parent.parent
+sys.path.insert(0, str(REPO_ROOT))
 
 
-class PlaceholderTest(unittest.TestCase):
-    """Placeholder test class."""
-    
-    def test_placeholder_1(self):
-        """Placeholder test method 1."""
-        self.assertTrue(True)
-    
-    def test_placeholder_2(self):
-        """Placeholder test method 2."""
-        self.assertEqual(1 + 1, 2)
-    
-    def test_placeholder_3(self):
-        """Placeholder test method 3."""
-        self.assertTrue(True)
+@pytest.mark.unit
+class TestAdgP3Enhancements:
+    """Test ADG P3 enhancements functionality."""
 
+    def test_p3_enhancements_imports(self):
+        """Test P3 enhancements module imports."""
+        from agentic_core.adg.extraction import static_scanner
+        assert static_scanner is not None
 
-if __name__ == '__main__':
-    unittest.main()
+    def test_p3_block_decomposition_exists(self):
+        """Test P3 block decomposition exists."""
+        from agentic_core.adg.extraction.static_scanner import _BlockDecompositionVisitor
+        assert _BlockDecompositionVisitor is not None
+
+    def test_p3_type_surface_exists(self):
+        """Test P3 type surface collector exists."""
+        from agentic_core.adg.extraction.static_scanner import _TypeSurfaceCollector
+        assert _TypeSurfaceCollector is not None
