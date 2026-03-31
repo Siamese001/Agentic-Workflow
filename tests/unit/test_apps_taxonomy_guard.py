@@ -1,29 +1,29 @@
-"""Placeholder test for AppsTaxonomyGuard."""
+"""Test AppsTaxonomyGuard functionality."""
+
+import sys
+from pathlib import Path
 
 import pytest
 
+REPO_ROOT = Path(__file__).parent.parent.parent
+sys.path.insert(0, str(REPO_ROOT))
 
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300  # 5 minutes
 
 @pytest.mark.unit
 class TestAppsTaxonomyGuard:
     """Test AppsTaxonomyGuard functionality."""
 
-    def test_placeholder_1(self):
-        """Placeholder test 1."""
-        assert True
-    
-    def test_placeholder_2(self):
-        """Placeholder test 2."""
-        assert True
-    
-    def test_placeholder_3(self):
-        """Placeholder test 3."""
-        assert True
+    def test_taxonomy_guard_imports(self):
+        """Test taxonomy guard module imports."""
+        from apps_shared import taxonomy_guard
+        assert taxonomy_guard is not None
+
+    def test_taxonomy_guard_class(self):
+        """Test taxonomy guard class exists."""
+        from apps_shared.taxonomy_guard import TaxonomyGuard
+        assert TaxonomyGuard is not None
+
+    def test_validate_taxonomy(self):
+        """Test validate taxonomy function."""
+        from apps_shared.taxonomy_guard import validate_taxonomy
+        assert callable(validate_taxonomy)
