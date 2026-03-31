@@ -2137,6 +2137,12 @@ def main() -> None:
     parser.add_argument(
         "--batch-size", type=int, default=100, help="Batch size for file processing (default: 100)"
     )
+    parser.add_argument(
+        "--repair", action="store_true", help="Run repair orchestrator after ADG generation"
+    )
+    parser.add_argument(
+        "--repair-dry-run", action="store_true", help="Show repairs without applying them"
+    )
 
     args = parser.parse_args()
 
@@ -2162,6 +2168,44 @@ def main() -> None:
         cpu_affinity=args.cpu_affinity,
         batch_size=args.batch_size,
     )
+
+    # Run repair orchestrator if requested
+    if args.repair:
+        print("\n" + "=" * 60)
+        print("ADG Repair Orchestrator Post-Generation")
+        print("=" * 60)
+
+        try:
+            from tools.adg.repair import ADGRepairOrchestrator
+
+            orchestrator = ADGRepairOrchestrator(
+                adg_dir=adg_artifacts_dir,
+                timestamp=ts,
+                repo_root=ROOT,
+            )
+
+            result = orchestrator.run(dry_run=args.repair_dry_run)
+            orchestrator.print_summary()
+
+            # Log repair results
+            if result.fixes_applied > 0:
+                print(f"\n[ADG] Repair: {result.fixes_applied} fixes applied successfully")
+            if result.fixes_suggested > 0:
+                print(f"[ADG] Repair: {result.fixes_suggested} fixes suggested for review")
+            if result.fixes_blocked > 0:
+                print(f"[ADG] Repair: {result.fixes_blocked} fixes require human attention")
+            if result.failed_fixes > 0:
+                print(f"[ADG] Repair: {result.failed_fixes} fixes failed")
+
+            if result.log_path:
+                print(f"[ADG] Repair log: {result.log_path}")
+
+        except Exception as e:
+            print(f"[ADG] Repair orchestrator failed: {e}")
+            # Don't fail the whole ADG generation if repair fails
+            import traceback
+
+            traceback.print_exc()
 
 
 if __name__ == "__main__":
