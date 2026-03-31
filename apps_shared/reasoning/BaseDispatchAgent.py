@@ -247,10 +247,11 @@ class BaseDispatchAgent(SovereignBaseAgent):
 
         start = time.time()
         try:
-            output = self._perform_action(action, params)
-            result = ExecutionResult(SUCCESS=True, OUTPUT=output, duration_ms=(time.time() - start) * 1000)
-            self._persist_outcome(action, result)
-            return result
+            with self.start_span("agent.execute", {"agent": self.__class__.__name__, "action": action}):
+                output = self._perform_action(action, params)
+                result = ExecutionResult(SUCCESS=True, OUTPUT=output, duration_ms=(time.time() - start) * 1000)
+                self._persist_outcome(action, result)
+                return result
         except (ValueError, TypeError, RuntimeError, KeyError) as e:
             result = ExecutionResult(SUCCESS=False, ERROR=str(e), duration_ms=(time.time() - start) * 1000)
             self._persist_outcome(action, result)
