@@ -88,7 +88,8 @@ def main() -> int:
         try:
             registry = json.loads(REGISTRY_PATH.read_text(encoding="utf-8"))
             registered_ids = {e["test_id"] for e in registry.get("skips", [])}
-        except (json.JSONDecodeError, KeyError):
+        except (json.JSONDecodeError, KeyError) as e:
+            warnings.append(f"C4-WARN: Could not parse skip registry at {REGISTRY_PATH}: {e}")
             registered_ids = set()
     else:
         registered_ids = set()
@@ -98,7 +99,8 @@ def main() -> int:
             try:
                 source = f.read_text(encoding="utf-8", errors="replace")
                 tree = ast.parse(source, filename=str(f))
-            except SyntaxError:
+            except SyntaxError as e:
+                warnings.append(f"C4-WARN: Syntax error in {f}: {e}")
                 continue
             for node in ast.walk(tree):
                 if not isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)):
@@ -127,7 +129,8 @@ def main() -> int:
             try:
                 source = f.read_text(encoding="utf-8", errors="replace")
                 tree = ast.parse(source, filename=str(f))
-            except SyntaxError:
+            except SyntaxError as e:
+                warnings.append(f"C8-WARN: Syntax error in {f}: {e}")
                 continue
             for node in ast.walk(tree):
                 if not isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)):
