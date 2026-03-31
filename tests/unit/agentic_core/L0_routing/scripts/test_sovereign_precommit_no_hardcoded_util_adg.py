@@ -1,29 +1,29 @@
-"""Placeholder test for SovereignPrecommitNoHardcodedUtilAdg."""
+"""Test SovereignPrecommitNoHardcodedUtilAdg functionality."""
+
+import sys
+from pathlib import Path
 
 import pytest
 
+REPO_ROOT = Path(__file__).parent.parent.parent
+sys.path.insert(0, str(REPO_ROOT))
 
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300  # 5 minutes
 
 @pytest.mark.unit
 class TestSovereignPrecommitNoHardcodedUtilAdg:
     """Test SovereignPrecommitNoHardcodedUtilAdg functionality."""
 
-    def test_placeholder_1(self):
-        """Placeholder test 1."""
-        assert True
-    
-    def test_placeholder_2(self):
-        """Placeholder test 2."""
-        assert True
-    
-    def test_placeholder_3(self):
-        """Placeholder test 3."""
-        assert True
+    def test_sovereign_precommit_no_hardcoded_util_adg_imports(self):
+        """Test sovereign_precommit_no_hardcoded_util_adg module imports."""
+        from agentic_core import sovereign_precommit_no_hardcoded_util_adg
+        assert sovereign_precommit_no_hardcoded_util_adg is not None
+
+    def test_sovereign_precommit_no_hardcoded_util_adg_class(self):
+        """Test SovereignPrecommitNoHardcodedUtilAdg class exists."""
+        from agentic_core import SovereignPrecommitNoHardcodedUtilAdg
+        assert SovereignPrecommitNoHardcodedUtilAdg is not None
+
+    def test_sovereign_precommit_no_hardcoded_util_adg_callable(self):
+        """Test sovereign_precommit_no_hardcoded_util_adg functions are callable."""
+        from agentic_core import validate_sovereign_precommit_no_hardcoded_util_adg
+        assert callable(validate_sovereign_precommit_no_hardcoded_util_adg)
