@@ -1,29 +1,29 @@
-"""Placeholder test for CidRegistry."""
+"""Test CidRegistry functionality."""
+
+import sys
+from pathlib import Path
 
 import pytest
 
+REPO_ROOT = Path(__file__).parent.parent.parent
+sys.path.insert(0, str(REPO_ROOT))
 
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300  # 5 minutes
 
 @pytest.mark.unit
 class TestCidRegistry:
     """Test CidRegistry functionality."""
 
-    def test_placeholder_1(self):
-        """Placeholder test 1."""
-        assert True
-    
-    def test_placeholder_2(self):
-        """Placeholder test 2."""
-        assert True
-    
-    def test_placeholder_3(self):
-        """Placeholder test 3."""
-        assert True
+    def test_cid_registry_imports(self):
+        """Test CID registry module imports."""
+        from agentic_core.L2_execution import cid_registry
+        assert cid_registry is not None
+
+    def test_cid_registry_class(self):
+        """Test CID registry class exists."""
+        from agentic_core.L2_execution.cid_registry import CIDRegistry
+        assert CIDRegistry is not None
+
+    def test_register_cid(self):
+        """Test register CID function."""
+        from agentic_core.L2_execution.cid_registry import register_cid
+        assert callable(register_cid)
