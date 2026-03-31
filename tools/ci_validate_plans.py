@@ -10,11 +10,24 @@ from datetime import datetime
 from pathlib import Path
 from typing import Any
 
+# Token validation constants per §10.2
+TOKEN_GREEN_THRESHOLD = 50000
+TOKEN_YELLOW_THRESHOLD = 100000
+TOKEN_RED_THRESHOLD = 175000
+
 # Add repo root to path
 repo_root = Path(__file__).parent.parent
 sys.path.insert(0, str(repo_root))
 
 from tools.validate_plan_format import validate_plan_format
+
+# Try to import token estimator - may not exist in all environments
+try:
+    from agentic_core.planning.token_estimator import ContextWindowEstimator
+    TOKEN_VALIDATOR_AVAILABLE = True
+except ImportError:
+    TOKEN_VALIDATOR_AVAILABLE = False
+    ContextWindowEstimator = None
 
 
 class CIPlanValidator:
@@ -32,6 +45,11 @@ class CIPlanValidator:
             "warnings": [],
             "metrics": {},
         }
+        # Initialize token validator if available
+        if TOKEN_VALIDATOR_AVAILABLE and ContextWindowEstimator:
+            self.token_validator = ContextWindowEstimator()
+        else:
+            self.token_validator = None
 
     def find_all_plans(self) -> list[Path]:
         """Find all plan files in the repository."""
@@ -102,7 +120,7 @@ class CIPlanValidator:
         return result
 
     def _validate_plan_content(self, content: str, result: dict[str, Any]):
-        """Additional content validations."""
+        """Additional content validations including token estimates (§10)."""
 
         # Check for required sections in CI context
         required_sections = ["## Wave Structure", "## Rules", "## Success Criteria"]
@@ -124,16 +142,42 @@ class CIPlanValidator:
             if "## ADG Impact" not in content:
                 result["warnings"].append("Consider ADG Impact section for dependency changes")
 
-        # Check for token estimates
-        if "token" not in content.lower():
-            result["warnings"].append("No token estimates found")
+        # §10 TOKEN ESTIMATION VALIDATION — NOW MANDATORY
+        if self.token_validator:
+            token_result = self.token_validator.validate_plan_tokens(
+                Path(result.get("path", "unknown")), content
+            )
+        else:
+            # Fallback if validator not available
+            token_result = {
+                "wave_table_found": "| Wave" in content or "| Waves" in content,
+                "token_estimates_found": "token" in content.lower(),
+                "total_tokens": 0,
+                "status": "green",
+            }
+        result["token_validation"] = token_result
 
-        # Check wave table format
-        if "| Waves |" in content:
+        # Hard fail if wave table missing (§10.1)
+        if not token_result["wave_table_found"]:
+            result["issues"].append("Missing required wave structure table (§10.1)")
+
+        # Hard fail if no token estimates (§10.2)
+        if not token_result["token_estimates_found"]:
+            result["issues"].append("No token estimates found — must run token estimator (§10.2)")
+
+        # Hard fail if RED status (exceeds 175K tokens)
+        if token_result["status"] == "red":
+            result["issues"].append(
+                f"Token budget exceeded: {token_result['total_tokens']:,} tokens (RED status > 175K). "
+                "Plan must be split into smaller waves."
+            )
+
+        # Check wave table format (relaxed for both "Wave" and "Waves")
+        if any(marker in content for marker in ["| Waves |", "| Wave |", "| **Wave** |"]):
             # Validate table structure
             lines = content.splitlines()
             for i, line in enumerate(lines):
-                if "| Waves |" in line:
+                if any(marker in line for marker in ["| Waves |", "| Wave |", "| **Wave** |"]):
                     # Check next few lines for proper table format
                     for j in range(i + 1, min(i + 5, len(lines))):
                         if "|" in lines[j] and "---" not in lines[j]:
@@ -177,6 +221,13 @@ class CIPlanValidator:
                 print(f"    - {issue}")
             if len(result["issues"]) > 3:
                 print(f"    ... and {len(result['issues']) - 3} more")
+
+            # Print token validation info
+            if "token_validation" in result:
+                tv = result["token_validation"]
+                print(f"  Tokens: {tv['total_tokens']:,} ({tv['status'].upper()})")
+                print(f"  Wave Table: {'✅' if tv['wave_table_found'] else '❌'}")
+                print(f"  Token Estimates: {'✅' if tv['token_estimates_found'] else '❌'}")
 
             print()
 
@@ -243,7 +294,7 @@ class CIPlanValidator:
 
         return "\n".join(report)
 
-    def save_report(self, output_path: str = None):
+    def save_report(self, output_path: str | None = None):
         """Save validation report."""
         if output_path is None:
             # Save report to docs/reports (SSOT location)
