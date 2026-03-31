@@ -1,29 +1,29 @@
-"""Placeholder test for Protocol."""
+"""Test Protocol functionality."""
+
+import sys
+from pathlib import Path
 
 import pytest
 
+REPO_ROOT = Path(__file__).parent.parent.parent
+sys.path.insert(0, str(REPO_ROOT))
 
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300  # 5 minutes
 
 @pytest.mark.unit
 class TestProtocol:
     """Test Protocol functionality."""
 
-    def test_placeholder_1(self):
-        """Placeholder test 1."""
-        assert True
-    
-    def test_placeholder_2(self):
-        """Placeholder test 2."""
-        assert True
-    
-    def test_placeholder_3(self):
-        """Placeholder test 3."""
-        assert True
+    def test_protocol_imports(self):
+        """Test protocol module imports."""
+        from agentic_core import protocol
+        assert protocol is not None
+
+    def test_protocol_class(self):
+        """Test Protocol class exists."""
+        from agentic_core import Protocol
+        assert Protocol is not None
+
+    def test_protocol_callable(self):
+        """Test protocol functions are callable."""
+        from agentic_core import validate_protocol
+        assert callable(validate_protocol)
