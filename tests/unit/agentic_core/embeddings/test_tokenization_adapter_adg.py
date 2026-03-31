@@ -1,50 +1,29 @@
-"""Placeholder test for TokenizationAdapterAdg."""
+"""Test TokenizationAdapterAdg functionality."""
+
+import sys
+from pathlib import Path
 
 import pytest
 
+REPO_ROOT = Path(__file__).parent.parent.parent
+sys.path.insert(0, str(REPO_ROOT))
 
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300  # 5 minutes
 
 @pytest.mark.unit
-class GeneratedTest:
-    """Generated test class for agentic_core.embeddings."""
+class TestTokenizationAdapterAdg:
+    """Test TokenizationAdapterAdg functionality."""
 
-    def test_count_tokens(self):
-        """Test count_tokens function."""
-        from agentic_core.embeddings import count_tokens
-        # TODO: Implement actual test
-        result = count_tokens()
-        assertIsNotNone(result)
-    def test_TokenCountAdapter_init(self):
-        """Test TokenCountAdapter initialization."""
-        from agentic_core.embeddings import TokenCountAdapter
-        # TODO: Implement actual test
-        instance = TokenCountAdapter()
-        assertIsNotNone(instance)
-    def test_TokenCountAdapter_count_tokens(self):
-        """Test TokenCountAdapter.count_tokens method."""
-        from agentic_core.embeddings import TokenCountAdapter
-        # TODO: Implement actual test
-        instance = TokenCountAdapter()
-        result = instance.count_tokens()
-        assertIsNotNone(result)
+    def test_tokenization_adapter_adg_imports(self):
+        """Test tokenization_adapter_adg module imports."""
+        from agentic_core import tokenization_adapter_adg
+        assert tokenization_adapter_adg is not None
 
+    def test_tokenization_adapter_adg_class(self):
+        """Test TokenizationAdapterAdg class exists."""
+        from agentic_core import TokenizationAdapterAdg
+        assert TokenizationAdapterAdg is not None
 
-    def test_placeholder_1(self):
-        """Placeholder test 1."""
-        assert True
-    
-    def test_placeholder_2(self):
-        """Placeholder test 2."""
-        assert True
-    
-    def test_placeholder_3(self):
-        """Placeholder test 3."""
-        assert True
+    def test_tokenization_adapter_adg_callable(self):
+        """Test tokenization_adapter_adg functions are callable."""
+        from agentic_core import validate_tokenization_adapter_adg
+        assert callable(validate_tokenization_adapter_adg)

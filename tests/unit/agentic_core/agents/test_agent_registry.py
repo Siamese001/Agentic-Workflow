@@ -1,43 +1,29 @@
-"""Placeholder test for AgentRegistry."""
+"""Test AgentRegistry functionality."""
+
+import sys
+from pathlib import Path
 
 import pytest
 
+REPO_ROOT = Path(__file__).parent.parent.parent
+sys.path.insert(0, str(REPO_ROOT))
 
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300  # 5 minutes
 
 @pytest.mark.unit
-class GeneratedTest:
-    """Generated test class for agentic_core.agents."""
+class TestAgentRegistry:
+    """Test AgentRegistry functionality."""
 
-    def test_get_execution_profile(self):
-        """Test get_execution_profile function."""
-        from agentic_core.agents import get_execution_profile
-        # TODO: Implement actual test
-        result = get_execution_profile()
-        assertIsNotNone(result)
-    def test_get_profile(self):
-        """Test get_profile function."""
-        from agentic_core.agents import get_profile
-        # TODO: Implement actual test
-        result = get_profile()
-        assertIsNotNone(result)
+    def test_agent_registry_imports(self):
+        """Test agent_registry module imports."""
+        from agentic_core import agent_registry
+        assert agent_registry is not None
 
+    def test_agent_registry_class(self):
+        """Test AgentRegistry class exists."""
+        from agentic_core import AgentRegistry
+        assert AgentRegistry is not None
 
-    def test_placeholder_1(self):
-        """Placeholder test 1."""
-        assert True
-    
-    def test_placeholder_2(self):
-        """Placeholder test 2."""
-        assert True
-    
-    def test_placeholder_3(self):
-        """Placeholder test 3."""
-        assert True
+    def test_agent_registry_callable(self):
+        """Test agent_registry functions are callable."""
+        from agentic_core import validate_agent_registry
+        assert callable(validate_agent_registry)

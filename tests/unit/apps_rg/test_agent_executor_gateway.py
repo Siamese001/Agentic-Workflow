@@ -1,29 +1,29 @@
-"""Placeholder test for AgentExecutorGateway."""
+"""Test AgentExecutorGateway functionality."""
+
+import sys
+from pathlib import Path
 
 import pytest
 
+REPO_ROOT = Path(__file__).parent.parent.parent
+sys.path.insert(0, str(REPO_ROOT))
 
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300  # 5 minutes
 
 @pytest.mark.unit
 class TestAgentExecutorGateway:
     """Test AgentExecutorGateway functionality."""
 
-    def test_placeholder_1(self):
-        """Placeholder test 1."""
-        assert True
-    
-    def test_placeholder_2(self):
-        """Placeholder test 2."""
-        assert True
-    
-    def test_placeholder_3(self):
-        """Placeholder test 3."""
-        assert True
+    def test_agent_executor_gateway_imports(self):
+        """Test agent_executor_gateway module imports."""
+        from agentic_core import agent_executor_gateway
+        assert agent_executor_gateway is not None
+
+    def test_agent_executor_gateway_class(self):
+        """Test AgentExecutorGateway class exists."""
+        from agentic_core import AgentExecutorGateway
+        assert AgentExecutorGateway is not None
+
+    def test_agent_executor_gateway_callable(self):
+        """Test agent_executor_gateway functions are callable."""
+        from agentic_core import validate_agent_executor_gateway
+        assert callable(validate_agent_executor_gateway)

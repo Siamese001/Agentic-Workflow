@@ -1,29 +1,29 @@
-"""Placeholder test for L0Routingbase."""
+"""Test L0routingbase functionality."""
+
+import sys
+from pathlib import Path
 
 import pytest
 
+REPO_ROOT = Path(__file__).parent.parent.parent
+sys.path.insert(0, str(REPO_ROOT))
 
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300  # 5 minutes
 
 @pytest.mark.unit
-class TestL0Routingbase:
-    """Test L0Routingbase functionality."""
+class TestL0routingbase:
+    """Test L0routingbase functionality."""
 
-    def test_placeholder_1(self):
-        """Placeholder test 1."""
-        assert True
-    
-    def test_placeholder_2(self):
-        """Placeholder test 2."""
-        assert True
-    
-    def test_placeholder_3(self):
-        """Placeholder test 3."""
-        assert True
+    def test_L0RoutingBase_imports(self):
+        """Test L0RoutingBase module imports."""
+        from agentic_core import L0RoutingBase
+        assert L0RoutingBase is not None
+
+    def test_L0RoutingBase_class(self):
+        """Test L0routingbase class exists."""
+        from agentic_core import L0routingbase
+        assert L0routingbase is not None
+
+    def test_L0RoutingBase_callable(self):
+        """Test L0RoutingBase functions are callable."""
+        from agentic_core import validate_L0RoutingBase
+        assert callable(validate_L0RoutingBase)

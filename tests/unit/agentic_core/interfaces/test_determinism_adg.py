@@ -1,43 +1,29 @@
-"""Placeholder test for DeterminismAdg."""
+"""Test DeterminismAdg functionality."""
+
+import sys
+from pathlib import Path
 
 import pytest
 
+REPO_ROOT = Path(__file__).parent.parent.parent
+sys.path.insert(0, str(REPO_ROOT))
 
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300  # 5 minutes
 
 @pytest.mark.unit
-class GeneratedTest:
-    """Generated test class for agentic_core.interfaces."""
+class TestDeterminismAdg:
+    """Test DeterminismAdg functionality."""
 
-    def test_canonical_bytes(self):
-        """Test canonical_bytes function."""
-        from agentic_core.interfaces import canonical_bytes
-        # TODO: Implement actual test
-        result = canonical_bytes()
-        assertIsNotNone(result)
-    def test_canonical_hash(self):
-        """Test canonical_hash function."""
-        from agentic_core.interfaces import canonical_hash
-        # TODO: Implement actual test
-        result = canonical_hash()
-        assertIsNotNone(result)
+    def test_determinism_adg_imports(self):
+        """Test determinism_adg module imports."""
+        from agentic_core import determinism_adg
+        assert determinism_adg is not None
 
+    def test_determinism_adg_class(self):
+        """Test DeterminismAdg class exists."""
+        from agentic_core import DeterminismAdg
+        assert DeterminismAdg is not None
 
-    def test_placeholder_1(self):
-        """Placeholder test 1."""
-        assert True
-    
-    def test_placeholder_2(self):
-        """Placeholder test 2."""
-        assert True
-    
-    def test_placeholder_3(self):
-        """Placeholder test 3."""
-        assert True
+    def test_determinism_adg_callable(self):
+        """Test determinism_adg functions are callable."""
+        from agentic_core import validate_determinism_adg
+        assert callable(validate_determinism_adg)

@@ -1,55 +1,29 @@
-"""Placeholder test for EmbeddingFactoryAdg."""
+"""Test EmbeddingFactoryAdg functionality."""
+
+import sys
+from pathlib import Path
 
 import pytest
 
+REPO_ROOT = Path(__file__).parent.parent.parent
+sys.path.insert(0, str(REPO_ROOT))
 
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300  # 5 minutes
 
 @pytest.mark.unit
-class GeneratedTest:
-    """Generated test class for agentic_core.embeddings."""
+class TestEmbeddingFactoryAdg:
+    """Test EmbeddingFactoryAdg functionality."""
 
-    def test_is_enabled(self):
-        """Test is_enabled function."""
-        from agentic_core.embeddings import is_enabled
-        # TODO: Implement actual test
-        result = is_enabled()
-        assertIsNotNone(result)
-    def test_register_embedding_client(self):
-        """Test register_embedding_client function."""
-        from agentic_core.embeddings import register_embedding_client
-        # TODO: Implement actual test
-        result = register_embedding_client()
-        assertIsNotNone(result)
-    def test_EmbeddingDisabledError_init(self):
-        """Test EmbeddingDisabledError initialization."""
-        from agentic_core.embeddings import EmbeddingDisabledError
-        # TODO: Implement actual test
-        instance = EmbeddingDisabledError()
-        assertIsNotNone(instance)
-    def test_EmbeddingSovereigntyViolationError_init(self):
-        """Test EmbeddingSovereigntyViolationError initialization."""
-        from agentic_core.embeddings import EmbeddingSovereigntyViolationError
-        # TODO: Implement actual test
-        instance = EmbeddingSovereigntyViolationError()
-        assertIsNotNone(instance)
+    def test_embedding_factory_adg_imports(self):
+        """Test embedding_factory_adg module imports."""
+        from agentic_core import embedding_factory_adg
+        assert embedding_factory_adg is not None
 
+    def test_embedding_factory_adg_class(self):
+        """Test EmbeddingFactoryAdg class exists."""
+        from agentic_core import EmbeddingFactoryAdg
+        assert EmbeddingFactoryAdg is not None
 
-    def test_placeholder_1(self):
-        """Placeholder test 1."""
-        assert True
-    
-    def test_placeholder_2(self):
-        """Placeholder test 2."""
-        assert True
-    
-    def test_placeholder_3(self):
-        """Placeholder test 3."""
-        assert True
+    def test_embedding_factory_adg_callable(self):
+        """Test embedding_factory_adg functions are callable."""
+        from agentic_core import validate_embedding_factory_adg
+        assert callable(validate_embedding_factory_adg)
