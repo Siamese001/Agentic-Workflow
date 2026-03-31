@@ -136,13 +136,13 @@
 | CONTROL    | EVAL: Exact Call Num?          | EVAL: Familiar Request?        | EVAL: fact in DB?              | EVAL: External Action?         | EVAL: No Ext Matches? |
 | FLOW       | ├─ [HIT] ─→ Exec & Ret (~1ms)  | ├─ [HIT] ─→ Exec & Ret         | ├─ [HIT] ─→ RAG Synth (~1-2s)  | ├─ [HIT] ─→ Exec & Ret         | ├─ [HIT] ─→ Exec & Ret|
 |            | └─ [MISS]─→ Layer 2 ──>        | └─ [MISS]─→ Layer 3 ──>        | └─ [MISS]─→ Layer 4 ──>        | └─ [MISS]─→ Layer 5 ──>        | └─ [FAIL]─→ Exception |
-+============+================================+================================+==================┬=============+================================+=======================+
++============+================================+================================+================================+================================+=======================+
                                                                                                   │
     ┌─────────────────────────────────────────────────────────────────────────────────────────────┴────────────────────────────────────────────────────────────────────────────────────────────────┐
     │ C0 RAG PIPELINE (INFORMATIONAL CONTEXT ASSEMBLY)                                                                                               ┌───────────────────────────────────────────┐ │
     │ [!] C0 IS AN EPHEMERAL ASSEMBLY PROCESS (NOT A SYSTEM LAYER)                                                                                   │ SYSTEM METRICS (GLOBAL LEDGER)            │ │
     │ C0 is a transient retrieval process invoked by L1 after L0 routes to R3. It assembles context only and has ZERO authority.                     ├───────────────────────────────────────────┤ │
-    │ C0 consumes the Dual-Rail payload { TEXT: raw_query, INTENT: 🔵 intent_vec } and reads ONLY from L4 / Vector DB.                                │ C0 Retrieval Metrics                      │ │
+    │ C0 consumes the Dual-Rail payload { TEXT: raw_query, INTENT: 🔵 intent_vec } and reads ONLY from L4 / Vector DB.                               │ C0 Retrieval Metrics                      │ │
     │ It NEVER creates canonical knowledge, NEVER writes to Redis, and NEVER writes back to L4.                                                      │ - Precision@K | - Recall@K                │ │
     │                                                                                                                                                │ - Completeness | - Supported Answer Rate  │ │
     │ L4H DEFINITION & LATENCY PROFILE:                                                                                                              └───────────────────────────────────────────┘ │
@@ -160,20 +160,19 @@
     │  └──────────┬──────────────┘                                                             │                                                                                                   │
     │             │                                                                            ▼                                                                                                   │
     │             ▼                                                                                                                                                                                │
-    │  ┌─────────────────────────┐   ┌─────────────────────────┐   ┌─────────────────────────┐   ┌─────────────────────────┐   ┌─────────────────────────┐                                         │
-    │  │ 2a. VECTOR SEARCH       │──>│ 3. SCORE FUSION (RRF)   │──>│ 4. CROSS-ENCODER RERANK │──>│ 5. CONTEXT BUILD        │──>│ 6. COMPLETENESS CHECK   │                                         │
-    │  │ 🔵 intent_vec vs 🟠 fact │ ┌>│ Reciprocal Rank Fusion  │   │ Q vs Doc deep scoring   │   │ Chunk stitching         │   │ Coverage validation     │                                         │
-    │  │ FAISS / ANN index       │ │ │ Combines Vec + Lex      │   │ Precision ordering      │   │ Parent-child expansion  │   │ Answerability scoring   │                                         │
-    │  │ Retrieves Top-K_vec     │ │ │ Produces Top-K_fused    │   │ Yields Top-N_final      │   │ Sibling windowing       │   │ Reject / augment if gap │                                         │
-    │  └─────────────────────────┘ │ └─────────────────────────┘   └─────────────────────────┘   └─────────────────────────┘   └──────────┬──────────────┘                                         │
-    │                              │                                                                                                      │                                                        │
-    │                              │                                                                                                      ▼                                                        │
-    │  ┌─────────────────────────┐ │                                                                                             ┌─────────────────────────┐                                         │
-    │  │ 2b. LEXICAL SEARCH      │─┘                                                                                             │ [OUT] C0 -> L1          │                                         │
-    │  │ BM25/sparse retrieval   │                                                                                               │ Curated context bundle  │                                         │
-    │  │ Token match scoring     │                                                                                               │ Enables synthesis       │                                         │
-    │  │ Retrieves Top-K_lex     │                                                                                               │ No execution authority  │                                         │
-    │  └─────────────────────────┘                                                                                               └─────────────────────────┘                                         │
+    │  ┌─────────────────────────┐                                                                                                                                                                 │
+    │  │ 2a. VECTOR SEARCH       │──┐                                                                                                                                                              │
+    │  │ 🔵 intent_vec vs 🟠 fact │  │   ┌─────────────────────────┐   ┌─────────────────────────┐   ┌─────────────────────────┐   ┌─────────────────────────┐   ┌─────────────────────────┐         │
+    │  │ FAISS / ANN index       │  ├──>│ 3. SCORE FUSION (RRF)   │──>│ 4. CROSS-ENCODER RERANK │──>│ 5. CONTEXT BUILD        │──>│ 6. COMPLETENESS CHECK   │──>│ [OUT] C0 -> L1          │         │
+    │  │ Retrieves Top-K_vec     │  │   │ Reciprocal Rank Fusion  │   │ Q vs Doc deep scoring   │   │ Chunk stitching         │   │ Coverage validation     │   │ Curated context bundle  │         │
+    │  └─────────────────────────┘  │   │ Combines Vec + Lex      │   │ Precision ordering      │   │ Parent-child expansion  │   │ Answerability scoring   │   │ Enables synthesis       │         │
+    │                               │   │ Produces Top-K_fused    │   │ Yields Top-N_final      │   │ Sibling windowing       │   │ Reject / augment if gap │   │ No execution authority  │         │
+    │  ┌─────────────────────────┐  │   └─────────────────────────┘   └─────────────────────────┘   └─────────────────────────┘   └─────────────────────────┘   └─────────────────────────┘         │
+    │  │ 2b. LEXICAL SEARCH      │──┘                                                                                                                                                              │
+    │  │ BM25/sparse retrieval   │                                                                                                                                                                 │
+    │  │ Token match scoring     │                                                                                                                                                                 │
+    │  │ Retrieves Top-K_lex     │                                                                                                                                                                 │
+    │  └─────────────────────────┘                                                                                                                                                                 │
     │                                                                                                                                                                                              │
     │  ┌──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┐                    │
     │  │ SEARCH SIGNAL DEFINITION                                                                                                                                             │                    │
@@ -224,14 +223,15 @@
  +-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
 
  ┌────────────────────────────┐      ┌────────────────────────────┐      ┌──────────────────────────────────────────┐      ┌────────────────────────────────────────┐
- │ 🟢 [P1: INIT]              │      │ 🛠️ [P2: EXECUTE]            │      │ 🏥 [P3: EVALUATE / HEAL]                  │      │ 📦 [P4: SYNTHESIZE]                    │
+ │ 🟢 [P1: INIT]              │      │ 🛠️ [P2: EXECUTE]            │      │ 🏥 [P3: EVALUATE / HEAL]                 │      │ 📦 [P4: SYNTHESIZE]                    │
  │ Validate signed plan       │─────>│ Enforce ToolCall -> sch.   │─────>│ Result --(Pass)--------------------------│─────>│ Aggregate outputs                      │
  │ PTC ToolBudget             │      │ STDOUT: structured         │      │        --(Fail)--> L2.3 TIER HEALING     │      │ Validate schema                        │
  │ CapToken: scope/unexp      │      │ Declare effect cls         │      │ EscalationContext -> tier router         │      │ Final artifact                         │
  │ FREEZE clean state         │      │ CEIL: term. stuck          │      │ LOCAL(>=0.75)/QWEN(>=0.40)/GEMINI        │      │ EMIT PTC ToolTranscript ONLY           │
  │ CLAIM write access         │      │ 🔍 C0 RAG: BLAS lck, SHA   │      │ HealingOutcome (retries >= 3 -> GEM)     │      │ ExecTrace w/ replay                    │
- └─────────────┬──────────────┘      └─────────────┬──────────────┘      │ qwen_circuit_breaker.py / healer res     │      │ TranscriptMutationViolation grd        │
-               │                                   │                     └──────────────────────┬───────────────────┘      └──────────────────┬─────────────────────┘
+ │                            │      │                            │      │ qwen_circuit_breaker.py / healer res     │      │ TranscriptMutationViolation grd        │
+ └─────────────┬──────────────┘      └─────────────┬──────────────┘      └──────────────────────┬───────────────────┘      └──────────────────┬─────────────────────┘
+               │                                   │                                            │                                             │
  ┌─────────────▼───────────────────────────────────▼────────────┐        ┌──────────────────────▼───────────────────┐                         │
  │ MUTATION SOVEREIGNTY                                         │        │ 🚪 UWG (Sidecar)                         │                         │
  │ Durable state mutations must pass through Universal Write    │        │ Sole mut, replay->diff | Non-UWG -> Error│                         +=========[ TX ➔ BUS T ]========> (To L4/L6)
@@ -247,7 +247,7 @@
  [ SCOPE RULES ]: EXECUTES STRICTLY POST-L2. WRITES TO L4. DOES NOT FEED L1 INLINE. G-GATE IS A READ-ONLY SHADOW COMPARISON.
  AUTHORITY: READ-ONLY | NO EXECUTE | NO ROUTE | NO MUTATION | SIGNALS ONLY
 
-    ┌─────────────────────────────────────────────────────────────────────────────────────────────┴────────────────────────────────────────────────────────────────────────────────────────────────┐
+    ┌──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┐
     │ ⚖️ EVALUATION SPINE & 🏆 G-GATE (POST-EXECUTION QUALITY & REGRESSION MANIFOLD)                                                                                                              │
     │ [!] SHADOW-MODE ONLY: Does not mutate runtime. Does not bypass UWG. Emits signals strictly for continuous offline learning (Bus P/T).                                                        │
     │                                                                                                                                                                                              │
@@ -284,7 +284,7 @@
 ========================================================================================================================================================================================================================================================
  [ SCOPE RULES ]: DOES NOT EXECUTE. DOES NOT ROUTE. ONLY OBSERVES, VALIDATES, AND AUDITS.
 
-    ┌─────────────────────────────────────────────────────────────────────────────────────────────┴────────────────────────────────────────────────────────────────────────────────────────────────┐
+    ┌──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┐
     │ 👁️ L6 OBSERVABILITY, REPLAY, & MASTER CLOCK                                                                                                                                                 │
     │ [!] OBSERVATION & TIME SOVEREIGNTY: DOES NOT EXECUTE | DOES NOT ROUTE | SOLE TIME AUTHORITY | ENFORCES EXACT REPLAYABILITY                                                                   │
     │                                                                                                                                                                                              │
