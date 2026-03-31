@@ -1,29 +1,29 @@
-"""Placeholder test for CitationEnforcement."""
+"""Test CitationEnforcement functionality."""
+
+import sys
+from pathlib import Path
 
 import pytest
 
+REPO_ROOT = Path(__file__).parent.parent.parent
+sys.path.insert(0, str(REPO_ROOT))
 
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300  # 5 minutes
 
 @pytest.mark.unit
 class TestCitationEnforcement:
     """Test CitationEnforcement functionality."""
 
-    def test_placeholder_1(self):
-        """Placeholder test 1."""
-        assert True
-    
-    def test_placeholder_2(self):
-        """Placeholder test 2."""
-        assert True
-    
-    def test_placeholder_3(self):
-        """Placeholder test 3."""
-        assert True
+    def test_citation_enforcement_imports(self):
+        """Test citation_enforcement module imports."""
+        from agentic_core import citation_enforcement
+        assert citation_enforcement is not None
+
+    def test_citation_enforcement_class(self):
+        """Test CitationEnforcement class exists."""
+        from agentic_core import CitationEnforcement
+        assert CitationEnforcement is not None
+
+    def test_citation_enforcement_callable(self):
+        """Test citation_enforcement functions are callable."""
+        from agentic_core import validate_citation_enforcement
+        assert callable(validate_citation_enforcement)

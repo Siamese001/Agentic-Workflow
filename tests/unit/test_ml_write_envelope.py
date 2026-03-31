@@ -1,41 +1,29 @@
-"""
-Unit tests for ML write envelope functionality.
-"""
+"""Test MlWriteEnvelope functionality."""
+
+import sys
+from pathlib import Path
 
 import pytest
 
+REPO_ROOT = Path(__file__).parent.parent.parent
+sys.path.insert(0, str(REPO_ROOT))
 
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300  # 5 minutes
-# Configuration constants
 
 @pytest.mark.unit
-class TestMLWriteEnvelope:
-    """Test ML write envelope functionality."""
+class TestMlWriteEnvelope:
+    """Test MlWriteEnvelope functionality."""
 
-    def test_envelope_creation(self):
-        """Test write envelope can be created."""
-        # Placeholder test for envelope creation
-        # Would verify that ML write envelopes are properly structured
+    def test_ml_write_envelope_imports(self):
+        """Test ml_write_envelope module imports."""
+        from agentic_core import ml_write_envelope
+        assert ml_write_envelope is not None
 
-        assert True  # Placeholder
+    def test_ml_write_envelope_class(self):
+        """Test MlWriteEnvelope class exists."""
+        from agentic_core import MlWriteEnvelope
+        assert MlWriteEnvelope is not None
 
-    def test_envelope_validation(self):
-        """Test write envelope validation."""
-        # Placeholder test for envelope validation
-        # Would verify that envelopes contain required fields
-
-        assert True  # Placeholder
-
-    def test_envelope_serialization(self):
-        """Test write envelope serialization."""
-        # Placeholder test for envelope serialization
-        # Would verify that envelopes can be serialized/deserialized
-
-        assert True  # Placeholder
+    def test_ml_write_envelope_callable(self):
+        """Test ml_write_envelope functions are callable."""
+        from agentic_core import validate_ml_write_envelope
+        assert callable(validate_ml_write_envelope)

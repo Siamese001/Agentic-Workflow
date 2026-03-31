@@ -1,48 +1,29 @@
-"""
-Unit tests for meta learning contract functionality.
-"""
+"""Test MetaLearningContract functionality."""
+
+import sys
+from pathlib import Path
 
 import pytest
 
+REPO_ROOT = Path(__file__).parent.parent.parent
+sys.path.insert(0, str(REPO_ROOT))
 
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300  # 5 minutes
-# Configuration constants
 
 @pytest.mark.unit
 class TestMetaLearningContract:
-    """Test meta learning contract functionality."""
+    """Test MetaLearningContract functionality."""
 
-    def test_contract_definition(self):
-        """Test meta learning contract is properly defined."""
-        # Placeholder test for contract definition
-        # Would verify that meta learning contracts are well-defined
+    def test_meta_learning_contract_imports(self):
+        """Test meta_learning_contract module imports."""
+        from agentic_core import meta_learning_contract
+        assert meta_learning_contract is not None
 
-        assert True  # Placeholder
+    def test_meta_learning_contract_class(self):
+        """Test MetaLearningContract class exists."""
+        from agentic_core import MetaLearningContract
+        assert MetaLearningContract is not None
 
-    def test_contract_compliance(self):
-        """Test meta learning contract compliance."""
-        # Placeholder test for contract compliance
-        # Would verify that implementations comply with contracts
-
-        assert True  # Placeholder
-
-    def test_contract_validation(self):
-        """Test meta learning contract validation."""
-        # Placeholder test for contract validation
-        # Would verify that contracts can be validated
-
-        assert True  # Placeholder
-
-    def test_contract_enforcement(self):
-        """Test meta learning contract enforcement."""
-        # Placeholder test for contract enforcement
-        # Would verify that contracts are enforced
-
-        assert True  # Placeholder
+    def test_meta_learning_contract_callable(self):
+        """Test meta_learning_contract functions are callable."""
+        from agentic_core import validate_meta_learning_contract
+        assert callable(validate_meta_learning_contract)

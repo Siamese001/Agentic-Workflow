@@ -1,29 +1,29 @@
-"""Placeholder test for Phase2DispositionProcessor."""
+"""Test Phase2DispositionProcessor functionality."""
+
+import sys
+from pathlib import Path
 
 import pytest
 
+REPO_ROOT = Path(__file__).parent.parent.parent
+sys.path.insert(0, str(REPO_ROOT))
 
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300  # 5 minutes
 
 @pytest.mark.unit
 class TestPhase2DispositionProcessor:
     """Test Phase2DispositionProcessor functionality."""
 
-    def test_placeholder_1(self):
-        """Placeholder test 1."""
-        assert True
-    
-    def test_placeholder_2(self):
-        """Placeholder test 2."""
-        assert True
-    
-    def test_placeholder_3(self):
-        """Placeholder test 3."""
-        assert True
+    def test_phase2_disposition_processor_imports(self):
+        """Test phase2_disposition_processor module imports."""
+        from agentic_core import phase2_disposition_processor
+        assert phase2_disposition_processor is not None
+
+    def test_phase2_disposition_processor_class(self):
+        """Test Phase2DispositionProcessor class exists."""
+        from agentic_core import Phase2DispositionProcessor
+        assert Phase2DispositionProcessor is not None
+
+    def test_phase2_disposition_processor_callable(self):
+        """Test phase2_disposition_processor functions are callable."""
+        from agentic_core import validate_phase2_disposition_processor
+        assert callable(validate_phase2_disposition_processor)

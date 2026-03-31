@@ -1,48 +1,29 @@
-"""
-Unit tests for meta learning rollout functionality.
-"""
+"""Test MetaLearningRollout functionality."""
+
+import sys
+from pathlib import Path
 
 import pytest
 
+REPO_ROOT = Path(__file__).parent.parent.parent
+sys.path.insert(0, str(REPO_ROOT))
 
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300  # 5 minutes
-# Configuration constants
 
 @pytest.mark.unit
 class TestMetaLearningRollout:
-    """Test meta learning rollout functionality."""
+    """Test MetaLearningRollout functionality."""
 
-    def test_rollout_strategy_selection(self):
-        """Test rollout strategy selection logic."""
-        # Placeholder test for strategy selection
-        # Would verify that appropriate rollout strategies are selected
+    def test_meta_learning_rollout_imports(self):
+        """Test meta_learning_rollout module imports."""
+        from agentic_core import meta_learning_rollout
+        assert meta_learning_rollout is not None
 
-        assert True  # Placeholder
+    def test_meta_learning_rollout_class(self):
+        """Test MetaLearningRollout class exists."""
+        from agentic_core import MetaLearningRollout
+        assert MetaLearningRollout is not None
 
-    def test_gradual_rollout(self):
-        """Test gradual rollout capability."""
-        # Placeholder test for gradual rollout
-        # Would verify that rollouts can be done gradually
-
-        assert True  # Placeholder
-
-    def test_rollout_monitoring(self):
-        """Test rollout monitoring and metrics."""
-        # Placeholder test for rollout monitoring
-        # Would verify that rollouts are properly monitored
-
-        assert True  # Placeholder
-
-    def test_rollout_rollback(self):
-        """Test rollback capability during rollout."""
-        # Placeholder test for rollback capability
-        # Would verify that rollouts can be rolled back
-
-        assert True  # Placeholder
+    def test_meta_learning_rollout_callable(self):
+        """Test meta_learning_rollout functions are callable."""
+        from agentic_core import validate_meta_learning_rollout
+        assert callable(validate_meta_learning_rollout)

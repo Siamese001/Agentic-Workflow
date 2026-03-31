@@ -1,29 +1,29 @@
-"""Placeholder test for MetaLearningBridge."""
+"""Test MetaLearningBridge functionality."""
+
+import sys
+from pathlib import Path
 
 import pytest
 
+REPO_ROOT = Path(__file__).parent.parent.parent
+sys.path.insert(0, str(REPO_ROOT))
 
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300  # 5 minutes
 
 @pytest.mark.unit
 class TestMetaLearningBridge:
     """Test MetaLearningBridge functionality."""
 
-    def test_placeholder_1(self):
-        """Placeholder test 1."""
-        assert True
-    
-    def test_placeholder_2(self):
-        """Placeholder test 2."""
-        assert True
-    
-    def test_placeholder_3(self):
-        """Placeholder test 3."""
-        assert True
+    def test_meta_learning_bridge_imports(self):
+        """Test meta_learning_bridge module imports."""
+        from agentic_core import meta_learning_bridge
+        assert meta_learning_bridge is not None
+
+    def test_meta_learning_bridge_class(self):
+        """Test MetaLearningBridge class exists."""
+        from agentic_core import MetaLearningBridge
+        assert MetaLearningBridge is not None
+
+    def test_meta_learning_bridge_callable(self):
+        """Test meta_learning_bridge functions are callable."""
+        from agentic_core import validate_meta_learning_bridge
+        assert callable(validate_meta_learning_bridge)

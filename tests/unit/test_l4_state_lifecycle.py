@@ -1,29 +1,29 @@
-"""Placeholder test for L4StateLifecycle."""
+"""Test L4StateLifecycle functionality."""
+
+import sys
+from pathlib import Path
 
 import pytest
 
+REPO_ROOT = Path(__file__).parent.parent.parent
+sys.path.insert(0, str(REPO_ROOT))
 
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300  # 5 minutes
 
 @pytest.mark.unit
 class TestL4StateLifecycle:
     """Test L4StateLifecycle functionality."""
 
-    def test_placeholder_1(self):
-        """Placeholder test 1."""
-        assert True
-    
-    def test_placeholder_2(self):
-        """Placeholder test 2."""
-        assert True
-    
-    def test_placeholder_3(self):
-        """Placeholder test 3."""
-        assert True
+    def test_l4_state_lifecycle_imports(self):
+        """Test l4_state_lifecycle module imports."""
+        from agentic_core import l4_state_lifecycle
+        assert l4_state_lifecycle is not None
+
+    def test_l4_state_lifecycle_class(self):
+        """Test L4StateLifecycle class exists."""
+        from agentic_core import L4StateLifecycle
+        assert L4StateLifecycle is not None
+
+    def test_l4_state_lifecycle_callable(self):
+        """Test l4_state_lifecycle functions are callable."""
+        from agentic_core import validate_l4_state_lifecycle
+        assert callable(validate_l4_state_lifecycle)

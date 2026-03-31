@@ -1,29 +1,29 @@
-"""Placeholder test for ExecutionOrchestrator."""
+"""Test ExecutionOrchestrator functionality."""
+
+import sys
+from pathlib import Path
 
 import pytest
 
+REPO_ROOT = Path(__file__).parent.parent.parent
+sys.path.insert(0, str(REPO_ROOT))
 
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300  # 5 minutes
 
 @pytest.mark.unit
 class TestExecutionOrchestrator:
     """Test ExecutionOrchestrator functionality."""
 
-    def test_placeholder_1(self):
-        """Placeholder test 1."""
-        assert True
-    
-    def test_placeholder_2(self):
-        """Placeholder test 2."""
-        assert True
-    
-    def test_placeholder_3(self):
-        """Placeholder test 3."""
-        assert True
+    def test_execution_orchestrator_imports(self):
+        """Test execution_orchestrator module imports."""
+        from agentic_core import execution_orchestrator
+        assert execution_orchestrator is not None
+
+    def test_execution_orchestrator_class(self):
+        """Test ExecutionOrchestrator class exists."""
+        from agentic_core import ExecutionOrchestrator
+        assert ExecutionOrchestrator is not None
+
+    def test_execution_orchestrator_callable(self):
+        """Test execution_orchestrator functions are callable."""
+        from agentic_core import validate_execution_orchestrator
+        assert callable(validate_execution_orchestrator)

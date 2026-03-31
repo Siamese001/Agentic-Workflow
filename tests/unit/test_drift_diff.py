@@ -1,29 +1,29 @@
-"""Placeholder test for DriftDiff."""
+"""Test DriftDiff functionality."""
+
+import sys
+from pathlib import Path
 
 import pytest
 
+REPO_ROOT = Path(__file__).parent.parent.parent
+sys.path.insert(0, str(REPO_ROOT))
 
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300  # 5 minutes
 
 @pytest.mark.unit
 class TestDriftDiff:
     """Test DriftDiff functionality."""
 
-    def test_placeholder_1(self):
-        """Placeholder test 1."""
-        assert True
-    
-    def test_placeholder_2(self):
-        """Placeholder test 2."""
-        assert True
-    
-    def test_placeholder_3(self):
-        """Placeholder test 3."""
-        assert True
+    def test_drift_diff_imports(self):
+        """Test drift_diff module imports."""
+        from agentic_core import drift_diff
+        assert drift_diff is not None
+
+    def test_drift_diff_class(self):
+        """Test DriftDiff class exists."""
+        from agentic_core import DriftDiff
+        assert DriftDiff is not None
+
+    def test_drift_diff_callable(self):
+        """Test drift_diff functions are callable."""
+        from agentic_core import validate_drift_diff
+        assert callable(validate_drift_diff)

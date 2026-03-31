@@ -1,29 +1,29 @@
-"""Placeholder test for Environment."""
+"""Test Environment functionality."""
+
+import sys
+from pathlib import Path
 
 import pytest
 
+REPO_ROOT = Path(__file__).parent.parent.parent
+sys.path.insert(0, str(REPO_ROOT))
 
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300  # 5 minutes
 
 @pytest.mark.unit
 class TestEnvironment:
     """Test Environment functionality."""
 
-    def test_placeholder_1(self):
-        """Placeholder test 1."""
-        assert True
-    
-    def test_placeholder_2(self):
-        """Placeholder test 2."""
-        assert True
-    
-    def test_placeholder_3(self):
-        """Placeholder test 3."""
-        assert True
+    def test_environment_imports(self):
+        """Test environment module imports."""
+        from agentic_core import environment
+        assert environment is not None
+
+    def test_environment_class(self):
+        """Test Environment class exists."""
+        from agentic_core import Environment
+        assert Environment is not None
+
+    def test_environment_callable(self):
+        """Test environment functions are callable."""
+        from agentic_core import validate_environment
+        assert callable(validate_environment)

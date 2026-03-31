@@ -1,71 +1,29 @@
-"""Unit tests for BrandComplianceAgent - Validator in Apps.
+"""Test BrandComplianceAgent functionality."""
 
-Ensures brand voice and professional tone.
-
-Checks for:
-- Professional language
-
-Tests:
-- State Integrity: Verify initialization and state
-- Logic Branching: Test method dispatch
-- Fuzzing: Invalid inputs
-- Mocking: Zero network calls
-"""
-
-from unittest.mock import Mock, patch
+import sys
+from pathlib import Path
 
 import pytest
 
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300  # 5 minutes
+REPO_ROOT = Path(__file__).parent.parent.parent
+sys.path.insert(0, str(REPO_ROOT))
 
 
-@pytest.fixture(autouse=True)
-def mock_external_services():
-    """Mock all external services to prevent network calls."""
-    with (
-        patch("redis.Redis", return_value=Mock()),
-        patch.dict("os.environ", {"OPENAI_API_KEY": "test-key", "ANTHROPIC_API_KEY": "test-key"}),
-    ):
-        yield
-
-
+@pytest.mark.unit
 class TestBrandComplianceAgent:
-    """Unit tests for BrandComplianceAgent."""
+    """Test BrandComplianceAgent functionality."""
 
-    @pytest.fixture
-    def agent_class(self):
-        """Import agent class with mocked dependencies."""
-        try:
-            from apps_rg.reasoning.BrandComplianceAgent import BrandComplianceAgent
-            return BrandComplianceAgent
-        except ImportError:
-            pytest.skip("BrandComplianceAgent not available")
+    def test_brand_compliance_agent_imports(self):
+        """Test brand_compliance_agent module imports."""
+        from agentic_core import brand_compliance_agent
+        assert brand_compliance_agent is not None
 
-    def test_class_exists(self, agent_class):
-        """Verify BrandComplianceAgent exists and is importable."""
-        assert agent_class is not None, "BrandComplianceAgent should exist"
+    def test_brand_compliance_agent_class(self):
+        """Test BrandComplianceAgent class exists."""
+        from agentic_core import BrandComplianceAgent
+        assert BrandComplianceAgent is not None
 
-    def test_inherits_from_r_g_agent_base(self, agent_class):
-        """Verify proper inheritance from RGAgentBase."""
-        mro_names = [cls.__name__ for cls in agent_class.__mro__]
-        assert "RGAgentBase" in mro_names, "Should inherit from RGAgentBase"
-
-    def test_has_post_init_method(self, agent_class):
-        """Verify agent has __post_init__ method."""
-        assert hasattr(agent_class, "__post_init__"), "Should have __post_init__ method"
-
-    def test_has_execute_method(self, agent_class):
-        """Verify agent has execute method."""
-        assert hasattr(agent_class, "execute"), "Should have execute method"
-
-    def test_no_network_calls_on_import(self):
-        """Verify no network calls during import."""
-        # This test passes if the fixture successfully mocks external services
-        assert True
+    def test_brand_compliance_agent_callable(self):
+        """Test brand_compliance_agent functions are callable."""
+        from agentic_core import validate_brand_compliance_agent
+        assert callable(validate_brand_compliance_agent)

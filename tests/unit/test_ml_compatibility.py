@@ -1,41 +1,29 @@
-"""
-Unit tests for ML compatibility layer functionality.
-"""
+"""Test MlCompatibility functionality."""
+
+import sys
+from pathlib import Path
 
 import pytest
 
+REPO_ROOT = Path(__file__).parent.parent.parent
+sys.path.insert(0, str(REPO_ROOT))
 
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300  # 5 minutes
-# Configuration constants
 
 @pytest.mark.unit
-class TestMLCompatibility:
-    """Test ML compatibility layer functionality."""
+class TestMlCompatibility:
+    """Test MlCompatibility functionality."""
 
-    def test_version_compatibility(self):
-        """Test ML version compatibility checks."""
-        # Placeholder test for version compatibility
-        # Would verify that ML components are version-compatible
+    def test_ml_compatibility_imports(self):
+        """Test ml_compatibility module imports."""
+        from agentic_core import ml_compatibility
+        assert ml_compatibility is not None
 
-        assert True  # Placeholder
+    def test_ml_compatibility_class(self):
+        """Test MlCompatibility class exists."""
+        from agentic_core import MlCompatibility
+        assert MlCompatibility is not None
 
-    def test_api_compatibility(self):
-        """Test ML API compatibility."""
-        # Placeholder test for API compatibility
-        # Would verify that ML APIs are compatible across versions
-
-        assert True  # Placeholder
-
-    def test_data_format_compatibility(self):
-        """Test ML data format compatibility."""
-        # Placeholder test for data format compatibility
-        # Would verify that data formats are compatible
-
-        assert True  # Placeholder
+    def test_ml_compatibility_callable(self):
+        """Test ml_compatibility functions are callable."""
+        from agentic_core import validate_ml_compatibility
+        assert callable(validate_ml_compatibility)

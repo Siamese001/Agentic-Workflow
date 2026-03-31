@@ -1,51 +1,29 @@
-"""
-Unit tests for nested LCD (Logic Chain Depth) prevention.
-"""
+"""Test NestedLcdPrevention functionality."""
+
+import sys
+from pathlib import Path
 
 import pytest
 
+REPO_ROOT = Path(__file__).parent.parent.parent
+sys.path.insert(0, str(REPO_ROOT))
 
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300  # 5 minutes
-# Configuration constants
 
 @pytest.mark.unit
-class TestNestedLCDPrevention:
-    """Test nested LCD prevention mechanisms."""
+class TestNestedLcdPrevention:
+    """Test NestedLcdPrevention functionality."""
 
-    def test_max_depth_enforcement(self):
-        """Test maximum depth is enforced."""
-        # This test would verify that logic chains don't exceed
-        # the configured maximum depth
+    def test_nested_lcd_prevention_imports(self):
+        """Test nested_lcd_prevention module imports."""
+        from agentic_core import nested_lcd_prevention
+        assert nested_lcd_prevention is not None
 
-        # For now, just test the concept
-        max_depth = 6  # From configuration
-        assert max_depth > 0
-        assert max_depth <= 10  # Reasonable upper bound
+    def test_nested_lcd_prevention_class(self):
+        """Test NestedLcdPrevention class exists."""
+        from agentic_core import NestedLcdPrevention
+        assert NestedLcdPrevention is not None
 
-    def test_depth_tracking(self):
-        """Test depth is properly tracked."""
-        # Placeholder test for depth tracking
-        # Would verify that the system tracks current depth
-
-        assert True  # Placeholder
-
-    def test_depth_prevention_trigger(self):
-        """Test prevention triggers at max depth."""
-        # Placeholder test for prevention trigger
-        # Would verify that actions are blocked when max depth reached
-
-        assert True  # Placeholder
-
-    def test_depth_recovery(self):
-        """Test system recovers when depth decreases."""
-        # Placeholder test for depth recovery
-        # Would verify that normal operation resumes when depth drops
-
-        assert True  # Placeholder
+    def test_nested_lcd_prevention_callable(self):
+        """Test nested_lcd_prevention functions are callable."""
+        from agentic_core import validate_nested_lcd_prevention
+        assert callable(validate_nested_lcd_prevention)
