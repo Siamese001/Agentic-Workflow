@@ -1,29 +1,29 @@
-"""Placeholder test for HierarchyAgentDepthViolation."""
+"""Test HierarchyAgentDepthViolation functionality."""
+
+import sys
+from pathlib import Path
 
 import pytest
 
+REPO_ROOT = Path(__file__).parent.parent.parent
+sys.path.insert(0, str(REPO_ROOT))
 
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300  # 5 minutes
 
 @pytest.mark.unit
 class TestHierarchyAgentDepthViolation:
     """Test HierarchyAgentDepthViolation functionality."""
 
-    def test_placeholder_1(self):
-        """Placeholder test 1."""
-        assert True
-    
-    def test_placeholder_2(self):
-        """Placeholder test 2."""
-        assert True
-    
-    def test_placeholder_3(self):
-        """Placeholder test 3."""
-        assert True
+    def test_hierarchy_agent_depth_violation_imports(self):
+        """Test hierarchy_agent_depth_violation module imports."""
+        from agentic_core import hierarchy_agent_depth_violation
+        assert hierarchy_agent_depth_violation is not None
+
+    def test_hierarchy_agent_depth_violation_class(self):
+        """Test HierarchyAgentDepthViolation class exists."""
+        from agentic_core import HierarchyAgentDepthViolation
+        assert HierarchyAgentDepthViolation is not None
+
+    def test_hierarchy_agent_depth_violation_callable(self):
+        """Test hierarchy_agent_depth_violation functions are callable."""
+        from agentic_core import validate_hierarchy_agent_depth_violation
+        assert callable(validate_hierarchy_agent_depth_violation)

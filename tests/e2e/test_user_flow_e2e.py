@@ -1,29 +1,29 @@
-"""
-E2E test example - should be routed to tests/e2e/
-"""
+"""Test UserFlowE2e functionality."""
+
+import sys
+from pathlib import Path
 
 import pytest
 
-pytestmark = pytest.mark.optional
+REPO_ROOT = Path(__file__).parent.parent.parent
+sys.path.insert(0, str(REPO_ROOT))
 
-playwright = pytest.importorskip("playwright", reason="playwright not installed")
-from playwright.sync_api import Page  # noqa: E402
 
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300  # 5 minutes
-# Configuration constants
+@pytest.mark.unit
+class TestUserFlowE2e:
+    """Test UserFlowE2e functionality."""
 
-class TestUserFlowE2E:
-    """E2E test for complete user flow."""
+    def test_user_flow_e2e_imports(self):
+        """Test user_flow_e2e module imports."""
+        from agentic_core import user_flow_e2e
+        assert user_flow_e2e is not None
 
-    @pytest.mark.e2e
-    def test_user_registration_flow(self):
-        """Test user registration flow - placeholder."""
-        # This is a placeholder test - actual implementation needs Playwright setup
-        assert True, "Placeholder test"
+    def test_user_flow_e2e_class(self):
+        """Test UserFlowE2e class exists."""
+        from agentic_core import UserFlowE2e
+        assert UserFlowE2e is not None
+
+    def test_user_flow_e2e_callable(self):
+        """Test user_flow_e2e functions are callable."""
+        from agentic_core import validate_user_flow_e2e
+        assert callable(validate_user_flow_e2e)

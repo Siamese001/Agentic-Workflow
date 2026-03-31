@@ -1,29 +1,29 @@
-"""Placeholder test for CodeQualityMetrics."""
+"""Test CodeQualityMetrics functionality."""
+
+import sys
+from pathlib import Path
 
 import pytest
 
+REPO_ROOT = Path(__file__).parent.parent.parent
+sys.path.insert(0, str(REPO_ROOT))
 
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300  # 5 minutes
 
 @pytest.mark.unit
 class TestCodeQualityMetrics:
     """Test CodeQualityMetrics functionality."""
 
-    def test_placeholder_1(self):
-        """Placeholder test 1."""
-        assert True
-    
-    def test_placeholder_2(self):
-        """Placeholder test 2."""
-        assert True
-    
-    def test_placeholder_3(self):
-        """Placeholder test 3."""
-        assert True
+    def test_code_quality_metrics_imports(self):
+        """Test code_quality_metrics module imports."""
+        from agentic_core import code_quality_metrics
+        assert code_quality_metrics is not None
+
+    def test_code_quality_metrics_class(self):
+        """Test CodeQualityMetrics class exists."""
+        from agentic_core import CodeQualityMetrics
+        assert CodeQualityMetrics is not None
+
+    def test_code_quality_metrics_callable(self):
+        """Test code_quality_metrics functions are callable."""
+        from agentic_core import validate_code_quality_metrics
+        assert callable(validate_code_quality_metrics)
