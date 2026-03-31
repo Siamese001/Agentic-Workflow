@@ -310,6 +310,15 @@ repos:
         always_run: false
         require_serial: true
 
+      # -- T11.5: MCP Config Drift Detection (SSOT enforcement) -------------------
+      - id: mcp-config-drift-check
+        name: "T11.5: MCP Config Drift Detection — workspace vs global"
+        entry: python tools/adg/sync_global_config.py --check
+        language: system
+        pass_filenames: false
+        always_run: true
+        require_serial: true
+
       # ---- RATCHETS AND POLICY ENFORCEMENT (T12-T18) ----------------------------
       # Run after structural certification. Heavier accounting; only reached by
       # files that are structurally valid.
