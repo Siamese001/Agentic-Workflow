@@ -19,7 +19,6 @@ import uuid
 from dataclasses import dataclass, field
 from typing import Any
 
-from agentic_core.L2_execution.providers import get_clock
 from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     LayerSegment,
     _emit_agent_executes_agent,
@@ -63,6 +62,7 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     emit_determinism_digest,  # noqa: E402
     emit_replay_key,  # noqa: E402
 )
+from agentic_core.utils.providers import get_clock
 
 _emit_authorize_and_execute("p2", "forward_rolling_facade", "execution_auth")
 _emit_validates_capability("p2", "forward_rolling_facade", "capability_check")
