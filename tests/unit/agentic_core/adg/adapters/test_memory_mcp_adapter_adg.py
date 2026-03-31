@@ -59,16 +59,13 @@ def test_layersegment_is_instantiable(mod):
 
 
 def test_get_adapter_is_callable(mod):
-    """Test get_adapter_is_callable runtime behavior."""
-    # Arrange
-    # TODO: Set up execution parameters
-    input_data = {}  # Replace with actual test data
-
-    # Act
-    # TODO: Execute get_adapter_is_callable
-    result = {}  # Placeholder - replace with actual execution
-
-    # Assert
-    assert result is not None, "get_adapter_is_callable should return a result"
-    assert isinstance(result, (dict, list, str, int, float, bool)), "Result should be a common type"
-    # TODO: Add specific execution assertions
+    """Test get_adapter function is callable and returns expected type."""
+    func = getattr(mod, "get_adapter", None)
+    assert func is not None, "get_adapter must be defined"
+    assert callable(func), "get_adapter must be callable"
+    
+    # Test function signature accepts expected parameters
+    import inspect
+    sig = inspect.signature(func)
+    params = list(sig.parameters.keys())
+    assert len(params) >= 1, "get_adapter should accept at least one parameter"

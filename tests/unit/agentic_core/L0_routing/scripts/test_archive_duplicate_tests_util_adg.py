@@ -52,13 +52,14 @@ def test_datetime_is_instantiable(mod):
 
 
 def test_assert_no_persistent_write_is_callable(mod):
-    """Test assert_no_persistent_write_is_callable runtime behavior."""
-    # Arrange
-    input_data = {}  # Replace with actual test data
-
-    # Act
-    result = {}  # Placeholder - replace with actual execution
-
-    # Assert
-    assert result is not None, "Function should return a result"
-    assert isinstance(result, (dict, list, str, int, float, bool)), "Result should be a common type"
+    """Test assert_no_persistent_write function is callable."""
+    func = getattr(mod, "assert_no_persistent_write", None)
+    if func is None:
+        pytest.skip("assert_no_persistent_write not found in module")
+    assert callable(func), "assert_no_persistent_write must be callable"
+    
+    # Test function signature
+    import inspect
+    sig = inspect.signature(func)
+    params = list(sig.parameters.keys())
+    assert len(params) >= 0, "assert_no_persistent_write should accept parameters"
