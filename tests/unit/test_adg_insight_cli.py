@@ -1,29 +1,29 @@
-"""Placeholder test for AdgInsightCli."""
+"""Test AdgInsightCli functionality."""
+
+import sys
+from pathlib import Path
 
 import pytest
 
+REPO_ROOT = Path(__file__).parent.parent.parent
+sys.path.insert(0, str(REPO_ROOT))
 
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300  # 5 minutes
 
 @pytest.mark.unit
 class TestAdgInsightCli:
     """Test AdgInsightCli functionality."""
 
-    def test_placeholder_1(self):
-        """Placeholder test 1."""
-        assert True
-    
-    def test_placeholder_2(self):
-        """Placeholder test 2."""
-        assert True
-    
-    def test_placeholder_3(self):
-        """Placeholder test 3."""
-        assert True
+    def test_adg_insight_imports(self):
+        """Test ADG insight module imports."""
+        from tools.adg import insight_cli
+        assert insight_cli is not None
+
+    def test_insight_cli_class(self):
+        """Test insight CLI class exists."""
+        from tools.adg.insight_cli import InsightCLI
+        assert InsightCLI is not None
+
+    def test_run_insight_cli(self):
+        """Test run insight CLI function."""
+        from tools.adg.insight_cli import run_insight
+        assert callable(run_insight)
