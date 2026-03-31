@@ -420,10 +420,14 @@ class PromptAssembler:
         _slot_map: dict[str, object] = {
             "S0": SlotS0(content=f"{role}: {objective}"),
             "D0": SlotD0(content=_healer_directive or "directives", authority="BINDING"),
+            "M0": SlotM0(content=meta_cognitive or "<!-- No meta-cognitive content -->"),
             "I0": SlotI0(content="instructional"),
             "E0": SlotE0(content=exemplars or "<!-- No exemplars provided -->"),
             "C0": SlotC0(content=_normalized),
+            "Y0": SlotY0(content=synthesis or "<!-- No synthesis provided -->"),
             "U0": SlotU0(content=str(context_data)),
+            "H0": SlotH0(content=healing_proposal or "<!-- No healing proposal -->"),
+            "R0": SlotR0(content="output_format"),
         }
         for _slot_key in SLOT_ORDER:
             if _slot_key not in _slot_map:

@@ -1,63 +1,60 @@
 ========================================================================================================================
                                AGENTIC SYSTEM — PROCESS MAP v40 (BOX LOCK & ALIGNMENT)
-   LAYER SOVEREIGNTY: L0 (Gate) → L1 (Cognition) → L3 (Orch) → L5 (Gov) → L2 (Exec) | UWG = ONLY WRITE PATH TO L4
+  PRIMARY RUNTIME PATH: L0 → {FAST WORKFLOW or L1} → [optional L3] → L2 | L5 = cross-cutting policy | UWG = writes to L4
 ========================================================================================================================
 
-[ REAL-TIME CONTROL & SAFETY MANIFOLD (BUS E, D, C) ] —————————————————————————————————————————————————————————┐
-    ▲                                                                                                          │
-    │  [ BUS E: ESCALATE (Anomaly) ] <─────────────────────────────────────────────────────────────────────────┤
-    │  [ BUS D: DENY     (Policy)  ] <─────────────────────────────────────────────────────────────────────────┤
-    │  [ BUS C: CONTROL  (Routing) ] <─────────────────────────────────────────────────────────────────────────┤
-    ▼                                                                                                          │
-                                                                                                               │
-┌──────────────────┐        ┌──────────────────┐                                                               │
-│        U0        │───────>│        L0        │──────── [L0 HIT: **FAST BYPASS**] ──────────┐                 │
-│      QUERY       │ `Input` │    FAST GATE     │                                            │                 │
-└──────────────────┘        └────────┬─────────┘                                            │                 │
-                                     │                                                      │                 │
-                           [MISS: **REASONING**]                                            │                 │
-                                     │                                                      │                 │
-┌──────────────────┐        ┌────────▼─────────┐        ┌──────────────────┐                │                 │
-│       APPS       │───────>│        L1        │ <────> │        C0        │                │                 │
-│     TRIGGER      │  `App`  │    COGNITION     │`Context`│     CONTEXT      │                │                 │
-└──────────────────┘        └────────┬─────────┘        └──────────────────┘                │                 │
-                                     │                                                      │                 │
-                                 [**PLAN**]                                                 │                 │
-                                     │                                                      │                 │
-                            ┌────────▼─────────┐        [**MODAL ORCHESTRATION**]           │                 │
-                            │        L3        │──────── CONTEXT-AWARE EXEC   [**Data**] ──>│                 │
-                            │   ORCHESTRATOR   │──────── WORKFLOW ORCHESTRATION [**Tools**] ─>│                 │
-                            └────────┬─────────┘──────── HUMAN APPROVAL (HITL) [**Auth**] ──>│                 │
-                                     │                                                      │                 │
-                                [**GOVERN**]                                                │                 │
-                                     │                                                      │                 │
-                            ┌────────▼─────────┐                                            │                 │
-                            │        L5        │ <──────────────────────────────────────────┘                 │
-                            │    GOVERNANCE    │        [UNIVERSAL EXIT SPINE]                                │
-                            └────────┬─────────┘                                                              │
-                                     │                                                                        │
-                               [**EXECUTE**]                                                                  │
-                                     │                                                                        │
-                            ┌────────▼─────────┐        ┌──────────────────┐        ┌──────────────────┐      │
-                            │        L2        │───────>│    EVAL SPINE    │───────>│      G-GATE      │      │
-                            │    EXECUTION     │`Verify`│  (Verification)  │`Enforce`│   (Enforcement)  │      │
-                            └────────┬─────────┘        └────────┬─────────┘        └────────┬─────────┘      │
-                                     │                           │                           │                │
-                                     └───────────────────────────┴─── [**DELIVER**] ─────────▼                │
-                                                                                    ┌──────────────────┐      │
-                                                                                    │        L6        │      │
-                                                                                    │  OBSERVABILITY   │      │
-                                                                                    └────────┬─────────┘      │
-                                                                                             │        │       │
-[ POST-EXECUTION EVOLUTION MANIFOLD (BUS T, P, U) ] <────────────────────────────────── [**LOG**] ─────┘       │
-    │                                                                                                         │
-    │  [ BUS T: TELEMETRY  (Performance/Cost) ]                                                               │
-    │  [ BUS P: PREFERENCE (User Feedback/DPO) ]                                                              │
-    │  [ BUS U: UPDATES    (Unified Write Gate)]                                                              │
-    │                                                                                                         │
-    └─> • Commits learned DPO paths (**Semantic Memory**)                                                     │
-        • Updates L5 Policy rules (**Governance Tuning**)                                                     │
-        • Primes L0 Cache (**Performance Optimization**) ─────────────────────────────────────────────────────┘
+[ L5 GOVERNANCE & REAL-TIME CONTROL PLANE (Escalate • Deny • Route) ] ───────────────────────────────────────────────┐
+    ▲                                                                                                                │
+    │                                                                                                                │
+┌───┴──────────────────────────────┐        ┌───────────────────────────────┐                                        │
+│        U0 REQUEST SOURCES        │───────>│      L0 ENTRY + ROUTING       │──────── [L0 HIT: FAST WORKFLOW PATH] ──┐
+│       (User / App / Event)       │`Input` │                               │                                        │
+└──────────────────────────────────┘        └──────────────┬────────────────┘                                        │
+                                                           │                                                         │
+                                                 [MISS: REASONING]                                                   │
+                                                           │                                                         │
+┌──────────────────────────────────┐        ┌──────────────▼────────────────┐                                        │
+│        C0 CONTEXT ENGINE         │ <────> │         L1 COGNITION          │                                        │
+│ retrieve•curate•compress•ground  │`Context│                               │                                        │
+└──────────────────────────────────┘        └──────────────┬────────────────┘                                        │
+                                                           │                                                         │
+                                                        [PLAN]                                                       │
+                                                           │                                                         │
+                                            ┌──────────────▼────────────────┐                                        │
+                                            │   L3 ORCHESTRATOR (optional)  │                                        │
+                                            │ specialists • parallel work   │                                        │
+                                            │      coordination only        │                                        │
+                                            └──────────────┬────────────────┘                                        │
+                                                           │                                                         │
+                                                       [EXECUTE]                                                     │
+                                                           │                                                         │
+                                            ┌──────────────▼────────────────┐<───────────────────────────────────────┘
+                                            │         L2 EXECUTION          │──────────────────────┐
+                                            └──────────────┬────────────────┘                      │
+                                                           │                                       │
+                                   ┌───────────────────────▼──────────────────────────┐      ┌─────▼───────┐
+                                   │               UNIVERSAL EXIT SPINE               │      │     UWG     │
+                                   │                                                  │      │  (Unified   │
+                                   │  ┌──────────────────┐      ┌──────────────────┐  │      │ Write Gate) │
+                                   │  │    EVAL SPINE    │─────>│      G-GATE      │  │      └─────┬───────┘
+                                   │  │quality/correct/  │      │ allow/block/     │──┼─┐          │
+                                   │  │   groundedness   │      │ fallback/HITL    │  │ │    ┌─────▼───────┐
+                                   │  └──────────────────┘      └────────┬─────────┘  │ │    │  L4 STATE / │
+                                   └─────────────────────────────────────┼────────────┘ │    │    MEMORY   │
+                                                                         │              │    └─────────────┘
+                                                                         │          ┌───▼──────────────────┐
+                                                                    [DELIVER]       │  HUMAN REVIEW / HITL │
+                                                                         │          │     (Escalation)     │
+                                                                ┌────────▼─────────┐└──────────────────────┘
+                                                                │ RESPONSE/OUTCOME │───────>┌──────────────────┐
+                                                                └────────┬─────────┘        │ L6 OBSERVABILITY │
+                                                                         │                  │   (Log / Trace)  │
+[ POST-EXECUTION EVOLUTION MANIFOLD ] <──────────────────────────────────┘                  └──────────────────┘
+    │ (future runs only • versioned promotion)                                                                       │
+    │                                                                                                                │
+    └─> • proposes semantic-memory updates                                                                           │
+        • proposes policy updates                                                                                    │
+        • proposes cache optimization ───────────────────────────────────────────────────────────────────────────────┘
 
 =========================================================================================================================================================================================================================================================
 
