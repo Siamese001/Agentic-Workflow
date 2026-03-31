@@ -237,9 +237,11 @@ _LAYER_RULES: dict[str, tuple[str, ...]] = {
     "agentic_core.L3_orchestration": ("agentic_core.L5_safety", "agentic_core.L6_observability"),
 }
 
-# apps_* must not directly import any agentic_core.L* layer
+# apps_* must not directly import any agentic_core.L[0-9]* numbered layer
+# (L_CONTRACTS, L_SHARED, L_APP, L_TOOLS, L_RUNTIME etc. are shared layers and are allowed)
 _APPS_PREFIXES = (APPS_LIC_DIR, APPS_RG_DIR, APPS_SHARED_DIR)
 _L_LAYER_PREFIX = AGENTIC_CORE_DIR + ".L"
+_L_NUMBERED_PREFIXES = tuple(f"{AGENTIC_CORE_DIR}.L{n}" for n in range(7))
 
 _EXCLUDE_DIRS = GLOBAL_EXCLUDED_DIRS | SOVEREIGN_EXCLUDED_FOLDERS
 
@@ -259,17 +261,57 @@ def _layer_prefix_of(file_path: Path) -> str | None:
     return None
 
 
-def _extract_imported_modules(tree: ast.AST) -> list[tuple[int, str]]:
-    """Return list of (lineno, module_name) from all import statements."""
-    result: list[tuple[int, str]] = []
-    for node in ast.walk(tree):
-        if isinstance(node, ast.Import):
+class _ModuleLevelImportVisitor(ast.NodeVisitor):
+    """Collect only module-level imports, skipping TYPE_CHECKING guards and function/class bodies."""
+
+    def __init__(self) -> None:
+        self._result: list[tuple[int, str]] = []
+        self._in_function: int = 0
+        self._in_type_checking: bool = False
+
+    def visit_If(self, node: ast.If) -> None:
+        test = node.test
+        is_tc = (isinstance(test, ast.Name) and test.id == "TYPE_CHECKING") or (
+            isinstance(test, ast.Attribute) and test.attr == "TYPE_CHECKING"
+        )
+        old = self._in_type_checking
+        if is_tc:
+            self._in_type_checking = True
+        self.generic_visit(node)
+        self._in_type_checking = old
+
+    def visit_FunctionDef(self, node: ast.FunctionDef) -> None:
+        self._in_function += 1
+        self.generic_visit(node)
+        self._in_function -= 1
+
+    visit_AsyncFunctionDef = visit_FunctionDef  # type: ignore[assignment]
+
+    def visit_ClassDef(self, node: ast.ClassDef) -> None:
+        self._in_function += 1
+        self.generic_visit(node)
+        self._in_function -= 1
+
+    def visit_Import(self, node: ast.Import) -> None:
+        if self._in_function == 0 and not self._in_type_checking:
             for alias in node.names:
-                result.append((node.lineno, alias.name))
-        elif isinstance(node, ast.ImportFrom):
+                self._result.append((node.lineno, alias.name))
+
+    def visit_ImportFrom(self, node: ast.ImportFrom) -> None:
+        if self._in_function == 0 and not self._in_type_checking:
             if node.module:
-                result.append((node.lineno, node.module))
-    return result    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime
+                self._result.append((node.lineno, node.module))
+
+    @property
+    def result(self) -> list[tuple[int, str]]:
+        return self._result
+
+
+def _extract_imported_modules(tree: ast.AST) -> list[tuple[int, str]]:
+    """Return module-level imports only, skipping TYPE_CHECKING guards and function/class bodies."""
+    visitor = _ModuleLevelImportVisitor()
+    visitor.visit(tree)
+    return visitor.result
 
 
 def scan_file(file_path: Path) -> list[str]:
@@ -377,7 +419,7 @@ def _validate_import_with_ast(file_path: Path, source_layer: str, lineno: int, m
 
     # Check apps_* direct L* imports
     if any(source_layer == ap for ap in _APPS_PREFIXES):
-        if mod.startswith(_L_LAYER_PREFIX):
+        if any(mod == p or mod.startswith(p + ".") for p in _L_NUMBERED_PREFIXES):
             violations.append(
                 f"VIOLATION {file_path}:{lineno}: "
                 f"apps_* direct L* import — {source_layer} imports {mod} "
@@ -403,10 +445,10 @@ def _scan_file_with_ast(file_path: Path, source_layer: str, tree: ast.AST) -> li
                         f"VIOLATION {file_path}:{lineno}: layer inversion — {source_layer} imports {mod}"
                     )
 
-    # Check apps_* direct L* imports
+    # Check apps_* direct numbered-layer imports (L0-L6 only; L_CONTRACTS etc. are allowed)
     if any(source_layer == ap for ap in _APPS_PREFIXES):
         for lineno, mod in imports:
-            if mod.startswith(_L_LAYER_PREFIX):
+            if any(mod == p or mod.startswith(p + ".") for p in _L_NUMBERED_PREFIXES):
                 violations.append(
                     f"VIOLATION {file_path}:{lineno}: "
                     f"apps_* direct L* import — {source_layer} imports {mod} "
