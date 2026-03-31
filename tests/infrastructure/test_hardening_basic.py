@@ -1,29 +1,29 @@
-"""Placeholder test for HardeningBasic."""
+"""Test HardeningBasic functionality."""
+
+import sys
+from pathlib import Path
 
 import pytest
 
+REPO_ROOT = Path(__file__).parent.parent.parent
+sys.path.insert(0, str(REPO_ROOT))
 
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300  # 5 minutes
 
 @pytest.mark.unit
 class TestHardeningBasic:
     """Test HardeningBasic functionality."""
 
-    def test_placeholder_1(self):
-        """Placeholder test 1."""
-        assert True
-    
-    def test_placeholder_2(self):
-        """Placeholder test 2."""
-        assert True
-    
-    def test_placeholder_3(self):
-        """Placeholder test 3."""
-        assert True
+    def test_hardening_basic_imports(self):
+        """Test hardening basic module imports."""
+        from ops_scripts.ci import hardening_basic
+        assert hardening_basic is not None
+
+    def test_hardening_basic_checker(self):
+        """Test hardening basic checker exists."""
+        from ops_scripts.ci.hardening_basic import BasicHardeningChecker
+        assert BasicHardeningChecker is not None
+
+    def test_hardening_basic_validate(self):
+        """Test hardening basic validate function."""
+        from ops_scripts.ci.hardening_basic import validate_basic_hardening
+        assert callable(validate_basic_hardening)

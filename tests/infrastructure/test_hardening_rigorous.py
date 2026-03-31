@@ -1,29 +1,29 @@
-"""Placeholder test for HardeningRigorous."""
+"""Test HardeningRigorous functionality."""
+
+import sys
+from pathlib import Path
 
 import pytest
 
+REPO_ROOT = Path(__file__).parent.parent.parent
+sys.path.insert(0, str(REPO_ROOT))
 
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300  # 5 minutes
 
 @pytest.mark.unit
 class TestHardeningRigorous:
     """Test HardeningRigorous functionality."""
 
-    def test_placeholder_1(self):
-        """Placeholder test 1."""
-        assert True
-    
-    def test_placeholder_2(self):
-        """Placeholder test 2."""
-        assert True
-    
-    def test_placeholder_3(self):
-        """Placeholder test 3."""
-        assert True
+    def test_hardening_rigorous_imports(self):
+        """Test hardening rigorous module imports."""
+        from ops_scripts.ci import hardening_rigorous
+        assert hardening_rigorous is not None
+
+    def test_hardening_rigorous_checker(self):
+        """Test hardening rigorous checker exists."""
+        from ops_scripts.ci.hardening_rigorous import RigorousHardeningChecker
+        assert RigorousHardeningChecker is not None
+
+    def test_hardening_rigorous_validate(self):
+        """Test hardening rigorous validate function."""
+        from ops_scripts.ci.hardening_rigorous import validate_rigorous_hardening
+        assert callable(validate_rigorous_hardening)
