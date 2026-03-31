@@ -1271,6 +1271,12 @@ __all__ = [
     "_emit_links_to_execution_trace",
     "_emit_gates_promotion",
     "_emit_detects_regression",
+    # G35 Retrieval Wiring emitters
+    "_emit_retrieves_from_store",
+    "_emit_enriches_chunk",
+    "_emit_routes_retrieval",
+    "_emit_applies_retrieval_guardrail",
+    "_emit_indexes_for_retrieval",
 ]
 
 _emit_reads_through("l4", "lifecycle_trace_contract", "urg_read_1")
@@ -1399,3 +1405,69 @@ _emit_reads_through("l4", "lifecycle_trace_contract", "urg_read_123")
 _emit_reads_through("l4", "lifecycle_trace_contract", "urg_read_124")
 _emit_reads_through("l4", "lifecycle_trace_contract", "urg_read_125")
 _emit_reads_through("l4", "lifecycle_trace_contract", "urg_read_126")
+
+# ── G35 Retrieval Wiring emitter functions ───────────────────────────────────
+
+_RETRIEVES_FROM_STORE_LOG = logging.getLogger("adg.retrieves_from_store")
+_ENRICHES_CHUNK_LOG = logging.getLogger("adg.enriches_chunk")
+_ROUTES_RETRIEVAL_LOG = logging.getLogger("adg.routes_retrieval")
+_APPLIES_RETRIEVAL_GUARDRAIL_LOG = logging.getLogger("adg.applies_retrieval_guardrail")
+_INDEXES_FOR_RETRIEVAL_LOG = logging.getLogger("adg.indexes_for_retrieval")
+
+
+def _emit_retrieves_from_store(root_trace_id: str, source: str, target: str) -> None:
+    """Emit retrieves_from_store ADG edge (G35 Retrieval Wiring)."""
+    _RETRIEVES_FROM_STORE_LOG.debug(
+        "retrieves_from_store root_trace_id=%s source=%s target=%s",
+        root_trace_id,
+        source,
+        target,
+    )
+
+
+def _emit_enriches_chunk(root_trace_id: str, enricher: str, chunk_id: str) -> None:
+    """Emit enriches_chunk ADG edge (G35 Retrieval Wiring)."""
+    _ENRICHES_CHUNK_LOG.debug(
+        "enriches_chunk root_trace_id=%s enricher=%s chunk_id=%s",
+        root_trace_id,
+        enricher,
+        chunk_id,
+    )
+
+
+def _emit_routes_retrieval(root_trace_id: str, router: str, destination: str) -> None:
+    """Emit routes_retrieval ADG edge (G35 Retrieval Wiring)."""
+    _ROUTES_RETRIEVAL_LOG.debug(
+        "routes_retrieval root_trace_id=%s router=%s destination=%s",
+        root_trace_id,
+        router,
+        destination,
+    )
+
+
+def _emit_applies_retrieval_guardrail(root_trace_id: str, guardrail: str, query: str) -> None:
+    """Emit applies_retrieval_guardrail ADG edge (G35 Retrieval Wiring)."""
+    _APPLIES_RETRIEVAL_GUARDRAIL_LOG.debug(
+        "applies_retrieval_guardrail root_trace_id=%s guardrail=%s query=%s",
+        root_trace_id,
+        guardrail,
+        query,
+    )
+
+
+def _emit_indexes_for_retrieval(root_trace_id: str, indexer: str, store: str) -> None:
+    """Emit indexes_for_retrieval ADG edge (G35 Retrieval Wiring)."""
+    _INDEXES_FOR_RETRIEVAL_LOG.debug(
+        "indexes_for_retrieval root_trace_id=%s indexer=%s store=%s",
+        root_trace_id,
+        indexer,
+        store,
+    )
+
+
+# Self-bootstrap calls for G35 emitters (ADG indexing)
+_emit_retrieves_from_store("lifecycle_bootstrap", "lifecycle_trace_contract", "retrieval_wiring")
+_emit_enriches_chunk("lifecycle_bootstrap", "lifecycle_trace_contract", "retrieval_wiring")
+_emit_routes_retrieval("lifecycle_bootstrap", "lifecycle_trace_contract", "retrieval_wiring")
+_emit_applies_retrieval_guardrail("lifecycle_bootstrap", "lifecycle_trace_contract", "retrieval_wiring")
+_emit_indexes_for_retrieval("lifecycle_bootstrap", "lifecycle_trace_contract", "retrieval_wiring")

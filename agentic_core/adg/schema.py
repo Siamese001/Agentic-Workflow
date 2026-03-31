@@ -178,6 +178,11 @@ RelationType = Literal[
     "overrides_prompt",
     "embeds_into",
     "retrieves_via",
+    "retrieves_from_store",
+    "enriches_chunk",
+    "routes_retrieval",
+    "applies_retrieval_guardrail",
+    "indexes_for_retrieval",
     "chunks_into",
     "stores_embedding",
     "escalates_to_human",
@@ -1825,6 +1830,48 @@ NETWORK_SYMBOLS: frozenset[str] = frozenset(
         "urllib.request.urlretrieve",
     }
 )
+RETRIEVES_FROM_STORE_SYMBOLS: frozenset[str] = frozenset(
+    {
+        "QueryRetrievalBridge",
+        "QueryIntentExpander",
+        "get_intent_expander",
+        "retrieves_from_store",
+    }
+)
+ENRICHES_CHUNK_SYMBOLS: frozenset[str] = frozenset(
+    {
+        "SemanticEnrichmentBridge",
+        "ExecutionGateway",
+        "BatchEmbeddingService",
+        "get_embedding_service",
+        "enriches_chunk",
+    }
+)
+ROUTES_RETRIEVAL_SYMBOLS: frozenset[str] = frozenset(
+    {
+        "ContextRetrievalOrchestrator",
+        "Orchestrator",
+        "SovereignRagOrchestrator",
+        "get_rag_orchestrator",
+        "routes_retrieval",
+    }
+)
+APPLIES_RETRIEVAL_GUARDRAIL_SYMBOLS: frozenset[str] = frozenset(
+    {
+        "RetrievalSafetyGate",
+        "validate_retrieval_request",
+        "apply_guardrails",
+        "applies_retrieval_guardrail",
+    }
+)
+INDEXES_FOR_RETRIEVAL_SYMBOLS: frozenset[str] = frozenset(
+    {
+        "ChunkManifestRegistry",
+        "UnifiedMemoryFacade",
+        "get_chunk_manifest_registry",
+        "indexes_for_retrieval",
+    }
+)
 SYMBOL_KINDS: frozenset[str] = frozenset({"function", "async_function", "class", "constant", "type_alias"})
 __all__ = [
     "ADG_NS",
@@ -1959,6 +2006,7 @@ __all__ = [
     "WRITES_OBSERVABILITY_LOG_SYMBOLS",
     "UPDATES_MONITORING_STATE_SYMBOLS",
     "TRIGGERS_ALERT_SYMBOLS",
+    "INDEXES_FOR_RETRIEVAL_SYMBOLS",
     "LINKS_INCIDENT_TRACE_SYMBOLS",
 ]
 
