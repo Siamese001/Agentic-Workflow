@@ -1,29 +1,29 @@
-"""Placeholder test for SpineAdapterWiring."""
+"""Test SpineAdapterWiring functionality."""
+
+import sys
+from pathlib import Path
 
 import pytest
 
+REPO_ROOT = Path(__file__).parent.parent.parent
+sys.path.insert(0, str(REPO_ROOT))
 
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300  # 5 minutes
 
 @pytest.mark.unit
 class TestSpineAdapterWiring:
     """Test SpineAdapterWiring functionality."""
 
-    def test_placeholder_1(self):
-        """Placeholder test 1."""
-        assert True
-    
-    def test_placeholder_2(self):
-        """Placeholder test 2."""
-        assert True
-    
-    def test_placeholder_3(self):
-        """Placeholder test 3."""
-        assert True
+    def test_spine_adapter_wiring_imports(self):
+        """Test spine_adapter_wiring module imports."""
+        from agentic_core import spine_adapter_wiring
+        assert spine_adapter_wiring is not None
+
+    def test_spine_adapter_wiring_class(self):
+        """Test SpineAdapterWiring class exists."""
+        from agentic_core import SpineAdapterWiring
+        assert SpineAdapterWiring is not None
+
+    def test_spine_adapter_wiring_callable(self):
+        """Test spine_adapter_wiring functions are callable."""
+        from agentic_core import validate_spine_adapter_wiring
+        assert callable(validate_spine_adapter_wiring)

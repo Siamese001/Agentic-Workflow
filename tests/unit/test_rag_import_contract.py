@@ -1,29 +1,29 @@
-"""Placeholder test for RagImportContract."""
+"""Test RagImportContract functionality."""
+
+import sys
+from pathlib import Path
 
 import pytest
 
+REPO_ROOT = Path(__file__).parent.parent.parent
+sys.path.insert(0, str(REPO_ROOT))
 
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300  # 5 minutes
 
 @pytest.mark.unit
 class TestRagImportContract:
     """Test RagImportContract functionality."""
 
-    def test_placeholder_1(self):
-        """Placeholder test 1."""
-        assert True
-    
-    def test_placeholder_2(self):
-        """Placeholder test 2."""
-        assert True
-    
-    def test_placeholder_3(self):
-        """Placeholder test 3."""
-        assert True
+    def test_rag_import_contract_imports(self):
+        """Test rag_import_contract module imports."""
+        from agentic_core import rag_import_contract
+        assert rag_import_contract is not None
+
+    def test_rag_import_contract_class(self):
+        """Test RagImportContract class exists."""
+        from agentic_core import RagImportContract
+        assert RagImportContract is not None
+
+    def test_rag_import_contract_callable(self):
+        """Test rag_import_contract functions are callable."""
+        from agentic_core import validate_rag_import_contract
+        assert callable(validate_rag_import_contract)

@@ -1,29 +1,29 @@
-"""Placeholder test for RedSentinelAgentAgents."""
+"""Test RedSentinelAgentAgents functionality."""
+
+import sys
+from pathlib import Path
 
 import pytest
 
+REPO_ROOT = Path(__file__).parent.parent.parent
+sys.path.insert(0, str(REPO_ROOT))
 
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300  # 5 minutes
 
 @pytest.mark.unit
 class TestRedSentinelAgentAgents:
     """Test RedSentinelAgentAgents functionality."""
 
-    def test_placeholder_1(self):
-        """Placeholder test 1."""
-        assert True
-    
-    def test_placeholder_2(self):
-        """Placeholder test 2."""
-        assert True
-    
-    def test_placeholder_3(self):
-        """Placeholder test 3."""
-        assert True
+    def test_red_sentinel_agent_agents_imports(self):
+        """Test red_sentinel_agent_agents module imports."""
+        from agentic_core import red_sentinel_agent_agents
+        assert red_sentinel_agent_agents is not None
+
+    def test_red_sentinel_agent_agents_class(self):
+        """Test RedSentinelAgentAgents class exists."""
+        from agentic_core import RedSentinelAgentAgents
+        assert RedSentinelAgentAgents is not None
+
+    def test_red_sentinel_agent_agents_callable(self):
+        """Test red_sentinel_agent_agents functions are callable."""
+        from agentic_core import validate_red_sentinel_agent_agents
+        assert callable(validate_red_sentinel_agent_agents)

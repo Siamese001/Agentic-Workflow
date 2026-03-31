@@ -1,29 +1,29 @@
-"""Placeholder test for SemanticCacheMixin."""
+"""Test SemanticCacheMixin functionality."""
+
+import sys
+from pathlib import Path
 
 import pytest
 
+REPO_ROOT = Path(__file__).parent.parent.parent
+sys.path.insert(0, str(REPO_ROOT))
 
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300  # 5 minutes
 
 @pytest.mark.unit
 class TestSemanticCacheMixin:
     """Test SemanticCacheMixin functionality."""
 
-    def test_placeholder_1(self):
-        """Placeholder test 1."""
-        assert True
-    
-    def test_placeholder_2(self):
-        """Placeholder test 2."""
-        assert True
-    
-    def test_placeholder_3(self):
-        """Placeholder test 3."""
-        assert True
+    def test_semantic_cache_mixin_imports(self):
+        """Test semantic_cache_mixin module imports."""
+        from agentic_core import semantic_cache_mixin
+        assert semantic_cache_mixin is not None
+
+    def test_semantic_cache_mixin_class(self):
+        """Test SemanticCacheMixin class exists."""
+        from agentic_core import SemanticCacheMixin
+        assert SemanticCacheMixin is not None
+
+    def test_semantic_cache_mixin_callable(self):
+        """Test semantic_cache_mixin functions are callable."""
+        from agentic_core import validate_semantic_cache_mixin
+        assert callable(validate_semantic_cache_mixin)

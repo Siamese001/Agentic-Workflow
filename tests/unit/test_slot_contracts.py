@@ -1,29 +1,29 @@
-"""Placeholder test for SlotContracts."""
+"""Test SlotContracts functionality."""
+
+import sys
+from pathlib import Path
 
 import pytest
 
+REPO_ROOT = Path(__file__).parent.parent.parent
+sys.path.insert(0, str(REPO_ROOT))
 
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300  # 5 minutes
 
 @pytest.mark.unit
 class TestSlotContracts:
     """Test SlotContracts functionality."""
 
-    def test_placeholder_1(self):
-        """Placeholder test 1."""
-        assert True
-    
-    def test_placeholder_2(self):
-        """Placeholder test 2."""
-        assert True
-    
-    def test_placeholder_3(self):
-        """Placeholder test 3."""
-        assert True
+    def test_slot_contracts_imports(self):
+        """Test slot_contracts module imports."""
+        from agentic_core import slot_contracts
+        assert slot_contracts is not None
+
+    def test_slot_contracts_class(self):
+        """Test SlotContracts class exists."""
+        from agentic_core import SlotContracts
+        assert SlotContracts is not None
+
+    def test_slot_contracts_callable(self):
+        """Test slot_contracts functions are callable."""
+        from agentic_core import validate_slot_contracts
+        assert callable(validate_slot_contracts)

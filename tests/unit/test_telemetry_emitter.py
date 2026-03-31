@@ -1,29 +1,29 @@
-"""Placeholder test for TelemetryEmitter."""
+"""Test TelemetryEmitter functionality."""
+
+import sys
+from pathlib import Path
 
 import pytest
 
+REPO_ROOT = Path(__file__).parent.parent.parent
+sys.path.insert(0, str(REPO_ROOT))
 
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300  # 5 minutes
 
 @pytest.mark.unit
 class TestTelemetryEmitter:
     """Test TelemetryEmitter functionality."""
 
-    def test_placeholder_1(self):
-        """Placeholder test 1."""
-        assert True
-    
-    def test_placeholder_2(self):
-        """Placeholder test 2."""
-        assert True
-    
-    def test_placeholder_3(self):
-        """Placeholder test 3."""
-        assert True
+    def test_telemetry_emitter_imports(self):
+        """Test telemetry_emitter module imports."""
+        from agentic_core import telemetry_emitter
+        assert telemetry_emitter is not None
+
+    def test_telemetry_emitter_class(self):
+        """Test TelemetryEmitter class exists."""
+        from agentic_core import TelemetryEmitter
+        assert TelemetryEmitter is not None
+
+    def test_telemetry_emitter_callable(self):
+        """Test telemetry_emitter functions are callable."""
+        from agentic_core import validate_telemetry_emitter
+        assert callable(validate_telemetry_emitter)

@@ -1,29 +1,29 @@
-"""Placeholder test for ReqPt011SlotOrderEnforcement."""
+"""Test ReqPt011SlotOrderEnforcement functionality."""
+
+import sys
+from pathlib import Path
 
 import pytest
 
+REPO_ROOT = Path(__file__).parent.parent.parent
+sys.path.insert(0, str(REPO_ROOT))
 
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300  # 5 minutes
 
 @pytest.mark.unit
 class TestReqPt011SlotOrderEnforcement:
     """Test ReqPt011SlotOrderEnforcement functionality."""
 
-    def test_placeholder_1(self):
-        """Placeholder test 1."""
-        assert True
-    
-    def test_placeholder_2(self):
-        """Placeholder test 2."""
-        assert True
-    
-    def test_placeholder_3(self):
-        """Placeholder test 3."""
-        assert True
+    def test_req_pt011_slot_order_enforcement_imports(self):
+        """Test req_pt011_slot_order_enforcement module imports."""
+        from agentic_core import req_pt011_slot_order_enforcement
+        assert req_pt011_slot_order_enforcement is not None
+
+    def test_req_pt011_slot_order_enforcement_class(self):
+        """Test ReqPt011SlotOrderEnforcement class exists."""
+        from agentic_core import ReqPt011SlotOrderEnforcement
+        assert ReqPt011SlotOrderEnforcement is not None
+
+    def test_req_pt011_slot_order_enforcement_callable(self):
+        """Test req_pt011_slot_order_enforcement functions are callable."""
+        from agentic_core import validate_req_pt011_slot_order_enforcement
+        assert callable(validate_req_pt011_slot_order_enforcement)

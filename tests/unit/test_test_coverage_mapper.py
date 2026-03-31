@@ -1,29 +1,29 @@
-"""Placeholder test for TestCoverageMapper."""
+"""Test CoverageMapper functionality."""
+
+import sys
+from pathlib import Path
 
 import pytest
 
+REPO_ROOT = Path(__file__).parent.parent.parent
+sys.path.insert(0, str(REPO_ROOT))
 
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300  # 5 minutes
 
 @pytest.mark.unit
-class TestTestCoverageMapper:
-    """Test TestCoverageMapper functionality."""
+class TestCoverageMapper:
+    """Test CoverageMapper functionality."""
 
-    def test_placeholder_1(self):
-        """Placeholder test 1."""
-        assert True
-    
-    def test_placeholder_2(self):
-        """Placeholder test 2."""
-        assert True
-    
-    def test_placeholder_3(self):
-        """Placeholder test 3."""
-        assert True
+    def test_coverage_mapper_imports(self):
+        """Test coverage_mapper module imports."""
+        from agentic_core import coverage_mapper
+        assert coverage_mapper is not None
+
+    def test_coverage_mapper_class(self):
+        """Test CoverageMapper class exists."""
+        from agentic_core import CoverageMapper
+        assert CoverageMapper is not None
+
+    def test_coverage_mapper_callable(self):
+        """Test coverage_mapper functions are callable."""
+        from agentic_core import validate_coverage_mapper
+        assert callable(validate_coverage_mapper)
