@@ -6,26 +6,27 @@ while preserving behavioral logic.
 """
 
 import ast
+import sys
 import tempfile
 from pathlib import Path
 from unittest.mock import patch
 
 import pytest
 
+# Add repo root to path
+REPO_ROOT = Path(__file__).parent.parent.parent.parent.parent
+sys.path.insert(0, str(REPO_ROOT))
 
-# Lazy imports to avoid collection-time conflicts
-def _get_stripper_classes():
-    from tools.adg.strip_boilerplate import (
-        BoilerplateStripper,
-        SafeBoilerplateStripper,
-        StripResult,
-    )
-    return BoilerplateStripper, SafeBoilerplateStripper, StripResult
+# Now imports will work
+from tools.adg.strip_boilerplate import (
+    BoilerplateStripper,
+    SafeBoilerplateStripper,
+    StripResult,
+)
 
 
 def test_boilerplate_stripper_removes_emit_calls():
     """Test that stripper removes emit calls."""
-    BoilerplateStripper, SafeBoilerplateStripper, StripResult = _get_stripper_classes()
     code = """
 import os
 
