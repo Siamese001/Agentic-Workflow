@@ -50,7 +50,15 @@ app = Flask(__name__)
 
 # In-memory storage (replace with persistent storage in production)
 _hitl_graph = HITLGraph()
-_rt_graph = _get_runtime_graph()
+
+# Runtime graph is lazy-initialized on first use
+_rt_graph = None
+
+def _ensure_rt_graph():
+    global _rt_graph
+    if _rt_graph is None:
+        _rt_graph = _get_runtime_graph()
+    return _rt_graph
 
 
 def _serialize_checkpoint(cp: Any) -> dict[str, Any]:
@@ -176,9 +184,9 @@ def submit_decision(checkpoint_id: str) -> tuple[Any, int]:
     
     if checkpoint.resolved:
         return jsonify({"error": "Checkpoint already resolved"}), 409
-    
+
     # Record the decision
-    recorder = HITLRuntimeRecorder(_rt_graph, _hitl_graph, agent_id=checkpoint.agent_id)
+    recorder = HITLRuntimeRecorder(_ensure_rt_graph(), _hitl_graph, agent_id=checkpoint.agent_id)
     recorder.decide(
         checkpoint_id=checkpoint_id,
         decision=decision_str,
@@ -283,7 +291,7 @@ def batch_decide() -> tuple[Any, int]:
             continue
         
         # Record the decision
-        recorder = HITLRuntimeRecorder(_rt_graph, _hitl_graph, agent_id=checkpoint.agent_id)
+        recorder = HITLRuntimeRecorder(_ensure_rt_graph(), _hitl_graph, agent_id=checkpoint.agent_id)
         recorder.decide(
             checkpoint_id=checkpoint_id,
             decision=decision_str,

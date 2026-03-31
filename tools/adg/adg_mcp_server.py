@@ -93,11 +93,19 @@ _r: _redis_lib.Redis | None = None
 
 
 def _redis() -> _redis_lib.Redis:
-    """Return a connected Redis client, reconnecting if necessary."""
+    """Return a connected Redis client, reconnecting if necessary.
+
+    Resets the singleton on ping failure so the next call reconnects
+    rather than re-using a broken socket.
+    """
     global _r
     if _r is None:
         _r = _redis_lib.from_url(_REDIS_URL, decode_responses=True)
-    _r.ping()
+    try:
+        _r.ping()
+    except _redis_lib.RedisError:
+        _r = None
+        raise
     return _r
 
 
@@ -544,6 +552,10 @@ def adg_violations(
                     continue
                 violations.append(row)
             else:
+                # Backward compat: try parsing vid as JSON (old v1 format)
+                # Skip if category/severity filter is active — raw stubs have no metadata
+                if category or severity:
+                    continue
                 try:
                     parsed = json.loads(vid)
                     violations.append(parsed)
