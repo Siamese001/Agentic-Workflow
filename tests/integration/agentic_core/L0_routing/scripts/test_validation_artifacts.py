@@ -1,29 +1,29 @@
-"""Placeholder test for ValidationArtifacts."""
+"""Test ValidationArtifacts functionality."""
+
+import sys
+from pathlib import Path
 
 import pytest
 
+REPO_ROOT = Path(__file__).parent.parent.parent.parent.parent
+sys.path.insert(0, str(REPO_ROOT))
 
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300  # 5 minutes
 
 @pytest.mark.unit
 class TestValidationArtifacts:
     """Test ValidationArtifacts functionality."""
 
-    def test_placeholder_1(self):
-        """Placeholder test 1."""
-        assert True
-    
-    def test_placeholder_2(self):
-        """Placeholder test 2."""
-        assert True
-    
-    def test_placeholder_3(self):
-        """Placeholder test 3."""
-        assert True
+    def test_validation_artifacts_imports(self):
+        """Test validation artifacts module imports."""
+        from agentic_core.L0_routing.scripts import validation_artifacts
+        assert validation_artifacts is not None
+
+    def test_validation_artifacts_generator(self):
+        """Test validation artifacts generator exists."""
+        from agentic_core.L0_routing.scripts.validation_artifacts import ArtifactsGenerator
+        assert ArtifactsGenerator is not None
+
+    def test_validation_artifacts_validate(self):
+        """Test validation artifacts validate function."""
+        from agentic_core.L0_routing.scripts.validation_artifacts import validate_artifacts
+        assert callable(validate_artifacts)

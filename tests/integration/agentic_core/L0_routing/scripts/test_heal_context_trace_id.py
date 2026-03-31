@@ -1,29 +1,29 @@
-"""Placeholder test for HealContextTraceId."""
+"""Test HealContextTraceId functionality."""
+
+import sys
+from pathlib import Path
 
 import pytest
 
+REPO_ROOT = Path(__file__).parent.parent.parent.parent.parent
+sys.path.insert(0, str(REPO_ROOT))
 
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300  # 5 minutes
 
 @pytest.mark.unit
 class TestHealContextTraceId:
     """Test HealContextTraceId functionality."""
 
-    def test_placeholder_1(self):
-        """Placeholder test 1."""
-        assert True
-    
-    def test_placeholder_2(self):
-        """Placeholder test 2."""
-        assert True
-    
-    def test_placeholder_3(self):
-        """Placeholder test 3."""
-        assert True
+    def test_heal_context_imports(self):
+        """Test heal context module imports."""
+        from agentic_core.L0_routing.scripts import heal_context_trace
+        assert heal_context_trace is not None
+
+    def test_heal_context_handler(self):
+        """Test heal context handler exists."""
+        from agentic_core.L0_routing.scripts.heal_context_trace import ContextTraceHandler
+        assert ContextTraceHandler is not None
+
+    def test_heal_context_function(self):
+        """Test heal context function."""
+        from agentic_core.L0_routing.scripts.heal_context_trace import heal_context
+        assert callable(heal_context)

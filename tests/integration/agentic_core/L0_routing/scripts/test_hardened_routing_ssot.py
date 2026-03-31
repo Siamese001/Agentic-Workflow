@@ -1,29 +1,29 @@
-"""Placeholder test for HardenedRoutingSsot."""
+"""Test HardenedRoutingSsot functionality."""
+
+import sys
+from pathlib import Path
 
 import pytest
 
+REPO_ROOT = Path(__file__).parent.parent.parent.parent.parent
+sys.path.insert(0, str(REPO_ROOT))
 
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300  # 5 minutes
 
 @pytest.mark.unit
 class TestHardenedRoutingSsot:
     """Test HardenedRoutingSsot functionality."""
 
-    def test_placeholder_1(self):
-        """Placeholder test 1."""
-        assert True
-    
-    def test_placeholder_2(self):
-        """Placeholder test 2."""
-        assert True
-    
-    def test_placeholder_3(self):
-        """Placeholder test 3."""
-        assert True
+    def test_hardened_routing_imports(self):
+        """Test hardened routing module imports."""
+        from agentic_core.L0_routing.scripts import hardened_routing_ssot
+        assert hardened_routing_ssot is not None
+
+    def test_hardened_routing_manager(self):
+        """Test hardened routing manager exists."""
+        from agentic_core.L0_routing.scripts.hardened_routing_ssot import HardenedRoutingManager
+        assert HardenedRoutingManager is not None
+
+    def test_validate_routing(self):
+        """Test validate routing function."""
+        from agentic_core.L0_routing.scripts.hardened_routing_ssot import validate_routing
+        assert callable(validate_routing)
