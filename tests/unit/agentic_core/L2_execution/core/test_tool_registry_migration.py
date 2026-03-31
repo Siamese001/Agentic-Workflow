@@ -17,4 +17,3 @@ class TestToolRegistryMigration:
         """Test migration_logic runtime behavior."""
         assert mock_env is not None
         assert isinstance(mock_env, Path)
-

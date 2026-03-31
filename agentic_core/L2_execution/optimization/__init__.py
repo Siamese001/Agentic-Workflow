@@ -2,7 +2,7 @@
 
 Provides high-performance parallel processing capabilities:
 - ProcessPoolExecutor for GIL-bound CPU tasks
-- CPU affinity tuning for AMD architectures  
+- CPU affinity tuning for AMD architectures
 - Parallel file processing
 - Batch processing utilities
 
@@ -12,11 +12,11 @@ Usage:
         get_file_processor,
         BatchProcessor,
     )
-    
+
     # CPU-optimized parallel processing
     optimizer = get_cpu_optimizer()
     results = optimizer.map_parallel(process_func, items)
-    
+
     # Parallel file processing
     processor = get_file_processor()
     results = processor.process_files(file_paths, parse_json_file)

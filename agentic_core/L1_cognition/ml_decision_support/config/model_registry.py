@@ -21,7 +21,7 @@ from dataclasses import dataclass, asdict
 class ModelStatus(Enum):
     """Model lifecycle status."""
     DEVELOPMENT = "development"
-    CANDIDATE = "candidate" 
+    CANDIDATE = "candidate"
     PRODUCTION = "production"
     DEPRECATED = "deprecated"
     ROLLED_BACK = "rolled_back"
@@ -69,7 +69,7 @@ class ModelRecord:
 class ModelRegistry:
     """
     Versioned model registry with governance controls.
-    
+
     Ensures all ML models are:
     - Versioned with content digests
     - Tracked with full metadata
@@ -77,7 +77,7 @@ class ModelRegistry:
     - Capable of rollback
     - Audited for compliance
     """
-    
+
     def __init__(self, registry_path: Path):
         self.registry_path = Path(registry_path)
         self.registry_path.mkdir(parents=True, exist_ok=True)
@@ -88,23 +88,23 @@ class ModelRegistry:
         # TODO: Replace with local snapshot management
         self._models: Dict[str, ModelRecord] = {}
         self._load_registry()
-    
+
     def _load_registry(self) -> None:
         """Load model registry from disk."""
         if self.models_file.exists():
             try:
                 with open(self.models_file, 'r', encoding='utf-8') as f:
                     data = json.load(f)
-                
+
                 for model_id, record_data in data.items():
                     metadata = ModelMetadata(**record_data['metadata'])
                     # Convert string timestamps back to datetime
                     metadata.created_at = datetime.fromisoformat(metadata.created_at)
                     metadata.last_used = (
-                        datetime.fromisoformat(metadata.last_used) 
+                        datetime.fromisoformat(metadata.last_used)
                         if metadata.last_used else None
                     )
-                    
+
                     record = ModelRecord(
                         metadata=metadata,
                         file_path=Path(record_data['file_path']),
@@ -113,11 +113,11 @@ class ModelRegistry:
                         usage_count=record_data['usage_count']
                     )
                     self._models[model_id] = record
-                    
+
             except Exception as e:
                 # Start fresh if registry is corrupted
                 self._models = {}
-    
+
     def _save_registry(self) -> None:
         """Save model registry to disk."""
         data = {}
@@ -128,10 +128,10 @@ class ModelRegistry:
                 'is_active': record.is_active,
                 'usage_count': record.usage_count
             }
-        
+
         with open(self.models_file, 'w', encoding='utf-8') as f:
             json.dump(data, f, indent=2, default=str)
-    
+
     def _compute_digest(self, file_path: Path) -> str:
         """Compute SHA-256 digest of model file."""
         hash_sha256 = hashlib.sha256()
@@ -139,11 +139,11 @@ class ModelRegistry:
             for chunk in iter(lambda: f.read(4096), b""):
                 hash_sha256.update(chunk)
         return hash_sha256.hexdigest()
-    
+
     def _generate_model_id(self, model_name: str, model_version: str) -> str:
         """Generate unique model identifier."""
         return f"{model_name}:{model_version}"
-    
+
     def register_model(
         self,
         model_name: str,
@@ -160,7 +160,7 @@ class ModelRegistry:
     ) -> str:
         """
         Register a new model in the registry.
-        
+
         Args:
             model_name: Name of the model
             model_version: Version string
@@ -173,18 +173,18 @@ class ModelRegistry:
             created_by: Who created the model
             validation_results: Validation test results
             compliance_checks: Compliance check results
-            
+
         Returns:
             Model ID for registered model
         """
         model_id = self._generate_model_id(model_name, model_version)
-        
+
         if model_id in self._models:
             raise ValueError(f"Model {model_id} already registered")
-        
+
         # Compute model digest
         model_digest = self._compute_digest(model_file_path)
-        
+
         # Create metadata
         metadata = ModelMetadata(
             model_name=model_name,
@@ -204,12 +204,12 @@ class ModelRegistry:
             validation_results=validation_results or {},
             compliance_checks=compliance_checks or {}
         )
-        
+
         # Copy model to registry
         registry_model_path = self.models_dir / f"{model_id}.pkl"
         import shutil
         shutil.copy2(model_file_path, registry_model_path)
-        
+
         # Create record
         record = ModelRecord(
             metadata=metadata,
@@ -218,15 +218,15 @@ class ModelRegistry:
             last_used=None,
             usage_count=0
         )
-        
+
         self._models[model_id] = record
         self._save_registry()
-        
+
         # Log to L4 canonical state
         self._log_model_event("model_registered", model_id, metadata)
-        
+
         return model_id
-    
+
     def promote_model(
         self,
         model_id: str,
@@ -237,32 +237,32 @@ class ModelRegistry:
     ) -> bool:
         """
         Promote a model to new status/decision mode.
-        
+
         Args:
             model_id: Model to promote
             target_status: New status
             target_decision_mode: New decision mode
             promoted_by: Who is promoting
             justification: Reason for promotion
-            
+
         Returns:
             True if promotion successful
         """
         if model_id not in self._models:
             raise ValueError(f"Model {model_id} not found")
-        
+
         record = self._models[model_id]
         old_status = record.metadata.status
         old_mode = record.metadata.decision_mode
-        
+
         # Validate promotion path
         if not self._validate_promotion(old_status, target_status, old_mode, target_decision_mode):
             return False
-        
+
         # Update metadata
         record.metadata.status = target_status
         record.metadata.decision_mode = target_decision_mode
-        
+
         # Add to promotion history
         promotion_event = {
             'timestamp': datetime.now().isoformat(),
@@ -274,19 +274,19 @@ class ModelRegistry:
             'justification': justification
         }
         record.metadata.promotion_history.append(promotion_event)
-        
+
         # Update active status
         record.is_active = (target_status == ModelStatus.PRODUCTION)
-        
+
         self._save_registry()
-        
+
         # Log promotion
         self._log_model_event("model_promoted", model_id, {
             'promotion_event': promotion_event
         })
-        
+
         return True
-    
+
     def rollback_model(
         self,
         model_id: str,
@@ -295,29 +295,29 @@ class ModelRegistry:
     ) -> bool:
         """
         Rollback a model to previous version.
-        
+
         Args:
             model_id: Model to rollback
             rollback_reason: Reason for rollback
             rolled_back_by: Who is rolling back
-            
+
         Returns:
             True if rollback successful
         """
         if model_id not in self._models:
             raise ValueError(f"Model {model_id} not found")
-        
+
         record = self._models[model_id]
-        
+
         # Can only rollback production models
         if record.metadata.status != ModelStatus.PRODUCTION:
             return False
-        
+
         # Update status
         old_status = record.metadata.status
         record.metadata.status = ModelStatus.ROLLED_BACK
         record.is_active = False
-        
+
         # Add to rollback history
         rollback_event = {
             'timestamp': datetime.now().isoformat(),
@@ -327,42 +327,42 @@ class ModelRegistry:
             'rolled_back_by': rolled_back_by
         }
         record.metadata.rollback_history.append(rollback_event)
-        
+
         self._save_registry()
-        
+
         # Log rollback
         self._log_model_event("model_rolled_back", model_id, {
             'rollback_event': rollback_event
         })
-        
+
         return True
-    
+
     def get_model(self, model_id: str) -> Optional[ModelRecord]:
         """Get model record by ID."""
         return self._models.get(model_id)
-    
+
     def get_active_models(self, model_type: Optional[str] = None) -> List[ModelRecord]:
         """Get all active models, optionally filtered by type."""
         active_models = [
-            record for record in self._models.values() 
+            record for record in self._models.values()
             if record.is_active
         ]
-        
+
         if model_type:
             active_models = [
                 record for record in active_models
                 if record.metadata.model_type == model_type
             ]
-        
+
         return active_models
-    
+
     def get_production_models(self) -> List[ModelRecord]:
         """Get all production models."""
         return [
             record for record in self._models.values()
             if record.metadata.status == ModelStatus.PRODUCTION
         ]
-    
+
     def update_usage(self, model_id: str) -> None:
         """Update model usage statistics."""
         if model_id in self._models:
@@ -370,7 +370,7 @@ class ModelRegistry:
             record.usage_count += 1
             record.last_used = datetime.now()
             self._save_registry()
-    
+
     def _validate_promotion(
         self,
         old_status: ModelStatus,
@@ -379,7 +379,7 @@ class ModelRegistry:
         new_mode: DecisionMode
     ) -> bool:
         """Validate promotion path follows governance rules."""
-        
+
         # Status progression rules
         valid_status_transitions = {
             ModelStatus.DEVELOPMENT: [ModelStatus.CANDIDATE],
@@ -388,10 +388,10 @@ class ModelRegistry:
             ModelStatus.DEPRECATED: [],  # Terminal state
             ModelStatus.ROLLED_BACK: [ModelStatus.DEVELOPMENT]  # Can restart development
         }
-        
+
         if new_status not in valid_status_transitions.get(old_status, []):
             return False
-        
+
         # Decision mode rules
         valid_mode_transitions = {
             DecisionMode.SHADOW_ONLY: [DecisionMode.ADVISORY],
@@ -399,12 +399,12 @@ class ModelRegistry:
             DecisionMode.ESCALATED: [DecisionMode.BLOCKED],
             DecisionMode.BLOCKED: []  # Terminal state
         }
-        
+
         if new_mode not in valid_mode_transitions.get(old_mode, []):
             return False
-        
+
         return True
-    
+
     def _log_model_event(self, event_type: str, model_id: str, data: Dict[str, Any]) -> None:
         """Log model events to L4 canonical state."""
         try:
@@ -414,15 +414,15 @@ class ModelRegistry:
                 'timestamp': datetime.now().isoformat(),
                 'data': data
             }
-            
+
             # Store in L4 canonical state
             # self.snapshot_manager.store_event("ml_model_registry", event)
             # TODO: Replace with local snapshot management
-            
+
         except Exception as e:
             # Log failure but don't fail the operation
             print(f"Failed to log model event: {e}")
-    
+
     def get_registry_stats(self) -> Dict[str, Any]:
         """Get registry statistics."""
         stats = {
@@ -432,14 +432,14 @@ class ModelRegistry:
             'models_by_type': {},
             'models_by_status': {}
         }
-        
+
         for record in self._models.values():
             # Count by type
             model_type = record.metadata.model_type
             stats['models_by_type'][model_type] = stats['models_by_type'].get(model_type, 0) + 1
-            
+
             # Count by status
             status = record.metadata.status.value
             stats['models_by_status'][status] = stats['models_by_status'].get(status, 0) + 1
-        
+
         return stats

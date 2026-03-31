@@ -25,7 +25,7 @@ class WorkflowConfig:
 
 class GitHubActionsHardener:
     """Hardener for GitHub Actions CI lanes."""
-    
+
     def __init__(self):
         self.workflows = []
         self.hardening_stats = {
@@ -34,40 +34,40 @@ class GitHubActionsHardener:
             'steps_added': 0,
             'environments_configured': 0
         }
-    
+
     def create_ci_workflows(self) -> Dict:
         """Create comprehensive CI workflows."""
         print("=== Creating GitHub Actions CI Workflows ===")
-        
+
         # Create main CI workflow
         main_ci = self._create_main_ci_workflow()
         self.workflows.append(main_ci)
-        
+
         # Create validation workflow
         validation_workflow = self._create_validation_workflow()
         self.workflows.append(validation_workflow)
-        
+
         # Create test suite workflow
         test_suite_workflow = self._create_test_suite_workflow()
         self.workflows.append(test_suite_workflow)
-        
+
         # Create security workflow
         security_workflow = self._create_security_workflow()
         self.workflows.append(security_workflow)
-        
+
         # Create performance workflow
         performance_workflow = self._create_performance_workflow()
         self.workflows.append(performance_workflow)
-        
+
         # Create release workflow
         release_workflow = self._create_release_workflow()
         self.workflows.append(release_workflow)
-        
+
         return {
             'workflows': self.workflows,
             'stats': self.hardening_stats
         }
-    
+
     def _create_main_ci_workflow(self) -> WorkflowConfig:
         """Create main CI workflow."""
         workflow = WorkflowConfig(
@@ -149,13 +149,13 @@ class GitHubActionsHardener:
                 }
             }
         )
-        
+
         self.hardening_stats['workflows_created'] += 1
         self.hardening_stats['jobs_defined'] += len(workflow.jobs)
         self.hardening_stats['steps_added'] += sum(len(job.get('steps', [])) for job in workflow.jobs.values())
-        
+
         return workflow
-    
+
     def _create_validation_workflow(self) -> WorkflowConfig:
         """Create validation-specific workflow."""
         workflow = WorkflowConfig(
@@ -210,13 +210,13 @@ class GitHubActionsHardener:
                 }
             }
         )
-        
+
         self.hardening_stats['workflows_created'] += 1
         self.hardening_stats['jobs_defined'] += len(workflow.jobs)
         self.hardening_stats['steps_added'] += sum(len(job.get('steps', [])) for job in workflow.jobs.values())
-        
+
         return workflow
-    
+
     def _create_test_suite_workflow(self) -> WorkflowConfig:
         """Create comprehensive test suite workflow."""
         workflow = WorkflowConfig(
@@ -307,13 +307,13 @@ class GitHubActionsHardener:
                 }
             }
         )
-        
+
         self.hardening_stats['workflows_created'] += 1
         self.hardening_stats['jobs_defined'] += len(workflow.jobs)
         self.hardening_stats['steps_added'] += sum(len(job.get('steps', [])) for job in workflow.jobs.values())
-        
+
         return workflow
-    
+
     def _create_security_workflow(self) -> WorkflowConfig:
         """Create security-focused workflow."""
         workflow = WorkflowConfig(
@@ -394,13 +394,13 @@ class GitHubActionsHardener:
                 }
             }
         )
-        
+
         self.hardening_stats['workflows_created'] += 1
         self.hardening_stats['jobs_defined'] += len(workflow.jobs)
         self.hardening_stats['steps_added'] += sum(len(job.get('steps', [])) for job in workflow.jobs.values())
-        
+
         return workflow
-    
+
     def _create_performance_workflow(self) -> WorkflowConfig:
         """Create performance testing workflow."""
         workflow = WorkflowConfig(
@@ -442,13 +442,13 @@ class GitHubActionsHardener:
                 }
             }
         )
-        
+
         self.hardening_stats['workflows_created'] += 1
         self.hardening_stats['jobs_defined'] += len(workflow.jobs)
         self.hardening_stats['steps_added'] += sum(len(job.get('steps', [])) for job in workflow.jobs.values())
-        
+
         return workflow
-    
+
     def _create_release_workflow(self) -> WorkflowConfig:
         """Create release workflow."""
         workflow = WorkflowConfig(
@@ -502,48 +502,48 @@ class GitHubActionsHardener:
                 }
             }
         )
-        
+
         self.hardening_stats['workflows_created'] += 1
         self.hardening_stats['jobs_defined'] += len(workflow.jobs)
         self.hardening_stats['steps_added'] += sum(len(job.get('steps', [])) for job in workflow.jobs.values())
         self.hardening_stats['environments_configured'] += 1
-        
+
         return workflow
-    
+
     def write_workflow_files(self, workflows_dir: str = ".github/workflows") -> Dict:
         """Write workflow files to GitHub Actions directory."""
         print("=== Writing GitHub Actions Workflow Files ===")
-        
+
         workflows_path = Path(workflows_dir)
         workflows_path.mkdir(parents=True, exist_ok=True)
-        
+
         files_created = []
-        
+
         for workflow in self.workflows:
             # Convert workflow to GitHub Actions YAML format
             workflow_yaml = self._workflow_to_yaml(workflow)
-            
+
             # Generate filename
             filename = f"{workflow.name.lower().replace(' ', '_').replace('-', '_')}.yml"
             file_path = workflows_path / filename
-            
+
             # Write file
             with open(file_path, 'w') as f:
                 f.write(workflow_yaml)
-            
+
             files_created.append({
                 'name': workflow.name,
                 'filename': filename,
                 'path': str(file_path)
             })
-            
+
             print(f"✅ Created workflow: {filename}")
-        
+
         return {
             'files_created': files_created,
             'total_files': len(files_created)
         }
-    
+
     def _workflow_to_yaml(self, workflow: WorkflowConfig) -> str:
         """Convert workflow configuration to GitHub Actions YAML."""
         yaml_dict = {
@@ -553,63 +553,63 @@ class GitHubActionsHardener:
             },
             'jobs': {}
         }
-        
+
         # Handle special triggers
         if 'schedule' in workflow.triggers:
             yaml_dict['on']['schedule'] = [{'cron': '0 2 * * *'}]  # Daily at 2 AM
-        
+
         # Convert jobs
         for job_name, job_config in workflow.jobs.items():
             yaml_job = {
                 'runs-on': job_config['runs-on']
             }
-            
+
             if 'needs' in job_config:
                 yaml_job['needs'] = job_config['needs']
-            
+
             if 'strategy' in job_config:
                 yaml_job['strategy'] = job_config['strategy']
-            
+
             if 'environment' in job_config:
                 yaml_job['environment'] = job_config['environment']
-            
+
             # Convert steps
             steps = []
             for step in job_config['steps']:
                 yaml_step = {}
-                
+
                 if 'name' in step:
                     yaml_step['name'] = step['name']
-                
+
                 if 'uses' in step:
                     yaml_step['uses'] = step['uses']
-                
+
                 if 'with' in step:
                     yaml_step['with'] = step['with']
-                
+
                 if 'run' in step:
                     yaml_step['run'] = step['run']
-                
+
                 if 'if' in step:
                     yaml_step['if'] = step['if']
-                
+
                 steps.append(yaml_step)
-            
+
             yaml_job['steps'] = steps
             yaml_dict['jobs'][job_name] = yaml_job
-        
+
         return yaml.dump(yaml_dict, default_flow_style=False, sort_keys=False)
-    
+
     def generate_wave7a_report(self) -> Dict:
         """Generate Wave 7a CI lane hardening report."""
         print("=== Wave 7a: CI Lane Hardening - GitHub Actions Setup ===")
-        
+
         # Create CI workflows
         ci_results = self.create_ci_workflows()
-        
+
         # Write workflow files
         file_results = self.write_workflow_files()
-        
+
         # Create comprehensive report
         report = {
             'wave': 'Wave 7a',
@@ -635,11 +635,11 @@ class GitHubActionsHardener:
                 'files_written': file_results['total_files']
             }
         }
-        
+
         # Save report
         with open('artifacts/wave7a_ci_hardening_report.json', 'w') as f:
             json.dump(report, f, indent=2, default=str)
-        
+
         # Print summary
         summary = report['summary']
         print(f"\n=== Wave 7a Summary ===")
@@ -648,9 +648,9 @@ class GitHubActionsHardener:
         print(f"Steps added: {summary['steps_added']}")
         print(f"Environments configured: {summary['environments_configured']}")
         print(f"Files written: {summary['files_written']}")
-        
+
         print(f"\n📄 Report saved to: artifacts/wave7a_ci_hardening_report.json")
-        
+
         return report
 
 
@@ -658,11 +658,11 @@ def main():
     """Main execution for Wave 7a."""
     hardener = GitHubActionsHardener()
     report = hardener.generate_wave7a_report()
-    
+
     print(f"\n=== Wave 7a Summary ===")
     print(f"CI lanes hardened: {len(report['ci_workflows'])}")
     print(f"Total workflow steps: {report['summary']['steps_added']}")
-    
+
     return report
 
 

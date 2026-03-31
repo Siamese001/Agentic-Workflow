@@ -16,7 +16,7 @@ def main():
         result = subprocess.run([
             "git", "diff", "--cached", "--name-only", "--diff-filter=ACM"
         ], capture_output=True, text=True)
-        
+
         if result.returncode == 0:
             changed_files = [
                 f for f in result.stdout.strip().split('\n')
@@ -24,19 +24,19 @@ def main():
             ]
     except Exception:
         pass
-    
+
     if not changed_files:
         print("No test files changed, skipping validation")
         return 0
-    
+
     print(f"Validating {len(changed_files)} changed test files...")
-    
+
     # Run validation
     try:
         result = subprocess.run([
             sys.executable, "tools/validation_runner.py"
         ], capture_output=True, text=True)
-        
+
         if result.returncode != 0:
             print("ERROR: Validation failed!")
             print(result.stdout)
@@ -47,7 +47,7 @@ def main():
         else:
             print("SUCCESS: Validation passed!")
             return 0
-            
+
     except Exception as e:
         print(f"ERROR: Validation error: {e}")
         return 1

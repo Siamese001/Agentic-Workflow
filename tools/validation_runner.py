@@ -12,12 +12,12 @@ sys.path.insert(0, str(Path(__file__).parent.parent / "tools"))
 
 try:
     from wave6a_validation_enforcer import ValidationEnforcer
-    
+
     def main():
         """Run validation enforcement."""
         enforcer = ValidationEnforcer()
         report = enforcer.generate_enforcement_report()
-        
+
         # Exit with error code if critical issues found
         if report['summary']['issues_by_severity'].get('critical', 0) > 0:
             print("CRITICAL: Critical validation issues found!")
@@ -28,7 +28,7 @@ try:
         else:
             print("SUCCESS: Validation passed!")
             sys.exit(0)
-    
+
     if __name__ == '__main__':
         main()
 

@@ -29,15 +29,15 @@ for test_dir in dirs_to_fix:
     for filename in os.listdir(test_dir):
         if not filename.startswith('test_') or not filename.endswith('.py'):
             continue
-        
+
         filepath = os.path.join(test_dir, filename)
         with open(filepath, 'r', encoding='utf-8') as f:
             content = f.read()
-        
+
         if text_to_remove in content:
             new_content = content.replace(text_to_remove, '')
             new_content = new_content.rstrip() + '\n'
-            
+
             with open(filepath, 'w', encoding='utf-8') as f:
                 f.write(new_content)
             print(f'Fixed: {filepath}')

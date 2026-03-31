@@ -63,7 +63,7 @@ def test_get_adapter_is_callable(mod):
     func = getattr(mod, "get_adapter", None)
     assert func is not None, "get_adapter must be defined"
     assert callable(func), "get_adapter must be callable"
-    
+
     # Test function signature accepts expected parameters
     import inspect
     sig = inspect.signature(func)

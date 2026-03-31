@@ -382,7 +382,7 @@ class DefaultDeterministicRollbackRefiner:
         timestamp_utc: int,
     ) -> None:
         """Track rollback strategy outcomes for system learning feedback.
-        
+
         Args:
             request: The rollback refinement request
             decision: The rollback decision made
@@ -393,7 +393,7 @@ class DefaultDeterministicRollbackRefiner:
         try:
             from system_learning.adapters.system_learning_memory_bridge import get_sl_memory_bridge
             bridge = get_sl_memory_bridge()
-            
+
             bridge.persist_rollback_strategy_outcome(
                 failure_type=request.failure_signature.failure_type,
                 failure_fingerprint=request.failure_signature.fingerprint,

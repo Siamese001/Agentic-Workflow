@@ -336,36 +336,36 @@ class DeterministicRoutingGateway:
         context: dict[str, Any] | None = None,
     ) -> bool:
         """Escalate routing decision to human review if confidence is low.
-        
+
         Args:
             route_path: The proposed route path
             confidence: Confidence score (0-1)
             threshold: Minimum confidence before escalation (default 0.5)
             context: Additional context for human review
-            
+
         Returns:
             True if escalation was triggered, False if confidence is acceptable
         """
         if confidence >= threshold:
             return False
-        
+
         # Lazy import to avoid circular import
         from agentic_core.L5_safety.hitl.hitl_escalation_activator import (
             EscalationPriority,
             get_hitl_escalation_activator,
         )
-        
+
         activator = get_hitl_escalation_activator()
-        
+
         def route_review_handler(req: Any) -> str | None:
             """Handler for route review decisions."""
             # Default: approve the route but log for learning
             return "APPROVE"
-        
+
         activator.register_handler(route_review_handler)
-        
+
         priority = EscalationPriority.HIGH if confidence < 0.3 else EscalationPriority.MEDIUM
-        
+
         escalation = activator.escalate(
             agent="DeterministicRoutingGateway",
             module="L0_routing",
@@ -380,14 +380,14 @@ class DeterministicRoutingGateway:
                 **(context or {}),
             },
         )
-        
+
         logger.info(
             "Routing escalation triggered: route=%s confidence=%.2f resolved=%s",
             route_path,
             confidence,
             escalation.resolved,
         )
-        
+
         return escalation.resolved
 
     def create_hitl_checkpoint(
@@ -399,29 +399,29 @@ class DeterministicRoutingGateway:
         context: dict[str, Any] | None = None,
     ) -> str:
         """Create a HITL checkpoint for routing decision review.
-        
+
         Args:
             rt_graph: Runtime graph
             hitl_graph: HITL graph
             violation_id: Violation or decision identifier
             confidence: Confidence score that triggered checkpoint
             context: Additional context
-            
+
         Returns:
             Checkpoint ID
         """
         recorder = HITLRuntimeRecorder(
             rt_graph, hitl_graph, agent_id="DeterministicRoutingGateway"
         )
-        
+
         checkpoint_id = recorder.checkpoint(
             violation_id=violation_id,
             confidence=confidence,
             context=context or {},
         )
-        
+
         logger.debug("HITL checkpoint created for routing: %s", checkpoint_id)
-        
+
         return checkpoint_id
 
 

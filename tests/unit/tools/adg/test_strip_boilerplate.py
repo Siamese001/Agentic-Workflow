@@ -36,20 +36,20 @@ def behavioral_function():
     return "test"
 """
     tree = ast.parse(code)
-    
+
     stripper = BoilerplateStripper()
     stripped_tree = stripper.visit(tree)
-    
+
     assert stripper.removed_count == 2
     assert stripper.emit_calls_removed == 2
-    
+
     # Check that emit calls are removed
     remaining_calls = []
     for node in ast.walk(stripped_tree):
         if isinstance(node, ast.Call) and isinstance(node.func, ast.Name):
             if node.func.id.startswith('_emit_'):
                 remaining_calls.append(node.func.id)
-    
+
     assert len(remaining_calls) == 0
 
 
@@ -65,10 +65,10 @@ def behavioral_function():
     return "test"
 """
     tree = ast.parse(code)
-    
+
     stripper = BoilerplateStripper()
     stripped_tree = stripper.visit(tree)
-    
+
     assert stripper.removed_count >= 2  # At least json and typing
     assert stripper.imports_removed >= 2
 
@@ -87,10 +87,10 @@ class BehavioralClass:
         return "test"
 """
     tree = ast.parse(code)
-    
+
     stripper = BoilerplateStripper()
     stripped_tree = stripper.visit(tree)
-    
+
     # Count behavioral nodes
     functions = []
     classes = []
@@ -99,7 +99,7 @@ class BehavioralClass:
             functions.append(node.name)
         elif isinstance(node, ast.ClassDef):
             classes.append(node.name)
-    
+
     assert "behavioral_function" in functions
     assert "BehavioralClass" in classes
 
@@ -119,11 +119,11 @@ def behavioral_function():
     return x
 """)
         temp_path = Path(f.name)
-    
+
     try:
         stripper = SafeBoilerplateStripper(Path("."))
         result = stripper.strip_file_boilerplate(temp_path, dry_run=True)
-        
+
         assert result.action == "cleaned"
         assert result.lines_removed > 0
         assert result.emit_calls_removed > 0
@@ -144,11 +144,11 @@ _emit_records_execution_trace("test", "test", "test")
 _emit_applies_guardrail("test", "test", "test")
 """)
         temp_path = Path(f.name)
-    
+
     try:
         stripper = SafeBoilerplateStripper(Path("."))
         result = stripper.strip_file_boilerplate(temp_path, dry_run=True)
-        
+
         assert result.action == "deleted"
         assert "become hollow" in result.reason.lower()
         assert result.became_hollow is True
@@ -170,11 +170,11 @@ class BehavioralClass:
         return "test"
 """)
         temp_path = Path(f.name)
-    
+
     try:
         stripper = SafeBoilerplateStripper(Path("."))
         result = stripper.strip_file_boilerplate(temp_path, dry_run=True)
-        
+
         assert result.action == "skipped"
         assert "no boilerplate" in result.reason.lower()
     finally:
@@ -187,11 +187,11 @@ def test_safe_stripper_syntax_error():
     with tempfile.NamedTemporaryFile(mode='w', suffix='.py', delete=False) as f:
         f.write("def broken(\n")  # Missing closing parenthesis
         temp_path = Path(f.name)
-    
+
     try:
         stripper = SafeBoilerplateStripper(Path("."))
         result = stripper.strip_file_boilerplate(temp_path, dry_run=True)
-        
+
         assert result.action == "skipped"
         assert "syntax error" in result.reason.lower()
     finally:
@@ -207,14 +207,14 @@ def test_strip_directory(mock_strip):
         StripResult(action="skipped", reason="no boilerplate"),
         StripResult(action="deleted", reason="became hollow")
     ]
-    
+
     with patch('pathlib.Path.rglob') as mock_rglob:
         mock_rglob.return_value = [Path("file1.py"), Path("file2.py"), Path("file3.py")]
-        
+
         with patch('pathlib.Path.exists', return_value=True):
             stripper = SafeBoilerplateStripper(Path("."))
             results = stripper.strip_directory(Path("."), dry_run=True, recursive=True)
-    
+
     assert len(results) == 3
     assert results[0].action == "cleaned"
     assert results[1].action == "skipped"
@@ -229,10 +229,10 @@ def test_generate_report():
         StripResult(action="skipped", reason="no boilerplate"),
         StripResult(action="cleaned", reason="test2", lines_removed=3, became_hollow=True)
     ]
-    
+
     stripper = SafeBoilerplateStripper(Path("."))
     report = stripper.generate_report(results)
-    
+
     assert report["total_files"] == 4
     assert report["cleaned"] == 2
     assert report["deleted"] == 1

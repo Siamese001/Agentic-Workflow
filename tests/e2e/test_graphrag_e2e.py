@@ -1,15 +1,15 @@
-"""GraphRAG End-to-End Test Suite — Full Coverage per Agentic Retrieval Models v9.
+"""GraphRAG End-to-End Test Suite - Full Coverage per Agentic Retrieval Models v9.
 
 Test Dimensions:
 - Pipeline B: Graph Ingestion & Indexing (ADG edge binding, L4D/L4E population)
 - Pipeline C: Inference & Graph Hydration (L4E expansion, ADG edge hydration)
 - Pipeline D: Meta-Learning Feedback (Evaluation, Completeness, Proposals)
-- Integration: Full flow from ingestion → retrieval → learning
+- Integration: Full flow from ingestion to retrieval to learning
 
 Standards Compliance:
 - Constitutional Rule #1: All tests deterministic with evidence capture
 - Constitutional Rule #3: Zero test skipping
-- §5.3: Timeout enforcement (300s default, 420s for heavy tests)
+- S5.3: Timeout enforcement (300s default, 420s for heavy tests)
 """
 
 from __future__ import annotations
@@ -26,55 +26,95 @@ from unittest.mock import MagicMock, Mock, patch
 
 import pytest
 
-# Lazy import fixtures - avoid collection-time errors
+
+# ---------------------------------------------------------------------------
+# Lazy import fixtures - avoid collection-time import errors
+# ---------------------------------------------------------------------------
 
 @pytest.fixture(scope="session")
-def _lazy_agentic_core_L3_orchestration_engines_graph_aware_indexer_0():
-    from agentic_core.L3_orchestration.engines.graph_aware_indexer import GraphAwareIndexer, ADGEdgeExtractor, ADGEdgeBinding, index_document, get_global_indexer
-    return type('_Import', (), {"GraphAwareIndexer": GraphAwareIndexer, "ADGEdgeExtractor": ADGEdgeExtractor, "ADGEdgeBinding": ADGEdgeBinding, "index_document": index_document, "get_global_indexer": get_global_indexer})
+def graphrag_indexer_imports():
+    from agentic_core.L3_orchestration.engines.graph_aware_indexer import (
+        GraphAwareIndexer, ADGEdgeExtractor, ADGEdgeBinding,
+        index_document, get_global_indexer,
+    )
+    return {
+        "GraphAwareIndexer": GraphAwareIndexer,
+        "ADGEdgeExtractor": ADGEdgeExtractor,
+        "ADGEdgeBinding": ADGEdgeBinding,
+        "index_document": index_document,
+        "get_global_indexer": get_global_indexer,
+    }
+
 
 @pytest.fixture(scope="session")
-def _lazy_agentic_core_L4_state_memory_chunk_manifest_registry_1():
-    from agentic_core.L4_state.memory.chunk_manifest_registry import ChunkManifestRegistry, EnrichedChunkManifest
-    return type('_Import', (), {"ChunkManifestRegistry": ChunkManifestRegistry, "EnrichedChunkManifest": EnrichedChunkManifest})
+def chunk_registry_imports():
+    from agentic_core.L4_state.memory.chunk_manifest_registry import (
+        ChunkManifestRegistry, EnrichedChunkManifest,
+    )
+    return {
+        "ChunkManifestRegistry": ChunkManifestRegistry,
+        "EnrichedChunkManifest": EnrichedChunkManifest,
+    }
+
 
 @pytest.fixture(scope="session")
-def _lazy_agentic_core_evaluation_retrieval_l4_registries_2():
-    from agentic_core.evaluation.retrieval.l4_registries import ChunkManifestRegistry as InMemoryChunkRegistry, ParentChildIndexRegistry, ParentChildLink
-    return type('_Import', (), {"ChunkManifestRegistry as InMemoryChunkRegistry": ChunkManifestRegistry as InMemoryChunkRegistry, "ParentChildIndexRegistry": ParentChildIndexRegistry, "ParentChildLink": ParentChildLink})
+def l4_registries_imports():
+    from agentic_core.evaluation.retrieval.l4_registries import (
+        ChunkManifestRegistry as InMemoryChunkRegistry,
+        ParentChildIndexRegistry,
+        ParentChildLink,
+    )
+    return {
+        "InMemoryChunkRegistry": InMemoryChunkRegistry,
+        "ParentChildIndexRegistry": ParentChildIndexRegistry,
+        "ParentChildLink": ParentChildLink,
+    }
+
 
 @pytest.fixture(scope="session")
-def _lazy_agentic_core_L3_orchestration_engines_l4e_retrieval_integration_3():
-    from agentic_core.L3_orchestration.engines.l4e_retrieval_integration import GraphRetrievalEngine, ADGEdgeHydrator, GraphRetrievalContext, RetrievalWithGraphIntegration, search, get_global_engine
-    return type('_Import', (), {"GraphRetrievalEngine": GraphRetrievalEngine, "ADGEdgeHydrator": ADGEdgeHydrator, "GraphRetrievalContext": GraphRetrievalContext, "RetrievalWithGraphIntegration": RetrievalWithGraphIntegration, "search": search, "get_global_engine": get_global_engine})
+def retrieval_integration_imports():
+    from agentic_core.L3_orchestration.engines.l4e_retrieval_integration import (
+        GraphRetrievalEngine, ADGEdgeHydrator, GraphRetrievalContext,
+        RetrievalWithGraphIntegration, search, get_global_engine,
+    )
+    return {
+        "GraphRetrievalEngine": GraphRetrievalEngine,
+        "ADGEdgeHydrator": ADGEdgeHydrator,
+        "GraphRetrievalContext": GraphRetrievalContext,
+        "RetrievalWithGraphIntegration": RetrievalWithGraphIntegration,
+        "search": search,
+        "get_global_engine": get_global_engine,
+    }
+
 
 @pytest.fixture(scope="session")
-def _lazy_agentic_core_L4_state_engines_parent_child_expansion_4():
-    from agentic_core.L4_state.engines.parent_child_expansion import ParentChildExpander, L4ERetrievalIntegrator, ExpansionContext
-    return type('_Import', (), {"ParentChildExpander": ParentChildExpander, "L4ERetrievalIntegrator": L4ERetrievalIntegrator, "ExpansionContext": ExpansionContext})
+def parent_child_imports():
+    from agentic_core.L4_state.engines.parent_child_expansion import (
+        ParentChildExpander, L4ERetrievalIntegrator, ExpansionContext,
+    )
+    return {
+        "ParentChildExpander": ParentChildExpander,
+        "L4ERetrievalIntegrator": L4ERetrievalIntegrator,
+        "ExpansionContext": ExpansionContext,
+    }
+
 
 @pytest.fixture(scope="session")
-def _lazy_agentic_core_L4_state_engines_meta_learning_feedback_5():
-    from agentic_core.L4_state.engines.meta_learning_feedback import CompletenessRAGProposer, EvaluationRunner, CompletenessAnalyzer, FeedbackTrigger, FeedbackProposal, CompletenessChangePackage, get_global_proposer
-    return type('_Import', (), {"CompletenessRAGProposer": CompletenessRAGProposer, "EvaluationRunner": EvaluationRunner, "CompletenessAnalyzer": CompletenessAnalyzer, "FeedbackTrigger": FeedbackTrigger, "FeedbackProposal": FeedbackProposal, "CompletenessChangePackage": CompletenessChangePackage, "get_global_proposer": get_global_proposer})
-
-# Pipeline B imports
-
-)
-
-)
-
-)
-
-# Pipeline C imports
-
-)
-
-)
-
-# Pipeline D imports
-
-)
+def meta_learning_imports():
+    from agentic_core.L4_state.engines.meta_learning_feedback import (
+        CompletenessRAGProposer, EvaluationRunner, CompletenessAnalyzer,
+        FeedbackTrigger, FeedbackProposal, CompletenessChangePackage,
+        get_global_proposer,
+    )
+    return {
+        "CompletenessRAGProposer": CompletenessRAGProposer,
+        "EvaluationRunner": EvaluationRunner,
+        "CompletenessAnalyzer": CompletenessAnalyzer,
+        "FeedbackTrigger": FeedbackTrigger,
+        "FeedbackProposal": FeedbackProposal,
+        "CompletenessChangePackage": CompletenessChangePackage,
+        "get_global_proposer": get_global_proposer,
+    }
 
 
 # =============================================================================
@@ -93,8 +133,6 @@ def temp_dir(tmp_path: Path) -> Path:
 def mock_vector_db() -> MagicMock:
     """Provide mock vector DB client."""
     mock = MagicMock()
-    
-    # Mock collection
     mock_collection = MagicMock()
     mock_collection.add.return_value = None
     mock_collection.query.return_value = {
@@ -105,7 +143,6 @@ def mock_vector_db() -> MagicMock:
     }
     mock.get_or_create_collection.return_value = mock_collection
     mock.get_collection.return_value = mock_collection
-    
     return mock
 
 
@@ -144,8 +181,9 @@ def sample_chunks() -> list[dict[str, Any]]:
 
 
 @pytest.fixture
-def sample_adg_edges() -> ADGEdgeBinding:
+def sample_adg_edges(graphrag_indexer_imports) -> Any:
     """Provide sample ADG edge binding."""
+    ADGEdgeBinding = graphrag_indexer_imports["ADGEdgeBinding"]
     return ADGEdgeBinding(
         chunk_id="doc_adg_edges",
         source_file="docs/graphrag.md",
@@ -158,7 +196,6 @@ def sample_adg_edges() -> ADGEdgeBinding:
 @pytest.fixture
 def sample_embeddings() -> list[list[float]]:
     """Provide sample embeddings for chunks."""
-    # Generate deterministic mock embeddings
     import random
     random.seed(42)
     return [
@@ -174,29 +211,26 @@ def sample_embeddings() -> list[list[float]]:
 @pytest.mark.timeout(120)
 class TestPipelineBGraphIngestion:
     """End-to-end tests for Pipeline B: Graph Ingestion & Indexing.
-    
+
     Covers:
     - ADG edge binding during ingestion
     - L4D ChunkManifestRegistry population
     - L4E ParentChildIndexRegistry population
     - Vector DB storage with metadata
     """
-    
+
     def test_index_document_creates_manifests(
         self,
         temp_dir: Path,
         mock_vector_db: MagicMock,
         sample_chunks: list[dict[str, Any]],
-        sample_adg_edges: ADGEdgeBinding,
+        sample_adg_edges,
         sample_embeddings: list[list[float]],
+        graphrag_indexer_imports,
     ) -> None:
         """Test that indexing creates L4D manifests."""
-        # Create indexer with mock vector DB
-        indexer = GraphAwareIndexer(
-            vector_db_client=mock_vector_db,
-        )
-        
-        # Index document
+        GraphAwareIndexer = graphrag_indexer_imports["GraphAwareIndexer"]
+        indexer = GraphAwareIndexer(vector_db_client=mock_vector_db)
         result = indexer.index_document(
             doc_id="test_doc_001",
             source_path="docs/test.md",
@@ -204,124 +238,106 @@ class TestPipelineBGraphIngestion:
             adg_edges=sample_adg_edges,
             embeddings=sample_embeddings,
         )
-        
-        # Verify results
         assert result["doc_id"] == "test_doc_001"
         assert result["chunks_indexed"] == 3
         assert len(result["manifests_created"]) == 3
-        assert len(result["parent_child_links"]) == 2  # 3 chunks = 2 parent-child links
-        
-        # Verify ADG edges bound
+        assert len(result["parent_child_links"]) == 2
         assert result["adg_edges_bound"]["chunk_id"] == sample_adg_edges.chunk_id
         assert result["adg_edges_bound"]["reads_from"] == sample_adg_edges.reads_from
-    
+
     def test_l4d_registry_populated(
         self,
         temp_dir: Path,
         sample_chunks: list[dict[str, Any]],
-        sample_adg_edges: ADGEdgeBinding,
+        sample_adg_edges,
+        graphrag_indexer_imports,
+        chunk_registry_imports,
     ) -> None:
         """Test that L4D registry is populated with manifests."""
-        # Create fresh registry
+        ChunkManifestRegistry = chunk_registry_imports["ChunkManifestRegistry"]
+        GraphAwareIndexer = graphrag_indexer_imports["GraphAwareIndexer"]
         l4d_registry = ChunkManifestRegistry(
-            db_path=str(temp_dir / "l4d_test.sqlite")
+            db_path=str(temp_dir / "l4d_test.sqlite"),
         )
-        
         indexer = GraphAwareIndexer(l4d_registry=l4d_registry)
-        
-        # Index without embeddings
         indexer.index_document(
             doc_id="test_doc_002",
             source_path="docs/test2.md",
-            chunks=sample_chunks[:2],  # Just 2 chunks
+            chunks=sample_chunks[:2],
             adg_edges=sample_adg_edges,
         )
-        
-        # Verify L4D registry
         stats = l4d_registry.get_stats()
         assert stats["total_manifests"] == 2
         assert stats["unique_documents"] == 1
-        
-        # Retrieve specific manifest
         manifest = l4d_registry.get_manifest("doc_chunk_0")
         assert manifest is not None
         assert manifest.doc_id == "test_doc_002"
         assert manifest.chunk_id == "doc_chunk_0"
-    
+
     def test_l4e_registry_parent_child_links(
         self,
         temp_dir: Path,
         sample_chunks: list[dict[str, Any]],
+        graphrag_indexer_imports,
+        l4_registries_imports,
     ) -> None:
         """Test that L4E registry is populated with parent-child links."""
+        ParentChildIndexRegistry = l4_registries_imports["ParentChildIndexRegistry"]
+        GraphAwareIndexer = graphrag_indexer_imports["GraphAwareIndexer"]
         l4e_registry = ParentChildIndexRegistry()
-        
         indexer = GraphAwareIndexer(l4e_registry=l4e_registry)
-        
-        # Index document
         indexer.index_document(
             doc_id="test_doc_003",
             source_path="docs/test3.md",
             chunks=sample_chunks[:2],
         )
-        
-        # Verify L4E registry
-        assert l4e_registry.count() == 1  # One link for 2 chunks
-        
-        # Verify link structure
+        assert l4e_registry.count() == 1
         link = l4e_registry.get_link("doc_chunk_1")
         assert link is not None
         assert link.child_chunk_id == "doc_chunk_1"
         assert link.parent_chunk_id == "doc_chunk_0"
-    
+
     def test_adg_edge_extraction_binding(
         self,
-        sample_adg_edges: ADGEdgeBinding,
+        sample_adg_edges,
+        graphrag_indexer_imports,
     ) -> None:
         """Test ADG edge extraction and binding."""
+        ADGEdgeExtractor = graphrag_indexer_imports["ADGEdgeExtractor"]
         extractor = ADGEdgeExtractor()
-        
-        # Extract edges for source file
         edges = extractor.extract_edges("docs/graphrag.md")
-        
         assert edges.chunk_id.startswith("adg_")
         assert edges.source_file == "docs/graphrag.md"
-        
-        # Extract edges for chunk
         chunk_edges = extractor.extract_edges_for_chunk(
             chunk_id="chunk_001",
             content="GraphRAG implements ADG edge binding.",
             entities=["GraphAwareIndexer", "ADGEdgeBinding"],
         )
-        
         assert chunk_edges.chunk_id == "chunk_001"
         assert "GraphAwareIndexer" in chunk_edges.reads_from
-    
+
     def test_neighbor_window_update(
         self,
         sample_chunks: list[dict[str, Any]],
+        graphrag_indexer_imports,
+        l4_registries_imports,
     ) -> None:
         """Test that neighbor windows are updated correctly."""
+        ParentChildIndexRegistry = l4_registries_imports["ParentChildIndexRegistry"]
+        GraphAwareIndexer = graphrag_indexer_imports["GraphAwareIndexer"]
         l4e_registry = ParentChildIndexRegistry()
         indexer = GraphAwareIndexer(l4e_registry=l4e_registry)
-        
-        # Create 3 chunks with siblings
         chunks = [
             {"chunk_id": "parent_chunk", "content": "Parent", "metadata": {}},
             {"chunk_id": "child_1", "content": "Child 1", "metadata": {}},
             {"chunk_id": "child_2", "content": "Child 2", "metadata": {}},
         ]
-        
         indexer.index_document(
             doc_id="sibling_test",
             source_path="docs/siblings.md",
             chunks=chunks,
         )
-        
-        # Verify links exist
         assert l4e_registry.count() == 2
-        
-        # Check that children are properly linked
         children = l4e_registry.get_children("parent_chunk")
         assert len(children) == 2
 
@@ -333,7 +349,7 @@ class TestPipelineBGraphIngestion:
 @pytest.mark.timeout(120)
 class TestPipelineCGraphHydration:
     """End-to-end tests for Pipeline C: Inference & Graph Hydration.
-    
+
     Covers:
     - Vector search retrieval (L3)
     - L4E parent-child expansion (Step 4c)
@@ -341,16 +357,15 @@ class TestPipelineCGraphHydration:
     - Groundedness scoring
     - Prompt context assembly
     """
-    
+
     def test_parent_child_expansion(
         self,
         mock_vector_db: MagicMock,
+        parent_child_imports,
     ) -> None:
         """Test parent-child expansion via L4E."""
-        # Create expander
+        ParentChildExpander = parent_child_imports["ParentChildExpander"]
         expander = ParentChildExpander(max_depth=2)
-        
-        # Mock L4E registry with parent-child relationships
         mock_l4e = MagicMock()
         mock_l4e.get_parents.return_value = [
             MagicMock(chunk_id="parent_1", content="Parent content", metadata={}),
@@ -359,75 +374,61 @@ class TestPipelineCGraphHydration:
             MagicMock(chunk_id="child_1", content="Child content", metadata={}),
         ]
         mock_l4e.get_siblings.return_value = []
-        
         expander.l4e_registry = mock_l4e
-        
-        # Expand from seed
         contexts = expander.expand(
             seed_chunk_id="seed_chunk",
             seed_content="Seed content",
         )
-        
-        # Verify expansion
         assert len(contexts) > 0
         assert contexts[0].chunk_id == "seed_chunk"
         assert contexts[0].depth == 0
         assert contexts[0].relationship == "seed"
-        
-        # Verify parent and child included
         chunk_ids = {ctx.chunk_id for ctx in contexts}
         assert "parent_1" in chunk_ids or "child_1" in chunk_ids
-    
+
     def test_adg_edge_hydration(
         self,
         mock_vector_db: MagicMock,
+        retrieval_integration_imports,
     ) -> None:
         """Test ADG edge hydration during retrieval."""
+        ADGEdgeHydrator = retrieval_integration_imports["ADGEdgeHydrator"]
         hydrator = ADGEdgeHydrator()
-        
-        # Hydrate chunk
         hydration = hydrator.hydrate(
             chunk_id="chunk_001",
             source_file="docs/graphrag.md",
         )
-        
         assert hydration.chunk_id == "chunk_001"
-        # Note: In production, this would have actual ADG edges
-    
+
     def test_graph_retrieval_engine(
         self,
         mock_vector_db: MagicMock,
+        retrieval_integration_imports,
     ) -> None:
         """Test full graph retrieval engine."""
-        engine = GraphRetrievalEngine(
-            vector_db_client=mock_vector_db,
-        )
-        
-        # Perform retrieval
+        GraphRetrievalEngine = retrieval_integration_imports["GraphRetrievalEngine"]
+        engine = GraphRetrievalEngine(vector_db_client=mock_vector_db)
         contexts = engine.retrieve(
-            query="GraphRAD ADG edges",
+            query="GraphRAG ADG edges",
             n_results=2,
             expansion_depth=1,
             hydrate_adg=True,
         )
-        
-        # Verify results
         assert len(contexts) > 0
         assert contexts[0].chunk_id is not None
         assert contexts[0].score > 0
-        
-        # Verify groundedness scoring
         for ctx in contexts:
             assert 0 <= ctx.groundedness_score <= 1.0
-    
+
     def test_prompt_context_assembly(
         self,
         mock_vector_db: MagicMock,
+        retrieval_integration_imports,
     ) -> None:
         """Test prompt context assembly."""
+        GraphRetrievalEngine = retrieval_integration_imports["GraphRetrievalEngine"]
+        GraphRetrievalContext = retrieval_integration_imports["GraphRetrievalContext"]
         engine = GraphRetrievalEngine(vector_db_client=mock_vector_db)
-        
-        # Create sample contexts
         contexts = [
             GraphRetrievalContext(
                 chunk_id="chunk_1",
@@ -445,26 +446,23 @@ class TestPipelineCGraphHydration:
                 groundedness_score=0.75,
             ),
         ]
-        
-        # Assemble prompt context
         prompt_context = engine.assemble_prompt_context(
             contexts=contexts,
             max_tokens=1000,
         )
-        
-        # Verify assembly
         assert "chunks" in prompt_context
         assert prompt_context["total_chunks"] > 0
         assert prompt_context["total_tokens"] > 0
-    
+
     def test_retrieval_with_graph_integration(
         self,
         mock_vector_db: MagicMock,
+        retrieval_integration_imports,
     ) -> None:
         """Test high-level retrieval with graph integration."""
+        RetrievalWithGraphIntegration = retrieval_integration_imports["RetrievalWithGraphIntegration"]
+        GraphRetrievalContext = retrieval_integration_imports["GraphRetrievalContext"]
         integration = RetrievalWithGraphIntegration()
-        
-        # Mock the engine's retrieve method
         integration.engine = MagicMock()
         integration.engine.retrieve.return_value = [
             GraphRetrievalContext(
@@ -479,15 +477,11 @@ class TestPipelineCGraphHydration:
             "chunks": [{"chunk_id": "chunk_1", "content": "Test"}],
             "total_chunks": 1,
         }
-        
-        # Search
         result = integration.search(
             query="test query",
             n_results=5,
             expansion_depth=2,
         )
-        
-        # Verify result structure
         assert "query" in result
         assert "contexts" in result
         assert "prompt_context" in result
@@ -501,19 +495,18 @@ class TestPipelineCGraphHydration:
 @pytest.mark.timeout(120)
 class TestPipelineDMetaLearning:
     """End-to-end tests for Pipeline D: Meta-Learning Feedback.
-    
+
     Covers:
     - Evaluation metrics (Precision@K, Recall@K, MRR, NDCG, F1-Groundedness)
     - Completeness analysis
     - Feedback trigger activation
     - Change package generation
     """
-    
-    def test_evaluation_metrics_computation(self) -> None:
+
+    def test_evaluation_metrics_computation(self, meta_learning_imports) -> None:
         """Test evaluation metrics computation."""
+        EvaluationRunner = meta_learning_imports["EvaluationRunner"]
         runner = EvaluationRunner()
-        
-        # Evaluate query
         metrics = runner.evaluate(
             query="test query",
             retrieved_chunks=["chunk_1", "chunk_2", "chunk_3"],
@@ -521,39 +514,32 @@ class TestPipelineDMetaLearning:
             groundedness_scores=[0.9, 0.8, 0.7],
             k=3,
         )
-        
-        # Verify metrics
         assert metrics.precision_at_k > 0
         assert metrics.recall_at_k > 0
         assert 0 <= metrics.mrr <= 1.0
         assert 0 <= metrics.ndcg <= 1.0
         assert 0 <= metrics.f1_groundedness <= 1.0
-    
-    def test_completeness_analysis(self) -> None:
+
+    def test_completeness_analysis(self, meta_learning_imports) -> None:
         """Test completeness analysis."""
+        CompletenessAnalyzer = meta_learning_imports["CompletenessAnalyzer"]
         analyzer = CompletenessAnalyzer()
-        
-        # Analyze query with missing elements
         contexts = [
             {"content": "If condition is met, execute action.", "key_concepts": ["condition"]},
             {"content": "Handle exception gracefully.", "key_concepts": ["exception"]},
         ]
-        
         analysis = analyzer.analyze(
             query="What if exception occurs when condition fails?",
             retrieved_contexts=contexts,
         )
-        
-        # Verify analysis
         assert 0 <= analysis.mean_completeness <= 1.0
         assert 0 <= analysis.missing_condition_rate <= 1.0
         assert 0 <= analysis.missing_exception_rate <= 1.0
-    
-    def test_feedback_trigger_generation(self) -> None:
+
+    def test_feedback_trigger_generation(self, meta_learning_imports) -> None:
         """Test feedback trigger generation."""
+        CompletenessRAGProposer = meta_learning_imports["CompletenessRAGProposer"]
         proposer = CompletenessRAGProposer()
-        
-        # Create query batch with low completeness
         query_batch = [
             {
                 "query": "test query 1",
@@ -570,37 +556,30 @@ class TestPipelineDMetaLearning:
                 "contexts": [],
             },
         ]
-        
-        # Analyze and propose
         change_package = proposer.analyze_and_propose(query_batch)
-        
-        # Verify change package
         assert change_package.snapshot_id is not None
         assert change_package.query_count == 2
-        assert isinstance(change_package.aggregate_metrics, EvaluationRunner.__call__.__class__ if False else object)
         assert len(change_package.proposals) >= 0
-    
-    def test_depth_increment_trigger(self) -> None:
+
+    def test_depth_increment_trigger(self, meta_learning_imports) -> None:
         """Test Depth++ feedback trigger."""
+        CompletenessRAGProposer = meta_learning_imports["CompletenessRAGProposer"]
+        FeedbackTrigger = meta_learning_imports["FeedbackTrigger"]
         proposer = CompletenessRAGProposer()
-        
-        # Set low precision to trigger depth increment
         metrics = proposer.evaluator.evaluate(
             query="test",
             retrieved_chunks=["chunk_1"],
             relevant_chunks=["chunk_1", "chunk_2", "chunk_3", "chunk_4"],
             groundedness_scores=[0.4],
         )
-        
-        # Check proposals
         proposals = proposer._check_completeness_trigger(metrics)
-        
-        # Should suggest depth increment if precision is low
         if metrics.precision_at_k < 0.5:
             assert any(p.trigger == FeedbackTrigger.DEPTH_INCREMENT for p in proposals)
-    
-    def test_change_package_format(self) -> None:
+
+    def test_change_package_format(self, meta_learning_imports) -> None:
         """Test change package format for L5 Board."""
+        FeedbackTrigger = meta_learning_imports["FeedbackTrigger"]
+        FeedbackProposal = meta_learning_imports["FeedbackProposal"]
         proposal = FeedbackProposal(
             trigger=FeedbackTrigger.DEPTH_INCREMENT,
             rationale="Low completeness detected",
@@ -609,9 +588,7 @@ class TestPipelineDMetaLearning:
             confidence=0.8,
             supporting_evidence=["precision_at_k=0.3"],
         )
-        
         package_dict = proposal.to_change_package()
-        
         assert package_dict["type"] == "retrieval_config_update"
         assert package_dict["proposal_only"] is True
         assert package_dict["trigger"] == "depth_increment"
@@ -625,77 +602,68 @@ class TestPipelineDMetaLearning:
 
 @pytest.mark.timeout(300)
 class TestFullPipelineIntegration:
-    """Integration tests covering full Pipeline B → C → D flow.
-    
+    """Integration tests covering full Pipeline B to C to D flow.
+
     These tests verify the complete GraphRAG workflow from ingestion
     through retrieval to meta-learning feedback.
     """
-    
+
     def test_full_pipeline_b_to_c(
         self,
         temp_dir: Path,
         mock_vector_db: MagicMock,
         sample_chunks: list[dict[str, Any]],
-        sample_adg_edges: ADGEdgeBinding,
+        sample_adg_edges,
+        graphrag_indexer_imports,
+        retrieval_integration_imports,
     ) -> None:
         """Test full flow from Pipeline B ingestion to Pipeline C retrieval."""
-        # Stage 1: Pipeline B - Ingest document
-        indexer = GraphAwareIndexer(
-            vector_db_client=mock_vector_db,
-        )
-        
+        GraphAwareIndexer = graphrag_indexer_imports["GraphAwareIndexer"]
+        GraphRetrievalEngine = retrieval_integration_imports["GraphRetrievalEngine"]
+        indexer = GraphAwareIndexer(vector_db_client=mock_vector_db)
         index_result = indexer.index_document(
             doc_id="integration_test_doc",
             source_path="docs/integration.md",
             chunks=sample_chunks,
             adg_edges=sample_adg_edges,
         )
-        
         assert index_result["chunks_indexed"] == 3
-        
-        # Stage 2: Pipeline C - Retrieve with graph awareness
-        # Create mock L4D registry with stored manifests
         mock_l4d = MagicMock()
         mock_l4d.get_manifest.return_value = MagicMock(
             chunk_id="doc_chunk_0",
             title="Test",
             key_concepts=["GraphRAG"],
         )
-        
         engine = GraphRetrievalEngine(
             vector_db_client=mock_vector_db,
             l4d_registry=mock_l4d,
         )
-        
         contexts = engine.retrieve(
             query="GraphRAG parent-child expansion",
             n_results=2,
             expansion_depth=1,
         )
-        
-        # Verify retrieval results
         assert len(contexts) > 0
-    
+
     def test_full_pipeline_with_feedback(
         self,
         temp_dir: Path,
         mock_vector_db: MagicMock,
         sample_chunks: list[dict[str, Any]],
+        graphrag_indexer_imports,
+        meta_learning_imports,
     ) -> None:
         """Test full pipeline with meta-learning feedback loop."""
-        # Setup
+        GraphAwareIndexer = graphrag_indexer_imports["GraphAwareIndexer"]
+        CompletenessRAGProposer = meta_learning_imports["CompletenessRAGProposer"]
         indexer = GraphAwareIndexer(vector_db_client=mock_vector_db)
         proposer = CompletenessRAGProposer()
-        
-        # Stage 1: Ingest documents
         for i in range(3):
             indexer.index_document(
                 doc_id=f"feedback_test_doc_{i}",
                 source_path=f"docs/feedback_{i}.md",
                 chunks=sample_chunks[:2],
             )
-        
-        # Stage 2: Simulate retrievals with varying quality
         query_batch = []
         for i in range(5):
             query_batch.append({
@@ -705,76 +673,72 @@ class TestFullPipelineIntegration:
                 "groundedness_scores": [0.4] if i < 3 else [0.8, 0.7],
                 "contexts": [],
             })
-        
-        # Stage 3: Generate feedback proposals
         change_package = proposer.analyze_and_propose(query_batch)
-        
-        # Verify feedback loop
         assert change_package.query_count == 5
         assert change_package.aggregate_metrics is not None
-        
-        # Verify proposals are actionable
         for proposal in change_package.proposals:
             assert proposal.rationale is not None
             assert proposal.confidence > 0
-    
+
     def test_parent_child_expansion_depth(
         self,
+        parent_child_imports,
     ) -> None:
         """Test parent-child expansion at different depths."""
-        # Create expander with depth 3
+        ParentChildExpander = parent_child_imports["ParentChildExpander"]
         expander = ParentChildExpander(max_depth=3)
-        
-        # Mock multi-level hierarchy
         mock_l4e = MagicMock()
-        
+
         def get_parents(chunk_id):
             if chunk_id == "level_2":
                 return [MagicMock(chunk_id="level_1", content="Parent", metadata={})]
             if chunk_id == "level_3":
                 return [MagicMock(chunk_id="level_2", content="Grandparent", metadata={})]
             return []
-        
+
         def get_children(chunk_id):
             if chunk_id == "level_1":
                 return [MagicMock(chunk_id="level_2", content="Child", metadata={})]
             if chunk_id == "level_2":
                 return [MagicMock(chunk_id="level_3", content="Grandchild", metadata={})]
             return []
-        
+
         mock_l4e.get_parents = get_parents
         mock_l4e.get_children = get_children
         mock_l4e.get_siblings.return_value = []
-        
         expander.l4e_registry = mock_l4e
-        
-        # Expand from deepest level
         contexts = expander.expand(
             seed_chunk_id="level_3",
             seed_content="Deepest level",
         )
-        
-        # Should include all ancestors up to depth 3
         chunk_ids = {ctx.chunk_id for ctx in contexts}
-        assert "level_3" in chunk_ids  # Seed
-        assert "level_2" in chunk_ids  # Depth 1
-        assert "level_1" in chunk_ids  # Depth 2
+        assert "level_3" in chunk_ids
+        assert "level_2" in chunk_ids
+        assert "level_1" in chunk_ids
 
 
 # =============================================================================
 # Test Utilities
 # =============================================================================
 
-def test_global_instances() -> None:
+def test_global_instances(
+    graphrag_indexer_imports,
+    retrieval_integration_imports,
+    meta_learning_imports,
+) -> None:
     """Test that global instances are properly initialized."""
+    get_global_indexer = graphrag_indexer_imports["get_global_indexer"]
+    get_global_engine = retrieval_integration_imports["get_global_engine"]
+    get_global_proposer = meta_learning_imports["get_global_proposer"]
+
     indexer1 = get_global_indexer()
     indexer2 = get_global_indexer()
     assert indexer1 is indexer2
-    
+
     engine1 = get_global_engine()
     engine2 = get_global_engine()
     assert engine1 is engine2
-    
+
     proposer1 = get_global_proposer()
     proposer2 = get_global_proposer()
     assert proposer1 is proposer2

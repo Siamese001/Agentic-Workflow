@@ -86,7 +86,7 @@ class FinalValidationOrchestrator:
     def _run_phase(self, phase):
         """Run a specific phase validation."""
         print(f"🔄 Running Phase {phase} validation...")
-        
+
         if phase == '2.1':
             return self._run_phase_21()
         elif phase == '2.4':
@@ -104,14 +104,14 @@ class FinalValidationOrchestrator:
             # Create a temporary report for this phase only
             phase_violations = [v for v in self.violations if v['severity'] == 'HIGH' and v['exception_type'] == 'ImportError']
             target_violations = len(phase_violations)
-            
+
             # Simulate applying fixes (don't actually modify files in validation)
             fixes_applied = target_violations  # Assume all would be fixed
             errors = 0
-            
+
             self.total_fixes_applied += fixes_applied
             self.total_errors += errors
-            
+
             return {
                 'phase': '2.1',
                 'target_violations': target_violations,
@@ -135,13 +135,13 @@ class FinalValidationOrchestrator:
         try:
             phase_violations = [v for v in self.violations if v['severity'] == 'HIGH' and v['exception_type'] != 'ImportError']
             target_violations = len(phase_violations)
-            
+
             fixes_applied = target_violations  # Assume all would be fixed
             errors = 0
-            
+
             self.total_fixes_applied += fixes_applied
             self.total_errors += errors
-            
+
             return {
                 'phase': '2.4',
                 'target_violations': target_violations,
@@ -165,13 +165,13 @@ class FinalValidationOrchestrator:
         try:
             phase_violations = [v for v in self.violations if v['severity'] == 'MEDIUM']
             target_violations = len(phase_violations)
-            
+
             fixes_applied = target_violations  # Assume all would be fixed
             errors = 0
-            
+
             self.total_fixes_applied += fixes_applied
             self.total_errors += errors
-            
+
             return {
                 'phase': '2.2',
                 'target_violations': target_violations,
@@ -195,13 +195,13 @@ class FinalValidationOrchestrator:
         try:
             phase_violations = [v for v in self.violations if v['severity'] == 'LOW']
             target_violations = len(phase_violations)
-            
+
             fixes_applied = target_violations  # Assume all would be fixed
             errors = 0
-            
+
             self.total_fixes_applied += fixes_applied
             self.total_errors += errors
-            
+
             return {
                 'phase': '2.3',
                 'target_violations': target_violations,
@@ -223,19 +223,19 @@ class FinalValidationOrchestrator:
     def _run_wave_30(self):
         """Run Wave 3.0 (Guardian sweep) validation."""
         print("🔄 Running Wave 3.0 (Guardian sweep) validation...")
-        
+
         try:
             target_violations = len(self.violations)
-            
+
             # In validation mode, just check coverage
             annotations_added = target_violations  # Assume all would be annotated
             skipped_guarded = 0
             errors = 0
-            
+
             # Don't double count annotations as fixes
             # self.total_fixes_applied += annotations_added
             self.total_errors += errors
-            
+
             return {
                 'wave': '3.0',
                 'target_violations': target_violations,
@@ -284,7 +284,7 @@ class FinalValidationOrchestrator:
             'completion_percentage': self._calculate_completion(),
             'overall_status': self._get_overall_status(),
             'phase_coverage': {
-                phase: self.results.get(phase, {}) 
+                phase: self.results.get(phase, {})
                 for phase in ['2.1', '2.2', '2.3', '2.4']
                 if phase in self.results
             },
@@ -296,12 +296,12 @@ class FinalValidationOrchestrator:
     def generate_final_report(self):
         """Generate comprehensive final validation report."""
         print("📋 Generating final validation report...")
-        
+
         if not self.results:
             self.run_full_validation()
-        
+
         report = self._generate_final_result()
-        
+
         # Add detailed breakdown
         report['detailed_breakdown'] = {
             'severity_distribution': self._get_severity_distribution(),
@@ -311,12 +311,12 @@ class FinalValidationOrchestrator:
                 'total_phases_waves': len(self.results)
             }
         }
-        
+
         # Write report
         report_file = PROJECT_ROOT / "tools" / "wave40_final_validation_report.json"
         with open(report_file, 'w') as f:
             json.dump(report, f, indent=2)
-        
+
         print(f"✅ Report: {report_file}")
         return report
 
@@ -346,19 +346,19 @@ def main():
 
     if not ALL_FIXERS_AVAILABLE:
         print("⚠️  Warning: Some fixers not available - validation may be incomplete")
-    
+
     orchestrator = FinalValidationOrchestrator()
     print(f"📊 Loaded {len(orchestrator.violations)} violations")
 
     if args.wave40:
         result = orchestrator.run_full_validation()
         report = orchestrator.generate_final_report()
-        
+
         print(f"\n🎉 VALIDATION COMPLETE")
         print(f"   Status: {result['overall_status']}")
         print(f"   Completion: {result['completion_percentage']:.1f}%")
         print(f"   Errors: {result['total_errors']}")
-        
+
         if args.dry_run:
             print("   Mode: DRY RUN (no files modified)")
     else:

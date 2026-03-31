@@ -926,38 +926,38 @@ class SystemLearningMemoryBridge:
 
     def get_latest_violation_counts(self) -> tuple[int, int]:
         """Get violation counts from the two most recent ADG snapshots.
-        
+
         Returns:
             Tuple of (current_count, previous_count)
         """
         if not self._bridge:
             return (0, 0)
-        
+
         try:
             # Query ADGSnapshot entities, sorted by timestamp descending
             snapshots = self._bridge.search_entities("ADGSnapshot")
             if len(snapshots) < 2:
                 return (0, 0)
-            
+
             # Sort by timestamp (most recent first)
             snapshots.sort(key=lambda s: self._extract_timestamp(s), reverse=True)
-            
+
             # Get violation counts from top 2 snapshots
             current_count = self._extract_violation_count(snapshots[0])
             previous_count = self._extract_violation_count(snapshots[1])
-            
+
             return (current_count, previous_count)
         except Exception as e:
             logger.debug("[SLMemoryBridge] get_latest_violation_counts failed: %s", e)
             return (0, 0)
-    
+
     def _extract_timestamp(self, snapshot: dict[str, Any]) -> int:
         """Extract timestamp from snapshot entity."""
         for obs in snapshot.get("observations", []):
             if obs.startswith("ts="):
                 return int(obs[3:])
         return 0
-    
+
     def _extract_violation_count(self, snapshot: dict[str, Any]) -> int:
         """Extract violation count from snapshot entity."""
         for obs in snapshot.get("observations", []):
@@ -976,7 +976,7 @@ class SystemLearningMemoryBridge:
         current_backoff: float,
     ) -> bool:
         """Persist circuit breaker state transition event.
-        
+
         Args:
             breaker_name: Name of the circuit breaker
             old_state: Previous state
@@ -985,13 +985,13 @@ class SystemLearningMemoryBridge:
             failure_count: Current failure count
             success_count: Current success count
             current_backoff: Current backoff timeout
-            
+
         Returns:
             True if persisted, False on failure
         """
         if not self._bridge:
             return False
-        
+
         try:
             entity_name = f"CircuitBreakerEvent_{breaker_name}_{int(timestamp_utc)}"
             self._bridge.create_agent_entity(
@@ -1014,33 +1014,33 @@ class SystemLearningMemoryBridge:
 
     def persist_adg_confidence_summary(self, conf_summary: dict[str, Any], timestamp: str) -> bool:
         """Persist ADG confidence tier distribution.
-        
+
         Args:
             conf_summary: Confidence summary dict from ADG confidence scoring
             timestamp: ADG timestamp string
-            
+
         Returns:
             True if persisted, False on failure
         """
         if not self._bridge:
             return False
-        
+
         try:
             entity_name = f"ADGConfidenceSummary_{timestamp}"
             observations = [
                 f"ts={timestamp}",
                 f"total_edges={conf_summary.get('total_edges', 0)}",
             ]
-            
+
             # Add tier distribution
             tier_dist = conf_summary.get('tier_distribution', {})
             for tier, count in tier_dist.items():
                 observations.append(f"tier_{tier}={count}")
-            
+
             # Add confidence metrics
             for metric, value in conf_summary.get('confidence_metrics', {}).items():
                 observations.append(f"metric_{metric}={value}")
-            
+
             self._bridge.create_agent_entity(
                 agent_name=entity_name,
                 agent_type=self.ENTITY_TYPE_TELEMETRY_EVENT,
@@ -1058,18 +1058,18 @@ class SystemLearningMemoryBridge:
         timestamp_utc: int,
     ) -> bool:
         """Persist injection detection counts for security pattern analysis.
-        
+
         Args:
             total_scans: Total number of scans performed
             detection_counts: Dictionary of signature_id -> count
             timestamp_utc: Timestamp in milliseconds
-            
+
         Returns:
             True if persisted, False on failure
         """
         if not self._bridge:
             return False
-        
+
         try:
             entity_name = f"InjectionDetectionCounts_{int(timestamp_utc)}"
             observations = [
@@ -1077,12 +1077,12 @@ class SystemLearningMemoryBridge:
                 f"total_scans={total_scans}",
                 f"total_detections={sum(detection_counts.values())}",
             ]
-            
+
             # Add top 10 most frequent signatures
             sorted_sigs = sorted(detection_counts.items(), key=lambda x: x[1], reverse=True)[:10]
             for sig_id, count in sorted_sigs:
                 observations.append(f"sig_{sig_id}={count}")
-            
+
             self._bridge.create_agent_entity(
                 agent_name=entity_name,
                 agent_type=self.ENTITY_TYPE_TELEMETRY_EVENT,
@@ -1105,7 +1105,7 @@ class SystemLearningMemoryBridge:
         trace_id: str,
     ) -> bool:
         """Persist healing tier dispatch outcome for effectiveness analysis.
-        
+
         Args:
             tier: Healing tier dispatched (LOCAL_AGENT, QWEN_VLLM, GEMINI_2_5_PRO)
             failure_type: Type of failure encountered
@@ -1115,13 +1115,13 @@ class SystemLearningMemoryBridge:
             timestamp_utc: Timestamp in milliseconds
             agent_name: Name of the healing agent
             trace_id: Trace ID for correlation
-            
+
         Returns:
             True if persisted, False on failure
         """
         if not self._bridge:
             return False
-        
+
         try:
             entity_name = f"HealingTierOutcome_{tier}_{int(timestamp_utc)}"
             observations = [
@@ -1134,7 +1134,7 @@ class SystemLearningMemoryBridge:
                 f"agent={agent_name}",
                 f"trace_id={trace_id}",
             ]
-            
+
             self._bridge.create_agent_entity(
                 agent_name=entity_name,
                 agent_type=self.ENTITY_TYPE_TELEMETRY_EVENT,
@@ -1158,7 +1158,7 @@ class SystemLearningMemoryBridge:
         timestamp_utc: int,
     ) -> bool:
         """Persist workflow outcome for meta-learning analysis.
-        
+
         Args:
             bundle_id: Workflow bundle identifier
             trace_id: Trace ID for correlation
@@ -1169,13 +1169,13 @@ class SystemLearningMemoryBridge:
             quality_score: Quality assessment score
             outcome_hash: Deterministic outcome hash
             timestamp_utc: Timestamp in milliseconds
-            
+
         Returns:
             True if persisted, False on failure
         """
         if not self._bridge:
             return False
-        
+
         try:
             entity_name = f"WorkflowOutcome_{workflow_type}_{int(timestamp_utc)}"
             observations = [
@@ -1189,11 +1189,11 @@ class SystemLearningMemoryBridge:
                 f"outcome_hash={outcome_hash}",
                 f"agent_count={len(agent_sequence)}",
             ]
-            
+
             # Add agent sequence (up to 10 agents)
             for i, agent in enumerate(agent_sequence[:10]):
                 observations.append(f"agent_{i}={agent}")
-            
+
             self._bridge.create_agent_entity(
                 agent_name=entity_name,
                 agent_type=self.ENTITY_TYPE_TELEMETRY_EVENT,
@@ -1215,7 +1215,7 @@ class SystemLearningMemoryBridge:
         timestamp_utc: int,
     ) -> bool:
         """Persist evaluation regression results for drift detection.
-        
+
         Args:
             trace_id: Evaluation trace ID
             total_records: Total number of evaluation records
@@ -1224,13 +1224,13 @@ class SystemLearningMemoryBridge:
             verdict_counts: Dictionary of verdict type -> count
             baseline_loaded: Whether baseline was available
             timestamp_utc: Timestamp in milliseconds
-            
+
         Returns:
             True if persisted, False on failure
         """
         if not self._bridge:
             return False
-        
+
         try:
             entity_name = f"EvalRegressionResults_{int(timestamp_utc)}"
             observations = [
@@ -1241,11 +1241,11 @@ class SystemLearningMemoryBridge:
                 f"regression_rate={regression_rate}",
                 f"baseline_loaded={baseline_loaded}",
             ]
-            
+
             # Add verdict counts
             for verdict, count in verdict_counts.items():
                 observations.append(f"verdict_{verdict}={count}")
-            
+
             self._bridge.create_agent_entity(
                 agent_name=entity_name,
                 agent_type=self.ENTITY_TYPE_TELEMETRY_EVENT,
@@ -1263,18 +1263,18 @@ class SystemLearningMemoryBridge:
         trace_id: str,
     ) -> bool:
         """Persist cognitive dispositions for RCA enrichment.
-        
+
         Args:
             dispositions_json: JSON-serialized cognitive disposition data
             timestamp_utc: Timestamp in milliseconds
             trace_id: Trace ID for correlation
-            
+
         Returns:
             True if persisted, False on failure
         """
         if not self._bridge:
             return False
-        
+
         try:
             entity_name = f"CognitiveDispositions_{int(timestamp_utc)}"
             observations = [
@@ -1282,7 +1282,7 @@ class SystemLearningMemoryBridge:
                 f"trace_id={trace_id}",
                 f"dispositions_json={dispositions_json[:500]}...",  # Truncate for storage
             ]
-            
+
             self._bridge.create_agent_entity(
                 agent_name=entity_name,
                 agent_type=self.ENTITY_TYPE_TELEMETRY_EVENT,
@@ -1307,7 +1307,7 @@ class SystemLearningMemoryBridge:
         timestamp_utc: int,
     ) -> bool:
         """Persist safety audit record for RCA clustering.
-        
+
         Args:
             audit_id: Unique audit identifier
             run_id: Run identifier
@@ -1319,13 +1319,13 @@ class SystemLearningMemoryBridge:
             action_class: Class of action taken
             reason: Reason for the decision
             timestamp_utc: Timestamp in milliseconds
-            
+
         Returns:
             True if persisted, False on failure
         """
         if not self._bridge:
             return False
-        
+
         try:
             entity_name = f"SafetyAudit_{audit_id}"
             observations = [
@@ -1340,7 +1340,7 @@ class SystemLearningMemoryBridge:
                 f"action_class={action_class}",
                 f"reason={reason[:200]}...",  # Truncate for storage
             ]
-            
+
             self._bridge.create_agent_entity(
                 agent_name=entity_name,
                 agent_type=self.ENTITY_TYPE_TELEMETRY_EVENT,
@@ -1369,7 +1369,7 @@ class SystemLearningMemoryBridge:
         timestamp_utc: int,
     ) -> bool:
         """Persist resource prediction accuracy feedback.
-        
+
         Args:
             failure_type: Type of failure predicted
             fingerprint: Failure signature fingerprint
@@ -1385,13 +1385,13 @@ class SystemLearningMemoryBridge:
             confidence: Prediction confidence
             success: Whether prediction was successful
             timestamp_utc: Timestamp in milliseconds
-            
+
         Returns:
             True if persisted, False on failure
         """
         if not self._bridge:
             return False
-        
+
         try:
             entity_name = f"ResourcePredictionFeedback_{int(timestamp_utc)}"
             observations = [
@@ -1410,7 +1410,7 @@ class SystemLearningMemoryBridge:
                 f"confidence={confidence:.3f}",
                 f"success={success}",
             ]
-            
+
             self._bridge.create_agent_entity(
                 agent_name=entity_name,
                 agent_type=self.ENTITY_TYPE_TELEMETRY_EVENT,
@@ -1433,7 +1433,7 @@ class SystemLearningMemoryBridge:
         timestamp_utc: int,
     ) -> bool:
         """Persist rollback strategy outcome for learning.
-        
+
         Args:
             failure_type: Type of failure that triggered rollback
             failure_fingerprint: Failure signature fingerprint
@@ -1443,13 +1443,13 @@ class SystemLearningMemoryBridge:
             success: Whether rollback was successful
             execution_time_ms: Execution time in milliseconds
             timestamp_utc: Timestamp in milliseconds
-            
+
         Returns:
             True if persisted, False on failure
         """
         if not self._bridge:
             return False
-        
+
         try:
             entity_name = f"RollbackStrategyOutcome_{strategy_chosen}_{int(timestamp_utc)}"
             observations = [
@@ -1461,11 +1461,11 @@ class SystemLearningMemoryBridge:
                 f"success={success}",
                 f"execution_time_ms={execution_time_ms}",
             ]
-            
+
             # Add top 5 reasons
             for i, reason in enumerate(strategy_reasons[:5]):
                 observations.append(f"reason_{i}={reason}")
-            
+
             self._bridge.create_agent_entity(
                 agent_name=entity_name,
                 agent_type=self.ENTITY_TYPE_TELEMETRY_EVENT,
@@ -1487,7 +1487,7 @@ class SystemLearningMemoryBridge:
         timestamp_utc: int,
     ) -> bool:
         """Persist healing memory retrieval quality metrics.
-        
+
         Args:
             signal_hash: Hash of the retrieval signal
             results_count: Number of results returned
@@ -1496,13 +1496,13 @@ class SystemLearningMemoryBridge:
             retrieval_quality: Quality classification (high/medium/low)
             top_k_used: Top-K parameter used
             timestamp_utc: Timestamp in milliseconds
-            
+
         Returns:
             True if persisted, False on failure
         """
         if not self._bridge:
             return False
-        
+
         try:
             entity_name = f"HealingMemoryRetrievalQuality_{int(timestamp_utc)}"
             observations = [
@@ -1514,7 +1514,7 @@ class SystemLearningMemoryBridge:
                 f"retrieval_quality={retrieval_quality}",
                 f"top_k_used={top_k_used}",
             ]
-            
+
             self._bridge.create_agent_entity(
                 agent_name=entity_name,
                 agent_type=self.ENTITY_TYPE_TELEMETRY_EVENT,
@@ -1533,19 +1533,19 @@ class SystemLearningMemoryBridge:
         trace_id: str,
     ) -> bool:
         """Persist Execute_SSOT phase outcomes for system learning.
-        
+
         Args:
             phase_name: Name of the phase (e.g., "execute_ssot")
             outcomes_json: JSON string containing phase outcomes
             timestamp_utc: Timestamp in milliseconds
             trace_id: Trace ID for correlation
-            
+
         Returns:
             True if persisted, False on failure
         """
         if not self._bridge:
             return False
-        
+
         try:
             entity_name = f"ExecuteSSOTPhaseOutcomes_{phase_name}_{int(timestamp_utc)}"
             observations = [
@@ -1554,7 +1554,7 @@ class SystemLearningMemoryBridge:
                 f"trace_id={trace_id}",
                 f"outcomes={outcomes_json[:500]}...",  # Truncate for storage
             ]
-            
+
             self._bridge.create_agent_entity(
                 agent_name=entity_name,
                 agent_type=self.ENTITY_TYPE_TELEMETRY_EVENT,
@@ -1572,18 +1572,18 @@ class SystemLearningMemoryBridge:
         trace_id: str,
     ) -> bool:
         """Persist repair routes for optimization proposals.
-        
+
         Args:
             repair_routes_json: JSON string containing repair routes
             timestamp_utc: Timestamp in milliseconds
             trace_id: Trace ID for correlation
-            
+
         Returns:
             True if persisted, False on failure
         """
         if not self._bridge:
             return False
-        
+
         try:
             entity_name = f"RepairRoutes_{int(timestamp_utc)}"
             observations = [
@@ -1591,7 +1591,7 @@ class SystemLearningMemoryBridge:
                 f"trace_id={trace_id}",
                 f"routes={repair_routes_json[:500]}...",  # Truncate for storage
             ]
-            
+
             self._bridge.create_agent_entity(
                 agent_name=entity_name,
                 agent_type=self.ENTITY_TYPE_TELEMETRY_EVENT,
@@ -1604,7 +1604,7 @@ class SystemLearningMemoryBridge:
 
     def _query_execute_ssot_outcomes(self, timestamp_utc: int) -> None:
         """Query recent Execute_SSOT outcomes (placeholder for future implementation).
-        
+
         Args:
             timestamp_utc: Current timestamp
         """
@@ -1613,10 +1613,10 @@ class SystemLearningMemoryBridge:
 
     def _query_recent_healing_memory_quality(self, hours: int) -> list[dict[str, Any]]:
         """Query recent healing memory retrieval quality metrics.
-        
+
         Args:
             hours: Number of hours to look back
-            
+
         Returns:
             List of quality metrics
         """
@@ -1632,20 +1632,20 @@ class SystemLearningMemoryBridge:
         timestamp_utc: int,
     ) -> bool:
         """Persist cache coherence violations for drift detection.
-        
+
         Args:
             layer_type: Type of layer where violation occurred
             violation_type: Type of violation
             error_message: Error message
             affected_keys: List of affected cache keys
             timestamp_utc: Timestamp in milliseconds
-            
+
         Returns:
             True if persisted, False on failure
         """
         if not self._bridge:
             return False
-        
+
         try:
             entity_name = f"CacheCoherenceViolation_{layer_type}_{int(timestamp_utc)}"
             observations = [
@@ -1655,11 +1655,11 @@ class SystemLearningMemoryBridge:
                 f"error_message={error_message[:100]}...",  # Truncate
                 f"affected_keys_count={len(affected_keys)}",
             ]
-            
+
             # Add first few keys as evidence
             for i, key in enumerate(affected_keys[:3]):
                 observations.append(f"key_{i}={key[:50]}...")
-            
+
             self._bridge.create_agent_entity(
                 agent_name=entity_name,
                 agent_type=self.ENTITY_TYPE_TELEMETRY_EVENT,
@@ -1680,7 +1680,7 @@ class SystemLearningMemoryBridge:
         timestamp_utc: int,
     ) -> bool:
         """Persist infrastructure drift analysis.
-        
+
         Args:
             drift_detected: Whether drift was detected
             severity: Drift severity level
@@ -1688,13 +1688,13 @@ class SystemLearningMemoryBridge:
             layers_affected: Number of layers affected
             analysis_json: Full analysis JSON
             timestamp_utc: Timestamp in milliseconds
-            
+
         Returns:
             True if persisted, False on failure
         """
         if not self._bridge:
             return False
-        
+
         try:
             entity_name = f"InfrastructureDriftAnalysis_{int(timestamp_utc)}"
             observations = [
@@ -1705,7 +1705,7 @@ class SystemLearningMemoryBridge:
                 f"layers_affected={layers_affected}",
                 f"analysis={analysis_json[:500]}...",  # Truncate
             ]
-            
+
             self._bridge.create_agent_entity(
                 agent_name=entity_name,
                 agent_type=self.ENTITY_TYPE_TELEMETRY_EVENT,
@@ -1728,7 +1728,7 @@ class SystemLearningMemoryBridge:
         domain: str,
     ) -> bool:
         """Persist cross-domain healing events for pattern sharing.
-        
+
         Args:
             orchestrator_class: Class name of the orchestrator
             cycle_index: Cycle index number
@@ -1738,13 +1738,13 @@ class SystemLearningMemoryBridge:
             success_rate: Success rate (0.0-1.0)
             timestamp_utc: Timestamp in milliseconds
             domain: Domain identifier
-            
+
         Returns:
             True if persisted, False on failure
         """
         if not self._bridge:
             return False
-        
+
         try:
             entity_name = f"CrossDomainHealingEvent_{domain}_{orchestrator_class}_{int(timestamp_utc)}"
             observations = [
@@ -1757,7 +1757,7 @@ class SystemLearningMemoryBridge:
                 f"success_rate={success_rate:.3f}",
                 f"domain={domain}",
             ]
-            
+
             self._bridge.create_agent_entity(
                 agent_name=entity_name,
                 agent_type=self.ENTITY_TYPE_TELEMETRY_EVENT,
@@ -1777,20 +1777,20 @@ class SystemLearningMemoryBridge:
         timestamp_utc: int,
     ) -> bool:
         """Persist cross-domain pattern analysis.
-        
+
         Args:
             patterns_detected: Whether patterns were detected
             domains_count: Number of domains analyzed
             correlations_count: Number of correlations found
             analysis_json: Full analysis JSON
             timestamp_utc: Timestamp in milliseconds
-            
+
         Returns:
             True if persisted, False on failure
         """
         if not self._bridge:
             return False
-        
+
         try:
             entity_name = f"CrossDomainPatternAnalysis_{int(timestamp_utc)}"
             observations = [
@@ -1800,7 +1800,7 @@ class SystemLearningMemoryBridge:
                 f"correlations_count={correlations_count}",
                 f"analysis={analysis_json[:500]}...",  # Truncate
             ]
-            
+
             self._bridge.create_agent_entity(
                 agent_name=entity_name,
                 agent_type=self.ENTITY_TYPE_TELEMETRY_EVENT,
@@ -1820,20 +1820,20 @@ class SystemLearningMemoryBridge:
         timestamp_utc: int,
     ) -> bool:
         """Persist OpenTelemetry span data.
-        
+
         Args:
             span_id: Unique span identifier
             trace_id: Trace identifier
             span_name: Span name
             span_data_json: Span data as JSON
             timestamp_utc: Timestamp in milliseconds
-            
+
         Returns:
             True if persisted, False on failure
         """
         if not self._bridge:
             return False
-        
+
         try:
             entity_name = f"OTelSpan_{span_id}_{int(timestamp_utc)}"
             observations = [
@@ -1843,7 +1843,7 @@ class SystemLearningMemoryBridge:
                 f"span_name={span_name}",
                 f"span_data={span_data_json[:500]}...",  # Truncate
             ]
-            
+
             self._bridge.create_agent_entity(
                 agent_name=entity_name,
                 agent_type=self.ENTITY_TYPE_TELEMETRY_EVENT,
@@ -1860,24 +1860,24 @@ class SystemLearningMemoryBridge:
         timestamp_utc: int,
     ) -> bool:
         """Persist OpenTelemetry span metrics.
-        
+
         Args:
             metrics_json: Span metrics as JSON
             timestamp_utc: Timestamp in milliseconds
-            
+
         Returns:
             True if persisted, False on failure
         """
         if not self._bridge:
             return False
-        
+
         try:
             entity_name = f"OTelSpanMetrics_{int(timestamp_utc)}"
             observations = [
                 f"ts={timestamp_utc}",
                 f"metrics={metrics_json[:500]}...",  # Truncate
             ]
-            
+
             self._bridge.create_agent_entity(
                 agent_name=entity_name,
                 agent_type=self.ENTITY_TYPE_TELEMETRY_EVENT,
@@ -1895,18 +1895,18 @@ class SystemLearningMemoryBridge:
         timestamp_utc: int,
     ) -> bool:
         """Persist injection detection counts.
-        
+
         Args:
             total_scans: Total number of scans performed
             detection_counts: Detection counts by signature ID
             timestamp_utc: Timestamp in milliseconds
-            
+
         Returns:
             True if persisted, False on failure
         """
         if not self._bridge:
             return False
-        
+
         try:
             entity_name = f"InjectionDetectionCounts_{int(timestamp_utc)}"
             observations = [
@@ -1914,12 +1914,12 @@ class SystemLearningMemoryBridge:
                 f"total_scans={total_scans}",
                 f"total_detections={sum(detection_counts.values())}",
             ]
-            
+
             # Add top detection signatures
             sorted_detections = sorted(detection_counts.items(), key=lambda x: x[1], reverse=True)[:5]
             for sig_id, count in sorted_detections:
                 observations.append(f"{sig_id}={count}")
-            
+
             self._bridge.create_agent_entity(
                 agent_name=entity_name,
                 agent_type=self.ENTITY_TYPE_TELEMETRY_EVENT,
@@ -1939,20 +1939,20 @@ class SystemLearningMemoryBridge:
         timestamp_utc: int,
     ) -> bool:
         """Persist injection detection context data.
-        
+
         Args:
             agent_id: Agent identifier
             route: Route identifier
             scan_counts: Scan counts by context
             detection_counts: Detection counts by context
             timestamp_utc: Timestamp in milliseconds
-            
+
         Returns:
             True if persisted, False on failure
         """
         if not self._bridge:
             return False
-        
+
         try:
             entity_name = f"InjectionContextData_{agent_id}_{route}_{int(timestamp_utc)}"
             observations = [
@@ -1962,7 +1962,7 @@ class SystemLearningMemoryBridge:
                 f"context_scans={scan_counts.get(f'{agent_id}:{route}', 0)}",
                 f"context_detections={detection_counts.get(f'{agent_id}:{route}', 0)}",
             ]
-            
+
             self._bridge.create_agent_entity(
                 agent_name=entity_name,
                 agent_type=self.ENTITY_TYPE_TELEMETRY_EVENT,
@@ -1981,19 +1981,19 @@ class SystemLearningMemoryBridge:
         timestamp_utc: int,
     ) -> bool:
         """Persist signal spike detection results.
-        
+
         Args:
             spike_detected: Whether spikes were detected
             spike_count: Number of spikes detected
             analysis_json: Full analysis JSON
             timestamp_utc: Timestamp in milliseconds
-            
+
         Returns:
             True if persisted, False on failure
         """
         if not self._bridge:
             return False
-        
+
         try:
             entity_name = f"SignalSpikeDetection_{int(timestamp_utc)}"
             observations = [
@@ -2002,7 +2002,7 @@ class SystemLearningMemoryBridge:
                 f"spike_count={spike_count}",
                 f"analysis={analysis_json[:500]}...",  # Truncate
             ]
-            
+
             self._bridge.create_agent_entity(
                 agent_name=entity_name,
                 agent_type=self.ENTITY_TYPE_TELEMETRY_EVENT,

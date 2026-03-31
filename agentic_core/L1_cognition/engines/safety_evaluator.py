@@ -103,7 +103,7 @@ _emit_stores_embedding("p4", "safety_evaluator", "embedding_store")
 
 class SafetyEvaluator:
     """Comprehensive safety evaluator combining multiple safety mechanisms."""
-    
+
     def __init__(
         self,
         config: Optional[GuardrailConfig] = None,
@@ -111,7 +111,7 @@ class SafetyEvaluator:
         content_filter: Optional[ContentFilterEngine] = None
     ) -> None:
         """Initialize the safety evaluator.
-        
+
         Args:
             config: Guardrail configuration
             constitutional_engine: Constitutional rules engine
@@ -119,18 +119,18 @@ class SafetyEvaluator:
         """
         self.config = config or GuardrailConfig()
         self.graphrag_config = get_config()
-        
+
         # Initialize components
         self.constitutional_engine = constitutional_engine or ConstitutionalRulesEngine(self.config)
         self.content_filter = content_filter or ContentFilterEngine(self.config)
-        
+
         # Evaluation statistics
         self._evaluation_stats: Dict[str, List[float]] = {
             "evaluation_time": [],
             "safety_scores": [],
             "risk_levels": {}
         }
-    
+
     async def evaluate_safety(
         self,
         content: str,
@@ -140,54 +140,54 @@ class SafetyEvaluator:
         additional_metadata: Optional[Dict[str, Any]] = None
     ) -> SafetyEvaluation:
         """Evaluate the safety of content.
-        
+
         Args:
             content: Content to evaluate
             content_id: Unique identifier for the content
             content_type: Type of content ("query", "context", "response", "generation")
             context: Additional context for evaluation
             additional_metadata: Additional metadata for evaluation
-            
+
         Returns:
             Comprehensive safety evaluation
         """
         start_time = datetime.utcnow()
         evaluation_id = f"safety_eval_{content_id}_{start_time.strftime('%Y%m%d_%H%M%S')}"
-        
+
         try:
             # Step 1: Run constitutional rules evaluation
             constitutional_report = self.constitutional_engine.evaluate_content(
                 content, content_id, content_type, context
             )
-            
+
             # Step 2: Run content filtering
             content_filter_report = self.content_filter.filter_content(
                 content, content_id, content_type, context
             )
-            
+
             # Step 3: Combine results and calculate overall safety
             safety_scores = self._calculate_safety_scores(
                 constitutional_report, content_filter_report
             )
-            
+
             # Step 4: Determine risk level
             risk_level = self._determine_risk_level(
                 constitutional_report, content_filter_report, safety_scores
             )
-            
+
             # Step 5: Generate recommendations
             recommendations = self._generate_recommendations(
                 constitutional_report, content_filter_report, risk_level
             )
-            
+
             # Step 6: Determine if safe to proceed
             safe_to_proceed = self._is_safe_to_proceed(
                 constitutional_report, content_filter_report, risk_level
             )
-            
+
             # Create evaluation
             evaluation_time = (datetime.utcnow() - start_time).total_seconds() * 1000
-            
+
             evaluation = SafetyEvaluation(
                 evaluation_id=evaluation_id,
                 content_id=content_id,
@@ -202,24 +202,24 @@ class SafetyEvaluator:
                 evaluation_time_ms=evaluation_time,
                 evaluator_version="1.0.0"
             )
-            
+
             # Update statistics
             self._evaluation_stats["evaluation_time"].append(evaluation_time)
             self._evaluation_stats["safety_scores"].append(evaluation.overall_safety_score)
-            
+
             risk_key = risk_level.value
             if risk_key not in self._evaluation_stats["risk_levels"]:
                 self._evaluation_stats["risk_levels"][risk_key] = 0
             self._evaluation_stats["risk_levels"][risk_key] += 1
-            
+
             _emit_records_telemetry_event(
                 "safety_evaluator",
                 f"safety_evaluated_{evaluation.overall_safety_score:.2f}_{risk_level.value}",
                 "safety_evaluated"
             )
-            
+
             return evaluation
-            
+
         except Exception as e:
             # Return error evaluation
             return SafetyEvaluation(
@@ -234,7 +234,7 @@ class SafetyEvaluator:
                 evaluation_time_ms=(datetime.utcnow() - start_time).total_seconds() * 1000,
                 evaluator_version="1.0.0"
             )
-    
+
     def _calculate_safety_scores(
         self,
         constitutional_report: GuardrailReport,
@@ -252,21 +252,21 @@ class SafetyEvaluator:
                 "fairness": 0.0
             }
         }
-        
+
         # Constitutional score
         if constitutional_report.total_checks > 0:
             constitutional_score = constitutional_report.overall_score
             scores["categories"]["constitutional"] = constitutional_score
         else:
             scores["categories"]["constitutional"] = 1.0  # No issues found
-        
+
         # Content filter score
         if content_filter_report.total_checks > 0:
             content_filter_score = content_filter_report.overall_score
             scores["categories"]["content_filter"] = content_filter_score
         else:
             scores["categories"]["content_filter"] = 1.0  # No issues found
-        
+
         # Category-specific scores from constitutional rules
         for check in constitutional_report.checks:
             if not check.passed:
@@ -278,24 +278,24 @@ class SafetyEvaluator:
                 # Add points for passed checks
                 rule_category = check.metadata.get("rule_category", "general")
                 if rule_category in scores["categories"]:
-                    scores["categories"][rule_category] = min(1.0, 
+                    scores["categories"][rule_category] = min(1.0,
                         scores["categories"][rule_category] + 0.1)
-        
+
         # Calculate overall score
         # Weight constitutional rules more heavily
         constitutional_weight = 0.6
         content_filter_weight = 0.4
-        
+
         scores["overall"] = (
             scores["categories"]["constitutional"] * constitutional_weight +
             scores["categories"]["content_filter"] * content_filter_weight
         )
-        
+
         # Ensure score is in [0, 1] range
         scores["overall"] = max(0.0, min(1.0, scores["overall"]))
-        
+
         return scores
-    
+
     def _determine_risk_level(
         self,
         constitutional_report: GuardrailReport,
@@ -305,24 +305,24 @@ class SafetyEvaluator:
         """Determine overall risk level."""
         # Check for critical violations
         critical_violations = []
-        
+
         for report in [constitutional_report, content_filter_report]:
             if report.highest_severity == GuardrailSeverity.CRITICAL and not report.passed:
                 critical_violations.append(report.highest_severity)
-        
+
         if critical_violations:
             return GuardrailSeverity.CRITICAL
-        
+
         # Check for high violations
         high_violations = []
-        
+
         for report in [constitutional_report, content_filter_report]:
             if report.highest_severity == GuardrailSeverity.HIGH and not report.passed:
                 high_violations.append(report.highest_severity)
-        
+
         if high_violations:
             return GuardrailSeverity.HIGH
-        
+
         # Check safety score thresholds
         if safety_scores["overall"] < 0.3:
             return GuardrailSeverity.HIGH
@@ -330,9 +330,9 @@ class SafetyEvaluator:
             return GuardrailSeverity.MEDIUM
         elif safety_scores["overall"] < 0.8:
             return GuardrailSeverity.LOW
-        
+
         return GuardrailSeverity.LOW
-    
+
     def _generate_recommendations(
         self,
         constitutional_report: GuardrailReport,
@@ -341,7 +341,7 @@ class SafetyEvaluator:
     ) -> List[str]:
         """Generate safety recommendations."""
         recommendations = []
-        
+
         # Based on risk level
         if risk_level == GuardrailSeverity.CRITICAL:
             recommendations.extend([
@@ -367,7 +367,7 @@ class SafetyEvaluator:
                 "Continue with standard processing",
                 "Log for future reference"
             ])
-        
+
         # Based on specific violations
         for report in [constitutional_report, content_filter_report]:
             for check in report.checks:
@@ -378,9 +378,9 @@ class SafetyEvaluator:
                         recommendations.append(f"Add warning for {check.filter_id or check.rule_id}")
                     elif check.action == GuardrailAction.ESCALATE:
                         recommendations.append(f"Escalate {check.filter_id or check.rule_id} to reviewer")
-        
+
         return list(set(recommendations))  # Remove duplicates
-    
+
     def _extract_risk_factors(
         self,
         constitutional_report: GuardrailReport,
@@ -388,20 +388,20 @@ class SafetyEvaluator:
     ) -> List[str]:
         """Extract risk factors from reports."""
         risk_factors = []
-        
+
         for report in [constitutional_report, content_filter_report]:
             if not report.passed:
                 risk_factors.append(f"Failed {report.content_type} guardrails")
-                
+
                 for check in report.checks:
                     if not check.passed:
                         if check.rule_id:
                             risk_factors.append(f"Violated rule: {check.rule_id}")
                         if check.filter_id:
                             risk_factors.append(f"Triggered filter: {check.filter_id}")
-        
+
         return list(set(risk_factors))
-    
+
     def _is_safe_to_proceed(
         self,
         constitutional_report: GuardrailReport,
@@ -412,11 +412,11 @@ class SafetyEvaluator:
         # Check for critical violations
         if risk_level == GuardrailSeverity.CRITICAL:
             return False
-        
+
         # Check for escalations
         if constitutional_report.escalation_required or content_filter_report.escalation_required:
             return False
-        
+
         # Check configuration
         if self.config.strict_mode:
             # In strict mode, any violation blocks
@@ -424,11 +424,11 @@ class SafetyEvaluator:
         else:
             # In non-strict mode, only critical violations block
             return risk_level != GuardrailSeverity.CRITICAL
-    
+
     def get_evaluation_stats(self) -> Dict[str, Any]:
         """Get evaluation statistics."""
         stats = {}
-        
+
         # Evaluation time stats
         if self._evaluation_stats["evaluation_time"]:
             times = self._evaluation_stats["evaluation_time"]
@@ -441,7 +441,7 @@ class SafetyEvaluator:
             stats["min_evaluation_time_ms"] = 0.0
             stats["max_evaluation_time_ms"] = 0.0
             stats["total_evaluations"] = 0
-        
+
         # Safety score stats
         if self._evaluation_stats["safety_scores"]:
             scores = self._evaluation_stats["safety_scores"]
@@ -452,12 +452,12 @@ class SafetyEvaluator:
             stats["avg_safety_score"] = 0.0
             stats["min_safety_score"] = 0.0
             stats["max_safety_score"] = 0.0
-        
+
         # Risk level distribution
         stats["risk_level_distribution"] = self._evaluation_stats["risk_levels"].copy()
-        
+
         return stats
-    
+
     def reset_stats(self) -> None:
         """Reset evaluation statistics."""
         self._evaluation_stats = {
@@ -465,7 +465,7 @@ class SafetyEvaluator:
             "safety_scores": [],
             "risk_levels": {}
         }
-        
+
         _emit_records_telemetry_event(
             "safety_evaluator",
             "stats_reset"

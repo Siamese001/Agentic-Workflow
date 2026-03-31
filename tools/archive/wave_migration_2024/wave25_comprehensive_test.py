@@ -14,7 +14,7 @@ from typing import Dict, List, Tuple
 
 class Wave25ComprehensiveTest:
     """Wave 25: Comprehensive test and validation."""
-    
+
     def __init__(self, repo_root: pathlib.Path):
         self.repo_root = repo_root
         self.tests_dir = repo_root / "tests"
@@ -28,31 +28,31 @@ class Wave25ComprehensiveTest:
             'tests_passed': 0,
             'tests_failed': 0
         }
-    
+
     def run_comprehensive_test(self) -> Dict:
         """Run comprehensive test validation."""
         # Check current syntax status
         self._check_syntax_status()
-        
+
         # Try pytest collection
         self._test_pytest_collection()
-        
+
         # Try running a few tests
         self._test_execution()
-        
+
         return self.stats
-    
+
     def _check_syntax_status(self):
         """Check current syntax status."""
         test_files = []
         for pattern in ["test_*.py", "*/test_*.py"]:
             test_files.extend(self.tests_dir.rglob(pattern))
-        
+
         # Filter out archives
         active_test_files = [f for f in test_files if "archive" not in str(f).lower()]
-        
+
         self.stats['total_files'] = len(active_test_files)
-        
+
         for test_file in active_test_files:
             try:
                 content = test_file.read_text(encoding='utf-8')
@@ -62,7 +62,7 @@ class Wave25ComprehensiveTest:
                 self.stats['syntax_errors'] += 1
             except UnicodeDecodeError:
                 self.stats['syntax_errors'] += 1
-    
+
     def _test_pytest_collection(self):
         """Test pytest collection."""
         try:
@@ -73,7 +73,7 @@ class Wave25ComprehensiveTest:
                 text=True,
                 timeout=60
             )
-            
+
             if result.returncode == 0:
                 self.stats['test_collection_success'] = True
                 # Extract number of collected tests
@@ -93,18 +93,18 @@ class Wave25ComprehensiveTest:
                     if match:
                         self.stats['tests_collected'] = int(match.group(1))
                     print("✅ Partial pytest collection successful!")
-                
+
         except subprocess.TimeoutExpired:
             print("⚠️ Pytest collection timed out")
         except Exception as e:
             print(f"⚠️ Test collection error: {e}")
-    
+
     def _test_execution(self):
         """Test execution of a subset of tests."""
         if not self.stats['test_collection_success']:
             print("⚠️ Skipping test execution due to collection failure")
             return
-        
+
         # Try to run a simple test
         try:
             result = subprocess.run(
@@ -114,7 +114,7 @@ class Wave25ComprehensiveTest:
                 text=True,
                 timeout=30
             )
-            
+
             if result.returncode == 0:
                 self.stats['test_execution_success'] = True
                 print("✅ Test execution successful!")
@@ -130,12 +130,12 @@ class Wave25ComprehensiveTest:
                     failed_match = re.search(r'(\d+)\s+failed', result.stdout)
                     if failed_match:
                         self.stats['tests_failed'] = int(failed_match.group(1))
-                
+
         except subprocess.TimeoutExpired:
             print("⚠️ Test execution timed out")
         except Exception as e:
             print(f"⚠️ Test execution error: {e}")
-    
+
     def print_summary(self):
         """Print comprehensive test summary."""
         print("\n" + "="*60)
@@ -145,19 +145,19 @@ class Wave25ComprehensiveTest:
         print(f"Valid files: {self.stats['valid_files']}")
         print(f"Syntax errors: {self.stats['syntax_errors']}")
         print(f"Success rate: {self.stats['valid_files']/self.stats['total_files']*100:.1f}%")
-        
+
         print(f"\nTest collection:")
         print(f"Pytest collection: {'✅ Success' if self.stats['test_collection_success'] else '⚠️ Failed'}")
         if self.stats['tests_collected'] > 0:
             print(f"Tests collected: {self.stats['tests_collected']}")
-        
+
         print(f"\nTest execution:")
         print(f"Test execution: {'✅ Success' if self.stats['test_execution_success'] else '⚠️ Failed'}")
         if self.stats['tests_passed'] > 0:
             print(f"Tests passed: {self.stats['tests_passed']}")
         if self.stats['tests_failed'] > 0:
             print(f"Tests failed: {self.stats['tests_failed']}")
-        
+
         print(f"\n🎯 COMPREHENSIVE STATUS:")
         if self.stats['valid_files'] >= 2708:
             print("✅ EXCELLENT: Test suite significantly restored!")
@@ -167,7 +167,7 @@ class Wave25ComprehensiveTest:
             print("✅ GOOD: Test suite partially restored!")
         else:
             print("⚠️ NEEDS WORK: More fixes needed")
-        
+
         if self.stats['test_collection_success'] and self.stats['tests_collected'] > 0:
             print("✅ TESTS CAN BE COLLECTED!")
             if self.stats['test_execution_success']:
@@ -176,21 +176,21 @@ class Wave25ComprehensiveTest:
                 print("⚠️ Test execution needs work")
         else:
             print("⚠️ Test collection needs work")
-        
+
         print("="*60)
 
 
 def main():
     """Run Wave 25 comprehensive test."""
     repo_root = pathlib.Path(__file__).parent.parent
-    
+
     print("🌊 WAVE 25: COMPREHENSIVE TEST")
     print(f"Repository: {repo_root}")
-    
+
     tester = Wave25ComprehensiveTest(repo_root)
     stats = tester.run_comprehensive_test()
     tester.print_summary()
-    
+
     return stats['valid_files'] > 2000
 
 

@@ -54,11 +54,11 @@ def ewma_cache_classifier():
 
 class TestL3FeatureExtractor:
     """Test L3 feature extraction functionality."""
-    
+
     def test_branch_complexity_extraction(self, l3_feature_extractor):
         """Test branch complexity score extraction."""
         extractor = l3_feature_extractor
-        
+
         context = {
             "branch": {
                 "nodes": [
@@ -85,24 +85,24 @@ class TestL3FeatureExtractor:
             "history": {},
             "trace_id": "test_trace_123"
         }
-        
+
         result = extractor.extract_features(
             context=context,
             trace_id="test_trace_123",
             replay_key="test_replay_456",
             policy_hash="policy_hash_789"
         )
-        
+
         assert result.success
         assert "branch_complexity_score" in result.features
         assert 0.0 <= result.features["branch_complexity_score"] <= 1.0
         assert "execution_probability" in result.features
         assert "resource_requirement_score" in result.features
-    
+
     def test_conflict_indicator_extraction(self, l3_feature_extractor):
         """Test conflict indicator extraction."""
         extractor = l3_feature_extractor
-        
+
         context = {
             "branch": {
                 "required_resources": {"cpu": 2, "memory": 1024}
@@ -122,22 +122,22 @@ class TestL3FeatureExtractor:
             "history": {},
             "trace_id": "test_trace_123"
         }
-        
+
         result = extractor.extract_features(
             context=context,
             trace_id="test_trace_123",
             replay_key="test_replay_456",
             policy_hash="policy_hash_789"
         )
-        
+
         assert result.success
         assert "conflict_indicator" in result.features
         assert 0.0 <= result.features["conflict_indicator"] <= 1.0
-    
+
     def test_escalation_priority_extraction(self, l3_feature_extractor):
         """Test escalation priority extraction."""
         extractor = l3_feature_extractor
-        
+
         context = {
             "branch": {
                 "business_criticality": "high",
@@ -154,14 +154,14 @@ class TestL3FeatureExtractor:
             "history": {},
             "trace_id": "test_trace_123"
         }
-        
+
         result = extractor.extract_features(
             context=context,
             trace_id="test_trace_123",
             replay_key="test_replay_456",
             policy_hash="policy_hash_789"
         )
-        
+
         assert result.success
         assert "escalation_priority" in result.features
         assert 0.0 <= result.features["escalation_priority"] <= 1.0
@@ -169,11 +169,11 @@ class TestL3FeatureExtractor:
 
 class TestL5FeatureExtractor:
     """Test L5 feature extraction functionality."""
-    
+
     def test_policy_complexity_extraction(self, l5_feature_extractor):
         """Test policy complexity score extraction."""
         extractor = l5_feature_extractor
-        
+
         context = {
             "policy": {
                 "rules": [
@@ -191,22 +191,22 @@ class TestL5FeatureExtractor:
             "environment": {},
             "trace_id": "test_trace_123"
         }
-        
+
         result = extractor.extract_features(
             context=context,
             trace_id="test_trace_123",
             replay_key="test_replay_456",
             policy_hash="policy_hash_789"
         )
-        
+
         assert result.success
         assert "policy_complexity_score" in result.features
         assert 0.0 <= result.features["policy_complexity_score"] <= 1.0
-    
+
     def test_compliance_risk_extraction(self, l5_feature_extractor):
         """Test compliance risk level extraction."""
         extractor = l5_feature_extractor
-        
+
         context = {
             "policy": {
                 "applicable_regulations": ["GDPR", "SOX", "HIPAA"],
@@ -229,22 +229,22 @@ class TestL5FeatureExtractor:
             "environment": {},
             "trace_id": "test_trace_123"
         }
-        
+
         result = extractor.extract_features(
             context=context,
             trace_id="test_trace_123",
             replay_key="test_replay_456",
             policy_hash="policy_hash_789"
         )
-        
+
         assert result.success
         assert "compliance_risk_level" in result.features
         assert 0.0 <= result.features["compliance_risk_level"] <= 1.0
-    
+
     def test_business_impact_extraction(self, l5_feature_extractor):
         """Test business impact score extraction."""
         extractor = l5_feature_extractor
-        
+
         context = {
             "policy": {
                 "financial_impact": {"amount": 500000},
@@ -261,14 +261,14 @@ class TestL5FeatureExtractor:
             "environment": {},
             "trace_id": "test_trace_123"
         }
-        
+
         result = extractor.extract_features(
             context=context,
             trace_id="test_trace_123",
             replay_key="test_replay_456",
             policy_hash="policy_hash_789"
         )
-        
+
         assert result.success
         assert "business_impact_score" in result.features
         assert 0.0 <= result.features["business_impact_score"] <= 1.0
@@ -276,11 +276,11 @@ class TestL5FeatureExtractor:
 
 class TestL2FeatureExtractor:
     """Test L2 feature extraction functionality."""
-    
+
     def test_healer_compatibility_extraction(self, l2_feature_extractor):
         """Test healer compatibility score extraction."""
         extractor = l2_feature_extractor
-        
+
         context = {
             "healer": {
                 "specialization": ["timeout", "connection", "network"],
@@ -304,22 +304,22 @@ class TestL2FeatureExtractor:
             "healing_context": {},
             "trace_id": "test_trace_123"
         }
-        
+
         result = extractor.extract_features(
             context=context,
             trace_id="test_trace_123",
             replay_key="test_replay_456",
             policy_hash="policy_hash_789"
         )
-        
+
         assert result.success
         assert "healer_compatibility_score" in result.features
         assert 0.0 <= result.features["healer_compatibility_score"] <= 1.0
-    
+
     def test_error_severity_extraction(self, l2_feature_extractor):
         """Test error severity score extraction."""
         extractor = l2_feature_extractor
-        
+
         context = {
             "error": {
                 "type": "critical_security_error",
@@ -335,22 +335,22 @@ class TestL2FeatureExtractor:
             "healing_context": {},
             "trace_id": "test_trace_123"
         }
-        
+
         result = extractor.extract_features(
             context=context,
             trace_id="test_trace_123",
             replay_key="test_replay_456",
             policy_hash="policy_hash_789"
         )
-        
+
         assert result.success
         assert "error_severity_score" in result.features
         assert 0.0 <= result.features["error_severity_score"] <= 1.0
-    
+
     def test_retry_probability_extraction(self, l2_feature_extractor):
         """Test retry probability extraction."""
         extractor = l2_feature_extractor
-        
+
         context = {
             "error": {
                 "type": "timeout_error"
@@ -369,14 +369,14 @@ class TestL2FeatureExtractor:
             "healing_context": {},
             "trace_id": "test_trace_123"
         }
-        
+
         result = extractor.extract_features(
             context=context,
             trace_id="test_trace_123",
             replay_key="test_replay_456",
             policy_hash="policy_hash_789"
         )
-        
+
         assert result.success
         assert "retry_probability" in result.features
         assert 0.0 <= result.features["retry_probability"] <= 1.0
@@ -384,27 +384,27 @@ class TestL2FeatureExtractor:
 
 class TestL3BranchRanker:
     """Test L3 DAG branch ranker model."""
-    
+
     @pytest.fixture
     def mock_model(self, l3_branch_ranker):
         """Create a mock L3 branch ranker for testing."""
         ranker = l3_branch_ranker
-        
+
         # Mock the model
         ranker.model = Mock()
         ranker.model.predict.return_value = np.array([0.75])
         ranker.model.feature_importance.return_value = np.array([0.3, 0.2, 0.1, 0.05, 0.05])
-        ranker.feature_names = ['branch_complexity_score', 'execution_probability', 
+        ranker.feature_names = ['branch_complexity_score', 'execution_probability',
                              'resource_requirement_score', 'conflict_indicator', 'escalation_priority']
         ranker.feature_importances = [0.3, 0.2, 0.1, 0.05, 0.05]
         ranker.is_loaded = True
-        
+
         return ranker
-    
+
     def test_branch_ranking_prediction(self, mock_model):
         """Test branch ranking prediction."""
         from agentic_core.L1_cognition.ml_decision_support.models.base_model import ModelInput
-        
+
         features = {
             'branch_complexity_score': 0.6,
             'execution_probability': 0.8,
@@ -412,20 +412,20 @@ class TestL3BranchRanker:
             'conflict_indicator': 0.2,
             'escalation_priority': 0.7
         }
-        
+
         model_input = mock_model.validate_input(features)
-        
+
         prediction = mock_model.predict(
             model_input=model_input,
             trace_id="test_trace_123",
             replay_key="test_replay_456",
             policy_hash="policy_hash_789"
         )
-        
+
         assert prediction.prediction == 0.75
         assert prediction.confidence > 0.0
         assert prediction.decision_mode.value in ["advisory", "escalated", "blocked"]
-    
+
     def test_batch_branch_ranking(self, mock_model):
         """Test batch branch ranking."""
         branches = [
@@ -433,13 +433,13 @@ class TestL3BranchRanker:
             {"id": "branch2", "complexity": 0.7},
             {"id": "branch3", "complexity": 0.5}
         ]
-        
+
         dag_context = {
             "resources": {"cpu": 8, "memory": 16384},
             "history": {},
             "other_branches": []
         }
-        
+
         ranked_branches = mock_model.rank_branches(
             branches=branches,
             dag_context=dag_context,
@@ -447,12 +447,12 @@ class TestL3BranchRanker:
             replay_key="test_replay_456",
             policy_hash="policy_hash_789"
         )
-        
+
         assert len(ranked_branches) <= 10  # Default top_k
         assert all('ranking_score' in branch for branch in ranked_branches)
         assert all('confidence' in branch for branch in ranked_branches)
         assert all('ranking_position' in branch for branch in ranked_branches[:10])
-    
+
     def test_execution_order_with_dependencies(self, mock_model):
         """Test execution order calculation with dependencies."""
         branches = [
@@ -460,13 +460,13 @@ class TestL3BranchRanker:
             {"id": "branch2", "dependencies": ["branch1"]},
             {"id": "branch3", "dependencies": ["branch1", "branch2"]}
         ]
-        
+
         dag_context = {
             "resources": {},
             "history": {},
             "other_branches": []
         }
-        
+
         ordered_branches = mock_model.get_execution_order(
             branches=branches,
             dag_context=dag_context,
@@ -475,7 +475,7 @@ class TestL3BranchRanker:
             policy_hash="policy_hash_789",
             respect_dependencies=True
         )
-        
+
         assert len(ordered_branches) == 3
         # branch1 should come first (no dependencies)
         assert ordered_branches[0]['branch']['id'] == "branch1"
@@ -487,12 +487,12 @@ class TestL3BranchRanker:
 
 class TestL5RiskCalibrator:
     """Test L5 risk calibrator model."""
-    
+
     @pytest.fixture
     def mock_model(self, l5_risk_calibrator):
         """Create a mock L5 risk calibrator for testing."""
         calibrator = l5_risk_calibrator
-        
+
         # Mock the model
         calibrator.model = Mock()
         calibrator.model.predict_proba.return_value = np.array([0.1, 0.2, 0.3, 0.4])
@@ -503,13 +503,13 @@ class TestL5RiskCalibrator:
         calibrator.feature_importances = [0.2, 0.15, 0.1, 0.1, 0.25, 0.2]
         calibrator.class_names = ["Low", "Medium", "High", "Critical"]
         calibrator.is_loaded = True
-        
+
         return calibrator
-    
+
     def test_risk_calibration_prediction(self, mock_model):
         """Test risk level prediction."""
         from agentic_core.L1_cognition.ml_decision_support.models.base_model import ModelInput
-        
+
         features = {
             'policy_complexity_score': 0.7,
             'compliance_risk_level': 0.8,
@@ -518,21 +518,21 @@ class TestL5RiskCalibrator:
             'business_impact_score': 0.9,
             'stakeholder_criticality': 0.8
         }
-        
+
         model_input = mock_model.validate_input(features)
-        
+
         prediction = mock_model.predict(
             model_input=model_input,
             trace_id="test_trace_123",
             replay_key="test_replay_456",
             policy_hash="policy_hash_789"
         )
-        
+
         assert prediction.prediction == "Critical"
         assert prediction.confidence == 0.4  # Max probability
         assert 'probability_distribution' in prediction.model_metadata
         assert prediction.decision_mode.value in ["advisory", "escalated", "blocked"]
-    
+
     def test_policy_risk_calibration(self, mock_model):
         """Test policy risk calibration from context."""
         policy = {
@@ -540,13 +540,13 @@ class TestL5RiskCalibrator:
             "applicable_regulations": ["GDPR", "SOX"],
             "business_impact": {"amount": 1000000}
         }
-        
+
         context = {
             "regulations": {"GDPR": {}, "SOX": {}},
             "history": {},
             "environment": {}
         }
-        
+
         prediction = mock_model.calibrate_policy_risk(
             policy=policy,
             context=context,
@@ -554,23 +554,23 @@ class TestL5RiskCalibrator:
             replay_key="test_replay_456",
             policy_hash="policy_hash_789"
         )
-        
+
         assert prediction.prediction in ["Low", "Medium", "High", "Critical"]
         assert prediction.confidence >= 0.0
-    
+
     def test_risk_recommendations(self, mock_model):
         """Test risk recommendations generation."""
         policy = {
             "complexity_score": 0.8,
             "applicable_regulations": ["GDPR"]
         }
-        
+
         context = {
             "regulations": {"GDPR": {}},
             "history": {},
             "environment": {}
         }
-        
+
         recommendations = mock_model.get_risk_recommendations(
             policy=policy,
             context=context,
@@ -578,7 +578,7 @@ class TestL5RiskCalibrator:
             replay_key="test_replay_456",
             policy_hash="policy_hash_789"
         )
-        
+
         assert 'risk_level' in recommendations
         assert 'confidence' in recommendations
         assert 'recommendations' in recommendations
@@ -588,12 +588,12 @@ class TestL5RiskCalibrator:
 
 class TestL2HealerSelector:
     """Test L2 healer selector model."""
-    
+
     @pytest.fixture
     def mock_model(self, l2_healer_selector):
         """Create a mock L2 healer selector for testing."""
         selector = l2_healer_selector
-        
+
         # Mock the pipeline
         selector.pipeline = Mock()
         selector.pipeline.predict_proba.return_value = np.array([0.4, 0.3, 0.2, 0.05, 0.03, 0.02])
@@ -601,13 +601,13 @@ class TestL2HealerSelector:
         selector.feature_names = ['healer_compatibility_score', 'historical_success_rate',
                                'resource_availability', 'error_severity_score', 'healing_complexity']
         selector.is_loaded = True
-        
+
         return selector
-    
+
     def test_healer_selection_prediction(self, mock_model):
         """Test healer selection prediction."""
         from agentic_core.L1_cognition.ml_decision_support.models.base_model import ModelInput
-        
+
         features = {
             'healer_compatibility_score': 0.8,
             'historical_success_rate': 0.7,
@@ -615,21 +615,21 @@ class TestL2HealerSelector:
             'error_severity_score': 0.4,
             'healing_complexity': 0.3
         }
-        
+
         model_input = mock_model.validate_input(features)
-        
+
         prediction = mock_model.predict(
             model_input=model_input,
             trace_id="test_trace_123",
             replay_key="test_replay_456",
             policy_hash="policy_hash_789"
         )
-        
+
         assert prediction.prediction == "Retry"
         assert prediction.confidence == 0.4  # Max probability
         assert 'probability_distribution' in prediction.model_metadata
         assert prediction.decision_mode.value in ["advisory", "escalated", "blocked"]
-    
+
     def test_healer_selection_from_available(self, mock_model):
         """Test healer selection from available options."""
         error = {
@@ -637,20 +637,20 @@ class TestL2HealerSelector:
             "severity": "medium",
             "recoverable": True
         }
-        
+
         available_healers = [
             {"name": "RetryHealer", "type": "Retry"},
             {"name": "RollbackHealer", "type": "Rollback"},
             {"name": "AlternativeHealer", "type": "Alternative_Path"}
         ]
-        
+
         context = {
             "system_resources": {"cpu": 4, "memory": 2048},
             "system_state": {"stability": "stable"},
             "history": {},
             "healing_context": {}
         }
-        
+
         selection = mock_model.select_healer(
             error=error,
             available_healers=available_healers,
@@ -659,14 +659,14 @@ class TestL2HealerSelector:
             replay_key="test_replay_456",
             policy_hash="policy_hash_789"
         )
-        
+
         assert 'selected_healer' in selection
         assert 'healer_name' in selection
         assert 'confidence' in selection
         assert 'recommendations' in selection
         assert 'all_healer_scores' in selection
         assert len(selection['all_healer_scores']) == len(available_healers)
-    
+
     def test_healing_strategy_generation(self, mock_model):
         """Test comprehensive healing strategy generation."""
         error = {
@@ -675,7 +675,7 @@ class TestL2HealerSelector:
             "impact_scope": "service",
             "recoverable": True
         }
-        
+
         context = {
             "available_healers": [{"name": "RetryHealer", "type": "Retry"}],
             "system_resources": {},
@@ -683,7 +683,7 @@ class TestL2HealerSelector:
             "history": {},
             "healing_context": {}
         }
-        
+
         strategy = mock_model.get_healing_strategy(
             error=error,
             context=context,
@@ -691,7 +691,7 @@ class TestL2HealerSelector:
             replay_key="test_replay_456",
             policy_hash="policy_hash_789"
         )
-        
+
         assert 'error_analysis' in strategy
         assert 'healing_strategy' in strategy
         assert 'recommended_healer' in strategy
@@ -703,11 +703,11 @@ class TestL2HealerSelector:
 
 class TestEWMACacheClassifier:
     """Test EWMA cache classifier model."""
-    
+
     def test_cache_entry_update(self, ewma_cache_classifier):
         """Test cache entry update functionality."""
         classifier = ewma_cache_classifier
-        
+
         cache_id = "test_cache_123"
         access_event = {
             "type": "hit",
@@ -715,36 +715,36 @@ class TestEWMACacheClassifier:
             "semantic_similarity": 0.7,
             "resource_utilization": 0.6
         }
-        
+
         # Update cache entry
         classifier.update_cache_entry(
             cache_id=cache_id,
             access_event=access_event
         )
-        
+
         # Verify entry was created
         assert cache_id in classifier.cache_entries
         assert cache_id in classifier.access_history
         assert cache_id in classifier.ewma_scores
-        
+
         entry = classifier.cache_entries[cache_id]
         assert entry['access_count'] == 1
         assert entry['hit_count'] == 1
         assert entry['content_relevance'] == 0.8
-    
+
     def test_cache_classification(self, ewma_cache_classifier):
         """Test cache entry classification."""
         classifier = ewma_cache_classifier
-        
+
         cache_id = "test_cache_123"
-        
+
         # Add some access history
         for i in range(5):
             classifier.update_cache_entry(
                 cache_id=cache_id,
                 access_event={"type": "hit", "content_relevance": 0.9}
             )
-        
+
         # Classify the cache entry
         prediction = classifier.classify_cache_entry(
             cache_id=cache_id,
@@ -752,31 +752,31 @@ class TestEWMACacheClassifier:
             replay_key="test_replay_456",
             policy_hash="policy_hash_789"
         )
-        
+
         assert prediction.prediction in ["Hot", "Warm", "Cold", "Stale"]
         assert prediction.confidence >= 0.0
         assert prediction.decision_mode.value in ["advisory", "escalated", "blocked"]
-    
+
     def test_cache_recommendations(self, ewma_cache_classifier):
         """Test cache management recommendations."""
         classifier = ewma_cache_classifier
-        
+
         cache_id = "test_cache_123"
-        
+
         # Add access history to make it "Hot"
         for i in range(10):
             classifier.update_cache_entry(
                 cache_id=cache_id,
                 access_event={"type": "hit", "content_relevance": 0.9}
             )
-        
+
         recommendations = classifier.get_cache_recommendations(
             cache_id=cache_id,
             trace_id="test_trace_123",
             replay_key="test_replay_456",
             policy_hash="policy_hash_789"
         )
-        
+
         assert 'cache_id' in recommendations
         assert 'classification' in recommendations
         assert 'confidence' in recommendations
@@ -785,11 +785,11 @@ class TestEWMACacheClassifier:
         assert 'recommended_action' in recommendations
         assert 'priority' in recommendations
         assert isinstance(recommendations['recommendations'], list)
-    
+
     def test_ewma_score_calculation(self, ewma_cache_classifier):
         """Test EWMA score calculation."""
         classifier = ewma_cache_classifier
-        
+
         # Test feature vector
         feature_vector = np.array([
             0.8,  # access_frequency
@@ -803,16 +803,16 @@ class TestEWMACacheClassifier:
             0.8,  # user_preference
             0.7   # cache_efficiency
         ])
-        
+
         ewma_score = classifier._calculate_ewma_score(feature_vector)
-        
+
         assert 0.0 <= ewma_score <= 1.0
         assert isinstance(ewma_score, float)
-    
+
     def test_classification_by_ewma_score(self, ewma_cache_classifier):
         """Test classification based on EWMA score."""
         classifier = ewma_cache_classifier
-        
+
         # Test different score ranges
         test_cases = [
             (0.8, 0),  # Hot
@@ -820,17 +820,17 @@ class TestEWMACacheClassifier:
             (0.3, 2),  # Cold
             (0.1, 3)   # Stale
         ]
-        
+
         for score, expected_class in test_cases:
             actual_class = classifier._classify_by_ewma_score(score)
             assert actual_class == expected_class
-    
+
     def test_feature_extraction_from_entry(self, ewma_cache_classifier):
         """Test feature extraction from cache entry."""
         classifier = ewma_cache_classifier
-        
+
         cache_id = "test_cache_123"
-        
+
         # Create a cache entry with known characteristics
         classifier.cache_entries[cache_id] = {
             'created_at': datetime.now() - timedelta(days=1),
@@ -842,13 +842,13 @@ class TestEWMACacheClassifier:
             'semantic_similarity': 0.7,
             'resource_utilization': 0.6
         }
-        
+
         # Add access history
         for i in range(10):
             classifier.access_history[cache_id].append(datetime.now() - timedelta(hours=i))
-        
+
         features = classifier._extract_features_from_entry(cache_id)
-        
+
         assert 'access_frequency' in features
         assert 'recency_score' in features
         assert 'hit_ratio' in features
@@ -859,7 +859,7 @@ class TestEWMACacheClassifier:
         assert 'temporal_decay' in features
         assert 'user_preference' in features
         assert 'cache_efficiency' in features
-        
+
         # Verify feature ranges
         for key, value in features.items():
             if key == 'access_frequency':
@@ -870,31 +870,31 @@ class TestEWMACacheClassifier:
 
 class TestPhase2Integration:
     """Integration tests for Phase 2 components."""
-    
+
     def test_l3_l5_integration(self):
         """Test integration between L3 and L5 components."""
         # This would test how L3 branch ranking interacts with L5 risk calibration
         # For example, high-risk policies might affect branch selection
         pass
-    
+
     def test_l2_l3_integration(self):
         """Test integration between L2 and L3 components."""
         # This would test how healer selection affects DAG branch execution
         # For example, healing outcomes might influence branch priority
         pass
-    
+
     def test_cache_integration(self):
         """Test integration of cache classifier with other components."""
         # This would test how cache classification affects performance
         # and decision making across other layers
         pass
-    
+
     def test_determinism_across_phase2(self):
         """Test determinism across all Phase 2 components."""
         # This would ensure that all Phase 2 models produce consistent
         # results given the same inputs
         pass
-    
+
     def test_governance_compliance_phase2(self):
         """Test governance compliance for Phase 2 components."""
         # This would verify that all Phase 2 components respect

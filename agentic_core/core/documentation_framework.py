@@ -75,12 +75,12 @@ class DocumentationArtifact:
 
 class DocumentationGenerator(ABC):
     """Abstract base class for documentation generators."""
-    
+
     @abstractmethod
     def generate(self, source: Any, target_path: Path) -> DocumentationArtifact:
         """Generate documentation from source."""
         pass
-    
+
     @abstractmethod
     def validate_quality(self, artifact: DocumentationArtifact) -> bool:
         """Validate documentation quality."""
@@ -89,7 +89,7 @@ class DocumentationGenerator(ABC):
 
 class APIDocumentationGenerator(DocumentationGenerator):
     """Generates API documentation from Python source code."""
-    
+
     def __init__(self):
         """Initialize the API documentation generator."""
         self.quality_checklist = {
@@ -98,25 +98,25 @@ class APIDocumentationGenerator(DocumentationGenerator):
             DocumentationQuality.COMPREHENSIVE: ["has_edge_cases", "has_troubleshooting"],
             DocumentationQuality.EXHAUSTIVE: ["has_performance_notes", "has_migration_guide"]
         }
-    
+
     def generate(self, source: Path, target_path: Path) -> DocumentationArtifact:
         """Generate API documentation from Python source file."""
         if not source.exists():
             raise FileNotFoundError(f"Source file not found: {source}")
-        
+
         try:
             with open(source, 'r', encoding='utf-8') as f:
                 source_content = f.read()
-            
+
             tree = ast.parse(source_content)
-            
+
             # Extract classes and functions
             classes = self._extract_classes(tree)
             functions = self._extract_functions(tree)
-            
+
             # Generate documentation sections
             sections = []
-            
+
             # Overview section
             overview = DocumentationSection(
                 title="Overview",
@@ -124,17 +124,17 @@ class APIDocumentationGenerator(DocumentationGenerator):
                 quality_level=DocumentationQuality.STANDARD
             )
             sections.append(overview)
-            
+
             # Class documentation
             for cls in classes:
                 class_section = self._generate_class_documentation(cls)
                 sections.append(class_section)
-            
+
             # Function documentation
             for func in functions:
                 func_section = self._generate_function_documentation(func)
                 sections.append(func_section)
-            
+
             # Usage examples
             examples = DocumentationSection(
                 title="Usage Examples",
@@ -142,7 +142,7 @@ class APIDocumentationGenerator(DocumentationGenerator):
                 quality_level=DocumentationQuality.COMPREHENSIVE
             )
             sections.append(examples)
-            
+
             # Create artifact
             artifact = DocumentationArtifact(
                 title=f"API Documentation: {source.stem}",
@@ -152,17 +152,17 @@ class APIDocumentationGenerator(DocumentationGenerator):
                 quality_level=DocumentationQuality.COMPREHENSIVE,
                 file_path=target_path
             )
-            
+
             return artifact
-            
+
         except Exception as e:
             logger.error(f"Failed to generate API documentation for {source}: {e}")
             raise
-    
+
     def validate_quality(self, artifact: DocumentationArtifact) -> bool:
         """Validate API documentation quality."""
         quality_checks = self.quality_checklist.get(artifact.quality_level, [])
-        
+
         for section in artifact.sections:
             # Check for required content based on quality level
             if "has_examples" in quality_checks and "example" not in section.content.lower():
@@ -171,24 +171,24 @@ class APIDocumentationGenerator(DocumentationGenerator):
                 return False
             if "has_return_types" in quality_checks and "return" not in section.content.lower():
                 return False
-        
+
         return True
-    
+
     def _extract_classes(self, tree: ast.AST) -> List[ast.ClassDef]:
         """Extract class definitions from AST."""
         return [node for node in ast.walk(tree) if isinstance(node, ast.ClassDef)]
-    
+
     def _extract_functions(self, tree: ast.AST) -> List[ast.FunctionDef]:
         """Extract function definitions from AST."""
         return [node for node in ast.walk(tree) if isinstance(node, ast.FunctionDef)]
-    
+
     def _generate_overview(self, source: Path, classes: List[ast.ClassDef], functions: List[ast.FunctionDef]) -> str:
         """Generate overview section for API documentation."""
         overview = f"# {source.stem} API Documentation\n\n"
         overview += f"**File**: `{source.name}`\n"
         overview += f"**Classes**: {len(classes)}\n"
         overview += f"**Functions**: {len(functions)}\n\n"
-        
+
         if classes:
             overview += "## Classes\n\n"
             for cls in classes:
@@ -197,7 +197,7 @@ class APIDocumentationGenerator(DocumentationGenerator):
                     base_names = [base.id if isinstance(base, ast.Name) else str(base) for base in cls.bases]
                     overview += f" (inherits from {', '.join(base_names)})"
                 overview += "\n"
-        
+
         if functions:
             overview += "\n## Functions\n\n"
             for func in functions:
@@ -205,18 +205,18 @@ class APIDocumentationGenerator(DocumentationGenerator):
                 if func.returns:
                     overview += f" -> {ast.unparse(func.returns) if hasattr(ast, 'unparse') else 'returns'}"
                 overview += "\n"
-        
+
         return overview
-    
+
     def _generate_class_documentation(self, cls: ast.ClassDef) -> DocumentationSection:
         """Generate documentation for a class."""
         content = f"## Class: {cls.name}\n\n"
-        
+
         # Add docstring if available
         if cls.body and isinstance(cls.body[0], ast.Expr) and isinstance(cls.body[0].value, ast.Constant):
             docstring = cls.body[0].value.value
             content += f"**Description**: {docstring}\n\n"
-        
+
         # Add inheritance information
         if cls.bases:
             content += "**Inherits from**: "
@@ -227,84 +227,84 @@ class APIDocumentationGenerator(DocumentationGenerator):
                 else:
                     base_names.append(ast.unparse(base) if hasattr(ast, 'unparse') else str(base))
             content += ", ".join(base_names) + "\n\n"
-        
+
         # Add methods
         methods = [node for node in cls.body if isinstance(node, ast.FunctionDef)]
         if methods:
             content += "### Methods\n\n"
             for method in methods:
                 content += f"#### {method.name}\n"
-                
+
                 # Add parameters
                 args = []
                 for arg in method.args.args:
                     args.append(arg.arg)
                 if args:
                     content += f"**Parameters**: {', '.join(args)}\n"
-                
+
                 # Add return type
                 if method.returns:
                     return_type = ast.unparse(method.returns) if hasattr(ast, 'unparse') else str(method.returns)
                     content += f"**Returns**: {return_type}\n"
-                
+
                 # Add docstring if available
                 if method.body and isinstance(method.body[0], ast.Expr) and isinstance(method.body[0].value, ast.Constant):
                     docstring = method.body[0].value.value
                     content += f"**Description**: {docstring}\n"
-                
+
                 content += "\n"
-        
+
         return DocumentationSection(
             title=f"Class: {cls.name}",
             content=content,
             quality_level=DocumentationQuality.COMPREHENSIVE
         )
-    
+
     def _generate_function_documentation(self, func: ast.FunctionDef) -> DocumentationSection:
         """Generate documentation for a function."""
         content = f"## Function: {func.name}\n\n"
-        
+
         # Add parameters
         args = []
         for arg in func.args.args:
             args.append(arg.arg)
         if args:
             content += f"**Parameters**: {', '.join(args)}\n"
-        
+
         # Add return type
         if func.returns:
             return_type = ast.unparse(func.returns) if hasattr(ast, 'unparse') else str(func.returns)
             content += f"**Returns**: {return_type}\n"
-        
+
         # Add docstring if available
         if func.body and isinstance(func.body[0], ast.Expr) and isinstance(func.body[0].value, ast.Constant):
             docstring = func.body[0].value.value
             content += f"**Description**: {docstring}\n\n"
-        
+
         return DocumentationSection(
             title=f"Function: {func.name}",
             content=content,
             quality_level=DocumentationQuality.STANDARD
         )
-    
+
     def _generate_usage_examples(self, classes: List[ast.ClassDef], functions: List[ast.FunctionDef]) -> str:
         """Generate usage examples for classes and functions."""
         examples = "## Usage Examples\n\n"
-        
+
         # Class examples
         if classes:
             examples += "### Class Usage\n\n"
             for cls in classes[:3]:  # Limit to first 3 classes
                 examples += f"```python\n# Using {cls.name}\n"
                 examples += f"{cls.name.lower()} = {cls.name}()\n"
-                
+
                 # Add method calls
                 methods = [node for node in cls.body if isinstance(node, ast.FunctionDef) and not node.name.startswith('_')]
                 for method in methods[:2]:  # Limit to first 2 public methods
                     examples += f"{cls.name.lower()}.{method.name}()\n"
-                
+
                 examples += "```\n\n"
-        
+
         # Function examples
         if functions:
             examples += "### Function Usage\n\n"
@@ -316,28 +316,28 @@ class APIDocumentationGenerator(DocumentationGenerator):
                 else:
                     examples += f"result = {func.name}()\n"
                 examples += "```\n\n"
-        
+
         return examples
 
 
 class ArchitecturalDocumentationGenerator(DocumentationGenerator):
     """Generates architectural documentation from system analysis."""
-    
+
     def __init__(self):
         """Initialize the architectural documentation generator."""
         self.layer_mapping = {
             "L0": "Routing and Orchestration",
-            "L1": "Reasoning and Decision Making", 
+            "L1": "Reasoning and Decision Making",
             "L2": "Execution and Tool Use",
             "L3": "Orchestration and Workflow",
             "L4": "State Management",
             "L5": "Safety and Governance"
         }
-    
+
     def generate(self, source: Path, target_path: Path) -> DocumentationArtifact:
         """Generate architectural documentation from codebase analysis."""
         sections = []
-        
+
         # System overview
         overview = DocumentationSection(
             title="System Architecture Overview",
@@ -345,11 +345,11 @@ class ArchitecturalDocumentationGenerator(DocumentationGenerator):
             quality_level=DocumentationQuality.COMPREHENSIVE
         )
         sections.append(overview)
-        
+
         # Layer documentation
         layer_docs = self._generate_layer_documentation(source)
         sections.extend(layer_docs)
-        
+
         # Component interactions
         interactions = DocumentationSection(
             title="Component Interactions",
@@ -357,7 +357,7 @@ class ArchitecturalDocumentationGenerator(DocumentationGenerator):
             quality_level=DocumentationQuality.COMPREHENSIVE
         )
         sections.append(interactions)
-        
+
         # Data flow
         data_flow = DocumentationSection(
             title="Data Flow and State Management",
@@ -365,7 +365,7 @@ class ArchitecturalDocumentationGenerator(DocumentationGenerator):
             quality_level=DocumentationQuality.STANDARD
         )
         sections.append(data_flow)
-        
+
         return DocumentationArtifact(
             title="Agentic Workflow Architecture",
             doc_type=DocumentationType.ARCHITECTURAL_OVERVIEW,
@@ -374,19 +374,19 @@ class ArchitecturalDocumentationGenerator(DocumentationGenerator):
             quality_level=DocumentationQuality.COMPREHENSIVE,
             file_path=target_path
         )
-    
+
     def validate_quality(self, artifact: DocumentationArtifact) -> bool:
         """Validate architectural documentation quality."""
         required_sections = ["overview", "layer", "interaction", "data_flow"]
-        
+
         section_titles = [section.title.lower() for section in artifact.sections]
-        
+
         for required in required_sections:
             if not any(required in title for title in section_titles):
                 return False
-        
+
         return True
-    
+
     def _generate_system_overview(self, source: Path) -> str:
         """Generate system overview documentation."""
         overview = """# Agentic Workflow System Architecture
@@ -434,14 +434,14 @@ The Agentic Workflow system is a multi-layered architecture designed for autonom
 - **PyTest**: Testing framework with comprehensive validation
 """
         return overview
-    
+
     def _generate_layer_documentation(self, source: Path) -> List[DocumentationSection]:
         """Generate documentation for each architectural layer."""
         sections = []
-        
+
         for layer_code, layer_desc in self.layer_mapping.items():
             content = f"## {layer_code}: {layer_desc}\n\n"
-            
+
             if layer_code == "L0":
                 content += """**Responsibilities**:
 - Request routing and orchestration
@@ -547,15 +547,15 @@ The Agentic Workflow system is a multi-layered architecture designed for autonom
 - Graceful degradation
 - Emergency shutdown procedures
 """
-            
+
             sections.append(DocumentationSection(
                 title=f"Layer {layer_code}",
                 content=content,
                 quality_level=DocumentationQuality.COMPREHENSIVE
             ))
-        
+
         return sections
-    
+
     def _generate_interaction_documentation(self, source: Path) -> str:
         """Generate component interaction documentation."""
         return """# Component Interactions
@@ -697,11 +697,11 @@ The Agentic Workflow system is a multi-layered architecture designed for autonom
 
 class KnowledgeTransferGenerator(DocumentationGenerator):
     """Generates knowledge transfer documentation and materials."""
-    
+
     def generate(self, source: Any, target_path: Path) -> DocumentationArtifact:
         """Generate knowledge transfer documentation."""
         sections = []
-        
+
         # Onboarding guide
         onboarding = DocumentationSection(
             title="Developer Onboarding Guide",
@@ -709,7 +709,7 @@ class KnowledgeTransferGenerator(DocumentationGenerator):
             quality_level=DocumentationQuality.COMPREHENSIVE
         )
         sections.append(onboarding)
-        
+
         # Architecture deep dive
         arch_dive = DocumentationSection(
             title="Architecture Deep Dive",
@@ -717,7 +717,7 @@ class KnowledgeTransferGenerator(DocumentationGenerator):
             quality_level=DocumentationQuality.COMPREHENSIVE
         )
         sections.append(arch_dive)
-        
+
         # Development workflows
         workflows = DocumentationSection(
             title="Development Workflows",
@@ -725,7 +725,7 @@ class KnowledgeTransferGenerator(DocumentationGenerator):
             quality_level=DocumentationQuality.STANDARD
         )
         sections.append(workflows)
-        
+
         # Troubleshooting guide
         troubleshooting = DocumentationSection(
             title="Troubleshooting Guide",
@@ -733,7 +733,7 @@ class KnowledgeTransferGenerator(DocumentationGenerator):
             quality_level=DocumentationQuality.COMPREHENSIVE
         )
         sections.append(troubleshooting)
-        
+
         return DocumentationArtifact(
             title="Agentic Workflow Knowledge Transfer",
             doc_type=DocumentationType.KNOWLEDGE_TRANSFER,
@@ -742,19 +742,19 @@ class KnowledgeTransferGenerator(DocumentationGenerator):
             quality_level=DocumentationQuality.COMPREHENSIVE,
             file_path=target_path
         )
-    
+
     def validate_quality(self, artifact: DocumentationArtifact) -> bool:
         """Validate knowledge transfer documentation quality."""
         required_sections = ["onboarding", "architecture", "workflows", "troubleshooting"]
-        
+
         section_titles = [section.title.lower() for section in artifact.sections]
-        
+
         for required in required_sections:
             if not any(required in title for title in section_titles):
                 return False
-        
+
         return True
-    
+
     def _generate_onboarding_guide(self) -> str:
         """Generate developer onboarding guide."""
         return """# Developer Onboarding Guide
@@ -788,7 +788,9 @@ cd agentic-workflow
 
 # Set up virtual environment
 python -m venv venv
-source venv/bin/activate  # On Windows: venv\Scripts\activate
+source venv/bin/activate  # Linux/Mac
+# or
+# Windows: venv\\Scripts\\activate
 
 # Install dependencies
 pip install -r requirements.txt
@@ -1510,7 +1512,9 @@ ImportError: No module named 'agentic_core'
 # Activate virtual environment
 source venv/bin/activate  # Linux/Mac
 # or
-venv\Scripts\activate     # Windows
+source venv/bin/activate  # Linux/Mac
+# or
+# Windows: venv\\Scripts\\activate
 
 # Install dependencies
 pip install -r requirements.txt
@@ -1913,7 +1917,7 @@ This troubleshooting guide should help you identify and resolve common issues in
 
 class DocumentationManager:
     """Manages documentation generation and maintenance."""
-    
+
     def __init__(self):
         """Initialize the documentation manager."""
         self.generators = {
@@ -1922,60 +1926,60 @@ class DocumentationManager:
             DocumentationType.KNOWLEDGE_TRANSFER: KnowledgeTransferGenerator(),
         }
         self.quality_validator = DocumentationQualityValidator()
-    
+
     def generate_documentation(self, doc_type: DocumentationType, source: Any, target_path: Path) -> DocumentationArtifact:
         """Generate documentation of specified type."""
         generator = self.generators.get(doc_type)
         if not generator:
             raise ValueError(f"No generator available for documentation type: {doc_type}")
-        
+
         artifact = generator.generate(source, target_path)
-        
+
         # Validate quality
         if not generator.validate_quality(artifact):
             logger.warning(f"Documentation quality validation failed for {doc_type}")
-        
+
         # Write to file
         self._write_documentation(artifact, target_path)
-        
+
         return artifact
-    
+
     def _write_documentation(self, artifact: DocumentationArtifact, target_path: Path) -> None:
         """Write documentation artifact to file."""
         target_path.parent.mkdir(parents=True, exist_ok=True)
-        
+
         content = self._format_documentation(artifact)
-        
+
         with open(target_path, 'w', encoding='utf-8') as f:
             f.write(content)
-        
+
         logger.info(f"Documentation written to: {target_path}")
-    
+
     def _format_documentation(self, artifact: DocumentationArtifact) -> str:
         """Format documentation artifact as markdown."""
         content = f"# {artifact.title}\n\n"
-        
+
         if artifact.target_audience:
             content += f"**Target Audience**: {', '.join(artifact.target_audience)}\n\n"
-        
+
         if artifact.prerequisites:
             content += f"**Prerequisites**: {', '.join(artifact.prerequisites)}\n\n"
-        
+
         for section in artifact.sections:
             content += f"{section.content}\n\n"
-        
+
         # Add metadata
         content += "---\n"
         content += f"**Generated**: {datetime.now().isoformat()}\n"
         content += f"**Type**: {artifact.doc_type.value}\n"
         content += f"**Quality**: {artifact.quality_level.value}\n"
-        
+
         return content
 
 
 class DocumentationQualityValidator:
     """Validates documentation quality and completeness."""
-    
+
     def __init__(self):
         """Initialize the quality validator."""
         self.quality_criteria = {
@@ -2000,41 +2004,41 @@ class DocumentationQualityValidator:
                 "min_length": 2000
             }
         }
-    
+
     def validate_quality(self, artifact: DocumentationArtifact) -> bool:
         """Validate documentation meets quality criteria."""
         criteria = self.quality_criteria.get(artifact.quality_level, {})
-        
+
         # Check basic requirements
         if not artifact.title:
             return False
-        
+
         # Check content length
         total_content = "".join(section.content for section in artifact.sections)
         if len(total_content) < criteria.get("min_length", 0):
             return False
-        
+
         # Check specific requirements
         content_lower = total_content.lower()
-        
+
         if criteria.get("has_examples") and "example" not in content_lower:
             return False
-        
+
         if criteria.get("has_usage") and "usage" not in content_lower:
             return False
-        
+
         if criteria.get("has_troubleshooting") and "troubleshoot" not in content_lower:
             return False
-        
+
         if criteria.get("has_best_practices") and "best practice" not in content_lower:
             return False
-        
+
         if criteria.get("has_performance_notes") and "performance" not in content_lower:
             return False
-        
+
         if criteria.get("has_migration_guide") and "migration" not in content_lower:
             return False
-        
+
         return True
 
 

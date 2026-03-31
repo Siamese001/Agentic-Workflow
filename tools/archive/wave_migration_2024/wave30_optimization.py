@@ -13,7 +13,7 @@ from typing import Dict, List, Tuple
 
 class Wave30Optimization:
     """Wave 30: Optimize test collection and execution."""
-    
+
     def __init__(self, repo_root: pathlib.Path):
         self.repo_root = repo_root
         self.tests_dir = repo_root / "tests"
@@ -25,14 +25,14 @@ class Wave30Optimization:
             'failed_files': 0
         }
         self.failed_files: List[Tuple[str, str]] = []
-    
+
     def process_files(self) -> Dict:
         """Process files with Wave 30 optimization."""
         # Only process files with syntax errors
         test_files = []
         for pattern in ["test_*.py", "*/test_*.py"]:
             test_files.extend(self.tests_dir.rglob(pattern))
-        
+
         # Filter out archives and already valid files
         active_test_files = []
         for test_file in test_files:
@@ -45,16 +45,16 @@ class Wave30Optimization:
                     active_test_files.append(test_file)
                 except UnicodeDecodeError:
                     continue
-        
+
         print(f"Wave 30: Processing {len(active_test_files)} files with syntax errors...")
-        
+
         for test_file in active_test_files:
             self.stats['total_files'] += 1
             if self.process_file(test_file):
                 self.stats['files_processed'] += 1
-        
+
         return self.stats
-    
+
     def process_file(self, file_path: pathlib.Path) -> bool:
         """Process a single file with optimization."""
         try:
@@ -62,10 +62,10 @@ class Wave30Optimization:
         except Exception as e:
             self.failed_files.append((str(file_path), f"Read error: {e}"))
             return False
-        
+
         # Apply optimization fixes
         optimized_content = self._optimize_content(original_content)
-        
+
         # Validate the fix
         try:
             ast.parse(optimized_content)
@@ -83,20 +83,20 @@ class Wave30Optimization:
             except SyntaxError as e2:
                 self.failed_files.append((str(file_path), f"Optimization failed: {e2}"))
                 return False
-    
+
     def _optimize_content(self, content: str) -> str:
         """Optimize content for better performance."""
         lines = content.splitlines()
         optimized_lines = []
-        
+
         for line in lines:
             stripped = line.strip()
-            
+
             # Skip empty lines
             if not stripped:
                 optimized_lines.append(line)
                 continue
-            
+
             # Apply optimizations
             optimized_line = self._apply_optimization(line, stripped)
             if optimized_line != line:
@@ -104,61 +104,61 @@ class Wave30Optimization:
                 optimized_lines.append(optimized_line)
             else:
                 optimized_lines.append(line)
-        
+
         return '\n'.join(optimized_lines)
-    
+
     def _apply_optimization(self, line: str, stripped: str) -> str:
         """Apply optimization to a line."""
         # Optimization 1: Remove problematic import statements
-        if (stripped.startswith(('from ', 'import ')) and 
+        if (stripped.startswith(('from ', 'import ')) and
             any(prefix in stripped for prefix in ['agentic_core', 'apps_', 'system_learning'])):
             return f"# {stripped}  # Optimized out"
-        
+
         # Optimization 2: Remove orphaned content
         if (not line.startswith(' ') and not line.startswith('\t') and
             (re.match(r'^_emit_[a-zA-Z_][a-zA-Z0-9_]*,?\s*$', stripped) or
              re.match(r'^emit_[a-zA-Z_][a-zA-Z0-9_]*,?\s*$', stripped) or
              re.match(r'^[A-Z_][A-Z0-9_]*,?\s*$', stripped))):
             return f"# {stripped}  # Optimized out"
-        
+
         # Optimization 3: Remove unmatched parentheses
         if re.match(r'^\s*\)\s*$', line):
             return ""
-        
+
         # Optimization 4: Remove legacy comments
         if re.match(r'^\s*#\s*#\s*MOVED:.*$', line):
             return ""
-        
+
         if stripped.startswith('# REMOVED:'):
             return ""
-        
+
         # Optimization 5: Complete incomplete blocks
         if re.match(r'^(def|class|if|elif|else|for|while|try|except|finally|with)\b.*$', stripped) and ':' not in stripped:
             return stripped + ': pass'
-        
+
         return line
-    
+
     def _aggressive_optimization(self, content: str) -> str:
         """Apply aggressive optimization."""
         lines = content.splitlines()
         optimized_lines = []
-        
+
         for line in lines:
             stripped = line.strip()
-            
+
             # Skip empty lines
             if not stripped:
                 optimized_lines.append(line)
                 continue
-            
+
             # Aggressively optimize all problematic lines
             if self._is_problematic_for_optimization(line, stripped):
                 continue  # Skip problematic lines
-            
+
             optimized_lines.append(line)
-        
+
         return '\n'.join(optimized_lines)
-    
+
     def _is_problematic_for_optimization(self, line: str, stripped: str) -> bool:
         """Check if line is problematic for optimization."""
         return (re.match(r'^\s*#\s*#\s*MOVED:.*$', line) or
@@ -168,7 +168,7 @@ class Wave30Optimization:
                  (re.match(r'^_emit_[a-zA-Z_][a-zA-Z0-9_]*,?\s*$', stripped) or
                   re.match(r'^emit_[a-zA-Z_][a-zA-Z0-9_]*,?\s*$', stripped) or
                   re.match(r'^[A-Z_][A-Z0-9_]*,?\s*$', stripped))))
-    
+
     def print_summary(self):
         """Print wave summary."""
         print("\n" + "="*60)
@@ -179,28 +179,28 @@ class Wave30Optimization:
         print(f"Optimizations applied: {self.stats['optimizations']}")
         print(f"Syntax errors fixed: {self.stats['syntax_errors_fixed']}")
         print(f"Failed files: {len(self.failed_files)}")
-        
+
         if self.failed_files:
             print(f"\nFailed files (first 3):")
             for file_path, error in self.failed_files[:3]:
                 print(f"  {file_path}: {error}")
             if len(self.failed_files) > 3:
                 print(f"  ... and {len(self.failed_files) - 3} more")
-        
+
         print("="*60)
 
 
 def main():
     """Run Wave 30 optimization."""
     repo_root = pathlib.Path(__file__).parent.parent
-    
+
     print("🌊 WAVE 30: OPTIMIZATION")
     print(f"Repository: {repo_root}")
-    
+
     optimizer = Wave30Optimization(repo_root)
     stats = optimizer.process_files()
     optimizer.print_summary()
-    
+
     return stats['syntax_errors_fixed'] > 0
 
 

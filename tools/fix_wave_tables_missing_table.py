@@ -12,7 +12,7 @@ import re
 def has_wave_table(content: str) -> bool:
     """Check if content has a wave table after ## Wave Structure."""
     lines = content.split("\n")
-    
+
     for i, line in enumerate(lines):
         if line.startswith("## Wave Structure"):
             # Look for table in next 10 lines
@@ -129,7 +129,7 @@ def main():
 
     repo_root = Path(__file__).parent.parent
     plans_to_fix = find_plans_needing_table(repo_root)
-    
+
     print(f"Found {len(plans_to_fix)} plans with ## Wave Structure but no table")
 
     if not plans_to_fix:

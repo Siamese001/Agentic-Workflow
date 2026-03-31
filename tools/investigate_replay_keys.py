@@ -28,19 +28,19 @@ disconnected_details = []
 
 for replay_key in replay_keys[:5]:  # Check first 5
     dst_id = replay_key['dst_id']
-    
+
     # Check for connected edges
     cursor.execute("""
         SELECT relation_type, COUNT(*) as count
-        FROM edges 
+        FROM edges
         WHERE (src_id = ? OR dst_id = ?)
         AND relation_type IN ('links_to_execution_trace', 'mutation_signature')
         GROUP BY relation_type
     """, (dst_id, dst_id))
-    
+
     connected_edges = cursor.fetchall()
     print(f"Replay key {replay_key['id']} -> dst_id {dst_id}: {connected_edges}")
-    
+
     if connected_edges:
         connected_count += 1
     else:
@@ -54,13 +54,13 @@ if disconnected_details:
     sample_dst = disconnected_details[0]['dst_id']
     cursor.execute("""
         SELECT relation_type, COUNT(*) as count
-        FROM edges 
+        FROM edges
         WHERE (src_id = ? OR dst_id = ?)
         GROUP BY relation_type
         ORDER BY count DESC
         LIMIT 10
     """, (sample_dst, sample_dst))
-    
+
     all_edges = cursor.fetchall()
     print(f"Sample disconnected replay key edges: {[dict(row) for row in all_edges]}")
 

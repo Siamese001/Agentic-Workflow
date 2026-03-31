@@ -424,11 +424,11 @@ class RfpOrchestrator:
         """
         if not self.qwen_enabled or self._qwen_gateway is None:
             return {"success": False, "error": "qwen_disabled", "content": None}
-        
+
         # Validate inputs
         if not rfp_details or not isinstance(rfp_details, dict):
             return {"success": False, "error": "invalid_rfp_details", "content": None}
-        
+
         if not proposal_type or not proposal_type.strip():
             return {"success": False, "error": "invalid_proposal_type", "content": None}
 

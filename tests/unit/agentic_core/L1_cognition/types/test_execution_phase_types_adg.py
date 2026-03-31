@@ -14,4 +14,3 @@ class TestExecutionPhase:
 
     """Test is_dataclass runtime behavior."""
     """Test creates_with_defaults runtime behavior."""
-

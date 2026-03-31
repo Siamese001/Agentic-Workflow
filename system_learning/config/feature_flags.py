@@ -13,18 +13,18 @@ from typing import Dict, Any
 @dataclass(frozen=True)
 class FeatureFlagConfig:
     """Configuration for feature flags."""
-    
+
     # Phase 1A: ADG Foundation
     enable_adg_rca_integration: bool = True
     enable_adg_hotspots: bool = True
     enable_adg_drift_detection: bool = True
-    
+
     # Phase 1B: Safety & Governance
     enable_circuit_breaker_tracking: bool = True
     enable_template_drift_detection: bool = True
     enable_adg_confidence_tiers: bool = True
     enable_safety_audit_emission: bool = True
-    
+
     # Phase 2: Execution & Orchestration
     enable_injection_monitoring: bool = True
     enable_healing_tier_tracking: bool = True
@@ -32,40 +32,40 @@ class FeatureFlagConfig:
     enable_tier_dispatch_optimization: bool = True
     enable_execution_trace_enhancement: bool = True
     enable_orchestration_signal_emission: bool = True
-    
+
     # Phase 3: Resource & Memory Integration
     enable_resource_prediction_tracking: bool = True
     enable_healing_memory_quality: bool = True
     enable_phase_outcome_intake: bool = True
     enable_repair_route_serialization: bool = True
-    
+
     # Phase 4: Cross-Domain & Infrastructure
     enable_cache_coherence_violations: bool = True
     enable_infrastructure_drift_detection: bool = True
     enable_cross_domain_healing_events: bool = True
     enable_cross_domain_pattern_analysis: bool = True
-    
+
     # Phase 5: Advanced Integration
     enable_otel_span_collection: bool = True
     enable_otel_telemetry_store: bool = True
     enable_injection_context_tracking: bool = True
     enable_signal_spike_detection: bool = True
-    
+
     # Phase 6: Final Integration
     enable_end_to_end_validation: bool = True
     enable_performance_monitoring: bool = True
     enable_graceful_degradation: bool = True
-    
+
     @classmethod
     def from_env(cls) -> "FeatureFlagConfig":
         """Create configuration from environment variables.
-        
+
         Returns:
             FeatureFlagConfig instance with env overrides
         """
         # Default configuration
         config = cls()
-        
+
         # Environment variable overrides
         env_overrides = {
             "SL_ENABLE_ADG_RCA_INTEGRATION": "enable_adg_rca_integration",
@@ -97,19 +97,19 @@ class FeatureFlagConfig:
             "SL_ENABLE_PERFORMANCE_MONITORING": "enable_performance_monitoring",
             "SL_ENABLE_GRACEFUL_DEGRADATION": "enable_graceful_degradation",
         }
-        
+
         # Apply environment overrides
         config_dict = {}
         for env_var, attr_name in env_overrides.items():
             env_value = os.getenv(env_var)
             if env_value is not None:
                 config_dict[attr_name] = env_value.lower() in ("true", "1", "yes", "on")
-        
+
         return config(**config_dict) if config_dict else config
-    
+
     def to_dict(self) -> Dict[str, Any]:
         """Convert configuration to dictionary.
-        
+
         Returns:
             Dictionary representation of feature flags
         """
@@ -165,7 +165,7 @@ _feature_config: FeatureFlagConfig | None = None
 
 def get_feature_flags() -> FeatureFlagConfig:
     """Get the global feature flag configuration.
-    
+
     Returns:
         FeatureFlagConfig instance
     """
@@ -177,10 +177,10 @@ def get_feature_flags() -> FeatureFlagConfig:
 
 def is_feature_enabled(feature_name: str) -> bool:
     """Check if a specific feature is enabled.
-    
+
     Args:
         feature_name: Name of the feature to check
-        
+
     Returns:
         True if feature is enabled
     """

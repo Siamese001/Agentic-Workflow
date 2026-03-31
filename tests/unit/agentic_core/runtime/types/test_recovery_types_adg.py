@@ -13,4 +13,3 @@ class TestRecoveryStrategy:
 
     """Test creates runtime behavior."""
     """Test creates_with_attempts runtime behavior."""
-

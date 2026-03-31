@@ -204,7 +204,7 @@ class LearningSignalEnricher:
             raise ValueError(f"Score must be non-negative, got {score}")
         if not evaluation_type or not evaluation_type.strip():
             raise ValueError("Evaluation type cannot be empty")
-            
+
         _emit_updates_meta_learning_state("p4", "learning_signal_enrichment", evaluation_type)
 
         if timestamp_utc is None:

@@ -39,17 +39,17 @@ class ValidationResult:
 
 class InputSanitizer:
     """Input sanitizer."""
-    
+
     @staticmethod
     def sanitize_string(value: str) -> str:
         """Sanitize string input."""
         return value.strip()
-    
+
     @staticmethod
     def sanitize_path(value: str) -> str:
         """Sanitize path input."""
         return value.strip().replace("..", "")
-    
+
     @staticmethod
     def sanitize_identifier(value: str) -> str:
         """Sanitize identifier."""
@@ -58,28 +58,28 @@ class InputSanitizer:
 
 class InputValidator:
     """Input validator."""
-    
+
     @staticmethod
     def validate_email(value: str) -> ValidationResult:
         """Validate email."""
         if "@" in value and "." in value:
             return ValidationResult(True, [], value)
         return ValidationResult(False, ["Invalid email format"])
-    
+
     @staticmethod
     def validate_url(value: str) -> ValidationResult:
         """Validate URL."""
         if value.startswith(("http://", "https://")):
             return ValidationResult(True, [], value)
         return ValidationResult(False, ["Invalid URL format"])
-    
+
     @staticmethod
     def validate_length(value: str, min_len: int = 1, max_len: int = 1000) -> ValidationResult:
         """Validate length."""
         if min_len <= len(value) <= max_len:
             return ValidationResult(True, [], value)
         return ValidationResult(False, [f"Length must be between {min_len} and {max_len}"])
-    
+
     @staticmethod
     def validate_not_empty(value: str) -> ValidationResult:
         """Validate not empty."""
@@ -90,22 +90,22 @@ class InputValidator:
 
 class SecureTokenGenerator:
     """Secure token generator."""
-    
+
     @staticmethod
     def generate_token(length: int = 32) -> str:
         """Generate secure token."""
         return secrets.token_hex(length)
-    
+
     @staticmethod
     def generate_api_key(prefix: str = "ak") -> str:
         """Generate API key."""
         return f"{prefix}_{secrets.token_urlsafe(32)}"
-    
+
     @staticmethod
     def hash_value(value: str) -> str:
         """Hash value."""
         return hashlib.sha256(value.encode()).hexdigest()
-    
+
     @staticmethod
     def verify_hash(value: str, hash_value: str) -> bool:
         """Verify hash."""

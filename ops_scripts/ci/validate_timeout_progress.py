@@ -48,12 +48,12 @@ def validate_timeout_compliance(file_path: Path) -> list[str]:
         try:
             bridge = ADGQueryBridge()
             subprocess_calls = bridge.subprocess_calls_without_timeout()
-            
+
             # Filter calls to those in the current file
             current_file_rel = str(file_path.relative_to(Path.cwd()))
-            file_calls = [call for call in subprocess_calls 
+            file_calls = [call for call in subprocess_calls
                          if call.file_path == current_file_rel or call.file_path.endswith(current_file_rel)]
-            
+
             for call in file_calls:
                 # Check if timeout is actually present by reading the specific line
                 if call.line_number:
@@ -67,7 +67,7 @@ def validate_timeout_compliance(file_path: Path) -> list[str]:
                         violations.append(f"{file_path}:{call.line_number}: subprocess call without timeout parameter")
                 else:
                     violations.append(f"{file_path}: subprocess call without timeout parameter")
-                    
+
         except Exception as e:
             warnings.warn(f"ADG query failed, falling back to regex: {e}")
             _fallback_regex_subprocess_detection(file_path, content, violations)

@@ -33,5 +33,3 @@ class TestHealerErrorContract:
 """Test is_positive_int runtime behavior."""
 
 """Test is_positive_int runtime behavior."""
-
-

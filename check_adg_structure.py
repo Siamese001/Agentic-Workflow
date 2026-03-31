@@ -18,7 +18,7 @@ if 'nodes' in tables:
     print('\nTest-related nodes in ADG:')
     for node in test_nodes:
         print(f'  {node[0]}')
-    
+
     cursor.execute('SELECT COUNT(*) FROM nodes WHERE adg_name LIKE "%tests%" OR adg_name LIKE "%test%"')
     test_count = cursor.fetchone()[0]
     print(f'\nTotal test nodes: {test_count}')

@@ -10,9 +10,9 @@ from pathlib import Path
 
 def create_test_scenarios():
     """Create test scenarios for sequential thinking analysis."""
-    
+
     repo_root = Path(__file__).parent
-    
+
     # Scenario 1: ADG Optimization Analysis
     adg_scenario = {
         "title": "ADG Performance Optimization Strategy",
@@ -33,7 +33,7 @@ def create_test_scenarios():
         },
         "question": "How can we optimize the ADG (Application Dependency Graph) system for better performance while maintaining accuracy and governance capabilities?"
     }
-    
+
     # Scenario 2: Test Strategy Enhancement
     test_scenario = {
         "title": "Multi-Layer Testing Strategy",
@@ -55,7 +55,7 @@ def create_test_scenarios():
         },
         "question": "What comprehensive testing strategy should we implement for this multi-layered agentic system to ensure reliability, performance, and compliance?"
     }
-    
+
     # Scenario 3: Memory System Integration
     memory_scenario = {
         "title": "ADG-Memory Integration Architecture",
@@ -76,12 +76,12 @@ def create_test_scenarios():
         },
         "question": "How should we architect the integration between ADG static analysis, runtime memory, and execution tracing to create a cohesive system understanding?"
     }
-    
+
     return [adg_scenario, test_scenario, memory_scenario]
 
 def create_sequential_thinking_prompt(scenario):
     """Create a structured prompt for sequential thinking analysis."""
-    
+
     prompt = f"""
 # Sequential Thinking Analysis: {scenario['title']}
 
@@ -134,42 +134,42 @@ For each thought, provide:
 
 Please analyze this systematically using the sequential thinking approach.
 """
-    
+
     return prompt
 
 def main():
     """Main function to run integration tests."""
     print("🧠 Sequential Thinking Integration Test for Agentic-Workflow")
     print("=" * 70)
-    
+
     scenarios = create_test_scenarios()
-    
+
     print(f"📋 Created {len(scenarios)} test scenarios for sequential thinking analysis")
-    
+
     for i, scenario in enumerate(scenarios, 1):
         print(f"\n--- Scenario {i}: {scenario['title']} ---")
         prompt = create_sequential_thinking_prompt(scenario)
-        
+
         # Save prompt to file for manual testing
         prompt_file = Path(__file__).parent / f"sequential_thinking_scenario_{i}.md"
         with open(prompt_file, 'w') as f:
             f.write(prompt)
-        
+
         print(f"✅ Saved scenario prompt to: {prompt_file}")
         print(f"   Problem type: {scenario['context']['problem_type']}")
         print(f"   Key components: {list(scenario['context'].keys())}")
-    
+
     print(f"\n🎯 Integration Test Summary:")
     print(f"   Scenarios created: {len(scenarios)}")
     print(f"   MCP server: Configured and ready")
     print(f"   Test files: Saved for manual verification")
-    
+
     print(f"\n📝 Manual Testing Instructions:")
     print(f"1. Restart Windsurf to load MCP configuration")
     print(f"2. Use the sequential_thinking tool with each scenario")
     print(f"3. Verify structured thinking process with 6+ thoughts")
     print(f"4. Check for logical progression and problem decomposition")
-    
+
     # Create a simple test for immediate verification
     print(f"\n🔬 Creating immediate verification test...")
     simple_test = {
@@ -183,14 +183,14 @@ def main():
         "branchId": None,
         "needsMoreThoughts": True
     }
-    
+
     test_file = Path(__file__).parent / "sequential_thinking_test_input.json"
     with open(test_file, 'w') as f:
         json.dump(simple_test, f, indent=2)
-    
+
     print(f"✅ Created test input file: {test_file}")
     print(f"   Use this with the sequential_thinking tool for immediate testing")
-    
+
     return 0
 
 if __name__ == "__main__":

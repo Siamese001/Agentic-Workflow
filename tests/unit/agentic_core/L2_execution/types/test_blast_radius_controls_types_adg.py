@@ -12,4 +12,3 @@ class TestBlastRadiusExceeded:
 
     """Test is_dataclass runtime behavior."""
     """Test is_frozen runtime behavior."""
-

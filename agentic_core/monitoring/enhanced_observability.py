@@ -15,7 +15,7 @@ FEATURES:
 USAGE:
     monitor = EnhancedObservability()
     monitor.start_monitoring()
-    
+
     health = monitor.get_system_health()
     alerts = monitor.get_active_alerts()
 """
@@ -62,7 +62,7 @@ class HealthStatus(Enum):
 @dataclass
 class SystemMetric:
     """System metric data point."""
-    
+
     name: str
     value: float
     unit: str
@@ -73,7 +73,7 @@ class SystemMetric:
 @dataclass
 class Alert:
     """System alert."""
-    
+
     id: str
     name: str
     description: str
@@ -87,7 +87,7 @@ class Alert:
 @dataclass
 class HealthCheck:
     """Health check result."""
-    
+
     name: str
     status: HealthStatus
     message: str
@@ -99,7 +99,7 @@ class HealthCheck:
 @dataclass
 class SystemHealth:
     """Overall system health."""
-    
+
     status: HealthStatus
     score: float  # 0-100
     checks: List[HealthCheck]
@@ -111,38 +111,38 @@ class SystemHealth:
 class EnhancedObservability:
     """
     Enhanced observability system with comprehensive monitoring.
-    
+
     Provides real-time metrics, health checks, alerting, and
     performance monitoring for the tracing system.
     """
-    
+
     def __init__(self) -> None:
         """Initialize enhanced observability system."""
         # Metrics storage
         self._metrics_history: Dict[str, deque] = defaultdict(lambda: deque(maxlen=1000))
         self._current_metrics: Dict[str, SystemMetric] = {}
-        
+
         # Health monitoring
         self._health_checks: Dict[str, callable] = {}
         self._health_history: deque = deque(maxlen=100)
-        
+
         # Alerting system
         self._active_alerts: Dict[str, Alert] = {}
         self._alert_history: deque = deque(maxlen=1000)
         self._alert_thresholds: Dict[str, Dict[str, Any]] = {}
-        
+
         # Monitoring state
         self._monitoring_active: bool = False
         self._monitoring_thread: Optional[threading.Thread] = None
         self._shutdown_requested: bool = False
-        
+
         # Performance tracking
         self._performance_trends: Dict[str, List[float]] = defaultdict(list)
-        
+
         # Initialize default health checks and alert thresholds
         self._initialize_health_checks()
         self._initialize_alert_thresholds()
-    
+
     def _initialize_health_checks(self) -> None:
         """Initialize default health checks."""
         self._health_checks = {
@@ -154,7 +154,7 @@ class EnhancedObservability:
             "span_collection": self._check_span_collection,
             "performance_metrics": self._check_performance_metrics,
         }
-    
+
     def _initialize_alert_thresholds(self) -> None:
         """Initialize default alert thresholds."""
         self._alert_thresholds = {
@@ -189,83 +189,83 @@ class EnhancedObservability:
                 "unit": "spans_per_second",
             },
         }
-    
+
     def start_monitoring(self, interval_seconds: float = 10.0) -> None:
         """Start enhanced monitoring."""
         if self._monitoring_active:
             Logger.warning("[OBSERVABILITY] Monitoring already active")
             return
-        
+
         self._monitoring_active = True
         self._shutdown_requested = False
-        
+
         self._monitoring_thread = threading.Thread(
             target=self._monitoring_loop,
             daemon=True,
             name="EnhancedObservability",
         )
         self._monitoring_thread.start()
-        
+
         Logger.info(f"[OBSERVABILITY] Started enhanced monitoring with {interval_seconds}s interval")
-    
+
     def stop_monitoring(self) -> None:
         """Stop enhanced monitoring."""
         if not self._monitoring_active:
             return
-        
+
         self._shutdown_requested = True
         self._monitoring_active = False
-        
+
         if self._monitoring_thread and self._monitoring_thread.is_alive():
             self._monitoring_thread.join(timeout=5.0)
-        
+
         Logger.info("[OBSERVABILITY] Stopped enhanced monitoring")
-    
+
     def _monitoring_loop(self) -> None:
         """Main monitoring loop."""
         while self._monitoring_active and not self._shutdown_requested:
             try:
                 start_time = time.time()
-                
+
                 # Collect system metrics
                 self._collect_system_metrics()
-                
+
                 # Run health checks
                 self._run_health_checks()
-                
+
                 # Check for alerts
                 self._check_alerts()
-                
+
                 # Update performance trends
                 self._update_performance_trends()
-                
+
                 # Cleanup old data
                 self._cleanup_old_data()
-                
+
                 # Sleep until next iteration
                 elapsed = time.time() - start_time
                 sleep_time = max(1.0, 10.0 - elapsed)
                 time.sleep(sleep_time)
-                
+
             except Exception as e:
                 Logger.error(f"[OBSERVABILITY] Monitoring loop error: {e}")
                 time.sleep(5.0)
-    
+
     def _collect_system_metrics(self) -> None:
         """Collect comprehensive system metrics."""
         timestamp = time.time()
-        
+
         try:
             # System metrics
             cpu_percent = psutil.cpu_percent(interval=1)
             memory = psutil.virtual_memory()
             disk = psutil.disk_usage('/')
-            
+
             # Process metrics
             process = psutil.Process()
             process_memory = process.memory_info()
             process_cpu = process.cpu_percent()
-            
+
             # Store metrics
             metrics = {
                 "system_cpu_percent": SystemMetric("system_cpu_percent", cpu_percent, "percent", timestamp),
@@ -276,29 +276,29 @@ class EnhancedObservability:
                 "process_cpu_percent": SystemMetric("process_cpu_percent", process_cpu, "percent", timestamp),
                 "process_threads": SystemMetric("process_threads", process.num_threads(), "count", timestamp),
             }
-            
+
             # Update current metrics
             self._current_metrics.update(metrics)
-            
+
             # Store in history
             for name, metric in metrics.items():
                 self._metrics_history[name].append(metric)
-            
+
             # Collect tracing-specific metrics
             self._collect_tracing_metrics(timestamp)
-            
+
         except Exception as e:
             Logger.error(f"[OBSERVABILITY] Failed to collect system metrics: {e}")
-    
+
     def _collect_tracing_metrics(self, timestamp: float) -> None:
         """Collect tracing-specific metrics."""
         try:
             # Try to get tracing system metrics
             from agentic_core.mixins.auto_span_collector import get_global_collector
-            
+
             collector = get_global_collector()
             stats = collector.get_collection_stats()
-            
+
             tracing_metrics = {
                 "tracing_spans_collected": SystemMetric("tracing_spans_collected", stats.get("total_spans_collected", 0), "count", timestamp),
                 "tracing_agents_registered": SystemMetric("tracing_agents_registered", stats.get("agents_registered", 0), "count", timestamp),
@@ -306,24 +306,24 @@ class EnhancedObservability:
                 "tracing_collection_errors": SystemMetric("tracing_collection_errors", stats.get("collection_errors", 0), "count", timestamp),
                 "tracing_runtime_adg_enabled": SystemMetric("tracing_runtime_adg_enabled", 1.0 if stats.get("runtime_adg_enabled") else 0.0, "boolean", timestamp),
             }
-            
+
             self._current_metrics.update(tracing_metrics)
-            
+
             for name, metric in tracing_metrics.items():
                 self._metrics_history[name].append(metric)
-            
+
         except Exception as e:
             Logger.debug(f"[OBSERVABILITY] Failed to collect tracing metrics: {e}")
-        
+
         try:
             # Try to get performance optimized collector metrics
             from agentic_core.mixins.performance_optimized_collector import get_global_optimized_collector
-            
+
             perf_collector = get_global_optimized_collector()
             perf_stats = perf_collector.get_performance_stats()
-            
+
             perf_metrics = perf_stats.get("performance_metrics", {})
-            
+
             optimized_metrics = {
                 "optimized_spans_per_second": SystemMetric("optimized_spans_per_second", perf_metrics.get("spans_per_second", 0), "rate", timestamp),
                 "optimized_avg_processing_time_ms": SystemMetric("optimized_avg_processing_time_ms", perf_metrics.get("avg_processing_time_ms", 0), "ms", timestamp),
@@ -332,25 +332,25 @@ class EnhancedObservability:
                 "optimized_buffer_utilization": SystemMetric("optimized_buffer_utilization", perf_metrics.get("buffer_utilization", 0), "ratio", timestamp),
                 "optimized_compression_ratio": SystemMetric("optimized_compression_ratio", perf_metrics.get("compression_ratio", 0), "ratio", timestamp),
             }
-            
+
             self._current_metrics.update(optimized_metrics)
-            
+
             for name, metric in optimized_metrics.items():
                 self._metrics_history[name].append(metric)
-            
+
         except Exception as e:
             Logger.debug(f"[OBSERVABILITY] Failed to collect optimized collector metrics: {e}")
-    
+
     def _run_health_checks(self) -> None:
         """Run all health checks."""
         health_results = []
-        
+
         for check_name, check_func in self._health_checks.items():
             try:
                 start_time = time.time()
                 result = check_func()
                 duration_ms = (time.time() - start_time) * 1000
-                
+
                 health_check = HealthCheck(
                     name=check_name,
                     status=result["status"],
@@ -359,9 +359,9 @@ class EnhancedObservability:
                     duration_ms=duration_ms,
                     metadata=result.get("metadata", {}),
                 )
-                
+
                 health_results.append(health_check)
-                
+
             except Exception as e:
                 health_check = HealthCheck(
                     name=check_name,
@@ -371,11 +371,11 @@ class EnhancedObservability:
                     duration_ms=0,
                 )
                 health_results.append(health_check)
-        
+
         # Calculate overall health
         overall_status = self._calculate_overall_health(health_results)
         health_score = self._calculate_health_score(health_results)
-        
+
         system_health = SystemHealth(
             status=overall_status,
             score=health_score,
@@ -384,15 +384,15 @@ class EnhancedObservability:
             alerts=list(self._active_alerts.values()),
             timestamp=time.time(),
         )
-        
+
         self._health_history.append(system_health)
-    
+
     def _check_memory_usage(self) -> Dict[str, Any]:
         """Check memory usage health."""
         try:
             memory = psutil.virtual_memory()
             usage_percent = memory.percent
-            
+
             if usage_percent > 90:
                 status = HealthStatus.CRITICAL
                 message = f"Critical memory usage: {usage_percent:.1f}%"
@@ -402,7 +402,7 @@ class EnhancedObservability:
             else:
                 status = HealthStatus.HEALTHY
                 message = f"Memory usage normal: {usage_percent:.1f}%"
-            
+
             return {
                 "status": status,
                 "message": message,
@@ -412,18 +412,18 @@ class EnhancedObservability:
                     "used_gb": memory.used / 1024**3,
                 },
             }
-            
+
         except Exception as e:
             return {
                 "status": HealthStatus.UNKNOWN,
                 "message": f"Failed to check memory: {e}",
             }
-    
+
     def _check_cpu_usage(self) -> Dict[str, Any]:
         """Check CPU usage health."""
         try:
             cpu_percent = psutil.cpu_percent(interval=1)
-            
+
             if cpu_percent > 90:
                 status = HealthStatus.CRITICAL
                 message = f"Critical CPU usage: {cpu_percent:.1f}%"
@@ -433,7 +433,7 @@ class EnhancedObservability:
             else:
                 status = HealthStatus.HEALTHY
                 message = f"CPU usage normal: {cpu_percent:.1f}%"
-            
+
             return {
                 "status": status,
                 "message": message,
@@ -442,19 +442,19 @@ class EnhancedObservability:
                     "core_count": psutil.cpu_count(),
                 },
             }
-            
+
         except Exception as e:
             return {
                 "status": HealthStatus.UNKNOWN,
                 "message": f"Failed to check CPU: {e}",
             }
-    
+
     def _check_disk_usage(self) -> Dict[str, Any]:
         """Check disk usage health."""
         try:
             disk = psutil.disk_usage('/')
             usage_percent = (disk.used / disk.total) * 100
-            
+
             if usage_percent > 95:
                 status = HealthStatus.CRITICAL
                 message = f"Critical disk usage: {usage_percent:.1f}%"
@@ -464,7 +464,7 @@ class EnhancedObservability:
             else:
                 status = HealthStatus.HEALTHY
                 message = f"Disk usage normal: {usage_percent:.1f}%"
-            
+
             return {
                 "status": status,
                 "message": message,
@@ -475,25 +475,25 @@ class EnhancedObservability:
                     "total_gb": disk.total / 1024**3,
                 },
             }
-            
+
         except Exception as e:
             return {
                 "status": HealthStatus.UNKNOWN,
                 "message": f"Failed to check disk: {e}",
             }
-    
+
     def _check_tracing_system(self) -> Dict[str, Any]:
         """Check tracing system health."""
         try:
             from agentic_core.mixins.auto_span_collector import get_global_collector
-            
+
             collector = get_global_collector()
             stats = collector.get_collection_stats()
-            
+
             collection_active = stats.get("collection_active", False)
             error_count = stats.get("collection_errors", 0)
             buffer_size = stats.get("buffer_size", 0)
-            
+
             if not collection_active:
                 status = HealthStatus.WARNING
                 message = "Tracing collection not active"
@@ -506,7 +506,7 @@ class EnhancedObservability:
             else:
                 status = HealthStatus.HEALTHY
                 message = "Tracing system healthy"
-            
+
             return {
                 "status": status,
                 "message": message,
@@ -517,31 +517,31 @@ class EnhancedObservability:
                     "runtime_adg_enabled": stats.get("runtime_adg_enabled", False),
                 },
             }
-            
+
         except Exception as e:
             return {
                 "status": HealthStatus.UNKNOWN,
                 "message": f"Failed to check tracing system: {e}",
             }
-    
+
     def _check_runtime_adg(self) -> Dict[str, Any]:
         """Check Runtime ADG health."""
         try:
             from system_learning.runtime_adg.auto_persistence import get_auto_persistence_tracer
-            
+
             tracer = get_auto_persistence_tracer()
             status_info = tracer.get_auto_persistence_status()
-            
+
             enabled = status_info.get("enabled", False)
             persistence_count = status_info.get("persistence_count", 0)
-            
+
             if not enabled:
                 status = HealthStatus.WARNING
                 message = "Runtime ADG auto-persistence not enabled"
             else:
                 status = HealthStatus.HEALTHY
                 message = f"Runtime ADG healthy, {persistence_count} persistences"
-            
+
             return {
                 "status": status,
                 "message": message,
@@ -551,24 +551,24 @@ class EnhancedObservability:
                     "last_persistence": status_info.get("last_persistence"),
                 },
             }
-            
+
         except Exception as e:
             return {
                 "status": HealthStatus.UNKNOWN,
                 "message": f"Failed to check Runtime ADG: {e}",
             }
-    
+
     def _check_span_collection(self) -> Dict[str, Any]:
         """Check span collection health."""
         try:
             from agentic_core.mixins.performance_optimized_collector import get_global_optimized_collector
-            
+
             collector = get_global_optimized_collector()
             stats = collector.get_performance_stats()
-            
+
             spans_per_second = stats.get("performance_metrics", {}).get("spans_per_second", 0)
             memory_usage = stats.get("performance_metrics", {}).get("memory_usage_mb", 0)
-            
+
             if spans_per_second < 10 and spans_per_second > 0:
                 status = HealthStatus.WARNING
                 message = f"Low collection rate: {spans_per_second:.1f} spans/sec"
@@ -578,7 +578,7 @@ class EnhancedObservability:
             else:
                 status = HealthStatus.HEALTHY
                 message = f"Span collection healthy: {spans_per_second:.1f} spans/sec"
-            
+
             return {
                 "status": status,
                 "message": message,
@@ -588,31 +588,31 @@ class EnhancedObservability:
                     "collection_active": stats.get("collection_active", False),
                 },
             }
-            
+
         except Exception as e:
             return {
                 "status": HealthStatus.UNKNOWN,
                 "message": f"Failed to check span collection: {e}",
             }
-    
+
     def _check_performance_metrics(self) -> Dict[str, Any]:
         """Check performance metrics health."""
         try:
             # Check recent performance trends
             recent_health = list(self._health_history)[-5:] if self._health_history else []
-            
+
             if len(recent_health) < 3:
                 return {
                     "status": HealthStatus.UNKNOWN,
                     "message": "Insufficient performance data",
                 }
-            
+
             # Calculate performance trend
             scores = [h.score for h in recent_health]
             if len(scores) >= 3:
                 recent_avg = sum(scores[-3:]) / 3
                 older_avg = sum(scores[-6:-3]) / 3 if len(scores) >= 6 else scores[0]
-                
+
                 if recent_avg < older_avg - 10:
                     status = HealthStatus.WARNING
                     message = f"Performance degrading: {recent_avg:.1f} vs {older_avg:.1f}"
@@ -625,7 +625,7 @@ class EnhancedObservability:
             else:
                 status = HealthStatus.HEALTHY
                 message = "Performance metrics healthy"
-            
+
             return {
                 "status": status,
                 "message": message,
@@ -634,23 +634,23 @@ class EnhancedObservability:
                     "trend_samples": len(scores),
                 },
             }
-            
+
         except Exception as e:
             return {
                 "status": HealthStatus.UNKNOWN,
                 "message": f"Failed to check performance metrics: {e}",
             }
-    
+
     def _calculate_overall_health(self, health_results: List[HealthCheck]) -> HealthStatus:
         """Calculate overall system health status."""
         if not health_results:
             return HealthStatus.UNKNOWN
-        
+
         status_counts = {status: 0 for status in HealthStatus}
-        
+
         for check in health_results:
             status_counts[check.status] += 1
-        
+
         # Determine overall status
         if status_counts[HealthStatus.CRITICAL] > 0:
             return HealthStatus.CRITICAL
@@ -662,14 +662,14 @@ class EnhancedObservability:
             return HealthStatus.HEALTHY
         else:
             return HealthStatus.WARNING
-    
+
     def _calculate_health_score(self, health_results: List[HealthCheck]) -> float:
         """Calculate overall health score (0-100)."""
         if not health_results:
             return 50.0
-        
+
         score = 100.0
-        
+
         for check in health_results:
             if check.status == HealthStatus.CRITICAL:
                 score -= 30
@@ -679,25 +679,25 @@ class EnhancedObservability:
                 score -= 10
             elif check.status == HealthStatus.UNKNOWN:
                 score -= 5
-        
+
         return max(0.0, min(100.0, score))
-    
+
     def _check_alerts(self) -> None:
         """Check for alert conditions."""
         for metric_name, metric in self._current_metrics.items():
             if metric_name in self._alert_thresholds:
                 threshold = self._alert_thresholds[metric_name]
                 self._check_metric_alert(metric_name, metric, threshold)
-    
+
     def _check_metric_alert(self, metric_name: str, metric: SystemMetric, threshold: Dict[str, Any]) -> None:
         """Check if metric triggers alert."""
         alert_id = f"{metric_name}_alert"
-        
+
         try:
             value = metric.value
             warning_threshold = threshold.get("warning")
             critical_threshold = threshold.get("critical")
-            
+
             # Check for critical alert
             if critical_threshold and value >= critical_threshold:
                 if alert_id not in self._active_alerts or self._active_alerts[alert_id].severity != AlertSeverity.CRITICAL:
@@ -718,7 +718,7 @@ class EnhancedObservability:
                     self._active_alerts[alert_id] = alert
                     self._alert_history.append(alert)
                     Logger.warning(f"[OBSERVABILITY] CRITICAL ALERT: {alert.description}")
-            
+
             # Check for warning alert (only if not critical)
             elif warning_threshold and value >= warning_threshold:
                 if alert_id not in self._active_alerts:
@@ -739,7 +739,7 @@ class EnhancedObservability:
                     self._active_alerts[alert_id] = alert
                     self._alert_history.append(alert)
                     Logger.warning(f"[OBSERVABILITY] WARNING ALERT: {alert.description}")
-            
+
             # Resolve alert if value is back to normal
             else:
                 if alert_id in self._active_alerts:
@@ -748,75 +748,75 @@ class EnhancedObservability:
                     alert.resolved_timestamp = time.time()
                     del self._active_alerts[alert_id]
                     Logger.info(f"[OBSERVABILITY] RESOLVED ALERT: {alert.name}")
-            
+
         except Exception as e:
             Logger.error(f"[OBSERVABILITY] Failed to check alert for {metric_name}: {e}")
-    
+
     def _update_performance_trends(self) -> None:
         """Update performance trend data."""
         for metric_name, metric in self._current_metrics.items():
             self._performance_trends[metric_name].append(metric.value)
-            
+
             # Keep only recent data
             if len(self._performance_trends[metric_name]) > 100:
                 self._performance_trends[metric_name] = self._performance_trends[metric_name][-100:]
-    
+
     def _cleanup_old_data(self) -> None:
         """Clean up old monitoring data."""
         # Clean up old metrics (handled by deque maxlen)
         # Clean up old alerts (handled by deque maxlen)
         # Clean up old health data (handled by deque maxlen)
         pass
-    
+
     def get_system_health(self) -> Optional[SystemHealth]:
         """Get current system health."""
         if self._health_history:
             return self._health_history[-1]
         return None
-    
+
     def get_active_alerts(self) -> List[Alert]:
         """Get active alerts."""
         return list(self._active_alerts.values())
-    
+
     def get_alert_history(self, limit: int = 100) -> List[Alert]:
         """Get alert history."""
         return list(self._alert_history)[-limit:]
-    
+
     def get_metrics_history(self, metric_name: str, limit: int = 100) -> List[SystemMetric]:
         """Get metrics history for a specific metric."""
         if metric_name in self._metrics_history:
             return list(self._metrics_history[metric_name])[-limit:]
         return []
-    
+
     def get_performance_trends(self) -> Dict[str, Dict[str, Any]]:
         """Get performance trend analysis."""
         trends = {}
-        
+
         for metric_name, values in self._performance_trends.items():
             if len(values) >= 2:
                 # Calculate trend
                 recent_avg = sum(values[-10:]) / min(10, len(values))
                 older_avg = sum(values[-20:-10]) / min(10, len(values) - 10) if len(values) > 10 else values[0]
-                
+
                 trend = "stable"
                 if recent_avg > older_avg * 1.1:
                     trend = "increasing"
                 elif recent_avg < older_avg * 0.9:
                     trend = "decreasing"
-                
+
                 trends[metric_name] = {
                     "current_value": values[-1],
                     "recent_average": recent_avg,
                     "trend": trend,
                     "sample_count": len(values),
                 }
-        
+
         return trends
-    
+
     def get_dashboard_data(self) -> Dict[str, Any]:
         """Get comprehensive dashboard data."""
         current_health = self.get_system_health()
-        
+
         return {
             "system_health": {
                 "status": current_health.status.value if current_health else HealthStatus.UNKNOWN.value,

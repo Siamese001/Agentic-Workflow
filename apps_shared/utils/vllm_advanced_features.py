@@ -136,7 +136,7 @@ class VLLMBatchProcessor:
                 errors=[{"error": "empty_batch"}],
                 processing_time_seconds=time.time() - start_time,
             )
-        
+
         # Validate individual requests
         for request in requests:
             if not request.id or not request.prompt:

@@ -75,7 +75,7 @@ P2_DIMENSIONS = {
 def _get_modules_to_process(layer: str | None = None) -> list[Path]:
     """Get Python modules to process, optionally filtered by layer."""
     modules = []
-    
+
     source_dirs = [
         REPO_ROOT / "agentic_core",
         REPO_ROOT / "apps_lic",
@@ -84,25 +84,25 @@ def _get_modules_to_process(layer: str | None = None) -> list[Path]:
         REPO_ROOT / "apps_eval",
         REPO_ROOT / "system_learning",
     ]
-    
+
     for src_dir in source_dirs:
         if not src_dir.exists():
             continue
-            
+
         for py_file in src_dir.rglob("*.py"):
             # Skip tests, __pycache__, etc.
-            if any(part.startswith("__") or part == "tests" or part == "test" 
+            if any(part.startswith("__") or part == "tests" or part == "test"
                    for part in py_file.parts):
                 continue
-            
+
             # Layer filtering
             if layer:
                 layer_from_path = _extract_layer_from_path(py_file)
                 if layer_from_path != layer:
                     continue
-            
+
             modules.append(py_file)
-    
+
     return modules
 
 
@@ -128,33 +128,33 @@ def _add_emitter_to_module(module_path: Path, symbol: str, apply: bool = False) 
     """Add an emitter call to a module."""
     try:
         content = module_path.read_text(encoding="utf-8")
-        
+
         # Check if already present
         if symbol in content:
             return False
-        
+
         # Find a good insertion point (after imports, before first function/class)
         tree = ast.parse(content)
-        
+
         # Find last import
         last_import_end = 0
         for node in ast.walk(tree):
             if isinstance(node, (ast.Import, ast.ImportFrom)):
                 last_import_end = max(last_import_end, node.end_lineno or 0)
-        
+
         # Insert after imports
         lines = content.split("\n")
         insert_line = last_import_end if last_import_end > 0 else 0
-        
+
         emitter_code = f"\n# ADG hardening: {symbol}\nfrom agentic_core.runtime.lifecycle_trace_contract import {symbol}\n{symbol}()\n"
-        
+
         if apply:
             lines.insert(insert_line, emitter_code)
             module_path.write_text("\n".join(lines), encoding="utf-8")
             _logger.info(f"Added {symbol} to {module_path}")
         else:
             _logger.info(f"Would add {symbol} to {module_path} (dry-run)")
-        
+
         return True
     except Exception as e:
         _logger.warning(f"Could not process {module_path}: {e}")
@@ -166,21 +166,21 @@ def cmd_p0(args: argparse.Namespace) -> int:
     dimension = args.dim
     layer = args.layer
     apply = args.apply
-    
+
     if dimension not in P0_DIMENSIONS:
         _logger.error(f"Unknown dimension: {dimension}. Choose from: {list(P0_DIMENSIONS.keys())}")
         return 1
-    
+
     config = P0_DIMENSIONS[dimension]
     symbols = config["symbols"]
-    
+
     _logger.info(f"P0 hardening: {dimension} - {config['description']}")
     if layer:
         _logger.info(f"Targeting layer: {layer}")
-    
+
     modules = _get_modules_to_process(layer)
     _logger.info(f"Found {len(modules)} modules to process")
-    
+
     results = {
         "dimension": dimension,
         "layer": layer,
@@ -188,10 +188,10 @@ def cmd_p0(args: argparse.Namespace) -> int:
         "modules_modified": 0,
         "symbols_added": []
     }
-    
+
     for module in modules[:args.limit] if args.limit else modules:
         results["modules_processed"] += 1
-        
+
         for symbol in symbols:
             if not _check_module_has_symbol(module, symbol):
                 if _add_emitter_to_module(module, symbol, apply):
@@ -200,10 +200,10 @@ def cmd_p0(args: argparse.Namespace) -> int:
                         "module": str(module.relative_to(REPO_ROOT)),
                         "symbol": symbol
                     })
-    
+
     if args.json:
         Path(args.json).write_text(json.dumps(results, indent=2))
-    
+
     _logger.info(f"Processed {results['modules_processed']} modules, modified {results['modules_modified']}")
     return 0
 
@@ -211,32 +211,32 @@ def cmd_p0(args: argparse.Namespace) -> int:
 def cmd_p1(args: argparse.Namespace) -> int:
     """P1 orchestration hardening."""
     apply = args.apply
-    
+
     _logger.info("P1 orchestration hardening")
     _logger.info(f"Dimensions: {list(P1_DIMENSIONS.keys())}")
-    
+
     # For P1, we target orchestration modules specifically
     target_dirs = [
         REPO_ROOT / "agentic_core" / "L3_orchestration",
         REPO_ROOT / "agentic_core" / "L4_state",
     ]
-    
+
     modules = []
     for d in target_dirs:
         if d.exists():
             modules.extend(d.rglob("*.py"))
-    
+
     _logger.info(f"Found {len(modules)} orchestration modules")
-    
+
     results = {
         "phase": "P1",
         "modules_processed": len(modules),
         "dimensions": list(P1_DIMENSIONS.keys())
     }
-    
+
     if args.json:
         Path(args.json).write_text(json.dumps(results, indent=2))
-    
+
     return 0
 
 
@@ -244,49 +244,49 @@ def cmd_p2(args: argparse.Namespace) -> int:
     """P2 execution capability hardening."""
     _logger.info("P2 execution hardening")
     _logger.info(f"Dimensions: {list(P2_DIMENSIONS.keys())}")
-    
+
     # Target execution engines
     target_dirs = [
         REPO_ROOT / "agentic_core" / "L2_execution",
         REPO_ROOT / "apps_exec",
     ]
-    
+
     modules = []
     for d in target_dirs:
         if d.exists():
             modules.extend(d.rglob("*.py"))
-    
+
     results = {
         "phase": "P2",
         "modules_processed": len(modules),
         "dimensions": list(P2_DIMENSIONS.keys())
     }
-    
+
     if args.json:
         Path(args.json).write_text(json.dumps(results, indent=2))
-    
+
     return 0
 
 
 def cmd_check(args: argparse.Namespace) -> int:
     """Check coverage across all phases."""
     import sqlite3
-    
+
     adg_dir = REPO_ROOT / "artifacts" / "adg"
     dbs = list(adg_dir.glob("adg_indexed_*.sqlite"))
-    
+
     if not dbs:
         _logger.error("No ADG database found")
         return 1
-    
+
     db_path = max(dbs, key=lambda p: p.stat().st_mtime)
     conn = sqlite3.connect(db_path)
-    
+
     results = {
         "database": str(db_path),
         "phases": {}
     }
-    
+
     # Check P0 dimensions
     if args.all or args.phase == "p0":
         results["phases"]["P0"] = {}
@@ -299,7 +299,7 @@ def cmd_check(args: argparse.Namespace) -> int:
                 )
                 counts[symbol] = cursor.fetchone()[0]
             results["phases"]["P0"][dim] = counts
-    
+
     # Check P1 dimensions
     if args.all or args.phase == "p1":
         results["phases"]["P1"] = {}
@@ -309,7 +309,7 @@ def cmd_check(args: argparse.Namespace) -> int:
                 (dim, dim)
             )
             results["phases"]["P1"][dim] = cursor.fetchone()[0]
-    
+
     # Check P2 dimensions
     if args.all or args.phase == "p2":
         results["phases"]["P2"] = {}
@@ -319,24 +319,24 @@ def cmd_check(args: argparse.Namespace) -> int:
                 (dim, dim)
             )
             results["phases"]["P2"][dim] = cursor.fetchone()[0]
-    
+
     conn.close()
-    
+
     if args.json:
         Path(args.json).write_text(json.dumps(results, indent=2))
     else:
         print(json.dumps(results, indent=2))
-    
+
     return 0
 
 
 def cmd_full(args: argparse.Namespace) -> int:
     """Full hardening across P0-P4."""
     _logger.info("Running full hardening (P0-P4)")
-    
+
     # Run each phase
     phases = ["p0", "p1", "p2"]
-    
+
     for phase in phases:
         _logger.info(f"\n=== Phase {phase.upper()} ===")
         phase_args = argparse.Namespace(
@@ -344,7 +344,7 @@ def cmd_full(args: argparse.Namespace) -> int:
             json=None,
             limit=args.limit if args.micro_wave else None
         )
-        
+
         if phase == "p0":
             # Run all P0 dimensions
             for dim in P0_DIMENSIONS:
@@ -356,7 +356,7 @@ def cmd_full(args: argparse.Namespace) -> int:
             cmd_p1(phase_args)
         elif phase == "p2":
             cmd_p2(phase_args)
-    
+
     _logger.info("\n=== Full Hardening Complete ===")
     return 0
 
@@ -367,7 +367,7 @@ def main() -> int:
         description="ADG Unified Hardening Accelerator"
     )
     subparsers = parser.add_subparsers(dest="command", help="Command to run")
-    
+
     # p0 command
     p0_parser = subparsers.add_parser("p0", help="P0 dimension hardening")
     p0_parser.add_argument("--dim", required=True, choices=list(P0_DIMENSIONS.keys()))
@@ -375,35 +375,35 @@ def main() -> int:
     p0_parser.add_argument("--apply", action="store_true", help="Apply changes (default: dry-run)")
     p0_parser.add_argument("--limit", type=int, help="Limit modules processed (micro-wave)")
     p0_parser.add_argument("--json", help="JSON output file")
-    
+
     # p1 command
     p1_parser = subparsers.add_parser("p1", help="P1 orchestration hardening")
     p1_parser.add_argument("--apply", action="store_true", help="Apply changes")
     p1_parser.add_argument("--json", help="JSON output file")
-    
+
     # p2 command
     p2_parser = subparsers.add_parser("p2", help="P2 execution hardening")
     p2_parser.add_argument("--apply", action="store_true", help="Apply changes")
     p2_parser.add_argument("--json", help="JSON output file")
-    
+
     # check command
     check_parser = subparsers.add_parser("check", help="Check coverage")
     check_parser.add_argument("--all", action="store_true", help="Check all phases")
     check_parser.add_argument("--phase", choices=["p0", "p1", "p2"], help="Check specific phase")
     check_parser.add_argument("--json", help="JSON output file")
-    
+
     # full command
     full_parser = subparsers.add_parser("full", help="Full hardening (P0-P4)")
     full_parser.add_argument("--apply", action="store_true", help="Apply changes")
     full_parser.add_argument("--micro-wave", action="store_true", help="Micro-wave mode (15 modules)")
     full_parser.add_argument("--limit", type=int, default=15, help="Modules per wave")
-    
+
     args = parser.parse_args()
-    
+
     if not args.command:
         parser.print_help()
         return 1
-    
+
     commands = {
         "p0": cmd_p0,
         "p1": cmd_p1,
@@ -411,7 +411,7 @@ def main() -> int:
         "check": cmd_check,
         "full": cmd_full,
     }
-    
+
     return commands[args.command](args)
 
 

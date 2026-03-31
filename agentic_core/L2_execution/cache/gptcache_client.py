@@ -24,21 +24,21 @@ Logger = logging.getLogger(__name__)
 
 class BGEEmbedding:
     """BGE-M3 embedding wrapper for GPTCache.
-    
+
     Implements the embedding interface expected by GPTCache using
     local BGE-M3 model via bmg_embed_text.
     """
-    
+
     def __init__(self, model_name: str = "BAAI/bge-m3"):
         self.model_name = model_name
         self.dimension = 1024  # BGE-M3 dimension
-    
+
     def to_embeddings(self, data: str, **_kwargs) -> list[float]:
         """Convert text to BGE-M3 embedding vector.
-        
+
         Args:
             data: Text to embed
-            
+
         Returns:
             Embedding vector as list of floats
         """

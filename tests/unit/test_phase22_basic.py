@@ -160,7 +160,7 @@ except Exception:
             assert new_handler != original
             assert 'ValueError' in new_handler or 'TypeError' in new_handler
             assert 'as e' in new_handler
-            
+
             # Note: Method doesn't validate inputs - this is a revealed limitation
             # TODO: Add input validation to _create_specific_exception_handler
         else:

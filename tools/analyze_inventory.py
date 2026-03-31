@@ -22,7 +22,7 @@ no_reason_skips = []
 for f in skip_calls:
     reason = f.get("reason", "")
     dep = f.get("dependency", "")
-    
+
     reason_lower = reason.lower()
     if "deps unavailable" in reason_lower or "not available" in reason_lower or "not importable" in reason_lower:
         reason_counter["deps_unavailable"] += 1

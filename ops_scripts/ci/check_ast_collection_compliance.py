@@ -105,7 +105,7 @@ class ASTComplianceChecker:
         # Skip pattern checking in the compliance checker itself (to avoid false positives)
         if file_path.name == "check_ast_collection_compliance.py":
             return
-            
+
         for line_num, line in enumerate(source.splitlines(), 1):
             for pattern in self.FORBIDDEN_PATTERNS:
                 if re.search(pattern, line, re.IGNORECASE):

@@ -13,7 +13,7 @@ from typing import Dict, List, Tuple
 
 class Wave10SimpleCleanup:
     """Wave 10: Simple cleanup of obvious issues."""
-    
+
     def __init__(self, repo_root: pathlib.Path):
         self.repo_root = repo_root
         self.tests_dir = repo_root / "tests"
@@ -25,14 +25,14 @@ class Wave10SimpleCleanup:
             'failed_files': 0
         }
         self.failed_files: List[Tuple[str, str]] = []
-    
+
     def process_files(self) -> Dict:
         """Process files with Wave 10 simple cleanup."""
         # Only process files with syntax errors
         test_files = []
         for pattern in ["test_*.py", "*/test_*.py"]:
             test_files.extend(self.tests_dir.rglob(pattern))
-        
+
         # Filter out archives and already valid files
         active_test_files = []
         for test_file in test_files:
@@ -45,16 +45,16 @@ class Wave10SimpleCleanup:
                     active_test_files.append(test_file)
                 except UnicodeDecodeError:
                     continue
-        
+
         print(f"Wave 10: Processing {len(active_test_files)} files with syntax errors...")
-        
+
         for test_file in active_test_files:
             self.stats['total_files'] += 1
             if self.process_file(test_file):
                 self.stats['files_processed'] += 1
-        
+
         return self.stats
-    
+
     def process_file(self, file_path: pathlib.Path) -> bool:
         """Process a single file with simple cleanup."""
         try:
@@ -62,10 +62,10 @@ class Wave10SimpleCleanup:
         except Exception as e:
             self.failed_files.append((str(file_path), f"Read error: {e}"))
             return False
-        
+
         # Apply simple cleanup
         cleaned_content = self._simple_cleanup(original_content)
-        
+
         # Validate the fix
         try:
             ast.parse(cleaned_content)
@@ -75,59 +75,59 @@ class Wave10SimpleCleanup:
         except SyntaxError as e:
             self.failed_files.append((str(file_path), f"Simple cleanup failed: {e}"))
             return False
-    
+
     def _simple_cleanup(self, content: str) -> str:
         """Apply simple cleanup - remove only obvious problematic lines."""
         lines = content.splitlines()
         cleaned_lines = []
-        
+
         for line in lines:
             stripped = line.strip()
-            
+
             # Skip empty lines
             if not stripped:
                 cleaned_lines.append(line)
                 continue
-            
+
             # Remove ONLY clearly problematic lines
             if self._is_clearly_problematic(line, stripped):
                 self.stats['lines_removed'] += 1
                 continue
-            
+
             # Keep everything else
             cleaned_lines.append(line)
-        
+
         return '\n'.join(cleaned_lines)
-    
+
     def _is_clearly_problematic(self, line: str, stripped: str) -> bool:
         """Check if line is clearly problematic (very conservative)."""
         # Only remove lines that are 100% problematic
-        
+
         # Pattern 1: Unmatched closing parentheses (very obvious)
         if re.match(r'^\s*\)\s*$', line):
             return True
-        
+
         # Pattern 2: Legacy migration comments (very specific)
         if re.match(r'^\s*#\s*#\s*MOVED:.*$', line):
             return True
-        
+
         # Pattern 3: Removed migration comments (very specific)
         if stripped.startswith('# REMOVED:'):
             return True
-        
+
         # Pattern 4: Orphaned import content (only if at module level and very specific)
         if (not line.startswith(' ') and not line.startswith('\t') and
             (re.match(r'^_emit_[a-zA-Z_][a-zA-Z0-9_]*,?\s*$', stripped) or
              re.match(r'^emit_[a-zA-Z_][a-zA-Z0-9_]*,?\s*$', stripped))):
             return True
-        
+
         # Pattern 5: Constants at module level (very specific)
         if (not line.startswith(' ') and not line.startswith('\t') and
             re.match(r'^[A-Z_][A-Z0-9_]*,?\s*$', stripped)):
             return True
-        
+
         return False  # Be conservative - keep everything else
-    
+
     def print_summary(self):
         """Print wave summary."""
         print("\n" + "="*60)
@@ -138,28 +138,28 @@ class Wave10SimpleCleanup:
         print(f"Lines removed: {self.stats['lines_removed']}")
         print(f"Syntax errors fixed: {self.stats['syntax_errors_fixed']}")
         print(f"Failed files: {len(self.failed_files)}")
-        
+
         if self.failed_files:
             print(f"\nFailed files (first 3):")
             for file_path, error in self.failed_files[:3]:
                 print(f"  {file_path}: {error}")
             if len(self.failed_files) > 3:
                 print(f"  ... and {len(self.failed_files) - 3} more")
-        
+
         print("="*60)
 
 
 def main():
     """Run Wave 10 simple cleanup."""
     repo_root = pathlib.Path(__file__).parent.parent
-    
+
     print("🌊 WAVE 10: SIMPLE CLEANUP")
     print(f"Repository: {repo_root}")
-    
+
     cleaner = Wave10SimpleCleanup(repo_root)
     stats = cleaner.process_files()
     cleaner.print_summary()
-    
+
     return stats['syntax_errors_fixed'] > 0
 
 

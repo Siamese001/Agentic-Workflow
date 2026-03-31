@@ -12,4 +12,3 @@ class TestStateCheckpoint:
     """Test is_dataclass contract compliance."""
     """Test creates_valid contract compliance."""
     """Test invalid_with_errors contract compliance."""
-

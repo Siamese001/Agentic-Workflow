@@ -7,17 +7,32 @@ implementations for L0 routing confidence calibration.
 
 import pytest
 
-# Lazy import fixtures - avoid collection-time errors
 
-@pytest.fixture(scope="session")
-def _lazy_agentic_core_L0_routing_engines_contextual_bandit_0():
-    from agentic_core.L0_routing.engines.contextual_bandit import LinUCBBandit, BanditContext, BanditArm, BanditDecision, create_bandit_context, calculate_routing_reward
-    return type('_Import', (), {"LinUCBBandit": LinUCBBandit, "BanditContext": BanditContext, "BanditArm": BanditArm, "BanditDecision": BanditDecision, "create_bandit_context": create_bandit_context, "calculate_routing_reward": calculate_routing_reward})
+# Lazy imports — wrapped to avoid collection-time errors
+try:
+    from agentic_core.L0_routing.engines.contextual_bandit import (
+        BanditArm,
+        BanditContext,
+        BanditDecision,
+        LinUCBBandit,
+        calculate_routing_reward,
+        create_bandit_context,
+    )
+    from agentic_core.L0_routing.engines.ensemble_router import (
+        BaseRoutingModel,
+        EnsembleDecision,
+        EnsembleFeatures,
+        EnsembleRouter,
+        IntentEmbeddingModel,
+        MetaLearner,
+        RoutingPrediction,
+        RuleBasedModel,
+        create_default_ensemble,
+    )
+except ImportError:
+    pass
 
-@pytest.fixture(scope="session")
-def _lazy_agentic_core_L0_routing_engines_ensemble_router_1():
-    from agentic_core.L0_routing.engines.ensemble_router import EnsembleRouter, BaseRoutingModel, IntentEmbeddingModel, RuleBasedModel, MetaLearner, RoutingPrediction, EnsembleFeatures, EnsembleDecision, create_default_ensemble
-    return type('_Import', (), {"EnsembleRouter": EnsembleRouter, "BaseRoutingModel": BaseRoutingModel, "IntentEmbeddingModel": IntentEmbeddingModel, "RuleBasedModel": RuleBasedModel, "MetaLearner": MetaLearner, "RoutingPrediction": RoutingPrediction, "EnsembleFeatures": EnsembleFeatures, "EnsembleDecision": EnsembleDecision, "create_default_ensemble": create_default_ensemble})
+
 import numpy as np
 import time
 from unittest.mock import Mock, patch

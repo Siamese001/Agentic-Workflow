@@ -13,7 +13,7 @@ from typing import Any, Dict, List, Optional
 
 class EntityRelationExtractor:
     """Extracts entities and relationships from text using LLM or NLP methods."""
-    
+
     def __init__(self, config=None) -> None:
         """Initialize the extractor."""
         self.config = config

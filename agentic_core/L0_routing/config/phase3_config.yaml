@@ -6,7 +6,7 @@ mixture_of_experts:
   max_concurrent_experts: 3
   expert_timeout: 5.0  # seconds
   load_balance_strategy: "least_loaded"  # Options: least_loaded, capacity_based, round_robin
-  
+
   # Expert specializations
   experts:
     - id: "code_review_expert"
@@ -15,35 +15,35 @@ mixture_of_experts:
       capability_score: 0.9
       confidence_threshold: 0.7
       capacity: 1.0
-    
+
     - id: "resume_expert"
       domain: "resume_career"
       keywords: ["resume", "cv", "career", "job", "interview", "hiring"]
       capability_score: 0.85
       confidence_threshold: 0.6
       capacity: 1.0
-    
+
     - id: "data_analysis_expert"
       domain: "data_analysis"
       keywords: ["data", "analysis", "chart", "graph", "statistics", "visualization"]
       capability_score: 0.8
       confidence_threshold: 0.65
       capacity: 1.0
-    
+
     - id: "writing_expert"
       domain: "content_writing"
       keywords: ["write", "article", "blog", "content", "essay", "documentation"]
       capability_score: 0.75
       confidence_threshold: 0.6
       capacity: 1.0
-    
+
     - id: "research_expert"
       domain: "research"
       keywords: ["research", "investigate", "analyze", "study", "report", "findings"]
       capability_score: 0.7
       confidence_threshold: 0.5
       capacity: 1.0
-  
+
   # Gating network
   gating_network:
     input_dim: 100
@@ -59,7 +59,7 @@ meta_learning:
     max_concurrent_tasks: 3
     task_timeout: 300  # seconds
     priority_threshold: 0.5
-    
+
   # MAML configuration
   maml:
     adaptation_rate: 0.01
@@ -68,7 +68,7 @@ meta_learning:
     meta_learning_rate: 0.001
     support_set_size: 5
     query_set_size: 5
-  
+
   # Continual learning configuration
   continual_learning:
     memory_size: 1000
@@ -76,12 +76,12 @@ meta_learning:
     ewc_lambda: 0.4
     fisher_update_frequency: 100
     consolidation_interval: 50
-  
+
   # Adaptation thresholds
   adaptation_threshold: 0.1
   min_examples_for_adaptation: 3
   max_examples_per_task: 100
-  
+
   # Performance tracking
   performance_window: 50  # Last N tasks for performance evaluation
   trend_analysis_window: 20  # Last N tasks for trend analysis
@@ -93,57 +93,57 @@ production_optimization:
     enabled: true
     target_compression_ratio: 2.0
     max_accuracy_degradation: 0.05
-    
+
     # Quantization
     quantization:
       enabled: true
       bits: 8
       calibration_samples: 100
       per_channel: false
-    
+
     # Pruning
     pruning:
       enabled: true
       pruning_ratio: 0.3
       structured_pruning: false
       fine_tune_steps: 10
-  
+
   # Caching
   cache:
     enabled: true
     cache_type: "lru"  # Options: lru, distributed
-    
+
     # LRU cache
     lru:
       max_size: 1000
       default_ttl: 3600  # seconds
       cleanup_interval: 300  # seconds
-    
+
     # Distributed cache
     distributed:
       nodes: ["node1", "node2", "node3"]
       replication_factor: 2
       consistency: "eventual"
-    
+
     # Cache strategies
     prediction_cache:
       enabled: true
       ttl: 1800  # 30 minutes
       max_size: 500
-    
+
     model_cache:
       enabled: true
       ttl: 7200  # 2 hours
       max_size: 100
-    
+
     optimization_cache:
       enabled: true
       ttl: 86400  # 24 hours
       max_size: 50
-  
+
   # Performance optimization
   optimization_target: "balanced"  # Options: latency, memory, balanced
-  
+
   # Resource limits
   max_memory_usage_mb: 2048
   max_cpu_usage_percent: 80
@@ -158,7 +158,7 @@ hitl_features:
     include_confidence_breakdown: true
     include_alternative_options: true
     include_reasoning_chain: true
-  
+
   # Active learning
   active_learning:
     enabled: true
@@ -166,13 +166,13 @@ hitl_features:
     diversity_threshold: 0.7
     max_human_queries_per_hour: 10
     query_budget: 100
-    
+
     # Query strategies
     uncertainty_sampling: true
     diversity_sampling: true
     expected_model_change: false
     density_weighted: false
-  
+
   # Feedback integration
   feedback:
     enabled: true
@@ -180,7 +180,7 @@ hitl_features:
     feedback_weight: 0.8
     immediate_update: true
     batch_update_size: 10
-    
+
     # Human feedback interface
     interface_type: "web"  # Options: web, api, cli
     response_timeout: 300  # seconds
@@ -197,7 +197,7 @@ production:
     scale_down_threshold: 30
     scale_up_cooldown: 300  # seconds
     scale_down_cooldown: 600  # seconds
-    
+
     # Load metrics
     metrics:
       - cpu_usage
@@ -205,7 +205,7 @@ production:
       - request_latency
       - queue_length
       - error_rate
-  
+
   # Reliability
   reliability:
     health_check_interval: 30  # seconds
@@ -213,7 +213,7 @@ production:
     grace_period: 30  # seconds
     max_retries: 3
     circuit_breaker_threshold: 5
-    
+
     # Failure handling
     failure_recovery:
       enabled: true
@@ -221,20 +221,20 @@ production:
       backoff_multiplier: 2.0
       max_retry_delay: 60.0  # seconds
       dead_letter_queue: true
-  
+
   # Monitoring
   monitoring:
     enabled: true
     metrics_port: 9090
     health_check_path: "/health"
     readiness_check_path: "/ready"
-    
+
     # Metrics collection
     metrics_collection:
       interval: 10  # seconds
       retention_period: 7  # days
       aggregation_level: "minute"  # Options: second, minute, hour
-    
+
     # Alerting
     alerting:
       enabled: true
@@ -245,25 +245,25 @@ production:
         max_error_rate: 0.02
         max_memory_usage: 0.8
         min_cache_hit_rate: 0.7
-  
+
   # Security
   security:
     authentication:
       enabled: true
       method: "jwt"  # Options: jwt, api_key, oauth2
       token_expiry: 3600  # seconds
-    
+
     authorization:
       enabled: true
       roles: ["admin", "user", "readonly"]
       default_role: "readonly"
-    
+
     rate_limiting:
       enabled: true
       global_limit: 1000  # requests per minute
       per_user_limit: 100  # requests per minute
       burst_limit: 10
-    
+
     encryption:
       enabled: true
       algorithm: "AES-256-GCM"
@@ -276,13 +276,13 @@ features:
   meta_learning_integration: true
   production_optimization: true
   advanced_hitl_features: true
-  
+
   # Experimental features
   dynamic_expert_creation: false
   federated_meta_learning: false
   advanced_compression: false
   intelligent_cache_warming: false
-  
+
   # Future features
   reinforcement_learning: false
   neural_architecture_search: false
@@ -293,29 +293,29 @@ development:
   # Test settings
   test_data_size: 1000
   test_timeout: 60  # seconds
-  
+
   # Mock services
   enable_mock_experts: true
   enable_mock_meta_learners: true
   enable_mock_compressors: true
   mock_response_delay: 0.1  # seconds
-  
+
   # Debug settings
   debug_logging: true
   trace_all_decisions: true
   save_intermediate_results: true
   performance_profiling: true
-  
+
   # Testing environments
   environments:
     - name: "unit"
       type: "local"
       parallel_workers: 4
-    
+
     - name: "integration"
       type: "docker"
       parallel_workers: 2
-    
+
     - name: "performance"
       type: "kubernetes"
       parallel_workers: 1
@@ -327,25 +327,25 @@ backup:
   backup_interval: 3600  # seconds (1 hour)
   backup_retention: 30  # days
   compression_enabled: true
-  
+
   # Backup destinations
   destinations:
     - type: "local"
       path: "/backups/ml_routing"
       encryption: true
-    
+
     - type: "s3"
       bucket: "ml-routing-backups"
       region: "us-west-2"
       encryption: true
-  
+
   # Disaster recovery
   disaster_recovery:
     enabled: true
     rpo: 3600  # Recovery Point Objective (1 hour)
     rto: 1800  # Recovery Time Objective (30 minutes)
     failover_regions: ["us-east-1", "eu-west-1"]
-    
+
     # Recovery procedures
     recovery_steps:
       - "Stop traffic to failed region"
@@ -361,14 +361,14 @@ cost_optimization:
     enabled: true
     target_cost_reduction: 0.2  # 20% reduction
     monitoring_interval: 300  # seconds
-    
+
     # Optimization strategies
     strategies:
       - "model_compression"
       - "intelligent_caching"
       - "auto_scaling"
       - "spot_instances"
-  
+
   # Usage tracking
   usage_tracking:
     enabled: true
@@ -377,7 +377,7 @@ cost_optimization:
       - "cache_hit_ratio"
       - "expert_utilization"
       - "meta_learning_adaptations"
-    
+
     # Cost allocation
     cost_allocation:
       - "model_inference": 0.6
@@ -393,35 +393,35 @@ compliance:
     gdpr_compliant: true
     data_retention: 90  # days
     anonymization_enabled: true
-    
+
     # Sensitive data handling
     sensitive_data:
       encryption_at_rest: true
       encryption_in_transit: true
       access_logging: true
       audit_trail: true
-  
+
   # Model governance
   model_governance:
     enabled: true
     model_registry: true
     version_control: true
     approval_workflow: true
-    
+
     # Model validation
     validation:
       accuracy_threshold: 0.8
       fairness_threshold: 0.7
       explainability_threshold: 0.6
       robustness_threshold: 0.7
-  
+
   # Audit logging
   audit_logging:
     enabled: true
     log_level: "INFO"
     retention_period: 365  # days
     log_format: "json"
-    
+
     # Events to log
     events:
       - "model_predictions"

@@ -11,7 +11,7 @@ try:
     from agentic_core.L0_routing.config import SOVEREIGN_TERRITORIES  # noqa: F401
     errors.append('L0_routing.config still exports SOVEREIGN_TERRITORIES')
 # guardian: allow-silent-swallow - optional dependency
-        except ImportError:
+except ImportError:
     print('[OK] L0_routing.config no longer exports SOVEREIGN_TERRITORIES')
 
 # Test 2: registry_config builds SOVEREIGN_REGISTRY without SOVEREIGN_TERRITORIES

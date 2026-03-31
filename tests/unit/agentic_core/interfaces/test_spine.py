@@ -13,5 +13,3 @@ class TestMaxRetriesConstant:
             """Test is_not_none contract compliance."""
             """Test is_not_none contract compliance."""
             """Test is_not_none contract compliance."""
-
-

@@ -143,7 +143,7 @@ def _get_commit_message() -> str:
 def _check_for_new_agents(diff_content: str) -> list[str]:
     """Check if diff contains new agent class definitions."""
     violations = []
-    
+
     # Use ADG for dedup checking when available
     if ADG_AVAILABLE:
         try:
@@ -153,56 +153,56 @@ def _check_for_new_agents(diff_content: str) -> list[str]:
             violations.extend(_check_agents_with_regex(diff_content))
     else:
         violations.extend(_check_agents_with_regex(diff_content))
-    
+
     return violations
 
 
 def _check_agents_with_adg(diff_content: str) -> list[str]:
     """Check for new agents using ADG semantic analysis."""
     violations = []
-    
+
     try:
         bridge = ADGQueryBridge()
-        
+
         # Extract agent class names from diff
         for pattern in _AGENT_PATTERNS:
             matches = re.finditer(pattern, diff_content, re.MULTILINE)
             for match in matches:
                 class_name = match.group(1) if match.groups() else match.group(0)
-                
+
                 # Check if similar agent exists in ADG
                 similar_agents = _find_similar_agents_in_adg(bridge, class_name)
                 if similar_agents:
                     violations.append(f"Potential duplicate agent '{class_name}' - similar to: {', '.join(similar_agents)}")
                 else:
                     violations.append(f"New agent '{class_name}' - no ADG duplicates found")
-                    
+
     except Exception as e:
         warnings.warn(f"ADG agent check failed: {e}")
-        
+
     return violations
 
 
 def _find_similar_agents_in_adg(bridge: ADGQueryBridge, agent_name: str) -> list[str]:
     """Find semantically similar agents in ADG."""
     similar = []
-    
+
     try:
         # Get all nodes that might be agents
         for layer in ["L1", "L2", "L3", "L4", "L5"]:
             nodes = bridge.nodes_in_layer(layer)
             for node in nodes:
-                if ("Agent" in node.label and 
+                if ("Agent" in node.label and
                     agent_name.lower() in node.label.lower() or
                     node.label.lower() in agent_name.lower()):
                     similar.append(f"{node.label} ({node.layer})")
-                    
+
         # Remove exact matches (same name)
         similar = [s for s in similar if agent_name not in s]
-        
+
     except Exception:
         pass
-        
+
     return similar[:3]  # Return top 3 similar agents
 
 
@@ -220,7 +220,7 @@ def _check_agents_with_regex(diff_content: str) -> list[str]:
 def _check_for_new_mixins(diff_content: str) -> list[str]:
     """Check if diff contains new mixin class definitions."""
     violations = []
-    
+
     # Use ADG for dedup checking when available
     if ADG_AVAILABLE:
         try:
@@ -230,56 +230,56 @@ def _check_for_new_mixins(diff_content: str) -> list[str]:
             violations.extend(_check_mixins_with_regex(diff_content))
     else:
         violations.extend(_check_mixins_with_regex(diff_content))
-    
+
     return violations
 
 
 def _check_mixins_with_adg(diff_content: str) -> list[str]:
     """Check for new mixins using ADG semantic analysis."""
     violations = []
-    
+
     try:
         bridge = ADGQueryBridge()
-        
+
         # Extract mixin class names from diff
         for pattern in _MIXIN_PATTERNS:
             matches = re.finditer(pattern, diff_content, re.MULTILINE)
             for match in matches:
                 class_name = match.group(1) if match.groups() else match.group(0)
-                
+
                 # Check if similar mixin exists in ADG
                 similar_mixins = _find_similar_mixins_in_adg(bridge, class_name)
                 if similar_mixins:
                     violations.append(f"Potential duplicate mixin '{class_name}' - similar to: {', '.join(similar_mixins)}")
                 else:
                     violations.append(f"New mixin '{class_name}' - no ADG duplicates found")
-                    
+
     except Exception as e:
         warnings.warn(f"ADG mixin check failed: {e}")
-        
+
     return violations
 
 
 def _find_similar_mixins_in_adg(bridge: ADGQueryBridge, mixin_name: str) -> list[str]:
     """Find semantically similar mixins in ADG."""
     similar = []
-    
+
     try:
         # Get all nodes that might be mixins
         for layer in ["L0", "L1", "L2", "L3", "L4", "L5"]:
             nodes = bridge.nodes_in_layer(layer)
             for node in nodes:
-                if ("Mixin" in node.label and 
+                if ("Mixin" in node.label and
                     (mixin_name.lower() in node.label.lower() or
                      node.label.lower() in mixin_name.lower())):
                     similar.append(f"{node.label} ({node.layer})")
-                    
+
         # Remove exact matches
         similar = [s for s in similar if mixin_name not in s]
-        
+
     except Exception:
         pass
-        
+
     return similar[:3]
 
 
@@ -297,7 +297,7 @@ def _check_mixins_with_regex(diff_content: str) -> list[str]:
 def _check_for_new_utilities(diff_content: str) -> list[str]:
     """Check if diff contains new utility function definitions."""
     violations = []
-    
+
     # Use ADG for dedup checking when available
     if ADG_AVAILABLE:
         try:
@@ -307,56 +307,56 @@ def _check_for_new_utilities(diff_content: str) -> list[str]:
             violations.extend(_check_utilities_with_regex(diff_content))
     else:
         violations.extend(_check_utilities_with_regex(diff_content))
-    
+
     return violations
 
 
 def _check_utilities_with_adg(diff_content: str) -> list[str]:
     """Check for new utilities using ADG semantic analysis."""
     violations = []
-    
+
     try:
         bridge = ADGQueryBridge()
-        
+
         # Extract utility function names from diff
         for pattern in _UTILITY_PATTERNS:
             matches = re.finditer(pattern, diff_content, re.MULTILINE)
             for match in matches:
                 func_name = match.group(1) if match.groups() else match.group(0)
-                
+
                 # Check if similar utility exists in ADG
                 similar_utilities = _find_similar_utilities_in_adg(bridge, func_name)
                 if similar_utilities:
                     violations.append(f"Potential duplicate utility '{func_name}' - similar to: {', '.join(similar_utilities)}")
                 else:
                     violations.append(f"New utility '{func_name}' - no ADG duplicates found")
-                    
+
     except Exception as e:
         warnings.warn(f"ADG utility check failed: {e}")
-        
+
     return violations
 
 
 def _find_similar_utilities_in_adg(bridge: ADGQueryBridge, utility_name: str) -> list[str]:
     """Find semantically similar utilities in ADG."""
     similar = []
-    
+
     try:
         # Get all nodes that might be utilities
         for layer in ["L0", "L1", "L2", "L3", "L4", "L5"]:
             nodes = bridge.nodes_in_layer(layer)
             for node in nodes:
-                if ("utility" in node.label.lower() and 
+                if ("utility" in node.label.lower() and
                     utility_name.lower() in node.label.lower() or
                     node.label.lower() in utility_name.lower()):
                     similar.append(f"{node.label} ({node.layer})")
-                    
+
         # Remove exact matches
         similar = [s for s in similar if utility_name not in s]
-        
+
     except Exception:
         pass
-        
+
     return similar[:3]
 
 

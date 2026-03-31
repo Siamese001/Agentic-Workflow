@@ -80,15 +80,15 @@ from typing import Any
 class TelemetryRecorder:
     def __init__(self, config):
         self.config = config
-    
+
     def record(self, event, data=None):
         """Record a telemetry event."""
         return f"recorded: {event}"
-    
+
     def track(self, metric, value):
         """Track a metric value."""
         return f"tracked: {metric}={value}"
-    
+
     def emit(self, signal, payload=None):
         """Emit a telemetry signal."""
         return f"emitted: {signal}"
@@ -117,8 +117,8 @@ class InputMembrane:
     def __init__(self, config): self.config = config
 # Placeholder for SubatomicHop
 class SubatomicHop:
-    def __init__(self, role, config, telemetry, StructuredEngineAgent, gatekeeper, sandbox, 
-                 mcp_manager=None, SupremeCourt=None, storage=None, genealogy=None, 
+    def __init__(self, role, config, telemetry, StructuredEngineAgent, gatekeeper, sandbox,
+                 mcp_manager=None, SupremeCourt=None, storage=None, genealogy=None,
                  PiiVault=None, membrane=None, airlock=None, CostGovernor=None, overseer=None):
         self.role = role
         self.config = config

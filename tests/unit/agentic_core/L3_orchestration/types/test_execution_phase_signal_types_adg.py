@@ -13,4 +13,3 @@ class TestExecutionPhaseSignal:
 
 
     """Test creates runtime behavior."""
-

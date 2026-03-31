@@ -29,7 +29,7 @@ def get_untracked_files() -> list[str]:
 
 def should_auto_stage(filepath: str) -> bool:
     """Determine if file should be auto-staged.
-    
+
     Excludes:
     - ADG archives (they're intentionally local-only)
     - Temporary files
@@ -64,11 +64,15 @@ def get_unstaged_files() -> list[str]:
         text=True,
         check=True
     )
-    
+
     unstaged_files = []
     for line in result.stdout.strip().split('\n'):
-        if line and line[0] in ' M':  # Modified but not staged
-            unstaged_files.append(line[3:].strip())
+        if line and line.startswith(' M '):
+            path = line[3:].strip()
+            # Handle cases where paths with spaces are quoted
+            if path.startswith('"') and path.endswith('"'):
+                path = path[1:-1]
+            unstaged_files.append(path)
     return unstaged_files
 
 
@@ -78,7 +82,7 @@ def main() -> int:
         # Stage untracked files that should be version controlled
         untracked = get_untracked_files()
         files_to_stage = [f for f in untracked if should_auto_stage(f)]
-        
+
         if files_to_stage:
             print(f"[auto-stage] Staging {len(files_to_stage)} untracked file(s):")
             for filepath in files_to_stage[:10]:  # Show first 10
@@ -96,10 +100,10 @@ def main() -> int:
                 print(f"  ... and {len(unstaged) - 10} more")
 
         # Stage everything at once
-        all_files = list(set(files_to_stage + unstaged))
-        if all_files:
-            subprocess.run(["git", "add"] + all_files, check=True)
-            print(f"[auto-stage] Staged {len(all_files)} file(s) total")
+        if files_to_stage or unstaged:
+            print("[auto-stage] Staging all new and modified files.")
+            subprocess.run(["git", "add", "."], check=True)
+            print(f"[auto-stage] Staging complete.")
         else:
             print("[auto-stage] No files to stage")
 

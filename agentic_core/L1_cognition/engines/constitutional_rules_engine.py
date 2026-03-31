@@ -104,32 +104,32 @@ _emit_stores_embedding("p4", "constitutional_rules_engine", "embedding_store")
 
 class ConstitutionalRulesEngine:
     """Engine for evaluating constitutional AI rules."""
-    
+
     def __init__(self, config: Optional[GuardrailConfig] = None) -> None:
         """Initialize the constitutional rules engine.
-        
+
         Args:
             config: Guardrail configuration
         """
         self.config = config or GuardrailConfig()
         self.graphrag_config = get_config()
-        
+
         # Rule storage
         self.rules: Dict[str, ConstitutionalRule] = {}
-        
+
         # Initialize default constitutional rules
         self._initialize_default_rules()
-        
+
         # Statistics
         self._evaluation_stats: Dict[str, List[float]] = {
             "evaluation_time": [],
             "rule_violations": {},
             "severity_counts": {}
         }
-    
+
     def _initialize_default_rules(self) -> None:
         """Initialize default constitutional AI rules."""
-        
+
         # Rule 1: Helpfulness
         helpfulness_rule = ConstitutionalRule(
             rule_id="helpfulness_001",
@@ -145,7 +145,7 @@ class ConstitutionalRulesEngine:
             tags=["core", "user_benefit"]
         )
         self.rules[helpfulness_rule.rule_id] = helpfulness_rule
-        
+
         # Rule 2: Honesty
         honesty_rule = ConstitutionalRule(
             rule_id="honesty_001",
@@ -161,7 +161,7 @@ class ConstitutionalRulesEngine:
             tags=["core", "truthfulness"]
         )
         self.rules[honesty_rule.rule_id] = honesty_rule
-        
+
         # Rule 3: Harmlessness
         harmlessness_rule = ConstitutionalRule(
             rule_id="harmlessness_001",
@@ -177,7 +177,7 @@ class ConstitutionalRulesEngine:
             tags=["core", "safety", "critical"]
         )
         self.rules[harmlessness_rule.rule_id] = harmlessness_rule
-        
+
         # Rule 4: Fairness
         fairness_rule = ConstitutionalRule(
             rule_id="fairness_001",
@@ -193,7 +193,7 @@ class ConstitutionalRulesEngine:
             tags=["ethics", "bias"]
         )
         self.rules[fairness_rule.rule_id] = fairness_rule
-        
+
         # Rule 5: Privacy
         privacy_rule = ConstitutionalRule(
             rule_id="privacy_001",
@@ -209,7 +209,7 @@ class ConstitutionalRulesEngine:
             tags=["privacy", "data_protection"]
         )
         self.rules[privacy_rule.rule_id] = privacy_rule
-        
+
         # Rule 6: Transparency
         transparency_rule = ConstitutionalRule(
             rule_id="transparency_001",
@@ -225,7 +225,7 @@ class ConstitutionalRulesEngine:
             tags=["honesty", "clarity"]
         )
         self.rules[transparency_rule.rule_id] = transparency_rule
-        
+
         # Rule 7: Respect
         respect_rule = ConstitutionalRule(
             rule_id="respect_001",
@@ -241,28 +241,28 @@ class ConstitutionalRulesEngine:
             tags=["ethics", "professionalism"]
         )
         self.rules[respect_rule.rule_id] = respect_rule
-    
+
     def add_rule(self, rule: ConstitutionalRule) -> None:
         """Add a constitutional rule."""
         self.rules[rule.rule_id] = rule
-        
+
         _emit_records_telemetry_event(
             "constitutional_rules_engine",
             f"rule_added_{rule.rule_id}"
         )
-    
+
     def remove_rule(self, rule_id: str) -> bool:
         """Remove a constitutional rule."""
         if rule_id in self.rules:
             del self.rules[rule_id]
-            
+
             _emit_records_telemetry_event(
                 "constitutional_rules_engine",
                 f"rule_removed_{rule_id}"
             )
             return True
         return False
-    
+
     def evaluate_content(
         self,
         content: str,
@@ -271,53 +271,53 @@ class ConstitutionalRulesEngine:
         context: Optional[str] = None
     ) -> GuardrailReport:
         """Evaluate content against all constitutional rules.
-        
+
         Args:
             content: Content to evaluate
             content_id: Unique identifier for the content
             content_type: Type of content ("query", "context", "response", "generation")
             context: Additional context for evaluation
-            
+
         Returns:
             Comprehensive guardrail report
         """
         start_time = datetime.utcnow()
-        
+
         try:
             # Filter applicable rules
             applicable_rules = self._get_applicable_rules(content_type, context)
-            
+
             # Evaluate each rule
             checks = []
             for rule in applicable_rules:
                 if not rule.enabled:
                     continue
-                
+
                 check = self._evaluate_rule(rule, content, content_id)
                 checks.append(check)
-                
+
                 # Update rule statistics
                 if not check.passed:
                     rule.trigger_count += 1
                     rule.last_triggered = datetime.utcnow()
-            
+
             # Create report
             report = self._create_report(
                 content_id, content_type, checks, start_time
             )
-            
+
             # Update statistics
             evaluation_time = (datetime.utcnow() - start_time).total_seconds() * 1000
             self._evaluation_stats["evaluation_time"].append(evaluation_time)
-            
+
             _emit_records_telemetry_event(
                 "constitutional_rules_engine",
                 f"evaluation_completed_{len(checks)}_checks_{report.passed}",
                 "evaluation_completed"
             )
-            
+
             return report
-            
+
         except Exception as e:
             # Return error report
             return GuardrailReport(
@@ -338,7 +338,7 @@ class ConstitutionalRulesEngine:
                 check_time_ms=(datetime.utcnow() - start_time).total_seconds() * 1000,
                 metadata={"error": str(e)}
             )
-    
+
     def _get_applicable_rules(
         self,
         content_type: str,
@@ -346,22 +346,22 @@ class ConstitutionalRulesEngine:
     ) -> List[ConstitutionalRule]:
         """Get rules applicable to the content type and context."""
         applicable = []
-        
+
         for rule in self.rules.values():
             if not rule.enabled:
                 continue
-            
+
             # Check context applicability - if context provided, it must match rule contexts
             # If no context provided, apply all rules
             if context and context not in rule.contexts:
                 continue
-            
+
             # For now, assume all rules apply to text content
             # In practice, you'd check content_type against rule.content_types
             applicable.append(rule)
-        
+
         return applicable
-    
+
     def _evaluate_rule(
         self,
         rule: ConstitutionalRule,
@@ -370,16 +370,16 @@ class ConstitutionalRulesEngine:
     ) -> GuardrailCheck:
         """Evaluate a single constitutional rule."""
         check_id = f"check_{rule.rule_id}_{content_id}"
-        
+
         # Simple rule evaluation (in practice, you'd use more sophisticated methods)
         passed, confidence, reason, evidence = self._simple_rule_evaluation(rule, content)
-        
+
         # Determine action based on rule configuration
         if passed:
             action = GuardrailAction.ALLOW
         else:
             action = rule.action
-        
+
         # Create check
         check = GuardrailCheck(
             check_id=check_id,
@@ -397,16 +397,16 @@ class ConstitutionalRulesEngine:
                 "rule_category": rule.category
             }
         )
-        
+
         return check
-    
+
     def _simple_rule_evaluation(
         self,
         rule: ConstitutionalRule,
         content: str
     ) -> Tuple[bool, float, str, str]:
         """Simple rule evaluation using keyword matching.
-        
+
         In practice, you'd use more sophisticated methods like:
         - LLM-based evaluation
         - Semantic analysis
@@ -414,7 +414,7 @@ class ConstitutionalRulesEngine:
         - External safety APIs
         """
         content_lower = content.lower()
-        
+
         # Define simple patterns for each rule
         rule_patterns = {
             "helpfulness_001": {
@@ -460,21 +460,21 @@ class ConstitutionalRulesEngine:
                 "positive_reason": "Response is respectful"
             }
         }
-        
+
         patterns = rule_patterns.get(rule.rule_id, {})
-        
+
         # Check for violations
         violation_count = 0
         positive_count = 0
-        
+
         for pattern in patterns.get("violation_patterns", []):
             if pattern in content_lower:
                 violation_count += 1
-        
+
         for pattern in patterns.get("positive_patterns", []):
             if pattern in content_lower:
                 positive_count += 1
-        
+
         # Determine result
         if violation_count > 0 and positive_count == 0:
             passed = False
@@ -491,9 +491,9 @@ class ConstitutionalRulesEngine:
             confidence = 0.5
             reason = "No clear violations detected"
             evidence = "No matching patterns found"
-        
+
         return passed, confidence, reason, evidence
-    
+
     def _create_report(
         self,
         content_id: str,
@@ -506,35 +506,35 @@ class ConstitutionalRulesEngine:
         total_checks = len(checks)
         passed_checks = sum(1 for check in checks if check.passed)
         failed_checks = total_checks - passed_checks
-        
+
         # Determine overall pass/fail
         if self.config.strict_mode:
             passed = failed_checks == 0
         else:
             # In non-strict mode, allow warnings
-            critical_failures = sum(1 for check in checks 
+            critical_failures = sum(1 for check in checks
                                  if not check.passed and check.severity == GuardrailSeverity.CRITICAL)
             passed = critical_failures == 0
-        
+
         # Calculate overall score
         if checks:
             overall_score = sum(check.confidence for check in checks if check.passed) / total_checks
         else:
             overall_score = 1.0
-        
+
         # Find highest severity
         highest_severity = None
         for check in checks:
             if not check.passed:
                 if highest_severity is None or check.severity.value > highest_severity.value:
                     highest_severity = check.severity
-        
+
         # Count actions and warnings
         actions_taken = list(set(check.action for check in checks if not check.passed))
         warnings = sum(1 for check in checks if not check.passed and check.action == GuardrailAction.WARN)
         content_modified = any(check.modified_content is not None for check in checks)
         escalation_required = any(check.action == GuardrailAction.ESCALATE for check in checks)
-        
+
         # Create report
         report = GuardrailReport(
             report_id=f"report_{content_id}_{datetime.utcnow().strftime('%Y%m%d_%H%M%S')}",
@@ -553,32 +553,32 @@ class ConstitutionalRulesEngine:
             escalation_required=escalation_required,
             check_time_ms=(datetime.utcnow() - start_time).total_seconds() * 1000
         )
-        
+
         return report
-    
+
     def get_rules(self) -> List[ConstitutionalRule]:
         """Get all constitutional rules."""
         return list(self.rules.values())
-    
+
     def get_rules_by_category(self, category: str) -> List[ConstitutionalRule]:
         """Get rules by category."""
         return [rule for rule in self.rules.values() if rule.category == category]
-    
+
     def get_rule(self, rule_id: str) -> Optional[ConstitutionalRule]:
         """Get a specific rule."""
         return self.rules.get(rule_id)
-    
+
     def update_rule(self, rule: ConstitutionalRule) -> bool:
         """Update an existing rule."""
         if rule.rule_id in self.rules:
             self.rules[rule.rule_id] = rule
             return True
         return False
-    
+
     def get_evaluation_stats(self) -> Dict[str, Any]:
         """Get evaluation statistics."""
         stats = {}
-        
+
         # Evaluation time stats
         if self._evaluation_stats["evaluation_time"]:
             times = self._evaluation_stats["evaluation_time"]
@@ -591,7 +591,7 @@ class ConstitutionalRulesEngine:
             stats["min_evaluation_time_ms"] = 0.0
             stats["max_evaluation_time_ms"] = 0.0
             stats["total_evaluations"] = 0
-        
+
         # Rule violation stats
         stats["rule_violations"] = {}
         for rule_id, rule in self.rules.items():
@@ -599,7 +599,7 @@ class ConstitutionalRulesEngine:
                 "trigger_count": rule.trigger_count,
                 "last_triggered": rule.last_triggered.isoformat() if rule.last_triggered else None
             }
-        
+
         return stats
 
 

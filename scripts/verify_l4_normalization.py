@@ -50,7 +50,7 @@ class ADGL4NormalizationVerifier:
     def _verify_l4_identity_resolution(self) -> dict[str, Any]:
         """Verify L4 identities are properly resolved."""
         result = {"identity_issues": 0, "issues": []}
-        
+
         if not self.db_path or not self.db_path.exists():
             result["issues"].append("No SQLite database found")
             return result
@@ -70,13 +70,13 @@ class ADGL4NormalizationVerifier:
         result["identity_issues"] = unresolved
         if unresolved > 0:
             result["issues"].append(f"{unresolved} L4 entities with unresolved identity")
-        
+
         return result
 
     def _verify_l4_path_integrity(self) -> dict[str, Any]:
         """Verify L4 path integrity - check for L_UNKNOWN in L4 paths."""
         result = {"l4_nodes": [], "unknown_layer_nodes": []}
-        
+
         if not self.db_path or not self.db_path.exists():
             return result
 

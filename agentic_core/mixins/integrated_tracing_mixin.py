@@ -14,7 +14,7 @@ USAGE:
     class MyAgent(IntegratedTracingMixin):
         def __init__(self):
             super().__init__(service_name=self.__class__.__name__)
-        
+
         def my_method(self):
             with self.start_span("my_operation"):
                 # Your code here - automatically captured in Runtime ADG
@@ -50,16 +50,16 @@ Logger = logging.getLogger(__name__)
 class IntegratedTracingMixin(TracingMixin):
     """
     Integrated Tracing Mixin with Runtime ADG support.
-    
+
     Extends TracingMixin to automatically bridge spans to OpenTelemetry
     and enable Runtime ADG collection and storage.
-    
+
     INTEGRATION POINTS:
     1. TracingMixin spans → OpenTelemetry spans
     2. Automatic Runtime ADG materialization
     3. L4/L6 storage persistence
     4. Dual span export (TracingMixin + OpenTelemetry)
-    
+
     BACKWARD COMPATIBILITY:
     - All existing TracingMixin methods work unchanged
     - Existing span management preserved
@@ -69,21 +69,21 @@ class IntegratedTracingMixin(TracingMixin):
     def __init__(self, service_name: str | None = None, **kwargs: Any) -> None:
         """
         Initialize integrated tracing with OpenTelemetry bridge.
-        
+
         Args:
             service_name: Service name for tracing
             **kwargs: Additional arguments passed to TracingMixin
         """
         # Initialize TracingMixin first
         super().__init__(service_name=service_name, **kwargs)
-        
+
         # Initialize OpenTelemetry integration
         self._otel_service_name = service_name or self._tracing_service_name
         self._otel_tracer = None
         self._otel_enabled = False
         self._runtime_adg_enabled = False
         self._auto_persistence_enabled = False
-        
+
         # Initialize OpenTelemetry tracer with auto-persistence
         try:
             self._otel_tracer = AutoPersistenceTracingAdapter(
@@ -94,7 +94,7 @@ class IntegratedTracingMixin(TracingMixin):
             self._otel_enabled = self._otel_tracer.is_enabled()
             self._runtime_adg_enabled = True
             self._auto_persistence_enabled = True
-            
+
             if self._otel_enabled:
                 Logger.info(
                     f"[INTEGRATED_TRACING] {self._otel_service_name} - OpenTelemetry + Runtime ADG enabled"
@@ -103,7 +103,7 @@ class IntegratedTracingMixin(TracingMixin):
                 Logger.warning(
                     f"[INTEGRATED_TRACING] {self._otel_service_name} - OpenTelemetry disabled, Runtime ADG only"
                 )
-                
+
         except Exception as e:
             Logger.error(
                 f"[INTEGRATED_TRACING] {self._otel_service_name} - Failed to initialize OpenTelemetry: {e}"
@@ -116,14 +116,14 @@ class IntegratedTracingMixin(TracingMixin):
     def start_span(self, operation_name: str, attributes: dict[str, Any] | None = None):
         """
         Start an integrated span that bridges TracingMixin and OpenTelemetry.
-        
+
         This context manager creates both a TracingMixin span and an OpenTelemetry span,
         automatically collecting data for Runtime ADG materialization.
-        
+
         Args:
             operation_name: Name of the operation
             attributes: Additional span attributes
-            
+
         Yields:
             IntegratedSpanContext with both TracingMixin and OpenTelemetry contexts
         """
@@ -134,7 +134,7 @@ class IntegratedTracingMixin(TracingMixin):
             if self._otel_enabled and self._otel_tracer:
                 # Map TracingMixin operation to appropriate OpenTelemetry span type
                 otel_span_context = self._create_otel_span(operation_name, attributes)
-            
+
             try:
                 # Create integrated context and enter OpenTelemetry span
                 integrated_span = IntegratedSpanContext(tm_span, otel_span_context, self)
@@ -168,28 +168,28 @@ class IntegratedTracingMixin(TracingMixin):
     def flush_traces(self) -> list[dict[str, Any]]:
         """
         Flush all buffered traces from TracingMixin.
-        
+
         Returns:
             List of flushed trace spans
         """
         tm_traces = super().flush_traces()
-        
+
         # Get OpenTelemetry status if available
         otel_status = {}
         if self._otel_tracer and self._auto_persistence_enabled:
             otel_status = self._otel_tracer.get_auto_persistence_status()
-        
+
         Logger.info(
             f"[INTEGRATED_TRACING] {self._otel_service_name} - Flushed {len(tm_traces)} TracingMixin traces",
             extra={"otel_status": otel_status}
         )
-        
+
         return tm_traces
 
     def get_integrated_tracing_status(self) -> dict[str, Any]:
         """
         Get comprehensive status of integrated tracing system.
-        
+
         Returns:
             Dictionary with status of all tracing components
         """
@@ -212,20 +212,20 @@ class IntegratedTracingMixin(TracingMixin):
                 "auto_persistence": self._auto_persistence_enabled,
             },
         }
-        
+
         # Add OpenTelemetry auto-persistence status if available
         if self._otel_tracer and self._auto_persistence_enabled:
             status["opentelemetry"]["auto_persistence"] = self._otel_tracer.get_auto_persistence_status()
-        
+
         return status
 
     def force_runtime_adg_persistence(self, mission: str = "manual") -> dict[str, Any]:
         """
         Force immediate Runtime ADG persistence of current spans.
-        
+
         Args:
             mission: Mission identifier for the manual persistence
-            
+
         Returns:
             Persistence result from OpenTelemetry adapter
         """
@@ -247,11 +247,11 @@ class IntegratedTracingMixin(TracingMixin):
 class IntegratedSpanContext:
     """
     Combined context for TracingMixin and OpenTelemetry spans.
-    
+
     Provides unified access to both tracing systems while maintaining
     backward compatibility with existing TracingMixin usage.
     """
-    
+
     def __init__(
         self,
         tm_span: SpanContext,
@@ -260,7 +260,7 @@ class IntegratedSpanContext:
     ):
         """
         Initialize integrated span context.
-        
+
         Args:
             tm_span: TracingMixin span context
             otel_span_context: OpenTelemetry span context manager
@@ -300,14 +300,14 @@ class IntegratedSpanContext:
     def set_attribute(self, key: str, value: Any) -> None:
         """
         Set attribute on both TracingMixin and OpenTelemetry spans.
-        
+
         Args:
             key: Attribute key
             value: Attribute value
         """
         # Set on TracingMixin span
         self._tm_span.attributes[key] = value
-        
+
         # Set on OpenTelemetry span if available and if we have the actual span
         if self._otel_span and self._parent_mixin._otel_tracer:
             self._parent_mixin._otel_tracer.set_attribute(self._otel_span, key, value)
@@ -315,7 +315,7 @@ class IntegratedSpanContext:
     def add_event(self, name: str, attributes: dict[str, Any] | None = None) -> None:
         """
         Add event to both TracingMixin and OpenTelemetry spans.
-        
+
         Args:
             name: Event name
             attributes: Event attributes
@@ -324,7 +324,7 @@ class IntegratedSpanContext:
         if attributes:
             event_key = f"event_{name}_{int(time.time() * 1000)}"
             self._tm_span.attributes[event_key] = attributes
-        
+
         # Add to OpenTelemetry span if available and if we have the actual span
         if self._otel_span and self._parent_mixin._otel_tracer:
             self._parent_mixin._otel_tracer.add_event(self._otel_span, name, attributes)
@@ -332,13 +332,13 @@ class IntegratedSpanContext:
     def set_status(self, status: str) -> None:
         """
         Set status on both TracingMixin and OpenTelemetry spans.
-        
+
         Args:
             status: Status string ("OK", "ERROR", etc.)
         """
         # Set on TracingMixin span
         self._tm_span.status = status
-        
+
         # Set on OpenTelemetry span if available and if we have the actual span
         if self._otel_span and self._parent_mixin._otel_tracer:
             self._otel_span.set_status(status)
@@ -346,7 +346,7 @@ class IntegratedSpanContext:
     def to_dict(self) -> dict[str, Any]:
         """
         Convert integrated span to dictionary.
-        
+
         Returns:
             Dictionary with both TracingMixin and OpenTelemetry span data
         """

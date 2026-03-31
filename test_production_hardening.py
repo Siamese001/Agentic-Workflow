@@ -18,12 +18,12 @@ async def test_production_hardening():
 
     class ProductionHardeningValidator:
         """Validator for production readiness of Runtime ADG and RAG pipelines."""
-        
+
         def __init__(self):
             self.test_results = {}
             self.errors = []
             self.warnings = []
-            
+
             # Configure logging
             logging.basicConfig(level=logging.INFO)
             self.logger = logging.getLogger(__name__)
@@ -112,11 +112,11 @@ async def test_production_hardening():
                     # Create a moderately large file (100KB)
                     large_content = "Large document test. " * 5000
                     large_file.write_text(large_content)
-                    
+
                     start_time = time.time()
                     result = orchestrator.ingest(large_file)
                     elapsed = time.time() - start_time
-                    
+
                     if elapsed < 5.0:  # Should process within 5 seconds
                         error_tests["large_file"] = True
                         self.log_info(f"    ✓ Large file processed in {elapsed:.2f}s")
@@ -157,7 +157,7 @@ async def test_production_hardening():
                 self.log_info("  Testing concurrent access...")
                 try:
                     import concurrent.futures
-                    
+
                     def ingest_file(filename):
                         test_file = Path(f"test_concurrent_{filename}.txt")
                         test_file.write_text(f"Concurrent test {filename}")
@@ -167,18 +167,18 @@ async def test_production_hardening():
                         finally:
                             if test_file.exists():
                                 test_file.unlink()
-                    
+
                     # Run 5 concurrent ingestions
                     with concurrent.futures.ThreadPoolExecutor(max_workers=5) as executor:
                         futures = [executor.submit(ingest_file, i) for i in range(5)]
                         results = [f.result() for f in futures]
-                    
+
                     if all(results):
                         error_tests["concurrent_access"] = True
                         self.log_info("    ✓ Concurrent access handled correctly")
                     else:
                         self.log_warning("    ⚠ Some concurrent operations failed")
-                        
+
                 except Exception as e:
                     self.log_error("    ✗ Concurrent access test failed", e)
 

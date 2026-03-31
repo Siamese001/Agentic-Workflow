@@ -476,7 +476,7 @@ class OptimizationProposalEngine:
 @dataclass(frozen=True)
 class RepairRouteCluster:
     """Cluster of repair routes for optimization analysis.
-    
+
     Attributes
     ----------
     cluster_id : str
@@ -498,11 +498,11 @@ class RepairRouteCluster:
     affected_components: list[str]
     success_rate: float
     timestamp_utc: int
-    
+
     def stable_hash(self) -> str:
         """Compute stable hash for content addressing."""
         import json
-        
+
         data = {
             "repair_routes": sorted(self.repair_routes, key=lambda x: x.get("route_id", "")),
             "failure_pattern": self.failure_pattern,
@@ -514,38 +514,38 @@ class RepairRouteCluster:
 
 class RepairRouteOptimizationEngine:
     """Generates optimization proposals from RepairRouteCluster objects.
-    
+
     Converts repair route data into actionable optimization proposals
     targeting specific components and improvement opportunities.
     """
-    
+
     def __init__(self, config: ProposalEngineConfig | None = None) -> None:
         self._config = config or ProposalEngineConfig()
-    
+
     def generate_from_repair_routes(
         self,
         repair_clusters: Sequence[RepairRouteCluster],
         timestamp_utc: int,
     ) -> list[OptimizationProposal]:
         """Generate optimization proposals from repair route clusters.
-        
+
         Args:
             repair_clusters: Sequence of repair route clusters
             timestamp_utc: Caller-supplied Unix timestamp
-            
+
         Returns:
             List of optimization proposals sorted by proposal_id
         """
         import uuid as _uuid  # noqa: PLC0415
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "RepairRouteOptimizationEngine.generate")
-        
+
         proposals: list[OptimizationProposal] = []
         for cluster in repair_clusters:
             proposals.extend(self._generate_from_cluster(cluster, timestamp_utc))
         proposals.sort(key=lambda p: p.proposal_id)
         return proposals
-    
+
     def _generate_from_cluster(
         self,
         cluster: RepairRouteCluster,
@@ -564,13 +564,13 @@ class RepairRouteOptimizationEngine:
             # High success rate - suggest optimization
             change_type = "REPAIR_OPTIMIZATION"
             risk_class = "LOW"
-        
+
         proposals: list[OptimizationProposal] = []
         for component in cluster.affected_components[:3]:  # Cap at 3 components
             proposal_id = _build_proposal_id(cluster.cluster_id, change_type, component, timestamp_utc)
             change_spec = _build_repair_change_spec(cluster, change_type)
             expected = f"Improve repair success rate from {cluster.success_rate:.2%} for {component}"
-            
+
             proposal = OptimizationProposal(
                 proposal_id=proposal_id,
                 cluster_id=cluster.cluster_id,
@@ -585,7 +585,7 @@ class RepairRouteOptimizationEngine:
                 timestamp_utc=timestamp_utc,
             )
             proposals.append(proposal)
-        
+
         return proposals
 
 

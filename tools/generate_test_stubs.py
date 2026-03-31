@@ -114,10 +114,10 @@ class TestStubGenerator:
         # Handle both unittest and pytest styles
         placeholder_start = test_content.find("class PlaceholderTest(unittest.TestCase):")
         pytest_start = test_content.find("class Test")
-        
+
         if placeholder_start == -1 and pytest_start == -1:
             return None
-        
+
         # For pytest, find the first test class
         if placeholder_start == -1:
             placeholder_start = pytest_start
@@ -145,7 +145,7 @@ class TestStubGenerator:
                 method = method.replace("self.", "")
                 method = method.replace("self.assert", "assert")
                 pytest_methods.append(method)
-            
+
             new_test_class = f'''class GeneratedTest:
     """Generated test class for {analysis["module_name"]}."""
 

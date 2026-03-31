@@ -16,7 +16,7 @@ logger = logging.getLogger(__name__)
 
 def ingest_jsonl_traces():
     """Ingest JSONL trace files"""
-    
+
     # JSONL trace files with metadata
     jsonl_files = [
         {
@@ -26,7 +26,7 @@ def ingest_jsonl_traces():
             "description": "Healing event traces"
         },
         {
-            "path": "artifacts/hitl/decisions.jsonl", 
+            "path": "artifacts/hitl/decisions.jsonl",
             "trace_type": "hitl_decision",
             "namespace": "human_in_loop",
             "description": "Human-in-the-loop decision traces"
@@ -40,7 +40,7 @@ def ingest_jsonl_traces():
         {
             "path": "artifacts/outputs/healing_experience.jsonl",
             "trace_type": "healing_experience",
-            "namespace": "healing_contexts", 
+            "namespace": "healing_contexts",
             "description": "Healing experience traces"
         },
         {
@@ -56,38 +56,38 @@ def ingest_jsonl_traces():
             "description": "Tool usage ground truth traces"
         }
     ]
-    
+
     # Initialize ChromaDB
     client = chromadb.PersistentClient("artifacts/chromadb")
     collection = client.get_collection("traces")
-    
+
     # Process each JSONL file
     total_chunks = 0
     for file_info in jsonl_files:
         file_path = Path(file_info["path"])
-        
+
         if not file_path.exists():
             logger.warning(f"File not found: {file_info['path']}")
             continue
-        
+
         try:
             chunks = []
             with open(file_path, 'r', encoding='utf-8') as f:
                 for line_num, line in enumerate(f, 1):
                     if not line.strip():
                         continue
-                    
+
                     try:
                         data = json.loads(line)
-                        
+
                         # Create trace content
                         content = json.dumps(data, indent=2)
-                        
+
                         # Create unique ID
                         chunk_id = hashlib.sha256(
                             f"{file_info['path']}:{line_num}:{content}".encode()
                         ).hexdigest()
-                        
+
                         # Enhanced metadata
                         metadata = {
                             'source_file': str(file_path),
@@ -101,52 +101,52 @@ def ingest_jsonl_traces():
                             'chunk_type': 'expanded_trace',
                             'file_size': len(content)
                         }
-                        
+
                         # Add any additional fields from the data
                         if isinstance(data, dict):
                             for key, value in data.items():
                                 if key not in metadata and isinstance(value, (str, int, float, bool)):
                                     metadata[f"data_{key}"] = value
-                        
+
                         chunk = {
                             'id': chunk_id,
                             'content': content,
                             'metadata': metadata
                         }
-                        
+
                         chunks.append(chunk)
-                        
+
                     except json.JSONDecodeError as e:
                         logger.warning(f"Invalid JSON on line {line_num} in {file_info['path']}: {e}")
                         continue
-            
+
             if chunks:
                 # Ingest chunks
                 ids = [chunk['id'] for chunk in chunks]
                 documents = [chunk['content'] for chunk in chunks]
                 metadatas = [chunk['metadata'] for chunk in chunks]
-                
+
                 # Generate mock embeddings
                 embeddings = [[0.0] * 1536 for _ in chunks]
-                
+
                 collection.add(
                     ids=ids,
                     documents=documents,
                     metadatas=metadatas,
                     embeddings=embeddings
                 )
-                
+
                 logger.info(f"Ingested {len(chunks)} chunks from {file_info['path']}")
                 total_chunks += len(chunks)
-            
+
         except Exception as e:
             logger.error(f"Error processing {file_info['path']}: {e}")
-    
+
     return total_chunks
 
 def ingest_log_traces():
     """Ingest log files as traces"""
-    
+
     log_files = [
         {
             "path": "artifacts/logs/_ssot_stderr.log",
@@ -154,42 +154,42 @@ def ingest_log_traces():
             "namespace": "system_logs"
         },
         {
-            "path": "artifacts/logs/_ssot_stderr_v2.log", 
+            "path": "artifacts/logs/_ssot_stderr_v2.log",
             "trace_type": "error_log_v2",
             "namespace": "system_logs"
         }
     ]
-    
+
     client = chromadb.PersistentClient("artifacts/chromadb")
     collection = client.get_collection("traces")
-    
+
     total_chunks = 0
     for file_info in log_files:
         file_path = Path(file_info["path"])
-        
+
         if not file_path.exists():
             logger.warning(f"File not found: {file_info['path']}")
             continue
-        
+
         try:
             with open(file_path, 'r', encoding='utf-8') as f:
                 content = f.read()
-            
+
             # Split into chunks (e.g., by lines or paragraphs)
             lines = content.split('\n')
             chunks = []
-            
+
             for i in range(0, len(lines), 100):  # Chunk every 100 lines
                 chunk_lines = lines[i:i+100]
                 chunk_content = '\n'.join(chunk_lines)
-                
+
                 if not chunk_content.strip():
                     continue
-                
+
                 chunk_id = hashlib.sha256(
                     f"{file_info['path']}:{i}:{chunk_content}".encode()
                 ).hexdigest()
-                
+
                 metadata = {
                     'source_file': str(file_path),
                     'trace_type': file_info['trace_type'],
@@ -202,53 +202,53 @@ def ingest_log_traces():
                     'chunk_type': 'log_trace',
                     'file_size': len(chunk_content)
                 }
-                
+
                 chunk = {
                     'id': chunk_id,
                     'content': chunk_content,
                     'metadata': metadata
                 }
-                
+
                 chunks.append(chunk)
-            
+
             if chunks:
                 # Ingest chunks
                 ids = [chunk['id'] for chunk in chunks]
                 documents = [chunk['content'] for chunk in chunks]
                 metadatas = [chunk['metadata'] for chunk in chunks]
-                
+
                 # Generate mock embeddings
                 embeddings = [[0.0] * 1536 for _ in chunks]
-                
+
                 collection.add(
                     ids=ids,
                     documents=documents,
                     metadatas=metadatas,
                     embeddings=embeddings
                 )
-                
+
                 logger.info(f"Ingested {len(chunks)} chunks from {file_info['path']}")
                 total_chunks += len(chunks)
-                
+
         except Exception as e:
             logger.error(f"Error processing {file_info['path']}: {e}")
-    
+
     return total_chunks
 
 def main():
     """Main function"""
     logger.info("Starting expanded traces ingestion...")
-    
+
     jsonl_chunks = ingest_jsonl_traces()
     log_chunks = ingest_log_traces()
-    
+
     total_new_chunks = jsonl_chunks + log_chunks
-    
+
     # Get final collection stats
     client = chromadb.PersistentClient("artifacts/chromadb")
     collection = client.get_collection("traces")
     final_count = collection.count()
-    
+
     logger.info(f"Wave 5 Complete:")
     logger.info(f"  - JSONL traces: {jsonl_chunks} chunks")
     logger.info(f"  - Log traces: {log_chunks} chunks")

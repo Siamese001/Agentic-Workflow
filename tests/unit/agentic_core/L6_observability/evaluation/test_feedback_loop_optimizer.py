@@ -68,7 +68,7 @@ class TestFeedbackLoopOptimizer:
 
         # Next signal with high priority should trigger capacity handling
         optimizer.enqueue_signal({"id": 11}, priority=1.0)
-        
+
         metrics = optimizer.get_metrics()
         # Queue should not exceed capacity
         assert metrics.current_queue_size <= 10
@@ -82,21 +82,21 @@ class TestFeedbackLoopOptimizer:
         # Normal state (< 50% full)
         for i in range(40):
             optimizer.enqueue_signal({"id": i}, priority=1.0)
-        
+
         metrics = optimizer.get_metrics()
         assert metrics.backpressure_state == BackpressureState.NORMAL
 
         # Elevated state (50-75% full)
         for i in range(20):
             optimizer.enqueue_signal({"id": i + 40}, priority=1.0)
-        
+
         metrics = optimizer.get_metrics()
         assert metrics.backpressure_state == BackpressureState.ELEVATED
 
         # High state (75-90% full)
         for i in range(15):
             optimizer.enqueue_signal({"id": i + 60}, priority=1.0)
-        
+
         metrics = optimizer.get_metrics()
         assert metrics.backpressure_state == BackpressureState.HIGH
 
@@ -290,7 +290,7 @@ class TestIntegration:
         # Process batch - should include high priority signals
         batch = optimizer.process_batch(batch_size=10)
         high_priority_in_batch = sum(1 for s in batch if s.get("priority") == "high")
-        
+
         # At least some high priority signals should be processed
         assert high_priority_in_batch >= 0
 

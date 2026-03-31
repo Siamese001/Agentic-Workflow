@@ -43,7 +43,7 @@ def test_emit_determinism_digest_is_callable(mod):
     if func is None:
         pytest.skip("emit_determinism_digest not found in module")
     assert callable(func), "emit_determinism_digest must be callable"
-    
+
     # Test function signature
     import inspect
     sig = inspect.signature(func)

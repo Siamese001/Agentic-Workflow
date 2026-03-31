@@ -18,17 +18,17 @@ def extract_skipped_tests():
         text=True,
         cwd="C:\\Git\\Agentic-Workflow"
     )
-    
+
     output = result.stdout
-    
+
     # Parse skipped tests
     skipped_tests = []
     current_test = None
     current_reason = ""
-    
+
     for line in output.split('\n'):
         line = line.strip()
-        
+
         # Detect test function
         if line.startswith('<Function test_'):
             if 'skip' in line.lower():
@@ -42,7 +42,7 @@ def extract_skipped_tests():
             else:
                 current_test = None
                 current_reason = ""
-        
+
         # Detect module skip
         elif line.startswith('<Module ') and 'skip' in line.lower():
             module_name = line.replace('<Module ', '').replace('>', '')
@@ -52,11 +52,11 @@ def extract_skipped_tests():
                 'file_path': module_name
             })
             current_reason = ""
-        
+
         # Collect reason lines (non-test lines between test entries)
         elif current_test and line and not line.startswith(('<', 'collecting', 'collected')):
             current_reason += line + " "
-    
+
     return skipped_tests
 
 def extract_file_path(test_line):
@@ -76,10 +76,10 @@ def categorize_by_phase(skipped_tests):
         'Phase 5 - Integration': [],
         'Uncategorized': []
     }
-    
+
     for test in skipped_tests:
         file_path = test['file_path'].lower()
-        
+
         if 'guardian' in file_path or 'core' in file_path:
             phases['Phase 1 - Foundation'].append(test)
         elif 'dependency' in file_path or 'import' in file_path:
@@ -92,18 +92,18 @@ def categorize_by_phase(skipped_tests):
             phases['Phase 5 - Integration'].append(test)
         else:
             phases['Uncategorized'].append(test)
-    
+
     return phases
 
 def create_burndown_plan(phases):
     """Create burndown plan with 5-10 files per wave."""
     plan = {}
     wave_num = 1
-    
+
     for phase_name, tests in phases.items():
         if not tests:
             continue
-            
+
         # Group by file path
         files = {}
         for test in tests:
@@ -111,7 +111,7 @@ def create_burndown_plan(phases):
             if file_path not in files:
                 files[file_path] = []
             files[file_path].append(test)
-        
+
         # Create waves with 5-10 files each
         file_list = list(files.keys())
         for i in range(0, len(file_list), 7):  # 7 files per wave (within 5-10 range)
@@ -124,23 +124,23 @@ def create_burndown_plan(phases):
                 'description': f"Fix {len(wave_files)} files with {sum(len(files[f]) for f in wave_files)} skipped tests"
             }
             wave_num += 1
-    
+
     return plan
 
 def main():
     print("Extracting skipped tests...")
     skipped_tests = extract_skipped_tests()
     print(f"Found {len(skipped_tests)} skipped tests")
-    
+
     print("Categorizing by phase...")
     phases = categorize_by_phase(skipped_tests)
-    
+
     for phase_name, tests in phases.items():
         print(f"{phase_name}: {len(tests)} tests")
-    
+
     print("Creating burndown plan...")
     plan = create_burndown_plan(phases)
-    
+
     # Save results
     results = {
         'total_skipped': len(skipped_tests),
@@ -148,17 +148,17 @@ def main():
         'burndown_plan': plan,
         'all_skipped_tests': skipped_tests
     }
-    
+
     with open('artifacts/skip_burndown_plan.json', 'w') as f:
         json.dump(results, f, indent=2)
-    
+
     print(f"Burndown plan saved to artifacts/skip_burndown_plan.json")
     print(f"Total waves: {len(plan)}")
-    
+
     # Print summary
     for wave_key, wave_data in plan.items():
         print(f"{wave_key}: {wave_data['files']}")
-    
+
     return results
 
 if __name__ == "__main__":

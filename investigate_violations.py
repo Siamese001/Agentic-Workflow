@@ -19,11 +19,11 @@ for kind in violation_kinds:
 
 # Get some sample violations with node names
 cursor.execute('''
-SELECT n1.adg_name as src_name, n2.adg_name as dst_name, e.edge_kind, e.source_file, e.line_no 
-FROM edges e 
-JOIN nodes n1 ON e.src_id = n1.id 
-JOIN nodes n2 ON e.dst_id = n2.id 
-WHERE e.relation_type = "violates" 
+SELECT n1.adg_name as src_name, n2.adg_name as dst_name, e.edge_kind, e.source_file, e.line_no
+FROM edges e
+JOIN nodes n1 ON e.src_id = n1.id
+JOIN nodes n2 ON e.dst_id = n2.id
+WHERE e.relation_type = "violates"
 LIMIT 10
 ''')
 sample_violations = cursor.fetchall()

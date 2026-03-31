@@ -103,7 +103,7 @@ try:
         OTEL_GRPC_EXPORTER_AVAILABLE = True
     except ImportError:
         OTEL_GRPC_EXPORTER_AVAILABLE = False
-    
+
     try:
         from opentelemetry.exporter.otlp.proto.http.trace_exporter import OTLPSpanExporter as OTLPHttpExporter
         OTEL_HTTP_EXPORTER_AVAILABLE = True
@@ -332,12 +332,12 @@ class OpenTelemetryTracingAdapter:
         if OTEL_AVAILABLE:
             resource = Resource.create({"service.name": service_name})
             provider = TracerProvider(resource=resource)
-            
+
             # Console exporter (for debugging)
             if enable_console_export:
                 processor = BatchSpanProcessor(ConsoleSpanExporter())
                 provider.add_span_processor(processor)
-            
+
             # OTLP gRPC exporter (for production backends like Jaeger, Tempo, etc.)
             if enable_otlp_grpc and OTEL_GRPC_EXPORTER_AVAILABLE:
                 try:
@@ -356,7 +356,7 @@ class OpenTelemetryTracingAdapter:
                 except Exception as e:
                     if self.enable_logging:
                         logger.warning("otlp_grpc_exporter_failed", extra={"error": str(e)})
-            
+
             # OTLP HTTP exporter (for environments where gRPC is blocked)
             if enable_otlp_http and OTEL_HTTP_EXPORTER_AVAILABLE:
                 try:
@@ -375,7 +375,7 @@ class OpenTelemetryTracingAdapter:
                 except Exception as e:
                     if self.enable_logging:
                         logger.warning("otlp_http_exporter_failed", extra={"error": str(e)})
-            
+
             trace.set_tracer_provider(provider)
             self.tracer = trace.get_tracer(__name__)
             self._enabled = True
@@ -686,17 +686,17 @@ class OpenTelemetryTracingAdapter:
             True if tracing is enabled
         """
         return self._enabled
-    
+
     # Wave C-2: Expose spans for telemetry store integration
     def get_active_spans(self) -> list[dict[str, Any]]:
         """Get all active spans for telemetry store integration.
-        
+
         Returns:
             List of active span data
         """
         if not self._enabled or not hasattr(self, '_active_spans'):
             return []
-        
+
         spans_data = []
         for span_id, span in self._active_spans.items():
             span_data = {
@@ -710,12 +710,12 @@ class OpenTelemetryTracingAdapter:
                 "events": getattr(span, 'events', []),
             }
             spans_data.append(span_data)
-        
+
         return spans_data
-    
+
     def get_span_metrics(self) -> dict[str, Any]:
         """Get span metrics for telemetry analysis.
-        
+
         Returns:
             Span metrics summary
         """
@@ -727,30 +727,30 @@ class OpenTelemetryTracingAdapter:
                 "error_spans": 0,
                 "avg_duration_ms": 0.0,
             }
-        
+
         spans = list(self._active_spans.values())
         total_spans = len(spans)
-        
-        running_spans = sum(1 for span in spans 
+
+        running_spans = sum(1 for span in spans
                           if getattr(span, 'status', 'RUNNING') == 'RUNNING')
-        completed_spans = sum(1 for span in spans 
+        completed_spans = sum(1 for span in spans
                             if getattr(span, 'status', 'RUNNING') == 'COMPLETED')
-        error_spans = sum(1 for span in spans 
+        error_spans = sum(1 for span in spans
                         if getattr(span, 'status', 'RUNNING') == 'ERROR')
-        
+
         # Calculate average duration for completed spans
-        completed_span_data = [span for span in spans 
+        completed_span_data = [span for span in spans
                               if getattr(span, 'status', 'RUNNING') == 'COMPLETED'
                               and hasattr(span, 'start_time')
                               and hasattr(span, 'end_time')
                               and span.end_time is not None]
-        
+
         if completed_span_data:
             durations = [(span.end_time - span.start_time) for span in completed_span_data]
             avg_duration_ms = sum(durations) / len(durations)
         else:
             avg_duration_ms = 0.0
-        
+
         return {
             "total_spans": total_spans,
             "running_spans": running_spans,

@@ -14,7 +14,7 @@ class TestBoundaryCases:
         for reasoning_dir in repo_root.rglob("reasoning"):
             if reasoning_dir.is_dir():
                 orchestrator_files.extend(list(reasoning_dir.glob("*Orchestrator*.py")))
-        
+
         if not orchestrator_files:
             pytest.skip("No Orchestrator files found")
 
@@ -34,7 +34,7 @@ class TestBoundaryCases:
             if ".venv" in f.parts or "site-packages" in f.parts:
                 continue
             strategy_files.append(f)
-        
+
         if not strategy_files:
             pytest.skip("No Strategy files found")
 
@@ -53,7 +53,7 @@ class TestBoundaryCases:
             if ".venv" in f.parts or "site-packages" in f.parts:
                 continue
             adapter_files.append(f)
-        
+
         if not adapter_files:
             pytest.skip("No Adapter files found")
 
@@ -72,7 +72,7 @@ class TestBoundaryCases:
             if ".venv" in f.parts or "site-packages" in f.parts:
                 continue
             executor_files.append(f)
-        
+
         if not executor_files:
             pytest.skip("No Executor files found")
 
@@ -91,7 +91,7 @@ class TestBoundaryCases:
             if ".venv" in f.parts or "site-packages" in f.parts:
                 continue
             mixin_files.append(f)
-        
+
         if not mixin_files:
             pytest.skip("No Mixin files found")
 

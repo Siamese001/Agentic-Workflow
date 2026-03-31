@@ -17,23 +17,23 @@ foreach ($zipFile in $zipFiles) {
     if ($zipFile -match "adg_run_(\d{8}_\d{4})\.zip\.gz") {
         $timestamp = $matches[1]
         Write-Host "`nProcessing timestamp: $timestamp"
-        
+
         # Find individual files with this timestamp (excluding zip files)
         $individualFiles = Get-ChildItem -Path $archiveDir -Name "*$timestamp*.gz" | Where-Object { $_ -notlike "*.zip.gz" }
-        
+
         if ($individualFiles.Count -gt 0) {
             Write-Host "  Found $($individualFiles.Count) individual files to remove:"
-            
+
             foreach ($file in $individualFiles) {
                 $filePath = Join-Path $archiveDir $file
                 $fileSize = (Get-Item $filePath).Length
                 Write-Host "    Removing: $file ($([math]::Round($fileSize/1MB, 2)) MB)"
-                
+
                 Remove-Item $filePath -Force
                 $totalFreed += $fileSize
                 $filesRemoved++
             }
-            
+
             Write-Host "  Keeping: $zipFile"
         }
     }

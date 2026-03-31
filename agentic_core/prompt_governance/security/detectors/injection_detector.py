@@ -300,16 +300,16 @@ class InjectionDetector:
         _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "InjectionDetector.scan")
 
         self._total_scans += 1
-        
+
         if not text:
             return True
-        
+
         original_lower = text.lower()
         self._check_signatures(original_lower)
         normalized_text, meta = normalize_and_decode(text)
         if normalized_text != original_lower:
             self._check_signatures(normalized_text)
-        
+
         # Emit detection counts to system learning
         self._emit_detection_counts()
         return True
@@ -341,7 +341,7 @@ class InjectionDetector:
         try:
             from system_learning.adapters.system_learning_memory_bridge import get_sl_memory_bridge
             bridge = get_sl_memory_bridge()
-            
+
             # Create a summary of detection counts
             total_detections = sum(self._detection_counts.values())
             if total_detections > 0:
@@ -361,12 +361,12 @@ class InjectionDetector:
         route: str | None = None,
     ) -> bool:
         """Scan text with agent/route context for enhanced tracking.
-        
+
         Args:
             text: Text to scan for injection patterns
             agent_id: Optional agent identifier
             route: Optional route identifier
-            
+
         Returns:
             True if scan completed (regardless of detections)
         """
@@ -375,23 +375,23 @@ class InjectionDetector:
         _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "InjectionDetector.scan_with_context")
 
         self._total_scans += 1
-        
+
         if not text:
             return True
-        
+
         # Track per-agent/route scans
         context_key = f"{agent_id or 'unknown'}:{route or 'unknown'}"
         if not hasattr(self, '_context_scan_counts'):
             self._context_scan_counts = {}
         if not hasattr(self, '_context_detection_counts'):
             self._context_detection_counts = {}
-        
+
         self._context_scan_counts[context_key] = self._context_scan_counts.get(context_key, 0) + 1
-        
+
         # Perform the scan
         original_lower = text.lower()
         detections_before = sum(self._detection_counts.values())
-        
+
         try:
             self._check_signatures(original_lower)
             normalized_text, meta = normalize_and_decode(text)
@@ -402,11 +402,11 @@ class InjectionDetector:
             detections_after = sum(self._detection_counts.values())
             if detections_after > detections_before:
                 self._context_detection_counts[context_key] = self._context_detection_counts.get(context_key, 0) + 1
-        
+
         # Emit enhanced detection data with context
         self._emit_context_detection_counts(agent_id, route)
         return True
-    
+
     def _emit_context_detection_counts(
         self,
         agent_id: str | None,
@@ -416,7 +416,7 @@ class InjectionDetector:
         try:
             from system_learning.adapters.system_learning_memory_bridge import get_sl_memory_bridge
             bridge = get_sl_memory_bridge()
-            
+
             # Emit per-context data if we have context tracking
             if hasattr(self, '_context_scan_counts') and hasattr(self, '_context_detection_counts'):
                 bridge.persist_injection_context_data(

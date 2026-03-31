@@ -296,14 +296,14 @@ class SovereignRagOrchestrator:
         # Validate input type
         if not isinstance(file_path, Path):
             raise TypeError(f"file_path must be a Path object, got {type(file_path).__name__}")
-        
+
         # Validate file exists and is not a directory
         if not file_path.exists():
             raise FileNotFoundError(f"File not found: {file_path}")
-        
+
         if file_path.is_dir():
             raise ValueError(f"Path is a directory, not a file: {file_path}")
-        
+
         suffix = file_path.suffix.lower()
         if suffix in {".txt", ".md", ".markdown"}:
             if TextDocumentLoader:

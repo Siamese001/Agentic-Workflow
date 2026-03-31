@@ -25,7 +25,7 @@ from ..config.feature_schemas import FeatureSchemas
 class C0RetrievalReranker(BaseMLModel):
     """
     LightGBM model for C0 retrieval reranking.
-    
+
     Reranks retrieved documents based on:
     - Query-document similarity and semantic match
     - Document quality (authority, completeness, reliability)
@@ -33,14 +33,14 @@ class C0RetrievalReranker(BaseMLModel):
     - Usage patterns and popularity
     - System performance (cache efficiency)
     - Domain-specific relevance signals
-    
+
     Always operates in advisory mode - final ranking decisions remain with C0.
     """
-    
+
     def __init__(self, model_file_path: Optional[Path] = None):
         if lgb is None:
             raise ImportError("LightGBM is required for C0RetrievalRanker")
-        
+
         super().__init__(
             model_name="c0_retrieval_reranker",
             model_version="1.0",
@@ -48,54 +48,54 @@ class C0RetrievalReranker(BaseMLModel):
             prediction_type=PredictionType.REGRESSION,  # Predict relevance score
             model_file_path=model_file_path
         )
-        
+
         # Initialize feature extractor
         self.feature_extractor = C0FeatureExtractor()
         self.feature_schema = self.feature_extractor.get_schema()
-        
+
         # Model components
         self.model = None
         self.feature_names = None
         self.feature_importances = None
-        
+
         # Default thresholds
         self.threshold_config = {
             "score_threshold": 0.5,
             "min_relevance": 0.3,
             "max_documents": 100
         }
-        
+
         if model_file_path and model_file_path.exists():
             self.load_model()
-    
+
     def load_model(self) -> None:
         """Load the LightGBM model from file."""
         if not self.model_file_path or not self.model_file_path.exists():
             raise FileNotFoundError(f"Model file not found: {self.model_file_path}")
-        
+
         try:
             with open(self.model_file_path, 'rb') as f:
                 model_data = pickle.load(f)
-            
+
             self.model = model_data.get('model')
             self.feature_names = model_data.get('feature_names', [])
             self.feature_importances = model_data.get('feature_importances', [])
             self.threshold_config = model_data.get('threshold_config', self.threshold_config)
             self._training_data_digest = model_data.get('training_data_digest', '')
-            
+
             if self.model is None:
                 raise ValueError("No model found in saved file")
-            
+
             self.is_loaded = True
-            
+
         except Exception as e:
             raise RuntimeError(f"Failed to load model: {e}")
-    
+
     def save_model(self, model_file_path: Path) -> None:
         """Save the model to file."""
         if self.model is None:
             raise RuntimeError("No model to save")
-        
+
         model_data = {
             'model': self.model,
             'feature_names': self.feature_names,
@@ -112,10 +112,10 @@ class C0RetrievalReranker(BaseMLModel):
                 'lightgbm_params': getattr(self.model, 'params', {})
             }
         }
-        
+
         with open(model_file_path, 'wb') as f:
             pickle.dump(model_data, f)
-    
+
     def predict(
         self,
         model_input: ModelInput,
@@ -126,27 +126,27 @@ class C0RetrievalReranker(BaseMLModel):
     ) -> ModelPrediction:
         """
         Predict relevance score for document reranking.
-        
+
         Args:
             model_input: Validated model input
             trace_id: Trace ID for reproducibility
             replay_key: Replay key for determinism
             policy_hash: Policy hash for governance
             decision_mode: Decision authority level
-            
+
         Returns:
             Relevance score prediction with full metadata
         """
         if not self.is_loaded:
             raise RuntimeError("Model not loaded")
-        
+
         # Preprocess features
         processed_features, preprocessing_steps = self.preprocess_features(model_input.features)
         model_input.preprocessing_applied = preprocessing_steps
-        
+
         # Extract features in correct order
         feature_vector = self._extract_feature_vector(processed_features)
-        
+
         if feature_vector is None:
             # Failed to extract features
             return self.create_prediction(
@@ -157,25 +157,25 @@ class C0RetrievalReranker(BaseMLModel):
                 replay_key=replay_key,
                 policy_hash=policy_hash
             )
-        
+
         try:
             # Make prediction
             start_time = datetime.now()
-            
+
             # LightGBM prediction
             relevance_score = self.model.predict(feature_vector.reshape(1, -1))[0]
-            
+
             prediction_time = (datetime.now() - start_time).total_seconds()
-            
+
             # Ensure score is in valid range
             relevance_score = float(np.clip(relevance_score, 0.0, 1.0))
-            
+
             # Calculate confidence based on prediction certainty
             confidence = self._calculate_prediction_confidence(feature_vector, relevance_score)
-            
+
             # Get feature importance
             top_features = self.get_feature_importance(model_input)
-            
+
             # Check thresholds
             threshold_used = self.threshold_config.get("score_threshold", 0.5)
             passes_threshold = self.check_thresholds(
@@ -185,12 +185,12 @@ class C0RetrievalReranker(BaseMLModel):
                     threshold_used=threshold_used
                 )
             )
-            
+
             # Determine final decision mode
             final_decision_mode = decision_mode
             if not passes_threshold or relevance_score < self.threshold_config.get("min_relevance", 0.3):
                 final_decision_mode = DecisionMode.ESCALATED
-            
+
             # Create prediction
             prediction = self.create_prediction(
                 prediction=relevance_score,
@@ -202,7 +202,7 @@ class C0RetrievalReranker(BaseMLModel):
                 replay_key=replay_key,
                 policy_hash=policy_hash
             )
-            
+
             # Add prediction metadata
             prediction.model_metadata.update({
                 'prediction_time_ms': prediction_time * 1000,
@@ -212,12 +212,12 @@ class C0RetrievalReranker(BaseMLModel):
                 'is_above_threshold': passes_threshold,
                 'ranking_position': None  # Will be set during batch ranking
             })
-            
+
             # Log prediction
             self.log_prediction(prediction, model_input)
-            
+
             return prediction
-            
+
         except Exception as e:
             # Prediction failed
             return self.create_prediction(
@@ -228,7 +228,7 @@ class C0RetrievalReranker(BaseMLModel):
                 replay_key=replay_key,
                 policy_hash=policy_hash
             )
-    
+
     def rerank_documents(
         self,
         query: Dict[str, Any],
@@ -240,7 +240,7 @@ class C0RetrievalReranker(BaseMLModel):
     ) -> List[Dict[str, Any]]:
         """
         Rerank a list of documents based on relevance scores.
-        
+
         Args:
             query: Query information
             documents: List of documents to rerank
@@ -248,18 +248,18 @@ class C0RetrievalReranker(BaseMLModel):
             replay_key: Replay key for determinism
             policy_hash: Policy hash for governance
             max_documents: Maximum number of documents to return
-            
+
         Returns:
             Reranked list of documents with scores
         """
         if not self.is_loaded:
             raise RuntimeError("Model not loaded")
-        
+
         max_docs = max_documents or self.threshold_config.get("max_documents", 100)
-        
+
         # Predict relevance for each document
         document_scores = []
-        
+
         for i, document in enumerate(documents):
             # Create context for this document
             context = {
@@ -270,7 +270,7 @@ class C0RetrievalReranker(BaseMLModel):
                 "domain_terms": query.get("domain_terms", []),
                 "technical_terms": query.get("technical_terms", [])
             }
-            
+
             # Extract features
             extraction_result = self.feature_extractor.extract_features(
                 context=context,
@@ -278,12 +278,12 @@ class C0RetrievalReranker(BaseMLModel):
                 replay_key=replay_key,
                 policy_hash=policy_hash
             )
-            
+
             if extraction_result.success:
                 # Validate input
                 model_input = self.validate_input(extraction_result.features)
                 model_input.feature_provenance = extraction_result.provenance
-                
+
                 # Make prediction
                 prediction = self.predict(
                     model_input=model_input,
@@ -291,7 +291,7 @@ class C0RetrievalReranker(BaseMLModel):
                     replay_key=replay_key,
                     policy_hash=policy_hash
                 )
-                
+
                 document_scores.append({
                     'document': document,
                     'original_index': i,
@@ -312,26 +312,26 @@ class C0RetrievalReranker(BaseMLModel):
                     'decision_mode': DecisionMode.BLOCKED,
                     'prediction_metadata': {'error': 'Feature extraction failed'}
                 })
-        
+
         # Sort by relevance score (descending)
         document_scores.sort(key=lambda x: x['relevance_score'], reverse=True)
-        
+
         # Update ranking positions
         for rank, doc_score in enumerate(document_scores[:max_docs]):
             doc_score['ranking_position'] = rank + 1
-        
+
         # Return top documents
         return document_scores[:max_docs]
-    
+
     def get_feature_importance(self, model_input: ModelInput) -> List[Dict[str, Any]]:
         """Get feature importance for explainability."""
         if not self.is_loaded or not self.feature_importances:
             return []
-        
+
         try:
             # Get feature names
             feature_names = self.feature_names or list(model_input.features.keys())
-            
+
             # Create feature importance list
             feature_importance = []
             for i, (name, importance) in enumerate(zip(feature_names, self.feature_importances)):
@@ -342,50 +342,50 @@ class C0RetrievalReranker(BaseMLModel):
                     'rank': i + 1,
                     'relative_importance': float(importance / max(self.feature_importances)) if max(self.feature_importances) > 0 else 0.0
                 })
-            
+
             # Sort by importance
             feature_importance.sort(key=lambda x: x['importance_score'], reverse=True)
-            
+
             # Update ranks
             for i, feature in enumerate(feature_importance):
                 feature['rank'] = i + 1
-            
+
             # Return top 10 features
             return feature_importance[:10]
-            
+
         except Exception as e:
             # Failed to compute importance
             return []
-    
+
     def _extract_feature_vector(self, features: Dict[str, Any]) -> Optional[np.ndarray]:
         """Extract features in the correct order for the model."""
         if not self.feature_names:
             return None
-        
+
         try:
             feature_vector = []
             for feature_name in self.feature_names:
                 value = features.get(feature_name, 0.0)  # Default to 0 if missing
-                
+
                 # Convert to numeric
                 if isinstance(value, str):
                     try:
                         value = float(value)
                     except ValueError:
                         value = 0.0
-                
+
                 feature_vector.append(float(value))
-            
+
             return np.array(feature_vector)
-            
+
         except Exception as e:
             return None
-    
+
     def _calculate_prediction_confidence(self, feature_vector: np.ndarray, prediction: float) -> float:
         """Calculate confidence score for prediction."""
         # For LightGBM, we can use prediction proximity to decision boundary
         # and feature vector characteristics
-        
+
         # Base confidence from prediction magnitude
         if prediction > 0.7 or prediction < 0.3:
             base_confidence = 0.8  # High confidence for extreme scores
@@ -393,22 +393,22 @@ class C0RetrievalReranker(BaseMLModel):
             base_confidence = 0.6  # Medium confidence
         else:
             base_confidence = 0.4  # Lower confidence for ambiguous scores
-        
+
         # Adjust based on feature vector characteristics
         feature_variance = np.var(feature_vector)
         variance_factor = min(0.2, feature_variance / 10.0)  # Boost confidence for varied features
-        
+
         # Adjust based on feature completeness
         non_zero_features = np.count_nonzero(feature_vector)
         completeness_factor = min(0.1, non_zero_features / len(feature_vector) * 0.1)
-        
+
         confidence = base_confidence + variance_factor + completeness_factor
         return round(min(1.0, max(0.0, confidence)), 3)
-    
+
     def preprocess_features(self, features: Dict[str, Any]) -> Tuple[Dict[str, Any], List[str]]:
         """Preprocess features for LightGBM."""
         processed_features, preprocessing_steps = super().preprocess_features(features)
-        
+
         # Additional preprocessing for LightGBM
         for key, value in processed_features.items():
             # Ensure all features are numeric
@@ -422,9 +422,9 @@ class C0RetrievalReranker(BaseMLModel):
             elif not isinstance(value, (int, float)):
                 processed_features[key] = 0.0
                 preprocessing_steps.append(f"non_numeric_to_default_{key}")
-        
+
         return processed_features, preprocessing_steps
-    
+
     def train_model(
         self,
         training_data: List[Dict[str, Any]],
@@ -434,7 +434,7 @@ class C0RetrievalReranker(BaseMLModel):
     ) -> None:
         """
         Train the LightGBM model.
-        
+
         Args:
             training_data: List of training examples with features and labels
             feature_names: Names of features to use
@@ -444,22 +444,22 @@ class C0RetrievalReranker(BaseMLModel):
         # Extract features and labels
         X = []
         y = []
-        
+
         for example in training_data:
             features = example['features']
             label = example['label']  # Relevance score (0-1)
-            
+
             feature_vector = []
             for feature_name in feature_names:
                 value = features.get(feature_name, 0.0)
                 feature_vector.append(float(value))
-            
+
             X.append(feature_vector)
             y.append(float(label))
-        
+
         X = np.array(X)
         y = np.array(y)
-        
+
         # Default LightGBM parameters
         default_params = {
             'objective': 'regression',
@@ -473,13 +473,13 @@ class C0RetrievalReranker(BaseMLModel):
             'verbose': -1,
             'random_state': 42
         }
-        
+
         # Merge with provided parameters
         params = {**default_params, **(lgb_params or {})}
-        
+
         # Create LightGBM dataset
         train_data = lgb.Dataset(X, label=y)
-        
+
         # Train model
         self.model = lgb.train(
             params,
@@ -488,16 +488,16 @@ class C0RetrievalReranker(BaseMLModel):
             valid_sets=[train_data],
             callbacks=[lgb.log_evaluation(10)]
         )
-        
+
         # Store feature names and importance
         self.feature_names = feature_names
         self.feature_importances = self.model.feature_importance()
-        
+
         # Store training digest
         self._training_data_digest = training_data_digest
-        
+
         self.is_loaded = True
-    
+
     def predict_from_context(
         self,
         query: Dict[str, Any],
@@ -509,7 +509,7 @@ class C0RetrievalReranker(BaseMLModel):
     ) -> ModelPrediction:
         """
         Predict relevance from context (convenience method).
-        
+
         Args:
             query: Query information
             document: Document to score
@@ -517,7 +517,7 @@ class C0RetrievalReranker(BaseMLModel):
             replay_key: Replay key for determinism
             policy_hash: Policy hash for governance
             decision_mode: Decision authority level
-            
+
         Returns:
             Relevance score prediction
         """
@@ -530,7 +530,7 @@ class C0RetrievalReranker(BaseMLModel):
             "domain_terms": query.get("domain_terms", []),
             "technical_terms": query.get("technical_terms", [])
         }
-        
+
         # Extract features
         extraction_result = self.feature_extractor.extract_features(
             context=context,
@@ -538,7 +538,7 @@ class C0RetrievalReranker(BaseMLModel):
             replay_key=replay_key,
             policy_hash=policy_hash
         )
-        
+
         if not extraction_result.success:
             # Feature extraction failed
             return self.create_prediction(
@@ -549,11 +549,11 @@ class C0RetrievalReranker(BaseMLModel):
                 replay_key=replay_key,
                 policy_hash=policy_hash
             )
-        
+
         # Validate input
         model_input = self.validate_input(extraction_result.features)
         model_input.feature_provenance = extraction_result.provenance
-        
+
         # Make prediction
         return self.predict(
             model_input=model_input,

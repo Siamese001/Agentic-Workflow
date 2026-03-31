@@ -44,5 +44,3 @@ class TestDeterminism:
 
     def test_compute_report_hash_deterministic(self):
         """compute_report_hash produces identical output for same report."""
-
-

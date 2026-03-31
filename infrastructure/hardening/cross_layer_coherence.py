@@ -641,12 +641,12 @@ class CrossLayerCoherenceManager:
             self.sync_status[layer_type].failed_operations += 1
             self.sync_status[layer_type].status = SyncStatus.FAILED
             logger.error(f"Error handling invalidation: {e}")
-            
+
             # Wave B-7: Emit cache coherence violations for drift detection
             try:
                 from system_learning.adapters.system_learning_memory_bridge import get_sl_memory_bridge
                 bridge = get_sl_memory_bridge()
-                
+
                 # Persist coherence violation
                 bridge.persist_cache_coherence_violation(
                     layer_type=layer_type.value,

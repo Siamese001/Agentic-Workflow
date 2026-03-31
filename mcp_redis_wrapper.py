@@ -22,28 +22,28 @@ def main():
     if len(sys.argv) < 2:
         print(json.dumps({"error": "Usage: mcp_redis_wrapper.py <command> [args]"}))
         sys.exit(1)
-    
+
     command = sys.argv[1].lower()
     repo_root = Path(__file__).parent
     fix = MCPRedisFix(str(repo_root))
-    
+
     if command == "status":
         result = fix.test_mcp_redis_functions()
         print(json.dumps(result))
-        
+
     elif command == "ingest":
         force = "--force" in sys.argv
         result = fix.run_adg_ingestion_optimized(force=force)
         print(json.dumps(result))
-        
+
     elif command == "clear":
         result = fix.clear_redis_cache()
         print(json.dumps(result))
-        
+
     elif command == "optimize":
         result = fix.optimize_redis_config()
         print(json.dumps(result))
-        
+
     else:
         print(json.dumps({"error": f"Unknown command: {command}"}))
         sys.exit(1)

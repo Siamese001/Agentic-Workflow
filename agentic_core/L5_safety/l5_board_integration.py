@@ -26,7 +26,7 @@ Logger = logging.getLogger(__name__)
 @dataclass
 class CompletenessChangePackage:
     """Change package for L5 Board review.
-    
+
     Spec-compliant C0 RULE: proposal_only=True, never authorizes.
     """
     package_id: str
@@ -34,21 +34,21 @@ class CompletenessChangePackage:
     confidence: float
     rationale: str
     affected_layers: list[str]
-    
+
     # Source
     source_evaluator: str
     source_trace_id: str
-    
+
     # Signals that triggered proposal
     trigger_signals: list[str]
-    
+
     # C0 RULE enforcement
     proposal_only: bool = True
-    
+
     # Metadata
     created_at: str = field(default_factory=lambda: datetime.utcnow().isoformat())
     status: str = "pending"  # pending, approved, rejected, escalated
-    
+
     # L5 Board response
     board_decision: Optional[str] = None
     decision_rationale: Optional[str] = None
@@ -57,13 +57,13 @@ class CompletenessChangePackage:
 
 class L5BoardBridge:
     """Bridge between CompletenessRAGProposer and L5 Board.
-    
+
     Routes proposals to L5 Board for decision per C0 RULE.
     """
-    
+
     def __init__(self, board_endpoint: Optional[str] = None):
         """Initialize L5 Board bridge.
-        
+
         Args:
             board_endpoint: L5 Board API endpoint
         """
@@ -71,7 +71,7 @@ class L5BoardBridge:
         self._pending_packages: list[CompletenessChangePackage] = []
         self._decided_packages: list[CompletenessChangePackage] = []
         self._package_count = 0
-    
+
     def submit_proposal(
         self,
         proposal_type: str,
@@ -83,7 +83,7 @@ class L5BoardBridge:
         trigger_signals: list[str],
     ) -> CompletenessChangePackage:
         """Submit proposal to L5 Board.
-        
+
         Args:
             proposal_type: Type of proposal
             confidence: Confidence score
@@ -92,7 +92,7 @@ class L5BoardBridge:
             source_evaluator: Evaluator that generated proposal
             source_trace_id: Trace ID of source evaluation
             trigger_signals: Signals that triggered proposal
-            
+
         Returns:
             CompletenessChangePackage
         """
@@ -100,7 +100,7 @@ class L5BoardBridge:
         _emit_records_execution_trace(
             _trace_id, LayerSegment.L5_SAFETY, "L5BoardBridge.submit_proposal"
         )
-        
+
         package = CompletenessChangePackage(
             package_id=f"l5pkg_{source_trace_id[:16]}_{self._package_count:04d}",
             proposal_type=proposal_type,
@@ -113,48 +113,48 @@ class L5BoardBridge:
             proposal_only=True,  # C0 RULE
             status="pending",
         )
-        
+
         # _emit_records_proposal_submitted(
         #     _trace_id, package.package_id, proposal_type, confidence
         # )
-        
+
         # Store pending
         self._pending_packages.append(package)
         self._package_count += 1
-        
+
         Logger.info(
             f"Submitted proposal to L5 Board: {package.package_id} "
             f"({proposal_type}, confidence={confidence:.2f})"
         )
-        
+
         return package
-    
+
     def route_to_l5(self, package: CompletenessChangePackage) -> bool:
         """Route package to L5 Board for decision.
-        
+
         Args:
             package: Change package to route
-            
+
         Returns:
             True if routed successfully
         """
         _trace_id = f"l5_route_{package.package_id}"
-        
+
         # In production, this would call L5 Board API
         # For now, we log and simulate
         Logger.info(f"Routing to L5 Board: {package.package_id}")
-        
+
         # Simulate L5 Board decision process
         # In production, this would be async
         self._simulate_l5_decision(package)
-        
+
         return True
-    
+
     def _simulate_l5_decision(self, package: CompletenessChangePackage) -> None:
         """Simulate L5 Board decision (placeholder)."""
         # L5 Board decision logic would go here
         # For now, auto-approve high confidence, escalate low confidence
-        
+
         if package.confidence > 0.8:
             package.status = "approved"
             package.board_decision = "approved"
@@ -167,55 +167,55 @@ class L5BoardBridge:
             package.status = "rejected"
             package.board_decision = "rejected"
             package.decision_rationale = "Low confidence proposal - rejected"
-        
+
         package.decided_at = datetime.utcnow().isoformat()
-        
+
         # _emit_records_decision_logged(
         #     package.source_trace_id,
         #     package.package_id,
         #     package.board_decision,
         # )
-        
+
         # Move to decided
         self._pending_packages = [
             p for p in self._pending_packages if p.package_id != package.package_id
         ]
         self._decided_packages.append(package)
-        
+
         Logger.info(
             f"L5 Board decision: {package.package_id} = {package.status}"
         )
-    
+
     def get_pending_packages(self) -> list[CompletenessChangePackage]:
         """Get all pending packages."""
         return self._pending_packages.copy()
-    
+
     def get_decided_packages(
         self,
         since: Optional[str] = None,
     ) -> list[CompletenessChangePackage]:
         """Get decided packages."""
         packages = self._decided_packages
-        
+
         if since:
             packages = [
                 p for p in packages
                 if p.decided_at and p.decided_at >= since
             ]
-        
+
         return packages
-    
+
     def get_approval_stats(self) -> dict[str, Any]:
         """Get approval statistics."""
         decided = self._decided_packages
-        
+
         if not decided:
             return {"total": 0}
-        
+
         approved = sum(1 for p in decided if p.status == "approved")
         rejected = sum(1 for p in decided if p.status == "rejected")
         escalated = sum(1 for p in decided if p.status == "escalated")
-        
+
         return {
             "total": len(decided),
             "approved": approved,
@@ -224,12 +224,12 @@ class L5BoardBridge:
             "approval_rate": approved / len(decided) if decided else 0.0,
             "pending": len(self._pending_packages),
         }
-    
+
     def export_packages(self, path: str) -> bool:
         """Export packages to file."""
         try:
             all_packages = self._pending_packages + self._decided_packages
-            
+
             data = [
                 {
                     "package_id": p.package_id,
@@ -244,13 +244,13 @@ class L5BoardBridge:
                 }
                 for p in all_packages
             ]
-            
+
             with open(path, 'w') as f:
                 json.dump(data, f, indent=2)
-            
+
             Logger.info(f"Exported {len(data)} packages to {path}")
             return True
-            
+
         except (ValueError, TypeError) as e:
             Logger.error(f"Failed to export packages: {e}")
             return False
@@ -258,14 +258,14 @@ class L5BoardBridge:
 
 class CompletenessRAGProposerBridge:
     """Bridge from CompletenessRAGProposer to L5 Board.
-    
+
     Integrates Pipeline D proposals with L5 Board governance.
     """
-    
+
     def __init__(self, l5_bridge: Optional[L5BoardBridge] = None):
         """Initialize proposer bridge."""
         self.l5_bridge = l5_bridge or L5BoardBridge()
-    
+
     def submit_proposal_from_pipeline_d(
         self,
         proposal_type: str,
@@ -276,7 +276,7 @@ class CompletenessRAGProposerBridge:
         trigger_signals: list[str],
     ) -> CompletenessChangePackage:
         """Submit Pipeline D proposal to L5 Board.
-        
+
         Args:
             proposal_type: Proposal type
             confidence: Confidence score
@@ -284,7 +284,7 @@ class CompletenessRAGProposerBridge:
             affected_layers: Affected layers
             source_trace_id: Source trace ID
             trigger_signals: Trigger signals
-            
+
         Returns:
             CompletenessChangePackage
         """

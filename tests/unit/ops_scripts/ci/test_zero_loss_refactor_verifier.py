@@ -75,7 +75,7 @@ import os
 _emit_records_execution_trace("test", "test", "test")
 """)
         temp_path = Path(f.name)
-    
+
     try:
         # Mock git_show to return behavioral content
         with patch('ops_scripts.ci.zero_loss_refactor_verifier.git_show') as mock_git_show:
@@ -84,9 +84,9 @@ def behavioral_function():
     x = 1 + 1
     return x
 """
-            
+
             is_neutered, before_count, after_count = check_file_neutered(temp_path, "HEAD~1")
-            
+
             assert is_neutered is True
             assert before_count == 1
             assert after_count == 0
@@ -107,7 +107,7 @@ def behavioral_function():
     return x
 """)
         temp_path = Path(f.name)
-    
+
     try:
         # Mock git_show to return same content
         with patch('ops_scripts.ci.zero_loss_refactor_verifier.git_show') as mock_git_show:
@@ -118,9 +118,9 @@ def behavioral_function():
     x = 1 + 1
     return x
 """
-            
+
             is_neutered, before_count, after_count = check_file_neutered(temp_path, "HEAD~1")
-            
+
             assert is_neutered is False
             assert before_count == 1
             assert after_count == 1
@@ -138,7 +138,7 @@ import os
 _emit_records_execution_trace("test", "test", "test")
 """)
         temp_path = Path(f.name)
-    
+
     try:
         # Mock git_show to return hollow content
         with patch('ops_scripts.ci.zero_loss_refactor_verifier.git_show') as mock_git_show:
@@ -146,9 +146,9 @@ _emit_records_execution_trace("test", "test", "test")
 import os
 _emit_records_execution_trace("test", "test", "test")
 """
-            
+
             is_neutered, before_count, after_count = check_file_neutered(temp_path, "HEAD~1")
-            
+
             assert is_neutered is False  # Was always hollow
             assert before_count == 0
             assert after_count == 0
@@ -160,7 +160,7 @@ _emit_records_execution_trace("test", "test", "test")
 def test_check_files_neutered(mock_get_modified):
     """Test checking multiple files for neutered content."""
     mock_get_modified.return_value = [Path("file1.py"), Path("file2.py")]
-    
+
     # Create temporary files
     temp_files = []
     for i in range(2):
@@ -175,7 +175,7 @@ def test():
     pass
 """)
             temp_files.append(Path(f.name))
-    
+
     try:
         # Mock git_show
         with patch('ops_scripts.ci.zero_loss_refactor_verifier.git_show') as mock_git_show:
@@ -184,12 +184,12 @@ def test():
                     return "def test():\n    pass\n"
                 else:
                     return "def test():\n    pass\n"
-            
+
             mock_git_show.side_effect = git_show_side_effect
-            
+
             # Override the file paths in results
             results = check_files_neutered(temp_files, "HEAD~1")
-            
+
             # Check results
             assert len(results) == 2
             assert results[temp_files[0]]["neutered"] is True
@@ -205,9 +205,9 @@ def test_generate_cleanup_commands():
         Path("test/file1.py"),
         Path("test/file2.py")
     ]
-    
+
     commands = generate_cleanup_commands(neutered_files)
-    
+
     assert len(commands) == 4  # 2 files * 2 commands each
     assert "git rm test/file1.py" in commands
     assert "git rm test/file2.py" in commands

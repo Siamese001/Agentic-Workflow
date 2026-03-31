@@ -1,16 +1,16 @@
 import pytest
 
-# Lazy import fixtures - avoid collection-time errors
 
-@pytest.fixture(scope="session")
-def _lazy_agentic_core_L5_safety_validators_base_detector_validator_0():
+# Lazy imports — wrapped to avoid collection-time errors
+try:
     from agentic_core.L5_safety.validators.base_detector_validator import AntiPatternCategory, EnforcementLevel
-    return type('_Import', (), {"AntiPatternCategory": AntiPatternCategory, "EnforcementLevel": EnforcementLevel})
+    from agentic_core.L5_safety.validators.hollow_file_detector_validator import (
+        HollowFileClassification,
+        HollowFileDetector,
+    )
+except ImportError:
+    pass
 
-@pytest.fixture(scope="session")
-def _lazy_agentic_core_L5_safety_validators_hollow_file_detector_validator_1():
-    from agentic_core.L5_safety.validators.hollow_file_detector_validator import HollowFileClassification, HollowFileDetector
-    return type('_Import', (), {"HollowFileClassification": HollowFileClassification, "HollowFileDetector": HollowFileDetector})
 
 """
 Test suite for HollowFileDetector
@@ -21,11 +21,6 @@ Verifies that hollow files are properly detected and classified.
 import ast
 import tempfile
 from pathlib import Path
-
-
-)
-
-)
 
 
 def test_hollow_file_detector_empty():

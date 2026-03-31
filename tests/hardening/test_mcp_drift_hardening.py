@@ -256,7 +256,7 @@ class TestMCPL6ObservabilityStoreHardening:
         # Mock Path.mkdir to simulate permission denied on Windows/Unix
         original_mkdir = Path.mkdir
         call_count = [0]
-        
+
         def mock_mkdir(self, *args, **kwargs):
             # Simulate permission denied on first call within mcp_snapshots
             if "mcp_snapshots" in str(self) and call_count[0] == 0:
@@ -674,7 +674,7 @@ class TestResilienceAndRecovery:
         # Mock open to simulate temporary permission error during drift check
         original_open = open
         call_count = [0]
-        
+
         def mock_open_temp_error(filepath, *args, **kwargs):
             if str(filepath) == str(config_path) and call_count[0] == 0:
                 call_count[0] += 1

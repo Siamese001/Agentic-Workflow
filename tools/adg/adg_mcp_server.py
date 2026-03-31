@@ -58,14 +58,27 @@ from __future__ import annotations
 
 import glob
 import json
+import logging
 import os
 import sqlite3
+import sys
 import time
 from pathlib import Path
 from typing import Any
 
 import redis as _redis_lib
 from mcp.server.fastmcp import FastMCP
+
+# ---------------------------------------------------------------------------
+# Diagnostic logging to stderr (visible in IDE logs, never pollutes stdio)
+# ---------------------------------------------------------------------------
+logging.basicConfig(
+    stream=sys.stderr,
+    level=logging.DEBUG,
+    format="[adg_mcp %(levelname)s %(asctime)s] %(message)s",
+    datefmt="%H:%M:%S",
+)
+_log = logging.getLogger("adg_mcp")
 
 # ---------------------------------------------------------------------------
 # Configuration — all overridable via env vars
@@ -78,6 +91,7 @@ _CACHE_META_TTL: float = float(os.environ.get("ADG_MCP_CACHE_META_TTL", "5"))
 # ---------------------------------------------------------------------------
 # FastMCP server instance
 # ---------------------------------------------------------------------------
+_log.info("Creating FastMCP instance...")
 mcp = FastMCP(
     "adg-redis",
     instructions=(
@@ -85,6 +99,7 @@ mcp = FastMCP(
         "tools with built-in freshness validation. Use adg_status first."
     ),
 )
+_log.info("FastMCP instance created")
 
 # ---------------------------------------------------------------------------
 # Redis connection — lazy singleton, reconnects on demand
@@ -100,10 +115,20 @@ def _redis() -> _redis_lib.Redis:
     """
     global _r
     if _r is None:
-        _r = _redis_lib.from_url(_REDIS_URL, decode_responses=True)
+        _log.debug("Creating Redis connection to %s ...", _REDIS_URL)
+        _r = _redis_lib.from_url(
+            _REDIS_URL,
+            decode_responses=True,
+            socket_connect_timeout=5,
+            socket_timeout=5,
+        )
+        _log.debug("Redis client created")
     try:
+        _log.debug("Pinging Redis...")
         _r.ping()
-    except _redis_lib.RedisError:
+        _log.debug("Redis ping OK")
+    except _redis_lib.RedisError as exc:
+        _log.error("Redis ping failed: %s", exc)
         _r = None
         raise
     return _r
@@ -978,4 +1003,6 @@ def redis_scan(
 # ---------------------------------------------------------------------------
 
 if __name__ == "__main__":
+    _log.info("Starting adg_mcp_server (stdio transport)...")
     mcp.run(transport="stdio")
+    _log.info("Server exited")

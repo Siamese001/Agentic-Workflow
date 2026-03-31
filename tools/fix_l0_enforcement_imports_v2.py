@@ -12,7 +12,7 @@ def get_exports_from_file(filepath):
     try:
         with open(filepath, 'r', encoding='utf-8') as f:
             tree = ast.parse(f.read())
-        
+
         exports = []
         for node in ast.walk(tree):
             if isinstance(node, ast.ClassDef):
@@ -29,17 +29,17 @@ def fix_init_file(init_path):
     """Fix __init__.py by properly organizing imports."""
     try:
         enforcement_dir = init_path.parent
-        
+
         # Get all exports from each module
         all_exports = {}
         for py_file in enforcement_dir.glob('*.py'):
             if py_file.name == '__init__.py':
                 continue
-            
+
             exports = get_exports_from_file(py_file)
             if exports:
                 all_exports[py_file.stem] = exports
-        
+
         # Create new content
         lines = [
             "from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (",
@@ -108,14 +108,14 @@ def fix_init_file(init_path):
             ")",
             ""
         ]
-        
+
         # Add module exports
         for module_name in sorted(all_exports.keys()):
             for export in sorted(all_exports[module_name]):
                 lines.append(f"from .{module_name} import {export}")
-        
+
         lines.append("")
-        
+
         # Add the original lifecycle trace calls
         lines.extend([
             "_emit_emits_metric_event(\"__init__\", \"p4obs\", \"metric_1\")",
@@ -200,11 +200,11 @@ def fix_init_file(init_path):
             "_emit_updates_meta_learning_state(\"p4\", \"__init__\", \"meta_learning\")",
             "_emit_links_execution_to_snapshot(\"p4\", \"__init__\", \"exec_snapshot_link\")",
         ])
-        
+
         # Write back
         with open(init_path, 'w', encoding='utf-8') as f:
             f.write('\n'.join(lines))
-        
+
         print(f"Fixed {init_path} with {sum(len(exports) for exports in all_exports.values())} exports")
         return True
     except Exception as e:
@@ -215,11 +215,11 @@ def main():
     """Main function to fix L0 routing enforcement imports."""
     enforcement_dir = pathlib.Path('agentic_core/L0_routing/enforcement')
     init_path = enforcement_dir / '__init__.py'
-    
+
     if not init_path.exists():
         print(f"__init__.py not found at {init_path}")
         return
-    
+
     if fix_init_file(init_path):
         print("Successfully fixed L0 routing enforcement __init__.py")
     else:

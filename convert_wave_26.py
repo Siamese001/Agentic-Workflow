@@ -31,7 +31,7 @@ def convert_file(file_path):
     file_stem = path.stem.replace('test_', '')
     class_name = ''.join(word.capitalize() for word in file_stem.split('_'))
     module_snake = file_stem
-    
+
     parts = path.parts
     if 'unit' in parts:
         if 'apps_' in file_stem:
@@ -47,17 +47,17 @@ def convert_file(file_path):
     else:
         import_path = 'agentic_core'
         module_name = file_stem
-    
+
     new_content = TEMPLATE.format(
         class_name=class_name,
         module_name=module_name,
         module_snake=module_snake,
         import_path=import_path
     )
-    
+
     with open(path, 'w', encoding='utf-8') as f:
         f.write(new_content)
-    
+
     return True
 
 converted = 0

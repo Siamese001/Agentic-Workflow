@@ -565,7 +565,7 @@ class PatternAnalysisEngine:
     def _empty_digest(self) -> str:
         """Digest for empty input."""
         return hashlib.sha256(json.dumps([]).encode()).hexdigest()
-    
+
     # Wave C-1: Cross-domain pattern analysis
     def analyze_cross_domain_patterns(
         self,
@@ -573,11 +573,11 @@ class PatternAnalysisEngine:
         now_utc: int,
     ) -> dict[str, Any]:
         """Analyze patterns across different domains.
-        
+
         Args:
             domain_events: List of cross-domain events with pattern data
             now_utc: Current timestamp
-            
+
         Returns:
             Cross-domain pattern analysis
         """
@@ -586,7 +586,7 @@ class PatternAnalysisEngine:
         _emit_verifies_policy(str(_uuid.uuid4()), "Module.analyze_cross_domain_patterns", "L4_STATE")
         _emit_observes_runtime_state(str(_uuid.uuid4()), "Module.analyze_cross_domain_patterns", "L4_STATE")
         _emit_snapshots_state(str(_uuid.uuid4()), "Module.analyze_cross_domain_patterns", "L4_STATE")
-        
+
         if not domain_events:
             return {
                 "cross_domain_patterns_detected": False,
@@ -594,7 +594,7 @@ class PatternAnalysisEngine:
                 "timestamp_utc": now_utc,
                 "analysis": "No cross-domain events provided",
             }
-        
+
         # Group events by domain
         domain_patterns = {}
         for event in domain_events:
@@ -602,27 +602,27 @@ class PatternAnalysisEngine:
             if domain not in domain_patterns:
                 domain_patterns[domain] = []
             domain_patterns[domain].append(event)
-        
+
         # Analyze patterns within each domain
         domain_analysis = {}
         shared_patterns = []
-        
+
         for domain, events in domain_patterns.items():
             # Extract success rates
             success_rates = [event.get("success_rate", 0.0) for event in events]
-            
+
             if len(success_rates) > 1:
                 # Compute pattern metrics
                 avg_success_rate = sum(success_rates) / len(success_rates)
                 success_variance = sum((r - avg_success_rate) ** 2 for r in success_rates) / len(success_rates)
-                
+
                 domain_analysis[domain] = {
                     "event_count": len(events),
                     "avg_success_rate": avg_success_rate,
                     "success_variance": success_variance,
                     "pattern_strength": 1.0 - success_variance,  # Lower variance = stronger pattern
                 }
-                
+
                 # Check for strong patterns (low variance, decent success rate)
                 if success_variance < 0.1 and avg_success_rate > 0.5:
                     shared_patterns.append({
@@ -631,7 +631,7 @@ class PatternAnalysisEngine:
                         "strength": 1.0 - success_variance,
                         "success_rate": avg_success_rate,
                     })
-        
+
         # Identify cross-domain correlations
         cross_domain_correlations = []
         domains = list(domain_patterns.keys())
@@ -642,7 +642,7 @@ class PatternAnalysisEngine:
                     rate1 = domain_analysis[domain1]["avg_success_rate"]
                     rate2 = domain_analysis[domain2]["avg_success_rate"]
                     correlation = 1.0 - abs(rate1 - rate2)  # Similar rates = high correlation
-                    
+
                     if correlation > 0.8:
                         cross_domain_correlations.append({
                             "domain1": domain1,
@@ -650,7 +650,7 @@ class PatternAnalysisEngine:
                             "correlation": correlation,
                             "pattern_type": "similar_success_rates",
                         })
-        
+
         analysis = {
             "cross_domain_patterns_detected": len(shared_patterns) > 0,
             "domains_analyzed": len(domain_patterns),
@@ -660,12 +660,12 @@ class PatternAnalysisEngine:
             "timestamp_utc": now_utc,
             "trace_id": _trace_id,
         }
-        
+
         # Persist cross-domain pattern analysis
         try:
             from system_learning.adapters.system_learning_memory_bridge import get_sl_memory_bridge
             bridge = get_sl_memory_bridge()
-            
+
             bridge.persist_cross_domain_pattern_analysis(
                 patterns_detected=len(shared_patterns) > 0,
                 domains_count=len(domain_patterns),
@@ -676,7 +676,7 @@ class PatternAnalysisEngine:
         except Exception:
             # Bridge unavailable - continue without it
             pass
-        
+
         return analysis
 
 

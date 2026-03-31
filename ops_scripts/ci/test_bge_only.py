@@ -21,11 +21,11 @@ except Exception as e:
 print('\n[2] Testing BGE embedding...')
 try:
     from agentic_core.L2_execution.healers.bmg_embedding_similarity import bmg_embed_text
-    
+
     start = time.time()
     embedding = bmg_embed_text("How do I configure Redis?")
     elapsed = time.time() - start
-    
+
     if embedding:
         print(f'   ✓ BGE embedding works: {len(embedding)} dims in {elapsed*1000:.2f}ms')
     else:
@@ -39,11 +39,11 @@ except Exception as e:
 print('\n[3] Testing BGEEmbedding wrapper...')
 try:
     bge = BGEEmbedding(model_name="BAAI/bge-m3")
-    
+
     start = time.time()
     embedding = bge.to_embeddings("How do I configure Redis?")
     elapsed = time.time() - start
-    
+
     if embedding and len(embedding) == 1024:
         print(f'   ✓ BGEEmbedding wrapper works: {len(embedding)} dims in {elapsed*1000:.2f}ms')
     else:
@@ -62,14 +62,14 @@ try:
         embedding_provider="bge-m3",
         embedding_model="BAAI/bge-m3",
     )
-    
+
     if cache._cache != "mock":
         print(f'   ✓ GPTCache initialized with BGE-only (not mock)')
         print(f'   ✓ Provider: {cache.embedding_provider}')
         print(f'   ✓ Model: {cache.embedding_model}')
     else:
         print(f'   ⚠ GPTCache using mock mode (gptcache may not be installed)')
-        
+
 except Exception as e:
     print(f'   ✗ GPTCache initialization failed: {e}')
     import traceback

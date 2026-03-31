@@ -7,14 +7,14 @@ from typing import Any
 
 class FilesystemMCPClient:
     """Client for filesystem operations via MCP."""
-    
+
     def __init__(self) -> None:
         self._base_path: Path | None = None
-    
+
     def set_base_path(self, path: str | Path) -> None:
         """Set the base path for filesystem operations."""
         self._base_path = Path(path)
-    
+
     async def read_text(self, file_path: str | Path) -> str | None:
         """Read text from a file."""
         try:
@@ -26,7 +26,7 @@ class FilesystemMCPClient:
             return path.read_text(encoding="utf-8")
         except (OSError, IOError, UnicodeDecodeError) as e:  # guardian: allow-silent-swallow -- file read failure returns None
             return None
-    
+
     async def write_text(self, file_path: str | Path, content: str) -> bool:
         """Write text to a file."""
         try:
@@ -37,7 +37,7 @@ class FilesystemMCPClient:
             return True
         except (OSError, IOError, PermissionError) as e:  # guardian: allow-silent-swallow -- file write failure returns False
             return False
-    
+
     async def list_files(self, directory: str | Path | None = None) -> list[str]:
         """List files in a directory."""
         try:
@@ -51,16 +51,16 @@ class FilesystemMCPClient:
 
 class FilesystemMCPClientFactory:
     """Factory for creating filesystem MCP clients."""
-    
+
     _instances: dict[str, FilesystemMCPClient] = {}
-    
+
     @classmethod
     def get_client(cls, name: str = "default") -> FilesystemMCPClient:
         """Get or create a filesystem MCP client."""
         if name not in cls._instances:
             cls._instances[name] = FilesystemMCPClient()
         return cls._instances[name]
-    
+
     @classmethod
     def reset_client(cls, name: str = "default") -> None:
         """Reset a client instance."""

@@ -18,5 +18,3 @@ def test_hygiene_enforcement(dirty_repo, monkeypatch):
 
 def test_purge_cache_refiling(dirty_repo, monkeypatch):
     """Test the specific rule for purge_cache.py reorganization."""
-
-

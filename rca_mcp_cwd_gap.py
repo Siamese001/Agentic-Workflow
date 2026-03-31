@@ -5,17 +5,17 @@ print("=" * 70)
 print("ROOT CAUSE ANALYSIS: MCP 'cwd' Parameter Validation Gap")
 print("=" * 70)
 
-print("""
+print(r"""
 ISSUE SUMMARY
 -------------
 Two local Python MCP servers (adg_redis, memory) were missing the 'cwd'
-parameter in user-global config (C:\Users\amita\.codeium\windsurf\mcp_config.json).
+parameter in user-global config (r'C:\Users\amita\.codeium\windsurf\mcp_config.json').
 This caused import failures when Windsurf launched them from default directory.
 
 AFFECTED MCPs
 -------------
-1. adg_redis  - FIXED: Added cwd=C:\Git\Agentic-Workflow
-2. memory     - FIXED: Added cwd=C:\Git\Agentic-Workflow
+1. adg_redis  - FIXED: Added cwd=r'C:\Git\Agentic-Workflow'
+2. memory     - FIXED: Added cwd=r'C:\Git\Agentic-Workflow'
 3. sequential-thinking - OK: Node.js global package, no local imports
 4. brave-search      - OK: Node.js global package
 5. filesystem        - OK: Uses absolute path in args
@@ -114,8 +114,8 @@ VALIDATION COMPLETED
 --------------------
 """)
 
-print("✅ adg_redis:  cwd=C:\Git\Agentic-Workflow")
-print("✅ memory:      cwd=C:\Git\Agentic-Workflow")
+print(r"✅ adg_redis:  cwd=C:\Git\Agentic-Workflow")
+print(r"✅ memory:      cwd=C:\Git\Agentic-Workflow")
 print("ℹ️  sequential-thinking: Node.js, no cwd needed")
 print("ℹ️  All other MCPs: cwd not required")
 print()

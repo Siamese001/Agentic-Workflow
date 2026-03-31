@@ -150,7 +150,7 @@ def _scan_test_with_adg(fpath: Path, tree: ast.AST, source: str, rel: str) -> tu
     """Scan test file using ADG for import validation."""
     try:
         bridge = ADGQueryBridge()
-        
+
         # Guard 3: stale mirror test
         if _has_mirror_marker(source):
             targets = _extract_mirror_targets(tree)
@@ -163,7 +163,7 @@ def _scan_test_with_adg(fpath: Path, tree: ast.AST, source: str, rel: str) -> tu
                     importers = bridge.files_importing(target)
                     if not importers and not _module_exists(target):
                         missing_targets.append(target)
-                
+
                 if missing_targets and all(not _module_exists(t) for t in missing_targets):
                     return False, True  # stale mirror
             return False, False
@@ -177,12 +177,12 @@ def _scan_test_with_adg(fpath: Path, tree: ast.AST, source: str, rel: str) -> tu
                 importers = bridge.files_importing(imp)
                 if not importers and not _module_exists(imp):
                     missing_imports.append(imp)
-            
+
             if missing_imports and all(not _module_exists(m) for m in missing_imports):
                 return True, False  # fully orphaned
-        
+
         return False, False
-        
+
     except Exception as e:
         warnings.warn(f"ADG validation failed: {e}")
         # Fall back to AST

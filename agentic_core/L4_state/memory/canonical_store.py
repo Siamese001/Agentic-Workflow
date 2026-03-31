@@ -51,22 +51,22 @@ class StoredArtifact:
 
 class StorageBackend(ABC):
     """Abstract storage backend."""
-    
+
     @abstractmethod
     def store(self, content: bytes, metadata: dict[str, Any]) -> StoredArtifact:
         """Store content and return artifact info."""
         pass
-    
+
     @abstractmethod
     def retrieve(self, artifact_id: str) -> Optional[bytes]:
         """Retrieve content by artifact ID."""
         pass
-    
+
     @abstractmethod
     def exists(self, artifact_id: str) -> bool:
         """Check if artifact exists."""
         pass
-    
+
     @abstractmethod
     def delete(self, artifact_id: str) -> bool:
         """Delete artifact."""
@@ -75,38 +75,38 @@ class StorageBackend(ABC):
 
 class LocalFileBackend(StorageBackend):
     """Local filesystem storage backend."""
-    
+
     def __init__(self, base_path: str = "artifacts/canonical_store"):
         self.base_path = Path(base_path)
         self.base_path.mkdir(parents=True, exist_ok=True)
         self._metadata_path = self.base_path / "metadata.json"
         self._metadata: dict[str, dict] = self._load_metadata()
-    
+
     def _load_metadata(self) -> dict:
         if self._metadata_path.exists():
             with open(self._metadata_path) as f:
                 return json.load(f)
         return {}
-    
+
     def _save_metadata(self) -> None:
         with open(self._metadata_path, 'w') as f:
             json.dump(self._metadata, f, indent=2)
-    
+
     def _content_path(self, content_hash: str) -> Path:
         # Use first 2 chars as subdir for distribution
         subdir = content_hash[:2]
         return self.base_path / "data" / subdir / content_hash
-    
+
     def store(self, content: bytes, metadata: dict[str, Any]) -> StoredArtifact:
         content_hash = hashlib.sha256(content).hexdigest()
         artifact_id = content_hash
-        
+
         path = self._content_path(content_hash)
         path.parent.mkdir(parents=True, exist_ok=True)
-        
+
         with open(path, 'wb') as f:
             f.write(content)
-        
+
         artifact = StoredArtifact(
             artifact_id=artifact_id,
             content_hash=content_hash,
@@ -116,7 +116,7 @@ class LocalFileBackend(StorageBackend):
             size_bytes=len(content),
             metadata=metadata,
         )
-        
+
         self._metadata[artifact_id] = {
             "content_hash": content_hash,
             "storage_path": str(path),
@@ -126,32 +126,32 @@ class LocalFileBackend(StorageBackend):
             "stored_at": artifact.stored_at,
         }
         self._save_metadata()
-        
+
         Logger.info(f"Stored artifact: {artifact_id[:16]}... ({len(content)} bytes)")
         return artifact
-    
+
     def retrieve(self, artifact_id: str) -> Optional[bytes]:
         if artifact_id not in self._metadata:
             return None
-        
+
         path = Path(self._metadata[artifact_id]["storage_path"])
         if not path.exists():
             return None
-        
+
         with open(path, 'rb') as f:
             return f.read()
-    
+
     def exists(self, artifact_id: str) -> bool:
         return artifact_id in self._metadata
-    
+
     def delete(self, artifact_id: str) -> bool:
         if artifact_id not in self._metadata:
             return False
-        
+
         path = Path(self._metadata[artifact_id]["storage_path"])
         if path.exists():
             path.unlink()
-        
+
         del self._metadata[artifact_id]
         self._save_metadata()
         return True
@@ -159,17 +159,17 @@ class LocalFileBackend(StorageBackend):
 
 class PostgresBackend(StorageBackend):
     """PostgreSQL storage backend (for metadata and small blobs)."""
-    
+
     def __init__(self, connection_string: Optional[str] = None):
         self.connection_string = connection_string or "postgresql://localhost/canonical_store"
         self._init_db()
-    
+
     def _init_db(self) -> None:
         try:
             import psycopg2
             conn = psycopg2.connect(self.connection_string)
             cursor = conn.cursor()
-            
+
             cursor.execute("""
                 CREATE TABLE IF NOT EXISTS artifacts (
                     artifact_id VARCHAR(64) PRIMARY KEY,
@@ -182,30 +182,30 @@ class PostgresBackend(StorageBackend):
                     retention_days INTEGER DEFAULT 365
                 )
             """)
-            
+
             # Index on content_hash for deduplication
             cursor.execute("""
                 CREATE INDEX IF NOT EXISTS idx_content_hash ON artifacts(content_hash)
             """)
-            
+
             conn.commit()
             conn.close()
             Logger.info("Initialized PostgreSQL canonical store")
-            
+
         except ImportError:
             Logger.warning("psycopg2 not available, Postgres backend disabled")
         except Exception as e:
             Logger.error(f"Failed to init PostgreSQL backend: {e}")
-    
+
     def store(self, content: bytes, metadata: dict[str, Any]) -> StoredArtifact:
         import psycopg2
-        
+
         content_hash = hashlib.sha256(content).hexdigest()
         artifact_id = content_hash
-        
+
         conn = psycopg2.connect(self.connection_string)
         cursor = conn.cursor()
-        
+
         cursor.execute("""
             INSERT INTO artifacts (
                 artifact_id, content_hash, content_type, size_bytes,
@@ -221,10 +221,10 @@ class PostgresBackend(StorageBackend):
             json.dumps(metadata),
             metadata.get("retention_days", 365),
         ))
-        
+
         conn.commit()
         conn.close()
-        
+
         artifact = StoredArtifact(
             artifact_id=artifact_id,
             content_hash=content_hash,
@@ -234,65 +234,65 @@ class PostgresBackend(StorageBackend):
             size_bytes=len(content),
             metadata=metadata,
         )
-        
+
         Logger.info(f"Stored artifact to Postgres: {artifact_id[:16]}...")
         return artifact
-    
+
     def retrieve(self, artifact_id: str) -> Optional[bytes]:
         try:
             import psycopg2
             conn = psycopg2.connect(self.connection_string)
             cursor = conn.cursor()
-            
+
             cursor.execute("""
                 SELECT content FROM artifacts WHERE artifact_id = %s
             """, (artifact_id,))
-            
+
             row = cursor.fetchone()
             conn.close()
-            
+
             return row[0] if row else None
-            
+
         except Exception as e:
             Logger.error(f"Failed to retrieve from Postgres: {e}")
             return None
-    
+
     def exists(self, artifact_id: str) -> bool:
         try:
             import psycopg2
             conn = psycopg2.connect(self.connection_string)
             cursor = conn.cursor()
-            
+
             cursor.execute("""
                 SELECT 1 FROM artifacts WHERE artifact_id = %s
             """, (artifact_id,))
-            
+
             exists = cursor.fetchone() is not None
             conn.close()
             return exists
-            
+
         except psycopg2.Error as e:
             Logger.debug(f"Postgres exists check failed: {e}")
             return False
         except Exception as e:
             Logger.error(f"Postgres exists check failed: {e}")
             return False
-    
+
     def delete(self, artifact_id: str) -> bool:
         try:
             import psycopg2
             conn = psycopg2.connect(self.connection_string)
             cursor = conn.cursor()
-            
+
             cursor.execute("""
                 DELETE FROM artifacts WHERE artifact_id = %s
             """, (artifact_id,))
-            
+
             deleted = cursor.rowcount > 0
             conn.commit()
             conn.close()
             return deleted
-            
+
         except psycopg2.Error as e:
             Logger.debug(f"Postgres delete failed: {e}")
             return False
@@ -303,7 +303,7 @@ class PostgresBackend(StorageBackend):
 
 class S3Backend(StorageBackend):
     """S3-compatible object storage backend."""
-    
+
     def __init__(
         self,
         bucket: str = "canonical-store",
@@ -314,7 +314,7 @@ class S3Backend(StorageBackend):
         self.endpoint = endpoint
         self.region = region
         self._s3 = None
-    
+
     def _get_s3_client(self):
         if self._s3 is None:
             try:
@@ -327,13 +327,13 @@ class S3Backend(StorageBackend):
             except ImportError:
                 raise ImportError("boto3 is required for S3 backend")
         return self._s3
-    
+
     def store(self, content: bytes, metadata: dict[str, Any]) -> StoredArtifact:
         content_hash = hashlib.sha256(content).hexdigest()
         artifact_id = content_hash
-        
+
         key = f"artifacts/{content_hash[:2]}/{content_hash}"
-        
+
         s3 = self._get_s3_client()
         s3.put_object(
             Bucket=self.bucket,
@@ -342,7 +342,7 @@ class S3Backend(StorageBackend):
             ContentType=metadata.get("content_type", "application/octet-stream"),
             Metadata={k: str(v) for k, v in metadata.items()},
         )
-        
+
         artifact = StoredArtifact(
             artifact_id=artifact_id,
             content_hash=content_hash,
@@ -352,13 +352,13 @@ class S3Backend(StorageBackend):
             size_bytes=len(content),
             metadata=metadata,
         )
-        
+
         Logger.info(f"Stored artifact to S3: {artifact_id[:16]}...")
         return artifact
-    
+
     def retrieve(self, artifact_id: str) -> Optional[bytes]:
         key = f"artifacts/{artifact_id[:2]}/{artifact_id}"
-        
+
         try:
             s3 = self._get_s3_client()
             response = s3.get_object(Bucket=self.bucket, Key=key)
@@ -366,10 +366,10 @@ class S3Backend(StorageBackend):
         except Exception as e:
             Logger.error(f"Failed to retrieve from S3: {e}")
             return None
-    
+
     def exists(self, artifact_id: str) -> bool:
         key = f"artifacts/{artifact_id[:2]}/{artifact_id}"
-        
+
         try:
             s3 = self._get_s3_client()
             s3.head_object(Bucket=self.bucket, Key=key)
@@ -383,10 +383,10 @@ class S3Backend(StorageBackend):
         except Exception as e:
             Logger.error(f"S3 exists check failed: {e}")
             return False
-    
+
     def delete(self, artifact_id: str) -> bool:
         key = f"artifacts/{artifact_id[:2]}/{artifact_id}"
-        
+
         try:
             s3 = self._get_s3_client()
             s3.delete_object(Bucket=self.bucket, Key=key)
@@ -404,23 +404,23 @@ class S3Backend(StorageBackend):
 
 class CanonicalStore:
     """Canonical Store for original file storage.
-    
+
     Provides content-addressable storage with multiple backend options.
     """
-    
+
     def __init__(
         self,
         backend: str = "local",
         backend_config: Optional[dict[str, Any]] = None,
     ):
         """Initialize canonical store.
-        
+
         Args:
             backend: Backend type (local, postgres, s3)
             backend_config: Backend configuration
         """
         backend_config = backend_config or {}
-        
+
         if backend == "local":
             self._backend: StorageBackend = LocalFileBackend(
                 backend_config.get("path", "artifacts/canonical_store")
@@ -435,10 +435,10 @@ class CanonicalStore:
             )
         else:
             raise ValueError(f"Unknown backend: {backend}")
-        
+
         self.backend_type = backend
         self._store_count = 0
-    
+
     def store_file(
         self,
         file_path: Union[str, Path],
@@ -446,43 +446,43 @@ class CanonicalStore:
         metadata: Optional[dict[str, Any]] = None,
     ) -> StoredArtifact:
         """Store a file in the canonical store.
-        
+
         Args:
             file_path: Path to file
             content_type: Content type (auto-detected if None)
             metadata: Additional metadata
-            
+
         Returns:
             StoredArtifact with artifact ID
         """
         _trace_id = f"canonical_store_{self._store_count}"
         _emit_records_execution_trace(_trace_id, LayerSegment.L2_EXECUTION, "CanonicalStore.store_file")
-        
+
         file_path = Path(file_path)
-        
+
         with open(file_path, 'rb') as f:
             content = f.read()
-        
+
         # Auto-detect content type
         if content_type is None:
             content_type = self._detect_content_type(file_path)
-        
+
         meta = {
             "original_path": str(file_path),
             "original_name": file_path.name,
             "content_type": content_type,
             **(metadata or {}),
         }
-        
+
         artifact = self._backend.store(content, meta)
-        
+
         # _emit_stores_artifact(_trace_id, artifact.artifact_id, str(file_path))
-        
+
         self._store_count += 1
         Logger.info(f"Stored file: {file_path.name} -> {artifact.artifact_id[:16]}...")
-        
+
         return artifact
-    
+
     def store_content(
         self,
         content: bytes,
@@ -490,50 +490,50 @@ class CanonicalStore:
         metadata: Optional[dict[str, Any]] = None,
     ) -> StoredArtifact:
         """Store raw content.
-        
+
         Args:
             content: Content bytes
             content_type: Content type
             metadata: Additional metadata
-            
+
         Returns:
             StoredArtifact with artifact ID
         """
         _trace_id = f"canonical_store_{self._store_count}"
         _emit_records_execution_trace(_trace_id, LayerSegment.L2_EXECUTION, "CanonicalStore.store_content")
-        
+
         meta = {
             "content_type": content_type,
             **(metadata or {}),
         }
-        
+
         artifact = self._backend.store(content, meta)
-        
+
         # _emit_stores_artifact(_trace_id, artifact.artifact_id, "inline_content")
-        
+
         self._store_count += 1
-        
+
         return artifact
-    
+
     def retrieve(self, artifact_id: str) -> Optional[bytes]:
         """Retrieve content by artifact ID.
-        
+
         Args:
             artifact_id: Artifact identifier
-            
+
         Returns:
             Content bytes if found
         """
         return self._backend.retrieve(artifact_id)
-    
+
     def exists(self, artifact_id: str) -> bool:
         """Check if artifact exists."""
         return self._backend.exists(artifact_id)
-    
+
     def _detect_content_type(self, file_path: Path) -> str:
         """Auto-detect content type from extension."""
         ext = file_path.suffix.lower()
-        
+
         mime_types = {
             '.txt': 'text/plain',
             '.md': 'text/markdown',
@@ -544,9 +544,9 @@ class CanonicalStore:
             '.csv': 'text/csv',
             '.xml': 'application/xml',
         }
-        
+
         return mime_types.get(ext, 'application/octet-stream')
-    
+
     def get_stats(self) -> dict[str, Any]:
         """Get store statistics."""
         return {

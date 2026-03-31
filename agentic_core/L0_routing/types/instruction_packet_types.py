@@ -16,13 +16,13 @@ class InstructionPacket:
     prompt: Optional[str] = None
     config: Optional[Dict[str, Any]] = None
     required_mixins: Optional[tuple] = None
-    
+
     def __post_init__(self):
         if self.context is None:
             self.context = {}
 
 
-@dataclass 
+@dataclass
 class PromptInstructionPacket:
     """Prompt instruction packet."""
     packet_id: str

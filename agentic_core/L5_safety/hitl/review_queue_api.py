@@ -100,7 +100,7 @@ def health_check() -> tuple[Any, int]:
 @app.route("/api/v1/hitl/checkpoints", methods=["GET"])
 def list_checkpoints() -> tuple[Any, int]:
     """List all HITL checkpoints with optional filtering.
-    
+
     Query parameters:
     - status: "pending" or "resolved"
     - agent_id: Filter by agent
@@ -109,19 +109,19 @@ def list_checkpoints() -> tuple[Any, int]:
     status_filter = request.args.get("status")
     agent_filter = request.args.get("agent_id")
     limit = request.args.get("limit", 50, type=int)
-    
+
     checkpoints = _hitl_graph.checkpoints
-    
+
     if status_filter == "pending":
         checkpoints = [cp for cp in checkpoints if not cp.resolved]
     elif status_filter == "resolved":
         checkpoints = [cp for cp in checkpoints if cp.resolved]
-    
+
     if agent_filter:
         checkpoints = [cp for cp in checkpoints if cp.agent_id == agent_filter]
-    
+
     checkpoints = checkpoints[-limit:]
-    
+
     return jsonify({
         "checkpoints": [_serialize_checkpoint(cp) for cp in checkpoints],
         "total": len(_hitl_graph.checkpoints),
@@ -134,12 +134,12 @@ def list_checkpoints() -> tuple[Any, int]:
 def get_checkpoint(checkpoint_id: str) -> tuple[Any, int]:
     """Get details of a specific checkpoint."""
     checkpoint = _hitl_graph.checkpoint_by_id(checkpoint_id)
-    
+
     if checkpoint is None:
         return jsonify({"error": "Checkpoint not found"}), 404
-    
+
     decisions = _hitl_graph.decisions_for(checkpoint_id)
-    
+
     return jsonify({
         "checkpoint": _serialize_checkpoint(checkpoint),
         "decisions": [_serialize_decision(d) for d in decisions],
@@ -149,7 +149,7 @@ def get_checkpoint(checkpoint_id: str) -> tuple[Any, int]:
 @app.route("/api/v1/hitl/checkpoints/<checkpoint_id>/decision", methods=["POST"])
 def submit_decision(checkpoint_id: str) -> tuple[Any, int]:
     """Submit a human decision for a checkpoint.
-    
+
     Request body:
     {
         "decision": "approve" | "reject" | "override" | "defer",
@@ -159,29 +159,29 @@ def submit_decision(checkpoint_id: str) -> tuple[Any, int]:
     }
     """
     data = request.get_json()
-    
+
     if not data:
         return jsonify({"error": "Missing request body"}), 400
-    
+
     decision_str = data.get("decision")
     reviewer = data.get("reviewer")
     rationale = data.get("rationale", "")
     override_value = data.get("override_value")
-    
+
     if not decision_str or not reviewer:
         return jsonify({"error": "Missing required fields: decision, reviewer"}), 400
-    
+
     try:
         decision_type = HITLDecisionType(decision_str)
     except ValueError:
         return jsonify({
             "error": f"Invalid decision: {decision_str}. Must be one of: approve, reject, override, defer"
         }), 400
-    
+
     checkpoint = _hitl_graph.checkpoint_by_id(checkpoint_id)
     if checkpoint is None:
         return jsonify({"error": "Checkpoint not found"}), 404
-    
+
     if checkpoint.resolved:
         return jsonify({"error": "Checkpoint already resolved"}), 409
 
@@ -194,14 +194,14 @@ def submit_decision(checkpoint_id: str) -> tuple[Any, int]:
         rationale=rationale,
         override_value=override_value,
     )
-    
+
     logger.info(
         "HITL decision submitted: checkpoint=%s decision=%s reviewer=%s",
         checkpoint_id,
         decision_str,
         reviewer,
     )
-    
+
     return jsonify({
         "success": True,
         "checkpoint_id": checkpoint_id,
@@ -214,7 +214,7 @@ def submit_decision(checkpoint_id: str) -> tuple[Any, int]:
 def get_metrics() -> tuple[Any, int]:
     """Get HITL system metrics."""
     dist = _hitl_graph.decision_distribution()
-    
+
     return jsonify({
         "total_checkpoints": len(_hitl_graph.checkpoints),
         "pending": _hitl_graph.pending_count,
@@ -226,7 +226,7 @@ def get_metrics() -> tuple[Any, int]:
 @app.route("/api/v1/hitl/batch/decide", methods=["POST"])
 def batch_decide() -> tuple[Any, int]:
     """Process batch decisions.
-    
+
     Request body:
     {
         "decisions": [
@@ -241,20 +241,20 @@ def batch_decide() -> tuple[Any, int]:
     }
     """
     data = request.get_json()
-    
+
     if not data or "decisions" not in data:
         return jsonify({"error": "Missing decisions array"}), 400
-    
+
     decisions = data["decisions"]
     results = []
-    
+
     for dec_data in decisions:
         checkpoint_id = dec_data.get("checkpoint_id")
         decision_str = dec_data.get("decision")
         reviewer = dec_data.get("reviewer")
         rationale = dec_data.get("rationale", "")
         override_value = dec_data.get("override_value")
-        
+
         if not checkpoint_id or not decision_str or not reviewer:
             results.append({
                 "checkpoint_id": checkpoint_id,
@@ -262,7 +262,7 @@ def batch_decide() -> tuple[Any, int]:
                 "error": "Missing required fields",
             })
             continue
-        
+
         checkpoint = _hitl_graph.checkpoint_by_id(checkpoint_id)
         if checkpoint is None:
             results.append({
@@ -271,7 +271,7 @@ def batch_decide() -> tuple[Any, int]:
                 "error": "Checkpoint not found",
             })
             continue
-        
+
         if checkpoint.resolved:
             results.append({
                 "checkpoint_id": checkpoint_id,
@@ -279,7 +279,7 @@ def batch_decide() -> tuple[Any, int]:
                 "error": "Checkpoint already resolved",
             })
             continue
-        
+
         try:
             decision_type = HITLDecisionType(decision_str)
         except ValueError:
@@ -289,7 +289,7 @@ def batch_decide() -> tuple[Any, int]:
                 "error": f"Invalid decision: {decision_str}",
             })
             continue
-        
+
         # Record the decision
         recorder = HITLRuntimeRecorder(_ensure_rt_graph(), _hitl_graph, agent_id=checkpoint.agent_id)
         recorder.decide(
@@ -299,13 +299,13 @@ def batch_decide() -> tuple[Any, int]:
             rationale=rationale,
             override_value=override_value,
         )
-        
+
         results.append({
             "checkpoint_id": checkpoint_id,
             "success": True,
             "decision": decision_str,
         })
-    
+
     return jsonify({
         "processed": len(results),
         "successful": sum(1 for r in results if r["success"]),
@@ -318,10 +318,10 @@ def batch_decide() -> tuple[Any, int]:
 def list_escalations() -> tuple[Any, int]:
     """List current escalations from the escalation activator."""
     activator = get_hitl_escalation_activator()
-    
+
     pending = activator.pending()
     resolved = activator.resolved()
-    
+
     def serialize_escalation(req: EscalationRequest) -> dict[str, Any]:
         return {
             "trace_id": req.trace_id,
@@ -334,7 +334,7 @@ def list_escalations() -> tuple[Any, int]:
             "resolved": req.resolved,
             "resolution": req.resolution,
         }
-    
+
     return jsonify({
         "pending": [serialize_escalation(r) for r in pending],
         "resolved": [serialize_escalation(r) for r in resolved],

@@ -55,16 +55,16 @@ class ADGIdentityCompletenessVerifier:
             WHERE identity_kind IS NULL OR identity_kind = ''
         """)
         incomplete = c.fetchone()[0]
-        
+
         # Check for enhanced fields missing
         c.execute("PRAGMA table_info(nodes)")
         columns = [row[1] for row in c.fetchall()]
-        
+
         conn.close()
 
         if incomplete > 0:
             self.errors.append(f"{incomplete} nodes with incomplete identity")
-        
+
         # Warn about missing enhanced fields
         enhanced_fields = ['identity_origin', 'domain', 'owner_surface']
         missing = [f for f in enhanced_fields if f not in columns]
@@ -157,10 +157,10 @@ class ADGIdentityCompletenessVerifier:
         self._verify_node_schema_completeness()
         self._verify_first_party_module_completeness()
         self._verify_low_confidence_node_traceability()
-        
+
         # Run check that returns tuple
         passed, issues = self._verify_enum_value_constraints()
-        
+
         all_issues = list(self.errors) + list(self.warnings) + list(issues)
 
         return len(all_issues) == 0, all_issues

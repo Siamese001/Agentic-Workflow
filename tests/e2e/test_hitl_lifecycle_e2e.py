@@ -42,72 +42,51 @@ from unittest.mock import MagicMock, Mock, patch
 
 import pytest
 
-# Lazy import fixtures - avoid collection-time errors
 
-@pytest.fixture(scope="session")
-def _lazy_agentic_core_L3_orchestration_types_human_decision_artifact_types_0():
-    from agentic_core.L3_orchestration.types.human_decision_artifact_types import HumanAction, HumanDecisionArtifact, StructuredPatchSchema, create_approval_artifact, create_human_review_draft, create_rejection_artifact
-    return type('_Import', (), {"HumanAction": HumanAction, "HumanDecisionArtifact": HumanDecisionArtifact, "StructuredPatchSchema": StructuredPatchSchema, "create_approval_artifact": create_approval_artifact, "create_human_review_draft": create_human_review_draft, "create_rejection_artifact": create_rejection_artifact})
-
-@pytest.fixture(scope="session")
-def _lazy_agentic_core_L5_safety_enforcement_hitl_gate_1():
-    from agentic_core.L5_safety.enforcement.hitl_gate import HitlChoice, HitlDecision, HitlRequest, HitlRequiredError, get_hitl_gate, prompt_for_hitl
-    return type('_Import', (), {"HitlChoice": HitlChoice, "HitlDecision": HitlDecision, "HitlRequest": HitlRequest, "HitlRequiredError": HitlRequiredError, "get_hitl_gate": get_hitl_gate, "prompt_for_hitl": prompt_for_hitl})
-
-@pytest.fixture(scope="session")
-def _lazy_agentic_core_L5_safety_hitl_decision_logger_2():
+# Lazy imports — wrapped to avoid collection-time errors
+try:
+    from agentic_core.L3_orchestration.types.human_decision_artifact_types import (
+        HumanAction,
+        HumanDecisionArtifact,
+        StructuredPatchSchema,
+        create_approval_artifact,
+        create_human_review_draft,
+        create_rejection_artifact,
+    )
+    from agentic_core.L5_safety.enforcement.hitl_gate import (
+        HitlChoice,
+        HitlDecision,
+        HitlRequest,
+        HitlRequiredError,
+        get_hitl_gate,
+        prompt_for_hitl,
+    )
     from agentic_core.L5_safety.hitl.decision_logger import HITLDecision, HITLDecisionLogger, get_decision_logger
-    return type('_Import', (), {"HITLDecision": HITLDecision, "HITLDecisionLogger": HITLDecisionLogger, "get_decision_logger": get_decision_logger})
-
-@pytest.fixture(scope="session")
-def _lazy_agentic_core_L5_safety_hitl_hitl_escalation_activator_3():
-    from agentic_core.L5_safety.hitl.hitl_escalation_activator import EscalationPriority, EscalationRequest, HITLEscalationActivator, get_hitl_escalation_activator, reset_hitl_escalation_activator
-    return type('_Import', (), {"EscalationPriority": EscalationPriority, "EscalationRequest": EscalationRequest, "HITLEscalationActivator": HITLEscalationActivator, "get_hitl_escalation_activator": get_hitl_escalation_activator, "reset_hitl_escalation_activator": reset_hitl_escalation_activator})
-
-@pytest.fixture(scope="session")
-def _lazy_agentic_core_L5_safety_hitl_patch_validator_4():
+    from agentic_core.L5_safety.hitl.hitl_escalation_activator import (
+        EscalationPriority,
+        EscalationRequest,
+        HITLEscalationActivator,
+        get_hitl_escalation_activator,
+        reset_hitl_escalation_activator,
+    )
     from agentic_core.L5_safety.hitl.patch_validator import HumanPatchValidationError, validate_patch
-    return type('_Import', (), {"HumanPatchValidationError": HumanPatchValidationError, "validate_patch": validate_patch})
-
-@pytest.fixture(scope="session")
-def _lazy_agentic_core_L5_safety_types_human_decision_artifact_types_5():
     from agentic_core.L5_safety.types.human_decision_artifact_types import HumanDecisionArtifact as L5HumanDecisionArtifact
-    return type('_Import', (), {"HumanDecisionArtifact as L5HumanDecisionArtifact": HumanDecisionArtifact as L5HumanDecisionArtifact})
-
-@pytest.fixture(scope="session")
-def _lazy_agentic_core_L6_observability_engines_hitl_dpo_pair_generator_6():
     from agentic_core.L6_observability.engines.hitl_dpo_pair_generator import DefaultDeterministicDPOPairGenerator
-    return type('_Import', (), {"DefaultDeterministicDPOPairGenerator": DefaultDeterministicDPOPairGenerator})
-
-@pytest.fixture(scope="session")
-def _lazy_agentic_core_adg_runtime_hitl_graph_7():
     from agentic_core.adg.runtime.hitl_graph import HITLDecisionType, HITLGraph, HITLRuntimeRecorder
-    return type('_Import', (), {"HITLDecisionType": HITLDecisionType, "HITLGraph": HITLGraph, "HITLRuntimeRecorder": HITLRuntimeRecorder})
+    from agentic_core.mixins.hitl_mixin import (
+        ApprovalRejectedError,
+        ApprovalRequiredError,
+        ApprovalStatus,
+        HITLMixin,
+        RiskLevel,
+    )
+except ImportError:
+    pass
 
-@pytest.fixture(scope="session")
-def _lazy_agentic_core_mixins_hitl_mixin_8():
-    from agentic_core.mixins.hitl_mixin import ApprovalRejectedError, ApprovalRequiredError, ApprovalStatus, HITLMixin, RiskLevel
-    return type('_Import', (), {"ApprovalRejectedError": ApprovalRejectedError, "ApprovalRequiredError": ApprovalRequiredError, "ApprovalStatus": ApprovalStatus, "HITLMixin": HITLMixin, "RiskLevel": RiskLevel})
 
 # HITL imports
 
-)
 
-)
-
-)
-
-)
-
-)
-
-)
-
-)
-
-)
-
-)
 from system_learning.engines.hitl_decision_logger import (
     log_hitl_decision,
     log_routing_correction,
@@ -729,9 +708,9 @@ class TestHITLFullLifecycle:
         """Test HITL gate protected paths detection."""
         from pathlib import Path
         from agentic_core.L5_safety.enforcement.hitl_gate import _is_protected
-        
+
         repo_root = Path.cwd()
-        
+
         # Test protected paths (using absolute paths)
         protected_files = [
             repo_root / "agentic_core" / "test.py",
@@ -739,17 +718,17 @@ class TestHITLFullLifecycle:
             repo_root / "tests" / "test.py",
             repo_root / "system_learning" / "test.py",
         ]
-        
+
         for file_path in protected_files:
             assert _is_protected([file_path], repo_root) is True, f"{file_path} should be protected"
-        
+
         # Test non-protected paths
         non_protected = [
             repo_root / "docs" / "test.py",
             repo_root / "artifacts" / "test.py",
             repo_root / "temp" / "test.py",
         ]
-        
+
         for file_path in non_protected:
             assert _is_protected([file_path], repo_root) is False, f"{file_path} should not be protected"
 

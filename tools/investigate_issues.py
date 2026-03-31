@@ -35,7 +35,7 @@ cursor.execute("""
     FROM edges e1
     WHERE e1.relation_type = 'emits_replay_key'
     AND NOT EXISTS (
-        SELECT 1 FROM edges e2 
+        SELECT 1 FROM edges e2
         WHERE (e2.src_id = e1.dst_id OR e2.dst_id = e1.dst_id)
         AND e2.relation_type IN ('links_to_execution_trace', 'mutation_signature')
     )

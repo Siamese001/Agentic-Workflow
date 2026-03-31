@@ -7,7 +7,7 @@ tests_dir = pathlib.Path('tests')
 for f in sorted(tests_dir.rglob('test_*.py')):
     if 'archive' in str(f).lower():
         continue
-    
+
     try:
         content = f.read_text(encoding='utf-8', errors='replace')
         ast.parse(content)

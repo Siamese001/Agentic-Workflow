@@ -41,7 +41,7 @@ logger = logging.getLogger(__name__)
 @dataclass
 class CachedEvaluation:
     """Cached evaluation result."""
-    
+
     cache_key: str
     result: Any
     timestamp: float
@@ -50,17 +50,17 @@ class CachedEvaluation:
 
 class EvaluationCache:
     """Cache for evaluation results with TTL and invalidation.
-    
+
     Features:
     - Automatic cache key generation
     - TTL-based expiration
     - Manual invalidation
     - Hit rate tracking
     """
-    
+
     def __init__(self, default_ttl_sec: float = 3600.0) -> None:
         """Initialize evaluation cache.
-        
+
         Args:
             default_ttl_sec: Default TTL in seconds (default 1 hour)
         """
@@ -68,33 +68,33 @@ class EvaluationCache:
         self._cache: dict[str, CachedEvaluation] = {}
         self._hits = 0
         self._misses = 0
-        
+
     def get(self, cache_key: str) -> Any | None:
         """Get cached evaluation result.
-        
+
         Args:
             cache_key: Cache key
-            
+
         Returns:
             Cached result or None if not found/expired
         """
         if cache_key not in self._cache:
             self._misses += 1
             return None
-            
+
         cached = self._cache[cache_key]
-        
+
         # Check expiration
         if time.time() - cached.timestamp > cached.ttl_sec:
             del self._cache[cache_key]
             self._misses += 1
             logger.debug("CACHE_EXPIRED: key=%s", cache_key[:12])
             return None
-            
+
         self._hits += 1
         logger.debug("CACHE_HIT: key=%s", cache_key[:12])
         return cached.result
-        
+
     def put(
         self,
         cache_key: str,
@@ -102,7 +102,7 @@ class EvaluationCache:
         ttl_sec: float | None = None,
     ) -> None:
         """Put evaluation result in cache.
-        
+
         Args:
             cache_key: Cache key
             result: Evaluation result
@@ -110,23 +110,23 @@ class EvaluationCache:
         """
         if ttl_sec is None:
             ttl_sec = self._default_ttl_sec
-            
+
         cached = CachedEvaluation(
             cache_key=cache_key,
             result=result,
             timestamp=time.time(),
             ttl_sec=ttl_sec,
         )
-        
+
         self._cache[cache_key] = cached
         logger.debug("CACHE_PUT: key=%s ttl=%.0fs", cache_key[:12], ttl_sec)
-        
+
     def invalidate(self, cache_key: str) -> bool:
         """Invalidate cache entry.
-        
+
         Args:
             cache_key: Cache key to invalidate
-            
+
         Returns:
             True if entry was found and removed
         """
@@ -135,17 +135,17 @@ class EvaluationCache:
             logger.debug("CACHE_INVALIDATED: key=%s", cache_key[:12])
             return True
         return False
-        
+
     def clear(self) -> None:
         """Clear all cache entries."""
         self._cache.clear()
         logger.info("CACHE_CLEARED")
-        
+
     def get_stats(self) -> dict[str, Any]:
         """Get cache statistics."""
         total_requests = self._hits + self._misses
         hit_rate = self._hits / total_requests if total_requests > 0 else 0.0
-        
+
         return {
             "size": len(self._cache),
             "hits": self._hits,
@@ -153,15 +153,15 @@ class EvaluationCache:
             "hit_rate": hit_rate,
             "total_requests": total_requests,
         }
-        
+
     @staticmethod
     def generate_key(eval_type: str, inputs: dict[str, Any]) -> str:
         """Generate cache key from evaluation type and inputs.
-        
+
         Args:
             eval_type: Type of evaluation
             inputs: Evaluation inputs
-            
+
         Returns:
             Cache key (SHA256 hash)
         """

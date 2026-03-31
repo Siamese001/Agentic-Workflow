@@ -42,27 +42,27 @@ _ROOT_SENTINEL = "__root__"
 
 def _extract_node(span: dict[str, Any]) -> RuntimeADGNode | None:
     """Extract RuntimeADGNode from span dict with validation and safe defaults.
-    
+
     Returns None if span lacks required span_id field.
     """
     # Validate required span_id
     span_id = span.get("span_id", "")
     if not span_id or not isinstance(span_id, str):
         return None
-    
+
     raw_attrs = span.get("attributes", {})
     if isinstance(raw_attrs, str):
         try:
             raw_attrs = json.loads(raw_attrs)
         except (ValueError, TypeError):
             raw_attrs = {}
-    
+
     # Safely extract and validate timestamp
     try:
         ts_utc = int(span.get("ts_utc", 0))
     except (ValueError, TypeError):
         ts_utc = 0
-    
+
     # Safely extract and validate duration
     try:
         duration_ms = float(span.get("duration_ms", 0.0))
@@ -70,12 +70,12 @@ def _extract_node(span: dict[str, Any]) -> RuntimeADGNode | None:
             duration_ms = 0.0
     except (ValueError, TypeError):
         duration_ms = 0.0
-    
+
     # Validate status is one of allowed values
     status = str(span.get("status", "ok"))
     if status not in ("ok", "error"):
         status = "ok"
-    
+
     return RuntimeADGNode(
         node_id=span_id,
         name=str(span.get("name", ""))[:256],  # Limit name length
@@ -91,40 +91,40 @@ def _extract_node(span: dict[str, Any]) -> RuntimeADGNode | None:
 
 def _extract_parent_child_edges(spans: list[dict[str, Any]]) -> list[RuntimeADGEdge]:
     """Extract parent-child edges from spans with validation.
-    
+
     Each span with a valid span_id gets a parent_child edge:
     - If parent_span_id is present and valid: edge from parent to child
     - Otherwise: edge from __root__ sentinel to child
     """
     edges: list[RuntimeADGEdge] = []
     seen_span_ids: set[str] = set()
-    
+
     for span in spans:
         span_id = str(span.get("span_id", ""))
         if not span_id:
             continue
-        
+
         # Skip duplicate span_ids (keep first occurrence)
         if span_id in seen_span_ids:
             continue
         seen_span_ids.add(span_id)
-        
+
         parent_id = str(span.get("parent_span_id", ""))
         # Use parent if valid and exists in seen spans, otherwise root
         src = parent_id if parent_id and parent_id in seen_span_ids else _ROOT_SENTINEL
         edges.append(RuntimeADGEdge(src_id=src, dst_id=span_id, relation="parent_child"))
-    
+
     return edges
 
 
 def _extract_temporal_edges(spans: list[dict[str, Any]]) -> list[RuntimeADGEdge]:
     """Extract temporal sequence edges from spans with validation.
-    
+
     Orders spans by timestamp and span_id, then creates edges between consecutive spans.
     """
     if len(spans) < 2:
         return []
-    
+
     def safe_ts_utc(s: dict[str, Any]) -> int:
         """Safely extract timestamp, returning 0 for invalid values."""
         try:
@@ -132,7 +132,7 @@ def _extract_temporal_edges(spans: list[dict[str, Any]]) -> list[RuntimeADGEdge]
             return int(val)
         except (ValueError, TypeError):
             return 0
-    
+
     ordered = sorted(spans, key=lambda s: (safe_ts_utc(s), str(s.get("span_id", ""))))
     edges: list[RuntimeADGEdge] = []
     for prev, curr in zip(ordered, ordered[1:]):
@@ -173,7 +173,7 @@ class RuntimeADGMaterializer:
         -------
         RuntimeADGSnapshot
             Immutable, content-addressed snapshot.
-            
+
         Validation:
             - Empty spans: returns empty snapshot with zero timestamps
             - Missing fields: safe defaults applied
@@ -182,7 +182,7 @@ class RuntimeADGMaterializer:
         """
         # Validate and sanitize mission
         mission = str(mission)[:256] if mission else ""
-        
+
         if not spans:
             return create_runtime_adg_snapshot(
                 trace_id=str(trace_id)[:128] if trace_id else "",
@@ -202,9 +202,9 @@ class RuntimeADGMaterializer:
             node = _extract_node(span)
             if node is not None:
                 nodes_list.append(node)
-        
+
         nodes = tuple(nodes_list)
-        
+
         # Extract edges
         parent_child = _extract_parent_child_edges(spans)
         temporal = _extract_temporal_edges(spans)

@@ -21,4 +21,3 @@ class TestSovereignErrorContract:
     """Test instantiable_or_abstract runtime behavior."""
 
     """Test instantiable_or_abstract runtime behavior."""
-

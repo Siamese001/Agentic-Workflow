@@ -13,7 +13,7 @@ from typing import Dict, List, Tuple
 
 class Wave26BlockFix:
     """Wave 26: Fix incomplete code blocks."""
-    
+
     def __init__(self, repo_root: pathlib.Path):
         self.repo_root = repo_root
         self.tests_dir = repo_root / "tests"
@@ -25,14 +25,14 @@ class Wave26BlockFix:
             'failed_files': 0
         }
         self.failed_files: List[Tuple[str, str]] = []
-    
+
     def process_files(self) -> Dict:
         """Process files with Wave 26 block fix."""
         # Only process files with syntax errors
         test_files = []
         for pattern in ["test_*.py", "*/test_*.py"]:
             test_files.extend(self.tests_dir.rglob(pattern))
-        
+
         # Filter out archives and already valid files
         active_test_files = []
         for test_file in test_files:
@@ -45,16 +45,16 @@ class Wave26BlockFix:
                     active_test_files.append(test_file)
                 except UnicodeDecodeError:
                     continue
-        
+
         print(f"Wave 26: Processing {len(active_test_files)} files with syntax errors...")
-        
+
         for test_file in active_test_files:
             self.stats['total_files'] += 1
             if self.process_file(test_file):
                 self.stats['files_processed'] += 1
-        
+
         return self.stats
-    
+
     def process_file(self, file_path: pathlib.Path) -> bool:
         """Process a single file with block fix."""
         try:
@@ -62,10 +62,10 @@ class Wave26BlockFix:
         except Exception as e:
             self.failed_files.append((str(file_path), f"Read error: {e}"))
             return False
-        
+
         # Apply block fix
         fixed_content = self._fix_blocks(original_content)
-        
+
         # Validate the fix
         try:
             ast.parse(fixed_content)
@@ -83,20 +83,20 @@ class Wave26BlockFix:
             except SyntaxError as e2:
                 self.failed_files.append((str(file_path), f"Block fix failed: {e2}"))
                 return False
-    
+
     def _fix_blocks(self, content: str) -> str:
         """Fix incomplete code blocks."""
         lines = content.splitlines()
         fixed_lines = []
-        
+
         for i, line in enumerate(lines):
             stripped = line.strip()
-            
+
             # Skip empty lines
             if not stripped:
                 fixed_lines.append(line)
                 continue
-            
+
             # Check for incomplete blocks
             if self._is_incomplete_block(line, stripped):
                 completed_lines = self._complete_block(line, stripped)
@@ -104,19 +104,19 @@ class Wave26BlockFix:
                 self.stats['blocks_fixed'] += 1
             else:
                 fixed_lines.append(line)
-        
+
         return '\n'.join(fixed_lines)
-    
+
     def _is_incomplete_block(self, line: str, stripped: str) -> bool:
         """Check if line starts an incomplete block."""
         return (re.match(r'^(def|class|if|elif|else|for|while|try|except|finally|with)\b', stripped) and
                 not stripped.endswith(':'))
-    
+
     def _complete_block(self, line: str, stripped: str) -> List[str]:
         """Complete an incomplete block."""
         # Add colon and appropriate content
         completed_line = stripped + ':'
-        
+
         # Determine appropriate content based on block type
         if stripped.startswith('def '):
             return [completed_line, '    pass  # TODO: Implement function']
@@ -126,29 +126,29 @@ class Wave26BlockFix:
             return [completed_line, '    pass  # TODO: Implement block']
         else:
             return [completed_line, '    pass  # TODO: Implement']
-    
+
     def _simple_block_fix(self, content: str) -> str:
         """Apply simple block fix."""
         lines = content.splitlines()
         fixed_lines = []
-        
+
         for line in lines:
             stripped = line.strip()
-            
+
             # Skip empty lines
             if not stripped:
                 fixed_lines.append(line)
                 continue
-            
+
             # Fix incomplete blocks
             if self._is_incomplete_block(line, stripped):
                 fixed_lines.append(stripped + ':')
                 fixed_lines.append('    pass')
             else:
                 fixed_lines.append(line)
-        
+
         return '\n'.join(fixed_lines)
-    
+
     def print_summary(self):
         """Print wave summary."""
         print("\n" + "="*60)
@@ -159,28 +159,28 @@ class Wave26BlockFix:
         print(f"Blocks fixed: {self.stats['blocks_fixed']}")
         print(f"Syntax errors fixed: {self.stats['syntax_errors_fixed']}")
         print(f"Failed files: {len(self.failed_files)}")
-        
+
         if self.failed_files:
             print(f"\nFailed files (first 3):")
             for file_path, error in self.failed_files[:3]:
                 print(f"  {file_path}: {error}")
             if len(self.failed_files) > 3:
                 print(f"  ... and {len(self.failed_files) - 3} more")
-        
+
         print("="*60)
 
 
 def main():
     """Run Wave 26 block fix."""
     repo_root = pathlib.Path(__file__).parent.parent
-    
+
     print("🌊 WAVE 26: BLOCK FIX")
     print(f"Repository: {repo_root}")
-    
+
     fixer = Wave26BlockFix(repo_root)
     stats = fixer.process_files()
     fixer.print_summary()
-    
+
     return stats['syntax_errors_fixed'] > 0
 
 

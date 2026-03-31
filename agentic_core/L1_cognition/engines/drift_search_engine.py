@@ -105,14 +105,14 @@ _emit_stores_embedding("p4", "drift_search_engine", "embedding_store")
 
 class DRIFTSearchEngine:
     """Implements DRIFT search strategy for GraphRAG."""
-    
+
     def __init__(
         self,
         graph_store: IGraphStore,
         config: Optional[DRIFTSearchConfig] = None
     ) -> None:
         """Initialize the DRIFT search engine.
-        
+
         Args:
             graph_store: The graph store to search in
             config: DRIFT search configuration
@@ -120,45 +120,45 @@ class DRIFTSearchEngine:
         self.graph_store = graph_store
         self.config = config or DRIFTSearchConfig()
         self.graphrag_config = get_config()
-        
+
         # Learning feedback storage
         self._feedback_history: Dict[str, List[Tuple[float, datetime]]] = {}
-    
+
     async def search(self, query: SearchQuery) -> SearchResponse:
         """Perform DRIFT search for the given query.
-        
+
         Args:
             query: The search query
-            
+
         Returns:
             SearchResponse with results and metadata
         """
         start_time = datetime.utcnow()
-        
+
         try:
             # Step 1: Multi-strategy search
             semantic_results = await self._semantic_search(query)
             structural_results = await self._structural_search(query)
             reasoning_results = await self._reasoning_search(query)
-            
+
             # Step 2: Dynamic fusion of results
             fused_results = await self._dynamic_fusion(
                 semantic_results, structural_results, reasoning_results, query
             )
-            
+
             # Step 3: Apply adaptive traversal
             traversed_results = await self._adaptive_traversal(fused_results, query)
-            
+
             # Step 4: Context-aware pruning
             pruned_results = self._context_aware_pruning(traversed_results, query)
-            
+
             # Step 5: Apply filters and limits
             filtered_results = self._apply_filters(pruned_results, query)
-            
+
             # Calculate statistics
             relevance_scores = [r.relevance_score for r in filtered_results]
             avg_relevance = sum(relevance_scores) / len(relevance_scores) if relevance_scores else 0.0
-            
+
             response = SearchResponse(
                 query=query,
                 results=filtered_results[:query.max_results],
@@ -177,14 +177,14 @@ class DRIFTSearchEngine:
                     "max_reasoning_depth": self.config.max_reasoning_depth
                 }
             )
-            
+
             _emit_records_telemetry_event(
                 "drift_search_engine",
                 f"search_completed_{len(filtered_results)}_results"
             )
-            
+
             return response
-            
+
         except Exception as e:
             return SearchResponse(
                 query=query,
@@ -199,7 +199,7 @@ class DRIFTSearchEngine:
                 fusion_method="dynamic_reasoning_informed",
                 errors=[f"DRIFT search failed: {str(e)}"]
             )
-    
+
     async def _semantic_search(self, query: SearchQuery) -> List[SearchResult]:
         """Perform semantic search using embeddings."""
         # Find entities using text search (placeholder for embedding-based search)
@@ -208,11 +208,11 @@ class DRIFTSearchEngine:
             entity_types=query.entity_types,
             limit=query.max_results
         )
-        
+
         results = []
         for i, entity in enumerate(search_result.entities):
             score = search_result.scores[i] if i < len(search_result.scores) else 0.5
-            
+
             result = SearchResult(
                 item_id=entity.id,
                 item_type="entity",
@@ -226,9 +226,9 @@ class DRIFTSearchEngine:
                 }
             )
             results.append(result)
-        
+
         return results
-    
+
     async def _structural_search(self, query: SearchQuery) -> List[SearchResult]:
         """Perform structural search based on graph topology."""
         # Find seed entities first
@@ -237,9 +237,9 @@ class DRIFTSearchEngine:
             entity_types=query.entity_types,
             limit=5
         )
-        
+
         results = []
-        
+
         # For each seed, explore structural relationships
         for entity in seed_search.entities[:3]:  # Limit to top 3 seeds
             # Get traversal results
@@ -249,14 +249,14 @@ class DRIFTSearchEngine:
                 relation_types=query.relation_types,
                 entity_types=query.entity_types
             )
-            
+
             # Convert traversal results to search results
             for traversed_entity in traversal.entities:
                 # Calculate structural relevance
                 struct_score = self._calculate_structural_relevance(
                     traversed_entity, entity, query
                 )
-                
+
                 result = SearchResult(
                     item_id=traversed_entity.id,
                     item_type="entity",
@@ -271,19 +271,19 @@ class DRIFTSearchEngine:
                     }
                 )
                 results.append(result)
-        
+
         return results
-    
+
     async def _reasoning_search(self, query: SearchQuery) -> List[SearchResult]:
         """Perform reasoning-based search with multi-hop inference."""
         # This is a simplified reasoning search
         # In practice, you'd use actual reasoning chains
-        
+
         results = []
-        
+
         # Find entities that match query keywords
         keywords = query.text.lower().split()
-        
+
         # For each keyword, find related entities through reasoning
         for keyword in keywords[:3]:  # Limit keywords
             # Find entities with keyword
@@ -291,11 +291,11 @@ class DRIFTSearchEngine:
                 query=keyword,
                 limit=10
             )
-            
+
             # Apply reasoning depth
             for entity in keyword_search.entities:
                 reasoning_score = self._apply_reasoning_depth(entity, keyword, query)
-                
+
                 if reasoning_score >= self.config.reasoning_confidence_threshold:
                     result = SearchResult(
                         item_id=entity.id,
@@ -310,9 +310,9 @@ class DRIFTSearchEngine:
                         }
                     )
                     results.append(result)
-        
+
         return results
-    
+
     def _calculate_structural_relevance(
         self,
         entity: GraphEntity,
@@ -322,17 +322,17 @@ class DRIFTSearchEngine:
         """Calculate structural relevance score."""
         # Base score from text similarity
         text_score = self._calculate_text_similarity(entity, query.text)
-        
+
         # Structural boost based on relationship to seed
         struct_boost = 0.8 if entity.id != seed_entity.id else 1.0
-        
+
         # Type compatibility
         type_boost = 1.0 if not query.entity_types or entity.entity_type in query.entity_types else 0.5
-        
+
         combined_score = text_score * struct_boost * type_boost
-        
+
         return min(1.0, combined_score)
-    
+
     def _apply_reasoning_depth(
         self,
         entity: GraphEntity,
@@ -342,12 +342,12 @@ class DRIFTSearchEngine:
         """Apply reasoning depth scoring."""
         # Base similarity
         similarity = self._calculate_text_similarity(entity, keyword)
-        
+
         # Reasoning confidence decay
         depth_factor = self.config.feedback_decay_factor ** 0  # Depth 1
-        
+
         return similarity * depth_factor
-    
+
     async def _dynamic_fusion(
         self,
         semantic_results: List[SearchResult],
@@ -358,50 +358,50 @@ class DRIFTSearchEngine:
         """Dynamically fuse results from multiple strategies."""
         # Group results by entity ID
         entity_scores: Dict[str, Dict[str, float]] = {}
-        
+
         # Collect scores from each strategy
         for result in semantic_results:
             entity_id = result.item_id
             if entity_id not in entity_scores:
                 entity_scores[entity_id] = {}
             entity_scores[entity_id]["semantic"] = result.relevance_score
-        
+
         for result in structural_results:
             entity_id = result.item_id
             if entity_id not in entity_scores:
                 entity_scores[entity_id] = {}
             entity_scores[entity_id]["structural"] = result.relevance_score
-        
+
         for result in reasoning_results:
             entity_id = result.item_id
             if entity_id not in entity_scores:
                 entity_scores[entity_id] = {}
             entity_scores[entity_id]["reasoning"] = result.relevance_score
-        
+
         # Calculate fused scores
         fused_results = []
         for entity_id, scores in entity_scores.items():
             semantic_score = scores.get("semantic", 0.0)
             structural_score = scores.get("structural", 0.0)
             reasoning_score = scores.get("reasoning", 0.0)
-            
+
             # Dynamic weighted fusion
             fused_score = (
                 semantic_score * self.config.semantic_weight +
                 structural_score * self.config.structural_weight +
                 reasoning_score * self.config.reasoning_weight
             )
-            
+
             # Get the best result to use as base
             best_result = None
             best_original_score = 0.0
-            
+
             for result_list in [semantic_results, structural_results, reasoning_results]:
                 for result in result_list:
                     if result.item_id == entity_id and result.relevance_score > best_original_score:
                         best_result = result
                         best_original_score = result.relevance_score
-            
+
             if best_result:
                 # Update the result with fused score
                 fused_result = SearchResult(
@@ -424,12 +424,12 @@ class DRIFTSearchEngine:
                     }
                 )
                 fused_results.append(fused_result)
-        
+
         # Sort by fused score
         fused_results.sort(key=lambda r: r.relevance_score, reverse=True)
-        
+
         return fused_results
-    
+
     async def _adaptive_traversal(
         self,
         results: List[SearchResult],
@@ -438,9 +438,9 @@ class DRIFTSearchEngine:
         """Apply adaptive traversal to expand result context."""
         if not self.config.adaptive_hop_selection:
             return results
-        
+
         enhanced_results = []
-        
+
         for result in results[:20]:  # Limit traversal to top 20
             # Get additional context through traversal
             if result.item_type == "entity":
@@ -449,16 +449,16 @@ class DRIFTSearchEngine:
                     max_depth=1,
                     entity_types=query.entity_types
                 )
-                
+
                 # Update result with traversal context
                 if traversal.entities:
                     result.surrounding_entities = [e.id for e in traversal.entities[:5]]
                     result.metadata["traversal_expanded"] = True
-            
+
             enhanced_results.append(result)
-        
+
         return enhanced_results
-    
+
     def _context_aware_pruning(
         self,
         results: List[SearchResult],
@@ -467,84 +467,84 @@ class DRIFTSearchEngine:
         """Apply context-aware pruning to remove redundant results."""
         if not self.config.context_aware_pruning:
             return results
-        
+
         pruned = []
         seen_entities = set()
-        
+
         for result in results:
             # Check for redundancy
             entity_key = (result.item_type, result.title.lower())
-            
+
             if entity_key not in seen_entities:
                 seen_entities.add(entity_key)
                 pruned.append(result)
             elif result.relevance_score > 0.8:  # Keep high-score duplicates
                 pruned.append(result)
-        
+
         return pruned
-    
+
     def _apply_filters(self, results: List[SearchResult], query: SearchQuery) -> List[SearchResult]:
         """Apply final filters to results."""
         filtered = []
-        
+
         for result in results:
             # Minimum relevance score
             if result.relevance_score < query.min_relevance_score:
                 continue
-            
+
             # Include/exclude by type
             if query.include_entities and result.item_type != "entity":
                 continue
-            
+
             filtered.append(result)
-        
+
         return filtered
-    
+
     def _calculate_text_similarity(self, entity: GraphEntity, query_text: str) -> float:
         """Calculate text similarity between entity and query."""
         query_terms = set(query_text.lower().split())
         entity_text = f"{entity.name} {entity.description}".lower()
         entity_terms = set(entity_text.split())
-        
+
         if not query_terms:
             return 0.0
-        
+
         intersection = query_terms & entity_terms
         union = query_terms | entity_terms
-        
+
         # Jaccard similarity
         jaccard = len(intersection) / len(union) if union else 0.0
-        
+
         # Boost for exact name matches
         name_boost = 1.0 if query_text.lower() == entity.name.lower() else 0.0
-        
+
         return min(1.0, jaccard * 0.7 + name_boost * 0.3)
-    
+
     def add_feedback(self, query_id: str, result_id: str, rating: float) -> None:
         """Add user feedback for learning."""
         if query_id not in self._feedback_history:
             self._feedback_history[query_id] = []
-        
+
         self._feedback_history[query_id].append((rating, datetime.utcnow()))
-        
+
         # Apply feedback decay to old entries
         if self.config.enable_feedback_learning:
             self._apply_feedback_decay(query_id)
-    
+
     def _apply_feedback_decay(self, query_id: str) -> None:
         """Apply decay factor to old feedback."""
         if query_id not in self._feedback_history:
             return
-        
+
         current_time = datetime.utcnow()
         decayed_feedback = []
-        
+
         for rating, timestamp in self._feedback_history[query_id]:
             age_hours = (current_time - timestamp).total_seconds() / 3600
             if age_hours < 24:  # Only keep feedback from last 24 hours
                 decayed_rating = rating * (self.config.feedback_decay_factor ** age_hours)
                 decayed_feedback.append((decayed_rating, timestamp))
-        
+
         self._feedback_history[query_id] = decayed_feedback
 
 

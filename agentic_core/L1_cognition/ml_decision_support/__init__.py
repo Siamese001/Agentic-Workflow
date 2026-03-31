@@ -17,7 +17,7 @@ from .inference.deterministic_engine import DeterministicInferenceEngine
 
 __all__ = [
     "ModelRegistry",
-    "FeatureSchemas", 
+    "FeatureSchemas",
     "ThresholdConfig",
     "DeterministicFeatureExtractor",
     "BaseMLModel",

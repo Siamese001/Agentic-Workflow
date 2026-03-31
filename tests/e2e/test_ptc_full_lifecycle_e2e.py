@@ -44,37 +44,44 @@ from unittest.mock import MagicMock, Mock, patch
 
 import pytest
 
-# Lazy import fixtures - avoid collection-time errors
 
-@pytest.fixture(scope="session")
-def _lazy_agentic_core_L3_orchestration_ptc_tool_call_store_0():
+# Lazy imports — wrapped to avoid collection-time errors
+try:
+    from agentic_core.L3_orchestration.ptc.builtin_tools import (
+        expr_eval_handler,
+        register_builtin_tools,
+        repo_rg_handler,
+    )
     from agentic_core.L3_orchestration.ptc.tool_call_store import ToolCallStore, get_tool_call_store, record_tool_call
-    return type('_Import', (), {"ToolCallStore": ToolCallStore, "get_tool_call_store": get_tool_call_store, "record_tool_call": record_tool_call})
-
-@pytest.fixture(scope="session")
-def _lazy_agentic_core_L3_orchestration_ptc_builtin_tools_1():
-    from agentic_core.L3_orchestration.ptc.builtin_tools import repo_rg_handler, expr_eval_handler, register_builtin_tools
-    return type('_Import', (), {"repo_rg_handler": repo_rg_handler, "expr_eval_handler": expr_eval_handler, "register_builtin_tools": register_builtin_tools})
-
-@pytest.fixture(scope="session")
-def _lazy_agentic_core_L3_orchestration_types_human_decision_artifact_types_2():
-    from agentic_core.L3_orchestration.types.human_decision_artifact_types import HumanAction, create_approval_artifact, create_human_review_draft
-    return type('_Import', (), {"HumanAction": HumanAction, "create_approval_artifact": create_approval_artifact, "create_human_review_draft": create_human_review_draft})
-
-@pytest.fixture(scope="session")
-def _lazy_agentic_core_L5_safety_enforcement_hitl_gate_3():
+    from agentic_core.L3_orchestration.types.human_decision_artifact_types import (
+        HumanAction,
+        create_approval_artifact,
+        create_human_review_draft,
+    )
     from agentic_core.L5_safety.enforcement.hitl_gate import HitlChoice, HitlDecision, HitlRequest, get_hitl_gate
-    return type('_Import', (), {"HitlChoice": HitlChoice, "HitlDecision": HitlDecision, "HitlRequest": HitlRequest, "get_hitl_gate": get_hitl_gate})
+    from agentic_core.L5_safety.hitl.hitl_escalation_activator import (
+        EscalationPriority,
+        EscalationRequest,
+        HITLEscalationActivator,
+        get_hitl_escalation_activator,
+        reset_hitl_escalation_activator,
+    )
+    from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        LayerSegment,
+        _emit_captures_execution_output,
+        _emit_escalates_to_human,
+        _emit_gated_by_confidence,
+        _emit_hard_fails_untranscripted,
+        _emit_records_execution_trace,
+        _emit_records_tool_invocation,
+        _emit_transcripts_response,
+        _emit_validated_by_safety_plane,
+        emit_determinism_digest,
+        emit_replay_key,
+    )
+except ImportError:
+    pass
 
-@pytest.fixture(scope="session")
-def _lazy_agentic_core_L5_safety_hitl_hitl_escalation_activator_4():
-    from agentic_core.L5_safety.hitl.hitl_escalation_activator import EscalationPriority, EscalationRequest, HITLEscalationActivator, get_hitl_escalation_activator, reset_hitl_escalation_activator
-    return type('_Import', (), {"EscalationPriority": EscalationPriority, "EscalationRequest": EscalationRequest, "HITLEscalationActivator": HITLEscalationActivator, "get_hitl_escalation_activator": get_hitl_escalation_activator, "reset_hitl_escalation_activator": reset_hitl_escalation_activator})
-
-@pytest.fixture(scope="session")
-def _lazy_agentic_core_L_CONTRACTS_lifecycle_trace_contract_5():
-    from agentic_core.L_CONTRACTS.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace, _emit_records_tool_invocation, _emit_captures_execution_output, _emit_transcripts_response, _emit_hard_fails_untranscripted, _emit_gated_by_confidence, _emit_escalates_to_human, _emit_validated_by_safety_plane, emit_determinism_digest, emit_replay_key
-    return type('_Import', (), {"LayerSegment": LayerSegment, "_emit_records_execution_trace": _emit_records_execution_trace, "_emit_records_tool_invocation": _emit_records_tool_invocation, "_emit_captures_execution_output": _emit_captures_execution_output, "_emit_transcripts_response": _emit_transcripts_response, "_emit_hard_fails_untranscripted": _emit_hard_fails_untranscripted, "_emit_gated_by_confidence": _emit_gated_by_confidence, "_emit_escalates_to_human": _emit_escalates_to_human, "_emit_validated_by_safety_plane": _emit_validated_by_safety_plane, "emit_determinism_digest": emit_determinism_digest, "emit_replay_key": emit_replay_key})
 
 # Lazy import fixtures to avoid collection-time errors
 @pytest.fixture

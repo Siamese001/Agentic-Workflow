@@ -1,4 +1,4 @@
-**TL;DR:** 7 universal testing categories for ANY multi-agent AI workflow: **Functional Behavior** (actually works), **Mock Detection** (no fakes), **Architectural Compliance** (proper patterns), **Design Validation** (matches spec), **Integration Flow** (agents coordinate), **Data Transformation** (adds value), **Contract Enforcement** (keeps promises). ~15-20 key tests per category, no implementation code needed.
+"""**TL;DR:** 7 universal testing categories for ANY multi-agent AI workflow: **Functional Behavior** (actually works), **Mock Detection** (no fakes), **Architectural Compliance** (proper patterns), **Design Validation** (matches spec), **Integration Flow** (agents coordinate), **Data Transformation** (adds value), **Contract Enforcement** (keeps promises). ~15-20 key tests per category, no implementation code needed.
 
 ---
 
@@ -300,4 +300,4 @@ APIs do what documentation promises, no surprises.
 
 ---
 
-This framework applies to ANY multi-agent system: resume generation, customer support, data analysis, content creation, fraud detection, etc.
+This framework applies to ANY multi-agent system: resume generation, customer support, data analysis, content creation, fraud detection, etc."""

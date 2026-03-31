@@ -32,7 +32,7 @@ class SequentialThinkingContext:
 class SequentialThinkingAutoInvoker:
     """
     Auto-invokes sequential thinking MCP for all complex Kimi K2.5 operations.
-    
+
     This class ensures sequential thinking is ALWAYS invoked at the start of:
     - Planning phases
     - Code analysis tasks
@@ -185,7 +185,7 @@ Proceeding with thought {self.invocation_count} of structured analysis."""
     def get_invocation_prompt(self, original_prompt: str) -> str:
         """
         Get the modified prompt that includes sequential thinking invocation.
-        
+
         This prepends instructions to ensure sequential thinking is used.
         """
         if not self.should_trigger(original_prompt):
@@ -213,7 +213,7 @@ I will use structured sequential thinking to analyze and solve this problem:
 class CascadeChatInterceptor:
     """
     Intercepts cascade chat messages and injects sequential thinking invocation.
-    
+
     This ensures sequential thinking MCP is ALWAYS called before processing
     complex requests in Kimi K2.5 cascade chat.
     """
@@ -225,7 +225,7 @@ class CascadeChatInterceptor:
     def intercept_prompt(self, prompt: str, user_context: Optional[Dict] = None) -> Dict[str, Any]:
         """
         Intercept a prompt and prepare sequential thinking invocation.
-        
+
         Returns a dict with:
         - 'should_invoke': bool - whether to invoke sequential thinking
         - 'modified_prompt': str - the modified prompt with invocation header
@@ -278,7 +278,7 @@ cascade_interceptor = CascadeChatInterceptor()
 def force_sequential_thinking(prompt: str) -> str:
     """
     Force sequential thinking invocation by modifying the prompt.
-    
+
     Use this function to wrap any prompt that should use sequential thinking.
     """
     interceptor = CascadeChatInterceptor()

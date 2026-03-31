@@ -30,7 +30,7 @@ def run_npx_command(command_args):
 def test_sequential_thinking_package():
     """Test if the sequential thinking package is installed and accessible."""
     print("🔍 Testing sequential thinking package installation...")
-    
+
     # Check if the package is installed globally
     try:
         cmd = ["node", "C:\\Users\\amita\\AppData\\Roaming\\fnm\\node-versions\\v24.13.0\\installation\\node_modules\\@modelcontextprotocol\\server-sequential-thinking\\dist\\index.js", "--help"]
@@ -41,14 +41,14 @@ def test_sequential_thinking_package():
             timeout=10,
             cwd=Path(__file__).parent
         )
-        
+
         if result.returncode == 0 or "sequential-thinking" in result.stdout.lower() or "sequential-thinking" in result.stderr.lower():
             print("✅ Sequential thinking package is installed and accessible")
             return True
         else:
             print(f"❌ Package not working properly: {result.stderr}")
             return False
-            
+
     except subprocess.TimeoutExpired:
         print("✅ Sequential thinking package started (timeout expected for server)")
         return True
@@ -59,7 +59,7 @@ def test_sequential_thinking_package():
 def test_repository_context():
     """Gather repository context for sequential thinking test."""
     print("\n📁 Gathering repository context...")
-    
+
     repo_root = Path(__file__).parent
     context = {
         "repository_name": "Agentic-Workflow",
@@ -75,56 +75,56 @@ def test_repository_context():
         "markdown_files_count": len(list(repo_root.rglob("*.md"))),
         "total_modules": sum(1 for d in repo_root.rglob("*/") if (d / "__init__.py").exists())
     }
-    
+
     print(f"📊 Repository context gathered:")
     print(f"   - Python files: {context['python_files_count']}")
     print(f"   - Markdown files: {context['markdown_files_count']}")
     print(f"   - Python modules: {context['total_modules']}")
-    
+
     return context
 
 def create_sequential_thinking_test():
     """Create a sequential thinking test scenario."""
     print("\n🧠 Creating sequential thinking test scenario...")
-    
+
     context = test_repository_context()
-    
+
     # Define a complex problem related to the repository
     problem = f"""
     Analyze the Agentic-Workflow repository architecture and provide a structured assessment:
-    
+
     Repository: {context['repository_name']}
     - Python files: {context['python_files_count']}
     - Markdown files: {context['markdown_files_count']}
     - Python modules: {context['total_modules']}
-    
+
     Problem: How should we optimize the testing strategy for this multi-layered agentic system?
-    
+
     Consider:
     1. Current test coverage across agentic_core layers (L0-L6)
     2. Integration testing between apps_* modules
     3. Performance testing for the ADG (Application Dependency Graph) system
     4. Testing governance and compliance requirements
-    
+
     Provide a sequential analysis breaking this down into manageable components.
     """
-    
+
     return problem
 
 def test_mcp_config():
     """Test the MCP configuration file."""
     print("\n⚙️ Testing MCP configuration...")
-    
+
     config_path = Path(__file__).parent / ".windsurf" / "mcp_config.json"
-    
+
     if not config_path.exists():
         print("❌ MCP config file not found")
         return False
-    
+
     try:
         with open(config_path, 'r') as f:
             config = json.load(f)
-        
+
         if "sequential-thinking" in config.get("mcpServers", {}):
             server_config = config["mcpServers"]["sequential-thinking"]
             print("✅ Sequential thinking server found in MCP config")
@@ -135,7 +135,7 @@ def test_mcp_config():
         else:
             print("❌ Sequential thinking server not found in MCP config")
             return False
-            
+
     except Exception as e:
         print(f"❌ Error reading MCP config: {e}")
         return False
@@ -144,31 +144,31 @@ def main():
     """Main test function."""
     print("🚀 Sequential Thinking MCP Server Integration Test")
     print("=" * 60)
-    
+
     # Test 1: Package access
     package_ok = test_sequential_thinking_package()
-    
+
     # Test 2: MCP configuration
     config_ok = test_mcp_config()
-    
+
     # Test 3: Create test scenario
     test_problem = create_sequential_thinking_test()
-    
+
     # Summary
     print("\n📋 Test Summary:")
     print(f"   Package Access: {'✅' if package_ok else '❌'}")
     print(f"   MCP Config: {'✅' if config_ok else '❌'}")
-    
+
     if package_ok and config_ok:
         print("\n🎉 Sequential thinking MCP server is ready!")
         print("\n📝 Test Problem for Sequential Thinking:")
         print(test_problem)
-        
+
         print("\n💡 Next Steps:")
         print("1. Restart Windsurf to load the new MCP configuration")
         print("2. Use the sequential_thinking tool to analyze the problem above")
         print("3. Verify the tool appears in the available tools list")
-        
+
         return 0
     else:
         print("\n❌ Issues found. Please check the errors above.")

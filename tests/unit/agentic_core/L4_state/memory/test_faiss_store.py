@@ -2,17 +2,20 @@
 
 import pytest
 
-# Lazy import fixtures - avoid collection-time errors
 
-@pytest.fixture(scope="session")
-def _lazy_agentic_core_L4_state_memory_faiss_store_0():
-    from agentic_core.L4_state.memory.faiss_store import FaissVectorStore, FaissEmbeddingStore, VectorDocument, get_global_faiss_store
-    return type('_Import', (), {"FaissVectorStore": FaissVectorStore, "FaissEmbeddingStore": FaissEmbeddingStore, "VectorDocument": VectorDocument, "get_global_faiss_store": get_global_faiss_store})
+# Lazy imports — wrapped to avoid collection-time errors
+try:
+    from agentic_core.L4_state.memory.faiss_store import (
+        FaissEmbeddingStore,
+        FaissVectorStore,
+        VectorDocument,
+        get_global_faiss_store,
+    )
+except ImportError:
+    pass
+
 import numpy as np
 from unittest.mock import MagicMock, patch
-
-
-)
 
 
 class TestFAISSVectorStore:

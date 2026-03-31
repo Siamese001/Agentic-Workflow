@@ -17,13 +17,13 @@ from L1_cognition.engines.semantic_retriever import SemanticRetriever, Retrieval
 async def test_retriever():
     """Test the semantic retriever with sample questions."""
     retriever = SemanticRetriever()
-    
+
     # Get collection stats
     stats = retriever.get_collection_stats()
     print("Collection Statistics:")
     for collection, info in stats.items():
         print(f"  {collection}: {info['document_count']} documents")
-    
+
     # Test questions
     questions = [
         "What does the UniversalWriteGateway do?",
@@ -31,7 +31,7 @@ async def test_retriever():
         "What are the L0-L6 layers?",
         "Show me the ChromaDB client implementation"
     ]
-    
+
     print("\nTesting Questions:")
     for question in questions:
         print(f"\nQuestion: {question}")
@@ -40,7 +40,7 @@ async def test_retriever():
         print(f"Found {len(results)} results")
         if results:
             print(f"Top result from: {results[0].collection}")
-    
+
     # Test direct query
     print("\nDirect Query Test:")
     query = RetrievalQuery(

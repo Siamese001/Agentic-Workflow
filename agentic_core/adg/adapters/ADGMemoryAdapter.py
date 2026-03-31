@@ -392,13 +392,13 @@ class ADGMemoryAdapter:
 
     def get_violation_file_set(self) -> frozenset[str]:
         """Get set of file paths that have ADG violations.
-        
+
         Returns:
             frozenset of file paths with violations
         """
         if not self.is_available:
             return frozenset()
-        
+
         try:
             # Query ADGViolation entities and extract source file observations
             violation_nodes = self._bridge.open_nodes(["ADGViolation_*"])
@@ -415,16 +415,16 @@ class ADGMemoryAdapter:
 
     def get_hotspot_modules(self, limit: int = 20) -> frozenset[str]:
         """Get top N modules by fan-out (hotspots).
-        
+
         Args:
             limit: Maximum number of hotspots to return
-            
+
         Returns:
             frozenset of module names
         """
         if not self.is_available:
             return frozenset()
-        
+
         try:
             # Query ADGHotspot entities and extract module names
             hotspot_nodes = self._bridge.open_nodes(["ADGHotspot_*"])
@@ -437,7 +437,7 @@ class ADGMemoryAdapter:
                         fan_out = int(obs[8:])  # Remove "fan_out=" prefix
                         break
                 hotspots.append((module_name, fan_out))
-            
+
             # Sort by fan_out descending and take top N
             hotspots.sort(key=lambda x: x[1], reverse=True)
             return frozenset(module for module, _ in hotspots[:limit])

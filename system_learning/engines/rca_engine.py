@@ -281,7 +281,7 @@ def analyze_failures(
             findings_dict[key].append(line)
     if not findings_dict:
         findings_dict["UNKNOWN", "no_patterns_matched"] = ["<no matching patterns>"]
-    
+
     # Check for ADG violation correlation
     adg_correlated = False
     violation_type = None
@@ -300,18 +300,18 @@ def analyze_failures(
                             break
             if adg_correlated:
                 break
-    
+
     findings = []
     for (category, signature), evidence_lines in findings_dict.items():
         count = len(evidence_lines)
         canonical_evidence = "\n".join(sorted(evidence_lines)).encode("utf-8")
         evidence_hash = hashlib.sha256(canonical_evidence).hexdigest()
-        
+
         # Add ADG correlation metadata if applicable
         if adg_correlated and category in ["SYNTAX", "IMPORT", "RUNTIME"]:
             # Add correlation info to signature
             signature = f"{signature}_ADG_CORRELATED"
-        
+
         findings.append(
             RCAFinding(category=category, signature=signature, count=count, evidence_hash=evidence_hash)
         )

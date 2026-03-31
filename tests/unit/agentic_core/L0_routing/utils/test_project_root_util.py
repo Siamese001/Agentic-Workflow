@@ -15,4 +15,3 @@ class TestGetProjectRootFunction:
 
 
 """Test is_callable runtime behavior."""
-

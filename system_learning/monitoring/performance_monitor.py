@@ -21,12 +21,12 @@ logger = logging.getLogger(__name__)
 @dataclass(frozen=True, slots=True)
 class PerformanceMetric:
     """A single performance metric measurement."""
-    
+
     metric_name: str
     value: float
     timestamp_utc: int
     tags: Dict[str, str] = field(default_factory=dict)
-    
+
     def to_dict(self) -> Dict[str, Any]:
         """Convert to dictionary for serialization."""
         return {
@@ -40,7 +40,7 @@ class PerformanceMetric:
 @dataclass(frozen=True, slots=True)
 class SignalHealthMetrics:
     """Health metrics for signal processing."""
-    
+
     total_signals_processed: int
     successful_signals: int
     failed_signals: int
@@ -48,7 +48,7 @@ class SignalHealthMetrics:
     p95_latency_ms: float
     error_rate: float
     timestamp_utc: int
-    
+
     @property
     def success_rate(self) -> float:
         """Calculate success rate."""
@@ -59,10 +59,10 @@ class SignalHealthMetrics:
 
 class PerformanceMonitor:
     """Monitors performance and health of system learning signals."""
-    
+
     def __init__(self, max_history_size: int = 10000):
         """Initialize performance monitor.
-        
+
         Args:
             max_history_size: Maximum number of metrics to keep in memory
         """
@@ -78,7 +78,7 @@ class PerformanceMonitor:
         self._last_health_check = 0
         self._health_cache: Optional[SignalHealthMetrics] = None
         self._health_cache_ttl = 30000  # 30 seconds cache TTL
-    
+
     def record_metric(
         self,
         metric_name: str,
@@ -86,7 +86,7 @@ class PerformanceMonitor:
         tags: Optional[Dict[str, str]] = None,
     ) -> None:
         """Record a performance metric.
-        
+
         Args:
             metric_name: Name of the metric
             value: Metric value
@@ -95,23 +95,23 @@ class PerformanceMonitor:
         flags = get_feature_flags()
         if not flags.enable_performance_monitoring:
             return
-        
+
         metric = PerformanceMetric(
             metric_name=metric_name,
             value=value,
             timestamp_utc=int(time.time() * 1000),
             tags=tags or {},
         )
-        
+
         with self._metrics_lock:
             self._metrics_history.append(metric)
-        
+
         # Log significant metrics
         if metric_name.endswith("_latency_ms") and value > 1000:
             logger.warning(f"High latency detected: {metric_name}={value}ms")
         elif metric_name.endswith("_error_rate") and value > 0.1:
             logger.warning(f"High error rate detected: {metric_name}={value:.2%}")
-    
+
     def record_signal_processing(
         self,
         signal_type: str,
@@ -120,7 +120,7 @@ class PerformanceMonitor:
         tags: Optional[Dict[str, str]] = None,
     ) -> None:
         """Record signal processing metrics.
-        
+
         Args:
             signal_type: Type of signal processed
             success: Whether processing was successful
@@ -130,7 +130,7 @@ class PerformanceMonitor:
         flags = get_feature_flags()
         if not flags.enable_performance_monitoring:
             return
-        
+
         # Update counters
         with self._metrics_lock:
             counters = self._signal_counters[signal_type]
@@ -139,17 +139,17 @@ class PerformanceMonitor:
                 counters["success"] += 1
             else:
                 counters["failure"] += 1
-            
+
             # Store latency sample
             self._latency_samples[signal_type].append(latency_ms)
-        
+
         # Record individual metrics
         self.record_metric(
             metric_name=f"{signal_type}_processing_latency_ms",
             value=latency_ms,
             tags=tags,
         )
-        
+
         # Record success/failure
         status = "success" if success else "failure"
         self.record_metric(
@@ -157,13 +157,13 @@ class PerformanceMonitor:
             value=1.0,
             tags=tags,
         )
-    
+
     def get_signal_health(self, signal_type: Optional[str] = None) -> SignalHealthMetrics:
         """Get health metrics for signal processing.
-        
+
         Args:
             signal_type: Optional signal type to filter by
-            
+
         Returns:
             Signal health metrics
         """
@@ -178,22 +178,22 @@ class PerformanceMonitor:
                 error_rate=0.0,
                 timestamp_utc=int(time.time() * 1000),
             )
-        
+
         now = int(time.time() * 1000)
-        
+
         # Check cache
         with self._metrics_lock:
-            if (self._health_cache and 
-                signal_type is None and 
+            if (self._health_cache and
+                signal_type is None and
                 now - self._health_cache.timestamp_utc < self._health_cache_ttl):
                 return self._health_cache
-        
+
         # Calculate metrics
         total_signals = 0
         successful_signals = 0
         failed_signals = 0
         all_latencies = []
-        
+
         with self._metrics_lock:
             if signal_type:
                 # Single signal type
@@ -210,7 +210,7 @@ class PerformanceMonitor:
                     successful_signals += counters["success"]
                     failed_signals += counters["failure"]
                     all_latencies.extend(self._latency_samples[sig_type])
-        
+
         # Calculate latency metrics
         if all_latencies:
             average_latency = sum(all_latencies) / len(all_latencies)
@@ -220,10 +220,10 @@ class PerformanceMonitor:
         else:
             average_latency = 0.0
             p95_latency = 0.0
-        
+
         # Calculate error rate
         error_rate = failed_signals / total_signals if total_signals > 0 else 0.0
-        
+
         health_metrics = SignalHealthMetrics(
             total_signals_processed=total_signals,
             successful_signals=successful_signals,
@@ -233,45 +233,45 @@ class PerformanceMonitor:
             error_rate=error_rate,
             timestamp_utc=now,
         )
-        
+
         # Cache for all signals
         if signal_type is None:
             with self._metrics_lock:
                 self._health_cache = health_metrics
                 self._last_health_check = now
-        
+
         return health_metrics
-    
+
     def get_metrics_summary(
         self,
         metric_name: Optional[str] = None,
         since_utc: Optional[int] = None,
     ) -> Dict[str, Any]:
         """Get summary of performance metrics.
-        
+
         Args:
             metric_name: Optional metric name to filter by
             since_utc: Optional timestamp to filter from
-            
+
         Returns:
             Metrics summary
         """
         flags = get_feature_flags()
         if not flags.enable_performance_monitoring:
             return {"status": "disabled"}
-        
+
         with self._metrics_lock:
             metrics = list(self._metrics_history)
-        
+
         # Apply filters
         if metric_name:
             metrics = [m for m in metrics if m.metric_name == metric_name]
         if since_utc:
             metrics = [m for m in metrics if m.timestamp_utc >= since_utc]
-        
+
         if not metrics:
             return {"status": "no_data"}
-        
+
         # Calculate summary statistics
         values = [m.value for m in metrics]
         summary = {
@@ -283,30 +283,30 @@ class PerformanceMonitor:
             "latest_timestamp": max(m.timestamp_utc for m in metrics),
             "earliest_timestamp": min(m.timestamp_utc for m in metrics),
         }
-        
+
         # Add percentiles
         sorted_values = sorted(values)
         summary["p50"] = sorted_values[int(len(sorted_values) * 0.5)]
         summary["p95"] = sorted_values[int(len(sorted_values) * 0.95)]
         summary["p99"] = sorted_values[int(len(sorted_values) * 0.99)]
-        
+
         return summary
-    
+
     def check_alert_conditions(self) -> List[Dict[str, Any]]:
         """Check for alert conditions.
-        
+
         Returns:
             List of alert conditions
         """
         flags = get_feature_flags()
         if not flags.enable_performance_monitoring:
             return []
-        
+
         alerts = []
-        
+
         # Check overall health
         health = self.get_signal_health()
-        
+
         # High error rate alert
         if health.error_rate > 0.1:
             alerts.append({
@@ -319,7 +319,7 @@ class PerformanceMonitor:
                     "total_signals": health.total_signals_processed,
                 },
             })
-        
+
         # High latency alert
         if health.p95_latency_ms > 5000:
             alerts.append({
@@ -332,7 +332,7 @@ class PerformanceMonitor:
                     "avg_latency_ms": health.average_latency_ms,
                 },
             })
-        
+
         # Low success rate alert
         if health.success_rate < 0.9 and health.total_signals_processed > 10:
             alerts.append({
@@ -345,9 +345,9 @@ class PerformanceMonitor:
                     "total_signals": health.total_signals_processed,
                 },
             })
-        
+
         return alerts
-    
+
     def reset_metrics(self) -> None:
         """Reset all metrics (for testing or maintenance)."""
         with self._metrics_lock:
@@ -356,25 +356,25 @@ class PerformanceMonitor:
             self._latency_samples.clear()
             self._health_cache = None
             self._last_health_check = 0
-    
+
     def export_metrics(self, format_type: str = "json") -> str:
         """Export metrics in specified format.
-        
+
         Args:
             format_type: Export format ('json' or 'csv')
-            
+
         Returns:
             Exported metrics as string
         """
         with self._metrics_lock:
             metrics = list(self._metrics_history)
-        
+
         if format_type == "json":
             return json.dumps([m.to_dict() for m in metrics], indent=2)
         elif format_type == "csv":
             if not metrics:
                 return ""
-            
+
             headers = ["metric_name", "value", "timestamp_utc", "tags"]
             rows = []
             for metric in metrics:
@@ -385,7 +385,7 @@ class PerformanceMonitor:
                     str(metric.timestamp_utc),
                     tags_str,
                 ])
-            
+
             return "\n".join([",".join(headers)] + [",".join(row) for row in rows])
         else:
             raise ValueError(f"Unsupported format: {format_type}")
@@ -397,7 +397,7 @@ _performance_monitor: Optional[PerformanceMonitor] = None
 
 def get_performance_monitor() -> PerformanceMonitor:
     """Get the global performance monitor instance.
-    
+
     Returns:
         PerformanceMonitor instance
     """
@@ -409,7 +409,7 @@ def get_performance_monitor() -> PerformanceMonitor:
 
 def record_signal_latency(signal_type: str, latency_ms: float, success: bool = True) -> None:
     """Convenience function to record signal processing latency.
-    
+
     Args:
         signal_type: Type of signal processed
         latency_ms: Processing latency in milliseconds
@@ -421,14 +421,14 @@ def record_signal_latency(signal_type: str, latency_ms: float, success: bool = T
 
 def check_system_health() -> Dict[str, Any]:
     """Check overall system health.
-    
+
     Returns:
         System health summary
     """
     monitor = get_performance_monitor()
     health = monitor.get_signal_health()
     alerts = monitor.check_alert_conditions()
-    
+
     return {
         "health": {
             "total_signals": health.total_signals_processed,

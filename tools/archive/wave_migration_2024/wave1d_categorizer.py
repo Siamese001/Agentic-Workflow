@@ -14,15 +14,15 @@ from collections import defaultdict, Counter
 
 class SkipTestCategorizer:
     """Detailed categorizer for skipped tests."""
-    
+
     def __init__(self):
         self.categorized_tests = defaultdict(list)
         self.actionable_skips = []
-        
+
     def categorize_all_skipped_tests(self) -> Dict:
         """Categorize all skipped tests with detailed analysis."""
         print("=== Wave 1d: Categorizing All Skipped Tests ===")
-        
+
         # Load previous wave data
         try:
             with open('artifacts/wave1a_inventory_report.json', 'r') as f:
@@ -32,7 +32,7 @@ class SkipTestCategorizer:
         except FileNotFoundError as e:
             print(f"❌ Missing previous wave data: {e}")
             return None
-        
+
         categorization = {
             'total_skipped_tests': 0,
             'categories': {
@@ -49,32 +49,32 @@ class SkipTestCategorizer:
             'requires_manual_review': [],
             'wave2_prioritization': {}
         }
-        
+
         # Process skip patterns from Wave 1b
         classification_results = wave1b_data.get('classification_results', {})
         detailed_classification = classification_results.get('detailed_classification', {})
-        
+
         # Categorize each skip
         for category, skips in detailed_classification.items():
             for skip_info in skips:
                 categorized_skip = self._create_categorized_skip(skip_info, category)
-                
+
                 # Add to appropriate category
                 target_category = self._determine_target_category(categorized_skip)
                 categorization['categories'][target_category].append(categorized_skip)
                 categorization['total_skipped_tests'] += 1
-                
+
                 # Determine actionability
                 if self._is_actionable_removal(categorized_skip):
                     categorization['actionable_removals'].append(categorized_skip)
                 else:
                     categorization['requires_manual_review'].append(categorized_skip)
-        
+
         # Create Wave 2 prioritization
         categorization['wave2_prioritization'] = self._create_wave2_prioritization(categorization)
-        
+
         return categorization
-    
+
     def _create_categorized_skip(self, skip_info: Dict, classification_category: str) -> Dict:
         """Create a detailed categorized skip entry."""
         return {
@@ -89,13 +89,13 @@ class SkipTestCategorizer:
             'estimated_effort': self._estimate_removal_effort(skip_info),
             'risk_level': self._assess_removal_risk(skip_info)
         }
-    
+
     def _determine_target_category(self, categorized_skip: Dict) -> str:
         """Determine the target category for Wave 2 processing."""
         classification = categorized_skip['classification']
         category = classification.get('category', '')
         subcategory = classification.get('subcategory', '')
-        
+
         # Map Wave 1b categories to Wave 2 categories
         if category == 'invalid_skips':
             if subcategory == 'masking_failures':
@@ -119,34 +119,34 @@ class SkipTestCategorizer:
                 return 'questionable_documentation'
             elif subcategory == 'structural_issues':
                 return 'questionable_structural'
-        
+
         return 'questionable_documentation'  # default
-    
+
     def _is_actionable_removal(self, categorized_skip: Dict) -> bool:
         """Determine if a skip is actionable for removal."""
         classification = categorized_skip['classification']
         confidence = categorized_skip['confidence']
         risk_level = categorized_skip['risk_level']
-        
+
         # High confidence invalid skips are actionable
-        if (classification.get('category') == 'invalid_skips' and 
-            confidence > 0.7 and 
+        if (classification.get('category') == 'invalid_skips' and
+            confidence > 0.7 and
             risk_level in ['low', 'medium']):
             return True
-        
+
         # Some questionable skips with high confidence are actionable
-        if (classification.get('category') == 'questionable_skips' and 
-            confidence > 0.8 and 
+        if (classification.get('category') == 'questionable_skips' and
+            confidence > 0.8 and
             classification.get('specific_type') == 'no_reason'):
             return True
-        
+
         return False
-    
+
     def _calculate_removal_priority(self, skip_info: Dict) -> str:
         """Calculate removal priority (high, medium, low)."""
         classification = skip_info['classification']
         confidence = skip_info['confidence']
-        
+
         # Invalid skips get high priority
         if classification.get('category') == 'invalid_skips':
             if confidence > 0.8:
@@ -155,74 +155,74 @@ class SkipTestCategorizer:
                 return 'medium'
             else:
                 return 'low'
-        
+
         # Questionable skips get medium priority
         elif classification.get('category') == 'questionable_skips':
             if confidence > 0.7:
                 return 'medium'
             else:
                 return 'low'
-        
+
         # Valid skips get low priority (keep them)
         return 'low'
-    
+
     def _estimate_removal_effort(self, skip_info: Dict) -> str:
         """Estimate effort required to remove skip."""
         pattern_type = skip_info.get('pattern_type', '')
         reason = skip_info.get('reason', '')
-        
+
         # Simple decorator removals are easy
         if pattern_type in ['pytest_skip', 'pytest_skipif', 'pytest_xfail']:
             return 'low'
-        
+
         # Manual skips might require more work
         elif pattern_type == 'manual_skips':
             return 'medium'
-        
+
         # Complex patterns require more effort
         elif pattern_type in ['conditional_skips', 'fixture_skips']:
             return 'high'
-        
+
         # No reason means investigation needed
         elif len(reason) == 0:
             return 'medium'
-        
+
         return 'low'
-    
+
     def _assess_removal_risk(self, skip_info: Dict) -> str:
         """Assess risk of removing the skip."""
         classification = skip_info['classification']
         category = classification.get('category', '')
         subcategory = classification.get('subcategory', '')
-        
+
         # Invalid skips have low risk (they're hiding problems)
         if category == 'invalid_skips':
             return 'low'
-        
+
         # Valid environmental skips have high risk
         if category == 'valid_skips' and subcategory == 'environmental':
             return 'high'
-        
+
         # Questionable skips have medium risk
         if category == 'questionable_skips':
             return 'medium'
-        
+
         return 'medium'
-    
+
     def _create_wave2_prioritization(self, categorization: Dict) -> Dict:
         """Create prioritization for Wave 2 processing."""
         actionable = categorization['actionable_removals']
-        
+
         # Group by priority
         high_priority = [s for s in actionable if s['removal_priority'] == 'high']
         medium_priority = [s for s in actionable if s['removal_priority'] == 'medium']
         low_priority = [s for s in actionable if s['removal_priority'] == 'low']
-        
+
         # Group by effort
         low_effort = [s for s in actionable if s['estimated_effort'] == 'low']
         medium_effort = [s for s in actionable if s['estimated_effort'] == 'medium']
         high_effort = [s for s in actionable if s['estimated_effort'] == 'high']
-        
+
         # Create Wave 2 sub-wave assignments
         wave2_assignments = {
             'wave2a_first_party': {
@@ -244,11 +244,11 @@ class SkipTestCategorizer:
                 'priority': 'high'
             }
         }
-        
+
         # Count assigned skips
         for assignment in wave2_assignments.values():
             assignment['estimated_count'] = len(assignment['assigned_skips'])
-        
+
         return {
             'total_actionable': len(actionable),
             'priority_breakdown': {
@@ -264,7 +264,7 @@ class SkipTestCategorizer:
             'wave2_assignments': wave2_assignments,
             'recommended_approach': self._generate_removal_approach(actionable)
         }
-    
+
     def _generate_removal_approach(self, actionable_skips: List[Dict]) -> Dict:
         """Generate recommended approach for skip removal."""
         return {
@@ -295,16 +295,16 @@ class SkipTestCategorizer:
                 'No tests broken by removal process'
             ]
         }
-    
+
     def generate_wave1d_report(self) -> Dict:
         """Generate Wave 1d categorization report."""
         print("=== Wave 1d: Categorize All Skipped Tests ===")
-        
+
         categorization = self.categorize_all_skipped_tests()
-        
+
         if not categorization:
             return None
-        
+
         # Create summary
         summary = {
             'total_skipped_tests': categorization['total_skipped_tests'],
@@ -312,29 +312,29 @@ class SkipTestCategorizer:
             'manual_review_required': len(categorization['requires_manual_review']),
             'wave2_targets': categorization['wave2_prioritization']['total_actionable']
         }
-        
+
         categorization['summary'] = summary
-        
+
         # Save report
         with open('artifacts/wave1d_categorization_report.json', 'w') as f:
             json.dump(categorization, f, indent=2, default=str)
-        
+
         # Print summary
         print(f"\n=== Wave 1d Summary ===")
         print(f"Total skipped tests: {summary['total_skipped_tests']}")
         print(f"Actionable for removal: {summary['actionable_removals']}")
         print(f"Require manual review: {summary['manual_review_required']}")
         print(f"Wave 2 targets: {summary['wave2_targets']}")
-        
+
         # Print Wave 2 assignments
         wave2_assignments = categorization['wave2_prioritization']['wave2_assignments']
         print(f"\n=== Wave 2 Assignments ===")
         for wave_id, assignment in wave2_assignments.items():
             print(f"{wave_id}: {assignment['estimated_count']} skips")
             print(f"  {assignment['description']}")
-        
+
         print(f"\n📄 Report saved to: artifacts/wave1d_categorization_report.json")
-        
+
         return categorization
 
 
@@ -342,7 +342,7 @@ def main():
     """Main execution for Wave 1d."""
     categorizer = SkipTestCategorizer()
     report = categorizer.generate_wave1d_report()
-    
+
     return report
 
 

@@ -138,7 +138,7 @@
 |            | └─ [MISS]─→ Layer 2 ──>        | └─ [MISS]─→ Layer 3 ──>        | └─ [MISS]─→ Layer 4 ──>        | └─ [MISS]─→ Layer 5 ──>        | └─ [FAIL]─→ Exception |
 +============+================================+================================+================================+================================+=======================+
                                                                                                   │
-    ┌─────────────────────────────────────────────────────────────────────────────────────────────┴────────────────────────────────────────────────────────────────────────────────────────────────┐
+┌──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┐
     │ C0 RAG PIPELINE (INFORMATIONAL CONTEXT ASSEMBLY)                                                                                               ┌───────────────────────────────────────────┐ │
     │ [!] C0 IS AN EPHEMERAL ASSEMBLY PROCESS (NOT A SYSTEM LAYER)                                                                                   │ SYSTEM METRICS (GLOBAL LEDGER)            │ │
     │ C0 is a transient retrieval process invoked by L1 after L0 routes to R3. It assembles context only and has ZERO authority.                     ├───────────────────────────────────────────┤ │
@@ -156,30 +156,27 @@
     │  ┌─────────────────────────┐                              │ [ FROM L4 ARCHIVE / VECTOR DB ]                               │                                                                  │
     │  │ 1. ACCEPT QUERY PAYLOAD │                              │ [PULL] C0 reads ONLY from L4 | Deep archive lookup            │                                                                  │
     │  │ raw_query + 🔵intent_vec│                              │ Cannot modify catalog        | Cannot write back              │                                                                  │
-    │  │ (precomputed upstream)  │                              └──────────────────────────────┬────────────────────────────────┘                                                                  │
-    │  └──────────┬──────────────┘                                                             │                                                                                                   │
-    │             │                                                                            ▼                                                                                                   │
+    │  │ (precomputed upstream)  │                              └──────────────┬────────────────────────────────────────────────┘                                                                  │
+    │  └──────────┬──────────────┘                                             │                                                                                                                   │
+    │             │                                                            ▼                                                                                                                   │
     │             ▼                                                                                                                                                                                │
-    │  ┌─────────────────────────┐                                                                                                                                                                 │
-    │  │ 2a. VECTOR SEARCH       │──┐                                                                                                                                                              │
-    │  │ 🔵 intent_vec vs 🟠 fact │  │   ┌─────────────────────────┐   ┌─────────────────────────┐   ┌─────────────────────────┐   ┌─────────────────────────┐   ┌─────────────────────────┐         │
-    │  │ FAISS / ANN index       │  ├──>│ 3. SCORE FUSION (RRF)   │──>│ 4. CROSS-ENCODER RERANK │──>│ 5. CONTEXT BUILD        │──>│ 6. COMPLETENESS CHECK   │──>│ [OUT] C0 -> L1          │         │
-    │  │ Retrieves Top-K_vec     │  │   │ Reciprocal Rank Fusion  │   │ Q vs Doc deep scoring   │   │ Chunk stitching         │   │ Coverage validation     │   │ Curated context bundle  │         │
-    │  └─────────────────────────┘  │   │ Combines Vec + Lex      │   │ Precision ordering      │   │ Parent-child expansion  │   │ Answerability scoring   │   │ Enables synthesis       │         │
-    │                               │   │ Produces Top-K_fused    │   │ Yields Top-N_final      │   │ Sibling windowing       │   │ Reject / augment if gap │   │ No execution authority  │         │
-    │  ┌─────────────────────────┐  │   └─────────────────────────┘   └─────────────────────────┘   └─────────────────────────┘   └─────────────────────────┘   └─────────────────────────┘         │
-    │  │ 2b. LEXICAL SEARCH      │──┘                                                                                                                                                              │
-    │  │ BM25/sparse retrieval   │                                                                                                                                                                 │
-    │  │ Token match scoring     │                                                                                                                                                                 │
-    │  │ Retrieves Top-K_lex     │                                                                                                                                                                 │
-    │  └─────────────────────────┘                                                                                                                                                                 │
+    │  ┌─────────────────────────────┐                                                                                                                                                             │
+    │  │ 2a. VECTOR SEARCH           │──┐                                                                                                                                                          │
+    │  │ 🔵 intent_vec (semantic     │  │   ┌─────────────────────────────┐   ┌─────────────────────────┐   ┌─────────────────────────┐   ┌─────────────────────────┐   ┌────────────────────────┐ │
+    │  │ intent) vs 🟠 fact_vec      │  ├──>│ 3. SCORE FUSION (RRF)       │──>│ 4. CROSS-ENCODER RERANK │──>│ 5. CONTEXT BUILD        │──>│ 6. COMPLETENESS CHECK   │──>│ [OUT] C0 -> L1         │ │
+    │  │ (embedded knowledge in DB)  │  │   │ RRF fuses BOTH lanes →      │   │ Q vs Doc deep scoring   │   │ Chunk stitching         │   │ Coverage validation     │   │ Curated context bundle │ │
+    │  │ FAISS / ANN index           │  │   │ hybrid retrieval (semantic  │   │ Precision ordering      │   │ Parent-child expansion  │   │ Answerability scoring   │   │ Enables synthesis      │ │
+    │  │ Retrieves Top-K_vec         │  │   │ + lexical).                 │   │ Yields Top-N_final      │   │ Sibling windowing       │   │ Reject / augment if gap │   │ No execution authority │ │
+    │  └─────────────────────────────┘  │   │ Produces Top-K_fused        │   └─────────────────────────┘   └─────────────────────────┘   └─────────────────────────┘   └────────────────────────┘ │
+    │                                   │   └─────────────────────────────┘                                                                                                                        │
+    │  ┌─────────────────────────────┐  │                                                                                                                                                          │
+    │  │ 2b. LEXICAL SEARCH          │──┘                                                                                                                                                          │
+    │  │ BM25 operates in parallel   │                                                                                                                                                             │
+    │  │ on raw_query (lexical       │                                                                                                                                                             │
+    │  │ token match scoring)        │                                                                                                                                                             │
+    │  │ Retrieves Top-K_lex         │                                                                                                                                                             │
+    │  └─────────────────────────────┘                                                                                                                                                             │
     │                                                                                                                                                                                              │
-    │  ┌──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┐                    │
-    │  │ SEARCH SIGNAL DEFINITION                                                                                                                                             │                    │
-    │  │ 🔵 intent_vec (semantic intent) is compared against 🟠 fact_vec (embedded knowledge in Vector DB)                                                                    │                    │
-    │  │ BM25 operates in parallel on raw_query (lexical token match)                                                                                                         │                    │
-    │  │ RRF fuses BOTH lanes → hybrid retrieval (semantic + lexical)                                                                                                         │                    │
-    │  └──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┘                    │
     └──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┘
 
 ========================================================================================================================================================================================================================================================

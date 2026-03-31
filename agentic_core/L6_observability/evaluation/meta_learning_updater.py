@@ -86,7 +86,7 @@ logger = logging.getLogger(__name__)
 
 class ConvergenceState(str, Enum):
     """Learning convergence state."""
-    
+
     NOT_STARTED = "not_started"
     IMPROVING = "improving"
     PLATEAUED = "plateaued"
@@ -97,7 +97,7 @@ class ConvergenceState(str, Enum):
 @dataclass
 class MetaLearningState:
     """Meta-learning state snapshot."""
-    
+
     learning_rate: float
     convergence_state: ConvergenceState
     total_updates: int
@@ -111,14 +111,14 @@ class MetaLearningState:
 
 class MetaLearningUpdater:
     """Updates meta-learning state based on evaluation insights.
-    
+
     Features:
     - Adaptive learning rate based on convergence
     - Convergence detection
     - Insight extraction from evaluation patterns
     - State persistence
     """
-    
+
     def __init__(
         self,
         initial_learning_rate: float = 0.01,
@@ -128,7 +128,7 @@ class MetaLearningUpdater:
         plateau_threshold_sec: float = 300.0,
     ) -> None:
         """Initialize meta-learning updater.
-        
+
         Args:
             initial_learning_rate: Starting learning rate
             min_learning_rate: Minimum learning rate
@@ -141,14 +141,14 @@ class MetaLearningUpdater:
         self._max_learning_rate = max_learning_rate
         self._convergence_threshold = convergence_threshold
         self._plateau_threshold_sec = plateau_threshold_sec
-        
+
         # State tracking
         self._eval_scores: list[tuple[float, float]] = []  # (timestamp, score)
         self._total_updates = 0
         self._last_update_time = time.time()
         self._last_significant_change_time = time.time()
         self._convergence_state = ConvergenceState.NOT_STARTED
-        
+
     def update_from_evaluation(
         self,
         eval_type: str,
@@ -156,18 +156,18 @@ class MetaLearningUpdater:
         timestamp: float | None = None,
     ) -> MetaLearningState:
         """Update meta-learning state from evaluation result.
-        
+
         Args:
             eval_type: Type of evaluation
             score: Evaluation score
             timestamp: Evaluation timestamp (defaults to now)
-            
+
         Returns:
             Updated meta-learning state
-            
+
         Raises:
             ValueError: If score is negative or eval_type is empty
-            
+
         Emits ADG edges:
             - updates_meta_learning_state (P4)
         """
@@ -175,34 +175,34 @@ class MetaLearningUpdater:
             raise ValueError(f"Score must be non-negative, got {score}")
         if not eval_type or not eval_type.strip():
             raise ValueError("Evaluation type cannot be empty")
-            
+
         _emit_updates_meta_learning_state("p4", "meta_learning_updater", eval_type)
-        
+
         if timestamp is None:
             timestamp = time.time()
-            
+
         self._total_updates += 1
         self._last_update_time = timestamp
-        
+
         # Track evaluation score
         self._eval_scores.append((timestamp, score))
         if len(self._eval_scores) > 100:
             self._eval_scores.pop(0)
-            
+
         # Update convergence state
         self._update_convergence_state(timestamp)
-        
+
         # Adapt learning rate
         self._adapt_learning_rate()
-        
+
         # Extract insights
         insights = self._extract_insights()
-        
+
         # Build state snapshot
         recent_scores = [s for _, s in self._eval_scores[-20:]]
         avg_score = statistics.mean(recent_scores) if recent_scores else 0.0
         score_variance = statistics.variance(recent_scores) if len(recent_scores) > 1 else 0.0
-        
+
         # Calculate improvement rate
         if len(self._eval_scores) >= 2:
             old_avg = statistics.mean([s for _, s in self._eval_scores[:10]])
@@ -210,9 +210,9 @@ class MetaLearningUpdater:
             improvement_rate = new_avg - old_avg
         else:
             improvement_rate = 0.0
-            
+
         plateau_duration = timestamp - self._last_significant_change_time
-        
+
         state = MetaLearningState(
             learning_rate=self._learning_rate,
             convergence_state=self._convergence_state,
@@ -224,7 +224,7 @@ class MetaLearningUpdater:
             plateau_duration_sec=plateau_duration,
             insights=insights,
         )
-        
+
         logger.info(
             "META_LEARNING_UPDATE: lr=%.4f convergence=%s avg_score=%.3f variance=%.4f",
             self._learning_rate,
@@ -232,24 +232,24 @@ class MetaLearningUpdater:
             avg_score,
             score_variance,
         )
-        
+
         return state
-        
+
     def get_current_state(self) -> MetaLearningState:
         """Get current meta-learning state."""
         recent_scores = [s for _, s in self._eval_scores[-20:]]
         avg_score = statistics.mean(recent_scores) if recent_scores else 0.0
         score_variance = statistics.variance(recent_scores) if len(recent_scores) > 1 else 0.0
-        
+
         if len(self._eval_scores) >= 2:
             old_avg = statistics.mean([s for _, s in self._eval_scores[:10]])
             new_avg = statistics.mean([s for _, s in self._eval_scores[-10:]])
             improvement_rate = new_avg - old_avg
         else:
             improvement_rate = 0.0
-            
+
         plateau_duration = time.time() - self._last_significant_change_time
-        
+
         return MetaLearningState(
             learning_rate=self._learning_rate,
             convergence_state=self._convergence_state,
@@ -261,7 +261,7 @@ class MetaLearningUpdater:
             plateau_duration_sec=plateau_duration,
             insights=self._extract_insights(),
         )
-        
+
     def reset(self) -> None:
         """Reset meta-learning state."""
         self._eval_scores.clear()
@@ -270,39 +270,39 @@ class MetaLearningUpdater:
         self._last_significant_change_time = time.time()
         self._convergence_state = ConvergenceState.NOT_STARTED
         self._learning_rate = (self._min_learning_rate + self._max_learning_rate) / 2
-        
+
     def _update_convergence_state(self, timestamp: float) -> None:
         """Update convergence state based on recent scores."""
         if len(self._eval_scores) < 10:
             self._convergence_state = ConvergenceState.NOT_STARTED
             return
-            
+
         recent_scores = [s for _, s in self._eval_scores[-20:]]
         score_variance = statistics.variance(recent_scores) if len(recent_scores) > 1 else 0.0
-        
+
         # Check for convergence
         if score_variance < self._convergence_threshold:
             self._convergence_state = ConvergenceState.CONVERGED
             return
-            
+
         # Check for plateau
         plateau_duration = timestamp - self._last_significant_change_time
         if plateau_duration > self._plateau_threshold_sec:
             self._convergence_state = ConvergenceState.PLATEAUED
             return
-            
+
         # Check for improvement or degradation
         if len(self._eval_scores) >= 20:
             old_avg = statistics.mean([s for _, s in self._eval_scores[-20:-10]])
             new_avg = statistics.mean([s for _, s in self._eval_scores[-10:]])
-            
+
             if new_avg > old_avg + 0.05:
                 self._convergence_state = ConvergenceState.IMPROVING
                 self._last_significant_change_time = timestamp
             elif new_avg < old_avg - 0.05:
                 self._convergence_state = ConvergenceState.DEGRADING
                 self._last_significant_change_time = timestamp
-                
+
     def _adapt_learning_rate(self) -> None:
         """Adapt learning rate based on convergence state."""
         if self._convergence_state == ConvergenceState.IMPROVING:
@@ -317,17 +317,17 @@ class MetaLearningUpdater:
         elif self._convergence_state == ConvergenceState.CONVERGED:
             # Minimal learning rate when converged
             self._learning_rate *= 0.95
-            
+
         # Clamp to bounds
         self._learning_rate = max(self._min_learning_rate, min(self._max_learning_rate, self._learning_rate))
-        
+
     def _extract_insights(self) -> dict[str, Any]:
         """Extract insights from evaluation patterns."""
         if len(self._eval_scores) < 5:
             return {}
-            
+
         recent_scores = [s for _, s in self._eval_scores[-20:]]
-        
+
         insights = {
             "sample_count": len(self._eval_scores),
             "recent_mean": statistics.mean(recent_scores),
@@ -337,7 +337,7 @@ class MetaLearningUpdater:
             "max_score": max(recent_scores),
             "score_range": max(recent_scores) - min(recent_scores),
         }
-        
+
         return insights
 
 

@@ -41,17 +41,17 @@ class LoadTestResult:
     cache_hits: int = 0
     cache_misses: int = 0
     gpu_metrics: dict[str, Any] = field(default_factory=dict)
-    
+
     @property
     def success_rate(self) -> float:
         return self.successful_requests / max(1, self.total_requests)
-    
+
     @property
     def latency_p50_ms(self) -> float:
         if not self.latencies_ms:
             return 0.0
         return statistics.median(self.latencies_ms)
-    
+
     @property
     def latency_p95_ms(self) -> float:
         if not self.latencies_ms:
@@ -59,7 +59,7 @@ class LoadTestResult:
         sorted_lat = sorted(self.latencies_ms)
         idx = int(len(sorted_lat) * 0.95)
         return sorted_lat[idx] if idx < len(sorted_lat) else sorted_lat[-1]
-    
+
     @property
     def latency_p99_ms(self) -> float:
         if not self.latencies_ms:
@@ -67,19 +67,19 @@ class LoadTestResult:
         sorted_lat = sorted(self.latencies_ms)
         idx = int(len(sorted_lat) * 0.99)
         return sorted_lat[idx] if idx < len(sorted_lat) else sorted_lat[-1]
-    
+
     @property
     def latency_mean_ms(self) -> float:
         if not self.latencies_ms:
             return 0.0
         return statistics.mean(self.latencies_ms)
-    
+
     @property
     def latency_stdev_ms(self) -> float:
         if len(self.latencies_ms) < 2:
             return 0.0
         return statistics.stdev(self.latencies_ms)
-    
+
     def to_dict(self) -> dict[str, Any]:
         return {
             "test_name": self.test_name,
@@ -103,7 +103,7 @@ class LoadTestResult:
 
 class QwenPerformanceTestSuite:
     """Performance testing suite for Qwen vLLM."""
-    
+
     def __init__(
         self,
         base_url: str = "http://localhost:8000/v1",
@@ -112,77 +112,77 @@ class QwenPerformanceTestSuite:
         self.base_url = base_url
         self.model = model
         self.results: list[LoadTestResult] = []
-    
+
     async def run_all_tests(self) -> list[LoadTestResult]:
         """Execute full performance test suite."""
         logger.info("=" * 60)
         logger.info("QWEN VLLM PERFORMANCE TEST SUITE")
         logger.info("=" * 60)
-        
+
         # Test 1: Sequential baseline
         result1 = await self.test_sequential_baseline(count=20)
         self.results.append(result1)
         self._print_result(result1)
-        
+
         # Test 2: Concurrent load (low)
         result2 = await self.test_concurrent_load(concurrent=4, total=20)
         self.results.append(result2)
         self._print_result(result2)
-        
+
         # Test 3: Concurrent load (medium)
         result3 = await self.test_concurrent_load(concurrent=8, total=40)
         self.results.append(result3)
         self._print_result(result3)
-        
+
         # Test 4: Batch efficiency
         result4 = await self.test_batch_efficiency(batch_sizes=[1, 2, 4, 8])
         self.results.append(result4)
         self._print_result(result4)
-        
+
         # Test 5: Cache efficiency
         result5 = await self.test_cache_efficiency(unique_prompts=5, repeats_per_prompt=4)
         self.results.append(result5)
         self._print_result(result5)
-        
+
         # Test 6: Hardened client resilience
         result6 = await self.test_hardened_client()
         self.results.append(result6)
         self._print_result(result6)
-        
+
         return self.results
-    
+
     async def test_sequential_baseline(self, count: int = 20) -> LoadTestResult:
         """Test sequential request baseline performance."""
         logger.info(f"\n[TEST] Sequential Baseline ({count} requests)")
-        
+
         client = OptimizedVLLMClient(base_url=self.base_url, model=self.model)
         await client.start()
-        
+
         latencies = []
         successes = 0
-        
+
         start_time = time.time()
-        
+
         for i in range(count):
             req = VLLMRequest(
                 prompt=f"What is {i} + {i}? Answer with just the number.",
                 max_tokens=10,
                 temperature=0.0,
             )
-            
+
             resp = await client.infer(req)
             latencies.append(resp.latency_ms)
-            
+
             if resp.success:
                 successes += 1
-            
+
             if (i + 1) % 5 == 0:
                 logger.info(f"  Progress: {i + 1}/{count}")
-        
+
         total_time = time.time() - start_time
-        
+
         await client.stop()
-        
+
         return LoadTestResult(
             test_name="sequential_baseline",
             total_requests=count,
@@ -192,7 +192,7 @@ class QwenPerformanceTestSuite:
             requests_per_second=count / total_time,
             latencies_ms=latencies,
         )
-    
+
     async def test_concurrent_load(
         self,
         concurrent: int,
@@ -200,18 +200,18 @@ class QwenPerformanceTestSuite:
     ) -> LoadTestResult:
         """Test concurrent load performance."""
         logger.info(f"\n[TEST] Concurrent Load ({concurrent} concurrent, {total} total)")
-        
+
         client = OptimizedVLLMClient(
             base_url=self.base_url,
             model=self.model,
             max_concurrent=concurrent,
         )
         await client.start()
-        
+
         latencies = []
         successes = 0
         semaphore = asyncio.Semaphore(concurrent)
-        
+
         async def _make_request(i: int) -> None:
             nonlocal successes
             async with semaphore:
@@ -220,23 +220,23 @@ class QwenPerformanceTestSuite:
                     max_tokens=20,
                     temperature=0.1,
                 )
-                
+
                 resp = await client.infer(req)
                 latencies.append(resp.latency_ms)
-                
+
                 if resp.success:
                     successes += 1
-        
+
         start_time = time.time()
-        
+
         # Create all tasks
         tasks = [_make_request(i) for i in range(total)]
         await asyncio.gather(*tasks, return_exceptions=True)
-        
+
         total_time = time.time() - start_time
-        
+
         await client.stop()
-        
+
         return LoadTestResult(
             test_name=f"concurrent_{concurrent}",
             total_requests=total,
@@ -246,26 +246,26 @@ class QwenPerformanceTestSuite:
             requests_per_second=total / total_time,
             latencies_ms=latencies,
         )
-    
+
     async def test_batch_efficiency(
         self,
         batch_sizes: list[int],
     ) -> LoadTestResult:
         """Test batch processing efficiency."""
         logger.info(f"\n[TEST] Batch Efficiency (sizes: {batch_sizes})")
-        
+
         latencies = []
-        
+
         for batch_size in batch_sizes:
             logger.info(f"  Testing batch_size={batch_size}")
-            
+
             client = OptimizedVLLMClient(
                 base_url=self.base_url,
                 model=self.model,
                 batch_size=batch_size,
             )
             await client.start()
-            
+
             # Create batch of requests
             requests = [
                 VLLMRequest(
@@ -275,17 +275,17 @@ class QwenPerformanceTestSuite:
                 )
                 for i in range(batch_size)
             ]
-            
+
             start_time = time.time()
             responses = await client.infer_batch(requests)
             batch_time = (time.time() - start_time) * 1000
-            
+
             latencies.append(batch_time / batch_size)  # Per-request latency
-            
+
             logger.info(f"    Batch time: {batch_time:.1f}ms, per-req: {batch_time/batch_size:.1f}ms")
-            
+
             await client.stop()
-        
+
         return LoadTestResult(
             test_name="batch_efficiency",
             total_requests=len(batch_sizes),
@@ -295,7 +295,7 @@ class QwenPerformanceTestSuite:
             requests_per_second=0,  # Not meaningful for this test
             latencies_ms=latencies,
         )
-    
+
     async def test_cache_efficiency(
         self,
         unique_prompts: int,
@@ -303,14 +303,14 @@ class QwenPerformanceTestSuite:
     ) -> LoadTestResult:
         """Test cache hit efficiency."""
         logger.info(f"\n[TEST] Cache Efficiency ({unique_prompts} unique × {repeats_per_prompt} repeats)")
-        
+
         client = OptimizedVLLMClient(base_url=self.base_url, model=self.model)
         await client.start()
-        
+
         latencies = []
         cache_hits = 0
         cache_misses = 0
-        
+
         # Create unique prompts
         unique_requests = [
             VLLMRequest(
@@ -321,9 +321,9 @@ class QwenPerformanceTestSuite:
             )
             for i in range(unique_prompts)
         ]
-        
+
         start_time = time.time()
-        
+
         # First pass: populate cache
         logger.info("  First pass (cache misses expected)")
         for req in unique_requests:
@@ -333,7 +333,7 @@ class QwenPerformanceTestSuite:
                 cache_hits += 1
             else:
                 cache_misses += 1
-        
+
         # Repeated passes: cache hits
         logger.info(f"  Repeated passes ({repeats_per_prompt - 1} each, cache hits expected)")
         for _ in range(repeats_per_prompt - 1):
@@ -344,12 +344,12 @@ class QwenPerformanceTestSuite:
                     cache_hits += 1
                 else:
                     cache_misses += 1
-        
+
         total_time = time.time() - start_time
         total_requests = unique_prompts * repeats_per_prompt
-        
+
         await client.stop()
-        
+
         return LoadTestResult(
             test_name="cache_efficiency",
             total_requests=total_requests,
@@ -361,14 +361,14 @@ class QwenPerformanceTestSuite:
             cache_hits=cache_hits,
             cache_misses=cache_misses,
         )
-    
+
     async def test_hardened_client(self) -> LoadTestResult:
         """Test hardened client with retry and circuit breaker."""
         logger.info("\n[TEST] Hardened Client Resilience")
-        
+
         base_client = OptimizedVLLMClient(base_url=self.base_url, model=self.model)
         await base_client.start()
-        
+
         hardened = HardenedVLLMClient(
             base_client=base_client,
             retry_config=RetryConfig(max_retries=2, base_delay_sec=0.5),
@@ -377,10 +377,10 @@ class QwenPerformanceTestSuite:
                 recovery_timeout_sec=10.0,
             ),
         )
-        
+
         latencies = []
         successes = 0
-        
+
         # Normal requests
         logger.info("  Testing normal operation")
         for i in range(10):
@@ -393,13 +393,13 @@ class QwenPerformanceTestSuite:
             latencies.append(resp.latency_ms)
             if resp.success:
                 successes += 1
-        
+
         # Get metrics
         metrics = hardened.get_metrics()
         logger.info(f"  Hardening metrics: {metrics}")
-        
+
         await base_client.stop()
-        
+
         return LoadTestResult(
             test_name="hardened_client",
             total_requests=10,
@@ -410,7 +410,7 @@ class QwenPerformanceTestSuite:
             latencies_ms=latencies,
             gpu_metrics=metrics,
         )
-    
+
     def _print_result(self, result: LoadTestResult) -> None:
         """Print test result in formatted table."""
         logger.info(f"\n  Results for: {result.test_name}")
@@ -422,11 +422,11 @@ class QwenPerformanceTestSuite:
         logger.info(f"  Latency (p95):    {result.latency_p95_ms:.1f} ms")
         logger.info(f"  Latency (p99):    {result.latency_p99_ms:.1f} ms")
         logger.info(f"  Latency (stdev):  {result.latency_stdev_ms:.1f} ms")
-        
+
         if result.cache_hits + result.cache_misses > 0:
             hit_rate = result.cache_hits / (result.cache_hits + result.cache_misses)
             logger.info(f"  Cache Hit Rate:   {hit_rate:.1%}")
-    
+
     def generate_report(self, output_path: Optional[str] = None) -> str:
         """Generate JSON report of all test results."""
         report = {
@@ -444,21 +444,21 @@ class QwenPerformanceTestSuite:
                 ]) if self.results else 0,
             },
         }
-        
+
         json_report = json.dumps(report, indent=2)
-        
+
         if output_path:
             with open(output_path, 'w') as f:
                 f.write(json_report)
             logger.info(f"\nReport saved to: {output_path}")
-        
+
         return json_report
 
 
 async def main():
     """Run performance test suite."""
     suite = QwenPerformanceTestSuite()
-    
+
     try:
         await suite.run_all_tests()
         report = suite.generate_report(

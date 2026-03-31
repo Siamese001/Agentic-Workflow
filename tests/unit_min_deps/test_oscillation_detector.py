@@ -57,4 +57,3 @@ class TestComputeFreezeDecision:
 class TestDeterminism:
     def test_detect_oscillation_deterministic(self):
         """detect_oscillation produces consistent results."""
-

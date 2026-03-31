@@ -72,7 +72,7 @@ class ToolingAppsBoundaryChecker:
                     continue
                 file_path = self.repo_root / line
                 # Check if it's a Python file in a tooling directory
-                if (file_path.suffix == '.py' and 
+                if (file_path.suffix == '.py' and
                     any(str(file_path).startswith(str(self.repo_root / d)) for d in self.TOOLING_DIRS)):
                     staged_files.append(file_path)
             return staged_files
@@ -115,11 +115,11 @@ def main():
         help="Only check staged files (git diff --cached)"
     )
     args = parser.parse_args()
-    
+
     repo_root = Path(__file__).parent.parent.parent
     checker = ToolingAppsBoundaryChecker(repo_root, staged_only=args.staged_only)
     violations = checker.check()
-    
+
     if violations:
         print(f'\nERROR: Tooling/apps_* boundary violations found: {len(violations)}')
         for violation in violations:

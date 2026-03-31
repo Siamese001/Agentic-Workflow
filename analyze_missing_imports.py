@@ -15,7 +15,7 @@ def get_import_errors():
         text=True,
         cwd="C:\\Git\\Agentic-Workflow"
     )
-    
+
     # Extract ImportError patterns
     import_errors = []
     for line in result.stderr.split('\n'):
@@ -26,7 +26,7 @@ def get_import_errors():
                 missing_name = match.group(1)
                 from_module = match.group(2)
                 import_errors.append((missing_name, from_module))
-    
+
     return import_errors
 
 def main():
@@ -34,14 +34,14 @@ def main():
     print(f"Found {len(errors)} import errors:")
     for missing_name, from_module in sorted(set(errors)):
         print(f"  {missing_name} from {from_module}")
-    
+
     # Group by module
     by_module = {}
     for missing_name, from_module in errors:
         if from_module not in by_module:
             by_module[from_module] = []
         by_module[from_module].append(missing_name)
-    
+
     print("\nBy module:")
     for module, names in sorted(by_module.items()):
         print(f"  {module}: {', '.join(sorted(set(names)))}")

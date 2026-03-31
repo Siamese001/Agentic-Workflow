@@ -14,4 +14,3 @@ class TestInjectionPattern:
     """Test creates_with_injection runtime behavior."""
 
     """Test variable_values_mutable runtime behavior."""
-

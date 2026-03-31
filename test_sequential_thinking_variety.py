@@ -20,10 +20,10 @@ os.environ['SWE15_SEQUENTIAL_THINKING'] = 'enabled'
 
 def test_sequential_thinking_prompts():
     """Test sequential thinking with various prompt types."""
-    
+
     repo_root = Path.cwd()
     usage_tracker = repo_root / "tools" / "monitoring" / "mcp_usage_tracker.py"
-    
+
     # Test scenarios with different complexity levels
     test_scenarios = [
         {
@@ -41,7 +41,7 @@ def test_sequential_thinking_prompts():
         },
         {
             "name": "Performance Debugging",
-            "type": "debugging", 
+            "type": "debugging",
             "complexity": "critical",
             "prompt": "Debug severe performance degradation in production. Response times increased from 100ms to 5s. CPU usage at 95%. Database connections exhausted.",
             "expected_thoughts": 6,
@@ -55,7 +55,7 @@ def test_sequential_thinking_prompts():
         {
             "name": "Feature Implementation",
             "type": "implementation",
-            "complexity": "high", 
+            "complexity": "high",
             "prompt": "Implement real-time notification system with WebSocket support. Must handle 10K concurrent users with message persistence.",
             "expected_thoughts": 6,
             "context": {
@@ -130,31 +130,31 @@ def test_sequential_thinking_prompts():
             }
         }
     ]
-    
+
     print("🚀 Testing Sequential Thinking MCP with Variety of Prompts")
     print("=" * 60)
-    
+
     results = []
-    
+
     for i, scenario in enumerate(test_scenarios, 1):
         print(f"\n📝 Test {i}: {scenario['name']}")
         print(f"   Type: {scenario['type']} | Complexity: {scenario['complexity']}")
         print(f"   Prompt: {scenario['prompt'][:100]}...")
-        
+
         # Log usage for this scenario
         try:
             result = subprocess.run([
                 sys.executable, str(usage_tracker),
                 "--log", "sequential-thinking", scenario['type'], "true", "2.5", "5000"
             ], capture_output=True, text=True, cwd=repo_root)
-            
+
             if result.returncode == 0:
                 print(f"   ✅ Usage logged successfully")
-                
+
                 # Simulate sequential thinking response
                 thoughts = generate_mock_thoughts(scenario)
                 print(f"   🧠 Generated {len(thoughts)} thoughts")
-                
+
                 results.append({
                     "scenario": scenario['name'],
                     "type": scenario['type'],
@@ -163,11 +163,11 @@ def test_sequential_thinking_prompts():
                     "success": True,
                     "token_estimate": estimate_tokens(scenario)
                 })
-                
+
                 # Show first thought as example
                 if thoughts:
                     print(f"   💭 Thought 1: {thoughts[0][:80]}...")
-                    
+
             else:
                 print(f"   ❌ Usage logging failed: {result.stderr}")
                 results.append({
@@ -175,7 +175,7 @@ def test_sequential_thinking_prompts():
                     "success": False,
                     "error": result.stderr
                 })
-                
+
         except Exception as e:
             print(f"   ❌ Test failed: {e}")
             results.append({
@@ -183,12 +183,12 @@ def test_sequential_thinking_prompts():
                 "success": False,
                 "error": str(e)
             })
-    
+
     return results
 
 def generate_mock_thoughts(scenario: Dict[str, Any]) -> List[str]:
     """Generate mock sequential thoughts for testing."""
-    
+
     thought_templates = {
         "architecture": [
             f"Thought 1: Analyzing current {scenario.get('context', {}).get('services', 'system')} architecture patterns",
@@ -247,7 +247,7 @@ def generate_mock_thoughts(scenario: Dict[str, Any]) -> List[str]:
             "Thought 6: Planning test automation and CI/CD integration"
         ]
     }
-    
+
     return thought_templates.get(scenario['type'], [
         "Thought 1: Analyzing problem requirements and constraints",
         "Thought 2: Breaking down into manageable components",
@@ -266,11 +266,11 @@ def estimate_tokens(scenario: Dict[str, Any]) -> int:
 
 def generate_test_report(results: List[Dict[str, Any]]) -> str:
     """Generate comprehensive test report."""
-    
+
     total_tests = len(results)
     passed_tests = sum(1 for r in results if r.get('success', False))
     total_tokens = sum(r.get('token_estimate', 0) for r in results if r.get('success', False))
-    
+
     report = f"""
 # Sequential Thinking MCP Test Report
 Generated: {time.strftime('%Y-%m-%d %H:%M:%S')}
@@ -283,7 +283,7 @@ Generated: {time.strftime('%Y-%m-%d %H:%M:%S')}
 
 ## Test Results by Type
 """
-    
+
     # Group results by type
     by_type = {}
     for result in results:
@@ -292,7 +292,7 @@ Generated: {time.strftime('%Y-%m-%d %H:%M:%S')}
             if test_type not in by_type:
                 by_type[test_type] = []
             by_type[test_type].append(result)
-    
+
     for test_type, type_results in by_type.items():
         avg_tokens = sum(r.get('token_estimate', 0) for r in type_results) / len(type_results)
         report += f"""
@@ -301,9 +301,9 @@ Generated: {time.strftime('%Y-%m-%d %H:%M:%S')}
 - **Average Tokens**: {avg_tokens:.0f}
 - **Complexity Levels**: {', '.join(set(r.get('complexity', 'medium') for r in type_results))}
 """
-    
+
     report += "\n## Detailed Results\n"
-    
+
     for i, result in enumerate(results, 1):
         if result.get('success', False):
             report += f"""
@@ -320,7 +320,7 @@ Generated: {time.strftime('%Y-%m-%d %H:%M:%S')}
 - **Status**: ❌ FAIL
 - **Error**: {result.get('error', 'Unknown error')}
 """
-    
+
     # Add recommendations
     report += """
 ## Recommendations
@@ -343,40 +343,40 @@ Generated: {time.strftime('%Y-%m-%d %H:%M:%S')}
 3. Collect user feedback on reasoning quality
 4. Optimize based on actual performance data
 """
-    
+
     return report
 
 def main():
     """Main test execution."""
     print("🧪 Starting Comprehensive Sequential Thinking MCP Tests")
     print("=" * 60)
-    
+
     # Run variety of tests
     results = test_sequential_thinking_prompts()
-    
+
     # Generate report
     report = generate_test_report(results)
-    
+
     # Save report
     report_file = Path.cwd() / "docs" / "reports" / "sequential_thinking_variety_test_report.md"
     report_file.parent.mkdir(parents=True, exist_ok=True)
-    
+
     with open(report_file, 'w', encoding='utf-8') as f:
         f.write(report)
-    
+
     print(f"\n📊 Test Summary")
     print("=" * 60)
     passed = sum(1 for r in results if r.get('success', False))
     total = len(results)
     print(f"Tests: {passed}/{total} passed ({passed/total*100:.1f}%)")
-    
+
     if passed == total:
         print("🎉 All tests passed! Sequential thinking MCP working excellently.")
     else:
         print("⚠️  Some tests failed. Check the report for details.")
-    
+
     print(f"📄 Full report: {report_file}")
-    
+
     # Show final usage statistics
     print("\n🔍 Final Usage Statistics:")
     try:

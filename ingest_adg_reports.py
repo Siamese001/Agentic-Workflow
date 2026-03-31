@@ -15,7 +15,7 @@ logger = logging.getLogger(__name__)
 
 def ingest_adg_reports():
     """Ingest ADG reports from docs/reports into ChromaDB"""
-    
+
     # ADG-related report files
     adg_report_files = [
         "docs/reports/ADG QA Workflow.md",
@@ -26,7 +26,7 @@ def ingest_adg_reports():
         "docs/reports/rca_gravity_leak_corruption_phase4.md",
         "docs/reports/system-learning-signal-enhancement-final-report.md"
     ]
-    
+
     # P0-P4 final validation reports
     p_reports = [
         "docs/reports/p0_final_100_percent_validation.md",
@@ -35,12 +35,12 @@ def ingest_adg_reports():
         "docs/reports/p3_microwave_final_validation.md",
         "docs/reports/p4_microwave_final_validation.md"
     ]
-    
+
     all_files = adg_report_files + p_reports
-    
+
     # Initialize ChromaDB
     client = chromadb.PersistentClient("artifacts/chromadb")
-    
+
     # Get or create collection
     try:
         collection = client.get_collection("adg_artifacts")
@@ -51,23 +51,23 @@ def ingest_adg_reports():
             metadata={"description": "ADG artifact reports and analyses"}
         )
         logger.info("Created new collection: adg_artifacts")
-    
+
     # Process files
     chunks = []
     for filepath in all_files:
         file_path = Path(filepath)
-        
+
         if not file_path.exists():
             logger.warning(f"File not found: {filepath}")
             continue
-        
+
         try:
             with open(file_path, 'r', encoding='utf-8') as f:
                 content = f.read()
-            
+
             # Create chunk ID
             chunk_id = hashlib.sha256(f"{filepath}:{content}".encode()).hexdigest()
-            
+
             # Determine artifact type
             if "p0" in filepath or "p1" in filepath or "p2" in filepath or "p3" in filepath or "p4" in filepath:
                 artifact_type = "p_validation"
@@ -79,7 +79,7 @@ def ingest_adg_reports():
                 artifact_type = "system_learning"
             else:
                 artifact_type = "adg_report"
-            
+
             # Create chunk
             chunk = {
                 'id': chunk_id,
@@ -92,40 +92,40 @@ def ingest_adg_reports():
                     'report_category': file_path.parent.name if file_path.parent != Path('.') else 'root'
                 }
             }
-            
+
             chunks.append(chunk)
             logger.info(f"Processed: {filepath}")
-            
+
         except Exception as e:
             logger.error(f"Error processing {filepath}: {e}")
-    
+
     if not chunks:
         logger.error("No files processed successfully")
         return
-    
+
     logger.info(f"Generated {len(chunks)} chunks from {len(all_files)} files")
-    
+
     # Generate embeddings
     logger.info("Generating embeddings...")
     embeddings = [[0.0] * 1536 for _ in chunks]  # Mock embeddings
     logger.info(f"Generated {len(embeddings)} mock embeddings")
-    
+
     # Ingest into ChromaDB
     logger.info("Ingesting into ChromaDB...")
-    
+
     ids = [chunk['id'] for chunk in chunks]
     documents = [chunk['content'] for chunk in chunks]
     metadatas = [chunk['metadata'] for chunk in chunks]
-    
+
     collection.add(
         ids=ids,
         documents=documents,
         metadatas=metadatas,
         embeddings=embeddings
     )
-    
+
     logger.info(f"Successfully ingested {len(chunks)} chunks into ChromaDB")
-    
+
     # Get collection stats
     stats = {
         "collection_name": "adg_artifacts",
@@ -133,7 +133,7 @@ def ingest_adg_reports():
         "vector_dimensions": 1536,
         "vector_metric": "cosine"
     }
-    
+
     logger.info(f"Collection stats: {stats}")
 
 if __name__ == "__main__":

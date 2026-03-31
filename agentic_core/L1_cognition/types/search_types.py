@@ -126,32 +126,32 @@ emit_determinism_digest("trace_search_types", "search_types_policy_verify")
 @dataclass
 class SearchQuery:
     """Represents a search query with various parameters."""
-    
+
     text: str
     query_type: str = "semantic"  # "semantic", "keyword", "hybrid"
     search_mode: str = "local"  # "local", "global", "drift"
-    
+
     # Search parameters
     max_results: int = 10
     min_relevance_score: float = 0.5
     include_communities: bool = True
     include_entities: bool = True
     include_relationships: bool = False
-    
+
     # Context parameters
     context_window: int = 5  # Number of surrounding entities to include
     max_depth: int = 2  # Maximum traversal depth
-    
+
     # Filters
     entity_types: Optional[List[str]] = None
     relation_types: Optional[List[str]] = None
     community_levels: Optional[List[int]] = None
-    
+
     # Metadata
     query_id: str = field(default_factory=lambda: f"query_{datetime.utcnow().strftime('%Y%m%d_%H%M%S')}")
     timestamp: datetime = field(default_factory=datetime.utcnow)
     metadata: Dict[str, Any] = field(default_factory=dict)
-    
+
     def __post_init__(self) -> None:
         """Normalize query text."""
         self.text = self.text.strip()
@@ -162,26 +162,26 @@ class SearchQuery:
 @dataclass
 class SearchResult:
     """Represents a single search result."""
-    
+
     item_id: str
     item_type: str  # "entity", "relationship", "community"
     title: str
     description: str
     relevance_score: float
-    
+
     # Context information
     context: Optional[str] = None
     surrounding_entities: List[str] = field(default_factory=list)
     path_to_root: List[str] = field(default_factory=list)
-    
+
     # Source information
     source_file: Optional[str] = None
     line_number: Optional[int] = None
     confidence: float = 1.0
-    
+
     # Metadata
     metadata: Dict[str, Any] = field(default_factory=dict)
-    
+
     def __post_init__(self) -> None:
         """Validate relevance score."""
         if not 0 <= self.relevance_score <= 1:
@@ -191,35 +191,35 @@ class SearchResult:
 @dataclass
 class SearchResponse:
     """Represents a complete search response."""
-    
+
     query: SearchQuery
     results: List[SearchResult]
-    
+
     # Search statistics
     total_found: int
     total_returned: int
     search_time_ms: float
-    
+
     # Quality metrics
     avg_relevance_score: float
     max_relevance_score: float
     min_relevance_score: float
-    
+
     # Search strategy used
     search_strategy: str
     fusion_method: Optional[str] = None
-    
+
     # Errors and warnings
     errors: List[str] = field(default_factory=list)
     warnings: List[str] = field(default_factory=list)
-    
+
     # Metadata
     metadata: Dict[str, Any] = field(default_factory=dict)
-    
+
     def get_top_results(self, n: int = 5) -> List[SearchResult]:
         """Get top N results by relevance score."""
         return sorted(self.results, key=lambda r: r.relevance_score, reverse=True)[:n]
-    
+
     def get_results_by_type(self, item_type: str) -> List[SearchResult]:
         """Get results filtered by type."""
         return [r for r in self.results if r.item_type == item_type]
@@ -228,22 +228,22 @@ class SearchResponse:
 @dataclass
 class LocalSearchConfig:
     """Configuration for local search strategy."""
-    
+
     # Search parameters
     max_hops: int = 2
     max_entities_per_hop: int = 50
     community_boost: float = 1.2  # Boost factor for entities in same community
-    
+
     # Scoring weights
     text_similarity_weight: float = 0.4
     graph_proximity_weight: float = 0.3
     community_coherence_weight: float = 0.2
     recency_weight: float = 0.1
-    
+
     # Filters
     min_degree_centrality: float = 0.0
     required_entity_types: Optional[List[str]] = None
-    
+
     # Performance
     enable_caching: bool = True
     cache_ttl_seconds: int = 300
@@ -252,21 +252,21 @@ class LocalSearchConfig:
 @dataclass
 class GlobalSearchConfig:
     """Configuration for global search strategy."""
-    
+
     # Community-level search
     max_communities: int = 10
     community_summary_weight: float = 0.6
     entity_density_weight: float = 0.4
-    
+
     # Entity-level search within communities
     max_entities_per_community: int = 20
     entity_relevance_threshold: float = 0.3
-    
+
     # Scoring
     summary_match_weight: float = 0.5
     keyword_match_weight: float = 0.3
     size_penalty_weight: float = 0.2
-    
+
     # Filters
     min_community_size: int = 3
     max_community_size: int = 1000
@@ -276,24 +276,24 @@ class GlobalSearchConfig:
 @dataclass
 class DRIFTSearchConfig:
     """Configuration for DRIFT (Dynamic Reasoning-Informed Fusion and Traversal) search."""
-    
+
     # Multi-hop reasoning
     max_reasoning_depth: int = 3
     reasoning_confidence_threshold: float = 0.7
-    
+
     # Dynamic traversal
     adaptive_hop_selection: bool = True
     context_aware_pruning: bool = True
-    
+
     # Fusion weights
     semantic_weight: float = 0.4
     structural_weight: float = 0.3
     reasoning_weight: float = 0.3
-    
+
     # Learning
     enable_feedback_learning: bool = True
     feedback_decay_factor: float = 0.9
-    
+
     # Performance
     max_traversal_paths: int = 100
     traversal_timeout_ms: int = 5000
@@ -302,21 +302,21 @@ class DRIFTSearchConfig:
 @dataclass
 class FusionConfig:
     """Configuration for search result fusion."""
-    
+
     # Fusion method
     fusion_method: str = "weighted_average"  # "weighted_average", "rank_fusion", "reciprocal_rank"
-    
+
     # Weight configuration
     local_weight: float = 0.4
     global_weight: float = 0.3
     drift_weight: float = 0.3
-    
+
     # Rank fusion parameters
     rank_fusion_k: int = 60  # Parameter for reciprocal rank fusion
-    
+
     # Normalization
     score_normalization: str = "min_max"  # "min_max", "z_score", "none"
-    
+
     # Diversity
     enable_diversification: bool = True
     diversity_lambda: float = 0.5  # Maximal Marginal Relevance parameter
@@ -326,31 +326,31 @@ class FusionConfig:
 @dataclass
 class SearchEngineMetrics:
     """Metrics for search engine performance."""
-    
+
     # Performance metrics
     avg_query_time_ms: float
     p95_query_time_ms: float
     p99_query_time_ms: float
     queries_per_second: float
-    
+
     # Quality metrics
     avg_relevance_score: float
     click_through_rate: float
     user_satisfaction_score: float
-    
+
     # Cache metrics
     cache_hit_rate: float
     cache_miss_rate: float
-    
+
     # Error metrics
     error_rate: float
     timeout_rate: float
-    
+
     # Strategy usage
     local_search_usage: float
     global_search_usage: float
     drift_search_usage: float
-    
+
     # Timestamp
     timestamp: datetime = field(default_factory=datetime.utcnow)
 
@@ -358,46 +358,46 @@ class SearchEngineMetrics:
 @dataclass
 class SearchSession:
     """Represents a search session with multiple queries."""
-    
+
     session_id: str
     queries: List[SearchQuery] = field(default_factory=list)
     responses: List[SearchResponse] = field(default_factory=list)
-    
+
     # Session metrics
     start_time: datetime = field(default_factory=datetime.utcnow)
     end_time: Optional[datetime] = None
     total_queries: int = 0
-    
+
     # User feedback
     clicked_results: List[str] = field(default_factory=list)
     rated_results: Dict[str, int] = field(default_factory=dict)  # result_id -> rating
-    
+
     # Context
     user_context: Dict[str, Any] = field(default_factory=dict)
     session_metadata: Dict[str, Any] = field(default_factory=dict)
-    
+
     def add_query(self, query: SearchQuery, response: SearchResponse) -> None:
         """Add a query and its response to the session."""
         self.queries.append(query)
         self.responses.append(response)
         self.total_queries += 1
-    
+
     def get_session_duration(self) -> float:
         """Get session duration in seconds."""
         end = self.end_time or datetime.utcnow()
         return (end - self.start_time).total_seconds()
-    
+
     def get_avg_relevance(self) -> float:
         """Get average relevance score across all responses."""
         if not self.responses:
             return 0.0
-        
+
         total_relevance = sum(
             sum(r.relevance_score for r in response.results)
             for response in self.responses
         )
         total_results = sum(len(response.results) for response in self.responses)
-        
+
         return total_relevance / max(1, total_results)
 
 

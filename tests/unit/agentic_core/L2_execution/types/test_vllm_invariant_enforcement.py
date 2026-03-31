@@ -33,5 +33,3 @@ def test_adapter_fail_violation_triggers_gemini_with_violations_attached():
 
     """
     from unittest.mock import patch
-
-

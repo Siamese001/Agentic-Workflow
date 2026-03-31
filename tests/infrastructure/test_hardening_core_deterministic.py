@@ -78,7 +78,7 @@ class TestPerformanceMetrics:
             cache_hit_rate=0.8,
             throughput=1000.0
         )
-        
+
         assert metrics.layer_type == "L0_routing"
         assert metrics.latency_ms == 100.0
         assert metrics.success_rate == 0.95
@@ -88,13 +88,13 @@ class TestPerformanceMetrics:
         current_threshold = 0.8
         target_success_rate = 0.95
         current_success_rate = 0.90
-        
+
         # Adjust threshold toward target
         if current_success_rate < target_success_rate:
             new_threshold = current_threshold * 0.95  # Lower threshold
         else:
             new_threshold = current_threshold * 1.05  # Raise threshold
-        
+
         assert new_threshold < current_threshold
 
     def test_cost_prediction(self):
@@ -102,7 +102,7 @@ class TestPerformanceMetrics:
         # Simple linear cost model
         operations = 1000
         cost_per_op = 0.001
-        
+
         predicted_cost = operations * cost_per_op
         assert predicted_cost == 1.0
 
@@ -110,14 +110,14 @@ class TestPerformanceMetrics:
         """Test latency vs cost tradeoff calculation."""
         latency = 100  # ms
         cost = 0.5
-        
+
         # Balanced score: lower is better
         # Weight: 50% latency, 50% cost (normalized)
         latency_score = latency / 200  # Assume max 200ms
         cost_score = cost / 1.0  # Assume max cost 1.0
-        
+
         balanced_score = 0.5 * latency_score + 0.5 * cost_score
-        
+
         assert 0 <= balanced_score <= 1.0
 
 
@@ -133,13 +133,13 @@ class TestDistributedStateManager:
         """Test state synchronization between nodes."""
         local_state = {"counter": 5, "data": ["a", "b"]}
         remote_state = {"counter": 3, "data": ["a"]}
-        
+
         # Merge: take max counter, union of data
         merged = {
             "counter": max(local_state["counter"], remote_state["counter"]),
             "data": list(set(local_state["data"]) | set(remote_state["data"]))
         }
-        
+
         assert merged["counter"] == 5
         assert "a" in merged["data"]
         assert "b" in merged["data"]
@@ -148,43 +148,43 @@ class TestDistributedStateManager:
         """Test last-write-wins conflict resolution."""
         timestamp_a = 1000
         timestamp_b = 2000  # Later
-        
+
         value_a = "old_value"
         value_b = "new_value"
-        
+
         # Last write wins
         if timestamp_b > timestamp_a:
             resolved_value = value_b
         else:
             resolved_value = value_a
-        
+
         assert resolved_value == "new_value"
 
     def test_distributed_lock_acquisition(self):
         """Test distributed lock acquisition."""
         lock_holder = None
-        
+
         # Try acquire
         if lock_holder is None:
             lock_holder = "node_1"
             acquired = True
         else:
             acquired = False
-        
+
         assert acquired
         assert lock_holder == "node_1"
 
     def test_distributed_lock_release(self):
         """Test distributed lock release."""
         lock_holder = "node_1"
-        
+
         # Release
         if lock_holder == "node_1":
             lock_holder = None
             released = True
         else:
             released = False
-        
+
         assert released
         assert lock_holder is None
 
@@ -195,11 +195,11 @@ class TestDistributedStateManager:
             "node_2": 3,
             "node_3": 5,
         }
-        
+
         # Find nodes with stale versions
         max_version = max(versions.values())
         stale_nodes = [n for n, v in versions.items() if v < max_version]
-        
+
         assert stale_nodes == ["node_2"]
 
 
@@ -220,10 +220,10 @@ class TestCrossLayerCoherence:
             "L1_cognition": ["L0_routing", "L1_cognition"],
             "L2_execution": ["L0_routing", "L1_cognition", "L2_execution"],
         }
-        
+
         current_layer = "L1_cognition"
         target_layer = "L0_routing"
-        
+
         assert target_layer in allowed_imports[current_layer]
 
     def test_invalid_layer_import_detection(self):
@@ -232,10 +232,10 @@ class TestCrossLayerCoherence:
             "L0_routing": ["L0_routing"],
             "L1_cognition": ["L0_routing", "L1_cognition"],
         }
-        
+
         current_layer = "L0_routing"
         target_layer = "L1_cognition"  # L0 cannot import from L1
-        
+
         assert target_layer not in allowed_imports[current_layer]
 
 
@@ -251,22 +251,22 @@ class TestImplementationPlan:
         """Test creation of layer response."""
         layer = "L2_execution"
         status = "optimized"
-        
+
         response = {
             "layer": layer,
             "status": status,
             "metrics": {"latency_ms": 50, "cost": 0.3}
         }
-        
+
         assert response["layer"] == layer
         assert response["status"] == status
 
     def test_four_layer_optimization(self):
         """Test four-layer retrieval optimization."""
         layers = ["L4_state", "L3_orchestration", "L2_execution", "L1_cognition"]
-        
+
         # Assign priorities (lower = higher priority)
         priorities = {layer: i for i, layer in enumerate(layers)}
-        
+
         assert priorities["L4_state"] == 0  # Highest priority
         assert priorities["L1_cognition"] == 3  # Lowest priority

@@ -38,7 +38,7 @@
       }
     },
     "adg_redis": {
-      "_comment": "ADG Redis MCP — CUSTOM: Python-based server with 17 specialized tools for ADG cache access. Supports HASH/SET operations, hot cache validation, and ADG-specific queries. Replaces marketplace Redis MCP.",
+      "_comment": "ADG Redis MCP — CUSTOM: Python-based server with 17 specialized tools for ADG cache access.",
       "command": "python",
       "args": [
         "C:\\Git\\Agentic-Workflow\\tools\\adg\\adg_mcp_server.py"

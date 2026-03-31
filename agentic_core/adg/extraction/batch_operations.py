@@ -39,11 +39,11 @@ class NodeBatch:
 
 class ADGSQLiteBatchInserter:
     """Batch inserter for ADG SQLite operations.
-    
+
     Optimizes edge/node insertion by batching to reduce
     transaction overhead and improve CPU utilization.
     """
-    
+
     def __init__(
         self,
         db_path: str,
@@ -56,62 +56,62 @@ class ADGSQLiteBatchInserter:
         self._edge_buffer: list[dict] = []
         self._node_buffer: list[dict] = []
         self._total_inserted = 0
-        
+
     def __enter__(self):
         """Context manager entry."""
         self.conn = sqlite3.connect(self.db_path)
         self.conn.execute("PRAGMA foreign_keys = ON")
-        
+
         if self.enable_wal:
             self.conn.execute("PRAGMA journal_mode = WAL")
             self.conn.execute("PRAGMA synchronous = NORMAL")
-        
+
         return self
-    
+
     def __exit__(self, exc_type, exc_val, exc_tb):
         """Context manager exit - flush remaining buffers."""
         self.flush()
         self.conn.close()
-    
+
     def add_edge(self, edge: dict) -> None:
         """Add edge to batch buffer."""
         self._edge_buffer.append(edge)
-        
+
         if len(self._edge_buffer) >= self.batch_size:
             self._flush_edges()
-    
+
     def add_node(self, node: dict) -> None:
         """Add node to batch buffer."""
         self._node_buffer.append(node)
-        
+
         if len(self._node_buffer) >= self.batch_size:
             self._flush_nodes()
-    
+
     def add_edges_batch(self, edges: list[dict]) -> None:
         """Add multiple edges to buffer."""
         self._edge_buffer.extend(edges)
-        
+
         while len(self._edge_buffer) >= self.batch_size:
             self._flush_edges()
-    
+
     def add_nodes_batch(self, nodes: list[dict]) -> None:
         """Add multiple nodes to buffer."""
         self._node_buffer.extend(nodes)
-        
+
         while len(self._node_buffer) >= self.batch_size:
             self._flush_nodes()
-    
+
     def _flush_edges(self) -> int:
         """Flush edge buffer to database."""
         if not self._edge_buffer:
             return 0
-        
+
         batch = self._edge_buffer[:self.batch_size]
         self._edge_buffer = self._edge_buffer[self.batch_size:]
-        
+
         try:
             cursor = self.conn.cursor()
-            
+
             # Batch insert with executemany
             cursor.executemany(
                 """
@@ -121,29 +121,29 @@ class ADGSQLiteBatchInserter:
                 """,
                 batch,
             )
-            
+
             self.conn.commit()
             self._total_inserted += len(batch)
-            
+
             logger.debug(f"Inserted {len(batch)} edges (total: {self._total_inserted})")
             return len(batch)
-            
+
         except Exception as e:
             logger.error(f"Edge batch insert failed: {e}")
             self.conn.rollback()
             raise
-    
+
     def _flush_nodes(self) -> int:
         """Flush node buffer to database."""
         if not self._node_buffer:
             return 0
-        
+
         batch = self._node_buffer[:self.batch_size]
         self._node_buffer = self._node_buffer[self.batch_size:]
-        
+
         try:
             cursor = self.conn.cursor()
-            
+
             cursor.executemany(
                 """
                 INSERT INTO nodes (adg_name, entity_type, layer, identity_kind, confidence, resolved_path)
@@ -157,30 +157,30 @@ class ADGSQLiteBatchInserter:
                 """,
                 batch,
             )
-            
+
             self.conn.commit()
             self._total_inserted += len(batch)
-            
+
             logger.debug(f"Inserted/updated {len(batch)} nodes")
             return len(batch)
-            
+
         except Exception as e:
             logger.error(f"Node batch insert failed: {e}")
             self.conn.rollback()
             raise
-    
+
     def flush(self) -> tuple[int, int]:
         """Flush all remaining buffers."""
         edges_flushed = self._flush_edges()
         nodes_flushed = self._flush_nodes()
-        
+
         logger.info(
             f"Final flush: {edges_flushed} edges, {nodes_flushed} nodes "
             f"(total inserted: {self._total_inserted})"
         )
-        
+
         return edges_flushed, nodes_flushed
-    
+
     def get_stats(self) -> dict[str, Any]:
         """Get insertion statistics."""
         return {
@@ -193,10 +193,10 @@ class ADGSQLiteBatchInserter:
 
 class ADGRedisBatchInserter:
     """Batch inserter for ADG Redis operations.
-    
+
     Uses Redis pipelines for efficient batch operations.
     """
-    
+
     def __init__(
         self,
         redis_client: redis.Redis,
@@ -207,51 +207,51 @@ class ADGRedisBatchInserter:
         self._pipeline = redis_client.pipeline(transaction=False)
         self._pending = 0
         self._total_executed = 0
-    
+
     def add_node(self, node_id: str, node_data: dict) -> None:
         """Add node to Redis batch."""
         self._pipeline.hset(f"adg:node:{node_id}", mapping=node_data)
         self._pending += 1
-        
+
         if self._pending >= self.pipeline_size:
             self.execute()
-    
+
     def add_edge(self, edge_id: str, edge_data: dict) -> None:
         """Add edge to Redis batch."""
         self._pipeline.hset(f"adg:edge_detail:{edge_id}", mapping=edge_data)
         self._pending += 1
-        
+
         if self._pending >= self.pipeline_size:
             self.execute()
-    
+
     def add_to_set(self, set_key: str, member: str) -> None:
         """Add member to Redis set."""
         self._pipeline.sadd(set_key, member)
         self._pending += 1
-        
+
         if self._pending >= self.pipeline_size:
             self.execute()
-    
+
     def execute(self) -> list[Any]:
         """Execute pending pipeline operations."""
         if not self._pending:
             return []
-        
+
         start = time.time()
         results = self._pipeline.execute()
         elapsed = (time.time() - start) * 1000
-        
+
         self._total_executed += self._pending
         logger.debug(
             f"Executed {self._pending} Redis ops in {elapsed:.1f}ms "
             f"(total: {self._total_executed})"
         )
-        
+
         self._pipeline = self.redis.pipeline(transaction=False)
         self._pending = 0
-        
+
         return results
-    
+
     def close(self) -> None:
         """Execute remaining operations and close."""
         self.execute()
@@ -260,7 +260,7 @@ class ADGRedisBatchInserter:
 
 class ADGEdgeBatchProcessor(BatchProcessor[dict, dict]):
     """Batch processor specifically for ADG edge operations."""
-    
+
     def __init__(
         self,
         batch_size: int = 1000,
@@ -274,7 +274,7 @@ class ADGEdgeBatchProcessor(BatchProcessor[dict, dict]):
                 # (validation, deduplication, enrichment)
                 processed.append(edge)
             return processed
-        
+
         super().__init__(
             processor_func=process_edge_batch,
             batch_size=batch_size,

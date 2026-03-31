@@ -311,15 +311,15 @@ class RagTelemetryCollector:
 
     def consume_otel_spans(self, spans: list[dict[str, Any]]) -> int:
         """Consume OpenTelemetry spans for RAG telemetry analysis.
-        
+
         Phase 3: Integrates OpenTelemetry spans into L6 RAG telemetry.
         Extracts RAG-relevant metrics from span attributes.
-        
+
         Parameters
         ----------
         spans : list[dict[str, Any]]
             OpenTelemetry span dictionaries from tracing adapter.
-            
+
         Returns
         -------
         int
@@ -327,13 +327,13 @@ class RagTelemetryCollector:
         """
         if not spans:
             return 0
-        
+
         processed = 0
         for span in spans:
             # Check if this is a RAG-related span
             name = span.get("name", "")
             attributes = span.get("attributes", {})
-            
+
             # Look for RAG operation indicators
             is_rag_span = (
                 "rag" in name.lower() or
@@ -341,7 +341,7 @@ class RagTelemetryCollector:
                 "embedding" in name.lower() or
                 attributes.get("rag.operation") is not None
             )
-            
+
             if is_rag_span:
                 # Extract RAG metrics from span attributes
                 latency_ms = attributes.get("rag.latency_ms", 0)
@@ -350,7 +350,7 @@ class RagTelemetryCollector:
                 reranked = attributes.get("rag.reranked", False)
                 faithfulness = attributes.get("rag.faithfulness_score", 0.0)
                 namespace = attributes.get("rag.namespace", "sovereign-core")
-                
+
                 self.record_query(
                     latency_ms=latency_ms,
                     cached=cached,
@@ -360,11 +360,11 @@ class RagTelemetryCollector:
                     namespace=namespace,
                 )
                 processed += 1
-        
+
         _emit_records_telemetry_event(
             "rag_telemetry_collector", "L6_OBSERVABILITY", "otel_spans_consumed",
             processed_count=processed,
             total_spans=len(spans)
         )
-        
+
         return processed

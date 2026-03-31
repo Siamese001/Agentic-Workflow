@@ -166,7 +166,7 @@ multi-hop orchestration, and full auditability.
 Our solution deploys a six-layer agentic platform:
 
 **L0 Routing:** Policy-enforced entry with InstructionPacket signing
-**L1 Cognition:** Adaptive retrieval and RAG pipeline  
+**L1 Cognition:** Adaptive retrieval and RAG pipeline
 **L2 Execution:** Deterministic execution contracts
 **L3 Orchestration:** Multi-hop agent workflows (this proposal system)
 **L4 State:** Versioned, auditable state management

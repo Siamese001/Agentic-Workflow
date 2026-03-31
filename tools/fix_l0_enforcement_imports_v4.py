@@ -20,10 +20,10 @@ def fix_init_file_minimal(init_path):
     """Fix __init__.py with only working imports."""
     try:
         enforcement_dir = init_path.parent
-        
+
         # Test imports for each module
         working_imports = []
-        
+
         modules_to_test = [
             ('execution_gateway', ['ExecutionGatewayError', 'UnregisteredAgentError', 'GatewayResult', 'V15ExecutionGateway']),
             ('boundary_contracts', ['BoundarySchemaError', 'ContextRetrievalError', 'MetaInvariantError', 'SSOTBindingError']),
@@ -32,7 +32,7 @@ def fix_init_file_minimal(init_path):
             ('routing_contract', ['UngovernnedRouteError', 'StaleRoutingContractError', 'RoutingContractValidationError']),
             ('traceability_contracts', ['TraceIDFormatError', 'ErrorSignatureError', 'PolicyConfigPinError']),
         ]
-        
+
         for module_name, class_names in modules_to_test:
             print(f"Testing {module_name}:")
             for class_name in class_names:
@@ -40,7 +40,7 @@ def fix_init_file_minimal(init_path):
                 if test_import(full_module, class_name):
                     working_imports.append(f"from .{module_name} import {class_name}")
                     print(f"  ✓ {class_name}")
-        
+
         # Create minimal __init__.py content
         lines = [
             "from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (",
@@ -109,21 +109,21 @@ def fix_init_file_minimal(init_path):
             ")",
             ""
         ]
-        
+
         # Add only working imports
         lines.extend(working_imports)
         lines.append("")
-        
+
         # Add minimal lifecycle trace calls
         lines.extend([
             "emit_replay_key(\"p0\", \"__init__\")",
             "emit_determinism_digest(\"p0\", \"__init__\")",
         ])
-        
+
         # Write back
         with open(init_path, 'w', encoding='utf-8') as f:
             f.write('\n'.join(lines))
-        
+
         print(f"Created minimal {init_path} with {len(working_imports)} working imports")
         return True
     except Exception as e:
@@ -134,11 +134,11 @@ def main():
     """Main function to fix L0 routing enforcement imports."""
     enforcement_dir = pathlib.Path('agentic_core/L0_routing/enforcement')
     init_path = enforcement_dir / '__init__.py'
-    
+
     if not init_path.exists():
         print(f"__init__.py not found at {init_path}")
         return
-    
+
     if fix_init_file_minimal(init_path):
         print("Successfully created minimal L0 routing enforcement __init__.py")
     else:

@@ -129,7 +129,7 @@ jobs:
         run: |
           # Get changed Python files
           git diff --name-only HEAD~1 HEAD | grep '\.py$' > changed_files.txt || true
-          
+
           if [ -s changed_files.txt ]; then
             echo "Changed files:"
             cat changed_files.txt
@@ -183,14 +183,14 @@ jobs:
           else
             echo "No test preflight data" >> artifacts/PIPELINE_REPORT.md
           fi
-          
+
           echo "" >> artifacts/PIPELINE_REPORT.md
           echo "## Gap Analysis" >> artifacts/PIPELINE_REPORT.md
           if [ -f artifacts/gap_analysis.json ]; then
             echo "Top uncovered modules:" >> artifacts/PIPELINE_REPORT.md
             cat artifacts/gap_analysis.json | grep -A 50 "uncovered_modules" | head -30 >> artifacts/PIPELINE_REPORT.md
           fi
-          
+
           echo "" >> artifacts/PIPELINE_REPORT.md
           echo "## Hardening Coverage" >> artifacts/PIPELINE_REPORT.md
           if [ -f artifacts/harden_coverage.json ]; then
@@ -198,7 +198,7 @@ jobs:
             cat artifacts/harden_coverage.json >> artifacts/PIPELINE_REPORT.md
             echo "\`\`\`" >> artifacts/PIPELINE_REPORT.md
           fi
-          
+
           echo "" >> artifacts/PIPELINE_REPORT.md
           echo "## ADG Status" >> artifacts/PIPELINE_REPORT.md
           if [ -f artifacts/adg_status.json ]; then
@@ -206,7 +206,7 @@ jobs:
             cat artifacts/adg_status.json >> artifacts/PIPELINE_REPORT.md
             echo "\`\`\`" >> artifacts/PIPELINE_REPORT.md
           fi
-          
+
           cat artifacts/PIPELINE_REPORT.md
 
       - name: Upload pipeline report

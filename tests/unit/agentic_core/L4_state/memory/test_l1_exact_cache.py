@@ -2,16 +2,21 @@
 
 import pytest
 
-# Lazy import fixtures - avoid collection-time errors
 
-@pytest.fixture(scope="session")
-def _lazy_agentic_core_L4_state_memory_l1_exact_cache_0():
-    from agentic_core.L4_state.memory.l1_exact_cache import L1ExactCache, L1CacheManager, CacheHit, get_global_l1_cache, l1_cache_get, l1_cache_set
-    return type('_Import', (), {"L1ExactCache": L1ExactCache, "L1CacheManager": L1CacheManager, "CacheHit": CacheHit, "get_global_l1_cache": get_global_l1_cache, "l1_cache_get": l1_cache_get, "l1_cache_set": l1_cache_set})
+# Lazy imports — wrapped to avoid collection-time errors
+try:
+    from agentic_core.L4_state.memory.l1_exact_cache import (
+        CacheHit,
+        L1CacheManager,
+        L1ExactCache,
+        get_global_l1_cache,
+        l1_cache_get,
+        l1_cache_set,
+    )
+except ImportError:
+    pass
+
 from unittest.mock import MagicMock, patch
-
-
-)
 
 
 class TestL1ExactCache:

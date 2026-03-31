@@ -12,22 +12,13 @@ from pathlib import Path
 
 import pytest
 
-# Lazy import fixtures - avoid collection-time errors
 
-@pytest.fixture(scope="session")
-def _lazy_agentic_core_adg_runtime_0():
-    from agentic_core.adg.runtime import MCPDriftEvent, MCPDriftRecorder, MCPDriftReport, MCPDriftSeverity, MCPDriftType
-    return type('_Import', (), {"MCPDriftEvent": MCPDriftEvent, "MCPDriftRecorder": MCPDriftRecorder, "MCPDriftReport": MCPDriftReport, "MCPDriftSeverity": MCPDriftSeverity, "MCPDriftType": MCPDriftType})
-
-@pytest.fixture(scope="session")
-def _lazy_agentic_core_L6_observability_1():
+# Lazy imports — wrapped to avoid collection-time errors
+try:
     from agentic_core.L6_observability import MCPDriftMonitor, MCPL6ObservabilityStore, MCPL6PersistenceConfig
-    return type('_Import', (), {"MCPDriftMonitor": MCPDriftMonitor, "MCPL6ObservabilityStore": MCPL6ObservabilityStore, "MCPL6PersistenceConfig": MCPL6PersistenceConfig})
-
-
-)
-
-)
+    from agentic_core.adg.runtime import MCPDriftEvent, MCPDriftRecorder, MCPDriftReport, MCPDriftSeverity, MCPDriftType
+except ImportError:
+    pass
 
 
 @pytest.fixture

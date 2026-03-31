@@ -304,18 +304,18 @@ class RegressionDetector:
         try:
             from system_learning.adapters.system_learning_memory_bridge import get_sl_memory_bridge
             bridge = get_sl_memory_bridge()
-            
+
             # Calculate regression metrics
             total_records = len(result.records)
             regression_count = result.regression_count
             regression_rate = regression_count / total_records if total_records > 0 else 0.0
-            
+
             # Count verdicts
             verdict_counts = {}
             for record in result.records:
                 verdict = record.verdict.name if hasattr(record.verdict, 'name') else str(record.verdict)
                 verdict_counts[verdict] = verdict_counts.get(verdict, 0) + 1
-            
+
             bridge.persist_eval_regression_results(
                 trace_id=trace_id,
                 total_records=total_records,

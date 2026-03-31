@@ -57,5 +57,3 @@ class TestL0ThresholdChangePackage:
 class TestDeterminism:
     def test_proposal_deterministic(self):
         """Identical inputs produce identical proposals."""
-
-

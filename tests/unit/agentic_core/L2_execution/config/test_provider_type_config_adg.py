@@ -16,4 +16,3 @@ class TestProviderType:
     """Test classes_is_dict runtime behavior."""
     """Test stub_in_modules runtime behavior."""
     """Test stub_in_classes runtime behavior."""
-

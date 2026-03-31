@@ -26,7 +26,7 @@ try:
         SovereignMCPRouter,  # noqa: F401
     )
 # guardian: allow-silent-swallow - optional dependency
-        except ImportError:
+except ImportError:
     # Fallback or strict error depending on startup order
     pass
 

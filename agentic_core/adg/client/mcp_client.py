@@ -317,7 +317,7 @@ class ADGMCPClient:
 
 __all__ = [
     "BATCH_SIZE",
-    "BUFFER_SIZE", 
+    "BUFFER_SIZE",
     "DEFAULT_SLEEP",
     "MAX_DEPTH",
     "MAX_RETRIES",

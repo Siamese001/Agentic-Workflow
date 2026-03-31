@@ -296,11 +296,11 @@ def invalidate_cache(cache_path: Path | None = None) -> None:
 
 __all__ = [
     "BATCH_SIZE",
-    "BUFFER_SIZE", 
+    "BUFFER_SIZE",
     "DEFAULT_SLEEP",
     "MAX_DEPTH",
     "MAX_RETRIES",
     "THRESHOLD",
-    "load_or_scan", 
+    "load_or_scan",
     "invalidate_cache"
 ]

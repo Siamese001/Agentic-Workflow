@@ -14,7 +14,7 @@ from typing import Dict, List, Tuple
 
 class Wave22FinalValidation:
     """Wave 22: Final validation and commit preparation."""
-    
+
     def __init__(self, repo_root: pathlib.Path):
         self.repo_root = repo_root
         self.tests_dir = repo_root / "tests"
@@ -25,28 +25,28 @@ class Wave22FinalValidation:
             'test_collection_success': False,
             'progress_improvement': 0
         }
-    
+
     def run_final_validation(self) -> Dict:
         """Run final validation."""
         # Check current syntax status
         self._check_syntax_status()
-        
+
         # Try pytest collection
         self._test_pytest_collection()
-        
+
         return self.stats
-    
+
     def _check_syntax_status(self):
         """Check current syntax status."""
         test_files = []
         for pattern in ["test_*.py", "*/test_*.py"]:
             test_files.extend(self.tests_dir.rglob(pattern))
-        
+
         # Filter out archives
         active_test_files = [f for f in test_files if "archive" not in str(f).lower()]
-        
+
         self.stats['total_files'] = len(active_test_files)
-        
+
         for test_file in active_test_files:
             try:
                 content = test_file.read_text(encoding='utf-8')
@@ -56,7 +56,7 @@ class Wave22FinalValidation:
                 self.stats['syntax_errors'] += 1
             except UnicodeDecodeError:
                 self.stats['syntax_errors'] += 1
-    
+
     def _test_pytest_collection(self):
         """Test pytest collection."""
         try:
@@ -67,7 +67,7 @@ class Wave22FinalValidation:
                 text=True,
                 timeout=30
             )
-            
+
             if result.returncode == 0:
                 self.stats['test_collection_success'] = True
                 print("✅ Pytest collection successful!")
@@ -77,12 +77,12 @@ class Wave22FinalValidation:
                 if "collected" in result.stdout.lower():
                     self.stats['test_collection_success'] = True
                     print("✅ Partial pytest collection successful!")
-                
+
         except subprocess.TimeoutExpired:
             print("⚠️ Pytest collection timed out")
         except Exception as e:
             print(f"⚠️ Test execution error: {e}")
-    
+
     def print_summary(self):
         """Print final validation summary."""
         print("\n" + "="*60)
@@ -92,10 +92,10 @@ class Wave22FinalValidation:
         print(f"Valid files: {self.stats['valid_files']}")
         print(f"Syntax errors: {self.stats['syntax_errors']}")
         print(f"Success rate: {self.stats['valid_files']/self.stats['total_files']*100:.1f}%")
-        
+
         print(f"\nTest collection:")
         print(f"Pytest collection: {'✅ Success' if self.stats['test_collection_success'] else '⚠️ Failed'}")
-        
+
         print(f"\n🎯 FINAL STATUS:")
         if self.stats['valid_files'] >= 2708:
             print("✅ EXCELLENT: Test suite significantly restored!")
@@ -105,25 +105,25 @@ class Wave22FinalValidation:
             print("✅ GOOD: Test suite partially restored!")
         else:
             print("⚠️ NEEDS WORK: More fixes needed")
-        
+
         print(f"\n📈 PROGRESS FROM WAVES 20-22:")
         print(f"Additional files fixed: +2")
         print(f"Total valid files: {self.stats['valid_files']}")
-        
+
         print("="*60)
 
 
 def main():
     """Run Wave 22 final validation."""
     repo_root = pathlib.Path(__file__).parent.parent
-    
+
     print("🌊 WAVE 22: FINAL VALIDATION")
     print(f"Repository: {repo_root}")
-    
+
     validator = Wave22FinalValidation(repo_root)
     stats = validator.run_final_validation()
     validator.print_summary()
-    
+
     return stats['valid_files'] > 2000
 
 

@@ -133,7 +133,7 @@ logger = logging.getLogger(__name__)
 
 class BoardDecisionType(str, Enum):
     """Decision types emitted by the Governed Board."""
-    
+
     ACCEPT_FOR_LEARNING = "accept_for_learning"
     REJECT_ANOMALOUS = "reject_anomalous"
     FLAG_FOR_REVIEW = "flag_for_review"
@@ -143,7 +143,7 @@ class BoardDecisionType(str, Enum):
 @dataclass(frozen=True)
 class DPOFeedbackRecord:
     """A single DPO feedback record processed by Desk D.
-    
+
     Attributes:
         trace_id: Unique trace identifier
         example_id: DPO example with control/candidate hashes
@@ -153,7 +153,7 @@ class DPOFeedbackRecord:
         candidate_output: Candidate output bytes
         timestamp: Deterministic sequence number (not wall clock)
     """
-    
+
     trace_id: str
     example_id: DPOExampleId
     human_decision: str
@@ -161,7 +161,7 @@ class DPOFeedbackRecord:
     control_output: bytes
     candidate_output: bytes
     timestamp: int  # Sequence number for determinism
-    
+
     def to_dict(self) -> dict[str, Any]:
         """Convert to dictionary for serialization."""
         return {
@@ -181,14 +181,14 @@ class DPOFeedbackRecord:
 @dataclass
 class BoardProcessingResult:
     """Result of Desk D processing a DPO record.
-    
+
     Attributes:
         decision: Board's decision on this record
         rlhf_proposal: Optional RLHF change package
         confidence: Confidence in the decision (0-1)
         metadata: Additional processing metadata
     """
-    
+
     decision: BoardDecisionType
     rlhf_proposal: RLHFChangePackage | None
     confidence: float
@@ -198,7 +198,7 @@ class BoardProcessingResult:
 @dataclass
 class BoardMetrics:
     """Metrics for Desk D processing."""
-    
+
     records_processed: int = 0
     records_accepted: int = 0
     records_rejected: int = 0
@@ -210,14 +210,14 @@ class BoardMetrics:
 
 class DeskDGovernedBoard:
     """Desk D — Governed Board for Path D HITL Meta-Learning Feedback.
-    
+
     The Governed Board sits at L6 Observability and processes human decisions
     into structured DPO pairs for the RLHF optimizer. It enforces governance
     invariants and emits telemetry for system visibility.
-    
+
     Usage:
         board = DeskDGovernedBoard()
-        
+
         # Process a human decision
         result = board.process_human_decision(
             trace_id="trace-123",
@@ -225,18 +225,18 @@ class DeskDGovernedBoard:
             control_output=b"original",
             candidate_output=b"proposed",
         )
-        
+
         # Batch process for RLHF optimization
         batch_result = board.process_batch_for_rlhf(records, min_pairs=4)
     """
-    
+
     def __init__(
         self,
         dpo_generator: DefaultDeterministicDPOPairGenerator | None = None,
         rlhf_optimizer: DefaultRLHFOptimizer | None = None,
     ) -> None:
         """Initialize the Governed Board.
-        
+
         Args:
             dpo_generator: DPO pair generator (creates default if None)
             rlhf_optimizer: RLHF optimizer (creates default if None)
@@ -246,21 +246,21 @@ class DeskDGovernedBoard:
         self._metrics = BoardMetrics()
         self._feedback_history: list[DPOFeedbackRecord] = []
         self._processing_callbacks: list[Callable[[DPOFeedbackRecord, BoardProcessingResult], None]] = []
-        
+
         logger.info("Desk D Governed Board initialized")
-    
+
     def register_processing_callback(
         self,
         callback: Callable[[DPOFeedbackRecord, BoardProcessingResult], None],
     ) -> None:
         """Register a callback for DPO processing events.
-        
+
         Args:
             callback: Function called with (record, result) after processing
         """
         self._processing_callbacks.append(callback)
         logger.debug("Registered Desk D processing callback")
-    
+
     def process_human_decision(
         self,
         trace_id: str,
@@ -270,24 +270,24 @@ class DeskDGovernedBoard:
         reason_codes: tuple[str, ...] = ("HUMAN_REVIEW",),
     ) -> BoardProcessingResult:
         """Process a human decision artifact into DPO feedback.
-        
+
         Args:
             trace_id: Unique trace identifier
             human_artifact: The human decision artifact (L3 or L5 type)
             control_output: Original control output bytes
             candidate_output: Candidate output bytes
             reason_codes: Structured reason codes
-            
+
         Returns:
             BoardProcessingResult with decision and optional RLHF proposal
         """
         import uuid as _uuid
-        
+
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(
             _trace_id, LayerSegment.L6_OBSERVABILITY, "DeskDGovernedBoard.process_human_decision"
         )
-        
+
         # Map action to human decision string
         if hasattr(human_artifact, 'action'):
             if isinstance(human_artifact.action, HumanAction):
@@ -296,7 +296,7 @@ class DeskDGovernedBoard:
                 human_decision = human_artifact.action
         else:
             human_decision = "APPROVE"
-        
+
         # Generate DPO pair
         try:
             dpo_pair = self._dpo_generator.generate(
@@ -313,7 +313,7 @@ class DeskDGovernedBoard:
                 confidence=0.0,
                 metadata={"error": str(e)},
             )
-        
+
         # Create feedback record
         record = DPOFeedbackRecord(
             trace_id=trace_id,
@@ -324,35 +324,35 @@ class DeskDGovernedBoard:
             candidate_output=candidate_output,
             timestamp=len(self._feedback_history),
         )
-        
+
         self._feedback_history.append(record)
         self._metrics.records_processed += 1
-        
+
         # Validate and decide
         result = self._validate_and_decide(record)
-        
+
         # Emit callbacks
         for callback in self._processing_callbacks:
             try:
                 callback(record, result)
             except Exception as e:
                 logger.warning(f"Desk D callback error: {e}")
-        
+
         logger.info(
             "Desk D processed decision: trace=%s decision=%s confidence=%.2f",
             trace_id,
             result.decision.value,
             result.confidence,
         )
-        
+
         return result
-    
+
     def _validate_and_decide(self, record: DPOFeedbackRecord) -> BoardProcessingResult:
         """Validate a DPO record and make a board decision.
-        
+
         Args:
             record: The DPO feedback record to validate
-            
+
         Returns:
             BoardProcessingResult with decision and optional RLHF proposal
         """
@@ -365,7 +365,7 @@ class DeskDGovernedBoard:
                 confidence=0.5,
                 metadata={"reason": "Missing reason codes"},
             )
-        
+
         # Check for anomalous patterns
         if len(record.control_output) == 0 or len(record.candidate_output) == 0:
             self._metrics.records_rejected += 1
@@ -375,7 +375,7 @@ class DeskDGovernedBoard:
                 confidence=0.0,
                 metadata={"reason": "Empty output detected"},
             )
-        
+
         # Accept for learning
         self._metrics.records_accepted += 1
         return BoardProcessingResult(
@@ -384,7 +384,7 @@ class DeskDGovernedBoard:
             confidence=0.95,
             metadata={"reason_codes": record.reason_codes},
         )
-    
+
     def process_batch_for_rlhf(
         self,
         records: list[DPOFeedbackRecord],
@@ -392,48 +392,48 @@ class DeskDGovernedBoard:
         surface_name: str = "desk_d_learning",
     ) -> RLHFChangePackage | None:
         """Process a batch of DPO records for RLHF optimization.
-        
+
         Args:
             records: List of DPO feedback records
             min_pairs: Minimum pairs required for RLHF proposal
             surface_name: Surface name for RLHF optimization
-            
+
         Returns:
             RLHFChangePackage if optimization generated, None otherwise
         """
         import uuid as _uuid
-        
+
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(
             _trace_id, LayerSegment.L6_OBSERVABILITY, "DeskDGovernedBoard.process_batch_for_rlhf"
         )
-        
+
         if len(records) < min_pairs:
             logger.debug(f"Insufficient records for RLHF: {len(records)} < {min_pairs}")
             return None
-        
+
         # Build DPO batch
         pairs = []
         for record in records:
             chosen_threshold = 0.8 if record.human_decision == "APPROVE" else 0.4
             rejected_threshold = 0.4 if record.human_decision == "APPROVE" else 0.8
-            
+
             pairs.append({
                 "chosen": {"threshold": chosen_threshold},
                 "rejected": {"threshold": rejected_threshold},
                 "surface": surface_name,
             })
-        
+
         dpo_batch = {"pairs": pairs}
         batch_bytes = json.dumps(dpo_batch).encode("utf-8")
-        
+
         # Generate RLHF proposal
         snapshot_id = f"desk_d_batch_{len(self._metrics.learning_cycles_completed)}"
         proposal = self._rlhf_optimizer.propose_from_dpo(
             dpo_batch_bytes=batch_bytes,
             snapshot_id=snapshot_id,
         )
-        
+
         if proposal:
             self._metrics.rlhf_proposals_generated += 1
             logger.info(
@@ -442,18 +442,18 @@ class DeskDGovernedBoard:
                 proposal.direction,
                 proposal.preference_strength,
             )
-        
+
         return proposal
-    
+
     def complete_learning_cycle(
         self,
         cycle_name: str = "desk_d_cycle",
     ) -> dict[str, Any]:
         """Complete a learning cycle and return summary.
-        
+
         Args:
             cycle_name: Name for this learning cycle
-            
+
         Returns:
             Dictionary with cycle summary and RLHF proposal if generated
         """
@@ -462,13 +462,13 @@ class DeskDGovernedBoard:
             r for r in self._feedback_history
             if r.timestamp >= self._metrics.learning_cycles_completed * 100
         ]
-        
+
         # Generate RLHF proposal from batch
         proposal = self.process_batch_for_rlhf(accepted_records)
-        
+
         if proposal:
             self._metrics.learning_cycles_completed += 1
-        
+
         return {
             "cycle_name": cycle_name,
             "cycle_number": self._metrics.learning_cycles_completed,
@@ -477,7 +477,7 @@ class DeskDGovernedBoard:
             "rlhf_proposal": proposal,
             "has_proposal": proposal is not None,
         }
-    
+
     def get_metrics(self) -> BoardMetrics:
         """Get current board metrics."""
         return BoardMetrics(
@@ -489,45 +489,45 @@ class DeskDGovernedBoard:
             rlhf_proposals_generated=self._metrics.rlhf_proposals_generated,
             learning_cycles_completed=self._metrics.learning_cycles_completed,
         )
-    
+
     def get_feedback_history(
         self,
         limit: int | None = None,
         decision_type: str | None = None,
     ) -> list[DPOFeedbackRecord]:
         """Get feedback history with optional filtering.
-        
+
         Args:
             limit: Maximum records to return (newest first)
             decision_type: Filter by human decision type
-            
+
         Returns:
             List of DPO feedback records
         """
         records = self._feedback_history
-        
+
         if decision_type:
             records = [r for r in records if r.human_decision == decision_type]
-        
+
         if limit:
             records = records[-limit:]
-        
+
         return records
-    
+
     def export_learning_report(self, output_path: Path | None = None) -> Path:
         """Export a learning report to disk.
-        
+
         Args:
             output_path: Path for report (default: artifacts/hitl/desk_d_report.json)
-            
+
         Returns:
             Path to the written report
         """
         if output_path is None:
             output_path = Path("artifacts/hitl/desk_d_report.json")
-        
+
         output_path.parent.mkdir(parents=True, exist_ok=True)
-        
+
         metrics = self.get_metrics()
         report = {
             "board_type": "DeskD_GovernedBoard",
@@ -543,10 +543,10 @@ class DeskDGovernedBoard:
                 r.to_dict() for r in self._feedback_history[-10:]
             ],
         }
-        
+
         with open(output_path, "w", encoding="utf-8") as f:
             json.dump(report, f, indent=2, sort_keys=True)
-        
+
         logger.info(f"Desk D learning report exported: {output_path}")
         return output_path
 

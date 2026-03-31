@@ -21,11 +21,11 @@ class Envelope:
     retry_count: int = 0
     max_retries: int = 3
     error_info: Optional[str] = None
-    
+
     def mark_delivered(self) -> None:
         """Mark envelope as delivered."""
         self.status = EnvelopeStatus.DELIVERED
-    
+
     def mark_failed(self, error: str) -> None:
         """Mark envelope as failed."""
         self.status = EnvelopeStatus.FAILED

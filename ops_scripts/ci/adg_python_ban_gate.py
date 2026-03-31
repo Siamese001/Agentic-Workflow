@@ -166,7 +166,7 @@ def scan_file(path: Path, checks: List[str]) -> Dict[str, List[Tuple[int, str]]]
         "mypy": [],
         "pytest": []
     }
-    
+
     try:
         lines = path.read_text(encoding="utf-8", errors="replace").splitlines()
     except OSError as exc:
@@ -186,7 +186,7 @@ def scan_file(path: Path, checks: List[str]) -> Dict[str, List[Tuple[int, str]]]
         stripped = line.lstrip()
         if stripped.startswith("#"):
             continue
-            
+
         # Check for line-level exemption
         if _EXEMPTION_RE.search(line):
             continue
@@ -306,22 +306,22 @@ def _cli() -> None:
     # Report violations
     print(f"\nFAIL: {total_violations} {', '.join(args.checks)}-ban violation(s) in {len(violations)} file(s).", file=sys.stderr)
     print("Use ADG accelerators instead of banned tools:", file=sys.stderr)
-    
+
     if "grep" in args.checks:
         print("  Symbol search:  python tools/adg/adg_redis_query.py search-nodes <term>", file=sys.stderr)
         print("  File search:    python tools/adg/adg_redis_query.py search-files <term>", file=sys.stderr)
         print("  Exemption:      # guardian: allow-grep -- <justification>", file=sys.stderr)
-    
+
     if "mypy" in args.checks:
         print("  Type check:     python tools/adg/adg_type_check.py --from-diff", file=sys.stderr)
         print("  Exemption:      # guardian: allow-mypy -- <justification>", file=sys.stderr)
-    
+
     if "pytest" in args.checks:
         print("  Test selection: python tools/adg/adg_test_selector.py --from-diff", file=sys.stderr)
         print("  Exemption:      # guardian: allow-pytest -- <justification>", file=sys.stderr)
-    
+
     print("", file=sys.stderr)
-    
+
     for path, file_violations in sorted(violations.items()):
         rel = path.relative_to(ROOT) if path.is_absolute() else path
         for check in args.checks:

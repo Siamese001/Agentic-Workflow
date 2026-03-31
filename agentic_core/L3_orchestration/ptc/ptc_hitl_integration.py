@@ -197,7 +197,7 @@ class PTCHumanDecision(Enum):
 @dataclass(frozen=True)
 class PTCSafetyAssessment:
     """Safety assessment for a PTC script.
-    
+
     Attributes:
         script_id: Unique identifier for the script
         risk_level: Assessed risk level
@@ -221,7 +221,7 @@ class PTCSafetyAssessment:
 @dataclass
 class PTCHumanReviewRecord:
     """Record of human review for a PTC script.
-    
+
     Attributes:
         script_id: Script that was reviewed
         reviewer_id: ID of the human reviewer
@@ -242,24 +242,24 @@ class PTCHumanReviewRecord:
 
 class PTCHITLIntegration:
     """Integration layer between PTC and HITL safety systems.
-    
+
     This class provides:
     1. Safety gate evaluation for PTC scripts
     2. Risk assessment and confidence scoring
     3. Human review workflow management
     4. L5 re-clear for modified scripts
     5. DPO pair generation for learning
-    
+
     Usage:
         integration = PTCHITLIntegration()
-        
+
         # Evaluate script safety
         assessment = integration.assess_script_safety(
             script_id="script-001",
             code="query_database('SELECT * FROM users')",
             tools=["query_database"],
         )
-        
+
         # If human review required
         if assessment.requires_human_review:
             decision = integration.request_human_review(assessment)
@@ -267,12 +267,12 @@ class PTCHITLIntegration:
                 # Proceed with execution
                 pass
     """
-    
+
     # Risk thresholds
     LOW_CONFIDENCE_THRESHOLD: float = 0.5
     MEDIUM_CONFIDENCE_THRESHOLD: float = 0.7
     HIGH_CONFIDENCE_THRESHOLD: float = 0.9
-    
+
     # Pattern definitions for risk assessment
     HIGH_RISK_PATTERNS: tuple[str, ...] = (
         r"\bopen\s*\(",
@@ -286,7 +286,7 @@ class PTCHITLIntegration:
         r"\b__import__",
         r"\bcompile\s*\(",
     )
-    
+
     MEDIUM_RISK_PATTERNS: tuple[str, ...] = (
         r"\bread\s*\(",
         r"\breadlines",
@@ -295,25 +295,25 @@ class PTCHITLIntegration:
         r"\blistdir",
         r"\bwalk\s*\(",
     )
-    
+
     LOW_RISK_PATTERNS: tuple[str, ...] = (
         r"\bprint\s*\(",
         r"\blogger\.",
         r"\bjson\.dumps",
         r"\bjson\.loads",
     )
-    
+
     def __init__(self) -> None:
         """Initialize PTC-HITL integration layer."""
         import uuid as _uuid
-        
+
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "PTCHITLIntegration.__init__")
         _emit_signs_execution_trace(_trace_id, _trace_id[:12], "ptc_hitl_init", 0)
-        
+
         self._assessment_history: list[PTCSafetyAssessment] = []
         self._review_history: list[PTCHumanReviewRecord] = []
-    
+
     def assess_script_safety(
         self,
         script_id: str,
@@ -322,43 +322,43 @@ class PTCHITLIntegration:
         context: dict[str, Any] | None = None,
     ) -> PTCSafetyAssessment:
         """Assess safety of a PTC script.
-        
+
         Analyzes script code for risk patterns, calculates confidence score,
         and determines if human review is required.
-        
+
         Args:
             script_id: Unique identifier for the script
             code: Python/Bash code of the script
             tools: List of tools the script will invoke
             context: Additional context for assessment
-            
+
         Returns:
             PTCSafetyAssessment with evaluation results
-            
+
         Emits:
             _emit_gated_by_confidence: If confidence is low
             _emit_validated_by_safety_plane: On completion
         """
         import uuid as _uuid
-        
+
         trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(trace_id, LayerSegment.L5_POLICY, "PTCHITLIntegration.assess_script_safety")
-        
+
         # Detect patterns in code
         detected_patterns: list[str] = []
-        
+
         for pattern in self.HIGH_RISK_PATTERNS:
             if re.search(pattern, code, re.IGNORECASE):
                 detected_patterns.append(f"high_risk:{pattern}")
-        
+
         for pattern in self.MEDIUM_RISK_PATTERNS:
             if re.search(pattern, code, re.IGNORECASE):
                 detected_patterns.append(f"medium_risk:{pattern}")
-        
+
         for pattern in self.LOW_RISK_PATTERNS:
             if re.search(pattern, code, re.IGNORECASE):
                 detected_patterns.append(f"low_risk:{pattern}")
-        
+
         # Determine risk level
         if any("high_risk" in p for p in detected_patterns):
             risk_level = PTCScriptRiskLevel.CRITICAL
@@ -372,17 +372,17 @@ class PTCHITLIntegration:
         else:
             risk_level = PTCScriptRiskLevel.LOW
             base_confidence = 0.95
-        
+
         # Adjust confidence based on tool risk levels
         tool_adjustment = self._calculate_tool_confidence_adjustment(tools)
         confidence_score = max(0.0, min(1.0, base_confidence + tool_adjustment))
-        
+
         # Determine if human review required
         requires_human_review = (
             confidence_score < self.LOW_CONFIDENCE_THRESHOLD
             or risk_level in (PTCScriptRiskLevel.HIGH, PTCScriptRiskLevel.CRITICAL)
         )
-        
+
         # Determine safety gate result
         if risk_level == PTCScriptRiskLevel.CRITICAL and confidence_score < 0.5:
             safety_gate_result = PTCSafetyGateResult.REJECT
@@ -390,19 +390,19 @@ class PTCHITLIntegration:
             safety_gate_result = PTCSafetyGateResult.REVIEW
         else:
             safety_gate_result = PTCSafetyGateResult.ALLOW
-        
+
         # Emit signals
         if confidence_score < self.LOW_CONFIDENCE_THRESHOLD:
             _emit_gated_by_confidence(trace_id, script_id, f"low_confidence:{confidence_score:.2f}")
-        
+
         if requires_human_review:
             _emit_escalates_to_human(trace_id, script_id, "safety_assessment")
-        
+
         _emit_validated_by_safety_plane(trace_id, script_id, "l5_safety_assessment")
-        
+
         # Check for policy violations
         policy_violations = self._check_policy_violations(code, tools, context or {})
-        
+
         assessment = PTCSafetyAssessment(
             script_id=script_id,
             risk_level=risk_level,
@@ -413,25 +413,25 @@ class PTCHITLIntegration:
             safety_gate_result=safety_gate_result,
             trace_id=trace_id,
         )
-        
+
         self._assessment_history.append(assessment)
-        
+
         return assessment
-    
+
     def _calculate_tool_confidence_adjustment(self, tools: list[str]) -> float:
         """Calculate confidence adjustment based on tool risk levels."""
         high_risk_tools = {"write_file", "delete_file", "subprocess_run", "eval", "exec"}
         medium_risk_tools = {"read_file", "query_database", "http_request"}
-        
+
         adjustment = 0.0
         for tool in tools:
             if tool in high_risk_tools:
                 adjustment -= 0.2
             elif tool in medium_risk_tools:
                 adjustment -= 0.05
-        
+
         return adjustment
-    
+
     def _check_policy_violations(
         self,
         code: str,
@@ -440,61 +440,61 @@ class PTCHITLIntegration:
     ) -> list[str]:
         """Check for policy violations in script."""
         violations: list[str] = []
-        
+
         # Check for PowerShell (banned)
         if re.search(r"\bpwsh\b|\bpowershell\b", code, re.IGNORECASE):
             violations.append("POLICY_POWERSHELL_BAN")
-        
+
         # Check for shell=True
         if re.search(r"shell\s*=\s*True", code):
             violations.append("POLICY_SHELL_TRUE_BAN")
-        
+
         # Check for protected path access
         protected_paths = context.get("protected_paths", [])
         for path in protected_paths:
             if path in code:
                 violations.append(f"POLICY_PROTECTED_PATH:{path}")
-        
+
         # Check for import of unsafe modules
         unsafe_imports = ["subprocess", "os.system", "ntpath", "posixpath"]
         for imp in unsafe_imports:
             if f"import {imp}" in code or f"from {imp}" in code:
                 violations.append(f"POLICY_UNSAFE_IMPORT:{imp}")
-        
+
         return violations
-    
+
     def request_human_review(
         self,
         assessment: PTCSafetyAssessment,
         reviewer_id: str | None = None,
     ) -> PTCHumanReviewRecord:
         """Request and process human review for a script.
-        
+
         This method creates a human review record. In production,
         this would integrate with the actual HITL escalation system.
-        
+
         Args:
             assessment: Safety assessment requiring review
             reviewer_id: Optional specific reviewer to assign
-            
+
         Returns:
             PTCHumanReviewRecord with the human decision
         """
         import uuid as _uuid
         from datetime import datetime, timezone
-        
+
         trace_id = assessment.trace_id
         _emit_records_execution_trace(trace_id, LayerSegment.L5_POLICY, "PTCHITLIntegration.request_human_review")
         _emit_escalates_to_human(trace_id, assessment.script_id, "review_requested")
-        
+
         # In a real implementation, this would:
         # 1. Create a human review request in the HITL system
         # 2. Wait for human response (async)
         # 3. Return the decision
-        
+
         # For this implementation, we simulate the human review process
         reviewer = reviewer_id or f"human:reviewer_{_uuid.uuid4().hex[:8]}"
-        
+
         # Determine decision based on risk level and violations
         if assessment.policy_violations:
             decision = PTCHumanDecision.REJECT
@@ -509,7 +509,7 @@ class PTCHITLIntegration:
             decision = PTCHumanDecision.APPROVE
             rationale = "Script passes safety review"
             modified_script = None
-        
+
         record = PTCHumanReviewRecord(
             script_id=assessment.script_id,
             reviewer_id=reviewer,
@@ -519,112 +519,112 @@ class PTCHITLIntegration:
             timestamp=datetime.now(timezone.utc).isoformat(),
             trace_id=trace_id,
         )
-        
+
         self._review_history.append(record)
-        
+
         # Emit signals
         _emit_transcripts_response(trace_id, reviewer, f"decision:{decision.value}")
-        
+
         if decision == PTCHumanDecision.REJECT:
             _emit_records_incident_event(trace_id, assessment.script_id, "human_rejection")
-        
+
         return record
-    
+
     def _generate_modified_script(self, assessment: PTCSafetyAssessment) -> str:
         """Generate a modified/safer version of the script.
-        
+
         In production, this would use LLM-based modification or
         human-provided modifications.
         """
         # Placeholder: return a comment indicating modification
         return f"# Modified version of script {assessment.script_id}\n# Original had risk level: {assessment.risk_level.value}"
-    
+
     def perform_l5_reclear(
         self,
         review_record: PTCHumanReviewRecord,
         policy_hash: str,
     ) -> bool:
         """Perform L5 re-clear for modified scripts.
-        
+
         After human modification (MODIFY_DIFF), the modified script
         must pass L5 safety plane validation before execution.
-        
+
         Args:
             review_record: Human review record with modification
             policy_hash: Current policy hash for validation
-            
+
         Returns:
             True if re-clear passed, False otherwise
-            
+
         Emits:
             _emit_validated_by_safety_plane: On successful validation
             _emit_records_incident_event: On validation failure
         """
         import uuid as _uuid
-        
+
         trace_id = review_record.trace_id
         _emit_records_execution_trace(trace_id, LayerSegment.L5_POLICY, "PTCHITLIntegration.perform_l5_reclear")
-        
+
         if review_record.decision != PTCHumanDecision.MODIFY_DIFF:
             # Only MODIFY_DIFF requires reclear
             return True
-        
+
         if not review_record.modified_script:
             _emit_records_incident_event(trace_id, review_record.script_id, "missing_modified_script")
             return False
-        
+
         # Validate modified script against policy
         # In production, this would re-run full safety assessment
         validation_passed = self._validate_modified_script(
             review_record.modified_script,
             policy_hash,
         )
-        
+
         if validation_passed:
             _emit_validated_by_safety_plane(trace_id, review_record.script_id, "l5_reclear_passed")
             return True
         else:
             _emit_records_incident_event(trace_id, review_record.script_id, "l5_reclear_failed")
             return False
-    
+
     def _validate_modified_script(self, modified_script: str, policy_hash: str) -> bool:
         """Validate a modified script against current policy."""
         # Placeholder: check that modified script has required markers
         has_marker = "# Modified version" in modified_script
         return has_marker
-    
+
     def generate_dpo_pair(
         self,
         assessment: PTCSafetyAssessment,
         review_record: PTCHumanReviewRecord,
     ) -> dict[str, Any]:
         """Generate DPO (Direct Preference Optimization) pair for learning.
-        
+
         Creates a preference pair based on human decision:
         - APPROVE: Original script is preferred
         - REJECT: Alternative (safer) script is preferred
         - MODIFY_DIFF: Modified script is preferred
-        
+
         Args:
             assessment: Safety assessment of original script
             review_record: Human review decision
-            
+
         Returns:
             DPO pair dictionary for learning system
         """
         import uuid as _uuid
-        
+
         trace_id = assessment.trace_id
         _emit_records_execution_trace(trace_id, LayerSegment.L6_OBSERVABILITY, "PTCHITLIntegration.generate_dpo_pair")
-        
+
         # Create example ID with hashes
         original_code_hash = hashlib.sha256(
             f"{assessment.script_id}:{assessment.detected_patterns}".encode()
         ).hexdigest()[:16]
-        
+
         control_hash = hashlib.sha256(b"safe_alternative").hexdigest()[:16]
         candidate_hash = hashlib.sha256(assessment.script_id.encode()).hexdigest()[:16]
-        
+
         dpo_pair = {
             "example_id": {
                 "control_hash": control_hash,
@@ -636,27 +636,27 @@ class PTCHITLIntegration:
             "risk_level": assessment.risk_level.value,
             "confidence": assessment.confidence_score,
         }
-        
+
         # Emit learning signals
         _emit_captures_pattern(trace_id, assessment.script_id, f"risk:{assessment.risk_level.value}")
         _emit_records_learning_event(trace_id, assessment.script_id, f"dpo_{review_record.decision.value}")
         _emit_writes_learning_snapshot(trace_id, assessment.script_id, "dpo_pair_generated")
-        
+
         return dpo_pair
-    
+
     def get_assessment_history(self) -> list[PTCSafetyAssessment]:
         """Get history of safety assessments."""
         return self._assessment_history.copy()
-    
+
     def get_review_history(self) -> list[PTCHumanReviewRecord]:
         """Get history of human reviews."""
         return self._review_history.copy()
-    
+
     def get_statistics(self) -> dict[str, Any]:
         """Get statistics about PTC-HITL integration usage."""
         total_assessments = len(self._assessment_history)
         total_reviews = len(self._review_history)
-        
+
         if total_assessments == 0:
             return {
                 "total_assessments": 0,
@@ -664,14 +664,14 @@ class PTCHITLIntegration:
                 "review_rate": 0.0,
                 "average_confidence": 0.0,
             }
-        
+
         avg_confidence = sum(a.confidence_score for a in self._assessment_history) / total_assessments
         review_rate = sum(1 for a in self._assessment_history if a.requires_human_review) / total_assessments
-        
+
         decision_counts = {}
         for r in self._review_history:
             decision_counts[r.decision.value] = decision_counts.get(r.decision.value, 0) + 1
-        
+
         return {
             "total_assessments": total_assessments,
             "total_reviews": total_reviews,

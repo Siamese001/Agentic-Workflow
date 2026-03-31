@@ -56,7 +56,7 @@ def parse_ast(content: str) -> ast.AST | None:
 
 def check_file_neutered(file_path: Path, before_hash: str, after_hash: str = "HEAD") -> Tuple[bool, int, int]:
     """Check if file lost all behavioral content in refactor.
-    
+
     Returns:
         (is_neutered, before_count, after_count)
     """
@@ -64,7 +64,7 @@ def check_file_neutered(file_path: Path, before_hash: str, after_hash: str = "HE
     before_content = git_show(before_hash, file_path)
     before_tree = parse_ast(before_content)
     before_behavioral = count_behavioral_nodes(before_tree) if before_tree else 0
-    
+
     # Get after content
     try:
         after_content = file_path.read_text(encoding="utf-8")
@@ -72,10 +72,10 @@ def check_file_neutered(file_path: Path, before_hash: str, after_hash: str = "HE
         after_content = ""
     after_tree = parse_ast(after_content)
     after_behavioral = count_behavioral_nodes(after_tree) if after_tree else 0
-    
+
     # Check if neutered
     is_neutered = before_behavioral > 0 and after_behavioral == 0
-    
+
     return is_neutered, before_behavioral, after_behavioral
 
 
@@ -96,39 +96,39 @@ def get_modified_files_since(base_hash: str) -> List[Path]:
 def check_files_neutered(files: List[Path], base_hash: str) -> Dict[Path, Dict]:
     """Check multiple files for neutered content."""
     results = {}
-    
+
     for file_path in files:
         if not file_path.exists():
             continue
-            
+
         is_neutered, before_count, after_count = check_file_neutered(file_path, base_hash)
-        
+
         results[file_path] = {
             "neutered": is_neutered,
             "before_behavioral": before_count,
             "after_behavioral": after_count,
             "action": None
         }
-        
+
         if is_neutered:
             # Suggest cleanup action
             if after_count == 0 and before_count > 0:
                 results[file_path]["action"] = "DELETE"
             else:
                 results[file_path]["action"] = "REVIEW"
-    
+
     return results
 
 
 def generate_cleanup_commands(neutered_files: List[Path]) -> List[str]:
     """Generate git commands for cleaning up neutered files."""
     commands = []
-    
+
     for file_path in neutered_files:
         rel_path = str(file_path).replace("\\", "/")
         commands.append(f"git rm {rel_path}")
         commands.append(f"# Removed hollow file: {rel_path}")
-    
+
     return commands
 
 
@@ -140,9 +140,9 @@ def main() -> int:
     parser.add_argument("--report", type=Path, help="Write report to JSON file")
     parser.add_argument("--changed-only", action="store_true", help="Only check files changed since base")
     parser.add_argument("--files", nargs="*", type=Path, help="Specific files to check")
-    
+
     args = parser.parse_args()
-    
+
     # Determine which files to check
     if args.files:
         files_to_check = args.files
@@ -153,16 +153,16 @@ def main() -> int:
         files_to_check = list(Path(".").rglob("*.py"))
         # Exclude common non-source directories
         files_to_check = [
-            f for f in files_to_check 
+            f for f in files_to_check
             if not any(part.startswith(('.', '__')) for part in f.parts)
         ]
-    
+
     # Check files for neutered content
     results = check_files_neutered(files_to_check, args.base)
-    
+
     # Find neutered files
     neutered_files = [f for f, r in results.items() if r["neutered"]]
-    
+
     # Generate report
     report = {
         "base_commit": args.base,
@@ -176,7 +176,7 @@ def main() -> int:
         "results": {str(k): v for k, v in results.items()},
         "cleanup_commands": generate_cleanup_commands(neutered_files) if neutered_files else []
     }
-    
+
     # Output results
     if neutered_files:
         print(f"\n❌ Found {len(neutered_files)} neutered files:")
@@ -186,24 +186,24 @@ def main() -> int:
             print(f"    Before: {result['before_behavioral']} behavioral nodes")
             print(f"    After:  {result['after_behavioral']} behavioral nodes")
             print(f"    Action:  {result['action']}")
-        
+
         print("\nSuggested cleanup commands:")
         for cmd in report["cleanup_commands"]:
             print(f"  {cmd}")
-        
+
         if args.strict:
             print("\n❌ Zero-loss refactor verification failed!")
             print("   Remove neutered files or use --no-strict to bypass")
             return 1
     else:
         print(f"✅ No neutered files found in {len(files_to_check)} checked files")
-    
+
     # Write report if requested
     if args.report:
         args.report.parent.mkdir(parents=True, exist_ok=True)
         args.report.write_text(json.dumps(report, indent=2))
         print(f"\n📄 Report written to {args.report}")
-    
+
     return 0
 
 

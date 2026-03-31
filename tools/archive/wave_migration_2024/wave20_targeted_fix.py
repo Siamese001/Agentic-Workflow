@@ -13,7 +13,7 @@ from typing import Dict, List, Tuple
 
 class Wave20TargetedFix:
     """Wave 20: Targeted fixes for specific patterns."""
-    
+
     def __init__(self, repo_root: pathlib.Path):
         self.repo_root = repo_root
         self.tests_dir = repo_root / "tests"
@@ -25,14 +25,14 @@ class Wave20TargetedFix:
             'failed_files': 0
         }
         self.failed_files: List[Tuple[str, str]] = []
-    
+
     def process_files(self) -> Dict:
         """Process files with Wave 20 targeted fix."""
         # Only process files with syntax errors
         test_files = []
         for pattern in ["test_*.py", "*/test_*.py"]:
             test_files.extend(self.tests_dir.rglob(pattern))
-        
+
         # Filter out archives and already valid files
         active_test_files = []
         for test_file in test_files:
@@ -45,16 +45,16 @@ class Wave20TargetedFix:
                     active_test_files.append(test_file)
                 except UnicodeDecodeError:
                     continue
-        
+
         print(f"Wave 20: Processing {len(active_test_files)} files with syntax errors...")
-        
+
         for test_file in active_test_files:
             self.stats['total_files'] += 1
             if self.process_file(test_file):
                 self.stats['files_processed'] += 1
-        
+
         return self.stats
-    
+
     def process_file(self, file_path: pathlib.Path) -> bool:
         """Process a single file with targeted fix."""
         try:
@@ -62,10 +62,10 @@ class Wave20TargetedFix:
         except Exception as e:
             self.failed_files.append((str(file_path), f"Read error: {e}"))
             return False
-        
+
         # Apply targeted fixes
         fixed_content = self._apply_targeted_fixes(original_content)
-        
+
         # Validate the fix
         try:
             ast.parse(fixed_content)
@@ -83,20 +83,20 @@ class Wave20TargetedFix:
             except SyntaxError as e2:
                 self.failed_files.append((str(file_path), f"Targeted fix failed: {e2}"))
                 return False
-    
+
     def _apply_targeted_fixes(self, content: str) -> str:
         """Apply targeted fixes for specific patterns."""
         lines = content.splitlines()
         fixed_lines = []
-        
+
         for line in lines:
             stripped = line.strip()
-            
+
             # Skip empty lines
             if not stripped:
                 fixed_lines.append(line)
                 continue
-            
+
             # Apply targeted fixes
             fixed_line = self._fix_targeted_pattern(line, stripped)
             if fixed_line != line:
@@ -104,58 +104,58 @@ class Wave20TargetedFix:
                 fixed_lines.append(fixed_line)
             else:
                 fixed_lines.append(line)
-        
+
         return '\n'.join(fixed_lines)
-    
+
     def _fix_targeted_pattern(self, line: str, stripped: str) -> str:
         """Fix specific targeted patterns."""
         # Pattern 1: Fix incomplete function definitions
         if re.match(r'^def\s+\w+\s*\([^)]*$', stripped):
             return stripped + '): pass'
-        
+
         # Pattern 2: Fix incomplete class definitions
         if re.match(r'^class\s+\w+\s*$', stripped):
             return stripped + ': pass'
-        
+
         # Pattern 3: Fix incomplete if statements
         if re.match(r'^if\s+.+\s*$', stripped) and ':' not in stripped:
             return stripped + ': pass'
-        
+
         # Pattern 4: Remove orphaned import content
         if (not line.startswith(' ') and not line.startswith('\t') and
             (re.match(r'^_emit_[a-zA-Z_][a-zA-Z0-9_]*,?\s*$', stripped) or
              re.match(r'^emit_[a-zA-Z_][a-zA-Z0-9_]*,?\s*$', stripped))):
             return f"# {stripped}"
-        
+
         # Pattern 5: Fix bad indentation
-        if (stripped.startswith(('from ', 'import ')) and 
+        if (stripped.startswith(('from ', 'import ')) and
             any(prefix in stripped for prefix in ['agentic_core', 'apps_', 'system_learning']) and
             (line.startswith(' ') or line.startswith('\t'))):
             return stripped
-        
+
         return line
-    
+
     def _pattern_specific_fix(self, content: str) -> str:
         """Apply pattern-specific fixes."""
         lines = content.splitlines()
         fixed_lines = []
-        
+
         for line in lines:
             stripped = line.strip()
-            
+
             # Skip empty lines
             if not stripped:
                 fixed_lines.append(line)
                 continue
-            
+
             # More aggressive pattern fixes
             if self._is_problematic_pattern(line, stripped):
                 continue  # Skip problematic lines
-            
+
             fixed_lines.append(line)
-        
+
         return '\n'.join(fixed_lines)
-    
+
     def _is_problematic_pattern(self, line: str, stripped: str) -> bool:
         """Check if line matches problematic pattern."""
         return (re.match(r'^\s*#\s*#\s*MOVED:.*$', line) or
@@ -163,7 +163,7 @@ class Wave20TargetedFix:
                 re.match(r'^\s*\)\s*$', line) or
                 (not line.startswith(' ') and not line.startswith('\t') and
                  re.match(r'^[A-Z_][A-Z0-9_]*,?\s*$', stripped)))
-    
+
     def print_summary(self):
         """Print wave summary."""
         print("\n" + "="*60)
@@ -174,28 +174,28 @@ class Wave20TargetedFix:
         print(f"Targeted fixes applied: {self.stats['targeted_fixes']}")
         print(f"Syntax errors fixed: {self.stats['syntax_errors_fixed']}")
         print(f"Failed files: {len(self.failed_files)}")
-        
+
         if self.failed_files:
             print(f"\nFailed files (first 3):")
             for file_path, error in self.failed_files[:3]:
                 print(f"  {file_path}: {error}")
             if len(self.failed_files) > 3:
                 print(f"  ... and {len(self.failed_files) - 3} more")
-        
+
         print("="*60)
 
 
 def main():
     """Run Wave 20 targeted fix."""
     repo_root = pathlib.Path(__file__).parent.parent
-    
+
     print("🌊 WAVE 20: TARGETED FIX")
     print(f"Repository: {repo_root}")
-    
+
     fixer = Wave20TargetedFix(repo_root)
     stats = fixer.process_files()
     fixer.print_summary()
-    
+
     return stats['syntax_errors_fixed'] > 0
 
 

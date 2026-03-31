@@ -6,9 +6,9 @@ cursor = conn.cursor()
 # Get all layer gravity violations
 cursor.execute('''
 SELECT n1.adg_name as src_module, n2.adg_name as target_layer, e.source_file, e.line_no, e.symbol
-FROM edges e 
-JOIN nodes n1 ON e.src_id = n1.id 
-JOIN nodes n2 ON e.dst_id = n2.id 
+FROM edges e
+JOIN nodes n1 ON e.src_id = n1.id
+JOIN nodes n2 ON e.dst_id = n2.id
 WHERE e.relation_type = "violates" AND e.edge_kind = "import"
 ORDER BY e.source_file, e.line_no
 ''')
@@ -40,8 +40,8 @@ runtime_layer = cursor.fetchone()
 if runtime_layer:
     cursor.execute('''
     SELECT n.adg_name, e.symbol
-    FROM edges e 
-    JOIN nodes n ON e.dst_id = n.id 
+    FROM edges e
+    JOIN nodes n ON e.dst_id = n.id
     WHERE e.src_id = (SELECT id FROM nodes WHERE adg_name = ?) AND e.relation_type = "belongs_to_layer"
     ''', (runtime_layer[0],))
     runtime_modules = cursor.fetchall()

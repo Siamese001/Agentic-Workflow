@@ -34,18 +34,18 @@ class StripResult:
 
 class BoilerplateStripper(ast.NodeTransformer):
     """AST transformer that removes boilerplate nodes."""
-    
+
     def __init__(self):
         self.removed_count = 0
         self.emit_calls_removed = 0
         self.imports_removed = 0
         self.preserved_imports: Set[str] = set()
-        
+
     def visit_Module(self, node: ast.Module) -> ast.Module:
         """Visit module level."""
         # Filter out boilerplate statements
         new_body = []
-        
+
         for stmt in node.body:
             if self._is_boilerplate_statement(stmt):
                 self.removed_count += 1
@@ -56,10 +56,10 @@ class BoilerplateStripper(ast.NodeTransformer):
                 # Skip this statement (don't add to new_body)
             else:
                 new_body.append(stmt)
-        
+
         node.body = new_body
         return node
-    
+
     def _is_boilerplate_statement(self, stmt: ast.stmt) -> bool:
         """Check if statement is boilerplate."""
         # Module-level emit calls
@@ -68,7 +68,7 @@ class BoilerplateStripper(ast.NodeTransformer):
             if isinstance(call.func, ast.Name):
                 if call.func.id.startswith('_emit_'):
                     return True
-        
+
         # Unused imports (simplified - would need full analysis for accuracy)
         if isinstance(stmt, (ast.Import, ast.ImportFrom)):
             # For now, only remove obvious boilerplate imports
@@ -85,62 +85,62 @@ class BoilerplateStripper(ast.NodeTransformer):
                     'typing', 'dataclasses', 'pathlib'
                 ]):
                     return True
-        
+
         return False
 
 
 class SafeBoilerplateStripper:
     """Safe boilerplate stripping with validation."""
-    
+
     def __init__(self, repo_root: Path):
         self.repo_root = repo_root
         self.detector = HollowFileDetector()
-        
+
     def count_behavioral_nodes(self, tree: ast.AST) -> int:
         """Count behavioral nodes in AST."""
         if not tree:
             return 0
-        
+
         # Create a new counter for each analysis
         from agentic_core.L5_safety.validators.hollow_file_detector_validator import BehavioralNodeCounter
         counter = BehavioralNodeCounter()
         counter.visit(tree)
         return counter.behavioral_functions + counter.behavioral_classes
-    
+
     def strip_file_boilerplate(self, file_path: Path, dry_run: bool = True) -> StripResult:
         """Strip boilerplate from a single file."""
         try:
             content = file_path.read_text(encoding="utf-8")
         except (OSError, UnicodeDecodeError):
             return StripResult(action="skipped", reason="Cannot read file")
-        
+
         # Handle empty file
         if not content.strip():
             return StripResult(action="skipped", reason="Empty file")
-        
+
         # Parse original tree
         try:
             original_tree = ast.parse(content)
         except SyntaxError:
             return StripResult(action="skipped", reason="Syntax error")
-        
+
         # Count original behavioral nodes
         original_behavioral = self.count_behavioral_nodes(original_tree)
-        
+
         # If no behavioral nodes to begin with, skip
         if original_behavioral == 0:
             return StripResult(action="skipped", reason="No behavioral content to preserve")
-        
+
         # Apply stripper
         stripper = BoilerplateStripper()
         stripped_tree = stripper.visit(original_tree)
-        
+
         # Count behavioral nodes after stripping
         after_behavioral = self.count_behavioral_nodes(stripped_tree)
-        
+
         # Check if file became hollow
         became_hollow = original_behavioral > 0 and after_behavioral == 0
-        
+
         if became_hollow:
             return StripResult(
                 action="deleted",
@@ -150,10 +150,10 @@ class SafeBoilerplateStripper:
                 imports_removed=stripper.imports_removed,
                 became_hollow=True
             )
-        
+
         if stripper.removed_count == 0:
             return StripResult(action="skipped", reason="No boilerplate to remove")
-        
+
         # Generate cleaned content
         try:
             import astor
@@ -161,18 +161,18 @@ class SafeBoilerplateStripper:
         except ImportError:
             # Fallback to basic unparse
             cleaned_content = ast.unparse(stripped_tree)
-        
+
         # Write file if not dry run
         if not dry_run:
             file_path.write_text(cleaned_content, encoding="utf-8")
-            
+
             # Run ruff format if available
             try:
                 import subprocess
                 subprocess.run(["ruff", "format", str(file_path)], check=True, capture_output=True)
             except (subprocess.CalledProcessError, FileNotFoundError):
                 pass  # ruff not available or failed
-        
+
         return StripResult(
             action="cleaned",
             reason=f"Removed {stripper.removed_count} boilerplate statements",
@@ -181,28 +181,28 @@ class SafeBoilerplateStripper:
             imports_removed=stripper.imports_removed,
             became_hollow=False
         )
-    
+
     def strip_directory(self, directory: Path, dry_run: bool = True, recursive: bool = True) -> List[StripResult]:
         """Strip boilerplate from all Python files in directory."""
         results = []
-        
+
         # Find Python files
         if recursive:
             python_files = list(directory.rglob("*.py"))
         else:
             python_files = list(directory.glob("*.py"))
-        
+
         # Exclude common non-source directories
         python_files = [
-            f for f in python_files 
+            f for f in python_files
             if not any(part.startswith(('.', '__')) for part in f.parts)
             and "site-packages" not in str(f)
         ]
-        
+
         for file_path in python_files:
             result = self.strip_file_boilerplate(file_path, dry_run)
             results.append(result)
-            
+
             # Print result
             rel_path = file_path.relative_to(self.repo_root)
             if result.action == "deleted":
@@ -211,9 +211,9 @@ class SafeBoilerplateStripper:
                 print(f"✨ {rel_path}: {result.reason}")
             elif result.action == "skipped":
                 print(f"⏭️  {rel_path}: {result.reason}")
-        
+
         return results
-    
+
     def generate_report(self, results: List[StripResult]) -> dict:
         """Generate summary report from results."""
         summary = {
@@ -226,7 +226,7 @@ class SafeBoilerplateStripper:
             "total_imports_removed": sum(r.imports_removed for r in results),
             "files_became_hollow": sum(1 for r in results if r.became_hollow)
         }
-        
+
         return summary
 
 
@@ -240,27 +240,27 @@ def main():
     parser.add_argument("--no-recursive", action="store_true", help="Don't process directories recursively")
     parser.add_argument("--report", type=Path, help="Write report to JSON file")
     parser.add_argument("--repo", type=Path, default=Path("."), help="Repository root")
-    
+
     args = parser.parse_args()
-    
+
     # Handle dry-run vs write
     if args.write:
         dry_run = False
     else:
         dry_run = args.dry_run
-    
+
     # Handle recursive flag
     if args.no_recursive:
         recursive = False
     else:
         recursive = args.recursive
-    
+
     # Initialize stripper
     stripper = SafeBoilerplateStripper(args.repo)
-    
+
     # Process paths
     all_results = []
-    
+
     for path in args.paths:
         if path.is_file():
             result = stripper.strip_file_boilerplate(path, dry_run)
@@ -270,10 +270,10 @@ def main():
             all_results.extend(results)
         else:
             print(f"⚠️  Path not found: {path}")
-    
+
     # Generate summary
     summary = stripper.generate_report(all_results)
-    
+
     print("\n📊 Summary:")
     print(f"  Total files: {summary['total_files']}")
     print(f"  Cleaned: {summary['cleaned']}")
@@ -282,10 +282,10 @@ def main():
     print(f"  Total lines removed: {summary['total_lines_removed']}")
     print(f"  Emit calls removed: {summary['total_emit_calls_removed']}")
     print(f"  Imports removed: {summary['total_imports_removed']}")
-    
+
     if dry_run:
         print("\n💡 This was a dry run. Use --write to actually modify files.")
-    
+
     # Write report
     if args.report:
         report_data = {
@@ -303,16 +303,16 @@ def main():
                 for r in all_results
             ]
         }
-        
+
         args.report.parent.mkdir(parents=True, exist_ok=True)
         args.report.write_text(json.dumps(report_data, indent=2))
         print(f"\n📄 Report written to {args.report}")
-    
+
     # Exit with error if files would be deleted
     if summary['deleted'] > 0 and dry_run:
         print(f"\n⚠️  {summary['deleted']} files would become hollow and should be deleted")
         print("   Review the results and consider removing these files manually")
-    
+
     return 0
 
 

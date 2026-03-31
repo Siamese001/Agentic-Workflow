@@ -389,7 +389,7 @@ def emit_safety_audit_record(
     try:
         from system_learning.adapters.system_learning_memory_bridge import get_sl_memory_bridge
         bridge = get_sl_memory_bridge()
-        
+
         bridge.persist_safety_audit_record(
             audit_id=audit.audit_id,
             run_id=audit.run_id,

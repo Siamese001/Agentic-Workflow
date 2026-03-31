@@ -76,11 +76,11 @@ class ThresholdConfig:
     created_at: datetime = field(default_factory=datetime.now)
     created_by: str = ""
     config_digest: str = ""
-    
+
     def __post_init__(self):
         """Compute config digest after creation."""
         self.config_digest = self._compute_digest()
-    
+
     def _compute_digest(self) -> str:
         """Compute SHA-256 digest of config."""
         config_dict = {
@@ -111,56 +111,56 @@ class ThresholdConfig:
                 for rc in self.rollback_conditions
             ]
         }
-        
+
         config_str = json.dumps(config_dict, sort_keys=True)
         return hashlib.sha256(config_str.encode()).hexdigest()
-    
+
     def get_threshold(self, name: str) -> Optional[ThresholdDefinition]:
         """Get threshold by name."""
         for threshold in self.thresholds:
             if threshold.name == name:
                 return threshold
         return None
-    
+
     def update_threshold(
-        self, 
-        name: str, 
-        new_value: float, 
+        self,
+        name: str,
+        new_value: float,
         rollout_percentage: Optional[float] = None
     ) -> bool:
         """Update threshold value and rollout."""
         threshold = self.get_threshold(name)
         if not threshold:
             return False
-        
+
         # Validate new value
         if threshold.min_value is not None and new_value < threshold.min_value:
             return False
         if threshold.max_value is not None and new_value > threshold.max_value:
             return False
-        
+
         threshold.current_value = new_value
         if rollout_percentage is not None:
             threshold.rollout_percentage = max(0.0, min(100.0, rollout_percentage))
-        
+
         # Recompute digest
         self.config_digest = self._compute_digest()
-        
+
         return True
-    
+
     def should_use_threshold(self, request_id: str) -> bool:
         """Determine if request should use new threshold based on rollout."""
         # Simple hash-based rollout for consistency
         import hashlib
         hash_value = int(hashlib.md5(request_id.encode()).hexdigest(), 16)
         rollout_threshold = int(self.get_active_rollout_percentage() * 100)
-        
+
         return hash_value % 100 < rollout_threshold
-    
+
     def get_active_rollout_percentage(self) -> float:
         """Get maximum rollout percentage among active thresholds."""
         active_rollouts = [
-            t.rollout_percentage for t in self.thresholds 
+            t.rollout_percentage for t in self.thresholds
             if t.is_active
         ]
         return max(active_rollouts) if active_rollouts else 0.0
@@ -169,14 +169,14 @@ class ThresholdConfig:
 class ThresholdConfig:
     """
     Manages threshold configurations with versioning and A/B testing.
-    
+
     Provides:
     - Versioned threshold storage
     - Gradual rollout control
     - Automated rollback triggers
     - Performance monitoring integration
     """
-    
+
     def __init__(self, config_path: Path):
         self.config_path = Path(config_path)
         self.config_path.mkdir(parents=True, exist_ok=True)
@@ -185,14 +185,14 @@ class ThresholdConfig:
         # TODO: Replace with local snapshot management
         self._configs: Dict[str, ThresholdConfig] = {}
         self._load_configs()
-    
+
     def _load_configs(self) -> None:
         """Load threshold configurations from disk."""
         if self.configs_file.exists():
             try:
                 with open(self.configs_file, 'r', encoding='utf-8') as f:
                     data = json.load(f)
-                
+
                 for config_key, config_data in data.items():
                     # Reconstruct thresholds
                     thresholds = []
@@ -211,7 +211,7 @@ class ThresholdConfig:
                             version=t_data.get('version', '1.0')
                         )
                         thresholds.append(threshold)
-                    
+
                     # Reconstruct rollback conditions
                     rollback_conditions = []
                     for rc_data in config_data.get('rollback_conditions', []):
@@ -223,7 +223,7 @@ class ThresholdConfig:
                             is_active=rc_data.get('is_active', True)
                         )
                         rollback_conditions.append(condition)
-                    
+
                     # Reconstruct config
                     config = ThresholdConfig(
                         model_name=config_data['model_name'],
@@ -235,13 +235,13 @@ class ThresholdConfig:
                         created_at=datetime.fromisoformat(config_data['created_at']),
                         created_by=config_data.get('created_by', '')
                     )
-                    
+
                     self._configs[config_key] = config
-                    
+
             except Exception as e:
                 # Start fresh if config is corrupted
                 self._configs = {}
-    
+
     def _save_configs(self) -> None:
         """Save threshold configurations to disk."""
         data = {}
@@ -282,14 +282,14 @@ class ThresholdConfig:
                 'created_by': config.created_by,
                 'config_digest': config.config_digest
             }
-        
+
         with open(self.configs_file, 'w', encoding='utf-8') as f:
             json.dump(data, f, indent=2)
-    
+
     def _generate_config_key(self, model_name: str, model_version: str, config_version: str) -> str:
         """Generate unique config key."""
         return f"{model_name}:{model_version}:{config_version}"
-    
+
     def create_config(
         self,
         model_name: str,
@@ -301,7 +301,7 @@ class ThresholdConfig:
     ) -> str:
         """
         Create a new threshold configuration.
-        
+
         Args:
             model_name: Name of the model
             model_version: Version of the model
@@ -309,13 +309,13 @@ class ThresholdConfig:
             thresholds: List of threshold definitions
             rollback_conditions: List of rollback conditions
             created_by: Who created the config
-            
+
         Returns:
             Configuration key
         """
         config_version = "1.0"
         config_key = self._generate_config_key(model_name, model_version, config_version)
-        
+
         # Check if config already exists
         if config_key in self._configs:
             # Increment version
@@ -325,7 +325,7 @@ class ThresholdConfig:
             ]
             config_version = str(len(existing_configs) + 1)
             config_key = self._generate_config_key(model_name, model_version, config_version)
-        
+
         config = ThresholdConfig(
             model_name=model_name,
             model_version=model_version,
@@ -335,10 +335,10 @@ class ThresholdConfig:
             rollback_conditions=rollback_conditions or [],
             created_by=created_by
         )
-        
+
         self._configs[config_key] = config
         self._save_configs()
-        
+
         # Log to L4 canonical state
         self._log_threshold_event("threshold_config_created", config_key, {
             'model_name': model_name,
@@ -346,13 +346,13 @@ class ThresholdConfig:
             'config_version': config_version,
             'threshold_count': len(thresholds)
         })
-        
+
         return config_key
-    
+
     def get_config(
-        self, 
-        model_name: str, 
-        model_version: str, 
+        self,
+        model_name: str,
+        model_version: str,
         config_version: str = "latest"
     ) -> Optional[ThresholdConfig]:
         """Get threshold configuration."""
@@ -362,17 +362,17 @@ class ThresholdConfig:
                 (key, config) for key, config in self._configs.items()
                 if config.model_name == model_name and config.model_version == model_version
             ]
-            
+
             if not matching_configs:
                 return None
-            
+
             # Return config with highest version
             latest_config = max(matching_configs, key=lambda x: int(x[1].config_version))
             return latest_config[1]
         else:
             config_key = self._generate_config_key(model_name, model_version, config_version)
             return self._configs.get(config_key)
-    
+
     def update_threshold_rollout(
         self,
         model_name: str,
@@ -385,21 +385,21 @@ class ThresholdConfig:
         config = self.get_config(model_name, model_version)
         if not config:
             return False
-        
+
         success = config.update_threshold(threshold_name, None, rollout_percentage)
         if success:
             self._save_configs()
-            
+
             # Log rollout update
-            self._log_threshold_event("threshold_rollout_updated", 
+            self._log_threshold_event("threshold_rollout_updated",
                 f"{model_name}:{model_version}", {
                     'threshold_name': threshold_name,
                     'rollout_percentage': rollout_percentage,
                     'updated_by': updated_by
                 })
-        
+
         return success
-    
+
     def check_rollback_conditions(
         self,
         model_name: str,
@@ -408,46 +408,46 @@ class ThresholdConfig:
     ) -> List[RollbackTrigger]:
         """
         Check if any rollback conditions are triggered.
-        
+
         Args:
             model_name: Name of the model
             model_version: Version of the model
             metrics: Current performance metrics
-            
+
         Returns:
             List of triggered rollback conditions
         """
         config = self.get_config(model_name, model_version)
         if not config:
             return []
-        
+
         triggered_triggers = []
-        
+
         for condition in config.rollback_conditions:
             if not condition.is_active:
                 continue
-            
+
             # Get metric value
             metric_value = metrics.get(condition.trigger_type.value)
             if metric_value is None:
                 continue
-            
+
             # Check condition
             triggered = self._evaluate_condition(
-                metric_value, 
-                condition.threshold_value, 
+                metric_value,
+                condition.threshold_value,
                 condition.comparison_operator
             )
-            
+
             if triggered:
                 triggered_triggers.append(condition.trigger_type)
-        
+
         return triggered_triggers
-    
+
     def _evaluate_condition(
-        self, 
-        actual_value: float, 
-        threshold_value: float, 
+        self,
+        actual_value: float,
+        threshold_value: float,
         operator: str
     ) -> bool:
         """Evaluate rollback condition."""
@@ -463,7 +463,7 @@ class ThresholdConfig:
             return actual_value == threshold_value
         else:
             return False
-    
+
     def _log_threshold_event(self, event_type: str, config_key: str, data: Dict[str, Any]) -> None:
         """Log threshold events to L4 canonical state."""
         try:
@@ -473,15 +473,15 @@ class ThresholdConfig:
                 'timestamp': datetime.now().isoformat(),
                 'data': data
             }
-            
+
             # Store in L4 canonical state
             # self.snapshot_manager.store_event("ml_threshold_config", event)
             # TODO: Replace with local snapshot management
-            
+
         except Exception as e:
             # Log failure but don't fail the operation
             print(f"Failed to log threshold event: {e}")
-    
+
     def get_default_thresholds(self, model_type: str) -> List[ThresholdDefinition]:
         """Get default thresholds for a model type."""
         defaults = {
@@ -524,5 +524,5 @@ class ThresholdConfig:
                 )
             ]
         }
-        
+
         return defaults.get(model_type, [])

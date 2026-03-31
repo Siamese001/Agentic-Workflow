@@ -1,18 +1,15 @@
 import pytest
 
-# Lazy import fixtures - avoid collection-time errors
 
-@pytest.fixture(scope="session")
-def _lazy_agentic_core_L2_execution_apps_qwen_0():
+# Lazy imports — wrapped to avoid collection-time errors
+try:
     from agentic_core.L2_execution.apps_qwen import AppsQwenGateway, AppsQwenRequest, AppsQwenResponse
-    return type('_Import', (), {"AppsQwenGateway": AppsQwenGateway, "AppsQwenRequest": AppsQwenRequest, "AppsQwenResponse": AppsQwenResponse})
+except ImportError:
+    pass
+
 
 """Tests for apps_qwen_gateway module."""
 import unittest
-
-
-)
-
 
 class TestAppsQwenGateway(unittest.TestCase):
     """Test class for AppsQwenGateway."""

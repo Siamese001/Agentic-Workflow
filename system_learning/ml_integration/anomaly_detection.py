@@ -14,7 +14,7 @@ FEATURES:
 USAGE:
     detector = MLAnomalyDetector()
     detector.initialize_models()
-    
+
     anomalies = detector.detect_anomalies(metrics_data)
     predictions = detector.predict_performance(historical_data)
 """
@@ -67,7 +67,7 @@ class ModelType(Enum):
 @dataclass
 class AnomalyDetection:
     """Anomaly detection result."""
-    
+
     anomaly_type: AnomalyType
     severity: str  # low, medium, high, critical
     confidence: float  # 0.0 to 1.0
@@ -82,7 +82,7 @@ class AnomalyDetection:
 @dataclass
 class PredictionResult:
     """Performance prediction result."""
-    
+
     metric_name: str
     predicted_value: float
     confidence_interval: Tuple[float, float]
@@ -96,7 +96,7 @@ class PredictionResult:
 @dataclass
 class ModelPerformance:
     """Model performance metrics."""
-    
+
     model_name: str
     accuracy: float
     precision: float
@@ -111,23 +111,23 @@ class ModelPerformance:
 class MLAnomalyDetector:
     """
     Machine learning-based anomaly detection and prediction system.
-    
+
     Provides sophisticated ML models for detecting anomalies,
     predicting performance trends, and optimizing system behavior.
     """
-    
+
     def __init__(self) -> None:
         """Initialize ML anomaly detector."""
         # Model storage
         self._models: Dict[str, Any] = {}
         self._model_performance: Dict[str, ModelPerformance] = {}
         self._scalers: Dict[str, StandardScaler] = {}
-        
+
         # Training data
         self._training_data: Dict[str, deque] = defaultdict(lambda: deque(maxlen=10000))
         self._anomaly_history: deque = deque(maxlen=1000)
         self._prediction_history: deque = deque(maxlen=1000)
-        
+
         # Configuration
         self._model_config = {
             "isolation_forest": {
@@ -154,7 +154,7 @@ class MLAnomalyDetector:
                 "seasonal_periods": 24,
             },
         }
-        
+
         # Detection thresholds
         self._detection_thresholds = {
             "confidence_threshold": 0.7,
@@ -162,15 +162,15 @@ class MLAnomalyDetector:
             "retrain_interval_hours": 24,
             "max_anomaly_rate": 0.1,
         }
-        
+
         # State
         self._models_initialized: bool = False
         self._last_training_time: float = 0
         self._detection_count: int = 0
-        
+
         # Try to load scikit-learn
         self._sklearn_available = self._check_sklearn_availability()
-    
+
     def _check_sklearn_availability(self) -> bool:
         """Check if scikit-learn is available."""
         try:
@@ -180,7 +180,7 @@ class MLAnomalyDetector:
         except ImportError:
             Logger.warning("[ML_DETECTOR] scikit-learn not available, using statistical methods only")
             return False
-    
+
     def initialize_models(self) -> None:
         """Initialize ML models for anomaly detection."""
         try:
@@ -192,9 +192,9 @@ class MLAnomalyDetector:
                     max_features=self._model_config["isolation_forest"]["max_features"],
                     random_state=self._model_config["isolation_forest"]["random_state"],
                 )
-                
+
                 Logger.info("[ML_DETECTOR] Initialized Isolation Forest model")
-            
+
             # Initialize statistical models (always available)
             self._models["z_score"] = {"threshold": self._model_config["z_score"]["threshold"]}
             self._models["iqr"] = {"factor": self._model_config["iqr"]["factor"]}
@@ -203,18 +203,18 @@ class MLAnomalyDetector:
                 "alpha": self._model_config["exponential_smoothing"]["alpha"],
                 "beta": self._model_config["exponential_smoothing"]["beta"],
             }
-            
+
             self._models_initialized = True
             Logger.info("[ML_DETECTOR] All models initialized successfully")
-            
+
         except Exception as e:
             Logger.error(f"[ML_DETECTOR] Failed to initialize models: {e}")
             self._models_initialized = False
-    
+
     def add_training_data(self, metric_name: str, value: float, timestamp: Optional[float] = None) -> None:
         """
         Add training data for model training.
-        
+
         Args:
             metric_name: Name of the metric
             value: Metric value
@@ -222,117 +222,117 @@ class MLAnomalyDetector:
         """
         if timestamp is None:
             timestamp = time.time()
-        
+
         self._training_data[metric_name].append({
             "value": value,
             "timestamp": timestamp,
         })
-        
+
         # Check if we need to retrain models
         if len(self._training_data[metric_name]) >= self._detection_thresholds["min_samples_for_training"]:
             if time.time() - self._last_training_time > self._detection_thresholds["retrain_interval_hours"] * 3600:
                 self._retrain_models(metric_name)
-    
+
     def detect_anomalies(self, metrics_data: Dict[str, float]) -> List[AnomalyDetection]:
         """
         Detect anomalies in metrics data using ML models.
-        
+
         Args:
             metrics_data: Dictionary of metric names to values
-            
+
         Returns:
             List of detected anomalies
         """
         if not self._models_initialized:
             Logger.warning("[ML_DETECTOR] Models not initialized, cannot detect anomalies")
             return []
-        
+
         anomalies = []
         current_time = time.time()
-        
+
         for metric_name, value in metrics_data.items():
             # Add to training data
             self.add_training_data(metric_name, value, current_time)
-            
+
             # Detect anomalies using different models
             metric_anomalies = []
-            
+
             # Statistical anomaly detection
             metric_anomalies.extend(self._detect_statistical_anomalies(metric_name, value, current_time))
-            
+
             # ML-based anomaly detection (if sklearn available)
             if self._sklearn_available:
                 metric_anomalies.extend(self._detect_ml_anomalies(metric_name, value, current_time))
-            
+
             # Filter by confidence threshold
             filtered_anomalies = [
                 anomaly for anomaly in metric_anomalies
                 if anomaly.confidence >= self._detection_thresholds["confidence_threshold"]
             ]
-            
+
             anomalies.extend(filtered_anomalies)
-        
+
         # Store in history
         self._anomaly_history.extend(anomalies)
         self._detection_count += len(anomalies)
-        
+
         Logger.info(f"[ML_DETECTOR] Detected {len(anomalies)} anomalies")
-        
+
         return anomalies
-    
+
     def _detect_statistical_anomalies(self, metric_name: str, value: float, timestamp: float) -> List[AnomalyDetection]:
         """Detect anomalies using statistical methods."""
         anomalies = []
-        
+
         # Get historical data
         historical_data = list(self._training_data[metric_name])
         if len(historical_data) < 10:
             return anomalies
-        
+
         values = [data["value"] for data in historical_data]
-        
+
         # Z-score anomaly detection
         z_anomaly = self._detect_z_score_anomaly(metric_name, value, values, timestamp)
         if z_anomaly:
             anomalies.append(z_anomaly)
-        
+
         # IQR anomaly detection
         iqr_anomaly = self._detect_iqr_anomaly(metric_name, value, values, timestamp)
         if iqr_anomaly:
             anomalies.append(iqr_anomaly)
-        
+
         # Moving average anomaly detection
         ma_anomaly = self._detect_moving_average_anomaly(metric_name, value, values, timestamp)
         if ma_anomaly:
             anomalies.append(ma_anomaly)
-        
+
         return anomalies
-    
+
     def _detect_z_score_anomaly(self, metric_name: str, value: float, values: List[float], timestamp: float) -> Optional[AnomalyDetection]:
         """Detect anomaly using Z-score method."""
         try:
             if len(values) < 2:
                 return None
-            
+
             mean = np.mean(values)
             std = np.std(values)
-            
+
             if std == 0:
                 return None
-            
+
             z_score = abs(value - mean) / std
             threshold = self._model_config["z_score"]["threshold"]
-            
+
             if z_score > threshold:
                 # Calculate confidence based on how far from threshold
                 confidence = min(1.0, (z_score - threshold) / threshold + 0.5)
-                
+
                 severity = "low"
                 if z_score > threshold * 2:
                     severity = "high"
                 elif z_score > threshold * 1.5:
                     severity = "medium"
-                
+
                 return AnomalyDetection(
                     anomaly_type=AnomalyType.STATISTICAL,
                     severity=severity,
@@ -344,41 +344,41 @@ class MLAnomalyDetector:
                     description=f"Z-score anomaly: {z_score:.2f} (threshold: {threshold})",
                     metadata={"z_score": z_score, "mean": mean, "std": std},
                 )
-            
+
         except Exception as e:
             Logger.debug(f"[ML_DETECTOR] Z-score detection failed: {e}")
-        
+
         return None
-    
+
     def _detect_iqr_anomaly(self, metric_name: str, value: float, values: List[float], timestamp: float) -> Optional[AnomalyDetection]:
         """Detect anomaly using Interquartile Range method."""
         try:
             if len(values) < 4:
                 return None
-            
+
             q1 = np.percentile(values, 25)
             q3 = np.percentile(values, 75)
             iqr = q3 - q1
             factor = self._model_config["iqr"]["factor"]
-            
+
             lower_bound = q1 - factor * iqr
             upper_bound = q3 + factor * iqr
-            
+
             if value < lower_bound or value > upper_bound:
                 # Calculate confidence based on distance from bounds
                 if value < lower_bound:
                     distance = (lower_bound - value) / iqr
                 else:
                     distance = (value - upper_bound) / iqr
-                
+
                 confidence = min(1.0, distance / factor + 0.5)
-                
+
                 severity = "low"
                 if distance > factor * 2:
                     severity = "high"
                 elif distance > factor * 1.5:
                     severity = "medium"
-                
+
                 return AnomalyDetection(
                     anomaly_type=AnomalyType.STATISTICAL,
                     severity=severity,
@@ -390,39 +390,39 @@ class MLAnomalyDetector:
                     description=f"IQR anomaly: value {value:.2f} outside range [{lower_bound:.2f}, {upper_bound:.2f}]",
                     metadata={"q1": q1, "q3": q3, "iqr": iqr, "distance": distance},
                 )
-            
+
         except Exception as e:
             Logger.debug(f"[ML_DETECTOR] IQR detection failed: {e}")
-        
+
         return None
-    
+
     def _detect_moving_average_anomaly(self, metric_name: str, value: float, values: List[float], timestamp: float) -> Optional[AnomalyDetection]:
         """Detect anomaly using moving average method."""
         try:
             window_size = self._model_config["moving_average"]["window_size"]
             std_threshold = self._model_config["moving_average"]["std_dev_threshold"]
-            
+
             if len(values) < window_size:
                 return None
-            
+
             recent_values = values[-window_size:]
             moving_avg = np.mean(recent_values)
             moving_std = np.std(recent_values)
-            
+
             if moving_std == 0:
                 return None
-            
+
             deviation = abs(value - moving_avg) / moving_std
-            
+
             if deviation > std_threshold:
                 confidence = min(1.0, (deviation - std_threshold) / std_threshold + 0.5)
-                
+
                 severity = "low"
                 if deviation > std_threshold * 2:
                     severity = "high"
                 elif deviation > std_threshold * 1.5:
                     severity = "medium"
-                
+
                 return AnomalyDetection(
                     anomaly_type=AnomalyType.PERFORMANCE,
                     severity=severity,
@@ -434,66 +434,66 @@ class MLAnomalyDetector:
                     description=f"Moving average anomaly: deviation {deviation:.2f} (threshold: {std_threshold})",
                     metadata={"moving_avg": moving_avg, "moving_std": moving_std, "deviation": deviation},
                 )
-            
+
         except Exception as e:
             Logger.debug(f"[ML_DETECTOR] Moving average detection failed: {e}")
-        
+
         return None
-    
+
     def _detect_ml_anomalies(self, metric_name: str, value: float, timestamp: float) -> List[AnomalyDetection]:
         """Detect anomalies using ML models."""
         anomalies = []
-        
+
         try:
             # Isolation Forest
             if "isolation_forest" in self._models and metric_name in self._scalers:
                 anomaly = self._detect_isolation_forest_anomaly(metric_name, value, timestamp)
                 if anomaly:
                     anomalies.append(anomaly)
-            
+
         except Exception as e:
             Logger.debug(f"[ML_DETECTOR] ML anomaly detection failed: {e}")
-        
+
         return anomalies
-    
+
     def _detect_isolation_forest_anomaly(self, metric_name: str, value: float, timestamp: float) -> Optional[AnomalyDetection]:
         """Detect anomaly using Isolation Forest."""
         try:
             model = self._models["isolation_forest"]
             scaler = self._scalers[metric_name]
-            
+
             # Get training data
             historical_data = list(self._training_data[metric_name])
             if len(historical_data) < 50:
                 return None
-            
+
             values = np.array([[data["value"]] for data in historical_data])
-            
+
             # Fit scaler if not already fitted
             if not hasattr(scaler, 'mean_'):
                 scaler.fit(values)
-            
+
             # Scale the current value
             scaled_value = scaler.transform([[value]])
-            
+
             # Predict anomaly
             prediction = model.predict(scaled_value)[0]
             anomaly_score = model.decision_function(scaled_value)[0]
-            
+
             if prediction == -1:  # Anomaly detected
                 confidence = abs(anomaly_score)
-                
+
                 severity = "low"
                 if confidence > 0.5:
                     severity = "high"
                 elif confidence > 0.3:
                     severity = "medium"
-                
+
                 # Calculate expected range from training data
                 train_values = [data["value"] for data in historical_data]
                 q1 = np.percentile(train_values, 25)
                 q3 = np.percentile(train_values, 75)
-                
+
                 return AnomalyDetection(
                     anomaly_type=AnomalyType.BEHAVIORAL,
                     severity=severity,
@@ -505,20 +505,20 @@ class MLAnomalyDetector:
                     description=f"Isolation Forest anomaly: score {anomaly_score:.3f}",
                     metadata={"anomaly_score": anomaly_score, "prediction": prediction},
                 )
-            
+
         except Exception as e:
             Logger.debug(f"[ML_DETECTOR] Isolation Forest detection failed: {e}")
-        
+
         return None
-    
+
     def predict_performance(self, metric_name: str, horizon_minutes: int = 60) -> Optional[PredictionResult]:
         """
         Predict performance metrics using time series models.
-        
+
         Args:
             metric_name: Name of the metric to predict
             horizon_minutes: Prediction horizon in minutes
-            
+
         Returns:
             Prediction result or None if insufficient data
         """
@@ -526,54 +526,54 @@ class MLAnomalyDetector:
             historical_data = list(self._training_data[metric_name])
             if len(historical_data) < 20:
                 return None
-            
+
             values = [data["value"] for data in historical_data]
             timestamps = [data["timestamp"] for data in historical_data]
-            
+
             # Use exponential smoothing for prediction
             prediction = self._predict_exponential_smoothing(metric_name, values, horizon_minutes)
-            
+
             if prediction:
                 self._prediction_history.append(prediction)
                 return prediction
-            
+
         except Exception as e:
             Logger.error(f"[ML_DETECTOR] Performance prediction failed: {e}")
-        
+
         return None
-    
+
     def _predict_exponential_smoothing(self, metric_name: str, values: List[float], horizon_minutes: int) -> Optional[PredictionResult]:
         """Predict using exponential smoothing."""
         try:
             alpha = self._model_config["exponential_smoothing"]["alpha"]
-            
+
             # Simple exponential smoothing
             smoothed_values = []
             smoothed_values.append(values[0])
-            
+
             for i in range(1, len(values)):
                 smoothed = alpha * values[i] + (1 - alpha) * smoothed_values[-1]
                 smoothed_values.append(smoothed)
-            
+
             # Predict future values
             last_smoothed = smoothed_values[-1]
             predicted_value = last_smoothed  # Simple prediction
-            
+
             # Calculate confidence interval based on recent variance
             recent_values = values[-10:]
             std_error = np.std(recent_values) if len(recent_values) > 1 else 0
-            
+
             confidence_interval = (
                 predicted_value - 1.96 * std_error,
                 predicted_value + 1.96 * std_error,
             )
-            
+
             # Calculate confidence score
             if std_error > 0:
                 confidence_score = max(0.1, 1.0 - (std_error / abs(predicted_value)) if predicted_value != 0 else 0.5)
             else:
                 confidence_score = 0.9
-            
+
             return PredictionResult(
                 metric_name=metric_name,
                 predicted_value=predicted_value,
@@ -584,63 +584,63 @@ class MLAnomalyDetector:
                 timestamp=time.time(),
                 metadata={"alpha": alpha, "std_error": std_error},
             )
-            
+
         except Exception as e:
             Logger.debug(f"[ML_DETECTOR] Exponential smoothing prediction failed: {e}")
-        
+
         return None
-    
+
     def _retrain_models(self, metric_name: str) -> None:
         """Retrain ML models with new data."""
         try:
             if not self._sklearn_available:
                 return
-            
+
             historical_data = list(self._training_data[metric_name])
             if len(historical_data) < 50:
                 return
-            
+
             values = np.array([[data["value"]] for data in historical_data])
-            
+
             # Retrain Isolation Forest
             if "isolation_forest" in self._models:
                 model = self._models["isolation_forest"]
-                
+
                 # Fit scaler
                 if metric_name not in self._scalers:
                     self._scalers[metric_name] = StandardScaler()
-                
+
                 scaler = self._scalers[metric_name]
                 scaled_values = scaler.fit_transform(values)
-                
+
                 # Fit model
                 model.fit(scaled_values)
-                
+
                 Logger.info(f"[ML_DETECTOR] Retrained Isolation Forest for {metric_name}")
-            
+
             self._last_training_time = time.time()
-            
+
         except Exception as e:
             Logger.error(f"[ML_DETECTOR] Model retraining failed: {e}")
-    
+
     def get_anomaly_statistics(self) -> Dict[str, Any]:
         """Get anomaly detection statistics."""
         if not self._anomaly_history:
             return {"message": "No anomalies detected yet"}
-        
+
         # Count anomalies by type and severity
         type_counts = defaultdict(int)
         severity_counts = defaultdict(int)
-        
+
         for anomaly in self._anomaly_history:
             type_counts[anomaly.anomaly_type.value] += 1
             severity_counts[anomaly.severity] += 1
-        
+
         # Calculate anomaly rate
         total_detections = self._detection_count
         recent_anomalies = [a for a in self._anomaly_history if time.time() - a.timestamp < 3600]  # Last hour
         anomaly_rate = len(recent_anomalies) / 60  # Anomalies per minute
-        
+
         return {
             "total_anomalies": len(self._anomaly_history),
             "total_detections": self._detection_count,
@@ -651,17 +651,17 @@ class MLAnomalyDetector:
             "sklearn_available": self._sklearn_available,
             "last_training_time": self._last_training_time,
         }
-    
+
     def get_prediction_statistics(self) -> Dict[str, Any]:
         """Get prediction statistics."""
         if not self._prediction_history:
             return {"message": "No predictions made yet"}
-        
+
         # Group predictions by metric
         metric_predictions = defaultdict(list)
         for prediction in self._prediction_history:
             metric_predictions[prediction.metric_name].append(prediction)
-        
+
         # Calculate statistics
         stats = {}
         for metric_name, predictions in metric_predictions.items():
@@ -672,18 +672,18 @@ class MLAnomalyDetector:
                 "max_confidence": max(confidences),
                 "min_confidence": min(confidences),
             }
-        
+
         return {
             "total_predictions": len(self._prediction_history),
             "metrics_tracked": list(metric_predictions.keys()),
             "prediction_statistics": stats,
             "last_prediction_time": max(p.timestamp for p in self._prediction_history),
         }
-    
+
     def get_model_performance(self) -> Dict[str, ModelPerformance]:
         """Get model performance metrics."""
         return self._model_performance.copy()
-    
+
     def save_models(self, filepath: str) -> bool:
         """Save trained models to file."""
         try:
@@ -694,34 +694,34 @@ class MLAnomalyDetector:
                 "config": self._model_config,
                 "last_training_time": self._last_training_time,
             }
-            
+
             with open(filepath, 'wb') as f:
                 pickle.dump(model_data, f)
-            
+
             Logger.info(f"[ML_DETECTOR] Models saved to {filepath}")
             return True
-            
+
         except Exception as e:
             Logger.error(f"[ML_DETECTOR] Failed to save models: {e}")
             return False
-    
+
     def load_models(self, filepath: str) -> bool:
         """Load trained models from file."""
         try:
             with open(filepath, 'rb') as f:
                 model_data = pickle.load(f)
-            
+
             self._models = model_data["models"]
             self._scalers = model_data["scalers"]
             self._model_performance = model_data["model_performance"]
             self._model_config = model_data["config"]
             self._last_training_time = model_data["last_training_time"]
-            
+
             self._models_initialized = True
-            
+
             Logger.info(f"[ML_DETECTOR] Models loaded from {filepath}")
             return True
-            
+
         except Exception as e:
             Logger.error(f"[ML_DETECTOR] Failed to load models: {e}")
             return False
@@ -748,10 +748,10 @@ def initialize_ml_models() -> None:
 def detect_ml_anomalies(metrics_data: Dict[str, float]) -> List[AnomalyDetection]:
     """
     Detect anomalies using ML models.
-    
+
     Args:
         metrics_data: Dictionary of metric names to values
-        
+
     Returns:
         List of detected anomalies
     """
@@ -762,11 +762,11 @@ def detect_ml_anomalies(metrics_data: Dict[str, float]) -> List[AnomalyDetection
 def predict_performance_metrics(metric_name: str, horizon_minutes: int = 60) -> Optional[PredictionResult]:
     """
     Predict performance metrics.
-    
+
     Args:
         metric_name: Name of the metric to predict
         horizon_minutes: Prediction horizon in minutes
-        
+
     Returns:
         Prediction result or None
     """

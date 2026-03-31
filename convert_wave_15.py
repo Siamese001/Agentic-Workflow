@@ -31,12 +31,12 @@ class Test{class_name}:
 def convert_file(file_path):
     """Convert a single placeholder test file."""
     path = Path(file_path)
-    
+
     # Extract class name from filename
     file_stem = path.stem.replace('test_', '')
     class_name = ''.join(word.capitalize() for word in file_stem.split('_'))
     module_snake = file_stem
-    
+
     # Determine import path based on file location
     parts = path.parts
     if 'unit' in parts:
@@ -53,7 +53,7 @@ def convert_file(file_path):
     else:
         import_path = 'agentic_core'
         module_name = file_stem
-    
+
     # Generate new content
     new_content = TEMPLATE.format(
         class_name=class_name,
@@ -61,11 +61,11 @@ def convert_file(file_path):
         module_snake=module_snake,
         import_path=import_path
     )
-    
+
     # Write new content
     with open(path, 'w', encoding='utf-8') as f:
         f.write(new_content)
-    
+
     return True
 
 # Convert all Wave 15 files

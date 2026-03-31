@@ -495,7 +495,7 @@ def dispatch_healing(
             # guardian: allow-silent-swallow
             except (RuntimeError, ValueError) as e:  # guardian: allow-silent-swallower
                 logger.warning("outcome_write_back_hook raised — continuing", exc_info=True)
-        
+
         # Emit tier dispatch outcome to system learning
         _emit_tier_dispatch_outcome(
             healing_input=healing_input,
@@ -505,7 +505,7 @@ def dispatch_healing(
             timestamp_utc=timestamp_utc,
             agent_name=agent_name,
         )
-        
+
         # Phase 3: C0 informational-only pattern advisor (cannot change tier)
         if pattern_advisor is not None:
             try:
@@ -670,17 +670,17 @@ def _emit_tier_dispatch_outcome(
     try:
         from system_learning.adapters.system_learning_memory_bridge import get_sl_memory_bridge
         bridge = get_sl_memory_bridge()
-        
+
         # Extract key metrics for analysis
         tier = decision.tier.name if hasattr(decision.tier, 'name') else str(decision.tier)
         failure_type = healing_input.failure_type
         module_name = getattr(healing_input, 'module_name', 'unknown')
-        
+
         # Calculate duration if record available
         duration_ms = 0
         if record and hasattr(record, 'duration_ms'):
             duration_ms = record.duration_ms
-        
+
         bridge.persist_healing_tier_outcome(
             tier=tier,
             failure_type=failure_type,

@@ -54,7 +54,7 @@ class TestEvaluationCache:
         cache.put("key1", {"score": 0.85})
         cache.get("key1")  # Hit
         cache.get("key2")  # Miss
-        
+
         stats = cache.get_stats()
         assert stats["hits"] == 1
         assert stats["misses"] == 1

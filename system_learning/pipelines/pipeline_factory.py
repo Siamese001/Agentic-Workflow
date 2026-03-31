@@ -369,7 +369,7 @@ def build_pipeline_deps(
     otel_telemetry_store = None
     try:
         from system_learning.adapters.otel_telemetry_store_adapter import OTelTelemetryStoreAdapter
-        
+
         otel_telemetry_store = OTelTelemetryStoreAdapter()
         logger.debug("OTel telemetry store adapter registered")
     except ImportError:

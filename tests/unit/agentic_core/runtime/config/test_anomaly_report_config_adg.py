@@ -18,4 +18,3 @@ class TestAnomalySeverity:
 
 
     """Test details_default_empty runtime behavior."""
-

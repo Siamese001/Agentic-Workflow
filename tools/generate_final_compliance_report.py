@@ -13,15 +13,15 @@ PROJECT_ROOT = Path(__file__).resolve().parent.parent
 
 class FinalComplianceReporter:
     """Generate final compliance report."""
-    
+
     def __init__(self):
         self.report_data = {}
         self.start_time = datetime.now()
-    
+
     def collect_all_reports(self):
         """Collect all available reports."""
         print("📊 Collecting all compliance reports...")
-        
+
         reports = {
             'layer_gravity': 'tools/check_layer_violations_fixed.py',
             'silent_swallowers': 'tools/silent_swallower_report.json',
@@ -35,7 +35,7 @@ class FinalComplianceReporter:
             'comprehensive_validation': 'tools/comprehensive_architectural_validation_report.json',
             'adg_separation': 'tools/adg_separation_deployment_report.json'
         }
-        
+
         for report_name, report_path in reports.items():
             report_file = PROJECT_ROOT / report_path
             if report_file.exists():
@@ -53,11 +53,11 @@ class FinalComplianceReporter:
             else:
                 print(f"  ⚠️  Missing: {report_name}")
                 self.report_data[report_name] = {'missing': True}
-    
+
     def calculate_final_metrics(self):
         """Calculate final compliance metrics."""
         print("📈 Calculating final compliance metrics...")
-        
+
         metrics = {
             'layer_violations': {
                 'before': 817,
@@ -96,42 +96,42 @@ class FinalComplianceReporter:
                 'fix_scripts_created': 8
             }
         }
-        
+
         # Calculate remaining work
         metrics['silent_swallowers']['remaining_high'] = metrics['silent_swallowers']['high_severity'] - metrics['silent_swallowers']['high_fixed']
         metrics['silent_swallowers']['remaining_medium'] = metrics['silent_swallowers']['medium_severity'] - metrics['silent_swallowers']['medium_fixed']
         metrics['silent_swallowers']['remaining_low'] = metrics['silent_swallowers']['low_severity'] - metrics['silent_swallowers']['comments_added']
-        
+
         metrics['test_enforcement']['remaining_high'] = metrics['test_enforcement']['high_severity'] - metrics['test_enforcement']['high_fixed']
-        
+
         self.report_data['final_metrics'] = metrics
-        
+
         print(f"  ✅ Layer violations: {metrics['layer_violations']['before']} → {metrics['layer_violations']['after']}")
         print(f"  ✅ ADG contamination: {metrics['adg_contamination']['before']} → {metrics['adg_contamination']['after']}")
         print(f"  🔄 Silent swallowers: {metrics['silent_swallowers']['high_fixed']}/{metrics['silent_swallowers']['high_severity']} HIGH fixed")
         print(f"  🔄 Test enforcement: {metrics['test_enforcement']['high_fixed']}/{metrics['test_enforcement']['high_severity']} HIGH fixed")
-        
+
         return metrics
-    
+
     def assess_completion_status(self):
         """Assess overall completion status."""
         print("🎯 Assessing completion status...")
-        
+
         metrics = self.report_data.get('final_metrics', {})
-        
+
         # Critical fixes (must be 100%)
         critical_complete = (
             metrics['layer_violations']['after'] == 0 and
             metrics['adg_contamination']['after'] == 0
         )
-        
+
         # High severity fixes
         silent_swallowers_complete = metrics['silent_swallowers']['remaining_high'] == 0
         test_enforcement_complete = metrics['test_enforcement']['remaining_high'] == 0
-        
+
         # Overall completion
         overall_complete = critical_complete and silent_swallowers_complete and test_enforcement_complete
-        
+
         # Progress percentage
         total_items = (
             metrics['layer_violations']['before'] +
@@ -139,7 +139,7 @@ class FinalComplianceReporter:
             metrics['silent_swallowers']['total'] +
             metrics['test_enforcement']['total']
         )
-        
+
         fixed_items = (
             metrics['layer_violations']['improvement'] +
             metrics['adg_contamination']['improvement'] +
@@ -147,9 +147,9 @@ class FinalComplianceReporter:
             metrics['silent_swallowers']['medium_fixed'] +
             metrics['test_enforcement']['high_fixed']
         )
-        
+
         overall_progress = (fixed_items / total_items * 100) if total_items > 0 else 0
-        
+
         status = {
             'critical_complete': critical_complete,
             'silent_swallowers_complete': silent_swallowers_complete,
@@ -158,17 +158,17 @@ class FinalComplianceReporter:
             'overall_progress': overall_progress,
             'completion_level': self._determine_completion_level(overall_complete, overall_progress)
         }
-        
+
         self.report_data['completion_status'] = status
-        
+
         print(f"  ✅ Critical fixes: {'COMPLETE' if critical_complete else 'INCOMPLETE'}")
         print(f"  🔄 Silent swallowers: {'COMPLETE' if silent_swallowers_complete else 'IN PROGRESS'}")
         print(f"  🔄 Test enforcement: {'COMPLETE' if test_enforcement_complete else 'IN PROGRESS'}")
         print(f"  📊 Overall progress: {overall_progress:.1f}%")
         print(f"  🎯 Status: {status['completion_level']}")
-        
+
         return status
-    
+
     def _determine_completion_level(self, overall_complete, overall_progress):
         """Determine completion level based on progress."""
         if overall_complete:
@@ -183,16 +183,16 @@ class FinalComplianceReporter:
             return "INITIAL_PROGRESS"
         else:
             return "JUST_STARTED"
-    
+
     def generate_final_report(self):
         """Generate final comprehensive report."""
         print("📋 Generating final compliance report...")
-        
+
         # Collect all data
         self.collect_all_reports()
         metrics = self.calculate_final_metrics()
         status = self.assess_completion_status()
-        
+
         # Build final report
         report = {
             'report_metadata': {
@@ -258,22 +258,22 @@ class FinalComplianceReporter:
                 "Train team on new architectural standards"
             ]
         }
-        
+
         # Write report
         report_file = PROJECT_ROOT / "docs" / "reports" / "plans" / "final_architectural_compliance_report_03242026.json"
         report_file.parent.mkdir(parents=True, exist_ok=True)
-        
+
         with open(report_file, 'w') as f:
             json.dump(report, f, indent=2)
-        
+
         # Also create a markdown summary
         self._create_markdown_summary(report, report_file.with_suffix('.md'))
-        
+
         print(f"✅ Final report written to: {report_file}")
         print(f"✅ Markdown summary written to: {report_file.with_suffix('.md')}")
-        
+
         return report
-    
+
     def _generate_next_steps(self, status, metrics):
         """Generate next steps based on current status."""
         if status['overall_complete']:
@@ -294,13 +294,13 @@ class FinalComplianceReporter:
             steps.append("Run comprehensive validation")
             steps.append("Generate final completion report")
             return steps
-    
+
     def _create_markdown_summary(self, report, md_file):
         """Create markdown summary of the final report."""
         summary = f"""# {report['executive_summary']['title']}
 
-**Generated:** {report['report_metadata']['generated_at']}  
-**Status:** {report['executive_summary']['completion_level']}  
+**Generated:** {report['report_metadata']['generated_at']}
+**Status:** {report['executive_summary']['completion_level']}
 **Progress:** {report['executive_summary']['overall_progress']:.1f}%
 
 ## 🎯 Executive Summary
@@ -311,7 +311,7 @@ class FinalComplianceReporter:
 """
         for achievement in report['executive_summary']['key_achievements']:
             summary += f"- {achievement}\n"
-        
+
         summary += f"""
 ## 📊 Critical Metrics
 
@@ -324,7 +324,7 @@ class FinalComplianceReporter:
 
 ### Silent Swallowers
 - HIGH: {report['detailed_metrics']['silent_swallowers']['remaining_high']:,} remaining
-- MEDIUM: {report['detailed_metrics']['silent_swallowers']['remaining_medium']:,} remaining  
+- MEDIUM: {report['detailed_metrics']['silent_swallowers']['remaining_medium']:,} remaining
 - LOW: {report['detailed_metrics']['silent_swallowers']['remaining_low']:,} remaining
 
 ### Test Enforcement
@@ -335,26 +335,26 @@ class FinalComplianceReporter:
 """
         for step in report['next_steps']:
             summary += f"1. {step}\n"
-        
+
         summary += f"""
 ## 📚 Lessons Learned
 """
         for lesson in report['lessons_learned']:
             summary += f"- {lesson}\n"
-        
+
         summary += f"""
 ## 🎯 Recommendations
 """
         for rec in report['recommendations']:
             summary += f"- {rec}\n"
-        
+
         summary += f"""
 ---
-**Report generated by:** tools/generate_final_compliance_report.py  
-**Data sources:** {len(self.report_data)} validation and fix reports  
+**Report generated by:** tools/generate_final_compliance_report.py
+**Data sources:** {len(self.report_data)} validation and fix reports
 **Infrastructure deployed:** {len(report['infrastructure_deployed']['tools_created'])} tools, {len(report['infrastructure_deployed']['layers_created'])} layers
 """
-        
+
         with open(md_file, 'w', encoding='utf-8') as f:
             f.write(summary)
 
@@ -366,22 +366,22 @@ def main():
     print("=" * 80)
     print("Generating final architectural compliance report...")
     print("=" * 80)
-    
+
     reporter = FinalComplianceReporter()
-    
+
     # Generate final report
     report = reporter.generate_final_report()
-    
+
     print("\n" + "=" * 80)
     print("🎉 FINAL COMPLIANCE REPORT GENERATED!")
     print(f"✅ Status: {report['executive_summary']['completion_level']}")
     print(f"📊 Progress: {report['executive_summary']['overall_progress']:.1f}%")
     print(f"🎯 Critical fixes: {'COMPLETE' if report['completion_status']['critical_complete'] else 'INCOMPLETE'}")
-    
+
     print(f"\n📁 Reports created:")
     print(f"   JSON: docs/reports/plans/final_architectural_compliance_report_03242026.json")
     print(f"   Markdown: docs/reports/plans/final_architectural_compliance_report_03242026.md")
-    
+
     if not report['completion_status']['overall_complete']:
         print(f"\n📝 REMAINING WORK:")
         remaining = report.get('remaining_work', {})
@@ -391,7 +391,7 @@ def main():
         if 'test_enforcement' in remaining:
             te = remaining['test_enforcement']
             print(f"   Test enforcement: {te['high_remaining']} HIGH, {te['medium_remaining']} MEDIUM")
-    
+
     print("=" * 80)
 
 

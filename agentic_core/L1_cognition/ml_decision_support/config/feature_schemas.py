@@ -47,12 +47,12 @@ class FeatureDefinition:
     provenance: str = ""  # Source of the feature
     extraction_function: Optional[str] = None  # Function name for extraction
     version: str = "1.0"
-    
+
     def __post_init__(self):
         """Validate feature definition."""
         if not self.name:
             raise ValueError("Feature name cannot be empty")
-        
+
         if self.null_handling == NullHandling.DEFAULT_VALUE and self.default_value is None:
             raise ValueError(f"Feature {self.name} must have default_value when using DEFAULT_VALUE null handling")
 
@@ -67,11 +67,11 @@ class FeatureSchema:
     created_at: datetime = field(default_factory=datetime.now)
     created_by: str = ""
     schema_digest: str = ""
-    
+
     def __post_init__(self):
         """Compute schema digest after creation."""
         self.schema_digest = self._compute_digest()
-    
+
     def _compute_digest(self) -> str:
         """Compute SHA-256 digest of schema."""
         schema_dict = {
@@ -92,57 +92,57 @@ class FeatureSchema:
                 for f in self.features
             ]
         }
-        
+
         schema_str = json.dumps(schema_dict, sort_keys=True)
         return hashlib.sha256(schema_str.encode()).hexdigest()
-    
+
     def get_feature(self, name: str) -> Optional[FeatureDefinition]:
         """Get feature definition by name."""
         for feature in self.features:
             if feature.name == name:
                 return feature
         return None
-    
+
     def validate_features(self, features: Dict[str, Any]) -> tuple[bool, List[str]]:
         """
         Validate a feature dictionary against this schema.
-        
+
         Args:
             features: Feature dictionary to validate
-            
+
         Returns:
             Tuple of (is_valid, error_messages)
         """
         errors = []
-        
+
         # Check required features
         for feature_def in self.features:
             if feature_def.required and feature_def.name not in features:
                 errors.append(f"Required feature '{feature_def.name}' is missing")
-        
+
         # Validate feature types and values
         for name, value in features.items():
             feature_def = self.get_feature(name)
             if not feature_def:
                 errors.append(f"Unknown feature '{name}'")
                 continue
-            
+
             # Type validation
             if not self._validate_feature_type(value, feature_def):
                 errors.append(f"Feature '{name}' has invalid type")
                 continue
-            
+
             # Value validation
             if not self._validate_feature_value(value, feature_def):
                 errors.append(f"Feature '{name}' failed validation rules")
-        
+
         return len(errors) == 0, errors
-    
+
     def _validate_feature_type(self, value: Any, feature_def: FeatureDefinition) -> bool:
         """Validate feature type."""
         if value is None:
             return True  # Null handling handled separately
-        
+
         type_map = {
             FeatureType.NUMERIC: (int, float),
             FeatureType.CATEGORICAL: str,
@@ -152,18 +152,18 @@ class FeatureSchema:
             FeatureType.LIST: list,
             FeatureType.DICT: dict
         }
-        
+
         expected_types = type_map.get(feature_def.feature_type)
         if expected_types is None:
             return False
-        
+
         return isinstance(value, expected_types)
-    
+
     def _validate_feature_value(self, value: Any, feature_def: FeatureDefinition) -> bool:
         """Validate feature value against rules."""
         if value is None or not feature_def.validation_rules:
             return True
-        
+
         # Numeric validations
         if feature_def.feature_type == FeatureType.NUMERIC:
             if 'min_value' in feature_def.validation_rules:
@@ -175,13 +175,13 @@ class FeatureSchema:
             if 'allowed_values' in feature_def.validation_rules:
                 if value not in feature_def.validation_rules['allowed_values']:
                     return False
-        
+
         # Categorical validations
         elif feature_def.feature_type == FeatureType.CATEGORICAL:
             if 'allowed_values' in feature_def.validation_rules:
                 if value not in feature_def.validation_rules['allowed_values']:
                     return False
-        
+
         # Text validations
         elif feature_def.feature_type == FeatureType.TEXT:
             if 'min_length' in feature_def.validation_rules:
@@ -190,25 +190,25 @@ class FeatureSchema:
             if 'max_length' in feature_def.validation_rules:
                 if len(value) > feature_def.validation_rules['max_length']:
                     return False
-        
+
         return True
 
 
 class FeatureSchemas:
     """
     Registry of feature schemas for all ML models.
-    
+
     Provides centralized schema management with versioning,
     validation, and provenance tracking.
     """
-    
+
     def __init__(self):
         self._schemas: Dict[str, FeatureSchema] = {}
         self._initialize_builtin_schemas()
-    
+
     def _initialize_builtin_schemas(self) -> None:
         """Initialize built-in feature schemas."""
-        
+
         # L0 Route Recommender Schema
         l0_route_schema = FeatureSchema(
             schema_name="l0_route_recommender",
@@ -280,7 +280,7 @@ class FeatureSchemas:
                 )
             ]
         )
-        
+
         # C0 Retrieval Reranker Schema
         c0_rerank_schema = FeatureSchema(
             schema_name="c0_retrieval_reranker",
@@ -352,7 +352,7 @@ class FeatureSchemas:
                 )
             ]
         )
-        
+
         # L6 Anomaly Detector Schema
         l6_anomaly_schema = FeatureSchema(
             schema_name="l6_anomaly_detector",
@@ -433,78 +433,78 @@ class FeatureSchemas:
                 )
             ]
         )
-        
+
         # Register schemas
         self.register_schema(l0_route_schema)
         self.register_schema(c0_rerank_schema)
         self.register_schema(l6_anomaly_schema)
-    
+
     def register_schema(self, schema: FeatureSchema) -> None:
         """Register a feature schema."""
         schema_key = f"{schema.schema_name}:{schema.schema_version}"
         self._schemas[schema_key] = schema
-    
+
     def get_schema(self, schema_name: str, version: str = "1.0") -> Optional[FeatureSchema]:
         """Get feature schema by name and version."""
         schema_key = f"{schema_name}:{version}"
         return self._schemas.get(schema_key)
-    
+
     def get_latest_schema(self, schema_name: str) -> Optional[FeatureSchema]:
         """Get latest version of a schema."""
         matching_schemas = [
             schema for key, schema in self._schemas.items()
             if schema.schema_name == schema_name
         ]
-        
+
         if not matching_schemas:
             return None
-        
+
         # Return schema with highest version
         return max(matching_schemas, key=lambda s: s.schema_version)
-    
+
     def list_schemas(self) -> List[str]:
         """List all available schema names."""
         return list(set(schema.schema_name for schema in self._schemas.values()))
-    
+
     def validate_features(
-        self, 
-        schema_name: str, 
-        features: Dict[str, Any], 
+        self,
+        schema_name: str,
+        features: Dict[str, Any],
         version: str = "1.0"
     ) -> tuple[bool, List[str], Optional[Dict[str, Any]]]:
         """
         Validate features against a schema.
-        
+
         Args:
             schema_name: Name of schema
             features: Feature dictionary to validate
             version: Schema version
-            
+
         Returns:
             Tuple of (is_valid, error_messages, processed_features)
         """
         schema = self.get_schema(schema_name, version)
         if not schema:
             return False, [f"Schema {schema_name}:{version} not found"], None
-        
+
         is_valid, errors = schema.validate_features(features)
-        
+
         # Process null handling
         processed_features = self._process_null_handling(features, schema)
-        
+
         return is_valid, errors, processed_features
-    
+
     def _process_null_handling(
-        self, 
-        features: Dict[str, Any], 
+        self,
+        features: Dict[str, Any],
         schema: FeatureSchema
     ) -> Dict[str, Any]:
         """Process null values according to schema rules."""
         processed = {}
-        
+
         for feature_def in schema.features:
             value = features.get(feature_def.name)
-            
+
             if value is None:
                 # Apply null handling strategy
                 if feature_def.null_handling == NullHandling.DEFAULT_VALUE:
@@ -518,9 +518,9 @@ class FeatureSchemas:
                     processed[feature_def.name] = feature_def.default_value
             else:
                 processed[feature_def.name] = value
-        
+
         return processed
-    
+
     def get_schema_digest(self, schema_name: str, version: str = "1.0") -> Optional[str]:
         """Get schema digest for version tracking."""
         schema = self.get_schema(schema_name, version)

@@ -30,15 +30,15 @@ class UnifiedInferenceRequest:
     replay_key: str
     policy_hash: str
     decision_mode: DecisionMode = DecisionMode.ADVISORY
-    
+
     # Context data for different models
     routing_context: Optional[Dict[str, Any]] = None
     reranking_context: Optional[Dict[str, Any]] = None
     anomaly_context: Optional[Dict[str, Any]] = None
-    
+
     # Unified context
     unified_context: Optional[Dict[str, Any]] = None
-    
+
     # Inference options
     enable_routing: bool = True
     enable_reranking: bool = True
@@ -53,21 +53,21 @@ class UnifiedInferenceResult:
     replay_key: str
     policy_hash: str
     timestamp: datetime
-    
+
     # Individual model results
     routing_result: Optional[ModelPrediction] = None
     reranking_result: Optional[ModelPrediction] = None
     anomaly_result: Optional[ModelPrediction] = None
-    
+
     # Coordination results
     coordinated_decision: Optional[str] = None
     coordination_confidence: float = 0.0
     coordination_rationale: List[str] = None
-    
+
     # Unified recommendations
     unified_recommendations: List[str] = None
     implementation_priority: str = "Medium"
-    
+
     # Metadata
     inference_time_ms: float = 0.0
     models_executed: List[str] = None
@@ -77,7 +77,7 @@ class UnifiedInferenceResult:
 class UnifiedInferenceEngine(BaseMLModel):
     """
     Unified inference engine for coordinating all Phase 4 advanced ML models.
-    
+
     Provides comprehensive decision making through:
     - Intelligent routing with neural networks
     - Semantic reranking with transformer-inspired models
@@ -86,7 +86,7 @@ class UnifiedInferenceEngine(BaseMLModel):
     - Cross-model consistency and validation
     - Governance compliance and audit logging
     """
-    
+
     def __init__(self, model_file_path: Optional[Path] = None):
         super().__init__(
             model_name="unified_inference_engine",
@@ -95,12 +95,12 @@ class UnifiedInferenceEngine(BaseMLModel):
             prediction_type=PredictionType.MULTICLASS,
             model_file_path=model_file_path
         )
-        
+
         # Initialize Phase 4 models
         self.routing_model = None
         self.reranking_model = None
         self.anomaly_model = None
-        
+
         # Unified configuration
         self.unified_config = {
             "coordination_strategy": "weighted_consensus",
@@ -109,55 +109,55 @@ class UnifiedInferenceEngine(BaseMLModel):
             "governance_enforcement": True,
             "deterministic_order": True
         }
-        
+
         # Model weights for coordination
         self.model_weights = {
             "routing": 0.4,
             "reranking": 0.3,
             "anomaly": 0.3
         }
-        
+
         # Initialize models if available
         self._initialize_models()
-        
+
         if model_file_path and model_file_path.exists():
             self.load_model()
-    
+
     def _initialize_models(self) -> None:
         """Initialize Phase 4 models."""
         try:
             self.routing_model = AdvancedL0Router()
         except Exception:
             pass  # Model not available
-        
+
         try:
             self.reranking_model = AdvancedC0Reranker()
         except Exception:
             pass  # Model not available
-        
+
         try:
             self.anomaly_model = AdvancedL6Detector()
         except Exception:
             pass  # Model not available
-    
+
     def load_model(self) -> None:
         """Load the unified inference engine configuration."""
         if not self.model_file_path or not self.model_file_path.exists():
             raise FileNotFoundError(f"Model file not found: {self.model_file_path}")
-        
+
         try:
             with open(self.model_file_path, 'rb') as f:
                 model_data = pickle.load(f)
-            
+
             self.unified_config = model_data.get('unified_config', self.unified_config)
             self.model_weights = model_data.get('model_weights', self.model_weights)
             self._training_data_digest = model_data.get('training_data_digest', '')
-            
+
             self.is_loaded = True
-            
+
         except Exception as e:
             raise RuntimeError(f"Failed to load model: {e}")
-    
+
     def save_model(self, model_file_path: Path) -> None:
         """Save the unified inference engine configuration."""
         model_data = {
@@ -172,10 +172,10 @@ class UnifiedInferenceEngine(BaseMLModel):
                 'saved_at': datetime.now().isoformat()
             }
         }
-        
+
         with open(model_file_path, 'wb') as f:
             pickle.dump(model_data, f)
-    
+
     def predict(
         self,
         model_input: ModelInput,
@@ -186,14 +186,14 @@ class UnifiedInferenceEngine(BaseMLModel):
     ) -> ModelPrediction:
         """
         Predict using unified inference engine.
-        
+
         Args:
             model_input: Validated model input
             trace_id: Trace ID for reproducibility
             replay_key: Replay key for determinism
             policy_hash: Policy hash for governance
             decision_mode: Decision authority level
-            
+
         Returns:
             Unified prediction with full metadata
         """
@@ -206,22 +206,22 @@ class UnifiedInferenceEngine(BaseMLModel):
             replay_key=replay_key,
             policy_hash=policy_hash
         )
-    
+
     def execute_unified_inference(
         self,
         request: UnifiedInferenceRequest
     ) -> UnifiedInferenceResult:
         """
         Execute unified inference across all Phase 4 models.
-        
+
         Args:
             request: Unified inference request
-            
+
         Returns:
             Comprehensive unified inference result
         """
         start_time = datetime.now()
-        
+
         # Initialize result
         result = UnifiedInferenceResult(
             trace_id=request.trace_id,
@@ -232,7 +232,7 @@ class UnifiedInferenceEngine(BaseMLModel):
             unified_recommendations=[],
             coordination_rationale=[]
         )
-        
+
         # Execute individual models based on request
         if request.enable_routing and self.routing_model:
             try:
@@ -242,7 +242,7 @@ class UnifiedInferenceEngine(BaseMLModel):
             except Exception as e:
                 # Log error but continue
                 pass
-        
+
         if request.enable_reranking and self.reranking_model:
             try:
                 reranking_result = self._execute_reranking_inference(request)
@@ -251,7 +251,7 @@ class UnifiedInferenceEngine(BaseMLModel):
             except Exception as e:
                 # Log error but continue
                 pass
-        
+
         if request.enable_anomaly_detection and self.anomaly_model:
             try:
                 anomaly_result = self._execute_anomaly_inference(request)
@@ -260,33 +260,33 @@ class UnifiedInferenceEngine(BaseMLModel):
             except Exception as e:
                 # Log error but continue
                 pass
-        
+
         # Coordinate results if enabled
         if request.enable_coordination and len(result.models_executed) > 1:
             coordination_result = self._coordinate_inference_results(result)
             result.coordinated_decision = coordination_result['decision']
             result.coordination_confidence = coordination_result['confidence']
             result.coordination_rationale = coordination_result['rationale']
-        
+
         # Generate unified recommendations
         result.unified_recommendations = self._generate_unified_recommendations(result)
-        
+
         # Determine implementation priority
         result.implementation_priority = self._determine_implementation_priority(result)
-        
+
         # Calculate inference time
         result.inference_time_ms = (datetime.now() - start_time).total_seconds() * 1000
-        
+
         # Check governance compliance
         result.governance_compliance = self._check_governance_compliance(result)
-        
+
         return result
-    
+
     def _execute_routing_inference(self, request: UnifiedInferenceRequest) -> ModelPrediction:
         """Execute routing inference."""
         if not request.routing_context:
             raise ValueError("Routing context required for routing inference")
-        
+
         # Extract routing features
         routing_features = self.routing_model.feature_extractor.extract_features(
             context=request.routing_context,
@@ -294,14 +294,14 @@ class UnifiedInferenceEngine(BaseMLModel):
             replay_key=request.replay_key,
             policy_hash=request.policy_hash
         )
-        
+
         if not routing_features.success:
             raise RuntimeError("Failed to extract routing features")
-        
+
         # Create model input
         model_input = self.routing_model.validate_input(routing_features.features)
         model_input.feature_provenance = routing_features.provenance
-        
+
         # Make prediction
         return self.routing_model.predict(
             model_input=model_input,
@@ -310,12 +310,12 @@ class UnifiedInferenceEngine(BaseMLModel):
             policy_hash=request.policy_hash,
             decision_mode=request.decision_mode
         )
-    
+
     def _execute_reranking_inference(self, request: UnifiedInferenceRequest) -> ModelPrediction:
         """Execute reranking inference."""
         if not request.reranking_context:
             raise ValueError("Reranking context required for reranking inference")
-        
+
         # Extract reranking features
         reranking_features = self.reranking_model.feature_extractor.extract_features(
             context=request.reranking_context,
@@ -323,14 +323,14 @@ class UnifiedInferenceEngine(BaseMLModel):
             replay_key=request.replay_key,
             policy_hash=request.policy_hash
         )
-        
+
         if not reranking_features.success:
             raise RuntimeError("Failed to extract reranking features")
-        
+
         # Create model input
         model_input = self.reranking_model.validate_input(reranking_features.features)
         model_input.feature_provenance = reranking_features.provenance
-        
+
         # Make prediction
         return self.reranking_model.predict(
             model_input=model_input,
@@ -339,12 +339,12 @@ class UnifiedInferenceEngine(BaseMLModel):
             policy_hash=request.policy_hash,
             decision_mode=request.decision_mode
         )
-    
+
     def _execute_anomaly_inference(self, request: UnifiedInferenceRequest) -> ModelPrediction:
         """Execute anomaly detection inference."""
         if not request.anomaly_context:
             raise ValueError("Anomaly context required for anomaly detection inference")
-        
+
         # Extract anomaly features
         anomaly_features = self.anomaly_model.feature_extractor.extract_features(
             context=request.anomaly_context,
@@ -352,14 +352,14 @@ class UnifiedInferenceEngine(BaseMLModel):
             replay_key=request.replay_key,
             policy_hash=request.policy_hash
         )
-        
+
         if not anomaly_features.success:
             raise RuntimeError("Failed to extract anomaly features")
-        
+
         # Create model input
         model_input = self.anomaly_model.validate_input(anomaly_features.features)
         model_input.feature_provenance = anomaly_features.provenance
-        
+
         # Make prediction
         return self.anomaly_model.predict(
             model_input=model_input,
@@ -368,7 +368,7 @@ class UnifiedInferenceEngine(BaseMLModel):
             policy_hash=request.policy_hash,
             decision_mode=request.decision_mode
         )
-    
+
     def _coordinate_inference_results(self, result: UnifiedInferenceResult) -> Dict[str, Any]:
         """Coordinate inference results from multiple models."""
         coordination = {
@@ -376,47 +376,47 @@ class UnifiedInferenceEngine(BaseMLModel):
             'confidence': 0.0,
             'rationale': []
         }
-        
+
         # Collect model predictions
         predictions = []
         confidences = []
-        
+
         if result.routing_result:
             predictions.append(result.routing_result.prediction)
             confidences.append(result.routing_result.confidence)
             coordination['rationale'].append(f"Routing: {result.routing_result.prediction} (confidence: {result.routing_result.confidence:.2f})")
-        
+
         if result.reranking_result:
             predictions.append(result.reranking_result.prediction)
             confidences.append(result.reranking_result.confidence)
             coordination['rationale'].append(f"Reranking: {result.reranking_result.prediction} (confidence: {result.reranking_result.confidence:.2f})")
-        
+
         if result.anomaly_result:
             predictions.append(result.anomaly_result.prediction)
             confidences.append(result.anomaly_result.confidence)
             coordination['rationale'].append(f"Anomaly: {result.anomaly_result.prediction} (confidence: {result.anomaly_result.confidence:.2f})")
-        
+
         if not predictions:
             return coordination
-        
+
         # Weighted consensus
         if self.unified_config["coordination_strategy"] == "weighted_consensus":
             weights = []
-            
+
             if result.routing_result:
                 weights.append(self.model_weights["routing"])
             if result.reranking_result:
                 weights.append(self.model_weights["reranking"])
             if result.anomaly_result:
                 weights.append(self.model_weights["anomaly"])
-            
+
             # Calculate weighted confidence
             total_weight = sum(weights)
             if total_weight > 0:
                 coordination['confidence'] = sum(w * c for w, c in zip(weights, confidences)) / total_weight
             else:
                 coordination['confidence'] = sum(confidences) / len(confidences)
-            
+
             # Determine coordinated decision
             if coordination['confidence'] > self.unified_config["consensus_threshold"]:
                 # High confidence - use highest confidence prediction
@@ -427,13 +427,13 @@ class UnifiedInferenceEngine(BaseMLModel):
                 # Low confidence - conservative decision
                 coordination['decision'] = "Standard_Operation"
                 coordination['rationale'].append("Low confidence - conservative decision")
-        
+
         return coordination
-    
+
     def _generate_unified_recommendations(self, result: UnifiedInferenceResult) -> List[str]:
         """Generate unified recommendations from all model results."""
         recommendations = []
-        
+
         # Routing recommendations
         if result.routing_result:
             if result.routing_result.prediction == "Neural_Advanced":
@@ -442,7 +442,7 @@ class UnifiedInferenceEngine(BaseMLModel):
                 recommendations.append("Use semantic optimization for routing decisions")
             elif result.routing_result.prediction == "User_Personalized":
                 recommendations.append("Apply personalized routing based on user preferences")
-        
+
         # Reranking recommendations
         if result.reranking_result:
             if result.reranking_result.prediction == "Transformer_Top":
@@ -451,7 +451,7 @@ class UnifiedInferenceEngine(BaseMLModel):
                 recommendations.append("Boost authoritative sources in reranking")
             elif result.reranking_result.prediction == "Engagement_Prioritized":
                 recommendations.append("Prioritize documents with high user engagement")
-        
+
         # Anomaly recommendations
         if result.anomaly_result:
             if result.anomaly_result.prediction == "Critical_Alert":
@@ -460,7 +460,7 @@ class UnifiedInferenceEngine(BaseMLModel):
                 recommendations.append("High priority monitoring of detected anomalies")
             elif result.anomaly_result.prediction == "Adaptive_Monitoring":
                 recommendations.append("Implement adaptive monitoring for anomaly patterns")
-        
+
         # Coordination recommendations
         if result.coordinated_decision:
             if result.coordination_confidence > 0.8:
@@ -469,7 +469,7 @@ class UnifiedInferenceEngine(BaseMLModel):
                 recommendations.append(f"Moderate confidence coordinated decision: {result.coordinated_decision}")
             else:
                 recommendations.append("Low confidence - consider additional validation")
-        
+
         # General recommendations
         if len(result.models_executed) == 3:
             recommendations.append("All Phase 4 models executed successfully - comprehensive analysis available")
@@ -477,68 +477,68 @@ class UnifiedInferenceEngine(BaseMLModel):
             recommendations.append("Partial Phase 4 analysis - consider enabling remaining models")
         else:
             recommendations.append("Limited analysis - enable more models for comprehensive insights")
-        
+
         return recommendations
-    
+
     def _determine_implementation_priority(self, result: UnifiedInferenceResult) -> str:
         """Determine implementation priority based on results."""
         # Check for critical anomalies
         if result.anomaly_result and result.anomaly_result.prediction == "Critical_Alert":
             return "Critical"
-        
+
         # Check for high confidence coordinated decisions
         if result.coordination_confidence > 0.8:
             if result.coordinated_decision in ["Neural_Advanced", "Transformer_Top"]:
                 return "High"
             else:
                 return "Medium"
-        
+
         # Check for individual model priorities
         if result.routing_result and result.routing_result.prediction in ["Neural_Advanced", "Semantic_Optimized"]:
             if result.routing_result.confidence > 0.7:
                 return "High"
-        
+
         if result.reranking_result and result.reranking_result.prediction in ["Transformer_Top", "Semantic_Prime"]:
             if result.reranking_result.confidence > 0.7:
                 return "High"
-        
+
         # Default priority
         return "Medium"
-    
+
     def _check_governance_compliance(self, result: UnifiedInferenceResult) -> bool:
         """Check governance compliance of the unified result."""
         # Check if all models operated in appropriate modes
         if result.routing_result and result.routing_result.decision_mode == DecisionMode.BLOCKED:
             return False
-        
+
         if result.reranking_result and result.reranking_result.decision_mode == DecisionMode.BLOCKED:
             return False
-        
+
         if result.anomaly_result and result.anomaly_result.decision_mode == DecisionMode.BLOCKED:
             return False
-        
+
         # Check coordination confidence
         if result.coordination_confidence < self.unified_config["confidence_threshold"]:
             return False
-        
+
         return True
-    
+
     def get_comprehensive_analysis(
         self,
         request: UnifiedInferenceRequest
     ) -> Dict[str, Any]:
         """
         Get comprehensive analysis across all Phase 4 models.
-        
+
         Args:
             request: Unified inference request
-            
+
         Returns:
             Comprehensive analysis report
         """
         # Execute unified inference
         result = self.execute_unified_inference(request)
-        
+
         # Build comprehensive analysis
         analysis = {
             'summary': {
@@ -559,7 +559,7 @@ class UnifiedInferenceEngine(BaseMLModel):
             'unified_recommendations': result.unified_recommendations,
             'implementation_priority': result.implementation_priority
         }
-        
+
         # Detailed routing analysis
         if result.routing_result and request.routing_context:
             try:
@@ -572,7 +572,7 @@ class UnifiedInferenceEngine(BaseMLModel):
                 analysis['routing_analysis'] = routing_analysis
             except Exception:
                 pass
-        
+
         # Detailed reranking analysis
         if result.reranking_result and request.reranking_context:
             try:
@@ -585,7 +585,7 @@ class UnifiedInferenceEngine(BaseMLModel):
                 analysis['reranking_analysis'] = reranking_analysis
             except Exception:
                 pass
-        
+
         # Detailed anomaly analysis
         if result.anomaly_result and request.anomaly_context:
             try:
@@ -598,9 +598,9 @@ class UnifiedInferenceEngine(BaseMLModel):
                 analysis['anomaly_analysis'] = anomaly_analysis
             except Exception:
                 pass
-        
+
         return analysis
-    
+
     def validate_unified_configuration(self) -> Dict[str, Any]:
         """Validate unified inference engine configuration."""
         validation_result = {
@@ -609,62 +609,62 @@ class UnifiedInferenceEngine(BaseMLModel):
             'recommendations': [],
             'model_status': {}
         }
-        
+
         # Check model availability
         if self.routing_model:
             validation_result['model_status']['routing'] = 'available'
         else:
             validation_result['model_status']['routing'] = 'unavailable'
             validation_result['issues'].append('Advanced L0 Router not available')
-        
+
         if self.reranking_model:
             validation_result['model_status']['reranking'] = 'available'
         else:
             validation_result['model_status']['reranking'] = 'unavailable'
             validation_result['issues'].append('Advanced C0 Reranker not available')
-        
+
         if self.anomaly_model:
             validation_result['model_status']['anomaly'] = 'available'
         else:
             validation_result['model_status']['anomaly'] = 'unavailable'
             validation_result['issues'].append('Advanced L6 Detector not available')
-        
+
         # Check configuration validity
         if not self.unified_config.get("coordination_strategy"):
             validation_result['issues'].append('No coordination strategy specified')
             validation_result['is_valid'] = False
-        
+
         if not self.model_weights:
             validation_result['issues'].append('No model weights specified')
             validation_result['is_valid'] = False
-        
+
         # Check weight sum
         total_weight = sum(self.model_weights.values())
         if abs(total_weight - 1.0) > 0.1:
             validation_result['issues'].append(f'Model weights sum to {total_weight:.2f}, should be 1.0')
-        
+
         # Generate recommendations
         if len(validation_result['issues']) > 0:
             validation_result['recommendations'].append('Address configuration issues before deployment')
-        
+
         available_models = sum(1 for status in validation_result['model_status'].values() if status == 'available')
         if available_models < 2:
             validation_result['recommendations'].append('Enable more models for comprehensive analysis')
-        
+
         return validation_result
-    
+
     def get_feature_importance(self, model_input: ModelInput) -> List[Dict[str, Any]]:
         """Get feature importance for explainability."""
         # Unified inference engine doesn't have direct feature importance
         # This would aggregate importance from individual models
         return []
-    
+
     def preprocess_features(self, features: Dict[str, Any]) -> Tuple[Dict[str, Any], List[str]]:
         """Preprocess features for unified inference."""
         # Unified inference engine doesn't directly process features
         # This would coordinate preprocessing across individual models
         return features, []
-    
+
     def train_model(
         self,
         training_data: List[Dict[str, Any]],
@@ -673,7 +673,7 @@ class UnifiedInferenceEngine(BaseMLModel):
     ) -> None:
         """
         Train the unified inference engine configuration.
-        
+
         Args:
             training_data: List of training examples
             feature_names: Names of features to use

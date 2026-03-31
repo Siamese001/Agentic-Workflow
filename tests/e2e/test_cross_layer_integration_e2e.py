@@ -499,7 +499,7 @@ class TestLayerGravityEnforcement:
         # If no explicit L5 span found, check for safety attributes in any span
         if not safety_spans:
             safety_spans = [s for s in spans if "safety" in str(s.get("attributes", {})).lower()]
-        
+
         # At minimum, verify spans were captured with safety metadata
         assert len(spans) >= 2  # Should have orchestrator + operations
 

@@ -16,7 +16,7 @@ from collections import defaultdict, Counter
 
 class ProductionReadinessCertifier:
     """Comprehensive production readiness certification."""
-    
+
     def __init__(self):
         self.start_time = time.time()
         self.results = {}
@@ -24,36 +24,36 @@ class ProductionReadinessCertifier:
     def run_comprehensive_validation(self) -> Dict:
         """Run comprehensive validation of the test suite."""
         print("=== Comprehensive Production Readiness Validation ===")
-        
+
         validations = {}
-        
+
         # 1. Syntax validation
         print("1. Running syntax validation...")
         validations['syntax'] = self._validate_syntax()
-        
+
         # 2. Import validation
         print("2. Running import validation...")
         validations['imports'] = self._validate_imports()
-        
+
         # 3. Test collection
         print("3. Running test collection...")
         validations['collection'] = self._validate_collection()
-        
+
         # 4. Smoke test execution
         print("4. Running smoke test execution...")
         validations['smoke_tests'] = self._run_smoke_tests()
-        
+
         # 5. Sample unit test execution
         print("5. Running sample unit test execution...")
         validations['unit_tests'] = self._run_sample_unit_tests()
-        
+
         # 6. Performance validation
         print("6. Running performance validation...")
         validations['performance'] = self._validate_performance()
-        
+
         # Overall assessment
         all_passed = all(v.get('success', False) for v in validations.values())
-        
+
         return {
             'overall_success': all_passed,
             'validations': validations,
@@ -84,13 +84,13 @@ print(f"Syntax validation: {files_checked - errors}/{files_checked} files passed
 exit(1 if errors > 0 else 0)
                 '''
             ], capture_output=True, text=True, timeout=300)
-            
+
             return {
                 'success': result.returncode == 0,
                 'output': result.stdout,
                 'errors': result.stderr
             }
-            
+
         except Exception as e:
             return {
                 'success': False,
@@ -118,13 +118,13 @@ print(f"Import validation: {files_checked - errors}/{files_checked} files passed
 exit(1 if errors > 0 else 0)
                 '''
             ], capture_output=True, text=True, timeout=300)
-            
+
             return {
                 'success': result.returncode == 0,
                 'output': result.stdout,
                 'errors': result.stderr
             }
-            
+
         except Exception as e:
             return {
                 'success': False,
@@ -137,23 +137,23 @@ exit(1 if errors > 0 else 0)
             result = subprocess.run([
                 'pytest', '--collect-only', '--quiet', '--tb=no'
             ], capture_output=True, text=True, timeout=300)
-            
+
             success = result.returncode == 0
             collected_tests = 0
-            
+
             if success and 'collected' in result.stdout.lower():
                 import re
                 match = re.search(r'collected (\d+)', result.stdout.lower())
                 if match:
                     collected_tests = int(match.group(1))
-            
+
             return {
                 'success': success,
                 'collected_tests': collected_tests,
                 'output': result.stdout,
                 'errors': result.stderr
             }
-            
+
         except Exception as e:
             return {
                 'success': False,
@@ -169,17 +169,17 @@ exit(1 if errors > 0 else 0)
                     'success': True,
                     'message': 'No smoke tests directory found'
                 }
-            
+
             result = subprocess.run([
                 'pytest', 'tests/smoke/', '-v', '--tb=short', '--maxfail=5'
             ], capture_output=True, text=True, timeout=600)
-            
+
             return {
                 'success': result.returncode == 0,
                 'output': result.stdout,
                 'errors': result.stderr
             }
-            
+
         except Exception as e:
             return {
                 'success': False,
@@ -193,13 +193,13 @@ exit(1 if errors > 0 else 0)
             result = subprocess.run([
                 'pytest', 'tests/unit/agentic_core/L0_routing/', '-v', '--tb=short', '--maxfail=3'
             ], capture_output=True, text=True, timeout=600)
-            
+
             return {
                 'success': result.returncode == 0,
                 'output': result.stdout,
                 'errors': result.stderr
             }
-            
+
         except Exception as e:
             return {
                 'success': False,
@@ -214,19 +214,19 @@ exit(1 if errors > 0 else 0)
             result = subprocess.run([
                 'pytest', '--collect-only', '--quiet', '--tb=no'
             ], capture_output=True, text=True, timeout=300)
-            
+
             collection_time = time.time() - start_time
-            
+
             # Performance criteria
             collection_ok = collection_time < 60  # Collection should be under 60 seconds
-            
+
             return {
                 'success': collection_ok,
                 'collection_time': collection_time,
                 'collection_performance_ok': collection_ok,
                 'output': f"Collection took {collection_time:.2f} seconds"
             }
-            
+
         except Exception as e:
             return {
                 'success': False,
@@ -236,7 +236,7 @@ exit(1 if errors > 0 else 0)
     def create_production_checklist(self) -> Dict:
         """Create production deployment checklist."""
         print("=== Creating Production Deployment Checklist ===")
-        
+
         checklist = {
             'syntax_validation': {
                 'status': '✅ PASS' if self.results.get('validations', {}).get('syntax', {}).get('success', False) else '❌ FAIL',
@@ -284,31 +284,31 @@ exit(1 if errors > 0 else 0)
                 'verification': 'Check docs/testing/maintenance_procedures.md'
             }
         }
-        
+
         # Calculate overall status
         passed_items = sum(1 for item in checklist.values() if '✅' in item['status'])
         total_items = len(checklist)
-        
+
         checklist['overall_status'] = {
             'passed': passed_items,
             'total': total_items,
             'percentage': (passed_items / total_items) * 100,
             'status': '✅ PRODUCTION READY' if passed_items >= total_items * 0.8 else '⚠️ NEEDS ATTENTION'
         }
-        
+
         return checklist
 
     def generate_final_report(self) -> Dict:
         """Generate final production readiness report."""
         print("=== Generating Final Production Readiness Report ===")
-        
+
         # Run comprehensive validation
         validation_results = self.run_comprehensive_validation()
         self.results = validation_results
-        
+
         # Create checklist
         checklist = self.create_production_checklist()
-        
+
         # Generate report
         report = {
             'timestamp': validation_results['timestamp'],
@@ -325,17 +325,17 @@ exit(1 if errors > 0 else 0)
                 'production_ready': checklist['overall_status']['percentage'] >= 80
             }
         }
-        
+
         return report
 
     def save_report(self, report: Dict, filename: str = 'wave7dh_production_readiness_report.json'):
         """Save the production readiness report."""
         report_path = Path('artifacts') / filename
         report_path.parent.mkdir(exist_ok=True)
-        
+
         with open(report_path, 'w') as f:
             json.dump(report, f, indent=2)
-        
+
         print(f"Production readiness report saved to: {report_path}")
         return report_path
 
@@ -343,15 +343,15 @@ exit(1 if errors > 0 else 0)
 def run_wave7dh_finalization():
     """Run Wave 7d-7h finalization."""
     print("=== Wave 7d-7h: Comprehensive Production Readiness Certification ===")
-    
+
     certifier = ProductionReadinessCertifier()
-    
+
     # Generate final report
     report = certifier.generate_final_report()
-    
+
     # Save report
     report_path = certifier.save_report(report)
-    
+
     # Print summary
     print(f"\n=== Wave 7d-7h Summary ===")
     print(f"Overall Success: {'✅ PRODUCTION READY' if report['overall_success'] else '⚠️ NEEDS ATTENTION'}")
@@ -359,22 +359,22 @@ def run_wave7dh_finalization():
     print(f"Validations Passed: {report['summary']['passed_validations']}/{report['summary']['total_validations']}")
     print(f"Checklist Items: {report['summary']['checklist_passed']}/{report['summary']['checklist_items']}")
     print(f"Readiness Percentage: {report['summary']['readiness_percentage']:.1f}%")
-    
+
     # Print checklist status
     print(f"\n=== Production Checklist Status ===")
     for item_name, item_info in report['production_checklist'].items():
         if item_name != 'overall_status':
             print(f"{item_name}: {item_info['status']} - {item_info['description']}")
-    
+
     print(f"\nOverall Status: {report['production_checklist']['overall_status']['status']}")
-    
+
     return report
 
 
 def main():
     """Main execution."""
     results = run_wave7dh_finalization()
-    
+
     print(f"\n=== Wave 7 Complete! ===")
     if results['summary']['production_ready']:
         print("🎉 Wave 7 SUCCESSFUL - Test suite is PRODUCTION READY!")
@@ -385,7 +385,7 @@ def main():
         print("⚠️  Wave 7 PARTIAL - Some items need attention")
         print(f"📊 Readiness: {results['summary']['readiness_percentage']:.1f}%")
         print("📋 Review the production checklist for remaining items")
-    
+
     return results
 
 

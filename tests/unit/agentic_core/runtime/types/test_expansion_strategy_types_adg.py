@@ -15,4 +15,3 @@ class TestExpansionStrategy:
 
     """Test creates runtime behavior."""
     """Test expand_query_stub runtime behavior."""
-

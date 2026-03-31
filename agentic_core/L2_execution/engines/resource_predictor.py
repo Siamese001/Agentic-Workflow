@@ -351,7 +351,7 @@ class DefaultDeterministicResourcePredictor:
         timestamp_utc: int,
     ) -> None:
         """Track prediction accuracy for system learning feedback.
-        
+
         Args:
             signature: The failure signature that was predicted
             prediction: The resource prediction made
@@ -362,17 +362,17 @@ class DefaultDeterministicResourcePredictor:
         try:
             from system_learning.adapters.system_learning_memory_bridge import get_sl_memory_bridge
             bridge = get_sl_memory_bridge()
-            
+
             # Calculate accuracy metrics
             cpu_error = abs(prediction.envelope.cpu_cores - actual_usage.cpu_cores)
             memory_error = abs(prediction.envelope.memory_mb - actual_usage.memory_mb)
             timeout_error = abs(prediction.envelope.timeout_s - actual_usage.timeout_s)
-            
+
             # Normalized error rates
             cpu_error_rate = cpu_error / max(1.0, prediction.envelope.cpu_cores)
             memory_error_rate = memory_error / max(1.0, prediction.envelope.memory_mb)
             timeout_error_rate = timeout_error / max(1.0, prediction.envelope.timeout_s)
-            
+
             bridge.persist_resource_prediction_feedback(
                 failure_type=signature.failure_type,
                 fingerprint=signature.fingerprint,

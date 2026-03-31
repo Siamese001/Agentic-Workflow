@@ -15,20 +15,20 @@ def run_validation():
         result = subprocess.run([
             sys.executable, "tools/validation_runner.py"
         ], capture_output=True, text=True, cwd=Path.cwd())
-        
+
         # Output results in CI-friendly format
         print("=== Validation Results ===")
         print(f"Exit code: {result.returncode}")
         print(f"Stdout: {result.stdout}")
         if result.stderr:
             print(f"Stderr: {result.stderr}")
-        
+
         # Generate GitHub Actions annotation if needed
         if result.returncode != 0:
             print("::error::Validation failed - check report for details")
-        
+
         return result.returncode
-        
+
     except Exception as e:
         print(f"::error::Validation runner error: {e}")
         return 1

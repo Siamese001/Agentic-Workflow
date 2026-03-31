@@ -13,12 +13,12 @@ class ExecutionStatus(Enum):
 
 class ExecutionContext:
     """Execution context."""
-    
+
     def __init__(self, trace_id: str, request_id: Optional[str] = None):
         self.trace_id = trace_id
         self.request_id = request_id
         self.status = ExecutionStatus.PENDING
-    
+
     def update_status(self, status: ExecutionStatus) -> None:
         """Update execution status."""
         self.status = status
@@ -26,7 +26,7 @@ class ExecutionContext:
 
 class ExecutionResult:
     """Execution result."""
-    
+
     def __init__(self, success: bool, data: Optional[Any] = None, error: Optional[str] = None):
         self.success = success
         self.data = data
@@ -35,6 +35,6 @@ class ExecutionResult:
 
 __all__ = [
     "ExecutionContext",
-    "ExecutionResult", 
+    "ExecutionResult",
     "ExecutionStatus",
 ]

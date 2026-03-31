@@ -252,11 +252,11 @@ def detect_template_drift(registry_path: Path, base_dir: Path) -> tuple[list[dic
 
 def detect_and_return_drift(registry_path: Path, base_dir: Path):
     """Detect template drift and return results programmatically.
-    
+
     Args:
         registry_path: Path to registry.json
         base_dir: Base directory containing templates
-        
+
     Returns:
         Tuple of (synchronized, drifted) lists
     """

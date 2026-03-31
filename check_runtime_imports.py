@@ -6,8 +6,8 @@ cursor = conn.cursor()
 # Look at actual import statements causing violations
 cursor.execute('''
 SELECT n1.adg_name as src_module, e.source_file, e.line_no, e.symbol
-FROM edges e 
-JOIN nodes n1 ON e.src_id = n1.id 
+FROM edges e
+JOIN nodes n1 ON e.src_id = n1.id
 WHERE e.relation_type = "violates" AND e.edge_kind = "import"
 LIMIT 10
 ''')
@@ -18,7 +18,7 @@ for src, file, line, symbol in violations:
     print(f'\n{src}')
     print(f'  File: {file}:{line}')
     print(f'  Symbol: {symbol}')
-    
+
     # Show the actual import line
     try:
         with open(file, 'r', encoding='utf-8') as f:
@@ -45,7 +45,7 @@ print(f'Examining: {sample_file}')
 try:
     with open(sample_file, 'r', encoding='utf-8') as f:
         content = f.read()
-        
+
     # Look for runtime-related imports
     import re
     runtime_imports = re.findall(r'from (agentic_core\.runtime\.\w+)|import (agentic_core\.runtime\.\w+)', content)
@@ -55,7 +55,7 @@ try:
             print(f'  {imp[0] or imp[1]}')
     else:
         print('No obvious runtime imports found')
-        
+
 except (ValueError, TypeError, RuntimeError) as e:
     print(f'Error analyzing file: {e}')
 

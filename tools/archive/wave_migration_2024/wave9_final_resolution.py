@@ -12,7 +12,7 @@ from typing import Dict, List, Tuple
 
 class Wave9FinalResolution:
     """Wave 9: Final resolution of all syntax errors."""
-    
+
     def __init__(self, repo_root: pathlib.Path):
         self.repo_root = repo_root
         self.tests_dir = repo_root / "tests"
@@ -24,14 +24,14 @@ class Wave9FinalResolution:
             'failed_files': 0
         }
         self.failed_files: List[Tuple[str, str]] = []
-    
+
     def process_files(self) -> Dict:
         """Process files with Wave 9 final resolution."""
         # Only process files in tests/ directory, exclude archives
         test_files = []
         for pattern in ["test_*.py", "*/test_*.py"]:
             test_files.extend(self.tests_dir.rglob(pattern))
-        
+
         # Filter out archive directories and already valid files
         active_test_files = []
         for test_file in test_files:
@@ -45,16 +45,16 @@ class Wave9FinalResolution:
                     active_test_files.append(test_file)
                 except UnicodeDecodeError:
                     continue
-        
+
         print(f"Wave 9: Processing {len(active_test_files)} files with syntax errors...")
-        
+
         for test_file in active_test_files:
             self.stats['total_files'] += 1
             if self.process_file(test_file):
                 self.stats['files_processed'] += 1
-        
+
         return self.stats
-    
+
     def process_file(self, file_path: pathlib.Path) -> bool:
         """Process a single file with final resolution."""
         try:
@@ -62,10 +62,10 @@ class Wave9FinalResolution:
         except Exception as e:
             self.failed_files.append((str(file_path), f"Read error: {e}"))
             return False
-        
+
         # Apply final resolution
         fixed_content = self._final_resolution(original_content)
-        
+
         # Validate the fix
         try:
             ast.parse(fixed_content)
@@ -83,20 +83,20 @@ class Wave9FinalResolution:
             except SyntaxError as e2:
                 self.failed_files.append((str(file_path), f"Final resolution failed: {e2}"))
                 return False
-    
+
     def _final_resolution(self, content: str) -> str:
         """Apply final resolution fixes."""
         lines = content.splitlines()
         fixed_lines = []
-        
+
         for line in lines:
             stripped = line.strip()
-            
+
             # Skip empty lines
             if not stripped:
                 fixed_lines.append(line)
                 continue
-            
+
             # Apply comprehensive fixes
             fixed_line = self._apply_comprehensive_fix(line, stripped)
             if fixed_line != line:
@@ -104,9 +104,9 @@ class Wave9FinalResolution:
                 fixed_lines.append(fixed_line)
             else:
                 fixed_lines.append(line)
-        
+
         return '\n'.join(fixed_lines)
-    
+
     def _apply_comprehensive_fix(self, line: str, stripped: str) -> str:
         """Apply comprehensive fixes to a line."""
         # Fix 1: Remove orphaned import content
@@ -115,79 +115,79 @@ class Wave9FinalResolution:
              re.match(r'^emit_[a-zA-Z_][a-zA-Z0-9_]*,?\s*$', stripped) or
              re.match(r'^[A-Z_][A-Z0-9_]*,?\s*$', stripped))):
             return f"# {stripped}  # Removed migration artifact"
-        
+
         # Fix 2: Remove unmatched parentheses
         if re.match(r'^\s*\)\s*$', line):
             return ""
-        
+
         # Fix 3: Fix bad indentation for imports
-        if (stripped.startswith(('from ', 'import ')) and 
+        if (stripped.startswith(('from ', 'import ')) and
             any(prefix in stripped for prefix in ['agentic_core', 'apps_', 'system_learning']) and
             (line.startswith(' ') or line.startswith('\t'))):
             return stripped
-        
+
         # Fix 4: Complete incomplete blocks
         if re.match(r'^(def|class|if|elif|else|for|while|try|except|finally|with)\b.*$', stripped) and not stripped.endswith(':'):
             return stripped + ': pass  # TODO: Implement'
-        
+
         # Fix 5: Remove problematic patterns
         if re.match(r'^\s*#\s*#\s*MOVED:.*$', line):
             return ""
-        
+
         if stripped.startswith('# REMOVED:'):
             return ""
-        
+
         return line
-    
+
     def _emergency_recovery(self, content: str) -> str:
         """Emergency recovery for severely broken files."""
         lines = content.splitlines()
         recovered_lines = []
-        
+
         for line in lines:
             stripped = line.strip()
-            
+
             # Keep only clearly valid lines
             if not stripped:
                 recovered_lines.append(line)
                 continue
-            
+
             # Keep docstrings
             if stripped.startswith(('"""', "'''")):
                 recovered_lines.append(line)
                 continue
-            
+
             # Keep standard imports (non-agentic_core)
             if (stripped.startswith(('import ', 'from ')) and
                 not any(prefix in stripped for prefix in ['agentic_core', 'apps_', 'system_learning'])):
                 recovered_lines.append(line)
                 continue
-            
+
             # Keep function/class definitions
             if re.match(r'^(def|class)\s+\w+', stripped):
                 recovered_lines.append(line)
                 continue
-            
+
             # Keep complete control structures
             if re.match(r'^(if|elif|else|for|while|try|except|finally|with|return|yield|raise|break|continue|pass)\b.*:', stripped):
                 recovered_lines.append(line)
                 continue
-            
+
             # Keep decorators
             if stripped.startswith('@'):
                 recovered_lines.append(line)
                 continue
-            
+
             # Keep pytest markers
             if stripped.startswith('@pytest'):
                 recovered_lines.append(line)
                 continue
-            
+
             # Skip everything else (likely migration artifacts)
             continue
-        
+
         return '\n'.join(recovered_lines)
-    
+
     def print_summary(self):
         """Print wave summary."""
         print("\n" + "="*60)
@@ -198,28 +198,28 @@ class Wave9FinalResolution:
         print(f"Final fixes applied: {self.stats['final_fixes']}")
         print(f"Syntax errors fixed: {self.stats['syntax_errors_fixed']}")
         print(f"Failed files: {len(self.failed_files)}")
-        
+
         if self.failed_files:
             print(f"\nFailed files (first 5):")
             for file_path, error in self.failed_files[:5]:
                 print(f"  {file_path}: {error}")
             if len(self.failed_files) > 5:
                 print(f"  ... and {len(self.failed_files) - 5} more")
-        
+
         print("="*60)
 
 
 def main():
     """Run Wave 9 final resolution."""
     repo_root = pathlib.Path(__file__).parent.parent
-    
+
     print("🌊 WAVE 9: FINAL RESOLUTION")
     print(f"Repository: {repo_root}")
-    
+
     resolver = Wave9FinalResolution(repo_root)
     stats = resolver.process_files()
     resolver.print_summary()
-    
+
     return stats['syntax_errors_fixed'] > 0
 
 

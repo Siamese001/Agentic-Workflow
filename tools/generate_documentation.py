@@ -39,60 +39,60 @@ logger = logging.getLogger(__name__)
 def generate_api_documentation(source_paths: List[Path], output_dir: Path) -> bool:
     """Generate API documentation from Python source files."""
     logger.info("Generating API documentation...")
-    
+
     success = True
-    
+
     for source_path in source_paths:
         if not source_path.exists():
             logger.warning(f"Source path not found: {source_path}")
             continue
-        
+
         # Find Python files
         if source_path.is_file():
             python_files = [source_path]
         else:
             python_files = list(source_path.rglob("*.py"))
-        
+
         for py_file in python_files:
             try:
                 # Generate output path
                 relative_path = py_file.relative_to(source_path.parent)
                 output_path = output_dir / "api" / relative_path.with_suffix(".md")
-                
+
                 logger.info(f"Generating API docs for: {py_file}")
-                
+
                 # Generate documentation
                 artifact = documentation_manager.generate_documentation(
                     DocumentationType.API_REFERENCE,
                     py_file,
                     output_path
                 )
-                
+
                 logger.info(f"✅ Generated: {output_path}")
-                
+
             except Exception as e:
                 logger.error(f"Failed to generate API docs for {py_file}: {e}")
                 success = False
-    
+
     return success
 
 
 def generate_architecture_documentation(source_path: Path, output_dir: Path) -> bool:
     """Generate comprehensive architectural documentation."""
     logger.info("Generating architectural documentation...")
-    
+
     try:
         output_path = output_dir / "architecture" / "system_overview.md"
-        
+
         artifact = documentation_manager.generate_documentation(
             DocumentationType.ARCHITECTURAL_OVERVIEW,
             source_path,
             output_path
         )
-        
+
         logger.info(f"✅ Generated: {output_path}")
         return True
-        
+
     except Exception as e:
         logger.error(f"Failed to generate architecture documentation: {e}")
         return False
@@ -101,19 +101,19 @@ def generate_architecture_documentation(source_path: Path, output_dir: Path) -> 
 def generate_knowledge_transfer_docs(output_dir: Path) -> bool:
     """Generate comprehensive knowledge transfer documentation."""
     logger.info("Generating knowledge transfer documentation...")
-    
+
     try:
         output_path = output_dir / "knowledge_transfer" / "developer_onboarding.md"
-        
+
         artifact = documentation_manager.generate_documentation(
             DocumentationType.KNOWLEDGE_TRANSFER,
             None,  # Knowledge transfer doesn't require source
             output_path
         )
-        
+
         logger.info(f"✅ Generated: {output_path}")
         return True
-        
+
     except Exception as e:
         logger.error(f"Failed to generate knowledge transfer documentation: {e}")
         return False
@@ -122,7 +122,7 @@ def generate_knowledge_transfer_docs(output_dir: Path) -> bool:
 def generate_tutorials(output_dir: Path) -> bool:
     """Generate tutorial documentation."""
     logger.info("Generating tutorial documentation...")
-    
+
     tutorials = [
         {
             "title": "Getting Started with Agentic Workflow",
@@ -203,16 +203,16 @@ from agentic_core.L1_reasoning.mixins.reasoning_mixin import ReasoningMixin
 
 class MyFirstAgent(SovereignBaseAgent, ReasoningMixin):
     \"\"\"A simple agent that demonstrates basic functionality.\"\"\"
-    
+
     def __init__(self, config: dict):
         super().__init__(config)
         self.reasoning_enabled = True
-    
+
     def execute(self, task: dict) -> dict:
         \"\"\"Execute a task with reasoning.\"\"\"
         # Use reasoning mixin
         reasoning_result = self.reason_about_task(task)
-        
+
         # Perform main execution
         result = {
             "task_id": task.get("id"),
@@ -220,7 +220,7 @@ class MyFirstAgent(SovereignBaseAgent, ReasoningMixin):
             "reasoning": reasoning_result,
             "output": f"Processed task: {task.get('description')}"
         }
-        
+
         return result
 ```
 
@@ -262,18 +262,18 @@ from agentic_core.L4_state.mixins.state_mixin import StateMixin
 
 class AdvancedAgent(SovereignBaseAgent, ReasoningMixin, ToolMixin, StateMixin):
     \"\"\"An advanced agent with multiple capabilities.\"\"\"
-    
+
     def execute(self, task: dict) -> dict:
         # Reason about the task
         reasoning = self.reason_about_task(task)
-        
+
         # Use tools if needed
         if reasoning.get("needs_tools"):
             tool_result = self.execute_tool(reasoning["tool_name"], reasoning["tool_args"])
-        
+
         # Manage state
         self.update_state({"last_task": task["id"], "status": "processing"})
-        
+
         return {
             "task_id": task["id"],
             "reasoning": reasoning,
@@ -289,27 +289,27 @@ The system provides comprehensive error handling:
 ```python
 class RobustAgent(SovereignBaseAgent):
     \"\"\"Agent with comprehensive error handling.\"\"\"
-    
+
     def execute(self, task: dict) -> dict:
         try:
             # Main execution logic
             result = self.process_task(task)
-            
+
         except ValueError as e:
             # Handle validation errors
             logger.error(f"Validation error: {e}")
             result = {"error": "Invalid task data", "details": str(e)}
-            
+
         except RuntimeError as e:
             # Handle runtime errors
             logger.error(f"Runtime error: {e}")
             result = {"error": "Execution failed", "details": str(e)}
-            
+
         except Exception as e:
             # Handle unexpected errors
             logger.error(f"Unexpected error: {e}")
             result = {"error": "Unexpected error", "details": str(e)}
-        
+
         return result
 ```
 
@@ -325,17 +325,17 @@ class TestMyFirstAgent:
     def test_agent_initialization(self):
         config = {"agent_id": "test_agent"}
         agent = MyFirstAgent(config)
-        
+
         assert agent.agent_id == "test_agent"
         assert agent.reasoning_enabled is True
-    
+
     def test_agent_execution(self):
         config = {"agent_id": "test_agent"}
         agent = MyFirstAgent(config)
-        
+
         task = {"id": "test_task", "description": "Test task"}
         result = agent.execute(task)
-        
+
         assert result["task_id"] == "test_task"
         assert result["status"] == "completed"
         assert "reasoning" in result
@@ -348,10 +348,10 @@ def test_agent_with_runtime_manager():
     config = {"agent_id": "integration_test_agent"}
     agent = MyFirstAgent(config)
     runtime = RuntimeManager()
-    
+
     task = {"id": "integration_task", "description": "Integration test"}
     result = runtime.execute_agent(agent, task)
-    
+
     assert result["status"] == "completed"
     assert "reasoning" in result
 ```
@@ -447,17 +447,17 @@ class BasicAgent(SovereignBaseAgent):
     def __init__(self, config: dict):
         super().__init__(config)
         self.setup_agent_specific_config(config)
-    
+
     def execute(self, task: dict) -> dict:
         # Validate input
         self.validate_task(task)
-        
+
         # Process task
         result = self.process_task(task)
-        
+
         # Validate output
         self.validate_result(result)
-        
+
         return result
 ```
 
@@ -470,13 +470,13 @@ class ReasoningAgent(SovereignBaseAgent, ReasoningMixin):
     def execute(self, task: dict) -> dict:
         # Reason about the task
         reasoning = self.reason_about_task(task)
-        
+
         # Choose execution strategy
         strategy = self.select_strategy(reasoning)
-        
+
         # Execute with strategy
         result = self.execute_with_strategy(task, strategy)
-        
+
         return result
 ```
 
@@ -493,16 +493,16 @@ class ToolAgent(SovereignBaseAgent, ToolMixin):
             "data_analyzer",
             "report_generator"
         ])
-    
+
     def execute(self, task: dict) -> dict:
         # Determine required tools
         required_tools = self.analyze_tool_requirements(task)
-        
+
         # Execute tools in sequence
         results = {}
         for tool in required_tools:
             results[tool] = self.execute_tool(tool, task)
-        
+
         return self.consolidate_results(results)
 ```
 
@@ -515,13 +515,13 @@ class StatefulAgent(SovereignBaseAgent, StateMixin):
     def execute(self, task: dict) -> dict:
         # Load previous state
         previous_state = self.load_state(task.get("session_id"))
-        
+
         # Process with context
         result = self.process_with_context(task, previous_state)
-        
+
         # Save new state
         self.save_state(task.get("session_id"), result)
-        
+
         return result
 ```
 
@@ -536,7 +536,7 @@ class CustomMixin:
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.custom_feature = True
-    
+
     def custom_operation(self, data: dict) -> dict:
         # Custom logic here
         return processed_data
@@ -569,17 +569,17 @@ class CoordinatorAgent(SovereignBaseAgent):
     def __init__(self, config: dict):
         super().__init__(config)
         self.sub_agents = self.initialize_sub_agents(config)
-    
+
     def execute(self, task: dict) -> dict:
         # Decompose task
         subtasks = self.decompose_task(task)
-        
+
         # Execute subtasks
         results = {}
         for subtask in subtasks:
             agent = self.select_agent(subtask)
             results[subtask["id"]] = agent.execute(subtask)
-        
+
         # Consolidate results
         return self.consolidate_results(results)
 ```
@@ -596,24 +596,24 @@ class TestMyAgent:
     def test_execute_success(self):
         config = {"agent_id": "test"}
         agent = MyAgent(config)
-        
+
         task = {"id": "test", "data": "sample"}
         result = agent.execute(task)
-        
+
         assert result["status"] == "success"
         assert "output" in result
-    
+
     def test_execute_with_mock(self):
         config = {"agent_id": "test"}
         agent = MyAgent(config)
-        
+
         # Mock external dependencies
         with patch.object(agent, 'external_service') as mock_service:
             mock_service.return_value = {"result": "mocked"}
-            
+
             task = {"id": "test", "use_external": True}
             result = agent.execute(task)
-            
+
             assert result["output"] == "mocked"
             mock_service.assert_called_once()
 ```
@@ -625,11 +625,11 @@ def test_agent_integration():
     # Test with real dependencies
     config = {"agent_id": "integration_test"}
     agent = MyAgent(config)
-    
+
     # Test full workflow
     task = create_complex_task()
     result = agent.execute(task)
-    
+
     # Validate end-to-end behavior
     assert result["status"] == "success"
     assert all_required_fields_present(result)
@@ -643,12 +643,12 @@ import time
 def test_agent_performance():
     config = {"agent_id": "performance_test"}
     agent = MyAgent(config)
-    
+
     # Measure execution time
     start_time = time.time()
     result = agent.execute(create_large_task())
     execution_time = time.time() - start_time
-    
+
     # Validate performance requirements
     assert execution_time < 5.0  # Should complete within 5 seconds
     assert result["status"] == "success"
@@ -664,21 +664,21 @@ class RobustAgent(SovereignBaseAgent):
         try:
             # Pre-execution validation
             self.validate_preconditions(task)
-            
+
             # Main execution
             result = self.execute_main(task)
-            
+
             # Post-execution validation
             self.validate_result(result)
-            
+
             return result
-            
+
         except ValidationError as e:
             return self.handle_validation_error(e, task)
-            
+
         except ExecutionError as e:
             return self.handle_execution_error(e, task)
-            
+
         except Exception as e:
             return self.handle_unexpected_error(e, task)
 ```
@@ -692,7 +692,7 @@ class RetryAgent(SovereignBaseAgent):
         for attempt in range(max_retries):
             try:
                 return self.execute_with_retry(task)
-                
+
             except TemporaryError as e:
                 if attempt == max_retries - 1:
                     raise
@@ -709,16 +709,16 @@ class CachedAgent(SovereignBaseAgent):
     def __init__(self, config: dict):
         super().__init__(config)
         self.cache = {}
-    
+
     def execute(self, task: dict) -> dict:
         cache_key = self.generate_cache_key(task)
-        
+
         if cache_key in self.cache:
             return self.cache[cache_key]
-        
+
         result = self.compute_result(task)
         self.cache[cache_key] = result
-        
+
         return result
 ```
 
@@ -728,16 +728,16 @@ class CachedAgent(SovereignBaseAgent):
 class BatchAgent(SovereignBaseAgent):
     def execute(self, task: dict) -> dict:
         items = task.get("items", [])
-        
+
         # Process in batches
         batch_size = 100
         results = []
-        
+
         for i in range(0, len(items), batch_size):
             batch = items[i:i + batch_size]
             batch_results = self.process_batch(batch)
             results.extend(batch_results)
-        
+
         return {"results": results, "total_processed": len(items)}
 ```
 
@@ -751,7 +751,7 @@ class ConfiguredAgent(SovereignBaseAgent):
         super().__init__(config)
         self.validate_config(config)
         self.setup_from_config(config)
-    
+
     def validate_config(self, config: dict):
         required_fields = ["agent_id", "mode", "timeout"]
         for field in required_fields:
@@ -768,7 +768,7 @@ class ResourceAwareAgent(SovereignBaseAgent):
         with self.acquire_resources():
             # Execute with resources
             result = self.execute_with_resources(task)
-        
+
         return result
 ```
 
@@ -790,13 +790,13 @@ class MonitoredAgent(SovereignBaseAgent):
 ```python
 class VersionedAgent(SovereignBaseAgent):
     SUPPORTED_VERSIONS = ["1.0", "1.1", "2.0"]
-    
+
     def execute(self, task: dict) -> dict:
         version = task.get("version", "1.0")
-        
+
         if version not in self.SUPPORTED_VERSIONS:
             raise ValueError(f"Unsupported version: {version}")
-        
+
         # Route to version-specific handler
         handler = getattr(self, f"execute_v{version.replace('.', '_')}")
         return handler(task)
@@ -807,55 +807,55 @@ This guide provides comprehensive patterns and best practices for developing rob
             "file_name": "agent_development.md"
         }
     ]
-    
+
     success = True
     tutorials_dir = output_dir / "tutorials"
-    
+
     for tutorial in tutorials:
         try:
             tutorial_path = tutorials_dir / tutorial["file_name"]
             tutorial_path.parent.mkdir(parents=True, exist_ok=True)
-            
+
             with open(tutorial_path, 'w', encoding='utf-8') as f:
                 f.write(f"# {tutorial['title']}\n\n")
                 f.write(tutorial['content'])
-            
+
             logger.info(f"✅ Generated tutorial: {tutorial_path}")
-            
+
         except Exception as e:
             logger.error(f"Failed to generate tutorial {tutorial['file_name']}: {e}")
             success = False
-    
+
     return success
 
 
 def validate_documentation(docs_dir: Path) -> bool:
     """Validate existing documentation quality."""
     logger.info("Validating documentation quality...")
-    
+
     from agentic_core.core.documentation_framework import DocumentationQualityValidator
-    
+
     validator = DocumentationQualityValidator()
     md_files = list(docs_dir.rglob("*.md"))
-    
+
     total_files = len(md_files)
     valid_files = 0
-    
+
     for md_file in md_files:
         try:
             with open(md_file, 'r', encoding='utf-8') as f:
                 content = f.read()
-            
+
             # Simple validation (in real implementation, would use proper parsing)
             if len(content) > 100 and "#" in content:
                 valid_files += 1
                 logger.info(f"✅ Valid: {md_file.name}")
             else:
                 logger.warning(f"⚠️  Low quality: {md_file.name}")
-                
+
         except Exception as e:
             logger.error(f"❌ Failed to validate {md_file}: {e}")
-    
+
     logger.info(f"Documentation validation: {valid_files}/{total_files} files passed")
     return valid_files == total_files
 
@@ -863,7 +863,7 @@ def validate_documentation(docs_dir: Path) -> bool:
 def generate_documentation_index(docs_dir: Path) -> bool:
     """Generate a comprehensive documentation index."""
     logger.info("Generating documentation index...")
-    
+
     try:
         index_content = """# Agentic Workflow Documentation
 
@@ -973,16 +973,16 @@ If you need help with the documentation:
 
 *This documentation is continuously updated. Check back regularly for the latest information.*
 """
-        
+
         index_path = docs_dir / "README.md"
         index_path.parent.mkdir(parents=True, exist_ok=True)
-        
+
         with open(index_path, 'w', encoding='utf-8') as f:
             f.write(index_content)
-        
+
         logger.info(f"✅ Generated documentation index: {index_path}")
         return True
-        
+
     except Exception as e:
         logger.error(f"Failed to generate documentation index: {e}")
         return False
@@ -993,99 +993,99 @@ def main():
     parser = argparse.ArgumentParser(
         description="Documentation Generation Tool - Phase 4 Implementation"
     )
-    
+
     subparsers = parser.add_subparsers(dest='command', help='Available commands')
-    
+
     # API documentation command
     api_parser = subparsers.add_parser('api', help='Generate API documentation')
     api_parser.add_argument('sources', nargs='+', help='Source files or directories')
     api_parser.add_argument('--output', default='docs/generated', help='Output directory')
-    
+
     # Architecture documentation command
     arch_parser = subparsers.add_parser('architecture', help='Generate architecture documentation')
     arch_parser.add_argument('source', help='Source directory for architecture analysis')
     arch_parser.add_argument('--output', default='docs/generated', help='Output directory')
-    
+
     # Knowledge transfer command
     kt_parser = subparsers.add_parser('knowledge-transfer', help='Generate knowledge transfer docs')
     kt_parser.add_argument('--output', default='docs/generated', help='Output directory')
     kt_parser.add_argument('--all', action='store_true', help='Generate all knowledge transfer materials')
-    
+
     # Tutorials command
     tutorials_parser = subparsers.add_parser('tutorials', help='Generate tutorial documentation')
     tutorials_parser.add_argument('--output', default='docs/generated', help='Output directory')
-    
+
     # Validation command
     validate_parser = subparsers.add_parser('validate', help='Validate documentation quality')
     validate_parser.add_argument('docs_dir', help='Documentation directory to validate')
-    
+
     # Index command
     index_parser = subparsers.add_parser('index', help='Generate documentation index')
     index_parser.add_argument('--output', default='docs', help='Documentation directory')
-    
+
     # Generate all command
     all_parser = subparsers.add_parser('all', help='Generate all documentation')
     all_parser.add_argument('--source', default='agentic_core', help='Source directory')
     all_parser.add_argument('--output', default='docs/generated', help='Output directory')
-    
+
     args = parser.parse_args()
-    
+
     if not args.command:
         parser.print_help()
         return 1
-    
+
     success = True
-    
+
     if args.command == 'api':
         source_paths = [Path(p) for p in args.sources]
         output_dir = Path(args.output)
         success = generate_api_documentation(source_paths, output_dir)
-        
+
     elif args.command == 'architecture':
         source_path = Path(args.source)
         output_dir = Path(args.output)
         success = generate_architecture_documentation(source_path, output_dir)
-        
+
     elif args.command == 'knowledge-transfer':
         output_dir = Path(args.output)
         success = generate_knowledge_transfer_docs(output_dir)
-        
+
     elif args.command == 'tutorials':
         output_dir = Path(args.output)
         success = generate_tutorials(output_dir)
-        
+
     elif args.command == 'validate':
         docs_dir = Path(args.docs_dir)
         success = validate_documentation(docs_dir)
-        
+
     elif args.command == 'index':
         output_dir = Path(args.output)
         success = generate_documentation_index(output_dir)
-        
+
     elif args.command == 'all':
         source_path = Path(args.source)
         output_dir = Path(args.output)
-        
+
         logger.info("Generating all documentation...")
-        
+
         # Generate API docs
         api_paths = [source_path / layer for layer in ["L0_routing", "L1_reasoning", "L2_execution", "L3_orchestration", "L4_state", "L5_safety"]]
         success &= generate_api_documentation(api_paths, output_dir)
-        
+
         # Generate architecture docs
         success &= generate_architecture_documentation(source_path, output_dir)
-        
+
         # Generate knowledge transfer docs
         success &= generate_knowledge_transfer_docs(output_dir)
-        
+
         # Generate tutorials
         success &= generate_tutorials(output_dir)
-        
+
         # Generate index
         success &= generate_documentation_index(output_dir)
-        
+
         logger.info(f"Documentation generation complete. Results in: {output_dir}")
-    
+
     return 0 if success else 1
 
 

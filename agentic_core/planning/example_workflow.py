@@ -20,17 +20,17 @@ logger = logging.getLogger(__name__)
 class TokenAwarePlanningWorkflow:
     """
     Example planning workflow with integrated token budget management.
-    
+
     This demonstrates how to wrap planning steps with token budget enforcement
     and maintain visibility into token usage across the entire workflow.
     """
-    
-    def __init__(self, 
+
+    def __init__(self,
                  budget_file: Optional[Path] = None,
                  custom_budget: Optional[TokenBudget] = None):
         """
         Initialize the token-aware planning workflow.
-        
+
         Args:
             budget_file: Path to budget history file
             custom_budget: Custom token budget configuration
@@ -39,26 +39,26 @@ class TokenAwarePlanningWorkflow:
             estimator=ContextWindowEstimator(budget=custom_budget),
             budget_file=budget_file
         )
-        
+
         # Workflow state
         self.current_phase = None
         self.current_wave = None
         self.step_results = []
-    
+
     def execute_phase(self, phase_name: str, waves: List[Dict[str, Any]]) -> Dict[str, Any]:
         """
         Execute a complete phase with multiple waves.
-        
+
         Args:
             phase_name: Name of the phase
             waves: List of wave configurations
-            
+
         Returns:
             Phase execution summary with token budget information
         """
         logger.info(f"Starting phase: {phase_name}")
         self.current_phase = phase_name
-        
+
         phase_results = {
             'phase': phase_name,
             'waves': [],
@@ -66,22 +66,22 @@ class TokenAwarePlanningWorkflow:
             'budget_violations': 0,
             'compression_events': 0
         }
-        
+
         for wave_config in waves:
             wave_name = wave_config['name']
             logger.info(f"Executing wave: {wave_name}")
-            
+
             try:
                 wave_result = self.execute_wave(wave_name, wave_config)
                 phase_results['waves'].append(wave_result)
                 phase_results['total_tokens'] += wave_result['total_tokens']
-                
+
                 if wave_result['budget_status'] == 'red':
                     phase_results['budget_violations'] += 1
-                
+
                 if wave_result['compression_applied']:
                     phase_results['compression_events'] += 1
-                    
+
             except TokenBudgetExceededError as e:
                 logger.error(f"Wave {wave_name} failed due to token budget: {e}")
                 phase_results['budget_violations'] += 1
@@ -93,25 +93,25 @@ class TokenAwarePlanningWorkflow:
                 }
                 phase_results['waves'].append(wave_result)
                 break  # Stop phase on budget failure
-        
+
         # Log phase summary
         self._log_phase_summary(phase_results)
-        
+
         return phase_results
-    
+
     def execute_wave(self, wave_name: str, wave_config: Dict[str, Any]) -> Dict[str, Any]:
         """
         Execute a single wave with multiple steps.
-        
+
         Args:
             wave_name: Name of the wave
             wave_config: Wave configuration including steps
-            
+
         Returns:
             Wave execution summary with token budget information
         """
         self.current_wave = wave_name
-        
+
         wave_results = {
             'wave': wave_name,
             'steps': [],
@@ -119,27 +119,27 @@ class TokenAwarePlanningWorkflow:
             'budget_status': 'green',
             'compression_applied': False
         }
-        
+
         for step_config in wave_config['steps']:
             step_name = step_config['name']
             step_type = step_config['type']
-            
+
             logger.info(f"Executing step: {step_name} ({step_type})")
-            
+
             try:
                 step_result = self.execute_step(step_name, step_type, step_config)
                 wave_results['steps'].append(step_result)
                 wave_results['total_tokens'] += step_result['estimated_tokens']
-                
+
                 # Update wave budget status
                 if step_result['budget_status'] == 'red':
                     wave_results['budget_status'] = 'red'
                 elif step_result['budget_status'] == 'yellow' and wave_results['budget_status'] == 'green':
                     wave_results['budget_status'] = 'yellow'
-                
+
                 if step_result['compression_applied']:
                     wave_results['compression_applied'] = True
-                    
+
             except TokenBudgetExceededError as e:
                 logger.error(f"Step {step_name} failed due to token budget: {e}")
                 wave_results['budget_status'] = 'red'
@@ -151,27 +151,27 @@ class TokenAwarePlanningWorkflow:
                 }
                 wave_results['steps'].append(step_result)
                 break  # Stop wave on budget failure
-        
+
         return wave_results
-    
+
     def execute_step(self, step_name: str, step_type: str, step_config: Dict[str, Any]) -> Dict[str, Any]:
         """
         Execute a single planning step with token budget enforcement.
-        
+
         Args:
             step_name: Name of the step
             step_type: Type of step (analysis, implementation, testing, etc.)
             step_config: Step configuration
-            
+
         Returns:
             Step execution result with token budget information
         """
         # Prepare context for token estimation
         context = self._prepare_step_context(step_name, step_type, step_config)
-        
+
         # Perform preflight token budget check
         estimate = self.preflight_hook.preflight_check(**context)
-        
+
         # Record step result
         step_result = {
             'step': step_name,
@@ -183,32 +183,32 @@ class TokenAwarePlanningWorkflow:
             'top_contributors': estimate.top_contributors,
             'recommendations': estimate.recommended_reductions
         }
-        
+
         # Execute the actual step logic
         if estimate.action == 'proceed':
             logger.info(f"Step {step_name} proceeding with {estimate.total_projected_tokens:,} tokens")
             result = self._execute_step_logic(step_type, step_config, estimate)
             step_result.update(result)
-            
+
         elif estimate.action == 'compress':
             logger.info(f"Step {step_name} compressed from original estimate")
             logger.info(f"Compression applied: {estimate.compression_applied}")
             result = self._execute_step_logic(step_type, step_config, estimate)
             step_result.update(result)
-            
+
         else:  # 'block'
             # This should be caught by the preflight hook, but add safety
             raise TokenBudgetExceededError(
                 f"Step {step_name} blocked: {estimate.total_projected_tokens:,} tokens"
             )
-        
+
         self.step_results.append(step_result)
         return step_result
-    
+
     def _prepare_step_context(self, step_name: str, step_type: str, step_config: Dict[str, Any]) -> Dict[str, Any]:
         """
         Prepare context for token estimation based on step type and configuration.
-        
+
         This is where you would gather the actual content that will be sent to SWE 1.5.
         """
         base_context = {
@@ -221,9 +221,9 @@ class TokenAwarePlanningWorkflow:
             'retrieved_context': self._get_retrieved_context(step_config.get('context', [])),
             'prior_steps': self._get_prior_step_contents()
         }
-        
+
         return base_context
-    
+
     def _get_system_prompt(self, step_type: str) -> str:
         """Get system prompt based on step type"""
         prompts = {
@@ -234,7 +234,7 @@ class TokenAwarePlanningWorkflow:
             'documentation': "You are a technical writer. Create clear documentation."
         }
         return prompts.get(step_type, "You are a helpful assistant.")
-    
+
     def _get_file_contents(self, file_paths: List[str]) -> List[Dict[str, Any]]:
         """Get file contents for token estimation"""
         files = []
@@ -254,7 +254,7 @@ class TokenAwarePlanningWorkflow:
                     'content': f"# Simulated content for {file_path}\n" + "def example_function():\n    pass\n" * 100
                 })
         return files
-    
+
     def _get_diff_contents(self, diff_paths: List[str]) -> List[Dict[str, Any]]:
         """Get diff contents for token estimation"""
         diffs = []
@@ -273,7 +273,7 @@ class TokenAwarePlanningWorkflow:
                 'content': diff_content
             })
         return diffs
-    
+
     def _get_log_contents(self, log_sources: List[str]) -> List[Dict[str, Any]]:
         """Get log contents for token estimation"""
         logs = []
@@ -292,7 +292,7 @@ FileNotFoundError: Config file not found
                 'content': log_content
             })
         return logs
-    
+
     def _get_retrieved_context(self, context_sources: List[str]) -> List[Dict[str, Any]]:
         """Get retrieved context for token estimation"""
         context = []
@@ -309,46 +309,46 @@ It contains important information about coding standards and patterns.
                 'chunk_id': f"chunk_{i+1}"
             })
         return context
-    
+
     def _get_prior_step_contents(self) -> List[str]:
         """Get contents from prior steps to carry forward"""
         # Return last 3 step results as context
         return [str(result) for result in self.step_results[-3:]]
-    
+
     def _execute_step_logic(self, step_type: str, step_config: Dict[str, Any], estimate) -> Dict[str, Any]:
         """
         Execute the actual step logic.
-        
+
         In a real implementation, this would call SWE 1.5 with the compressed content.
         """
         # Simulate step execution
         execution_time = 0.5  # Simulated execution time
-        
+
         return {
             'execution_time': execution_time,
             'output_tokens': 5000,  # Simulated output
             'success': True,
             'artifacts': [f"artifact_{step_type}_{hash(str(step_config)) % 1000}.json"]
         }
-    
+
     def _log_phase_summary(self, phase_results: Dict[str, Any]) -> None:
         """Log phase execution summary"""
         logger.info(f"Phase {phase_results['phase']} completed:")
         logger.info(f"  - Total tokens: {phase_results['total_tokens']:,}")
         logger.info(f"  - Budget violations: {phase_results['budget_violations']}")
         logger.info(f"  - Compression events: {phase_results['compression_events']}")
-        
+
         # Get overall budget summary
         budget_summary = self.preflight_hook.get_budget_summary()
         logger.info(f"Overall budget summary:")
         logger.info(f"  - Total steps: {budget_summary['total_steps']}")
         logger.info(f"  - Average tokens per step: {budget_summary['average_tokens_per_step']:.0f}")
         logger.info(f"  - Status distribution: {budget_summary['status_distribution']}")
-    
+
     def get_workflow_summary(self) -> Dict[str, Any]:
         """Get complete workflow summary"""
         budget_summary = self.preflight_hook.get_budget_summary()
-        
+
         return {
             'workflow_summary': {
                 'phases_completed': 1,  # Single phase in this example
@@ -363,18 +363,18 @@ It contains important information about coding standards and patterns.
 # Example usage
 def example_workflow():
     """Example of using the TokenAwarePlanningWorkflow"""
-    
+
     # Initialize workflow with custom budget
     custom_budget = TokenBudget(
         WARNING_THRESHOLD=120000,  # Earlier warning for demo
         SAFE_OPERATING_CAP=150000   # Lower safe cap for demo
     )
-    
+
     workflow = TokenAwarePlanningWorkflow(
         budget_file=Path("docs/reports/plans/example_workflow_budget.json"),
         custom_budget=custom_budget
     )
-    
+
     # Define phase configuration
     phase_configs = [
         {
@@ -429,11 +429,11 @@ def example_workflow():
             ]
         }
     ]
-    
+
     # Execute the phase
     try:
         results = workflow.execute_phase('feature_development', phase_configs)
-        
+
         # Print workflow summary
         summary = workflow.get_workflow_summary()
         print("\n" + "="*50)
@@ -444,9 +444,9 @@ def example_workflow():
         print(f"Total tokens used: {summary['workflow_summary']['total_tokens']:,}")
         print(f"Average tokens per step: {summary['budget_summary']['average_tokens_per_step']:.0f}")
         print(f"Status distribution: {summary['budget_summary']['status_distribution']}")
-        
+
         return results
-        
+
     except Exception as e:
         logger.error(f"Workflow failed: {e}")
         raise

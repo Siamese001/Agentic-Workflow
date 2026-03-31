@@ -445,17 +445,17 @@ class ResearchOrchestrator:
         """
         if not self.qwen_enabled:
             return {"success": False, "error": "qwen_disabled", "content": None}
-        
+
         if self._qwen_gateway is None or AppsQwenRequest is None:
             return {"success": False, "error": "qwen_gateway_unavailable", "content": None}
-        
+
         if apps_qwen_telemetry is None or self._qwen_session_id is None:
             return {"success": False, "error": "qwen_telemetry_unavailable", "content": None}
-        
+
         # Validate inputs
         if not research_topic or not research_topic.strip():
             return {"success": False, "error": "empty_research_topic", "content": None}
-        
+
         if not sources or not isinstance(sources, list):
             return {"success": False, "error": "invalid_sources", "content": None}
 

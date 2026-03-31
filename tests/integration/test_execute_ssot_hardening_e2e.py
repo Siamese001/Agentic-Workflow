@@ -150,10 +150,10 @@ class TestExecuteSsotSystemLearningHardening:
             HealingOutcomeAggregator,
             HealingOutcomeEvent,
         )
-        
+
         store = InMemoryHealingOutcomeIntakeStore()
         adapter = HealingOutcomeIntakeAdapter(store=store)
-        
+
         # Create aggregator with actual events to get positive window_size
         aggregator = HealingOutcomeAggregator(window_size=5)
         event = HealingOutcomeEvent(
@@ -164,14 +164,14 @@ class TestExecuteSsotSystemLearningHardening:
             timestamp_utc=1234567890,
         )
         aggregator.ingest(event)
-        
+
         # Build record
         record = adapter.build_record(
             aggregator=aggregator,
             created_utc=1234567890,
             source="hardening_test",
         )
-        
+
         # Verify mandatory fields
         assert hasattr(record, 'schema_version')
         assert hasattr(record, 'created_utc')

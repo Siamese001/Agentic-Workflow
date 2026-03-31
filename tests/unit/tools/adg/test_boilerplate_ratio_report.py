@@ -26,7 +26,7 @@ def test_infer_layer_from_path():
     """Test layer inference from file paths."""
     BoilerplateRatioAnalyzer, LayerStats, RatioReport = _get_analyzer_classes()
     analyzer = BoilerplateRatioAnalyzer(Path("."))
-    
+
     # Test various layer paths
     assert analyzer.infer_layer_from_path(Path("agentic_core/L0_routing/test.py")) == "L0"
     assert analyzer.infer_layer_from_path(Path("agentic_core/L5_safety/test.py")) == "L5"
@@ -49,11 +49,11 @@ _emit_records_execution_trace("test", "test", "test")
 _emit_applies_guardrail("test", "test", "test")
 """)
         temp_path = Path(f.name)
-    
+
     try:
         analyzer = BoilerplateRatioAnalyzer(Path("."))
         ratio, metadata = analyzer.calculate_boilerplate_ratio(temp_path)
-        
+
         assert ratio == 1.0  # All boilerplate
         assert metadata["behavioral_nodes"] == 0
         assert metadata["boilerplate_nodes"] > 0
@@ -78,11 +78,11 @@ class TestClass:
         return "test"
 """)
         temp_path = Path(f.name)
-    
+
     try:
         analyzer = BoilerplateRatioAnalyzer(Path("."))
         ratio, metadata = analyzer.calculate_boilerplate_ratio(temp_path)
-        
+
         assert ratio < 0.7  # Should be healthy
         assert metadata["behavioral_nodes"] > 0
         assert metadata["classification"] == "healthy"
@@ -96,11 +96,11 @@ def test_calculate_boilerplate_ratio_syntax_error():
     with tempfile.NamedTemporaryFile(mode='w', suffix='.py', delete=False) as f:
         f.write("def broken(\n")  # Missing closing parenthesis
         temp_path = Path(f.name)
-    
+
     try:
         analyzer = BoilerplateRatioAnalyzer(Path("."))
         ratio, metadata = analyzer.calculate_boilerplate_ratio(temp_path)
-        
+
         assert ratio == 1.0  # Syntax errors treated as all boilerplate
         assert "error" in metadata
     finally:
@@ -113,11 +113,11 @@ def test_calculate_boilerplate_ratio_empty():
     with tempfile.NamedTemporaryFile(mode='w', suffix='.py', delete=False) as f:
         f.write("")
         temp_path = Path(f.name)
-    
+
     try:
         analyzer = BoilerplateRatioAnalyzer(Path("."))
         ratio, metadata = analyzer.calculate_boilerplate_ratio(temp_path)
-        
+
         assert ratio == 1.0  # Empty file is all boilerplate
         assert metadata["behavioral_nodes"] == 0
         assert metadata["boilerplate_nodes"] == 0
@@ -135,33 +135,33 @@ def test_generate_ratio_report(mock_scan, mock_calculate):
         Path("L0_file2.py"),
         Path("L5_file1.py")
     ]
-    
+
     # Mock ratio calculations
     mock_calculate.side_effect = [
         (1.0, {"classification": "hollow", "behavioral_nodes": 0, "boilerplate_nodes": 5, "lines": 10}),
         (0.5, {"classification": "healthy", "behavioral_nodes": 2, "boilerplate_nodes": 2, "lines": 20}),
         (0.8, {"classification": "boilerplate_heavy", "behavioral_nodes": 1, "boilerplate_nodes": 4, "lines": 15})
     ]
-    
+
     analyzer = BoilerplateRatioAnalyzer(Path("."))
     report = analyzer.generate_ratio_report()
-    
+
     # Check totals
     assert report.total_files == 3
     assert report.summary["total_hollow"] == 1
     assert report.summary["total_boilerplate_heavy"] == 1
     assert report.summary["total_healthy"] == 1
-    
+
     # Check layer stats
     assert "L0" in report.layer_stats
     assert "L5" in report.layer_stats
-    
+
     l0_stats = report.layer_stats["L0"]
     assert l0_stats.files == 2
     assert l0_stats.hollow == 1
     assert l0_stats.healthy == 1
     assert l0_stats.avg_ratio == 0.75  # (1.0 + 0.5) / 2
-    
+
     l5_stats = report.layer_stats["L5"]
     assert l5_stats.files == 1
     assert l5_stats.boilerplate_heavy == 1
@@ -171,7 +171,7 @@ def test_generate_ratio_report(mock_scan, mock_calculate):
 def test_scan_python_files():
     """Test Python file scanning."""
     analyzer = BoilerplateRatioAnalyzer(Path("."))
-    
+
     with patch('pathlib.Path.rglob') as mock_rglob:
         mock_rglob.return_value = [
             Path("test1.py"),
@@ -180,9 +180,9 @@ def test_scan_python_files():
             Path("__pycache__/test.py"),  # Should be excluded
             Path("test.pyc"),  # Not a Python file
         ]
-        
+
         files = analyzer.scan_python_files()
-        
+
         # Should only include actual Python files not in excluded dirs
         assert len(files) == 2
         assert Path("test1.py") in files
@@ -238,10 +238,10 @@ def test_print_summary(capsys):
             "overall_boilerplate_heavy_percentage": 50.0
         }
     )
-    
+
     analyzer = BoilerplateRatioAnalyzer(Path("."))
     analyzer.print_summary(report)
-    
+
     captured = capsys.readouterr()
     assert "Boilerplate Ratio Report" in captured.out
     assert "L0:" in captured.out

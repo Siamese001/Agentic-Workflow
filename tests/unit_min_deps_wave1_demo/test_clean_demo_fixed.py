@@ -33,11 +33,11 @@ class TestWriteAmplificationDetector:
             max_growth_ratio=MAX_GROWTH_RATIO,
             max_write_bytes=MAX_WRITE_BYTES,
         )
-        
+
         # Simulate write operations that exceed threshold
         detector.track_write(100)  # Initial write
         detector.track_write(500)  # This should trigger amplification warning
-        
+
         # Assert
         assert detector.get_amplification_ratio() > MAX_GROWTH_RATIO
         assert detector.is_amplification_detected()
@@ -46,7 +46,7 @@ class TestWriteAmplificationDetector:
         """Test that write size cap is enforced."""
         # Arrange
         detector = WriteSizeCapError(max_bytes=MAX_WRITE_BYTES)
-        
+
         # Act & Assert
         with pytest.raises(WriteSizeCapError):
             detector.validate_write_size(MAX_WRITE_BYTES + 1)
@@ -55,11 +55,11 @@ class TestWriteAmplificationDetector:
         """Test prohibition hit count tracking."""
         # Arrange
         initial_count = get_prohibition_hit_count()
-        
+
         # Act
         record_prohibition_hit("test_operation")
         new_count = get_prohibition_hit_count()
-        
+
         # Assert
         assert new_count == initial_count + 1
 
@@ -67,11 +67,11 @@ class TestWriteAmplificationDetector:
         """Test lifecycle trace contract integration."""
         # Arrange
         agent_id = "test_write_guard_agent"
-        
+
         # Act - Emit various lifecycle events
         _emit_agent_executes_agent(agent_id, "target_agent")
         _emit_applies_guardrail(agent_id, "write_guardrail")
-        
+
         # Assert - Verify emissions were recorded
         assert True  # Placeholder assertion
 

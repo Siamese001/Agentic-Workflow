@@ -3,7 +3,7 @@ Feature extraction package for ML decision support.
 
 Provides deterministic feature extractors for different architecture layers:
 - L0FeatureExtractor: Route recommendation features
-- C0FeatureExtractor: Retrieval reranking features  
+- C0FeatureExtractor: Retrieval reranking features
 - L6FeatureExtractor: Anomaly detection features
 - L3FeatureExtractor: DAG branch ranking features
 - L5FeatureExtractor: Risk calibration features
@@ -33,7 +33,7 @@ from .advanced_l6_features import AdvancedL6FeatureExtractor
 __all__ = [
     'DeterministicFeatureExtractor',
     'L0FeatureExtractor',
-    'C0FeatureExtractor', 
+    'C0FeatureExtractor',
     'L6FeatureExtractor',
     'L3FeatureExtractor',
     'L5FeatureExtractor',

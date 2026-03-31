@@ -9,7 +9,7 @@ for root, dirs, files in os.walk(r'tests\unit'):
         filepath = os.path.join(root, file)
         with open(filepath, 'r', encoding='utf-8') as f:
             content = f.read()
-        
+
         # Check if it has unittest.TestCase but no unittest import
         if 'unittest.TestCase' in content and 'import unittest' not in content:
             # Add unittest import after the docstring or at the top
@@ -19,7 +19,7 @@ for root, dirs, files in os.walk(r'tests\unit'):
                 new_content = content[:end_doc] + '\nimport unittest\n' + content[end_doc:]
             else:
                 new_content = 'import unittest\n' + content
-            
+
             with open(filepath, 'w', encoding='utf-8') as f:
                 f.write(new_content)
             print(f'Fixed: {filepath}')

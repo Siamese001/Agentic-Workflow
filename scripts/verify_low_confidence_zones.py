@@ -131,7 +131,7 @@ class ADGDeadCodeZoneControlVerifier:
         inferred_result = self._verify_inferred_symbol_ratio()
 
         all_issues: list[str] = []
-        
+
         # Check for issues in results
         if dead_import_result.get("total_dead_imports", 0) > 1000:
             all_issues.append(f"{dead_import_result['total_dead_imports']} dead imports detected")

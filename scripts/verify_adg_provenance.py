@@ -25,14 +25,14 @@ class ADGProvenanceVerifier:
         """Collect all ADG artifact files (SQLite, JSON, CSV)."""
         if not self.adg_dir.exists():
             raise ProvenanceVerificationError(f"No artifacts found in {self.adg_dir}")
-        
+
         artifacts = []
         for pattern in ["*.sqlite", "*.json", "*.csv"]:
             artifacts.extend(self.adg_dir.glob(pattern))
-        
+
         if not artifacts:
             raise ProvenanceVerificationError(f"No artifacts found in {self.adg_dir}")
-        
+
         return artifacts
 
     def _load_sqlite_meta(self, db_path: Path) -> dict[str, Any]:

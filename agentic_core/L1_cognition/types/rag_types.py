@@ -126,36 +126,36 @@ emit_determinism_digest("trace_rag_types", "rag_types_policy_verify")
 @dataclass
 class RAGQuery:
     """Represents a RAG pipeline query with context requirements."""
-    
+
     query_text: str
     query_type: str = "qa"  # "qa", "summarization", "explanation", "analysis"
-    
+
     # Context requirements
     max_context_length: int = 4000  # Maximum context tokens
     min_context_items: int = 3
     max_context_items: int = 10
-    
+
     # Search strategy
     search_mode: str = "fusion"  # "local", "global", "drift", "fusion"
     search_filters: Dict[str, Any] = field(default_factory=dict)
-    
+
     # Generation parameters
     temperature: float = 0.7
     max_tokens: int = 1000
     top_p: float = 0.9
     top_k: int = 40
-    
+
     # Context assembly
     include_sources: bool = True
     include_relationships: bool = True
     include_communities: bool = True
     context_format: str = "structured"  # "structured", "narrative", "bullet"
-    
+
     # Metadata
     query_id: str = field(default_factory=lambda: f"rag_query_{datetime.utcnow().strftime('%Y%m%d_%H%M%S')}")
     timestamp: datetime = field(default_factory=datetime.utcnow)
     metadata: Dict[str, Any] = field(default_factory=dict)
-    
+
     def __post_init__(self) -> None:
         """Normalize query text."""
         self.query_text = self.query_text.strip()
@@ -166,31 +166,31 @@ class RAGQuery:
 @dataclass
 class ContextItem:
     """Represents a single context item for RAG."""
-    
+
     item_id: str
     content: str
     item_type: str  # "entity", "relationship", "community", "document"
     title: str
     relevance_score: float
-    
+
     # Source information
     source_file: Optional[str] = None
     line_number: Optional[int] = None
     confidence: float = 1.0
-    
+
     # Context metadata
     context_type: str = "primary"  # "primary", "supporting", "background"
     hierarchy_level: Optional[int] = None
     surrounding_context: Optional[str] = None
-    
+
     # Formatting
     formatted_content: Optional[str] = None
-    
+
     def format_for_context(self, format_type: str = "structured") -> str:
         """Format the context item for inclusion in prompt."""
         if self.formatted_content and format_type == self.context_format:
             return self.formatted_content
-        
+
         if format_type == "structured":
             parts = [
                 f"Type: {self.item_type}",
@@ -201,13 +201,13 @@ class ContextItem:
             if self.source_file:
                 parts.append(f"Source: {self.source_file}")
             return "\n".join(parts)
-        
+
         elif format_type == "narrative":
             return f"{self.title}: {self.content}"
-        
+
         elif format_type == "bullet":
             return f"• {self.title}: {self.content}"
-        
+
         else:
             return self.content
 
@@ -215,57 +215,57 @@ class ContextItem:
 @dataclass
 class RAGContext:
     """Represents the assembled context for RAG generation."""
-    
+
     query: RAGQuery
     items: List[ContextItem]
-    
+
     # Context statistics
     total_items: int
     total_length: int  # Character count
     token_estimate: int
-    
+
     # Quality metrics
     avg_relevance_score: float
     max_relevance_score: float
     min_relevance_score: float
-    
+
     # Diversity metrics
     item_type_distribution: Dict[str, int]
     source_distribution: Dict[str, int]
-    
+
     # Assembly metadata
     assembly_time_ms: float
     assembly_method: str
     truncation_applied: bool = False
     warnings: List[str] = field(default_factory=list)
-    
+
     def get_formatted_context(self, format_type: Optional[str] = None) -> str:
         """Get the formatted context as a string."""
         fmt = format_type or self.query.context_format
-        
+
         if fmt == "structured":
             sections = []
             for item in self.items:
                 sections.append(item.format_for_context(fmt))
                 sections.append("---")
             return "\n".join(sections)
-        
+
         elif fmt == "narrative":
             parts = []
             for item in self.items:
                 parts.append(item.format_for_context(fmt))
             return " ".join(parts)
-        
+
         elif fmt == "bullet":
             bullets = []
             for item in self.items:
                 bullets.append(item.format_for_context(fmt))
             return "\n".join(bullets)
-        
+
         else:
             # Default: concatenate with newlines
             return "\n\n".join(item.content for item in self.items)
-    
+
     def get_sources(self) -> List[str]:
         """Get unique sources from context items."""
         sources = set()
@@ -278,29 +278,29 @@ class RAGContext:
 @dataclass
 class PromptTemplate:
     """Represents a prompt template for RAG generation."""
-    
+
     template_id: str
     name: str
     description: str
-    
+
     # Template content
     system_prompt: str
     user_prompt_template: str
-    
+
     # Placeholders
     required_placeholders: List[str] = field(default_factory=list)
     optional_placeholders: List[str] = field(default_factory=list)
-    
+
     # Template metadata
     template_type: str = "qa"  # "qa", "summarization", "explanation", "analysis"
     target_llm: str = "generic"
     version: str = "1.0"
-    
+
     # Usage statistics
     usage_count: int = 0
     last_used: Optional[datetime] = None
     avg_success_score: float = 0.0
-    
+
     def render(
         self,
         context: RAGContext,
@@ -317,46 +317,46 @@ class PromptTemplate:
             "item_count": str(context.total_items),
             "avg_relevance": f"{context.avg_relevance_score:.2f}"
         }
-        
+
         # Add additional data
         if additional_data:
             placeholders.update(additional_data)
-        
+
         # Check required placeholders
         missing = [p for p in self.required_placeholders if p not in placeholders]
         if missing:
             raise ValueError(f"Missing required placeholders: {missing}")
-        
+
         # Render prompts
         system_prompt = self.system_prompt
         user_prompt = self.user_prompt_template
-        
+
         for placeholder, value in placeholders.items():
             system_prompt = system_prompt.replace(f"{{{placeholder}}}", str(value))
             user_prompt = user_prompt.replace(f"{{{placeholder}}}", str(value))
-        
+
         return system_prompt, user_prompt
 
 
 @dataclass
 class GenerationRequest:
     """Represents a request to the LLM for generation."""
-    
+
     request_id: str
     query: RAGQuery
     context: RAGContext
     template: PromptTemplate
-    
+
     # Rendered prompts
     system_prompt: str
     user_prompt: str
-    
+
     # Generation parameters
     temperature: float
     max_tokens: int
     top_p: float
     top_k: int
-    
+
     # Request metadata
     timestamp: datetime = field(default_factory=datetime.utcnow)
     metadata: Dict[str, Any] = field(default_factory=dict)
@@ -365,30 +365,30 @@ class GenerationRequest:
 @dataclass
 class GenerationResult:
     """Represents the result from LLM generation."""
-    
+
     request_id: str
     generated_text: str
-    
+
     # Generation metadata
     model_used: str
     tokens_generated: int
     tokens_prompt: int
     tokens_total: int
     generation_time_ms: float
-    
+
     # Quality metrics
     coherence_score: float
     relevance_score: float
     completeness_score: float
-    
+
     # Source attribution
     source_citations: List[str] = field(default_factory=list)
     attribution_confidence: float = 0.0
-    
+
     # Errors and warnings
     errors: List[str] = field(default_factory=list)
     warnings: List[str] = field(default_factory=list)
-    
+
     # Timestamp
     timestamp: datetime = field(default_factory=datetime.utcnow)
 
@@ -396,31 +396,31 @@ class GenerationResult:
 @dataclass
 class RAGResponse:
     """Represents a complete RAG pipeline response."""
-    
+
     query: RAGQuery
     context: RAGContext
     template: PromptTemplate
     generation: GenerationResult
-    
+
     # Pipeline statistics
     total_time_ms: float
     search_time_ms: float
     context_assembly_time_ms: float
     generation_time_ms: float
-    
+
     # Quality metrics
     overall_quality_score: float
     context_quality_score: float
     generation_quality_score: float
-    
+
     # Feedback
     user_rating: Optional[int] = None  # 1-5
     user_feedback: Optional[str] = None
-    
+
     # Errors and warnings
     errors: List[str] = field(default_factory=list)
     warnings: List[str] = field(default_factory=list)
-    
+
     def get_summary(self) -> Dict[str, Any]:
         """Get a summary of the RAG response."""
         return {
@@ -442,31 +442,31 @@ class RAGResponse:
 @dataclass
 class RAGConfig:
     """Configuration for the RAG pipeline."""
-    
+
     # Search configuration
     search_mode: str = "fusion"
     max_context_items: int = 10
     min_relevance_threshold: float = 0.3
-    
+
     # Context assembly
     context_format: str = "structured"
     max_context_length: int = 4000
     include_sources: bool = True
-    
+
     # Generation
     default_temperature: float = 0.7
     default_max_tokens: int = 1000
     default_top_p: float = 0.9
-    
+
     # Templates
     default_template_id: str = "qa_default"
     template_cache_size: int = 100
-    
+
     # Quality control
     min_coherence_score: float = 0.5
     min_relevance_score: float = 0.5
     enable_source_attribution: bool = True
-    
+
     # Performance
     enable_caching: bool = True
     cache_ttl_seconds: int = 3600
@@ -476,31 +476,31 @@ class RAGConfig:
 @dataclass
 class RAGMetrics:
     """Metrics for RAG pipeline performance."""
-    
+
     # Performance metrics
     avg_response_time_ms: float
     p95_response_time_ms: float
     p99_response_time_ms: float
     requests_per_second: float
-    
+
     # Quality metrics
     avg_quality_score: float
     avg_context_relevance: float
     avg_generation_coherence: float
-    
+
     # Usage metrics
     total_requests: int
     successful_requests: int
     error_rate: float
-    
+
     # Context metrics
     avg_context_items: float
     avg_context_length: float
     truncation_rate: float
-    
+
     # Template usage
     template_usage: Dict[str, int]
-    
+
     # Timestamp
     timestamp: datetime = field(default_factory=datetime.utcnow)
 

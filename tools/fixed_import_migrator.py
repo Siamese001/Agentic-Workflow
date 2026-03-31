@@ -83,13 +83,13 @@ class FixedImportMigrator:
             return True  # No migration needed
 
         print(f"  🔄 Migrating {len(top_imports)} top-level imports in {file_path.name}")
-        
+
         # Analyze which imports are used where
         import_usage = self._analyze_import_usage(tree, top_imports)
-        
+
         # Generate new content with moved imports
         new_content = self._generate_migrated_content(content, top_imports, import_usage)
-        
+
         # Write back
         try:
             file_path.write_text(new_content, encoding='utf-8')
@@ -109,7 +109,7 @@ class FixedImportMigrator:
                 if import_stmt not in SAFE_TOP_IMPORTS:
                     return True
         elif isinstance(node, ast.ImportFrom):
-            if node.module and any(node.module.startswith(prefix) for prefix in 
+            if node.module and any(node.module.startswith(prefix) for prefix in
                                   ['agentic_core', 'apps_', 'system_learning', 'infrastructure']):
                 line = content.splitlines()[node.lineno - 1]
                 return TARGET_IMPORT_RE.match(line) is not None
@@ -118,7 +118,7 @@ class FixedImportMigrator:
     def _analyze_import_usage(self, tree: ast.AST, imports: List[ast.AST]) -> Dict[str, List[str]]:
         """Analyze which imported symbols are used in which test functions/fixtures."""
         usage = {}
-        
+
         # Map imported names to their import statements
         import_map = {}
         for imp in imports:
@@ -128,7 +128,7 @@ class FixedImportMigrator:
             elif isinstance(imp, ast.ImportFrom):
                 for alias in imp.names:
                     import_map[alias.asname or alias.name] = imp
-        
+
         # Find usage in each test function/fixture
         for node in ast.walk(tree):
             if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)):
@@ -137,17 +137,17 @@ class FixedImportMigrator:
                     for subnode in ast.walk(node):
                         if isinstance(subnode, ast.Name) and subnode.id in import_map:
                             used_imports.add(subnode.id)
-                    
+
                     if used_imports:
                         usage[node.name] = list(used_imports)
 
         return usage
 
-    def _generate_migrated_content(self, content: str, imports: List[ast.AST], 
+    def _generate_migrated_content(self, content: str, imports: List[ast.AST],
                                  usage: Dict[str, List[str]]) -> str:
         """Generate new content with imports moved into functions."""
         lines = content.splitlines()
-        
+
         # Remove top-level target imports
         new_lines = []
         for i, line in enumerate(lines):
@@ -159,7 +159,7 @@ class FixedImportMigrator:
                     break
             if not should_remove:
                 new_lines.append(line)
-        
+
         # Add imports to functions that use them
         for func_name, used_names in usage.items():
             # Find the function definition
@@ -170,7 +170,7 @@ class FixedImportMigrator:
                     func_start = i
                     func_indent = len(line) - len(line.lstrip())
                     break
-            
+
             if func_start is not None:
                 # Insert imports after function definition
                 import_lines = []
@@ -185,7 +185,7 @@ class FixedImportMigrator:
                             if (alias.asname or alias.name) in used_names:
                                 import_lines.append(f"{' ' * (func_indent + 4)}{ast.unparse(imp)}")
                                 break
-                
+
                 if import_lines:
                     # Insert imports after function docstring or first line
                     insert_pos = func_start + 1
@@ -195,7 +195,7 @@ class FixedImportMigrator:
                             if new_lines[j].strip().endswith(('"""', "'''")):
                                 insert_pos = j + 1
                                 break
-                    
+
                     for import_line in reversed(import_lines):
                         new_lines.insert(insert_pos, import_line)
 
@@ -208,7 +208,7 @@ class FixedImportMigrator:
         print(f"Successfully migrated: {self.stats['migrated']}")
         print(f"Failed: {self.stats['failed']}")
         print(f"Imports moved: {self.stats['imports_moved']}")
-        
+
         if self.failed_files:
             print("\nFailed files:")
             for path, error in self.failed_files[:10]:
@@ -220,10 +220,10 @@ def main():
     if len(sys.argv) != 2:
         print("Usage: python fixed_import_migrator.py <test_directory>")
         sys.exit(1)
-    
+
     repo_root = pathlib.Path(__file__).parent.parent
     test_dir = sys.argv[1]
-    
+
     migrator = FixedImportMigrator(repo_root)
     migrator.migrate_directory(test_dir)
     migrator.print_summary()

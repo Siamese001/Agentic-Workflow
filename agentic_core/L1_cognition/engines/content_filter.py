@@ -104,32 +104,32 @@ _emit_stores_embedding("p4", "content_filter", "embedding_store")
 
 class ContentFilterEngine:
     """Engine for filtering sensitive content."""
-    
+
     def __init__(self, config: Optional[GuardrailConfig] = None) -> None:
         """Initialize the content filter engine.
-        
+
         Args:
             config: Guardrail configuration
         """
         self.config = config or GuardrailConfig()
         self.graphrag_config = get_config()
-        
+
         # Filter storage
         self.filters: Dict[str, ContentFilter] = {}
-        
+
         # Initialize default filters
         self._initialize_default_filters()
-        
+
         # Statistics
         self._filter_stats: Dict[str, List[float]] = {
             "filter_time": [],
             "filter_matches": {},
             "content_type_matches": {}
         }
-    
+
     def _initialize_default_filters(self) -> None:
         """Initialize default content filters."""
-        
+
         # PII Filter
         pii_filter = ContentFilter(
             filter_id="pii_001",
@@ -144,7 +144,7 @@ class ContentFilterEngine:
             category="privacy"
         )
         self.filters[pii_filter.filter_id] = pii_filter
-        
+
         # Email Filter
         email_filter = ContentFilter(
             filter_id="email_001",
@@ -158,7 +158,7 @@ class ContentFilterEngine:
             category="contact"
         )
         self.filters[email_filter.filter_id] = email_filter
-        
+
         # Phone Filter
         phone_filter = ContentFilter(
             filter_id="phone_001",
@@ -172,7 +172,7 @@ class ContentFilterEngine:
             category="contact"
         )
         self.filters[phone_filter.filter_id] = phone_filter
-        
+
         # URL Filter
         url_filter = ContentFilter(
             filter_id="url_001",
@@ -186,7 +186,7 @@ class ContentFilterEngine:
             category="web"
         )
         self.filters[url_filter.filter_id] = url_filter
-        
+
         # Toxicity Filter
         toxicity_filter = ContentFilter(
             filter_id="toxicity_001",
@@ -200,7 +200,7 @@ class ContentFilterEngine:
             category="safety"
         )
         self.filters[toxicity_filter.filter_id] = toxicity_filter
-        
+
         # Violence Filter
         violence_filter = ContentFilter(
             filter_id="violence_001",
@@ -214,7 +214,7 @@ class ContentFilterEngine:
             category="safety"
         )
         self.filters[violence_filter.filter_id] = violence_filter
-        
+
         # Hate Speech Filter
         hate_speech_filter = ContentFilter(
             filter_id="hate_speech_001",
@@ -228,7 +228,7 @@ class ContentFilterEngine:
             category="safety"
         )
         self.filters[hate_speech_filter.filter_id] = hate_speech_filter
-        
+
         # Self Harm Filter
         self_harm_filter = ContentFilter(
             filter_id="self_harm_001",
@@ -242,7 +242,7 @@ class ContentFilterEngine:
             category="safety"
         )
         self.filters[self_harm_filter.filter_id] = self_harm_filter
-        
+
         # Illegal Content Filter
         illegal_filter = ContentFilter(
             filter_id="illegal_001",
@@ -256,28 +256,28 @@ class ContentFilterEngine:
             category="legal"
         )
         self.filters[illegal_filter.filter_id] = illegal_filter
-    
+
     def add_filter(self, filter: ContentFilter) -> None:
         """Add a content filter."""
         self.filters[filter.filter_id] = filter
-        
+
         _emit_records_telemetry_event(
             "content_filter",
             f"filter_added_{filter.filter_id}"
         )
-    
+
     def remove_filter(self, filter_id: str) -> bool:
         """Remove a content filter."""
         if filter_id in self.filters:
             del self.filters[filter_id]
-            
+
             _emit_records_telemetry_event(
                 "content_filter",
                 f"filter_removed_{filter_id}"
             )
             return True
         return False
-    
+
     def filter_content(
         self,
         content: str,
@@ -286,56 +286,56 @@ class ContentFilterEngine:
         context: Optional[str] = None
     ) -> GuardrailReport:
         """Filter content for policy violations.
-        
+
         Args:
             content: Content to filter
             content_id: Unique identifier for the content
             content_type: Type of content ("query", "context", "response", "generation")
             context: Additional context for filtering
-            
+
         Returns:
             Comprehensive guardrail report
         """
         start_time = datetime.utcnow()
-        
+
         try:
             # Apply all enabled filters
             checks = []
             modified_content = content
-            
+
             for filter in self.filters.values():
                 if not filter.enabled:
                     continue
-                
+
                 check = self._apply_filter(filter, content, content_id)
                 checks.append(check)
-                
+
                 # Update filter statistics
                 if not check.passed:
                     filter.match_count += 1
                     filter.last_matched = datetime.utcnow()
-                    
+
                     # Apply modification if needed
                     if check.action == GuardrailAction.MODIFY and check.modified_content:
                         modified_content = check.modified_content
-            
+
             # Create report
             report = self._create_report(
                 content_id, content_type, checks, start_time
             )
-            
+
             # Update statistics
             filter_time = (datetime.utcnow() - start_time).total_seconds() * 1000
             self._filter_stats["filter_time"].append(filter_time)
-            
+
             _emit_records_telemetry_event(
                 "content_filter",
                 f"filtering_completed_{len(checks)}_checks_{report.passed}",
                 "filtering_completed"
             )
-            
+
             return report
-            
+
         except Exception as e:
             # Return error report
             return GuardrailReport(
@@ -356,7 +356,7 @@ class ContentFilterEngine:
                 check_time_ms=(datetime.utcnow() - start_time).total_seconds() * 1000,
                 metadata={"error": str(e)}
             )
-    
+
     def _apply_filter(
         self,
         filter: ContentFilter,
@@ -365,10 +365,10 @@ class ContentFilterEngine:
     ) -> GuardrailCheck:
         """Apply a single content filter."""
         check_id = f"filter_{filter.filter_id}_{content_id}"
-        
+
         # Check if content matches filter
         matches, confidence = filter.matches(content)
-        
+
         if not matches:
             # Content passes filter
             return GuardrailCheck(
@@ -387,12 +387,12 @@ class ContentFilterEngine:
                     "filter_category": filter.category
                 }
             )
-        
+
         # Content violates filter
         modified_content = None
         if filter.action == GuardrailAction.MODIFY:
             modified_content = self._modify_content(content, filter)
-        
+
         return GuardrailCheck(
             check_id=check_id,
             rule_id=None,
@@ -411,7 +411,7 @@ class ContentFilterEngine:
                 "filter_category": filter.category
             }
         )
-    
+
     def _modify_content(self, content: str, filter: ContentFilter) -> str:
         """Modify content to remove/filter sensitive information."""
         if filter.content_type == ContentType.EMAIL:
@@ -438,35 +438,35 @@ class ContentFilterEngine:
         else:
             # For other content types, return original (or could block entirely)
             return content
-    
+
     def _get_evidence(self, content: str, filter: ContentFilter) -> str:
         """Get evidence for why content matched the filter."""
         evidence_parts = []
-        
+
         # Check keywords
         if filter.keywords:
             matched_keywords = []
             for keyword in filter.keywords:
                 if keyword.lower() in content.lower():
                     matched_keywords.append(keyword)
-            
+
             if matched_keywords:
                 evidence_parts.append(f"Keywords: {', '.join(matched_keywords)}")
-        
+
         # Check pattern
         if filter.pattern:
             if re.search(filter.pattern, content, re.IGNORECASE):
                 evidence_parts.append("Pattern matched")
-        
+
         return "; ".join(evidence_parts) if evidence_parts else "Content matched filter criteria"
-    
+
     def _extract_matched_content(self, content: str, filter: ContentFilter) -> Optional[str]:
         """Extract the specific content that matched the filter."""
         if filter.pattern:
             matches = re.findall(filter.pattern, content, re.IGNORECASE)
             if matches:
                 return str(matches[0]) if matches else None
-        
+
         if filter.keywords:
             for keyword in filter.keywords:
                 if keyword.lower() in content.lower():
@@ -476,9 +476,9 @@ class ContentFilterEngine:
                         context_start = max(0, start - 20)
                         context_end = min(len(content), start + len(keyword) + 20)
                         return content[context_start:context_end]
-        
+
         return None
-    
+
     def _create_report(
         self,
         content_id: str,
@@ -491,35 +491,35 @@ class ContentFilterEngine:
         total_checks = len(checks)
         passed_checks = sum(1 for check in checks if check.passed)
         failed_checks = total_checks - passed_checks
-        
+
         # Determine overall pass/fail
         if self.config.strict_mode:
             passed = failed_checks == 0
         else:
             # In non-strict mode, allow warnings
-            critical_failures = sum(1 for check in checks 
+            critical_failures = sum(1 for check in checks
                                  if not check.passed and check.severity == GuardrailSeverity.CRITICAL)
             passed = critical_failures == 0
-        
+
         # Calculate overall score
         if checks:
             overall_score = sum(check.confidence for check in checks if check.passed) / total_checks
         else:
             overall_score = 1.0
-        
+
         # Find highest severity
         highest_severity = None
         for check in checks:
             if not check.passed:
                 if highest_severity is None or check.severity.value > highest_severity.value:
                     highest_severity = check.severity
-        
+
         # Count actions and warnings
         actions_taken = list(set(check.action for check in checks if not check.passed))
         warnings = sum(1 for check in checks if not check.passed and check.action == GuardrailAction.WARN)
         content_modified = any(check.modified_content is not None for check in checks)
         escalation_required = any(check.action == GuardrailAction.ESCALATE for check in checks)
-        
+
         # Create report
         report = GuardrailReport(
             report_id=f"report_{content_id}_{datetime.utcnow().strftime('%Y%m%d_%H%M%S')}",
@@ -538,32 +538,32 @@ class ContentFilterEngine:
             escalation_required=escalation_required,
             check_time_ms=(datetime.utcnow() - start_time).total_seconds() * 1000
         )
-        
+
         return report
-    
+
     def get_filters(self) -> List[ContentFilter]:
         """Get all content filters."""
         return list(self.filters.values())
-    
+
     def get_filters_by_category(self, category: str) -> List[ContentFilter]:
         """Get filters by category."""
         return [f for f in self.filters.values() if f.category == category]
-    
+
     def get_filter(self, filter_id: str) -> Optional[ContentFilter]:
         """Get a specific filter."""
         return self.filters.get(filter_id)
-    
+
     def update_filter(self, filter: ContentFilter) -> bool:
         """Update an existing filter."""
         if filter.filter_id in self.filters:
             self.filters[filter.filter_id] = filter
             return True
         return False
-    
+
     def get_filter_stats(self) -> Dict[str, Any]:
         """Get filter statistics."""
         stats = {}
-        
+
         # Filter time stats
         if self._filter_stats["filter_time"]:
             times = self._filter_stats["filter_time"]
@@ -576,7 +576,7 @@ class ContentFilterEngine:
             stats["min_filter_time_ms"] = 0.0
             stats["max_filter_time_ms"] = 0.0
             stats["total_filters"] = 0
-        
+
         # Filter match stats
         stats["filter_matches"] = {}
         for filter_id, filter in self.filters.items():
@@ -584,7 +584,7 @@ class ContentFilterEngine:
                 "match_count": filter.match_count,
                 "last_matched": filter.last_matched.isoformat() if filter.last_matched else None
             }
-        
+
         return stats
 
 

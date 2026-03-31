@@ -398,7 +398,7 @@ api/
     def test_decorator_integration(self, token_estimator_classes):
         """Test decorator integration with real workflow functions"""
         require_token_budget, _ = token_estimator_classes
-        
+
         @require_token_budget(self.hook)
         def analyze_requirements(system_prompt, user_prompt, files, **kwargs):
             """Simulated requirements analysis function"""

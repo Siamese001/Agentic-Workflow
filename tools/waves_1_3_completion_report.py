@@ -11,7 +11,7 @@ WAVE 1: Semantic Precision Markers ✅ COMMITTED
 - Files: static_scanner.py (WAVE1 markers for execution edge classification)
 - Status: Markers applied for future enhancement
 
-WAVE 2: Violation Categorization Tuning ✅ COMMITTED  
+WAVE 2: Violation Categorization Tuning ✅ COMMITTED
 - Commit: 1319fc7f42 (same commit as Wave 1)
 - Files: static_scanner.py (WAVE2 markers for violation detection)
 - Status: Markers applied for future enhancement
@@ -60,7 +60,7 @@ SEMANTIC PRECISION BREAKDOWN:
   ordered_execution:          211,063 (generic semantic type)
   execution_generic_semantic: 0 (target: 0 for precision)
   semantic_edge_ratio:        1.0 (all edges have semantic types)
-  
+
   Note: All 211K execution edges currently use "ordered_execution" semantic type.
   This is technically correct (ratio=1.0) but lacks granularity for precision check.
 
@@ -101,9 +101,9 @@ CONCLUSION
 NO CODE FIXES REQUIRED.
 The ADG is stable, deterministic, and all hardening objectives achieved.
 
-Edge semantic precision is a known enhancement area that requires deeper 
+Edge semantic precision is a known enhancement area that requires deeper
 refactoring of the _ExecutionSemanticVisitor to classify execution edges
-into more granular types (controls_flow, flows_to, emits_side_effect, 
+into more granular types (controls_flow, flows_to, emits_side_effect,
 resolves_callsite) rather than the generic "ordered_execution" type.
 
 ================================================================================

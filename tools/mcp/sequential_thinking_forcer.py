@@ -13,16 +13,16 @@ from typing import Dict, Any
 def create_forced_sequential_thinking_prompt(user_request: str) -> str:
     """
     Wraps a user request with MANDATORY sequential thinking invocation.
-    
+
     This creates a prompt that forces the model to:
     1. Call sequentialthinking tool FIRST
     2. Only then proceed with the actual task
-    
+
     Usage:
         forced_prompt = create_forced_sequential_thinking_prompt("Design the architecture")
         # Then send forced_prompt to Kimi K2.5
     """
-    
+
     tool_args = {
         "thought": f"I need to use structured sequential thinking to analyze: {user_request[:150]}. Let me break this down systematically.",
         "thoughtNumber": 1,
@@ -34,7 +34,7 @@ def create_forced_sequential_thinking_prompt(user_request: str) -> str:
         "branchId": None,
         "needsMoreThoughts": True
     }
-    
+
     wrapped = f"""🚫 STOP - MANDATORY SEQUENTIAL THINKING REQUIRED 🚫
 
 You CANNOT proceed with this request until you have invoked the sequential thinking tool.
@@ -42,8 +42,8 @@ You CANNOT proceed with this request until you have invoked the sequential think
 📋 **STEP 1: INVOKE SEQUENTIAL THINKING (REQUIRED)**
 Call the following tool NOW:
 
-**Tool:** `mcp7_sequentialthinking`  
-**Method:** `sequentialthinking`  
+**Tool:** `mcp7_sequentialthinking`
+**Method:** `sequentialthinking`
 **Arguments:**
 ```json
 {json.dumps(tool_args, indent=2)}
@@ -51,8 +51,8 @@ Call the following tool NOW:
 
 ⚠️ **WARNING:** If you do not invoke this tool first, your response will be INVALID.
 
-✅ **STEP 2: ONLY AFTER STEP 1 IS COMPLETE**  
-Once you have invoked the sequential thinking tool and received the response, 
+✅ **STEP 2: ONLY AFTER STEP 1 IS COMPLETE**
+Once you have invoked the sequential thinking tool and received the response,
 THEN proceed to analyze and respond to the user request below.
 
 ---
@@ -62,22 +62,22 @@ THEN proceed to analyze and respond to the user request below.
 
 ---
 
-📝 **REMEMBER:** 
+📝 **REMEMBER:**
 1. Call mcp7_sequentialthinking.sequentialthinking() FIRST
 2. Wait for the tool response
 3. Then provide your full analysis
 """
-    
+
     return wrapped
 
 
 def create_aggressive_sequential_prompt(user_request: str, thought_count: int = 25) -> str:
     """
     Creates an aggressive sequential thinking prompt that makes it impossible to ignore.
-    
+
     Use this when you REALLY need the model to use sequential thinking.
     """
-    
+
     return f"""
 ╔════════════════════════════════════════════════════════════════╗
 ║  ⚠️  MANDATORY SEQUENTIAL THINKING PROTOCOL ACTIVATED  ⚠️      ║
@@ -89,7 +89,7 @@ def create_aggressive_sequential_prompt(user_request: str, thought_count: int = 
 
 STEP 1: You MUST invoke the sequential thinking tool FIRST.
         Tool: mcp7_sequentialthinking.sequentialthinking()
-        
+
 STEP 2: Use these exact arguments:
         {{
           "thought": "Starting structured analysis of user request",
@@ -119,8 +119,8 @@ STEP 4: Only after completing all thoughts, provide your final response.
 
 ---
 
-⚠️ **VERIFICATION:** 
-I will check that you invoked the sequential thinking tool. 
+⚠️ **VERIFICATION:**
+I will check that you invoked the sequential thinking tool.
 If you did not, I will re-prompt you until you do.
 """
 
@@ -128,7 +128,7 @@ If you did not, I will re-prompt you until you do.
 def create_system_message() -> str:
     """
     Creates a system message that forces sequential thinking behavior.
-    
+
     This can be prepended to the conversation to set the expectation.
     """
     return """
@@ -163,20 +163,20 @@ class SequentialThinkingForcer:
     """
     A class that forces sequential thinking by wrapping prompts.
     """
-    
+
     def __init__(self, thought_count: int = 25):
         self.thought_count = thought_count
         self.invocation_count = 0
-        
+
     def force(self, prompt: str) -> str:
         """Force sequential thinking on any prompt."""
         self.invocation_count += 1
         return create_aggressive_sequential_prompt(prompt, self.thought_count)
-    
+
     def wrap_simple(self, prompt: str) -> str:
         """Simple wrapper with basic instruction."""
         return create_forced_sequential_thinking_prompt(prompt)
-    
+
     def get_system_prompt(self) -> str:
         """Get system message for conversation setup."""
         return create_system_message()
@@ -199,17 +199,17 @@ def seq(prompt: str) -> str:
 if __name__ == '__main__':
     # Test
     test_prompt = "Design the architecture for the new payment system"
-    
+
     print("=" * 70)
     print("SIMPLE WRAPPER:")
     print("=" * 70)
     print(create_forced_sequential_thinking_prompt(test_prompt))
-    
+
     print("\n" + "=" * 70)
     print("AGGRESSIVE WRAPPER:")
     print("=" * 70)
     print(force_seq_think(test_prompt))
-    
+
     print("\n" + "=" * 70)
     print("SYSTEM MESSAGE:")
     print("=" * 70)

@@ -53,7 +53,7 @@ def add_missing_sections(file_path: Path, dry_run: bool = True) -> tuple[bool, s
         return False, "Encoding error"
 
     plan_type = detect_plan_type(content, file_path.name)
-    
+
     # Define required sections by type
     section_requirements = {
         "execution": ["## Rules", "## Success Criteria"],
@@ -61,20 +61,20 @@ def add_missing_sections(file_path: Path, dry_run: bool = True) -> tuple[bool, s
         "gap_analysis": ["## Gap Register", "## Execution Plan"],
         "investigation": ["## Findings", "## Evidence"]
     }
-    
+
     required_sections = section_requirements.get(plan_type, [])
     missing_sections = []
-    
+
     for section in required_sections:
         if section not in content:
             missing_sections.append(section)
-    
+
     if not missing_sections:
         return True, "All required sections present"
-    
+
     # Generate missing sections
     sections_to_add = []
-    
+
     if "## Rules" in missing_sections:
         sections_to_add.append("""## Rules
 
@@ -86,7 +86,7 @@ def add_missing_sections(file_path: Path, dry_run: bool = True) -> tuple[bool, s
 ---
 
 """)
-    
+
     if "## Success Criteria" in missing_sections:
         sections_to_add.append("""## Success Criteria
 
@@ -98,7 +98,7 @@ def add_missing_sections(file_path: Path, dry_run: bool = True) -> tuple[bool, s
 ---
 
 """)
-    
+
     if "## Violation" in missing_sections:
         sections_to_add.append("""## Violation
 
@@ -107,7 +107,7 @@ def add_missing_sections(file_path: Path, dry_run: bool = True) -> tuple[bool, s
 ---
 
 """)
-    
+
     if "## Root Cause" in missing_sections:
         sections_to_add.append("""## Root Cause
 
@@ -116,7 +116,7 @@ def add_missing_sections(file_path: Path, dry_run: bool = True) -> tuple[bool, s
 ---
 
 """)
-    
+
     if "## Corrective Actions" in missing_sections:
         sections_to_add.append("""## Corrective Actions
 
@@ -125,7 +125,7 @@ def add_missing_sections(file_path: Path, dry_run: bool = True) -> tuple[bool, s
 ---
 
 """)
-    
+
     if "## Gap Register" in missing_sections:
         sections_to_add.append("""## Gap Register
 
@@ -137,7 +137,7 @@ def add_missing_sections(file_path: Path, dry_run: bool = True) -> tuple[bool, s
 ---
 
 """)
-    
+
     if "## Execution Plan" in missing_sections:
         sections_to_add.append("""## Execution Plan
 
@@ -149,7 +149,7 @@ def add_missing_sections(file_path: Path, dry_run: bool = True) -> tuple[bool, s
 ---
 
 """)
-    
+
     if "## Findings" in missing_sections:
         sections_to_add.append("""## Findings
 
@@ -158,7 +158,7 @@ def add_missing_sections(file_path: Path, dry_run: bool = True) -> tuple[bool, s
 ---
 
 """)
-    
+
     if "## Evidence" in missing_sections:
         sections_to_add.append("""## Evidence
 
@@ -167,17 +167,17 @@ def add_missing_sections(file_path: Path, dry_run: bool = True) -> tuple[bool, s
 ---
 
 """)
-    
+
     if dry_run:
         return False, f"Would add {len(missing_sections)} sections to {file_path.name}"
-    
+
     # Add sections at the end of the file
     new_content = content + "\n" + "".join(sections_to_add)
-    
+
     # Write back
     with open(file_path, "w", encoding="utf-8") as f:
         f.write(new_content)
-    
+
     return True, f"Added {len(missing_sections)} sections to {file_path.name}"
 
 
@@ -209,14 +209,14 @@ def find_plans_needing_sections(repo_root: Path) -> list[Path]:
                     "gap_analysis": ["## Gap Register", "## Execution Plan"],
                     "investigation": ["## Findings", "## Evidence"]
                 }
-                
+
                 required_sections = section_requirements.get(plan_type, [])
                 missing_sections = []
-                
+
                 for section in required_sections:
                     if section not in content:
                         missing_sections.append(section)
-                
+
                 if missing_sections:
                     plans_needing_sections.append(plan_path)
 
@@ -240,7 +240,7 @@ def main():
 
     repo_root = Path(__file__).parent.parent
     plans_to_fix = find_plans_needing_sections(repo_root)
-    
+
     print(f"Found {len(plans_to_fix)} plans needing sections")
 
     if not plans_to_fix:

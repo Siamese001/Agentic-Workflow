@@ -19,17 +19,17 @@ for filepath in files_to_fix:
     if not os.path.exists(filepath):
         print(f'Not found: {filepath}')
         continue
-    
+
     # Get the module path from the file location
     parts = filepath.replace('tests/unit/', '').replace('/', '.').replace('\\', '.').replace('.py', '').split('.')
     module_path = '.'.join(parts[:-1])  # Remove 'test___init___adg' or 'test_coverage_adg'
-    
+
     # Create new content with correct module path
     new_content = template.replace(
         'agentic_core.L0_routing.scripts.__init__',
         module_path
     )
-    
+
     with open(filepath, 'w', encoding='utf-8') as f:
         f.write(new_content)
     print(f'Fixed: {os.path.basename(filepath)}')

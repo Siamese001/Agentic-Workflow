@@ -18,7 +18,7 @@ def test_all_infrastructure_tests_pass():
         "tests/tools/memory/test_adg_memory_server.py",
         "tests/infrastructure/test_hardening_core_deterministic.py",
     ]
-    
+
     # Verify test files exist
     for path in test_paths:
         import pathlib
@@ -30,12 +30,12 @@ def test_coverage_exclusion_policy():
     # Per policy, coverage measures only agentic_core/ product code
     # Infrastructure tests in tests/tools/ and tests/infrastructure/
     # are excluded from 100% mandate via omit = ["*/tests/*"]
-    
+
     excluded_paths = [
         "tests/tools/",
         "tests/infrastructure/",
     ]
-    
+
     for path in excluded_paths:
         assert path.startswith("tests/")
 
@@ -51,7 +51,7 @@ def test_total_test_count():
         "Wave 6: Infrastructure Hardening": 17,
         "Wave 7: Memory MCP Server": 15,
     }
-    
+
     total = sum(wave_tests.values())
     assert total >= 100  # At least 100 tests delivered
 
@@ -59,14 +59,14 @@ def test_total_test_count():
 def test_new_test_directories_created():
     """Verify new test directory structure."""
     import pathlib
-    
+
     new_dirs = [
         "tests/tools/",
         "tests/tools/adg/",
         "tests/tools/adg/shared_modules/",
         "tests/tools/memory/",
     ]
-    
+
     for dir_path in new_dirs:
         path = pathlib.Path(dir_path)
         assert path.exists(), f"Directory missing: {dir_path}"

@@ -29,7 +29,7 @@ class ADGTraceReplayCoverageVerifier:
     def _verify_trace_replay_completeness(self) -> dict[str, Any]:
         """Verify modules with writes have trace/replay coverage."""
         result = {"modules_without_trace": []}
-        
+
         if not self.db_path or not self.db_path.exists():
             return result
 
@@ -106,7 +106,7 @@ class ADGTraceReplayCoverageVerifier:
             "coverage_results": {},
             "complete_coverage": False,
         }
-        
+
         if not self.db_path or not self.db_path.exists():
             return result
 

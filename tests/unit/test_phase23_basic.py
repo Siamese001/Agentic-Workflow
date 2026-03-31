@@ -36,7 +36,7 @@ class TestPhase23Basic:
     def test_can_import_fixer(self):
         """Test that the fixer can be imported and instantiated."""
         assert CAN_IMPORT
-        
+
         # Behavioral validation - test actual instantiation
         fixer = LowSeveritySilentSwallowerFixer()
         assert hasattr(fixer, 'apply_fixes_to_all_remaining_violations')

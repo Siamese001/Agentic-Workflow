@@ -70,7 +70,7 @@ class Wave2SimpleMigrator:
             return True  # No migration needed
 
         print(f"  🔄 Migrating {len(import_lines)} top-level imports in {file_path.name}")
-        
+
         # Find first test function
         first_func_match = None
         for line in lines:
@@ -78,7 +78,7 @@ class Wave2SimpleMigrator:
             if match:
                 first_func_match = match
                 break
-        
+
         if not first_func_match:
             print(f"  ⚠️  No test functions found in {file_path.name}")
             return False
@@ -86,7 +86,7 @@ class Wave2SimpleMigrator:
         # Build new content
         new_lines = []
         moved_imports = []
-        
+
         # Remove imports and collect them
         for i, line in enumerate(lines):
             is_import_line = any(i == import_idx for import_idx, _ in import_lines)
@@ -94,7 +94,7 @@ class Wave2SimpleMigrator:
                 moved_imports.append(line)
             else:
                 new_lines.append(line)
-        
+
         # Insert imports after first test function
         func_indent = len(first_func_match.group(1))
         insert_pos = None
@@ -102,7 +102,7 @@ class Wave2SimpleMigrator:
             if line.strip().startswith(f"def {first_func_match.group(2)}("):
                 insert_pos = i + 1
                 break
-        
+
         if insert_pos is not None:
             # Skip docstring if present
             if insert_pos < len(new_lines):
@@ -110,18 +110,18 @@ class Wave2SimpleMigrator:
                     if new_lines[j].strip().endswith(('"""', "'''")):
                         insert_pos = j + 1
                         break
-            
+
             # Insert imports with proper indentation
             for import_line in moved_imports:
                 indented_import = ' ' * (func_indent + 4) + import_line.strip()
                 new_lines.insert(insert_pos, indented_import)
                 insert_pos += 1
-            
+
             # Add blank line after imports
             new_lines.insert(insert_pos, '')
-        
+
         new_content = '\n'.join(new_lines) + '\n'
-        
+
         # Write back
         try:
             file_path.write_text(new_content, encoding='utf-8')
@@ -140,7 +140,7 @@ class Wave2SimpleMigrator:
         print(f"Successfully migrated: {self.stats['migrated']}")
         print(f"Failed: {self.stats['failed']}")
         print(f"Imports moved: {self.stats['imports_moved']}")
-        
+
         if self.failed_files:
             print("\nFailed files:")
             for path, error in self.failed_files[:10]:
@@ -152,10 +152,10 @@ def main():
     if len(sys.argv) != 2:
         print("Usage: python wave2_simple_migrator.py <test_directory>")
         sys.exit(1)
-    
+
     repo_root = pathlib.Path(__file__).parent.parent
     test_dir = sys.argv[1]
-    
+
     migrator = Wave2SimpleMigrator(repo_root)
     migrator.migrate_directory(test_dir)
     migrator.print_summary()

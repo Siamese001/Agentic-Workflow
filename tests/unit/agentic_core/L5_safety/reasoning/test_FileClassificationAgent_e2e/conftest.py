@@ -1,27 +1,25 @@
 """E2E Test Harness for FileClassificationAgent - Wave 1 Baseline"""
 import pytest
 
-# Lazy import fixtures - avoid collection-time errors
 
-@pytest.fixture(scope="session")
-def _lazy_agentic_core_L5_safety_reasoning_FileClassificationAgent_0():
-    from agentic_core.L5_safety.reasoning.FileClassificationAgent import FileClassificationAgent, FileClassificationHealerAgent, ClassificationResult
-    return type('_Import', (), {"FileClassificationAgent": FileClassificationAgent, "FileClassificationHealerAgent": FileClassificationHealerAgent, "ClassificationResult": ClassificationResult})
-
-@pytest.fixture(scope="session")
-def _lazy_agentic_core_L5_safety_core_kernel_classification_kernel_1():
+# Lazy imports — wrapped to avoid collection-time errors
+try:
     from agentic_core.L5_safety.core_kernel.classification_kernel import FileType
-    return type('_Import', (), {"FileType": FileType})
+    from agentic_core.L5_safety.reasoning.FileClassificationAgent import (
+        ClassificationResult,
+        FileClassificationAgent,
+        FileClassificationHealerAgent,
+    )
+except ImportError:
+    pass
+
+
 from pathlib import Path
 from typing import Dict, List, Any
 import sys
 
 # Add agentic_core to path
 sys.path.insert(0, str(Path(__file__).parents[7]))
-
-
-)
-
 
 @pytest.fixture(scope="session")
 def agent():

@@ -160,37 +160,37 @@ class ContentType(Enum):
 @dataclass
 class ConstitutionalRule:
     """Represents a constitutional AI rule."""
-    
+
     rule_id: str
     name: str
     description: str
-    
+
     # Rule content
     principle: str
     constitution: str
-    
+
     # Rule configuration
     severity: GuardrailSeverity
     action: GuardrailAction
-    
+
     # Applicability
     content_types: List[ContentType]
     contexts: List[str]  # "query", "context", "response", "generation"
-    
+
     # Rule metadata
     category: str
     tags: List[str] = field(default_factory=list)
     version: str = "1.0"
     enabled: bool = True
-    
+
     # Performance
     false_positive_rate: float = 0.0
     false_negative_rate: float = 0.0
-    
+
     # Usage statistics
     trigger_count: int = 0
     last_triggered: Optional[datetime] = None
-    
+
     def __post_init__(self) -> None:
         """Validate rule configuration."""
         if not self.principle:
@@ -202,7 +202,7 @@ class ConstitutionalRule:
 @dataclass
 class ContentFilter:
     """Represents a content filter for specific content types."""
-    
+
     filter_id: str
     name: str
     description: str
@@ -210,45 +210,45 @@ class ContentFilter:
     action: GuardrailAction
     severity: GuardrailSeverity
     category: str
-    
+
     # Optional fields with defaults
     pattern: Optional[str] = None  # Regex pattern
     keywords: List[str] = field(default_factory=list)
     confidence_threshold: float = 0.7
     tags: List[str] = field(default_factory=list)
     enabled: bool = True
-    
+
     # Statistics
     match_count: int = 0
     last_matched: Optional[datetime] = None
-    
+
     def matches(self, content: str) -> Tuple[bool, float]:
         """Check if content matches the filter.
-        
+
         Args:
             content: Content to check
-            
+
         Returns:
             Tuple of (matches, confidence_score)
         """
         if not content:
             return False, 0.0
-        
+
         content_lower = content.lower()
         confidence = 0.0
-        
+
         # Check keywords
         if self.keywords:
             keyword_matches = sum(1 for kw in self.keywords if kw.lower() in content_lower)
             if keyword_matches > 0:
                 confidence = min(1.0, keyword_matches / len(self.keywords))
-        
+
         # Check pattern
         if self.pattern:
             import re
             if re.search(self.pattern, content, re.IGNORECASE):
                 confidence = max(confidence, 0.8)
-        
+
         matches = confidence >= self.confidence_threshold
         return matches, confidence
 
@@ -256,7 +256,7 @@ class ContentFilter:
 @dataclass
 class GuardrailCheck:
     """Represents a single guardrail check result."""
-    
+
     check_id: str
     rule_id: Optional[str]  # None for content filters
     filter_id: Optional[str]  # None for constitutional rules
@@ -267,7 +267,7 @@ class GuardrailCheck:
     evidence: str
     action: GuardrailAction
     check_type: str  # "constitutional", "content_filter"
-    
+
     # Optional fields with defaults
     matched_content: Optional[str] = None
     modified_content: Optional[str] = None
@@ -278,41 +278,41 @@ class GuardrailCheck:
 @dataclass
 class GuardrailReport:
     """Comprehensive report of guardrail checks."""
-    
+
     report_id: str
     content_id: str
     content_type: str  # "query", "context", "response", "generation"
-    
+
     # Overall results
     passed: bool
     overall_score: float
     highest_severity: Optional[GuardrailSeverity]
-    
+
     # Individual checks
     checks: List[GuardrailCheck]
-    
+
     # Summary statistics
     total_checks: int
     passed_checks: int
     failed_checks: int
     warnings: int
-    
+
     # Actions taken
     actions_taken: List[GuardrailAction]
     content_modified: bool
     escalation_required: bool
-    
+
     # Timing
     check_time_ms: float
     timestamp: datetime = field(default_factory=datetime.utcnow)
-    
+
     # Metadata
     metadata: Dict[str, Any] = field(default_factory=dict)
-    
+
     def get_failed_rules(self) -> List[str]:
         """Get list of failed rule IDs."""
         return [check.rule_id for check in self.checks if not check.passed and check.rule_id]
-    
+
     def get_triggered_filters(self) -> List[str]:
         """Get list of triggered filter IDs."""
         return [check.filter_id for check in self.checks if not check.passed and check.filter_id]
@@ -321,29 +321,29 @@ class GuardrailReport:
 @dataclass
 class GuardrailConfig:
     """Configuration for the guardrail system."""
-    
+
     # General settings
     enabled: bool = True
     strict_mode: bool = False  # Block on any violation vs. warnings
-    
+
     # Thresholds
     min_confidence_threshold: float = 0.5
     severity_threshold: GuardrailSeverity = GuardrailSeverity.MEDIUM
-    
+
     # Performance
     max_check_time_ms: float = 1000.0
     enable_caching: bool = True
     cache_ttl_seconds: int = 300
-    
+
     # Logging
     log_all_checks: bool = False
     log_failures_only: bool = True
     include_content_in_logs: bool = False
-    
+
     # Escalation
     auto_escalate_critical: bool = True
     escalation_webhook: Optional[str] = None
-    
+
     # Learning
     enable_feedback_learning: bool = True
     feedback_decay_factor: float = 0.9
@@ -352,35 +352,35 @@ class GuardrailConfig:
 @dataclass
 class GuardrailMetrics:
     """Metrics for guardrail system performance."""
-    
+
     # Performance metrics
     avg_check_time_ms: float
     p95_check_time_ms: float
     p99_check_time_ms: float
     checks_per_second: float
-    
+
     # Quality metrics
     false_positive_rate: float
     false_negative_rate: float
     precision: float
     recall: float
-    
+
     # Usage metrics
     total_checks: int
     passed_checks: int
     failed_checks: int
     escalation_count: int
-    
+
     # Rule statistics
     rule_trigger_rates: Dict[str, float]
     filter_match_rates: Dict[str, float]
-    
+
     # Severity distribution
     severity_distribution: Dict[str, int]
-    
+
     # Content type distribution
     content_type_distribution: Dict[str, int]
-    
+
     # Timestamp
     timestamp: datetime = field(default_factory=datetime.utcnow)
 
@@ -388,7 +388,7 @@ class GuardrailMetrics:
 @dataclass
 class SafetyEvaluation:
     """Result of a safety evaluation."""
-    
+
     evaluation_id: str
     content_id: str
     overall_safety_score: float  # 0.0 (unsafe) to 1.0 (safe)
@@ -400,7 +400,7 @@ class SafetyEvaluation:
     evaluation_time_ms: float
     evaluator_version: str
     timestamp: datetime = field(default_factory=datetime.utcnow)
-    
+
     def is_safe(self, threshold: float = 0.7) -> bool:
         """Check if content is safe above threshold."""
         return self.overall_safety_score >= threshold
@@ -409,19 +409,19 @@ class SafetyEvaluation:
 @dataclass
 class GuardrailFeedback:
     """Feedback for improving guardrail performance."""
-    
+
     feedback_id: str
     check_id: str
-    
+
     # Feedback content
     was_correct: bool
     actual_severity: Optional[GuardrailSeverity]
     user_action: Optional[GuardrailAction]
-    
+
     # Context
     content_snippet: Optional[str]
     user_comment: Optional[str]
-    
+
     # Metadata
     timestamp: datetime = field(default_factory=datetime.utcnow)
     feedback_source: str = "user"  # "user", "automated", "reviewer"

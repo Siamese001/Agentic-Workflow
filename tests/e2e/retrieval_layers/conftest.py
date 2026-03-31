@@ -16,17 +16,17 @@ def mock_redis_client():
     class MockRedis:
         def __init__(self):
             self.cache = {}
-        
+
         def get(self, key):
             return self.cache.get(key)
-        
+
         def set(self, key, value):
             self.cache[key] = value
             return True
-        
+
         def ping(self):
             return True
-    
+
     return MockRedis()
 
 
@@ -37,14 +37,14 @@ def mock_embedding_service():
         def embed(self, text):
             # Return mock 768-dim embedding
             return [0.1] * 768
-        
+
         def similarity(self, vec1, vec2):
             import math
             dot = sum(a * b for a, b in zip(vec1, vec2))
             norm1 = math.sqrt(sum(a * a for a in vec1))
             norm2 = math.sqrt(sum(a * a for a in vec2))
             return dot / (norm1 * norm2)
-    
+
     return MockEmbeddingService()
 
 
@@ -58,7 +58,7 @@ def mock_faiss_store():
                 "chunk_2": [0.2] * 768,
                 "chunk_3": [0.3] * 768,
             }
-        
+
         def search(self, query_vector, k=5):
             # Return mock results
             return [
@@ -66,7 +66,7 @@ def mock_faiss_store():
                 ("chunk_2", 0.89),
                 ("chunk_3", 0.85),
             ][:k]
-    
+
     return MockFAISSStore()
 
 
@@ -79,10 +79,10 @@ def mock_adg_graph():
                 "chunk_1": [("chunk_4", "calls"), ("chunk_5", "imports")],
                 "chunk_2": [("chunk_6", "references")],
             }
-        
+
         def expand(self, chunk_id):
             return self.edges.get(chunk_id, [])
-    
+
     return MockADGGraph()
 
 
@@ -96,7 +96,7 @@ def mock_langgraph_orchestrator():
                 "success": True,
                 "results": []
             }
-    
+
     return MockLangGraph()
 
 
@@ -110,7 +110,7 @@ def mock_llm_client():
                 "tokens_used": 150,
                 "model": "gpt-4-mock"
             }
-    
+
     return MockLLMClient()
 
 

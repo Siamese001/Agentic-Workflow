@@ -14,7 +14,7 @@ from typing import Dict, Any, Optional
 class SequentialThinkingPreProcessor:
     """
     Pre-processor that forces sequential thinking tool invocation.
-    
+
     This ensures EVERY complex prompt with Kimi K2.5 starts with
     a sequential thinking tool call.
     """
@@ -22,30 +22,30 @@ class SequentialThinkingPreProcessor:
     def __init__(self):
         self.enabled = True
         self.aggressive = os.environ.get('SEQUENTIAL_THINKING_AGGRESSIVE_MODE', 'enabled') == 'enabled'
-        
+
     def preprocess(self, prompt: str, context: Optional[Dict] = None) -> Dict[str, Any]:
         """
         Preprocess the prompt to inject sequential thinking invocation.
-        
+
         Returns dict with:
         - modified_prompt: The prompt with invocation instructions
         - tool_invocation_required: Whether to force tool call
         - tool_call: The tool call spec
         """
-        
+
         # Determine if this needs sequential thinking
         needs_thinking = self._needs_sequential_thinking(prompt)
-        
+
         if not needs_thinking and not self.aggressive:
             return {
                 'modified_prompt': prompt,
                 'tool_invocation_required': False,
                 'tool_call': None
             }
-        
+
         # Create the tool invocation instruction
         tool_call = self._create_tool_call(prompt)
-        
+
         # Inject the instruction at the START of the prompt
         modified = f"""⚠️ MANDATORY: Invoke Sequential Thinking First ⚠️
 
@@ -79,18 +79,18 @@ Arguments: {{
 
 **AFTER** invoking the tool above, continue with your analysis using the structured thinking process.
 """
-        
+
         return {
             'modified_prompt': modified,
             'tool_invocation_required': True,
             'tool_call': tool_call,
             'original_prompt': prompt
         }
-    
+
     def _needs_sequential_thinking(self, prompt: str) -> bool:
         """Check if prompt needs sequential thinking."""
         prompt_lower = prompt.lower()
-        
+
         # Always trigger keywords
         trigger_words = [
             'plan', 'design', 'architecture', 'implement', 'create',
@@ -99,17 +99,17 @@ Arguments: {{
             'strategy', 'approach', 'how should', 'what is the best',
             'complex', 'difficult', 'multi-step'
         ]
-        
+
         for word in trigger_words:
             if word in prompt_lower:
                 return True
-        
+
         # Length-based trigger
         if len(prompt) > 100:
             return True
-            
+
         return False
-    
+
     def _create_tool_call(self, prompt: str) -> Dict[str, Any]:
         """Create the tool call specification."""
         return {
@@ -136,7 +136,7 @@ preprocessor = SequentialThinkingPreProcessor()
 def preprocess_for_sequential_thinking(prompt: str) -> str:
     """
     Main entry point - preprocess prompt to force sequential thinking.
-    
+
     Use this function to wrap ANY prompt before sending to Kimi K2.5.
     """
     result = preprocessor.preprocess(prompt)

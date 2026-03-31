@@ -174,7 +174,7 @@ _emit_invokes_evaluation("p1", "ptc_orchestrator", "eval_call")
 @dataclass(frozen=True)
 class PTCScriptPlan:
     """Execution plan for a PTC script.
-    
+
     Attributes:
         script_id: Unique identifier
         tools: List of tools to invoke in order
@@ -192,7 +192,7 @@ class PTCScriptPlan:
 @dataclass
 class PTCExecutionResult:
     """Result of PTC script execution.
-    
+
     Attributes:
         script_id: Script that was executed
         success: Whether execution succeeded
@@ -213,17 +213,17 @@ class PTCExecutionResult:
 
 class PTCOrchestrator:
     """Orchestrates PTC script execution with inference batching.
-    
+
     Key Features:
     1. Script parsing and tool extraction
     2. Dependency analysis for optimal batching
     3. Sandbox execution with context isolation
     4. Result aggregation and summary generation
     5. Token savings tracking
-    
+
     Usage:
         orchestrator = PTCOrchestrator()
-        
+
         # Parse and plan
         code = '''
 users = query_database("SELECT * FROM users")
@@ -232,64 +232,64 @@ summary = {"users": len(users), "orders": len(orders)}
 print(json.dumps(summary))
 '''
         plan = orchestrator.parse_script("script-001", code)
-        
+
         # Execute with batching
         result = orchestrator.execute_batch(plan)
     """
-    
+
     # Token estimation constants
     TOKENS_PER_TOOL_CALL: int = 100
     TOKENS_PER_CONTEXT_ITEM: int = 50
     TRADITIONAL_OVERHEAD: int = 200  # Per separate inference
-    
+
     def __init__(self, max_batch_size: int = 10) -> None:
         """Initialize PTC orchestrator.
-        
+
         Args:
             max_batch_size: Maximum number of tools to batch together
         """
         import uuid as _uuid
-        
+
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "PTCOrchestrator.__init__")
         _emit_signs_execution_trace(_trace_id, _trace_id[:12], "ptc_orch_init", 0)
-        
+
         self._max_batch_size = max_batch_size
         self._execution_history: list[PTCExecutionResult] = []
         self._tool_registry: dict[str, Callable] = {}
-    
+
     def parse_script(self, script_id: str, code: str) -> PTCScriptPlan:
         """Parse PTC script and extract execution plan.
-        
+
         Analyzes code to identify:
         - Tool invocations (function calls)
         - Dependencies between tools
         - Whether tools can be batched
-        
+
         Args:
             script_id: Unique identifier for the script
             code: Python/Bash code of the script
-            
+
         Returns:
             PTCScriptPlan with tool extraction and dependency analysis
         """
         import uuid as _uuid
-        
+
         trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(trace_id, LayerSegment.L3_ORCHESTRATION, "PTCOrchestrator.parse_script")
-        
+
         # Extract tool calls from code
         tools = self._extract_tool_calls(code)
-        
+
         # Analyze dependencies
         dependencies = self._analyze_dependencies(code, tools)
-        
+
         # Check if batchable (no circular deps, within size limit)
         can_batch = self._can_batch(tools, dependencies)
-        
+
         # Estimate tokens
         estimated_tokens = self._estimate_tokens(code, tools)
-        
+
         plan = PTCScriptPlan(
             script_id=script_id,
             tools=tools,
@@ -297,42 +297,42 @@ print(json.dumps(summary))
             estimated_tokens=estimated_tokens,
             can_batch=can_batch,
         )
-        
+
         _emit_captures_pattern(trace_id, script_id, f"tools:{len(tools)}:batchable:{can_batch}")
-        
+
         return plan
-    
+
     def _extract_tool_calls(self, code: str) -> list[str]:
         """Extract tool call identifiers from script code."""
         tools: list[str] = []
-        
+
         # Pattern 1: Direct function calls (e.g., query_database(...))
         # Match: tool_name(args)
         pattern1 = r"\b(\w+)\s*\("
         matches1 = re.findall(pattern1, code)
-        
+
         # Pattern 2: await calls (e.g., await query_database(...))
         pattern2 = r"await\s+(\w+)\s*\("
         matches2 = re.findall(pattern2, code)
-        
+
         # Combine and filter common non-tool names
         non_tool_names = {"print", "len", "range", "enumerate", "zip", "map", "filter", "json", "str", "int", "float", "bool", "list", "dict", "tuple", "set"}
-        
+
         for match in matches1 + matches2:
             if match not in non_tool_names and match not in tools:
                 tools.append(match)
-        
+
         return tools
-    
+
     def _analyze_dependencies(self, code: str, tools: list[str]) -> dict[str, list[str]]:
         """Analyze dependencies between tools in the script."""
         dependencies: dict[str, list[str]] = {tool: [] for tool in tools}
-        
+
         # Simple dependency analysis:
         # If tool B uses a variable assigned by tool A, B depends on A
         lines = code.split("\n")
         assigned_vars: dict[str, str] = {}  # var_name -> tool_name
-        
+
         for line in lines:
             # Check for assignments (e.g., result = tool_name(...))
             match = re.match(r"\s*(\w+)\s*=\s*(\w+)\s*\(", line)
@@ -340,7 +340,7 @@ print(json.dumps(summary))
                 var_name, tool_name = match.groups()
                 if tool_name in tools:
                     assigned_vars[var_name] = tool_name
-            
+
             # Check for variable usage in tool calls
             for tool in tools:
                 # If this line calls tool and uses a variable
@@ -349,76 +349,76 @@ print(json.dumps(summary))
                         if var_name in line and source_tool != tool:
                             if source_tool not in dependencies[tool]:
                                 dependencies[tool].append(source_tool)
-        
+
         return dependencies
-    
+
     def _can_batch(self, tools: list[str], dependencies: dict[str, list[str]]) -> bool:
         """Determine if tools can be batched in single inference pass."""
         # Too many tools
         if len(tools) > self._max_batch_size:
             return False
-        
+
         # Check for dependencies that prevent batching
         for tool, deps in dependencies.items():
             if deps:  # Any dependency prevents full batching
                 return False
-        
+
         return True
-    
+
     def _estimate_tokens(self, code: str, tools: list[str]) -> int:
         """Estimate token count for script execution."""
         # Base tokens for code
         code_tokens = len(code.split())
-        
+
         # Tool call tokens
         tool_tokens = len(tools) * self.TOKENS_PER_TOOL_CALL
-        
+
         return code_tokens + tool_tokens
-    
+
     def execute_batch(
         self,
         plan: PTCScriptPlan,
         tool_handlers: dict[str, Callable] | None = None,
     ) -> PTCExecutionResult:
         """Execute a batched PTC script plan.
-        
+
         Executes all tools in the plan within a single "inference pass".
         Results are aggregated and only a summary returns to L1 context.
-        
+
         Args:
             plan: Execution plan from parse_script
             tool_handlers: Optional dict mapping tool_id to handler function
-            
+
         Returns:
             PTCExecutionResult with summary and metadata
         """
         import uuid as _uuid
         import time as _time
-        
+
         trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(trace_id, LayerSegment.L3_ORCHESTRATION, "PTCOrchestrator.execute_batch")
         _emit_orchestrates_workflow(trace_id, plan.script_id, "ptc_batch_execution")
-        
+
         start_time = _time.time()
-        
+
         handlers = tool_handlers or self._tool_registry
         raw_results: dict[str, Any] = {}
-        
+
         # Execute all tools
         for tool_id in plan.tools:
             if tool_id in handlers:
                 try:
                     # Execute tool
                     _emit_records_tool_invocation(trace_id, tool_id, plan.script_id)
-                    
+
                     result = handlers[tool_id]({})
                     raw_results[tool_id] = {
                         "success": True,
                         "result": result,
                     }
-                    
+
                     _emit_captures_execution_output(trace_id, tool_id, "success")
-                    
+
                 except (ValueError, TypeError) as e:
                     raw_results[tool_id] = {
                         "success": False,
@@ -430,18 +430,18 @@ print(json.dumps(summary))
                     "success": False,
                     "error": f"Tool '{tool_id}' not found",
                 }
-        
+
         execution_time_ms = (_time.time() - start_time) * 1000
-        
+
         # Generate summary (only this goes back to L1 context)
         summary = self._generate_summary(plan, raw_results)
-        
+
         # Calculate token savings
         tokens_saved = self._calculate_token_savings(plan)
-        
+
         # Check success (all tools succeeded)
         success = all(r.get("success", False) for r in raw_results.values())
-        
+
         result = PTCExecutionResult(
             script_id=plan.script_id,
             success=success,
@@ -451,22 +451,22 @@ print(json.dumps(summary))
             tokens_saved=tokens_saved,
             trace_id=trace_id,
         )
-        
+
         self._execution_history.append(result)
-        
+
         # Emit completion signals
         _emit_transcripts_response(trace_id, plan.script_id, summary[:100])  # Truncated
         _emit_writes_learning_snapshot(trace_id, plan.script_id, "execution_completed")
-        
+
         return result
-    
+
     def _generate_summary(self, plan: PTCScriptPlan, raw_results: dict[str, Any]) -> str:
         """Generate summary output from raw results.
-        
+
         This is the only output that escapes the sandbox and goes to L1 context.
         """
         summary_parts = []
-        
+
         for tool_id, result in raw_results.items():
             if result.get("success"):
                 res = result.get("result", {})
@@ -484,32 +484,32 @@ print(json.dumps(summary))
                     summary_parts.append(f"{tool_id}: success")
             else:
                 summary_parts.append(f"{tool_id}: failed")
-        
+
         return json.dumps({
             "status": "success" if all(r.get("success") for r in raw_results.values()) else "partial_failure",
             "tools_executed": len(raw_results),
             "tools_successful": sum(1 for r in raw_results.values() if r.get("success")),
             "summary": summary_parts,
         }, separators=(",", ":"))
-    
+
     def _calculate_token_savings(self, plan: PTCScriptPlan) -> int:
         """Calculate estimated token savings vs traditional approach."""
         # Traditional: separate inference per tool
         traditional_tokens = len(plan.tools) * (self.TOKENS_PER_TOOL_CALL + self.TRADITIONAL_OVERHEAD)
-        
+
         # PTC: single inference
         ptc_tokens = self.TOKENS_PER_TOOL_CALL + plan.estimated_tokens
-        
+
         return max(0, traditional_tokens - ptc_tokens)
-    
+
     def register_tool(self, tool_id: str, handler: Callable) -> None:
         """Register a tool handler with the orchestrator."""
         self._tool_registry[tool_id] = handler
-    
+
     def get_execution_history(self) -> list[PTCExecutionResult]:
         """Get history of executed scripts."""
         return self._execution_history.copy()
-    
+
     def get_statistics(self) -> dict[str, Any]:
         """Get execution statistics."""
         if not self._execution_history:
@@ -519,12 +519,12 @@ print(json.dumps(summary))
                 "total_tokens_saved": 0,
                 "average_execution_time_ms": 0.0,
             }
-        
+
         total = len(self._execution_history)
         successful = sum(1 for r in self._execution_history if r.success)
         tokens_saved = sum(r.tokens_saved for r in self._execution_history)
         avg_time = sum(r.execution_time_ms for r in self._execution_history) / total
-        
+
         return {
             "total_executions": total,
             "successful_executions": successful,
@@ -541,7 +541,7 @@ print(json.dumps(summary))
 @dataclass
 class PTCSandboxContext:
     """Sandbox execution context for PTC scripts.
-    
+
     Provides isolated execution environment where raw tool results
     are trapped and only summaries escape.
     """
@@ -550,12 +550,12 @@ class PTCSandboxContext:
     raw_results: dict[str, Any] = field(default_factory=dict)
     stdout_buffer: str = ""
     stderr_buffer: str = ""
-    
+
     def trap_result(self, tool_id: str, result: Any) -> None:
         """Trap a tool result in the sandbox."""
         self.raw_results[tool_id] = result
         _emit_records_execution_trace(self.context_id, LayerSegment.L2_EXECUTION, f"PTCSandbox.trap:{tool_id}")
-    
+
     def release_summary(self, summary: str) -> str:
         """Release summary output from sandbox (only L1-visible output)."""
         self.stdout_buffer = summary
@@ -565,27 +565,27 @@ class PTCSandboxContext:
 
 class PTCSandboxExecutor:
     """Executes PTC scripts within isolated sandbox context.
-    
+
     Ensures that raw tool results stay trapped in L2 sandbox,
     with only summaries escaping to L1 context.
     """
-    
+
     def __init__(self) -> None:
         """Initialize sandbox executor."""
         import uuid as _uuid
-        
+
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L2_EXECUTION, "PTCSandboxExecutor.__init__")
         _emit_snapshots_state(_trace_id, "sandbox_executor", "initialized")
-    
+
     def create_context(self) -> PTCSandboxContext:
         """Create new isolated sandbox context."""
         import uuid as _uuid
-        
+
         context_id = str(_uuid.uuid4())
         _emit_snapshots_state(context_id, "sandbox", "context_created")
         _emit_records_execution_trace(context_id, LayerSegment.L2_EXECUTION, "PTCSandbox.create_context")
-        
+
         return PTCSandboxContext(
             context_id=context_id,
             isolated=True,
@@ -593,30 +593,30 @@ class PTCSandboxExecutor:
             stdout_buffer="",
             stderr_buffer="",
         )
-    
+
     def execute_in_sandbox(
         self,
         code: str,
         tool_handlers: dict[str, Callable],
     ) -> tuple[PTCSandboxContext, str]:
         """Execute code within isolated sandbox context.
-        
+
         Args:
             code: Python code to execute
             tool_handlers: Dictionary of tool handlers
-            
+
         Returns:
             Tuple of (sandbox_context, summary_output)
         """
         import uuid as _uuid
-        
+
         trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(trace_id, LayerSegment.L2_EXECUTION, "PTCSandboxExecutor.execute")
         _emit_snapshots_state(trace_id, "sandbox", "execution_started")
-        
+
         # Create isolated context
         context = self.create_context()
-        
+
         # Execute tools and trap results
         for tool_id, handler in tool_handlers.items():
             if tool_id in code:
@@ -625,22 +625,22 @@ class PTCSandboxExecutor:
                     context.trap_result(tool_id, result)
                 except (ValueError, TypeError) as e:
                     context.trap_result(tool_id, {"error": str(e)})
-        
+
         # Generate summary
         summary = self._generate_summary(context.raw_results)
-        
+
         # Release summary (only this escapes sandbox)
         output = context.release_summary(summary)
-        
+
         _emit_snapshots_state(trace_id, "sandbox", "execution_completed")
         _emit_records_execution_trace(trace_id, LayerSegment.L2_EXECUTION, "PTCSandboxExecutor.completed")
-        
+
         return context, output
-    
+
     def _generate_summary(self, raw_results: dict[str, Any]) -> str:
         """Generate summary from trapped raw results."""
         summaries = []
-        
+
         for tool_id, result in raw_results.items():
             if isinstance(result, dict):
                 if "error" in result:
@@ -653,7 +653,7 @@ class PTCSandboxExecutor:
                     summaries.append(f"{tool_id}: completed")
             else:
                 summaries.append(f"{tool_id}: completed")
-        
+
         return json.dumps({
             "executed": len(raw_results),
             "summary": summaries,

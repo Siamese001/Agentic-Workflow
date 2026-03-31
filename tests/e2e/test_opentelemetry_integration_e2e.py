@@ -18,15 +18,13 @@ from typing import Any
 
 import pytest
 
-# Lazy import fixtures - avoid collection-time errors
 
-@pytest.fixture(scope="session")
-def _lazy_agentic_core_L6_observability_enforcement_rag_telemetry_collector_0():
-    from agentic_core.L6_observability.enforcement.rag_telemetry_collector import (
-        RagMetrics,
-        RagTelemetryCollector,
-    )
-    return type('_Import', (), {"RagTelemetryCollector": RagTelemetryCollector, "RagMetrics": RagMetrics})
+# Lazy imports — wrapped to avoid collection-time errors
+try:
+    from agentic_core.L6_observability.enforcement.rag_telemetry_collector import RagMetrics, RagTelemetryCollector
+except ImportError:
+    pass
+
 
 # Phase 1: OpenTelemetry imports
 try:

@@ -51,11 +51,11 @@ def validate_pre_write_hooks():
 def main():
     """Run all contract gates in deterministic order."""
     repo_root = Path(__file__).parent.parent.parent
-    
+
     # Validate pre-write hooks
     if not validate_pre_write_hooks():
         sys.exit(1)
-    
+
     # Continue with existing logic...
     return 0
 

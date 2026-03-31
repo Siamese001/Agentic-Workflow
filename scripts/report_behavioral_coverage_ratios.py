@@ -80,7 +80,7 @@ class BehavioralCoverageReporter:
     def _verify_runtime_semantic_edge_detection(self) -> dict[str, Any]:
         """Verify runtime semantic edge detection."""
         result = {"total_runtime_edges": 0, "edge_types": {}}
-        
+
         if not self.db_path or not self.db_path.exists():
             return result
 
@@ -91,7 +91,7 @@ class BehavioralCoverageReporter:
             'records_execution_trace', 'applies_guardrail',
             'emits_replay_key', 'snapshots_state'
         ]
-        
+
         for rel_type in runtime_types:
             c.execute("""
                 SELECT COUNT(*) FROM edges WHERE relation_type = ?
@@ -106,7 +106,7 @@ class BehavioralCoverageReporter:
     def _verify_structural_edge_detection(self) -> dict[str, Any]:
         """Verify structural edge detection."""
         result = {"total_structural_edges": 0, "edge_types": {}}
-        
+
         if not self.db_path or not self.db_path.exists():
             return result
 
@@ -114,7 +114,7 @@ class BehavioralCoverageReporter:
         c = conn.cursor()
 
         structural_types = ['imports', 'exports', 'defines', 'calls']
-        
+
         for rel_type in structural_types:
             c.execute("""
                 SELECT COUNT(*) FROM edges WHERE relation_type = ?
@@ -129,7 +129,7 @@ class BehavioralCoverageReporter:
     def _verify_layer_balance_analysis(self) -> dict[str, Any]:
         """Verify layer balance analysis."""
         result = {"layer_balance": {}, "total_modules": 0}
-        
+
         if not self.db_path or not self.db_path.exists():
             return result
 
@@ -137,7 +137,7 @@ class BehavioralCoverageReporter:
         c = conn.cursor()
 
         c.execute("""
-            SELECT layer, COUNT(*) FROM nodes 
+            SELECT layer, COUNT(*) FROM nodes
             WHERE entity_type = 'module'
             GROUP BY layer
         """)

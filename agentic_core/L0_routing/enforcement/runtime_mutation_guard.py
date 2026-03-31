@@ -378,7 +378,7 @@ class RuntimeMutationGuard:
         import os
         if os.environ.get('DISABLE_RUNTIME_MUTATION_GUARD') == '1':
             return
-            
+
         import uuid as _uuid  # noqa: PLC0415
 
         _trace_id = str(_uuid.uuid4())

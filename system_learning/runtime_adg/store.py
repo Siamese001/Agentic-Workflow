@@ -160,7 +160,7 @@ class FileBackedRuntimeADGStore:
 
 def _deserialise_snapshot(payload: bytes) -> RuntimeADGSnapshot:
     """Reconstruct a RuntimeADGSnapshot from its canonical bytes payload.
-    
+
     The canonical format uses RS (\x1f) as record separator and GS (\x1e) as group separator:
     header: trace_id\x1fmission\x1fstarted_at\x1fended_at
     nodes: node_id\x1ename\x1ekind\x1elayer\x1ecomponent\x1ets\x1eduration\x1estatus\x1eattrs_json
@@ -171,23 +171,23 @@ def _deserialise_snapshot(payload: bytes) -> RuntimeADGSnapshot:
         parts = payload.split(b"\x1f")
         if len(parts) < 4:
             raise ValueError("Invalid canonical format: insufficient header fields")
-        
+
         trace_id = parts[0].decode("utf-8")
         mission = parts[1].decode("utf-8")
         started_at_utc = int(parts[2].decode("utf-8"))
         ended_at_utc = int(parts[3].decode("utf-8"))
-        
+
         # Remaining parts are nodes and edges
         remaining = parts[4:]
-        
+
         nodes: list[RuntimeADGNode] = []
         edges: list[RuntimeADGEdge] = []
-        
+
         for part in remaining:
             if not part:
                 continue
             fields = part.split(b"\x1e")
-            
+
             if len(fields) == 9:
                 # This is a node: 9 fields
                 nodes.append(RuntimeADGNode(
@@ -209,7 +209,7 @@ def _deserialise_snapshot(payload: bytes) -> RuntimeADGSnapshot:
                     relation=fields[2].decode("utf-8"),
                 ))
             # Skip unknown field counts
-        
+
         return create_runtime_adg_snapshot(
             trace_id=trace_id,
             mission=mission,

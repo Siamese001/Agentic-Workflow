@@ -6,17 +6,17 @@ def aggressive_clean(filepath):
     """Remove all stray code patterns from test files."""
     with open(filepath, 'r', encoding='utf-8', errors='replace') as f:
         lines = f.readlines()
-    
+
     cleaned = []
     in_class = False
     in_function = False
     indent_level = 0
     i = 0
-    
+
     while i < len(lines):
         line = lines[i]
         stripped = line.strip()
-        
+
         # Track class/function state
         if stripped.startswith('class '):
             in_class = True
@@ -24,14 +24,14 @@ def aggressive_clean(filepath):
             cleaned.append(line)
             i += 1
             continue
-            
+
         if stripped.startswith('def test_'):
             in_function = True
             indent_level = len(line) - len(line.lstrip())
             cleaned.append(line)
             i += 1
             continue
-        
+
         # Check for stray code at module level after class ends
         if in_class and not in_function:
             # If we see # Arrange, # Act, result = None, assert at module level, skip it
@@ -39,7 +39,7 @@ def aggressive_clean(filepath):
                 # Skip this line and keep skipping related lines
                 i += 1
                 continue
-        
+
         # If we're in a function and see a bare string followed by # Arrange at wrong indent, skip
         if in_function and stripped.startswith('"""') and 'runtime behavior' in stripped:
             # Check if next lines are stray code
@@ -56,19 +56,19 @@ def aggressive_clean(filepath):
                                     break
                         i += 1
                     continue
-        
+
         # Remove pytest.main calls at module level
         if stripped.startswith('pytest.main'):
             i += 1
             continue
-            
+
         cleaned.append(line)
         i += 1
-    
+
     # Join and clean up multiple blank lines
     content = ''.join(cleaned)
     content = re.sub(r'\n{4,}', '\n\n\n', content)
-    
+
     with open(filepath, 'w', encoding='utf-8') as f:
         f.write(content)
     return True

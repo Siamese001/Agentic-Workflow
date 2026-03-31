@@ -34,7 +34,7 @@ class WorkflowOutcomeSLAdapter:
         try:
             from system_learning.adapters.system_learning_memory_bridge import get_sl_memory_bridge
             bridge = get_sl_memory_bridge()
-            
+
             # Persist as telemetry event
             success = bridge.persist_workflow_outcome(
                 bundle_id=outcome.bundle_id,
@@ -47,13 +47,13 @@ class WorkflowOutcomeSLAdapter:
                 outcome_hash=outcome.outcome_hash,
                 timestamp_utc=int(outcome.metadata.get('timestamp_utc', 0) * 1000) if outcome.metadata.get('timestamp_utc') else 0,
             )
-            
+
             if success:
                 self._accepted_count += 1
             else:
                 logger.debug("Failed to persist workflow outcome: %s", outcome.bundle_id)
                 self._error_count += 1
-                
+
         except Exception as e:
             logger.error("WorkflowOutcomeSLAdapter failed to accept outcome: %s", e)
             self._error_count += 1
@@ -83,10 +83,10 @@ def register_with_workflow_bridge() -> None:
     """Register the SL adapter with the WorkflowLearningBridge."""
     try:
         from agentic_core.L3_orchestration.learning.workflow_learning_bridge import get_workflow_learning_bridge
-        
+
         bridge = get_workflow_learning_bridge()
         adapter = get_workflow_outcome_sl_adapter()
-        
+
         bridge.register_learner("system_learning", adapter.accept)
         logger.info("WorkflowOutcomeSLAdapter registered with WorkflowLearningBridge")
     except Exception as e:

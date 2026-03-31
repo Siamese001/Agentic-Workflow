@@ -16,11 +16,11 @@ class TestCrossAppPromptTemplateWiring:
     def test_apps_rg_imports_and_get_prompt(self):
         """Verify apps_rg (reference implementation) still works."""
         from apps_rg.types.PromptTemplate import FROZEN_SNAPSHOT, get_prompt
-        
+
         assert FROZEN_SNAPSHOT is not None
         assert hasattr(FROZEN_SNAPSHOT, 'prompts')
         assert hasattr(FROZEN_SNAPSHOT, 'nodes')
-        
+
         # Test get_prompt returns non-empty for known prompt
         result = get_prompt("input_jd")
         assert isinstance(result, str)

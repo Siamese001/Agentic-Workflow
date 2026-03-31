@@ -86,7 +86,7 @@ logger = logging.getLogger(__name__)
 
 class AlertSeverity(str, Enum):
     """Alert severity levels."""
-    
+
     INFO = "info"
     WARNING = "warning"
     ERROR = "error"
@@ -96,7 +96,7 @@ class AlertSeverity(str, Enum):
 @dataclass
 class MetricAlert:
     """Alert for metric anomaly."""
-    
+
     metric_name: str
     severity: AlertSeverity
     message: str
@@ -108,7 +108,7 @@ class MetricAlert:
 @dataclass
 class DashboardMetrics:
     """Dashboard metrics summary."""
-    
+
     total_evaluations: int
     avg_score: float
     score_trend: str
@@ -119,32 +119,32 @@ class DashboardMetrics:
 
 class LearningMetricsDashboard:
     """Dashboard for learning metrics with alerting and visualization.
-    
+
     Features:
     - Metric aggregation by type
     - Trend analysis
     - Anomaly detection and alerting
     - Query API for visualization
     """
-    
+
     def __init__(
         self,
         alert_threshold_low: float = 0.5,
         alert_threshold_critical: float = 0.3,
     ) -> None:
         """Initialize learning metrics dashboard.
-        
+
         Args:
             alert_threshold_low: Threshold for low score warnings
             alert_threshold_critical: Threshold for critical alerts
         """
         self._alert_threshold_low = alert_threshold_low
         self._alert_threshold_critical = alert_threshold_critical
-        
+
         # Metrics storage
         self._metrics: dict[str, list[tuple[float, float]]] = {}  # type -> [(timestamp, score)]
         self._alerts: list[MetricAlert] = []
-        
+
     def record_metric(
         self,
         metric_type: str,
@@ -152,37 +152,37 @@ class LearningMetricsDashboard:
         timestamp: float | None = None,
     ) -> None:
         """Record a learning metric.
-        
+
         Args:
             metric_type: Type of metric
             score: Metric score
             timestamp: Timestamp (defaults to now)
-            
+
         Emits ADG edges:
             - captures_evaluation_metric (P4)
         """
         _emit_captures_evaluation_metric("p4", "learning_metrics_dashboard", metric_type)
-        
+
         if timestamp is None:
             timestamp = time.time()
-            
+
         if metric_type not in self._metrics:
             self._metrics[metric_type] = []
-            
+
         self._metrics[metric_type].append((timestamp, score))
-        
+
         # Check for alerts
         self._check_alerts(metric_type, score, timestamp)
-        
+
         logger.debug("METRIC_RECORDED: type=%s score=%.3f", metric_type, score)
-        
+
     def get_dashboard_summary(self) -> DashboardMetrics:
         """Get dashboard summary with all metrics and alerts."""
         total_evals = sum(len(scores) for scores in self._metrics.values())
-        
+
         all_scores = [score for scores in self._metrics.values() for _, score in scores]
         avg_score = statistics.mean(all_scores) if all_scores else 0.0
-        
+
         # Calculate trend
         if len(all_scores) >= 10:
             recent_avg = statistics.mean(all_scores[-5:])
@@ -195,7 +195,7 @@ class LearningMetricsDashboard:
                 trend = "stable"
         else:
             trend = "insufficient_data"
-            
+
         # Aggregate metrics by type
         metrics_by_type = {}
         for metric_type, scores in self._metrics.items():
@@ -206,14 +206,14 @@ class LearningMetricsDashboard:
                 "min": min(recent_scores) if recent_scores else 0.0,
                 "max": max(recent_scores) if recent_scores else 0.0,
             }
-            
+
         # Get active alerts (last hour)
         current_time = time.time()
         active_alerts = [
             alert for alert in self._alerts
             if current_time - alert.timestamp < 3600
         ]
-        
+
         return DashboardMetrics(
             total_evaluations=total_evals,
             avg_score=avg_score,
@@ -222,69 +222,69 @@ class LearningMetricsDashboard:
             active_alerts=active_alerts,
             metrics_by_type=metrics_by_type,
         )
-        
+
     def get_metric_history(
         self,
         metric_type: str,
         limit: int = 100,
     ) -> list[tuple[float, float]]:
         """Get metric history for a specific type.
-        
+
         Args:
             metric_type: Type of metric
             limit: Maximum number of records to return
-            
+
         Returns:
             List of (timestamp, score) tuples
         """
         if metric_type not in self._metrics:
             return []
-            
+
         return self._metrics[metric_type][-limit:]
-        
+
     def get_alerts(
         self,
         severity: AlertSeverity | None = None,
         limit: int = 50,
     ) -> list[MetricAlert]:
         """Get alerts, optionally filtered by severity.
-        
+
         Args:
             severity: Filter by severity (optional)
             limit: Maximum alerts to return
-            
+
         Returns:
             List of alerts
         """
         alerts = self._alerts
-        
+
         if severity is not None:
             alerts = [a for a in alerts if a.severity == severity]
-            
+
         return alerts[-limit:]
-        
+
     def clear_old_alerts(self, max_age_sec: float = 86400) -> int:
         """Clear alerts older than max_age_sec.
-        
+
         Args:
             max_age_sec: Maximum age in seconds (default 24 hours)
-            
+
         Returns:
             Number of alerts cleared
         """
         current_time = time.time()
         cutoff_time = current_time - max_age_sec
-        
+
         initial_count = len(self._alerts)
         self._alerts = [a for a in self._alerts if a.timestamp >= cutoff_time]
-        
+
         return initial_count - len(self._alerts)
-        
+
     def reset(self) -> None:
         """Reset all metrics and alerts."""
         self._metrics.clear()
         self._alerts.clear()
-        
+
     def _check_alerts(self, metric_type: str, score: float, timestamp: float) -> None:
         """Check if metric triggers any alerts."""
         if score < self._alert_threshold_critical:
@@ -298,7 +298,7 @@ class LearningMetricsDashboard:
             )
             self._alerts.append(alert)
             logger.error("CRITICAL_ALERT: %s", alert.message)
-            
+
         elif score < self._alert_threshold_low:
             alert = MetricAlert(
                 metric_name=metric_type,

@@ -54,7 +54,7 @@ class EvaluationMetrics:
     mrr: float = 0.0  # Mean Reciprocal Rank
     ndcg: float = 0.0  # Normalized Discounted Cumulative Gain
     f1_groundedness: float = 0.0
-    
+
     def is_acceptable(self, threshold: float = 0.5) -> bool:
         """Check if metrics meet threshold."""
         return all([
@@ -74,11 +74,11 @@ class CompletenessAnalysis:
     missing_temporal_qualifier_rate: float = 0.0
     fragmentation_score: float = 0.0
     high_similarity_wrong_answer_rate: float = 0.0
-    
+
     def is_complete(self, threshold: float = 0.5) -> bool:
         """Check if completeness meets threshold."""
         return self.mean_completeness >= threshold
-    
+
     def has_fragmentation(self, threshold: float = 0.3) -> bool:
         """Check if fragmentation is high."""
         return self.fragmentation_score >= threshold
@@ -93,7 +93,7 @@ class FeedbackProposal:
     proposed_value: Any
     confidence: float
     supporting_evidence: list[str] = field(default_factory=list)
-    
+
     def to_change_package(self) -> dict[str, Any]:
         """Convert to L5 ChangePackage format."""
         return {
@@ -118,7 +118,7 @@ class CompletenessChangePackage:
     aggregate_metrics: EvaluationMetrics
     completeness_analysis: CompletenessAnalysis
     query_count: int
-    
+
     def to_dict(self) -> dict[str, Any]:
         """Convert to dictionary for L5 Board submission."""
         return {
@@ -144,7 +144,7 @@ class CompletenessChangePackage:
 
 class EvaluationRunner:
     """Evaluation runner for retrieval quality metrics.
-    
+
     Computes:
     - Precision@K: Relevant items in top K
     - Recall@K: Relevant items retrieved
@@ -152,12 +152,12 @@ class EvaluationRunner:
     - NDCG: Normalized discounted cumulative gain
     - F1-Groundedness: Groundedness F1 score
     """
-    
+
     def __init__(self):
         """Initialize evaluation runner."""
         self._eval_count = 0
         self._accumulated_metrics: list[EvaluationMetrics] = []
-    
+
     def evaluate(
         self,
         query: str,
@@ -167,14 +167,14 @@ class EvaluationRunner:
         k: int = 5,
     ) -> EvaluationMetrics:
         """Evaluate retrieval quality for a single query.
-        
+
         Args:
             query: The search query
             retrieved_chunks: List of retrieved chunk IDs
             relevant_chunks: Ground truth relevant chunk IDs
             groundedness_scores: Groundedness scores for retrieved chunks
             k: Cutoff for precision/recall
-            
+
         Returns:
             EvaluationMetrics for this query
         """
@@ -182,33 +182,33 @@ class EvaluationRunner:
         _emit_records_execution_trace(
             _trace_id, LayerSegment.L6_OBSERVABILITY, "EvaluationRunner.evaluate"
         )
-        
+
         metrics = EvaluationMetrics()
-        
+
         # Precision@K
         retrieved_k = set(retrieved_chunks[:k])
         relevant_set = set(relevant_chunks)
         metrics.precision_at_k = len(retrieved_k & relevant_set) / max(len(retrieved_k), 1)
-        
+
         # Recall@K
         metrics.recall_at_k = len(retrieved_k & relevant_set) / max(len(relevant_set), 1)
-        
+
         # MRR
         for i, chunk in enumerate(retrieved_chunks):
             if chunk in relevant_chunks:
                 metrics.mrr = 1.0 / (i + 1)
                 break
-        
+
         # NDCG (simplified)
         dcg = 0.0
         for i, chunk in enumerate(retrieved_chunks[:k]):
             rel = 1.0 if chunk in relevant_chunks else 0.0
             dcg += rel / (i + 1)  # Discounted
-        
+
         # Ideal DCG
         ideal_dcg = sum(1.0 / (i + 1) for i in range(min(k, len(relevant_chunks))))
         metrics.ndcg = dcg / max(ideal_dcg, 1e-10)
-        
+
         # F1-Groundedness
         if groundedness_scores:
             avg_groundedness = sum(groundedness_scores) / len(groundedness_scores)
@@ -216,7 +216,7 @@ class EvaluationRunner:
             metrics.f1_groundedness = 2 * (avg_groundedness * metrics.precision_at_k) / max(
                 avg_groundedness + metrics.precision_at_k, 1e-10
             )
-        
+
         _emit_captures_evaluation_metric(
             _trace_id, "precision_at_k", metrics.precision_at_k
         )
@@ -226,17 +226,17 @@ class EvaluationRunner:
         _emit_captures_evaluation_metric(
             _trace_id, "mrr", metrics.mrr
         )
-        
+
         self._eval_count += 1
         self._accumulated_metrics.append(metrics)
-        
+
         return metrics
-    
+
     def aggregate_metrics(self) -> EvaluationMetrics:
         """Aggregate metrics across all evaluations."""
         if not self._accumulated_metrics:
             return EvaluationMetrics()
-        
+
         n = len(self._accumulated_metrics)
         return EvaluationMetrics(
             precision_at_k=sum(m.precision_at_k for m in self._accumulated_metrics) / n,
@@ -249,7 +249,7 @@ class EvaluationRunner:
 
 class CompletenessAnalyzer:
     """Analyzes context completeness for feedback signals.
-    
+
     Detects:
     - Missing conditions (if/unless statements)
     - Missing exceptions (error handling)
@@ -257,11 +257,11 @@ class CompletenessAnalyzer:
     - Missing temporal qualifiers (when/after/before)
     - Fragmentation (disconnected context pieces)
     """
-    
+
     def __init__(self):
         """Initialize completeness analyzer."""
         self._analysis_count = 0
-    
+
     def analyze(
         self,
         query: str,
@@ -269,12 +269,12 @@ class CompletenessAnalyzer:
         answer_quality: Optional[float] = None,
     ) -> CompletenessAnalysis:
         """Analyze completeness of retrieved context.
-        
+
         Args:
             query: The search query
             retrieved_contexts: Retrieved context chunks with metadata
             answer_quality: Optional answer quality score
-            
+
         Returns:
             CompletenessAnalysis with detected gaps
         """
@@ -282,38 +282,38 @@ class CompletenessAnalyzer:
         _emit_records_execution_trace(
             _trace_id, LayerSegment.L6_OBSERVABILITY, "CompletenessAnalyzer.analyze"
         )
-        
+
         analysis = CompletenessAnalysis()
-        
+
         # Analyze query for missing elements
         query_lower = query.lower()
-        
+
         # Check for conditional keywords
         has_condition = any(kw in query_lower for kw in ["if", "unless", "when", "condition"])
         has_exception = any(kw in query_lower for kw in ["except", "error", "exception", "handle"])
         has_scope = any(kw in query_lower for kw in ["scope", "within", "inside", "context"])
         has_temporal = any(kw in query_lower for kw in ["before", "after", "during", "while"])
-        
+
         # Check retrieved contexts for coverage
         context_text = " ".join(ctx.get("content", "") for ctx in retrieved_contexts).lower()
-        
+
         # Calculate missing rates
         if has_condition:
             condition_mentions = sum(1 for kw in ["if", "unless", "condition"] if kw in context_text)
             analysis.missing_condition_rate = 1.0 - min(1.0, condition_mentions / 2)
-        
+
         if has_exception:
             exception_mentions = sum(1 for kw in ["except", "error", "exception"] if kw in context_text)
             analysis.missing_exception_rate = 1.0 - min(1.0, exception_mentions / 2)
-        
+
         if has_scope:
             scope_mentions = sum(1 for kw in ["scope", "within", "context"] if kw in context_text)
             analysis.missing_scope_rate = 1.0 - min(1.0, scope_mentions / 2)
-        
+
         if has_temporal:
             temporal_mentions = sum(1 for kw in ["before", "after", "during"] if kw in context_text)
             analysis.missing_temporal_qualifier_rate = 1.0 - min(1.0, temporal_mentions / 2)
-        
+
         # Calculate fragmentation
         if len(retrieved_contexts) > 1:
             # Check for disconnected contexts (no shared concepts)
@@ -322,7 +322,7 @@ class CompletenessAnalyzer:
                 concepts = set(ctx.get("key_concepts", []))
                 if concepts:
                     concept_sets.append(concepts)
-            
+
             if concept_sets:
                 # Fragmentation = 1 - average overlap
                 overlaps = []
@@ -331,10 +331,10 @@ class CompletenessAnalyzer:
                         if i < j:
                             overlap = len(set_i & set_j) / max(len(set_i | set_j), 1)
                             overlaps.append(overlap)
-                
+
                 if overlaps:
                     analysis.fragmentation_score = 1.0 - (sum(overlaps) / len(overlaps))
-        
+
         # Calculate mean completeness
         missing_rates = [
             analysis.missing_condition_rate,
@@ -343,24 +343,24 @@ class CompletenessAnalyzer:
             analysis.missing_temporal_qualifier_rate,
         ]
         analysis.mean_completeness = 1.0 - (sum(missing_rates) / max(len(missing_rates), 1))
-        
+
         # High similarity wrong answer detection
         if answer_quality is not None and answer_quality < 0.3:
             # Check if contexts seem relevant but answer is poor
             avg_chunk_relevance = sum(
                 ctx.get("score", 0) for ctx in retrieved_contexts
             ) / max(len(retrieved_contexts), 1)
-            
+
             if avg_chunk_relevance > 0.7:
                 analysis.high_similarity_wrong_answer_rate = 1.0
-        
+
         self._analysis_count += 1
         return analysis
 
 
 class CompletenessRAGProposer:
     """Proposes retrieval configuration changes based on feedback analysis.
-    
+
     Implements the feedback trigger decision tree from Agentic Retrieval Models v9:
     1. EVAL: COMPLETENESS -> Depth++
     2. EVAL: FRAGMENTATION -> Enrichment+
@@ -368,40 +368,40 @@ class CompletenessRAGProposer:
     4. EVAL: LEXICAL GAP -> Lexical Boost
     5. EVAL: SIGNAL VOLUME -> No Action
     """
-    
+
     def __init__(
         self,
         evaluator: Optional[EvaluationRunner] = None,
         analyzer: Optional[CompletenessAnalyzer] = None,
     ):
         """Initialize CompletenessRAGProposer.
-        
+
         Args:
             evaluator: Evaluation runner for metrics
             analyzer: Completeness analyzer
         """
         self.evaluator = evaluator or EvaluationRunner()
         self.analyzer = analyzer or CompletenessAnalyzer()
-        
+
         self._current_config = {
             "expansion_depth": 3,
             "enable_enrichment": True,
             "hybrid_mode": False,
             "lexical_weight": 0.3,
         }
-    
+
     def analyze_and_propose(
         self,
         query_batch: list[dict[str, Any]],
     ) -> CompletenessChangePackage:
         """Analyze query batch and propose configuration changes.
-        
+
         Args:
             query_batch: List of query results with retrieved contexts
-            
+
         Returns:
             CompletenessChangePackage for L5 Board
-            
+
         Note:
             Implements dampening gate: If query_count < 5, returns NO_ACTION
             to await more observations.
@@ -411,11 +411,11 @@ class CompletenessRAGProposer:
             _trace_id, LayerSegment.L6_OBSERVABILITY, "CompletenessRAGProposer.analyze_and_propose"
         )
         _emit_feeds_meta_learning(_trace_id, "proposer", f"batch:{len(query_batch)}")
-        
+
         # Dampening gate: Low signal volume check
         if len(query_batch) < 5:
             Logger.info(f"Dampening gate active: insufficient query volume ({len(query_batch)} < 5)")
-            
+
             # Return NO_ACTION change package
             no_action_proposal = FeedbackProposal(
                 trigger=FeedbackTrigger.NO_ACTION,
@@ -429,7 +429,7 @@ class CompletenessRAGProposer:
                     "dampening_gate_active",
                 ],
             )
-            
+
             return CompletenessChangePackage(
                 snapshot_id=_trace_id,
                 proposals=[no_action_proposal],
@@ -437,9 +437,9 @@ class CompletenessRAGProposer:
                 completeness_analysis=CompletenessAnalysis(),
                 query_count=len(query_batch),
             )
-        
+
         proposals = []
-        
+
         # Evaluate each query
         for query_data in query_batch:
             self.evaluator.evaluate(
@@ -448,23 +448,23 @@ class CompletenessRAGProposer:
                 relevant_chunks=query_data.get("relevant_chunks", []),
                 groundedness_scores=query_data.get("groundedness_scores", []),
             )
-            
+
             self.analyzer.analyze(
                 query=query_data["query"],
                 retrieved_contexts=query_data.get("contexts", []),
                 answer_quality=query_data.get("answer_quality"),
             )
-        
+
         # Aggregate metrics
         agg_metrics = self.evaluator.aggregate_metrics()
-        
+
         # Generate proposals based on feedback triggers
         proposals.extend(self._check_completeness_trigger(agg_metrics))
         proposals.extend(self._check_fragmentation_trigger())
         proposals.extend(self._check_groundedness_trigger(agg_metrics))
         proposals.extend(self._check_lexical_gap_trigger(query_batch))
         proposals.extend(self._check_signal_volume_trigger(query_batch))
-        
+
         # Create change package
         change_package = CompletenessChangePackage(
             snapshot_id=_trace_id,
@@ -473,27 +473,27 @@ class CompletenessRAGProposer:
             completeness_analysis=self.analyzer.analyze("", []),  # Get latest
             query_count=len(query_batch),
         )
-        
+
         _emit_records_learning_event(
             _trace_id, "proposals_generated", f"count:{len(proposals)}"
         )
-        
+
         return change_package
-    
+
     def _check_completeness_trigger(
         self,
         metrics: EvaluationMetrics,
     ) -> list[FeedbackProposal]:
         """Check completeness trigger (Score < 0.5 -> Depth++).
-        
+
         COND: mean_completeness < 0.5
         PROPOSAL: Depth++ (Modifies Step 4c)
         """
         proposals = []
-        
+
         if metrics.precision_at_k < 0.5 or metrics.recall_at_k < 0.5:
             current_depth = self._current_config["expansion_depth"]
-            
+
             if current_depth < 5:  # Max depth is 5
                 proposal = FeedbackProposal(
                     trigger=FeedbackTrigger.DEPTH_INCREMENT,
@@ -510,23 +510,23 @@ class CompletenessRAGProposer:
                 _emit_updates_routing_strategy(
                     "completeness_proposer", "depth_increment", str(current_depth + 1)
                 )
-        
+
         return proposals
-    
+
     def _check_fragmentation_trigger(self) -> list[FeedbackProposal]:
         """Check fragmentation trigger (High fragmentation -> Enrichment+).
-        
+
         COND: High fragmentation
         PROPOSAL: Enrichment+ (Modifies L4D Prompts)
         """
         proposals = []
-        
+
         # Use recent analysis
         recent_analysis = self.analyzer.analyze("", [])
-        
+
         if recent_analysis.has_fragmentation(threshold=0.3):
             current = self._current_config["enable_enrichment"]
-            
+
             proposal = FeedbackProposal(
                 trigger=FeedbackTrigger.ENRICHMENT_BOOST,
                 rationale=f"High fragmentation detected (score={recent_analysis.fragmentation_score:.2f}). Enhancing L4D enrichment to improve context cohesion.",
@@ -542,23 +542,23 @@ class CompletenessRAGProposer:
             _emit_improves_agent_policy(
                 "completeness_proposer", "enrichment_boost", "fragmentation_fix"
             )
-        
+
         return proposals
-    
+
     def _check_groundedness_trigger(
         self,
         metrics: EvaluationMetrics,
     ) -> list[FeedbackProposal]:
         """Check groundedness trigger (Support score < 0.5 -> Hybrid Mode).
-        
+
         COND: Fully supported? (Support score < 0.5)
         PROPOSAL: Hybrid Mode (Enable Parallel 4a+4b)
         """
         proposals = []
-        
+
         if metrics.f1_groundedness < 0.5:
             current = self._current_config["hybrid_mode"]
-            
+
             if not current:  # Only propose if not already enabled
                 proposal = FeedbackProposal(
                     trigger=FeedbackTrigger.HYBRID_MODE,
@@ -575,32 +575,32 @@ class CompletenessRAGProposer:
                 _emit_updates_routing_strategy(
                     "completeness_proposer", "hybrid_mode", "enabled"
                 )
-        
+
         return proposals
-    
+
     def _check_lexical_gap_trigger(
         self,
         query_batch: list[dict[str, Any]],
     ) -> list[FeedbackProposal]:
         """Check lexical gap trigger (High missing condition -> Lexical Boost).
-        
+
         COND: High Missing Condition? (Lexical exact match issues)
         PROPOSAL: Lexical Boost (Increase 4e weight)
         """
         proposals = []
-        
+
         # Check for lexical issues in batch
         lexical_issues = sum(
             1 for q in query_batch
             if q.get("lexical_match_score", 1.0) < 0.5
         )
-        
+
         if lexical_issues > len(query_batch) * 0.3:  # >30% have issues
             current_weight = self._current_config["lexical_weight"]
-            
+
             if current_weight < 0.7:  # Cap at 0.7
                 new_weight = min(0.7, current_weight + 0.1)
-                
+
                 proposal = FeedbackProposal(
                     trigger=FeedbackTrigger.LEXICAL_BOOST,
                     rationale=f"Lexical match issues detected in {lexical_issues}/{len(query_batch)} queries. Increasing lexical weight to improve exact matching.",
@@ -616,20 +616,20 @@ class CompletenessRAGProposer:
                 _emit_updates_routing_strategy(
                     "completeness_proposer", "lexical_weight", str(new_weight)
                 )
-        
+
         return proposals
-    
+
     def _check_signal_volume_trigger(
         self,
         query_batch: list[dict[str, Any]],
     ) -> list[FeedbackProposal]:
         """Check signal volume trigger (Low observations -> No Action).
-        
+
         COND: Low Observations? (Dampening gate active)
         ACTION: None (Awaiting more queries)
         """
         proposals = []
-        
+
         # If batch is small, recommend waiting
         if len(query_batch) < 5:
             proposal = FeedbackProposal(
@@ -644,12 +644,12 @@ class CompletenessRAGProposer:
                 ],
             )
             proposals.append(proposal)
-        
+
         return proposals
-    
+
     def update_config(self, approved_proposals: list[FeedbackProposal]) -> None:
         """Update current config with approved proposals.
-        
+
         Args:
             approved_proposals: Proposals approved by L5 Board
         """
@@ -662,9 +662,9 @@ class CompletenessRAGProposer:
                 self._current_config["lexical_weight"] = proposal.proposed_value
             elif proposal.trigger == FeedbackTrigger.ENRICHMENT_BOOST:
                 self._current_config["enable_enrichment"] = proposal.proposed_value
-        
+
         Logger.info(f"Updated config: {self._current_config}")
-    
+
     def get_current_config(self) -> dict[str, Any]:
         """Get current configuration."""
         return dict(self._current_config)

@@ -194,7 +194,7 @@ class TestAllSubphasesPresent:
         with patch("agentic_core.L3_orchestration.registry.agent_dispatch_registry.get_agent_dispatch_registry") as mock_registry, \
              patch("agentic_core.L0_routing.scripts.execute_ssot._emit_pipeline_digest"):
             mock_registry.return_value = MagicMock()
-            
+
             AGENT_PIPELINE, run_pipeline, PIPELINE_SUBPHASES, SubphaseResult = execute_ssot_imports[:4]
 
             adapter = CleanAdapter()
@@ -246,7 +246,7 @@ class TestGatePreventsUpdateAgentForMutating:
         with patch("agentic_core.L3_orchestration.registry.agent_dispatch_registry.get_agent_dispatch_registry") as mock_registry, \
              patch("agentic_core.L0_routing.scripts.execute_ssot._emit_pipeline_digest"):
             mock_registry.return_value = MagicMock()
-            
+
             AGENT_PIPELINE, run_pipeline, PIPELINE_SUBPHASES, SubphaseResult = execute_ssot_imports[:4]
 
             adapter = ViolatingAdapter()
@@ -302,7 +302,7 @@ class TestScanModeReadOnly:
         with patch("agentic_core.L3_orchestration.registry.agent_dispatch_registry.get_agent_dispatch_registry") as mock_registry, \
              patch("agentic_core.L0_routing.scripts.execute_ssot._emit_pipeline_digest"):
             mock_registry.return_value = MagicMock()
-            
+
             AGENT_PIPELINE, run_pipeline, PIPELINE_SUBPHASES, SubphaseResult = execute_ssot_imports[:4]
 
             adapter = CleanAdapter()
@@ -354,7 +354,7 @@ class TestFailClosedOnException:
         with patch("agentic_core.L3_orchestration.registry.agent_dispatch_registry.get_agent_dispatch_registry") as mock_registry, \
              patch("agentic_core.L0_routing.scripts.execute_ssot._emit_pipeline_digest"):
             mock_registry.return_value = MagicMock()
-            
+
             AGENT_PIPELINE, run_pipeline, PIPELINE_SUBPHASES, SubphaseResult = execute_ssot_imports[:4]
 
             adapter = self.ExceptionAdapter()

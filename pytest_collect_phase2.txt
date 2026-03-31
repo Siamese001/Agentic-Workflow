@@ -142,9 +142,9 @@ collecting ... collected 7053 items / 124 errors / 2 skipped
             Placeholder test method 3.
       <Module test_adg_final_coverage.py>
         Final coverage push for static_scanner.py and builder.py.
-        
+
         Targets every remaining uncovered line from the 87.71% baseline:
-        
+
         static_scanner.py gaps:
           - _InheritanceVisitor._extract_name: Attribute branch (line 336-338), empty (339)
           - _AttributeVisitor._extract_call_sym: Attribute branch (406-408), empty (409)
@@ -182,7 +182,7 @@ collecting ... collected 7053 items / 124 errors / 2 skipped
           - _check_cardinality: HIGH violation branch (2036)
           - run_scanner_self_test: each visitor fail path (2068-2102)
           - ADGStaticScanner.scan(): full scan via temp repo directory (2128-2260)
-        
+
         builder.py gaps:
           - line 347: adg_target already in existing_adg inside to_resolve loop
           - line 457: UNRESOLVED_IMPORT kind triggers unresolved_imports append
@@ -324,15 +324,15 @@ collecting ... collected 7053 items / 124 errors / 2 skipped
             Placeholder test method 3.
       <Module test_adg_hardening_verification.py>
         ADG Hardening Verification ù Comprehensive Test Suite
-        
+
         Nuanced, innovative, novel testing across all verification scripts.
         Tests are grounded in the REAL ADG SQLite schema (inspected from production DB):
-        
+
           nodes: id, adg_name, entity_type, layer, identity_kind, confidence, resolved_path
           edges: id, src_id, dst_id, relation_type, edge_kind, source_file, line_no, symbol
           meta:  key, value  (schema_version, commit_sha, scanner_digest, artifact_digest, total_nodes, total_edges)
           violations: id, edge_id, category, evidence, file_path, line_no
-        
+
         Test categories:
           1. Fixture Factory ù deterministic synthetic DB construction
           2. Provenance SSOT ù cross-artifact consistency, adversarial inputs
@@ -559,7 +559,7 @@ collecting ... collected 7053 items / 124 errors / 2 skipped
             Placeholder test method 3.
       <Module test_adg_scan_roundtrip.py>
         Fixture-file round-trip tests ù end-to-end scan through _scan_file.
-        
+
         Methods used:
         1. Real .py fixture files written to tmp_path, scanned via _scan_file()
         2. _classify_call() boundary tests (all branches + edge-case suffixes)
@@ -636,7 +636,7 @@ collecting ... collected 7053 items / 124 errors / 2 skipped
             Placeholder test method 3.
       <Module test_adg_test_selector.py>
         Tests for ADG test selector ù Accelerator #5.
-        
+
         Coverage matrix per º1.1:
         - Success: single file, multiple files, dedup, sorted output
         - Edge cases: empty input, file not in ADG, no covers edges, non-test resolved_path,
@@ -732,7 +732,7 @@ collecting ... collected 7053 items / 124 errors / 2 skipped
             Placeholder test method 3.
       <Module test_case_memory_architecture.py>
         Tests for the Memory MCP + Redis + ADG case memory architecture.
-        
+
         Covers:
           - CaseRecord / HealerBundle / GovernancePrecedent / PromptBundle /
             HITLPreferenceRecord frozen invariants and deterministic serialisation
@@ -1870,7 +1870,7 @@ collecting ... collected 7053 items / 124 errors / 2 skipped
             Placeholder test method 3.
       <Module test_audit_completeness.py>
         W15: WaveAuditSummary emission; post-seal mutation raises; wildcard scope rejected.
-        
+
         REQ-243/244/247:
         - WaveAuditSummary emitted per wave
         - Post-seal mutation raises
@@ -2031,7 +2031,7 @@ collecting ... collected 7053 items / 124 errors / 2 skipped
             Placeholder test method 3.
       <Module test_evacuation_discipline.py>
         W15: Evacuation uses semantic clock only; no wall-clock fallback.
-        
+
         REQ-244/247: EvacuationDiscipline uses semantic_clock ticks only;
         no wall-clock time.time() / datetime.now() usage in evacuation paths.
         <Function test_evacuation_uses_semantic_clock_only>
@@ -2164,7 +2164,7 @@ collecting ... collected 7053 items / 124 errors / 2 skipped
             Placeholder test method 3.
       <Module test_guardian_emission.py>
         W15: CitationBundle + CognitiveDiffBundle emission; blueprint_hash in PromotionDecisionArtifact.
-        
+
         REQ-199/211/236:
         - CitationBundle emitted on Tier III
         - CognitiveDiffBundle emitted on Tier III
@@ -2203,7 +2203,7 @@ collecting ... collected 7053 items / 124 errors / 2 skipped
             Placeholder test method 3.
       <Module test_hash_chain_tamper.py>
         REQ-158/303: Hash chain tamper detection.
-        
+
         Inject reorder into HashChainAuditLog; assert detection raises.
         <Function test_req158_hash_chain_integrity>
           REQ-158: Hash chain maintains integrity.
@@ -2411,7 +2411,7 @@ collecting ... collected 7053 items / 124 errors / 2 skipped
             Placeholder test method 3.
       <Module test_meta_learning_replay.py>
         Tests for REQ-060 and REQ-063: Meta-learning replay proof.
-        
+
         Tests that meta-learning stage and proposer are replay-proof with
         identical ChangePackage lists across runs.
         <Function test_req060_meta_learning_stage_replay_proof>
@@ -2440,7 +2440,7 @@ collecting ... collected 7053 items / 124 errors / 2 skipped
             Placeholder test method 3.
       <Module test_metrics_single_emission.py>
         W16: Metrics artifact emitted from single control-spine point; duplicate emissions rejected.
-        
+
         REQ-060/063/298/337: Single authoritative metrics emission point.
         Duplicate emissions per trace_id are rejected at runtime.
         <Function test_metrics_single_emission_succeeds>
@@ -2462,14 +2462,14 @@ collecting ... collected 7053 items / 124 errors / 2 skipped
       <Module test_negative_control_exit0_tamper.py>
         <Function test_negative_control_integrity>
           Validates the integrity of the negative control system.
-          
+
           This test enforces Guarantee #25. When the `W4_NEGCTRL_TAMPER` environment
           variable is set to '1', this test is designed to fail. The `pytest.mark.xfail`
           decorator with `strict=True` ensures two things:
           1. If the test fails as expected (in tamper mode), it is marked as XFAIL.
           2. If the test unexpectedly passes (meaning the tamper was not detected), the
              test run fails.
-          
+
           Crucially, a test run with an XFAIL result exits with code 0, allowing CI
           to verify the tamper detection mechanism without failing the build.
       <Module test_network_egress_guard.py>
@@ -2762,7 +2762,7 @@ collecting ... collected 7053 items / 124 errors / 2 skipped
             Placeholder test method 3.
       <Module test_sig_before_effect.py>
         W13: Sig verification precedes mutation in all 5 artifact consumption paths.
-        
+
         REQ-177/354: Signature verification must precede side-effect for:
           1. SurgicalManifest
           2. WaveAuditSummary
@@ -2855,7 +2855,7 @@ collecting ... collected 7053 items / 124 errors / 2 skipped
           REQ-320: Test SSOT hash determinism.
       <Module test_tier3_authority.py>
         REQ-346/347: Tier III emergency freeze authority.
-        
+
         Prove Tier III evacuation revokes L2 capability tokens and blocks new routing.
         <Function test_req346_tier3_freeze_revokes_tokens>
           REQ-346: Tier III freeze revokes L2 capability tokens.
@@ -2915,7 +2915,7 @@ collecting ... collected 7053 items / 124 errors / 2 skipped
             Placeholder test method 3.
       <Module test_uwg_routing.py>
         W13: Stage 8 INTAKE routes through UWG; bypass raises.
-        
+
         REQ-071: Stage 8 INTAKE UWG routing proof ù all LLM calls in Stage 8
         must route through UniversalWriteGateway; direct bypass raises.
         <Function test_req071_stage8_intake_routes_through_uwg>
@@ -2974,7 +2974,7 @@ collecting ... collected 7053 items / 124 errors / 2 skipped
       <Module test_agent_autonomy.py>
         Guardian Test for Agent Autonomy Compliance
         Comprehensive tests for agent autonomy methods and compliance validation.
-        
+
         Merged from:
         - test_agent_autonomy.py (core validation logic)
         - test_agent_autonomy_comprehensive.py (test cases)
@@ -2998,7 +2998,7 @@ collecting ... collected 7053 items / 124 errors / 2 skipped
             TC-AA-08: Non-Python file fails.
         <Function test_required_methods>
           Test that agent files have required autonomy methods.
-          
+
           This test is currently disabled as heal_repository is not universally
           required for all agents. It's only required for agents that inherit
           from HealerMixin.
@@ -3155,7 +3155,7 @@ collecting ... collected 7053 items / 124 errors / 2 skipped
       <Module test_core_components.py>
         Guardian Test for Critical Core Components
         Comprehensive tests for critical system file existence and accessibility.
-        
+
         Merged from:
         - test_core_components.py (core validation logic)
         - test_core_components_comprehensive.py (test cases)
@@ -3175,7 +3175,7 @@ collecting ... collected 7053 items / 124 errors / 2 skipped
             TC-CC-08: Performance with large file lists.
         <Function test_critical_files_exist>
           Test that all critical system files exist.
-          
+
           This is the main guardian test for critical components.
       <Module test_crypto_trust_signing_contracts.py>
         Placeholder test for CryptoTrustSigningContracts.
@@ -3249,7 +3249,7 @@ collecting ... collected 7053 items / 124 errors / 2 skipped
             Placeholder test 3.
       <Module test_exemption_recognition.py>
         Tests for guardian exemption recognition in silent degradation detector.
-        
+
         Covers all 6 sub-patterns and verifies that # guardian: allow-silent-degradation
         comments properly suppress violations when placed within 3-5 lines.
         <Class TestExemptionRecognition>
@@ -3760,7 +3760,7 @@ collecting ... collected 7053 items / 124 errors / 2 skipped
             Placeholder test 3.
       <Module test_test_silent_skip_detector.py>
         Behavioral tests for TestSilentSkipDetector.
-        
+
         Covers:
           - BROAD_EXCEPT_AVAILABILITY_FLAG detection (positive cases)
           - Safe except ImportError pattern (negative / no false-positive)
@@ -3771,7 +3771,7 @@ collecting ... collected 7053 items / 124 errors / 2 skipped
           - Severity is always error
           - Category is TEST_SILENT_SKIP
           - ADG integration: AntiPatternCategory enum has TEST_SILENT_SKIP
-        
+
         Run with: pytest tests/guardian/test_test_silent_skip_detector.py -v
         <Class TestBroadExceptAvailabilityFlag>
           except Exception: _AVAILABLE = False must be flagged.
@@ -4371,7 +4371,7 @@ collecting ... collected 7053 items / 124 errors / 2 skipped
             Placeholder test method 3.
       <Module test_ci_adg_migration.py>
         Integration tests for CI ADG migration
-        
+
         Verify that refactored CI scripts produce same results as originals.
         <Class TestCIMigrationIntegration>
           Integration tests for CI script migration to ADG.
@@ -4427,13 +4427,13 @@ collecting ... collected 7053 items / 124 errors / 2 skipped
             Placeholder test method 3.
       <Module test_execute_ssot_debt_removal.py>
         Hardening tests for execute_ssot.py technical-debt removal.
-        
+
         Covers:
         - Debt-1: _compute_novelty_score uses BGE vector (always-on; no fallback path)
         - Debt-2: VectorSourceMismatchError raised on dimension mismatch
         - Debt-4: _fire_meta_learning_intake adapter sentinel (no NameError when intake fails)
         - Debt-5: _wc_digest uses module-level hashlib (no inline import)
-        
+
         BGE embeddings are a mandatory system dependency. BMG_EMBEDDINGS_ENABLED env flag
         has been removed. All tests exercise the BGE-always-on code path.
         <Class TestNoveltyScoreBGE>
@@ -4586,7 +4586,7 @@ collecting ... collected 7053 items / 124 errors / 2 skipped
             Placeholder test method 3.
       <Module test_wave4_simple_integration.py>
         Integration tests for Wave 4 cleanup validation.
-        
+
         Tests the anti-pattern scanner on actual files that were modified during Wave 4
         to ensure guardian exemptions work correctly and violations are properly detected/suppressed.
         <Class TestWave4Integration>
@@ -4617,7 +4617,7 @@ collecting ... collected 7053 items / 124 errors / 2 skipped
     <Dir invariants>
       <Module test_architectural_invariants.py>
         Addendum P0: Architectural invariant tests.
-        
+
         Tests for:
         - boundary_validator (Addendum 1.2)
         - ledger integrity_validator (Addendum 2.2)
@@ -4978,12 +4978,12 @@ collecting ... collected 7053 items / 124 errors / 2 skipped
               Placeholder test method 3.
       <Module test_smoke_quality_guard.py>
         Smoke test quality guard ù prevents regression to fake-green smoke coverage.
-        
+
         This meta-test scans all smoke test files and flags:
           1. VACUOUS: `assert True` in any test function (fake-green)
           2. BARE_IMPORT: test that only imports a module with no assertion beyond `is not None`
           3. NO_ASSERTION: test function with zero assert statements
-        
+
         Run with: pytest tests/smoke/test_smoke_quality_guard.py -v
         <Function test_no_vacuous_assert_in_smoke_tests>
           No smoke test should contain `assert True` ù this is fake-green coverage.
@@ -5024,7 +5024,7 @@ collecting ... collected 7053 items / 124 errors / 2 skipped
             Placeholder test method 3.
       <Module test_ssot_pipeline_protocol.py>
         Tests for the SSOT orchestration pipeline hardening (Phase SSOT-Orchestration-Hardening).
-        
+
         Five test groups:
           1. Structural completeness  ù all 4 subphase slots always present in AgentRunResult
           2. Gate blocks update_agent ù confidence gate prevents update_agent("execute"/"heal")
@@ -5076,7 +5076,7 @@ collecting ... collected 7053 items / 124 errors / 2 skipped
             emit_pipeline_digest must include SSOT_ORCH_NEGCTRL_TAMPER in payload.
           <Function test_negctrl_tamper_changes_digest_xfail>
             Intentionally fails when SSOT_ORCH_NEGCTRL_TAMPER=1.
-            
+
             Normal run (env unset): test is skipped via pytest.skip().
                     Tamper run (env=1):     assertion fails intentionally \u2192 xfail(strict=True) \u2192 exit 0.
     <Package ssot_equivalence>
@@ -5114,7 +5114,7 @@ collecting ... collected 7053 items / 124 errors / 2 skipped
     <Dir system>
       <Module test_system_integrity_audit.py>
         Wave 3: System Integrity - Isolation & Determinism Audit Tests
-        
+
         Tests for global state usage, singleton accumulation, deterministic outputs,
         and zero silent degradation enforcement patterns.
         <Class TestSystemIntegrity>
@@ -6623,7 +6623,7 @@ collecting ... collected 7053 items / 124 errors / 2 skipped
                 Module layer_summary_util must be importable.
             <Module test_lifecycle_audit.py>
               Lifecycle Audit - Validates Sovereign Lifecycle Guard hardening.
-              
+
               Tests DNA contract enforcement using AST visitors implemented inline
               (CanonDependencySentinelAgent is not yet a standalone importable module).
               <Function test_init_gate_compliant>
@@ -9436,16 +9436,16 @@ collecting ... collected 7053 items / 124 errors / 2 skipped
                 Test that valid local request produces zero violations.
               <Function test_adapter_with_fingerprint_produces_no_violations>
                 Test that providing fingerprint produces no violations.
-                
-                    
+
+
               <Function test_adapter_result_has_invariant_violations_field>
                 Test that result always has invariant_violations field.
               <Function test_adapter_preserves_phase_1_4_behavior>
                 Test that Phase 5 preserves Phase 1-4 routing behavior when no violations.
               <Function test_adapter_fail_violation_triggers_gemini_with_violations_attached>
                 Test that FAIL violation triggers Gemini fallback with violations in telemetry.
-                
-                    
+
+
             <Module test_vllm_profile_selection.py>
               Placeholder test for VllmProfileSelection.
               <Class TestVllmProfileSelection>
@@ -10961,7 +10961,7 @@ collecting ... collected 7053 items / 124 errors / 2 skipped
                   Placeholder test method 3.
             <Module test_complexity_analyzer_facade.py>
               Unit Tests for ComplexityAnalyzerAgent Facade - Phase 5
-              
+
               Tests the facade conversion of ComplexityAnalyzerAgent including:
               - Legacy signature compatibility
               - ComplexityAnalyzerStrategy functionality
@@ -12858,7 +12858,7 @@ collecting ... collected 7053 items / 124 errors / 2 skipped
                   Get enforcement action should return correct action string.
             <Module test_anti_pattern_scanner_validator_enhanced.py>
               Enhanced test for AntiPatternScanner with strong assertions and behavioral validation.
-              
+
               This test replaces weak assertions with comprehensive behavioral validation,
               error handling tests, and edge case coverage.
               <Class TestScanReportEnhanced>
@@ -15928,7 +15928,7 @@ collecting ... collected 7053 items / 124 errors / 2 skipped
               Module meta_learning_types_util must be importable.
           <Module test_meta_learning_types_util_adg.py>
             ADG-driven tests for agentic_core/utils/meta_learning_types_util.py ù fan_in=2.
-            
+
             Contract tests: re-export shim identity for LearningContext, LearningResult, MetaLearningProtocol.
             <Class TestMetaLearningTypesShim>
               <Function test_importable>
@@ -16410,7 +16410,7 @@ collecting ... collected 7053 items / 124 errors / 2 skipped
               Module config must be importable.
           <Module test_archetype_indicator_config.py>
             Foundational behavioral tests for apps_lic/config/archetype_indicator_config.py.
-            
+
             fan_in=14 ù this module is imported by 14 other modules.
             ADG contract: import-hygiene is covered by test_archetype_indicator_config_adg.py.
             This file covers behavioral invariants and public API contracts.
@@ -16628,7 +16628,7 @@ collecting ... collected 7053 items / 124 errors / 2 skipped
               Module MessageComplianceAgent must be importable.
           <Module test_OutreachLearningAgent.py>
             Foundational behavioral tests for apps_lic/reasoning/OutreachLearningAgent.py.
-            
+
             fan_in=14 ù this module is imported by 14 other modules.
             ADG contract: import-hygiene is covered by test_OutreachLearningAgent_adg.py.
             This file covers behavioral invariants and public API contracts.
@@ -16695,7 +16695,7 @@ collecting ... collected 7053 items / 124 errors / 2 skipped
               Module OutreachSignalRouterAgent must be importable.
           <Module test_OutreachValidationExecutorAgent.py>
             Foundational behavioral tests for apps_lic/reasoning/OutreachValidationExecutorAgent.py.
-            
+
             fan_in=11 ù this module is imported by 11 other modules.
             ADG contract: import-hygiene is covered by test_OutreachValidationExecutorAgent_adg.py.
             This file covers behavioral invariants and public API contracts.
@@ -16739,7 +16739,7 @@ collecting ... collected 7053 items / 124 errors / 2 skipped
               Module reasoning must be importable.
           <Module test_campaign_balance_agent_adg.py>
             ADG contract tests for apps_lic/reasoning/CampaignBalanceAgent.py.
-            
+
             Uses AST-based source inspection -- immune to broken transitive deps.
             <Class TestCampaignBalanceAgentSource>
               <Function test_source_exists>
@@ -16748,7 +16748,7 @@ collecting ... collected 7053 items / 124 errors / 2 skipped
             <Function test_module_importable>
           <Module test_governance_shield_agent_adg.py>
             ADG contract tests for apps_lic/reasoning/GovernanceShieldAgent.py.
-            
+
             Uses AST-based source inspection -- immune to broken transitive deps.
             <Class TestGovernanceShieldAgentSource>
               <Function test_source_exists>
@@ -17207,7 +17207,7 @@ collecting ... collected 7053 items / 124 errors / 2 skipped
               Module utils must be importable.
           <Module test_archetype_indicator_util.py>
             Foundational behavioral tests for apps_lic/utils/archetype_indicator_util.py.
-            
+
             fan_in=14 ù this module is imported by 14 other modules.
             ADG contract: import-hygiene is covered by test_archetype_indicator_util_adg.py.
             This file covers behavioral invariants and public API contracts.
@@ -17607,7 +17607,7 @@ collecting ... collected 7053 items / 124 errors / 2 skipped
           <Dir utils>
             <Module test_content_strategy_agent.py>
               ADG contract tests for apps_rg/reasoning/RGStrategyExecutor.py (canonical, replaces ContentStrategyAgent shim).
-              
+
               Uses AST-based source inspection -- immune to broken transitive deps.
               <Class TestContentStrategyAgentSource>
                 <Function test_source_exists>
@@ -17615,7 +17615,7 @@ collecting ... collected 7053 items / 124 errors / 2 skipped
                 <Function test_mentions_class_name>
             <Module test_proactive_agent.py>
               ADG contract tests for apps_rg/reasoning/ProactiveAgent.py.
-              
+
               Uses AST-based source inspection -- immune to broken transitive deps.
               <Class TestProactiveAgentSource>
                 <Function test_source_exists>
@@ -17624,7 +17624,7 @@ collecting ... collected 7053 items / 124 errors / 2 skipped
                 <Function test_has_post_init>
             <Module test_rg_healing_orchestrator.py>
               ADG contract tests for apps_rg/reasoning/RgHealingOrchestrator.py.
-              
+
               Uses AST-based source inspection -- immune to broken transitive deps.
               <Class TestRgHealingOrchestratorSource>
                 <Function test_source_exists>
@@ -17636,7 +17636,7 @@ collecting ... collected 7053 items / 124 errors / 2 skipped
                 <Function test_has_ml_determine_strategy>
             <Module test_rg_strategic_planner_agent.py>
               ADG contract tests for apps_rg/reasoning/RgStrategicPlannerAgent.py.
-              
+
               Uses AST-based source inspection -- immune to broken transitive deps.
               <Class TestRgStrategicPlannerAgentSource>
                 <Function test_source_exists>
@@ -17644,7 +17644,7 @@ collecting ... collected 7053 items / 124 errors / 2 skipped
                 <Function test_mentions_class_name>
             <Module test_rg_template_optimizer_agent.py>
               ADG contract tests for apps_rg/reasoning/RgTemplateOptimizerAgent.py.
-              
+
               Uses AST-based source inspection -- immune to broken transitive deps.
               <Class TestRgTemplateOptimizerAgentSource>
                 <Function test_source_exists>
@@ -17652,7 +17652,7 @@ collecting ... collected 7053 items / 124 errors / 2 skipped
                 <Function test_mentions_class_name>
             <Module test_section_balance_agent.py>
               ADG contract tests for apps_rg/reasoning/SectionBalanceAgent.py.
-              
+
               Uses AST-based source inspection -- immune to broken transitive deps.
               <Class TestSectionBalanceAgentSource>
                 <Function test_source_exists>
@@ -17856,7 +17856,7 @@ collecting ... collected 7053 items / 124 errors / 2 skipped
                   Placeholder test 3.
             <Module test_gap_closure_architect_agent.py>
               ADG contract tests for apps_rg/types/gap_closure_architect_agent_types.py.
-              
+
               Uses AST-based source inspection -- immune to broken transitive deps.
               <Class TestGapClosureArchitectAgent>
                 <Function test_source_exists>
@@ -18089,7 +18089,7 @@ collecting ... collected 7053 items / 124 errors / 2 skipped
               Module types must be importable.
           <Module test_all_providers_down_error_adg.py>
             ADG contract tests for apps_rg/types/AllProvidersDownError.py (duplicate test file).
-            
+
             Uses AST-based source inspection ù immune to broken transitive deps.
             <Class TestAllProvidersDownErrorDetailed>
               <Function test_source_exists>
@@ -19937,7 +19937,7 @@ collecting ... collected 7053 items / 124 errors / 2 skipped
               Placeholder test method 3.
         <Module test_template_rendering_e2e.py>
           End-to-end tests: every Jinja template renders through SovereignPromptRenderer.
-          
+
           This file proves that templates are not just wired but actually *renderable*
           with proper context dictionaries. It catches:
             - Missing variables (StrictUndefined failures)
@@ -21213,7 +21213,7 @@ collecting ... collected 7053 items / 124 errors / 2 skipped
       <Module test_l0_routing_override.py>
         Invariant test: L0_routing LAYER_OVERRIDES must encode Model A
         (Core Logic & Routing + Control-Plane Core).
-        
+
         This test prevents semantic drift back to ambiguous "maintenance/tooling"
         language.  Phase 1 of L0 Routing Scope Hardening.
         <Class TestL0RoutingOverrideModelA>
@@ -21448,7 +21448,7 @@ collecting ... collected 7053 items / 124 errors / 2 skipped
             Test seam contains no routing decision logic.
       <Module test_phase1_adg_ssot.py>
         Phase 1 SSOT Tests: ADG Violations Table as Single Authority.
-        
+
         Tests per windsurfrules º1.1-º1.8 requirements:
         - º1.1 Deterministic inputs/outputs
         - º1.2 No external dependencies
@@ -21458,7 +21458,7 @@ collecting ... collected 7053 items / 124 errors / 2 skipped
         - º1.6 Error handling and recovery
         - º1.7 Deterministic behavior
         - º1.8 Fail-closed error handling
-        
+
         Phase 1 validates:
         1. ADG violations schema extensions (disposition, severity fields)
         2. GuardianSweepFixer reads from ADG instead of JSON
@@ -21577,7 +21577,7 @@ collecting ... collected 7053 items / 124 errors / 2 skipped
       <Module test_phase22_comprehensive_v2.py>
         Comprehensive tests for Phase 2.2: MEDIUM severity broad exception fixes.
         Tests follow windsurfrules º1.1-º1.8 requirements.
-        
+
         Uses patch('fix_medium_severity_swallowers.PROJECT_ROOT', ...) for proper
         test isolation ù matching the working Phase 2.1 pattern.
         <Class TestPhase22EdgeCases>
@@ -21672,7 +21672,7 @@ collecting ... collected 7053 items / 124 errors / 2 skipped
       <Module test_phase23_comprehensive_v2.py>
         Comprehensive tests for Phase 2.3: LOW severity specific exception fixes.
         Tests follow windsurfrules º1.1-º1.8 requirements.
-        
+
         Uses patch('fix_low_severity_swallowers.PROJECT_ROOT', ...) for proper
         test isolation ù matching the working Phase 2.1 pattern.
         <Class TestPhase23EdgeCases>
@@ -21758,7 +21758,7 @@ collecting ... collected 7053 items / 124 errors / 2 skipped
         Comprehensive tests for Phase 2.4: HIGH severity remaining violations.
         Target: 2,482 violations (744 single-type + 1,738 multi-exception combos).
         Tests follow windsurfrules º1.1-º1.8 requirements.
-        
+
         Uses patch('fix_high_severity_remaining.PROJECT_ROOT', ...) for isolation.
         <Class TestPhase24EdgeCases>
           º1.5 Edge case tests for Phase 2.4.
@@ -22010,7 +22010,7 @@ collecting ... collected 7053 items / 124 errors / 2 skipped
             Placeholder test 3.
       <Module test_scripts_gate.py>
         Test scripts purity gate in FCA.
-        
+
         Validates:
         - L0/scripts accepts script-like modules only
         - Rejects PascalCase filenames
@@ -22297,7 +22297,7 @@ collecting ... collected 7053 items / 124 errors / 2 skipped
         Comprehensive tests for Wave 3.0: Guardian Annotation Sweep.
         Validates Phases 2.1-2.4 fixes and annotates remaining violations with guardian comments.
         Tests follow windsurfrules º1.1-º1.8 requirements.
-        
+
         Uses patch('guardian_sweep.PROJECT_ROOT', ...) for isolation.
         <Class TestWave30EdgeCases>
           º1.5 Edge case tests for Wave 3.0.
@@ -22349,7 +22349,7 @@ collecting ... collected 7053 items / 124 errors / 2 skipped
         Wave 4.0: Final Validation & Regression Suite.
         Comprehensive testing across all phases/waves to ensure no regressions and full coverage.
         Tests follow windsurfrules º1.1-º1.8 requirements.
-        
+
         Uses patch('final_validation.PROJECT_ROOT', ...) for isolation.
         <Class TestWave40FullCoverage>
           º1.5 Full coverage tests across all phases/waves.
@@ -22399,7 +22399,7 @@ collecting ... collected 7053 items / 124 errors / 2 skipped
         <Dir adg>
           <Module test_adg_query_bridge.py>
             Unit tests for ADGQueryBridge
-            
+
             Tests the Redis/SQLite/AST fallback chain and all query methods.
             <Class TestADGQueryBridge>
               Test suite for ADGQueryBridge.
@@ -22927,7 +22927,7 @@ collecting ... collected 7053 items / 124 errors / 2 skipped
             Placeholder test method 3.
       <Module test_leaf_domain_contract.py>
         LEAF_DOMAIN contract enforcement.
-        
+
         Deterministic filesystem scan. No heuristics.
         Guardian hard gate per LEAF_DOMAINS_NO_LCD in ssot.py.
         <Function test_leaf_domains_no_lcd>

@@ -359,17 +359,17 @@ class HealingMemoryRetriever:
         _digest_input = f"{_signal_norm}|{effective_top_k}|{_sorted_ids}|{_scores_r6}"
         _digest = hashlib.sha256(_digest_input.encode("utf-8", errors="replace")).hexdigest()
         print(f"W-B-DETERMINISM-DIGEST: {_digest}")
-        
+
         # Track retrieval quality metrics for system learning
         try:
             from system_learning.adapters.system_learning_memory_bridge import get_sl_memory_bridge
             bridge = get_sl_memory_bridge()
-            
+
             # Calculate quality metrics
             avg_similarity = sum(inc.similarity for inc in results) / len(results) if results else 0.0
             high_similarity_count = sum(1 for inc in results if inc.similarity > 0.8)
             retrieval_quality = "high" if avg_similarity > 0.8 else "medium" if avg_similarity > 0.6 else "low"
-            
+
             bridge.persist_healing_memory_retrieval_quality(
                 signal_hash=hashlib.sha256(signal_text.encode()).hexdigest()[:16],
                 results_count=len(results),
@@ -382,7 +382,7 @@ class HealingMemoryRetriever:
         except Exception:
             # System learning unavailable - continue without tracking
             pass
-        
+
         return results
 
 

@@ -33,7 +33,7 @@ class SequentialThinkingRequest:
 class SequentialThinkingMCPInvoker:
     """
     ACTIVELY invokes the sequential thinking MCP server.
-    
+
     This class makes actual tool calls to ensure sequential thinking is used.
     """
 
@@ -56,7 +56,7 @@ class SequentialThinkingMCPInvoker:
     def invoke_sequential_thinking(self, prompt: str, thought_number: int = 1) -> Optional[Dict[str, Any]]:
         """
         ACTIVELY invoke the sequential thinking MCP tool.
-        
+
         This makes the actual tool call to start sequential thinking.
         """
         if not self.is_enabled:
@@ -123,7 +123,7 @@ Understanding the full scope of the request and identifying key components that 
     def get_mcp_tool_call(self, prompt: str) -> Dict[str, Any]:
         """
         Get the MCP tool call specification for sequential thinking.
-        
+
         This can be used to make the actual MCP tool call.
         """
         request = self.invoke_sequential_thinking(prompt)
@@ -141,7 +141,7 @@ Understanding the full scope of the request and identifying key components that 
 class KimiK25PromptWrapper:
     """
     Wraps Kimi K2.5 prompts to enforce sequential thinking invocation.
-    
+
     This intercepts all prompts and ensures sequential thinking MCP is called.
     """
 
@@ -152,7 +152,7 @@ class KimiK25PromptWrapper:
     def wrap_prompt(self, user_prompt: str) -> str:
         """
         Wrap a user prompt to force sequential thinking.
-        
+
         This prepends instructions that REQUIRE sequential thinking to be invoked.
         """
         self.wrapped_count += 1
@@ -220,7 +220,7 @@ Before answering, you MUST use the sequential thinking tool.
 class CascadeChatIntegration:
     """
     Integration point for cascade chat to use sequential thinking.
-    
+
     This is the main entry point that should be called at the start of
 cascade chat sessions with Kimi K2.5.
     """
@@ -232,7 +232,7 @@ cascade chat sessions with Kimi K2.5.
     def on_cascade_chat_start(self) -> str:
         """
         Called when a cascade chat session starts.
-        
+
         Returns the initialization message.
         """
         return """🧠 **SEQUENTIAL THINKING ACTIVATED** 🧠
@@ -255,7 +255,7 @@ Type your request to begin.
     def process_user_prompt(self, prompt: str) -> Dict[str, Any]:
         """
         Process a user prompt in cascade chat.
-        
+
         Returns dict with:
         - 'original_prompt': the original user input
         - 'wrapped_prompt': the prompt with sequential thinking wrapper
@@ -310,7 +310,7 @@ cascade_integration = CascadeChatIntegration()
 def wrap_kimi_k25_prompt(prompt: str) -> str:
     """
     Wrap a Kimi K2.5 prompt to enforce sequential thinking.
-    
+
     This is the main function to use when processing user prompts.
     """
     result = cascade_integration.process_user_prompt(prompt)
@@ -320,7 +320,7 @@ def wrap_kimi_k25_prompt(prompt: str) -> str:
 def force_sequential_thinking_in_cascade(prompt: str) -> Dict[str, Any]:
     """
     Force sequential thinking in cascade chat and return full processing info.
-    
+
     Returns complete information for making the MCP tool call.
     """
     return cascade_integration.process_user_prompt(prompt)

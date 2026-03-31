@@ -29,7 +29,7 @@ class TestExecuteSsotExceptionHandling:
         main, can_import = execute_ssot_main
         if not can_import:
             pytest.skip("Cannot import execute_ssot")
-            
+
         with tempfile.TemporaryDirectory() as temp_dir:
             # Use non-existent config file
             config_path = Path(temp_dir) / "non_existent.json"
@@ -45,7 +45,7 @@ class TestExecuteSsotExceptionHandling:
         main, can_import = execute_ssot_main
         if not can_import:
             pytest.skip("Cannot import execute_ssot")
-            
+
         with tempfile.TemporaryDirectory() as temp_dir:
             # Create invalid JSON file
             config_path = Path(temp_dir) / "invalid.json"
@@ -62,7 +62,7 @@ class TestExecuteSsotExceptionHandling:
         main, can_import = execute_ssot_main
         if not can_import:
             pytest.skip("Cannot import execute_ssot")
-            
+
         with tempfile.TemporaryDirectory() as temp_dir:
             config_path = Path(temp_dir) / "config.json"
             config_path.write_text('{"pipeline_type": "test"}')

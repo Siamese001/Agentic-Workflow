@@ -8,7 +8,7 @@ regeneration to reflect the current state.
 
 Categories already fixed:
 - except: + return [] (empty list) - 83 violations - FIXED
-- except: + return False/None (silent failures) - FIXED  
+- except: + return False/None (silent failures) - FIXED
 - subprocess.run patterns - 43 violations - FIXED
 - Unknown layer assignment - Requires ADG regeneration with updated rules
 

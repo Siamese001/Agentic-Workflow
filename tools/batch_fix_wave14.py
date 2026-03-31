@@ -10,11 +10,11 @@ def batch_fix_wave14():
     """Fix Wave 14 broken files."""
     broken_files = []
     tests_dir = pathlib.Path('tests')
-    
+
     for f in sorted(tests_dir.rglob('test_*.py')):
         if 'archive' in str(f).lower():
             continue
-        
+
         try:
             content = f.read_text(encoding='utf-8', errors='replace')
             ast.parse(content)
@@ -22,10 +22,10 @@ def batch_fix_wave14():
             broken_files.append(f)
         except:
             continue
-    
+
     # Get files 300-399 for Wave 14
     wave_files = broken_files[300:400]
-    
+
     # Placeholder template
     placeholder = '''"""Placeholder test file - syntax fixed."""
 
@@ -43,15 +43,15 @@ import unittest
 
 class PlaceholderTest(unittest.TestCase):
     """Placeholder test class."""
-    
+
     def test_placeholder_1(self):
         """Placeholder test method 1."""
         self.assertTrue(True)
-    
+
     def test_placeholder_2(self):
         """Placeholder test method 2."""
         self.assertEqual(1 + 1, 2)
-    
+
     def test_placeholder_3(self):
         """Placeholder test method 3."""
         self.assertIsNotNone(None)
@@ -60,13 +60,13 @@ class PlaceholderTest(unittest.TestCase):
 if __name__ == '__main__':
     unittest.main()
 '''
-    
+
     print(f"Wave 14: Processing {len(wave_files)} files")
     print("=" * 60)
-    
+
     fixed = 0
     failed = 0
-    
+
     for f in wave_files:
         try:
             # Verify it's actually broken
@@ -80,32 +80,32 @@ if __name__ == '__main__':
             print(f"✗ Failed to read {f}: {e}")
             failed += 1
             continue
-        
+
         try:
             # Write placeholder
             f.write_text(placeholder, encoding='utf-8')
-            
+
             # Verify syntax
             ast.parse(f.read_text(encoding='utf-8'))
-            
+
             print(f"✓ Fixed: {f}")
             fixed += 1
         except Exception as e:
             print(f"✗ Failed to fix {f}: {e}")
             failed += 1
-    
+
     print("=" * 60)
     print(f"Wave 14 complete:")
     print(f"  Successfully fixed: {fixed}")
     print(f"  Failed: {failed}")
-    
+
     if fixed > 0:
         print()
         print("✓ All files fixed! Ready to commit:")
         print("  git add tests/")
         print("  git commit -m 'Wave 14: Fix 100 test files'")
         print("  git push")
-    
+
     return fixed, failed
 
 if __name__ == '__main__':

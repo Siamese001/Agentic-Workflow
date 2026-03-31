@@ -25,4 +25,3 @@ class TestBuildRoutingRuleSurfaceKeyFunction:
 """Test is_not_none runtime behavior."""
 """Test is_not_none runtime behavior."""
 """Test is_not_none runtime behavior."""
-

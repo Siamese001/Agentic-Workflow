@@ -83,10 +83,10 @@ class Wave2ImportMigrator:
             return True  # No migration needed
 
         print(f"  🔄 Migrating {len(top_imports)} top-level imports in {file_path.name}")
-        
+
         # Generate new content with moved imports
         new_content = self._generate_migrated_content_v2(content, top_imports)
-        
+
         # Write back
         try:
             file_path.write_text(new_content, encoding='utf-8')
@@ -106,7 +106,7 @@ class Wave2ImportMigrator:
                 if import_stmt not in SAFE_TOP_IMPORTS:
                     return True
         elif isinstance(node, ast.ImportFrom):
-            if node.module and any(node.module.startswith(prefix) for prefix in 
+            if node.module and any(node.module.startswith(prefix) for prefix in
                                   ['agentic_core', 'apps_', 'system_learning', 'infrastructure']):
                 return True
         return False
@@ -114,48 +114,48 @@ class Wave2ImportMigrator:
     def _generate_migrated_content_v2(self, content: str, imports: List[ast.AST]) -> str:
         """Generate new content with imports properly moved into functions."""
         lines = content.splitlines()
-        
+
         # Find which lines contain target imports
         import_line_numbers = set()
         for imp in imports:
             if hasattr(imp, 'lineno'):
                 import_line_numbers.add(imp.lineno - 1)
-        
+
         # Remove top-level target imports but preserve other content
         new_lines = []
         for i, line in enumerate(lines):
             if i not in import_line_numbers:
                 new_lines.append(line)
-        
+
         # Find test functions and add imports
         for i, line in enumerate(new_lines):
             if re.match(r'^\s*def\s+test_\w+\s*\(', line):
                 indent = len(line) - len(line.lstrip())
-                
+
                 # Add all imports after the function definition
                 import_section = []
                 for imp in imports:
                     import_text = ast.unparse(imp)
                     import_section.append(f"{' ' * (indent + 4)}{import_text}")
-                
+
                 if import_section:
                     # Insert imports after function definition
                     insert_pos = i + 1
-                    
+
                     # Skip docstring if present
                     if insert_pos < len(new_lines):
                         for j in range(insert_pos, min(insert_pos + 3, len(new_lines))):
                             if new_lines[j].strip().endswith(('"""', "'''")):
                                 insert_pos = j + 1
                                 break
-                    
+
                     # Insert the imports
                     for import_line in import_section:
                         new_lines.insert(insert_pos, import_line)
                         insert_pos += 1
                     new_lines.insert(insert_pos, "")  # Add blank line after imports
                     break  # Only add to first test function for simplicity
-        
+
         return '\n'.join(new_lines) + '\n'
 
     def print_summary(self):
@@ -165,7 +165,7 @@ class Wave2ImportMigrator:
         print(f"Successfully migrated: {self.stats['migrated']}")
         print(f"Failed: {self.stats['failed']}")
         print(f"Imports moved: {self.stats['imports_moved']}")
-        
+
         if self.failed_files:
             print("\nFailed files:")
             for path, error in self.failed_files[:10]:
@@ -177,10 +177,10 @@ def main():
     if len(sys.argv) != 2:
         print("Usage: python wave2_import_migrator.py <test_directory>")
         sys.exit(1)
-    
+
     repo_root = pathlib.Path(__file__).parent.parent
     test_dir = sys.argv[1]
-    
+
     migrator = Wave2ImportMigrator(repo_root)
     migrator.migrate_directory(test_dir)
     migrator.print_summary()

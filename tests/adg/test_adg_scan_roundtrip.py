@@ -64,11 +64,11 @@ def _classify(symbol: str) -> str:
 
 def _tag_dead_imports(edges, live_names):
     """Tag dead imports - retag unused imports as dead_imports.
-    
+
     Args:
         edges: List of edges to process
         live_names: Set of names that are actually used
-        
+
     Returns:
         List of edges with dead imports retagged
     """
@@ -244,7 +244,7 @@ class TestVerifyLayerGraphConsistency:
     def _build(self, modules, edges=None):
         """Build a minimal artifact for testing."""
         from agentic_core.adg.artifact.builder_types import ADGArtifact, EntityRecord
-        
+
         entities = []
         for mod in modules:
             # Determine layer from path
@@ -264,7 +264,7 @@ class TestVerifyLayerGraphConsistency:
                 layer = "L6"
             else:
                 layer = "L_UNKNOWN"
-            
+
             entities.append(EntityRecord(
                 adg_name=f"ADG::Module::{mod}",
                 entity_type="module",
@@ -273,7 +273,7 @@ class TestVerifyLayerGraphConsistency:
                 confidence="HIGH",
                 resolved_path=mod,
             ))
-        
+
         return ADGArtifact(entities=entities, relations=edges or [])
 
     def test_clean_map_returns_empty(self):

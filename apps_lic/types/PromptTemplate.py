@@ -299,7 +299,7 @@ FROZEN_SNAPSHOT = LicSovereignKnowledge(
 
 def get_prompt(prompt_id: str) -> str:
     """Retrieve prompt template by ID.
-    
+
     Returns the user_template string for the given prompt_id.
     Raises KeyError if prompt_id not found.
     """
@@ -310,7 +310,7 @@ def get_prompt(prompt_id: str) -> str:
 
 def get_system_prompt(prompt_id: str) -> str:
     """Retrieve system prompt by ID.
-    
+
     Returns the system_prompt string for the given prompt_id.
     Raises KeyError if prompt_id not found.
     """

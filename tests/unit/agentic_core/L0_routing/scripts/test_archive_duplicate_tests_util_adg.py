@@ -57,7 +57,7 @@ def test_assert_no_persistent_write_is_callable(mod):
     if func is None:
         pytest.skip("assert_no_persistent_write not found in module")
     assert callable(func), "assert_no_persistent_write must be callable"
-    
+
     # Test function signature
     import inspect
     sig = inspect.signature(func)
