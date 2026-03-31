@@ -5,6 +5,10 @@ Auto-generated for LinkedIn Campaign Optimizer system.
 This module serves as the immutable 'brain' of the outreach system.
 
 VIOLATION: NO MAGIC STRINGS. ALL PROMPTS/CONFIGS MUST BE ACCESSED VIA THIS REGISTRY.
+
+Slot Taxonomy Integration:
+- Unified 10-slot taxonomy: S0,D0,M0,I0,E0,C0,Y0,U0,H0,R0
+- See agentic_core.prompt_governance.contracts.slot_contracts for definitions
 """
 
 from __future__ import annotations
@@ -17,6 +21,20 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_reads_policy_state,
     _emit_snapshots_state,
 )
+from agentic_core.prompt_governance.contracts.slot_contracts import (
+    SLOT_ORDER,
+    SlotC0,
+    SlotD0,
+    SlotE0,
+    SlotH0,
+    SlotI0,
+    SlotM0,
+    SlotR0,
+    SlotS0,
+    SlotU0,
+    SlotY0,
+)
+from agentic_core.prompt_governance.core.prompt_assembler import PromptAssembler
 
 _emit_applies_guardrail("p0", "lic_PromptTemplate", "p0_governance")
 _emit_reads_policy_state("p0", "lic_PromptTemplate", "policy_binding")
