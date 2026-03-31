@@ -8841,3 +8841,64 @@ _emit_reads_through("l4", "static_scanner", "urg_read_640")
 # - except Exception: → broad (with logging ok)
 # - except: → bare (flagged for review)
 # Applied: 2026-03-30
+
+
+class _RetrievalWiringVisitor(ast.NodeVisitor):
+    """G35 (gap): Retrieval wiring graph � L1-L5 retrieval bridge edge extraction.
+
+    Emits:
+      module --retrieves_from_store--> ADG::Symbol::<retrieval_bridge>
+          for imports of L1 retrieval bridges (QueryRetrievalBridge, QueryIntentExpander).
+      module --enriches_chunk--> ADG::Symbol::<enrichment_bridge>
+          for imports of L2 retrieval bridges (SemanticEnrichmentBridge).
+      module --routes_retrieval--> ADG::Symbol::<orchestrator>
+          for imports of L3 retrieval bridges (ContextRetrievalOrchestrator).
+      module --indexes_for_retrieval--> ADG::Symbol::<state_bridge>
+          for imports of L4 retrieval bridges (L4StateRetrievalBridge).
+      module --applies_retrieval_guardrail--> ADG::Symbol::<safety_gate>
+          for imports of L5 retrieval bridges (RetrievalSafetyGate).
+    """
+
+    def __init__(self, module_adg_name: str, source_file: str) -> None:
+        self.module_adg_name = module_adg_name
+        self.source_file = source_file
+        self.edges: list[dict] = []
+        self._relation_map: dict[str, str] = {
+            "QueryRetrievalBridge": "retrieves_from_store",
+            "QueryIntentExpander": "retrieves_from_store",
+            "SemanticEnrichmentBridge": "enriches_chunk",
+            "ExecutionGateway": "enriches_chunk",
+            "BatchEmbeddingService": "enriches_chunk",
+            "ContextRetrievalOrchestrator": "routes_retrieval",
+            "Orchestrator": "routes_retrieval",
+            "SovereignRagOrchestrator": "routes_retrieval",
+            "L4StateRetrievalBridge": "indexes_for_retrieval",
+            "ChunkManifestRegistry": "indexes_for_retrieval",
+            "UnifiedMemoryFacade": "indexes_for_retrieval",
+            "RetrievalSafetyGate": "applies_retrieval_guardrail",
+        }
+
+    def _emit(self, relation: str, target_symbol: str, line_no: int) -> None:
+        self.edges.append(
+            {
+                "src": self.module_adg_name,
+                "relation": relation,
+                "dst": f"ADG::Symbol::{target_symbol}",
+                "source_file": self.source_file,
+                "line_no": line_no,
+                "edge_kind": "retrieval_pipeline",
+            }
+        )
+
+    def visit_ImportFrom(self, node: ast.ImportFrom) -> None:  # noqa: N802
+        if node.module and "retrieval" in node.module:
+            for alias in node.names:
+                name = alias.name
+                if name in self._relation_map:
+                    self._emit(self._relation_map[name], name, node.lineno)
+        self.generic_visit(node)
+
+    def visit_Name(self, node: ast.Name) -> None:  # noqa: N802
+        if isinstance(node.ctx, ast.Load) and node.id in self._relation_map:
+            self._emit(self._relation_map[node.id], node.id, node.lineno)
+        self.generic_visit(node)
