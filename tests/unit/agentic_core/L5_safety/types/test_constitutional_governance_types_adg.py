@@ -1,50 +1,29 @@
-"""Placeholder test for ConstitutionalGovernanceTypesAdg."""
+"""Test ConstitutionalGovernanceTypesAdg functionality."""
+
+import sys
+from pathlib import Path
+
 import pytest
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300
+
+REPO_ROOT = Path(__file__).parent.parent.parent
+sys.path.insert(0, str(REPO_ROOT))
+
 
 @pytest.mark.unit
-class GeneratedTest:
-    """Generated test class for agentic_core.L5_safety.types."""
+class TestConstitutionalGovernanceTypesAdg:
+    """Test ConstitutionalGovernanceTypesAdg functionality."""
 
-    def test_revise_content(self):
-        """Test revise_content function."""
-        from agentic_core.L5_safety.types import revise_content
-        result = revise_content()
-        assertIsNotNone(result)
+    def test_constitutional_governance_types_adg_imports(self):
+        """Test constitutional_governance_types_adg module imports."""
+        from agentic_core import constitutional_governance_types_adg
+        assert constitutional_governance_types_adg is not None
 
-    def test_get_audit_log(self):
-        """Test get_audit_log function."""
-        from agentic_core.L5_safety.types import get_audit_log
-        result = get_audit_log()
-        assertIsNotNone(result)
+    def test_constitutional_governance_types_adg_class(self):
+        """Test ConstitutionalGovernanceTypesAdg class exists."""
+        from agentic_core import ConstitutionalGovernanceTypesAdg
+        assert ConstitutionalGovernanceTypesAdg is not None
 
-    def test_ConstitutionalPrinciple_init(self):
-        """Test ConstitutionalPrinciple initialization."""
-        from agentic_core.L5_safety.types import ConstitutionalPrinciple
-        instance = ConstitutionalPrinciple()
-        assertIsNotNone(instance)
-
-    def test_PrincipleViolation_init(self):
-        """Test PrincipleViolation initialization."""
-        from agentic_core.L5_safety.types import PrincipleViolation
-        instance = PrincipleViolation()
-        assertIsNotNone(instance)
-
-    def test_placeholder_1(self):
-        """Placeholder test 1."""
-        assert True
-
-    def test_placeholder_2(self):
-        """Placeholder test 2."""
-        assert True
-
-    def test_placeholder_3(self):
-        """Placeholder test 3."""
-        assert True
+    def test_constitutional_governance_types_adg_callable(self):
+        """Test constitutional_governance_types_adg functions are callable."""
+        from agentic_core import validate_constitutional_governance_types_adg
+        assert callable(validate_constitutional_governance_types_adg)

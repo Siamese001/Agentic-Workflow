@@ -1,29 +1,29 @@
-"""Placeholder test for FixInheritedInvocationUtil."""
+"""Test FixInheritedInvocationUtil functionality."""
+
+import sys
+from pathlib import Path
 
 import pytest
 
+REPO_ROOT = Path(__file__).parent.parent.parent
+sys.path.insert(0, str(REPO_ROOT))
 
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300  # 5 minutes
 
 @pytest.mark.unit
 class TestFixInheritedInvocationUtil:
     """Test FixInheritedInvocationUtil functionality."""
 
-    def test_placeholder_1(self):
-        """Placeholder test 1."""
-        assert True
-    
-    def test_placeholder_2(self):
-        """Placeholder test 2."""
-        assert True
-    
-    def test_placeholder_3(self):
-        """Placeholder test 3."""
-        assert True
+    def test_fix_inherited_invocation_util_imports(self):
+        """Test fix_inherited_invocation_util module imports."""
+        from agentic_core import fix_inherited_invocation_util
+        assert fix_inherited_invocation_util is not None
+
+    def test_fix_inherited_invocation_util_class(self):
+        """Test FixInheritedInvocationUtil class exists."""
+        from agentic_core import FixInheritedInvocationUtil
+        assert FixInheritedInvocationUtil is not None
+
+    def test_fix_inherited_invocation_util_callable(self):
+        """Test fix_inherited_invocation_util functions are callable."""
+        from agentic_core import validate_fix_inherited_invocation_util
+        assert callable(validate_fix_inherited_invocation_util)

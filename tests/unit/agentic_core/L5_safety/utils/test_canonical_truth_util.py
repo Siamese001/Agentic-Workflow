@@ -1,29 +1,29 @@
-"""Placeholder test for CanonicalTruthUtil."""
+"""Test CanonicalTruthUtil functionality."""
+
+import sys
+from pathlib import Path
 
 import pytest
 
+REPO_ROOT = Path(__file__).parent.parent.parent
+sys.path.insert(0, str(REPO_ROOT))
 
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300  # 5 minutes
 
 @pytest.mark.unit
 class TestCanonicalTruthUtil:
     """Test CanonicalTruthUtil functionality."""
 
-    def test_placeholder_1(self):
-        """Placeholder test 1."""
-        assert True
-    
-    def test_placeholder_2(self):
-        """Placeholder test 2."""
-        assert True
-    
-    def test_placeholder_3(self):
-        """Placeholder test 3."""
-        assert True
+    def test_canonical_truth_util_imports(self):
+        """Test canonical_truth_util module imports."""
+        from agentic_core import canonical_truth_util
+        assert canonical_truth_util is not None
+
+    def test_canonical_truth_util_class(self):
+        """Test CanonicalTruthUtil class exists."""
+        from agentic_core import CanonicalTruthUtil
+        assert CanonicalTruthUtil is not None
+
+    def test_canonical_truth_util_callable(self):
+        """Test canonical_truth_util functions are callable."""
+        from agentic_core import validate_canonical_truth_util
+        assert callable(validate_canonical_truth_util)

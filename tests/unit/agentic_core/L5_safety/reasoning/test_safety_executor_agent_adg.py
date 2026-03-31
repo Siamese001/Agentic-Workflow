@@ -1,29 +1,29 @@
-"""Placeholder test for SafetyExecutorAgentAdg."""
+"""Test SafetyExecutorAgentAdg functionality."""
+
+import sys
+from pathlib import Path
 
 import pytest
 
+REPO_ROOT = Path(__file__).parent.parent.parent
+sys.path.insert(0, str(REPO_ROOT))
 
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300  # 5 minutes
 
 @pytest.mark.unit
 class TestSafetyExecutorAgentAdg:
     """Test SafetyExecutorAgentAdg functionality."""
 
-    def test_placeholder_1(self):
-        """Placeholder test 1."""
-        assert True
-    
-    def test_placeholder_2(self):
-        """Placeholder test 2."""
-        assert True
-    
-    def test_placeholder_3(self):
-        """Placeholder test 3."""
-        assert True
+    def test_safety_executor_agent_adg_imports(self):
+        """Test safety_executor_agent_adg module imports."""
+        from agentic_core import safety_executor_agent_adg
+        assert safety_executor_agent_adg is not None
+
+    def test_safety_executor_agent_adg_class(self):
+        """Test SafetyExecutorAgentAdg class exists."""
+        from agentic_core import SafetyExecutorAgentAdg
+        assert SafetyExecutorAgentAdg is not None
+
+    def test_safety_executor_agent_adg_callable(self):
+        """Test safety_executor_agent_adg functions are callable."""
+        from agentic_core import validate_safety_executor_agent_adg
+        assert callable(validate_safety_executor_agent_adg)
