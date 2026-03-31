@@ -7,30 +7,17 @@ import pytest
 import tempfile
 import json
 import os
+import sys
 from pathlib import Path
 from unittest.mock import patch, MagicMock
 
+# Add repo root to path
+REPO_ROOT = Path(__file__).parent.parent.parent.parent.parent
+sys.path.insert(0, str(REPO_ROOT))
+
 # Import the module under test
-import sys
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..")))
+from tools.adg.capability_extractor import CapabilityExtractor
 
-
-# Lazy import to avoid collection-time conflicts
-@pytest.fixture
-def capability_extractor():
-    """Fixture to lazily import CapabilityExtractor."""
-    try:
-        from tools.adg.capability_extractor import CapabilityExtractor
-    except ImportError as e:
-        if "ContextWindowEstimator" in str(e):
-            # Mock the missing dependency
-            from unittest.mock import MagicMock
-            sys.modules['agentic_core.planning.token_estimator'] = MagicMock()
-            sys.modules['agentic_core.planning.token_estimator'].ContextWindowEstimator = MagicMock
-            from tools.adg.capability_extractor import CapabilityExtractor
-        else:
-            raise
-    return CapabilityExtractor
 
 class TestCapabilityExtractor:
     """Test suite for CapabilityExtractor class."""
