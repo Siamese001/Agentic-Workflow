@@ -16,7 +16,7 @@ import logging
 import multiprocessing as mp
 import os
 import platform
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from typing import Any, Callable, Iterator, TypeVar
 
 import psutil
@@ -31,7 +31,7 @@ class CPUConfig:
     """CPU optimization configuration."""
     max_workers: int | None = None  # None = auto-detect
     chunk_size: int = 100
-    use_processes: bool = True  # True = ProcessPool, False = ThreadPool
+    use_processes: bool | None = None  # None = auto-detect (False on Windows, True on Unix)
     cpu_affinity: bool = True
     batch_size: int = 1000
 
@@ -52,6 +52,18 @@ class AMDCPUOptimizer:
         self._cpu_count = psutil.cpu_count(logical=True) or 4
         self._physical_cores = psutil.cpu_count(logical=False) or 2
         self._is_amd = self._detect_amd()
+        self._is_windows = platform.system().lower() == "windows"
+
+        # Auto-configure: Windows = threads (spawn overhead), Unix = processes (fork is fast)
+        if self.config.use_processes is None:
+            if self._is_windows:
+                # Windows spawn() overhead makes ProcessPool slower for short tasks
+                self.config = replace(self.config, use_processes=False)
+                logger.info("Windows detected: Using ThreadPoolExecutor (avoid spawn overhead)")
+            else:
+                # Unix fork() is fast, use ProcessPool for true parallelism
+                self.config = replace(self.config, use_processes=True)
+                logger.info("Unix detected: Using ProcessPoolExecutor (fast fork)")
 
     def _detect_amd(self) -> bool:
         """Detect if running on AMD processor."""
@@ -109,9 +121,11 @@ class AMDCPUOptimizer:
             workers = self.get_optimal_workers()
 
             if self.config.use_processes:
+                # Unix: Use fork context (fast)
+                ctx = mp.get_context('fork') if not self._is_windows else mp.get_context('spawn')
                 self._executor = concurrent.futures.ProcessPoolExecutor(
                     max_workers=workers,
-                    mp_context=mp.get_context('spawn'),
+                    mp_context=ctx,
                 )
                 logger.info(f"Created ProcessPoolExecutor with {workers} workers")
             else:

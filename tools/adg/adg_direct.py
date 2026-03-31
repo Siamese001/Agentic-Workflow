@@ -112,7 +112,7 @@ def cmd_status(args: list[str]) -> None:
             print(f"AGE        : {age}s")
             print(f"DIGEST     : {status.get('digest', 'n/a')}")
             print(f"COHERENT   : {status.get('projection_coherent', 'unknown')}")
-            print(f"VERDICT    : {'HOT ✓' if is_fresh else 'STALE — run: python tools/adg/adg_redis_ingest.py --force'}")
+            print(f"VERDICT    : {'HOT [OK]' if is_fresh else 'STALE — run: python tools/adg/adg_redis_ingest.py --force'}")
             return
         else:
             print("Redis: adg:status key missing — falling back to SQLite")

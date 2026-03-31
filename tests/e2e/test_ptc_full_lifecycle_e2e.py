@@ -142,21 +142,9 @@ def ptc_orchestration():
         'ToolInvoker': ToolInvoker,
     })
 
-)
-
-)
-
 # HITL imports for PTC integration
 
-)
-
-)
-
-)
-
 # Lifecycle trace imports
-
-)
 
 # Constants per spec
 MAX_RETRIES = 3
@@ -295,7 +283,7 @@ class TestPTCCoreInfrastructure:
             instruction_packet_id="test-packet",
         )
         # Envelope auto-signs on creation with get_current_secret()
-        
+
         # Should not raise
         ptc_enforcer.pre_execute(envelope)
         assert ptc_enforcer.violation_count == 0
@@ -312,10 +300,10 @@ class TestPTCCoreInfrastructure:
         from agentic_core.L2_execution.types.sandbox_envelope_types import ToolBudget
         object.__setattr__(envelope, "budget", ToolBudget())
         object.__setattr__(envelope, "signature", "")  # Empty signature = unsigned
-        
+
         with pytest.raises(PTCUnsignedEnvelopeError) as exc_info:
             ptc_enforcer.pre_execute(envelope)
-        
+
         assert "unsigned" in str(exc_info.value).lower()
         assert ptc_enforcer.violation_count == 1
 
@@ -330,9 +318,9 @@ class TestPTCCoreInfrastructure:
         Bearer abcdefghijklmnop
         Query completed successfully.
         """
-        
+
         redacted = ptc_enforcer.post_execute(raw_output)
-        
+
         # Secrets should be redacted
         assert "[REDACTED]" in redacted
         assert "sk-abc123xyz789" not in redacted
@@ -340,7 +328,7 @@ class TestPTCCoreInfrastructure:
         assert "hunter2" not in redacted
         assert "bearer_token_12345" not in redacted
         assert "abcdefghijklmnop" not in redacted
-        
+
         # Non-secret content preserved
         assert "Database connection established" in redacted
         assert "Query completed successfully" in redacted
@@ -349,10 +337,10 @@ class TestPTCCoreInfrastructure:
         """Test PTC enforcer enforces byte cap (fail-closed)."""
         # Create output exceeding cap
         huge_output = "x" * (PTC_STDOUT_BYTE_CAP + 1000)
-        
+
         with pytest.raises(PTCBytesCapExceeded) as exc_info:
             ptc_enforcer.post_execute(huge_output)
-        
+
         assert ptc_enforcer.violation_count == 1
         assert "exceeds" in str(exc_info.value).lower() or "cap" in str(exc_info.value).lower()
 
@@ -361,12 +349,12 @@ class TestPTCCoreInfrastructure:
         # Valid exit codes
         ToolResult(exit_code=0, stdout=b"success")
         ToolResult(exit_code=1, stdout=b"failure")
-        
+
         # Invalid exit codes should raise
         with pytest.raises(ToolContractViolation) as exc_info:
             ToolResult(exit_code=2, stdout=b"invalid")
         assert "0 or 1" in str(exc_info.value)
-        
+
         with pytest.raises(ToolContractViolation) as exc_info:
             ToolResult(exit_code=-1, stdout=b"invalid")
         assert "0 or 1" in str(exc_info.value)
@@ -376,10 +364,10 @@ class TestPTCCoreInfrastructure:
         small_cap = 100
         small_output = b"x" * 50
         large_output = b"x" * 200
-        
+
         # Should pass with small output
         ToolResult(exit_code=0, stdout=small_output, stdout_bytes_cap=small_cap)
-        
+
         # Should fail with large output
         with pytest.raises(ToolContractViolation) as exc_info:
             ToolResult(exit_code=0, stdout=large_output, stdout_bytes_cap=small_cap)
@@ -406,10 +394,10 @@ class TestPTCInferenceBatching:
             output_kind="JSON",
             version=1,
         )
-        
+
         def query_handler(args: dict[str, Any]) -> dict[str, Any]:
             return {"rows": [{"id": 1, "name": "test"}]}
-        
+
         tool2_spec = ToolSpec(
             tool_id="calculate",
             description="Perform calculation",
@@ -418,13 +406,13 @@ class TestPTCInferenceBatching:
             output_kind="TEXT",
             version=1,
         )
-        
+
         def calc_handler(args: dict[str, Any]) -> str:
             return str(eval(args["expr"]))  # Safe eval in test
-        
+
         ptc_registry.register(tool1_spec, query_handler)
         ptc_registry.register(tool2_spec, calc_handler)
-        
+
         # Execute both tools in "single pass" (sequential but within one script)
         call1 = PTCToolCall(
             call_id="call-001",
@@ -436,16 +424,16 @@ class TestPTCInferenceBatching:
             tool_id="calculate",
             args={"expr": "2 + 2"},
         )
-        
+
         result1 = ptc_invoker.invoke(call1, ptc_registry)
         result2 = ptc_invoker.invoke(call2, ptc_registry)
-        
+
         # Both should succeed
         assert result1.exit_code == 0
         assert result2.exit_code == 0
         assert "rows" in result1.stdout
         assert "4" in result2.stdout
-        
+
         # Verify tool invocation was recorded
         _emit_records_tool_invocation("ptc_test", "query_db", "batch_test")
         _emit_records_tool_invocation("ptc_test", "calculate", "batch_test")
@@ -479,12 +467,12 @@ print(json.dumps(summary))
             tools=["query_database"],
             estimated_tokens=500,
         )
-        
+
         # Verify script structure
         assert script.script_id == "batch-001"
         assert len(script.tools) == 1
         assert "query_database" in script.code
-        
+
         # Simulate execution tracking
         trace_id = str(uuid.uuid4())
         _emit_records_execution_trace(trace_id, LayerSegment.L3_ORCHESTRATION, "PTCBatchScript.execute")
@@ -505,26 +493,26 @@ class TestPTCContextIsolation:
             frozen_inputs={"query": "SELECT * FROM large_table"},
             isolated=True,
         )
-        
+
         # Simulate tool execution within sandbox
         raw_result = {
             "rows": [{"id": i, "data": "x" * 1000} for i in range(1000)],  # Large result
             "metadata": {"query_time": 1.5, "rows": 1000},
         }
-        
+
         # Process result - only summary should escape
         summary = {
             "row_count": len(raw_result["rows"]),
             "query_time": raw_result["metadata"]["query_time"],
         }
-        
+
         sandbox.stdout_buffer = json.dumps(summary)
         sandbox.tool_results.append({
             "tool": "query_database",
             "summary": summary,
             "raw_result_stored": True,  # Raw result stays in sandbox
         })
-        
+
         # Verify isolation
         assert sandbox.isolated is True
         assert len(sandbox.stdout_buffer) < 1000  # Small output
@@ -534,10 +522,10 @@ class TestPTCContextIsolation:
         """Test that un-transcripted I/O triggers immediate halt."""
         # Simulate output that bypassed transcription
         untranscripted_output = b"\x00\x01\x02\x03"  # Binary data
-        
+
         # This should trigger fail-closed behavior
         _emit_hard_fails_untranscripted("ptc_test", "untranscripted_detected")
-        
+
         # Verify fail-closed was recorded
         # In production, this would halt execution
 
@@ -545,7 +533,7 @@ class TestPTCContextIsolation:
         """Test PTC stdout-only contract enforcement."""
         # Valid stdout-only output
         valid_output = "Summary: 3 queries executed, 150 rows returned"
-        
+
         # Check no file writes or side effects in output
         assert "open(" not in valid_output
         assert "write(" not in valid_output
@@ -569,20 +557,20 @@ class TestPTCSafetyGates:
             confidence_score=0.3,  # Low confidence
             requires_human_review=True,
         )
-        
+
         # Should be gated by confidence
         _emit_gated_by_confidence("ptc_test", script.script_id, "low_confidence")
-        
+
         # Verify requires_human_review flag
         assert script.requires_human_review is True
         assert script.confidence_score < 0.5
-        
+
         # Register handler and escalate
         def handler(req: EscalationRequest) -> str | None:
             return "APPROVE"
-        
+
         escalation_activator.register_handler(handler)
-        
+
         escalation = escalation_activator.escalate(
             agent="PTCAgent",
             module="ptc_script.py",
@@ -591,7 +579,7 @@ class TestPTCSafetyGates:
             priority=EscalationPriority.HIGH,
             policy_hash="sha256:test",
         )
-        
+
         assert escalation.resolved is True
         assert escalation.resolution == "APPROVE"
 
@@ -600,7 +588,7 @@ class TestPTCSafetyGates:
     ) -> None:
         """Test human review approval flow for PTC script."""
         trace_id = f"ptc-hr-{uuid.uuid4().hex[:8]}"
-        
+
         # Create human review draft
         artifact = create_human_review_draft(
             trace_id=trace_id,
@@ -610,16 +598,16 @@ class TestPTCSafetyGates:
             allowed_tools=("query_database", "file_read"),
             plan_content={"steps": [{"tool": "query_database", "sql": "SELECT count(*) FROM users"}]},
         )
-        
+
         assert artifact.action == HumanAction.MODIFY_DIFF
-        
+
         # Apply approval
         artifact.apply_modify_diff(
             reviewer_id="human:senior_reviewer",
             modified_plan={"steps": [{"tool": "query_database", "sql": "SELECT count(*) FROM users"}]},
             rationale="Query is read-only and safe",
         )
-        
+
         assert artifact.reviewer_id == "human:senior_reviewer"
 
     def test_ptc_safety_gate_human_review_reject(
@@ -627,12 +615,12 @@ class TestPTCSafetyGates:
     ) -> None:
         """Test human review rejection flow for PTC script."""
         trace_id = f"ptc-reject-{uuid.uuid4().hex[:8]}"
-        
+
         def reject_handler(req: EscalationRequest) -> str | None:
             return "REJECT"
-        
+
         escalation_activator.register_handler(reject_handler)
-        
+
         # Create rejection artifact
         from agentic_core.L3_orchestration.types.human_decision_artifact_types import create_rejection_artifact
         artifact = create_rejection_artifact(
@@ -642,17 +630,17 @@ class TestPTCSafetyGates:
             reviewer_id="human:security",
             rationale="Script contains unsafe operations",
         )
-        
+
         assert artifact.action == HumanAction.REJECT
         assert artifact.certification_invalidated is True
 
     def test_ptc_escalates_to_human(self) -> None:
         """Test PTC escalates to human on policy-ambiguous cases."""
         trace_id = str(uuid.uuid4())
-        
+
         # Emit escalation signal
         _emit_escalates_to_human(trace_id, "ptc_script", "policy_ambiguous")
-        
+
         # Verify trace contract recorded
         assert trace_id is not None
 
@@ -669,7 +657,7 @@ class TestPTCL5Reclear:
         from agentic_core.L5_safety.types.human_decision_artifact_types import (
             HumanDecisionArtifact as L5HumanDecisionArtifact,
         )
-        
+
         # MODIFY_DIFF requires reclear
         artifact = L5HumanDecisionArtifact(
             trace_id="test-modify",
@@ -679,9 +667,9 @@ class TestPTCL5Reclear:
             original_plan_hash="sha256:original",
             structured_patch_schema={"tool": "query_database"},
         )
-        
+
         assert artifact.l5_reclear_required is True
-        
+
         # APPROVE does not require reclear
         artifact_approve = L5HumanDecisionArtifact(
             trace_id="test-approve",
@@ -696,10 +684,10 @@ class TestPTCL5Reclear:
     def test_ptc_validated_by_safety_plane(self) -> None:
         """Test PTC validation by safety plane."""
         trace_id = str(uuid.uuid4())
-        
+
         # Emit safety plane validation
         _emit_validated_by_safety_plane(trace_id, "ptc_script", "l5_validation")
-        
+
         # Verify validation recorded
         assert trace_id is not None
 
@@ -716,15 +704,15 @@ class TestPTCBuiltinTools:
         # Create test file
         test_file = temp_ptc_dir / "test.py"
         test_file.write_text("def hello(): return 'world'")
-        
+
         # Use repo_rg handler
         args = {
             "pattern": "def hello",
             "root": str(temp_ptc_dir),
         }
-        
+
         result = repo_rg_handler(args)
-        
+
         # Parse JSON result
         data = json.loads(result)
         assert "results" in data
@@ -737,12 +725,12 @@ class TestPTCBuiltinTools:
         args = {"expr": "2 + 3 * 4"}
         result = expr_eval_handler(args)
         assert result == "14"
-        
+
         # Complex expression
         args = {"expr": "(2 + 3) * 4"}
         result = expr_eval_handler(args)
         assert result == "20"
-        
+
         # Function call
         args = {"expr": "max(1, 5, 3) + min(2, 8)"}
         result = expr_eval_handler(args)
@@ -767,15 +755,15 @@ class TestPTCDeterminism:
     def test_ptc_deterministic_redaction(self) -> None:
         """Test that redaction is deterministic (same input → same output)."""
         input_text = "API_KEY: secret123 Password: pass456"
-        
+
         # Run multiple times
         results = [redact_output(input_text) for _ in range(10)]
-        
+
         # All results should be identical
         first = results[0]
         for result in results[1:]:
             assert result == first
-        
+
         # Secrets should be redacted
         assert "[REDACTED]" in first
         assert "secret123" not in first
@@ -784,15 +772,15 @@ class TestPTCDeterminism:
     def test_ptc_canonical_json_determinism(self) -> None:
         """Test canonical JSON serialization is deterministic."""
         data = {"b": 2, "a": 1, "c": {"z": 26, "a": 1}}
-        
+
         # Run multiple times
         results = [canonical_json(data) for _ in range(10)]
-        
+
         # All should be identical
         first = results[0]
         for result in results[1:]:
             assert result == first
-        
+
         # Keys should be sorted
         assert results[0] == '{"a":1,"b":2,"c":{"a":1,"z":26}}'
 
@@ -800,15 +788,15 @@ class TestPTCDeterminism:
         """Test call ID generation is deterministic."""
         tool_id = "test_tool"
         args = {"a": 1, "b": 2}
-        
+
         # Run multiple times
         results = [generate_call_id(tool_id, args) for _ in range(10)]
-        
+
         # All should be identical
         first = results[0]
         for result in results[1:]:
             assert result == first
-        
+
         # Should be valid SHA256 hex
         assert len(first) == 64
         assert all(c in "0123456789abcdef" for c in first)
@@ -829,7 +817,7 @@ class TestPTCDeterminism:
                 ptc_registry.register(spec, lambda x: x)
             except ValueError:
                 pass  # Duplicate
-        
+
         # List should be sorted
         tools = ptc_registry.list()
         tool_ids = [t.tool_id for t in tools]
@@ -859,9 +847,9 @@ class TestPTCEdgeCases:
             output_kind="TEXT",
             version=1,
         )
-        
+
         ptc_registry.register(spec, lambda x: x)
-        
+
         # Duplicate should fail
         with pytest.raises(ValueError) as exc_info:
             ptc_registry.register(spec, lambda x: x)
@@ -907,18 +895,18 @@ class TestPTCEdgeCases:
             output_kind="TEXT",
             version=1,
         )
-        
+
         def handler(args: dict[str, Any]) -> str:
             return "output"
-        
+
         ptc_registry.register(spec, handler)
-        
+
         call = PTCToolCall(
             call_id="call-001",
             tool_id="subprocess_tool",
             args={"command": "pwsh -c 'Get-Date'"},
         )
-        
+
         # Should reject PowerShell and return error result (exit_code=1)
         result = ptc_invoker.invoke(call, ptc_registry)
         assert result.exit_code == 1
@@ -933,10 +921,10 @@ class TestPTCEdgeCases:
             instruction_packet_id="test-packet",
         )
         # Envelope auto-signs on creation
-        
+
         # Should pass pre-execute (envelope is valid)
         ptc_enforcer.pre_execute(envelope)
-        
+
         # Post-execute should handle empty output
         result = ptc_enforcer.post_execute("")
         assert result == ""
@@ -946,7 +934,7 @@ class TestPTCEdgeCases:
         from agentic_core.L2_execution.types.sandbox_envelope_types import ToolBudget
         # Create budget with compute time limit
         budget = ToolBudget(compute_ms=10)  # 10ms timeout
-        
+
         # Timeout should be respected
         assert budget.compute_ms == 10
 
@@ -963,19 +951,19 @@ class TestPTCLearningLinkage:
         from agentic_core.L6_observability.engines.hitl_dpo_pair_generator import (
             DefaultDeterministicDPOPairGenerator,
         )
-        
+
         generator = DefaultDeterministicDPOPairGenerator()
-        
+
         control = b"original_script_output"
         candidate = b"modified_script_output"
-        
+
         pair = generator.generate(
             control_output_bytes=control,
             candidate_output_bytes=candidate,
             human_decision="APPROVE",
             reason_codes=("SAFE_SCRIPT", "READ_ONLY"),
         )
-        
+
         assert pair.human_decision == "APPROVE"
         assert len(pair.reasons) == 2
         assert pair.example_id.control_hash == hashlib.sha256(control).hexdigest()
@@ -985,20 +973,20 @@ class TestPTCLearningLinkage:
         from agentic_core.L6_observability.engines.hitl_dpo_pair_generator import (
             DefaultDeterministicDPOPairGenerator,
         )
-        
+
         generator = DefaultDeterministicDPOPairGenerator()
-        
+
         # Rejected script produces negative example
         control = b"safe_script"
         candidate = b"unsafe_script_with_file_delete"
-        
+
         pair = generator.generate(
             control_output_bytes=control,
             candidate_output_bytes=candidate,
             human_decision="REJECT",
             reason_codes=("UNSAFE_OPERATION", "FILE_DELETE"),
         )
-        
+
         assert pair.human_decision == "REJECT"
         assert "UNSAFE_OPERATION" in pair.reasons
 
@@ -1019,7 +1007,7 @@ class TestPTCFullLifecycle:
     ) -> None:
         """Test complete PTC workflow with APPROVE decision."""
         trace_id = f"ptc-full-{uuid.uuid4().hex[:8]}"
-        
+
         # Stage 1: Register tools
         query_spec = ToolSpec(
             tool_id="query_users",
@@ -1029,12 +1017,12 @@ class TestPTCFullLifecycle:
             output_kind="JSON",
             version=1,
         )
-        
+
         def query_handler(args: dict[str, Any]) -> dict[str, Any]:
             return {"users": [{"id": 1, "name": "Alice"}, {"id": 2, "name": "Bob"}]}
-        
+
         ptc_registry.register(query_spec, query_handler)
-        
+
         # Stage 2: Create PTC script
         script = PTCScript(
             script_id=trace_id,
@@ -1042,27 +1030,27 @@ class TestPTCFullLifecycle:
             tools=["query_users"],
             confidence_score=0.8,
         )
-        
+
         # Stage 3: Safety gate (confidence OK, no human review needed)
         if script.confidence_score < 0.5:
             _emit_gated_by_confidence(trace_id, script.script_id, "low_confidence")
-        
+
         # Stage 4: Execute script
         call = PTCToolCall(
             call_id=f"{trace_id}-call-001",
             tool_id="query_users",
             args={},
         )
-        
+
         result = ptc_invoker.invoke(call, ptc_registry)
-        
+
         # Stage 5: Post-execute validation
         safe_output = ptc_enforcer.post_execute(result.stdout)
-        
+
         # Stage 6: Record execution
         _emit_records_execution_trace(trace_id, LayerSegment.L3_ORCHESTRATION, "PTCFullWorkflow")
         _emit_records_tool_invocation(trace_id, "query_users", trace_id)
-        
+
         # Verify
         assert result.exit_code == 0
         assert "Alice" in safe_output
@@ -1077,12 +1065,12 @@ class TestPTCFullLifecycle:
     ) -> None:
         """Test complete PTC workflow with REJECT decision."""
         trace_id = f"ptc-reject-{uuid.uuid4().hex[:8]}"
-        
+
         def reject_handler(req: EscalationRequest) -> str | None:
             return "REJECT"
-        
+
         escalation_activator.register_handler(reject_handler)
-        
+
         # Create rejection artifact
         from agentic_core.L3_orchestration.types.human_decision_artifact_types import create_rejection_artifact
         artifact = create_rejection_artifact(
@@ -1092,23 +1080,23 @@ class TestPTCFullLifecycle:
             reviewer_id="human:security",
             rationale="Script contains unsafe file operations",
         )
-        
+
         assert artifact.action == HumanAction.REJECT
         assert artifact.certification_invalidated is True
-        
+
         # Generate DPO pair
         from agentic_core.L6_observability.engines.hitl_dpo_pair_generator import (
             DefaultDeterministicDPOPairGenerator,
         )
         generator = DefaultDeterministicDPOPairGenerator()
-        
+
         pair = generator.generate(
             control_output_bytes=b"safe_script",
             candidate_output_bytes=b"unsafe_script",
             human_decision="REJECT",
             reason_codes=("UNSAFE_OPERATION",),
         )
-        
+
         assert pair.human_decision == "REJECT"
 
     def test_ptc_inference_batching_savings(self) -> None:
@@ -1116,20 +1104,20 @@ class TestPTCFullLifecycle:
         # Traditional: 3 tools = 3 inference passes
         traditional_passes = 3
         traditional_context_pollution = 3  # Each pollutes context
-        
+
         # PTC: 3 tools = 1 inference pass via script
         ptc_passes = 1
         ptc_context_isolation = 0  # Raw results trapped in sandbox
-        
+
         # Verify value proposition
         assert ptc_passes < traditional_passes
         assert ptc_context_isolation < traditional_context_pollution
-        
+
         # Simulate token savings (~37% per spec)
         traditional_tokens = 1000 * 3  # 3 separate calls
         ptc_tokens = 1000 + 100  # 1 call + summary
         savings = (traditional_tokens - ptc_tokens) / traditional_tokens
-        
+
         assert savings > 0.30  # At least 30% savings
 
 
@@ -1153,17 +1141,17 @@ class TestPTCConcurrentExecution:
             output_kind="TEXT",
             version=1,
         )
-        
+
         def handler(args: dict[str, Any]) -> str:
             time.sleep(0.01)  # Simulate work
             return str(args["value"] * 2)
-        
+
         ptc_registry.register(spec, handler)
-        
+
         # Concurrent invocations
         num_threads = 10
         results: list[str] = []
-        
+
         def invoke_task(idx: int) -> str:
             call = PTCToolCall(
                 call_id=f"concurrent-{idx}",
@@ -1172,11 +1160,11 @@ class TestPTCConcurrentExecution:
             )
             result = ptc_invoker.invoke(call, ptc_registry)
             return result.stdout
-        
+
         with ThreadPoolExecutor(max_workers=num_threads) as executor:
             futures = [executor.submit(invoke_task, i) for i in range(num_threads)]
             results = [f.result() for f in as_completed(futures)]
-        
+
         # All should complete
         assert len(results) == num_threads
         assert all(str(i * 2) in results for i in range(num_threads))
@@ -1184,10 +1172,10 @@ class TestPTCConcurrentExecution:
     def test_ptc_registry_thread_safety(self) -> None:
         """Test tool registry is thread-safe."""
         registry = ToolRegistry()
-        
+
         num_threads = 5
         errors: list[Exception] = []
-        
+
         def register_task(idx: int) -> None:
             try:
                 spec = ToolSpec(
@@ -1201,12 +1189,12 @@ class TestPTCConcurrentExecution:
                 registry.register(spec, lambda x: x)
             except Exception as e:
                 errors.append(e)
-        
+
         with ThreadPoolExecutor(max_workers=num_threads) as executor:
             futures = [executor.submit(register_task, i) for i in range(num_threads)]
             for f in as_completed(futures):
                 f.result()
-        
+
         # All registrations should succeed
         assert len(errors) == 0
         assert registry.count() == num_threads
@@ -1216,9 +1204,19 @@ class TestPTCConcurrentExecution:
 # Lifecycle Trace Contract Compliance
 # =============================================================================
 
-emit_replay_key("p0", "test_ptc_e2e")
-emit_determinism_digest("p0", "test_ptc_e2e")
-
-_emit_records_execution_trace("ptc_e2e", LayerSegment.L2_EXECUTION, "PTCE2ETestSuite")
-_emit_records_tool_invocation("ptc_e2e", "test_ptc_e2e", "e2e_suite")
-_emit_captures_execution_output("ptc_e2e", "test_output", "e2e_capture")
+try:
+    from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        LayerSegment,
+        _emit_captures_execution_output,
+        _emit_records_execution_trace,
+        _emit_records_tool_invocation,
+        emit_determinism_digest,
+        emit_replay_key,
+    )
+    emit_replay_key("p0", "test_ptc_e2e")
+    emit_determinism_digest("p0", "test_ptc_e2e")
+    _emit_records_execution_trace("ptc_e2e", LayerSegment.L2_EXECUTION, "PTCE2ETestSuite")
+    _emit_records_tool_invocation("ptc_e2e", "test_ptc_e2e", "e2e_suite")
+    _emit_captures_execution_output("ptc_e2e", "test_output", "e2e_capture")
+except ImportError:
+    pass  # Lifecycle tracing optional during test collection
