@@ -1,29 +1,29 @@
-"""Placeholder test for PiiVaultEnforcerAdg."""
+"""Test PiiVaultEnforcerAdg functionality."""
+
+import sys
+from pathlib import Path
 
 import pytest
 
+REPO_ROOT = Path(__file__).parent.parent.parent
+sys.path.insert(0, str(REPO_ROOT))
 
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300  # 5 minutes
 
 @pytest.mark.unit
 class TestPiiVaultEnforcerAdg:
     """Test PiiVaultEnforcerAdg functionality."""
 
-    def test_placeholder_1(self):
-        """Placeholder test 1."""
-        assert True
-    
-    def test_placeholder_2(self):
-        """Placeholder test 2."""
-        assert True
-    
-    def test_placeholder_3(self):
-        """Placeholder test 3."""
-        assert True
+    def test_pii_vault_enforcer_adg_imports(self):
+        """Test pii_vault_enforcer_adg module imports."""
+        from agentic_core import pii_vault_enforcer_adg
+        assert pii_vault_enforcer_adg is not None
+
+    def test_pii_vault_enforcer_adg_class(self):
+        """Test PiiVaultEnforcerAdg class exists."""
+        from agentic_core import PiiVaultEnforcerAdg
+        assert PiiVaultEnforcerAdg is not None
+
+    def test_pii_vault_enforcer_adg_callable(self):
+        """Test pii_vault_enforcer_adg functions are callable."""
+        from agentic_core import validate_pii_vault_enforcer_adg
+        assert callable(validate_pii_vault_enforcer_adg)

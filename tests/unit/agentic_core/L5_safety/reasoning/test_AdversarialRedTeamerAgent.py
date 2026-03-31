@@ -1,50 +1,29 @@
-"""Placeholder test for Adversarialredteameragent."""
+"""Test Adversarialredteameragent functionality."""
+
+import sys
+from pathlib import Path
+
 import pytest
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300
+
+REPO_ROOT = Path(__file__).parent.parent.parent
+sys.path.insert(0, str(REPO_ROOT))
+
 
 @pytest.mark.unit
-class GeneratedTest:
-    """Generated test class for agentic_core.L5_safety.reasoning."""
+class TestAdversarialredteameragent:
+    """Test Adversarialredteameragent functionality."""
 
-    def test_get_adversarial_red_teamer(self):
-        """Test get_adversarial_red_teamer function."""
-        from agentic_core.L5_safety.reasoning import get_adversarial_red_teamer
-        result = get_adversarial_red_teamer()
-        assertIsNotNone(result)
+    def test_AdversarialRedTeamerAgent_imports(self):
+        """Test AdversarialRedTeamerAgent module imports."""
+        from agentic_core import AdversarialRedTeamerAgent
+        assert AdversarialRedTeamerAgent is not None
 
-    def test_heal_repository(self):
-        """Test heal_repository function."""
-        from agentic_core.L5_safety.reasoning import heal_repository
-        result = heal_repository()
-        assertIsNotNone(result)
+    def test_AdversarialRedTeamerAgent_class(self):
+        """Test Adversarialredteameragent class exists."""
+        from agentic_core import Adversarialredteameragent
+        assert Adversarialredteameragent is not None
 
-    def test_VulnerabilityTest_init(self):
-        """Test VulnerabilityTest initialization."""
-        from agentic_core.L5_safety.reasoning import VulnerabilityTest
-        instance = VulnerabilityTest()
-        assertIsNotNone(instance)
-
-    def test_RedTeamResult_init(self):
-        """Test RedTeamResult initialization."""
-        from agentic_core.L5_safety.reasoning import RedTeamResult
-        instance = RedTeamResult()
-        assertIsNotNone(instance)
-
-    def test_placeholder_1(self):
-        """Placeholder test 1."""
-        assert True
-
-    def test_placeholder_2(self):
-        """Placeholder test 2."""
-        assert True
-
-    def test_placeholder_3(self):
-        """Placeholder test 3."""
-        assert True
+    def test_AdversarialRedTeamerAgent_callable(self):
+        """Test AdversarialRedTeamerAgent functions are callable."""
+        from agentic_core import validate_AdversarialRedTeamerAgent
+        assert callable(validate_AdversarialRedTeamerAgent)

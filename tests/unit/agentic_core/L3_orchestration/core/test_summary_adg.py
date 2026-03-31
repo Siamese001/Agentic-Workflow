@@ -1,14 +1,29 @@
-"""ADG-driven tests for L3 orchestration core summary."""
-from __future__ import annotations
+"""Test SummaryAdg functionality."""
+
+import sys
+from pathlib import Path
 
 import pytest
 
-pytestmark = pytest.mark.unit
+REPO_ROOT = Path(__file__).parent.parent.parent
+sys.path.insert(0, str(REPO_ROOT))
 
 
+@pytest.mark.unit
 class TestSummaryAdg:
-    """Test summary ADG functionality."""
-    
-    def test_summary_placeholder(self):
-        """Placeholder test for summary ADG."""
-        assert True
+    """Test SummaryAdg functionality."""
+
+    def test_summary_adg_imports(self):
+        """Test summary_adg module imports."""
+        from agentic_core import summary_adg
+        assert summary_adg is not None
+
+    def test_summary_adg_class(self):
+        """Test SummaryAdg class exists."""
+        from agentic_core import SummaryAdg
+        assert SummaryAdg is not None
+
+    def test_summary_adg_callable(self):
+        """Test summary_adg functions are callable."""
+        from agentic_core import validate_summary_adg
+        assert callable(validate_summary_adg)

@@ -1,22 +1,29 @@
-"""Placeholder test for L3 orchestration core."""
-from __future__ import annotations
+"""Test OrchestratorStateRetry functionality."""
+
+import sys
+from pathlib import Path
 
 import pytest
 
-pytestmark = pytest.mark.unit
+REPO_ROOT = Path(__file__).parent.parent.parent
+sys.path.insert(0, str(REPO_ROOT))
 
 
+@pytest.mark.unit
 class TestOrchestratorStateRetry:
-    """Test orchestrator state retry functionality."""
-    
-    def test_retry_mechanism_exists(self):
-        """Test that retry mechanism exists."""
-        assert True
+    """Test OrchestratorStateRetry functionality."""
 
+    def test_orchestrator_state_retry_imports(self):
+        """Test orchestrator_state_retry module imports."""
+        from agentic_core import orchestrator_state_retry
+        assert orchestrator_state_retry is not None
 
-class TestSummary:
-    """Test summary functionality."""
-    
-    def test_summary_placeholder(self):
-        """Placeholder test for summary."""
-        assert True
+    def test_orchestrator_state_retry_class(self):
+        """Test OrchestratorStateRetry class exists."""
+        from agentic_core import OrchestratorStateRetry
+        assert OrchestratorStateRetry is not None
+
+    def test_orchestrator_state_retry_callable(self):
+        """Test orchestrator_state_retry functions are callable."""
+        from agentic_core import validate_orchestrator_state_retry
+        assert callable(validate_orchestrator_state_retry)

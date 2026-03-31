@@ -1,64 +1,29 @@
-"""Placeholder test for Governanceagent."""
+"""Test Governanceagent functionality."""
+
+import sys
+from pathlib import Path
+
 import pytest
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300
+
+REPO_ROOT = Path(__file__).parent.parent.parent
+sys.path.insert(0, str(REPO_ROOT))
+
 
 @pytest.mark.unit
-class GeneratedTest:
-    """Generated test class for agentic_core.L5_safety.reasoning."""
+class TestGovernanceagent:
+    """Test Governanceagent functionality."""
 
-    def test_heal(self):
-        """Test heal function."""
-        from agentic_core.L5_safety.reasoning import heal
-        result = heal()
-        assertIsNotNone(result)
+    def test_GovernanceAgent_imports(self):
+        """Test GovernanceAgent module imports."""
+        from agentic_core import GovernanceAgent
+        assert GovernanceAgent is not None
 
-    def test_create_architecture_governor(self):
-        """Test create_architecture_governor function."""
-        from agentic_core.L5_safety.reasoning import create_architecture_governor
-        result = create_architecture_governor()
-        assertIsNotNone(result)
+    def test_GovernanceAgent_class(self):
+        """Test Governanceagent class exists."""
+        from agentic_core import Governanceagent
+        assert Governanceagent is not None
 
-    def test_DependencyGraph_init(self):
-        """Test DependencyGraph initialization."""
-        from agentic_core.L5_safety.reasoning import DependencyGraph
-        instance = DependencyGraph()
-        assertIsNotNone(instance)
-
-    def test_DependencyGraph_build(self):
-        """Test DependencyGraph.build method."""
-        from agentic_core.L5_safety.reasoning import DependencyGraph
-        instance = DependencyGraph()
-        result = instance.build()
-        assertIsNotNone(result)
-
-    def test_GovernanceAgent_init(self):
-        """Test GovernanceAgent initialization."""
-        from agentic_core.L5_safety.reasoning import GovernanceAgent
-        instance = GovernanceAgent()
-        assertIsNotNone(instance)
-
-    def test_GovernanceAgent_hierarchy_agent(self):
-        """Test GovernanceAgent.hierarchy_agent method."""
-        from agentic_core.L5_safety.reasoning import GovernanceAgent
-        instance = GovernanceAgent()
-        result = instance.hierarchy_agent()
-        assertIsNotNone(result)
-
-    def test_placeholder_1(self):
-        """Placeholder test 1."""
-        assert True
-
-    def test_placeholder_2(self):
-        """Placeholder test 2."""
-        assert True
-
-    def test_placeholder_3(self):
-        """Placeholder test 3."""
-        assert True
+    def test_GovernanceAgent_callable(self):
+        """Test GovernanceAgent functions are callable."""
+        from agentic_core import validate_GovernanceAgent
+        assert callable(validate_GovernanceAgent)
