@@ -59,7 +59,11 @@ class IntakeClerk:
         if HTMLDocumentLoader:
             self._loaders[ContentType.HTML] = HTMLDocumentLoader.load_file
         if CSVDocumentLoader:
-            self._loaders[ContentType.CSV] = CSVDocumentLoader.load_file
+            # CSV loader returns list of dicts, need to convert to string
+            def csv_loader_wrapper(file_path):
+                records = CSVDocumentLoader.load(file_path)
+                return str(records)  # Convert to string for processing
+            self._loaders[ContentType.CSV] = csv_loader_wrapper
     
     def ingest_document(self, file_path: Union[str, Path]) -> IngestionResult:
         """Ingest a single document with full processing pipeline.

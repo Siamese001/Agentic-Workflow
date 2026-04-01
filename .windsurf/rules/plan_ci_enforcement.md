@@ -24,11 +24,11 @@ All plans must pass Windsurf CI validation before commit.
 ## Rule: Plan Location Standards
 Plans must be stored in approved locations only.
 
-### Approved Locations:
-1. `docs/reports/plans/` - Repository plans (canonical location for long-lived plans)
-2. `.windsurf/plans/` - Workspace plans (acceptable for active work)
+### Approved Location (SSOT):
+- `docs/reports/plans/` - **ONLY** approved location for all plans per `plan-location.md`
 
 ### Forbidden:
+- Plans in `.windsurf/plans/` (not sovereign territory)
 - Plans in root directory
 - Plans in random subdirectories
 - Plans without .md extension

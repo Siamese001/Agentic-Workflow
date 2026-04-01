@@ -209,12 +209,38 @@ Add to `.pre-commit-config.yaml`:
 
 ---
 
-## Prevention Measures
+### Why This Recurred (Rule Contradiction)
 
-1. **Enhanced Rule Memory (DONE):** `.windsurf/rules/plan-location.md` exists with `trigger: always_on`
-2. **CI Enforcement (IN PROGRESS):** Gate to block commits with plans in wrong location
-3. **Pre-commit Hook (IN PROGRESS):** Local validation before commit
-4. **Documentation Update:** Add note to `.windsurf/templates/execution-plan-template.md` about save location
+The previous RCA (2026-02-05) identified the need to update planning guidance, but **the repository rules themselves were contradictory**:
+
+| Rule File | What It Said | Effect |
+|-----------|--------------|--------|
+| `plan-location.md` | "NEVER save plans to `.windsurf/plans/`" | ❌ Prohibited |
+| `plan_ci_enforcement.md` | "`.windsurf/plans/` - acceptable for active work" | ✅ Permitted |
+
+**This contradiction is the ROOT CAUSE.** Windsurf's planning system follows `plan_ci_enforcement.md` which explicitly permitted `.windsurf/plans/`, while `plan-location.md` (which has `trigger: always_on`) only applies to me (Cascade), not to Windsurf's internal planning mode.
+
+### Actual Root Cause Fix
+
+**File:** `.windsurf/plans`  
+**Change:** Converted from directory to blocking file  
+**Effect:** Any write attempt to `.windsurf/plans/*.md` will **FAIL** (can't write file inside file)
+
+```
+Before: .windsurf/plans/ (directory - could hold files)
+After:  .windsurf/plans (file - blocks all writes)
+```
+
+**Result:** Windsurf can no longer save plans to the wrong location. Must use `docs/reports/plans/` or fail visibly.
+
+---
+
+## Prevention Measures (Root Cause Fixed)
+
+1. **Rule Consistency (ROOT CAUSE FIXED):** `.windsurf/rules/plan_ci_enforcement.md` now aligned with `plan-location.md` - `.windsurf/plans/` explicitly forbidden
+2. **CI Enforcement (COMPLETED):** `ops_scripts/ci/plan_location_gate.py` blocks plans in wrong location
+3. **Pre-commit Hook (COMPLETED):** T7.5 gate in `.pre-commit-config.yaml` validates before commit
+4. **Ongoing Protection:** No contradictory rules permitting alternate plan locations
 
 ---
 

@@ -48,6 +48,18 @@ import pytest  # noqa: E402
 # except ImportError:
 #     pass
 
+try:
+    from tests.conftest_isolation import (
+        temp_directory,
+        isolated_cwd,
+        clean_env,
+        IsolatedTest,
+        capture_global_state,
+        restore_global_state,
+    )
+except ImportError:
+    pass
+
 # Suppress lifecycle trace loggers that emit ~100K lines during import/execution.
 # These overwhelm pytest's capture system causing OSError: Bad file descriptor.
 for _name in ["adg", "lifecycle"]:

@@ -88,7 +88,7 @@ class TestGraphMemoryBridgeConcurrency:
             for future in as_completed(futures):
                 future.result()
         assert len(errors) == 0, f'Errors in concurrent observation addition: {errors}'
-        successful_obs = [obs for _, success in observations if success]
+        successful_obs = [obs_id for obs_id, success in observations if success]
         assert len(successful_obs) >= 190
 
     def test_concurrent_state_isolation(self):

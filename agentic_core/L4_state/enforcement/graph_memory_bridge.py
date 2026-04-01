@@ -255,6 +255,7 @@ class GraphMemoryBridge:
             "mcp_errors": 0,
             "operations_skipped": 0,
         }
+        self._stats = self.stats
         self._registered_entities: set[str] = set()
         self._cleanup_registered = False
         self._init_mcp()
@@ -316,12 +317,14 @@ class GraphMemoryBridge:
             Dictionary with isolation validation results.
         """
         with self._lock:
+            stats_total = sum(self.stats.values())
             return {
                 "registered_entities_count": len(self._registered_entities),
-                "stats_totals": sum(self._stats.values()),
+                "registered_entities": list(self._registered_entities),
+                "stats_totals": stats_total,
                 "mcp_available": self._mcp_available,
                 "cleanup_registered": self._cleanup_registered,
-                "is_clean": len(self._registered_entities) == 0 and sum(self._stats.values()) == 0
+                "is_clean": len(self._registered_entities) == 0 and stats_total == 0
             }
 
     @classmethod

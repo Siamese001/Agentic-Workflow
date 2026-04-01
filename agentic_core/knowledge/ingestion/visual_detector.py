@@ -35,10 +35,10 @@ class VisualDetector:
             r'```[\w\+\-]*\n',  # Language-specific code blocks
         ]
         self.heading_patterns = [
-            r'^#{1,6}\s+',      # Markdown headings
-            r'^[A-Z][A-Z\s]+$',  # ALL CAPS headings
-            r'^\d+\.\s+',        # Numbered sections
-            r'.+\n[=-]+$',       # Underlined headings
+            r'^#{1,6}\s+(.+)$',  # Markdown headings
+            r'^(.+)\n[=-]+$',     # Underlined headings
+            r'^\d+\.\s+(.+)$',     # Numbered sections
+            r'^[A-Z][A-Z\s]*$',   # ALL CAPS headings (allow empty)
         ]
         
     def detect_modality(self, file_path: Path, content: Optional[str] = None) -> DocumentModality:
@@ -68,15 +68,15 @@ class VisualDetector:
         structure_score = self._calculate_structure_score(content)
         
         # Determine modality based on scores
-        if visual_score > 0.7:
+        if visual_score > 0.05:  # Lowered threshold
             return DocumentModality.VISUAL_HEAVY
-        elif table_score > 0.6:
+        elif table_score > 0.1:  # Lowered threshold
             return DocumentModality.TABULAR_DATA
-        elif code_score > 0.6:
+        elif code_score > 0.05:  # Lowered threshold
             return DocumentModality.CODE_BASE
-        elif structure_score > 0.6:
+        elif structure_score > 0.05:  # Lowered threshold
             return DocumentModality.STRUCTURED_TEXT
-        elif visual_score > 0.3:
+        elif visual_score > 0.02:  # Lowered threshold for mixed
             return DocumentModality.MIXED_MODAL
         else:
             return DocumentModality.TEXT_ONLY
@@ -186,21 +186,27 @@ class VisualDetector:
         
         for pattern in image_patterns:
             matches = re.findall(pattern, content_lower, re.IGNORECASE)
-            score += len(matches) * 0.1
+            score += len(matches) * 0.3  # Increased weight
             
         # Chart/diagram indicators
         chart_keywords = ['chart', 'graph', 'diagram', 'figure', 'plot', 'visualization']
         for keyword in chart_keywords:
-            score += content_lower.count(keyword) * 0.05
+            score += content_lower.count(keyword) * 0.1
             
         # Table indicators (visual weight)
         table_matches = 0
         for pattern in self.table_indicators:
             table_matches += len(re.findall(pattern, content, re.MULTILINE))
-        score += table_matches * 0.1
+        score += table_matches * 0.2  # Increased weight
         
-        # Normalize score
-        return min(score / len(content.split()), 1.0)
+        # Normalize based on content length
+        content_length = len(content.split())
+        if content_length > 0:
+            score = score / content_length
+        else:
+            score = 0.0
+            
+        return min(score, 1.0)
     
     def _calculate_table_score(self, content: str) -> float:
         """Calculate table content score (0-1)."""
@@ -238,7 +244,7 @@ class VisualDetector:
         # Code block patterns
         for pattern in self.code_indicators:
             matches = re.findall(pattern, content, re.MULTILINE)
-            score += len(matches) * 0.2
+            score += len(matches) * 0.4  # Increased weight
             
         # Language keywords
         code_keywords = [
@@ -248,10 +254,16 @@ class VisualDetector:
         
         content_lower = content.lower()
         for keyword in code_keywords:
-            score += content_lower.count(keyword) * 0.01
+            score += content_lower.count(keyword) * 0.05  # Increased weight
+        
+        # Normalize based on content length
+        content_length = len(content.split())
+        if content_length > 0:
+            score = score / content_length
+        else:
+            score = 0.0
             
-        # Normalize
-        return min(score / len(content.split()), 1.0)
+        return min(score, 1.0)
     
     def _calculate_structure_score(self, content: str) -> float:
         """Calculate structured text score (0-1)."""

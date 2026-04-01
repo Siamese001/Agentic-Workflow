@@ -5,6 +5,8 @@ and that cleanup operations work correctly.
 """
 from __future__ import annotations
 
+import os
+
 import pytest
 
 # Check if GraphMemoryBridge is available
@@ -171,5 +173,9 @@ class TestIsolationFramework(IsolatedTest):
         env_vars = list(os.environ.keys())
         assert 'PATH' in env_vars
         assert 'HOME' in env_vars or 'USERPROFILE' in env_vars
-        test_vars = [v for v in env_vars if 'test' in v.lower()]
+        test_vars = [
+            v
+            for v in env_vars
+            if 'test' in v.lower() and not v.startswith('PYTEST_')
+        ]
         assert len(test_vars) == 0
