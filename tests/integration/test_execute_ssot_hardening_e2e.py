@@ -117,11 +117,9 @@ class TestExecuteSsotSystemLearningHardening:
 
     def test_healing_aggregator_determinism(self):
         """HealingOutcomeAggregator must be deterministic."""
-        try:
-            from agentic_core.L0_routing.scripts.execute_ssot import HealingOutcomeAggregator
-            from system_learning.types.healing_outcome_types import HealingOutcomeEvent
-        except ImportError:
-            pytest.skip("HealingOutcomeAggregator not available")
+        # Import must succeed - no skip allowed
+        from agentic_core.L0_routing.scripts.execute_ssot import HealingOutcomeAggregator
+        from system_learning.types.healing_outcome_types import HealingOutcomeEvent
 
         # Create two aggregators with same events
         agg1 = HealingOutcomeAggregator(window_size=5)
@@ -144,15 +142,13 @@ class TestExecuteSsotSystemLearningHardening:
 
     def test_intake_adapter_required_fields(self):
         """Intake adapter requires all mandatory fields."""
-        try:
-            from agentic_core.L0_routing.scripts.execute_ssot import (
-                HealingOutcomeAggregator,
-                HealingOutcomeEvent,
-                HealingOutcomeIntakeAdapter,
-                InMemoryHealingOutcomeIntakeStore,
-            )
-        except ImportError:
-            pytest.skip("HealingOutcomeIntakeAdapter not available")
+        # Import must succeed - no skip allowed
+        from agentic_core.L0_routing.scripts.execute_ssot import (
+            HealingOutcomeAggregator,
+            HealingOutcomeEvent,
+            HealingOutcomeIntakeAdapter,
+            InMemoryHealingOutcomeIntakeStore,
+        )
 
         store = InMemoryHealingOutcomeIntakeStore()
         adapter = HealingOutcomeIntakeAdapter(store=store)
