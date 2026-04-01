@@ -180,35 +180,7 @@
  └────────────────────────────────────┘
 ===============================================================================================================================================================================
 
-====================================================================================================================================================================================================================================
-[6] ⚙️ L2 UNIFIED EXECUTION CORE (PTC Sandbox)
-====================================================================================================================================================================================================================================
- [ SCOPE RULES ]: L2 EXECUTES BLINDLY. L2 HARD CONSTRAINTS: Cannot modify policy (L5) | Cannot modify routing (L0) | Cannot write directly to archive (must use UWG).
 
- +----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
- | * CAPABILITY CHOKEPOINT: authorize_and_execute() on EVERY call        * ISOLATION: DockerSandbox.run_code() / FirecrackerManager                                                                                                                    
- | * PROTOCOL: pre_commit -> validate -> execute -> heal                 * NETWORK EGRESS: SovereignLLMGateway -> Ext. Providers                                                                                                                       
- | * INFRA: Circuit breakers · Backoff · Timeout · Rate limits · Health checks · Readiness/Liveness probes                                                                                                                                             
- +----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-
- ┌────────────────────────────┐      ┌────────────────────────────┐      ┌──────────────────────────────────────────┐      ┌────────────────────────────────────────┐
- │ 🟢 [P1: INIT]              │      │ 🛠️ [P2: EXECUTE]            │      │ 🏥 [P3: EVALUATE / HEAL]                 │      │ 📦 [P4: SYNTHESIZE]                    │
- │ Validate signed plan       │─────>│ Enforce ToolCall -> sch.   │─────>│ Result --(Pass)--------------------------│─────>│ Aggregate outputs                      │
- │ PTC ToolBudget             │      │ STDOUT: structured         │      │        --(Fail)--> L2.3 TIER HEALING     │      │ Validate schema                        │
- │ CapToken: scope/unexp      │      │ Declare effect cls         │      │ EscalationContext -> tier router         │      │ Final artifact                         │
- │ FREEZE clean state         │      │ CEIL: term. stuck          │      │ LOCAL(>=0.75)/QWEN(>=0.40)/GEMINI        │      │ EMIT PTC ToolTranscript ONLY           │
- │ CLAIM write access         │      │ 🔍 C0 RAG: BLAS lck, SHA   │      │ HealingOutcome (retries >= 3 -> GEM)     │      │ ExecTrace w/ replay                    │
- │                            │      │                            │      │ qwen_circuit_breaker.py / healer res     │      │ TranscriptMutationViolation grd        │
- └─────────────┬──────────────┘      └─────────────┬──────────────┘      └──────────────────────┬───────────────────┘      └──────────────────┬─────────────────────┘
-               │                                   │                                            │                                             │
- ┌─────────────▼───────────────────────────────────▼────────────┐        ┌──────────────────────▼───────────────────┐                         │
- │ MUTATION SOVEREIGNTY                                         │        │ 🚪 UWG (Sidecar)                         │                         │
- │ Durable state mutations must pass through Universal Write    │        │ Sole mut, replay->diff | Non-UWG -> Error│                         +=========[ TX ➔ BUS T ]========> (To L4/L6)
- │ Gateway (UWG). Direct writes are prohibited. Dep graph       │        └──────────────────────────────────────────┘                         │
- │ ensures no bypass of gateway.                                │        ┌──────────────────────────────────────────┐                         │
- └──────────────────────────────────────────────────────────────┘        │ 📡 ML Feedback Signals                   │=========================[ TX ➔ BUS P ]========> (To Eval Spine/ML)
-                                                                         │ (Failure Class, Predictor, RL Refine)    │
-                                                                         └──────────────────────────────────────────┘
 
 
 
