@@ -1,52 +1,47 @@
 """Tests for apps_qwen_config module."""
+
 from __future__ import annotations
 
+import importlib
 import unittest
+from importlib.util import find_spec
+from typing import Any
 
 import pytest
 
 # Check if apps_qwen is available
-try:
-    from agentic_core.L2_execution.apps_qwen import AppsQwenConfig, AppsQwenModelConfig, AppsQwenPromptConfig
-    APPS_QWEN_AVAILABLE = True
-except ImportError:
-    APPS_QWEN_AVAILABLE = False
+APPS_QWEN_AVAILABLE = find_spec("agentic_core.L2_execution.apps_qwen.apps_qwen_config") is not None
+
+if APPS_QWEN_AVAILABLE:
+    _apps_qwen_config: Any = importlib.import_module("agentic_core.L2_execution.apps_qwen.apps_qwen_config")
+else:
+    _apps_qwen_config: Any = None
 
 
-# Check if path_constants is available
-try:
-    from agentic_core.L0_routing.config.path_constants import AGENTIC_CORE_DIR
-    from agentic_core.L5_safety.validators import canonical_truth
-    PATH_SETUP_AVAILABLE = True
-except ImportError:
-    PATH_SETUP_AVAILABLE = False
-
-
-"""Tests for apps_qwen_config module."""
-import unittest
-
-
+@pytest.mark.skipif(
+    not APPS_QWEN_AVAILABLE,
+    reason="apps_qwen modules not available",
+)
 class TestAppsQwenConfig(unittest.TestCase):
     """Test class for AppsQwenConfig."""
 
-    @pytest.mark.skipif(not PATH_SETUP_AVAILABLE, reason="path_constants not available")
     def test_get_model_config(self):
         """Test get_model_config method."""
-        config = AppsQwenConfig()
+        config = _apps_qwen_config.AppsQwenConfig()
         result = config.get_model_config("fast_inference")
         self.assertIsNotNone(result)
         self.assertEqual(result.model_id, "Qwen/Qwen2.5-7B-Instruct")
 
     def test_get_prompt_config(self):
         """Test get_prompt_config method."""
-        config = AppsQwenConfig()
+        config = _apps_qwen_config.AppsQwenConfig()
         result = config.get_prompt_config("apps_research")
         self.assertIsNotNone(result)
         self.assertEqual(result.app_name, "apps_research")
 
     def test_AppsQwenModelConfig_init(self):
         """Test AppsQwenModelConfig initialization."""
-        instance = AppsQwenModelConfig(
+        instance = _apps_qwen_config.AppsQwenModelConfig(
             model_id="Qwen/Qwen2.5-7B-Instruct",
             max_tokens=1024,
             temperature=0.3,
@@ -59,7 +54,7 @@ class TestAppsQwenConfig(unittest.TestCase):
 
     def test_AppsQwenPromptConfig_init(self):
         """Test AppsQwenPromptConfig initialization."""
-        instance = AppsQwenPromptConfig(
+        instance = _apps_qwen_config.AppsQwenPromptConfig(
             app_name="test_app",
             prompt_templates={"default": "test prompt"},
             default_template="default",
