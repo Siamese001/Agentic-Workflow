@@ -77,6 +77,21 @@ from agentic_core.L6_observability.mcp_drift_store import (
 from agentic_core.L6_observability.metrics.prometheus_metrics import (
     AGENTIC_REGISTRY,
 )
+from agentic_core.L6_observability.engines.metrics_server import (
+    start_metrics_server,
+    stop_metrics_server,
+    MetricsServerContext,
+    get_metrics_endpoint_url,
+    get_server_status,
+)
+
+# Wave 3: Auto-Persistence Tracing Adapter
+from agentic_core.L6_observability.engines.auto_persistence_adapter import (
+    AutoPersistenceTracingAdapter,
+    get_auto_persistence_tracer,
+)
+
+# Wave 0: Performance
 from agentic_core.L6_observability.performance.performance_emitter import (
     LatencyBudget,
     PerformanceContext,
@@ -272,6 +287,9 @@ __all__ = [
     "MetricsServerContext",
     "get_metrics_endpoint_url",
     "get_server_status",
+    # Auto-Persistence (Wave 3)
+    "AutoPersistenceTracingAdapter",
+    "get_auto_persistence_tracer",
     # Context Classes
     "PerformanceContext",
     "StageOwner",
