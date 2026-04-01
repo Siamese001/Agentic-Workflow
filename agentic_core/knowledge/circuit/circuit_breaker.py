@@ -120,8 +120,10 @@ class CircuitBreaker:
             if self._failure_count >= self.config.failure_threshold:
                 self._transition_to(CircuitState.OPEN)
         
+        trace_id = f"cb_failure_{self.name}_{int(time.time())}"
         _emit_records_telemetry_event(
-            "circuit_breaker",
+            trace_id,
+            "CircuitBreaker",
             f"{self.name}_failure_{self._state.value}"
         )
     
@@ -158,8 +160,10 @@ class CircuitBreaker:
         
         log.info(f"Circuit '{self.name}' transitioned: {old_state.value} -> {new_state.value}")
         
+        trace_id = f"cb_transition_{self.name}_{int(time.time())}"
         _emit_records_telemetry_event(
-            "circuit_breaker",
+            trace_id,
+            "CircuitBreaker",
             f"{self.name}_transition_{old_state.value}_to_{new_state.value}"
         )
     

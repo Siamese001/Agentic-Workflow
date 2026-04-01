@@ -125,8 +125,9 @@ class VersionAwareCache:
             
             if policy_result.can_use_cache:
                 _emit_records_telemetry_event(
-                    "cache_hit",
-                    "exact"
+                    trace_id,
+                    "VersionAwareCache",
+                    "cache_hit_exact"
                 )
                 entry.access_count += 1
                 return CacheLookupResult(
@@ -145,14 +146,16 @@ class VersionAwareCache:
             )
             if semantic_result.found:
                 _emit_records_telemetry_event(
-                    "cache_hit",
-                    "semantic"
+                    trace_id,
+                    "VersionAwareCache",
+                    "cache_hit_semantic"
                 )
                 return semantic_result
         
         _emit_records_telemetry_event(
-            "cache_miss",
-            "lookup"
+            trace_id,
+            "VersionAwareCache",
+            "cache_miss"
         )
         return CacheLookupResult(found=False)
     

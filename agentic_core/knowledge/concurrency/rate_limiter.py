@@ -85,7 +85,8 @@ class RateLimiter:
             return True
         
         _emit_records_telemetry_event(
-            "rate_limit",
+            trace_id,
+            "RateLimiter",
             f"blocked_{client_id}"
         )
         

@@ -5,6 +5,7 @@ and handles multiple query formats.
 """
 
 import re
+import time
 import logging
 from dataclasses import dataclass, field
 from typing import Any, Dict, List, Optional, Union
@@ -135,7 +136,8 @@ class QueryPreprocessor:
         )
 
         _emit_records_telemetry_event(
-            "query_preprocessing",
+            trace_id,
+            "QueryPreprocessor",
             f"processed_{source_format.value}"
         )
 
@@ -257,6 +259,3 @@ def get_query_preprocessor() -> QueryPreprocessor:
     if _global_preprocessor is None:
         _global_preprocessor = QueryPreprocessor()
     return _global_preprocessor
-
-
-import time
