@@ -106,7 +106,7 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_writes_through,
 )
 
-from .base import tool_registry
+from .base_tool_script import BaseTool, tool_registry
 
 _emit_emits_metric_event("function_tool", "p4obs", "metric_1")
 _emit_emits_metric_event("function_tool", "p4obs", "metric_2")

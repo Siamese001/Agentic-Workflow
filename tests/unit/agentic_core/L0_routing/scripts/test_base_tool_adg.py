@@ -1,39 +1,46 @@
-"""Placeholder test file - syntax fixed."""
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300
+"""Behavioral tests for agentic_core.L0_routing.scripts.base_tool."""
+
 import unittest
+
+from agentic_core.L0_routing.scripts.base_tool import BaseTool, FunctionalTool, ToolRegistry
+
+
+class ConcreteTool(BaseTool):
+    async def run(self, **kwargs) -> str:
+        return "ok"
+
 
 class GeneratedTest(unittest.TestCase):
     """Generated test class for agentic_core.L0_routing.scripts."""
 
     def test_register(self):
-        """Test register function."""
-        from agentic_core.L0_routing.scripts import register
-        result = register()
-        self.assertIsNotNone(result)
+        """Test register stores a tool in the registry."""
+        registry = ToolRegistry()
+        tool = ConcreteTool(name="demo", description="demo tool")
+        registry.register(tool)
+        self.assertIsNotNone(registry.get("demo"))
 
     def test_get(self):
-        """Test get function."""
-        from agentic_core.L0_routing.scripts import get
-        result = get()
+        """Test get returns the registered tool."""
+        registry = ToolRegistry()
+        tool = ConcreteTool(name="demo", description="demo tool")
+        registry.register(tool)
+        result = registry.get("demo")
         self.assertIsNotNone(result)
+        self.assertEqual(result.name, "demo")
 
     def test_BaseTool_init(self):
-        """Test BaseTool initialization."""
-        from agentic_core.L0_routing.scripts import BaseTool
-        instance = BaseTool()
+        """Test BaseTool initialization via a concrete subclass."""
+        instance = ConcreteTool(name="demo", description="demo tool")
         self.assertIsNotNone(instance)
+        self.assertEqual(instance.name, "demo")
 
     def test_FunctionalTool_init(self):
         """Test FunctionalTool initialization."""
-        from agentic_core.L0_routing.scripts import FunctionalTool
-        instance = FunctionalTool()
+        instance = FunctionalTool(name="functional", description="functional tool", func=lambda: "ok")
         self.assertIsNotNone(instance)
+        self.assertEqual(instance.name, "functional")
+
+
 if __name__ == '__main__':
     unittest.main()

@@ -1,29 +1,31 @@
 """Test HealerNamingConvention functionality."""
 
-import sys
-from pathlib import Path
+from __future__ import annotations
+
+import importlib
 
 import pytest
 
-REPO_ROOT = Path(__file__).parent.parent.parent
-sys.path.insert(0, str(REPO_ROOT))
+MODULE_PATH = "agentic_core.L0_routing.scripts.run_hygiene_naming_audit_util"
+
+
+@pytest.fixture(scope="module")
+def mod():
+    return importlib.import_module(MODULE_PATH)
 
 
 @pytest.mark.unit
 class TestHealerNamingConvention:
     """Test HealerNamingConvention functionality."""
 
-    def test_healer_naming_convention_imports(self):
-        """Test healer_naming_convention module imports."""
-        from agentic_core import healer_naming_convention
-        assert healer_naming_convention is not None
+    def test_healer_naming_convention_imports(self, mod):
+        """Test hygiene naming audit module imports."""
+        assert mod.__name__ == MODULE_PATH
 
-    def test_healer_naming_convention_class(self):
-        """Test HealerNamingConvention class exists."""
-        from agentic_core import HealerNamingConvention
-        assert HealerNamingConvention is not None
+    def test_healer_naming_convention_class(self, mod):
+        """Test main entry point exists."""
+        assert callable(mod.main)
 
-    def test_healer_naming_convention_callable(self):
-        """Test healer_naming_convention functions are callable."""
-        from agentic_core import validate_healer_naming_convention
-        assert callable(validate_healer_naming_convention)
+    def test_healer_naming_convention_callable(self, mod):
+        """Test hygiene naming audit callable contract."""
+        assert callable(mod.main)

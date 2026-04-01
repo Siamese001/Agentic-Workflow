@@ -28,6 +28,3 @@ def test_module_exposes_public_api(mod):
     """Module exposes expected public symbols."""
     public = [n for n in dir(mod) if not n.startswith("_")]
     assert len(public) >= 1, f"{MODULE_PATH} must expose at least one public symbol"
-
-
-    assert isinstance(result, (dict, list, str, int, float, bool)), "Result should be a common type"

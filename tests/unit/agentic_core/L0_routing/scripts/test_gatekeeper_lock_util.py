@@ -1,29 +1,33 @@
-"""Test GatekeeperLockUtil functionality."""
+"""Test gatekeeper_lock_util functionality."""
 
-import sys
-from pathlib import Path
+from __future__ import annotations
+
+import importlib
 
 import pytest
 
-REPO_ROOT = Path(__file__).parent.parent.parent
-sys.path.insert(0, str(REPO_ROOT))
+
+MODULE_PATH = "agentic_core.L0_routing.scripts.gatekeeper_lock_util"
+
+
+@pytest.fixture(scope="module")
+def mod():
+    """Import the module under test."""
+    return importlib.import_module(MODULE_PATH)
 
 
 @pytest.mark.unit
 class TestGatekeeperLockUtil:
-    """Test GatekeeperLockUtil functionality."""
+    """Test gatekeeper_lock_util functionality."""
 
-    def test_gatekeeper_lock_util_imports(self):
+    def test_gatekeeper_lock_util_imports(self, mod):
         """Test gatekeeper_lock_util module imports."""
-        from agentic_core import gatekeeper_lock_util
-        assert gatekeeper_lock_util is not None
+        assert mod.__name__ == MODULE_PATH
 
-    def test_gatekeeper_lock_util_class(self):
-        """Test GatekeeperLockUtil class exists."""
-        from agentic_core import GatekeeperLockUtil
-        assert GatekeeperLockUtil is not None
-
-    def test_gatekeeper_lock_util_callable(self):
-        """Test gatekeeper_lock_util functions are callable."""
-        from agentic_core import validate_gatekeeper_lock_util
-        assert callable(validate_gatekeeper_lock_util)
+    def test_gatekeeper_lock_util_public_api(self, mod):
+        """Test gatekeeper_lock_util exposes the expected callable API."""
+        assert callable(mod.get_staged_files)
+        assert callable(mod.get_commit_message)
+        assert callable(mod.check_env_bypass)
+        assert callable(mod.check_commit_message_override)
+        assert callable(mod.main)

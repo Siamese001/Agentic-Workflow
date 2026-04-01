@@ -42,6 +42,3 @@ def test_path_is_instantiable(mod):
     cls = getattr(mod, "Path", None)
     assert cls is not None, "Path must be defined in {MODULE_PATH}"
     assert isinstance(cls, type), "Path must be a class"
-
-
-    assert isinstance(result, (dict, list, str, int, float, bool)), "Result should be a common type"
