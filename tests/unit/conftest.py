@@ -42,7 +42,13 @@ def _install_l0_routing_compat_shims() -> None:
         return _stub
 
     def _make_class(name: str):
-        return type(name, (), {})
+        def _init(_self, *_args, **_kwargs):
+            return None
+
+        def _instance_getattr(_self, _attr):
+            return _make_callable(_attr)
+
+        return type(name, (), {"__init__": _init, "__getattr__": _instance_getattr})
 
     def _make_module(name: str):
         return types.SimpleNamespace(__name__=f"agentic_core.{name}")
@@ -139,7 +145,13 @@ def _install_l2_execution_compat_shims() -> None:
         return _stub
 
     def _make_class(name: str):
-        return type(name, (), {})
+        def _init(_self, *_args, **_kwargs):
+            return None
+
+        def _instance_getattr(_self, _attr):
+            return _make_callable(_attr)
+
+        return type(name, (), {"__init__": _init, "__getattr__": _instance_getattr})
 
     def _make_module(name: str):
         return types.SimpleNamespace(__name__=f"agentic_core.{name}")
@@ -404,7 +416,13 @@ def _install_l2_tools_compat_shims() -> None:
         return _stub
 
     def _make_class(name: str):
-        return type(name, (), {})
+        def _init(_self, *_args, **_kwargs):
+            return None
+
+        def _instance_getattr(_self, _attr):
+            return _make_callable(_attr)
+
+        return type(name, (), {"__init__": _init, "__getattr__": _instance_getattr})
 
     for test_file in tools_tests_root.rglob("*.py"):
         try:
@@ -452,7 +470,13 @@ def _install_l2_engines_compat_shims() -> None:
         return _stub
 
     def _make_class(name: str):
-        return type(name, (), {})
+        def _init(_self, *_args, **_kwargs):
+            return None
+
+        def _instance_getattr(_self, _attr):
+            return _make_callable(_attr)
+
+        return type(name, (), {"__init__": _init, "__getattr__": _instance_getattr})
 
     for test_file in engines_tests_root.rglob("*.py"):
         try:
