@@ -22,6 +22,29 @@ from system_learning.engines.outcome_evaluation_engine import (
 )
 from system_learning.engines.trajectory_evaluation_engine import TrajectoryEvaluationEngine
 
+# Wave 3: System Learning Pipeline (Steps 6-7)
+from system_learning.engines.rule_drafting_engine import (
+    RuleDraftingEngine,
+    RuleDraftingResult,
+    RuleProposal,
+)
+from system_learning.engines.approval_gauntlet_engine import (
+    ApprovalGauntletEngine,
+    ApprovalDecision,
+    ApprovalGauntletResult,
+)
+
+# Wave 4: Control & Calibration (Components A, F)
+from system_learning.engines.live_exit_control_gate import (
+    LiveExitControlGate,
+    ExitControlResult,
+)
+from system_learning.engines.human_calibration_engine import (
+    HumanCalibrationEngine,
+    CalibrationRecord,
+    HumanJudgment,
+)
+
 __all__ = [
     # Wave 1: Core Pipeline
     "CaseCompilationEngine",
@@ -37,4 +60,17 @@ __all__ = [
     "GroundednessChecker",
     "OutcomeEvaluationEngine",
     "TrajectoryEvaluationEngine",
+    # Wave 3: Rule Drafting & Approval
+    "RuleDraftingEngine",
+    "RuleDraftingResult",
+    "RuleProposal",
+    "ApprovalGauntletEngine",
+    "ApprovalDecision",
+    "ApprovalGauntletResult",
+    # Wave 4: Exit Control & Calibration
+    "LiveExitControlGate",
+    "ExitControlResult",
+    "HumanCalibrationEngine",
+    "CalibrationRecord",
+    "HumanJudgment",
 ]
