@@ -24,7 +24,6 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_checks_agent_registry,
     _emit_dispatches_agent,
     _emit_dispatches_execution_plan,
-    _emit_execution_terminates_at_uwg,
     _emit_records_execution_trace,
     _emit_records_tool_invocation,
     _emit_routes_to_agent,
@@ -46,7 +45,6 @@ _emit_writes_via_uwg("p2", "live_exit_control_gate", "uwg_write")
 _emit_blocks_direct_write("p2", "live_exit_control_gate", "direct_write_block")
 _emit_records_tool_invocation("p2", "live_exit_control_gate", "tool_invocation")
 _emit_captures_execution_output("p2", "live_exit_control_gate", "exec_output")
-_emit_execution_terminates_at_uwg("p2", "live_exit_control_gate", "uwg_termination")
 _emit_dispatches_agent("p3", "live_exit_control_gate", "agent_dispatch")
 _emit_dispatches_execution_plan("p3", "live_exit_control_gate", "exec_plan")
 _emit_routes_to_agent("p3", "live_exit_control_gate", "target_agent")

@@ -68,7 +68,7 @@ class ExecutionTraceReader(Protocol):
 
     def read_trace(self, trace_id: str) -> dict:
         """Read and return the execution trace content."""
-        ...
+        raise NotImplementedError
 
 
 class GroundednessChecker(Protocol):
@@ -76,7 +76,7 @@ class GroundednessChecker(Protocol):
 
     def check_groundedness(self, response: str, context: str) -> tuple[float, str]:
         """Return (score, evidence) for groundedness."""
-        ...
+        raise NotImplementedError
 
 
 # =============================================================================

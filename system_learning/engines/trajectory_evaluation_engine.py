@@ -13,7 +13,6 @@ Deterministic, with full ADG traceability.
 from __future__ import annotations
 
 import logging
-from typing import Protocol
 
 from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,

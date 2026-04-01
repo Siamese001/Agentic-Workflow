@@ -13,7 +13,7 @@ from __future__ import annotations
 
 import logging
 from dataclasses import dataclass
-from typing import Literal
+from typing import Literal, Protocol
 
 from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
@@ -173,6 +173,14 @@ class RuleDraftingResult:
         return stable_sha256_json(self.to_dict())
 
 
+class ExecutionTraceReader(Protocol):
+    """Protocol for reading execution traces."""
+
+    def read_trace(self, trace_id: str) -> dict:
+        """Read and return the execution trace content."""
+        raise NotImplementedError
+
+
 # =============================================================================
 # RuleDraftingEngine
 # =============================================================================
@@ -301,7 +309,7 @@ class RuleDraftingEngine:
 
             return result
 
-        except Exception as e:
+        except (ValueError, TypeError, KeyError) as e:
             logger.error("Rule drafting failed: %s", e)
             return RuleDraftingResult(
                 artifact_type="RULE_DRAFTING_RESULT",
