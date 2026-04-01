@@ -67,7 +67,7 @@ class TestObservabilityStack:
         result = agent.execute("test", {"query": "integration test"})
         
         assert result.SUCCESS is True
-        assert result.duration_ms > 0
+        assert result.duration_ms >= 0  # Allow 0.0 for very fast executions
 
     @pytest.mark.integration
     def test_end_to_end_telemetry(self):

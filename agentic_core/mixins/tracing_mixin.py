@@ -328,7 +328,26 @@ class TracingMixin:
                 Logger.warning(
                     f"[TRACING] {self._tracing_service_name} initialization failed: {e}. Operating in degraded mode. Failures: {TracingMixin._circuit_breaker_failures}"
                 )
-        super().__init__(**kwargs)
+    def __post_init__(self) -> None:
+        """
+        Cooperative __post_init__ for dataclass agents.
+        
+        Dataclass-based agents (like BaseDispatchAgent) use __post_init__
+        instead of __init__. This method ensures tracing is properly initialized.
+        """
+        # Initialize tracing if not already done via __init__
+        if not hasattr(self, '_span_stack'):
+            self._tracing_service_name: str = self.__class__.__name__
+            self._tracing_initialized: bool = False
+            self._tracing_degraded: bool = False
+            self._current_trace_id: str | None = None
+            self._current_span_id: str | None = None
+            self._span_stack: list[SpanContext] = []
+            self._trace_buffer: list[dict[str, Any]] = []
+            self._trace_buffer_max: int = 1000
+        # Call parent's __post_init__ if it exists
+        if hasattr(super(), '__post_init__'):
+            super().__post_init__()
 
     def _initialize_tracing_safe(self) -> None:
         """

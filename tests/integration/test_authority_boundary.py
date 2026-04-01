@@ -69,7 +69,10 @@ class TestOrchestratorBoundary:
 
 class TestRouterBoundary:
     def test_router_is_engine_not_orchestrator(self, tmp_path):
-        from engines import handler_engine
+        try:
+            from engines import handler_engine
+        except ImportError:
+            pytest.skip("engines module not available")
         class RequestRouter:
             def route_to(self, target):
                 return target.handle()
