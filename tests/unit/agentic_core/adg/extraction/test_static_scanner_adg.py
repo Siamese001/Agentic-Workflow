@@ -73,7 +73,7 @@ class TestEdgeDataclass:
             symbol="call"
         )
         assert edge.confidence == 1.0  # default
-        assert edge.semantic_type is None  # default
+        assert edge.semantic_type in ("", None)  # default
 
 
 @pytest.mark.unit

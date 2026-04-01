@@ -3045,15 +3045,14 @@ def _detect_cycles(result: ScanResult) -> list[Edge]:
         visited.add(v)
         while stack:
             node, children = stack[-1]
-            try:
-                child = next(children)
-                if child not in visited:
-                    visited.add(child)
-                    stack.append((child, iter(adj.get(child, set()))))
-            # guardian: allow-silent-swallow - acceptable exception handling
-            except StopIteration:
+            child = next(children, None)
+            if child is None:
                 order.append(node)
                 stack.pop()
+                continue
+            if child not in visited:
+                visited.add(child)
+                stack.append((child, iter(adj.get(child, set()))))
 
     for n in sorted(nodes):
         if n not in visited:
@@ -6003,6 +6002,7 @@ def _scan_file(
     include_tests: bool = True,
     identity_normalizer: object | None = None,
     scan_mode: str = "full",
+    layer: str | None = None,
 ) -> tuple[list[Edge], bool, dict[str, str], dict[str, int]]:
     """Scan a single Python file and return edges, syntax flag, type surface, and evidence.
 
@@ -6026,10 +6026,11 @@ def _scan_file(
         tree = ast.parse(source, filename=str(filepath))
     # guardian: allow-silent-swallow - acceptable exception handling
     except SyntaxError as exc:
-        logger.debug("SyntaxError in %s: %s", filepath, exc)
+        line_info = f"line {exc.lineno}" if exc.lineno else "unknown line"
+        logger.error("SyntaxError in %s at %s: %s", filepath, line_info, exc)
         return [], True, {}, {}  # A4: parse failures tracked
     except OSError as exc:
-        logger.debug("OSError reading %s: %s", filepath, exc)
+        logger.error("OSError reading %s: %s", filepath, exc)
         return [], True, {}, {}
 
     # Helper function to check if a visitor should run

@@ -22,94 +22,100 @@ from adg_query_bridge import ADGQueryBridge, FileMatch, Node, Violation, ADG_RED
 ADG_AVAILABLE = True
 
 
+@pytest.fixture
+def mock_redis_client():
+    """Mock Redis client."""
+    mock_redis = Mock()
+    mock_redis.ping.return_value = True
+    mock_redis.get.return_value = json.dumps({"status": "fresh"})
+    mock_redis.hgetall.return_value = {"test": "data"}
+    mock_redis.smembers.return_value = {"file1.py", "file2.py"}
+    mock_redis.lrange.return_value = ["violation1", "violation2"]
+    return mock_redis
+
+
+@pytest.fixture
+def mock_sqlite_db():
+    """Create a temporary SQLite database for testing."""
+    with tempfile.NamedTemporaryFile(suffix='.sqlite', delete=False) as f:
+        db_path = f.name
+
+    # Create test database
+    conn = sqlite3.connect(db_path)
+    cursor = conn.cursor()
+
+    # Create tables
+    cursor.execute("""
+        CREATE TABLE nodes (
+            id INTEGER PRIMARY KEY,
+            label TEXT,
+            layer TEXT,
+            entity_type TEXT,
+            file_path TEXT
+        )
+    """)
+
+    cursor.execute("""
+        CREATE TABLE edges (
+            id INTEGER PRIMARY KEY,
+            src_id INTEGER,
+            dst_id INTEGER,
+            relation_type TEXT,
+            source_file TEXT,
+            line_no INTEGER,
+            symbol TEXT
+        )
+    """)
+
+    # Insert test data
+    cursor.execute("""
+        INSERT INTO nodes (label, layer, entity_type, file_path) VALUES
+        ('test_node1', 'L1', 'function', 'test_file1.py'),
+        ('test_node2', 'L2', 'function', 'test_file2.py'),
+        ('subprocess_call', 'L3', 'function', 'subprocess_file.py')
+    """)
+
+    cursor.execute("""
+        INSERT INTO edges (src_id, dst_id, relation_type, source_file, line_no, symbol) VALUES
+        (1, 2, 'imports', 'test_file1.py', 10, 'import test_module'),
+        (2, 3, 'calls', 'test_file2.py', 20, 'subprocess.run'),
+        (1, 3, 'calls', 'test_file1.py', 15, 'test_module'),
+        (2, 3, 'calls', 'test_file3.py', 25, 'subprocess.run')
+    """)
+
+    conn.commit()
+    conn.close()
+
+    yield db_path
+
+    # Cleanup
+    Path(db_path).unlink(missing_ok=True)
+
+
+@pytest.fixture
+def bridge_with_fallback(mock_sqlite_db):
+    """Create bridge with SQLite fallback (no Redis)."""
+    return ADGQueryBridge(repo_root=str(mock_sqlite_db))
+
+
+@pytest.fixture
+def bridge_with_redis(mock_redis_client, mock_sqlite_db):
+    """Create bridge with Redis and SQLite."""
+    return ADGQueryBridge(repo_root=str(mock_sqlite_db))
+
+
 class TestADGQueryBridge:
     """Test suite for ADGQueryBridge."""
 
-    @pytest.fixture
-    def mock_redis_client(self):
-        """Mock Redis client."""
-        mock_redis = Mock()
-        mock_redis.ping.return_value = True
-        mock_redis.get.return_value = json.dumps({"status": "fresh"})
-        mock_redis.hgetall.return_value = {"test": "data"}
-        mock_redis.smembers.return_value = {"file1.py", "file2.py"}
-        mock_redis.lrange.return_value = ["violation1", "violation2"]
-        return mock_redis
-
-    @pytest.fixture
-    def mock_sqlite_db(self):
-        """Create a temporary SQLite database for testing."""
-        with tempfile.NamedTemporaryFile(suffix='.sqlite', delete=False) as f:
-            db_path = f.name
-
-        # Create test database
-        conn = sqlite3.connect(db_path)
-        cursor = conn.cursor()
-
-        # Create tables
-        cursor.execute("""
-            CREATE TABLE nodes (
-                id INTEGER PRIMARY KEY,
-                label TEXT,
-                layer TEXT,
-                entity_type TEXT,
-                file_path TEXT
-            )
-        """)
-
-        cursor.execute("""
-            CREATE TABLE edges (
-                id INTEGER PRIMARY KEY,
-                src_id INTEGER,
-                dst_id INTEGER,
-                relation_type TEXT,
-                source_file TEXT,
-                line_no INTEGER,
-                symbol TEXT
-            )
-        """)
-
-        # Insert test data
-        cursor.execute("""
-            INSERT INTO nodes (label, layer, entity_type, file_path) VALUES
-            ('test_node1', 'L1', 'function', 'test_file1.py'),
-            ('test_node2', 'L2', 'function', 'test_file2.py'),
-            ('subprocess_call', 'L3', 'function', 'subprocess_file.py')
-        """)
-
-        cursor.execute("""
-            INSERT INTO edges (src_id, dst_id, relation_type, source_file, line_no, symbol) VALUES
-            (1, 2, 'imports', 'test_file1.py', 10, 'import test_module'),
-            (2, 3, 'calls', 'test_file2.py', 20, 'subprocess.run')
-        """)
-
-        conn.commit()
-        conn.close()
-
-        yield db_path
-
-        # Cleanup
-        Path(db_path).unlink(missing_ok=True)
-
-    @pytest.fixture
-    def bridge_with_fallback(self, mock_sqlite_db):
-        """Create bridge with SQLite fallback (no Redis)."""
-        return ADGQueryBridge(repo_root=str(mock_sqlite_db).replace('.sqlite', ''))
-
-    @pytest.fixture
-    def bridge_with_redis(self, mock_redis_client, mock_sqlite_db):
-        """Create bridge with Redis and SQLite."""
-        return ADGQueryBridge(repo_root=str(mock_sqlite_db).replace('.sqlite', ''))
-
     def test_init_with_redis(self, mock_redis_client, mock_sqlite_db):
         """Test bridge initialization with Redis."""
-        bridge = ADGQueryBridge(repo_root=str(mock_sqlite_db).replace('.sqlite', ''))
+        bridge = ADGQueryBridge(repo_root=str(mock_sqlite_db))
         # Test that bridge can be initialized without errors
         assert bridge.repo_root is not None
 
     def test_init_without_redis(self, mock_sqlite_db):
         """Test bridge initialization without Redis (SQLite fallback)."""
-        bridge = ADGQueryBridge(repo_root=str(mock_sqlite_db).replace('.sqlite', ''))
+        bridge = ADGQueryBridge(repo_root=str(mock_sqlite_db))
         # Test that bridge can be initialized without errors
         assert bridge.repo_root is not None
 
@@ -163,7 +169,7 @@ class TestADGQueryBridge:
 
     def test_redis_fallback_to_sqlite(self, mock_sqlite_db):
         """Test fallback from Redis to SQLite when Redis fails."""
-        bridge = ADGQueryBridge(repo_root=str(mock_sqlite_db).replace('.sqlite', ''))
+        bridge = ADGQueryBridge(repo_root=str(mock_sqlite_db))
         # Verify bridge initializes successfully
         assert bridge.repo_root is not None
 

@@ -17,6 +17,7 @@ from typing import Dict, List, Set, Tuple
 sys.path.insert(0, str(Path(__file__).parent.parent.parent))
 
 from agentic_core.L5_safety.validators.hollow_file_detector_validator import (
+    BehavioralNodeCounter,
     HollowFileDetector,
     HollowFileClassification,
 )
@@ -73,8 +74,7 @@ class HollowFileCleanupAnalyzer:
 
         # Count nodes
         if tree:
-            counter = self.detector._node_counter
-            counter.reset()
+            counter = BehavioralNodeCounter()
             counter.visit(tree)
             behavioral_nodes = counter.behavioral_functions + counter.behavioral_classes
             boilerplate_nodes = counter.import_statements + counter.boilerplate_statements
@@ -101,8 +101,8 @@ class HollowFileCleanupAnalyzer:
         """Simple import analysis without ADG dependency."""
         import ast
 
-        incoming = []
-        outgoing = []
+        incoming: List[str] = []
+        outgoing: List[str] = []
 
         try:
             tree = ast.parse(content)
@@ -138,7 +138,10 @@ class HollowFileCleanupAnalyzer:
         ]
 
         for file_path in python_files:
-            analysis = self.analyze_file(file_path)
+            try:
+                analysis = self.analyze_file(file_path)
+            except StopIteration:
+                break
             if analysis.is_hollow:
                 results.append(analysis)
 
@@ -163,9 +166,9 @@ class HollowFileCleanupAnalyzer:
             }
 
             # Classify by safety
-            if analysis.incoming_count == 0:
+            if analysis.incoming_count == 0 and analysis.outgoing_count == 0:
                 manifest.tier1_safe_delete.append(rel_path)
-            elif analysis.outgoing_count == 0:
+            elif analysis.incoming_count == 0:
                 # Only imports, no exports - likely boilerplate only
                 manifest.tier2_boilerplate_only.append(rel_path)
             else:

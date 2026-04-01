@@ -76,8 +76,7 @@ class BoilerplateStripper(ast.NodeTransformer):
                 for alias in stmt.names:
                     if any(name in alias.name for name in [
                         'uuid', 'hashlib', 'json', 'logging',
-                        'dataclasses', 'typing', 'pathlib',
-                        'sys', 'os', 'time', 'datetime'
+                        'dataclasses', 'typing', 'pathlib'
                     ]):
                         return True
             elif isinstance(stmt, ast.ImportFrom):
@@ -105,7 +104,7 @@ class SafeBoilerplateStripper:
         from agentic_core.L5_safety.validators.hollow_file_detector_validator import BehavioralNodeCounter
         counter = BehavioralNodeCounter()
         counter.visit(tree)
-        return counter.behavioral_functions + counter.behavioral_classes
+        return int(counter.behavioral_functions + counter.behavioral_classes)
 
     def strip_file_boilerplate(self, file_path: Path, dry_run: bool = True) -> StripResult:
         """Strip boilerplate from a single file."""
@@ -127,10 +126,6 @@ class SafeBoilerplateStripper:
         # Count original behavioral nodes
         original_behavioral = self.count_behavioral_nodes(original_tree)
 
-        # If no behavioral nodes to begin with, skip
-        if original_behavioral == 0:
-            return StripResult(action="skipped", reason="No behavioral content to preserve")
-
         # Apply stripper
         stripper = BoilerplateStripper()
         stripped_tree = stripper.visit(original_tree)
@@ -139,7 +134,10 @@ class SafeBoilerplateStripper:
         after_behavioral = self.count_behavioral_nodes(stripped_tree)
 
         # Check if file became hollow
-        became_hollow = original_behavioral > 0 and after_behavioral == 0
+        became_hollow = after_behavioral == 0 and stripper.removed_count > 0
+
+        if original_behavioral == 0 and stripper.removed_count == 0:
+            return StripResult(action="skipped", reason="No behavioral content to preserve")
 
         if became_hollow:
             return StripResult(

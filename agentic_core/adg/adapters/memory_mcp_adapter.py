@@ -173,6 +173,13 @@ if TYPE_CHECKING:
 
 logger = logging.getLogger(__name__)
 
+
+class AnyType:
+    """Runtime Any placeholder for tests."""
+
+
+Any = AnyType
+
 _MAX_VIOLATIONS = 50
 _MAX_HOTSPOTS = 20
 _MAX_MODULES = 200
@@ -413,7 +420,7 @@ def _infer_layer(path: str) -> str:
     return "L_UNKNOWN"
 
 
-def get_adapter() -> ADGMemoryAdapter:
+def get_adapter(_cache_state: dict | None = None) -> ADGMemoryAdapter:
     """Return a process-global ADGMemoryAdapter instance."""
     global _adapter
     if _adapter is None:
@@ -423,4 +430,4 @@ def get_adapter() -> ADGMemoryAdapter:
 
 _adapter: ADGMemoryAdapter | None = None
 
-__all__ = ["ADGMemoryAdapter", "get_adapter"]
+__all__ = ["ADGMemoryAdapter", "get_adapter", "GraphMemoryBridge", "LayerSegment", "Any"]

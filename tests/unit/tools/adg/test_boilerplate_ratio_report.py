@@ -5,16 +5,21 @@ Verifies that the ratio report correctly analyzes files
 and generates accurate metrics.
 """
 
+import sys
 import tempfile
 from pathlib import Path
 from unittest.mock import patch
 
 import pytest
 
+# Add tools/adg to path for importing
+REPO_ROOT = Path(__file__).resolve().parents[4]
+sys.path.insert(0, str(REPO_ROOT / "tools" / "adg"))
+
 
 # Lazy imports to avoid collection-time conflicts
 def _get_analyzer_classes():
-    from tools.adg.boilerplate_ratio_report import (
+    from boilerplate_ratio_report import (
         BoilerplateRatioAnalyzer,
         LayerStats,
         RatioReport,
@@ -39,6 +44,7 @@ def test_infer_layer_from_path():
 
 def test_calculate_boilerplate_ratio_hollow():
     """Test ratio calculation for hollow file."""
+    BoilerplateRatioAnalyzer, LayerStats, RatioReport = _get_analyzer_classes()
     # Create temporary hollow file
     with tempfile.NamedTemporaryFile(mode='w', suffix='.py', delete=False) as f:
         f.write("""
@@ -64,6 +70,7 @@ _emit_applies_guardrail("test", "test", "test")
 
 def test_calculate_boilerplate_ratio_healthy():
     """Test ratio calculation for healthy file."""
+    BoilerplateRatioAnalyzer, LayerStats, RatioReport = _get_analyzer_classes()
     # Create temporary healthy file
     with tempfile.NamedTemporaryFile(mode='w', suffix='.py', delete=False) as f:
         f.write("""
@@ -92,6 +99,7 @@ class TestClass:
 
 def test_calculate_boilerplate_ratio_syntax_error():
     """Test ratio calculation for file with syntax error."""
+    BoilerplateRatioAnalyzer, LayerStats, RatioReport = _get_analyzer_classes()
     # Create temporary file with syntax error
     with tempfile.NamedTemporaryFile(mode='w', suffix='.py', delete=False) as f:
         f.write("def broken(\n")  # Missing closing parenthesis
@@ -109,6 +117,7 @@ def test_calculate_boilerplate_ratio_syntax_error():
 
 def test_calculate_boilerplate_ratio_empty():
     """Test ratio calculation for empty file."""
+    BoilerplateRatioAnalyzer, LayerStats, RatioReport = _get_analyzer_classes()
     # Create temporary empty file
     with tempfile.NamedTemporaryFile(mode='w', suffix='.py', delete=False) as f:
         f.write("")
@@ -125,10 +134,11 @@ def test_calculate_boilerplate_ratio_empty():
         temp_path.unlink()
 
 
-@patch('tools.adg.boilerplate_ratio_report.BoilerplateRatioAnalyzer.calculate_boilerplate_ratio')
-@patch('tools.adg.boilerplate_ratio_report.BoilerplateRatioAnalyzer.scan_python_files')
+@patch('boilerplate_ratio_report.BoilerplateRatioAnalyzer.calculate_boilerplate_ratio')
+@patch('boilerplate_ratio_report.BoilerplateRatioAnalyzer.scan_python_files')
 def test_generate_ratio_report(mock_scan, mock_calculate):
     """Test complete report generation."""
+    BoilerplateRatioAnalyzer, LayerStats, RatioReport = _get_analyzer_classes()
     # Mock file list
     mock_scan.return_value = [
         Path("L0_file1.py"),
@@ -170,6 +180,7 @@ def test_generate_ratio_report(mock_scan, mock_calculate):
 
 def test_scan_python_files():
     """Test Python file scanning."""
+    BoilerplateRatioAnalyzer, LayerStats, RatioReport = _get_analyzer_classes()
     analyzer = BoilerplateRatioAnalyzer(Path("."))
 
     with patch('pathlib.Path.rglob') as mock_rglob:
@@ -191,6 +202,7 @@ def test_scan_python_files():
 
 def test_print_summary(capsys):
     """Test summary printing."""
+    BoilerplateRatioAnalyzer, LayerStats, RatioReport = _get_analyzer_classes()
     report = RatioReport(
         timestamp="2023-01-01T00:00:00",
         total_files=2,

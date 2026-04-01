@@ -97,6 +97,7 @@ class ADGQueryBridge:
         self.adg_dir = self.repo_root / "artifacts" / "adg"
         self._cache_status = None
         self._sqlite_path = None
+        self._table_columns: dict[str, set[str]] = {}
 
     def _check_adg_status(self) -> dict[str, Any]:
         """Check ADG Redis cache status."""
@@ -116,6 +117,13 @@ class ADGQueryBridge:
     def _get_sqlite_path(self) -> Path | None:
         """Find the latest ADG SQLite database."""
         if self._sqlite_path is None:
+            if self.repo_root.suffix == ".sqlite" and self.repo_root.exists():
+                self._sqlite_path = self.repo_root
+                return self._sqlite_path
+            candidate = self.repo_root.with_suffix(".sqlite")
+            if candidate.exists():
+                self._sqlite_path = candidate
+                return self._sqlite_path
             # Look for the latest adg_indexed_*.sqlite file
             sqlite_files = list(self.adg_dir.glob("adg_indexed_*.sqlite"))
             if sqlite_files:
@@ -126,6 +134,25 @@ class ADGQueryBridge:
             else:
                 logger.warning("No ADG SQLite database found")
         return self._sqlite_path
+
+    def _get_table_columns(self, table: str) -> set[str]:
+        """Get column names for a SQLite table."""
+        if table in self._table_columns:
+            return self._table_columns[table]
+        sqlite_path = self._get_sqlite_path()
+        if not sqlite_path:
+            self._table_columns[table] = set()
+            return self._table_columns[table]
+        try:
+            conn = sqlite3.connect(sqlite_path)
+            cursor = conn.cursor()
+            cursor.execute(f"PRAGMA table_info({table})")
+            columns = {row[1] for row in cursor.fetchall()}
+            conn.close()
+        except Exception:
+            columns = set()
+        self._table_columns[table] = columns
+        return columns
 
     def _query_sqlite(self, query: str, params: tuple = ()) -> list[dict[str, Any]]:
         """Execute a query against the ADG SQLite database."""
@@ -147,17 +174,19 @@ class ADGQueryBridge:
 
     def _find_node_by_symbol(self, symbol: str) -> str | None:
         """Find node ID by symbol name."""
-        # Prefer exact adg_name match, then label match with module context
-        results = self._query_sqlite(
-            """
-            SELECT id FROM nodes
-            WHERE adg_name = ?
-            OR (label = ? AND entity_type IN ('function', 'class', 'method'))
-            ORDER BY (CASE WHEN adg_name = ? THEN 0 ELSE 1 END)
-            LIMIT 1
-        """,
-            (symbol, symbol, symbol),
-        )
+        columns = self._get_table_columns("nodes")
+        clauses = []
+        params: list[str] = []
+        if "adg_name" in columns:
+            clauses.append("adg_name = ?")
+            params.append(symbol)
+        if "label" in columns:
+            clauses.append("label = ?")
+            params.append(symbol)
+        if not clauses:
+            return None
+        query = f"SELECT id FROM nodes WHERE {' OR '.join(clauses)} LIMIT 1"
+        results = self._query_sqlite(query, tuple(params))
         if results:
             return results[0]["id"]
 
@@ -198,17 +227,19 @@ class ADGQueryBridge:
                 logger.warning(f"Redis query failed, falling back to SQLite: {e}")
 
         # Fallback to SQLite
+        columns = self._get_table_columns("edges")
+        if "relation_type" not in columns or "symbol" not in columns:
+            return []
         results = self._query_sqlite(
-            """
-            SELECT DISTINCT e.source_file, e.line_no, e.symbol, n.adg_name as caller
-            FROM edges e
-            JOIN nodes n ON e.src_id = n.id
-            WHERE e.relation_type = 'calls' AND e.symbol LIKE ?
-        """,
+            "SELECT * FROM edges WHERE relation_type = 'calls' AND symbol LIKE ?",
             (f"%{symbol}%",),
         )
-
-        return [FileMatch(r["source_file"], r["line_no"], r["symbol"]) for r in results]
+        matches = []
+        for row in results:
+            file_path = row.get("source_file") or row.get("file_path") or ""
+            line_no = row.get("line_no") or row.get("line")
+            matches.append(FileMatch(file_path, line_no, row.get("symbol")))
+        return matches
 
     def files_importing(self, module: str) -> list[FileMatch]:
         """Find files that import the given module."""
@@ -235,17 +266,24 @@ class ADGQueryBridge:
                 logger.warning(f"Redis query failed, falling back to SQLite: {e}")
 
         # Fallback to SQLite
-        results = self._query_sqlite(
-            """
-            SELECT DISTINCT e.source_file, e.line_no, e.symbol, n.adg_name as importer
-            FROM edges e
-            JOIN nodes n ON e.src_id = n.id
-            WHERE e.relation_type = 'imports' AND (e.symbol LIKE ? OR e.to_name LIKE ?)
-        """,
-            (f"%{module}%", f"%{module}%"),
-        )
-
-        return [FileMatch(r["source_file"], r["line_no"], r["symbol"]) for r in results]
+        columns = self._get_table_columns("edges")
+        if "relation_type" not in columns or "symbol" not in columns:
+            return []
+        if "to_name" in columns:
+            query = (
+                "SELECT * FROM edges WHERE relation_type = 'imports' AND (symbol LIKE ? OR to_name LIKE ?)"
+            )
+            params = (f"%{module}%", f"%{module}%")
+        else:
+            query = "SELECT * FROM edges WHERE relation_type = 'imports' AND symbol LIKE ?"
+            params = (f"%{module}%",)
+        results = self._query_sqlite(query, params)
+        matches = []
+        for row in results:
+            file_path = row.get("source_file") or row.get("file_path") or ""
+            line_no = row.get("line_no") or row.get("line")
+            matches.append(FileMatch(file_path, line_no, row.get("symbol")))
+        return matches
 
     def nodes_in_layer(self, layer: str) -> list[Node]:
         """Get all nodes in the specified layer."""
@@ -273,15 +311,18 @@ class ADGQueryBridge:
                 logger.warning(f"Redis query failed, falling back to SQLite: {e}")
 
         # Fallback to SQLite
+        columns = self._get_table_columns("nodes")
+        if "layer" not in columns:
+            return []
         results = self._query_sqlite("SELECT * FROM nodes WHERE layer = ?", (layer,))
 
         return [
             Node(
                 node_id=r["id"],
-                label=r.get("adg_name", ""),
+                label=r.get("adg_name") or r.get("label") or r.get("name") or "",
                 layer=r.get("layer", ""),
                 entity_type=r.get("entity_type", ""),
-                file_path=r.get("resolved_path"),
+                file_path=r.get("resolved_path") or r.get("file_path"),
             )
             for r in results
         ]

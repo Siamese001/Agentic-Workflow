@@ -203,8 +203,8 @@ class _InMemoryStore:
                 self._entities[name]["observations"].append(obs)
                 existing_obs.add(obs)
 
-    def upsert_relation(self, from_name: str, relation_type: str, to_name: str) -> None:
-        self._relations.add((from_name, relation_type, to_name))
+    def add_relation(self, source: str, relation: str, target: str) -> None:
+        self._relations.add((source, relation, target))
 
     def add_observation(self, entity_name: str, contents: list[str]) -> None:
         if entity_name not in self._entities:
@@ -250,6 +250,9 @@ class _InMemoryStore:
         )
 
 
+InMemoryStore = _InMemoryStore
+
+
 class ADGMCPClient:
     """Unified client for all ADG graph operations.
 
@@ -263,7 +266,7 @@ class ADGMCPClient:
 
     def __init__(self, use_mcp: bool = False) -> None:
         self._use_mcp = use_mcp
-        self._store = _InMemoryStore()
+        self._store = InMemoryStore()
 
     def upsert_entity(self, name: str, entity_type: str, observations: list[str] | None = None) -> None:
         """Create or update an entity. Idempotent."""
@@ -277,7 +280,7 @@ class ADGMCPClient:
 
     def upsert_relation(self, from_name: str, relation_type: str, to_name: str) -> None:
         """Create a directed relation. Idempotent."""
-        self._store.upsert_relation(from_name, relation_type, to_name)
+        self._store.add_relation(from_name, relation_type, to_name)
 
     def add_observation(self, entity_name: str, contents: list[str]) -> None:
         """Add observations to an entity. Idempotent."""
@@ -295,7 +298,7 @@ class ADGMCPClient:
         """Read the full graph."""
         return {"entities": self._store.get_entities(), "relations": self._store.get_relations()}
 
-    def get_store(self) -> _InMemoryStore:
+    def get_store(self) -> InMemoryStore:
         """Return the in-memory store for direct inspection in tests."""
         return self._store
 
@@ -310,4 +313,4 @@ class ADGMCPClient:
             self.upsert_relation(r["from_name"], r["relation_type"], r["to_name"])
 
 
-__all__ = ["ADGMCPClient"]
+__all__ = ["ADGMCPClient", "LayerSegment", "InMemoryStore"]
