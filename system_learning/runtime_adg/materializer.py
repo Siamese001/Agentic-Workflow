@@ -143,6 +143,372 @@ def _extract_temporal_edges(spans: list[dict[str, Any]]) -> list[RuntimeADGEdge]
     return edges
 
 
+# =============================================================================
+# Wave 2: Semantic Edge Extraction
+# =============================================================================
+
+SEMANTIC_EDGE_RELATIONS = frozenset({
+    "actor", "action", "target", "dependency", "read_edge", "write_edge",
+    "tool_invocation_edge", "orchestration_handoff_edge", "retry_edge",
+    "evaluation_edge", "policy_validation_edge", "human_escalation_edge",
+    "failure_propagation_edge", "outcome_edge",
+})
+
+
+def _extract_semantic_edges(spans: list[dict[str, Any]]) -> list[RuntimeADGEdge]:
+    """Extract semantic edges based on span attributes and relationships.
+
+    Wave 2: Extracts 13 edge types for comprehensive runtime graph representation:
+    - actor: Entity initiating an action
+    - action: Action being performed
+    - target: Target of an action
+    - dependency: Dependency relationship
+    - read_edge: Read operation
+    - write_edge: Write operation
+    - tool_invocation_edge: Tool being invoked
+    - orchestration_handoff_edge: Handoff between orchestrators
+    - retry_edge: Retry relationship
+    - evaluation_edge: Evaluation operation
+    - policy_validation_edge: Policy validation
+    - human_escalation_edge: Human escalation
+    - failure_propagation_edge: Failure propagation
+    - outcome_edge: Outcome relationship
+    """
+    edges: list[RuntimeADGEdge] = []
+    span_map: dict[str, dict[str, Any]] = {}
+
+    # Build span lookup map
+    for span in spans:
+        span_id = str(span.get("span_id", ""))
+        if span_id:
+            span_map[span_id] = span
+
+    for span in spans:
+        span_id = str(span.get("span_id", ""))
+        if not span_id:
+            continue
+
+        attrs = span.get("attributes", {})
+        if isinstance(attrs, str):
+            try:
+                attrs = json.loads(attrs)
+            except (ValueError, TypeError):
+                attrs = {}
+        if not isinstance(attrs, dict):
+            attrs = {}
+
+        # Extract semantic relationships from attributes
+        edges.extend(_extract_actor_edges(span_id, attrs, span_map))
+        edges.extend(_extract_target_edges(span_id, attrs, span_map))
+        edges.extend(_extract_dependency_edges(span_id, attrs, span_map))
+        edges.extend(_extract_read_write_edges(span_id, attrs))
+        edges.extend(_extract_tool_invocation_edges(span_id, attrs))
+        edges.extend(_extract_orchestration_handoff_edges(span_id, attrs, span_map))
+        edges.extend(_extract_retry_edges(span_id, attrs, span_map))
+        edges.extend(_extract_evaluation_edges(span_id, attrs))
+        edges.extend(_extract_policy_validation_edges(span_id, attrs))
+        edges.extend(_extract_human_escalation_edges(span_id, attrs))
+        edges.extend(_extract_failure_propagation_edges(span_id, attrs, span_map))
+        edges.extend(_extract_outcome_edges(span_id, attrs))
+
+    return edges
+
+
+def _extract_actor_edges(
+    span_id: str, attrs: dict[str, Any], span_map: dict[str, dict[str, Any]]
+) -> list[RuntimeADGEdge]:
+    """Extract actor edges from span attributes."""
+    edges: list[RuntimeADGEdge] = []
+    actor_id = attrs.get("actor_id") or attrs.get("agent_id") or attrs.get("component")
+    if actor_id and isinstance(actor_id, str):
+        edges.append(RuntimeADGEdge(
+            src_id=str(actor_id)[:128],
+            dst_id=span_id,
+            relation="actor"
+        ))
+    return edges
+
+
+def _extract_target_edges(
+    span_id: str, attrs: dict[str, Any], span_map: dict[str, dict[str, Any]]
+) -> list[RuntimeADGEdge]:
+    """Extract target edges from span attributes."""
+    edges: list[RuntimeADGEdge] = []
+    target_id = attrs.get("target_id") or attrs.get("destination") or attrs.get("dest")
+    if target_id and isinstance(target_id, str):
+        edges.append(RuntimeADGEdge(
+            src_id=span_id,
+            dst_id=str(target_id)[:128],
+            relation="target"
+        ))
+    return edges
+
+
+def _extract_dependency_edges(
+    span_id: str, attrs: dict[str, Any], span_map: dict[str, dict[str, Any]]
+) -> list[RuntimeADGEdge]:
+    """Extract dependency edges from span attributes."""
+    edges: list[RuntimeADGEdge] = []
+    depends_on = attrs.get("depends_on") or attrs.get("dependency")
+    if depends_on:
+        if isinstance(depends_on, str):
+            edges.append(RuntimeADGEdge(
+                src_id=str(depends_on)[:128],
+                dst_id=span_id,
+                relation="dependency"
+            ))
+        elif isinstance(depends_on, list):
+            for dep in depends_on[:10]:  # Limit dependencies
+                if isinstance(dep, str):
+                    edges.append(RuntimeADGEdge(
+                        src_id=str(dep)[:128],
+                        dst_id=span_id,
+                        relation="dependency"
+                    ))
+    return edges
+
+
+def _extract_read_write_edges(span_id: str, attrs: dict[str, Any]) -> list[RuntimeADGEdge]:
+    """Extract read and write edges from span attributes."""
+    edges: list[RuntimeADGEdge] = []
+
+    # Read edges
+    reads_from = attrs.get("reads_from") or attrs.get("source")
+    if reads_from and isinstance(reads_from, str):
+        edges.append(RuntimeADGEdge(
+            src_id=str(reads_from)[:128],
+            dst_id=span_id,
+            relation="read_edge"
+        ))
+
+    # Write edges
+    writes_to = attrs.get("writes_to") or attrs.get("destination")
+    if writes_to and isinstance(writes_to, str):
+        edges.append(RuntimeADGEdge(
+            src_id=span_id,
+            dst_id=str(writes_to)[:128],
+            relation="write_edge"
+        ))
+
+    return edges
+
+
+def _extract_tool_invocation_edges(span_id: str, attrs: dict[str, Any]) -> list[RuntimeADGEdge]:
+    """Extract tool invocation edges from span attributes."""
+    edges: list[RuntimeADGEdge] = []
+
+    # Check for tool invocation attributes
+    tool_name = attrs.get("tool_name") or attrs.get("tool")
+    span_kind = attrs.get("span_kind", "")
+
+    if span_kind == "tool" and tool_name and isinstance(tool_name, str):
+        edges.append(RuntimeADGEdge(
+            src_id=span_id,
+            dst_id=f"tool.{str(tool_name)[:120]}",
+            relation="tool_invocation_edge"
+        ))
+
+    # Also check explicit tool_invocation attribute
+    invoked_tool = attrs.get("tool_invoked") or attrs.get("invoked_tool")
+    if invoked_tool and isinstance(invoked_tool, str):
+        edges.append(RuntimeADGEdge(
+            src_id=span_id,
+            dst_id=f"tool.{str(invoked_tool)[:120]}",
+            relation="tool_invocation_edge"
+        ))
+
+    return edges
+
+
+def _extract_orchestration_handoff_edges(
+    span_id: str, attrs: dict[str, Any], span_map: dict[str, dict[str, Any]]
+) -> list[RuntimeADGEdge]:
+    """Extract orchestration handoff edges from span attributes."""
+    edges: list[RuntimeADGEdge] = []
+
+    handoff_to = attrs.get("handoff_to") or attrs.get("next_orchestrator")
+    if handoff_to and isinstance(handoff_to, str):
+        edges.append(RuntimeADGEdge(
+            src_id=span_id,
+            dst_id=str(handoff_to)[:128],
+            relation="orchestration_handoff_edge"
+        ))
+
+    # Check span kind for orchestrator
+    span_kind = attrs.get("span_kind", "")
+    orchestrator_name = attrs.get("orchestrator_name")
+    if span_kind == "orchestrator" and orchestrator_name:
+        edges.append(RuntimeADGEdge(
+            src_id=span_id,
+            dst_id=f"orchestrator.{str(orchestrator_name)[:115]}",
+            relation="orchestration_handoff_edge"
+        ))
+
+    return edges
+
+
+def _extract_retry_edges(
+    span_id: str, attrs: dict[str, Any], span_map: dict[str, dict[str, Any]]
+) -> list[RuntimeADGEdge]:
+    """Extract retry edges from span attributes."""
+    edges: list[RuntimeADGEdge] = []
+
+    retry_of = attrs.get("retry_of") or attrs.get("previous_attempt")
+    if retry_of and isinstance(retry_of, str):
+        edges.append(RuntimeADGEdge(
+            src_id=str(retry_of)[:128],
+            dst_id=span_id,
+            relation="retry_edge"
+        ))
+
+    # Check for retry_count indicating this is a retry
+    retry_count = attrs.get("retry_count") or attrs.get("attempt")
+    if retry_count and int(retry_count) > 0:
+        # Link to parent span as retry
+        parent_span_id = attrs.get("parent_retry_span")
+        if parent_span_id and isinstance(parent_span_id, str):
+            edges.append(RuntimeADGEdge(
+                src_id=str(parent_span_id)[:128],
+                dst_id=span_id,
+                relation="retry_edge"
+            ))
+
+    return edges
+
+
+def _extract_evaluation_edges(span_id: str, attrs: dict[str, Any]) -> list[RuntimeADGEdge]:
+    """Extract evaluation edges from span attributes."""
+    edges: list[RuntimeADGEdge] = []
+
+    # Check for evaluation attributes
+    evaluated = attrs.get("evaluated") or attrs.get("evaluation_target")
+    if evaluated and isinstance(evaluated, str):
+        edges.append(RuntimeADGEdge(
+            src_id=span_id,
+            dst_id=str(evaluated)[:128],
+            relation="evaluation_edge"
+        ))
+
+    # Check span kind
+    span_kind = attrs.get("span_kind", "")
+    if span_kind == "evaluation":
+        eval_subject = attrs.get("subject") or attrs.get("eval_subject")
+        if eval_subject and isinstance(eval_subject, str):
+            edges.append(RuntimeADGEdge(
+                src_id=span_id,
+                dst_id=str(eval_subject)[:128],
+                relation="evaluation_edge"
+            ))
+
+    return edges
+
+
+def _extract_policy_validation_edges(span_id: str, attrs: dict[str, Any]) -> list[RuntimeADGEdge]:
+    """Extract policy validation edges from span attributes."""
+    edges: list[RuntimeADGEdge] = []
+
+    # Check for policy validation attributes
+    policy_check = attrs.get("policy_checked") or attrs.get("validated_policy")
+    if policy_check and isinstance(policy_check, str):
+        edges.append(RuntimeADGEdge(
+            src_id=span_id,
+            dst_id=f"policy.{str(policy_check)[:123]}",
+            relation="policy_validation_edge"
+        ))
+
+    # Check for guardrail triggers
+    guardrail_type = attrs.get("guardrail_type") or attrs.get("guardrail_triggered")
+    if guardrail_type and isinstance(guardrail_type, str):
+        edges.append(RuntimeADGEdge(
+            src_id=span_id,
+            dst_id=f"guardrail.{str(guardrail_type)[:120]}",
+            relation="policy_validation_edge"
+        ))
+
+    return edges
+
+
+def _extract_human_escalation_edges(span_id: str, attrs: dict[str, Any]) -> list[RuntimeADGEdge]:
+    """Extract human escalation edges from span attributes."""
+    edges: list[RuntimeADGEdge] = []
+
+    escalated_to = attrs.get("escalated_to") or attrs.get("human_escalation")
+    if escalated_to and isinstance(escalated_to, str):
+        edges.append(RuntimeADGEdge(
+            src_id=span_id,
+            dst_id=f"human.{str(escalated_to)[:124]}",
+            relation="human_escalation_edge"
+        ))
+
+    # Check for escalation reason
+    escalation_reason = attrs.get("escalation_reason") or attrs.get("human_override")
+    if escalation_reason:
+        edges.append(RuntimeADGEdge(
+            src_id=span_id,
+            dst_id="human.escalation",
+            relation="human_escalation_edge"
+        ))
+
+    return edges
+
+
+def _extract_failure_propagation_edges(
+    span_id: str, attrs: dict[str, Any], span_map: dict[str, dict[str, Any]]
+) -> list[RuntimeADGEdge]:
+    """Extract failure propagation edges from span attributes."""
+    edges: list[RuntimeADGEdge] = []
+
+    # Check for error status
+    status = attrs.get("status", "")
+    error_type = attrs.get("error_type") or attrs.get("exception")
+
+    if status == "error" or error_type:
+        # Propagate to parent or dependent spans
+        failed_component = attrs.get("component") or attrs.get("failed_agent")
+        if failed_component and isinstance(failed_component, str):
+            edges.append(RuntimeADGEdge(
+                src_id=span_id,
+                dst_id=f"failure.{str(failed_component)[:121]}",
+                relation="failure_propagation_edge"
+            ))
+
+        # Check for affected_by attribute
+        affected_by = attrs.get("affected_by") or attrs.get("failure_source")
+        if affected_by and isinstance(affected_by, str):
+            edges.append(RuntimeADGEdge(
+                src_id=str(affected_by)[:128],
+                dst_id=span_id,
+                relation="failure_propagation_edge"
+            ))
+
+    return edges
+
+
+def _extract_outcome_edges(span_id: str, attrs: dict[str, Any]) -> list[RuntimeADGEdge]:
+    """Extract outcome edges from span attributes."""
+    edges: list[RuntimeADGEdge] = []
+
+    # Check for outcome attributes
+    outcome = attrs.get("outcome") or attrs.get("result")
+    if outcome and isinstance(outcome, str):
+        edges.append(RuntimeADGEdge(
+            src_id=span_id,
+            dst_id=f"outcome.{str(outcome)[:122]}",
+            relation="outcome_edge"
+        ))
+
+    # Check for result_status
+    result_status = attrs.get("result_status") or attrs.get("status")
+    if result_status and isinstance(result_status, str):
+        edges.append(RuntimeADGEdge(
+            src_id=span_id,
+            dst_id=f"outcome.{str(result_status)[:122]}",
+            relation="outcome_edge"
+        ))
+
+    return edges
+
+
 class RuntimeADGMaterializer:
     """Converts a list of drained OTel span dicts into a ``RuntimeADGSnapshot``.
 
@@ -205,10 +571,11 @@ class RuntimeADGMaterializer:
 
         nodes = tuple(nodes_list)
 
-        # Extract edges
+        # Extract edges (Wave 2: Added semantic edge extraction)
         parent_child = _extract_parent_child_edges(spans)
         temporal = _extract_temporal_edges(spans)
-        all_edges = tuple(parent_child + temporal)
+        semantic = _extract_semantic_edges(spans)  # Wave 2: 13 edge types
+        all_edges = tuple(parent_child + temporal + semantic)
 
         # Calculate time bounds with validation
         if nodes_list:

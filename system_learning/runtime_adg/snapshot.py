@@ -15,6 +15,7 @@ from __future__ import annotations
 import hashlib
 import json
 from dataclasses import dataclass
+from typing import Any
 
 from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     emit_determinism_digest,
@@ -126,6 +127,103 @@ class RuntimeADGSnapshot:
 
     def edge_count(self) -> int:
         return len(self.edges)
+
+    def validate(self) -> dict[str, Any]:
+        """Validate snapshot integrity and return validation report.
+
+        Wave 2: Validates snapshot structure and edge types.
+
+        Returns:
+            Dictionary with validation results:
+            - is_valid: Overall validation status
+            - errors: List of validation errors
+            - warnings: List of validation warnings
+            - stats: Snapshot statistics
+            - edge_types: Count of each edge type
+        """
+        errors: list[str] = []
+        warnings: list[str] = []
+        edge_type_counts: dict[str, int] = {}
+
+        # Validate basic structure
+        if not self.snapshot_id:
+            errors.append("Missing snapshot_id")
+
+        if not self.trace_id:
+            errors.append("Missing trace_id")
+
+        # Validate hash consistency
+        if self.snapshot_id != self.snapshot_hash:
+            errors.append(f"Hash mismatch: snapshot_id={self.snapshot_id[:16]}... vs snapshot_hash={self.snapshot_hash[:16]}...")
+
+        # Validate timestamps
+        if self.started_at_utc < 0:
+            errors.append(f"Invalid started_at_utc: {self.started_at_utc}")
+        if self.ended_at_utc < 0:
+            errors.append(f"Invalid ended_at_utc: {self.ended_at_utc}")
+        if self.ended_at_utc < self.started_at_utc:
+            warnings.append(f"Time inversion: ended ({self.ended_at_utc}) < started ({self.started_at_utc})")
+
+        # Validate nodes
+        if not self.nodes:
+            warnings.append("Empty nodes list")
+        else:
+            # Check for duplicate node IDs
+            node_ids = [n.node_id for n in self.nodes]
+            if len(node_ids) != len(set(node_ids)):
+                errors.append("Duplicate node IDs detected")
+
+            # Validate each node
+            for node in self.nodes:
+                if not node.node_id:
+                    errors.append("Node with empty node_id")
+                if node.duration_ms < 0:
+                    errors.append(f"Negative duration for node {node.node_id[:16]}: {node.duration_ms}")
+
+        # Validate edges and count types
+        valid_relations = frozenset({
+            "parent_child", "temporal_sequence", "actor", "action", "target",
+            "dependency", "read_edge", "write_edge", "tool_invocation_edge",
+            "orchestration_handoff_edge", "retry_edge", "evaluation_edge",
+            "policy_validation_edge", "human_escalation_edge",
+            "failure_propagation_edge", "outcome_edge",
+        })
+
+        for edge in self.edges:
+            # Count edge types
+            edge_type_counts[edge.relation] = edge_type_counts.get(edge.relation, 0) + 1
+
+            # Validate edge relation
+            if edge.relation not in valid_relations:
+                warnings.append(f"Unknown edge relation: {edge.relation}")
+
+            # Check for dangling edges (referencing non-existent nodes)
+            if self.nodes:
+                node_ids = {n.node_id for n in self.nodes}
+                if edge.src_id not in node_ids and not edge.src_id.startswith("__"):
+                    warnings.append(f"Dangling edge src: {edge.src_id[:32]}...")
+                if edge.dst_id not in node_ids and not edge.dst_id.startswith("__"):
+                    warnings.append(f"Dangling edge dst: {edge.dst_id[:32]}...")
+
+        # Calculate statistics
+        stats = {
+            "node_count": len(self.nodes),
+            "edge_count": len(self.edges),
+            "edge_type_count": len(edge_type_counts),
+            "semantic_edge_count": sum(
+                count for rel, count in edge_type_counts.items()
+                if rel not in ("parent_child", "temporal_sequence")
+            ),
+            "duration_ms": self.ended_at_utc - self.started_at_utc if self.ended_at_utc >= self.started_at_utc else 0,
+        }
+
+        return {
+            "is_valid": len(errors) == 0,
+            "errors": errors,
+            "warnings": warnings,
+            "stats": stats,
+            "edge_types": edge_type_counts,
+        }
 
     def to_dict(self) -> dict:
         return {
