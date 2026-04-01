@@ -251,6 +251,16 @@ repos:
         always_run: true
         require_serial: true
 
+      # -- T7.5: Plan Location Gate — enforce SSOT-approved plan locations ----
+      # Blocks commits if plans exist in .windsurf/plans/ instead of docs/reports/plans/
+      - id: plan-location-gate
+        name: "T7.5: Plan Location SSOT Gate"
+        entry: python ops_scripts/ci/plan_location_gate.py
+        language: system
+        pass_filenames: false
+        always_run: true
+        require_serial: true
+
       # -- T8: Generated-artifact tracking guard ----------------------------------
       # Rejects commits if git tracks any of:
       #   **/guardian_report.json, **/.core_golden_seal, v15_d_evidence_*.json

@@ -189,6 +189,8 @@ class EnforcementLevel(str, Enum):
 class AntiPatternCategory(str, Enum):
     """Categories of anti-patterns."""
 
+    NAMING = "naming"
+    DOCUMENTATION = "documentation"
     SILENT_SWALLOWER = "silent_swallower"
     SILENT_DEGRADATION = "silent_degradation"
     TEST_SILENT_SKIP = "test_silent_skip"
@@ -209,12 +211,22 @@ class AntiPatternViolation:
     file_path: Path
     line_number: int
     category: AntiPatternCategory
-    message: str
-    evidence: str
+    message: str | None = None
+    evidence: str | None = ""
+    description: str | None = None
     severity: str = "warning"
     suggested_fix: str | None = None
+    suggestion: str | None = None
     whitelisted: bool = False
     metadata: dict[str, Any] = field(default_factory=dict)
+
+    def __post_init__(self) -> None:
+        if self.message is None:
+            self.message = self.description or ""
+        if self.suggested_fix is None and self.suggestion:
+            self.suggested_fix = self.suggestion
+        if self.evidence is None:
+            self.evidence = ""
 
     def to_dict(self) -> dict[str, Any]:
         """Convert to dictionary for reporting."""
@@ -222,8 +234,8 @@ class AntiPatternViolation:
             "file_path": str(self.file_path),
             "line_number": self.line_number,
             "category": self.category.value,
-            "message": self.message,
-            "evidence": self.evidence,
+            "message": self.message or "",
+            "evidence": self.evidence or "",
             "severity": self.severity,
             "suggested_fix": self.suggested_fix,
             "whitelisted": self.whitelisted,
