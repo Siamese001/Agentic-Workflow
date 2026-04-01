@@ -210,43 +210,6 @@
                                                                          │ (Failure Class, Predictor, RL Refine)    │
                                                                          └──────────────────────────────────────────┘
 
-================================================================================================================================================================================================================================
-[7] ⚖️ EVAL SPINE & 🏆 G-GATE (GOLDEN COMPARISON)
-================================================================================================================================================================================================================================
- [ SCOPE RULES ]: EXECUTES STRICTLY POST-L2. WRITES TO L4. DOES NOT FEED L1 INLINE. G-GATE IS A READ-ONLY SHADOW COMPARISON.
- AUTHORITY: READ-ONLY | NO EXECUTE | NO ROUTE | NO MUTATION | SIGNALS ONLY
-
-    ┌──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┐
-    │ ⚖️ EVALUATION SPINE & 🏆 G-GATE (POST-EXECUTION QUALITY & REGRESSION MANIFOLD)                                                                                                              │
-    │ [!] SHADOW-MODE ONLY: Does not mutate runtime. Does not bypass UWG. Emits signals strictly for continuous offline learning (Bus P/T).                                                        │
-    │                                                                                                                                                                                              │
-    │   [ FROM L2 EXECUTION ] ──(Raw Output, ExecTrace & Transcript)                                                                                                                               │
-    │          │                                                                                                                                                                                   │
-    │          ▼                                                ┌─────────────────────────┐                                                                                                        │
-    │  ┌─────────────────────────┐                              │ [ GOLDEN DATASET ]      │                                                                                                        │
-    │  │ 1. INGEST TRANSCRIPT    │                              │ Immutable baselines     │                                                                                                        │
-    │  │ Load L2 execution trace │                              │ test_cases/ground_truth │                                                                                                        │
-    │  │ Extract Context & Ans   │                              └──────────┬──────────────┘                                                                                                        │
-    │  │ Check PTC isolation     │                                         │                                                                                                                       │
-    │  └──────────┬──────────────┘                                         ▼                                                                                                                       │
-    │             │                                             ┌─────────────────────────┐                                                                                                        │
-    │             ▼                                             │ 3. GOLDEN GATE (G-GATE) │                                                                                                        │
-    │  ┌─────────────────────────┐                              │ Fetch test baseline     │                                                                                                        │
-    │  │ 2. METRIC CALCULATION   │                              │ Align input to golden   │                                                                                                        │
-    │  │ Faithfulness scoring    │                              └──────────┬──────────────┘                                                                                                        │
-    │  │ Groundedness scoring    │                                         │                                                                                                                       │
-    │  │ Answer Relevancy score  │                                         │                                                                                                                       │
-    │  └──────────┬──────────────┘                                         │                                                                                                                       │
-    │             │                                                        │                                                                                                                       │
-    │             └─────────────────────────────────┐   ┌──────────────────┘                                                                                                                       │
-    │                                               ▼   ▼                                                                                                                                          │
-    │                                      ┌─────────────────────────┐          ┌─────────────────────────┐                                                                                        │
-    │                                      │ 4. REGRESSION DIFFING   │─────────>│ 5. SIGNAL EMISSION      │                                                                                        │
-    │                                      │ Output vs Expected      │          │ Package system outcome  │──> (To L6 Observability)                                                               │
-    │                                      │ Citation Match Rate     │          │ Combine metric & drift  │                                                                                        │
-    │                                      │ API Call Drift detect   │          │ Prep DPO grades         │──> [ BUS P: DPO/GRADES ]                                                               │
-    │                                      └─────────────────────────┘          └─────────────────────────┘                                                                                        │
-    └──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┘
 
 ==================================================================================================================================================================================================================================
 [8] 👁️ L6 (VERIFY) — OBSERVABILITY & REPLAY
@@ -276,21 +239,4 @@
     └──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┘
 
 ===================================================================================================================================================================================================================================
-[9] 💾 L4 (STORE) & 🚪 UWG (WRITE) — STATE, REGISTRY, & UNIVERSAL GATEWAY
-=================================================================================================================================================================================================================================
- [ SCOPE RULES ]: L4 DOES NOT DECIDE. L4 DOES NOT EXECUTE. ONLY STORES, SERVES, AND LEARNS. UWG is the ONLY write path.
-
- ┌─────────────────────────────────────────────────────────┐ ┌───────────────────────────────────────────────────────────────────────────────────────────────────────────┐
- │ L4: CANONICAL STATE & REGISTRIES                        │ │ UWG: UNIVERSAL WRITE GATEWAY & VIOLATION ENFORCEMENT                                                      │
- ├─────────────────────────────────────────────────────────┤ ├───────────────────────────────────────────────────────────────────────────────────────────────────────────┤
- │ • P1: COGNITIVE REG: Prompts, Calibrations              │ │ • All FS/DB/Vector writes route through single gateway with MutationRecord logging.                       │
- │ • P2: CAPABILITY REG: Tools, Policies                   │ │ • Allowed: artifacts/, docs/reports/, logs/, temp/, cache/. Blocked: .exe, .dll, .py, .js, .ts.           │
- │ • P3: WORKFLOW MEMORY: Pending Steps, DAG               │ │ • EPHEMERAL EXCEPTION: L4H (Redis) write-backs (TTL: 24h) MUST route via UWG to avert cache poisoning.  │
- │ • P4: TELEMETRY LEDGER: Exec Logs, System Outcomes      │ │                                                                                                           │
- │                                                         │ │ [ UWG AUTHORITY CHAIN & GRAVITY MATRIX DEMONSTRATION ]                                                    │
- │ [SYNC] L4 updates Shared Team Memory & Activity Ledger  │ │ [ L0/L2/L3/L4/L5/L6 ] ──(Solid ─→ Governed Req)──> [ UWG ] ──(Solid ─→ Digest Chain)──> [ ARCHIVE ]       │
- │ (Non-blocking state update occurs only after L2 seals). │ │           │                                                                                     ^         │
- │                                                         │ │           └- - - - - - - - - - (-→ Dashed: Direct FS/DB Write Bypassing Gateway) - - - - - - - -┘         │
- │                                                         │ │ [!] VIOLATION DETECTED: Direct write bypassing UWG → BLOCKED. Direct dashed line = gravity breach.        │
- └─────────────────────────────────────────────────────────┘ └───────────────────────────────────────────────────────────────────────────────────────────────────────────┘
 
