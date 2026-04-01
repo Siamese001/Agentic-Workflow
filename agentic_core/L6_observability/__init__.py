@@ -16,13 +16,6 @@ from agentic_core.L0_routing.config.path_constants import (
     MAX_RETRIES,
     THRESHOLD,
 )
-
-# P3/L6 Observability Dashboard exports
-from agentic_core.L6_observability.mcp_drift_store import (
-    MCPDriftMonitor,
-    MCPL6ObservabilityStore,
-    MCPL6PersistenceConfig,
-)
 from agentic_core.L6_observability.dashboard.dashboard_aggregate import (
     CRITICAL,
     DEGRADED,
@@ -64,6 +57,25 @@ from agentic_core.L6_observability.dashboard.dashboard_orchestrator import (
     query_dashboard_snapshots,
     query_exposed,
     snapshot_persisted,
+)
+from agentic_core.L6_observability.engines.metrics_server import (
+    MetricsServerContext,
+    get_metrics_endpoint_url,
+    get_server_status,
+    start_metrics_server,
+    stop_metrics_server,
+)
+
+# P3/L6 Observability Dashboard exports
+from agentic_core.L6_observability.mcp_drift_store import (
+    MCPDriftMonitor,
+    MCPL6ObservabilityStore,
+    MCPL6PersistenceConfig,
+)
+
+# Wave 0: Prometheus Metrics
+from agentic_core.L6_observability.metrics.prometheus_metrics import (
+    AGENTIC_REGISTRY,
 )
 from agentic_core.L6_observability.performance.performance_emitter import (
     LatencyBudget,
@@ -253,6 +265,13 @@ __all__ = [
     # Registry Access
     "get_performance_registry",
     "reset_performance_registry",
+    # Prometheus Metrics (Wave 0)
+    "AGENTIC_REGISTRY",
+    "start_metrics_server",
+    "stop_metrics_server",
+    "MetricsServerContext",
+    "get_metrics_endpoint_url",
+    "get_server_status",
     # Context Classes
     "PerformanceContext",
     "StageOwner",
