@@ -5,26 +5,25 @@ Verifies that the cleanup scanner correctly analyzes hollow files
 and generates appropriate cleanup manifests.
 """
 
+import sys
 import tempfile
 from pathlib import Path
 from unittest.mock import patch
 
 import pytest
 
+# Add tools/adg to path for importing
+_repo_root = Path(__file__).resolve().parents[4]
+sys.path.insert(0, str(_repo_root / "tools" / "adg"))
 
-# Lazy imports to avoid collection-time conflicts
-def _get_analyzer_classes():
-    from tools.adg.hollow_file_cleanup import (
-        CleanupManifest,
-        FileAnalysis,
-        HollowFileCleanupAnalyzer,
-    )
-    return HollowFileCleanupAnalyzer, CleanupManifest, FileAnalysis
+from hollow_file_cleanup import (
+    FileAnalysis,
+    HollowFileCleanupAnalyzer,
+)
 
 
 def test_analyze_file_hollow():
     """Test analysis of a hollow file."""
-    HollowFileCleanupAnalyzer, CleanupManifest, FileAnalysis = _get_analyzer_classes()
     # Create temporary hollow file
     with tempfile.NamedTemporaryFile(mode='w', suffix='.py', delete=False) as f:
         f.write("""
@@ -50,7 +49,6 @@ _emit_applies_guardrail("test", "test", "test")
 
 def test_analyze_file_healthy():
     """Test analysis of a healthy file."""
-    HollowFileCleanupAnalyzer, CleanupManifest, FileAnalysis = _get_analyzer_classes()
     # Create temporary healthy file
     with tempfile.NamedTemporaryFile(mode='w', suffix='.py', delete=False) as f:
         f.write("""
@@ -79,7 +77,6 @@ class TestClass:
 
 def test_classify_cleanup_safety():
     """Test classification of cleanup safety."""
-    HollowFileCleanupAnalyzer, CleanupManifest, FileAnalysis = _get_analyzer_classes()
     analyses = [
         FileAnalysis(
             file_path="safe1.py",
@@ -131,7 +128,6 @@ def test_classify_cleanup_safety():
 
 def test_try_adg_enhancement_no_adg():
     """Test ADG enhancement when ADG is not available."""
-    HollowFileCleanupAnalyzer, CleanupManifest, FileAnalysis = _get_analyzer_classes()
     analyses = [
         FileAnalysis(
             file_path="test.py",
@@ -156,10 +152,9 @@ def test_try_adg_enhancement_no_adg():
     assert len(enhanced.tier1_safe_delete) == 1
 
 
-@patch('tools.adg.hollow_file_cleanup.HollowFileCleanupAnalyzer.analyze_file')
+@patch('hollow_file_cleanup.HollowFileCleanupAnalyzer.analyze_file')
 def test_scan_repository(mock_analyze):
     """Test repository scanning."""
-    HollowFileCleanupAnalyzer, CleanupManifest, FileAnalysis = _get_analyzer_classes()
     # Mock analyze_file to return hollow files
     mock_analyze.side_effect = [
         FileAnalysis(
@@ -201,7 +196,6 @@ def test_scan_repository(mock_analyze):
 
 def test_analyze_file_syntax_error():
     """Test analysis of file with syntax error."""
-    HollowFileCleanupAnalyzer, CleanupManifest, FileAnalysis = _get_analyzer_classes()
     # Create temporary file with syntax error
     with tempfile.NamedTemporaryFile(mode='w', suffix='.py', delete=False) as f:
         f.write("def broken(\n")  # Missing closing parenthesis

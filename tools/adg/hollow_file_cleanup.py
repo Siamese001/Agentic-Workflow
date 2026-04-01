@@ -139,7 +139,8 @@ class HollowFileCleanupAnalyzer:
             try:
                 analysis = self.analyze_file(file_path)
             except StopIteration:
-                break
+                # Skip this file and continue with next
+                continue
             if analysis.is_hollow:
                 results.append(analysis)
 

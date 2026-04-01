@@ -12,14 +12,13 @@ import sys
 from collections import defaultdict
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Dict, List, Tuple
 
 # Add project root to path
 sys.path.insert(0, str(Path(__file__).parent.parent.parent))
 
 from agentic_core.L5_safety.validators.hollow_file_detector_validator import (
+    BehavioralNodeCounter,
     HollowFileDetector,
-    HollowFileClassification,
 )
 
 
@@ -44,9 +43,9 @@ class RatioReport:
     """Complete boilerplate ratio report."""
     timestamp: str
     total_files: int
-    layer_stats: Dict[str, LayerStats] = field(default_factory=dict)
-    file_details: List[Dict] = field(default_factory=list)
-    summary: Dict[str, int] = field(default_factory=dict)
+    layer_stats: dict[str, LayerStats] = field(default_factory=dict)
+    file_details: list[dict] = field(default_factory=list)
+    summary: dict[str, int] = field(default_factory=dict)
 
 
 class BoilerplateRatioAnalyzer:
@@ -86,7 +85,7 @@ class BoilerplateRatioAnalyzer:
         else:
             return "UNKNOWN"
 
-    def calculate_boilerplate_ratio(self, file_path: Path) -> Tuple[float, Dict]:
+    def calculate_boilerplate_ratio(self, file_path: Path) -> tuple[float, dict]:
         """Calculate boilerplate ratio for a file."""
         try:
             content = file_path.read_text(encoding="utf-8")
@@ -104,8 +103,7 @@ class BoilerplateRatioAnalyzer:
         violations = self.detector.detect(file_path, tree)
 
         # Get node counts
-        counter = self.detector._node_counter
-        counter.reset()
+        counter = BehavioralNodeCounter()
         counter.visit(tree)
 
         behavioral_nodes = counter.behavioral_functions + counter.behavioral_classes
@@ -135,7 +133,7 @@ class BoilerplateRatioAnalyzer:
 
         return ratio, metadata
 
-    def scan_python_files(self) -> List[Path]:
+    def scan_python_files(self) -> list[Path]:
         """Scan for all Python files in repository."""
         python_files = list(self.repo_root.rglob("*.py"))
 

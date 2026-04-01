@@ -372,7 +372,7 @@ class ADGQueryBridge:
                     if status.get("is_fresh"):
                         # This is a simplified approach - might need refinement
                         for root_dir in [dir_path]:
-                            for py_file in root_path.rglob("*.py"):
+                            for py_file in root_dir.rglob("*.py"):
                                 if py_file.is_file():
                                     files.add(py_file)
                     else:

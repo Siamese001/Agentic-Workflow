@@ -10,16 +10,13 @@ Tests ALL integrations:
 These tests are designed to FAIL if any integration is missing or broken.
 """
 
-import pytest
-import json
-import time
-import hashlib
-from pathlib import Path
-from unittest.mock import MagicMock, patch, Mock
-from dataclasses import dataclass
-from datetime import datetime, timezone
-
 import sys
+import time
+from pathlib import Path
+from unittest.mock import MagicMock
+
+import pytest
+
 sys.path.insert(0, str(Path(__file__).parent.parent.parent / "agentic_core" / "L0_routing" / "scripts"))
 
 pytestmark = [pytest.mark.e2e, pytest.mark.hardening, pytest.mark.aggressive]
@@ -31,9 +28,9 @@ class TestExecuteSsotRetrievalHardening:
     def test_l1_exact_cache_hit_performance(self):
         """L1 cache hit should be O(1) and fast."""
         from agentic_core.L0_routing.scripts.execute_ssot import (
+            _L1_EXACT_CACHE,
             _retrieve_execution_context,
             _store_in_retrieval_cache,
-            _L1_EXACT_CACHE,
         )
 
         _L1_EXACT_CACHE.clear()
@@ -54,8 +51,8 @@ class TestExecuteSsotRetrievalHardening:
     def test_l2_semantic_cache_storage(self):
         """L2 semantic cache stores and retrieves correctly."""
         from agentic_core.L0_routing.scripts.execute_ssot import (
-            _store_in_retrieval_cache,
             _L2_SEMANTIC_CACHE,
+            _store_in_retrieval_cache,
         )
 
         _L2_SEMANTIC_CACHE.clear()
@@ -76,9 +73,9 @@ class TestExecuteSsotRetrievalHardening:
     def test_l5_fallback_no_exceptions(self):
         """L5 fallback should never raise exceptions."""
         from agentic_core.L0_routing.scripts.execute_ssot import (
-            _retrieve_execution_context,
             _L1_EXACT_CACHE,
             _L2_SEMANTIC_CACHE,
+            _retrieve_execution_context,
         )
 
         _L1_EXACT_CACHE.clear()
@@ -149,10 +146,10 @@ class TestExecuteSsotSystemLearningHardening:
         """Intake adapter requires all mandatory fields."""
         try:
             from agentic_core.L0_routing.scripts.execute_ssot import (
-                HealingOutcomeIntakeAdapter,
-                InMemoryHealingOutcomeIntakeStore,
                 HealingOutcomeAggregator,
                 HealingOutcomeEvent,
+                HealingOutcomeIntakeAdapter,
+                InMemoryHealingOutcomeIntakeStore,
             )
         except ImportError:
             pytest.skip("HealingOutcomeIntakeAdapter not available")
@@ -258,8 +255,9 @@ class TestExecuteSsotL6ObservabilityHardening:
 
     def test_execute_contracted_signature(self):
         """execute_contracted has correct signature."""
-        from agentic_core.L0_routing.scripts.execute_ssot import execute_contracted
         import inspect
+
+        from agentic_core.L0_routing.scripts.execute_ssot import execute_contracted
 
         sig = inspect.signature(execute_contracted)
         params = list(sig.parameters.keys())
@@ -282,9 +280,9 @@ class TestExecuteSsotLifecycleEmittersHardening:
         """All P0 governance emitters must be callable."""
         from agentic_core.L0_routing.scripts.execute_ssot import (
             _emit_applies_guardrail,
-            _emit_snapshots_state,
             _emit_reads_policy_state,
             _emit_signs_execution_trace,
+            _emit_snapshots_state,
         )
 
         emitters = [
@@ -300,9 +298,9 @@ class TestExecuteSsotLifecycleEmittersHardening:
     def test_all_p1_emitters_callable(self):
         """All P1 orchestration emitters must be callable."""
         from agentic_core.L0_routing.scripts.execute_ssot import (
+            _emit_checks_agent_registry,
             _emit_pulls_context,
             _emit_routes_through,
-            _emit_checks_agent_registry,
         )
 
         emitters = [
@@ -335,11 +333,11 @@ class TestExecuteSsotLifecycleEmittersHardening:
         """All P3 learning maturity emitters must be callable."""
         from agentic_core.L0_routing.scripts.execute_ssot import (
             _emit_captures_pattern,
-            _emit_records_learning_event,
             _emit_feeds_meta_learning,
-            _emit_updates_routing_strategy,
             _emit_improves_agent_policy,
+            _emit_records_learning_event,
             _emit_stores_learning_state,
+            _emit_updates_routing_strategy,
         )
 
         emitters = [
@@ -357,13 +355,13 @@ class TestExecuteSsotLifecycleEmittersHardening:
     def test_all_p4_observability_emitters_callable(self):
         """All P4 observability emitters must be callable."""
         from agentic_core.L0_routing.scripts.execute_ssot import (
-            _emit_emits_metric_event,
-            _emit_records_incident_event,
             _emit_captures_runtime_anomaly,
-            _emit_writes_observability_log,
-            _emit_updates_monitoring_state,
-            _emit_triggers_alert,
+            _emit_emits_metric_event,
             _emit_links_incident_trace,
+            _emit_records_incident_event,
+            _emit_triggers_alert,
+            _emit_updates_monitoring_state,
+            _emit_writes_observability_log,
         )
 
         emitters = [
@@ -386,11 +384,11 @@ class TestExecuteSsotIntegrationHardening:
     def test_retrieval_to_meta_learning_flow(self):
         """Full flow: retrieval context → meta-learning pipeline."""
         from agentic_core.L0_routing.scripts.execute_ssot import (
+            _L1_EXACT_CACHE,
+            MetaLearningResult,
+            _fire_meta_learning_intake_required,
             _retrieve_execution_context,
             _store_in_retrieval_cache,
-            _fire_meta_learning_intake_required,
-            MetaLearningResult,
-            _L1_EXACT_CACHE,
         )
 
         _L1_EXACT_CACHE.clear()
@@ -458,7 +456,7 @@ class TestExecuteSsotIntegrationHardening:
         for attr_name, description in imports_to_test:
             if not hasattr(ssot, attr_name):
                 # Skip System Learning imports if not available (they're optional)
-                if "Healing" in attr_name or "Meta" in attr_name:
+                if "Healing" in attr_name or "Meta" in attr_name or "sl_memory" in attr_name:
                     continue
                 failures.append(f"Missing {description}: {attr_name}")
 
@@ -491,8 +489,8 @@ class TestExecuteSsotFailureModesHardening:
     def test_empty_healing_actions_returns_empty_result(self):
         """Empty healing actions should return empty MetaLearningResult."""
         from agentic_core.L0_routing.scripts.execute_ssot import (
-            _fire_meta_learning_intake_required,
             MetaLearningResult,
+            _fire_meta_learning_intake_required,
         )
 
         mock_state = MagicMock()
