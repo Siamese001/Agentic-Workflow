@@ -89,6 +89,61 @@ env/
 # docs/technical/ moved to docs/reference/ (SSOT-compliant)
 docs/reference/
 
+# Chroma DB noise - transient execution artifacts, do not embed
+docs/reports/
+docs/evidence/
+docs/generated/
+docs/quarantine_artifacts/
+docs/plans/
+docs/metrics/
+docs/specs/*.json
+
+# Artifacts noise - transient execution outputs, do not embed
+artifacts/collection*.txt
+artifacts/collection*.json
+artifacts/test_*.txt
+artifacts/test_*.json
+artifacts/unit*.txt
+artifacts/plans_*.txt
+artifacts/wave*.json
+artifacts/analysis/
+artifacts/ci/
+artifacts/dedup/
+artifacts/evidence/
+artifacts/fca_safety_gates/
+artifacts/gptcache*/
+artifacts/healing/
+artifacts/hitl/
+artifacts/import_health/
+artifacts/logs/
+artifacts/manifests/
+artifacts/migration/
+artifacts/monitoring/
+artifacts/observability/
+artifacts/outputs/
+artifacts/rollback/
+artifacts/runtime_adg/
+artifacts/security/
+artifacts/windsurf/
+artifacts/xml/
+artifacts/governance/*.json
+artifacts/discovery/*.json
+artifacts/consolidation/*.json
+artifacts/guardian_*.txt
+artifacts/guardian_*.json
+
+# data/ noise - transient/generated data, do not embed
+data/corpus/
+data/freeze_reports/
+data/golden_state/
+data/logs/
+data/manifests/*.sha256
+data/manifests/sdks_mcps_manifest.json
+data/output/
+data/processed/
+data/raw/
+data/snapshots/
+
 # IDE and OS noise
 .vscode/
 .idea/
@@ -195,3 +250,80 @@ docs/store/
 
 # Root README (auto-generated / user-local)
  /README.md
+
+# Root-level noise - generated outputs, temp files, one-off scripts
+validation_output*.json
+violation_audit.json
+runtime_state.json
+remaining_placeholders.json
+faiss.index
+dummy.sqlite
+nonexistent.sqlite
+wave*_batch*.txt
+sequential_thinking_*.json
+test_*.json
+mcp_*.json
+*.sqlite
+
+# One-off diagnostic/profiling scripts (root level only)
+/test_*.py
+/debug_*.py
+/check_*.py
+/fix_*.py
+/add_*.py
+/analyze_*.py
+/convert_wave_*.py
+/mcp_*.py
+/adg_*.py
+/probe_*.py
+/rca_*.py
+/profile_*.py
+/ingest_*.py
+/upgrade_to_*.py
+/wave*.py
+/demo_*.py
+/generate_*.py
+/gravity_*.py
+/edge_*.py
+/simple_debug.py
+/cleanup_tests.py
+/batch_fix_*.py
+/categorize_*.py
+/recalculate_*.py
+/verify_*.py
+/test_cache_*.py
+/test_layer_*.py
+/test_mcp_*.py
+/test_adg_*.py
+/test_semantic_*.py
+/test_template_*.py
+/test_token_*.py
+/test_visualization_*.py
+/test_vllm_*.py
+/test_workflow_*.py
+/test_rag_*.py
+/test_runtime_*.py
+/test_sequential_*.py
+/test_rigor_*.py
+/test_production_*.py
+/test_fix.py
+/test_sample.py
+
+# Tools noise - debug scripts and one-off fixes
+tools/__dbg_*.py
+tools/_*.py
+tools/wave*_*.py
+tools/fix_*.py
+tools/convert_*.py
+tools/validate_*.py
+tools/evidence/
+
+# Reports directory
+reports/
+
+# Eval/RFP outputs
+eval/
+rfp/test_output/
+
+# Backup directory
+.backup/

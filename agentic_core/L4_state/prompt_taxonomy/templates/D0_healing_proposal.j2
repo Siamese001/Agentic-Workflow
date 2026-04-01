@@ -1,0 +1,44 @@
+{# D0 - HEALING_PROPOSAL (PROPOSED Authority - mapped to BINDING after validation)
+ # Revised action plan after L2 failure
+ # Requires re-entry into assembly after L5 validation
+ #}
+================================================================================
+HEALING PROPOSAL (PROPOSED - REQUIRES VALIDATION)
+================================================================================
+
+{% if failure_context %}
+FAILURE CONTEXT:
+{{ failure_context }}
+{% endif %}
+
+{% if root_cause_analysis %}
+ROOT CAUSE ANALYSIS:
+{{ root_cause_analysis }}
+{% endif %}
+
+PROPOSED CORRECTION:
+{{ correction_plan }}
+
+{% if affected_files %}
+AFFECTED FILES:
+{% for file in affected_files %}
+- {{ file }}
+{% endfor %}
+{% endif %}
+
+{% if rollback_plan %}
+ROLLBACK PLAN (if correction fails):
+{{ rollback_plan }}
+{% endif %}
+
+{% if retry_count %}
+RETRY COUNT: {{ retry_count }}/3
+{% if retry_count >= 3 %}
+⚠️ MAX RETRIES REACHED - ESCALATE TO GEMINI TIER
+{% endif %}
+{% endif %}
+
+================================================================================
+THIS PROPOSAL MUST PASS L5 VALIDATION BEFORE EXECUTION.
+APPLY VIA UWG ONLY AFTER VALIDATION SUCCESS.
+================================================================================

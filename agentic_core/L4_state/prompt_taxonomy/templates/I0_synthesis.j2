@@ -1,0 +1,42 @@
+{# I0 - SYNTHESIS (ANALYTIC Authority - mapped to GOVERNED)
+ # Summarizes telemetry into actionable configuration proposals
+ # Improvement through analysis
+ #}
+================================================================================
+SYNTHESIS & ANALYSIS (ANALYTIC AUTHORITY)
+================================================================================
+
+{% if telemetry_summary %}
+TELEMETRY SUMMARY:
+{{ telemetry_summary }}
+{% endif %}
+
+{% if pattern_analysis %}
+PATTERN ANALYSIS:
+{% for pattern in pattern_analysis %}
+- Pattern: {{ pattern.name }}
+  Frequency: {{ pattern.frequency }}
+  Impact: {{ pattern.impact }}
+  Recommendation: {{ pattern.recommendation }}
+{% endfor %}
+{% endif %}
+
+{% if configuration_proposals %}
+CONFIGURATION PROPOSALS:
+{% for proposal in configuration_proposals %}
+{{ loop.index }}. {{ proposal.description }}
+   Expected outcome: {{ proposal.expected_outcome }}
+   Confidence: {{ proposal.confidence }}
+{% endfor %}
+{% endif %}
+
+{% if failure_classes %}
+FAILURE CLASS DISTRIBUTION:
+{% for fc in failure_classes %}
+- {{ fc.name }}: {{ fc.count }} ({{ fc.percentage }}%)
+{% endfor %}
+{% endif %}
+
+================================================================================
+PROPOSALS REQUIRE L5 VALIDATION BEFORE APPLICATION.
+================================================================================

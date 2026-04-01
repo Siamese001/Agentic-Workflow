@@ -1,0 +1,36 @@
+{# C0 - DEPENDENCY (INFORMATIONAL Authority)
+ # Real-time context retrieved via RAG or Elevator Shaft
+ # Grounding with no execution authority
+ #}
+================================================================================
+CONTEXT (INFORMATIONAL - NO EXECUTION AUTHORITY)
+================================================================================
+
+{% if rag_results %}
+RETRIEVED CONTEXT (via RAG):
+{% for result in rag_results %}
+[{{ loop.index }}] {{ result.content }}
+    Source: {{ result.source }} | Score: {{ result.score }}
+{% endfor %}
+{% endif %}
+
+{% if ast_snapshots %}
+AST SNAPSHOTS:
+{% for snapshot in ast_snapshots %}
+- {{ snapshot.file_path }}: {{ snapshot.summary }}
+{% endfor %}
+{% endif %}
+
+{% if import_resolution %}
+IMPORT RESOLUTION:
+{{ import_resolution }}
+{% endif %}
+
+{% if external_state %}
+EXTERNAL STATE:
+{{ external_state }}
+{% endif %}
+
+================================================================================
+CONTEXT IS FOR GROUNDING ONLY - NO EXECUTION AUTHORITY CONFERRED.
+================================================================================

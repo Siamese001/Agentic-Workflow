@@ -1,0 +1,36 @@
+{# C0 - EXEMPLARS (GUIDING Authority - mapped to INFO)
+ # Best-in-class few-shot examples guiding output style
+ # Performance optimization through examples
+ #}
+================================================================================
+EXEMPLARS (FEW-SHOT EXAMPLES - GUIDING AUTHORITY)
+================================================================================
+
+{% if examples %}
+EXAMPLES TO FOLLOW:
+{% for ex in examples %}
+---
+Input: {{ ex.input }}
+
+Output: {{ ex.output }}
+
+{% if ex.explanation %}
+Explanation: {{ ex.explanation }}
+{% endif %}
+---
+{% endfor %}
+{% endif %}
+
+{% if style_guidance %}
+STYLE GUIDANCE:
+{{ style_guidance }}
+{% endif %}
+
+{% if output_format %}
+OUTPUT FORMAT:
+{{ output_format }}
+{% endif %}
+
+================================================================================
+FOLLOW EXEMPLAR STYLE FOR CONSISTENT HIGH-QUALITY OUTPUTS.
+================================================================================

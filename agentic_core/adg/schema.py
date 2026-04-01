@@ -1620,6 +1620,19 @@ LINKS_INCIDENT_TRACE_SYMBOLS: frozenset[str] = frozenset(
         "IncidentTraceLinker",
     }
 )
+
+# ── Prompt Lifecycle Relation Types ─────────────────────────────────────────
+PROMPT_RELATION_TYPES: frozenset[str] = frozenset(
+    {
+        "generates_prompt",
+        "consumes_prompt",
+        "prompt_template_used_by",
+        "reads_policy_state",
+        "applies_guardrail",
+        "retrieves_via",
+    }
+)
+
 ORCHESTRATION_CONTEXT_CLASSES: frozenset[str] = frozenset(
     {
         "OrchestrationContext",
@@ -2008,6 +2021,7 @@ __all__ = [
     "TRIGGERS_ALERT_SYMBOLS",
     "INDEXES_FOR_RETRIEVAL_SYMBOLS",
     "LINKS_INCIDENT_TRACE_SYMBOLS",
+    "PROMPT_RELATION_TYPES",
 ]
 
 _emit_reads_through("l4", "schema", "urg_read_1")

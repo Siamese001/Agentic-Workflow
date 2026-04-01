@@ -1,0 +1,41 @@
+{# C0 - META_COGNITIVE (PRIVATE Authority - mapped to INFO)
+ # Hidden Chain/Tree of Thought forcing internal reasoning
+ # Private reasoning before answer
+ #}
+================================================================================
+INTERNAL REASONING PROTOCOL (PRIVATE - NOT SHOWN IN FINAL OUTPUT)
+================================================================================
+
+Before generating the response, work through this reasoning process:
+
+{% if reasoning_steps %}
+REASONING STEPS:
+{% for step in reasoning_steps %}
+{{ loop.index }}. {{ step }}
+{% endfor %}
+{% endif %}
+
+{% if tree_of_thought %}
+TREE OF THOUGHT BRANCHES:
+{% for branch in tree_of_thought %}
+Branch {{ loop.index }}: {{ branch.description }}
+- Pros: {{ branch.pros }}
+- Cons: {{ branch.cons }}
+{% endfor %}
+{% endif %}
+
+{% if verification_checks %}
+VERIFICATION CHECKS:
+{% for check in verification_checks %}
+- [ ] {{ check }}
+{% endfor %}
+{% endif %}
+
+{% if confidence_threshold %}
+CONFIDENCE THRESHOLD: {{ confidence_threshold }}
+Only proceed if confidence >= threshold after reasoning.
+{% endif %}
+
+================================================================================
+DO NOT INCLUDE THIS REASONING IN FINAL OUTPUT UNLESS EXPLICITLY REQUESTED.
+================================================================================
