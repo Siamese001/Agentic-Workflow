@@ -1,5 +1,5 @@
 {
-  "runtime_adg_1775046837_84bb17ad": {
+  "runtime_adg_1775075128_9d5e37fb": {
     "component_distribution": {
       "CognitivePlane": 1,
       "DAGEngine": 1,
@@ -12,7 +12,7 @@
     },
     "error_patterns": [],
     "extraction_metadata": {
-      "timestamp": 1775046837,
+      "timestamp": 1775075128,
       "total_nodes": 8
     },
     "layer_distribution": {
@@ -33,44 +33,44 @@
     "timing_patterns": {
       "fast_operations": [
         {
-          "component": "Tool.validate_safety",
-          "duration_ms": 0.0,
-          "node_id": "42d6cb5c6ed4e94b"
-        },
-        {
           "component": "CognitivePlane",
-          "duration_ms": 0.0,
-          "node_id": "452ec40a3193ca54"
-        },
-        {
-          "component": "DAGEngine",
-          "duration_ms": 0.0,
-          "node_id": "5f811cb929645f8b"
-        },
-        {
-          "component": "Tool.execute_action",
-          "duration_ms": 0.0,
-          "node_id": "6facaa5090e5e945"
-        },
-        {
-          "component": "Tool.record_metric",
-          "duration_ms": 0.0,
-          "node_id": "a091250e8fe46024"
-        },
-        {
-          "component": "NervousSystem",
-          "duration_ms": 0.0,
-          "node_id": "daea58ba4c73a942"
-        },
-        {
-          "component": "Tool.read_state",
-          "duration_ms": 0.0,
-          "node_id": "dfc9e3b11fcff454"
+          "duration_ms": 1.004,
+          "node_id": "02acb542eebdec42"
         },
         {
           "component": "Tool.route_request",
           "duration_ms": 0.0,
-          "node_id": "ee8971105e503a67"
+          "node_id": "33a1fae834cf3e64"
+        },
+        {
+          "component": "NervousSystem",
+          "duration_ms": 1.004,
+          "node_id": "9c80f070db48be9b"
+        },
+        {
+          "component": "Tool.read_state",
+          "duration_ms": 0.0,
+          "node_id": "2c1d8cfc775df63e"
+        },
+        {
+          "component": "DAGEngine",
+          "duration_ms": 0.0,
+          "node_id": "2f83face428749d8"
+        },
+        {
+          "component": "Tool.record_metric",
+          "duration_ms": 0.0,
+          "node_id": "416bce22890e5585"
+        },
+        {
+          "component": "Tool.execute_action",
+          "duration_ms": 0.0,
+          "node_id": "532759b75c76e8a2"
+        },
+        {
+          "component": "Tool.validate_safety",
+          "duration_ms": 0.0,
+          "node_id": "f8c4517ca7f700be"
         }
       ],
       "slow_operations": []

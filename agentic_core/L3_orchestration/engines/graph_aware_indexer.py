@@ -32,7 +32,6 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 )
 from agentic_core.L3_orchestration.engines.adg_integration import (
     ADGQueryClient,
-    ADGEdgeBinding,
     get_global_adg_client,
 )
 # ChunkManifestRegistry, EnrichedChunkManifest imported lazily to avoid L3->L4 violation

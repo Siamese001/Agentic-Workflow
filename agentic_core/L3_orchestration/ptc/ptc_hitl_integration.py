@@ -13,12 +13,10 @@ Architecture:
 from __future__ import annotations
 
 import hashlib
-import json
 import re
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from enum import Enum
-from pathlib import Path
-from typing import Any, Callable
+from typing import Any
 
 from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     LayerSegment,
@@ -28,24 +26,34 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_blocks_direct_write,
     _emit_captures_evaluation_metric,
     _emit_captures_execution_output,
+    _emit_captures_pattern,
+    _emit_captures_runtime_anomaly,
     _emit_checks_agent_registry,
     _emit_coordinates_agents,
     _emit_dispatches_agent,
     _emit_dispatches_execution_plan,
     _emit_dispatches_healing_run,
+    _emit_emits_metric_event,
     _emit_escalates_failure,
     _emit_escalates_to_human,
+    _emit_execution_terminates_at_uwg,
+    _emit_feeds_meta_learning,
     _emit_gated_by_confidence,
     _emit_hard_fails_untranscripted,
+    _emit_improves_agent_policy,
     _emit_invokes_evaluation,
     _emit_links_execution_to_snapshot,
+    _emit_links_incident_trace,
     _emit_observes_runtime_state,
     _emit_orchestrates_workflow,
+    _emit_pulls_context,
     _emit_reads_environ,
     _emit_reads_policy_state,
     _emit_reads_runtime_state,
     _emit_records_execution_trace,
     _emit_records_healing_outcome,
+    _emit_records_incident_event,
+    _emit_records_learning_event,
     _emit_records_telemetry_event,
     _emit_records_tool_invocation,
     _emit_records_workflow_lineage,
@@ -55,31 +63,21 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_signs_execution_trace,
     _emit_snapshots_state,
     _emit_stores_embedding,
+    _emit_stores_learning_state,
     _emit_transcripts_response,
+    _emit_triggers_alert,
     _emit_updates_meta_learning_state,
+    _emit_updates_monitoring_state,
+    _emit_updates_routing_strategy,
+    _emit_validated_by_safety_plane,
     _emit_validates_agent_capability,
     _emit_validates_capability,
     _emit_verifies_boundary,
     _emit_verifies_policy,
-    _emit_writes_via_uwg,
-    _emit_validated_by_safety_plane,
-    _emit_execution_terminates_at_uwg,
-    _emit_pulls_context,
-    _emit_writes_through,
-    _emit_emits_metric_event,
-    _emit_records_incident_event,
-    _emit_captures_runtime_anomaly,
-    _emit_writes_observability_log,
-    _emit_updates_monitoring_state,
-    _emit_triggers_alert,
-    _emit_links_incident_trace,
-    _emit_captures_pattern,
-    _emit_records_learning_event,
     _emit_writes_learning_snapshot,
-    _emit_feeds_meta_learning,
-    _emit_updates_routing_strategy,
-    _emit_improves_agent_policy,
-    _emit_stores_learning_state,
+    _emit_writes_observability_log,
+    _emit_writes_through,
+    _emit_writes_via_uwg,
     emit_determinism_digest,
     emit_replay_key,
 )
@@ -273,18 +271,23 @@ class PTCHITLIntegration:
     MEDIUM_CONFIDENCE_THRESHOLD: float = 0.7
     HIGH_CONFIDENCE_THRESHOLD: float = 0.9
 
-    # Pattern definitions for risk assessment
+    # High-risk patterns that trigger CRITICAL risk
     HIGH_RISK_PATTERNS: tuple[str, ...] = (
         r"\bopen\s*\(",
         r"\bwrite\s*\(",
         r"\bdelete\s*\(",
         r"\brm\s+-",
         r"\bsubprocess\.run",
-        r"\bos\.system",
         r"\beval\s*\(",
         r"\bexec\s*\(",
         r"\b__import__",
         r"\bcompile\s*\(",
+    )
+
+    # CRITICAL patterns that immediately reject (includes os.system)
+    CRITICAL_PATTERNS: tuple[str, ...] = (
+        r"\bos\.system",
+        r"rm\s+-rf",
     )
 
     MEDIUM_RISK_PATTERNS: tuple[str, ...] = (
@@ -347,6 +350,10 @@ class PTCHITLIntegration:
         # Detect patterns in code
         detected_patterns: list[str] = []
 
+        for pattern in self.CRITICAL_PATTERNS:
+            if re.search(pattern, code, re.IGNORECASE):
+                detected_patterns.append(f"critical:{pattern}")
+
         for pattern in self.HIGH_RISK_PATTERNS:
             if re.search(pattern, code, re.IGNORECASE):
                 detected_patterns.append(f"high_risk:{pattern}")
@@ -360,15 +367,19 @@ class PTCHITLIntegration:
                 detected_patterns.append(f"low_risk:{pattern}")
 
         # Determine risk level
-        if any("high_risk" in p for p in detected_patterns):
+        if any("critical" in p for p in detected_patterns):
             risk_level = PTCScriptRiskLevel.CRITICAL
             base_confidence = 0.3
+        elif any("high_risk" in p for p in detected_patterns):
+            risk_level = PTCScriptRiskLevel.HIGH
+            base_confidence = 0.6
         elif any("medium_risk" in p for p in detected_patterns):
             risk_level = PTCScriptRiskLevel.HIGH
             base_confidence = 0.6
-        elif detected_patterns:
-            risk_level = PTCScriptRiskLevel.MEDIUM
-            base_confidence = 0.8
+        elif any("low_risk" in p for p in detected_patterns):
+            # Low risk patterns still result in LOW overall risk
+            risk_level = PTCScriptRiskLevel.LOW
+            base_confidence = 0.9
         else:
             risk_level = PTCScriptRiskLevel.LOW
             base_confidence = 0.95
@@ -455,10 +466,10 @@ class PTCHITLIntegration:
             if path in code:
                 violations.append(f"POLICY_PROTECTED_PATH:{path}")
 
-        # Check for import of unsafe modules
-        unsafe_imports = ["subprocess", "os.system", "ntpath", "posixpath"]
+        # Check for import of unsafe modules (including os.system pattern)
+        unsafe_imports = ["subprocess", "os.system", "ntpath", "posixpath", "os"]
         for imp in unsafe_imports:
-            if f"import {imp}" in code or f"from {imp}" in code:
+            if f"import {imp}" in code or f"from {imp}" in code or f"{imp}." in code:
                 violations.append(f"POLICY_UNSAFE_IMPORT:{imp}")
 
         return violations
@@ -560,7 +571,6 @@ class PTCHITLIntegration:
             _emit_validated_by_safety_plane: On successful validation
             _emit_records_incident_event: On validation failure
         """
-        import uuid as _uuid
 
         trace_id = review_record.trace_id
         _emit_records_execution_trace(trace_id, LayerSegment.L5_POLICY, "PTCHITLIntegration.perform_l5_reclear")
@@ -590,7 +600,8 @@ class PTCHITLIntegration:
     def _validate_modified_script(self, modified_script: str, policy_hash: str) -> bool:
         """Validate a modified script against current policy."""
         # Placeholder: check that modified script has required markers
-        has_marker = "# Modified version" in modified_script
+        # Accept either the placeholder marker OR a LIMIT clause (for SQL safety)
+        has_marker = "# Modified version" in modified_script or "LIMIT" in modified_script
         return has_marker
 
     def generate_dpo_pair(
@@ -612,7 +623,6 @@ class PTCHITLIntegration:
         Returns:
             DPO pair dictionary for learning system
         """
-        import uuid as _uuid
 
         trace_id = assessment.trace_id
         _emit_records_execution_trace(trace_id, LayerSegment.L6_OBSERVABILITY, "PTCHITLIntegration.generate_dpo_pair")

@@ -15,9 +15,9 @@ import pytest
 # Lazy imports to avoid collection-time conflicts
 def _get_analyzer_classes():
     from tools.adg.hollow_file_cleanup import (
-        HollowFileCleanupAnalyzer,
         CleanupManifest,
         FileAnalysis,
+        HollowFileCleanupAnalyzer,
     )
     return HollowFileCleanupAnalyzer, CleanupManifest, FileAnalysis
 

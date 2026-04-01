@@ -5,20 +5,22 @@ Unit tests for ADGQueryBridge
 Tests the Redis/SQLite/AST fallback chain and all query methods.
 """
 
-import pytest
-import tempfile
-import sqlite3
 import json
-from pathlib import Path
-from unittest.mock import Mock, patch, MagicMock
+import sqlite3
 import sys
+import tempfile
 import warnings
+from pathlib import Path
+from unittest.mock import Mock
+
+import pytest
 
 # Add tools/adg to path for importing
 _repo_root = Path(__file__).resolve().parents[4]
 sys.path.insert(0, str(_repo_root / "tools" / "adg"))
 
-from adg_query_bridge import ADGQueryBridge, FileMatch, Node, Violation, ADG_REDIS_AVAILABLE
+from adg_query_bridge import ADGQueryBridge, FileMatch, Node, Violation
+
 ADG_AVAILABLE = True
 
 
@@ -265,7 +267,6 @@ class TestADGQueryBridgeIntegration:
     def test_concurrent_queries(self, bridge_with_fallback):
         """Test that multiple concurrent queries work correctly."""
         import threading
-        import time
 
         results = []
 

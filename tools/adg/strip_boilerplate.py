@@ -9,9 +9,8 @@ import argparse
 import ast
 import json
 import sys
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from pathlib import Path
-from typing import List, Optional, Set, Tuple
 
 # Add project root to path
 sys.path.insert(0, str(Path(__file__).parent.parent.parent))
@@ -39,7 +38,7 @@ class BoilerplateStripper(ast.NodeTransformer):
         self.removed_count = 0
         self.emit_calls_removed = 0
         self.imports_removed = 0
-        self.preserved_imports: Set[str] = set()
+        self.preserved_imports: set[str] = set()
 
     def visit_Module(self, node: ast.Module) -> ast.Module:
         """Visit module level."""
@@ -180,7 +179,7 @@ class SafeBoilerplateStripper:
             became_hollow=False
         )
 
-    def strip_directory(self, directory: Path, dry_run: bool = True, recursive: bool = True) -> List[StripResult]:
+    def strip_directory(self, directory: Path, dry_run: bool = True, recursive: bool = True) -> list[StripResult]:
         """Strip boilerplate from all Python files in directory."""
         results = []
 
@@ -212,7 +211,7 @@ class SafeBoilerplateStripper:
 
         return results
 
-    def generate_report(self, results: List[StripResult]) -> dict:
+    def generate_report(self, results: list[StripResult]) -> dict:
         """Generate summary report from results."""
         summary = {
             "total_files": len(results),

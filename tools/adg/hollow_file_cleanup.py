@@ -11,7 +11,6 @@ import json
 import sys
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Dict, List, Set, Tuple
 
 # Add project root to path
 sys.path.insert(0, str(Path(__file__).parent.parent.parent))
@@ -19,17 +18,16 @@ sys.path.insert(0, str(Path(__file__).parent.parent.parent))
 from agentic_core.L5_safety.validators.hollow_file_detector_validator import (
     BehavioralNodeCounter,
     HollowFileDetector,
-    HollowFileClassification,
 )
 
 
 @dataclass
 class CleanupManifest:
     """Manifest for hollow file cleanup operations."""
-    tier1_safe_delete: List[str] = field(default_factory=list)  # No incoming edges
-    tier2_boilerplate_only: List[str] = field(default_factory=list)  # Only boilerplate imports
-    tier3_behavioral_imports: List[str] = field(default_factory=list)  # Has behavioral imports
-    metadata: Dict[str, Dict] = field(default_factory=dict)
+    tier1_safe_delete: list[str] = field(default_factory=list)  # No incoming edges
+    tier2_boilerplate_only: list[str] = field(default_factory=list)  # Only boilerplate imports
+    tier3_behavioral_imports: list[str] = field(default_factory=list)  # Has behavioral imports
+    metadata: dict[str, dict] = field(default_factory=dict)
 
 
 @dataclass
@@ -40,8 +38,8 @@ class FileAnalysis:
     classification: str
     behavioral_nodes: int
     boilerplate_nodes: int
-    incoming_edges: List[str]
-    outgoing_edges: List[str]
+    incoming_edges: list[str]
+    outgoing_edges: list[str]
     incoming_count: int
     outgoing_count: int
 
@@ -97,12 +95,12 @@ class HollowFileCleanupAnalyzer:
             outgoing_count=len(outgoing_edges)
         )
 
-    def _analyze_imports(self, content: str, file_path: str) -> Tuple[List[str], List[str]]:
+    def _analyze_imports(self, content: str, file_path: str) -> tuple[list[str], list[str]]:
         """Simple import analysis without ADG dependency."""
         import ast
 
-        incoming: List[str] = []
-        outgoing: List[str] = []
+        incoming: list[str] = []
+        outgoing: list[str] = []
 
         try:
             tree = ast.parse(content)
@@ -123,7 +121,7 @@ class HollowFileCleanupAnalyzer:
 
         return incoming, outgoing
 
-    def scan_repository(self) -> List[FileAnalysis]:
+    def scan_repository(self) -> list[FileAnalysis]:
         """Scan entire repository for hollow files."""
         results = []
 
@@ -147,7 +145,7 @@ class HollowFileCleanupAnalyzer:
 
         return results
 
-    def classify_cleanup_safety(self, analyses: List[FileAnalysis]) -> CleanupManifest:
+    def classify_cleanup_safety(self, analyses: list[FileAnalysis]) -> CleanupManifest:
         """Classify hollow files by cleanup safety."""
         manifest = CleanupManifest()
 
@@ -181,8 +179,8 @@ class HollowFileCleanupAnalyzer:
         """Try to enhance with ADG data if available."""
         try:
             # Try to import ADG components
-            from agentic_core.adg.extraction.static_scanner import ADGStaticScanner
             from agentic_core.adg.artifact.builder_types import ADGArtifactBuilder
+            from agentic_core.adg.extraction.static_scanner import ADGStaticScanner
 
             print("🔍 ADG available - enhancing with dependency analysis...")
 
