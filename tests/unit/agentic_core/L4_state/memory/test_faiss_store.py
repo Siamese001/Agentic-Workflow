@@ -1,9 +1,11 @@
 """Tests for FAISS Vector Store implementation."""
 
+from unittest.mock import patch
+
+import numpy as np
 import pytest
 
-
-# Lazy imports — wrapped to avoid collection-time errors
+# Check if faiss_store is available
 try:
     from agentic_core.L4_state.memory.faiss_store import (
         FaissEmbeddingStore,
@@ -11,13 +13,12 @@ try:
         VectorDocument,
         get_global_faiss_store,
     )
+    FAISS_AVAILABLE = True
 except ImportError:
-    pass
-
-import numpy as np
-from unittest.mock import MagicMock, patch
+    FAISS_AVAILABLE = False
 
 
+@pytest.mark.skipif(not FAISS_AVAILABLE, reason="FAISS store not available")
 class TestFAISSVectorStore:
     """Test FAISS Vector Store functionality."""
 

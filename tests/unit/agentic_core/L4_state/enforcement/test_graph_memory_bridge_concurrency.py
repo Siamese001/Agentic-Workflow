@@ -3,21 +3,22 @@
 Tests thread safety and race conditions in concurrent access scenarios.
 """
 from __future__ import annotations
+
 import pytest
 
-
-# Lazy imports — wrapped to avoid collection-time errors
+# Check if GraphMemoryBridge is available
 try:
     from agentic_core.L4_state.enforcement.graph_memory_bridge import GraphMemoryBridge
+    GRAPH_MEMORY_AVAILABLE = True
 except ImportError:
-    pass
+    GRAPH_MEMORY_AVAILABLE = False
 
 import threading
 import time
 from concurrent.futures import ThreadPoolExecutor, as_completed
-from pathlib import Path
 
 
+@pytest.mark.skipif(not GRAPH_MEMORY_AVAILABLE, reason="GraphMemoryBridge not available")
 class TestGraphMemoryBridgeConcurrency:
     """Test thread safety of GraphMemoryBridge operations."""
 

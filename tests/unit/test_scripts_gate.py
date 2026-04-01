@@ -12,6 +12,8 @@ import re
 
 import pytest
 
+from agentic_core.L0_routing.config import SCRIPTS_FORBIDDEN_PATTERNS
+
 
 MAX_RETRIES = 3
 DEFAULT_SLEEP = 1.0
@@ -48,8 +50,6 @@ class TestScriptsGatePatterns:
     )
     def test_pascalcase_rejected(self, compiled_patterns, forbidden_name: str):
         """PascalCase filenames must be rejected."""
-        from agentic_core.L0_routing.config import SCRIPTS_FORBIDDEN_PATTERNS
-
         matched = any(p.match(forbidden_name) for p in compiled_patterns)
         assert matched, f"'{forbidden_name}' should be rejected by scripts gate"
 

@@ -1,8 +1,7 @@
 """E2E Test Harness for FileClassificationAgent - Wave 1 Baseline"""
 import pytest
 
-
-# Lazy imports — wrapped to avoid collection-time errors
+# Check if FileClassificationAgent is available
 try:
     from agentic_core.L5_safety.core_kernel.classification_kernel import FileType
     from agentic_core.L5_safety.reasoning.FileClassificationAgent import (
@@ -10,26 +9,32 @@ try:
         FileClassificationAgent,
         FileClassificationHealerAgent,
     )
+    FCA_AVAILABLE = True
 except ImportError:
-    pass
+    FCA_AVAILABLE = False
 
 
-from pathlib import Path
-from typing import Dict, List, Any
 import sys
+from pathlib import Path
+from typing import Any
 
 # Add agentic_core to path
 sys.path.insert(0, str(Path(__file__).parents[7]))
 
+
 @pytest.fixture(scope="session")
 def agent():
     """Session-scoped FileClassificationAgent fixture."""
+    if not FCA_AVAILABLE:
+        pytest.skip("FileClassificationAgent not available")
     return FileClassificationAgent()
 
 
 @pytest.fixture(scope="session")
 def healer_agent():
     """Session-scoped FileClassificationHealerAgent fixture."""
+    if not FCA_AVAILABLE:
+        pytest.skip("FileClassificationAgent not available")
     return FileClassificationHealerAgent()
 
 
@@ -62,7 +67,7 @@ class ClassificationReporter:
 
     def __init__(self, agent):
         self.agent = agent
-        self.results: List[Dict[str, Any]] = []
+        self.results: list[dict[str, Any]] = []
 
     def classify_directory(self, directory: Path, recursive: bool = True) -> None:
         """Classify all Python files in a directory."""
@@ -82,7 +87,7 @@ class ClassificationReporter:
                     "error": str(e),
                 })
 
-    def generate_report(self) -> Dict[str, Any]:
+    def generate_report(self) -> dict[str, Any]:
         """Generate summary statistics."""
         stats = {}
         for r in self.results:

@@ -17,29 +17,24 @@ ROBUSTNESS_MATRIX:
 
 from __future__ import annotations
 
-import json
 import time
-import uuid
 from pathlib import Path
 from typing import Any
-from unittest.mock import MagicMock, patch
 
 import pytest
 
-
-# Lazy imports — wrapped to avoid collection-time errors
+# Check if ssot is available
 try:
     from agentic_core.L5_safety.config.structure_blueprint.ssot import get_validated_project_root
+    SSOT_AVAILABLE = True
 except ImportError:
-    pass
+    SSOT_AVAILABLE = False
 
 
 from system_learning.runtime_adg import (
-    RuntimeADGMaterializer,
-    RuntimeADGSnapshot,
     L6MetaLearningBridge,
+    RuntimeADGMaterializer,
 )
-
 
 # =============================================================================
 # Fixtures
@@ -213,6 +208,7 @@ def error_spans() -> list[dict[str, Any]]:
 # Test Class: L6 Metrics Integration
 # =============================================================================
 
+@pytest.mark.skipif(not SSOT_AVAILABLE, reason="SSOT modules not available")
 class TestL6ObservabilityMetrics:
     """Test L6 observability metrics collection from runtime ADG."""
 
@@ -311,6 +307,7 @@ class TestL6ObservabilityMetrics:
 # Test Class: L6 Alert Generation
 # =============================================================================
 
+@pytest.mark.skipif(not SSOT_AVAILABLE, reason="SSOT modules not available")
 class TestL6ObservabilityAlerts:
     """Test L6 alert generation from runtime ADG snapshots."""
 
@@ -380,6 +377,7 @@ class TestL6ObservabilityAlerts:
 # Test Class: Cross-Layer Analysis
 # =============================================================================
 
+@pytest.mark.skipif(not SSOT_AVAILABLE, reason="SSOT modules not available")
 class TestL6CrossLayerAnalysis:
     """Test cross-layer observability analysis."""
 
@@ -465,6 +463,7 @@ class TestL6CrossLayerAnalysis:
 # Test Class: Integration Edge Cases
 # =============================================================================
 
+@pytest.mark.skipif(not SSOT_AVAILABLE, reason="SSOT modules not available")
 class TestL6ObservabilityEdgeCases:
     """Edge case tests for L6 observability integration."""
 

@@ -1,19 +1,35 @@
+"""Tests for apps_qwen_config module."""
+from __future__ import annotations
+
+import unittest
+
 import pytest
 
-
-# Lazy imports — wrapped to avoid collection-time errors
+# Check if apps_qwen is available
 try:
     from agentic_core.L2_execution.apps_qwen import AppsQwenConfig, AppsQwenModelConfig, AppsQwenPromptConfig
+    APPS_QWEN_AVAILABLE = True
 except ImportError:
-    pass
+    APPS_QWEN_AVAILABLE = False
+
+
+# Check if path_constants is available
+try:
+    from agentic_core.L0_routing.config.path_constants import AGENTIC_CORE_DIR
+    from agentic_core.L5_safety.validators import canonical_truth
+    PATH_SETUP_AVAILABLE = True
+except ImportError:
+    PATH_SETUP_AVAILABLE = False
 
 
 """Tests for apps_qwen_config module."""
 import unittest
 
+
 class TestAppsQwenConfig(unittest.TestCase):
     """Test class for AppsQwenConfig."""
 
+    @pytest.mark.skipif(not PATH_SETUP_AVAILABLE, reason="path_constants not available")
     def test_get_model_config(self):
         """Test get_model_config method."""
         config = AppsQwenConfig()

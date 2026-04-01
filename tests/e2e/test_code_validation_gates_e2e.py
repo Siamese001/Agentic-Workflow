@@ -17,18 +17,16 @@ ROBUSTNESS_MATRIX:
 from __future__ import annotations
 
 import ast
-import sys
 from pathlib import Path
-from typing import Any
 
 import pytest
 
-
-# Lazy imports — wrapped to avoid collection-time errors
+# Check if ssot is available
 try:
     from agentic_core.L5_safety.config.structure_blueprint.ssot import get_validated_project_root
+    SSOT_AVAILABLE = True
 except ImportError:
-    pass
+    SSOT_AVAILABLE = False
 
 
 # =============================================================================
@@ -143,6 +141,7 @@ class TestImportHygieneGate:
 # Test Class: Syntax and Schema Validation
 # =============================================================================
 
+@pytest.mark.skipif(not SSOT_AVAILABLE, reason="SSOT module not available")
 class TestSyntaxValidationGate:
     """Test syntax and structural validation gates."""
 

@@ -621,7 +621,7 @@ Every HITL prompt MUST include:
 - **Context**: Brief description of decision point and current state
 - **Options**: 3-5 high-signal concrete alternatives numbered 1, 2, 3, 4, 5
 - **Trade-offs**: Honest pros/cons or impact for each option
-- **Recommendation**: Explicit recommendation marked with ⭐ emoji based on OpenAI SVP Agentic Engineer standards
+- **Recommendation**: Explicit recommendation marked with ⭐ emoji based on the use case: **"Target state is world-class quality that makes SVP Engineering at Anthropic/Google/OpenAI think 'we need to hire this person' — BUT balance expediency vs robustness. Short-term progress and innovation velocity matter; don't always reach for the stars if it blocks shipping."**
 - **Question**: Clear "Which option do you choose?"
 
 **HIGH-SIGNAL REQUIREMENTS:**
@@ -654,13 +654,13 @@ Every HITL prompt MUST include:
 
 **FORBIDDEN**: Single option + confirmation request, proceeding with "default", open-ended questions without options, hiding trade-offs, biased presentation, missing ⭐ recommendation, unnumbered options, missing **Pros**/**Cons** sections, verbose or unclear pros/cons, low-signal or redundant options, forcing exactly 4 options when fewer high-signal options exist.
 
-**RECOMMENDATION CRITERIA (OpenAI SVP Agentic Engineer alignment):**
-- ⭐ **Architectural Excellence**: Choose options demonstrating clean separation of concerns, modular design, and scalable patterns
-- ⭐ **Production Readiness**: Prioritize solutions with robust error handling, observability, and operational maturity
-- ⭐ **Code Quality**: Favor approaches with comprehensive testing, type safety, and maintainable abstractions
-- ⭐ **Performance at Scale**: Select options that demonstrate understanding of latency, throughput, and resource optimization
-- ⭐ **Security & Safety**: Choose solutions with proper validation, least-privilege design, and failure containment
-- ⭐ **Documentation & Communication**: Prefer approaches with clear interfaces, comprehensive documentation, and team collaboration patterns
+**RECOMMENDATION CRITERIA (Balanced SVP Engineering Excellence):**
+- ⭐ **Target State**: The option that, in 6-12 months, would make SVP Engineering at Anthropic/Google/OpenAI say "we need to hire this person"
+- ⭐ **Expediency vs Robustness**: Prioritize shipping when the cost of "perfect" exceeds 2x the "good enough" solution AND the debt is documented with a clear migration path
+- ⭐ **Innovation Velocity**: Choose approaches that demonstrate forward progress and learning, even if interim, over analysis paralysis
+- ⭐ **Technical Debt Awareness**: Favor options that either (a) incur no architectural debt, or (b) incur debt with explicit TODOs, ADR documentation, and committed remediation timeline
+- ⭐ **Scaffold vs Foundation**: Distinguish between "scaffolding" (expedient, throwaway) and "foundation" (load-bearing, requires rigor) — scaffold when testing hypotheses, foundation when validating core abstractions
+- ⭐ **Demonstrable Progress**: Prefer options that produce visible, measurable outcomes (features, performance wins, test coverage) over invisible infrastructure polish when in early-phase work
 
 ### 8.5.4 Execution Discipline
 

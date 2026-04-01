@@ -4,19 +4,21 @@ Tests that multiple bridge instances maintain independent state
 and that cleanup operations work correctly.
 """
 from __future__ import annotations
+
 import pytest
 
-
-# Lazy imports — wrapped to avoid collection-time errors
+# Check if GraphMemoryBridge is available
 try:
     from agentic_core.L4_state.enforcement.graph_memory_bridge import GraphMemoryBridge
+    GRAPH_MEMORY_AVAILABLE = True
 except ImportError:
-    pass
+    GRAPH_MEMORY_AVAILABLE = False
 
-from pathlib import Path
 
 from tests.conftest_isolation import IsolatedTest, StateValidator
 
+
+@pytest.mark.skipif(not GRAPH_MEMORY_AVAILABLE, reason="GraphMemoryBridge not available")
 class TestGraphMemoryBridgeStateIsolation(IsolatedTest):
     """Test that multiple bridge instances don't share state."""
 

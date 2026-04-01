@@ -1,47 +1,47 @@
 {
-  "runtime_adg_1774997336_2b4c2834": {
+  "runtime_adg_1775045072_25d38c1c": {
     "duration_ms": 10,
     "edge_count": 1,
-    "file_path": "agentic_core\\L4_state\\memory\\runtime_adg_test\\evolution_test\\runtime_adg_1774997336_2b4c2834.json",
-    "mission": "evo-test-1",
-    "node_count": 1,
-    "timestamp": 1774997336,
-    "trace_id": "trace-evo-001"
-  },
-  "runtime_adg_1774997336_42b2ea7b": {
-    "duration_ms": 10,
-    "edge_count": 1,
-    "file_path": "agentic_core\\L4_state\\memory\\runtime_adg_test\\evolution_test\\runtime_adg_1774997336_42b2ea7b.json",
-    "mission": "evo-test-3",
-    "node_count": 1,
-    "timestamp": 1774997336,
-    "trace_id": "trace-evo-003"
-  },
-  "runtime_adg_1774997336_834beed5": {
-    "duration_ms": 10,
-    "edge_count": 1,
-    "file_path": "agentic_core\\L4_state\\memory\\runtime_adg_test\\evolution_test\\runtime_adg_1774997336_834beed5.json",
+    "file_path": "agentic_core\\L4_state\\memory\\runtime_adg_test\\evolution_test\\runtime_adg_1775045072_25d38c1c.json",
     "mission": "evo-test-2",
     "node_count": 1,
-    "timestamp": 1774997336,
+    "timestamp": 1775045072,
     "trace_id": "trace-evo-002"
   },
-  "runtime_adg_1774997336_a6a89df0": {
+  "runtime_adg_1775045072_4081528e": {
     "duration_ms": 10,
     "edge_count": 1,
-    "file_path": "agentic_core\\L4_state\\memory\\runtime_adg_test\\evolution_test\\runtime_adg_1774997336_a6a89df0.json",
-    "mission": "evo-test-0",
-    "node_count": 1,
-    "timestamp": 1774997336,
-    "trace_id": "trace-evo-000"
-  },
-  "runtime_adg_1774997336_da08d725": {
-    "duration_ms": 10,
-    "edge_count": 1,
-    "file_path": "agentic_core\\L4_state\\memory\\runtime_adg_test\\evolution_test\\runtime_adg_1774997336_da08d725.json",
+    "file_path": "agentic_core\\L4_state\\memory\\runtime_adg_test\\evolution_test\\runtime_adg_1775045072_4081528e.json",
     "mission": "evo-test-4",
     "node_count": 1,
-    "timestamp": 1774997336,
+    "timestamp": 1775045072,
     "trace_id": "trace-evo-004"
+  },
+  "runtime_adg_1775045072_628d4ced": {
+    "duration_ms": 10,
+    "edge_count": 1,
+    "file_path": "agentic_core\\L4_state\\memory\\runtime_adg_test\\evolution_test\\runtime_adg_1775045072_628d4ced.json",
+    "mission": "evo-test-3",
+    "node_count": 1,
+    "timestamp": 1775045072,
+    "trace_id": "trace-evo-003"
+  },
+  "runtime_adg_1775045072_8d9df162": {
+    "duration_ms": 10,
+    "edge_count": 1,
+    "file_path": "agentic_core\\L4_state\\memory\\runtime_adg_test\\evolution_test\\runtime_adg_1775045072_8d9df162.json",
+    "mission": "evo-test-1",
+    "node_count": 1,
+    "timestamp": 1775045072,
+    "trace_id": "trace-evo-001"
+  },
+  "runtime_adg_1775045072_df0f071b": {
+    "duration_ms": 10,
+    "edge_count": 1,
+    "file_path": "agentic_core\\L4_state\\memory\\runtime_adg_test\\evolution_test\\runtime_adg_1775045072_df0f071b.json",
+    "mission": "evo-test-0",
+    "node_count": 1,
+    "timestamp": 1775045072,
+    "trace_id": "trace-evo-000"
   }
 }

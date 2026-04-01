@@ -4,20 +4,30 @@ This test replaces weak assertions with comprehensive behavioral validation,
 error handling tests, and edge case coverage.
 """
 from __future__ import annotations
+
 from unittest.mock import patch
+
 import pytest
 
-
-# Lazy imports — wrapped to avoid collection-time errors
+# Check if anti_pattern_scanner_validator is available
 try:
-    from agentic_core.L5_safety.validators.anti_pattern_scanner_validator import AntiPatternScanner, ScanReport
-    from agentic_core.L5_safety.validators.base_detector_validator import AntiPatternCategory, AntiPatternViolation
+    from agentic_core.L5_safety.validators.anti_pattern_scanner_validator import (
+        AntiPatternScanner,
+        ScanReport,
+    )
+    from agentic_core.L5_safety.validators.base_detector_validator import (
+        AntiPatternCategory,
+        AntiPatternViolation,
+    )
+    ANTI_PATTERN_AVAILABLE = True
 except ImportError:
-    pass
+    ANTI_PATTERN_AVAILABLE = False
 
 
 pytestmark = pytest.mark.unit
 
+
+@pytest.mark.skipif(not ANTI_PATTERN_AVAILABLE, reason="anti_pattern_scanner_validator not available")
 class TestScanReportEnhanced:
     """Enhanced tests for ScanReport with behavioral validation."""
 
@@ -206,7 +216,7 @@ class TestAntiPatternScannerEnhanced:
         if report.total_violations > 0:
             assert report.passed is False
             assert len(report.all_violations) > 0
-            assert all((hasattr(v, 'file_path') for v in report.all_violations))
+            assert all(hasattr(v, 'file_path') for v in report.all_violations)
 
     def test_scanner_error_handling(self, tmp_path):
         """Scanner should handle errors gracefully and report them."""
@@ -218,7 +228,7 @@ class TestAntiPatternScannerEnhanced:
         assert report.total_files_scanned >= 0
         if len(report.errors) > 0:
             assert len(report.errors) > 0
-            assert all((isinstance(error, str) for error in report.errors))
+            assert all(isinstance(error, str) for error in report.errors)
 
     def test_scanner_configuration_validation(self, tmp_path):
         """Scanner should validate configuration properly."""
@@ -249,10 +259,10 @@ class TestAntiPatternScannerEnhanced:
         for thread in threads:
             thread.join()
         assert len(results) == 3
-        assert all((isinstance(r, (ScanReport, Exception)) for r in results))
+        assert all(isinstance(r, (ScanReport, Exception)) for r in results)
         reports = [r for r in results if isinstance(r, ScanReport)]
         if reports:
-            assert all((r.project_root == tmp_path for r in reports))
+            assert all(r.project_root == tmp_path for r in reports)
 
 class TestIntegrationEnhanced:
     """Integration tests with enhanced validation."""

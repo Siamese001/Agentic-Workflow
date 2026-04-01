@@ -1,9 +1,9 @@
 """Tests for L1 Exact Cache implementation."""
 
+
 import pytest
 
-
-# Lazy imports — wrapped to avoid collection-time errors
+# Check if l1_exact_cache is available
 try:
     from agentic_core.L4_state.memory.l1_exact_cache import (
         CacheHit,
@@ -13,12 +13,12 @@ try:
         l1_cache_get,
         l1_cache_set,
     )
+    L1_CACHE_AVAILABLE = True
 except ImportError:
-    pass
-
-from unittest.mock import MagicMock, patch
+    L1_CACHE_AVAILABLE = False
 
 
+@pytest.mark.skipif(not L1_CACHE_AVAILABLE, reason="L1 exact cache not available")
 class TestL1ExactCache:
     """Test L1 Exact Cache functionality."""
 

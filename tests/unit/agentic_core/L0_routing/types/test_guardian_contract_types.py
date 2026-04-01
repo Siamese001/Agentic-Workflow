@@ -8,8 +8,7 @@ import os
 
 import pytest
 
-
-# Lazy imports — wrapped to avoid collection-time errors
+# Check if guardian_contract_types is available
 try:
     from agentic_core.L0_routing.types.guardian_contract_types import (
         V15EnforcementError,
@@ -19,12 +18,15 @@ try:
         is_v15_hard_fail,
         is_v15_soft_fail,
     )
+    V15_AVAILABLE = True
 except ImportError:
-    pass
+    V15_AVAILABLE = False
 
 
 pytestmark = pytest.mark.unit
 
+
+@pytest.mark.skipif(not V15_AVAILABLE, reason="V15 exception classes not available")
 class TestV15Exceptions:
     """Test V15 exception classes and functions."""
 

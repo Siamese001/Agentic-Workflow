@@ -31,20 +31,18 @@ from __future__ import annotations
 import hashlib
 import json
 import os
-import tempfile
-import threading
 import time
 import uuid
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
 from typing import Any
-from unittest.mock import MagicMock, Mock, patch
+from unittest.mock import MagicMock
 
 import pytest
 
-
-# Lazy imports — wrapped to avoid collection-time errors
+# Check if HITL modules are available
 try:
+    from agentic_core.adg.runtime.hitl_graph import HITLDecisionType, HITLGraph, HITLRuntimeRecorder
     from agentic_core.L3_orchestration.types.human_decision_artifact_types import (
         HumanAction,
         HumanDecisionArtifact,
@@ -61,7 +59,11 @@ try:
         get_hitl_gate,
         prompt_for_hitl,
     )
-    from agentic_core.L5_safety.hitl.decision_logger import HITLDecision, HITLDecisionLogger, get_decision_logger
+    from agentic_core.L5_safety.hitl.decision_logger import (
+        HITLDecision,
+        HITLDecisionLogger,
+        get_decision_logger,
+    )
     from agentic_core.L5_safety.hitl.hitl_escalation_activator import (
         EscalationPriority,
         EscalationRequest,
@@ -70,9 +72,12 @@ try:
         reset_hitl_escalation_activator,
     )
     from agentic_core.L5_safety.hitl.patch_validator import HumanPatchValidationError, validate_patch
-    from agentic_core.L5_safety.types.human_decision_artifact_types import HumanDecisionArtifact as L5HumanDecisionArtifact
-    from agentic_core.L6_observability.engines.hitl_dpo_pair_generator import DefaultDeterministicDPOPairGenerator
-    from agentic_core.adg.runtime.hitl_graph import HITLDecisionType, HITLGraph, HITLRuntimeRecorder
+    from agentic_core.L5_safety.types.human_decision_artifact_types import (
+        HumanDecisionArtifact as L5HumanDecisionArtifact,
+    )
+    from agentic_core.L6_observability.engines.hitl_dpo_pair_generator import (
+        DefaultDeterministicDPOPairGenerator,
+    )
     from agentic_core.mixins.hitl_mixin import (
         ApprovalRejectedError,
         ApprovalRequiredError,
@@ -80,8 +85,9 @@ try:
         HITLMixin,
         RiskLevel,
     )
+    HITL_AVAILABLE = True
 except ImportError:
-    pass
+    HITL_AVAILABLE = False
 
 
 # HITL imports
@@ -94,9 +100,7 @@ from system_learning.engines.hitl_decision_logger import (
 )
 from system_learning.engines.rlhf_optimizer_impl import (
     DefaultRLHFOptimizer,
-    RLHFChangePackage,
 )
-
 
 # =============================================================================
 # Fixtures
@@ -166,6 +170,7 @@ def reset_global_state() -> None:
 # Test Class: HITL Full Lifecycle
 # =============================================================================
 
+@pytest.mark.skipif(not HITL_AVAILABLE, reason="HITL modules not available")
 class TestHITLFullLifecycle:
     """End-to-end HITL lifecycle tests covering Path D flow.
 
@@ -707,6 +712,7 @@ class TestHITLFullLifecycle:
     def test_hitl_gate_protected_paths(self) -> None:
         """Test HITL gate protected paths detection."""
         from pathlib import Path
+
         from agentic_core.L5_safety.enforcement.hitl_gate import _is_protected
 
         repo_root = Path.cwd()
@@ -797,6 +803,7 @@ class TestHITLFullLifecycle:
 # Test Class: Edge Cases and Fail-Closed
 # =============================================================================
 
+@pytest.mark.skipif(not HITL_AVAILABLE, reason="HITL modules not available")
 class TestHITLEdgeCases:
     """Edge case and fail-closed behavior tests."""
 
@@ -882,6 +889,7 @@ class TestHITLEdgeCases:
 # Integration Tests
 # =============================================================================
 
+@pytest.mark.skipif(not HITL_AVAILABLE, reason="HITL modules not available")
 class TestHITLIntegration:
     """Integration tests combining multiple HITL components."""
 

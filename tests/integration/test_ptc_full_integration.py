@@ -6,30 +6,29 @@ Tests all components working together: orchestrator, safety gates, HITL, sandbox
 
 from __future__ import annotations
 
-import hashlib
 import json
-import os
-import tempfile
 import time
 import uuid
 from pathlib import Path
 from typing import Any
-from unittest.mock import MagicMock
 
 import pytest
 
-
-# Lazy imports — wrapped to avoid collection-time errors
+# Check if PTC modules are available
 try:
     from agentic_core.L2_execution.tools.ptc_contract import (
+        PTC_STDOUT_BYTE_CAP,
         PTCBytesCapExceeded,
         PTCContractEnforcer,
         PTCContractViolation,
         PTCUnsignedEnvelopeError,
-        PTC_STDOUT_BYTE_CAP,
         redact_output,
     )
-    from agentic_core.L2_execution.types.ptc_tool_contracts_types import ToolCall, ToolContractViolation, ToolResult
+    from agentic_core.L2_execution.types.ptc_tool_contracts_types import (
+        ToolCall,
+        ToolContractViolation,
+        ToolResult,
+    )
     from agentic_core.L2_execution.types.sandbox_envelope_types import SandboxEnvelope
     from agentic_core.L3_orchestration.ptc.builtin_tools import expr_eval_handler, repo_rg_handler
     from agentic_core.L3_orchestration.ptc.ptc_hitl_integration import (
@@ -60,7 +59,11 @@ try:
         reset_ptc_orchestrator,
         reset_ptc_sandbox,
     )
-    from agentic_core.L3_orchestration.ptc.ptc_registry import ToolRegistry, get_global_registry, register_tool
+    from agentic_core.L3_orchestration.ptc.ptc_registry import (
+        ToolRegistry,
+        get_global_registry,
+        register_tool,
+    )
     from agentic_core.L3_orchestration.ptc.ptc_safety_gates import (
         PTCConfidenceGate,
         PTCExecutionGate,
@@ -76,15 +79,21 @@ try:
         get_ptc_safety_gate_manager,
         reset_ptc_safety_gate_manager,
     )
-    from agentic_core.L3_orchestration.ptc.tool_call_store import ToolCallStore, get_tool_call_store, record_tool_call
+    from agentic_core.L3_orchestration.ptc.tool_call_store import (
+        ToolCallStore,
+        get_tool_call_store,
+        record_tool_call,
+    )
     from agentic_core.L3_orchestration.ptc.tool_contract import (
-        ToolCall as PTCToolCall,
         ToolArg,
         ToolCallResult,
         ToolSpec,
         canonical_json,
         generate_call_id,
         hash_result_data,
+    )
+    from agentic_core.L3_orchestration.ptc.tool_contract import (
+        ToolCall as PTCToolCall,
     )
     from agentic_core.L3_orchestration.ptc.tool_invoker import ToolInvoker
     from agentic_core.L3_orchestration.types.human_decision_artifact_types import (
@@ -107,8 +116,9 @@ try:
         emit_determinism_digest,
         emit_replay_key,
     )
+    PTC_AVAILABLE = True
 except ImportError:
-    pass
+    PTC_AVAILABLE = False
 
 
 # PTC Core imports
@@ -185,7 +195,7 @@ def ptc_safety_manager() -> PTCSafetyGateManager:
 @pytest.fixture
 def ptc_enforcer() -> PTCContractEnforcer:
     """Provide PTC contract enforcer with key source injected."""
-    from agentic_core.L2_execution.enforcement.key_source import inject_key_source, TestKeySource
+    from agentic_core.L2_execution.enforcement.key_source import TestKeySource, inject_key_source
     inject_key_source(TestKeySource())
     return PTCContractEnforcer(secret=TestKeySource.TEST_SECRET)
 
@@ -210,6 +220,7 @@ def escalation_activator():
 # Test Class: PTC End-to-End Integration
 # =============================================================================
 
+@pytest.mark.skipif(not PTC_AVAILABLE, reason="PTC modules not available")
 class TestPTCEndToEndIntegration:
     """End-to-end integration tests for PTC system."""
 
@@ -562,6 +573,7 @@ print(json.dumps({"done": True}))
 # Test Class: PTC Contract Enforcement Integration
 # =============================================================================
 
+@pytest.mark.skipif(not PTC_AVAILABLE, reason="PTC modules not available")
 class TestPTCContractEnforcementIntegration:
     """Integration tests for PTC contract enforcement."""
 
@@ -614,6 +626,7 @@ class TestPTCContractEnforcementIntegration:
 # Test Class: PTC Built-in Tools Integration
 # =============================================================================
 
+@pytest.mark.skipif(not PTC_AVAILABLE, reason="PTC modules not available")
 class TestPTCBuiltinToolsIntegration:
     """Integration tests for PTC built-in tools."""
 
@@ -670,6 +683,7 @@ class TestPTCBuiltinToolsIntegration:
 # Test Class: PTC Tool Registry Integration
 # =============================================================================
 
+@pytest.mark.skipif(not PTC_AVAILABLE, reason="PTC modules not available")
 class TestPTCToolRegistryIntegration:
     """Integration tests for PTC tool registry."""
 
@@ -734,6 +748,7 @@ class TestPTCToolRegistryIntegration:
 # Test Class: PTC Performance Integration
 # =============================================================================
 
+@pytest.mark.skipif(not PTC_AVAILABLE, reason="PTC modules not available")
 class TestPTCPerformanceIntegration:
     """Performance integration tests for PTC."""
 

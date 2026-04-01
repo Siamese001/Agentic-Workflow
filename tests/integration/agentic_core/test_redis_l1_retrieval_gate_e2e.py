@@ -16,22 +16,18 @@ from __future__ import annotations
 
 import hashlib
 import json
-import os
 import sys
 import tempfile
 import unittest
 from pathlib import Path
-from typing import Any, Dict, List, Optional
-from unittest.mock import MagicMock, Mock, patch
-
-import pytest
 
 # Add project root to path
 sys.path.insert(0, str(Path(__file__).parent.parent.parent.parent))
 
 
-# Lazy imports — wrapped to avoid collection-time errors
+# Check if retrieval layers are available
 try:
+    from agentic_core.cache import get_hot_cache, reset_cache_singletons
     from agentic_core.L4_state.engines.retrieval_layers import (
         L1ExactCache,
         L2SemanticCache,
@@ -39,9 +35,9 @@ try:
         L4AgenticActions,
         RetrievalOrchestrator,
     )
-    from agentic_core.cache import get_hot_cache, reset_cache_singletons
+    RETRIEVAL_AVAILABLE = True
 except ImportError:
-    pass
+    RETRIEVAL_AVAILABLE = False
 
 
 class TestL1ExactCache(unittest.TestCase):
@@ -553,7 +549,7 @@ class TestRedisIntegration(unittest.TestCase):
         """Test DeterministicRedisCache with real Redis."""
         self.skip_if_no_redis()
 
-        from agentic_core.cache import DeterministicRedisCache, CacheDB
+        from agentic_core.cache import CacheDB, DeterministicRedisCache
 
         cache = DeterministicRedisCache(db=CacheDB.HOT)
 

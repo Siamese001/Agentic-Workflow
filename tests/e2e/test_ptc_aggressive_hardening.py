@@ -14,15 +14,14 @@ from typing import Any
 
 import pytest
 
-
-# Lazy imports — wrapped to avoid collection-time errors
+# Check if PTC modules are available
 try:
     from agentic_core.L2_execution.enforcement.key_source import TestKeySource, inject_key_source
     from agentic_core.L2_execution.tools.ptc_contract import (
+        PTC_STDOUT_BYTE_CAP,
         PTCBytesCapExceeded,
         PTCContractEnforcer,
         PTCContractViolation,
-        PTC_STDOUT_BYTE_CAP,
         redact_output,
     )
     from agentic_core.L2_execution.types.sandbox_envelope_types import SandboxEnvelope, ToolBudget
@@ -30,10 +29,12 @@ try:
     from agentic_core.L3_orchestration.ptc.ptc_registry import ToolRegistry
     from agentic_core.L3_orchestration.ptc.ptc_safety_gates import PTCSafetyGateManager
     from agentic_core.L3_orchestration.ptc.tool_contract import (
-        ToolCall as PTCToolCall,
         ToolArg,
         ToolSpec,
         canonical_json,
+    )
+    from agentic_core.L3_orchestration.ptc.tool_contract import (
+        ToolCall as PTCToolCall,
     )
     from agentic_core.L3_orchestration.ptc.tool_invoker import ToolInvoker
     from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
@@ -43,8 +44,9 @@ try:
         emit_determinism_digest,
         emit_replay_key,
     )
+    PTC_AVAILABLE = True
 except ImportError:
-    pass
+    PTC_AVAILABLE = False
 
 
 # PTC Core imports
@@ -89,6 +91,7 @@ def ptc_invoker() -> ToolInvoker:
 # Test Class: Malicious Input Attacks
 # =============================================================================
 
+@pytest.mark.skipif(not PTC_AVAILABLE, reason="PTC modules not available")
 class TestPTCMaliciousInputs:
     """Tests against malicious and adversarial inputs."""
 
@@ -240,6 +243,7 @@ class TestPTCMaliciousInputs:
 # Test Class: Resource Exhaustion Attacks
 # =============================================================================
 
+@pytest.mark.skipif(not PTC_AVAILABLE, reason="PTC modules not available")
 class TestPTCResourceExhaustion:
     """Tests against resource exhaustion attacks."""
 
@@ -376,6 +380,7 @@ class TestPTCResourceExhaustion:
 # Test Class: Concurrency Stress Tests
 # =============================================================================
 
+@pytest.mark.skipif(not PTC_AVAILABLE, reason="PTC modules not available")
 class TestPTCConcurrencyStress:
     """Stress tests for concurrent execution scenarios."""
 
@@ -480,6 +485,7 @@ class TestPTCConcurrencyStress:
 # Test Class: Chaos Tests (Random Failures)
 # =============================================================================
 
+@pytest.mark.skipif(not PTC_AVAILABLE, reason="PTC modules not available")
 class TestPTCChaos:
     """Chaos tests with random failures and invalid states."""
 
@@ -582,6 +588,7 @@ class TestPTCChaos:
 # Test Class: Determinism Under Stress
 # =============================================================================
 
+@pytest.mark.skipif(not PTC_AVAILABLE, reason="PTC modules not available")
 class TestPTCDeterminismStress:
     """Verify determinism guarantees hold under stress."""
 
@@ -651,6 +658,7 @@ class TestPTCDeterminismStress:
 # Test Class: Safety Gate Torture Tests
 # =============================================================================
 
+@pytest.mark.skipif(not PTC_AVAILABLE, reason="PTC modules not available")
 class TestPTCSafetyGateTorture:
     """Aggressive safety gate testing."""
 

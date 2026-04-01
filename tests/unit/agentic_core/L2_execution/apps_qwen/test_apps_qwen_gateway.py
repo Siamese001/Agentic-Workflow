@@ -1,16 +1,19 @@
-import pytest
+"""Tests for apps_qwen gateway module."""
+from __future__ import annotations
 
-
-# Lazy imports — wrapped to avoid collection-time errors
-try:
-    from agentic_core.L2_execution.apps_qwen import AppsQwenGateway, AppsQwenRequest, AppsQwenResponse
-except ImportError:
-    pass
-
-
-"""Tests for apps_qwen_gateway module."""
 import unittest
 
+import pytest
+
+# Check if apps_qwen is available
+try:
+    from agentic_core.L2_execution.apps_qwen import AppsQwenGateway, AppsQwenRequest, AppsQwenResponse
+    APPS_QWEN_AVAILABLE = True
+except ImportError:
+    APPS_QWEN_AVAILABLE = False
+
+
+@pytest.mark.skipif(not APPS_QWEN_AVAILABLE, reason="apps_qwen modules not available")
 class TestAppsQwenGateway(unittest.TestCase):
     """Test class for AppsQwenGateway."""
 

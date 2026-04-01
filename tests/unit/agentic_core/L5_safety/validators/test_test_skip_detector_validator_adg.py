@@ -1,6 +1,8 @@
 """ADG importability contract for agentic_core/L5_safety/validators/test_skip_detector_validator.py."""
 from __future__ import annotations
 
+import pytest
+
 def test_module_importable():
     """Module test_skip_detector_validator must be importable."""
     try:
@@ -11,11 +13,9 @@ def test_module_importable():
 
 def test_determinism_types_importable():
     """Module determinism_types must be importable or skip gracefully."""
-    try:
-        from agentic_core.runtime.determinism_types import DeterminismDigest
-        assert DeterminismDigest is not None
-    except ImportError:
-        pass
+    pytest.importorskip("agentic_core.runtime.determinism_types", reason="determinism_types not available")
+    from agentic_core.runtime.determinism_types import DeterminismDigest
+    assert DeterminismDigest is not None
 
 def test_review_protocol_util_importable():
     """Module review_protocol_util must be importable or skip gracefully."""

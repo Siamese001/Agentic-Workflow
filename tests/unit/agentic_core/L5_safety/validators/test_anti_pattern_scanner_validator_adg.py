@@ -1,17 +1,23 @@
 """ADG-driven tests for L5_safety/validators/anti_pattern_scanner_validator.py — fan_in=1."""
 from __future__ import annotations
+
 import pytest
 
-
-# Lazy imports — wrapped to avoid collection-time errors
+# Check if anti_pattern_scanner_validator is available
 try:
-    from agentic_core.L5_safety.validators.anti_pattern_scanner_validator import AntiPatternScanner, ScanReport
+    from agentic_core.L5_safety.validators.anti_pattern_scanner_validator import (
+        AntiPatternScanner,
+        ScanReport,
+    )
+    ANTI_PATTERN_AVAILABLE = True
 except ImportError:
-    pass
+    ANTI_PATTERN_AVAILABLE = False
 
 
 pytestmark = pytest.mark.unit
 
+
+@pytest.mark.skipif(not ANTI_PATTERN_AVAILABLE, reason="anti_pattern_scanner_validator not available")
 class TestScanReport:
 
     def test_creates_with_valid_project_root(self, tmp_path):
@@ -42,7 +48,10 @@ class TestScanReport:
 
     def test_passed_property_false_with_violations(self, tmp_path):
         """Passed property should be False when violations exist with state validation."""
-        from agentic_core.L5_safety.validators.base_detector_validator import AntiPatternCategory, AntiPatternViolation
+        from agentic_core.L5_safety.validators.base_detector_validator import (
+            AntiPatternCategory,
+            AntiPatternViolation,
+        )
         report = ScanReport(project_root=tmp_path)
         assert report.passed is True
         assert report.total_violations == 0
@@ -86,9 +95,9 @@ class TestAntiPatternScanner:
         violations = scanner.scan_file(test_file)
         assert isinstance(violations, list)
         if violations:
-            assert all((hasattr(v, 'file_path') for v in violations))
-            assert all((hasattr(v, 'line_number') for v in violations))
-            assert all((v.file_path == test_file for v in violations))
+            assert all(hasattr(v, 'file_path') for v in violations)
+            assert all(hasattr(v, 'line_number') for v in violations)
+            assert all(v.file_path == test_file for v in violations)
         non_existent = tmp_path / 'does_not_exist.py'
         error_violations = scanner.scan_file(non_existent)
         assert isinstance(error_violations, list)
@@ -97,7 +106,7 @@ class TestAntiPatternScanner:
         error_violations = scanner.scan_file(invalid_file)
         assert isinstance(error_violations, list)
         assert len(violations) > 0
-        assert all((hasattr(v, 'category') for v in violations))
+        assert all(hasattr(v, 'category') for v in violations)
 
     def test_scan_changed_files_returns_report(self, tmp_path):
         """Scan changed files should return ScanReport for specified files."""
