@@ -13,14 +13,28 @@ from system_learning.engines.signal_aggregator_engine import (
     TelemetryMetric,
 )
 
+# Wave 2: Evaluation Components (B, C, D)
+from system_learning.engines.g_gate_regression_checker import GGateRegressionChecker
+from system_learning.engines.outcome_evaluation_engine import (
+    ExecutionTraceReader,
+    GroundednessChecker,
+    OutcomeEvaluationEngine,
+)
+from system_learning.engines.trajectory_evaluation_engine import TrajectoryEvaluationEngine
+
 __all__ = [
-    # Case Compilation
+    # Wave 1: Core Pipeline
     "CaseCompilationEngine",
     "CaseRecordBuilder",
     "SealedOutputReader",
-    # Signal Aggregator
     "AggregatedSignalBundle",
     "PreferenceGrade",
     "SignalAggregatorEngine",
     "TelemetryMetric",
+    # Wave 2: Evaluation Engines
+    "GGateRegressionChecker",
+    "ExecutionTraceReader",
+    "GroundednessChecker",
+    "OutcomeEvaluationEngine",
+    "TrajectoryEvaluationEngine",
 ]

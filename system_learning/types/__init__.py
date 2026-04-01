@@ -13,12 +13,25 @@ from system_learning.types.case_compilation_types import (
     SealedOutputRef,
 )
 
+# Wave 2: Evaluation Spine types
+from system_learning.types.evaluation_spine_types import (
+    GGateValidationResult,
+    MetricScore,
+    OutcomeEvaluationResult,
+    TrajectoryEvaluationResult,
+)
+
 __all__ = [
-    # Case Compilation types
+    # Wave 1: Case Compilation types
     "CaseCompilationResult",
     "CompilationInput",
     "CompilationPayload",
     "CompilationStage",
     "ContextLogAttachment",
     "SealedOutputRef",
+    # Wave 2: Evaluation Spine types
+    "GGateValidationResult",
+    "MetricScore",
+    "OutcomeEvaluationResult",
+    "TrajectoryEvaluationResult",
 ]
