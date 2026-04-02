@@ -51,6 +51,7 @@ from agentic_core.adg.schema_util import (
     CLAIMS_WRITE_LOCK_SYMBOLS,
     CONFIDENCE_SCORING_CLASSES,
     CONFIG_ACCESS_METHODS,
+    CONFIG_READ_SYMBOLS,
     CONFIG_READER_CLASSES,
     COORDINATES_AGENTS_SYMBOLS,
     DETERMINISM_PATCH_METHODS,
@@ -59,6 +60,7 @@ from agentic_core.adg.schema_util import (
     DRIFT_ALERT_METHODS,
     DURABLE_COMMIT_SYMBOLS,
     DYNAMIC_EVAL_SYMBOLS,
+    DYNAMIC_EXEC_SYMBOLS,
     DYNAMIC_GETATTR_SYMBOLS,
     EMBEDDING_PIPELINE_SYMBOLS,
     EMBEDDING_SYMBOLS,
@@ -71,6 +73,9 @@ from agentic_core.adg.schema_util import (
     EXTERNAL_HTTP_SYMBOLS,
     FEEDS_META_LEARNING_SYMBOLS,
     FREEZE_METHOD_NAMES,
+    GOVERNANCE_READ_SYMBOLS,
+    GOVERNANCE_ROUTE_SYMBOLS,
+    GOVERNANCE_WRITE_SYMBOLS,
     GUARDRAIL_CLASS_NAMES,
     HASH_CHAIN_APPEND_SYMBOLS,
     HEALER_BASE_CLASSES,
@@ -786,22 +791,6 @@ _MIN_EVIDENCE_FLOORS: dict[str, int] = {
     "instantiates": 50,
 }
 
-# H4: config read symbols that trigger reads_from edges
-CONFIG_READ_SYMBOLS: frozenset[str] = frozenset(
-    {
-        "os.environ",
-        "os.getenv",
-        "os.environ.get",
-        "getenv",
-        "config.get",
-        "settings.get",
-        "cfg.get",
-        "CONFIG",
-        "SETTINGS",
-    }
-)
-
-# H5: noise constructors to exclude from composition graph
 _COMPOSITION_NOISE: frozenset[str] = frozenset(
     {
         "dict",
@@ -826,14 +815,6 @@ _COMPOSITION_NOISE: frozenset[str] = frozenset(
         "threading.Thread",
         "asyncio.Lock",
         "asyncio.Event",
-    }
-)
-
-# S3: dynamic execution symbols (RULE_F)
-DYNAMIC_EXEC_SYMBOLS: frozenset[str] = frozenset(
-    {
-        "eval",
-        "exec",
     }
 )
 
@@ -1714,240 +1695,6 @@ _INTERNAL_MODULE_PREFIXES: tuple[str, ...] = (
 )
 
 _TEST_FILE_INDICATORS: tuple[str, ...] = ("tests/", "test_", "_test.py")
-
-GOVERNANCE_WRITE_SYMBOLS: frozenset[str] = frozenset(
-    {
-        "UniversalWriteGateway",
-        "execute_write",
-        "submit_instruction",
-        "commit_write",
-        "uwg",
-        "WriteGovernorMixin",
-        "uwg_write",
-        "write_text",
-        "write_guardian_result",
-        "create_artifact",
-        "get_write_gateway",
-        "persist_scan_result",
-        # Wave 116: gateway/mutation writes
-        "write_gateway",
-        "assert_no_persistent_write",
-        "write_all_artifacts",
-        "is_commit_sandbox_active",
-        "ProposalCommitter",
-        # Wave 117: store writes
-        "InMemoryHealingOutcomeIntakeStore",
-        "HealingSuccessRateStore",
-        "get_default_store",
-        "reset_default_store",
-        "get_bm25_store",
-        # Wave 118: record writes
-        "TraceFeatureRecord",
-        "CorpusRecord",
-        "KeyRecord",
-        "MutationDiffRecord",
-        "ReplayFailureRecord",
-        "PromptOutcomeRecord",
-        "HealingOutcomeIntakeRecord",
-        # Wave 119: commit/persist writes
-        "create_and_commit_routing_contract",
-        "analyze_failures_and_persist",
-        "compute_content_hash",
-        "compute_replay_hash",
-        "PolicyUpdateProposal",
-        # Wave 120: healing/input writes
-        "HealingInput",
-        "compute_heal_confidence",
-        "create_legacy_import_healer",
-        "log_event",
-        # Wave 137-139: writes_through density
-        "get_validated_project_root",
-        "ExecutionContext",
-        "SurgicalContext",
-        "ViolationConstraint",
-    }
-)
-
-GOVERNANCE_ROUTE_SYMBOLS: frozenset[str] = frozenset(
-    {
-        "HealingOrchestrator",
-        "SovereignLLMGateway",
-        "sovereign_gateway",
-        "run_healing",
-        "replay_run",
-        "route_instruction",
-        "healing_orchestrator",
-        "dispatch_healing",
-        "route_healing_tier",
-        "AgenticRouter",
-        # Wave 121: gateway/routing dispatchers
-        "get_routing_gateway",
-        "V15ExecutionGateway",
-        "VLLMQueueController",
-        "VLLMCircuitBreakerRegistry",
-        "get_agent_dispatch_registry",
-        # Wave 122: pipeline/orchestrator routes
-        "run_pipeline",
-        "ExecutionOrchestrator",
-        "VigilanceDispatcherAdapter",
-        "get_healing_orchestrator",
-        "get_validator_orchestrator",
-        # Wave 123: route decision artifacts
-        "route_violations",
-        "build_l3_route_decision_artifact",
-        "ResumeOrchestratorEngine",
-        "PipelineDependencies",
-        "build_pipeline_deps",
-        # Wave 124: coordination routes
-        "ASTCoordinate",
-        "MCPConnectionManager",
-        "ExecutionPathController",
-        # Wave 143-145: routes_through density
-        "invoke_hierarchy_agent",
-        "safe_run",
-        "ModelRouter",
-        "ValidationResult",
-        "UnifiedAgent",
-        "get_llm_gateway",
-        "check_gateway_topology",
-        "build_route_decision_key",
-        "build_route_context_key",
-    }
-)
-
-GOVERNANCE_READ_SYMBOLS: frozenset[str] = frozenset(
-    {
-        "UniversalReadGateway",
-        "read_file",
-        "read_sqlite",
-        "read_redis",
-        "read_vector",
-        "read_artifact",
-        "urg_read",
-        "ReadGovernorMixin",
-        "read_active_payload",
-        "pull_audit_data",
-        # Wave 101: config readers
-        "load_default_healing_tier_config",
-        "load_or_scan",
-        "get_sovereign_config",
-        "get_active_configs",
-        "ConfigurationLoader",
-        "get_config_loader",
-        "EvaluationLoader",
-        "build_pipeline_config",
-        "load_dev_script",
-        "get_config_surface",
-        "deterministic_json",
-        # Wave 102: sqlite readers
-        "ADGQuerySession",
-        "ADGRuntimeQueryEngine",
-        "SqliteMemoryStore",
-        "safe_execute",
-        "execute_ssot",
-        "get_runtime_query_engine",
-        # Wave 103: redis readers
-        "get_hot_cache",
-        "ADGRedisClient",
-        "SemanticCacheManager",
-        "DeterministicRedisCache",
-        "check_redis_health",
-        "ScanCache",
-        "get_coordination_cache",
-        # Wave 104: vector/faiss readers
-        "LocalFAISSStore",
-        "RetrievalProfile",
-        "EmbeddingServiceFactory",
-        "query_similarity",
-        "build_retriever",
-        "build_seed_embedding_pack",
-        # Wave 105: artifact/archive readers
-        "build_artifact",
-        "build_pre_run_report",
-        "RouteDecisionArtifact",
-        "ADGArtifactBuilder",
-        "IncidentBundle",
-        # Wave 106: file/path readers
-        "module_path_to_layer",
-        "normalize_repo_path",
-        "validate_no_absolute_paths",
-        "PathRouter",
-        "ExecutionPathController",
-        # Wave 107: state/freeze readers
-        "get_run_state_authority",
-        "RuntimeStateGuard",
-        "RuntimeStateManager",
-        "JsonFileBackedFreezeReader",
-        "StaticFreezeReader",
-        "compute_runtime_state_digest",
-        "FileBackedAuditStore",
-        # Wave 108: healing/config readers
-        "HealingTierConfig",
-        "HealingConfigOptimizer",
-        "ConfigurationService",
-        "SandboxEnvelope",
-        "ResourceEnvelope",
-        "GovernedPayload",
-        # Wave 109: snapshot readers
-        "SemanticClockSnapshot",
-        "HealingOutcomeAggregateSnapshot",
-        "BlindSpotReport",
-        "PatternFindingReport",
-        "GuardianReportBuilder",
-        # Wave 110: misc residual readers
-        "MCPConnectionManager",
-        "load_agent_discovery",
-        "stable_sha256_json",
-        "RetrievalAnchor",
-        "get_embedding_gateway",
-        # Wave 111: envelope/payload readers
-        "CanonicalJSON",
-        "canonical_json",
-        "ReasonTraceEnvelope",
-        "ResultEnvelope",
-        "ReplayEnvelope",
-        "PromptLoader",
-        "MetaLearningBusConfig",
-        # Wave 112: state/queue readers
-        "VLLMQueueState",
-        "HandshakeStateMachine",
-        "SlotPayload",
-        "RunScopedStateAuthority",
-        "StateVersionManager",
-        "DefaultL4StateWriter",
-        # Wave 113: retrieval/drift readers
-        "RetrievalDriftMonitor",
-        "RetrievalPipeline",
-        "RetrievalCaseRecord",
-        "EmbeddingHealthSnapshot",
-        "PromptOutcomeEmbeddingRecord",
-        "read_only_retrieval_scope",
-        "get_embedding_config_surface",
-        # Wave 114: report/artifact readers
-        "EvaluationReport",
-        "DeltaReport",
-        "AnswerQualitySnapshot",
-        "HumanDecisionArtifact",
-        "FeatureBundle",
-        "ReportLocationValidator",
-        "build_replay_bundle",
-        # Wave 115: security/protected readers
-        "assert_read_only_audit_access",
-        "SafetyAuditTrail",
-        "verify_mutation_paths",
-        "PathFragilityDetector",
-        "_read_baseline",
-        "safe_git_execute",
-        # Wave 140-142: reads_through density
-        "get_clock",
-        "get_python_files",
-        "get_active_execution_trace",
-        "get_behavioral_profile",
-        "ADGBehavioralIndex",
-        "get_data_files",
-        "ADGStaticScanner",
-    }
-)
 
 
 class _InternalCallGraphVisitor(ast.NodeVisitor):
