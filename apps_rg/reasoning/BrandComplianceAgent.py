@@ -1,9 +1,20 @@
 """CONSOLIDATED: BrandComplianceAgent → RGValidationExecutor (2026-02-08).
 
+DEPRECATED: This shim will be removed in a future release.
+Import the canonical executor directly:
+    from apps_rg.engines.RGValidationExecutor import RGValidationExecutor
+
 This file is a backward-compatibility shim.
-Import the canonical executor directly for new code.
 """
 
-from apps_rg.reasoning.RGValidationExecutor import RGValidationExecutor as BrandComplianceAgent
+import warnings
+
+warnings.warn(
+    "BrandComplianceAgent is deprecated. Use RGValidationExecutor directly.",
+    DeprecationWarning,
+    stacklevel=2,
+)
+
+from apps_rg.engines.RGValidationExecutor import RGValidationExecutor as BrandComplianceAgent
 
 __all__ = ["BrandComplianceAgent"]
