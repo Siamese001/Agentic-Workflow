@@ -44,9 +44,14 @@ import os
 import sqlite3
 import sys
 import time
+import warnings
 from collections import defaultdict
 
 import redis
+
+# Suppress deprecated hmset warning - required for Redis server <4.0 compatibility
+# The modern hset(mapping=...) requires Redis 4.0+; we upgrade server separately
+warnings.filterwarnings("ignore", category=DeprecationWarning, message=".*hmset.*")
 
 # CPU Optimization Imports
 from agentic_core.L2_execution.optimization.cpu_optimizer import (
@@ -62,7 +67,7 @@ ADG_DIR = r"c:\Git\Agentic-Workflow\artifacts\adg"
 REDIS_HOST = "localhost"
 REDIS_PORT = 6379
 REDIS_DB = 0
-BATCH_SIZE = 1000  # Optimized from 500 for better throughput
+BATCH_SIZE = 5000  # Larger batches for better throughput
 DIGEST_SPOT_CHECK_SIZE = 200
 
 # ---------------------------------------------------------------------------
@@ -236,9 +241,14 @@ def ingest(force: bool = False, parallel: bool = True) -> None:
     sqlite_mtime = os.path.getmtime(sqlite_path)
     ts_from_file = _ts_from_sqlite_path(sqlite_path)
 
-    r = redis.Redis(host=REDIS_HOST, port=REDIS_PORT, db=REDIS_DB, decode_responses=True)
+    # Connection pool for better throughput
+    r = redis.Redis(
+        host=REDIS_HOST, port=REDIS_PORT, db=REDIS_DB, decode_responses=True,
+        socket_keepalive=True, socket_connect_timeout=5, socket_timeout=30,
+        health_check_interval=30, max_connections=20,
+    )
     r.ping()
-    print(f"[redis] connected {REDIS_HOST}:{REDIS_PORT}")
+    print(f"[redis] connected {REDIS_HOST}:{REDIS_PORT} (pooled)")
 
     if not force and not is_stale(r, sqlite_mtime):
         print("[redis] ADG cache is current — skipping ingest (use --force to override)")
@@ -455,22 +465,21 @@ def ingest(force: bool = False, parallel: bool = True) -> None:
     node_count_str = str(snap.get("counts", {}).get("module_count", 0))
     edge_count_str = str(snap.get("counts", {}).get("total_relations", 0))
     digest = snap.get("artifact_digest", "")
-    r.hmset(
-        "adg:meta",
-        {
-            "sqlite_path": sqlite_path,
-            "sqlite_mtime": str(sqlite_mtime),
-            "timestamp": ts_from_file,
-            "ingested_at": ingested_at,
-            "node_count": node_count_str,
-            "edge_count": edge_count_str,
-            "digest": digest,
-            "sqlite_digest": sqlite_digest,
-            "redis_digest": redis_digest,
-            "violation_count": str(violation_count),
-            "module_context_count": str(mod_ctx_count),
-        },
-    )
+    meta_fields = {
+        "sqlite_path": sqlite_path,
+        "sqlite_mtime": str(sqlite_mtime),
+        "timestamp": ts_from_file,
+        "ingested_at": ingested_at,
+        "node_count": node_count_str,
+        "edge_count": edge_count_str,
+        "digest": digest,
+        "sqlite_digest": sqlite_digest,
+        "redis_digest": redis_digest,
+        "violation_count": str(violation_count),
+        "module_context_count": str(mod_ctx_count),
+    }
+    for k, v in meta_fields.items():
+        r.hset("adg:meta", k, v)
     print("[redis] meta written")
 
     # ── STRING sentinel (readable via mcp9_get for MCP-level freshness check) ──

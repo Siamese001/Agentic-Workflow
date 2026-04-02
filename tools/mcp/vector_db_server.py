@@ -57,13 +57,14 @@ class VectorDBMCPServer:
         self.server = Server("vector-db")
         self.chroma_client = None
         self.embedding_model = None
+        self._embedding_model_loading = False
         self._setup_handlers()
-        self._initialize_clients()
+        # Fast initialization - defer heavy loading
+        self._initialize_chroma_only()
 
-    def _initialize_clients(self):
-        """Initialize vector database clients"""
+    def _initialize_chroma_only(self):
+        """Initialize only ChromaDB for fast startup"""
         try:
-            # Initialize ChromaDB
             CHROMA_PATH.mkdir(parents=True, exist_ok=True)
             self.chroma_client = chromadb.PersistentClient(
                 path=str(CHROMA_PATH),
@@ -73,12 +74,19 @@ class VectorDBMCPServer:
         except Exception as e:
             logger.error(f"Failed to initialize ChromaDB: {e}")
 
-        try:
-            # Initialize embedding model
-            self.embedding_model = SentenceTransformer(DEFAULT_EMBEDDING_MODEL)
-            logger.info(f"Embedding model loaded: {DEFAULT_EMBEDDING_MODEL}")
-        except Exception as e:
-            logger.error(f"Failed to load embedding model: {e}")
+    def _ensure_embedding_model(self):
+        """Lazy load embedding model on first use"""
+        if self.embedding_model is None and not self._embedding_model_loading:
+            self._embedding_model_loading = True
+            try:
+                logger.info("Loading embedding model (lazy init)...")
+                self.embedding_model = SentenceTransformer(DEFAULT_EMBEDDING_MODEL)
+                logger.info(f"Embedding model loaded: {DEFAULT_EMBEDDING_MODEL}")
+            except Exception as e:
+                logger.error(f"Failed to load embedding model: {e}")
+            finally:
+                self._embedding_model_loading = False
+        return self.embedding_model is not None
 
     def _setup_handlers(self):
         @self.server.list_tools()
@@ -396,9 +404,16 @@ class VectorDBMCPServer:
 
     async def _add_documents(self, args: dict[str, Any]) -> CallToolResult:
         """Add documents to a collection with embeddings"""
-        if not self.chroma_client or not self.embedding_model:
+        if not self.chroma_client:
             return CallToolResult(
-                content=[TextContent(type="text", text="Vector DB not properly initialized")],
+                content=[TextContent(type="text", text="ChromaDB client not initialized")],
+                isError=True
+            )
+        
+        # Lazy load embedding model
+        if not self._ensure_embedding_model():
+            return CallToolResult(
+                content=[TextContent(type="text", text="Failed to load embedding model")],
                 isError=True
             )
 
@@ -456,9 +471,16 @@ class VectorDBMCPServer:
 
     async def _query_collection(self, args: dict[str, Any]) -> CallToolResult:
         """Query a collection for similar documents"""
-        if not self.chroma_client or not self.embedding_model:
+        if not self.chroma_client:
             return CallToolResult(
-                content=[TextContent(type="text", text="Vector DB not properly initialized")],
+                content=[TextContent(type="text", text="ChromaDB client not initialized")],
+                isError=True
+            )
+        
+        # Lazy load embedding model
+        if not self._ensure_embedding_model():
+            return CallToolResult(
+                content=[TextContent(type="text", text="Failed to load embedding model")],
                 isError=True
             )
 
@@ -568,9 +590,10 @@ class VectorDBMCPServer:
 
     async def _embed_text(self, args: dict[str, Any]) -> CallToolResult:
         """Generate embeddings for text"""
-        if not self.embedding_model:
+        # Lazy load embedding model
+        if not self._ensure_embedding_model():
             return CallToolResult(
-                content=[TextContent(type="text", text="Embedding model not initialized")],
+                content=[TextContent(type="text", text="Failed to load embedding model")],
                 isError=True
             )
 
@@ -615,9 +638,16 @@ class VectorDBMCPServer:
 
     async def _semantic_search(self, args: dict[str, Any]) -> CallToolResult:
         """Perform semantic search across all collections"""
-        if not self.chroma_client or not self.embedding_model:
+        if not self.chroma_client:
             return CallToolResult(
-                content=[TextContent(type="text", text="Vector DB not properly initialized")],
+                content=[TextContent(type="text", text="ChromaDB client not initialized")],
+                isError=True
+            )
+        
+        # Lazy load embedding model
+        if not self._ensure_embedding_model():
+            return CallToolResult(
+                content=[TextContent(type="text", text="Failed to load embedding model")],
                 isError=True
             )
 

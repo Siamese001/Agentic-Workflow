@@ -1624,3 +1624,105 @@ _emit_generates_mutation_diff("l4w2", "lifecycle_trace_contract", "mutation_diff
 _emit_computes_mutation_replay_key("l4w2", "lifecycle_trace_contract", "replay_key_bootstrap")
 _emit_applies_hmac_seal("l4w2", "lifecycle_trace_contract", "hmac_seal_bootstrap")
 _emit_packages_execution_trace("l4w2", "lifecycle_trace_contract", "trace_package_bootstrap")
+
+# ── Wave 3: Authoritative Commit + L4 Read Surface ─────────────────────────
+# Loggers for L4/UWG Wave 3 emitters
+_CLAIMS_WRITE_LOCK_LOG: logging.Logger = logging.getLogger("adg.claims_write_lock")
+_COMMITS_MUTATION_DURABLE_LOG: logging.Logger = logging.getLogger("adg.commits_mutation_durable")
+_APPENDS_HASH_CHAIN_LOG: logging.Logger = logging.getLogger("adg.appends_hash_chain")
+_HEALS_ON_ROLLBACK_FAILURE_LOG: logging.Logger = logging.getLogger("adg.heals_on_rollback_failure")
+_MATERIALIZES_READ_VIEW_LOG: logging.Logger = logging.getLogger("adg.materializes_read_view")
+_REFRESHES_RETRIEVAL_SURFACE_LOG: logging.Logger = logging.getLogger("adg.refreshes_retrieval_surface")
+_SWAPS_VERSION_ALIAS_LOG: logging.Logger = logging.getLogger("adg.swaps_version_alias")
+_SYNCS_L4_TELEMETRY_LOG: logging.Logger = logging.getLogger("adg.syncs_l4_telemetry")
+
+
+def _emit_claims_write_lock(root_trace_id: str, claimer: str, lock: str) -> None:
+    """Emit claims_write_lock ADG edge (L4/UWG Wave 3 Authoritative Commit)."""
+    _CLAIMS_WRITE_LOCK_LOG.debug(
+        "claims_write_lock root_trace_id=%s claimer=%s lock=%s",
+        root_trace_id,
+        claimer,
+        lock,
+    )
+
+
+def _emit_commits_mutation_durable(root_trace_id: str, committer: str, mutation: str) -> None:
+    """Emit commits_mutation_durable ADG edge (L4/UWG Wave 3 Authoritative Commit)."""
+    _COMMITS_MUTATION_DURABLE_LOG.debug(
+        "commits_mutation_durable root_trace_id=%s committer=%s mutation=%s",
+        root_trace_id,
+        committer,
+        mutation,
+    )
+
+
+def _emit_appends_hash_chain(root_trace_id: str, appender: str, chain_link: str) -> None:
+    """Emit appends_hash_chain ADG edge (L4/UWG Wave 3 Authoritative Commit)."""
+    _APPENDS_HASH_CHAIN_LOG.debug(
+        "appends_hash_chain root_trace_id=%s appender=%s chain_link=%s",
+        root_trace_id,
+        appender,
+        chain_link,
+    )
+
+
+def _emit_heals_on_rollback_failure(root_trace_id: str, healer: str, failure: str) -> None:
+    """Emit heals_on_rollback_failure ADG edge (L4/UWG Wave 3 Authoritative Commit)."""
+    _HEALS_ON_ROLLBACK_FAILURE_LOG.debug(
+        "heals_on_rollback_failure root_trace_id=%s healer=%s failure=%s",
+        root_trace_id,
+        healer,
+        failure,
+    )
+
+
+def _emit_materializes_read_view(root_trace_id: str, materializer: str, view: str) -> None:
+    """Emit materializes_read_view ADG edge (L4/UWG Wave 3 L4 Read Surface)."""
+    _MATERIALIZES_READ_VIEW_LOG.debug(
+        "materializes_read_view root_trace_id=%s materializer=%s view=%s",
+        root_trace_id,
+        materializer,
+        view,
+    )
+
+
+def _emit_refreshes_retrieval_surface(root_trace_id: str, refresher: str, surface: str) -> None:
+    """Emit refreshes_retrieval_surface ADG edge (L4/UWG Wave 3 L4 Read Surface)."""
+    _REFRESHES_RETRIEVAL_SURFACE_LOG.debug(
+        "refreshes_retrieval_surface root_trace_id=%s refresher=%s surface=%s",
+        root_trace_id,
+        refresher,
+        surface,
+    )
+
+
+def _emit_swaps_version_alias(root_trace_id: str, swapper: str, alias: str) -> None:
+    """Emit swaps_version_alias ADG edge (L4/UWG Wave 3 L4 Read Surface)."""
+    _SWAPS_VERSION_ALIAS_LOG.debug(
+        "swaps_version_alias root_trace_id=%s swapper=%s alias=%s",
+        root_trace_id,
+        swapper,
+        alias,
+    )
+
+
+def _emit_syncs_l4_telemetry(root_trace_id: str, syncer: str, telemetry: str) -> None:
+    """Emit syncs_l4_telemetry ADG edge (L4/UWG Wave 3 L4 Read Surface)."""
+    _SYNCS_L4_TELEMETRY_LOG.debug(
+        "syncs_l4_telemetry root_trace_id=%s syncer=%s telemetry=%s",
+        root_trace_id,
+        syncer,
+        telemetry,
+    )
+
+
+# Self-bootstrap calls for L4/UWG Wave 3 emitters
+_emit_claims_write_lock("l4w3", "lifecycle_trace_contract", "write_lock_bootstrap")
+_emit_commits_mutation_durable("l4w3", "lifecycle_trace_contract", "durable_commit_bootstrap")
+_emit_appends_hash_chain("l4w3", "lifecycle_trace_contract", "hash_chain_bootstrap")
+_emit_heals_on_rollback_failure("l4w3", "lifecycle_trace_contract", "rollback_heal_bootstrap")
+_emit_materializes_read_view("l4w3", "lifecycle_trace_contract", "read_view_bootstrap")
+_emit_refreshes_retrieval_surface("l4w3", "lifecycle_trace_contract", "surface_refresh_bootstrap")
+_emit_swaps_version_alias("l4w3", "lifecycle_trace_contract", "alias_swap_bootstrap")
+_emit_syncs_l4_telemetry("l4w3", "lifecycle_trace_contract", "telemetry_sync_bootstrap")

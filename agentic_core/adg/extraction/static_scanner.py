@@ -140,6 +140,14 @@ from agentic_core.adg.schema_util import (
     MUTATION_REPLAY_KEY_SYMBOLS,
     HMAC_SEAL_SYMBOLS,
     EXECUTION_TRACE_PACKAGE_SYMBOLS,
+    CLAIMS_WRITE_LOCK_SYMBOLS,
+    DURABLE_COMMIT_SYMBOLS,
+    HASH_CHAIN_APPEND_SYMBOLS,
+    ROLLBACK_HEAL_SYMBOLS,
+    MATERIALIZES_READ_VIEW_SYMBOLS,
+    RETRIEVAL_SURFACE_REFRESH_SYMBOLS,
+    SWAPS_VERSION_ALIAS_SYMBOLS,
+    L4_TELEMETRY_SYNC_SYMBOLS,
     VALIDATES_CAPABILITY_SYMBOLS,
     VALIDATOR_BASE_CLASSES,
     VECTOR_STORE_SYMBOLS,
@@ -234,6 +242,14 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_computes_mutation_replay_key,
     _emit_applies_hmac_seal,
     _emit_packages_execution_trace,
+    _emit_claims_write_lock,
+    _emit_commits_mutation_durable,
+    _emit_appends_hash_chain,
+    _emit_heals_on_rollback_failure,
+    _emit_materializes_read_view,
+    _emit_refreshes_retrieval_surface,
+    _emit_swaps_version_alias,
+    _emit_syncs_l4_telemetry,
     _emit_feeds_meta_learning,
     _emit_gated_by_confidence,
     _emit_hard_fails_untranscripted,
@@ -289,10 +305,19 @@ _emit_validates_uwg_intent("l4w1", "static_scanner", "uwg_intent_bootstrap")
 _emit_checks_policy_hash_at_uwg("l4w1", "static_scanner", "uwg_policy_bootstrap")
 _emit_checks_capability_set("l4w1", "static_scanner", "uwg_capability_bootstrap")
 _emit_validates_blast_radius_at_uwg("l4w1", "static_scanner", "uwg_blast_bootstrap")
+_emit_syncs_l4_telemetry("l4w3", "static_scanner", "l4_telemetry_bootstrap")
 _emit_generates_mutation_diff("l4w2", "static_scanner", "mutation_diff_bootstrap")
 _emit_computes_mutation_replay_key("l4w2", "static_scanner", "replay_key_bootstrap")
 _emit_applies_hmac_seal("l4w2", "static_scanner", "hmac_seal_bootstrap")
 _emit_packages_execution_trace("l4w2", "static_scanner", "trace_package_bootstrap")
+# Wave 3 self-bootstrap calls
+_emit_claims_write_lock("l4w3", "static_scanner", "write_lock_bootstrap")
+_emit_commits_mutation_durable("l4w3", "static_scanner", "durable_commit_bootstrap")
+_emit_appends_hash_chain("l4w3", "static_scanner", "hash_chain_bootstrap")
+_emit_heals_on_rollback_failure("l4w3", "static_scanner", "rollback_heal_bootstrap")
+_emit_materializes_read_view("l4w3", "static_scanner", "read_view_bootstrap")
+_emit_refreshes_retrieval_surface("l4w3", "static_scanner", "surface_refresh_bootstrap")
+_emit_swaps_version_alias("l4w3", "static_scanner", "alias_swap_bootstrap")
 _emit_writes_through("p1", "static_scanner", "write_through")
 _emit_validated_by_safety_plane("p1", "static_scanner", "safety_validation")
 _emit_invokes_eval("p1", "static_scanner", "eval_call")
@@ -2987,6 +3012,150 @@ class _MutationRecordAssemblyVisitor(ast.NodeVisitor):
                     to_name=canonical_name("Symbol", sym),
                     relation_type="packages_execution_trace",
                     edge_kind="mutation_assembly",
+                    source_file=self.source_file,
+                    line_no=getattr(node, "lineno", 1),
+                    symbol=sym,
+                )
+            )
+
+        self.generic_visit(node)
+
+
+class _AuthoritativeCommitVisitor(ast.NodeVisitor):
+    """G36: L4/UWG Wave 3 Authoritative Commit + L4 Read Surface edge extraction.
+
+    Emits:
+      - claims_write_lock
+      - commits_mutation_durable
+      - appends_hash_chain
+      - heals_on_rollback_failure
+      - materializes_read_view
+      - refreshes_retrieval_surface
+      - swaps_version_alias
+      - syncs_l4_telemetry
+    """
+
+    def __init__(self, module_adg_name: str, source_file: str) -> None:
+        self.module_adg_name = module_adg_name
+        self.source_file = source_file
+        self.edges: list[Edge] = []
+
+    def _sym(self, node: ast.AST) -> str:
+        if isinstance(node, ast.Name):
+            return node.id
+        if isinstance(node, ast.Attribute):
+            return f"{self._sym(node.value)}.{node.attr}"
+        return ""
+
+    def visit_Call(self, node: ast.Call) -> None:
+        import uuid as _uuid  # noqa: PLC0415
+
+        sym = self._sym(node.func)
+        if not sym:
+            self.generic_visit(node)
+            return
+
+        tail = sym.split(".")[-1]
+        base = sym.split(".")[0]
+
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L4_STATE, "_AuthoritativeCommitVisitor.visit_Call"
+        )
+
+        # Check authoritative commit symbols
+        if base in CLAIMS_WRITE_LOCK_SYMBOLS or tail in CLAIMS_WRITE_LOCK_SYMBOLS:
+            self.edges.append(
+                Edge(
+                    from_name=self.module_adg_name,
+                    to_name=canonical_name("Symbol", sym),
+                    relation_type="claims_write_lock",
+                    edge_kind="authoritative_commit",
+                    source_file=self.source_file,
+                    line_no=getattr(node, "lineno", 1),
+                    symbol=sym,
+                )
+            )
+        elif base in DURABLE_COMMIT_SYMBOLS or tail in DURABLE_COMMIT_SYMBOLS:
+            self.edges.append(
+                Edge(
+                    from_name=self.module_adg_name,
+                    to_name=canonical_name("Symbol", sym),
+                    relation_type="commits_mutation_durable",
+                    edge_kind="authoritative_commit",
+                    source_file=self.source_file,
+                    line_no=getattr(node, "lineno", 1),
+                    symbol=sym,
+                )
+            )
+        elif base in HASH_CHAIN_APPEND_SYMBOLS or tail in HASH_CHAIN_APPEND_SYMBOLS:
+            self.edges.append(
+                Edge(
+                    from_name=self.module_adg_name,
+                    to_name=canonical_name("Symbol", sym),
+                    relation_type="appends_hash_chain",
+                    edge_kind="authoritative_commit",
+                    source_file=self.source_file,
+                    line_no=getattr(node, "lineno", 1),
+                    symbol=sym,
+                )
+            )
+        elif base in ROLLBACK_HEAL_SYMBOLS or tail in ROLLBACK_HEAL_SYMBOLS:
+            self.edges.append(
+                Edge(
+                    from_name=self.module_adg_name,
+                    to_name=canonical_name("Symbol", sym),
+                    relation_type="heals_on_rollback_failure",
+                    edge_kind="authoritative_commit",
+                    source_file=self.source_file,
+                    line_no=getattr(node, "lineno", 1),
+                    symbol=sym,
+                )
+            )
+        # Check L4 read surface symbols
+        elif base in MATERIALIZES_READ_VIEW_SYMBOLS or tail in MATERIALIZES_READ_VIEW_SYMBOLS:
+            self.edges.append(
+                Edge(
+                    from_name=self.module_adg_name,
+                    to_name=canonical_name("Symbol", sym),
+                    relation_type="materializes_read_view",
+                    edge_kind="l4_read_surface",
+                    source_file=self.source_file,
+                    line_no=getattr(node, "lineno", 1),
+                    symbol=sym,
+                )
+            )
+        elif base in RETRIEVAL_SURFACE_REFRESH_SYMBOLS or tail in RETRIEVAL_SURFACE_REFRESH_SYMBOLS:
+            self.edges.append(
+                Edge(
+                    from_name=self.module_adg_name,
+                    to_name=canonical_name("Symbol", sym),
+                    relation_type="refreshes_retrieval_surface",
+                    edge_kind="l4_read_surface",
+                    source_file=self.source_file,
+                    line_no=getattr(node, "lineno", 1),
+                    symbol=sym,
+                )
+            )
+        elif base in SWAPS_VERSION_ALIAS_SYMBOLS or tail in SWAPS_VERSION_ALIAS_SYMBOLS:
+            self.edges.append(
+                Edge(
+                    from_name=self.module_adg_name,
+                    to_name=canonical_name("Symbol", sym),
+                    relation_type="swaps_version_alias",
+                    edge_kind="l4_read_surface",
+                    source_file=self.source_file,
+                    line_no=getattr(node, "lineno", 1),
+                    symbol=sym,
+                )
+            )
+        elif base in L4_TELEMETRY_SYNC_SYMBOLS or tail in L4_TELEMETRY_SYNC_SYMBOLS:
+            self.edges.append(
+                Edge(
+                    from_name=self.module_adg_name,
+                    to_name=canonical_name("Symbol", sym),
+                    relation_type="syncs_l4_telemetry",
+                    edge_kind="l4_read_surface",
                     source_file=self.source_file,
                     line_no=getattr(node, "lineno", 1),
                     symbol=sym,
@@ -6502,6 +6671,11 @@ def _scan_file(
         mutation_visitor = _MutationRecordAssemblyVisitor(module_adg, rel)
         mutation_visitor.visit(tree)
         edges.extend(mutation_visitor.edges)
+
+        # G36: L4/UWG Wave 3 Authoritative Commit + L4 Read Surface visitor
+        commit_visitor = _AuthoritativeCommitVisitor(module_adg, rel)
+        commit_visitor.visit(tree)
+        edges.extend(commit_visitor.edges)
 
         # G7 (gap): Sandbox airlock / work-contract (enters_sandbox, issues_capability_token, stamps_work_contract)
         sandbox_visitor = _SandboxAirlockVisitor(module_adg, rel)

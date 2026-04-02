@@ -56,6 +56,13 @@ tools/_patch_evidence.py
 *.lfs
 *.DS_Store
 
+# ADG variant directories (all contain large SQLite files - exclude from LFS)
+artifacts/adg_clean/
+artifacts/adg_truly_clean/
+artifacts/adg_runtime/
+
+models/*.pkl
+
 # [NEURAL LINK] SENSITIVE DATA
 .env
 .env.*
@@ -88,6 +95,7 @@ env/
 # docs/ - REMOVED: docs/ is now tracked
 # docs/technical/ moved to docs/reference/ (SSOT-compliant)
 docs/reference/
+docs/reference/_archive/
 
 # Chroma DB noise - transient execution artifacts, do not embed
 docs/reports/

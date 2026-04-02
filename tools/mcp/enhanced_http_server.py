@@ -142,7 +142,7 @@ class EnhancedHTTPMCPServer:
                                     "oneOf": [
                                         {"type": "string"},
                                         {"type": "object"},
-                                        {"type": "array"}
+                                        {"type": "array", "items": {}}
                                     ]
                                 },
                                 "json": {
@@ -195,7 +195,7 @@ class EnhancedHTTPMCPServer:
                                     "oneOf": [
                                         {"type": "string"},
                                         {"type": "object"},
-                                        {"type": "array"}
+                                        {"type": "array", "items": {}}
                                     ]
                                 },
                                 "json": {

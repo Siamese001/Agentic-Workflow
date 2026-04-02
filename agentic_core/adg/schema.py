@@ -1623,6 +1623,88 @@ EXECUTION_TRACE_PACKAGE_SYMBOLS: frozenset[str] = frozenset(
     }
 )
 
+# ── Wave 3: Authoritative Commit + L4 Read Surface ─────────────────────────
+CLAIMS_WRITE_LOCK_SYMBOLS: frozenset[str] = frozenset(
+    {
+        "claims_write_lock",
+        "claim_write_lock",
+        "WriteLockClaimer",
+        "L4WriteLock",
+        "acquire_write_lock",
+        "_emit_claims_write_lock",
+    }
+)
+DURABLE_COMMIT_SYMBOLS: frozenset[str] = frozenset(
+    {
+        "commits_mutation_durable",
+        "durable_commit",
+        "DurableCommitExecutor",
+        "MutationCommit",
+        "commit_to_ledger",
+        "_emit_commits_mutation_durable",
+    }
+)
+HASH_CHAIN_APPEND_SYMBOLS: frozenset[str] = frozenset(
+    {
+        "appends_hash_chain",
+        "append_hash_chain",
+        "HashChainAppender",
+        "LedgerHashChain",
+        "append_to_chain",
+        "_emit_appends_hash_chain",
+    }
+)
+ROLLBACK_HEAL_SYMBOLS: frozenset[str] = frozenset(
+    {
+        "heals_on_rollback_failure",
+        "heal_rollback_failure",
+        "RollbackHealer",
+        "RollbackFailureHandler",
+        "handle_rollback_failure",
+        "_emit_heals_on_rollback_failure",
+    }
+)
+MATERIALIZES_READ_VIEW_SYMBOLS: frozenset[str] = frozenset(
+    {
+        "materializes_read_view",
+        "materialize_read_view",
+        "ReadViewMaterializer",
+        "L4ReadView",
+        "generate_materialized_view",
+        "_emit_materializes_read_view",
+    }
+)
+RETRIEVAL_SURFACE_REFRESH_SYMBOLS: frozenset[str] = frozenset(
+    {
+        "refreshes_retrieval_surface",
+        "refresh_retrieval_surface",
+        "RetrievalSurfaceRefresher",
+        "L4RetrievalSurface",
+        "refresh_surface",
+        "_emit_refreshes_retrieval_surface",
+    }
+)
+SWAPS_VERSION_ALIAS_SYMBOLS: frozenset[str] = frozenset(
+    {
+        "swaps_version_alias",
+        "swap_version_alias",
+        "VersionAliasSwapper",
+        "L4VersionAlias",
+        "swap_alias",
+        "_emit_swaps_version_alias",
+    }
+)
+L4_TELEMETRY_SYNC_SYMBOLS: frozenset[str] = frozenset(
+    {
+        "syncs_l4_telemetry",
+        "sync_telemetry",
+        "L4TelemetrySync",
+        "TelemetryAuditor",
+        "sync_audit_telemetry",
+        "_emit_syncs_l4_telemetry",
+    }
+)
+
 RECORDS_LEARNING_EVENT_SYMBOLS: frozenset[str] = frozenset(
     {
         "records_learning_event",
@@ -2138,6 +2220,14 @@ __all__ = [
     "MUTATION_REPLAY_KEY_SYMBOLS",
     "HMAC_SEAL_SYMBOLS",
     "EXECUTION_TRACE_PACKAGE_SYMBOLS",
+    "CLAIMS_WRITE_LOCK_SYMBOLS",
+    "DURABLE_COMMIT_SYMBOLS",
+    "HASH_CHAIN_APPEND_SYMBOLS",
+    "ROLLBACK_HEAL_SYMBOLS",
+    "MATERIALIZES_READ_VIEW_SYMBOLS",
+    "RETRIEVAL_SURFACE_REFRESH_SYMBOLS",
+    "SWAPS_VERSION_ALIAS_SYMBOLS",
+    "L4_TELEMETRY_SYNC_SYMBOLS",
     "PROMPT_RELATION_TYPES",
 ]
 
