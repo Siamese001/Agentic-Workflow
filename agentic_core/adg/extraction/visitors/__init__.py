@@ -216,6 +216,7 @@ def list_registered_visitors() -> list[str]:
 # Export structural visitors
 from .structural import _InheritanceVisitor, _AttributeVisitor, _CompositionVisitor
 from .dynamic import _DynamicExecutionVisitor, _ImportVisitor, _InternalCallGraphVisitor
+from .core import _CallVisitor, _AntipatternVisitor
 
 __all__ = [
     # Base classes
@@ -235,4 +236,7 @@ __all__ = [
     "_DynamicExecutionVisitor",
     "_ImportVisitor",
     "_InternalCallGraphVisitor",
+    # Core visitors
+    "_CallVisitor",
+    "_AntipatternVisitor",
 ]
