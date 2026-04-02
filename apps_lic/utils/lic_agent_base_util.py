@@ -24,7 +24,7 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any, Final
 
-from apps_shared.utils.AppBase import AppBase
+from apps_shared.utils.app_base_util import AppBase
 
 from agentic_core.L0_routing.config import APPS_LIC_DIR
 from agentic_core.L0_routing.config.path_constants import APPS_LIC_DIR

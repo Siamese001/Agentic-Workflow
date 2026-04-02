@@ -11,7 +11,7 @@ from typing import Any
 BATCH_SIZE = 32
 BUFFER_SIZE = 8192
 
-from apps_lic.utils.LICAgentBase import LICAgentBase
+from apps_lic.utils.lic_agent_base_util import LICAgentBase
 from pydantic import BaseModel, Field
 
 from agentic_core.mixins.subatomic_testing_mixin import SubatomicTestingMixin
