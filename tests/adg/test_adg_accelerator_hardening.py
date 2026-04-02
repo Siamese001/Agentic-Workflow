@@ -1,9 +1,7 @@
 """Test ADG accelerator hardening functionality."""
 
-import ast
 import sys
 from pathlib import Path
-from unittest.mock import MagicMock, patch
 
 import pytest
 
@@ -15,11 +13,18 @@ sys.path.insert(0, str(REPO_ROOT))
 class TestAdgAcceleratorHardening:
     """Test ADG accelerator hardening functionality."""
 
-    def test_p0_gap_files_returns_list(self):
+    def test_p0_gap_files_returns_list(self, adg_fixture_with_edges, monkeypatch):
         """Test get_gap_files returns a list of files."""
+        import glob
+
         from tools.p0_batch_wirer import DIMENSION_CONFIG, get_gap_files
 
-        # Mock should return list even if no DB found
+        # Mock glob to return our fixture database
+        def mock_glob(pattern):
+            return [str(adg_fixture_with_edges)]
+
+        monkeypatch.setattr(glob, "glob", mock_glob)
+
         result = get_gap_files("L3", DIMENSION_CONFIG["evidence"])
         assert isinstance(result, list)
 

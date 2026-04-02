@@ -230,7 +230,8 @@ class TestHighSeveritySilentSwallowerFixerPhase21:
             # Should handle invalid paths without crashing
             result = fixer.fix_import_error_violations()
             assert "errors" in result
-# REMOVED HIDDEN FAILURE SKIP: # REMOVED SKIP: # REMOVED HIDDEN FAILURE SKIP: # REMOVED SKIP: # Invalid path should be skipped, not crash  # REVEALED FAILURE: # invalid path should be skipped, not crash  # REVEALED FAILURE: # removed hidden failure skip: # removed skip: # invalid path should be skipped, not crash  # revealed failure: # invalid path should be skipped, not crash
+
+    # REMOVED HIDDEN FAILURE SKIP: # REMOVED SKIP: # REMOVED HIDDEN FAILURE SKIP: # REMOVED SKIP: # Invalid path should be skipped, not crash  # REVEALED FAILURE: # invalid path should be skipped, not crash  # REVEALED FAILURE: # removed hidden failure skip: # removed skip: # invalid path should be skipped, not crash  # revealed failure: # invalid path should be skipped, not crash
 
     # Test §1.8: Fail-closed - Permission errors handled gracefully
     def test_permission_errors_handled_gracefully(self, fixer):
@@ -322,7 +323,44 @@ except ImportError:
 
             for filename, content in test_files:
                 file_path = workspace / filename
+                file_path.parent.mkdir(parents=True, exist_ok=True)
                 file_path.write_text(content)
+
+            # Create mock silent_swallower_report.json required by fixer
+            tools_dir = workspace / "tools"
+            tools_dir.mkdir(parents=True, exist_ok=True)
+            report = {
+                "scan_timestamp": "2026-03-24T19:30:00Z",
+                "total_violations": 3,
+                "violations": [
+                    {
+                        "file_path": str(workspace / "file1.py"),
+                        "line_number": 3,
+                        "exception_type": "ImportError",
+                        "handler_body": ["pass"],
+                        "context": "import missing_dependency",
+                        "severity": "HIGH",
+                    },
+                    {
+                        "file_path": str(workspace / "file2.py"),
+                        "line_number": 3,
+                        "exception_type": "ImportError",
+                        "handler_body": ["pass"],
+                        "context": "import optional_module",
+                        "severity": "HIGH",
+                    },
+                    {
+                        "file_path": str(workspace / "tests" / "test_file.py"),
+                        "line_number": 3,
+                        "exception_type": "ImportError",
+                        "handler_body": ["pass"],
+                        "context": "import test_dependency",
+                        "severity": "HIGH",
+                    },
+                ],
+            }
+            with open(tools_dir / "silent_swallower_report.json", "w") as f:
+                json.dump(report, f)
 
             yield workspace
 
