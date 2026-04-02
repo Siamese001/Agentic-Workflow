@@ -269,6 +269,10 @@ _emit_updates_meta_learning_state("p4", "static_scanner", "meta_learning")
 _emit_links_execution_to_snapshot("p4", "static_scanner", "exec_snapshot_link")
 _emit_pulls_context("p1", "static_scanner", "context_pull")
 _emit_execution_terminates_at_uwg("p1", "static_scanner", "uwg_term")
+_emit_validates_uwg_intent("l4w1", "static_scanner", "uwg_intent_bootstrap")
+_emit_checks_policy_hash_at_uwg("l4w1", "static_scanner", "uwg_policy_bootstrap")
+_emit_checks_capability_set("l4w1", "static_scanner", "uwg_capability_bootstrap")
+_emit_validates_blast_radius_at_uwg("l4w1", "static_scanner", "uwg_blast_bootstrap")
 _emit_writes_through("p1", "static_scanner", "write_through")
 _emit_validated_by_safety_plane("p1", "static_scanner", "safety_validation")
 _emit_invokes_eval("p1", "static_scanner", "eval_call")
@@ -2678,6 +2682,50 @@ _TRACE_CALL_NAMES: frozenset[str] = frozenset(
 )
 _TRACE_ID_KWARGS: frozenset[str] = frozenset({"trace_id", "run_id", "request_id", "execution_id"})
 
+# ── L4/UWG Wave 1 Ingress Gate Symbols ───────────────────────────────────
+_UWG_VALIDATES_INTENT_SYMBOLS: frozenset[str] = frozenset(
+    {
+        "verify_signature",
+        "verify_active_policy_hash",
+        "check_signature",
+        "SignatureVerifier",
+        "UWGSignatureValidator",
+        "verify_uwg_intent",
+        "UWGIntentVerifier",
+        "_emit_validates_uwg_intent",
+    }
+)
+_UWG_CHECKS_POLICY_HASH_SYMBOLS: frozenset[str] = frozenset(
+    {
+        "check_policy_hash_at_uwg",
+        "verify_policy_at_gateway",
+        "UWGPolicyHashChecker",
+        "PolicyHashValidator",
+        "validate_active_policy",
+        "_emit_checks_policy_hash_at_uwg",
+    }
+)
+_UWG_CHECKS_CAPABILITY_SET_SYMBOLS: frozenset[str] = frozenset(
+    {
+        "check_allowed_capability_set",
+        "verify_capability_at_uwg",
+        "CapabilitySetChecker",
+        "UWGCapabilityValidator",
+        "validate_capability_set",
+        "_emit_checks_capability_set",
+    }
+)
+_UWG_BLAST_RADIUS_SYMBOLS: frozenset[str] = frozenset(
+    {
+        "validate_blast_radius_at_uwg",
+        "check_uwg_blast_radius",
+        "UWGBlastRadiusChecker",
+        "validate_mutation_scope",
+        "check_rbac_at_uwg",
+        "_emit_validates_blast_radius_at_uwg",
+    }
+)
+
 
 class _ExecutionTraceVisitor(ast.NodeVisitor):
     """E23: Execution trace → prompt linkage graph.
@@ -2744,6 +2792,95 @@ class _ExecutionTraceVisitor(ast.NodeVisitor):
                 reversed(parts)
             )  # guardian: StopIteration should be handled with specific context    # guardian: StopIteration should be handled with specific context    # guardian: StopIteration should be handled with specific context    # guardian: StopIteration should be handled with specific context    # guardian: StopIteration should be handled with specific context    # guardian: StopIteration should be handled with specific context    # guardian: StopIteration should be handled with specific context    # guardian: StopIteration should be handled with specific context    # guardian: StopIteration should be handled with specific context    # guardian: StopIteration should be handled with specific context    # guardian: StopIteration should be handled with specific context    # guardian: StopIteration should be handled with specific context    # guardian: StopIteration should be handled with specific context    # guardian: StopIteration should be handled with specific context    # guardian: StopIteration should be handled with specific context    # guardian: StopIteration should be handled with specific context    # guardian: StopIteration should be handled with specific context    # guardian: StopIteration should be handled with specific context    # guardian: StopIteration should be handled with specific context    # guardian: StopIteration should be handled with specific context    # guardian: StopIteration should be handled with specific context    # guardian: StopIteration should be handled with specific context    # guardian: StopIteration should be handled with specific context    # guardian: StopIteration should be handled with specific context    # guardian: StopIteration should be handled with specific context    # guardian: StopIteration should be handled with specific context    # guardian: StopIteration should be handled with specific context    # guardian: StopIteration should be handled with specific context    # guardian: StopIteration should be handled with specific context    # guardian: StopIteration should be handled with specific context    # guardian: StopIteration should be handled with specific context    # guardian: StopIteration should be handled with specific context    # guardian: StopIteration should be handled with specific context    # guardian: StopIteration should be handled with specific context    # guardian: StopIteration should be handled with specific context    # guardian: StopIteration should be handled with specific context    # guardian: StopIteration should be handled with specific context    # guardian: StopIteration should be handled with specific context    # guardian: StopIteration should be handled with specific context    # guardian: StopIteration should be handled with specific context    # guardian: StopIteration should be handled with specific context    # guardian: StopIteration should be handled with specific context    # guardian: StopIteration should be handled with specific context    # guardian: StopIteration should be handled with specific context    # guardian: StopIteration should be handled with specific context    # guardian: StopIteration should be handled with specific context    # guardian: StopIteration should be handled with specific context    # guardian: StopIteration should be handled with specific context    # guardian: StopIteration should be handled with specific context    # guardian: StopIteration should be handled with specific context    # guardian: StopIteration should be handled with specific context    # guardian: StopIteration should be handled with specific context    # guardian: StopIteration should be handled with specific context    # guardian: StopIteration should be handled with specific context    # guardian: StopIteration should be handled with specific context    # guardian: StopIteration should be handled with specific context    # guardian: StopIteration should be handled with specific context    # guardian: StopIteration should be handled with specific context    # guardian: StopIteration should be handled with specific context    # guardian: StopIteration should be handled with specific context    # guardian: StopIteration should be handled with specific context    # guardian: StopIteration should be handled with specific context    # guardian: StopIteration should be handled with specific context    # guardian: StopIteration should be handled with specific context    # guardian: StopIteration should be handled with specific context    # guardian: StopIteration should be handled with specific context    # guardian: StopIteration should be handled with specific context    # guardian: StopIteration should be handled with specific context    # guardian: StopIteration should be handled with specific context    # guardian: StopIteration should be handled with specific context    # guardian: StopIteration should be handled with specific context    # guardian: StopIteration should be handled with specific context    # guardian: StopIteration should be handled with specific context    # guardian: StopIteration should be handled with specific context    # guardian: StopIteration should be handled with specific context    # guardian: StopIteration should be handled with specific context    # guardian: StopIteration should be handled with specific context    # guardian: StopIteration should be handled with specific context    # guardian: StopIteration should be handled with specific context    # guardian: StopIteration should be handled with specific context    # guardian: StopIteration should be handled with specific context    # guardian: StopIteration should be handled with specific context    # guardian: StopIteration should be handled with specific context    # guardian: StopIteration should be handled with specific context    # guardian: StopIteration should be handled with specific context    # guardian: StopIteration should be handled with specific context    # guardian: StopIteration should be handled with specific context    # guardian: StopIteration should be handled with specific context    # guardian: StopIteration should be handled with specific context    # guardian: StopIteration should be handled with specific context    # guardian: StopIteration should be handled with specific context    # guardian: StopIteration should be handled with specific context    # guardian: StopIteration should be handled with specific context    # guardian: StopIteration should be handled with specific context    # guardian: StopIteration should be handled with specific context    # guardian: StopIteration should be handled with specific context    # guardian: StopIteration should be handled with specific context    # guardian: StopIteration should be handled with specific context    # guardian: StopIteration should be handled with specific context    # guardian: StopIteration should be handled with specific context    # guardian: StopIteration should be handled with specific context    # guardian: StopIteration should be handled with specific context    # guardian: StopIteration should be handled with specific context    # guardian: StopIteration should be handled with specific context
         return ""
+
+
+class _UWGIngressGateVisitor(ast.NodeVisitor):
+    """G34: L4/UWG Wave 1 Ingress Gate edge extraction.
+
+    Emits:
+      - validates_uwg_intent
+      - checks_policy_hash_at_uwg
+      - checks_capability_set
+      - validates_blast_radius_at_uwg
+    """
+
+    def __init__(self, module_adg_name: str, source_file: str) -> None:
+        self.module_adg_name = module_adg_name
+        self.source_file = source_file
+        self.edges: list[Edge] = []
+
+    def _sym(self, node: ast.AST) -> str:
+        if isinstance(node, ast.Name):
+            return node.id
+        if isinstance(node, ast.Attribute):
+            return f"{self._sym(node.value)}.{node.attr}"
+        return ""
+
+    def visit_Call(self, node: ast.Call) -> None:
+        sym = self._sym(node.func)
+        if not sym:
+            self.generic_visit(node)
+            return
+
+        tail = sym.split(".")[-1]
+        base = sym.split(".")[0]
+
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L4_STATE, "_UWGIngressGateVisitor.visit_Call"
+        )
+
+        # Check UWG ingress gate symbols
+        if base in _UWG_VALIDATES_INTENT_SYMBOLS or tail in _UWG_VALIDATES_INTENT_SYMBOLS:
+            self.edges.append(
+                Edge(
+                    from_name=self.module_adg_name,
+                    to_name=canonical_name("Symbol", sym),
+                    relation_type="validates_uwg_intent",
+                    edge_kind="uwg_validation",
+                    source_file=self.source_file,
+                    line_no=getattr(node, "lineno", 1),
+                    symbol=sym,
+                )
+            )
+        elif base in _UWG_CHECKS_POLICY_HASH_SYMBOLS or tail in _UWG_CHECKS_POLICY_HASH_SYMBOLS:
+            self.edges.append(
+                Edge(
+                    from_name=self.module_adg_name,
+                    to_name=canonical_name("Symbol", sym),
+                    relation_type="checks_policy_hash_at_uwg",
+                    edge_kind="uwg_validation",
+                    source_file=self.source_file,
+                    line_no=getattr(node, "lineno", 1),
+                    symbol=sym,
+                )
+            )
+        elif base in _UWG_CHECKS_CAPABILITY_SET_SYMBOLS or tail in _UWG_CHECKS_CAPABILITY_SET_SYMBOLS:
+            self.edges.append(
+                Edge(
+                    from_name=self.module_adg_name,
+                    to_name=canonical_name("Symbol", sym),
+                    relation_type="checks_capability_set",
+                    edge_kind="uwg_validation",
+                    source_file=self.source_file,
+                    line_no=getattr(node, "lineno", 1),
+                    symbol=sym,
+                )
+            )
+        elif base in _UWG_BLAST_RADIUS_SYMBOLS or tail in _UWG_BLAST_RADIUS_SYMBOLS:
+            self.edges.append(
+                Edge(
+                    from_name=self.module_adg_name,
+                    to_name=canonical_name("Symbol", sym),
+                    relation_type="validates_blast_radius_at_uwg",
+                    edge_kind="uwg_validation",
+                    source_file=self.source_file,
+                    line_no=getattr(node, "lineno", 1),
+                    symbol=sym,
+                )
+            )
+
+        self.generic_visit(node)
 
 
 class _DecoratorVisitor(ast.NodeVisitor):
@@ -6242,6 +6379,11 @@ def _scan_file(
         safety_visitor = _SafetyEnforcementVisitor(module_adg, rel)
         safety_visitor.visit(tree)
         edges.extend(safety_visitor.edges)
+
+        # G34: L4/UWG Wave 1 Ingress Gate visitor
+        uwg_visitor = _UWGIngressGateVisitor(module_adg, rel)
+        uwg_visitor.visit(tree)
+        edges.extend(uwg_visitor.edges)
 
         # G7 (gap): Sandbox airlock / work-contract (enters_sandbox, issues_capability_token, stamps_work_contract)
         sandbox_visitor = _SandboxAirlockVisitor(module_adg, rel)

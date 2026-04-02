@@ -1,3 +1,23 @@
+## File Size Handling Rule
+
+**Rule:** For files exceeding 250KB (read_file tool limit), ALWAYS use `mcp6_edit_file` or `multi_edit` tools instead of `read_file`.
+
+**Why:** The `read_file` tool has a 250KB file size limit. Large files like `static_scanner.py` (386KB) will error.
+
+**Procedure:**
+1. Check file size with `mcp6_get_file_info` first
+2. If >250KB: Use `mcp6_edit_file` with precise string matching
+3. If >500KB: Use `multi_edit` in smaller chunks
+4. Never attempt `read_file` on files >250KB
+
+**Applies to:**
+- `agentic_core/adg/extraction/static_scanner.py` (386KB)
+- `agentic_core/L_CONTRACTS/lifecycle_trace_contract.py` (>250KB)
+- Any generated ADG artifacts
+- Large test files
+
+---
+
 ---
 trigger: always_on
 ---
