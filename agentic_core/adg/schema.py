@@ -1582,14 +1582,47 @@ UWG_BLAST_RADIUS_SYMBOLS: frozenset[str] = frozenset(
     }
 )
 
-CAPTURES_PATTERN_SYMBOLS: frozenset[str] = frozenset(
+MUTATION_DIFF_SYMBOLS: frozenset[str] = frozenset(
     {
-        "captures_pattern",
-        "capture_pattern",
-        "PatternCapture",
-        "_emit_captures_pattern",
+        "generate_mutation_diff",
+        "create_before_after_diff",
+        "MutationDiffGenerator",
+        "RFC6902DiffGenerator",
+        "diff_mutation_state",
+        "_emit_generates_mutation_diff",
     }
 )
+MUTATION_REPLAY_KEY_SYMBOLS: frozenset[str] = frozenset(
+    {
+        "compute_mutation_replay_key",
+        "generate_replay_key_for_mutation",
+        "MutationReplayKeyGenerator",
+        "ReplayKeyComputer",
+        "compute_replay_key",
+        "_emit_computes_mutation_replay_key",
+    }
+)
+HMAC_SEAL_SYMBOLS: frozenset[str] = frozenset(
+    {
+        "apply_hmac_seal",
+        "seal_mutation_with_hmac",
+        "HMACSealApplier",
+        "MutationHMACSealer",
+        "apply_hmac",
+        "_emit_applies_hmac_seal",
+    }
+)
+EXECUTION_TRACE_PACKAGE_SYMBOLS: frozenset[str] = frozenset(
+    {
+        "package_execution_trace",
+        "create_execution_trace_artifact",
+        "ExecutionTracePackager",
+        "TraceArtifactBuilder",
+        "package_trace",
+        "_emit_packages_execution_trace",
+    }
+)
+
 RECORDS_LEARNING_EVENT_SYMBOLS: frozenset[str] = frozenset(
     {
         "records_learning_event",
@@ -2083,7 +2116,6 @@ __all__ = [
     "STORES_EMBEDDING_SYMBOLS",
     "UPDATES_META_LEARNING_STATE_SYMBOLS",
     "LINKS_EXECUTION_TO_SNAPSHOT_SYMBOLS",
-    "CAPTURES_PATTERN_SYMBOLS",
     "RECORDS_LEARNING_EVENT_SYMBOLS",
     "WRITES_LEARNING_SNAPSHOT_SYMBOLS",
     "FEEDS_META_LEARNING_SYMBOLS",
@@ -2102,6 +2134,10 @@ __all__ = [
     "UWG_CHECKS_POLICY_HASH_SYMBOLS",
     "UWG_CHECKS_CAPABILITY_SET_SYMBOLS",
     "UWG_BLAST_RADIUS_SYMBOLS",
+    "MUTATION_DIFF_SYMBOLS",
+    "MUTATION_REPLAY_KEY_SYMBOLS",
+    "HMAC_SEAL_SYMBOLS",
+    "EXECUTION_TRACE_PACKAGE_SYMBOLS",
     "PROMPT_RELATION_TYPES",
 ]
 

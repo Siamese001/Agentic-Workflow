@@ -139,6 +139,12 @@ _CHECKS_POLICY_HASH_UWG_LOG = logging.getLogger("adg.checks_policy_hash_at_uwg")
 _CHECKS_CAPABILITY_SET_LOG = logging.getLogger("adg.checks_capability_set")
 _VALIDATES_BLAST_RADIUS_UWG_LOG = logging.getLogger("adg.validates_blast_radius_at_uwg")
 
+# ── L4/UWG Wave 2 Mutation Record Assembly loggers ─────────────────────────
+_GENERATES_MUTATION_DIFF_LOG = logging.getLogger("adg.generates_mutation_diff")
+_COMPUTES_MUTATION_REPLAY_KEY_LOG = logging.getLogger("adg.computes_mutation_replay_key")
+_APPLIES_HMAC_SEAL_LOG = logging.getLogger("adg.applies_hmac_seal")
+_PACKAGES_EXECUTION_TRACE_LOG = logging.getLogger("adg.packages_execution_trace")
+
 
 # ── §3 — Per-layer trace segment types ───────────────────────────────────────
 
@@ -1319,6 +1325,11 @@ __all__ = [
     "_emit_checks_policy_hash_at_uwg",
     "_emit_checks_capability_set",
     "_emit_validates_blast_radius_at_uwg",
+    # L4/UWG Wave 2 Mutation Record Assembly emitters
+    "_emit_generates_mutation_diff",
+    "_emit_computes_mutation_replay_key",
+    "_emit_applies_hmac_seal",
+    "_emit_packages_execution_trace",
 ]
 
 _emit_reads_through("l4", "lifecycle_trace_contract", "urg_read_1")
@@ -1563,3 +1574,53 @@ _emit_validates_uwg_intent("l4w1", "lifecycle_trace_contract", "uwg_intent_valid
 _emit_checks_policy_hash_at_uwg("l4w1", "lifecycle_trace_contract", "uwg_policy_check")
 _emit_checks_capability_set("l4w1", "lifecycle_trace_contract", "uwg_capability_check")
 _emit_validates_blast_radius_at_uwg("l4w1", "lifecycle_trace_contract", "uwg_blast_radius")
+
+
+# ── L4/UWG Wave 2 Mutation Record Assembly emitter functions ──────────────
+
+
+def _emit_generates_mutation_diff(root_trace_id: str, generator: str, diff: str) -> None:
+    """Emit generates_mutation_diff ADG edge (L4/UWG Wave 2 Mutation Assembly)."""
+    _GENERATES_MUTATION_DIFF_LOG.debug(
+        "generates_mutation_diff root_trace_id=%s generator=%s diff=%s",
+        root_trace_id,
+        generator,
+        diff,
+    )
+
+
+def _emit_computes_mutation_replay_key(root_trace_id: str, computer: str, key: str) -> None:
+    """Emit computes_mutation_replay_key ADG edge (L4/UWG Wave 2 Mutation Assembly)."""
+    _COMPUTES_MUTATION_REPLAY_KEY_LOG.debug(
+        "computes_mutation_replay_key root_trace_id=%s computer=%s key=%s",
+        root_trace_id,
+        computer,
+        key,
+    )
+
+
+def _emit_applies_hmac_seal(root_trace_id: str, applier: str, seal: str) -> None:
+    """Emit applies_hmac_seal ADG edge (L4/UWG Wave 2 Mutation Assembly)."""
+    _APPLIES_HMAC_SEAL_LOG.debug(
+        "applies_hmac_seal root_trace_id=%s applier=%s seal=%s",
+        root_trace_id,
+        applier,
+        seal,
+    )
+
+
+def _emit_packages_execution_trace(root_trace_id: str, packager: str, trace_pkg: str) -> None:
+    """Emit packages_execution_trace ADG edge (L4/UWG Wave 2 Mutation Assembly)."""
+    _PACKAGES_EXECUTION_TRACE_LOG.debug(
+        "packages_execution_trace root_trace_id=%s packager=%s trace_pkg=%s",
+        root_trace_id,
+        packager,
+        trace_pkg,
+    )
+
+
+# Self-bootstrap calls for L4/UWG Wave 2 emitters
+_emit_generates_mutation_diff("l4w2", "lifecycle_trace_contract", "mutation_diff_bootstrap")
+_emit_computes_mutation_replay_key("l4w2", "lifecycle_trace_contract", "replay_key_bootstrap")
+_emit_applies_hmac_seal("l4w2", "lifecycle_trace_contract", "hmac_seal_bootstrap")
+_emit_packages_execution_trace("l4w2", "lifecycle_trace_contract", "trace_package_bootstrap")
