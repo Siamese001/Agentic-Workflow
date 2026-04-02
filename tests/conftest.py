@@ -1,14 +1,19 @@
-# Core pytest configuration
+# Core pytest configuration - sys.path setup MUST be first
 import sys
-import types
 from pathlib import Path
+
+# Ensure repo root is on sys.path BEFORE any other imports
+_REPO_ROOT = str(Path(__file__).resolve().parents[1])
+if _REPO_ROOT not in sys.path:
+    sys.path.insert(0, _REPO_ROOT)
+
+import types
 
 import pytest
 
 # Ensure repo root is on sys.path for apps_* imports
-_REPO_ROOT = Path(__file__).resolve().parents[1]
 if str(_REPO_ROOT) not in sys.path:
-    sys.path.insert(0, str(_REPO_ROOT))
+    sys.path.insert(0, _REPO_ROOT)
 
 
 # Standard fixtures for path semantics

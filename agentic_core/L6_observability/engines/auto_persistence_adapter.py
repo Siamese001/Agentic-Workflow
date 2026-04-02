@@ -51,7 +51,7 @@ try:
     OTEL_ADAPTER_AVAILABLE = True
 except ImportError:
     OTEL_ADAPTER_AVAILABLE = False
-    OpenTelemetryTracingAdapter = None  # type: ignore[misc, assignment]
+    OpenTelemetryTracingAdapter = object  # type: ignore[misc, assignment]
 
 try:
     from system_learning.runtime_adg.materializer import RuntimeADGMaterializer

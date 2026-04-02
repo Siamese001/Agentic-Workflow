@@ -1,11 +1,11 @@
 {
-  "runtime_adg_1775084686_f085deaf": {
+  "runtime_adg_1775148664_2be891fa": {
     "duration_ms": 0,
-    "edge_count": 9,
-    "file_path": "agentic_core\\L4_state\\memory\\cross_layer_test\\telemetry\\l6\\runtime_adg_1775084686_f085deaf.json",
+    "edge_count": 14,
+    "file_path": "agentic_core\\L4_state\\memory\\cross_layer_test\\telemetry\\l6\\runtime_adg_1775148664_2be891fa.json",
     "mission": "telemetry-test-001",
     "node_count": 5,
-    "timestamp": 1775084686,
-    "trace_id": "cbaf412cb9fa7a9af58989a0b9f5acb1"
+    "timestamp": 1775148664,
+    "trace_id": "6fcbe9423f77e6a7161f55a398c1a83d"
   }
 }

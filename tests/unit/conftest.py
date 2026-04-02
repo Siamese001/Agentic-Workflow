@@ -15,7 +15,7 @@ from pathlib import Path
 import pytest
 
 # Add project root to path IMMEDIATELY at module load time
-_PROJECT_ROOT = str(Path(__file__).parent.parent.parent)
+_PROJECT_ROOT = str(Path(__file__).parent.parent.parent.resolve())
 if _PROJECT_ROOT not in sys.path:
     sys.path.insert(0, _PROJECT_ROOT)
 
