@@ -437,6 +437,92 @@ UWG_WRITE_SYMBOLS: frozenset[str] = frozenset(
     }
 )
 
+# ── L4/UWG Wave 1 Ingress Gate Symbols ───────────────────────────────────
+UWG_VALIDATES_INTENT_SYMBOLS: frozenset[str] = frozenset(
+    {
+        "verify_signature",
+        "verify_active_policy_hash",
+        "check_signature",
+        "SignatureVerifier",
+        "UWGSignatureValidator",
+        "verify_uwg_intent",
+        "UWGIntentVerifier",
+        "_emit_validates_uwg_intent",
+    }
+)
+UWG_CHECKS_POLICY_HASH_SYMBOLS: frozenset[str] = frozenset(
+    {
+        "check_policy_hash_at_uwg",
+        "verify_policy_at_gateway",
+        "UWGPolicyHashChecker",
+        "PolicyHashValidator",
+        "validate_active_policy",
+        "_emit_checks_policy_hash_at_uwg",
+    }
+)
+UWG_CHECKS_CAPABILITY_SET_SYMBOLS: frozenset[str] = frozenset(
+    {
+        "check_allowed_capability_set",
+        "verify_capability_at_uwg",
+        "CapabilitySetChecker",
+        "UWGCapabilityValidator",
+        "validate_capability_set",
+        "_emit_checks_capability_set",
+    }
+)
+UWG_BLAST_RADIUS_SYMBOLS: frozenset[str] = frozenset(
+    {
+        "validate_blast_radius_at_uwg",
+        "check_uwg_blast_radius",
+        "UWGBlastRadiusChecker",
+        "validate_mutation_scope",
+        "check_rbac_at_uwg",
+        "_emit_validates_blast_radius_at_uwg",
+    }
+)
+
+# ── L4/UWG Wave 2 Mutation Record Assembly Symbols ─────────────────────────
+MUTATION_DIFF_SYMBOLS: frozenset[str] = frozenset(
+    {
+        "generate_mutation_diff",
+        "create_before_after_diff",
+        "MutationDiffGenerator",
+        "RFC6902DiffGenerator",
+        "diff_mutation_state",
+        "_emit_generates_mutation_diff",
+    }
+)
+MUTATION_REPLAY_KEY_SYMBOLS: frozenset[str] = frozenset(
+    {
+        "compute_mutation_replay_key",
+        "generate_replay_key_for_mutation",
+        "MutationReplayKeyGenerator",
+        "ReplayKeyComputer",
+        "compute_replay_key",
+        "_emit_computes_mutation_replay_key",
+    }
+)
+HMAC_SEAL_SYMBOLS: frozenset[str] = frozenset(
+    {
+        "apply_hmac_seal",
+        "seal_mutation_with_hmac",
+        "HMACSealApplier",
+        "MutationHMACSealer",
+        "apply_hmac",
+        "_emit_applies_hmac_seal",
+    }
+)
+EXECUTION_TRACE_PACKAGE_SYMBOLS: frozenset[str] = frozenset(
+    {
+        "package_execution_trace",
+        "create_execution_trace_artifact",
+        "ExecutionTracePackager",
+        "TraceArtifactBuilder",
+        "package_trace",
+        "_emit_packages_execution_trace",
+    }
+)
+
 
 def canonical_name(entity_type: str, *parts: str) -> str:
     """Build a canonical ADG entity name.
