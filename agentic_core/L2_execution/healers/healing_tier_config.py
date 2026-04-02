@@ -180,12 +180,9 @@ DEFAULT_TIMEOUT = 300  # 5 minutes
 # Configuration constants
 
 # FIXED THRESHOLDS - IMMUTABLE BY META-LEARNING
-HEALING_CONFIDENCE_X = 0.80  # Upper threshold: conf > X  → DETERMINISTIC
-HEALING_CONFIDENCE_Y = 0.50  # Lower threshold: conf <= Y → GEMINI 2.5 Pro
-
-# SSOT score thresholds for integer-score routing (S = 3C+4B+3A+2N+4F)
-SSOT_SCORE_THRESHOLD_DET: int = 13  # S <= 13  → DETERMINISTIC
-SSOT_SCORE_THRESHOLD_QWEN: int = 26  # S <= 26  → QWEN; S > 26 → GEMINI
+# Imported from L0 SSOT: agentic_core.L0_routing.config.path_constants
+# HEALING_CONFIDENCE_X, HEALING_CONFIDENCE_Y, SSOT_SCORE_THRESHOLD_DET,
+# SSOT_SCORE_THRESHOLD_QWEN defined in L0 to allow L2+ import without boundary violation
 
 # Qwen pinned revisions for determinism
 QWEN_MODEL_REVISION_SHA = "a1b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9b0"

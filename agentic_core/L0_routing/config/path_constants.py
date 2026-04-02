@@ -183,6 +183,21 @@ DEFAULT_TIMEOUT = 300  # 5 minutes
 # Configuration constants
 
 # ============================================================================
+# HEALING TIER THRESHOLDS (Moved from L2 to L0 - L0 can be imported by any layer)
+# ============================================================================
+
+# FIXED THRESHOLDS - IMMUTABLE BY META-LEARNING
+HEALING_CONFIDENCE_X: float = 0.80  # Upper threshold: conf > X  → DETERMINISTIC
+HEALING_CONFIDENCE_Y: float = 0.50  # Lower threshold: conf <= Y → GEMINI 2.5 Pro
+
+# SSOT score thresholds for integer-score routing (S = 3C+4B+3A+2N+4F)
+SSOT_SCORE_THRESHOLD_DET: int = 13  # S <= 13  → DETERMINISTIC
+SSOT_SCORE_THRESHOLD_QWEN: int = 26  # S <= 26  → QWEN; S > 26 → GEMINI
+
+# Qwen 14B model identifier
+QWEN_14B_MODEL_ID: str = "Qwen/Qwen2.5-14B-Instruct-GPTQ-Int4"
+
+# ============================================================================
 # PROJECT ROOT DETECTION
 # ============================================================================
 
@@ -250,6 +265,7 @@ REPORTS_DIR: Final[str] = "reports"
 # DYNAMIC DIRECTORY DISCOVERY
 # ============================================================================
 
+
 @lru_cache(maxsize=1)
 def get_apps_directories() -> list[str]:
     """Dynamically discover all apps_* directories in the repository.
@@ -280,6 +296,7 @@ def get_all_apps_paths() -> list[Path]:
     project_root = get_validated_project_root()
     apps_dirs = get_apps_directories()
     return [project_root / dir_name for dir_name in apps_dirs]
+
 
 # Layer-specific directories
 L0_MAINTENANCE_DIR: Final[str] = "agentic_core/L0_maintenance"
@@ -846,6 +863,11 @@ __all__ = [
     "TESTS_DIR",
     "TESTS_UNIT_DIR",
     "THRESHOLD",
+    "HEALING_CONFIDENCE_X",
+    "HEALING_CONFIDENCE_Y",
+    "SSOT_SCORE_THRESHOLD_DET",
+    "SSOT_SCORE_THRESHOLD_QWEN",
+    "QWEN_14B_MODEL_ID",
     "TOOLS_DIR",
     "VARIABLE_DEPTH_SUBFOLDERS",
     "get_all_apps_paths",
