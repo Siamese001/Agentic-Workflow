@@ -1,6 +1,6 @@
 {
-  "timestamp": 1774659755.5961912,
-  "duration": 34.83271145820618,
+  "timestamp": 1775092289.8192756,
+  "duration": 38.657230615615845,
   "repository": "C:\\Git\\Agentic-Workflow",
   "results": {
     "terminal": {
@@ -24,13 +24,13 @@
             {
               "name": "Git status",
               "success": true,
-              "duration": 0.040952205657958984,
+              "duration": 0.04591250419616699,
               "has_changes": true
             },
             {
               "name": "Git log",
               "success": true,
-              "duration": 0.02435469627380371,
+              "duration": 0.021243810653686523,
               "commits_shown": 5
             }
           ]
@@ -42,13 +42,13 @@
             {
               "name": "Execute Python script",
               "success": true,
-              "duration": 0.028864383697509766,
+              "duration": 0.025676488876342773,
               "output": "Hello from test file!"
             },
             {
               "name": "Python version check",
               "success": true,
-              "duration": 0.029761552810668945,
+              "duration": 0.028446197509765625,
               "version": "Python 3.12.10 (tags/v3.12.10:0cc8128, Apr  8 2025, 12:21:36) [MSC v.1943 64 bit (AMD64)]"
             }
           ]
@@ -65,11 +65,11 @@
           ]
         }
       },
-      "start_time": 1774659720.7639847,
+      "start_time": 1775092251.1636684,
       "success": true,
       "errors": [],
-      "end_time": 1774659720.8899581,
-      "total_duration": 0.12597346305847168
+      "end_time": 1775092251.2854662,
+      "total_duration": 0.12179780006408691
     },
     "pytest": {
       "server": "pytest",
@@ -80,14 +80,14 @@
           "tests": [
             {
               "name": "Discover routing tests",
-              "success": false,
-              "duration": 1.7058026790618896,
+              "success": true,
+              "duration": 1.52400541305542,
               "tests_found": 0
             },
             {
               "name": "Discover all tests",
-              "success": false,
-              "duration": 6.539148330688477,
+              "success": true,
+              "duration": 7.686060190200806,
               "total_tests": 0
             }
           ]
@@ -99,7 +99,7 @@
             {
               "name": "Execute routing tests",
               "success": false,
-              "duration": 0.5460803508758545,
+              "duration": 0.8782308101654053,
               "passed": 0,
               "failed": 0,
               "errors": 0,
@@ -114,7 +114,7 @@
             {
               "name": "Coverage analysis",
               "success": false,
-              "duration": 0.6726112365722656,
+              "duration": 1.079559087753296,
               "coverage_generated": false,
               "total_coverage": 0
             }
@@ -127,23 +127,23 @@
             {
               "name": "Pytest version",
               "success": true,
-              "duration": 0.10679960250854492,
+              "duration": 0.10503220558166504,
               "version": "pytest 9.0.2"
             },
             {
               "name": "Configuration check",
-              "success": false,
-              "duration": 6.473335266113281,
-              "config_lines": 14897
+              "success": true,
+              "duration": 7.574445724487305,
+              "config_lines": 12528
             }
           ]
         }
       },
-      "start_time": 1774659720.8899581,
+      "start_time": 1775092251.2854662,
       "success": true,
       "errors": [],
-      "end_time": 1774659736.9367685,
-      "total_duration": 16.046810388565063
+      "end_time": 1775092270.1353624,
+      "total_duration": 18.84989619255066
     },
     "enhanced_http": {
       "server": "enhanced_http",
@@ -155,24 +155,24 @@
             {
               "name": "GET request",
               "success": true,
-              "duration": 0.4566681385040283,
+              "duration": 0.5734014511108398,
               "status_code": 200,
               "response_size": 307
             },
             {
               "name": "POST request",
               "success": true,
-              "duration": 0.5117590427398682,
+              "duration": 0.7189083099365234,
               "status_code": 200,
               "json_response": {
                 "test": "data",
-                "timestamp": 1774659737.430054
+                "timestamp": 1775092270.746508
               }
             },
             {
               "name": "PUT request",
               "success": true,
-              "duration": 0.6144123077392578,
+              "duration": 0.4076845645904541,
               "status_code": 200
             }
           ]
@@ -184,13 +184,13 @@
             {
               "name": "Bearer token auth",
               "success": true,
-              "duration": 0.5101804733276367,
+              "duration": 0.4637563228607178,
               "authenticated": true
             },
             {
               "name": "Basic auth",
               "success": true,
-              "duration": 0.6148848533630371,
+              "duration": 0.6110751628875732,
               "authenticated": true
             }
           ]
@@ -202,13 +202,13 @@
             {
               "name": "404 handling",
               "success": true,
-              "duration": 0.5116620063781738,
+              "duration": 0.26487016677856445,
               "error_handled": true
             },
             {
               "name": "Timeout handling",
               "success": true,
-              "duration": 2.408393383026123,
+              "duration": 2.2219526767730713,
               "timeout_handled": true
             }
           ]
@@ -220,19 +220,19 @@
             {
               "name": "Concurrent requests",
               "success": true,
-              "duration": 0.5295517444610596,
+              "duration": 0.5121650695800781,
               "requests_count": 5,
               "success_count": 5,
-              "avg_time_per_request": 0.10591034889221192
+              "avg_time_per_request": 0.10243301391601563
             }
           ]
         }
       },
-      "start_time": 1774659736.9367685,
+      "start_time": 1775092270.1353624,
       "success": true,
       "errors": [],
-      "end_time": 1774659743.1370406,
-      "total_duration": 6.200272083282471
+      "end_time": 1775092275.9540892,
+      "total_duration": 5.8187267780303955
     },
     "vector_db": {
       "server": "vector_db",
@@ -244,14 +244,14 @@
             {
               "name": "Index documents",
               "success": true,
-              "duration": 1.3518311977386475,
+              "duration": 1.3533563613891602,
               "documents_count": 5,
               "embedding_dimension": 384
             },
             {
               "name": "Verify indexing",
               "success": true,
-              "duration": 0.0,
+              "duration": 0.0009996891021728516,
               "stored_count": 5
             }
           ]
@@ -263,21 +263,21 @@
             {
               "name": "Search: programming languages",
               "success": true,
-              "duration": 0.009719133377075195,
+              "duration": 0.009018182754516602,
               "results_count": 3,
               "top_result": "Python is a popular programming language"
             },
             {
               "name": "Search: version control systems",
               "success": true,
-              "duration": 0.004054546356201172,
+              "duration": 0.0024046897888183594,
               "results_count": 3,
               "top_result": "Git is used for version control"
             },
             {
               "name": "Search: containerization technology",
               "success": true,
-              "duration": 0.003804445266723633,
+              "duration": 0.004707813262939453,
               "results_count": 3,
               "top_result": "Docker containers help with application deployment"
             }
@@ -290,19 +290,19 @@
             {
               "name": "List collections",
               "success": true,
-              "duration": 0.0,
+              "duration": 0.0005180835723876953,
               "collection_count": 1
             },
             {
               "name": "Collection info",
               "success": true,
-              "duration": 0.0015358924865722656,
+              "duration": 0.0005176067352294922,
               "document_count": 5
             },
             {
               "name": "Delete collection",
               "success": true,
-              "duration": 0.003282785415649414
+              "duration": 0.0030562877655029297
             }
           ]
         },
@@ -313,32 +313,32 @@
             {
               "name": "Embed batch 10",
               "success": true,
-              "duration": 0.005684852600097656,
+              "duration": 0.003535747528076172,
               "batch_size": 10,
-              "docs_per_second": 1759.060560308673
+              "docs_per_second": 2828.2562373567093
             },
             {
               "name": "Embed batch 50",
               "success": true,
-              "duration": 0.009422063827514648,
+              "duration": 0.011922359466552734,
               "batch_size": 50,
-              "docs_per_second": 5306.692983122042
+              "docs_per_second": 4193.8007439107305
             },
             {
               "name": "Embed batch 100",
               "success": true,
-              "duration": 0.012705326080322266,
+              "duration": 0.011670112609863281,
               "batch_size": 100,
-              "docs_per_second": 7870.71495590167
+              "docs_per_second": 8568.897605622293
             }
           ]
         }
       },
-      "start_time": 1774659743.1370406,
+      "start_time": 1775092275.9546142,
       "success": true,
       "errors": [],
-      "end_time": 1774659750.2939339,
-      "total_duration": 7.156893253326416
+      "end_time": 1775092283.2886446,
+      "total_duration": 7.334030389785767
     },
     "integration": {
       "terminal_pytest": {
@@ -348,7 +348,7 @@
           {
             "name": "Terminal pytest execution",
             "success": false,
-            "duration": 0.549480676651001,
+            "duration": 0.9342246055603027,
             "test_results": 0,
             "exit_code": 4
           }
@@ -361,7 +361,7 @@
           {
             "name": "HTTP to Vector DB workflow",
             "success": true,
-            "duration": 1.1589839458465576,
+            "duration": 1.3630790710449219,
             "content_size": 292,
             "indexed": true
           }
@@ -374,7 +374,7 @@
           {
             "name": "Complete workflow",
             "success": false,
-            "duration": 1.7220370769500732,
+            "duration": 2.1466264724731445,
             "steps_completed": 4,
             "git_success": true,
             "http_success": true,
@@ -392,10 +392,10 @@
           {
             "name": "Concurrent HTTP requests",
             "success": true,
-            "duration": 0.8021411895751953,
+            "duration": 0.9508512020111084,
             "requests_count": 10,
             "success_rate": 1.0,
-            "avg_time_per_request": 0.08021411895751954
+            "avg_time_per_request": 0.09508512020111085
           }
         ]
       },
@@ -406,10 +406,10 @@
           {
             "name": "Large batch embedding",
             "success": true,
-            "duration": 0.016138792037963867,
+            "duration": 0.019366979598999023,
             "document_count": 100,
             "embedding_dimension": 384,
-            "docs_per_second": 6196.250609386772
+            "docs_per_second": 5163.427755413573
           }
         ]
       },
@@ -420,11 +420,11 @@
           {
             "name": "Memory stress test",
             "success": true,
-            "baseline_memory_mb": 1733.71875,
-            "peak_memory_mb": 1737.47265625,
-            "final_memory_mb": 1703.828125,
-            "memory_increase_mb": 3.75390625,
-            "memory_recovered_mb": 33.64453125
+            "baseline_memory_mb": 1706.84375,
+            "peak_memory_mb": 1710.78125,
+            "final_memory_mb": 1696.52734375,
+            "memory_increase_mb": 3.9375,
+            "memory_recovered_mb": 14.25390625
           }
         ]
       }
