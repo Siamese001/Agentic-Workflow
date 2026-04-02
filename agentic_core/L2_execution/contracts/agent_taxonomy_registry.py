@@ -1,0 +1,390 @@
+"""
+Agent Taxonomy Registry - Canonical classification of all agents.
+
+This module maintains the canonical taxonomy mapping for all agents
+in the system, ensuring every agent is classified into one of the
+seven canonical roles.
+
+Generated: Wave 1 of Agent Taxonomy & Healing Standardization Hardening
+"""
+
+from __future__ import annotations
+
+from dataclasses import dataclass
+from enum import Enum
+from typing import Any
+
+from agentic_core.L2_execution.contracts.l2_execution_contract import CanonicalAgentRole
+
+__all__ = [
+    "AgentClassification",
+    "AgentTaxonomyRegistry",
+    "AGENT_TAXONOMY_MAP",
+]
+
+
+class AgentStatus(Enum):
+    """Status of an agent in the taxonomy."""
+
+    ACTIVE = "active"
+    DEPRECATED = "deprecated"
+    SHIM = "shim"
+    PLANNED = "planned"
+    OBSOLETE = "obsolete"
+
+
+@dataclass(frozen=True, slots=True)
+class AgentClassification:
+    """Canonical classification for a single agent."""
+
+    file_path: str
+    class_name: str
+    current_layer: str
+    canonical_role: CanonicalAgentRole
+    status: AgentStatus
+    is_shim: bool
+    implements_l2_contract: bool
+    notes: str = ""
+
+
+class AgentTaxonomyRegistry:
+    """Registry maintaining canonical taxonomy for all agents."""
+
+    def __init__(self):
+        self._agents: dict[str, AgentClassification] = {}
+
+    def register(self, classification: AgentClassification) -> None:
+        """Register an agent classification."""
+        key = f"{classification.file_path}:{classification.class_name}"
+        self._agents[key] = classification
+
+    def get_by_path(self, file_path: str) -> list[AgentClassification]:
+        """Get all agent classifications for a file path."""
+        return [a for a in self._agents.values() if a.file_path == file_path]
+
+    def get_by_role(self, role: CanonicalAgentRole) -> list[AgentClassification]:
+        """Get all agents with a specific canonical role."""
+        return [a for a in self._agents.values() if a.canonical_role == role]
+
+    def get_by_layer(self, layer: str) -> list[AgentClassification]:
+        """Get all agents in a specific layer."""
+        return [a for a in self._agents.values() if a.current_layer == layer]
+
+    def get_shims(self) -> list[AgentClassification]:
+        """Get all shim agents marked for deprecation."""
+        return [a for a in self._agents.values() if a.is_shim or a.status == AgentStatus.SHIM]
+
+    def get_l2_noncompliant(self) -> list[AgentClassification]:
+        """Get all L2 agents not yet implementing the L2 contract."""
+        return [
+            a
+            for a in self._agents.values()
+            if a.current_layer == "L2"
+            and a.canonical_role == CanonicalAgentRole.EXECUTION
+            and not a.implements_l2_contract
+        ]
+
+    def count_by_role(self) -> dict[CanonicalAgentRole, int]:
+        """Count agents by canonical role."""
+        counts: dict[CanonicalAgentRole, int] = dict.fromkeys(CanonicalAgentRole, 0)
+        for agent in self._agents.values():
+            counts[agent.canonical_role] += 1
+        return counts
+
+    def generate_report(self) -> dict[str, Any]:
+        """Generate a comprehensive taxonomy report."""
+        by_role = self.count_by_role()
+        total = len(self._agents)
+        shims = len(self.get_shims())
+        l2_noncompliant = len(self.get_l2_noncompliant())
+
+        return {
+            "total_agents": total,
+            "by_canonical_role": {r.value: c for r, c in by_role.items()},
+            "shim_count": shims,
+            "l2_noncompliant": l2_noncompliant,
+            "wave_1_pilot_agents": len(
+                [a for a in self._agents.values() if a.file_path.startswith("agentic_core/base_agents")]
+            ),
+            "wave_2_hop_agents": len(
+                [a for a in self._agents.values() if "Hop" in a.class_name or "HOP" in a.class_name]
+            ),
+        }
+
+
+# Wave 1: Canonical Taxonomy Mapping
+# This map contains the authoritative classification for all agents
+# as determined by architectural analysis of the codebase.
+
+AGENT_TAXONOMY_MAP: dict[str, AgentClassification] = {
+    # ============================================
+    # L0: ROUTING AGENTS
+    # ============================================
+    "RootCustomsAgent": AgentClassification(
+        file_path="agentic_core/L0_routing/reasoning/RootCustomsAgent.py",
+        class_name="RootCustomsAgent",
+        current_layer="L0",
+        canonical_role=CanonicalAgentRole.ROUTER,
+        status=AgentStatus.ACTIVE,
+        is_shim=False,
+        implements_l2_contract=False,
+        notes="Root routing agent for L0 customs/validation",
+    ),
+    "SSOTFolderCleanupAgent": AgentClassification(
+        file_path="agentic_core/L0_routing/reasoning/SSOTFolderCleanupAgent.py",
+        class_name="SSOTFolderCleanupAgent",
+        current_layer="L0",
+        canonical_role=CanonicalAgentRole.ROUTER,
+        status=AgentStatus.ACTIVE,
+        is_shim=False,
+        implements_l2_contract=False,
+        notes="Folder cleanup routing agent",
+    ),
+    # ============================================
+    # L1: PLANNER AGENTS
+    # ============================================
+    "ASTValidatorAgent": AgentClassification(
+        file_path="agentic_core/L1_cognition/reasoning/ASTValidatorAgent.py",
+        class_name="ASTValidatorAgent",
+        current_layer="L1",
+        canonical_role=CanonicalAgentRole.PLANNER,
+        status=AgentStatus.ACTIVE,
+        is_shim=False,
+        implements_l2_contract=False,
+        notes="AST-based validation planner",
+    ),
+    "MetaLearningAgent": AgentClassification(
+        file_path="agentic_core/L1_cognition/reasoning/MetaLearningAgent.py",
+        class_name="MetaLearningAgent",
+        current_layer="L1",
+        canonical_role=CanonicalAgentRole.PLANNER,
+        status=AgentStatus.ACTIVE,
+        is_shim=False,
+        implements_l2_contract=False,
+        notes="Meta-learning strategy planner",
+    ),
+    "StrategicRecommendationAgent": AgentClassification(
+        file_path="agentic_core/L1_cognition/reasoning/StrategicRecommendationAgent.py",
+        class_name="StrategicRecommendationAgent",
+        current_layer="L1",
+        canonical_role=CanonicalAgentRole.PLANNER,
+        status=AgentStatus.ACTIVE,
+        is_shim=False,
+        implements_l2_contract=False,
+        notes="Strategic recommendation planner",
+    ),
+    # ============================================
+    # L2: EXECUTION AGENTS (Core)
+    # ============================================
+    "StructuredEngineAgent": AgentClassification(
+        file_path="agentic_core/L2_execution/reasoning/StructuredEngineAgent.py",
+        class_name="StructuredEngineAgent",
+        current_layer="L2",
+        canonical_role=CanonicalAgentRole.EXECUTION,
+        status=AgentStatus.ACTIVE,
+        is_shim=False,
+        implements_l2_contract=False,
+        notes="Core structured execution engine - WAVE 5 TARGET",
+    ),
+    "SovereignMCPGatewayAgent": AgentClassification(
+        file_path="agentic_core/L2_execution/reasoning/SovereignMCPGatewayAgent.py",
+        class_name="SovereignMCPGatewayAgent",
+        current_layer="L2",
+        canonical_role=CanonicalAgentRole.EXECUTION,
+        status=AgentStatus.ACTIVE,
+        is_shim=False,
+        implements_l2_contract=False,
+        notes="MCP gateway execution agent - WAVE 5 TARGET",
+    ),
+    "RedisSovereignAgent": AgentClassification(
+        file_path="agentic_core/L2_execution/reasoning/RedisSovereignAgent.py",
+        class_name="RedisSovereignAgent",
+        current_layer="L2",
+        canonical_role=CanonicalAgentRole.EXECUTION,
+        status=AgentStatus.ACTIVE,
+        is_shim=False,
+        implements_l2_contract=False,
+        notes="Redis execution agent - WAVE 5 TARGET",
+    ),
+    "EmbeddingSovereignAgent": AgentClassification(
+        file_path="agentic_core/L2_execution/reasoning/EmbeddingSovereignAgent.py",
+        class_name="EmbeddingSovereignAgent",
+        current_layer="L2",
+        canonical_role=CanonicalAgentRole.EXECUTION,
+        status=AgentStatus.ACTIVE,
+        is_shim=False,
+        implements_l2_contract=False,
+        notes="Embedding execution agent - WAVE 5 TARGET",
+    ),
+    "SubAtomicRegistryAgent": AgentClassification(
+        file_path="agentic_core/L2_execution/reasoning/SubAtomicRegistryAgent.py",
+        class_name="SubAtomicRegistryAgent",
+        current_layer="L2",
+        canonical_role=CanonicalAgentRole.EXECUTION,
+        status=AgentStatus.ACTIVE,
+        is_shim=False,
+        implements_l2_contract=False,
+        notes="Registry execution agent - WAVE 5 TARGET",
+    ),
+    "ToolsmithAgent": AgentClassification(
+        file_path="agentic_core/L2_execution/reasoning/ToolsmithAgent.py",
+        class_name="ToolsmithAgent",
+        current_layer="L2",
+        canonical_role=CanonicalAgentRole.EXECUTION,
+        status=AgentStatus.ACTIVE,
+        is_shim=False,
+        implements_l2_contract=False,
+        notes="Tool management execution agent - WAVE 5 TARGET",
+    ),
+    # ============================================
+    # L3: ORCHESTRATOR AGENTS
+    # ============================================
+    "CoverageAgent": AgentClassification(
+        file_path="agentic_core/L3_orchestration/reasoning/CoverageAgent.py",
+        class_name="CoverageAgent",
+        current_layer="L3",
+        canonical_role=CanonicalAgentRole.ORCHESTRATOR,
+        status=AgentStatus.ACTIVE,
+        is_shim=False,
+        implements_l2_contract=False,
+        notes="Coverage analysis orchestrator",
+    ),
+    "DAGMutatorAgent": AgentClassification(
+        file_path="agentic_core/L3_orchestration/reasoning/DAGMutatorAgent.py",
+        class_name="DAGMutatorAgent",
+        current_layer="L3",
+        canonical_role=CanonicalAgentRole.ORCHESTRATOR,
+        status=AgentStatus.ACTIVE,
+        is_shim=False,
+        implements_l2_contract=False,
+        notes="DAG mutation orchestrator",
+    ),
+    "DagEngineAgent": AgentClassification(
+        file_path="agentic_core/L3_orchestration/reasoning/DagEngineAgent.py",
+        class_name="DagEngineAgent",
+        current_layer="L3",
+        canonical_role=CanonicalAgentRole.ORCHESTRATOR,
+        status=AgentStatus.ACTIVE,
+        is_shim=False,
+        implements_l2_contract=False,
+        notes="DAG execution engine orchestrator",
+    ),
+    "DagRuntimeInspectorAgent": AgentClassification(
+        file_path="agentic_core/L3_orchestration/reasoning/DagRuntimeInspectorAgent.py",
+        class_name="DagRuntimeInspectorAgent",
+        current_layer="L3",
+        canonical_role=CanonicalAgentRole.OBSERVER,
+        status=AgentStatus.ACTIVE,
+        is_shim=False,
+        implements_l2_contract=False,
+        notes="DAG runtime inspection - L6 observer role",
+    ),
+    "DomainPlannerAgent": AgentClassification(
+        file_path="agentic_core/L3_orchestration/reasoning/DomainPlannerAgent.py",
+        class_name="DomainPlannerAgent",
+        current_layer="L3",
+        canonical_role=CanonicalAgentRole.ORCHESTRATOR,
+        status=AgentStatus.ACTIVE,
+        is_shim=False,
+        implements_l2_contract=False,
+        notes="Domain planning orchestrator",
+    ),
+    "FissionManagerAgent": AgentClassification(
+        file_path="agentic_core/L3_orchestration/reasoning/FissionManagerAgent.py",
+        class_name="FissionManagerAgent",
+        current_layer="L3",
+        canonical_role=CanonicalAgentRole.ORCHESTRATOR,
+        status=AgentStatus.ACTIVE,
+        is_shim=False,
+        implements_l2_contract=False,
+        notes="Fission management orchestrator",
+    ),
+    "GravityStateAgent": AgentClassification(
+        file_path="agentic_core/L3_orchestration/reasoning/GravityStateAgent.py",
+        class_name="GravityStateAgent",
+        current_layer="L3",
+        canonical_role=CanonicalAgentRole.ORCHESTRATOR,
+        status=AgentStatus.ACTIVE,
+        is_shim=False,
+        implements_l2_contract=False,
+        notes="Gravity state orchestrator",
+    ),
+    "NervousSystemAgent": AgentClassification(
+        file_path="agentic_core/L3_orchestration/reasoning/NervousSystemAgent.py",
+        class_name="NervousSystemAgent",
+        current_layer="L3",
+        canonical_role=CanonicalAgentRole.ORCHESTRATOR,
+        status=AgentStatus.ACTIVE,
+        is_shim=False,
+        implements_l2_contract=False,
+        notes="Nervous system orchestrator",
+    ),
+    "OrchestrationHandshakeAgent": AgentClassification(
+        file_path="agentic_core/L3_orchestration/reasoning/OrchestrationHandshakeAgent.py",
+        class_name="OrchestrationHandshakeAgent",
+        current_layer="L3",
+        canonical_role=CanonicalAgentRole.ORCHESTRATOR,
+        status=AgentStatus.ACTIVE,
+        is_shim=False,
+        implements_l2_contract=False,
+        notes="Orchestration handshake coordinator",
+    ),
+    "SemanticGatekeeperAgent": AgentClassification(
+        file_path="agentic_core/L3_orchestration/reasoning/SemanticGatekeeperAgent.py",
+        class_name="SemanticGatekeeperAgent",
+        current_layer="L3",
+        canonical_role=CanonicalAgentRole.SAFETY,
+        status=AgentStatus.ACTIVE,
+        is_shim=False,
+        implements_l2_contract=False,
+        notes="Semantic gatekeeper - L5 safety role",
+    ),
+    "StateManagementAgent": AgentClassification(
+        file_path="agentic_core/L3_orchestration/reasoning/StateManagementAgent.py",
+        class_name="StateManagementAgent",
+        current_layer="L3",
+        canonical_role=CanonicalAgentRole.ORCHESTRATOR,
+        status=AgentStatus.ACTIVE,
+        is_shim=False,
+        implements_l2_contract=False,
+        notes="State management orchestrator",
+    ),
+    "SubAtomicAgent": AgentClassification(
+        file_path="agentic_core/L3_orchestration/reasoning/SubAtomicAgent.py",
+        class_name="SubAtomicAgent",
+        current_layer="L3",
+        canonical_role=CanonicalAgentRole.ORCHESTRATOR,
+        status=AgentStatus.ACTIVE,
+        is_shim=False,
+        implements_l2_contract=False,
+        notes="Sub-atomic orchestrator",
+    ),
+    "SubatomicHopAgent": AgentClassification(
+        file_path="agentic_core/L3_orchestration/reasoning/SubatomicHopAgent.py",
+        class_name="SubatomicHopAgent",
+        current_layer="L3",
+        canonical_role=CanonicalAgentRole.ORCHESTRATOR,
+        status=AgentStatus.ACTIVE,
+        is_shim=False,
+        implements_l2_contract=False,
+        notes="Sub-atomic HOP orchestrator",
+    ),
+    "UnifiedAgent": AgentClassification(
+        file_path="agentic_core/L3_orchestration/reasoning/UnifiedAgent.py",
+        class_name="UnifiedAgent",
+        current_layer="L3",
+        canonical_role=CanonicalAgentRole.ORCHESTRATOR,
+        status=AgentStatus.ACTIVE,
+        is_shim=False,
+        implements_l2_contract=False,
+        notes="Unified orchestration agent",
+    ),
+}
+
+
+def get_taxonomy_registry() -> AgentTaxonomyRegistry:
+    """Get the populated taxonomy registry."""
+    registry = AgentTaxonomyRegistry()
+    for classification in AGENT_TAXONOMY_MAP.values():
+        registry.register(classification)
+    return registry
