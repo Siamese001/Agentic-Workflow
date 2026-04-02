@@ -148,6 +148,11 @@ from agentic_core.adg.schema_util import (
     RETRIEVAL_SURFACE_REFRESH_SYMBOLS,
     SWAPS_VERSION_ALIAS_SYMBOLS,
     L4_TELEMETRY_SYNC_SYMBOLS,
+    READS_L4_SURFACE_SYMBOLS,
+    L0_RECEIVES_POLICY_HASH_SYMBOLS,
+    L5_READS_L4_SURFACE_SYMBOLS,
+    L3_READS_L4_SURFACE_SYMBOLS,
+    L6_INGESTS_L4_TRACE_SYMBOLS,
     VALIDATES_CAPABILITY_SYMBOLS,
     VALIDATOR_BASE_CLASSES,
     VECTOR_STORE_SYMBOLS,
@@ -250,6 +255,11 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_refreshes_retrieval_surface,
     _emit_swaps_version_alias,
     _emit_syncs_l4_telemetry,
+    _emit_reads_l4_surface,
+    _emit_receives_policy_hash,
+    _emit_l5_reads_l4_surface,
+    _emit_l3_reads_l4_surface,
+    _emit_l6_ingests_l4_trace,
     _emit_feeds_meta_learning,
     _emit_gated_by_confidence,
     _emit_hard_fails_untranscripted,
@@ -318,6 +328,13 @@ _emit_heals_on_rollback_failure("l4w3", "static_scanner", "rollback_heal_bootstr
 _emit_materializes_read_view("l4w3", "static_scanner", "read_view_bootstrap")
 _emit_refreshes_retrieval_surface("l4w3", "static_scanner", "surface_refresh_bootstrap")
 _emit_swaps_version_alias("l4w3", "static_scanner", "alias_swap_bootstrap")
+# Wave 4 self-bootstrap calls
+_emit_reads_l4_surface("l4w4", "static_scanner", "l4_surface_bootstrap")
+_emit_receives_policy_hash("l4w4", "static_scanner", "policy_hash_bootstrap")
+_emit_l5_reads_l4_surface("l4w4", "static_scanner", "l5_surface_bootstrap")
+_emit_l3_reads_l4_surface("l4w4", "static_scanner", "l3_surface_bootstrap")
+_emit_l6_ingests_l4_trace("l4w4", "static_scanner", "l6_trace_bootstrap")
+
 _emit_writes_through("p1", "static_scanner", "write_through")
 _emit_validated_by_safety_plane("p1", "static_scanner", "safety_validation")
 _emit_invokes_eval("p1", "static_scanner", "eval_call")
@@ -3156,6 +3173,110 @@ class _AuthoritativeCommitVisitor(ast.NodeVisitor):
                     to_name=canonical_name("Symbol", sym),
                     relation_type="syncs_l4_telemetry",
                     edge_kind="l4_read_surface",
+                    source_file=self.source_file,
+                    line_no=getattr(node, "lineno", 1),
+                    symbol=sym,
+                )
+            )
+
+        self.generic_visit(node)
+
+
+class _OutboundReadBridgeVisitor(ast.NodeVisitor):
+    """G37: L4/UWG Wave 4 Outbound Read Bridge edge extraction.
+
+    Emits:
+      - reads_l4_surface (C0/L1 context builds)
+      - receives_policy_hash (L0 routing)
+      - l5_reads_l4_surface (L5 constitution)
+      - l3_reads_l4_surface (L3 DAG workflow)
+      - l6_ingests_l4_trace (L6 observability)
+    """
+
+    def __init__(self, module_adg_name: str, source_file: str) -> None:
+        self.module_adg_name = module_adg_name
+        self.source_file = source_file
+        self.edges: list[Edge] = []
+
+    def _sym(self, node: ast.AST) -> str:
+        if isinstance(node, ast.Name):
+            return node.id
+        if isinstance(node, ast.Attribute):
+            return f"{self._sym(node.value)}.{node.attr}"
+        return ""
+
+    def visit_Call(self, node: ast.Call) -> None:
+        import uuid as _uuid  # noqa: PLC0415
+
+        sym = self._sym(node.func)
+        if not sym:
+            self.generic_visit(node)
+            return
+
+        tail = sym.split(".")[-1]
+        base = sym.split(".")[0]
+
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L4_STATE, "_OutboundReadBridgeVisitor.visit_Call"
+        )
+
+        # Check outbound read bridge symbols
+        if base in READS_L4_SURFACE_SYMBOLS or tail in READS_L4_SURFACE_SYMBOLS:
+            self.edges.append(
+                Edge(
+                    from_name=self.module_adg_name,
+                    to_name=canonical_name("Symbol", sym),
+                    relation_type="reads_l4_surface",
+                    edge_kind="outbound_read_bridge",
+                    source_file=self.source_file,
+                    line_no=getattr(node, "lineno", 1),
+                    symbol=sym,
+                )
+            )
+        elif base in L0_RECEIVES_POLICY_HASH_SYMBOLS or tail in L0_RECEIVES_POLICY_HASH_SYMBOLS:
+            self.edges.append(
+                Edge(
+                    from_name=self.module_adg_name,
+                    to_name=canonical_name("Symbol", sym),
+                    relation_type="receives_policy_hash",
+                    edge_kind="outbound_read_bridge",
+                    source_file=self.source_file,
+                    line_no=getattr(node, "lineno", 1),
+                    symbol=sym,
+                )
+            )
+        elif base in L5_READS_L4_SURFACE_SYMBOLS or tail in L5_READS_L4_SURFACE_SYMBOLS:
+            self.edges.append(
+                Edge(
+                    from_name=self.module_adg_name,
+                    to_name=canonical_name("Symbol", sym),
+                    relation_type="l5_reads_l4_surface",
+                    edge_kind="outbound_read_bridge",
+                    source_file=self.source_file,
+                    line_no=getattr(node, "lineno", 1),
+                    symbol=sym,
+                )
+            )
+        elif base in L3_READS_L4_SURFACE_SYMBOLS or tail in L3_READS_L4_SURFACE_SYMBOLS:
+            self.edges.append(
+                Edge(
+                    from_name=self.module_adg_name,
+                    to_name=canonical_name("Symbol", sym),
+                    relation_type="l3_reads_l4_surface",
+                    edge_kind="outbound_read_bridge",
+                    source_file=self.source_file,
+                    line_no=getattr(node, "lineno", 1),
+                    symbol=sym,
+                )
+            )
+        elif base in L6_INGESTS_L4_TRACE_SYMBOLS or tail in L6_INGESTS_L4_TRACE_SYMBOLS:
+            self.edges.append(
+                Edge(
+                    from_name=self.module_adg_name,
+                    to_name=canonical_name("Symbol", sym),
+                    relation_type="l6_ingests_l4_trace",
+                    edge_kind="outbound_read_bridge",
                     source_file=self.source_file,
                     line_no=getattr(node, "lineno", 1),
                     symbol=sym,
@@ -6676,6 +6797,11 @@ def _scan_file(
         commit_visitor = _AuthoritativeCommitVisitor(module_adg, rel)
         commit_visitor.visit(tree)
         edges.extend(commit_visitor.edges)
+
+        # G37: L4/UWG Wave 4 Outbound Read Bridge visitor
+        bridge_visitor = _OutboundReadBridgeVisitor(module_adg, rel)
+        bridge_visitor.visit(tree)
+        edges.extend(bridge_visitor.edges)
 
         # G7 (gap): Sandbox airlock / work-contract (enters_sandbox, issues_capability_token, stamps_work_contract)
         sandbox_visitor = _SandboxAirlockVisitor(module_adg, rel)

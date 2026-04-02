@@ -1726,3 +1726,69 @@ _emit_materializes_read_view("l4w3", "lifecycle_trace_contract", "read_view_boot
 _emit_refreshes_retrieval_surface("l4w3", "lifecycle_trace_contract", "surface_refresh_bootstrap")
 _emit_swaps_version_alias("l4w3", "lifecycle_trace_contract", "alias_swap_bootstrap")
 _emit_syncs_l4_telemetry("l4w3", "lifecycle_trace_contract", "telemetry_sync_bootstrap")
+
+# ── Wave 4: Outbound Read Bridges ──────────────────────────────────────────
+# Loggers for L4/UWG Wave 4 emitters
+_READS_L4_SURFACE_LOG: logging.Logger = logging.getLogger("adg.reads_l4_surface")
+_RECEIVES_POLICY_HASH_LOG: logging.Logger = logging.getLogger("adg.receives_policy_hash")
+_L5_READS_L4_SURFACE_LOG: logging.Logger = logging.getLogger("adg.l5_reads_l4_surface")
+_L3_READS_L4_SURFACE_LOG: logging.Logger = logging.getLogger("adg.l3_reads_l4_surface")
+_L6_INGESTS_L4_TRACE_LOG: logging.Logger = logging.getLogger("adg.l6_ingests_l4_trace")
+
+
+def _emit_reads_l4_surface(root_trace_id: str, reader: str, surface: str) -> None:
+    """Emit reads_l4_surface ADG edge (L4/UWG Wave 4 Outbound Read Bridges - C0/L1)."""
+    _READS_L4_SURFACE_LOG.debug(
+        "reads_l4_surface root_trace_id=%s reader=%s surface=%s",
+        root_trace_id,
+        reader,
+        surface,
+    )
+
+
+def _emit_receives_policy_hash(root_trace_id: str, receiver: str, policy_hash: str) -> None:
+    """Emit receives_policy_hash ADG edge (L4/UWG Wave 4 Outbound Read Bridges - L0)."""
+    _RECEIVES_POLICY_HASH_LOG.debug(
+        "receives_policy_hash root_trace_id=%s receiver=%s policy_hash=%s",
+        root_trace_id,
+        receiver,
+        policy_hash,
+    )
+
+
+def _emit_l5_reads_l4_surface(root_trace_id: str, reader: str, surface: str) -> None:
+    """Emit l5_reads_l4_surface ADG edge (L4/UWG Wave 4 Outbound Read Bridges - L5)."""
+    _L5_READS_L4_SURFACE_LOG.debug(
+        "l5_reads_l4_surface root_trace_id=%s reader=%s surface=%s",
+        root_trace_id,
+        reader,
+        surface,
+    )
+
+
+def _emit_l3_reads_l4_surface(root_trace_id: str, reader: str, surface: str) -> None:
+    """Emit l3_reads_l4_surface ADG edge (L4/UWG Wave 4 Outbound Read Bridges - L3)."""
+    _L3_READS_L4_SURFACE_LOG.debug(
+        "l3_reads_l4_surface root_trace_id=%s reader=%s surface=%s",
+        root_trace_id,
+        reader,
+        surface,
+    )
+
+
+def _emit_l6_ingests_l4_trace(root_trace_id: str, ingester: str, trace: str) -> None:
+    """Emit l6_ingests_l4_trace ADG edge (L4/UWG Wave 4 Outbound Read Bridges - L6)."""
+    _L6_INGESTS_L4_TRACE_LOG.debug(
+        "l6_ingests_l4_trace root_trace_id=%s ingester=%s trace=%s",
+        root_trace_id,
+        ingester,
+        trace,
+    )
+
+
+# Self-bootstrap calls for L4/UWG Wave 4 emitters
+_emit_reads_l4_surface("l4w4", "lifecycle_trace_contract", "l4_surface_bootstrap")
+_emit_receives_policy_hash("l4w4", "lifecycle_trace_contract", "policy_hash_bootstrap")
+_emit_l5_reads_l4_surface("l4w4", "lifecycle_trace_contract", "l5_surface_bootstrap")
+_emit_l3_reads_l4_surface("l4w4", "lifecycle_trace_contract", "l3_surface_bootstrap")
+_emit_l6_ingests_l4_trace("l4w4", "lifecycle_trace_contract", "l6_trace_bootstrap")

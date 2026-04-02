@@ -35,6 +35,7 @@ trigger: always_on
 > 8. **GUARDIAN EXEMPTION DISCIPLINE.** NEVER add `# guardian: allow-*` to silence the anti-pattern scanner without a real, specific justification. The format is `# guardian: allow-<type> -- <specific justification>`. Generic words ("needed", "required", "temporary", "legacy") are FORBIDDEN as justifications. Every new exemption in production code (`agentic_core/`, `apps_*/`, `system_learning/`) requires explicit HITL approval before the comment is added. The `guardian_exemption_gate.py` ratchet enforces this at commit time — new exemptions that exceed the ceiling will BLOCK the commit. Cascade MUST present a HITL prompt before adding any guardian comment. Gate: `ops_scripts/ci/guardian_exemption_gate.py`. Init after approval: `ADG_EXEMPTION_INIT=1 python ops_scripts/ci/guardian_exemption_gate.py`.
 > 9. **SVP ENGINEERING PERSONA — ARCHITECTURAL DECISIONS.** When facing high-level design choices (technology selection, dependency reduction, infrastructure consolidation, migration strategies), explicitly invoke the "SVP Engineering" persona. This persona prioritizes: (a) operational simplicity — reduce moving parts, (b) dependency hygiene — eliminate redundant libraries, (c) archival over deletion — preserve history in `tools/archive/`, (d) documentation — ADRs in `docs/architecture/adr/`, (e) zero-regression validation — full test pass before commit. Apply this lens to all T3 architectural decisions.
 > 10. **ZERO-LOSS REFACTOR DISCIPLINE.** When removing `_emit_*` boilerplate, trace instrumentation, or synthetic scaffolding from a file, the resulting file MUST be checked by the hollow file detector. If the file has zero behavioral FunctionDefs/ClassDefs after the removal, the file MUST be deleted entirely — not left as an empty shell. Gate: `ops_scripts/ci/zero_loss_refactor_verifier.py`. Pre-commit hook: T25 hollow-file-gate.
+> 11. **TERMINAL PROCESS LIFECYCLE MANAGEMENT.** All terminal processes spawned via `run_command` or `subprocess` MUST be explicitly terminated when the query completes. Non-blocking commands MUST set `WaitMsBeforeAsync` or implement explicit process cleanup. Hanging terminal processes after query finish = CONSTITUTIONAL VIOLATION. Gate: `ops_scripts/ci/check_terminal_cleanup.py`.
 
 ## §0. DEFAULT ANALYSIS MODE — Tier-Aware
 
@@ -199,6 +200,7 @@ Baseline: `tests/_config/test_count_baseline.json`. Count drops = FAIL. xfail in
 | RCA auto-closure | `ops_scripts/ci/check_rca_closure.py` |
 | Zero-loss refactor | `ops_scripts/ci/zero_loss_refactor_verifier.py` |
 | Agent deletion authorization | `ops_scripts/ci/guard-agent-deletion.py` |
+| Terminal process cleanup | `ops_scripts/ci/check_terminal_cleanup.py` |
 
 **Single entrypoint:** `python ops_scripts/ci/run_contract_gates.py`
 

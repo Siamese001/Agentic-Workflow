@@ -1705,6 +1705,58 @@ L4_TELEMETRY_SYNC_SYMBOLS: frozenset[str] = frozenset(
     }
 )
 
+# ── Wave 4: Outbound Read Bridges ──────────────────────────────────────────
+READS_L4_SURFACE_SYMBOLS: frozenset[str] = frozenset(
+    {
+        "reads_l4_surface",
+        "read_l4_surface",
+        "L4SurfaceReader",
+        "ContextBuilder",
+        "build_context_from_l4",
+        "_emit_reads_l4_surface",
+    }
+)
+L0_RECEIVES_POLICY_HASH_SYMBOLS: frozenset[str] = frozenset(
+    {
+        "receives_policy_hash",
+        "receive_policy_hash",
+        "PolicyHashReceiver",
+        "L0PolicyHash",
+        "get_active_policy_hash",
+        "_emit_receives_policy_hash",
+    }
+)
+L5_READS_L4_SURFACE_SYMBOLS: frozenset[str] = frozenset(
+    {
+        "l5_reads_l4_surface",
+        "read_l4_at_l5",
+        "L5L4SurfaceReader",
+        "ConstitutionBoundaryChecker",
+        "check_constitution_against_l4",
+        "_emit_l5_reads_l4_surface",
+    }
+)
+L3_READS_L4_SURFACE_SYMBOLS: frozenset[str] = frozenset(
+    {
+        "l3_reads_l4_surface",
+        "read_l4_at_l3",
+        "L3L4SurfaceReader",
+        "DAGWorkflowRuleChecker",
+        "check_dag_rules_against_l4",
+        "_emit_l3_reads_l4_surface",
+    }
+)
+L6_INGESTS_L4_TRACE_SYMBOLS: frozenset[str] = frozenset(
+    {
+        "ingests_l4_trace",
+        "ingest_l4_trace",
+        "L4TraceIngester",
+        "ExecutionTraceConsumer",
+        "consume_l4_execution_trace",
+        "_emit_l6_ingests_l4_trace",
+    }
+)
+
 RECORDS_LEARNING_EVENT_SYMBOLS: frozenset[str] = frozenset(
     {
         "records_learning_event",
@@ -2228,6 +2280,11 @@ __all__ = [
     "RETRIEVAL_SURFACE_REFRESH_SYMBOLS",
     "SWAPS_VERSION_ALIAS_SYMBOLS",
     "L4_TELEMETRY_SYNC_SYMBOLS",
+    "READS_L4_SURFACE_SYMBOLS",
+    "L0_RECEIVES_POLICY_HASH_SYMBOLS",
+    "L5_READS_L4_SURFACE_SYMBOLS",
+    "L3_READS_L4_SURFACE_SYMBOLS",
+    "L6_INGESTS_L4_TRACE_SYMBOLS",
     "PROMPT_RELATION_TYPES",
 ]
 
