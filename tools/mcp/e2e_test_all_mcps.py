@@ -8,6 +8,7 @@ import asyncio
 import json
 import logging
 import os
+import platform
 import subprocess
 import sys
 import time
@@ -113,7 +114,16 @@ def example():
 
         logger.info(f"Created {len(test_files)} test files")
 
-    async def _test_server_e2e(self, server_name: str) -> Dict[str, Any]:
+    def _get_platform_commands(self):
+        """Get platform-specific commands"""
+        is_windows = platform.system() == "Windows"
+        return {
+            "list_files": ["dir"] if is_windows else ["ls", "-la"],
+            "read_file": ["type"] if is_windows else ["cat"],
+            "current_dir": ["cd"] if is_windows else ["pwd"],
+            "env_vars": ["set"] if is_windows else ["env"],
+            "is_windows": is_windows
+        }
         """Test a single MCP server with end-to-end scenarios"""
         results = {
             "server": server_name,

@@ -183,8 +183,8 @@ AGENT_TAXONOMY_MAP: dict[str, AgentClassification] = {
         canonical_role=CanonicalAgentRole.EXECUTION,
         status=AgentStatus.ACTIVE,
         is_shim=False,
-        implements_l2_contract=False,
-        notes="Core structured execution engine - WAVE 5 TARGET",
+        implements_l2_contract=True,
+        notes="Core structured execution engine. WAVE 5: L2 contract compliant.",
     ),
     "SovereignMCPGatewayAgent": AgentClassification(
         file_path="agentic_core/L2_execution/reasoning/SovereignMCPGatewayAgent.py",
@@ -193,8 +193,8 @@ AGENT_TAXONOMY_MAP: dict[str, AgentClassification] = {
         canonical_role=CanonicalAgentRole.EXECUTION,
         status=AgentStatus.ACTIVE,
         is_shim=False,
-        implements_l2_contract=False,
-        notes="MCP gateway execution agent - WAVE 5 TARGET",
+        implements_l2_contract=True,
+        notes="MCP gateway execution agent. WAVE 5: L2 contract compliant.",
     ),
     "RedisSovereignAgent": AgentClassification(
         file_path="agentic_core/L2_execution/reasoning/RedisSovereignAgent.py",
@@ -203,8 +203,8 @@ AGENT_TAXONOMY_MAP: dict[str, AgentClassification] = {
         canonical_role=CanonicalAgentRole.EXECUTION,
         status=AgentStatus.ACTIVE,
         is_shim=False,
-        implements_l2_contract=False,
-        notes="Redis execution agent - WAVE 5 TARGET",
+        implements_l2_contract=True,
+        notes="Redis execution agent. WAVE 5: L2 contract compliant.",
     ),
     "EmbeddingSovereignAgent": AgentClassification(
         file_path="agentic_core/L2_execution/reasoning/EmbeddingSovereignAgent.py",
@@ -213,8 +213,8 @@ AGENT_TAXONOMY_MAP: dict[str, AgentClassification] = {
         canonical_role=CanonicalAgentRole.EXECUTION,
         status=AgentStatus.ACTIVE,
         is_shim=False,
-        implements_l2_contract=False,
-        notes="Embedding execution agent - WAVE 5 TARGET",
+        implements_l2_contract=True,
+        notes="Embedding execution agent. WAVE 5: L2 contract compliant.",
     ),
     "SubAtomicRegistryAgent": AgentClassification(
         file_path="agentic_core/L2_execution/reasoning/SubAtomicRegistryAgent.py",
@@ -223,8 +223,8 @@ AGENT_TAXONOMY_MAP: dict[str, AgentClassification] = {
         canonical_role=CanonicalAgentRole.EXECUTION,
         status=AgentStatus.ACTIVE,
         is_shim=False,
-        implements_l2_contract=False,
-        notes="Registry execution agent - WAVE 5 TARGET",
+        implements_l2_contract=True,
+        notes="Registry execution agent. WAVE 5: L2 contract compliant.",
     ),
     "ToolsmithAgent": AgentClassification(
         file_path="agentic_core/L2_execution/reasoning/ToolsmithAgent.py",
@@ -233,8 +233,8 @@ AGENT_TAXONOMY_MAP: dict[str, AgentClassification] = {
         canonical_role=CanonicalAgentRole.EXECUTION,
         status=AgentStatus.ACTIVE,
         is_shim=False,
-        implements_l2_contract=False,
-        notes="Tool management execution agent - WAVE 5 TARGET",
+        implements_l2_contract=True,
+        notes="Tool management execution agent. WAVE 5: L2 contract compliant.",
     ),
     # ============================================
     # L3: ORCHESTRATOR AGENTS
