@@ -50,20 +50,15 @@ builder.py gaps:
 from __future__ import annotations
 
 import ast
-import tempfile
-from pathlib import Path
-from unittest.mock import patch
 
-import pytest
-
+from agentic_core.adg.artifact.builder import build_artifact
 from agentic_core.adg.extraction.static_scanner import (
-    ADGStaticScanner,
     Edge,
     ScanResult,
-    _GovernancePlaneVisitor,
     canonical_name,
 )
-from agentic_core.adg.artifact.builder import build_artifact
+from agentic_core.adg.extraction.visitors import VisitorContext
+from agentic_core.adg.extraction.visitors.governance import _GovernancePlaneVisitor
 
 # Helpers
 # ─────────────────────────────────────────────────────────────────────────────
@@ -95,7 +90,7 @@ class TestInheritanceExtractName:
 
         # Use a governance write symbol as tail via dotted call
         tree = _parse(src)
-        v = _GovernancePlaneVisitor(canonical_name("Module", "pkg/m.py"), "pkg/m.py")
+        v = _GovernancePlaneVisitor(VisitorContext(canonical_name("Module", "pkg/m.py"), "pkg/m.py"))
         v.visit(tree)
         return v.edges
 

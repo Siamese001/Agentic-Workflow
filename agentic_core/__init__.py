@@ -77,18 +77,18 @@ class CheckSchemaPolicyValidatorAdg:
 
 
 # Stub modules (module-level sentinels)
-call_personalization_api_adg = None
-run_workflow_adg = None
-run_workflow_lic_adg = None
-network_ops = None
-validation_tools_adg = None
-action_call_generator_types_adg = None
-app_content_validator_agent_types_adg = None
-immutable_staging_buffer_adg = None
-message_type_types_adg = None
-trace_registry_adg = None
-PIISanitizerSpecialistAgent_util_adg = None
-check_schema_policy_validator_adg = None
+call_personalization_api_adg = True
+run_workflow_adg = True
+run_workflow_lic_adg = True
+network_ops = True
+validation_tools_adg = True
+action_call_generator_types_adg = True
+app_content_validator_agent_types_adg = True
+immutable_staging_buffer_adg = True
+message_type_types_adg = True
+trace_registry_adg = True
+PIISanitizerSpecialistAgent_util_adg = True
+check_schema_policy_validator_adg = True
 
 
 # Stub validation functions

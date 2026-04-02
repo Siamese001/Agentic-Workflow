@@ -182,17 +182,17 @@ Logger: Any = logging.getLogger(__name__)
 class BatchEmbeddingService:
     """Service for parallel batch embedding generation.
 
-    Optimized for i7-10750H (6 cores/12 threads).
-    Keeps workers low to prevent context switching overhead.
+    Optimized for AMD Ryzen 9950X3D (16 cores/32 threads).
+    Uses ThreadPoolExecutor to process embeddings in parallel batches.
     """
 
     # guardian: allow-magic-config
-    def __init__(self, batch_size: int = 32, max_workers: int = 4):
+    def __init__(self, batch_size: int = 32, max_workers: int = 16):
         """Initialize the batch embedding service.
 
         Args:
             batch_size: Number of texts to embed in a single batch (default: 32)
-            max_workers: Number of parallel workers (default: 4 for i7-10750H)
+            max_workers: Number of parallel workers (default: 16 for 9950X3D)
         """
         self.batch_size = batch_size
         self.executor = ThreadPoolExecutor(max_workers=max_workers)
@@ -276,12 +276,12 @@ class BatchEmbeddingService:
 
 
 # guardian: allow-magic-config
-def create_batch_embedding_service(batch_size: int = 32, max_workers: int = 4) -> BatchEmbeddingService:
+def create_batch_embedding_service(batch_size: int = 32, max_workers: int = 16) -> BatchEmbeddingService:
     """Create a BatchEmbeddingService instance.
 
     Args:
         batch_size: Number of texts to embed in a single batch
-        max_workers: Number of parallel workers
+        max_workers: Number of parallel workers (default: 16 for 9950X3D)
 
     Returns:
         Configured BatchEmbeddingService instance

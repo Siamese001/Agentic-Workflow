@@ -201,6 +201,7 @@ Baseline: `tests/_config/test_count_baseline.json`. Count drops = FAIL. xfail in
 | Zero-loss refactor | `ops_scripts/ci/zero_loss_refactor_verifier.py` |
 | Agent deletion authorization | `ops_scripts/ci/guard-agent-deletion.py` |
 | Terminal process cleanup | `ops_scripts/ci/check_terminal_cleanup.py` |
+| Pytest config SSOT | `ops_scripts/ci/_validate_pytest_config.py` | Blocks commits with pytest.ini/pyproject.toml drift; see `.windsurf/rules/pytest-config-ssot.md` |
 
 **Single entrypoint:** `python ops_scripts/ci/run_contract_gates.py`
 

@@ -255,6 +255,22 @@ from .lifecycle_advanced import (
     _EmbeddingPipelineVisitor,
     _HITLVisitor,
 )
+from .orchestration import (
+    _HealingOrchestratorVisitor,
+    _P1OrchestrationVisitor,
+    _P2ExecutionCapabilityVisitor,
+    _P3OrchestrationHealingVisitor,
+)
+from .learning import (
+    _L5ValidationProofVisitor,
+    _LearningProvenanceVisitor,
+    _P3LearningMaturityVisitor,
+)
+from .p4_waves import (
+    _P4StateTelemetryVisitor,
+    _P4ObservabilityGovernanceVisitor,
+    _RetrievalWiringVisitor,
+)
 
 __all__ = [
     # Base classes
@@ -305,10 +321,17 @@ __all__ = [
     "_DecoratorVisitor",
     "_SymbolInventoryVisitor",
     "_UnusedImportVisitor",
-    # Advanced lifecycle visitors
-    "_PromptSlotVisitor",
-    "_ExecutionTraceVisitor",
-    "_HealerValidatorVisitor",
-    "_EmbeddingPipelineVisitor",
-    "_HITLVisitor",
+    # Orchestration visitors
+    "_HealingOrchestratorVisitor",
+    "_P1OrchestrationVisitor",
+    "_P2ExecutionCapabilityVisitor",
+    "_P3OrchestrationHealingVisitor",
+    # Learning visitors
+    "_L5ValidationProofVisitor",
+    "_LearningProvenanceVisitor",
+    "_P3LearningMaturityVisitor",
+    # P4 wave visitors
+    "_P4StateTelemetryVisitor",
+    "_P4ObservabilityGovernanceVisitor",
+    "_RetrievalWiringVisitor",
 ]

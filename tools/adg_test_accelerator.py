@@ -51,7 +51,7 @@ from agentic_core.adg.schema_util import module_path_to_layer
 # Constants
 DEFAULT_MAX_DEPTH = 4
 DEFAULT_TOP_N = 30
-DEFAULT_WORKERS = 4
+DEFAULT_WORKERS = 32
 PROBLEM_FILE_DISPLAY_LIMIT = 20
 SYMBOL_PREFIX = "ADG::Symbol::"
 MODULE_PREFIX = "ADG::Module::"

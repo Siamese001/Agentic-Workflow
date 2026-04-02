@@ -352,7 +352,7 @@ class ContextWindowEstimator:
     def _get_top_contributors(self, sources: list[ContextSource]) -> list[dict[str, Any]]:
         """Get top contributors to token count"""
         # Group by source type
-        type_totals = {}
+        type_totals: dict[str, int] = {}
         for source in sources:
             type_totals[source.source_type] = type_totals.get(source.source_type, 0) + source.tokens
 
@@ -374,13 +374,13 @@ class ContextWindowEstimator:
                                 status: str,
                                 total_tokens: int) -> list[str]:
         """Generate reduction recommendations based on analysis"""
-        recommendations = []
+        recommendations: list[str] = []
 
         if status == 'green':
             return recommendations
 
         # Analyze sources for reduction opportunities
-        type_totals = {}
+        type_totals: dict[str, int] = {}
         for source in sources:
             type_totals[source.source_type] = type_totals.get(source.source_type, 0) + source.tokens
 
@@ -754,3 +754,81 @@ class ContextWindowEstimator:
                 "warning_threshold": self.budget.WARNING_THRESHOLD,
             },
         }
+
+
+def main() -> None:
+    """CLI entry point for token estimator"""
+    import argparse
+    import json
+    import sys
+
+    parser = argparse.ArgumentParser(
+        description="Context Window Estimator for Kimi K2.5",
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+        epilog="""
+Examples:
+  python -m agentic_core.planning.token_estimator --help
+  python -m agentic_core.planning.token_estimator --demo
+        """
+    )
+    parser.add_argument(
+        "--demo",
+        action="store_true",
+        help="Run a demo estimation"
+    )
+    parser.add_argument(
+        "--json",
+        action="store_true",
+        help="Output demo results as JSON"
+    )
+    parser.add_argument(
+        "--budget",
+        action="store_true",
+        help="Show default budget configuration"
+    )
+
+    args = parser.parse_args()
+    estimator = ContextWindowEstimator()
+
+    if args.budget:
+        budget_info = {
+            "HARD_MAX_CONTEXT": estimator.budget.HARD_MAX_CONTEXT,
+            "SAFE_OPERATING_CAP": estimator.budget.SAFE_OPERATING_CAP,
+            "WARNING_THRESHOLD": estimator.budget.WARNING_THRESHOLD,
+            "DEFAULT_RESERVED_OUTPUT": estimator.budget.DEFAULT_RESERVED_OUTPUT,
+            "DEFAULT_SAFETY_BUFFER": estimator.budget.DEFAULT_SAFETY_BUFFER,
+        }
+        print(json.dumps(budget_info, indent=2))
+        sys.exit(0)
+
+    if args.demo:
+        result = estimator.estimate_with_breakdown(
+            plan_step="demo_estimation",
+            system_prompt="You are a helpful assistant.",
+            user_prompt="Estimate tokens for this request.",
+            files=[],
+            diffs=[],
+            logs=[],
+            retrieved_context=[],
+            prior_steps=[]
+        )
+        if args.json:
+            print(json.dumps(result, indent=2))
+        else:
+            estimator.print_report(estimator.estimate_step_tokens(
+                plan_step="demo_estimation",
+                system_prompt="You are a helpful assistant.",
+                user_prompt="Estimate tokens for this request.",
+                files=[],
+                diffs=[],
+                logs=[],
+                retrieved_context=[],
+                prior_steps=[]
+            ))
+        sys.exit(0)
+
+    parser.print_help()
+
+
+if __name__ == "__main__":
+    main()

@@ -339,6 +339,19 @@ repos:
         always_run: true
         require_serial: true
 
+      # -- T11.6: Pytest Config SSOT Gate ----------------------------------------
+      # Validates pytest.ini and pyproject.toml [tool.pytest.ini_options] consistency.
+      # Critical checks: -n auto presence, timeout values, serial marker, addopts alignment.
+      # Blocks commits with config drift that would cause Windsurf IDE vs CI behavior mismatch.
+      - id: pytest-config-ssot
+        name: "T11.6: Pytest Config SSOT — pytest.ini vs pyproject.toml consistency"
+        entry: python ops_scripts/ci/_validate_pytest_config.py --strict
+        language: system
+        pass_filenames: false
+        files: ^(pytest\.ini|pyproject\.toml)$
+        always_run: false
+        require_serial: true
+
       # ---- RATCHETS AND POLICY ENFORCEMENT (T12-T18) ----------------------------
       # Run after structural certification. Heavier accounting; only reached by
       # files that are structurally valid.

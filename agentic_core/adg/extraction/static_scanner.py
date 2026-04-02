@@ -29,54 +29,62 @@ from typing import Iterator
 
 from agentic_core.adg.extraction.visitors import (
     VisitorContext,
-    # Lifecycle visitors (G1, G7, G1', G2', G7')
-    _PromptSlotVisitor,
-    _ExecutionTraceVisitor,
-    _HealerValidatorVisitor,
-    _EmbeddingPipelineVisitor,
-    _HITLVisitor,
-    # Structural visitors (G3, G5, G6)
-    _InheritanceVisitor,
+    _AntipatternVisitor,
     _AttributeVisitor,
-    _CompositionVisitor,
-    # Dynamic visitors (GF)
-    _DynamicExecutionVisitor,
-    _ImportVisitor,
-    _InternalCallGraphVisitor,
+    _AuthoritativeCommitVisitor,
+    _BoundaryVerifierVisitor,
     # Core visitors
     _CallVisitor,
-    _AntipatternVisitor,
+    _CapabilityBudgetVisitor,
+    _CompositionVisitor,
+    _DecoratorVisitor,
+    _DeterminismControlVisitor,
+    # Dynamic visitors (GF)
+    _DynamicExecutionVisitor,
+    _EmbeddingPipelineVisitor,
+    # Runtime semantic visitors
+    _EvalSpineVisitor,
+    # Transport proof visitors
+    _ExecutionProofVisitor,
+    _ExecutionSemanticVisitor,
+    _ExecutionTraceVisitor,
+    # Governance visitors
+    _GovernancePlaneVisitor,
+    _HealerValidatorVisitor,
+    # Orchestration visitors (G22, G28-G30)
+    _HealingOrchestratorVisitor,
+    _HITLVisitor,
+    _ImportVisitor,
+    # Structural visitors (G3, G5, G6)
+    _InheritanceVisitor,
+    _InternalCallGraphVisitor,
+    _IOInterceptionVisitor,
+    # Context control visitors
+    _JITContextVisitor,
+    # Learning visitors (G26-G27, G32)
+    _L5ValidationProofVisitor,
+    _LearningProvenanceVisitor,
+    _MutationRecordAssemblyVisitor,
+    _MutationTransportVisitor,
+    _OutboundReadBridgeVisitor,
+    _P1OrchestrationVisitor,
+    _P2ExecutionCapabilityVisitor,
+    _P3LearningMaturityVisitor,
+    _P3OrchestrationHealingVisitor,
+    _P4ObservabilityGovernanceVisitor,
+    # P4 wave visitors (G31, G33-G35)
+    _P4StateTelemetryVisitor,
+    _PromptSlotVisitor,
+    _RetrievalWiringVisitor,
+    _SafetyEnforcementVisitor,
+    _SandboxAirlockVisitor,
+    _SymbolInventoryVisitor,
     # Misc visitors
     _TestTraceabilityVisitor,
     _TypeAnnotationVisitor,
-    _DecoratorVisitor,
-    _SymbolInventoryVisitor,
     _UnusedImportVisitor,
-    # Governance visitors
-    _GovernancePlaneVisitor,
-    _SafetyEnforcementVisitor,
-    _SandboxAirlockVisitor,
-    _CapabilityBudgetVisitor,
-    # Context control visitors
-    _JITContextVisitor,
-    _BoundaryVerifierVisitor,
-    _DeterminismControlVisitor,
-    _IOInterceptionVisitor,
     # L4 waves visitors
     _UWGIngressGateVisitor,
-    _MutationRecordAssemblyVisitor,
-    _AuthoritativeCommitVisitor,
-    _OutboundReadBridgeVisitor,
-    # Transport proof visitors
-    _ExecutionProofVisitor,
-    _PathControlVisitor,
-    _MutationTransportVisitor,
-    # Runtime semantic visitors
-    _EvalSpineVisitor,
-    _ExecutionSemanticVisitor,
-)
-from agentic_core.adg.identity.normalizer import (
-    IdentityKind,
 )
 from agentic_core.adg.schema_util import (
     AGENT_DISPATCH_CLASSES,
@@ -86,71 +94,29 @@ from agentic_core.adg.schema_util import (
     ANTIPATTERN_REGISTRY_CLASSES,
     AUTHORIZE_EXECUTE_SYMBOLS,
     BLOCKS_DIRECT_WRITE_SYMBOLS,
-    BOUNDARY_VERIFIER_CLASSES,
-    BROAD_EXCEPTION_TYPES,
-    BUDGET_EXCEEDED_EXCEPTIONS,
-    CAPABILITY_CHOKEPOINT_CLASSES,
-    CAPABILITY_TOKEN_CLASSES,
     CAPABILITY_VALIDATION_SYMBOLS,
     CAPTURES_EVALUATION_METRIC_SYMBOLS,
     CAPTURES_EXECUTION_OUTPUT_SYMBOLS,
     CAPTURES_PATTERN_SYMBOLS,
     CAPTURES_RUNTIME_ANOMALY_SYMBOLS,
-    CLAIMS_WRITE_LOCK_SYMBOLS,
-    CONFIDENCE_SCORING_CLASSES,
     CONFIG_ACCESS_METHODS,
-    CONFIG_READ_SYMBOLS,
     CONFIG_READER_CLASSES,
     COORDINATES_AGENTS_SYMBOLS,
-    DETERMINISM_PATCH_METHODS,
     DISPATCHES_AGENT_SYMBOLS,
-    DPO_BATCH_CLASSES,
-    DRIFT_ALERT_METHODS,
-    DURABLE_COMMIT_SYMBOLS,
     DYNAMIC_EVAL_SYMBOLS,
-    DYNAMIC_EXEC_SYMBOLS,
     DYNAMIC_GETATTR_SYMBOLS,
-    EMBEDDING_PIPELINE_SYMBOLS,
-    EMBEDDING_SYMBOLS,
     EMITS_METRIC_EVENT_SYMBOLS,
     ESCALATES_FAILURE_SYMBOLS,
-    EVAL_METRIC_CLASSES,
     EXECUTION_PLAN_DISPATCH_SYMBOLS,
-    EXECUTION_TRACE_CLASSES,
-    EXECUTION_TRACE_PACKAGE_SYMBOLS,
     EXTERNAL_HTTP_SYMBOLS,
     FEEDS_META_LEARNING_SYMBOLS,
-    FREEZE_METHOD_NAMES,
-    GOVERNANCE_READ_SYMBOLS,
-    GOVERNANCE_ROUTE_SYMBOLS,
-    GOVERNANCE_WRITE_SYMBOLS,
-    GUARDRAIL_CLASS_NAMES,
-    HASH_CHAIN_APPEND_SYMBOLS,
-    HEALER_BASE_CLASSES,
-    HEALER_METHOD_NAMES,
     HEALING_DISPATCH_METHODS,
     HEALING_ORCHESTRATOR_CLASSES,
-    HITL_ESCALATION_METHODS,
-    HMAC_SEAL_SYMBOLS,
     HUMAN_REVIEW_SYMBOLS,
     IMPROVES_AGENT_POLICY_SYMBOLS,
     INVOKES_EVALUATION_SYMBOLS,
-    IO_INTERCEPT_CLASSES,
-    JIT_CONTEXT_CLASSES,
-    L0_RECEIVES_POLICY_HASH_SYMBOLS,
-    L3_READS_L4_SURFACE_SYMBOLS,
-    L4_TELEMETRY_SYNC_SYMBOLS,
-    L5_READS_L4_SURFACE_SYMBOLS,
-    L6_INGESTS_L4_TRACE_SYMBOLS,
     LINKS_EXECUTION_TO_SNAPSHOT_SYMBOLS,
     LINKS_INCIDENT_TRACE_SYMBOLS,
-    LOGGING_METHOD_NAMES,
-    MATERIALIZES_READ_VIEW_SYMBOLS,
-    MUTATION_DIFF_SYMBOLS,
-    MUTATION_REPLAY_KEY_SYMBOLS,
-    MUTATION_TRANSPORT_CLASSES,
-    NETWORK_SYMBOLS,
-    NETWORK_TRANSCRIPT_SYMBOLS,
     NONDETERMINISM_RANDOM_SYMBOLS,
     NONDETERMINISM_UUID_SYMBOLS,
     # G23-G27 (gap): new proof-edge frozensets
@@ -161,17 +127,12 @@ from agentic_core.adg.schema_util import (
     # P1 orchestration symbols
     P1_ROUTES_TO_AGENT_SYMBOLS,
     P1_VALIDATES_AGENT_CAPABILITY_SYMBOLS,
-    PATH_CONTROL_CLASSES,
-    PATH_REROUTE_METHODS,
-    POLICY_HASH_METHODS,
     POLICY_HASH_SYMBOLS,
     POLICY_STATE_READ_METHODS,
     POLICY_STATE_READER_CLASSES,
     PREFERENCE_PAIR_SYMBOLS,
     PROMPT_INJECTION_SYMBOLS,
     PROMPT_TEMPLATE_SYMBOLS,
-    PROVIDER_SDK_SYMBOLS,
-    READS_L4_SURFACE_SYMBOLS,
     RECORDS_HEALING_OUTCOME_SYMBOLS,
     RECORDS_INCIDENT_EVENT_SYMBOLS,
     RECORDS_LEARNING_EVENT_SYMBOLS,
@@ -179,40 +140,21 @@ from agentic_core.adg.schema_util import (
     RECORDS_TOOL_INVOCATION_SYMBOLS,
     RECORDS_WORKFLOW_LINEAGE_SYMBOLS,
     REGISTRY_CHECK_SYMBOLS,
-    REPLAY_GUARD_CLASSES,
-    REPLAY_KEY_METHODS,
-    RETRIEVAL_SURFACE_REFRESH_SYMBOLS,
-    RETRIEVAL_SYMBOLS,
-    RFC6902_DIFF_SYMBOLS,
-    ROLLBACK_HEAL_SYMBOLS,
     ROUTES_TO_CAPABILITY_SYMBOLS,
     ROUTING_COMMIT_SYMBOLS,
     SAFETY_PLANE_CLASSES,
-    SANDBOX_ENVELOPE_CLASSES,
     SECRET_ACCESS_METHODS,
     SECRET_ENV_PATTERNS,
     SECRET_VAULT_CLASSES,
-    SEMANTIC_CLOCK_CLASSES,
     STORES_EMBEDDING_SYMBOLS,
     STORES_LEARNING_STATE_SYMBOLS,
-    SWAPS_VERSION_ALIAS_SYMBOLS,
-    TOOL_BUDGET_CLASSES,
     TRIGGERS_ALERT_SYMBOLS,
     UPDATES_META_LEARNING_STATE_SYMBOLS,
     UPDATES_MONITORING_STATE_SYMBOLS,
     UPDATES_ROUTING_STRATEGY_SYMBOLS,
-    UWG_BLAST_RADIUS_SYMBOLS,
-    UWG_CHECKS_CAPABILITY_SET_SYMBOLS,
-    UWG_CHECKS_POLICY_HASH_SYMBOLS,
     UWG_TERMINATION_SYMBOLS,
-    UWG_VALIDATES_INTENT_SYMBOLS,
     VALIDATES_CAPABILITY_SYMBOLS,
-    VALIDATOR_BASE_CLASSES,
-    VECTOR_STORE_SYMBOLS,
-    WORK_CONTRACT_METHODS,
     WORKFLOW_ORCHESTRATION_SYMBOLS,
-    WRITE_SIDE_EFFECT_EXCLUSIONS,
-    WRITE_SIDE_EFFECT_SYMBOLS,
     WRITES_LEARNING_SNAPSHOT_SYMBOLS,
     WRITES_OBSERVABILITY_LOG_SYMBOLS,
     WRITES_VIA_UWG_SYMBOLS,
@@ -3226,38 +3168,31 @@ def _scan_file(
         proof_visitor.visit(tree)
         edges.extend(proof_visitor.extract_edges())
 
-        # G15 (gap): Path control (routes_path, forces_stall, reenters_safety, vigilance_reroute)
-        path_visitor = _PathControlVisitor(VisitorContext(module_adg, rel))
-        path_visitor.visit(tree)
-        edges.extend(path_visitor.extract_edges())
+    # G16 (gap): Evaluation / optimization spine (scores_groundedness, emits_drift_alert, builds_dpo_batch)
+    eval_visitor = _EvalSpineVisitor(VisitorContext(module_adg, rel))
+    eval_visitor.visit(tree)
+    edges.extend(eval_visitor.extract_edges())
 
-        # G16 (gap): Evaluation / optimization spine (scores_groundedness, emits_drift_alert, builds_dpo_batch)    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime
-        eval_visitor = _EvalSpineVisitor(
-            module_adg, rel
-        )  # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime
-        eval_visitor.visit(tree)
-        edges.extend(eval_visitor.edges)
+    # GH (RCA Rule D): Duplicate method definition detection
+    dup_visitor = _DuplicateMethodVisitor(module_adg, rel)
+    dup_visitor.visit(tree)
+    edges.extend(dup_visitor.edges)
 
-        # GH (RCA Rule D): Duplicate method definition detection
-        dup_visitor = _DuplicateMethodVisitor(module_adg, rel)
-        dup_visitor.visit(tree)
-        edges.extend(dup_visitor.edges)
+    # GU (RCA Rule G): Unreachable code after raise detection
+    unreach_visitor = _UnreachableCodeAfterRaiseVisitor(module_adg, rel)
+    unreach_visitor.visit(tree)
+    edges.extend(unreach_visitor.edges)
 
-        # GU (RCA Rule G): Unreachable code after raise detection
-        unreach_visitor = _UnreachableCodeAfterRaiseVisitor(module_adg, rel)
-        unreach_visitor.visit(tree)
-        edges.extend(unreach_visitor.edges)
+    # G17 (gap): Secret / credential access (reads_secret_vault, accesses_credential, rotates_secret)
+    secret_visitor = _SecretAccessVisitor(module_adg, rel)
+    secret_visitor.visit(tree)
+    edges.extend(secret_visitor.edges)
 
-        # G17 (gap): Secret / credential access (reads_secret_vault, accesses_credential, rotates_secret)
-        secret_visitor = _SecretAccessVisitor(module_adg, rel)
-        secret_visitor.visit(tree)
-        edges.extend(secret_visitor.edges)
-
-        # Execution-grade semantic enrichment (replaces disabled _PrecisionHardeningVisitor)
-        # Closes gaps: Data Lineage, Control Flow, Side Effects, Temporal Ordering, Callsite Resolution
-        exec_visitor = _ExecutionSemanticVisitor(VisitorContext(module_adg, rel))
-        exec_visitor.visit(tree)
-        edges.extend(exec_visitor.extract_edges())
+    # Execution-grade semantic enrichment (replaces disabled _PrecisionHardeningVisitor)
+    # Closes gaps: Data Lineage, Control Flow, Side Effects, Temporal Ordering, Callsite Resolution
+    exec_visitor = _ExecutionSemanticVisitor(VisitorContext(module_adg, rel))
+    exec_visitor.visit(tree)
+    edges.extend(exec_visitor.extract_edges())
 
     # All final gap visitors (only in full mode)
     if visitors_to_run == "full":

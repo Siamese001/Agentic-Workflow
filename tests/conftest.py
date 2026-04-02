@@ -1,6 +1,24 @@
 # Core pytest configuration - sys.path setup MUST be first
 import sys
+import warnings
 from pathlib import Path
+
+# Filter Pydantic V2 deprecation warnings to prevent collection errors
+warnings.filterwarnings(
+    "ignore",
+    message=".*PydanticDeprecatedSince20.*",
+    category=DeprecationWarning,
+)
+warnings.filterwarnings(
+    "ignore",
+    message=".*Pydantic V1 style.*",
+    category=DeprecationWarning,
+)
+warnings.filterwarnings(
+    "ignore",
+    message=".*Support for class-based.*",
+    category=DeprecationWarning,
+)
 
 # Ensure repo root is on sys.path BEFORE any other imports
 _REPO_ROOT = str(Path(__file__).resolve().parents[1])

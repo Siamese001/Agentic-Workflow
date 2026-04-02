@@ -101,7 +101,7 @@ def run_benchmarks() -> dict:
     print("[B3] Parallel AST parse (ProcessPool) sweep:")
     best_parallel = serial_ast
     best_workers = 1
-    for nw in [4, 8, 12, 16]:
+    for nw in [8, 16, 24, 32]:
         t0 = time.perf_counter()
         with ProcessPoolExecutor(max_workers=nw) as ex:
             _ = list(ex.map(_parse_file, files, chunksize=60))
@@ -128,7 +128,7 @@ def run_benchmarks() -> dict:
 
     # ── B5: Parallel full visitor sweep ─────────────────────────────────────
     print("[B5] Parallel full visitor sweep:")
-    for nw in [8, 12, 16]:
+    for nw in [16, 24, 32]:
         t0 = time.perf_counter()
         with ProcessPoolExecutor(max_workers=nw) as ex:
             _ = list(ex.map(_parse_and_visit, files, chunksize=60))
@@ -151,12 +151,12 @@ def run_benchmarks() -> dict:
 
     # Thread pool for I/O-bound hashing
     t0 = time.perf_counter()
-    with ThreadPoolExecutor(max_workers=8) as ex:
+    with ThreadPoolExecutor(max_workers=32) as ex:
         _ = list(ex.map(_hash_file, files))
     t1 = time.perf_counter()
     thread_hash = t1 - t0
-    print(f"     ThreadPool w=8: {_fmt(thread_hash)}  speedup={serial_hash / thread_hash:.2f}x")
-    results["thread_hash_w8"] = {"wall_s": thread_hash, "speedup": serial_hash / thread_hash}
+    print(f"     ThreadPool w=32: {_fmt(thread_hash)}  speedup={serial_hash / thread_hash:.2f}x")
+    results["thread_hash_w32"] = {"wall_s": thread_hash, "speedup": serial_hash / thread_hash}
 
     # ── B7: JSON serialization (report gen workload) ─────────────────────────
     sample_data = {
