@@ -452,6 +452,13 @@ def _cli() -> None:
 
 
 # Export aliases for backward compatibility with tests
+__all__ = [
+    "ADGStalenessChecker",
+    "StalenessResult",
+    "_cli",
+    "main",
+    "ADGStaleGuard",
+]
 main = _cli
 ADGStaleGuard = ADGStalenessChecker
 

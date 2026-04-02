@@ -504,6 +504,13 @@ def _cli() -> None:
 
 # Alias for backward compatibility with tests
 ADGRedisQuery = ADGRedisClient
+# Alias for backward compatibility with tests
+__all__ = [
+    "ADGRedisClient",
+    "ADGRedisQuery",
+    "_cli",
+]
+ADGRedisQuery = ADGRedisClient
 
 
 if __name__ == "__main__":
