@@ -230,6 +230,12 @@ from .governance import (
     _SandboxAirlockVisitor,
     _CapabilityBudgetVisitor,
 )
+from .context_control import (
+    _JITContextVisitor,
+    _BoundaryVerifierVisitor,
+    _DeterminismControlVisitor,
+    _IOInterceptionVisitor,
+)
 
 __all__ = [
     # Base classes
@@ -265,4 +271,9 @@ __all__ = [
     "_SafetyEnforcementVisitor",
     "_SandboxAirlockVisitor",
     "_CapabilityBudgetVisitor",
+    # Context & Control visitors
+    "_JITContextVisitor",
+    "_BoundaryVerifierVisitor",
+    "_DeterminismControlVisitor",
+    "_IOInterceptionVisitor",
 ]
