@@ -50,7 +50,7 @@ from agentic_core.L0_routing.config.path_constants import DEFAULT_TIMEOUT, MAX_R
 
 _clock_cache = None
 
-def __get_clock():
+def _get_clock():
     global _clock_cache
     if _clock_cache is None:
         try:
@@ -787,7 +787,8 @@ def _fire_meta_learning_intake(state_mgr: "RuntimeStateManager", now_utc: int) -
         _apply_proposals = state_mgr.state.get("apply_proposals", False)
         _now_utc = int(_time_mod.time())
         _window_start_utc = max(0, _now_utc - 3600)
-        _ml_cfg = build_pipeline_config(proposal_only=not _apply_proposals)
+        # Meta-learning intake always uses proposal_only=True (non-mutating)
+        _ml_cfg = build_pipeline_config(proposal_only=True)
         _ml_deps = build_pipeline_deps(repo_root=REPO_ROOT, healing_outcome_intake_adapter=adapter)
         _ml_proposals = _ml_run_pipeline(
             now_utc=_now_utc,
@@ -2920,7 +2921,7 @@ class SovereignDecisionEngine:
             return False
         self._operation_stack.append(op_signature)
         self._atomic_lock = True
-        self._sovereignty_token = f"SOV_{int(__get_clock().now_epoch())}_{agent_name}"
+        self._sovereignty_token = f"SOV_{int(_get_clock().now_epoch())}_{agent_name}"
         return True
 
     def release_sovereignty_token(self, agent_name: str, success: bool = True) -> None:
@@ -4775,7 +4776,7 @@ def save_aggregate_report(targets: list[str], project_root: Path) -> Path | None
         aggregate = {
             "meta": {
                 "report_type": "AGGREGATE",
-                "timestamp": __get_clock().now_iso(),
+                "timestamp": _get_clock().now_iso(),
                 "territories_scanned": len(territory_summaries),
                 "territories_compliant": compliant,
                 "territories_non_compliant": non_compliant,
@@ -5699,7 +5700,7 @@ def _write_mandatory_json_output(
     output = {
         "meta": {
             "report_type": "HEAL_RUN_OUTPUT",
-            "timestamp": __get_clock().now_iso(),
+            "timestamp": _get_clock().now_iso(),
             "mandatory": True,
         },
         "semantic_cache": {
@@ -5917,7 +5918,7 @@ def _write_heal_run_complete(
         git_commit = _r.stdout.strip()
     except (subprocess.CalledProcessError, OSError, subprocess.TimeoutExpired):
         pass
-    run_ts = __get_clock().now_iso()
+    run_ts = _get_clock().now_iso()
     run_id = "run_" + run_ts.replace(":", "").replace("-", "").replace("T", "_")[:19]
     import re as _re
 
@@ -6507,7 +6508,7 @@ def _write_failure_forensics(
                     "remediation": "Lower DETERMINISTIC threshold or add agent-specific calibration",
                 }
             )
-    run_ts = __get_clock().now_iso()
+    run_ts = _get_clock().now_iso()
     output = {
         "meta": {"report_type": "FAILURE_FORENSICS", "timestamp": run_ts},
         "summary": {
@@ -7540,7 +7541,7 @@ def _legacy_main(
                 state_mgr.state["current_territory"] = territory
                 state_mgr.save()
                 state_mgr.add_event("domain_start", f"Entering Domain: {territory}")
-                _territory_start_ms = __get_clock().now_epoch() * 1000.0
+                _territory_start_ms = _get_clock().now_epoch() * 1000.0
                 from dataclasses import replace as _dc_replace
 
                 effective_ctx = ctx
@@ -7823,7 +7824,7 @@ def _legacy_main(
                             )
                         cert = execute_phase7_final(agents, territory, state_mgr, decision_engine)
                         results.append(cert)
-                        _territory_elapsed_ms = __get_clock().now_epoch() * 1000.0 - _territory_start_ms
+                        _territory_elapsed_ms = _get_clock().now_epoch() * 1000.0 - _territory_start_ms
                         state_mgr.state["agent_execution_log"].append(
                             {
                                 "territory": territory,
@@ -7846,10 +7847,10 @@ def _legacy_main(
                     if is_autonomous:
                         continue
                     else:
-                        _fire_meta_learning_intake(state_mgr, now_utc=int(__get_clock().now_epoch()))
+                        _fire_meta_learning_intake(state_mgr, now_utc=int(_get_clock().now_epoch()))
                         state_mgr.finish_mission(status="error")
                         sys.exit(1)
-            _fire_meta_learning_intake(state_mgr, now_utc=int(__get_clock().now_epoch()))
+            _fire_meta_learning_intake(state_mgr, now_utc=int(_get_clock().now_epoch()))
             save_aggregate_report(targets, REPO_ROOT)
             state_mgr.finish_mission(status="completed")
             try:
@@ -7901,7 +7902,7 @@ def _legacy_main(
     except (ImportError, AttributeError, TypeError, ValueError, OSError) as fatal_e:
         logger.critical(f"🔥 FATAL PROTOCOL ERROR: {fatal_e}")
         traceback.print_exc()
-        _fire_meta_learning_intake(state_mgr, now_utc=int(__get_clock().now_epoch()))
+        _fire_meta_learning_intake(state_mgr, now_utc=int(_get_clock().now_epoch()))
         state_mgr.finish_mission(status="fatal_error")
         try:
             print("\n" + "=" * 80)
