@@ -217,6 +217,7 @@ def list_registered_visitors() -> list[str]:
 from .structural import _InheritanceVisitor, _AttributeVisitor, _CompositionVisitor
 from .dynamic import _DynamicExecutionVisitor, _ImportVisitor, _InternalCallGraphVisitor
 from .core import _CallVisitor, _AntipatternVisitor
+from .runtime_semantic import _ExecutionSemanticVisitor, _EvalSpineVisitor
 
 __all__ = [
     # Base classes
@@ -239,4 +240,7 @@ __all__ = [
     # Core visitors
     "_CallVisitor",
     "_AntipatternVisitor",
+    # Runtime semantic visitors
+    "_ExecutionSemanticVisitor",
+    "_EvalSpineVisitor",
 ]
