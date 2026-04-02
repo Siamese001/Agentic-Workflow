@@ -218,6 +218,12 @@ from .structural import _InheritanceVisitor, _AttributeVisitor, _CompositionVisi
 from .dynamic import _DynamicExecutionVisitor, _ImportVisitor, _InternalCallGraphVisitor
 from .core import _CallVisitor, _AntipatternVisitor
 from .runtime_semantic import _ExecutionSemanticVisitor, _EvalSpineVisitor
+from .l4_waves import (
+    _UWGIngressGateVisitor,
+    _MutationRecordAssemblyVisitor,
+    _AuthoritativeCommitVisitor,
+    _OutboundReadBridgeVisitor,
+)
 
 __all__ = [
     # Base classes
@@ -243,4 +249,9 @@ __all__ = [
     # Runtime semantic visitors
     "_ExecutionSemanticVisitor",
     "_EvalSpineVisitor",
+    # L4/UWG wave visitors
+    "_UWGIngressGateVisitor",
+    "_MutationRecordAssemblyVisitor",
+    "_AuthoritativeCommitVisitor",
+    "_OutboundReadBridgeVisitor",
 ]
