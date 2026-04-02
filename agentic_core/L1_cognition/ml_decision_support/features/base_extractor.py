@@ -14,7 +14,7 @@ from typing import Dict, List, Optional, Any, Union, Callable
 from dataclasses import dataclass, asdict
 from pathlib import Path
 
-from agentic_core.runtime.lifecycle_trace_contract import _emit_records_execution_trace
+from agentic_core.L_CONTRACTS.lifecycle_trace_contract import _emit_records_execution_trace
 from ..config.feature_schemas import FeatureSchema, FeatureDefinition, NullHandling
 
 

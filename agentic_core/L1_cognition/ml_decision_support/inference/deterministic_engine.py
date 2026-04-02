@@ -11,7 +11,7 @@ from typing import Dict, List, Optional, Any, Union
 from dataclasses import dataclass
 from pathlib import Path
 
-from agentic_core.runtime.lifecycle_trace_contract import _emit_records_execution_trace
+from agentic_core.L_CONTRACTS.lifecycle_trace_contract import _emit_records_execution_trace
 from ..config.model_registry import DecisionMode
 from ..models.base_model import BaseMLModel, ModelPrediction, ModelInput
 from ..inference.shadow_logger import ShadowLogger, ShadowMode

@@ -13,7 +13,7 @@ from typing import Dict, List, Optional, Any
 from dataclasses import dataclass, asdict
 from enum import Enum
 
-from agentic_core.runtime.lifecycle_trace_contract import _emit_records_execution_trace
+from agentic_core.L_CONTRACTS.lifecycle_trace_contract import _emit_records_execution_trace
 from ..models.base_model import ModelPrediction, ModelInput
 
 

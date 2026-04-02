@@ -12,7 +12,7 @@ from pathlib import Path
 from typing import Dict, List, Optional, Any, Tuple
 from dataclasses import dataclass, asdict
 
-from agentic_core.runtime.lifecycle_trace_contract import _emit_records_execution_trace
+from agentic_core.L_CONTRACTS.lifecycle_trace_contract import _emit_records_execution_trace
 from ..models.base_model import ModelPrediction, ModelInput
 
 
