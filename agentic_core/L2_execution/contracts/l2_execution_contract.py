@@ -169,6 +169,9 @@ class CanonicalAgentRole(Enum):
     OBSERVER = "observer"  # L6: Observation and evaluation
 
 
+import uuid
+
+
 class L2ExecutionAgent(ABC):
     """
     Abstract base class for L2 execution agents.
@@ -268,7 +271,7 @@ class L2ExecutionAgent(ABC):
         )
 
         # Execute healing based on tier
-        if heal_decision.tier.value == "LOCAL_AGENT":
+        if heal_decision.tier == HealingTier.LOCAL_AGENT:
             return self._execute_local_heal(context, healing_input, heal_decision)
         else:
             # Escalate to higher tier
@@ -313,8 +316,6 @@ class L2ExecutionAgent(ABC):
 
     def _generate_trace_id(self) -> str:
         """Generate a unique trace ID for this execution."""
-        import uuid
-
         return f"{self.agent_id}-{uuid.uuid4().hex[:8]}"
 
     def _build_final_result(
