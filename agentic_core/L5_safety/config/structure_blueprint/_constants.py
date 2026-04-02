@@ -2,20 +2,11 @@
 Constants Module — LEAF NODE (Zero Internal Dependencies).
 
 This module is the foundational leaf in the dependency graph for the
-structure_blueprint package. It imports ONLY from the Python standard library.
+structure_blueprint package. It imports ONLY from the Python standard library
+and agentic_core.L0_routing.config.path_constants (L0 is allowed for all layers).
 
 All sibling modules (ssot.py, derived.py, etc.) import shared static data
 from HERE, eliminating circular dependency patterns.
-
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300  # 5 minutes
-# Configuration constants
 
 Contents:
   - SubfolderDefinition / TerritoryDefinition TypedDicts
@@ -37,6 +28,18 @@ Design rationale:
 """
 
 from __future__ import annotations
+
+# Import canonical constants from L0 (L0 can be imported by any layer)
+from agentic_core.L0_routing.config.path_constants import (
+    BATCH_SIZE,
+    BUFFER_SIZE,
+    DEFAULT_SLEEP,
+    DEFAULT_TIMEOUT,
+    MAX_DEPTH,
+    MAX_FILES,
+    MAX_RETRIES,
+    THRESHOLD,
+)
 
 import warnings
 from collections.abc import Mapping, Sequence
