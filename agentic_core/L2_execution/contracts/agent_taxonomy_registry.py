@@ -575,8 +575,8 @@ AGENT_TAXONOMY_MAP: dict[str, AgentClassification] = {
         canonical_role=CanonicalAgentRole.OBSERVER,
         status=AgentStatus.ACTIVE,
         is_shim=False,
-        implements_l2_contract=False,
-        notes="RG reflection/observation agent (L6).",
+        implements_l2_contract=True,
+        notes="RG reflection/observation agent (L6). WAVE 8: Now L2 contract compliant.",
     ),
     "RgStrategicPlannerAgent": AgentClassification(
         file_path="apps_rg/reasoning/RgStrategicPlannerAgent.py",
@@ -649,8 +649,8 @@ AGENT_TAXONOMY_MAP: dict[str, AgentClassification] = {
         canonical_role=CanonicalAgentRole.OBSERVER,
         status=AgentStatus.ACTIVE,
         is_shim=False,
-        implements_l2_contract=False,
-        notes="Test discovery and cataloging agent (L6 observation).",
+        implements_l2_contract=True,
+        notes="Test discovery and cataloging agent (L6 observation). WAVE 8: Now L2 contract compliant.",
     ),
     "QualityGateAgent": AgentClassification(
         file_path="apps_eval/reasoning/QualityGateAgent.py",
@@ -659,8 +659,8 @@ AGENT_TAXONOMY_MAP: dict[str, AgentClassification] = {
         canonical_role=CanonicalAgentRole.SAFETY,
         status=AgentStatus.ACTIVE,
         is_shim=False,
-        implements_l2_contract=False,
-        notes="Quality gate safety agent (L5).",
+        implements_l2_contract=True,
+        notes="Quality gate safety agent (L5). WAVE 8: Now L2 contract compliant.",
     ),
     "ScenarioGenerationAgent": AgentClassification(
         file_path="apps_eval/reasoning/ScenarioGenerationAgent.py",
@@ -702,8 +702,8 @@ AGENT_TAXONOMY_MAP: dict[str, AgentClassification] = {
         canonical_role=CanonicalAgentRole.SAFETY,
         status=AgentStatus.ACTIVE,
         is_shim=False,
-        implements_l2_contract=False,
-        notes="Style compliance safety agent (L5).",
+        implements_l2_contract=True,
+        notes="Style compliance safety agent (L5). WAVE 8: Now L2 contract compliant.",
     ),
     # ============================================
     # L5 SAFETY AGENTS (Key Agents)
@@ -715,8 +715,8 @@ AGENT_TAXONOMY_MAP: dict[str, AgentClassification] = {
         canonical_role=CanonicalAgentRole.SAFETY,
         status=AgentStatus.ACTIVE,
         is_shim=False,
-        implements_l2_contract=False,
-        notes="L5 governance safety agent - can emit heal_blocked signals.",
+        implements_l2_contract=True,
+        notes="L5 governance safety agent - can emit heal_blocked signals. WAVE 8: Now L2 contract compliant.",
     ),
     "CodeJanitorAgent": AgentClassification(
         file_path="agentic_core/L5_safety/reasoning/CodeJanitorAgent.py",
@@ -725,8 +725,8 @@ AGENT_TAXONOMY_MAP: dict[str, AgentClassification] = {
         canonical_role=CanonicalAgentRole.SAFETY,
         status=AgentStatus.ACTIVE,
         is_shim=False,
-        implements_l2_contract=False,
-        notes="L5 code janitor/healer safety agent.",
+        implements_l2_contract=True,
+        notes="L5 code janitor/healer safety agent. WAVE 8: Now L2 contract compliant.",
     ),
     "PascalSovereigntyAgent": AgentClassification(
         file_path="agentic_core/L5_safety/reasoning/PascalSovereigntyAgent.py",
@@ -735,8 +735,8 @@ AGENT_TAXONOMY_MAP: dict[str, AgentClassification] = {
         canonical_role=CanonicalAgentRole.SAFETY,
         status=AgentStatus.ACTIVE,
         is_shim=False,
-        implements_l2_contract=False,
-        notes="L5 Pascal naming sovereignty enforcer.",
+        implements_l2_contract=True,
+        notes="L5 Pascal naming sovereignty enforcer. WAVE 8: Now L2 contract compliant.",
     ),
     "HygieneGuardianAgent": AgentClassification(
         file_path="agentic_core/L5_safety/reasoning/HygieneGuardianAgent.py",
@@ -745,8 +745,8 @@ AGENT_TAXONOMY_MAP: dict[str, AgentClassification] = {
         canonical_role=CanonicalAgentRole.SAFETY,
         status=AgentStatus.ACTIVE,
         is_shim=False,
-        implements_l2_contract=False,
-        notes="L5 code hygiene guardian safety agent.",
+        implements_l2_contract=True,
+        notes="L5 code hygiene guardian safety agent. WAVE 8: Now L2 contract compliant.",
     ),
     "PreCommitSovereignAgent": AgentClassification(
         file_path="agentic_core/L5_safety/reasoning/PreCommitSovereignAgent.py",
@@ -755,8 +755,8 @@ AGENT_TAXONOMY_MAP: dict[str, AgentClassification] = {
         canonical_role=CanonicalAgentRole.SAFETY,
         status=AgentStatus.ACTIVE,
         is_shim=False,
-        implements_l2_contract=False,
-        notes="L5 pre-commit safety enforcement agent.",
+        implements_l2_contract=True,
+        notes="L5 pre-commit safety enforcement agent. WAVE 8: Now L2 contract compliant.",
     ),
     "RedTeamAgent": AgentClassification(
         file_path="agentic_core/L5_safety/reasoning/RedTeamAgent.py",
@@ -765,8 +765,8 @@ AGENT_TAXONOMY_MAP: dict[str, AgentClassification] = {
         canonical_role=CanonicalAgentRole.SAFETY,
         status=AgentStatus.ACTIVE,
         is_shim=False,
-        implements_l2_contract=False,
-        notes="L5 adversarial red team safety agent.",
+        implements_l2_contract=True,
+        notes="L5 adversarial red team safety agent. WAVE 8: Now L2 contract compliant.",
     ),
     "ConstitutionalReviewerAgent": AgentClassification(
         file_path="agentic_core/L5_safety/reasoning/ConstitutionalReviewerAgent.py",
@@ -775,8 +775,8 @@ AGENT_TAXONOMY_MAP: dict[str, AgentClassification] = {
         canonical_role=CanonicalAgentRole.SAFETY,
         status=AgentStatus.ACTIVE,
         is_shim=False,
-        implements_l2_contract=False,
-        notes="L5 constitutional compliance reviewer.",
+        implements_l2_contract=True,
+        notes="L5 constitutional compliance reviewer. WAVE 8: Now L2 contract compliant.",
     ),
     # ============================================
     # L6 OBSERVABILITY AGENTS
@@ -788,8 +788,8 @@ AGENT_TAXONOMY_MAP: dict[str, AgentClassification] = {
         canonical_role=CanonicalAgentRole.OBSERVER,
         status=AgentStatus.ACTIVE,
         is_shim=False,
-        implements_l2_contract=False,
-        notes="L6 performance analysis observer agent.",
+        implements_l2_contract=True,
+        notes="L6 performance analysis observer agent. WAVE 8: Now L2 contract compliant.",
     ),
     # ============================================
     # APPS_LIC: REMAINING LIC AGENTS
@@ -801,8 +801,8 @@ AGENT_TAXONOMY_MAP: dict[str, AgentClassification] = {
         canonical_role=CanonicalAgentRole.SAFETY,
         status=AgentStatus.ACTIVE,
         is_shim=False,
-        implements_l2_contract=False,
-        notes="LIC governance shield safety agent.",
+        implements_l2_contract=True,
+        notes="LIC governance shield safety agent. WAVE 8: Now L2 contract compliant.",
     ),
     "ExecutiveStrategyAgent": AgentClassification(
         file_path="apps_lic/reasoning/ExecutiveStrategyAgent.py",
@@ -821,8 +821,8 @@ AGENT_TAXONOMY_MAP: dict[str, AgentClassification] = {
         canonical_role=CanonicalAgentRole.OBSERVER,
         status=AgentStatus.ACTIVE,
         is_shim=False,
-        implements_l2_contract=False,
-        notes="LIC reflection/observation agent (L6).",
+        implements_l2_contract=True,
+        notes="LIC reflection/observation agent (L6). WAVE 8: Now L2 contract compliant.",
     ),
     "LeadQualityAgent": AgentClassification(
         file_path="apps_lic/reasoning/LeadQualityAgent.py",
@@ -871,8 +871,8 @@ AGENT_TAXONOMY_MAP: dict[str, AgentClassification] = {
         canonical_role=CanonicalAgentRole.SAFETY,
         status=AgentStatus.ACTIVE,
         is_shim=False,
-        implements_l2_contract=False,
-        notes="LIC message compliance safety agent (L5).",
+        implements_l2_contract=True,
+        notes="LIC message compliance safety agent (L5). WAVE 8: Now L2 contract compliant.",
     ),
     "MessageArchitectAgent": AgentClassification(
         file_path="apps_lic/reasoning/MessageArchitectAgent.py",
@@ -951,8 +951,8 @@ AGENT_TAXONOMY_MAP: dict[str, AgentClassification] = {
         canonical_role=CanonicalAgentRole.SAFETY,
         status=AgentStatus.ACTIVE,
         is_shim=False,
-        implements_l2_contract=False,
-        notes="LIC validation safety agent (L5).",
+        implements_l2_contract=True,
+        notes="LIC validation safety agent (L5). WAVE 8: Now L2 contract compliant.",
     ),
     # APPS_LIC Shims
     "ArchetypeIndicatorsAgent": AgentClassification(
