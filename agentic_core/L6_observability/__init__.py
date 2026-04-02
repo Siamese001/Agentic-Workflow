@@ -91,6 +91,13 @@ from agentic_core.L6_observability.engines.auto_persistence_adapter import (
     get_auto_persistence_tracer,
 )
 
+# Wave 4: Meta-Learning Bridge
+from agentic_core.L6_observability.engines.meta_learning_bridge import (
+    L6MetaLearningBridge,
+    MetaLearningRecord,
+    get_meta_learning_bridge,
+)
+
 # Wave 0: Performance
 from agentic_core.L6_observability.performance.performance_emitter import (
     LatencyBudget,
@@ -290,6 +297,10 @@ __all__ = [
     # Auto-Persistence (Wave 3)
     "AutoPersistenceTracingAdapter",
     "get_auto_persistence_tracer",
+    # Meta-Learning Bridge (Wave 4)
+    "L6MetaLearningBridge",
+    "MetaLearningRecord",
+    "get_meta_learning_bridge",
     # Context Classes
     "PerformanceContext",
     "StageOwner",
