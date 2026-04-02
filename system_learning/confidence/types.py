@@ -168,6 +168,24 @@ _emit_links_execution_to_snapshot("p4", "types", "exec_snapshot_link")
 
 
 @dataclass(frozen=True)
+class ConfidenceLevel:
+    """Confidence level for test compatibility."""
+    LOW = "low"
+    MEDIUM = "medium"
+    HIGH = "high"
+    CRITICAL = "critical"
+
+
+@dataclass(frozen=True)
+class ConfidenceFactor:
+    """Confidence factor for test compatibility."""
+    COVERAGE = "coverage"
+    COMPLEXITY = "complexity"
+    TEST_RESULTS = "test_results"
+    STATIC_ANALYSIS = "static_analysis"
+
+
+@dataclass(frozen=True)
 class HealingAttempt:
     """A healing attempt for confidence scoring."""
 

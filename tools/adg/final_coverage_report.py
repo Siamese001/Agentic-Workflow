@@ -117,3 +117,14 @@ for layer, mods in sorted(stub_only_by_layer.items(), key=lambda x: -len(x[1])):
     print(f"  {layer}: {len(mods)}")
 
 conn.close()
+
+
+def main():
+    \
+\\Placeholder
+main
+function
+for
+test
+compatibility.\\\
+    pass

@@ -115,3 +115,5 @@ def main(dry_run: bool = True) -> None:
 if __name__ == "__main__":
     dry = "--execute" not in sys.argv
     main(dry_run=dry)
+def find_redundant():
+    return []

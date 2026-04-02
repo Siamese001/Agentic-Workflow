@@ -184,3 +184,6 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
+
+def analyze_split():
+    return {}

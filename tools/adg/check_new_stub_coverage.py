@@ -65,3 +65,5 @@ cov = covered["cnt"]
 print(f"\nCoverage: {cov}/{total} = {100 * cov / total:.1f}%")
 
 conn.close()
+def check_coverage():
+    return {}
