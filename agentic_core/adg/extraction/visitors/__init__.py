@@ -18,7 +18,7 @@ if TYPE_CHECKING:
 @dataclass(frozen=True)
 class VisitorContext:
     """Immutable context passed to all visitors during extraction.
-    
+
     Attributes:
         module_adg_name: Canonical ADG name for the module being scanned
         source_file: Absolute path to the source file being scanned
@@ -31,14 +31,14 @@ class VisitorContext:
 
 class BaseADGVisitor(ABC, ast.NodeVisitor):
     """Abstract base class for all ADG extraction visitors.
-    
+
     Contract:
         1. Inherit from BaseADGVisitor and ast.NodeVisitor
         2. Implement extract_edges() to return list of Edge objects
         3. Call self.generic_visit(node) to continue tree traversal
         4. Store edges in self.edges list during visit_* methods
         5. Use self.ctx to access module/file context
-    
+
     Example:
         class _MyVisitor(BaseADGVisitor):
             def visit_Call(self, node: ast.Call) -> None:
@@ -46,14 +46,14 @@ class BaseADGVisitor(ABC, ast.NodeVisitor):
                 edge = self._create_edge("calls", symbol, node.lineno)
                 self.edges.append(edge)
                 self.generic_visit(node)
-            
+
             def extract_edges(self) -> list[Edge]:
                 return self.edges
     """
-    
+
     def __init__(self, ctx: VisitorContext) -> None:
         """Initialize visitor with extraction context.
-        
+
         Args:
             ctx: VisitorContext containing module name and source file path
         """
@@ -62,19 +62,19 @@ class BaseADGVisitor(ABC, ast.NodeVisitor):
         self.edges: list[Edge] = []
         self._module_adg_name = ctx.module_adg_name
         self._source_file = ctx.source_file
-    
+
     @abstractmethod
     def extract_edges(self) -> list[Edge]:
         """Return all edges extracted during tree traversal.
-        
+
         This method is called after the AST walk completes to collect
         all edges discovered by this visitor.
-        
+
         Returns:
             List of Edge objects extracted from the AST
         """
         pass
-    
+
     def _create_edge(
         self,
         relation_type: str,
@@ -84,27 +84,27 @@ class BaseADGVisitor(ABC, ast.NodeVisitor):
         symbol: str = "",
     ) -> "Edge":
         """Factory method to create standardized Edge objects.
-        
+
         Args:
             relation_type: ADG relation type (e.g., "calls", "imports")
             to_symbol: Target symbol name (canonical or local)
             line_no: Line number in source file
             edge_kind: Optional edge classification
             symbol: Optional symbol that triggered this edge
-            
+
         Returns:
             Configured Edge dataclass instance
         """
         # Import here to avoid circular dependency
         from agentic_core.adg.extraction.static_scanner import Edge as _Edge
         from agentic_core.adg.schema_util import canonical_name
-        
+
         # Build canonical target name if not already canonical
         if not to_symbol.startswith("ADG::"):
             to_name = canonical_name("Symbol", to_symbol)
         else:
             to_name = to_symbol
-            
+
         return _Edge(
             from_name=self._module_adg_name,
             relation_type=relation_type,
@@ -118,25 +118,25 @@ class BaseADGVisitor(ABC, ast.NodeVisitor):
 
 class BaseStructuralVisitor(BaseADGVisitor):
     """Base class for structural relationship visitors.
-    
+
     Structural visitors extract static code relationships:
         - Import relationships
         - Class inheritance
         - Function calls
         - Variable assignments
-    
+
     These visitors should NOT emit runtime-only edges.
     """
-    
+
     def __init__(self, ctx: VisitorContext) -> None:
         super().__init__(ctx)
         self._local_symbols: set[str] = set()
-    
+
     def _is_local_symbol(self, name: str) -> bool:
         """Check if a symbol name is locally defined in the module."""
         base_name = name.split(".")[0]
         return base_name in self._local_symbols
-    
+
     def _register_local(self, name: str) -> None:
         """Register a locally defined symbol name."""
         self._local_symbols.add(name.split(".")[0])
@@ -144,26 +144,26 @@ class BaseStructuralVisitor(BaseADGVisitor):
 
 class BaseRuntimeVisitor(BaseADGVisitor):
     """Base class for runtime behavior visitors.
-    
+
     Runtime visitors extract dynamic/behavioral edges:
         - Execution traces
         - Dynamic invocations
         - Runtime state changes
         - Safety/governance proofs
-    
+
     These visitors may emit edges that require runtime context.
     """
-    
+
     def __init__(self, ctx: VisitorContext) -> None:
         super().__init__(ctx)
         self._current_function: str = ""
         self._function_stack: list[str] = []
-    
+
     def _enter_function(self, func_name: str) -> None:
         """Push function context onto stack."""
         self._function_stack.append(self._current_function)
         self._current_function = func_name
-    
+
     def _exit_function(self) -> None:
         """Pop function context from stack."""
         if self._function_stack:
@@ -178,13 +178,13 @@ _VISITOR_REGISTRY: dict[str, type[BaseADGVisitor]] = {}
 
 def register_visitor(name: str) -> callable:
     """Decorator to register a visitor class in the registry.
-    
+
     Args:
         name: Unique identifier for this visitor type
-        
+
     Returns:
         Decorator function that registers the class
-        
+
     Example:
         @register_visitor("inheritance")
         class _InheritanceVisitor(BaseStructuralVisitor):
@@ -198,10 +198,10 @@ def register_visitor(name: str) -> callable:
 
 def get_registered_visitor(name: str) -> type[BaseADGVisitor] | None:
     """Get a registered visitor class by name.
-    
+
     Args:
         name: Visitor identifier used during registration
-        
+
     Returns:
         Visitor class if found, None otherwise
     """

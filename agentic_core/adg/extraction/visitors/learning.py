@@ -3,8 +3,8 @@
 import ast
 from typing import Any
 
+from agentic_core.adg.extraction.edge_builder import Edge
 from agentic_core.adg.extraction.visitors import BaseStructuralVisitor, VisitorContext, register_visitor
-from agentic_core.adg.extraction.static_scanner import Edge
 
 
 @register_visitor("l5_validation_proof")
