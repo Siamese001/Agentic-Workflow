@@ -6281,13 +6281,39 @@ def _iter_python_files(
 
 
 def _repo_relative(path: Path, repo_root: Path) -> str:
-    """Return forward-slash repo-relative path."""
+    """Return forward-slash repo-relative path.
+
+    Args:
+        path: Absolute or relative path to convert
+        repo_root: Repository root directory (must be absolute)
+
+    Returns:
+        Forward-slash normalized path relative to repo_root
+
+    Raises:
+        ValueError: If repo_root is not an absolute path
+        TypeError: If path or repo_root are not Path-like
+    """
+    # Input validation
+    if not isinstance(path, (Path, str)):
+        raise TypeError(f"path must be Path or str, got {type(path).__name__}")
+    if not isinstance(repo_root, (Path, str)):
+        raise TypeError(f"repo_root must be Path or str, got {type(repo_root).__name__}")
+
+    path = Path(path) if isinstance(path, str) else path
+    repo_root = Path(repo_root) if isinstance(repo_root, str) else repo_root
+
+    if not repo_root.is_absolute():
+        raise ValueError(f"repo_root must be absolute path: {repo_root}")
+
+    # Handle case where path is not under repo_root
     try:
         rel = path.relative_to(repo_root)
-    except ValueError as e:
-        # TODO: Add proper input validation
-        logger.warning(f"Invalid input: {e}")
+    except ValueError:
+        # Path is outside repo_root - return as-is with forward slashes
+        logger.debug("Path %s is outside repo_root %s", path, repo_root)
         return str(path).replace("\\", "/")
+
     return str(rel).replace("\\", "/")
 
 
