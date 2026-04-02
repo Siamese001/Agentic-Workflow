@@ -362,6 +362,12 @@ def _cli() -> None:
                 print(f"  GAP: {g}")
         else:
             print("\nNo coverage gaps — all changed files have ADG covers edges.")
+__all__ = [
+    "ADGTestSelector",
+    "TestImpactAnalyzer",
+    "select_tests_for_changes",
+    "_cli",
+]
 
 
 if __name__ == "__main__":
