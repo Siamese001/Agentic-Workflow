@@ -132,6 +132,14 @@ from agentic_core.adg.schema_util import (
     UPDATES_MONITORING_STATE_SYMBOLS,
     UPDATES_ROUTING_STRATEGY_SYMBOLS,
     UWG_TERMINATION_SYMBOLS,
+    UWG_VALIDATES_INTENT_SYMBOLS,
+    UWG_CHECKS_POLICY_HASH_SYMBOLS,
+    UWG_CHECKS_CAPABILITY_SET_SYMBOLS,
+    UWG_BLAST_RADIUS_SYMBOLS,
+    MUTATION_DIFF_SYMBOLS,
+    MUTATION_REPLAY_KEY_SYMBOLS,
+    HMAC_SEAL_SYMBOLS,
+    EXECUTION_TRACE_PACKAGE_SYMBOLS,
     VALIDATES_CAPABILITY_SYMBOLS,
     VALIDATOR_BASE_CLASSES,
     VECTOR_STORE_SYMBOLS,
@@ -222,6 +230,10 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_checks_policy_hash_at_uwg,
     _emit_checks_capability_set,
     _emit_validates_blast_radius_at_uwg,
+    _emit_generates_mutation_diff,
+    _emit_computes_mutation_replay_key,
+    _emit_applies_hmac_seal,
+    _emit_packages_execution_trace,
     _emit_feeds_meta_learning,
     _emit_gated_by_confidence,
     _emit_hard_fails_untranscripted,
@@ -277,6 +289,10 @@ _emit_validates_uwg_intent("l4w1", "static_scanner", "uwg_intent_bootstrap")
 _emit_checks_policy_hash_at_uwg("l4w1", "static_scanner", "uwg_policy_bootstrap")
 _emit_checks_capability_set("l4w1", "static_scanner", "uwg_capability_bootstrap")
 _emit_validates_blast_radius_at_uwg("l4w1", "static_scanner", "uwg_blast_bootstrap")
+_emit_generates_mutation_diff("l4w2", "static_scanner", "mutation_diff_bootstrap")
+_emit_computes_mutation_replay_key("l4w2", "static_scanner", "replay_key_bootstrap")
+_emit_applies_hmac_seal("l4w2", "static_scanner", "hmac_seal_bootstrap")
+_emit_packages_execution_trace("l4w2", "static_scanner", "trace_package_bootstrap")
 _emit_writes_through("p1", "static_scanner", "write_through")
 _emit_validated_by_safety_plane("p1", "static_scanner", "safety_validation")
 _emit_invokes_eval("p1", "static_scanner", "eval_call")
@@ -2880,6 +2896,97 @@ class _UWGIngressGateVisitor(ast.NodeVisitor):
                     to_name=canonical_name("Symbol", sym),
                     relation_type="validates_blast_radius_at_uwg",
                     edge_kind="uwg_validation",
+                    source_file=self.source_file,
+                    line_no=getattr(node, "lineno", 1),
+                    symbol=sym,
+                )
+            )
+
+        self.generic_visit(node)
+
+
+class _MutationRecordAssemblyVisitor(ast.NodeVisitor):
+    """G35: L4/UWG Wave 2 Mutation Record Assembly edge extraction.
+
+    Emits:
+      - generates_mutation_diff
+      - computes_mutation_replay_key
+      - applies_hmac_seal
+      - packages_execution_trace
+    """
+
+    def __init__(self, module_adg_name: str, source_file: str) -> None:
+        self.module_adg_name = module_adg_name
+        self.source_file = source_file
+        self.edges: list[Edge] = []
+
+    def _sym(self, node: ast.AST) -> str:
+        if isinstance(node, ast.Name):
+            return node.id
+        if isinstance(node, ast.Attribute):
+            return f"{self._sym(node.value)}.{node.attr}"
+        return ""
+
+    def visit_Call(self, node: ast.Call) -> None:
+        import uuid as _uuid  # noqa: PLC0415
+
+        sym = self._sym(node.func)
+        if not sym:
+            self.generic_visit(node)
+            return
+
+        tail = sym.split(".")[-1]
+        base = sym.split(".")[0]
+
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L4_STATE, "_MutationRecordAssemblyVisitor.visit_Call"
+        )
+
+        # Check mutation record assembly symbols
+        if base in _MUTATION_DIFF_SYMBOLS or tail in _MUTATION_DIFF_SYMBOLS:
+            self.edges.append(
+                Edge(
+                    from_name=self.module_adg_name,
+                    to_name=canonical_name("Symbol", sym),
+                    relation_type="generates_mutation_diff",
+                    edge_kind="mutation_assembly",
+                    source_file=self.source_file,
+                    line_no=getattr(node, "lineno", 1),
+                    symbol=sym,
+                )
+            )
+        elif base in _MUTATION_REPLAY_KEY_SYMBOLS or tail in _MUTATION_REPLAY_KEY_SYMBOLS:
+            self.edges.append(
+                Edge(
+                    from_name=self.module_adg_name,
+                    to_name=canonical_name("Symbol", sym),
+                    relation_type="computes_mutation_replay_key",
+                    edge_kind="mutation_assembly",
+                    source_file=self.source_file,
+                    line_no=getattr(node, "lineno", 1),
+                    symbol=sym,
+                )
+            )
+        elif base in _HMAC_SEAL_SYMBOLS or tail in _HMAC_SEAL_SYMBOLS:
+            self.edges.append(
+                Edge(
+                    from_name=self.module_adg_name,
+                    to_name=canonical_name("Symbol", sym),
+                    relation_type="applies_hmac_seal",
+                    edge_kind="mutation_assembly",
+                    source_file=self.source_file,
+                    line_no=getattr(node, "lineno", 1),
+                    symbol=sym,
+                )
+            )
+        elif base in _EXECUTION_TRACE_PACKAGE_SYMBOLS or tail in _EXECUTION_TRACE_PACKAGE_SYMBOLS:
+            self.edges.append(
+                Edge(
+                    from_name=self.module_adg_name,
+                    to_name=canonical_name("Symbol", sym),
+                    relation_type="packages_execution_trace",
+                    edge_kind="mutation_assembly",
                     source_file=self.source_file,
                     line_no=getattr(node, "lineno", 1),
                     symbol=sym,
@@ -6390,6 +6497,11 @@ def _scan_file(
         uwg_visitor = _UWGIngressGateVisitor(module_adg, rel)
         uwg_visitor.visit(tree)
         edges.extend(uwg_visitor.edges)
+
+        # G35: L4/UWG Wave 2 Mutation Record Assembly visitor
+        mutation_visitor = _MutationRecordAssemblyVisitor(module_adg, rel)
+        mutation_visitor.visit(tree)
+        edges.extend(mutation_visitor.edges)
 
         # G7 (gap): Sandbox airlock / work-contract (enters_sandbox, issues_capability_token, stamps_work_contract)
         sandbox_visitor = _SandboxAirlockVisitor(module_adg, rel)
