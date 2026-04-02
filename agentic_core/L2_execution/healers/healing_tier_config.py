@@ -12,6 +12,14 @@ from __future__ import annotations
 import os
 from dataclasses import dataclass
 
+# Import canonical healing thresholds from L0 (L0 can be imported by any layer)
+from agentic_core.L0_routing.config.path_constants import (
+    HEALING_CONFIDENCE_X,
+    HEALING_CONFIDENCE_Y,
+    QWEN_14B_MODEL_ID,
+    SSOT_SCORE_THRESHOLD_DET,
+    SSOT_SCORE_THRESHOLD_QWEN,
+)
 from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     LayerSegment,
     _emit_agent_executes_agent,
@@ -192,7 +200,7 @@ QWEN_CUDA_VERSION = "12.1"
 QWEN_TORCH_VERSION = "2.1.0"
 
 # Qwen 14B — targets RTX 5090 (32 GB VRAM, CUDA >= 12.0, compute >= 8.9)
-QWEN_14B_MODEL_ID = "Qwen/Qwen2.5-14B-Instruct-GPTQ-Int4"
+# QWEN_14B_MODEL_ID imported from L0: agentic_core.L0_routing.config.path_constants
 QWEN_14B_MIN_VRAM_GB: float = 16.0  # Int4-quantized 14B fits in 16 GB
 QWEN_14B_MIN_CUDA = "12.0"
 QWEN_14B_MIN_COMPUTE: float = 8.0  # Ada Lovelace baseline (RTX 4090/5090)
