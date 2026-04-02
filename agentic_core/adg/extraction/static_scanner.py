@@ -216,19 +216,27 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     emit_replay_key,  # noqa: E402
 )
 
-_emit_applies_guardrail("p0", "static_scanner", "p0_governance")
-_emit_snapshots_state("p0", "static_scanner", "state_snapshot")
-_emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
+# P0: Bootstrap mode flag - gates self-emit calls during scanner self-analysis
+# When True, scanner skips emitting edges for itself to avoid circular ADG entries
+_bootstrap_mode: bool = os.getenv("ADG_SCANNER_SELF_TEST", "0") == "1"
 
-emit_replay_key("p0", "static_scanner")
-emit_determinism_digest("p0", "static_scanner")
-_emit_authorize_and_execute("p2", "static_scanner", "execution_auth")
-_emit_validates_capability("p2", "static_scanner", "capability_check")
-_emit_routes_to_capability("p2", "static_scanner", "capability_route")
-_emit_writes_via_uwg("p2", "static_scanner", "uwg_write")
-_emit_blocks_direct_write("p2", "static_scanner", "direct_write_block")
-_emit_records_tool_invocation("p2", "static_scanner", "tool_invocation")
-_emit_captures_execution_output("p2", "static_scanner", "exec_output")
+if _bootstrap_mode:
+    _emit_applies_guardrail("p0", "static_scanner", "p0_governance")
+    _emit_snapshots_state("p0", "static_scanner", "state_snapshot")
+    _emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
+
+    emit_replay_key("p0", "static_scanner")
+    emit_determinism_digest("p0", "static_scanner")
+
+# P2 self-emit calls (gated by bootstrap mode)
+if _bootstrap_mode:
+    _emit_authorize_and_execute("p2", "static_scanner", "execution_auth")
+    _emit_validates_capability("p2", "static_scanner", "capability_check")
+    _emit_routes_to_capability("p2", "static_scanner", "capability_route")
+    _emit_writes_via_uwg("p2", "static_scanner", "uwg_write")
+    _emit_blocks_direct_write("p2", "static_scanner", "direct_write_block")
+    _emit_records_tool_invocation("p2", "static_scanner", "tool_invocation")
+    _emit_captures_execution_output("p2", "static_scanner", "exec_output")
 
 from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
