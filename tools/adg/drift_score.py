@@ -701,3 +701,71 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
+
+
+# ---------------------------------------------------------------------------
+# Public exports for testing
+# ---------------------------------------------------------------------------
+
+RATCHET_THRESHOLD = 0.15  # 15% drift threshold
+
+
+def calculate_drift(artifact_a: dict, artifact_b: dict) -> float:
+    """Calculate drift score between two ADG artifacts.
+    
+    Args:
+        artifact_a: First ADG artifact dict
+        artifact_b: Second ADG artifact dict
+        
+    Returns:
+        Drift score between 0.0 and 1.0 (higher = more drift)
+    """
+    nodes_a = artifact_a.get("total_nodes", 0)
+    nodes_b = artifact_b.get("total_nodes", 0)
+    
+    if nodes_a == 0 and nodes_b == 0:
+        return 0.0
+    
+    max_nodes = max(nodes_a, nodes_b)
+    node_drift = abs(nodes_a - nodes_b) / max_nodes if max_nodes > 0 else 0.0
+    
+    edges_a = artifact_a.get("total_edges", 0)
+    edges_b = artifact_b.get("total_edges", 0)
+    
+    max_edges = max(edges_a, edges_b)
+    edge_drift = abs(edges_a - edges_b) / max_edges if max_edges > 0 else 0.0
+    
+    return 0.5 * node_drift + 0.5 * edge_drift
+
+
+def compare_artifacts(artifact_a: dict, artifact_b: dict) -> dict:
+    """Compare two ADG artifacts and return detailed diff.
+    
+    Args:
+        artifact_a: First ADG artifact dict
+        artifact_b: Second ADG artifact dict
+        
+    Returns:
+        Dict with comparison metrics
+    """
+    return {
+        "drift_score": calculate_drift(artifact_a, artifact_b),
+        "node_diff": artifact_b.get("total_nodes", 0) - artifact_a.get("total_nodes", 0),
+        "edge_diff": artifact_b.get("total_edges", 0) - artifact_a.get("total_edges", 0),
+        "artifact_a_digest": artifact_a.get("digest", "unknown"),
+        "artifact_b_digest": artifact_b.get("digest", "unknown"),
+    }
+
+
+def check_ratchet(current_score: float, baseline_score: float) -> bool:
+    """Check if drift exceeds ratchet threshold.
+    
+    Args:
+        current_score: Current drift score
+        baseline_score: Baseline drift score
+        
+    Returns:
+        True if drift is within acceptable bounds
+    """
+    drift_increase = current_score - baseline_score
+    return drift_increase <= RATCHET_THRESHOLD
