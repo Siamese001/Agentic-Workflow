@@ -133,6 +133,12 @@ _UPDATES_MONITORING_STATE_LOG = logging.getLogger("adg.updates_monitoring_state"
 _TRIGGERS_ALERT_LOG = logging.getLogger("adg.triggers_alert")
 _LINKS_INCIDENT_TRACE_LOG = logging.getLogger("adg.links_incident_trace")
 
+# ── L4/UWG Wave 1 Ingress Gate loggers ─────────────────────────────────────
+_VALIDATES_UWG_INTENT_LOG = logging.getLogger("adg.validates_uwg_intent")
+_CHECKS_POLICY_HASH_UWG_LOG = logging.getLogger("adg.checks_policy_hash_at_uwg")
+_CHECKS_CAPABILITY_SET_LOG = logging.getLogger("adg.checks_capability_set")
+_VALIDATES_BLAST_RADIUS_UWG_LOG = logging.getLogger("adg.validates_blast_radius_at_uwg")
+
 
 # ── §3 — Per-layer trace segment types ───────────────────────────────────────
 
@@ -1277,6 +1283,11 @@ __all__ = [
     "_emit_routes_retrieval",
     "_emit_applies_retrieval_guardrail",
     "_emit_indexes_for_retrieval",
+    # L4/UWG Wave 1 Ingress Gate emitters
+    "_emit_validates_uwg_intent",
+    "_emit_checks_policy_hash_at_uwg",
+    "_emit_checks_capability_set",
+    "_emit_validates_blast_radius_at_uwg",
 ]
 
 _emit_reads_through("l4", "lifecycle_trace_contract", "urg_read_1")
@@ -1471,3 +1482,52 @@ _emit_enriches_chunk("lifecycle_bootstrap", "lifecycle_trace_contract", "retriev
 _emit_routes_retrieval("lifecycle_bootstrap", "lifecycle_trace_contract", "retrieval_wiring")
 _emit_applies_retrieval_guardrail("lifecycle_bootstrap", "lifecycle_trace_contract", "retrieval_wiring")
 _emit_indexes_for_retrieval("lifecycle_bootstrap", "lifecycle_trace_contract", "retrieval_wiring")
+
+
+# ── L4/UWG Wave 1 Ingress Gate emitter functions ───────────────────────────
+
+def _emit_validates_uwg_intent(root_trace_id: str, validator: str, intent: str) -> None:
+    """Emit validates_uwg_intent ADG edge (L4/UWG Wave 1 Ingress Gate)."""
+    _VALIDATES_UWG_INTENT_LOG.debug(
+        "validates_uwg_intent root_trace_id=%s validator=%s intent=%s",
+        root_trace_id,
+        validator,
+        intent,
+    )
+
+
+def _emit_checks_policy_hash_at_uwg(root_trace_id: str, checker: str, policy_hash: str) -> None:
+    """Emit checks_policy_hash_at_uwg ADG edge (L4/UWG Wave 1 Ingress Gate)."""
+    _CHECKS_POLICY_HASH_UWG_LOG.debug(
+        "checks_policy_hash_at_uwg root_trace_id=%s checker=%s policy_hash=%s",
+        root_trace_id,
+        checker,
+        policy_hash,
+    )
+
+
+def _emit_checks_capability_set(root_trace_id: str, checker: str, capability_set: str) -> None:
+    """Emit checks_capability_set ADG edge (L4/UWG Wave 1 Ingress Gate)."""
+    _CHECKS_CAPABILITY_SET_LOG.debug(
+        "checks_capability_set root_trace_id=%s checker=%s capability_set=%s",
+        root_trace_id,
+        checker,
+        capability_set,
+    )
+
+
+def _emit_validates_blast_radius_at_uwg(root_trace_id: str, validator: str, scope: str) -> None:
+    """Emit validates_blast_radius_at_uwg ADG edge (L4/UWG Wave 1 Ingress Gate)."""
+    _VALIDATES_BLAST_RADIUS_UWG_LOG.debug(
+        "validates_blast_radius_at_uwg root_trace_id=%s validator=%s scope=%s",
+        root_trace_id,
+        validator,
+        scope,
+    )
+
+
+# Self-bootstrap calls for L4/UWG Wave 1 emitters
+_emit_validates_uwg_intent("l4w1", "lifecycle_trace_contract", "uwg_intent_validation")
+_emit_checks_policy_hash_at_uwg("l4w1", "lifecycle_trace_contract", "uwg_policy_check")
+_emit_checks_capability_set("l4w1", "lifecycle_trace_contract", "uwg_capability_check")
+_emit_validates_blast_radius_at_uwg("l4w1", "lifecycle_trace_contract", "uwg_blast_radius")

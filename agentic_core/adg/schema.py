@@ -278,6 +278,23 @@ RelationType = Literal[
     "records_validation_outcome",
     "links_to_execution_trace",
     "gates_promotion",
+    "validates_uwg_intent",
+    "checks_policy_hash_at_uwg",
+    "checks_capability_set",
+    "validates_blast_radius_at_uwg",
+    "generates_mutation_diff",
+    "computes_mutation_replay_key",
+    "applies_hmac_seal",
+    "packages_execution_trace",
+    "claims_write_lock",
+    "performs_durable_commit",
+    "appends_hash_chain",
+    "materializes_read_view",
+    "reads_materialized_surface",
+    "receives_policy_hash",
+    "pulls_constitution_boundaries",
+    "reads_dag_rules_from_l4",
+    "ingests_l4_execution_trace",
     "detects_regression",
 ]
 EdgeKind = Literal[
@@ -385,6 +402,23 @@ EdgeKind = Literal[
     "registry_validation",
     "safety_plane_validation",
     "llm_gateway_validation",
+    "validates_uwg_intent",
+    "checks_policy_hash_at_uwg",
+    "checks_capability_set",
+    "validates_blast_radius_at_uwg",
+    "generates_mutation_diff",
+    "computes_mutation_replay_key",
+    "applies_hmac_seal",
+    "packages_execution_trace",
+    "claims_write_lock",
+    "performs_durable_commit",
+    "appends_hash_chain",
+    "materializes_read_view",
+    "reads_materialized_surface",
+    "receives_policy_hash",
+    "pulls_constitution_boundaries",
+    "reads_dag_rules_from_l4",
+    "ingests_l4_execution_trace",
     "uwg_termination",
     "policy_hash_link",
     "routing_commit",
@@ -1505,6 +1539,49 @@ LINKS_EXECUTION_TO_SNAPSHOT_SYMBOLS: frozenset[str] = frozenset(
     }
 )
 
+UWG_VALIDATES_INTENT_SYMBOLS: frozenset[str] = frozenset(
+    {
+        "verify_signature",
+        "verify_active_policy_hash",
+        "check_signature",
+        "SignatureVerifier",
+        "UWGSignatureValidator",
+        "verify_uwg_intent",
+        "UWGIntentVerifier",
+        "_emit_validates_uwg_intent",
+    }
+)
+UWG_CHECKS_POLICY_HASH_SYMBOLS: frozenset[str] = frozenset(
+    {
+        "check_policy_hash_at_uwg",
+        "verify_policy_at_gateway",
+        "UWGPolicyHashChecker",
+        "PolicyHashValidator",
+        "validate_active_policy",
+        "_emit_checks_policy_hash_at_uwg",
+    }
+)
+UWG_CHECKS_CAPABILITY_SET_SYMBOLS: frozenset[str] = frozenset(
+    {
+        "check_allowed_capability_set",
+        "verify_capability_at_uwg",
+        "CapabilitySetChecker",
+        "UWGCapabilityValidator",
+        "validate_capability_set",
+        "_emit_checks_capability_set",
+    }
+)
+UWG_BLAST_RADIUS_SYMBOLS: frozenset[str] = frozenset(
+    {
+        "validate_blast_radius_at_uwg",
+        "check_uwg_blast_radius",
+        "UWGBlastRadiusChecker",
+        "validate_mutation_scope",
+        "check_rbac_at_uwg",
+        "_emit_validates_blast_radius_at_uwg",
+    }
+)
+
 CAPTURES_PATTERN_SYMBOLS: frozenset[str] = frozenset(
     {
         "captures_pattern",
@@ -2021,6 +2098,10 @@ __all__ = [
     "TRIGGERS_ALERT_SYMBOLS",
     "INDEXES_FOR_RETRIEVAL_SYMBOLS",
     "LINKS_INCIDENT_TRACE_SYMBOLS",
+    "UWG_VALIDATES_INTENT_SYMBOLS",
+    "UWG_CHECKS_POLICY_HASH_SYMBOLS",
+    "UWG_CHECKS_CAPABILITY_SET_SYMBOLS",
+    "UWG_BLAST_RADIUS_SYMBOLS",
     "PROMPT_RELATION_TYPES",
 ]
 
