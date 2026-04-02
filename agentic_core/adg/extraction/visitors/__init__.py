@@ -236,6 +236,11 @@ from .context_control import (
     _DeterminismControlVisitor,
     _IOInterceptionVisitor,
 )
+from .transport_proof import (
+    _MutationTransportVisitor,
+    _ExecutionProofVisitor,
+    _PathControlVisitor,
+)
 
 __all__ = [
     # Base classes
@@ -276,4 +281,8 @@ __all__ = [
     "_BoundaryVerifierVisitor",
     "_DeterminismControlVisitor",
     "_IOInterceptionVisitor",
+    # Transport & Proof visitors
+    "_MutationTransportVisitor",
+    "_ExecutionProofVisitor",
+    "_PathControlVisitor",
 ]
