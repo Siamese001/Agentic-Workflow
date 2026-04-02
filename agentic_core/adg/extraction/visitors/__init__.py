@@ -224,6 +224,12 @@ from .l4_waves import (
     _AuthoritativeCommitVisitor,
     _OutboundReadBridgeVisitor,
 )
+from .governance import (
+    _GovernancePlaneVisitor,
+    _SafetyEnforcementVisitor,
+    _SandboxAirlockVisitor,
+    _CapabilityBudgetVisitor,
+)
 
 __all__ = [
     # Base classes
@@ -254,4 +260,9 @@ __all__ = [
     "_MutationRecordAssemblyVisitor",
     "_AuthoritativeCommitVisitor",
     "_OutboundReadBridgeVisitor",
+    # Governance visitors
+    "_GovernancePlaneVisitor",
+    "_SafetyEnforcementVisitor",
+    "_SandboxAirlockVisitor",
+    "_CapabilityBudgetVisitor",
 ]
