@@ -241,6 +241,13 @@ from .transport_proof import (
     _ExecutionProofVisitor,
     _PathControlVisitor,
 )
+from .misc import (
+    _TestTraceabilityVisitor,
+    _TypeAnnotationVisitor,
+    _DecoratorVisitor,
+    _SymbolInventoryVisitor,
+    _UnusedImportVisitor,
+)
 
 __all__ = [
     # Base classes
@@ -285,4 +292,10 @@ __all__ = [
     "_MutationTransportVisitor",
     "_ExecutionProofVisitor",
     "_PathControlVisitor",
+    # Miscellaneous visitors
+    "_TestTraceabilityVisitor",
+    "_TypeAnnotationVisitor",
+    "_DecoratorVisitor",
+    "_SymbolInventoryVisitor",
+    "_UnusedImportVisitor",
 ]
