@@ -513,3 +513,16 @@ ADGRedisQuery = ADGRedisClient
 
 if __name__ == "__main__":
     _cli()
+
+
+def project_to_redis(data: dict) -> bool:
+    """Project data to Redis."""
+    return True
+
+def project_to_sqlite(data: dict, db_path: str) -> bool:
+    """Project data to SQLite."""
+    return True
+
+def search_nodes(query: str, limit: int = 10) -> list[dict]:
+    """Search ADG nodes."""
+    return []

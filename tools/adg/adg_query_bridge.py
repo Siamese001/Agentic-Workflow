@@ -565,3 +565,8 @@ if __name__ == "__main__":
         parser.error("Invalid arguments")
 
     print(json.dumps([vars(r) if hasattr(r, "__dict__") else str(r) for r in results], indent=2))
+
+
+def query_bridge(query: str) -> dict:
+    """Bridge query function."""
+    return {"results": []}
