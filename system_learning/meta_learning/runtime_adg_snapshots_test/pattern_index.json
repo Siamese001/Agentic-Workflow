@@ -1,5 +1,5 @@
 {
-  "runtime_adg_1775084687_b13fe547": {
+  "runtime_adg_1775148665_a9964fe1": {
     "component_distribution": {
       "ExecOrchestrator": 1,
       "HitlGate": 1,
@@ -11,7 +11,7 @@
     },
     "error_patterns": [],
     "extraction_metadata": {
-      "timestamp": 1775084687,
+      "timestamp": 1775148665,
       "total_nodes": 7
     },
     "layer_distribution": {
@@ -24,6 +24,7 @@
       "L6": 1
     },
     "relation_patterns": {
+      "outcome_edge": 1,
       "parent_child": 7,
       "temporal_sequence": 6
     },
