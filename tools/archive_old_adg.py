@@ -26,10 +26,12 @@ from __future__ import annotations
 
 import argparse
 import gzip
+import logging
 import shutil
 from collections import defaultdict
 from datetime import datetime, timedelta
 from pathlib import Path
+from typing import Any
 
 from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_pulls_context,
@@ -71,6 +73,8 @@ _emit_reads_through("l4", "archive_old_adg", "urg_read_22")
 _emit_reads_through("l4", "archive_old_adg", "urg_read_23")
 _emit_reads_through("l4", "archive_old_adg", "urg_read_24")
 
+logger = logging.getLogger(__name__)
+
 ROOT = Path(__file__).resolve().parents[1]
 ADG_DIR = ROOT / "artifacts" / "adg"
 ARCHIVE_DIR = ADG_DIR / "_archive"
@@ -93,12 +97,21 @@ ARTIFACT_PATTERNS = [
 def _extract_timestamp(filename: str) -> str | None:
     """Extract timestamp from ADG artifact filename.
 
-    Supports both formats:
+    Supports formats:
         New: adg_indexed_03122026.sqlite    -> 03122026  (MMDDYYYY)
         Old: adg_indexed_20260312T093508Z.sqlite -> 20260312T093508Z  (legacy)
+        Repair: adg_repair_03312026_0951.json -> 03312026  (MMDDYYYY + time suffix)
     """
     parts = filename.split("_")
     if len(parts) < 3:
+        return None
+
+    # Handle repair file format: adg_repair_03312026_0951.json
+    if len(parts) >= 4 and parts[1] == "repair":
+        # Timestamp is the third part (index 2) for repair files
+        ts = parts[2]
+        if len(ts) == 8 and ts.isdigit():
+            return ts
         return None
 
     # Last part before extension should be timestamp
@@ -152,9 +165,10 @@ def discover_runs() -> dict[str, list[Path]]:
     Returns:
         Dict mapping timestamp -> list of artifact paths for that run
     """
-    runs = defaultdict(list)
+    runs: dict[str, list[Path]] = defaultdict(list)
+    seen_files: set[Path] = set()
 
-    for pattern in ["adg_*.json", "adg_*.sqlite", "adg_*.md"]:
+    for pattern in ["adg_*.json", "adg_*.sqlite", "adg_*.md", "adg_repair_*.json"]:
         for path in ADG_DIR.glob(pattern):
             # Skip LATEST files
             if "LATEST" in path.name:
@@ -163,6 +177,11 @@ def discover_runs() -> dict[str, list[Path]]:
             # Skip archived files
             if path.is_relative_to(ARCHIVE_DIR):
                 continue
+
+            # Deduplicate (repair files may match both patterns)
+            if path in seen_files:
+                continue
+            seen_files.add(path)
 
             ts = _extract_timestamp(path.name)
             if ts:
@@ -208,7 +227,7 @@ def archive_run(ts: str, files: list[Path], compress: bool, dry_run: bool) -> di
     """
     archive_dir = _get_archive_month_dir(ts)
 
-    stats = {
+    stats: dict[str, Any] = {
         "timestamp": ts,
         "files_archived": 0,
         "bytes_original": 0,
@@ -280,8 +299,7 @@ def cleanup_old_archives(archive_months: int, dry_run: bool) -> dict:
         try:
             dir_date = datetime.strptime(month_dir.name, "%Y-%m")
         except ValueError as e:
-            # TODO: Add proper input validation
-            logger.warning(f"Invalid input: {e}")
+            logger.warning("Invalid input: %s", e)
             continue
 
         if dir_date < cutoff_date:
@@ -297,7 +315,7 @@ def cleanup_old_archives(archive_months: int, dry_run: bool) -> dict:
     return stats
 
 
-def format_bytes(bytes_count: int) -> str:
+def format_bytes(bytes_count: float) -> str:
     """Format bytes as human-readable string."""
     for unit in ["B", "KB", "MB", "GB"]:
         if bytes_count < 1024:

@@ -85,17 +85,6 @@ class TestInstructionalTemplateRendering:
     """Every template in templates/ must render without error."""
 
     def test_code_healing(self, renderer: SovereignPromptRenderer):
-        from agentic_core.prompt_governance.core.sovereign_prompt_renderer import (
-            SovereignPromptRenderer,
-            TemplateValidationError,
-        )
-        from agentic_core.prompt_governance.core.template_catalog import (
-            TEMPLATE_CATALOG,
-            TemplateCategory,
-            TemplateStatus,
-            get_templates_for_agent,
-        )
-
         ctx = {
             **_subatomic_context(),
             "violations": ["snake_case violation", "missing docstring"],

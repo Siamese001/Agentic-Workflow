@@ -1,40 +1,23 @@
-"""Analyze skipped modules from P0 wiring campaign."""
-import csv
-from pathlib import Path
+import json
 
-PROJECT_ROOT = Path(__file__).resolve().parent.parent
+with open('artifacts/current_skip_analysis.json', 'r') as f:
+    data = json.load(f)
 
-SKIP_PATTERNS = {
-    "_constants.py",
-    "conftest.py",
-    "structure_blueprint_config.py",
-    "ssot_tier_constants.py",
-    "path_constants.py",
-    "lifecycle_trace_contract.py",
-}
+# Find actual skipped tests
+skipped_tests = []
+for test in data['tests']:
+    if test['is_skipped']:
+        skipped_tests.append({
+            'node_id': test['node_id'],
+            'file_path': test['file_path'],
+            'skip_reason': test['skip_reason'],
+            'line_number': test['line_number']
+        })
 
-# Read deficit modules
-deficit_csv = PROJECT_ROOT / "runtime_gaps" / "trace_deficit_modules.csv"
-with open(deficit_csv) as f:
-    deficit_modules = list(csv.DictReader(f))
+print(f'Actual skipped tests from AST analysis: {len(skipped_tests)}')
+for skip in skipped_tests[:10]:
+    print(f'  {skip["node_id"]} - {skip["skip_reason"]}')
 
-# Find modules matching skip patterns
-skipped = []
-for module in deficit_modules:
-    path = module['source_file']
-    for pattern in SKIP_PATTERNS:
-        if pattern in path:
-            skipped.append((path, pattern))
-            break
-
-print(f"Total deficit modules: {len(deficit_modules)}")
-print(f"Modules matching skip patterns: {len(skipped)}")
-print("\nSkipped modules by pattern:")
-print("=" * 80)
-
-for pattern in sorted(SKIP_PATTERNS):
-    matching = [s for s in skipped if s[1] == pattern]
-    if matching:
-        print(f"\n{pattern}: {len(matching)} modules")
-        for path, _ in sorted(matching):
-            print(f"  {path}")
+# Save skipped tests list
+with open('artifacts/skipped_tests_list.json', 'w') as f:
+    json.dump(skipped_tests, f, indent=2)

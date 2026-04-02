@@ -708,7 +708,13 @@ HEALER_BASE_CLASSES: frozenset[str] = frozenset(
     }
 )
 VALIDATOR_BASE_CLASSES: frozenset[str] = frozenset(
-    {"BaseValidator", "SovereignValidator", "HealerValidator", "ResolutionValidator", "ValidationAgent"}
+    {
+        "BaseValidator",
+        "SovereignValidator",
+        "HealerValidator",
+        "ResolutionValidator",
+        "ValidationAgent",
+    }
 )
 HEALER_METHOD_NAMES: frozenset[str] = frozenset(
     {
@@ -2129,7 +2135,9 @@ INDEXES_FOR_RETRIEVAL_SYMBOLS: frozenset[str] = frozenset(
         "indexes_for_retrieval",
     }
 )
-SYMBOL_KINDS: frozenset[str] = frozenset({"function", "async_function", "class", "constant", "type_alias"})
+SYMBOL_KINDS: frozenset[str] = frozenset(
+    {"function", "async_function", "class", "constant", "type_alias"}
+)
 __all__ = [
     "ADG_NS",
     "EntityType",
@@ -2560,4 +2568,42 @@ class NodeType:
     SYMBOL = "symbol"
 
 
-__all__ = ["EDGE_TYPES", "NODE_TYPES", "NodeType"]
+__all__ = ["EDGE_TYPES", "NODE_TYPES", "NodeType", "validate_node", "VALIDATION_RULES"]
+
+
+VALIDATION_RULES = {
+    "required_fields": ["adg_name", "entity_type", "layer"],
+    "valid_layers": ["L0", "L1", "L2", "L3", "L4", "L5", "L6", "L_TEST", "L_TOOLS", "L_RUNTIME"],
+    "valid_confidence": ["HIGH", "MEDIUM", "LOW"],
+}
+
+
+def validate_node(node: dict) -> bool:
+    """Validate a node dictionary.
+
+    Args:
+        node: Node dictionary to validate
+
+    Returns:
+        True if valid, False otherwise
+    """
+    for field in VALIDATION_RULES["required_fields"]:
+        if field not in node:
+            return False
+    return True
+
+
+def validate_edge(edge: dict) -> bool:
+    """Validate an edge dictionary.
+
+    Args:
+        edge: Edge dictionary to validate
+
+    Returns:
+        True if valid, False otherwise
+    """
+    required = ["src_id", "dst_id", "relation_type", "edge_kind"]
+    for field in required:
+        if field not in edge:
+            return False
+    return True

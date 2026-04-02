@@ -1,5 +1,6 @@
 """Final coverage report after stub cleanup and new stub generation."""
 
+import argparse
 import glob
 import sqlite3
 from collections import defaultdict
@@ -72,6 +73,14 @@ useful_stubs = [tf for tf in stub_files if test_to_covered[tf] - non_stub_covere
 
 # Layer breakdown
 def layer_of(path):
+    """Extract layer name from a module path.
+
+    Args:
+        path: Module path like 'agentic_core/L1_cognition/module.py'
+
+    Returns:
+        Layer name (e.g., 'L1_cognition') or 'unknown' if not found.
+    """
     parts = path.split("/")
     if len(parts) >= 2:
         return parts[1]
@@ -93,14 +102,18 @@ print(f"ADG DB: {Path(db).name}")
 print()
 print("SOURCE MODULES")
 print(f"  Total unique .py files:          {len(src_mods)}")
-print(f"  Covered by any test:             {len(covered)}  ({100 * len(covered) / len(src_mods):.1f}%)")
+pct_covered = 100 * len(covered) / len(src_mods)
+print(f"  Covered by any test:             {len(covered)}  ({pct_covered:.1f}%)")
 print(
-    f"  Covered behavioral only:         {len(non_stub_covered)}  ({100 * len(non_stub_covered) / len(src_mods):.1f}%)"
+    f"  Covered behavioral only:         {len(non_stub_covered)}  "
+    f"({100 * len(non_stub_covered) / len(src_mods):.1f}%)"
 )
 print(
-    f"  Covered by stubs only:           {len(stub_only_covered)}  ({100 * len(stub_only_covered) / len(src_mods):.1f}%)"
+    f"  Covered by stubs only:           {len(stub_only_covered)}  "
+    f"({100 * len(stub_only_covered) / len(src_mods):.1f}%)"
 )
-print(f"  Uncovered (no test):             {len(uncovered)}  ({100 * len(uncovered) / len(src_mods):.1f}%)")
+pct_uncovered = 100 * len(uncovered) / len(src_mods)
+print(f"  Uncovered (no test):             {len(uncovered)}  ({pct_uncovered:.1f}%)")
 print()
 print("TEST FILES")
 print(f"  Total ADG stub files:            {len(stub_files)}")
@@ -120,11 +133,13 @@ conn.close()
 
 
 def main():
-    \
-\\Placeholder
-main
-function
-for
-test
-compatibility.\\\
-    pass
+    """Main entry point for CLI usage."""
+    parser = argparse.ArgumentParser(description="Generate final ADG coverage report")
+    parser.add_argument("--output", type=str, help="Output file path")
+    parser.parse_args()
+
+    # Report is already generated above at module load time
+
+
+if __name__ == "__main__":
+    main()

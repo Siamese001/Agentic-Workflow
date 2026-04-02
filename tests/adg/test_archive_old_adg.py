@@ -6,6 +6,7 @@ Covers:
 - Datetime-based sorting (not lexicographic)
 - Retention policy (keep N newest runs)
 - Archive month directory calculation
+- Repair file pattern (adg_repair_*.json)
 """
 
 from __future__ import annotations
@@ -44,6 +45,11 @@ class TestTimestampExtraction:
         assert _extract_timestamp("adg_full_20260312T104141Z.json") == "20260312T104141Z"
         assert _extract_timestamp("adg_indexed_20260311T230549Z.sqlite") == "20260311T230549Z"
 
+    def test_repair_file_format(self):
+        """Repair files: adg_repair_03312026_0951.json → 03312026"""
+        assert _extract_timestamp("adg_repair_03312026_0951.json") == "03312026"
+        assert _extract_timestamp("adg_repair_04012026_2215.json") == "04012026"
+
     def test_no_timestamp_returns_none(self):
         """Files without valid timestamps return None."""
         assert _extract_timestamp("README.md") is None
@@ -67,6 +73,18 @@ class TestTimestampParsing:
         assert dt.day == 12
         assert dt.hour == 0
         assert dt.minute == 0
+
+    def test_repair_file_parsing(self):
+        """Repair file timestamps parse correctly."""
+        dt = _parse_timestamp("03312026")
+        assert dt.year == 2026
+        assert dt.month == 3
+        assert dt.day == 31
+
+        dt2 = _parse_timestamp("04012026")
+        assert dt2.year == 2026
+        assert dt2.month == 4
+        assert dt2.day == 1
 
     def test_legacy_yyyymmdd_8digit(self):
         """YYYYMMDD: 20260310 → March 10, 2026"""

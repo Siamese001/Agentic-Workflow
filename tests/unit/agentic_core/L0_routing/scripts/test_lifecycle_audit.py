@@ -67,10 +67,7 @@ INIT_NO_KWARGS_AGENT = '\n\nclass NoKwargsAgent(SovereignBaseAgent):\n    def __
 DNA_SEVERED_AGENT = '\nclass OrphanAgent:\n    def __init__(self):\n        pass\n\n    def heal_repository(self, dry_run=True, execute=False, **kwargs):\n        return {"status": "SUCCESS"}\n'
 
 def test_init_gate_compliant():
-    from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
-    from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
-    from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
-    'DNA-01: Compliant Agent must produce 0 violations.'
+    """DNA-01: Compliant Agent must produce 0 violations."""
     tree = ast.parse(COMPLIANT_AGENT)
     visitor = InitializationIntegrityVisitor('test_compliant.py')
     visitor.visit(tree)

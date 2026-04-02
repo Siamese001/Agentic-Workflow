@@ -36,20 +36,6 @@ pytestmark = pytest.mark.unit
 
 class TestValidationLevelContract:
     def test_is_enum(self):
-        from apps_shared.utils.security_config_util import (  # noqa: F401
-            BATCH_SIZE,
-            BUFFER_SIZE,
-            DEFAULT_SLEEP,
-            MAX_RETRIES,
-            THRESHOLD,
-            InputSanitizer,
-            InputValidator,
-            RateLimiter,
-            SecureTokenGenerator,
-            ValidationLevel,
-            ValidationResult,
-        )
-
         import enum
         assert issubclass(ValidationLevel, enum.Enum)
 

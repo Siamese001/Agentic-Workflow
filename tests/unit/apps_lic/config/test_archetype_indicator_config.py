@@ -4,7 +4,17 @@ fan_in=14 — this module is imported by 14 other modules.
 ADG contract: import-hygiene is covered by test_archetype_indicator_config_adg.py.
 This file covers behavioral invariants and public API contracts.
 """
+
 from __future__ import annotations
+
+import warnings
+
+# Filter Pydantic V2 deprecation warnings to prevent collection errors
+warnings.filterwarnings(
+    "ignore",
+    message=".*BaseModel.__pydantic_init_subclass__.*",
+    category=DeprecationWarning,
+)
 
 import pytest
 
@@ -32,12 +42,14 @@ class TestArchetypeIndicatorsContract:
     def test_instantiable_or_abstract(self):
         assert isinstance(ArchetypeIndicators, type)
 
+
 class TestProfileAnalysisAgentContract:
     def test_is_class(self):
         assert isinstance(ProfileAnalysisAgent, type)
 
     def test_instantiable_or_abstract(self):
         assert isinstance(ProfileAnalysisAgent, type)
+
 
 class TestVectorStoreQueryParamsContract:
     def test_is_class(self):
@@ -46,12 +58,14 @@ class TestVectorStoreQueryParamsContract:
     def test_instantiable_or_abstract(self):
         assert isinstance(VectorStoreQueryParams, type)
 
+
 class TestFallbackRAGParamsContract:
     def test_is_class(self):
         assert isinstance(FallbackRAGParams, type)
 
     def test_instantiable_or_abstract(self):
         assert isinstance(FallbackRAGParams, type)
+
 
 class TestResearchAgentContract:
     def test_is_class(self):
@@ -60,6 +74,7 @@ class TestResearchAgentContract:
     def test_instantiable_or_abstract(self):
         assert isinstance(ResearchAgent, type)
 
+
 class TestSenderGroundingAgentContract:
     def test_is_class(self):
         assert isinstance(SenderGroundingAgent, type)
@@ -67,21 +82,26 @@ class TestSenderGroundingAgentContract:
     def test_instantiable_or_abstract(self):
         assert isinstance(SenderGroundingAgent, type)
 
+
 class TestMaxRetriesConstant:
     def test_is_not_none(self):
         assert MAX_RETRIES is not None
+
 
 class TestDefaultSleepConstant:
     def test_is_not_none(self):
         assert DEFAULT_SLEEP is not None
 
+
 class TestThresholdConstant:
     def test_is_not_none(self):
         assert THRESHOLD is not None
 
+
 class TestBufferSizeConstant:
     def test_is_not_none(self):
         assert BUFFER_SIZE is not None
+
 
 class TestBatchSizeConstant:
     def test_is_not_none(self):

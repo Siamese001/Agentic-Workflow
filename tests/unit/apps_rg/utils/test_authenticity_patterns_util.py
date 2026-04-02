@@ -17,8 +17,6 @@ from apps_rg.utils.authenticity_patterns_util import (
     OverviewSynthesisOutput,
     ThematicAnalysisNode,
     ThematicAnalysisOutput,
-    example_two_phase_generation,
-    example_validation_gates,
 )
 
 pytestmark = pytest.mark.unit

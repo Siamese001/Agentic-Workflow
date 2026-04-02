@@ -588,3 +588,50 @@ def check_gaps() -> dict:
 def enforce_gap_policy() -> bool:
     """Enforce gap policy."""
     return True
+
+
+# Banned pattern definitions for ADG grep ban gate
+BANNED_PATTERNS = {
+    "eval_usage": r"\beval\s*\(",
+    "exec_usage": r"\bexec\s*\(",
+    "pickle_loads": r"pickle\.loads?\s*\(",
+    "yaml_unsafe_load": r"yaml\.load\s*\([^)]*\)(?!.*Loader=yaml\.SafeLoader)",
+}
+
+
+def check_banned_patterns(file_path: str, patterns: dict | None = None) -> list[dict]:
+    """Check a file for banned patterns."""
+    import re
+    if patterns is None:
+        patterns = BANNED_PATTERNS
+    violations = []
+    try:
+        with open(file_path, "r", encoding="utf-8") as f:
+            for line_no, line in enumerate(f, 1):
+                for pattern_name, pattern in patterns.items():
+                    if re.search(pattern, line):
+                        violations.append({
+                            "pattern_name": pattern_name,
+                            "line_no": line_no,
+                            "line_content": line.strip(),
+                            "file_path": file_path,
+                        })
+    except Exception:
+        pass
+    return violations
+
+
+def scan_for_banned(directory: str, patterns: dict | None = None, exclude_patterns: tuple[str, ...] = (".git", "__pycache__")) -> list[dict]:
+    """Scan a directory for banned patterns."""
+    import os
+    if patterns is None:
+        patterns = BANNED_PATTERNS
+    all_violations = []
+    for root, dirs, files in os.walk(directory):
+        dirs[:] = [d for d in dirs if d not in exclude_patterns]
+        for file in files:
+            if file.endswith(".py"):
+                file_path = os.path.join(root, file)
+                violations = check_banned_patterns(file_path, patterns)
+                all_violations.extend(violations)
+    return all_violations

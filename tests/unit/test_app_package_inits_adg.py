@@ -5,8 +5,6 @@ from __future__ import annotations
 import importlib
 from pathlib import Path
 
-import pytest
-
 
 class TestAppsLicUtils:
     """apps_lic/utils/__init__.py — fan_in=4."""

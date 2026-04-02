@@ -11,10 +11,8 @@ from typing import Any
 BATCH_SIZE = 32
 BUFFER_SIZE = 8192
 
-from apps_lic.utils.lic_agent_base_util import LICAgentBase
 from pydantic import BaseModel, Field
 
-from agentic_core.mixins.subatomic_testing_mixin import SubatomicTestingMixin
 from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     LayerSegment,
     _emit_agent_executes_agent,
@@ -58,6 +56,8 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     emit_determinism_digest,  # noqa: E402
     emit_replay_key,  # noqa: E402
 )
+from agentic_core.mixins.subatomic_testing_mixin import SubatomicTestingMixin
+from apps_lic.utils.lic_agent_base_util import LICAgentBase
 
 _emit_authorize_and_execute("p2", "PIISanitizerSpecialistAgent_util", "execution_auth")
 _emit_validates_capability("p2", "PIISanitizerSpecialistAgent_util", "capability_check")

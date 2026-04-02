@@ -2,19 +2,19 @@
 
 import pytest
 
+from agentic_core.prompt_governance.core.tier_instructional_enrichment import (
+    EnrichmentTier,
+    InstructionalEnrichment,
+    TIER_ENRICHMENT_TABLE,
+    enrich_i0_for_tier,
+    get_tier_enrichment,
+)
+
 
 class TestEnrichmentTier:
     """Test EnrichmentTier enum."""
 
     def test_all_tiers_exist(self):
-        from agentic_core.prompt_governance.core.tier_instructional_enrichment import (
-            TIER_ENRICHMENT_TABLE,
-            EnrichmentTier,
-            InstructionalEnrichment,
-            enrich_i0_for_tier,
-            get_tier_enrichment,
-        )
-
         assert EnrichmentTier.LOW == "low"
         assert EnrichmentTier.MEDIUM == "medium"
         assert EnrichmentTier.HIGH == "high"

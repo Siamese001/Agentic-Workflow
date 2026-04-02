@@ -24,8 +24,6 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any, Final
 
-from apps_shared.utils.app_base_util import AppBase
-
 from agentic_core.L0_routing.config import APPS_LIC_DIR
 from agentic_core.L0_routing.config.path_constants import APPS_LIC_DIR
 from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
@@ -70,6 +68,7 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     emit_determinism_digest,  # noqa: E402
     emit_replay_key,  # noqa: E402
 )
+from apps_shared.utils.app_base_util import AppBase
 from archives.healing_backups.location_violations.meta_learning import (
     HealingPattern,
     MetaLearningGuardrails,
@@ -112,8 +111,7 @@ _emit_links_execution_to_snapshot("p4", "lic_agent_base_util", "exec_snapshot_li
 
 Logger = logging.getLogger(__name__)
 try:
-    from agentic_core.interfaces.mixins import MetaLearningMixin
-    from agentic_core.interfaces.mixins import HealerMixin
+    from agentic_core.interfaces.mixins import HealerMixin, MetaLearningMixin
 except ImportError:
 
     class HealerMixin:

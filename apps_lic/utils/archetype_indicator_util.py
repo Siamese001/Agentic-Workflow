@@ -10,7 +10,6 @@ from typing import Any
 
 from pydantic import BaseModel, Field
 
-
 # Constants for test compatibility
 BATCH_SIZE = 32
 BUFFER_SIZE = 8192

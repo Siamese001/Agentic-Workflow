@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import pytest
+
 from apps_lic.utils.lic_engine_validation_capability_util import LICEngineValidationCapability
 
 pytestmark = pytest.mark.unit

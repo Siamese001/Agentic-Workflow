@@ -20,9 +20,9 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_dispatches_agent,
     _emit_dispatches_execution_plan,
     _emit_dispatches_healing_run,
+    _emit_emits_metric_event,
     _emit_escalates_failure,
     _emit_escalates_to_human,
-    _emit_emits_metric_event,
     _emit_execution_terminates_at_uwg,
     _emit_feeds_meta_learning,
     _emit_gated_by_confidence,
@@ -110,13 +110,12 @@ import hashlib
 import json
 from datetime import datetime
 from enum import Enum
-from typing import Optional
 
 
 class OutreachEngineContext:
     """Context for outreach engine operations."""
 
-    def __init__(self, leads: Optional[list[dict]] = None, messages: Optional[list[dict]] = None) -> None:
+    def __init__(self, leads: list[dict] | None = None, messages: list[dict] | None = None) -> None:
         self.leads = leads or []
         self.messages = messages or []
         self._instructions: list[dict] = []
@@ -219,7 +218,7 @@ class OutreachLearningExample:
     """
 
     example_id: str
-    TaskType: Optional[str] = None
+    TaskType: str | None = None
     input_context: str = ""
     output_result: str = ""
     success: bool = False
@@ -319,7 +318,7 @@ class OutreachLearningLoop:
         return successes / total
 
     # guardian: allow-magic-config
-    def get_examples(self, TaskType: Optional[str] = None, limit: int = 10) -> list[OutreachLearningExample]:
+    def get_examples(self, TaskType: str | None = None, limit: int = 10) -> list[OutreachLearningExample]:
         """Get learning examples."""
         if TaskType:
             examples = [e for e in self._examples if e.TaskType == TaskType]
