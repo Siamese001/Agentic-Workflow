@@ -11,6 +11,9 @@ from tools.adg.adg_query_bridge import (
     violations,
     subprocess_calls_without_timeout,
 )
+from tools.adg.adg_redis_query import ADGRedisClient, ADGRedisQuery
+from tools.adg.adg_stale_guard import ADGStalenessChecker, ADGStaleGuard
+from tools.adg.adg_test_selector import ADGTestSelector, TestImpactAnalyzer, select_tests_for_changes
 
 __all__ = [
     "ADGQueryBridge",
@@ -22,4 +25,11 @@ __all__ = [
     "nodes_in_layer",
     "violations",
     "subprocess_calls_without_timeout",
+    "ADGRedisClient",
+    "ADGRedisQuery",
+    "ADGStalenessChecker",
+    "ADGStaleGuard",
+    "ADGTestSelector",
+    "TestImpactAnalyzer",
+    "select_tests_for_changes",
 ]
