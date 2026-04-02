@@ -218,6 +218,10 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_escalates_failure,
     _emit_escalates_to_human,
     _emit_execution_terminates_at_uwg,
+    _emit_validates_uwg_intent,
+    _emit_checks_policy_hash_at_uwg,
+    _emit_checks_capability_set,
+    _emit_validates_blast_radius_at_uwg,
     _emit_feeds_meta_learning,
     _emit_gated_by_confidence,
     _emit_hard_fails_untranscripted,
@@ -2817,6 +2821,8 @@ class _UWGIngressGateVisitor(ast.NodeVisitor):
         return ""
 
     def visit_Call(self, node: ast.Call) -> None:
+        import uuid as _uuid  # noqa: PLC0415
+
         sym = self._sym(node.func)
         if not sym:
             self.generic_visit(node)
