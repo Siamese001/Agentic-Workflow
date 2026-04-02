@@ -48,6 +48,7 @@ from agentic_core.adg.schema_util import (
     CAPTURES_EXECUTION_OUTPUT_SYMBOLS,
     CAPTURES_PATTERN_SYMBOLS,
     CAPTURES_RUNTIME_ANOMALY_SYMBOLS,
+    CLAIMS_WRITE_LOCK_SYMBOLS,
     CONFIDENCE_SCORING_CLASSES,
     CONFIG_ACCESS_METHODS,
     CONFIG_READER_CLASSES,
@@ -56,6 +57,7 @@ from agentic_core.adg.schema_util import (
     DISPATCHES_AGENT_SYMBOLS,
     DPO_BATCH_CLASSES,
     DRIFT_ALERT_METHODS,
+    DURABLE_COMMIT_SYMBOLS,
     DYNAMIC_EVAL_SYMBOLS,
     DYNAMIC_GETATTR_SYMBOLS,
     EMBEDDING_PIPELINE_SYMBOLS,
@@ -65,23 +67,34 @@ from agentic_core.adg.schema_util import (
     EVAL_METRIC_CLASSES,
     EXECUTION_PLAN_DISPATCH_SYMBOLS,
     EXECUTION_TRACE_CLASSES,
+    EXECUTION_TRACE_PACKAGE_SYMBOLS,
     EXTERNAL_HTTP_SYMBOLS,
     FEEDS_META_LEARNING_SYMBOLS,
     FREEZE_METHOD_NAMES,
     GUARDRAIL_CLASS_NAMES,
+    HASH_CHAIN_APPEND_SYMBOLS,
     HEALER_BASE_CLASSES,
     HEALER_METHOD_NAMES,
     HEALING_DISPATCH_METHODS,
     HEALING_ORCHESTRATOR_CLASSES,
     HITL_ESCALATION_METHODS,
+    HMAC_SEAL_SYMBOLS,
     HUMAN_REVIEW_SYMBOLS,
     IMPROVES_AGENT_POLICY_SYMBOLS,
     INVOKES_EVALUATION_SYMBOLS,
     IO_INTERCEPT_CLASSES,
     JIT_CONTEXT_CLASSES,
+    L0_RECEIVES_POLICY_HASH_SYMBOLS,
+    L3_READS_L4_SURFACE_SYMBOLS,
+    L4_TELEMETRY_SYNC_SYMBOLS,
+    L5_READS_L4_SURFACE_SYMBOLS,
+    L6_INGESTS_L4_TRACE_SYMBOLS,
     LINKS_EXECUTION_TO_SNAPSHOT_SYMBOLS,
     LINKS_INCIDENT_TRACE_SYMBOLS,
     LOGGING_METHOD_NAMES,
+    MATERIALIZES_READ_VIEW_SYMBOLS,
+    MUTATION_DIFF_SYMBOLS,
+    MUTATION_REPLAY_KEY_SYMBOLS,
     MUTATION_TRANSPORT_CLASSES,
     NETWORK_SYMBOLS,
     NETWORK_TRANSCRIPT_SYMBOLS,
@@ -105,6 +118,7 @@ from agentic_core.adg.schema_util import (
     PROMPT_INJECTION_SYMBOLS,
     PROMPT_TEMPLATE_SYMBOLS,
     PROVIDER_SDK_SYMBOLS,
+    READS_L4_SURFACE_SYMBOLS,
     RECORDS_HEALING_OUTCOME_SYMBOLS,
     RECORDS_INCIDENT_EVENT_SYMBOLS,
     RECORDS_LEARNING_EVENT_SYMBOLS,
@@ -114,8 +128,10 @@ from agentic_core.adg.schema_util import (
     REGISTRY_CHECK_SYMBOLS,
     REPLAY_GUARD_CLASSES,
     REPLAY_KEY_METHODS,
+    RETRIEVAL_SURFACE_REFRESH_SYMBOLS,
     RETRIEVAL_SYMBOLS,
     RFC6902_DIFF_SYMBOLS,
+    ROLLBACK_HEAL_SYMBOLS,
     ROUTES_TO_CAPABILITY_SYMBOLS,
     ROUTING_COMMIT_SYMBOLS,
     SAFETY_PLANE_CLASSES,
@@ -126,33 +142,17 @@ from agentic_core.adg.schema_util import (
     SEMANTIC_CLOCK_CLASSES,
     STORES_EMBEDDING_SYMBOLS,
     STORES_LEARNING_STATE_SYMBOLS,
+    SWAPS_VERSION_ALIAS_SYMBOLS,
     TOOL_BUDGET_CLASSES,
     TRIGGERS_ALERT_SYMBOLS,
     UPDATES_META_LEARNING_STATE_SYMBOLS,
     UPDATES_MONITORING_STATE_SYMBOLS,
     UPDATES_ROUTING_STRATEGY_SYMBOLS,
+    UWG_BLAST_RADIUS_SYMBOLS,
+    UWG_CHECKS_CAPABILITY_SET_SYMBOLS,
+    UWG_CHECKS_POLICY_HASH_SYMBOLS,
     UWG_TERMINATION_SYMBOLS,
     UWG_VALIDATES_INTENT_SYMBOLS,
-    UWG_CHECKS_POLICY_HASH_SYMBOLS,
-    UWG_CHECKS_CAPABILITY_SET_SYMBOLS,
-    UWG_BLAST_RADIUS_SYMBOLS,
-    MUTATION_DIFF_SYMBOLS,
-    MUTATION_REPLAY_KEY_SYMBOLS,
-    HMAC_SEAL_SYMBOLS,
-    EXECUTION_TRACE_PACKAGE_SYMBOLS,
-    CLAIMS_WRITE_LOCK_SYMBOLS,
-    DURABLE_COMMIT_SYMBOLS,
-    HASH_CHAIN_APPEND_SYMBOLS,
-    ROLLBACK_HEAL_SYMBOLS,
-    MATERIALIZES_READ_VIEW_SYMBOLS,
-    RETRIEVAL_SURFACE_REFRESH_SYMBOLS,
-    SWAPS_VERSION_ALIAS_SYMBOLS,
-    L4_TELEMETRY_SYNC_SYMBOLS,
-    READS_L4_SURFACE_SYMBOLS,
-    L0_RECEIVES_POLICY_HASH_SYMBOLS,
-    L5_READS_L4_SURFACE_SYMBOLS,
-    L3_READS_L4_SURFACE_SYMBOLS,
-    L6_INGESTS_L4_TRACE_SYMBOLS,
     VALIDATES_CAPABILITY_SYMBOLS,
     VALIDATOR_BASE_CLASSES,
     VECTOR_STORE_SYMBOLS,
@@ -227,10 +227,17 @@ _emit_captures_execution_output("p2", "static_scanner", "exec_output")
 
 from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
+    _emit_appends_hash_chain,
+    _emit_applies_hmac_seal,
     _emit_captures_evaluation_metric,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
     _emit_checks_agent_registry,
+    _emit_checks_capability_set,
+    _emit_checks_policy_hash_at_uwg,
+    _emit_claims_write_lock,
+    _emit_commits_mutation_durable,
+    _emit_computes_mutation_replay_key,
     _emit_coordinates_agents,
     _emit_dispatches_agent,
     _emit_dispatches_execution_plan,
@@ -239,49 +246,40 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_escalates_failure,
     _emit_escalates_to_human,
     _emit_execution_terminates_at_uwg,
-    _emit_validates_uwg_intent,
-    _emit_checks_policy_hash_at_uwg,
-    _emit_checks_capability_set,
-    _emit_validates_blast_radius_at_uwg,
-    _emit_generates_mutation_diff,
-    _emit_computes_mutation_replay_key,
-    _emit_applies_hmac_seal,
-    _emit_packages_execution_trace,
-    _emit_claims_write_lock,
-    _emit_commits_mutation_durable,
-    _emit_appends_hash_chain,
-    _emit_heals_on_rollback_failure,
-    _emit_materializes_read_view,
-    _emit_refreshes_retrieval_surface,
-    _emit_swaps_version_alias,
-    _emit_syncs_l4_telemetry,
-    _emit_reads_l4_surface,
-    _emit_receives_policy_hash,
-    _emit_l5_reads_l4_surface,
-    _emit_l3_reads_l4_surface,
-    _emit_l6_ingests_l4_trace,
     _emit_feeds_meta_learning,
     _emit_gated_by_confidence,
+    _emit_generates_mutation_diff,
     _emit_hard_fails_untranscripted,
+    _emit_heals_on_rollback_failure,
     _emit_improves_agent_policy,
     _emit_invokes_eval,
     _emit_invokes_evaluation,
+    _emit_l3_reads_l4_surface,
+    _emit_l5_reads_l4_surface,
+    _emit_l6_ingests_l4_trace,
     _emit_links_execution_to_snapshot,
     _emit_links_incident_trace,
+    _emit_materializes_read_view,
     _emit_observes_runtime_state,
     _emit_orchestrates_workflow,
+    _emit_packages_execution_trace,
     _emit_proposal_commits_routing,
     _emit_pulls_context,
     _emit_reads_environ,
+    _emit_reads_l4_surface,
     _emit_reads_runtime_state,
+    _emit_receives_policy_hash,
     _emit_records_healing_outcome,
     _emit_records_incident_event,
     _emit_records_learning_event,
     _emit_records_telemetry_event,
     _emit_records_workflow_lineage,
+    _emit_refreshes_retrieval_surface,
     _emit_routes_to_agent,
     _emit_stores_embedding,
     _emit_stores_learning_state,
+    _emit_swaps_version_alias,
+    _emit_syncs_l4_telemetry,
     _emit_transcripts_response,
     _emit_triggers_alert,
     _emit_updates_meta_learning_state,
@@ -289,6 +287,8 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_updates_routing_strategy,
     _emit_validated_by_safety_plane,
     _emit_validates_agent_capability,
+    _emit_validates_blast_radius_at_uwg,
+    _emit_validates_uwg_intent,
     _emit_verifies_boundary,
     _emit_verifies_policy,
     _emit_writes_learning_snapshot,
@@ -787,7 +787,7 @@ _MIN_EVIDENCE_FLOORS: dict[str, int] = {
 }
 
 # H4: config read symbols that trigger reads_from edges
-_CONFIG_READ_SYMBOLS: frozenset[str] = frozenset(
+CONFIG_READ_SYMBOLS: frozenset[str] = frozenset(
     {
         "os.environ",
         "os.getenv",
@@ -830,7 +830,7 @@ _COMPOSITION_NOISE: frozenset[str] = frozenset(
 )
 
 # S3: dynamic execution symbols (RULE_F)
-_DYNAMIC_EXEC_SYMBOLS: frozenset[str] = frozenset(
+DYNAMIC_EXEC_SYMBOLS: frozenset[str] = frozenset(
     {
         "eval",
         "exec",
@@ -1259,7 +1259,7 @@ class _AttributeVisitor(ast.NodeVisitor):
             return "reads_policy_state"
         if "runtime" in sym.lower():
             return "reads_runtime_state"
-        if sym in _CONFIG_READ_SYMBOLS:
+        if sym in CONFIG_READ_SYMBOLS:
             return "reads_config"
         return ""
 
@@ -1360,7 +1360,7 @@ class _DynamicExecutionVisitor(ast.NodeVisitor):
 
         sym = self._extract_sym(node.func)
         tail = sym.split(".")[-1] if sym else ""
-        if sym and (sym in _DYNAMIC_EXEC_SYMBOLS or tail in _DYNAMIC_EXEC_SYMBOLS):
+        if sym and (sym in DYNAMIC_EXEC_SYMBOLS or tail in DYNAMIC_EXEC_SYMBOLS):
             to_name = canonical_name("Symbol", sym)
             self.edges.append(
                 Edge(
@@ -1715,7 +1715,7 @@ _INTERNAL_MODULE_PREFIXES: tuple[str, ...] = (
 
 _TEST_FILE_INDICATORS: tuple[str, ...] = ("tests/", "test_", "_test.py")
 
-_GOVERNANCE_WRITE_SYMBOLS: frozenset[str] = frozenset(
+GOVERNANCE_WRITE_SYMBOLS: frozenset[str] = frozenset(
     {
         "UniversalWriteGateway",
         "execute_write",
@@ -1768,7 +1768,7 @@ _GOVERNANCE_WRITE_SYMBOLS: frozenset[str] = frozenset(
     }
 )
 
-_GOVERNANCE_ROUTE_SYMBOLS: frozenset[str] = frozenset(
+GOVERNANCE_ROUTE_SYMBOLS: frozenset[str] = frozenset(
     {
         "HealingOrchestrator",
         "SovereignLLMGateway",
@@ -1815,7 +1815,7 @@ _GOVERNANCE_ROUTE_SYMBOLS: frozenset[str] = frozenset(
     }
 )
 
-_GOVERNANCE_READ_SYMBOLS: frozenset[str] = frozenset(
+GOVERNANCE_READ_SYMBOLS: frozenset[str] = frozenset(
     {
         "UniversalReadGateway",
         "read_file",
@@ -2101,7 +2101,7 @@ class _GovernancePlaneVisitor(ast.NodeVisitor):
             if sym:
                 tail = sym.split(".")[-1]
                 base_name = sym.split(".")[0]
-                if base_name in _GOVERNANCE_WRITE_SYMBOLS or tail in _GOVERNANCE_WRITE_SYMBOLS:
+                if base_name in GOVERNANCE_WRITE_SYMBOLS or tail in GOVERNANCE_WRITE_SYMBOLS:
                     self.edges.append(
                         Edge(
                             from_name=self.module_adg_name,
@@ -2124,7 +2124,7 @@ class _GovernancePlaneVisitor(ast.NodeVisitor):
             if tail.startswith("_emit_") or tail.startswith("emit_"):
                 self.generic_visit(node)
                 return
-            if base in _GOVERNANCE_WRITE_SYMBOLS or tail in _GOVERNANCE_WRITE_SYMBOLS:
+            if base in GOVERNANCE_WRITE_SYMBOLS or tail in GOVERNANCE_WRITE_SYMBOLS:
                 to_name = canonical_name("Symbol", sym)
                 self.edges.append(
                     Edge(
@@ -2137,7 +2137,7 @@ class _GovernancePlaneVisitor(ast.NodeVisitor):
                         symbol=sym,
                     )
                 )
-            elif base in _GOVERNANCE_ROUTE_SYMBOLS or tail in _GOVERNANCE_ROUTE_SYMBOLS:
+            elif base in GOVERNANCE_ROUTE_SYMBOLS or tail in GOVERNANCE_ROUTE_SYMBOLS:
                 to_name = canonical_name("Symbol", sym)
                 self.edges.append(
                     Edge(
@@ -2150,7 +2150,7 @@ class _GovernancePlaneVisitor(ast.NodeVisitor):
                         symbol=sym,
                     )
                 )
-            elif base in _GOVERNANCE_READ_SYMBOLS or tail in _GOVERNANCE_READ_SYMBOLS:
+            elif base in GOVERNANCE_READ_SYMBOLS or tail in GOVERNANCE_READ_SYMBOLS:
                 to_name = canonical_name("Symbol", sym)
                 self.edges.append(
                     Edge(
@@ -2745,7 +2745,7 @@ _TRACE_CALL_NAMES: frozenset[str] = frozenset(
 _TRACE_ID_KWARGS: frozenset[str] = frozenset({"trace_id", "run_id", "request_id", "execution_id"})
 
 # ── L4/UWG Wave 1 Ingress Gate Symbols ───────────────────────────────────
-_UWG_VALIDATES_INTENT_SYMBOLS: frozenset[str] = frozenset(
+UWG_VALIDATES_INTENT_SYMBOLS: frozenset[str] = frozenset(
     {
         "verify_signature",
         "verify_active_policy_hash",
@@ -2757,7 +2757,7 @@ _UWG_VALIDATES_INTENT_SYMBOLS: frozenset[str] = frozenset(
         "_emit_validates_uwg_intent",
     }
 )
-_UWG_CHECKS_POLICY_HASH_SYMBOLS: frozenset[str] = frozenset(
+UWG_CHECKS_POLICY_HASH_SYMBOLS: frozenset[str] = frozenset(
     {
         "check_policy_hash_at_uwg",
         "verify_policy_at_gateway",
@@ -2767,7 +2767,7 @@ _UWG_CHECKS_POLICY_HASH_SYMBOLS: frozenset[str] = frozenset(
         "_emit_checks_policy_hash_at_uwg",
     }
 )
-_UWG_CHECKS_CAPABILITY_SET_SYMBOLS: frozenset[str] = frozenset(
+UWG_CHECKS_CAPABILITY_SET_SYMBOLS: frozenset[str] = frozenset(
     {
         "check_allowed_capability_set",
         "verify_capability_at_uwg",
@@ -2777,7 +2777,7 @@ _UWG_CHECKS_CAPABILITY_SET_SYMBOLS: frozenset[str] = frozenset(
         "_emit_checks_capability_set",
     }
 )
-_UWG_BLAST_RADIUS_SYMBOLS: frozenset[str] = frozenset(
+UWG_BLAST_RADIUS_SYMBOLS: frozenset[str] = frozenset(
     {
         "validate_blast_radius_at_uwg",
         "check_uwg_blast_radius",
@@ -2895,7 +2895,7 @@ class _UWGIngressGateVisitor(ast.NodeVisitor):
         )
 
         # Check UWG ingress gate symbols
-        if base in _UWG_VALIDATES_INTENT_SYMBOLS or tail in _UWG_VALIDATES_INTENT_SYMBOLS:
+        if base in UWG_VALIDATES_INTENT_SYMBOLS or tail in UWG_VALIDATES_INTENT_SYMBOLS:
             self.edges.append(
                 Edge(
                     from_name=self.module_adg_name,
@@ -2907,7 +2907,7 @@ class _UWGIngressGateVisitor(ast.NodeVisitor):
                     symbol=sym,
                 )
             )
-        elif base in _UWG_CHECKS_POLICY_HASH_SYMBOLS or tail in _UWG_CHECKS_POLICY_HASH_SYMBOLS:
+        elif base in UWG_CHECKS_POLICY_HASH_SYMBOLS or tail in UWG_CHECKS_POLICY_HASH_SYMBOLS:
             self.edges.append(
                 Edge(
                     from_name=self.module_adg_name,
@@ -2919,7 +2919,7 @@ class _UWGIngressGateVisitor(ast.NodeVisitor):
                     symbol=sym,
                 )
             )
-        elif base in _UWG_CHECKS_CAPABILITY_SET_SYMBOLS or tail in _UWG_CHECKS_CAPABILITY_SET_SYMBOLS:
+        elif base in UWG_CHECKS_CAPABILITY_SET_SYMBOLS or tail in UWG_CHECKS_CAPABILITY_SET_SYMBOLS:
             self.edges.append(
                 Edge(
                     from_name=self.module_adg_name,
@@ -2931,7 +2931,7 @@ class _UWGIngressGateVisitor(ast.NodeVisitor):
                     symbol=sym,
                 )
             )
-        elif base in _UWG_BLAST_RADIUS_SYMBOLS or tail in _UWG_BLAST_RADIUS_SYMBOLS:
+        elif base in UWG_BLAST_RADIUS_SYMBOLS or tail in UWG_BLAST_RADIUS_SYMBOLS:
             self.edges.append(
                 Edge(
                     from_name=self.module_adg_name,
@@ -2986,7 +2986,7 @@ class _MutationRecordAssemblyVisitor(ast.NodeVisitor):
         )
 
         # Check mutation record assembly symbols
-        if base in _MUTATION_DIFF_SYMBOLS or tail in _MUTATION_DIFF_SYMBOLS:
+        if base in MUTATION_DIFF_SYMBOLS or tail in MUTATION_DIFF_SYMBOLS:
             self.edges.append(
                 Edge(
                     from_name=self.module_adg_name,
@@ -2998,7 +2998,7 @@ class _MutationRecordAssemblyVisitor(ast.NodeVisitor):
                     symbol=sym,
                 )
             )
-        elif base in _MUTATION_REPLAY_KEY_SYMBOLS or tail in _MUTATION_REPLAY_KEY_SYMBOLS:
+        elif base in MUTATION_REPLAY_KEY_SYMBOLS or tail in MUTATION_REPLAY_KEY_SYMBOLS:
             self.edges.append(
                 Edge(
                     from_name=self.module_adg_name,
@@ -3010,7 +3010,7 @@ class _MutationRecordAssemblyVisitor(ast.NodeVisitor):
                     symbol=sym,
                 )
             )
-        elif base in _HMAC_SEAL_SYMBOLS or tail in _HMAC_SEAL_SYMBOLS:
+        elif base in HMAC_SEAL_SYMBOLS or tail in HMAC_SEAL_SYMBOLS:
             self.edges.append(
                 Edge(
                     from_name=self.module_adg_name,
@@ -3022,7 +3022,7 @@ class _MutationRecordAssemblyVisitor(ast.NodeVisitor):
                     symbol=sym,
                 )
             )
-        elif base in _EXECUTION_TRACE_PACKAGE_SYMBOLS or tail in _EXECUTION_TRACE_PACKAGE_SYMBOLS:
+        elif base in EXECUTION_TRACE_PACKAGE_SYMBOLS or tail in EXECUTION_TRACE_PACKAGE_SYMBOLS:
             self.edges.append(
                 Edge(
                     from_name=self.module_adg_name,
@@ -3293,8 +3293,8 @@ class _DecoratorVisitor(ast.NodeVisitor):
       module --applies--> ADG::Symbol::<decorator>
 
     Special cases:
-      - Decorators matching _GOVERNANCE_WRITE_SYMBOLS -> writes_through (already in GG)
-      - Decorators matching _GOVERNANCE_ROUTE_SYMBOLS -> routes_through (already in GG)
+      - Decorators matching GOVERNANCE_WRITE_SYMBOLS -> writes_through (already in GG)
+      - Decorators matching GOVERNANCE_ROUTE_SYMBOLS -> routes_through (already in GG)
       These are skipped here to avoid duplicate edges with GovernancePlaneVisitor.
     """
 
@@ -3310,11 +3310,11 @@ class _DecoratorVisitor(ast.NodeVisitor):
                 continue
             base = sym.split(".")[0]
             tail = sym.split(".")[-1]
-            if base in _GOVERNANCE_WRITE_SYMBOLS or tail in _GOVERNANCE_WRITE_SYMBOLS:
+            if base in GOVERNANCE_WRITE_SYMBOLS or tail in GOVERNANCE_WRITE_SYMBOLS:
                 continue
-            if base in _GOVERNANCE_ROUTE_SYMBOLS or tail in _GOVERNANCE_ROUTE_SYMBOLS:
+            if base in GOVERNANCE_ROUTE_SYMBOLS or tail in GOVERNANCE_ROUTE_SYMBOLS:
                 continue
-            if base in _GOVERNANCE_READ_SYMBOLS or tail in _GOVERNANCE_READ_SYMBOLS:
+            if base in GOVERNANCE_READ_SYMBOLS or tail in GOVERNANCE_READ_SYMBOLS:
                 continue
             to_name = canonical_name("Symbol", sym)
             self.edges.append(

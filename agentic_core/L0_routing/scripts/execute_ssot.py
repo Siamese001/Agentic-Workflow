@@ -27,6 +27,7 @@ import platform
 import re
 import signal
 import stat
+import subprocess
 import sys
 import tempfile
 import time
@@ -37,7 +38,6 @@ from dataclasses import dataclass, field
 from datetime import datetime
 from functools import wraps
 from pathlib import Path
-from subprocess import DEVNULL
 from types import FrameType
 from typing import Any, Optional
 
@@ -50,7 +50,7 @@ from agentic_core.L0_routing.config.path_constants import DEFAULT_TIMEOUT, MAX_R
 
 _clock_cache = None
 
-def _get_clock():
+def __get_clock():
     global _clock_cache
     if _clock_cache is None:
         try:
@@ -225,8 +225,8 @@ except ImportError:
 
 try:
     from system_learning.engines.retrieval_profile_manager import (
-        get_active_retrieval_profile,
         RetrievalProfile,
+        get_active_retrieval_profile,
     )
     _RETRIEVAL_PROFILE_AVAILABLE = True
 except ImportError:
@@ -1405,8 +1405,8 @@ def _maybe_force_utf8_console() -> None:
         try:
             _get_safe_subprocess_run()(
                 ["chcp", "65001"],
-                stdout=DEVNULL,
-                stderr=DEVNULL,
+                stdout=subprocess.DEVNULL,
+                stderr=subprocess.DEVNULL,
                 check=False,
                 allow_protected_root_mutation=True,
             )
@@ -1554,7 +1554,7 @@ from agentic_core.L0_routing.config.path_constants import (
     AGENTIC_CORE_DIR,
     APPS_LIC_DIR,
     APPS_RG_DIR,
-    APPS_SHARED_DIR,    # guardian: File operations with encoding need error-specific handling    # guardian: File operations with encoding need error-specific handling    # guardian: File operations with encoding need error-specific handling    # guardian: File operations with encoding need error-specific handling    # guardian: File operations with encoding need error-specific handling    # guardian: File operations with encoding need error-specific handling    # guardian: File operations with encoding need error-specific handling    # guardian: File operations with encoding need error-specific handling    # guardian: File operations with encoding need error-specific handling    # guardian: File operations with encoding need error-specific handling
+    APPS_SHARED_DIR,  # guardian: File operations with encoding need error-specific handling    # guardian: File operations with encoding need error-specific handling    # guardian: File operations with encoding need error-specific handling    # guardian: File operations with encoding need error-specific handling    # guardian: File operations with encoding need error-specific handling    # guardian: File operations with encoding need error-specific handling    # guardian: File operations with encoding need error-specific handling    # guardian: File operations with encoding need error-specific handling    # guardian: File operations with encoding need error-specific handling    # guardian: File operations with encoding need error-specific handling
     ARCHIVES_DIR,
     OPS_SCRIPTS_DIR,
     TESTS_DIR,
@@ -1582,7 +1582,7 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_reads_runtime_state,
     _emit_records_execution_trace,
     _emit_records_incident_event,
-    _emit_records_learning_event,    # guardian: File operations with encoding need error-specific handling    # guardian: File operations with encoding need error-specific handling    # guardian: File operations with encoding need error-specific handling    # guardian: File operations with encoding need error-specific handling    # guardian: File operations with encoding need error-specific handling    # guardian: File operations with encoding need error-specific handling    # guardian: File operations with encoding need error-specific handling    # guardian: File operations with encoding need error-specific handling    # guardian: File operations with encoding need error-specific handling    # guardian: File operations with encoding need error-specific handling    # guardian: File operations with encoding need error-specific handling    # guardian: File operations with encoding need error-specific handling    # guardian: File operations with encoding need error-specific handling    # guardian: File operations with encoding need error-specific handling    # guardian: File operations with encoding need error-specific handling    # guardian: File operations with encoding need error-specific handling    # guardian: File operations with encoding need error-specific handling    # guardian: File operations with encoding need error-specific handling    # guardian: File operations with encoding need error-specific handling    # guardian: File operations with encoding need error-specific handling    # guardian: File operations with encoding need error-specific handling    # guardian: File operations with encoding need error-specific handling    # guardian: File operations with encoding need error-specific handling    # guardian: File operations with encoding need error-specific handling    # guardian: File operations with encoding need error-specific handling    # guardian: File operations with encoding need error-specific handling    # guardian: File operations with encoding need error-specific handling    # guardian: File operations with encoding need error-specific handling    # guardian: File operations with encoding need error-specific handling    # guardian: File operations with encoding need error-specific handling    # guardian: File operations with encoding need error-specific handling    # guardian: File operations with encoding need error-specific handling    # guardian: File operations with encoding need error-specific handling    # guardian: File operations with encoding need error-specific handling    # guardian: File operations with encoding need error-specific handling    # guardian: File operations with encoding need error-specific handling    # guardian: File operations with encoding need error-specific handling    # guardian: File operations with encoding need error-specific handling    # guardian: File operations with encoding need error-specific handling    # guardian: File operations with encoding need error-specific handling    # guardian: File operations with encoding need error-specific handling    # guardian: File operations with encoding need error-specific handling    # guardian: File operations with encoding need error-specific handling    # guardian: File operations with encoding need error-specific handling    # guardian: File operations with encoding need error-specific handling
+    _emit_records_learning_event,  # guardian: File operations with encoding need error-specific handling    # guardian: File operations with encoding need error-specific handling    # guardian: File operations with encoding need error-specific handling    # guardian: File operations with encoding need error-specific handling    # guardian: File operations with encoding need error-specific handling    # guardian: File operations with encoding need error-specific handling    # guardian: File operations with encoding need error-specific handling    # guardian: File operations with encoding need error-specific handling    # guardian: File operations with encoding need error-specific handling    # guardian: File operations with encoding need error-specific handling    # guardian: File operations with encoding need error-specific handling    # guardian: File operations with encoding need error-specific handling    # guardian: File operations with encoding need error-specific handling    # guardian: File operations with encoding need error-specific handling    # guardian: File operations with encoding need error-specific handling    # guardian: File operations with encoding need error-specific handling    # guardian: File operations with encoding need error-specific handling    # guardian: File operations with encoding need error-specific handling    # guardian: File operations with encoding need error-specific handling    # guardian: File operations with encoding need error-specific handling    # guardian: File operations with encoding need error-specific handling    # guardian: File operations with encoding need error-specific handling    # guardian: File operations with encoding need error-specific handling    # guardian: File operations with encoding need error-specific handling    # guardian: File operations with encoding need error-specific handling    # guardian: File operations with encoding need error-specific handling    # guardian: File operations with encoding need error-specific handling    # guardian: File operations with encoding need error-specific handling    # guardian: File operations with encoding need error-specific handling    # guardian: File operations with encoding need error-specific handling    # guardian: File operations with encoding need error-specific handling    # guardian: File operations with encoding need error-specific handling    # guardian: File operations with encoding need error-specific handling    # guardian: File operations with encoding need error-specific handling    # guardian: File operations with encoding need error-specific handling    # guardian: File operations with encoding need error-specific handling    # guardian: File operations with encoding need error-specific handling    # guardian: File operations with encoding need error-specific handling    # guardian: File operations with encoding need error-specific handling    # guardian: File operations with encoding need error-specific handling    # guardian: File operations with encoding need error-specific handling    # guardian: File operations with encoding need error-specific handling    # guardian: File operations with encoding need error-specific handling    # guardian: File operations with encoding need error-specific handling    # guardian: File operations with encoding need error-specific handling
     _emit_routes_to_agent,
     _emit_stores_learning_state,
     _emit_transcripts_response,
@@ -2920,7 +2920,7 @@ class SovereignDecisionEngine:
             return False
         self._operation_stack.append(op_signature)
         self._atomic_lock = True
-        self._sovereignty_token = f"SOV_{int(get_clock().now_epoch())}_{agent_name}"
+        self._sovereignty_token = f"SOV_{int(__get_clock().now_epoch())}_{agent_name}"
         return True
 
     def release_sovereignty_token(self, agent_name: str, success: bool = True) -> None:
@@ -4775,7 +4775,7 @@ def save_aggregate_report(targets: list[str], project_root: Path) -> Path | None
         aggregate = {
             "meta": {
                 "report_type": "AGGREGATE",
-                "timestamp": get_clock().now_iso(),
+                "timestamp": __get_clock().now_iso(),
                 "territories_scanned": len(territory_summaries),
                 "territories_compliant": compliant,
                 "territories_non_compliant": non_compliant,
@@ -5699,7 +5699,7 @@ def _write_mandatory_json_output(
     output = {
         "meta": {
             "report_type": "HEAL_RUN_OUTPUT",
-            "timestamp": get_clock().now_iso(),
+            "timestamp": __get_clock().now_iso(),
             "mandatory": True,
         },
         "semantic_cache": {
@@ -5917,7 +5917,7 @@ def _write_heal_run_complete(
         git_commit = _r.stdout.strip()
     except (subprocess.CalledProcessError, OSError, subprocess.TimeoutExpired):
         pass
-    run_ts = get_clock().now_iso()
+    run_ts = __get_clock().now_iso()
     run_id = "run_" + run_ts.replace(":", "").replace("-", "").replace("T", "_")[:19]
     import re as _re
 
@@ -6507,7 +6507,7 @@ def _write_failure_forensics(
                     "remediation": "Lower DETERMINISTIC threshold or add agent-specific calibration",
                 }
             )
-    run_ts = get_clock().now_iso()
+    run_ts = __get_clock().now_iso()
     output = {
         "meta": {"report_type": "FAILURE_FORENSICS", "timestamp": run_ts},
         "summary": {
@@ -7540,7 +7540,7 @@ def _legacy_main(
                 state_mgr.state["current_territory"] = territory
                 state_mgr.save()
                 state_mgr.add_event("domain_start", f"Entering Domain: {territory}")
-                _territory_start_ms = get_clock().now_epoch() * 1000.0
+                _territory_start_ms = __get_clock().now_epoch() * 1000.0
                 from dataclasses import replace as _dc_replace
 
                 effective_ctx = ctx
@@ -7823,7 +7823,7 @@ def _legacy_main(
                             )
                         cert = execute_phase7_final(agents, territory, state_mgr, decision_engine)
                         results.append(cert)
-                        _territory_elapsed_ms = get_clock().now_epoch() * 1000.0 - _territory_start_ms
+                        _territory_elapsed_ms = __get_clock().now_epoch() * 1000.0 - _territory_start_ms
                         state_mgr.state["agent_execution_log"].append(
                             {
                                 "territory": territory,
@@ -7846,10 +7846,10 @@ def _legacy_main(
                     if is_autonomous:
                         continue
                     else:
-                        _fire_meta_learning_intake(state_mgr, now_utc=int(get_clock().now_epoch()))
+                        _fire_meta_learning_intake(state_mgr, now_utc=int(__get_clock().now_epoch()))
                         state_mgr.finish_mission(status="error")
                         sys.exit(1)
-            _fire_meta_learning_intake(state_mgr, now_utc=int(get_clock().now_epoch()))
+            _fire_meta_learning_intake(state_mgr, now_utc=int(__get_clock().now_epoch()))
             save_aggregate_report(targets, REPO_ROOT)
             state_mgr.finish_mission(status="completed")
             try:
@@ -7901,7 +7901,7 @@ def _legacy_main(
     except (ImportError, AttributeError, TypeError, ValueError, OSError) as fatal_e:
         logger.critical(f"🔥 FATAL PROTOCOL ERROR: {fatal_e}")
         traceback.print_exc()
-        _fire_meta_learning_intake(state_mgr, now_utc=int(get_clock().now_epoch()))
+        _fire_meta_learning_intake(state_mgr, now_utc=int(__get_clock().now_epoch()))
         state_mgr.finish_mission(status="fatal_error")
         try:
             print("\n" + "=" * 80)

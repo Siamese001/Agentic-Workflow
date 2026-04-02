@@ -64,7 +64,11 @@ from agentic_core.L2_execution.enforcement.execution_proof_contract import (
     emit_execution_proof,
 )
 from agentic_core.L2_execution.observability.observability_recorder import (
+    ExecutionContext as ObservabilityExecutionContext,
+)
+from agentic_core.L2_execution.observability.observability_recorder import (
     ExecutionObservabilityContext,
+    ExecutionStatus,
     FailureClassification,
     record_execution_failure,
     record_execution_observability,
@@ -75,16 +79,6 @@ from agentic_core.L5_safety.audit.safety_audit_emitter import (
     emit_guardrail_audit,
 )
 from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-    # noqa: E402
-    _emit_escalates_failure,
-    # noqa: E402
-    _emit_gated_by_confidence,
-    # noqa: E402
-    _emit_records_healing_outcome,
-    # noqa: E402
-    _emit_routes_to_agent,
-    # noqa: E402
-    _emit_stores_embedding,
     LayerSegment,
     _emit_agent_executes_agent,
     _emit_authorize_and_execute,
@@ -96,20 +90,30 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_dispatches_agent,
     _emit_dispatches_execution_plan,
     _emit_dispatches_healing_run,
+    # noqa: E402
+    _emit_escalates_failure,
     _emit_escalates_to_human,
+    # noqa: E402
+    _emit_gated_by_confidence,
     _emit_hard_fails_untranscripted,
     _emit_invokes_evaluation,
     _emit_links_execution_to_snapshot,
     _emit_observes_runtime_state,
     _emit_orchestrates_workflow,
     _emit_reads_policy_state,
+    # noqa: E402
+    _emit_records_healing_outcome,
     _emit_records_telemetry_event,
     _emit_records_tool_invocation,
     _emit_records_workflow_lineage,
     _emit_routes_through,
+    # noqa: E402
+    _emit_routes_to_agent,
     _emit_routes_to_capability,
     _emit_signs_execution_trace,
     _emit_snapshots_state,
+    # noqa: E402
+    _emit_stores_embedding,
     _emit_transcripts_response,
     _emit_updates_meta_learning_state,
     _emit_validates_agent_capability,
@@ -117,7 +121,7 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_verifies_boundary,
     _emit_verifies_policy,
     _emit_writes_via_uwg,
-    emit_determinism_digest
+    emit_determinism_digest,
 )
 
 _emit_authorize_and_execute("p2", "execution_guardrail_chokepoint", "execution_auth")
@@ -642,7 +646,12 @@ def authorize_and_execute(
                 policy_hash=bound_ctx.policy_hash,
             )
             record_policy_block(
-                execution_context=bound_ctx,
+                execution_context=ObservabilityExecutionContext.create(
+                    execution_request_id=bound_ctx.execution_request_id,
+                    execution_start_tick=_exec_start,
+                    execution_end_tick=_time.monotonic(),
+                    execution_status=ExecutionStatus.BLOCKED_BY_POLICY,
+                ),
                 observability_context=obs_context,
                 block_reason=f"Guardrail {outcome.value} for {_tgt}",
             )
@@ -724,7 +733,12 @@ def authorize_and_execute(
                 policy_hash=bound_ctx.policy_hash,
             )
             record_execution_failure(
-                execution_context=bound_ctx,
+                execution_context=ObservabilityExecutionContext.create(
+                    execution_request_id=bound_ctx.execution_request_id,
+                    execution_start_tick=_exec_start,
+                    execution_end_tick=_time.monotonic(),
+                    execution_status=ExecutionStatus.FAILED,
+                ),
                 observability_context=obs_context,
                 failure_classification=FailureClassification.TOOL_ERROR,
                 failure_reason=f"Tool contract violation: {type(exc).__name__}",
@@ -745,7 +759,12 @@ def authorize_and_execute(
                 policy_hash=bound_ctx.policy_hash,
             )
             record_execution_failure(
-                execution_context=bound_ctx,
+                execution_context=ObservabilityExecutionContext.create(
+                    execution_request_id=bound_ctx.execution_request_id,
+                    execution_start_tick=_exec_start,
+                    execution_end_tick=_time.monotonic(),
+                    execution_status=ExecutionStatus.FAILED,
+                ),
                 observability_context=obs_context,
                 failure_classification=FailureClassification.UNKNOWN_FAILURE,
                 failure_reason=f"Execution error: {type(exc).__name__}",
@@ -755,7 +774,8 @@ def authorize_and_execute(
 
         _emit_reenters_safety(bound_ctx, f"EXECUTION_ERROR:{type(exc).__name__}")
         raise
-    _elapsed_ms = (_time.monotonic() - _exec_start) * 1000.0
+    _exec_end = _time.monotonic()
+    _elapsed_ms = (_exec_end - _exec_start) * 1000.0
 
     # 13a. Emit execution proof (replay-valid, signed) — P1/L2 mandatory
     try:
@@ -790,9 +810,16 @@ def authorize_and_execute(
         )
 
         # Create execution context with timing
+        exec_context = ObservabilityExecutionContext.create(
+            execution_request_id=bound_ctx.execution_request_id,
+            execution_start_tick=_exec_start,
+            execution_end_tick=_exec_end,
+            execution_status=ExecutionStatus.SUCCEEDED,
+        )
+
         # Record observability
         observability_record = record_execution_observability(
-            execution_context=bound_ctx,
+            execution_context=exec_context,
             observability_context=obs_context,
         )
 
