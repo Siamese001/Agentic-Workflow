@@ -17,20 +17,20 @@ jobs:
   validate-pytest-config:
     runs-on: ubuntu-latest
     name: Validate Pytest Config SSOT
-    
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-        
+
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
           python-version: '3.11'
-          
+
       - name: Run SSOT validation
         run: |
           python ops_scripts/ci/_validate_pytest_config.py --strict
-          
+
       - name: Check for auto-fix capability
         if: failure()
         run: |

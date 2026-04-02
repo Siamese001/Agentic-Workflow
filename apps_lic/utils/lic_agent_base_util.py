@@ -303,7 +303,7 @@ _emit_reads_through("l4", "lic_agent_base_util", "urg_read_78")
 
 
 @dataclass
-class LICAgentBase(SemanticCacheMixin, EmbeddingMixin, MetaLearningMixin, AppBase, HealerMixin):
+class LICAgentBase(AppBase, HealerMixin):
     """
     LICAgentBase: Sovereign Foundation for 'Linked-In Canonical' (LIC).
 

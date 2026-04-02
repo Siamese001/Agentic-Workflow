@@ -44,6 +44,10 @@ from system_learning.engines.human_calibration_engine import (
     CalibrationRecord,
     HumanJudgment,
 )
+from system_learning.engines.stage_barrier_enforcer import (
+    StageBarrierEnforcer,
+    MetaLearningStage,
+)
 
 __all__ = [
     # Wave 1: Core Pipeline
@@ -73,4 +77,7 @@ __all__ = [
     "HumanCalibrationEngine",
     "CalibrationRecord",
     "HumanJudgment",
+    # Stage Barrier Enforcer
+    "StageBarrierEnforcer",
+    "MetaLearningStage",
 ]
