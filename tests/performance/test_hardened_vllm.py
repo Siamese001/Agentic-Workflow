@@ -120,7 +120,7 @@ class TestCircuitBreaker:
             cb.state = CircuitState.HALF_OPEN
             cb.success_count = 0
             cb.half_open_calls = 0
-        
+
         # Record successes to close circuit
         await cb._record_success()
         await cb._record_success()

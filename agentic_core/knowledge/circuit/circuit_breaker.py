@@ -36,42 +36,42 @@ class CircuitBreakerConfig:
 
 class CircuitBreaker:
     """Circuit breaker for fault tolerance.
-    
+
     The CircuitBreaker implements a state machine that prevents
     cascading failures by rejecting requests when a service is
     experiencing high error rates.
     """
-    
+
     def __init__(
         self,
         name: str,
         config: Optional[CircuitBreakerConfig] = None,
     ):
         """Initialize the circuit breaker.
-        
+
         Args:
             name: Circuit breaker name
             config: Optional configuration
         """
         self.name = name
         self.config = config or CircuitBreakerConfig()
-        
+
         self._state = CircuitState.CLOSED
         self._failure_count = 0
         self._success_count = 0
         self._last_failure_time: Optional[float] = None
         self._half_open_calls = 0
-        
+
         log.info(f"CircuitBreaker '{name}' initialized")
-    
+
     @property
     def state(self) -> CircuitState:
         """Current circuit state."""
         return self._state
-    
+
     def can_execute(self) -> bool:
         """Check if execution is allowed.
-        
+
         Returns:
             True if circuit allows execution
         """
@@ -79,10 +79,10 @@ class CircuitBreaker:
         _emit_records_execution_trace(
             trace_id, LayerSegment.L1_REASONING, "CircuitBreaker.can_execute"
         )
-        
+
         if self._state == CircuitState.CLOSED:
             return True
-        
+
         if self._state == CircuitState.OPEN:
             # Check if recovery timeout passed
             if self._last_failure_time and \
@@ -90,61 +90,61 @@ class CircuitBreaker:
                 self._transition_to(CircuitState.HALF_OPEN)
                 return True
             return False
-        
+
         if self._state == CircuitState.HALF_OPEN:
             return self._half_open_calls < self.config.half_open_max_calls
-        
+
         return False
-    
+
     def record_success(self) -> None:
         """Record a successful execution."""
         if self._state == CircuitState.HALF_OPEN:
             self._success_count += 1
             self._half_open_calls += 1
-            
+
             if self._success_count >= self.config.success_threshold:
                 self._transition_to(CircuitState.CLOSED)
                 self._reset_counts()
         else:
             self._failure_count = 0
-    
+
     def record_failure(self) -> None:
         """Record a failed execution."""
         self._failure_count += 1
         self._last_failure_time = time.time()
-        
+
         if self._state == CircuitState.HALF_OPEN:
             self._half_open_calls += 1
             self._transition_to(CircuitState.OPEN)
         elif self._state == CircuitState.CLOSED:
             if self._failure_count >= self.config.failure_threshold:
                 self._transition_to(CircuitState.OPEN)
-        
+
         trace_id = f"cb_failure_{self.name}_{int(time.time())}"
         _emit_records_telemetry_event(
             trace_id,
             "CircuitBreaker",
             f"{self.name}_failure_{self._state.value}"
         )
-    
+
     def execute(self, fn: Callable, *args, **kwargs) -> Any:
         """Execute function with circuit breaker protection.
-        
+
         Args:
             fn: Function to execute
             *args: Function arguments
             **kwargs: Function keyword arguments
-            
+
         Returns:
             Function result
-            
+
         Raises:
             CircuitBreakerOpen: If circuit is open
             Exception: If function raises
         """
         if not self.can_execute():
             raise CircuitBreakerOpen(f"Circuit '{self.name}' is OPEN")
-        
+
         try:
             result = fn(*args, **kwargs)
             self.record_success()
@@ -152,30 +152,30 @@ class CircuitBreaker:
         except Exception as e:
             self.record_failure()
             raise
-    
+
     def _transition_to(self, new_state: CircuitState) -> None:
         """Transition to a new state."""
         old_state = self._state
         self._state = new_state
-        
+
         log.info(f"Circuit '{self.name}' transitioned: {old_state.value} -> {new_state.value}")
-        
+
         trace_id = f"cb_transition_{self.name}_{int(time.time())}"
         _emit_records_telemetry_event(
             trace_id,
             "CircuitBreaker",
             f"{self.name}_transition_{old_state.value}_to_{new_state.value}"
         )
-    
+
     def _reset_counts(self) -> None:
         """Reset failure and success counts."""
         self._failure_count = 0
         self._success_count = 0
         self._half_open_calls = 0
-    
+
     def get_stats(self) -> Dict[str, Any]:
         """Get circuit breaker statistics.
-        
+
         Returns:
             Dictionary with stats
         """

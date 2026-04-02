@@ -1,9 +1,20 @@
 """CONSOLIDATED: HOP9IntegrationAgent → HOPPipelineExecutor (2026-02-08).
 
+DEPRECATED: This shim will be removed in a future release.
+Import the canonical executor directly:
+    from apps_lic.reasoning.HOPPipelineExecutor import HOPPipelineExecutor
+
 This file is a backward-compatibility shim.
-Import the canonical executor directly for new code.
 """
 
-from apps_lic.engines.HOPPipelineExecutor import HOPPipelineExecutor as HOP9IntegrationAgent
+import warnings
+
+warnings.warn(
+    "HOP9IntegrationAgent is deprecated. Use HOPPipelineExecutor directly.",
+    DeprecationWarning,
+    stacklevel=2,
+)
+
+from apps_lic.reasoning.HOPPipelineExecutor import HOPPipelineExecutor as HOP9IntegrationAgent
 
 __all__ = ["HOP9IntegrationAgent"]

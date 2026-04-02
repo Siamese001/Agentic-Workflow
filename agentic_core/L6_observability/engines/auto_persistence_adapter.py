@@ -12,17 +12,17 @@ Design:
 
 Usage:
     from agentic_core.L6_observability import AutoPersistenceTracingAdapter
-    
+
     adapter = AutoPersistenceTracingAdapter(
         service_name="my-service",
         auto_persist=True,
         uwg_endpoint="http://localhost:8000",
     )
-    
+
     with adapter.trace_orchestrator("my-mission"):
         # Run orchestration...
         pass
-    
+
     # Automatically drains and persists runtime ADG snapshot
     spans = adapter.drain_completed_spans()
 """

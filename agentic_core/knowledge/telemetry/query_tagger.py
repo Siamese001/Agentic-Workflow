@@ -30,16 +30,16 @@ class QueryTags:
 
 class QueryTagger:
     """Tags queries for attribution and analysis.
-    
+
     The QueryTagger analyzes queries and assigns relevant tags
     for categorization and performance attribution.
     """
-    
+
     def __init__(self):
         """Initialize the query tagger."""
         self._setup_patterns()
         log.info("QueryTagger initialized")
-    
+
     def _setup_patterns(self):
         """Setup detection patterns."""
         self.intent_patterns = {
@@ -48,20 +48,20 @@ class QueryTagger:
             "troubleshoot": [r"\berror|issue|problem|broken|fail"],
             "compare": [r"\bcompare|versus|vs|difference"],
         }
-        
+
         self.domain_patterns = {
             "technical": [r"\b(?:code|api|function|class|bug)"],
             "policy": [r"\b(?:policy|procedure|compliance|guideline)"],
             "operational": [r"\b(?:runbook|playbook|process|workflow)"],
         }
-    
+
     def tag(self, query: str, context: Optional[Dict[str, Any]] = None) -> QueryTags:
         """Tag a query.
-        
+
         Args:
             query: Query string
             context: Optional context
-            
+
         Returns:
             QueryTags with assigned tags
         """
@@ -69,24 +69,24 @@ class QueryTagger:
         _emit_records_execution_trace(
             trace_id, LayerSegment.L1_REASONING, "QueryTagger.tag"
         )
-        
+
         query_lower = query.lower()
-        
+
         # Detect intent
         intent = self._detect_intent(query_lower)
-        
+
         # Detect domain
         domain = self._detect_domain(query_lower)
-        
+
         # Assess complexity
         complexity = self._assess_complexity(query)
-        
+
         # Assess urgency
         urgency = self._assess_urgency(query_lower)
-        
+
         # Extract topic tags
         topics = self._extract_topics(query_lower)
-        
+
         tags = QueryTags(
             intent=intent,
             domain=domain,
@@ -95,10 +95,10 @@ class QueryTagger:
             topic_tags=topics,
             user_segments=context.get("user_segments", []) if context else [],
         )
-        
+
         log.debug(f"Tagged query: intent={intent}, domain={domain}")
         return tags
-    
+
     def _detect_intent(self, query: str) -> str:
         """Detect query intent."""
         for intent, patterns in self.intent_patterns.items():
@@ -106,7 +106,7 @@ class QueryTagger:
                 if re.search(pattern, query, re.IGNORECASE):
                     return intent
         return "general"
-    
+
     def _detect_domain(self, query: str) -> str:
         """Detect query domain."""
         for domain, patterns in self.domain_patterns.items():
@@ -114,33 +114,33 @@ class QueryTagger:
                 if re.search(pattern, query, re.IGNORECASE):
                     return domain
         return "general"
-    
+
     def _assess_complexity(self, query: str) -> str:
         """Assess query complexity."""
         word_count = len(query.split())
-        
+
         if word_count < 5:
             return "simple"
         elif word_count < 15:
             return "medium"
         else:
             return "complex"
-    
+
     def _assess_urgency(self, query: str) -> str:
         """Assess query urgency."""
         urgent_terms = ['urgent', 'asap', 'emergency', 'critical', 'blocker']
-        
+
         if any(term in query for term in urgent_terms):
             return "high"
         return "normal"
-    
+
     def _extract_topics(self, query: str) -> List[str]:
         """Extract topic keywords."""
         # Simple keyword extraction
         stop_words = {'the', 'a', 'an', 'is', 'are', 'was', 'were'}
         words = re.findall(r'\b[a-z]{4,}\b', query)
         keywords = [w for w in words if w not in stop_words]
-        
+
         # Return unique keywords
         seen = set()
         unique = []

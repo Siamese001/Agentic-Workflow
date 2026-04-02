@@ -41,17 +41,17 @@ log = logging.getLogger(__name__)
 
 class RawUnitFactory:
     """Factory for creating canonical raw units with immutable base records.
-    
+
     The RawUnitFactory implements Pipeline B Phase B2: CANONICAL RAW UNIT.
     It establishes the base immutable record with proper identifier generation,
     version tracking, and comprehensive provenance metadata.
     """
-    
+
     def __init__(self):
         """Initialize the raw unit factory."""
         self._unit_counter: Dict[str, int] = {}
         self._checksum_cache: Dict[str, str] = {}
-        
+
     def create_from_content(
         self,
         content: str,
@@ -64,7 +64,7 @@ class RawUnitFactory:
         custom_attributes: Optional[Dict[str, str]] = None,
     ) -> CanonicalRawUnit:
         """Create a canonical raw unit from content.
-        
+
         Args:
             content: The content to create unit from
             unit_type: Type of unit being created
@@ -74,7 +74,7 @@ class RawUnitFactory:
             content_metadata: Content metadata from ingestion
             custom_tags: Additional tags for the unit
             custom_attributes: Additional custom attributes
-            
+
         Returns:
             CanonicalRawUnit with full provenance
         """
@@ -82,14 +82,14 @@ class RawUnitFactory:
         _emit_records_execution_trace(
             trace_id, LayerSegment.L2_EXECUTION, "RawUnitFactory.create_from_content"
         )
-        
+
         # Generate unique identifier
         unit_id = self._generate_unit_id(content, unit_type)
         checksum = self._calculate_checksum(content)
-        
+
         # Get or create version
         version = self._get_next_version(unit_id)
-        
+
         # Create identifier
         identifier = CanonicalIdentifier(
             unit_id=unit_id,
@@ -97,7 +97,7 @@ class RawUnitFactory:
             checksum=checksum,
             created_at=datetime.utcnow(),
         )
-        
+
         # Create lineage
         lineage = CanonicalLineage(
             parent_id=parent_id,
@@ -105,10 +105,10 @@ class RawUnitFactory:
             extraction_method=extraction_method,
             processing_chain=[extraction_method] if extraction_method else [],
         )
-        
+
         # Create metadata
         metadata = self._create_metadata(content, unit_type, content_metadata, custom_tags, custom_attributes)
-        
+
         # Create the canonical unit
         unit = CanonicalRawUnit(
             identifier=identifier,
@@ -118,10 +118,10 @@ class RawUnitFactory:
             lineage=lineage,
             metadata=metadata,
         )
-        
+
         log.debug(f"Created canonical unit: {unit_id}:v{version}")
         return unit
-    
+
     def create_from_ingestion_result(
         self,
         ingestion_metadata: ContentMetadata,
@@ -129,12 +129,12 @@ class RawUnitFactory:
         unit_type: CanonicalUnitType = CanonicalUnitType.DOCUMENT,
     ) -> CanonicalRawUnit:
         """Create canonical unit from ingestion result.
-        
+
         Args:
             ingestion_metadata: Metadata from ingestion process
             content: Extracted content
             unit_type: Type of unit to create
-            
+
         Returns:
             CanonicalRawUnit with ingestion-based provenance
         """
@@ -146,7 +146,7 @@ class RawUnitFactory:
             content_metadata=ingestion_metadata,
             custom_tags=[ingestion_metadata.modality.value, ingestion_metadata.content_type.value],
         )
-    
+
     def create_child_units(
         self,
         parent_unit: CanonicalRawUnit,
@@ -155,13 +155,13 @@ class RawUnitFactory:
         extraction_method: Optional[str] = None,
     ) -> List[CanonicalRawUnit]:
         """Create child units from a parent unit.
-        
+
         Args:
             parent_unit: Parent canonical unit
             child_contents: List of child content strings
             child_type: Type of child units to create
             extraction_method: Method used for child extraction
-            
+
         Returns:
             List of child canonical units
         """
@@ -169,9 +169,9 @@ class RawUnitFactory:
         _emit_records_execution_trace(
             trace_id, LayerSegment.L2_EXECUTION, "RawUnitFactory.create_child_units"
         )
-        
+
         child_units = []
-        
+
         for i, content in enumerate(child_contents):
             child_unit = self.create_from_content(
                 content=content,
@@ -182,13 +182,13 @@ class RawUnitFactory:
                 custom_tags=[f"child_{i}", f"parent_{parent_unit.identifier.unit_id}"],
             )
             child_units.append(child_unit)
-        
+
         # Update parent lineage with children
         parent_unit.lineage.children_ids = [unit.identifier.unit_id for unit in child_units]
-        
+
         log.info(f"Created {len(child_units)} child units for parent {parent_unit.identifier.unit_id}")
         return child_units
-    
+
     def create_versioned_unit(
         self,
         existing_unit: CanonicalRawUnit,
@@ -196,12 +196,12 @@ class RawUnitFactory:
         change_reason: Optional[str] = None,
     ) -> Tuple[CanonicalRawUnit, CanonicalDiff]:
         """Create a new version of an existing unit.
-        
+
         Args:
             existing_unit: Existing canonical unit
             new_content: New content for the unit
             change_reason: Reason for the change
-            
+
         Returns:
             Tuple of (new_unit, diff) showing the changes
         """
@@ -209,7 +209,7 @@ class RawUnitFactory:
         _emit_records_execution_trace(
             trace_id, LayerSegment.L2_EXECUTION, "RawUnitFactory.create_versioned_unit"
         )
-        
+
         # Check if content actually changed
         new_checksum = self._calculate_checksum(new_content)
         if new_checksum == existing_unit.identifier.checksum:
@@ -220,7 +220,7 @@ class RawUnitFactory:
                 change_type="unchanged",
                 changes=[],
             )
-        
+
         # Create new version
         new_unit = self.create_from_content(
             content=new_content,
@@ -229,7 +229,7 @@ class RawUnitFactory:
             parent_id=existing_unit.lineage.parent_id,
             extraction_method=existing_unit.lineage.extraction_method,
         )
-        
+
         # Copy lineage and processing chain
         new_unit.lineage = CanonicalLineage(
             parent_id=existing_unit.lineage.parent_id,
@@ -238,7 +238,7 @@ class RawUnitFactory:
             extraction_method=existing_unit.lineage.extraction_method,
             processing_chain=existing_unit.lineage.processing_chain + ["version_update"],
         )
-        
+
         # Copy metadata with updates
         new_unit.metadata = self._create_metadata(
             new_content,
@@ -247,35 +247,35 @@ class RawUnitFactory:
             existing_unit.metadata.tags,
             existing_unit.metadata.custom_attributes,
         )
-        
+
         # Ensure we have the correct version number
         new_unit.identifier.version = existing_unit.identifier.version + 1
-        
+
         # Mark old unit as superseded
         existing_unit.status = CanonicalUnitStatus.SUPERSEDED
-        
+
         # Create diff
         changes = [f"Content updated: {change_reason or 'No reason provided'}"]
         if len(new_content) != len(existing_unit.content):
             changes.append(f"Size changed: {len(existing_unit.content)} -> {len(new_content)} characters")
-        
+
         diff = CanonicalDiff(
             old_unit=existing_unit,
             new_unit=new_unit,
             change_type="updated",
             changes=changes,
         )
-        
+
         log.info(f"Created version {new_unit.identifier.version} for unit {new_unit.identifier.unit_id}")
         return new_unit, diff
-    
+
     def tombstone_unit(self, unit: CanonicalRawUnit, reason: Optional[str] = None) -> CanonicalRawUnit:
         """Create a tombstoned version of a unit.
-        
+
         Args:
             unit: Unit to tombstone
             reason: Reason for tombstoning
-            
+
         Returns:
             Tombstoned unit
         """
@@ -283,7 +283,7 @@ class RawUnitFactory:
         _emit_records_execution_trace(
             trace_id, LayerSegment.L2_EXECUTION, "RawUnitFactory.tombstone_unit"
         )
-        
+
         # Create tombstoned version
         tombstoned_unit = CanonicalRawUnit(
             identifier=CanonicalIdentifier(
@@ -317,31 +317,31 @@ class RawUnitFactory:
                 },
             ),
         )
-        
+
         # Mark original unit as superseded
         unit.status = CanonicalUnitStatus.SUPERSEDED
-        
+
         log.info(f"Tombstoned unit {unit.identifier.unit_id}: {reason}")
         return tombstoned_unit
-    
+
     def _generate_unit_id(self, content: str, unit_type: CanonicalUnitType) -> str:
         """Generate unique unit ID based on content and type."""
         # Create content hash for uniqueness
         content_hash = hashlib.sha256(content.encode('utf-8')).hexdigest()[:16]
         type_prefix = unit_type.value[:3].upper()
         return f"{type_prefix}_{content_hash}"
-    
+
     def _calculate_checksum(self, content: str) -> str:
         """Calculate SHA-256 checksum of content."""
         return hashlib.sha256(content.encode('utf-8')).hexdigest()
-    
+
     def _get_next_version(self, unit_id: str) -> int:
         """Get next version number for a unit ID."""
         current = self._unit_counter.get(unit_id, 0)
         next_version = current + 1
         self._unit_counter[unit_id] = next_version
         return next_version
-    
+
     def _create_metadata(
         self,
         content: str,
@@ -354,26 +354,26 @@ class RawUnitFactory:
         # Base metadata from content analysis
         size_bytes = len(content.encode('utf-8'))
         token_count = len(content) // 4  # Rough approximation
-        
+
         # Default values
         content_type = "text/plain"
         modality = "text_only"
         language = "en"
-        
+
         # Override with ingestion metadata if available
         if content_metadata:
             content_type = content_metadata.content_type.value
             modality = content_metadata.modality.value
             language = content_metadata.language or "en"
             token_count = content_metadata.estimated_tokens
-        
+
         # Merge tags
         tags = [unit_type.value]
         if custom_tags:
             tags.extend(custom_tags)
         if content_metadata:
             tags.extend([content_metadata.modality.value, content_metadata.content_type.value])
-        
+
         # Merge custom attributes
         attributes = {}
         if custom_attributes:
@@ -386,7 +386,7 @@ class RawUnitFactory:
                 "has_code_blocks": content_metadata.has_code_blocks,
                 "has_headings": content_metadata.has_headings,
             })
-        
+
         return CanonicalMetadata(
             content_type=content_type,
             modality=modality,

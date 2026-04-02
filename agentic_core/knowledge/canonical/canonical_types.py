@@ -38,10 +38,10 @@ class CanonicalIdentifier:
     version: int
     checksum: str
     created_at: datetime
-    
+
     def __str__(self) -> str:
         return f"{self.unit_id}:v{self.version}"
-    
+
     def to_dict(self) -> Dict[str, Any]:
         """Convert to dictionary for serialization."""
         return {
@@ -60,13 +60,13 @@ class CanonicalLineage:
     source_file: Optional[str] = None
     extraction_method: Optional[str] = None
     processing_chain: List[str] = None
-    
+
     def __post_init__(self):
         if self.children_ids is None:
             self.children_ids = []
         if self.processing_chain is None:
             self.processing_chain = []
-    
+
     def to_dict(self) -> Dict[str, Any]:
         """Convert to dictionary for serialization."""
         return {
@@ -89,13 +89,13 @@ class CanonicalMetadata:
     encoding: str = "utf-8"
     tags: List[str] = None
     custom_attributes: Dict[str, Any] = None
-    
+
     def __post_init__(self):
         if self.tags is None:
             self.tags = []
         if self.custom_attributes is None:
             self.custom_attributes = {}
-    
+
     def to_dict(self) -> Dict[str, Any]:
         """Convert to dictionary for serialization."""
         return {
@@ -113,7 +113,7 @@ class CanonicalMetadata:
 @dataclass
 class CanonicalRawUnit:
     """Immutable canonical raw unit with full provenance.
-    
+
     Represents the base immutable record for all content in the system.
     Maintains canonical truth while enabling version tracking and lineage.
     """
@@ -123,23 +123,23 @@ class CanonicalRawUnit:
     content: str
     lineage: CanonicalLineage
     metadata: CanonicalMetadata
-    
+
     def is_active(self) -> bool:
         """Check if unit is active."""
         return self.status == CanonicalUnitStatus.ACTIVE
-    
+
     def is_tombstoned(self) -> bool:
         """Check if unit is tombstoned."""
         return self.status == CanonicalUnitStatus.TOMBSTONED
-    
+
     def get_canonical_text(self) -> str:
         """Get the canonical text content (immutable)."""
         return self.content
-    
+
     def get_size_estimate(self) -> int:
         """Get size estimate in bytes."""
         return len(self.content.encode(self.metadata.encoding))
-    
+
     def to_dict(self) -> Dict[str, Any]:
         """Convert to dictionary for serialization."""
         return {
@@ -150,7 +150,7 @@ class CanonicalRawUnit:
             "lineage": self.lineage.to_dict(),
             "metadata": self.metadata.to_dict(),
         }
-    
+
     @classmethod
     def from_dict(cls, data: Dict[str, Any]) -> "CanonicalRawUnit":
         """Create from dictionary."""
@@ -161,7 +161,7 @@ class CanonicalRawUnit:
             checksum=identifier_data["checksum"],
             created_at=datetime.fromisoformat(identifier_data["created_at"]),
         )
-        
+
         lineage_data = data["lineage"]
         lineage = CanonicalLineage(
             parent_id=lineage_data.get("parent_id"),
@@ -170,7 +170,7 @@ class CanonicalRawUnit:
             extraction_method=lineage_data.get("extraction_method"),
             processing_chain=lineage_data.get("processing_chain", []),
         )
-        
+
         metadata_data = data["metadata"]
         metadata = CanonicalMetadata(
             content_type=metadata_data["content_type"],
@@ -182,7 +182,7 @@ class CanonicalRawUnit:
             tags=metadata_data.get("tags", []),
             custom_attributes=metadata_data.get("custom_attributes", {}),
         )
-        
+
         return cls(
             identifier=identifier,
             unit_type=CanonicalUnitType(data["unit_type"]),
@@ -200,7 +200,7 @@ class CanonicalDiff:
     new_unit: CanonicalRawUnit
     change_type: str  # "created", "updated", "deleted", "tombstoned"
     changes: List[str]
-    
+
     def to_dict(self) -> Dict[str, Any]:
         """Convert to dictionary for serialization."""
         return {

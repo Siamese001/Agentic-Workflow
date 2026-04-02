@@ -50,11 +50,11 @@ class PolicyResult:
 
 class PolicyEvaluator:
     """Evaluates cache policies for freshness, ACL, and matching.
-    
+
     The PolicyEvaluator performs comprehensive checks to determine
     if cached content can be used for a given query context.
     """
-    
+
     def __init__(self):
         """Initialize the policy evaluator."""
         self._freshness_bands = {
@@ -64,7 +64,7 @@ class PolicyEvaluator:
             "weekly": 604800,     # 7 days
         }
         log.info("PolicyEvaluator initialized")
-    
+
     def evaluate(
         self,
         cache_entry: Dict[str, Any],
@@ -72,12 +72,12 @@ class PolicyEvaluator:
         scope_metadata: Dict[str, Any],
     ) -> PolicyResult:
         """Evaluate if cache entry can be used.
-        
+
         Args:
             cache_entry: Cached data with metadata
             query_context: Current query context
             scope_metadata: Scope metadata from gates
-            
+
         Returns:
             PolicyResult with evaluation outcome
         """
@@ -85,27 +85,27 @@ class PolicyEvaluator:
         _emit_records_execution_trace(
             trace_id, LayerSegment.L1_REASONING, "PolicyEvaluator.evaluate"
         )
-        
+
         reasons = []
-        
+
         # Check freshness
         freshness_check = self.check_freshness(
             cache_entry.get("timestamp"),
             query_context.get("freshness_band", "daily"),
         )
-        
+
         if not freshness_check.is_fresh:
             reasons.append(f"Data stale: {freshness_check.age_seconds}s old")
-        
+
         # Check ACL
         acl_check = self.check_acl(
             scope_metadata.get("user_permissions", []),
             cache_entry.get("required_permissions", []),
         )
-        
+
         if not acl_check.allowed:
             reasons.append(f"ACL denied: missing {acl_check.missing_perms}")
-        
+
         # Check exact match if required
         exact_match = False
         if query_context.get("require_exact_match", False):
@@ -115,11 +115,11 @@ class PolicyEvaluator:
             )
             if not exact_match:
                 reasons.append("Exact match required but not found")
-        
+
         can_use = freshness_check.is_fresh and acl_check.allowed
         if query_context.get("require_exact_match", False):
             can_use = can_use and exact_match
-        
+
         result = PolicyResult(
             can_use_cache=can_use,
             freshness_ok=freshness_check.is_fresh,
@@ -131,21 +131,21 @@ class PolicyEvaluator:
                 "acl": acl_check,
             },
         )
-        
+
         log.debug(f"Policy evaluation: can_use={can_use}, reasons={len(reasons)}")
         return result
-    
+
     def check_freshness(
         self,
         entry_timestamp: Optional[float],
         freshness_band: str,
     ) -> FreshnessCheck:
         """Check if cache entry is fresh.
-        
+
         Args:
             entry_timestamp: When entry was created (Unix timestamp)
             freshness_band: Required freshness band
-            
+
         Returns:
             FreshnessCheck with result
         """
@@ -157,47 +157,47 @@ class PolicyEvaluator:
                 max_age_seconds=0,
                 reason="No timestamp available",
             )
-        
+
         max_age = self._freshness_bands.get(freshness_band, 86400)
         age = time.time() - entry_timestamp
-        
+
         return FreshnessCheck(
             is_fresh=age <= max_age,
             age_seconds=age,
             freshness_band=freshness_band,
             max_age_seconds=max_age,
         )
-    
+
     def check_acl(
         self,
         user_permissions: List[str],
         required_permissions: List[str],
     ) -> ACCheck:
         """Check if user has required permissions.
-        
+
         Args:
             user_permissions: User's granted permissions
             required_permissions: Required permissions for access
-            
+
         Returns:
             ACCheck with result
         """
         missing = [p for p in required_permissions if p not in user_permissions]
-        
+
         return ACCheck(
             allowed=len(missing) == 0,
             user_perms=user_permissions,
             required_perms=required_permissions,
             missing_perms=missing,
         )
-    
+
     def check_exact_match(self, query1: str, query2: str) -> bool:
         """Check if two queries are exact matches.
-        
+
         Args:
             query1: First query
             query2: Second query
-            
+
         Returns:
             True if exact match
         """

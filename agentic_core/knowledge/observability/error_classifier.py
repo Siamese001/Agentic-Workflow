@@ -52,18 +52,18 @@ class ErrorClassification:
 
 class ErrorClassifier:
     """Classifies errors for analysis.
-    
+
     The ErrorClassifier categorizes errors and attempts to
     identify root causes for better handling.
     """
-    
+
     def __init__(self):
         """Initialize the error classifier."""
         self._error_patterns = self._setup_patterns()
         self._error_counts: Dict[ErrorCategory, int] = defaultdict(int)
-        
+
         log.info("ErrorClassifier initialized")
-    
+
     def _setup_patterns(self) -> Dict[ErrorCategory, List[str]]:
         """Setup error detection patterns."""
         return {
@@ -106,18 +106,18 @@ class ErrorClassifier:
                 r"dns",
             ],
         }
-    
+
     def classify(
         self,
         error: Exception,
         context: Optional[Dict[str, Any]] = None,
     ) -> ErrorClassification:
         """Classify an error.
-        
+
         Args:
             error: The exception to classify
             context: Optional context
-            
+
         Returns:
             ErrorClassification with category and analysis
         """
@@ -125,22 +125,22 @@ class ErrorClassifier:
         _emit_records_execution_trace(
             trace_id, LayerSegment.L1_REASONING, "ErrorClassifier.classify"
         )
-        
+
         error_msg = str(error).lower()
         error_type = type(error).__name__
-        
+
         # Detect category
         category = self._detect_category(error_msg, error_type)
-        
+
         # Assess severity
         severity = self._assess_severity(error, category)
-        
+
         # Determine if transient
         is_transient = self._is_transient(category, error_msg)
-        
+
         # Identify root cause
         root_cause = self._identify_root_cause(error, category)
-        
+
         classification = ErrorClassification(
             error_type=error_type,
             category=category,
@@ -150,22 +150,22 @@ class ErrorClassifier:
             is_transient=is_transient,
             metadata=context or {},
         )
-        
+
         # Track error count
         self._error_counts[category] += 1
-        
+
         log.debug(f"Classified error: {category.value} (severity={severity.value})")
         return classification
-    
+
     def _detect_category(self, error_msg: str, error_type: str) -> ErrorCategory:
         """Detect error category from message and type."""
         for category, patterns in self._error_patterns.items():
             for pattern in patterns:
                 if re.search(pattern, error_msg, re.IGNORECASE):
                     return category
-        
+
         return ErrorCategory.UNKNOWN
-    
+
     def _assess_severity(
         self,
         error: Exception,
@@ -175,17 +175,17 @@ class ErrorClassifier:
         # Critical errors
         if category in [ErrorCategory.GENERATION_FAILURE]:
             return ErrorSeverity.CRITICAL
-        
+
         # High severity
         if category in [ErrorCategory.RETRIEVAL_FAILURE, ErrorCategory.CACHE_FAILURE]:
             return ErrorSeverity.HIGH
-        
+
         # Medium severity
         if category in [ErrorCategory.TIMEOUT, ErrorCategory.RATE_LIMIT]:
             return ErrorSeverity.MEDIUM
-        
+
         return ErrorSeverity.LOW
-    
+
     def _is_transient(self, category: ErrorCategory, error_msg: str) -> bool:
         """Determine if error is transient."""
         transient_categories = [
@@ -193,9 +193,9 @@ class ErrorClassifier:
             ErrorCategory.RATE_LIMIT,
             ErrorCategory.NETWORK,
         ]
-        
+
         return category in transient_categories
-    
+
     def _identify_root_cause(self, error: Exception, category: ErrorCategory) -> str:
         """Identify root cause."""
         if category == ErrorCategory.TIMEOUT:
@@ -206,12 +206,12 @@ class ErrorClassifier:
             return "connectivity_issue"
         elif category == ErrorCategory.RETRIEVAL_FAILURE:
             return "search_backend_failure"
-        
+
         return "unknown"
-    
+
     def get_error_summary(self) -> Dict[str, int]:
         """Get summary of error counts by category.
-        
+
         Returns:
             Dictionary mapping categories to counts
         """

@@ -20,10 +20,10 @@ __all__ = [
 
 class L4StateRetrievalBridge:
     """Bridge L4 state store to retrieval pipeline.
-    
+
     This class is imported by apps_* to establish ADG edges
     from apps to L4_state retrieval components.
-    
+
     Minimal implementation: re-exports L4 retrieval functionality.
     """
 

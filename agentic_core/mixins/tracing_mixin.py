@@ -331,7 +331,7 @@ class TracingMixin:
     def __post_init__(self) -> None:
         """
         Cooperative __post_init__ for dataclass agents.
-        
+
         Dataclass-based agents (like BaseDispatchAgent) use __post_init__
         instead of __init__. This method ensures tracing is properly initialized.
         """

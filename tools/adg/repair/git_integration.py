@@ -13,33 +13,33 @@ from typing import Any
 
 class GitIntegration:
     """Git integration for repair operations.
-    
+
     Provides:
     - Pre-fix git checkpoints (branches/tags)
     - Post-commit verification
     - Rollback to checkpoints
     - Change summary generation
-    
+
     Usage:
         git = GitIntegration(repo_root=Path("."))
-        
+
         checkpoint = git.create_checkpoint("repair-20240312-0512")
-        
+
         # Apply fixes...
-        
+
         if not git.verify_clean_working_tree():
             git.rollback_to_checkpoint(checkpoint)
     """
-    
+
     def __init__(self, repo_root: Path | str | None = None):
         """Initialize git integration.
-        
+
         Args:
             repo_root: Repository root path (default: current directory)
         """
         self.repo_root = Path(repo_root) if repo_root else Path(".")
         self._check_git_available()
-    
+
     def _check_git_available(self) -> bool:
         """Check if git is available and this is a git repo."""
         try:
@@ -53,20 +53,20 @@ class GitIntegration:
             return bool(result.stdout.strip())
         except (subprocess.CalledProcessError, FileNotFoundError):
             return False
-    
+
     def create_checkpoint(self, name: str | None = None) -> str:
         """Create a git checkpoint (stash + branch).
-        
+
         Args:
             name: Checkpoint name (default: auto-generated)
-            
+
         Returns:
             Checkpoint name
         """
         if name is None:
             timestamp = datetime.now(timezone.utc).strftime("%Y%m%d-%H%M%S")
             name = f"adg-repair-{timestamp}"
-        
+
         # Stash any current changes
         subprocess.run(
             ["git", "stash", "push", "-m", f"Pre-repair stash for {name}"],
@@ -74,7 +74,7 @@ class GitIntegration:
             capture_output=True,
             check=False,
         )
-        
+
         # Create checkpoint branch from current HEAD
         subprocess.run(
             ["git", "branch", name],
@@ -82,15 +82,15 @@ class GitIntegration:
             capture_output=True,
             check=False,
         )
-        
+
         return name
-    
+
     def rollback_to_checkpoint(self, checkpoint_name: str) -> bool:
         """Rollback to a checkpoint.
-        
+
         Args:
             checkpoint_name: Name of checkpoint to rollback to
-            
+
         Returns:
             True if rollback succeeded
         """
@@ -106,10 +106,10 @@ class GitIntegration:
         except subprocess.CalledProcessError as e:
             print(f"[GitIntegration] Rollback failed: {e}")
             return False
-    
+
     def get_current_branch(self) -> str | None:
         """Get current git branch name.
-        
+
         Returns:
             Branch name or None if not in a repo
         """
@@ -124,10 +124,10 @@ class GitIntegration:
             return result.stdout.strip() or None
         except subprocess.CalledProcessError:
             return None
-    
+
     def has_uncommitted_changes(self) -> bool:
         """Check if there are uncommitted changes.
-        
+
         Returns:
             True if working tree is dirty
         """
@@ -142,13 +142,13 @@ class GitIntegration:
             return bool(result.stdout.strip())
         except subprocess.CalledProcessError:
             return False
-    
+
     def stage_files(self, file_paths: list[str]) -> bool:
         """Stage files for commit.
-        
+
         Args:
             file_paths: List of file paths to stage
-            
+
         Returns:
             True if staging succeeded
         """
@@ -163,13 +163,13 @@ class GitIntegration:
         except subprocess.CalledProcessError as e:
             print(f"[GitIntegration] Staging failed: {e}")
             return False
-    
+
     def commit_changes(self, message: str) -> bool:
         """Commit staged changes.
-        
+
         Args:
             message: Commit message
-            
+
         Returns:
             True if commit succeeded
         """
@@ -184,10 +184,10 @@ class GitIntegration:
         except subprocess.CalledProcessError as e:
             print(f"[GitIntegration] Commit failed: {e}")
             return False
-    
+
     def get_changed_files(self) -> list[str]:
         """Get list of changed files.
-        
+
         Returns:
             List of changed file paths
         """
@@ -199,7 +199,7 @@ class GitIntegration:
                 text=True,
                 check=True,
             )
-            
+
             files = []
             for line in result.stdout.strip().split("\n"):
                 if line:
@@ -207,14 +207,14 @@ class GitIntegration:
                     parts = line.split()
                     if len(parts) >= 2:
                         files.append(parts[1])
-            
+
             return files
         except subprocess.CalledProcessError:
             return []
-    
+
     def get_summary(self) -> dict[str, Any]:
         """Get git status summary.
-        
+
         Returns:
             Dictionary with git status
         """

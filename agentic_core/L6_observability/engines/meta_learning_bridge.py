@@ -13,16 +13,16 @@ Design:
 
 Usage:
     from agentic_core.L6_observability import L6MetaLearningBridge
-    
+
     bridge = L6MetaLearningBridge(storage_path="artifacts/meta_learning")
-    
+
     # Store snapshot with metadata
     bridge.store_snapshot(
         snapshot=snapshot,
         eval_results={"accuracy": 0.95, "f1": 0.92},
         telemetry_events=[{"type": "metric", "value": 42}],
     )
-    
+
     # Feed to meta-learning pipeline
     bridge.feed_meta_learning(snapshot_id)
 """

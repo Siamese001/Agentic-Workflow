@@ -10,7 +10,7 @@ from .modality_types import DocumentModality, ContentType
 
 __all__ = [
     "IntakeClerk",
-    "VisualDetector", 
+    "VisualDetector",
     "DocumentModality",
     "ContentType",
 ]

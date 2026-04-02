@@ -45,22 +45,22 @@ class TelemetryEvent:
 
 class TelemetryCollector:
     """Collects and manages telemetry events.
-    
+
     The TelemetryCollector provides structured logging and event
     collection for monitoring RAG pipeline performance.
     """
-    
+
     def __init__(self, max_events: int = 10000):
         """Initialize the telemetry collector.
-        
+
         Args:
             max_events: Maximum events to retain in memory
         """
         self.max_events = max_events
         self._events: List[TelemetryEvent] = []
-        
+
         log.info(f"TelemetryCollector initialized (max_events={max_events})")
-    
+
     def record_event(
         self,
         event_type: EventType,
@@ -69,13 +69,13 @@ class TelemetryCollector:
         metadata: Optional[Dict[str, Any]] = None,
     ) -> TelemetryEvent:
         """Record a telemetry event.
-        
+
         Args:
             event_type: Type of event
             query_id: Query identifier
             duration_ms: Optional duration in milliseconds
             metadata: Optional event metadata
-            
+
         Returns:
             Recorded TelemetryEvent
         """
@@ -83,35 +83,35 @@ class TelemetryCollector:
         _emit_records_execution_trace(
             trace_id, LayerSegment.L1_REASONING, "TelemetryCollector.record_event"
         )
-        
+
         event = TelemetryEvent(
             event_type=event_type,
             query_id=query_id,
             duration_ms=duration_ms,
             metadata=metadata or {},
         )
-        
+
         self._events.append(event)
-        
+
         # Trim if exceeding max
         if len(self._events) > self.max_events:
             self._events = self._events[-self.max_events:]
-        
+
         return event
-    
+
     def record_start(self, event_type: EventType, query_id: str) -> float:
         """Record start of an operation.
-        
+
         Args:
             event_type: Type of event
             query_id: Query identifier
-            
+
         Returns:
             Start timestamp
         """
         self.record_event(event_type, query_id)
         return time.time()
-    
+
     def record_end(
         self,
         event_type: EventType,
@@ -120,13 +120,13 @@ class TelemetryCollector:
         metadata: Optional[Dict[str, Any]] = None,
     ) -> TelemetryEvent:
         """Record end of an operation.
-        
+
         Args:
             event_type: Type of event
             query_id: Query identifier
             start_time: Start timestamp from record_start
             metadata: Optional metadata
-            
+
         Returns:
             Recorded TelemetryEvent
         """
@@ -137,7 +137,7 @@ class TelemetryCollector:
             duration_ms=duration_ms,
             metadata=metadata,
         )
-    
+
     def get_events(
         self,
         event_type: Optional[EventType] = None,
@@ -145,43 +145,43 @@ class TelemetryCollector:
         limit: int = 100,
     ) -> List[TelemetryEvent]:
         """Get filtered events.
-        
+
         Args:
             event_type: Optional filter by type
             query_id: Optional filter by query ID
             limit: Maximum events to return
-            
+
         Returns:
             List of matching events
         """
         filtered = self._events
-        
+
         if event_type:
             filtered = [e for e in filtered if e.event_type == event_type]
-        
+
         if query_id:
             filtered = [e for e in filtered if e.query_id == query_id]
-        
+
         return filtered[-limit:]
-    
+
     def export_events(self, format: str = "json") -> str:
         """Export events as string.
-        
+
         Args:
             format: Export format (json, csv)
-            
+
         Returns:
             Exported events string
         """
         if format == "json":
             events_dict = [asdict(e) for e in self._events]
             return json.dumps(events_dict, default=str, indent=2)
-        
+
         return ""
-    
+
     def clear(self) -> int:
         """Clear all events.
-        
+
         Returns:
             Number of events cleared
         """

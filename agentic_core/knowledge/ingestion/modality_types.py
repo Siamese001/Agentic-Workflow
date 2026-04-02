@@ -56,7 +56,7 @@ class ContentMetadata:
     parent_id: Optional[str] = None
     source_identifier: Optional[str] = None
     extracted_at: Optional[str] = None
-    
+
     def to_dict(self) -> Dict[str, Any]:
         """Convert to dictionary for serialization."""
         return {
@@ -87,7 +87,7 @@ class IngestionResult:
     error_message: Optional[str] = None
     processing_time_ms: Optional[float] = None
     warnings: list[str] = None
-    
+
     def __post_init__(self):
         if self.warnings is None:
             self.warnings = []

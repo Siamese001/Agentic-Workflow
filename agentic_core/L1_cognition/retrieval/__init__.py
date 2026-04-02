@@ -19,10 +19,10 @@ __all__ = [
 
 class QueryRetrievalBridge:
     """Bridge L1 query intent expansion to retrieval pipeline.
-    
+
     This class is imported by apps_* execution adapters to establish
     ADG edges from apps to L1_cognition retrieval components.
-    
+
     Minimal implementation: re-exports L1 retrieval functionality.
     """
 

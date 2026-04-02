@@ -62,10 +62,10 @@ class TestObservabilityStack:
     def test_agent_emits_span(self):
         """Test that an agent execution creates a trace span."""
         from apps_shared.reasoning.BaseDispatchAgent import BaseDispatchAgent
-        
+
         agent = BaseDispatchAgent(config_dict={"timeout": 5})
         result = agent.execute("test", {"query": "integration test"})
-        
+
         assert result.SUCCESS is True
         assert result.duration_ms >= 0  # Allow 0.0 for very fast executions
 
@@ -73,7 +73,7 @@ class TestObservabilityStack:
     def test_end_to_end_telemetry(self):
         """
         Full pipeline test: Execute agent and verify telemetry flows.
-        
+
         This test:
         1. Executes an agent (creates span via start_span())
         2. Waits for collector to process
@@ -81,22 +81,22 @@ class TestObservabilityStack:
         """
         import uuid
         from apps_shared.reasoning.BaseDispatchAgent import BaseDispatchAgent
-        
+
         # Generate unique trace ID for this test
         test_id = str(uuid.uuid4())[:8]
-        
+
         # Execute agent
         agent = BaseDispatchAgent(config_dict={"timeout": 5})
         result = agent.execute(
             "integration_test",
             {"test_id": test_id, "query": "e2e telemetry test"}
         )
-        
+
         assert result.SUCCESS, f"Agent execution failed: {result.ERROR}"
-        
+
         # Wait for collector to process and export
         time.sleep(2)
-        
+
         # Query Jaeger for recent traces
         try:
             response = requests.get(
@@ -121,11 +121,11 @@ class TestADGObservabilityEdges:
         try:
             from agentic_core.adg.runtime.behavioral_index import ADGBehavioralIndex
             from pathlib import Path
-            
+
             idx = ADGBehavioralIndex.from_latest(Path.cwd())
             if idx is None:
                 pytest.skip("ADG index not available")
-            
+
             # Check that we have behavioral data
             assert idx is not None
         except ImportError:

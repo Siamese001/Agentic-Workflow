@@ -30,20 +30,20 @@ class HydrationResult:
 
 class ParentChildHydrator:
     """Hydrates documents with parent/child context.
-    
+
     The ParentChildHydrator expands validated winners with their full
     context from parent documents and child chunks.
     """
-    
+
     def __init__(self, max_expansion_depth: int = 2):
         """Initialize the hydrator.
-        
+
         Args:
             max_expansion_depth: Maximum depth for parent expansion
         """
         self.max_expansion_depth = max_expansion_depth
         log.info(f"ParentChildHydrator initialized (depth={max_expansion_depth})")
-    
+
     def hydrate(
         self,
         doc_id: str,
@@ -52,13 +52,13 @@ class ParentChildHydrator:
         fetch_children: bool = False,
     ) -> HydrationResult:
         """Hydrate document with parent/child context.
-        
+
         Args:
             doc_id: Document ID
             content: Document content
             fetch_parent: Whether to fetch parent document
             fetch_children: Whether to fetch child chunks
-            
+
         Returns:
             HydrationResult with expanded content
         """
@@ -66,23 +66,23 @@ class ParentChildHydrator:
         _emit_records_execution_trace(
             trace_id, LayerSegment.L1_REASONING, "ParentChildHydrator.hydrate"
         )
-        
+
         parent_content = None
         child_contents = []
         is_expanded = False
-        
+
         # Fetch parent if requested
         if fetch_parent:
             parent_content = self._fetch_parent(doc_id)
             if parent_content:
                 is_expanded = True
-        
+
         # Fetch children if requested
         if fetch_children:
             child_contents = self._fetch_children(doc_id)
             if child_contents:
                 is_expanded = True
-        
+
         result = HydrationResult(
             doc_id=doc_id,
             content=content,
@@ -96,26 +96,26 @@ class ParentChildHydrator:
                 "child_count": len(child_contents),
             },
         )
-        
+
         _emit_records_telemetry_event(
             "hydration",
             f"doc_{doc_id}_expanded_{is_expanded}"
         )
-        
+
         log.debug(f"Hydrated {doc_id}: parent={parent_content is not None}, children={len(child_contents)}")
         return result
-    
+
     def hydrate_batch(
         self,
         documents: List[Dict[str, Any]],
         fetch_parent: bool = True,
     ) -> List[HydrationResult]:
         """Hydrate multiple documents.
-        
+
         Args:
             documents: List of documents with doc_id and content
             fetch_parent: Whether to fetch parents
-            
+
         Returns:
             List of HydrationResult
         """
@@ -128,26 +128,26 @@ class ParentChildHydrator:
             )
             results.append(result)
         return results
-    
+
     def _fetch_parent(self, doc_id: str) -> Optional[str]:
         """Fetch parent document content.
-        
+
         Args:
             doc_id: Document ID
-            
+
         Returns:
             Parent content if found
         """
         # Mock implementation - replace with actual parent lookup
         # Would query canonical store for parent relationship
         return None
-    
+
     def _fetch_children(self, doc_id: str) -> List[str]:
         """Fetch child chunk contents.
-        
+
         Args:
             doc_id: Document ID
-            
+
         Returns:
             List of child contents
         """

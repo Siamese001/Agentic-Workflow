@@ -29,16 +29,16 @@ class FallbackResult:
 
 class LowRiskFallback:
     """Generates low-risk fallback responses.
-    
+
     The LowRiskFallback provides constrained responses when normal
     retrieval fails, ensuring policy compliance and risk mitigation.
     """
-    
+
     def __init__(self):
         """Initialize the fallback generator."""
         self._fallback_templates = self._load_templates()
         log.info("LowRiskFallback initialized")
-    
+
     def generate(
         self,
         query: str,
@@ -46,12 +46,12 @@ class LowRiskFallback:
         query_context: Dict[str, Any],
     ) -> FallbackResult:
         """Generate fallback response.
-        
+
         Args:
             query: Original query
             reason: Reason for fallback
             query_context: Query context
-            
+
         Returns:
             FallbackResult with constrained response
         """
@@ -59,19 +59,19 @@ class LowRiskFallback:
         _emit_records_execution_trace(
             trace_id, LayerSegment.L1_REASONING, "LowRiskFallback.generate"
         )
-        
+
         # Determine risk level
         risk_level = self._assess_risk(query, reason)
-        
+
         # Select appropriate template
         template = self._select_template(reason, risk_level)
-        
+
         # Apply constraints
         constraints = self._apply_constraints(template, risk_level)
-        
+
         # Generate response
         response = self._render_response(template, query, reason)
-        
+
         result = FallbackResult(
             response=response,
             is_fallback=True,
@@ -83,15 +83,15 @@ class LowRiskFallback:
                 "fallback_reason": reason,
             },
         )
-        
+
         _emit_records_telemetry_event(
             "fallback_generated",
             f"risk_{risk_level}"
         )
-        
+
         log.debug(f"Generated fallback response (risk={risk_level})")
         return result
-    
+
     def _load_templates(self) -> Dict[str, str]:
         """Load fallback response templates."""
         return {
@@ -116,7 +116,7 @@ class LowRiskFallback:
                 "Please try again later or contact support if the problem persists."
             ),
         }
-    
+
     def _assess_risk(self, query: str, reason: str) -> str:
         """Assess risk level for fallback."""
         # Simple risk assessment based on reason
@@ -126,23 +126,23 @@ class LowRiskFallback:
             return "low"
         elif "error" in reason.lower():
             return "medium"
-        
+
         return "low"
-    
+
     def _select_template(self, reason: str, risk_level: str) -> str:
         """Select appropriate template."""
         # Match reason to template
         for key, template in self._fallback_templates.items():
             if key in reason.lower():
                 return template
-        
+
         # Default template
         return self._fallback_templates.get("insufficient_support", "")
-    
+
     def _apply_constraints(self, template: str, risk_level: str) -> List[str]:
         """Apply constraints based on risk level."""
         constraints = []
-        
+
         if risk_level == "high":
             constraints.append("No specific information disclosed")
             constraints.append("General response only")
@@ -150,9 +150,9 @@ class LowRiskFallback:
             constraints.append("Caveats included")
         else:
             constraints.append("Helpful but bounded")
-        
+
         return constraints
-    
+
     def _render_response(self, template: str, query: str, reason: str) -> str:
         """Render final response."""
         # Simple template rendering

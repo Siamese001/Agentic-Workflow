@@ -34,40 +34,40 @@ class LatencyReport:
 
 class LatencyAnalyzer:
     """Analyzes latency by pipeline stage.
-    
+
     The LatencyAnalyzer tracks latency at each pipeline stage and
     provides percentile analysis for bottleneck identification.
     """
-    
+
     def __init__(self):
         """Initialize the latency analyzer."""
         self._stage_latencies: Dict[str, List[float]] = defaultdict(list)
-        
+
         log.info("LatencyAnalyzer initialized")
-    
+
     def record_stage_latency(
         self,
         stage_name: str,
         latency_ms: float,
     ) -> None:
         """Record latency for a pipeline stage.
-        
+
         Args:
             stage_name: Name of the pipeline stage
             latency_ms: Latency in milliseconds
         """
         self._stage_latencies[stage_name].append(latency_ms)
-        
+
         # Keep only last 1000 measurements per stage
         if len(self._stage_latencies[stage_name]) > 1000:
             self._stage_latencies[stage_name] = self._stage_latencies[stage_name][-1000:]
-    
+
     def generate_report(self, stage_name: str) -> Optional[LatencyReport]:
         """Generate latency report for a stage.
-        
+
         Args:
             stage_name: Stage to analyze
-            
+
         Returns:
             LatencyReport if data available
         """
@@ -75,19 +75,19 @@ class LatencyAnalyzer:
         _emit_records_execution_trace(
             trace_id, LayerSegment.L1_REASONING, "LatencyAnalyzer.generate_report"
         )
-        
+
         latencies = self._stage_latencies.get(stage_name, [])
-        
+
         if not latencies:
             return None
-        
+
         sorted_latencies = sorted(latencies)
         n = len(sorted_latencies)
-        
+
         p50 = self._percentile(sorted_latencies, 50)
         p95 = self._percentile(sorted_latencies, 95)
         p99 = self._percentile(sorted_latencies, 99)
-        
+
         return LatencyReport(
             stage_name=stage_name,
             p50_ms=p50,
@@ -98,10 +98,10 @@ class LatencyAnalyzer:
             min_ms=min(latencies),
             sample_count=n,
         )
-    
+
     def generate_all_reports(self) -> Dict[str, LatencyReport]:
         """Generate reports for all stages.
-        
+
         Returns:
             Dictionary mapping stage names to reports
         """
@@ -111,37 +111,37 @@ class LatencyAnalyzer:
             if report:
                 reports[stage_name] = report
         return reports
-    
+
     def get_bottlenecks(self, threshold_ms: float = 100.0) -> List[str]:
         """Identify bottleneck stages.
-        
+
         Args:
             threshold_ms: P95 threshold for bottleneck detection
-            
+
         Returns:
             List of bottleneck stage names
         """
         bottlenecks = []
-        
+
         for stage_name in self._stage_latencies.keys():
             report = self.generate_report(stage_name)
             if report and report.p95_ms > threshold_ms:
                 bottlenecks.append(stage_name)
-        
+
         return bottlenecks
-    
+
     def _percentile(self, sorted_data: List[float], p: float) -> float:
         """Calculate percentile from sorted data."""
         if not sorted_data:
             return 0.0
-        
+
         k = (len(sorted_data) - 1) * (p / 100)
         f = int(k)
         c = f + 1 if f + 1 < len(sorted_data) else f
-        
+
         if f == c:
             return sorted_data[f]
-        
+
         return sorted_data[f] * (c - k) + sorted_data[c] * (k - f)
 
 

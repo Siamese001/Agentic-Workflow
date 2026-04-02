@@ -30,10 +30,10 @@ for filepath in test_files:
     if not os.path.exists(full_path):
         print(f'Missing: {filepath}')
         continue
-    
+
     with open(full_path, 'r') as f:
         content = f.read()
-    
+
     # Replace simple imports with try-except
     lines = content.split('\n')
     new_lines = []
@@ -69,9 +69,9 @@ for filepath in test_files:
                     continue
         new_lines.append(line)
         i += 1
-    
+
     new_content = '\n'.join(new_lines)
-    
+
     with open(full_path, 'w') as f:
         f.write(new_content)
     print(f'Fixed: {filepath}')

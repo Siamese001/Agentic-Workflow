@@ -10,7 +10,7 @@ from .canonical_types import CanonicalUnitStatus, CanonicalUnitType
 
 __all__ = [
     "RawUnitFactory",
-    "CanonicalRawUnit", 
+    "CanonicalRawUnit",
     "CanonicalStore",
     "CanonicalUnitStatus",
     "CanonicalUnitType",

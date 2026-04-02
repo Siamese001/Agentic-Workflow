@@ -20,10 +20,10 @@ __all__ = [
 
 class SemanticEnrichmentBridge:
     """Bridge L2 execution to retrieval pipeline.
-    
+
     This class is imported by apps_* to establish ADG edges
     from apps to L2_execution retrieval components.
-    
+
     Minimal implementation: re-exports L2 retrieval functionality.
     """
 

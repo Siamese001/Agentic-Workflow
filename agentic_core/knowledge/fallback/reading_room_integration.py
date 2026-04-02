@@ -29,27 +29,27 @@ class ReadingRoomResult:
 
 class ReadingRoomIntegration:
     """Final stage integration for output generation.
-    
+
     The ReadingRoomIntegration manages context windows, applies
     reasoning paths, and enforces safety guardrails.
     """
-    
+
     def __init__(
         self,
         max_context_tokens: int = 4000,
         safety_threshold: float = 0.9,
     ):
         """Initialize the reading room integration.
-        
+
         Args:
             max_context_tokens: Maximum tokens for context window
             safety_threshold: Minimum safety score threshold
         """
         self.max_context_tokens = max_context_tokens
         self.safety_threshold = safety_threshold
-        
+
         log.info(f"ReadingRoomIntegration initialized (max_tokens={max_context_tokens})")
-    
+
     def process(
         self,
         query: str,
@@ -58,13 +58,13 @@ class ReadingRoomIntegration:
         reasoning_path: str = "direct",
     ) -> ReadingRoomResult:
         """Process final output generation.
-        
+
         Args:
             query: Original query
             context_packet: Context packet from evidence
             evidence_contract: Evidence contract
             reasoning_path: Reasoning strategy
-            
+
         Returns:
             ReadingRoomResult with final output
         """
@@ -72,13 +72,13 @@ class ReadingRoomIntegration:
         _emit_records_execution_trace(
             trace_id, LayerSegment.L1_REASONING, "ReadingRoomIntegration.process"
         )
-        
+
         # Manage context window
         truncated_context, truncation_applied = self._manage_context(context_packet)
-        
+
         # Evaluate safety
         safety_passed = self._evaluate_safety(query, truncated_context)
-        
+
         # Generate output based on reasoning path
         output = self._generate_output(
             query,
@@ -86,7 +86,7 @@ class ReadingRoomIntegration:
             evidence_contract,
             reasoning_path,
         )
-        
+
         result = ReadingRoomResult(
             final_output=output,
             context_window_used=len(truncated_context.split()),
@@ -98,41 +98,41 @@ class ReadingRoomIntegration:
                 "safety_threshold": self.safety_threshold,
             },
         )
-        
+
         _emit_records_telemetry_event(
             "reading_room",
             f"processed_{reasoning_path}"
         )
-        
+
         log.debug(f"Reading room processed: {len(truncated_context.split())} tokens, safety={safety_passed}")
         return result
-    
+
     def _manage_context(self, context_packet: str) -> tuple:
         """Manage context window size."""
         tokens = context_packet.split()
-        
+
         if len(tokens) > self.max_context_tokens:
             # Truncate context
             truncated = " ".join(tokens[:self.max_context_tokens])
             return truncated, True
-        
+
         return context_packet, False
-    
+
     def _evaluate_safety(self, query: str, context: str) -> bool:
         """Evaluate safety guardrails."""
         # Mock safety evaluation
         # Would include: harmful content detection, PII detection, etc.
-        
+
         # Simple check: query doesn't contain obvious harmful patterns
         harmful_patterns = ['hack', 'exploit', 'bypass security']
-        
+
         query_lower = query.lower()
         for pattern in harmful_patterns:
             if pattern in query_lower:
                 return False
-        
+
         return True
-    
+
     def _generate_output(
         self,
         query: str,
@@ -143,18 +143,18 @@ class ReadingRoomIntegration:
         """Generate final output."""
         # Mock output generation
         # Would call LLM with appropriate prompt
-        
+
         if reasoning_path == "abstain":
             return "I cannot provide an answer to this query."
-        
+
         citations = getattr(evidence_contract, 'citations', [])
-        
+
         output_parts = [
             f"Based on the available information, here's what I found:\n",
             context[:500],  # First 500 chars of context
             f"\n\nSources: {len(citations)} documents",
         ]
-        
+
         return "\n".join(output_parts)
 
 

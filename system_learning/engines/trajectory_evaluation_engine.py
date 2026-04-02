@@ -313,7 +313,7 @@ class TrajectoryEvaluationEngine:
 
         for call in tool_calls:
             args = call.get("arguments", {})
-            
+
             # Check for non-empty arguments
             if args:
                 correct_count += 0.5

@@ -67,9 +67,9 @@ def _extract_attributes(
     """Extract attributes from function arguments."""
     bound = sig.bind_partial(*args, **kwargs)
     bound.apply_defaults()
-    
+
     attributes: dict[str, Any] = {}
-    
+
     # Add bound arguments (excluding self/cls)
     for name, value in bound.arguments.items():
         if name in ("self", "cls"):
@@ -85,10 +85,10 @@ def _extract_attributes(
         except Exception:
             # Skip values that can't be serialized
             pass
-    
+
     if extra_attrs:
         attributes.update(extra_attrs)
-    
+
     return attributes
 
 
@@ -107,14 +107,14 @@ def trace_cognitive(
     extra_attrs: dict[str, Any] | None = None,
 ) -> Callable[[F], F]:
     """Decorator for cognitive/reasoning operations.
-    
+
     Creates a cognitive span with reasoning_mode attribute.
-    
+
     Args:
         reasoning_mode: Type of reasoning (react, cot, reflection, etc.)
         layer: Architecture layer (default L1)
         extra_attrs: Additional attributes to attach to span
-        
+
     Usage:
         @trace_cognitive(reasoning_mode="chain_of_thought")
         def analyze_document(self, doc: str) -> dict:
@@ -123,25 +123,25 @@ def trace_cognitive(
     """
     def decorator(func: F) -> F:
         sig = inspect.signature(func)
-        
+
         @functools.wraps(func)
         def wrapper(*args: Any, **kwargs: Any) -> Any:
             instance = _get_tracing_instance(args)
-            
+
             if instance is None:
                 # No tracing available, just run function
                 return func(*args, **kwargs)
-            
+
             operation_name = _make_operation_name(func)
             attributes = _extract_attributes(sig, args, kwargs, extra_attrs)
             attributes["reasoning_mode"] = reasoning_mode
             attributes["layer"] = layer
             attributes["span_kind"] = "cognitive"
-            
+
             _emit_records_execution_trace(
                 operation_name, str(getattr(LayerSegment, layer, "L1_COGNITION")), func.__name__
             )
-            
+
             try:
                 with instance.start_span(operation_name, attributes) as span:
                     result = func(*args, **kwargs)
@@ -153,9 +153,9 @@ def trace_cognitive(
                 logger.debug("Tracing error in %s: %s", operation_name, e)
                 # Fallback: run without tracing
                 return func(*args, **kwargs)
-        
+
         return wrapper  # type: ignore[return-value]
-    
+
     return decorator
 
 
@@ -165,14 +165,14 @@ def trace_action(
     extra_attrs: dict[str, Any] | None = None,
 ) -> Callable[[F], F]:
     """Decorator for action/execution operations.
-    
+
     Creates an action span for tool executions and side effects.
-    
+
     Args:
         action_name: Name of the action (defaults to function name)
         layer: Architecture layer (default L2)
         extra_attrs: Additional attributes to attach to span
-        
+
     Usage:
         @trace_action(action_name="file_write")
         def save_output(self, data: dict, path: str) -> bool:
@@ -181,23 +181,23 @@ def trace_action(
     """
     def decorator(func: F) -> F:
         sig = inspect.signature(func)
-        
+
         @functools.wraps(func)
         def wrapper(*args: Any, **kwargs: Any) -> Any:
             instance = _get_tracing_instance(args)
-            
+
             if instance is None:
                 return func(*args, **kwargs)
-            
+
             operation_name = action_name or _make_operation_name(func)
             attributes = _extract_attributes(sig, args, kwargs, extra_attrs)
             attributes["layer"] = layer
             attributes["span_kind"] = "action"
-            
+
             _emit_records_execution_trace(
                 operation_name, str(getattr(LayerSegment, layer, "L2_EXECUTION")), func.__name__
             )
-            
+
             try:
                 with instance.start_span(operation_name, attributes) as span:
                     start_time = time.time()
@@ -208,9 +208,9 @@ def trace_action(
             except Exception as e:
                 logger.debug("Tracing error in %s: %s", operation_name, e)
                 return func(*args, **kwargs)
-        
+
         return wrapper  # type: ignore[return-value]
-    
+
     return decorator
 
 
@@ -220,14 +220,14 @@ def trace_tool(
     extra_attrs: dict[str, Any] | None = None,
 ) -> Callable[[F], F]:
     """Decorator for tool invocations.
-    
+
     Creates a tool span for external tool/API calls.
-    
+
     Args:
         tool_name: Name of the tool (defaults to function name)
         layer: Architecture layer (default L2)
         extra_attrs: Additional attributes to attach to span
-        
+
     Usage:
         @trace_tool(tool_name="pinecone_query")
         def query_vectors(self, query: str, top_k: int = 5) -> list:
@@ -236,44 +236,44 @@ def trace_tool(
     """
     def decorator(func: F) -> F:
         sig = inspect.signature(func)
-        
+
         @functools.wraps(func)
         def wrapper(*args: Any, **kwargs: Any) -> Any:
             instance = _get_tracing_instance(args)
-            
+
             if instance is None:
                 return func(*args, **kwargs)
-            
+
             operation_name = f"tool.{tool_name or func.__name__}"
             attributes = _extract_attributes(sig, args, kwargs, extra_attrs)
             attributes["tool_name"] = tool_name or func.__name__
             attributes["layer"] = layer
             attributes["span_kind"] = "tool"
-            
+
             _emit_records_execution_trace(
                 operation_name, str(getattr(LayerSegment, layer, "L2_EXECUTION")), func.__name__
             )
-            
+
             try:
                 with instance.start_span(operation_name, attributes) as span:
                     start_time = time.time()
                     result = func(*args, **kwargs)
                     duration_ms = (time.time() - start_time) * 1000
-                    
+
                     # Record tool metrics
                     span.set_attribute("duration_ms", duration_ms)
                     if isinstance(result, list):
                         span.set_attribute("result_count", len(result))
                     elif isinstance(result, dict):
                         span.set_attribute("result_keys", list(result.keys()))
-                    
+
                     return result
             except Exception as e:
                 logger.debug("Tracing error in %s: %s", operation_name, e)
                 return func(*args, **kwargs)
-        
+
         return wrapper  # type: ignore[return-value]
-    
+
     return decorator
 
 
@@ -283,14 +283,14 @@ def trace_orchestrator(
     extra_attrs: dict[str, Any] | None = None,
 ) -> Callable[[F], F]:
     """Decorator for orchestration operations.
-    
+
     Creates an orchestrator span for workflow coordination.
-    
+
     Args:
         orchestrator_name: Name of the orchestrator (defaults to function name)
         layer: Architecture layer (default L3)
         extra_attrs: Additional attributes to attach to span
-        
+
     Usage:
         @trace_orchestrator(orchestrator_name="campaign_workflow")
         def run_campaign(self, config: dict) -> dict:
@@ -299,44 +299,44 @@ def trace_orchestrator(
     """
     def decorator(func: F) -> F:
         sig = inspect.signature(func)
-        
+
         @functools.wraps(func)
         def wrapper(*args: Any, **kwargs: Any) -> Any:
             instance = _get_tracing_instance(args)
-            
+
             if instance is None:
                 return func(*args, **kwargs)
-            
+
             operation_name = orchestrator_name or _make_operation_name(func)
             attributes = _extract_attributes(sig, args, kwargs, extra_attrs)
             attributes["orchestrator_name"] = orchestrator_name or func.__name__
             attributes["layer"] = layer
             attributes["span_kind"] = "orchestrator"
-            
+
             _emit_records_execution_trace(
                 operation_name, str(getattr(LayerSegment, layer, "L3_ORCHESTRATION")), func.__name__
             )
-            
+
             try:
                 with instance.start_span(operation_name, attributes) as span:
                     start_time = time.time()
                     result = func(*args, **kwargs)
                     duration_ms = (time.time() - start_time) * 1000
-                    
+
                     span.set_attribute("duration_ms", duration_ms)
                     if isinstance(result, dict):
                         if "status" in result:
                             span.set_attribute("result_status", result["status"])
                         if "agent_count" in result:
                             span.set_attribute("agent_count", result["agent_count"])
-                    
+
                     return result
             except Exception as e:
                 logger.debug("Tracing error in %s: %s", operation_name, e)
                 return func(*args, **kwargs)
-        
+
         return wrapper  # type: ignore[return-value]
-    
+
     return decorator
 
 
@@ -346,14 +346,14 @@ def trace_router(
     extra_attrs: dict[str, Any] | None = None,
 ) -> Callable[[F], F]:
     """Decorator for routing operations.
-    
+
     Creates a router span for L0 routing decisions.
-    
+
     Args:
         router_name: Name of the router (defaults to function name)
         layer: Architecture layer (default L0)
         extra_attrs: Additional attributes to attach to span
-        
+
     Usage:
         @trace_router(router_name="intent_classifier")
         def classify_intent(self, query: str) -> str:
@@ -362,24 +362,24 @@ def trace_router(
     """
     def decorator(func: F) -> F:
         sig = inspect.signature(func)
-        
+
         @functools.wraps(func)
         def wrapper(*args: Any, **kwargs: Any) -> Any:
             instance = _get_tracing_instance(args)
-            
+
             if instance is None:
                 return func(*args, **kwargs)
-            
+
             operation_name = router_name or _make_operation_name(func)
             attributes = _extract_attributes(sig, args, kwargs, extra_attrs)
             attributes["router_name"] = router_name or func.__name__
             attributes["layer"] = layer
             attributes["span_kind"] = "router"
-            
+
             _emit_records_execution_trace(
                 operation_name, str(getattr(LayerSegment, layer, "L0_ROUTING")), func.__name__
             )
-            
+
             try:
                 with instance.start_span(operation_name, attributes) as span:
                     result = func(*args, **kwargs)
@@ -388,9 +388,9 @@ def trace_router(
             except Exception as e:
                 logger.debug("Tracing error in %s: %s", operation_name, e)
                 return func(*args, **kwargs)
-        
+
         return wrapper  # type: ignore[return-value]
-    
+
     return decorator
 
 

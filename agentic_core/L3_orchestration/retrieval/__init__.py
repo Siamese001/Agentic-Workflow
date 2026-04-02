@@ -20,10 +20,10 @@ __all__ = [
 
 class ContextRetrievalOrchestrator:
     """Bridge L3 orchestration to retrieval pipeline.
-    
+
     This class is imported by apps_* to establish ADG edges
     from apps to L3_orchestration retrieval components.
-    
+
     Minimal implementation: re-exports L3 retrieval functionality.
     """
 
