@@ -1089,6 +1089,36 @@ AGENT_TAXONOMY_MAP: dict[str, AgentClassification] = {
     # ============================================
     # APPS_SHARED: Shared Infrastructure Agents
     # ============================================
+    "BaseDispatchAgent": AgentClassification(
+        file_path="apps_shared/reasoning/BaseDispatchAgent.py",
+        class_name="BaseDispatchAgent",
+        current_layer="L2",
+        canonical_role=CanonicalAgentRole.EXECUTION,
+        status=AgentStatus.ACTIVE,
+        is_shim=False,
+        implements_l2_contract=True,
+        notes="Shared base dispatch agent. L2 contract compliant.",
+    ),
+    "BaseProactiveAgent": AgentClassification(
+        file_path="apps_shared/reasoning/BaseProactiveAgent.py",
+        class_name="BaseProactiveAgent",
+        current_layer="L2",
+        canonical_role=CanonicalAgentRole.EXECUTION,
+        status=AgentStatus.ACTIVE,
+        is_shim=False,
+        implements_l2_contract=True,
+        notes="Shared base proactive agent. L2 contract compliant.",
+    ),
+    "BaseReflectionAgent": AgentClassification(
+        file_path="apps_shared/reasoning/BaseReflectionAgent.py",
+        class_name="BaseReflectionAgent",
+        current_layer="L6",
+        canonical_role=CanonicalAgentRole.OBSERVER,
+        status=AgentStatus.ACTIVE,
+        is_shim=False,
+        implements_l2_contract=True,
+        notes="Shared base reflection agent. L2 contract compliant.",
+    ),
     "InfrastructureOrchestrator": AgentClassification(
         file_path="apps_shared/reasoning/InfrastructureOrchestrator.py",
         class_name="InfrastructureOrchestrator",
