@@ -248,6 +248,13 @@ from .misc import (
     _SymbolInventoryVisitor,
     _UnusedImportVisitor,
 )
+from .lifecycle_advanced import (
+    _PromptSlotVisitor,
+    _ExecutionTraceVisitor,
+    _HealerValidatorVisitor,
+    _EmbeddingPipelineVisitor,
+    _HITLVisitor,
+)
 
 __all__ = [
     # Base classes
@@ -298,4 +305,10 @@ __all__ = [
     "_DecoratorVisitor",
     "_SymbolInventoryVisitor",
     "_UnusedImportVisitor",
+    # Advanced lifecycle visitors
+    "_PromptSlotVisitor",
+    "_ExecutionTraceVisitor",
+    "_HealerValidatorVisitor",
+    "_EmbeddingPipelineVisitor",
+    "_HITLVisitor",
 ]
