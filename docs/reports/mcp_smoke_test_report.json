@@ -1,6 +1,6 @@
 {
-  "timestamp": 1774659493.1739886,
-  "duration": 6.816507577896118,
+  "timestamp": 1775094024.345052,
+  "duration": 7.950541734695435,
   "repository": "C:\\Git\\Agentic-Workflow",
   "results": {
     "terminal": {
@@ -11,8 +11,8 @@
           "name": "File Check",
           "success": true,
           "details": [
-            "File size: 9,893 bytes",
-            "Lines of code: 277",
+            "File size: 10,036 bytes",
+            "Lines of code: 280",
             "\u2705 Has main() function",
             "\u2705 Uses async functions",
             "\u2705 Imports MCP server"
@@ -22,7 +22,7 @@
           "name": "Import Test",
           "success": true,
           "details": [
-            "Found 12 import statements",
+            "Found 11 import statements",
             "\u2705 mcp.server",
             "\u2705 asyncio",
             "\u2705 subprocess"
@@ -43,11 +43,11 @@
           ]
         }
       },
-      "start_time": 1774659486.3580153,
+      "start_time": 1775094016.3950317,
       "success": true,
       "errors": [],
-      "end_time": 1774659486.7705812,
-      "duration": 0.4125659465789795
+      "end_time": 1775094016.8005836,
+      "duration": 0.4055519104003906
     },
     "pytest": {
       "server": "pytest",
@@ -57,8 +57,8 @@
           "name": "File Check",
           "success": true,
           "details": [
-            "File size: 22,406 bytes",
-            "Lines of code: 584",
+            "File size: 21,937 bytes",
+            "Lines of code: 588",
             "\u2705 Has main() function",
             "\u2705 Uses async functions",
             "\u2705 Imports MCP server"
@@ -90,11 +90,11 @@
           ]
         }
       },
-      "start_time": 1774659486.7705812,
+      "start_time": 1775094016.8005836,
       "success": true,
       "errors": [],
-      "end_time": 1774659486.9245698,
-      "duration": 0.15398859977722168
+      "end_time": 1775094016.9775853,
+      "duration": 0.1770017147064209
     },
     "enhanced_http": {
       "server": "enhanced_http",
@@ -104,8 +104,8 @@
           "name": "File Check",
           "success": true,
           "details": [
-            "File size: 38,130 bytes",
-            "Lines of code: 907",
+            "File size: 37,301 bytes",
+            "Lines of code: 910",
             "\u2705 Has main() function",
             "\u2705 Uses async functions",
             "\u2705 Imports MCP server"
@@ -115,7 +115,7 @@
           "name": "Import Test",
           "success": true,
           "details": [
-            "Found 17 import statements",
+            "Found 16 import statements",
             "\u2705 mcp.server",
             "\u2705 asyncio",
             "\u2705 aiohttp",
@@ -139,11 +139,11 @@
           ]
         }
       },
-      "start_time": 1774659486.9245698,
+      "start_time": 1775094016.9775853,
       "success": true,
       "errors": [],
-      "end_time": 1774659487.519427,
-      "duration": 0.5948572158813477
+      "end_time": 1775094017.7890708,
+      "duration": 0.8114855289459229
     },
     "vector_db": {
       "server": "vector_db",
@@ -153,8 +153,8 @@
           "name": "File Check",
           "success": true,
           "details": [
-            "File size: 32,006 bytes",
-            "Lines of code: 780",
+            "File size: 31,365 bytes",
+            "Lines of code: 784",
             "\u2705 Has main() function",
             "\u2705 Uses async functions",
             "\u2705 Imports MCP server"
@@ -188,11 +188,11 @@
           ]
         }
       },
-      "start_time": 1774659487.519427,
+      "start_time": 1775094017.7890708,
       "success": true,
       "errors": [],
-      "end_time": 1774659493.1678507,
-      "duration": 5.648423671722412
+      "end_time": 1775094024.345052,
+      "duration": 6.555981159210205
     }
   }
 }

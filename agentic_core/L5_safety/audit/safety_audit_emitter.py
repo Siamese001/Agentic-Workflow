@@ -391,7 +391,7 @@ def emit_safety_audit_record(
         bridge = get_sl_memory_bridge()
 
         bridge.persist_safety_audit_record(
-            audit_id=audit.audit_id,
+            audit_id=audit.safety_audit_id,
             run_id=audit.run_id,
             trace_id=audit.trace_id,
             decision_type=audit.decision_type,
@@ -399,8 +399,8 @@ def emit_safety_audit_record(
             policy_hash=audit.policy_hash,
             actor_id=audit.actor_id,
             action_class=audit.action_class,
-            reason=audit.reason,
-            timestamp_utc=int(audit.timestamp_utc * 1000) if hasattr(audit, 'timestamp_utc') else 0,
+            reason=audit.reason_hash,
+            timestamp_utc=int(audit.audit_epoch * 1000),
         )
     except (ValueError, TypeError):
         # System learning unavailable - continue without emission

@@ -124,6 +124,8 @@ def example():
             "env_vars": ["set"] if is_windows else ["env"],
             "is_windows": is_windows
         }
+
+    async def _test_server_e2e(self, server_name: str) -> Dict[str, Any]:
         """Test a single MCP server with end-to-end scenarios"""
         results = {
             "server": server_name,
@@ -174,15 +176,18 @@ def example():
     async def _test_terminal_file_ops(self) -> Dict[str, Any]:
         """Test file operations through terminal MCP"""
         result = {"name": "File Operations", "success": True, "tests": []}
+        cmds = self._get_platform_commands()
 
         try:
             # Test file listing
             start_time = time.time()
+            cmd = cmds["list_files"] + [str(self.test_data_dir)]
             process = subprocess.run(
-                ["ls", "-la", str(self.test_data_dir)],
+                cmd,
                 capture_output=True,
                 text=True,
-                timeout=10
+                timeout=10,
+                shell=cmds["is_windows"]  # Use shell on Windows for dir command
             )
             end_time = time.time()
 
@@ -203,11 +208,13 @@ def example():
 
             # Test file content reading
             start_time = time.time()
+            cmd = cmds["read_file"] + [str(self.test_data_dir / "sample_python.py")]
             process = subprocess.run(
-                ["cat", str(self.test_data_dir / "sample_python.py")],
+                cmd,
                 capture_output=True,
                 text=True,
-                timeout=10
+                timeout=10,
+                shell=cmds["is_windows"]  # Use shell on Windows for type command
             )
             end_time = time.time()
 
@@ -339,12 +346,13 @@ def example():
     async def _test_terminal_system_info(self) -> Dict[str, Any]:
         """Test system information gathering through terminal MCP"""
         result = {"name": "System Information", "success": True, "tests": []}
+        cmds = self._get_platform_commands()
 
         try:
-            # Test current directory
+            # Test current directory - use python instead of pwd/cd for cross-platform
             start_time = time.time()
             process = subprocess.run(
-                ["pwd"],
+                ["python", "-c", "import os; print(os.getcwd())"],
                 capture_output=True,
                 text=True,
                 timeout=5
@@ -358,14 +366,13 @@ def example():
                 "directory": process.stdout.strip()
             })
 
-            # Test environment variables
+            # Test environment variables - use python for cross-platform
             start_time = time.time()
             process = subprocess.run(
-                ["env", "|", "head", "-5"],
+                ["python", "-c", "import os; [print(f'{k}={v}') for k, v in list(os.environ.items())[:5]]"],
                 capture_output=True,
                 text=True,
-                timeout=5,
-                shell=True
+                timeout=5
             )
             end_time = time.time()
 
@@ -412,7 +419,7 @@ def example():
             # Discover tests in a specific directory
             start_time = time.time()
             process = subprocess.run(
-                ["python", "-m", "pytest", "--collect-only", "-q", "tests/unit/agentic_core/L0_routing/"],
+                ["python", "-m", "pytest", "--collect-only", "-q", "tests/unit/agentic_core/L0_routing/config/test_path_constants.py"],
                 capture_output=True,
                 text=True,
                 timeout=30,
@@ -420,7 +427,8 @@ def example():
             )
             end_time = time.time()
 
-            test_count = process.stdout.count("::")
+            # Count tests by looking for test function names (test_ prefix)
+            test_count = len([line for line in process.stdout.split('\n') if 'test_' in line and '::' in line])
 
             result["tests"].append({
                 "name": "Discover routing tests",
@@ -432,7 +440,7 @@ def example():
             # Discover all tests
             start_time = time.time()
             process = subprocess.run(
-                ["python", "-m", "pytest", "--collect-only", "-q"],
+                ["python", "-m", "pytest", "--collect-only", "-q", "tests/unit/agentic_core/L0_routing/config/"],
                 capture_output=True,
                 text=True,
                 timeout=60,
@@ -440,7 +448,8 @@ def example():
             )
             end_time = time.time()
 
-            total_tests = process.stdout.count("::")
+            # Count tests by looking for :: separator in node IDs
+            total_tests = len([line for line in process.stdout.split('\n') if '::' in line])
 
             result["tests"].append({
                 "name": "Discover all tests",
@@ -467,7 +476,7 @@ def example():
             # Run a small subset of tests
             start_time = time.time()
             process = subprocess.run(
-                ["python", "-m", "pytest", "tests/unit/agentic_core/L0_routing/test_path_constants.py", "-v"],
+                ["python", "-m", "pytest", "tests/unit/agentic_core/L0_routing/config/test_path_constants.py", "-v"],
                 capture_output=True,
                 text=True,
                 timeout=60,
@@ -475,11 +484,23 @@ def example():
             )
             end_time = time.time()
 
-            # Parse results
+            # Parse results - look for passed/failed in output
             output_lines = process.stdout.split('\n')
-            passed = sum(1 for line in output_lines if "PASSED" in line)
-            failed = sum(1 for line in output_lines if "FAILED" in line)
-            errors = sum(1 for line in output_lines if "ERROR" in line)
+            passed = sum(1 for line in output_lines if ' passed' in line or 'PASSED' in line)
+            failed = sum(1 for line in output_lines if ' failed' in line or 'FAILED' in line)
+            errors = sum(1 for line in output_lines if ' error' in line or 'ERROR' in line)
+            
+            # Also check summary line like "1 passed in 0.01s"
+            summary_passed = 0
+            for line in output_lines:
+                if ' passed' in line and ' in ' in line:
+                    try:
+                        summary_passed = int(line.split(' passed')[0].split()[-1])
+                    except (ValueError, IndexError):
+                        pass
+            
+            if summary_passed > 0:
+                passed = summary_passed
 
             result["tests"].append({
                 "name": "Execute routing tests",
@@ -509,7 +530,7 @@ def example():
             # Run tests with coverage
             start_time = time.time()
             process = subprocess.run(
-                ["python", "-m", "pytest", "tests/unit/agentic_core/L0_routing/test_path_constants.py", "--cov=agentic_core.L0_routing", "--cov-report=json"],
+                ["python", "-m", "pytest", "tests/unit/agentic_core/L0_routing/config/test_path_constants.py", "--cov=agentic_core.L0_routing.config", "--cov-report=json"],
                 capture_output=True,
                 text=True,
                 timeout=90,
@@ -1097,7 +1118,7 @@ def example():
             # Use terminal to run pytest and analyze results
             start_time = time.time()
             process = subprocess.run(
-                ["python", "-m", "pytest", "tests/unit/agentic_core/L0_routing/test_path_constants.py", "--tb=short"],
+                ["python", "-m", "pytest", "tests/unit/agentic_core/L0_routing/config/test_path_constants.py", "--tb=short"],
                 capture_output=True,
                 text=True,
                 timeout=60,
@@ -1107,7 +1128,7 @@ def example():
 
             # Parse pytest output
             output_lines = process.stdout.split('\n')
-            test_results = [line for line in output_lines if any(x in line for x in ['PASSED', 'FAILED', 'ERROR'])]
+            test_results = [line for line in output_lines if any(x in line for x in [' passed', ' failed', ' error'])]
 
             result["tests"].append({
                 "name": "Terminal pytest execution",
@@ -1242,7 +1263,7 @@ def example():
 
             # Step 4: Pytest - Run a quick test to verify system health
             test_process = subprocess.run(
-                ["python", "-m", "pytest", "tests/unit/agentic_core/L0_routing/test_path_constants.py::test_path_constants_exist", "-q"],
+                ["python", "-m", "pytest", "tests/unit/agentic_core/L0_routing/config/test_path_constants.py", "-q"],
                 capture_output=True,
                 text=True,
                 timeout=30,

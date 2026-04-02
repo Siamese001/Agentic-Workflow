@@ -1,6 +1,6 @@
 {
-  "timestamp": 1775092289.8192756,
-  "duration": 38.657230615615845,
+  "timestamp": 1775094069.2733078,
+  "duration": 36.98713254928589,
   "repository": "C:\\Git\\Agentic-Workflow",
   "results": {
     "terminal": {
@@ -8,12 +8,19 @@
       "scenarios": {
         "file_operations": {
           "name": "File Operations",
-          "success": false,
+          "success": true,
           "tests": [
             {
-              "name": "File operations error",
-              "success": false,
-              "error": "[WinError 2] The system cannot find the file specified"
+              "name": "List files",
+              "success": true,
+              "duration": 0.010059595108032227,
+              "output_lines": 13
+            },
+            {
+              "name": "Read file",
+              "success": true,
+              "duration": 0.008208990097045898,
+              "content_size": 192
             }
           ]
         },
@@ -24,13 +31,13 @@
             {
               "name": "Git status",
               "success": true,
-              "duration": 0.04591250419616699,
+              "duration": 0.047601938247680664,
               "has_changes": true
             },
             {
               "name": "Git log",
               "success": true,
-              "duration": 0.021243810653686523,
+              "duration": 0.023958206176757812,
               "commits_shown": 5
             }
           ]
@@ -42,34 +49,41 @@
             {
               "name": "Execute Python script",
               "success": true,
-              "duration": 0.025676488876342773,
+              "duration": 0.03043675422668457,
               "output": "Hello from test file!"
             },
             {
               "name": "Python version check",
               "success": true,
-              "duration": 0.028446197509765625,
+              "duration": 0.029753923416137695,
               "version": "Python 3.12.10 (tags/v3.12.10:0cc8128, Apr  8 2025, 12:21:36) [MSC v.1943 64 bit (AMD64)]"
             }
           ]
         },
         "system_info": {
           "name": "System Information",
-          "success": false,
+          "success": true,
           "tests": [
             {
-              "name": "System info error",
-              "success": false,
-              "error": "[WinError 2] The system cannot find the file specified"
+              "name": "Current directory",
+              "success": true,
+              "duration": 0.02895498275756836,
+              "directory": "C:\\Git\\Agentic-Workflow"
+            },
+            {
+              "name": "Environment variables",
+              "success": true,
+              "duration": 0.02980208396911621,
+              "env_vars_count": 5
             }
           ]
         }
       },
-      "start_time": 1775092251.1636684,
+      "start_time": 1775094032.2877033,
       "success": true,
       "errors": [],
-      "end_time": 1775092251.2854662,
-      "total_duration": 0.12179780006408691
+      "end_time": 1775094032.5206637,
+      "total_duration": 0.23296046257019043
     },
     "pytest": {
       "server": "pytest",
@@ -81,13 +95,13 @@
             {
               "name": "Discover routing tests",
               "success": true,
-              "duration": 1.52400541305542,
+              "duration": 1.2191884517669678,
               "tests_found": 0
             },
             {
               "name": "Discover all tests",
               "success": true,
-              "duration": 7.686060190200806,
+              "duration": 1.2126328945159912,
               "total_tests": 0
             }
           ]
@@ -98,12 +112,12 @@
           "tests": [
             {
               "name": "Execute routing tests",
-              "success": false,
-              "duration": 0.8782308101654053,
-              "passed": 0,
+              "success": true,
+              "duration": 1.2467248439788818,
+              "passed": 2,
               "failed": 0,
               "errors": 0,
-              "total": 0
+              "total": 2
             }
           ]
         },
@@ -113,10 +127,10 @@
           "tests": [
             {
               "name": "Coverage analysis",
-              "success": false,
-              "duration": 1.079559087753296,
-              "coverage_generated": false,
-              "total_coverage": 0
+              "success": true,
+              "duration": 1.5458600521087646,
+              "coverage_generated": true,
+              "total_coverage": 83.94415357766142
             }
           ]
         },
@@ -127,23 +141,23 @@
             {
               "name": "Pytest version",
               "success": true,
-              "duration": 0.10503220558166504,
+              "duration": 0.11260700225830078,
               "version": "pytest 9.0.2"
             },
             {
               "name": "Configuration check",
               "success": true,
-              "duration": 7.574445724487305,
+              "duration": 9.530687093734741,
               "config_lines": 12528
             }
           ]
         }
       },
-      "start_time": 1775092251.2854662,
+      "start_time": 1775094032.5206637,
       "success": true,
       "errors": [],
-      "end_time": 1775092270.1353624,
-      "total_duration": 18.84989619255066
+      "end_time": 1775094047.390904,
+      "total_duration": 14.870240211486816
     },
     "enhanced_http": {
       "server": "enhanced_http",
@@ -155,24 +169,24 @@
             {
               "name": "GET request",
               "success": true,
-              "duration": 0.5734014511108398,
+              "duration": 0.3808732032775879,
               "status_code": 200,
               "response_size": 307
             },
             {
               "name": "POST request",
               "success": true,
-              "duration": 0.7189083099365234,
+              "duration": 0.670220136642456,
               "status_code": 200,
               "json_response": {
                 "test": "data",
-                "timestamp": 1775092270.746508
+                "timestamp": 1775094047.8249276
               }
             },
             {
               "name": "PUT request",
               "success": true,
-              "duration": 0.4076845645904541,
+              "duration": 0.39623379707336426,
               "status_code": 200
             }
           ]
@@ -184,13 +198,13 @@
             {
               "name": "Bearer token auth",
               "success": true,
-              "duration": 0.4637563228607178,
+              "duration": 0.2933323383331299,
               "authenticated": true
             },
             {
               "name": "Basic auth",
               "success": true,
-              "duration": 0.6110751628875732,
+              "duration": 0.2751312255859375,
               "authenticated": true
             }
           ]
@@ -202,13 +216,13 @@
             {
               "name": "404 handling",
               "success": true,
-              "duration": 0.26487016677856445,
+              "duration": 0.4902055263519287,
               "error_handled": true
             },
             {
               "name": "Timeout handling",
               "success": true,
-              "duration": 2.2219526767730713,
+              "duration": 2.2869672775268555,
               "timeout_handled": true
             }
           ]
@@ -220,19 +234,19 @@
             {
               "name": "Concurrent requests",
               "success": true,
-              "duration": 0.5121650695800781,
+              "duration": 0.6397223472595215,
               "requests_count": 5,
               "success_count": 5,
-              "avg_time_per_request": 0.10243301391601563
+              "avg_time_per_request": 0.1279444694519043
             }
           ]
         }
       },
-      "start_time": 1775092270.1353624,
+      "start_time": 1775094047.390904,
       "success": true,
       "errors": [],
-      "end_time": 1775092275.9540892,
-      "total_duration": 5.8187267780303955
+      "end_time": 1775094052.8822446,
+      "total_duration": 5.491340637207031
     },
     "vector_db": {
       "server": "vector_db",
@@ -244,14 +258,14 @@
             {
               "name": "Index documents",
               "success": true,
-              "duration": 1.3533563613891602,
+              "duration": 1.959697961807251,
               "documents_count": 5,
               "embedding_dimension": 384
             },
             {
               "name": "Verify indexing",
               "success": true,
-              "duration": 0.0009996891021728516,
+              "duration": 0.0015292167663574219,
               "stored_count": 5
             }
           ]
@@ -263,21 +277,21 @@
             {
               "name": "Search: programming languages",
               "success": true,
-              "duration": 0.009018182754516602,
+              "duration": 0.010361194610595703,
               "results_count": 3,
               "top_result": "Python is a popular programming language"
             },
             {
               "name": "Search: version control systems",
               "success": true,
-              "duration": 0.0024046897888183594,
+              "duration": 0.005518198013305664,
               "results_count": 3,
               "top_result": "Git is used for version control"
             },
             {
               "name": "Search: containerization technology",
               "success": true,
-              "duration": 0.004707813262939453,
+              "duration": 0.0060520172119140625,
               "results_count": 3,
               "top_result": "Docker containers help with application deployment"
             }
@@ -290,19 +304,19 @@
             {
               "name": "List collections",
               "success": true,
-              "duration": 0.0005180835723876953,
+              "duration": 0.0,
               "collection_count": 1
             },
             {
               "name": "Collection info",
               "success": true,
-              "duration": 0.0005176067352294922,
+              "duration": 0.0,
               "document_count": 5
             },
             {
               "name": "Delete collection",
               "success": true,
-              "duration": 0.0030562877655029297
+              "duration": 0.0025544166564941406
             }
           ]
         },
@@ -313,32 +327,32 @@
             {
               "name": "Embed batch 10",
               "success": true,
-              "duration": 0.003535747528076172,
+              "duration": 0.00613713264465332,
               "batch_size": 10,
-              "docs_per_second": 2828.2562373567093
+              "docs_per_second": 1629.425430247465
             },
             {
               "name": "Embed batch 50",
               "success": true,
-              "duration": 0.011922359466552734,
+              "duration": 0.009513616561889648,
               "batch_size": 50,
-              "docs_per_second": 4193.8007439107305
+              "docs_per_second": 5255.624890359121
             },
             {
               "name": "Embed batch 100",
               "success": true,
-              "duration": 0.011670112609863281,
+              "duration": 0.01752638816833496,
               "batch_size": 100,
-              "docs_per_second": 8568.897605622293
+              "docs_per_second": 5705.68214280856
             }
           ]
         }
       },
-      "start_time": 1775092275.9546142,
+      "start_time": 1775094052.8822446,
       "success": true,
       "errors": [],
-      "end_time": 1775092283.2886446,
-      "total_duration": 7.334030389785767
+      "end_time": 1775094061.73633,
+      "total_duration": 8.854085445404053
     },
     "integration": {
       "terminal_pytest": {
@@ -347,10 +361,10 @@
         "tests": [
           {
             "name": "Terminal pytest execution",
-            "success": false,
-            "duration": 0.9342246055603027,
-            "test_results": 0,
-            "exit_code": 4
+            "success": true,
+            "duration": 1.170985460281372,
+            "test_results": 1,
+            "exit_code": 0
           }
         ]
       },
@@ -361,7 +375,7 @@
           {
             "name": "HTTP to Vector DB workflow",
             "success": true,
-            "duration": 1.3630790710449219,
+            "duration": 1.5055890083312988,
             "content_size": 292,
             "indexed": true
           }
@@ -373,13 +387,13 @@
         "tests": [
           {
             "name": "Complete workflow",
-            "success": false,
-            "duration": 2.1466264724731445,
+            "success": true,
+            "duration": 2.6752068996429443,
             "steps_completed": 4,
             "git_success": true,
             "http_success": true,
             "vector_db_success": true,
-            "pytest_success": false
+            "pytest_success": true
           }
         ]
       }
@@ -392,10 +406,10 @@
           {
             "name": "Concurrent HTTP requests",
             "success": true,
-            "duration": 0.9508512020111084,
+            "duration": 1.078963279724121,
             "requests_count": 10,
             "success_rate": 1.0,
-            "avg_time_per_request": 0.09508512020111085
+            "avg_time_per_request": 0.10789632797241211
           }
         ]
       },
@@ -406,10 +420,10 @@
           {
             "name": "Large batch embedding",
             "success": true,
-            "duration": 0.019366979598999023,
+            "duration": 0.01980137825012207,
             "document_count": 100,
             "embedding_dimension": 384,
-            "docs_per_second": 5163.427755413573
+            "docs_per_second": 5050.153516429268
           }
         ]
       },
@@ -420,11 +434,11 @@
           {
             "name": "Memory stress test",
             "success": true,
-            "baseline_memory_mb": 1706.84375,
-            "peak_memory_mb": 1710.78125,
-            "final_memory_mb": 1696.52734375,
-            "memory_increase_mb": 3.9375,
-            "memory_recovered_mb": 14.25390625
+            "baseline_memory_mb": 1732.49609375,
+            "peak_memory_mb": 1736.22265625,
+            "final_memory_mb": 1703.55859375,
+            "memory_increase_mb": 3.7265625,
+            "memory_recovered_mb": 32.6640625
           }
         ]
       }

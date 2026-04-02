@@ -28,6 +28,7 @@ try:
     from mcp.server import Server
     from mcp.server.models import InitializationOptions
     from mcp.server.stdio import stdio_server
+    from mcp.server.lowlevel.server import NotificationOptions
     from mcp.types import (
         CallToolRequest,
         CallToolResult,
@@ -40,8 +41,8 @@ except ImportError:
     print("MCP SDK not found. Install with: pip install mcp", file=sys.stderr)
     sys.exit(1)
 
-# Configure logging
-logging.basicConfig(level=logging.INFO)
+# Configure logging - use stderr to avoid interfering with MCP protocol on stdout
+logging.basicConfig(level=logging.INFO, stream=sys.stderr)
 logger = logging.getLogger(__name__)
 
 # Configuration
@@ -520,7 +521,7 @@ class VectorDBMCPServer:
     async def _get_collection_info(self, args: dict[str, Any]) -> CallToolResult:
         """Get detailed information about a collection"""
         if not self.chroma_client:
-            return CallResult(
+            return CallToolResult(
                 content=[TextContent(type="text", text="ChromaDB client not initialized")],
                 isError=True
             )
@@ -762,7 +763,11 @@ async def main():
                 server_name="vector-db",
                 server_version="1.0.0",
                 capabilities=server_instance.server.get_capabilities(
-                    notification_options=None,
+                    notification_options=NotificationOptions(
+                        prompts_changed=False,
+                        resources_changed=False,
+                        tools_changed=False,
+                    ),
                     experimental_capabilities=None,
                 ),
             ),
