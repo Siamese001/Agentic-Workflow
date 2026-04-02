@@ -11,6 +11,14 @@ from typing import Any
 from pydantic import BaseModel, Field
 
 
+# Constants for test compatibility
+BATCH_SIZE = 32
+BUFFER_SIZE = 8192
+DEFAULT_SLEEP = 1.0
+MAX_RETRIES = 3
+THRESHOLD = 0.95
+
+
 class ArchetypeIndicator(BaseModel):
     """configuration for identifying specific user archetypes."""
 

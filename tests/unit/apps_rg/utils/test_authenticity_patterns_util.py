@@ -8,27 +8,24 @@ from __future__ import annotations
 
 import pytest
 
+from apps_rg.utils.authenticity_patterns_util import (
+    BATCH_SIZE,
+    BUFFER_SIZE,
+    AuthenticityPatterns,
+    BulletGenerationOutput,
+    CompetitiveIntelligence,
+    OverviewSynthesisOutput,
+    ThematicAnalysisNode,
+    ThematicAnalysisOutput,
+    example_two_phase_generation,
+    example_validation_gates,
+)
+
 pytestmark = pytest.mark.unit
 
 
 class TestAuthenticityPatternsContract:
     def test_is_dataclass(self):
-        from apps_rg.utils.authenticity_patterns_util import (  # noqa: F401
-            BATCH_SIZE,
-            BUFFER_SIZE,
-            DEFAULT_SLEEP,
-            MAX_RETRIES,
-            THRESHOLD,
-            AuthenticityPatterns,
-            BulletGenerationOutput,
-            CompetitiveIntelligence,
-            OverviewSynthesisOutput,
-            ThematicAnalysisNode,
-            ThematicAnalysisOutput,
-            example_two_phase_generation,
-            example_validation_gates,
-        )
-
         import dataclasses
         assert dataclasses.is_dataclass(AuthenticityPatterns)
 

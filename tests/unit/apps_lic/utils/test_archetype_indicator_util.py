@@ -8,25 +8,25 @@ from __future__ import annotations
 
 import pytest
 
+from apps_lic.utils.archetype_indicator_util import (
+    BATCH_SIZE,
+    BUFFER_SIZE,
+    DEFAULT_SLEEP,
+    MAX_RETRIES,
+    THRESHOLD,
+    ArchetypeIndicator,
+    ProfileAnalysisConfig,
+    ResearchConfig,
+    RouteConditions,
+    RouteConstraints,
+    SenderGroundingConfig,
+)
+
 pytestmark = pytest.mark.unit
 
 
 class TestArchetypeIndicatorContract:
     def test_is_class(self):
-        from apps_lic.utils.archetype_indicator_util import (  # noqa: F401
-            BATCH_SIZE,
-            BUFFER_SIZE,
-            DEFAULT_SLEEP,
-            MAX_RETRIES,
-            THRESHOLD,
-            ArchetypeIndicator,
-            ProfileAnalysisConfig,
-            ResearchConfig,
-            RouteConditions,
-            RouteConstraints,
-            SenderGroundingConfig,
-        )
-
         assert isinstance(ArchetypeIndicator, type)
 
     def test_instantiable_or_abstract(self):

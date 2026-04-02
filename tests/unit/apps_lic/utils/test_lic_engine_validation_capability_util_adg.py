@@ -2,14 +2,13 @@
 from __future__ import annotations
 
 import pytest
+from apps_lic.utils.lic_engine_validation_capability_util import LICEngineValidationCapability
 
 pytestmark = pytest.mark.unit
 
 
 class TestLICEngineValidationCapability:
     def test_importable(self):
-        from apps_lic.utils.lic_engine_validation_capability_util import LICEngineValidationCapability
-
         assert callable(LICEngineValidationCapability)
 
     def test_signal_name_default_empty(self):

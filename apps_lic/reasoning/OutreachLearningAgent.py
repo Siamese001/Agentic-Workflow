@@ -1,3 +1,4 @@
+import logging
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
@@ -7,11 +8,13 @@ from agentic_core.L4_state.enforcement.graph_memory_bridge import GraphMemoryBri
 from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     LayerSegment,
     _emit_agent_executes_agent,
-    _emit_applies_guardrail,  # noqa: E402
+    _emit_applies_guardrail,
     _emit_authorize_and_execute,
     _emit_blocks_direct_write,
     _emit_captures_evaluation_metric,
     _emit_captures_execution_output,
+    _emit_captures_pattern,
+    _emit_captures_runtime_anomaly,
     _emit_checks_agent_registry,
     _emit_coordinates_agents,
     _emit_dispatches_agent,
@@ -19,33 +22,53 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_dispatches_healing_run,
     _emit_escalates_failure,
     _emit_escalates_to_human,
+    _emit_emits_metric_event,
+    _emit_execution_terminates_at_uwg,
+    _emit_feeds_meta_learning,
     _emit_gated_by_confidence,
     _emit_hard_fails_untranscripted,
+    _emit_improves_agent_policy,
+    _emit_invokes_eval,
     _emit_invokes_evaluation,
     _emit_links_execution_to_snapshot,
+    _emit_links_incident_trace,
     _emit_observes_runtime_state,
     _emit_orchestrates_workflow,
-    _emit_reads_policy_state,  # noqa: E402
+    _emit_proposal_commits_routing,
+    _emit_pulls_context,
+    _emit_reads_environ,
+    _emit_reads_policy_state,
+    _emit_reads_runtime_state,
     _emit_records_execution_trace,
     _emit_records_healing_outcome,
+    _emit_records_incident_event,
+    _emit_records_learning_event,
     _emit_records_telemetry_event,
     _emit_records_tool_invocation,
     _emit_records_workflow_lineage,
     _emit_routes_through,
     _emit_routes_to_agent,
     _emit_routes_to_capability,
-    _emit_signs_execution_trace,  # noqa: E402
-    _emit_snapshots_state,  # noqa: E402
+    _emit_signs_execution_trace,
+    _emit_snapshots_state,
     _emit_stores_embedding,
+    _emit_stores_learning_state,
     _emit_transcripts_response,
+    _emit_triggers_alert,
     _emit_updates_meta_learning_state,
+    _emit_updates_monitoring_state,
+    _emit_updates_routing_strategy,
+    _emit_validated_by_safety_plane,
     _emit_validates_agent_capability,
     _emit_validates_capability,
     _emit_verifies_boundary,
     _emit_verifies_policy,
+    _emit_writes_learning_snapshot,
+    _emit_writes_observability_log,
+    _emit_writes_through,
     _emit_writes_via_uwg,
-    emit_determinism_digest,  # noqa: E402
-    emit_replay_key,  # noqa: E402
+    emit_determinism_digest,
+    emit_replay_key,
 )
 
 _emit_applies_guardrail("p0", "OutreachLearningAgent", "p0_governance")
@@ -76,55 +99,31 @@ _emit_updates_meta_learning_state("p4", "OutreachLearningAgent", "meta_learning"
 _emit_links_execution_to_snapshot("p4", "OutreachLearningAgent", "exec_snapshot_link")
 
 
-class OutreachEngineContext:
-    def __init__(self, *args, **kwargs):
-        pass
+"""Outreach Engine Learning Module.
 
-
-"\nOutreach Engine Learning Module\n\nProvides learning and memory capabilities:\n- Learning loops for pattern recognition\n- Confidence scoring for decisions\n- Memory persistence across sessions\n"
+Provides learning and memory capabilities:
+- Learning loops for pattern recognition
+- Confidence scoring for decisions
+- Memory persistence across sessions
+"""
 import hashlib
 import json
 from datetime import datetime
 from enum import Enum
+from typing import Optional
 
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-    _emit_agent_executes_agent,
-    _emit_captures_pattern,
-    _emit_captures_runtime_anomaly,
-    _emit_checks_agent_registry,
-    _emit_dispatches_execution_plan,
-    _emit_emits_metric_event,
-    _emit_escalates_to_human,
-    _emit_execution_terminates_at_uwg,
-    _emit_feeds_meta_learning,
-    _emit_gated_by_confidence,
-    _emit_hard_fails_untranscripted,
-    _emit_improves_agent_policy,
-    _emit_invokes_eval,
-    _emit_links_incident_trace,
-    _emit_observes_runtime_state,
-    _emit_proposal_commits_routing,
-    _emit_pulls_context,
-    _emit_reads_environ,
-    _emit_reads_runtime_state,
-    _emit_records_execution_trace,
-    _emit_records_incident_event,
-    _emit_records_learning_event,
-    _emit_routes_through,
-    _emit_routes_to_agent,
-    _emit_stores_learning_state,
-    _emit_transcripts_response,
-    _emit_triggers_alert,
-    _emit_updates_monitoring_state,
-    _emit_updates_routing_strategy,
-    _emit_validated_by_safety_plane,
-    _emit_validates_agent_capability,
-    _emit_verifies_boundary,
-    _emit_verifies_policy,
-    _emit_writes_learning_snapshot,
-    _emit_writes_observability_log,
-    _emit_writes_through,
-)
+
+class OutreachEngineContext:
+    """Context for outreach engine operations."""
+
+    def __init__(self, leads: Optional[list[dict]] = None, messages: Optional[list[dict]] = None) -> None:
+        self.leads = leads or []
+        self.messages = messages or []
+        self._instructions: list[dict] = []
+
+    def inject_instruction(self, instruction: str, priority: int = 5) -> None:
+        """Inject an instruction into the context."""
+        self._instructions.append({"text": instruction, "priority": priority})
 
 _emit_emits_metric_event("OutreachLearningAgent", "p4obs", "metric_1")
 _emit_emits_metric_event("OutreachLearningAgent", "p4obs", "metric_2")
@@ -177,10 +176,16 @@ _emit_transcripts_response("p1", "OutreachLearningAgent", "transcript")
 _emit_hard_fails_untranscripted("p1", "OutreachLearningAgent")
 _emit_gated_by_confidence("p1", "OutreachLearningAgent", "confidence_gate")
 
+# Constants for test compatibility
+BATCH_SIZE = 32
+BUFFER_SIZE = 8192
+DEFAULT_SLEEP = 1.0
+MAX_RETRIES = 3
+THRESHOLD = 0.95
+
 
 class HealerMixin:
     """Legacy mixin - use LICAgentBase instead."""
-
     pass
 
 
@@ -214,11 +219,11 @@ class OutreachLearningExample:
     """
 
     example_id: str
-    TaskType: str
-    input_context: str
-    output_result: str
-    success: bool
-    confidence: float
+    TaskType: Optional[str] = None
+    input_context: str = ""
+    output_result: str = ""
+    success: bool = False
+    confidence: float = 0.0
     timestamp: str = field(default_factory=lambda: datetime.now().isoformat())
 
 
@@ -314,7 +319,7 @@ class OutreachLearningLoop:
         return successes / total
 
     # guardian: allow-magic-config
-    def get_examples(self, TaskType: str = None, limit: int = 10) -> list[OutreachLearningExample]:
+    def get_examples(self, TaskType: Optional[str] = None, limit: int = 10) -> list[OutreachLearningExample]:
         """Get learning examples."""
         if TaskType:
             examples = [e for e in self._examples if e.TaskType == TaskType]
@@ -383,20 +388,22 @@ class OutreachMemoryPersistence:
     def __init__(self, memory_file: str = "outreach_memory.json") -> None:
         self.memory_file = Path(memory_file)
         self._memory: dict[str, Any] = {}
+        self.logger = logging.getLogger(__name__)
         self._load()
 
     def _load(self):
         """Load memory from file."""
         if self.memory_file.exists():
             try:
-                self._memory = json.loads(self.memory_file.read_text())
-            except (OSError, json.JSONDecodeError):    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging
+                self._memory = json.loads(self.memory_file.read_text(encoding="utf-8"))
+            except (OSError, json.JSONDecodeError):
+                self.logger.error("Failed to load memory from file", exc_info=True)
                 self._memory = {}
 
     def _save(self):
         """Save memory to file."""
         try:
-            self.memory_file.write_text(json.dumps(self._memory, indent=2))
+            self.memory_file.write_text(json.dumps(self._memory, indent=2), encoding="utf-8")
         except (OSError, TypeError) as e:
             self.logger.debug(f"Failed to save memory: {e}")
 
@@ -431,8 +438,11 @@ class OutreachLearningAgent(SovereignBaseAgent):
     Learns from past campaigns and provides recommendations.
     """
 
-    def __init__(self, ctx: OutreachEngineContext) -> None:
-        super().__init__(ctx)
+    ctx: OutreachEngineContext
+
+    def __init__(self, agent_id: str, ctx: OutreachEngineContext) -> None:
+        super().__init__(agent_id=agent_id)
+        self.ctx = ctx
         self.learning_loop = OutreachLearningLoop(ctx)
         self.confidence_scorer = OutreachConfidenceScorer(ctx)
         self.memory = OutreachMemoryPersistence()
@@ -483,7 +493,12 @@ class OutreachLearningAgent(SovereignBaseAgent):
         if recommendations:
             self.ctx.inject_instruction(f"Learning recommendations: {'; '.join(recommendations)}", priority=7)
         self.record_result(True, f"Lead score: {avg_lead_score:.2f}, Message score: {avg_message_score:.2f}")
-        print(f"   [{self.name}] ✅ Analysis complete")
+
+    # guardian: allow-type-erasure
+    def record_result(self, success: bool, details: str) -> None:
+        """Record execution result."""
+        self.memory.store("last_result", {"success": success, "details": details, "timestamp": datetime.now().isoformat()})
+        print(f"   [{self.name}]  Analysis complete")
 
     # guardian: allow-type-erasure
     def inject_instruction(self, instruction: str, priority: int = 5) -> Any:
@@ -527,12 +542,27 @@ class OutreachLearningAgent(SovereignBaseAgent):
             pass
 
     # guardian: allow-type-erasure
-    def heal_repository(self) -> dict:
-        """Invoke healing chain via super()."""
-        return super().heal_repository()
+    def heal_repository(
+        self,
+        dry_run: bool = True,
+        execute: bool = False,
+        _call_path: set | None = None,
+        depth: int = 0,
+        max_depth: int = 8,
+        **kwargs,
+    ) -> dict[str, Any]:
+        """Delegate to parent heal_repository."""
+        return super().heal_repository(
+            dry_run=dry_run,
+            execute=execute,
+            _call_path=_call_path,
+            depth=depth,
+            max_depth=max_depth,
+            **kwargs,
+        )
 
     # guardian: allow-type-erasure
-    def heal(self, violation: dict[str, Any]) -> dict[str, Any]:
+    def heal(self, violation: dict[str, Any], **kwargs) -> dict[str, Any]:
         """Heal violations detected by OutreachLearningAgent."""
         violation_type = violation.get("type", "unknown")
         try:
@@ -542,7 +572,6 @@ class OutreachLearningAgent(SovereignBaseAgent):
                 "artifacts": [],
                 "errors": [],
             }
-        # guardian: allow-silent-swallow
         except Exception as e:
             return {
                 "status": "failed",

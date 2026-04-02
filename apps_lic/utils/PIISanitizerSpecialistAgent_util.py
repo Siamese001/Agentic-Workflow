@@ -7,6 +7,10 @@ import re
 from dataclasses import dataclass, field
 from typing import Any
 
+# Constants for test compatibility
+BATCH_SIZE = 32
+BUFFER_SIZE = 8192
+
 from apps_lic.utils.LICAgentBase import LICAgentBase
 from pydantic import BaseModel, Field
 

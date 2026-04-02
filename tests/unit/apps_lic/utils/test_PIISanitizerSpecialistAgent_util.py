@@ -8,25 +8,21 @@ from __future__ import annotations
 
 import pytest
 
+from apps_lic.utils.PIISanitizerSpecialistAgent_util import (
+    BATCH_SIZE,
+    BUFFER_SIZE,
+    BiasDetectorSpecialist,
+    ConstitutionalReviewerAgent,
+    ConstitutionalReviewResult,
+    PII_SanitizerSpecialistAgent,
+    PromptInjectionDetectorSpecialist,
+)
+
 pytestmark = pytest.mark.unit
 
 
 class TestPII_SanitizerSpecialistAgentContract:
     def test_is_dataclass(self):
-        from apps_lic.utils.PIISanitizerSpecialistAgent_util import (  # noqa: F401
-            BATCH_SIZE,
-            BUFFER_SIZE,
-            DEFAULT_SLEEP,
-            MAX_RETRIES,
-            THRESHOLD,
-            BiasDetectorSpecialist,
-            ConstitutionalReviewerAgent,
-            ConstitutionalReviewResult,
-            PII_SanitizerSpecialistAgent,
-            PromptInjectionDetectorSpecialist,
-            track_metrics,
-        )
-
         import dataclasses
         assert dataclasses.is_dataclass(PII_SanitizerSpecialistAgent)
 

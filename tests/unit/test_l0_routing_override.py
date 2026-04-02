@@ -10,6 +10,8 @@ from __future__ import annotations
 
 import re
 
+from agentic_core.L5_safety.config.structure_blueprint import LAYER_OVERRIDES
+
 
 class TestL0RoutingOverrideModelA:
     """Assert LAYER_OVERRIDES['L0_routing'] encodes Model A exactly."""
@@ -25,10 +27,6 @@ class TestL0RoutingOverrideModelA:
     # 1. Key existence
     # ------------------------------------------------------------------
     def test_layer_overrides_has_l0_routing(self):
-        from agentic_core.L5_safety.config.structure_blueprint import (
-            LAYER_OVERRIDES,
-        )
-
         assert "L0_routing" in LAYER_OVERRIDES
 
     def test_purpose_key_exists(self):

@@ -8,23 +8,23 @@ from __future__ import annotations
 
 import pytest
 
+from apps_rg.validators.regeneration_validator import (
+    BATCH_SIZE,
+    BUFFER_SIZE,
+    DEFAULT_SLEEP,
+    MAX_RETRIES,
+    THRESHOLD,
+    CondensationStrategy,
+    ExpansionStrategy,
+    RegenerationEngine,
+    RegenerationStrategy,
+)
+
 pytestmark = pytest.mark.unit
 
 
 class TestRegenerationStrategyContract:
     def test_is_class(self):
-        from apps_rg.validators.regeneration_validator import (  # noqa: F401
-            BATCH_SIZE,
-            BUFFER_SIZE,
-            DEFAULT_SLEEP,
-            MAX_RETRIES,
-            THRESHOLD,
-            CondensationStrategy,
-            ExpansionStrategy,
-            RegenerationEngine,
-            RegenerationStrategy,
-        )
-
         assert isinstance(RegenerationStrategy, type)
 
     def test_has_method_execute(self):
