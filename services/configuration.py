@@ -1,36 +1,25 @@
-"""Services module for shared system services."""
+"""Configuration service for application settings."""
+
 from __future__ import annotations
 
-import logging
 from typing import Any
 
 
 class ConfigurationService:
-    """Service for managing system configuration."""
-
-    _instance: ConfigurationService | None = None
-    _config: dict[str, Any] = {}
-
-    def __new__(cls) -> ConfigurationService:
-        if cls._instance is None:
-            cls._instance = super().__new__(cls)
-            cls._instance._initialized = False
-        return cls._instance
+    """Service for managing application configuration."""
 
     def __init__(self) -> None:
-        if self._initialized:
-            return
-        self._initialized = True
-        self.Logger = logging.getLogger(__name__)
-        self.data: Any = None
+        """Initialize configuration service."""
+        self._config: dict[str, Any] = {}
 
-    def get_config(self, key: str, default: Any = None) -> Any:
+    def get(self, key: str, default: Any = None) -> Any:
         """Get configuration value by key."""
         return self._config.get(key, default)
 
-    def set_config(self, key: str, value: Any) -> None:
+    def set(self, key: str, value: Any) -> None:
         """Set configuration value."""
         self._config[key] = value
 
-
-__all__ = ["ConfigurationService"]
+    def load_from_env(self) -> None:
+        """Load configuration from environment variables."""
+        pass

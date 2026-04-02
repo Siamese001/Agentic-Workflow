@@ -1,5 +1,4 @@
-"""Services package for shared system services."""
-from __future__ import annotations
+"""Services module for shared application services."""
 
 from services.configuration import ConfigurationService
 
