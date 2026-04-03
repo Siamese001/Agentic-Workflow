@@ -93,14 +93,14 @@ def validate_plan_location(file_path: str) -> tuple[bool, list[str]]:
 
     path = Path(file_path)
 
-    # Must be in docs/reports/plans/
-    if not str(path).startswith("docs/reports/plans/"):
-        issues.append(f"Plan path {file_path} not in SSOT location docs/reports/plans/")
+    # Must be in .windsurf/plans/
+    if ".windsurf/plans/" not in str(path).replace("\\", "/"):
+        issues.append(f"Plan path {file_path} not in SSOT location .windsurf/plans/")
         return False, issues
 
-    # Check for .windsurf/plans/ violation
-    if ".windsurf" in str(path):
-        issues.append(f"Plan path {file_path} violates SSOT (contains .windsurf)")
+    # Check for user home directory violation
+    if str(path).startswith("C:\\Users\\") or str(path).startswith("/Users/"):
+        issues.append(f"Plan path {file_path} violates SSOT (in user home directory)")
         return False, issues
 
     return True, []

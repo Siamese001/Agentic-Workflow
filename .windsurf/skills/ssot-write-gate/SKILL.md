@@ -14,14 +14,14 @@ Validates every artifact write target against SSOT sovereign territories before 
 
 - **`path_validation_checklist.md`** — Pre-write checklist. Given a target path, validates: (1) path is inside repository root, (2) root folder is in PROJECT_ROOT_WHITELIST, (3) artifact type maps to correct SSOT directory. BLOCKS write if any check fails.
 
-- **`artifact_type_resolver.md`** — Lookup table mapping artifact type → canonical SSOT path. Plans → `docs/reports/plans/`. Evidence → `docs/reports/plans/`. Telemetry → `docs/reports/telemetry/`. Freeze reports → `data/freeze_reports/`. Governance → `docs/reports/governance/`.
+- **`artifact_type_resolver.md`** — Lookup table mapping artifact type → canonical SSOT path. Plans → `.windsurf/plans/`. Evidence → `.windsurf/plans/`. Telemetry → `docs/reports/telemetry/`. Freeze reports → `data/freeze_reports/`. Governance → `docs/reports/governance/`.
 
 ## When to use
 
 - Before writing ANY `.md` plan, report, or evidence file
 - Before writing ANY `.json` artifact, registry, or snapshot
 - Before writing ANY `.py` script to a directory not yet confirmed as SSOT-approved
-- When a path contains `C:\Users\`, `.windsurf/plans/`, or any absolute user-home path
+- When a path contains `C:\Users\`, or any absolute user-home path
 
 ## Path Validation Rules (ALL must pass)
 
@@ -29,13 +29,17 @@ Validates every artifact write target against SSOT sovereign territories before 
 2. **Whitelist check** — First path component MUST be in `PROJECT_ROOT_WHITELIST`:
    `agentic_core`, `apps_rg`, `apps_lic`, `apps_shared`, `ops_scripts`, `tests`, `docs`, `data`, `tools`, `artifacts`, `system_learning`
 3. **Artifact type check** — Artifact type MUST match canonical directory per `artifact_type_resolver.md`
-4. **No IDE-system paths** — NEVER write to `.windsurf/plans/`, `.cursor/`, `.vscode/` for project artifacts
+4. **No IDE-system paths** — NEVER write to `.cursor/`, `.vscode/` for project artifacts
 
 ## Canonical Paths Quick Reference
 
 | Artifact Type | Canonical Path |
 |---|---|
-| Plans / evidence / RCAs | `docs/reports/plans/` |
+| Path Pattern | Verdict |
+|---|---|
+| `.windsurf/plans/` | APPROVED for plans, evidence, RCAs |
+| `.windsurf/skills/` | Only for skill SKILL.md and supporting files |
+| Plans / evidence / RCAs | `.windsurf/plans/` |
 | Governance reports | `docs/reports/governance/` |
 | Telemetry | `docs/reports/telemetry/` |
 | Freeze reports | `data/freeze_reports/` |
@@ -44,6 +48,6 @@ Validates every artifact write target against SSOT sovereign territories before 
 
 ## Constitutional Requirements Enforced
 
-- **§8:** All plans and reports MUST reside in `docs/reports/plans/`
+- **§8:** All plans and reports MUST reside in `.windsurf/plans/`
 - **§2.1:** Evidence files MUST be within repository sovereign territories
-- **DOCS_REPORTS_PLANS constant:** `agentic_core/L5_safety/config/structure_blueprint_config.py`
+- **IDE system paths:** `.windsurf/plans/`, `.windsurf/skills/`, `.windsurf/workflows/`

@@ -9,10 +9,10 @@ Use this BEFORE choosing a write target path.
 
 | Artifact Type | Canonical Path | SSOT Reference |
 |---|---|---|
-| Plans (implementation plans) | `docs/reports/plans/` | `DOCS_REPORTS_PLANS` constant |
-| Evidence files (phase evidence) | `docs/reports/plans/` | `DOCS_REPORTS_PLANS` constant |
-| RCA files | `docs/reports/plans/` | `DOCS_REPORTS_PLANS` constant |
-| Gap analysis reports | `docs/reports/plans/` | `DOCS_REPORTS_PLANS` constant |
+| Plans (implementation plans) | `.windsurf/plans/` | IDE system territory |
+| Evidence files (phase evidence) | `.windsurf/plans/` | IDE system territory |
+| RCA files | `.windsurf/plans/` | IDE system territory |
+| Gap analysis reports | `.windsurf/plans/` | IDE system territory |
 | Governance reports | `docs/reports/governance/` | sovereign territory |
 | Telemetry reports | `docs/reports/telemetry/` | sovereign territory |
 | Security reports | `docs/reports/security/` | sovereign territory |
@@ -64,11 +64,11 @@ Use this BEFORE choosing a write target path.
 
 ## SSOT Constants Reference
 
-Key constants in `agentic_core/L5_safety/config/structure_blueprint_config.py`:
+Key IDE system paths:
 
-```python
-DOCS_REPORTS_PLANS = "docs/reports/plans"
-FREEZE_REPORTS_DIR = "data/freeze_reports"
-TOOLS_DIR = "tools"
-SYSTEM_LEARNING_DIR = "system_learning"
+```
+.windsurf/plans/       — Execution plans, RCAs, evidence
+.windsurf/skills/      — Skill definitions
+.windsurf/workflows/    — Workflow definitions
+.windsurf/rules/        — Windsurf rules
 ```

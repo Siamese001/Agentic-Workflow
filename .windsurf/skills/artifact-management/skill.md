@@ -33,14 +33,14 @@ Consolidated skill that merges `evidence-bundle`, `ssot-write-gate`, and `progre
 2. **Whitelist check** — First path component MUST be in `PROJECT_ROOT_WHITELIST`:
    `agentic_core`, `apps_rg`, `apps_lic`, `apps_shared`, `ops_scripts`, `tests`, `docs`, `data`, `tools`, `artifacts`, `system_learning`
 3. **Artifact type check** — Artifact type MUST match canonical directory per `artifact_type_resolver.md`
-4. **No IDE-system paths** — NEVER write to `.windsurf/plans/`, `.cursor/`, `.vscode/` for project artifacts
+4. **No IDE-system paths** — NEVER write to `.cursor/`, `.vscode/` for project artifacts
 
 ## Canonical Paths Quick Reference
 
 | Artifact Type | Canonical Path |
 |---|---|
-| Plans / evidence / RCAs | `docs/reports/plans/` |
-| Governance reports | `docs/reports/governance/` |
+| Plans / evidence / RCAs | `.windsurf/plans/` |
+| Governance reports | `.windsurf/plans/` |
 | Telemetry | `docs/reports/telemetry/` |
 | Freeze reports | `data/freeze_reports/` |
 | Architecture docs | `docs/architecture/` |
@@ -154,7 +154,7 @@ tracker.complete(f"Processed {total_items} items")
 
 ## Constitutional Requirements Enforced
 
-- **§8:** All plans and reports MUST reside in `docs/reports/plans/`
+- **§8:** All plans and reports MUST reside in `.windsurf/plans/`
 - **§2.1:** Evidence files MUST be within repository sovereign territories
 - **§5.3:** Query timeout & progress reporting requirements
 - **DOCS_REPORTS_PLANS constant:** `agentic_core/L5_safety/config/structure_blueprint_config.py`
@@ -182,7 +182,7 @@ When creating RCA documents, this skill ensures:
 ## Forbidden Patterns
 
 - ❌ Writing artifacts outside repository sovereign territories
-- ❌ Using `.windsurf/plans/` for project artifacts
+- ❌ Using `docs/reports/plans/` for IDE-generated plans
 - ❌ Long operations (>5s) without progress display
 - ❌ Unbounded file operations (processing unlimited files)
 - ❌ Missing PowerShell compatibility

@@ -6,14 +6,13 @@ trigger: always_on
 Plans MUST always be saved to the SSOT-approved location:
 
 ```
-docs/reports/plans/
+.windsurf/plans/
 ```
 
 ## Hard Constraints — Location
 
 - **NEVER** save plans to `C:\Users\amita\.windsurf\plans\` or any path outside the repository
-- **NEVER** save plans to `.windsurf/plans/` inside the repository
-- **ALWAYS** use `docs/reports/plans/<filename>.md` as the canonical plan path
+- **ALWAYS** use `.windsurf/plans/<filename>.md` as the canonical plan path
 - Plan filenames should be descriptive with a short hex suffix (e.g. `execute-ssot-streamlining-hardened.md`)
 
 ## Hard Constraints — Format (Execution Plans)
@@ -31,15 +30,13 @@ A plan without a wave summary table and token estimates is **invalid and must no
 
 ## Why
 
-- `docs/reports/plans/` is the SSOT-approved territory defined in `SOVEREIGN_TERRITORIES` and `structure_blueprint_config.py` (`DOCS_REPORTS_PLANS = "docs/reports/plans"`)
-- Paths outside the repository (`C:\Users\amita\.windsurf\plans\`) are not in `PROJECT_ROOT_WHITELIST` and violate sovereignty rules
-- `.windsurf/plans/` inside the repo is a Windsurf system directory, not a sovereign plans territory
-- Wave table and token estimates are mandated by `plan_ci_enforcement.md` §10.1/§10.2 but Windsurf plan mode system instructions do not reference them — this rule compensates for that gap
+- `.windsurf/plans/` is the SSOT-approved territory for Windsurf-generated execution plans
+- Paths outside the repository (`C:\Users\amita\.windsurf\plans\`) violate sovereignty rules
+- Plans are IDE-system metadata, not project documentation, and belong in `.windsurf/`
+- Wave table and token estimates are mandated by `plan_ci_enforcement.md` §10.1/§10.2
 
 ## Reference
 
-- SSOT constant: `agentic_core/L5_safety/config/structure_blueprint_config.py` → `DOCS_REPORTS_PLANS`
-- RCA: `docs/reports/plans/RCA_windsurf_plans_violation.md`
 - Plan template: `.windsurf/templates/execution-plan-template.md`
 - Token estimator: `agentic_core/planning/token_estimator.py`
 - Enforcement rules: `.windsurf/rules/plan_ci_enforcement.md`
