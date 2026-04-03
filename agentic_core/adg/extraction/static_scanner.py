@@ -1164,8 +1164,6 @@ def _emit_layer_violation_edges(result: ScanResult) -> list[Edge]:
     return violations
 
 
-
-
 # ---------------------------------------------------------------------------
 # Phase 3a: Block Decomposition Visitor — closes Node Granularity gap
 # Creates block-level nodes (code_block, control_branch) with decomposes_into
@@ -1175,8 +1173,6 @@ def _emit_layer_violation_edges(result: ScanResult) -> list[Edge]:
 
 _BLOCK_COMPLEXITY_THRESHOLD = 2  # min control-flow stmts to decompose a function
 _MAX_BLOCKS_PER_FUNC = 10  # cap block nodes per function
-
-
 
 
 # ---------------------------------------------------------------------------
