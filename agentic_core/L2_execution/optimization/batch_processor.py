@@ -12,7 +12,7 @@ from dataclasses import dataclass, field
 from typing import Any, Callable, Generic, TypeVar
 
 from agentic_core.L2_execution.optimization.cpu_optimizer import (
-    AMDCPUOptimizer,
+    AMD9950X3DOptimizer,
     CPUConfig,
 )
 
@@ -89,7 +89,7 @@ class BatchProcessor(Generic[T, R]):
         self.processor_func = processor_func
         self.batch_size = batch_size
         self.error_isolation = error_isolation
-        self.optimizer = AMDCPUOptimizer(CPUConfig(max_workers=max_workers))
+        self.optimizer = AMD9950X3DOptimizer(CPUConfig(max_workers=max_workers))
         self.metrics = BatchMetrics()
 
     def process(self, items: list[T]) -> list[R]:

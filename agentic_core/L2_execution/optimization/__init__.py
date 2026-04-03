@@ -26,10 +26,18 @@ from __future__ import annotations
 
 # CPU Optimizer
 from agentic_core.L2_execution.optimization.cpu_optimizer import (
-    AMDCPUOptimizer,
+    AMD9950X3DOptimizer,
     CPUConfig,
+    OperatingProfile,
+    WorkloadClass,
+    WorkerRecommendation,
     get_cpu_optimizer,
+    get_recommended_defaults,
     shutdown_cpu_optimizer,
+    MAX_OPERATING_TEMP_C,
+    SUSTAINED_TEMP_THRESHOLD_C,
+    INTERACTIVE_THREAD_RESERVE,
+    BATCH_THREAD_RESERVE,
 )
 
 # Parallel File Processor
@@ -58,10 +66,19 @@ __version__ = "1.0.0"
 
 __all__ = [
     # CPU Optimizer
-    "AMDCPUOptimizer",
+    "AMD9950X3DOptimizer",
     "CPUConfig",
+    "OperatingProfile",
+    "WorkloadClass",
+    "WorkerRecommendation",
     "get_cpu_optimizer",
+    "get_recommended_defaults",
     "shutdown_cpu_optimizer",
+    # Safety constants
+    "MAX_OPERATING_TEMP_C",
+    "SUSTAINED_TEMP_THRESHOLD_C",
+    "INTERACTIVE_THREAD_RESERVE",
+    "BATCH_THREAD_RESERVE",
     # Parallel File Processor
     "ParallelFileProcessor",
     "FileTask",

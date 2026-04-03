@@ -1,11 +1,11 @@
 {
-  "runtime_adg_1775177492_53d4d479": {
+  "runtime_adg_1775231758_fface00a": {
     "duration_ms": 100,
     "edge_count": 9,
-    "file_path": "agentic_core\\L4_state\\memory\\runtime_adg_test\\ml_test\\runtime_adg_1775177492_53d4d479.json",
+    "file_path": "agentic_core\\L4_state\\memory\\runtime_adg_test\\ml_test\\runtime_adg_1775231758_fface00a.json",
     "mission": "mixed-test",
     "node_count": 5,
-    "timestamp": 1775177492,
+    "timestamp": 1775231758,
     "trace_id": "trace-001"
   }
 }

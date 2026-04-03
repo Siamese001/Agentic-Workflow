@@ -42,7 +42,13 @@ from typing import Any
 logging.basicConfig(level=logging.INFO, format="%(levelname)s: %(message)s")
 _logger = logging.getLogger(__name__)
 
-# Static ADG imports — runtime analysis only, no lifecycle/telemetry emissions
+from agentic_core.L2_execution.optimization.cpu_optimizer import (
+    CPUConfig,
+    OperatingProfile,
+    WorkloadClass,
+    get_cpu_optimizer,
+    get_recommended_defaults,
+)
 from agentic_core.adg.analysis.hotspot_index_types import HotspotIndex
 from agentic_core.adg.analysis.test_gap_types import detect_test_gaps
 from agentic_core.adg.extraction.static_scanner import ADGStaticScanner, ScanResult
@@ -51,7 +57,17 @@ from agentic_core.adg.schema_util import module_path_to_layer
 # Constants
 DEFAULT_MAX_DEPTH = 4
 DEFAULT_TOP_N = 30
-DEFAULT_WORKERS = 32
+
+# Worker defaults — workload-aware via cpu_optimizer
+# Default uses pytest_mixed workload class in batch mode (safe for 9950X3D)
+defaults: dict[str, int] = {
+    "pytest_mixed": 24,
+    "interactive_reserve": 4,
+    "batch_reserve": 2,
+}
+DEFAULT_WORKERS: int = 24  # pytest_mixed batch default
+DEFAULT_WORKERS_BATCH: int = DEFAULT_WORKERS
+DEFAULT_WORKERS_INTERACTIVE: int = 20  # 24 - 4 reserve
 PROBLEM_FILE_DISPLAY_LIMIT = 20
 SYMBOL_PREFIX = "ADG::Symbol::"
 MODULE_PREFIX = "ADG::Module::"

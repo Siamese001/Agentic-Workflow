@@ -11,7 +11,6 @@ from typing import Any
 
 from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_records_execution_trace,
-    _emit_phase_transition,
     LayerSegment,
 )
 
@@ -215,120 +214,118 @@ class SovereignDecisionEngine:
             LayerSegment.L2_EXECUTION,
             "execute_ssot.workflow.init"
         )
-            # Initialize heal context
-            from .execute_ssot_context import HealContext
-            self.heal_context = HealContext(
-                targets=targets,
-                registry=self.registry,
-                args=self.args
-            )
+        # Initialize heal context
+        from .execute_ssot_context import HealContext
+        self.heal_context = HealContext(
+            targets=targets,
+            registry=self.registry,
+            args=self.args
+        )
 
-            # Phase 1: Discovery
+        # Phase 1: Discovery
+        _emit_records_execution_trace(
+            str(id(self)),
+            LayerSegment.L1_COGNITION,
+            "execute_ssot.phase.discovery.start"
+        )
+        try:
+            success, findings = self.run_discovery_phase(self.heal_context)
             _emit_records_execution_trace(
                 str(id(self)),
                 LayerSegment.L1_COGNITION,
-                "execute_ssot.phase.discovery.start"
+                f"execute_ssot.phase.discovery.end:success={success}"
             )
-            try:
-                success, findings = self.run_discovery_phase(self.heal_context)
-                _emit_records_execution_trace(
-                    str(id(self)),
-                    LayerSegment.L1_COGNITION,
-                    f"execute_ssot.phase.discovery.end:success={success}"
-                )
-                if not success:
-                    return False, {"phase": "discovery", "error": "Discovery failed", "context": self.heal_context}
-                self.heal_context.record_phase_result("discovery", findings)
-            except Exception as e:
-                return False, {"phase": "discovery", "error": f"Discovery exception: {str(e)}", "context": self.heal_context}
+            if not success:
+                return False, {"phase": "discovery", "error": "Discovery failed", "context": self.heal_context}
+            self.heal_context.record_phase_result("discovery", findings)
+        except Exception as e:
+            return False, {"phase": "discovery", "error": f"Discovery exception: {str(e)}", "context": self.heal_context}
 
-            # Phase 2: Validation
+        # Phase 2: Validation
+        _emit_records_execution_trace(
+            str(id(self)),
+            LayerSegment.L1_COGNITION,
+            "execute_ssot.phase.validation.start"
+        )
+        try:
+            success, validated = self.run_validation_phase(self.heal_context, findings)
             _emit_records_execution_trace(
                 str(id(self)),
                 LayerSegment.L1_COGNITION,
-                "execute_ssot.phase.validation.start"
+                f"execute_ssot.phase.validation.end:success={success}"
             )
-            try:
-                success, validated = self.run_validation_phase(self.heal_context, findings)
-                _emit_records_execution_trace(
-                    str(id(self)),
-                    LayerSegment.L1_COGNITION,
-                    f"execute_ssot.phase.validation.end:success={success}"
-                )
-                if not success:
-                    return False, {"phase": "validation", "error": "Validation failed", "context": self.heal_context}
-                self.heal_context.record_phase_result("validation", validated)
-            except Exception as e:
-                return False, {"phase": "validation", "error": f"Validation exception: {str(e)}", "context": self.heal_context}
+            if not success:
+                return False, {"phase": "validation", "error": "Validation failed", "context": self.heal_context}
+            self.heal_context.record_phase_result("validation", validated)
+        except Exception as e:
+            return False, {"phase": "validation", "error": f"Validation exception: {str(e)}", "context": self.heal_context}
 
-            # Phase 3: Alignment
+        # Phase 3: Alignment
+        _emit_records_execution_trace(
+            str(id(self)),
+            LayerSegment.L3_ORCHESTRATION,
+            "execute_ssot.phase.alignment.start"
+        )
+        try:
+            success, alignments = self.run_alignment_phase(self.heal_context, validated)
             _emit_records_execution_trace(
                 str(id(self)),
                 LayerSegment.L3_ORCHESTRATION,
-                "execute_ssot.phase.alignment.start"
+                f"execute_ssot.phase.alignment.end:success={success}"
             )
-            try:
-                success, alignments = self.run_alignment_phase(self.heal_context, validated)
-                _emit_records_execution_trace(
-                    str(id(self)),
-                    LayerSegment.L3_ORCHESTRATION,
-                    f"execute_ssot.phase.alignment.end:success={success}"
-                )
-                if not success:
-                    return False, {"phase": "alignment", "error": "Alignment failed", "context": self.heal_context}
-                self.heal_context.record_phase_result("alignment", alignments)
-            except Exception as e:
-                return False, {"phase": "alignment", "error": f"Alignment exception: {str(e)}", "context": self.heal_context}
+            if not success:
+                return False, {"phase": "alignment", "error": "Alignment failed", "context": self.heal_context}
+            self.heal_context.record_phase_result("alignment", alignments)
+        except Exception as e:
+            return False, {"phase": "alignment", "error": f"Alignment exception: {str(e)}", "context": self.heal_context}
 
-            # Phase 4: Healing
+        # Phase 4: Healing
+        _emit_records_execution_trace(
+            str(id(self)),
+            LayerSegment.L2_EXECUTION,
+            "execute_ssot.phase.healing.start"
+        )
+        try:
+            success, healing_results = self.run_healing_phase(self.heal_context, alignments)
             _emit_records_execution_trace(
                 str(id(self)),
                 LayerSegment.L2_EXECUTION,
-                "execute_ssot.phase.healing.start"
+                f"execute_ssot.phase.healing.end:success={success}"
             )
-            try:
-                success, healing_results = self.run_healing_phase(self.heal_context, alignments)
-                _emit_records_execution_trace(
-                    str(id(self)),
-                    LayerSegment.L2_EXECUTION,
-                    f"execute_ssot.phase.healing.end:success={success}"
-                )
-                if not success:
-                    return False, {"phase": "healing", "error": "Healing failed", "context": self.heal_context}
-                self.heal_context.record_phase_result("healing", healing_results)
-            except Exception as e:
-                return False, {"phase": "healing", "error": f"Healing exception: {str(e)}", "context": self.heal_context}
+            if not success:
+                return False, {"phase": "healing", "error": "Healing failed", "context": self.heal_context}
+            self.heal_context.record_phase_result("healing", healing_results)
+        except Exception as e:
+            return False, {"phase": "healing", "error": f"Healing exception: {str(e)}", "context": self.heal_context}
 
-            # Phase 5: Reporting
+        # Phase 5: Reporting
+        _emit_records_execution_trace(
+            str(id(self)),
+            LayerSegment.L4_STATE,
+            "execute_ssot.phase.reporting.start"
+        )
+        try:
+            success, report = self.run_reporting_phase(self.heal_context, healing_results)
             _emit_records_execution_trace(
                 str(id(self)),
                 LayerSegment.L4_STATE,
-                "execute_ssot.phase.reporting.start"
+                f"execute_ssot.phase.reporting.end:success={success}"
             )
-            try:
-                success, report = self.run_reporting_phase(self.heal_context, healing_results)
-                _emit_records_execution_trace(
-                    str(id(self)),
-                    LayerSegment.L4_STATE,
-                    f"execute_ssot.phase.reporting.end:success={success}"
-                )
-                self.heal_context.record_phase_result("reporting", report)
-            except Exception as e:
-                return False, {"phase": "reporting", "error": f"Reporting exception: {str(e)}", "context": self.heal_context}
-
-            # PTC: Workflow completion
-            _emit_records_execution_trace(
-                str(id(self)),
-                LayerSegment.L2_EXECUTION,
-                "execute_ssot.workflow.complete"
-            )
-            return True, {
-                "heal_context": self.heal_context,
-                "phase_results": self.heal_context.phase_results,
-                "final_report": report
-            }
+            self.heal_context.record_phase_result("reporting", report)
         except Exception as e:
-            return False, {"phase": "workflow", "error": f"Workflow exception: {str(e)}", "context": getattr(self, 'heal_context', None)}
+            return False, {"phase": "reporting", "error": f"Reporting exception: {str(e)}", "context": self.heal_context}
+
+        # PTC: Workflow completion
+        _emit_records_execution_trace(
+            str(id(self)),
+            LayerSegment.L2_EXECUTION,
+            "execute_ssot.workflow.complete"
+        )
+        return True, {
+            "heal_context": self.heal_context,
+            "phase_results": self.heal_context.phase_results,
+            "final_report": report
+        }
 
     def save_checkpoint(self) -> None:
         """Save current state as checkpoint for recovery."""

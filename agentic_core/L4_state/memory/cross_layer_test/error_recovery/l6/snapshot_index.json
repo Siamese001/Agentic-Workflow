@@ -1,11 +1,11 @@
 {
-  "runtime_adg_1775177492_5e59d5ce": {
-    "duration_ms": 1,
+  "runtime_adg_1775231758_221abdf0": {
+    "duration_ms": 2,
     "edge_count": 5,
-    "file_path": "agentic_core\\L4_state\\memory\\cross_layer_test\\error_recovery\\l6\\runtime_adg_1775177492_5e59d5ce.json",
+    "file_path": "agentic_core\\L4_state\\memory\\cross_layer_test\\error_recovery\\l6\\runtime_adg_1775231758_221abdf0.json",
     "mission": "error-test",
     "node_count": 2,
-    "timestamp": 1775177492,
-    "trace_id": "2720d69d80fa8fc29813fc91e3f29e3f"
+    "timestamp": 1775231758,
+    "trace_id": "eb044a4a6cc1be362a977fe896698a42"
   }
 }

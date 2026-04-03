@@ -15,7 +15,7 @@ from pathlib import Path
 from typing import Any, Callable, TypeVar
 
 from agentic_core.L2_execution.optimization.cpu_optimizer import (
-    AMDCPUOptimizer,
+    AMD9950X3DOptimizer,
     CPUConfig,
 )
 
@@ -57,7 +57,7 @@ class ParallelFileProcessor:
             chunk_size=chunk_size,
             use_processes=use_processes,
         )
-        self.optimizer = AMDCPUOptimizer(self.config)
+        self.optimizer = AMD9950X3DOptimizer(self.config)
         self._executor: concurrent.futures.Executor | None = None
 
     def _get_executor(self) -> concurrent.futures.Executor:

@@ -114,9 +114,11 @@ infra = [
 
 [tool.pytest.ini_options]
 minversion = "7.0"
-# Pointing to 'agentic_core' based on actual repo structure.
-# Enforcing 100% coverage, branch checking, and detailed html reports.
-addopts = "--cov=agentic_core --cov-branch --cov-report=term-missing --cov-report=html:reports/coverage_html --cov-fail-under=100 -ra -v -n 32 --dist=load --timeout=180"
+# Workload-aware defaults for AMD 9950X3D:
+# - 24 workers with worksteal (default for mixed pytest workloads)
+# - Fixture-heavy: 18 workers with loadscope
+# - File-isolated: 20 workers with loadfile
+addopts = "--cov=agentic_core --cov-branch --cov-report=term-missing --cov-report=html:reports/coverage_html --cov-fail-under=100 -ra -v -n 24 --dist=worksteal --timeout=180"
 testpaths = ["tests"]
 python_files = ["test_*.py"]
 python_classes = ["Test*"]

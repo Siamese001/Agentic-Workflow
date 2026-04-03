@@ -1,5 +1,0 @@
-{"timestamp":1775177493,"event_type":"runtime_adg_stored","data":{"meta_learning_id":"runtime_adg_1775177493_f99b3aae","trace_id":"trace-evo-000","mission":"evo-test-0","node_count":1,"edge_count":1}}
-{"timestamp":1775177493,"event_type":"runtime_adg_stored","data":{"meta_learning_id":"runtime_adg_1775177493_4c33bca4","trace_id":"trace-evo-001","mission":"evo-test-1","node_count":1,"edge_count":1}}
-{"timestamp":1775177493,"event_type":"runtime_adg_stored","data":{"meta_learning_id":"runtime_adg_1775177493_d82bdcde","trace_id":"trace-evo-002","mission":"evo-test-2","node_count":1,"edge_count":1}}
-{"timestamp":1775177493,"event_type":"runtime_adg_stored","data":{"meta_learning_id":"runtime_adg_1775177493_9ad771fa","trace_id":"trace-evo-003","mission":"evo-test-3","node_count":1,"edge_count":1}}
-{"timestamp":1775177493,"event_type":"runtime_adg_stored","data":{"meta_learning_id":"runtime_adg_1775177493_a99e8bc0","trace_id":"trace-evo-004","mission":"evo-test-4","node_count":1,"edge_count":1}}

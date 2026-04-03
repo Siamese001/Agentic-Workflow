@@ -1,7 +1,13 @@
-"""CPU optimization baseline benchmark script.
+"""CPU optimization baseline benchmark script — AMD 9950X3D Workload-Aware Edition.
 
 Measures wall-clock time for every major CPU-bound workload in the repo.
+Includes benchmark matrix for worker count optimization.
 Run with: python tools/_benchmark_cpu.py
+
+Benchmark Matrix (AMD 9950X3D):
+- Worker counts: 12, 14, 16, 20, 24, 28, 32
+- Modes: interactive (reserve 4 threads), batch (reserve 2 threads)
+- Promotion rule: Fastest setting under 90°C with no error increase
 """
 
 from __future__ import annotations
@@ -14,10 +20,33 @@ import pathlib
 import sys
 import time
 from concurrent.futures import ProcessPoolExecutor, ThreadPoolExecutor
+from dataclasses import asdict, dataclass
+from typing import Any
 
 ROOT = pathlib.Path(__file__).resolve().parents[1]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
+
+# Import workload-aware optimizer
+from agentic_core.L2_execution.optimization.cpu_optimizer import (
+    CPUConfig,
+    OperatingProfile,
+    WorkloadClass,
+    get_cpu_optimizer,
+    get_recommended_defaults,
+)
+
+
+@dataclass
+class BenchmarkResult:
+    """Single benchmark run result."""
+    workers: int
+    mode: str
+    wall_s: float
+    throughput: float
+    cpu_percent: float
+    temperature_c: float
+    errors: int
 
 
 # ── Top-level picklable functions for ProcessPool ──────────────────────────
@@ -296,6 +325,189 @@ def run_benchmarks() -> dict:
     return results
 
 
+def run_worker_matrix_benchmark(files: list[str]) -> dict[str, Any]:
+    """Run worker count benchmark matrix for AMD 9950X3D.
+
+    Tests worker counts: 12, 14, 16, 20, 24, 28, 32
+    Modes: interactive (reserve 4 threads), batch (reserve 2 threads)
+
+    Returns results dict with optimal configuration.
+    """
+    print("\n" + "=" * 70)
+    print("WORKER MATRIX BENCHMARK — AMD 9950X3D")
+    print("=" * 70)
+    print("Testing worker counts with temperature guardrails")
+    print(f"Threshold: stop if sustained temp >= 90°C (AMD max: 95°C)")
+    print()
+
+    optimizer = get_cpu_optimizer()
+    worker_counts = [12, 14, 16, 20, 24, 28, 32]
+    modes = [
+        ("batch", OperatingProfile.BATCH),
+        ("interactive", OperatingProfile.INTERACTIVE),
+    ]
+
+    matrix_results: dict[str, list[BenchmarkResult]] = {
+        "batch": [],
+        "interactive": [],
+    }
+
+    for mode_name, profile in modes:
+        print(f"\nMode: {mode_name.upper()}")
+        print("-" * 50)
+
+        for workers in worker_counts:
+            # Check temperature before run
+            if optimizer.should_stop_for_temperature():
+                print(f"  w={workers:2d}: SKIPPED (temperature guardrail)")
+                continue
+
+            # Run parallel AST parse
+            t0 = time.perf_counter()
+            errors = 0
+            try:
+                with ProcessPoolExecutor(max_workers=workers) as ex:
+                    _ = list(ex.map(_parse_file, files, chunksize=60))
+            except Exception as e:
+                errors += 1
+                print(f"  w={workers:2d}: ERROR ({e})")
+                continue
+            t1 = time.perf_counter()
+
+            wall = t1 - t0
+            throughput = len(files) / wall if wall > 0 else 0
+
+            # Get metrics
+            metrics = optimizer.get_cpu_metrics()
+            cpu_pct = metrics.get("cpu_percent_avg", 0)
+            temp_c = metrics.get("temperature_c", 0)
+
+            result = BenchmarkResult(
+                workers=workers,
+                mode=mode_name,
+                wall_s=wall,
+                throughput=throughput,
+                cpu_percent=cpu_pct,
+                temperature_c=temp_c,
+                errors=errors,
+            )
+            matrix_results[mode_name].append(result)
+
+            status = "OK"
+            if temp_c >= 90:
+                status = "HOT"
+            elif temp_c >= 85:
+                status = "WARM"
+
+            print(
+                f"  w={workers:2d}: {wall:.3f}s  "
+                f"{throughput:.0f} files/s  "
+                f"CPU={cpu_pct:.0f}%  "
+                f"Temp={temp_c:.1f}°C  [{status}]"
+            )
+
+    # Find optimal configurations
+    recommendations = {}
+    for mode_name, results in matrix_results.items():
+        if not results:
+            continue
+
+        # Filter: under 90°C, no errors
+        valid = [r for r in results if r.temperature_c < 90 and r.errors == 0]
+        if not valid:
+            valid = results  # fallback
+
+        # Find fastest
+        best = min(valid, key=lambda r: r.wall_s)
+        recommendations[mode_name] = {
+            "optimal_workers": best.workers,
+            "wall_s": best.wall_s,
+            "throughput": best.throughput,
+            "temperature_c": best.temperature_c,
+        }
+
+    # Print recommendations
+    print("\n" + "=" * 70)
+    print("RECOMMENDED CONFIGURATIONS")
+    print("=" * 70)
+    for mode_name, rec in recommendations.items():
+        print(f"  {mode_name:12s}: {rec['optimal_workers']} workers  "
+              f"({rec['wall_s']:.3f}s, {rec['temperature_c']:.1f}°C)")
+
+    # Safe baseline per optimization plan
+    defaults = get_recommended_defaults()
+    print("\n" + "=" * 70)
+    print("SAFE BASELINE (Production Starting Point)")
+    print("=" * 70)
+    print(f"  python_cpu:           {defaults['python_cpu']:2d} workers")
+    print(f"  native_cpu:           {defaults['native_cpu']:2d} workers")
+    print(f"  pytest_mixed:         {defaults['pytest_mixed']:2d} workers")
+    print(f"  pytest_fixture_heavy: {defaults['pytest_fixture_heavy']:2d} workers")
+    print(f"  network_io:           {defaults['network_io']:2d} workers")
+
+    return {
+        "matrix": {
+            mode: [asdict(r) for r in results]
+            for mode, results in matrix_results.items()
+        },
+        "recommendations": recommendations,
+        "safe_baseline": defaults,
+    }
+
+
+def emit_recommended_profile() -> dict[str, Any]:
+    """Emit JSON profile with recommended worker configuration.
+
+    Returns profile that can be consumed by CI/CD or local scripts.
+    """
+    defaults = get_recommended_defaults()
+
+    profile = {
+        "cpu": "AMD Ryzen 9 9950X3D",
+        "cores": 16,
+        "threads": 32,
+        "settings": "stock_only",
+        "safety": {
+            "max_operating_temp_c": defaults["max_operating_temp_c"],
+            "sustained_threshold_c": defaults["sustained_temp_threshold_c"],
+        },
+        "workers": {
+            "python_cpu": defaults["python_cpu"],
+            "native_cpu": defaults["native_cpu"],
+            "pytest_mixed": defaults["pytest_mixed"],
+            "pytest_fixture_heavy": defaults["pytest_fixture_heavy"],
+            "network_io": defaults["network_io"],
+            "disk_io": defaults["disk_io"],
+        },
+        "pytest": {
+            "default": f"-n {defaults['pytest_mixed']} --dist=worksteal",
+            "fixture_heavy": f"-n {defaults['pytest_fixture_heavy']} --dist=loadscope",
+            "file_isolated": f"-n {defaults['native_cpu']} --dist=loadfile",
+        },
+        "reservation": {
+            "interactive": defaults["interactive_reserve"],
+            "batch": defaults["batch_reserve"],
+        },
+    }
+
+    return profile
+
+
 if __name__ == "__main__":
     multiprocessing.freeze_support()
-    run_benchmarks()
+    results = run_benchmarks()
+
+    # Optionally run worker matrix (can be slow)
+    import os
+    if os.environ.get("CPU_BENCHMARK_MATRIX"):
+        from agentic_core.adg.extraction.static_scanner import _iter_python_files
+        files = [str(p) for p in _iter_python_files(ROOT)]
+        matrix_results = run_worker_matrix_benchmark(files)
+        results["worker_matrix"] = matrix_results
+
+        # Emit recommended profile
+        profile = emit_recommended_profile()
+        print("\n" + "=" * 70)
+        print("RECOMMENDED PROFILE JSON")
+        print("=" * 70)
+        print(json.dumps(profile, indent=2))
