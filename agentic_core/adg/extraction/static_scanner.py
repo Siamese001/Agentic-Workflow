@@ -27,6 +27,10 @@ from dataclasses import asdict, dataclass, field, fields, replace
 from pathlib import Path
 from typing import Iterator
 
+from agentic_core.adg.extraction.scanner_utils import (
+    _HollowFileAnnotator,
+    _TypeSurfaceCollector,
+)
 from agentic_core.adg.extraction.visitors import (
     VisitorContext,
     _AntipatternVisitor,
@@ -38,44 +42,25 @@ from agentic_core.adg.extraction.visitors import (
     _CapabilityBudgetVisitor,
     _CompositionVisitor,
     _DecoratorVisitor,
-    _DeterminismControlVisitor,
-    # Dynamic visitors (GF)
     _DynamicExecutionVisitor,
     _EmbeddingPipelineVisitor,
     # Runtime semantic visitors
-    _EvalSpineVisitor,
-    # Transport proof visitors
-    _ExecutionProofVisitor,
     _ExecutionSemanticVisitor,
     _ExecutionTraceVisitor,
     # Governance visitors
     _GovernancePlaneVisitor,
     _HealerValidatorVisitor,
     # Orchestration visitors (G22, G28-G30)
-    _HealingOrchestratorVisitor,
     _HITLVisitor,
     _ImportVisitor,
     # Structural visitors (G3, G5, G6)
     _InheritanceVisitor,
     _InternalCallGraphVisitor,
-    _IOInterceptionVisitor,
-    # Context control visitors
     _JITContextVisitor,
     # Learning visitors (G26-G27, G32)
-    _L5ValidationProofVisitor,
-    _LearningProvenanceVisitor,
     _MutationRecordAssemblyVisitor,
-    _MutationTransportVisitor,
     _OutboundReadBridgeVisitor,
-    _P1OrchestrationVisitor,
-    _P2ExecutionCapabilityVisitor,
-    _P3LearningMaturityVisitor,
-    _P3OrchestrationHealingVisitor,
-    _P4ObservabilityGovernanceVisitor,
-    # P4 wave visitors (G31, G33-G35)
-    _P4StateTelemetryVisitor,
     _PromptSlotVisitor,
-    _RetrievalWiringVisitor,
     _SafetyEnforcementVisitor,
     _SandboxAirlockVisitor,
     _SymbolInventoryVisitor,
@@ -87,77 +72,6 @@ from agentic_core.adg.extraction.visitors import (
     _UWGIngressGateVisitor,
 )
 from agentic_core.adg.schema_util import (
-    AGENT_DISPATCH_CLASSES,
-    AGENT_DISPATCH_METHODS,
-    AGENT_REGISTRY_CLASSES,
-    ANTIPATTERN_CATEGORY_NAMES,
-    ANTIPATTERN_REGISTRY_CLASSES,
-    AUTHORIZE_EXECUTE_SYMBOLS,
-    BLOCKS_DIRECT_WRITE_SYMBOLS,
-    CAPABILITY_VALIDATION_SYMBOLS,
-    CAPTURES_EVALUATION_METRIC_SYMBOLS,
-    CAPTURES_EXECUTION_OUTPUT_SYMBOLS,
-    CAPTURES_PATTERN_SYMBOLS,
-    CAPTURES_RUNTIME_ANOMALY_SYMBOLS,
-    CONFIG_ACCESS_METHODS,
-    CONFIG_READER_CLASSES,
-    COORDINATES_AGENTS_SYMBOLS,
-    DISPATCHES_AGENT_SYMBOLS,
-    DYNAMIC_EVAL_SYMBOLS,
-    DYNAMIC_GETATTR_SYMBOLS,
-    EMITS_METRIC_EVENT_SYMBOLS,
-    ESCALATES_FAILURE_SYMBOLS,
-    EXECUTION_PLAN_DISPATCH_SYMBOLS,
-    EXTERNAL_HTTP_SYMBOLS,
-    FEEDS_META_LEARNING_SYMBOLS,
-    HEALING_DISPATCH_METHODS,
-    HEALING_ORCHESTRATOR_CLASSES,
-    HUMAN_REVIEW_SYMBOLS,
-    IMPROVES_AGENT_POLICY_SYMBOLS,
-    INVOKES_EVALUATION_SYMBOLS,
-    LINKS_EXECUTION_TO_SNAPSHOT_SYMBOLS,
-    LINKS_INCIDENT_TRACE_SYMBOLS,
-    NONDETERMINISM_RANDOM_SYMBOLS,
-    NONDETERMINISM_UUID_SYMBOLS,
-    # G23-G27 (gap): new proof-edge frozensets
-    NONDETERMINISM_WALL_CLOCK_SYMBOLS,
-    ORCHESTRATION_ROUTE_SYMBOLS,
-    P1_CHECKS_AGENT_REGISTRY_SYMBOLS,
-    P1_DISPATCHES_EXECUTION_PLAN_SYMBOLS,
-    # P1 orchestration symbols
-    P1_ROUTES_TO_AGENT_SYMBOLS,
-    P1_VALIDATES_AGENT_CAPABILITY_SYMBOLS,
-    POLICY_HASH_SYMBOLS,
-    POLICY_STATE_READ_METHODS,
-    POLICY_STATE_READER_CLASSES,
-    PREFERENCE_PAIR_SYMBOLS,
-    PROMPT_INJECTION_SYMBOLS,
-    PROMPT_TEMPLATE_SYMBOLS,
-    RECORDS_HEALING_OUTCOME_SYMBOLS,
-    RECORDS_INCIDENT_EVENT_SYMBOLS,
-    RECORDS_LEARNING_EVENT_SYMBOLS,
-    RECORDS_TELEMETRY_EVENT_SYMBOLS,
-    RECORDS_TOOL_INVOCATION_SYMBOLS,
-    RECORDS_WORKFLOW_LINEAGE_SYMBOLS,
-    REGISTRY_CHECK_SYMBOLS,
-    ROUTES_TO_CAPABILITY_SYMBOLS,
-    ROUTING_COMMIT_SYMBOLS,
-    SAFETY_PLANE_CLASSES,
-    SECRET_ACCESS_METHODS,
-    SECRET_ENV_PATTERNS,
-    SECRET_VAULT_CLASSES,
-    STORES_EMBEDDING_SYMBOLS,
-    STORES_LEARNING_STATE_SYMBOLS,
-    TRIGGERS_ALERT_SYMBOLS,
-    UPDATES_META_LEARNING_STATE_SYMBOLS,
-    UPDATES_MONITORING_STATE_SYMBOLS,
-    UPDATES_ROUTING_STRATEGY_SYMBOLS,
-    UWG_TERMINATION_SYMBOLS,
-    VALIDATES_CAPABILITY_SYMBOLS,
-    WORKFLOW_ORCHESTRATION_SYMBOLS,
-    WRITES_LEARNING_SNAPSHOT_SYMBOLS,
-    WRITES_OBSERVABILITY_LOG_SYMBOLS,
-    WRITES_VIA_UWG_SYMBOLS,
     canonical_name,
     module_path_to_layer,
 )
@@ -189,7 +103,6 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_gated_by_confidence,
     _emit_hard_fails_untranscripted,
     _emit_observes_runtime_state,
-    _emit_reads_through,
     _emit_records_execution_trace,
     _emit_records_tool_invocation,
     _emit_routes_to_agent,
@@ -1270,353 +1183,6 @@ _MAX_BLOCKS_PER_FUNC = 10  # cap block nodes per function
 # Phase 3b: Type Surface Collector — closes Type Enrichment gap
 # Walks AST and collects type annotations for symbols. Returns a dict
 # mapping canonical symbol name → inferred type string.
-# ---------------------------------------------------------------------------
-
-
-class _HollowFileAnnotator(ast.NodeVisitor):
-    """Phase 1.4: Annotate modules with hollow file classification.
-
-    Identifies files with minimal behavioral content relative to boilerplate.
-    Results are stored in surface_evidence for downstream processing.
-    """
-
-    def __init__(self, module_adg: str, rel_path: str):
-        self.module_adg = module_adg
-        self.rel_path = rel_path
-        self.behavioral_functions = 0
-        self.behavioral_classes = 0
-        self.behavioral_methods = 0
-        self.total_statements = 0
-        self.boilerplate_statements = 0
-        self.import_statements = 0
-        self.string_literals = 0
-
-    def visit_Module(self, node: ast.Module):
-        """Visit module level."""
-        for stmt in node.body:
-            self.total_statements += 1
-            self.visit(stmt)
-        return node
-
-    def visit_Import(self, node: ast.Import):
-        """Count import statements."""
-        self.import_statements += 1
-        return node
-
-    def visit_ImportFrom(self, node: ast.ImportFrom):
-        """Count import from statements."""
-        self.import_statements += 1
-        return node
-
-    def visit_FunctionDef(self, node: ast.FunctionDef):
-        """Analyze function definition."""
-        # Check if function has non-trivial body
-        if self._has_behavioral_body(node.body):
-            if node.name.startswith("_emit_"):
-                # Module-level emit calls are boilerplate
-                self.boilerplate_statements += 1
-            else:
-                self.behavioral_functions += 1
-        return node
-
-    def visit_AsyncFunctionDef(self, node: ast.AsyncFunctionDef):
-        """Analyze async function definition."""
-        if self._has_behavioral_body(node.body):
-            if node.name.startswith("_emit_"):
-                self.boilerplate_statements += 1
-            else:
-                self.behavioral_functions += 1
-        return node
-
-    def visit_ClassDef(self, node: ast.ClassDef):
-        """Analyze class definition."""
-        # Check if class has behavioral methods
-        behavioral_methods = 0
-        for item in node.body:
-            if isinstance(item, (ast.FunctionDef, ast.AsyncFunctionDef)):
-                if self._has_behavioral_body([item]):
-                    if not item.name.startswith("_emit_"):
-                        behavioral_methods += 1
-
-        if behavioral_methods > 0:
-            self.behavioral_classes += 1
-            self.behavioral_methods += behavioral_methods
-        return node
-
-    def visit_Expr(self, node: ast.Expr):
-        """Analyze expression statements."""
-        if isinstance(node.value, ast.Constant) and isinstance(node.value.value, str):
-            # Module-level string literals (likely docstrings or comments)
-            self.string_literals += 1
-        elif (
-            isinstance(node.value, ast.Call)
-            and isinstance(node.value.func, ast.Name)
-            and node.value.func.id.startswith("_emit_")
-        ):
-            # Module-level emit calls
-            self.boilerplate_statements += 1
-        return node
-
-    def _has_behavioral_body(self, body: list[ast.stmt]) -> bool:
-        """Check if function/class body has behavioral content."""
-        if len(body) == 0:
-            return False
-
-        # Check for stub bodies (pass, ..., NotImplementedError)
-        if len(body) == 1:
-            stmt = body[0]
-            if isinstance(stmt, ast.Pass):
-                return False
-            elif isinstance(stmt, ast.Expr) and isinstance(stmt.value, ast.Constant):
-                if stmt.value.value == Ellipsis:
-                    return False
-            elif (
-                isinstance(stmt, ast.Raise)
-                and isinstance(stmt.exc, ast.Call)
-                and isinstance(stmt.exc.func, ast.Name)
-                and stmt.exc.func.id == "NotImplementedError"
-            ):
-                return False
-
-        # Look for actual behavioral statements
-        for stmt in body:
-            if self._is_behavioral_statement(stmt):
-                return True
-
-        return False
-
-    def _is_behavioral_statement(self, stmt: ast.stmt) -> bool:
-        """Check if statement represents behavioral logic."""
-        # Behavioral statements include: assignments, returns, if/for/while/try,
-        # function calls (except emits), etc.
-        if isinstance(stmt, (ast.Assign, ast.AugAssign, ast.AnnAssign)):
-            return True
-        elif isinstance(stmt, ast.Return):
-            return True
-        elif isinstance(stmt, (ast.If, ast.For, ast.While, ast.Try)):
-            return True
-        elif isinstance(stmt, ast.Expr) and isinstance(stmt.value, ast.Call):
-            # Function call - check if it's not just an emit
-            call = stmt.value
-            if not (isinstance(call.func, ast.Name) and call.func.id.startswith("_emit_")):
-                return True
-        elif isinstance(stmt, ast.With):
-            return True
-
-        return False
-
-    @property
-    def is_hollow(self) -> bool:
-        """Check if file is hollow (no behavioral content)."""
-        behavioral_nodes = self.behavioral_functions + self.behavioral_classes
-        return behavioral_nodes == 0
-
-    @property
-    def boilerplate_ratio(self) -> float:
-        """Calculate ratio of boilerplate to total statements."""
-        if self.total_statements == 0:
-            return 0.0
-        return self.boilerplate_statements / self.total_statements
-
-
-# ---------------------------------------------------------------------------
-
-
-class _TypeSurfaceCollector(ast.NodeVisitor):
-    """Phase 3b: Collect type annotations from AST.
-
-    Populates type_surface_map on ScanResult for downstream enrichment.
-    Sources: function annotations, variable annotations, class bases, literals.
-    """
-
-    def __init__(self, source_file: str) -> None:
-        self.source_file = source_file
-        self.type_map: dict[str, str] = {}
-        self._class_stack: list[str] = []
-        self._func_stack: list[str] = []
-        self._base = source_file.replace("/", ".").replace("\\", ".").removesuffix(".py")
-
-    def _symbol(self, name: str) -> str:
-        parts = [self._base] + self._class_stack + self._func_stack + [name]
-        return canonical_name("Symbol", "::".join(parts))
-
-    def _current_scope_symbol(self) -> str:
-        parts = [self._base] + self._class_stack + self._func_stack
-        return canonical_name("Symbol", "::".join(parts))
-
-    def visit_ClassDef(self, node: ast.ClassDef) -> None:
-        sym = self._symbol(node.name)
-        bases = [_annotation_str(b) for b in node.bases]
-        self.type_map[sym] = f"class({', '.join(bases)})" if bases else "class"
-        self._class_stack.append(node.name)
-        self.generic_visit(node)
-        self._class_stack.pop()
-
-    def visit_FunctionDef(self, node: ast.FunctionDef) -> None:
-        sym = self._symbol(node.name)
-        # Return annotation
-        ret = _annotation_str(node.returns) if node.returns else "None"
-        # Parameter annotations
-        params: list[str] = []
-        for arg in node.args.args:
-            if arg.annotation:
-                params.append(f"{arg.arg}: {_annotation_str(arg.annotation)}")
-            else:
-                params.append(arg.arg)
-        self.type_map[sym] = f"({', '.join(params)}) -> {ret}"
-        # Visit body
-        self._func_stack.append(node.name)
-        self.generic_visit(node)
-        self._func_stack.pop()
-
-    visit_AsyncFunctionDef = visit_FunctionDef
-
-    def visit_AnnAssign(self, node: ast.AnnAssign) -> None:
-        if isinstance(node.target, ast.Name) and node.annotation:
-            sym = self._symbol(node.target.id)
-            self.type_map[sym] = _annotation_str(node.annotation)
-        self.generic_visit(node)
-
-    def visit_Assign(self, node: ast.Assign) -> None:
-        # Infer type from simple literal assignments
-        for tgt in node.targets:
-            if isinstance(tgt, ast.Name):
-                inferred = _infer_literal_type(node.value)
-                if inferred:
-                    sym = self._symbol(tgt.id)
-                    self.type_map[sym] = inferred
-        self.generic_visit(node)
-
-
-def _annotation_str(node: ast.expr | None) -> str:
-    """Extract a human-readable type string from an AST annotation node."""
-    if node is None:
-        return ""
-    if isinstance(node, ast.Name):
-        return node.id
-    if isinstance(node, ast.Constant):
-        return repr(node.value)
-    if isinstance(node, ast.Attribute):
-        return f"{_annotation_str(node.value)}.{node.attr}"
-    if isinstance(node, ast.Subscript):
-        return f"{_annotation_str(node.value)}[{_annotation_str(node.slice)}]"
-    if isinstance(node, ast.Tuple):
-        return ", ".join(_annotation_str(e) for e in node.elts)
-    if isinstance(node, ast.BinOp) and isinstance(node.op, ast.BitOr):
-        return f"{_annotation_str(node.left)} | {_annotation_str(node.right)}"
-    return ast.dump(node)
-
-
-def _infer_literal_type(node: ast.expr) -> str:
-    """Infer type from simple literal/constructor expressions."""
-    if isinstance(node, ast.Constant):
-        return type(node.value).__name__
-    if isinstance(node, ast.List):
-        return "list"
-    if isinstance(node, ast.Dict):
-        return "dict"
-    if isinstance(node, ast.Set):
-        return "set"
-    if isinstance(node, ast.Tuple):
-        return "tuple"
-    if isinstance(node, ast.Call):
-        sym = _sym_of(node.func)
-        if sym:
-            return sym.split(".")[-1]
-    return ""
-
-
-# ---------------------------------------------------------------------------
-# Phase 3c: Test → Execution Linkage — closes Test→Exec Linkage gap
-# For test files, emits tests_execution_of edges from test functions to
-# the symbols they call, providing execution-unit-level test mapping.
-# ---------------------------------------------------------------------------
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-def _sym_of(node: ast.expr) -> str:
-    """Shared symbol extractor used by gap-plane visitors."""
-    if isinstance(node, ast.Name):
-        return node.id
-    if isinstance(node, ast.Attribute):
-        parts: list[str] = []
-        cur: ast.expr = node
-        while isinstance(cur, ast.Attribute):
-            parts.append(cur.attr)
-            cur = cur.value
-        if isinstance(cur, ast.Name):
-            parts.append(cur.id)
-        return ".".join(reversed(parts))
-    return ""
-
-
-def _get_call_name(node: ast.expr) -> str:
-    """Extract full call name from AST expression node."""
-    if isinstance(node, ast.Name):
-        return node.id
-    if isinstance(node, ast.Attribute):
-        parts = []
-        cur: ast.expr = node
-        while isinstance(cur, ast.Attribute):
-            parts.append(cur.attr)
-            cur = cur.value
-        if isinstance(cur, ast.Name):
-            parts.append(cur.id)
-        return ".".join(reversed(parts))
-    return ""
-
-
-def _is_property_accessor(node: ast.FunctionDef | ast.AsyncFunctionDef) -> bool:
-    """Return True if a function is decorated as a property getter, setter, or deleter."""
-    for dec in node.decorator_list:
-        if isinstance(dec, ast.Name) and dec.id == "property":
-            return True
-        if isinstance(dec, ast.Attribute) and dec.attr in ("setter", "deleter", "getter"):
-            return True
-    return False
-
-
-
-
-
-
 def _iter_python_files(
     repo_root: Path, include_tests: bool = True, scan_mode: str = "full"
 ) -> Iterator[Path]:
@@ -1785,18 +1351,18 @@ def _scan_file(
         gov_visitor.visit(tree)
         edges.extend(gov_visitor.extract_edges())
 
-        # Wave 4: Critical edge densification
-        critical_visitor = _CriticalEdgeVisitor(module_adg, rel)
-        critical_visitor.visit(tree)
-        edges.extend(critical_visitor.edges)
+        # Wave 4: Critical edge densification (DISABLED - legacy visitor removed)
+        # critical_visitor = _CriticalEdgeVisitor(module_adg, rel)
+        # critical_visitor.visit(tree)
+        # edges.extend(critical_visitor.edges)
 
-        # Wave 2: Test surface linking
-        if include_tests and (
-            filepath.name.endswith("_test.py") or "test_" in filepath.name or rel.startswith("tests/")
-        ):
-            test_surface_visitor = _TestSurfaceVisitor(module_adg, str(filepath))
-            test_surface_visitor.visit(tree)
-            edges.extend(test_surface_visitor.edges)
+        # Wave 2: Test surface linking (DISABLED - legacy visitor removed)
+        # if include_tests and (
+        #     filepath.name.endswith("_test.py") or "test_" in filepath.name or rel.startswith("tests/")
+        # ):
+        #     test_surface_visitor = _TestSurfaceVisitor(module_adg, str(filepath))
+        #     test_surface_visitor.visit(tree)
+        #     edges.extend(test_surface_visitor.edges)
 
         # E1: Symbol inventory / exports graph
         sym_visitor = _SymbolInventoryVisitor(VisitorContext(module_adg, rel))
@@ -1812,83 +1378,6 @@ def _scan_file(
         ann_visitor = _TypeAnnotationVisitor(VisitorContext(module_adg, rel))
         ann_visitor.visit(tree)
         edges.extend(ann_visitor.extract_edges())
-    elif isinstance(visitors_to_run, list):
-        # Selective mode: run only specified visitors
-        if "inheritance" in visitors_to_run:
-            inh_visitor = _InheritanceVisitor(VisitorContext(module_adg, rel))
-            inh_visitor.visit(tree)
-            edges.extend(inh_visitor.extract_edges())
-
-        if "call" in visitors_to_run:
-            call_visitor = _CallVisitor(VisitorContext(module_adg, rel))
-            call_visitor.visit(tree)
-            edges.extend(call_visitor.extract_edges())
-
-        if "attribute" in visitors_to_run:
-            attr_visitor = _AttributeVisitor(VisitorContext(module_adg, rel))
-            attr_visitor.visit(tree)
-            edges.extend(attr_visitor.extract_edges())
-
-        if "composition" in visitors_to_run:
-            comp_visitor = _CompositionVisitor(VisitorContext(module_adg, rel))
-            comp_visitor.visit(tree)
-            edges.extend(comp_visitor.extract_edges())
-
-        if "dynamic_execution" in visitors_to_run:
-            dyn_visitor = _DynamicExecutionVisitor(VisitorContext(module_adg, rel))
-            dyn_visitor.visit(tree)
-            edges.extend(dyn_visitor.extract_edges())
-
-        if "internal_call_graph" in visitors_to_run:
-            icg_visitor = _InternalCallGraphVisitor(VisitorContext(module_adg, rel))
-            icg_visitor.visit(tree)
-            edges.extend(icg_visitor.extract_edges())
-
-        if "governance" in visitors_to_run:
-            gov_visitor = _GovernancePlaneVisitor(VisitorContext(module_adg, rel))
-            gov_visitor.visit(tree)
-            edges.extend(gov_visitor.extract_edges())
-
-        if "safety_enforcement" in visitors_to_run:
-            safety_visitor = _SafetyEnforcementVisitor(VisitorContext(module_adg, rel))
-            safety_visitor.visit(tree)
-            edges.extend(safety_visitor.extract_edges())
-
-        if "boundary_verification" in visitors_to_run:
-            boundary_visitor = _BoundaryVerifierVisitor(VisitorContext(module_adg, rel))
-            boundary_visitor.visit(tree)
-            edges.extend(boundary_visitor.extract_edges())
-
-        if "embedding_pipeline" in visitors_to_run:
-            ctx = VisitorContext(module_adg_name=module_adg, source_file=rel, repo_root=str(repo_root))
-            emb_visitor = _EmbeddingPipelineVisitor(ctx)
-            emb_visitor.visit(tree)
-            edges.extend(emb_visitor.extract_edges())
-
-        if "learning_provenance" in visitors_to_run:
-            learning_prov_visitor = _LearningProvenanceVisitor(module_adg, rel)
-            learning_prov_visitor.visit(tree)
-            edges.extend(learning_prov_visitor.edges)
-
-        if "p3_learning_maturity" in visitors_to_run:
-            p3_learn_visitor = _P3LearningMaturityVisitor(module_adg, rel)
-            p3_learn_visitor.visit(tree)
-            edges.extend(p3_learn_visitor.edges)
-
-        if "p4_observability_governance" in visitors_to_run:
-            p4_obs_visitor = _P4ObservabilityGovernanceVisitor(module_adg, rel)
-            p4_obs_visitor.visit(tree)
-            edges.extend(p4_obs_visitor.edges)
-
-        if "execution_trace_proof" in visitors_to_run:
-            proof_visitor = _ExecutionProofVisitor(module_adg, rel)
-            proof_visitor.visit(tree)
-            edges.extend(proof_visitor.edges)
-
-        if "execution_semantic" in visitors_to_run:
-            exec_visitor = _ExecutionSemanticVisitor(VisitorContext(module_adg, rel))
-            exec_visitor.visit(tree)
-            edges.extend(exec_visitor.extract_edges())
 
     # E6: Unused import detection — emit dead_import edges (only in full mode)
     if _should_run_visitor("unused_import"):
@@ -1975,47 +1464,47 @@ def _scan_file(
         boundary_visitor.visit(tree)
         edges.extend(boundary_visitor.extract_edges())
 
-    # All remaining gap visitors (only in full mode)
-    if visitors_to_run == "full":
-        # G11 (gap): Determinism control (seeds_rng, patches_time, guards_replay, emits_determinism_digest)
-        determinism_visitor = _DeterminismControlVisitor(VisitorContext(module_adg, rel))
-        determinism_visitor.visit(tree)
-        edges.extend(determinism_visitor.extract_edges())
+    # All remaining gap visitors (DISABLED - legacy visitors)
+    # if visitors_to_run == "full":
+    #     # G11 (gap): Determinism control
+    #     determinism_visitor = _DeterminismControlVisitor(VisitorContext(module_adg, rel))
+    #     determinism_visitor.visit(tree)
+    #     edges.extend(determinism_visitor.extract_edges())
+    #
+    #     # G12 (gap): Network / I/O interception
+    #     io_visitor = _IOInterceptionVisitor(VisitorContext(module_adg, rel))
+    #     io_visitor.visit(tree)
+    #     edges.extend(io_visitor.extract_edges())
+    #
+    #     # G13 (gap): Mutation transport / commit
+    #     mutation_transport_visitor = _MutationTransportVisitor(VisitorContext(module_adg, rel))
+    #     mutation_transport_visitor.visit(tree)
+    #     edges.extend(mutation_transport_visitor.extract_edges())
+    #
+    #     # G14 (gap): Execution trace / proof
+    #     proof_visitor = _ExecutionProofVisitor(VisitorContext(module_adg, rel))
+    #     proof_visitor.visit(tree)
+    #     edges.extend(proof_visitor.extract_edges())
 
-        # G12 (gap): Network / I/O interception (intercepts_io, transcripts_response, hard_fails_untranscripted)
-        io_visitor = _IOInterceptionVisitor(VisitorContext(module_adg, rel))
-        io_visitor.visit(tree)
-        edges.extend(io_visitor.extract_edges())
+    # G16 (gap): Evaluation / optimization spine (DISABLED - legacy visitor)
+    # eval_visitor = _EvalSpineVisitor(VisitorContext(module_adg, rel))
+    # eval_visitor.visit(tree)
+    # edges.extend(eval_visitor.extract_edges())
 
-        # G13 (gap): Mutation transport / commit (packages_diff, validates_blast_radius, commits_mutation)
-        mutation_transport_visitor = _MutationTransportVisitor(VisitorContext(module_adg, rel))
-        mutation_transport_visitor.visit(tree)
-        edges.extend(mutation_transport_visitor.extract_edges())
+    # GH (RCA Rule D): Duplicate method definition detection (DISABLED)
+    # dup_visitor = _DuplicateMethodVisitor(module_adg, rel)
+    # dup_visitor.visit(tree)
+    # edges.extend(dup_visitor.edges)
 
-        # G14 (gap): Execution trace / proof (records_execution_trace, emits_replay_key, compares_proof)
-        proof_visitor = _ExecutionProofVisitor(VisitorContext(module_adg, rel))
-        proof_visitor.visit(tree)
-        edges.extend(proof_visitor.extract_edges())
+    # GU (RCA Rule G): Unreachable code after raise detection (DISABLED)
+    # unreach_visitor = _UnreachableCodeAfterRaiseVisitor(module_adg, rel)
+    # unreach_visitor.visit(tree)
+    # edges.extend(unreach_visitor.edges)
 
-    # G16 (gap): Evaluation / optimization spine (scores_groundedness, emits_drift_alert, builds_dpo_batch)
-    eval_visitor = _EvalSpineVisitor(VisitorContext(module_adg, rel))
-    eval_visitor.visit(tree)
-    edges.extend(eval_visitor.extract_edges())
-
-    # GH (RCA Rule D): Duplicate method definition detection
-    dup_visitor = _DuplicateMethodVisitor(module_adg, rel)
-    dup_visitor.visit(tree)
-    edges.extend(dup_visitor.edges)
-
-    # GU (RCA Rule G): Unreachable code after raise detection
-    unreach_visitor = _UnreachableCodeAfterRaiseVisitor(module_adg, rel)
-    unreach_visitor.visit(tree)
-    edges.extend(unreach_visitor.edges)
-
-    # G17 (gap): Secret / credential access (reads_secret_vault, accesses_credential, rotates_secret)
-    secret_visitor = _SecretAccessVisitor(module_adg, rel)
-    secret_visitor.visit(tree)
-    edges.extend(secret_visitor.edges)
+    # G17 (gap): Secret / credential access (DISABLED - legacy visitor)
+    # secret_visitor = _SecretAccessVisitor(module_adg, rel)
+    # secret_visitor.visit(tree)
+    # edges.extend(secret_visitor.edges)
 
     # Execution-grade semantic enrichment (replaces disabled _PrecisionHardeningVisitor)
     # Closes gaps: Data Lineage, Control Flow, Side Effects, Temporal Ordering, Callsite Resolution
@@ -2023,135 +1512,121 @@ def _scan_file(
     exec_visitor.visit(tree)
     edges.extend(exec_visitor.extract_edges())
 
-    # All final gap visitors (only in full mode)
-    if visitors_to_run == "full":
-        # G18 (gap): Config governance (reads_governed_config, validates_config_schema, caches_config)
-        config_gov_visitor = _ConfigGovernanceVisitor(module_adg, rel)
-        config_gov_visitor.visit(tree)
-        edges.extend(config_gov_visitor.edges)
+    # All final gap visitors (DISABLED - legacy visitors removed)
+    # if visitors_to_run == "full":
+    #     # G18 (gap): Config governance
+    #     config_gov_visitor = _ConfigGovernanceVisitor(module_adg, rel)
+    #     config_gov_visitor.visit(tree)
+    #     edges.extend(config_gov_visitor.edges)
+    #
+    #     # G19 (gap): Dynamic invocation
+    #     dyn_inv_visitor = _DynamicInvocationVisitor(module_adg, rel)
+    #     dyn_inv_visitor.visit(tree)
+    #     edges.extend(dyn_inv_visitor.edges)
+    #
+    #     # G20 (gap): Policy state observation
+    #     pso_visitor = _PolicyStateObserverVisitor(module_adg, rel)
+    #     pso_visitor.visit(tree)
+    #     edges.extend(pso_visitor.edges)
+    #
+    #     # G21 (gap): Anti-pattern registry
+    #     ap_reg_visitor = _AntipatternRegistryVisitor(module_adg, rel)
+    #     ap_reg_visitor.visit(tree)
+    #     edges.extend(ap_reg_visitor.edges)
+    #
+    #     # G22 (gap): Healing orchestrator
+    #     healing_orch_visitor = _HealingOrchestratorVisitor(module_adg, rel)
+    #     healing_orch_visitor.visit(tree)
+    #     edges.extend(healing_orch_visitor.edges)
+    #
+    #     # G23 (gap): Non-determinism primitive detection
+    #     nondet_visitor = _NondeterminismVisitor(module_adg, rel)
+    #     nondet_visitor.visit(tree)
+    #     edges.extend(nondet_visitor.edges)
+    #
+    #     # G24 (gap): External HTTP / network egress
+    #     http_visitor = _ExternalHttpVisitor(module_adg, rel)
+    #     http_visitor.visit(tree)
+    #     edges.extend(http_visitor.edges)
+    #
+    #     # G25 (gap): Agent-to-agent dispatch
+    #     agent_dispatch_visitor = _AgentDispatchVisitor(module_adg, rel)
+    #     agent_dispatch_visitor.visit(tree)
+    #     edges.extend(agent_dispatch_visitor.edges)
+    #
+    #     # G28 (gap): P1 orchestration governance
+    #     p1_orch_visitor = _P1OrchestrationGovernanceVisitor(module_adg, rel)
+    #     p1_orch_visitor.visit(tree)
+    #     edges.extend(p1_orch_visitor.edges)
+    #
+    #     # G26 (gap): L5 validation proof edges
+    #     l5_proof_visitor = _L5ValidationProofVisitor(module_adg, rel)
+    #     l5_proof_visitor.visit(tree)
+    #     edges.extend(l5_proof_visitor.edges)
 
-        # G19 (gap): Dynamic invocation (invokes_eval, invokes_exec, invokes_importlib, invokes_getattr_dynamic)
-        dyn_inv_visitor = _DynamicInvocationVisitor(module_adg, rel)
-        dyn_inv_visitor.visit(tree)
-        edges.extend(dyn_inv_visitor.edges)
+    # All P-series visitors (DISABLED - legacy visitors removed)
+    # if visitors_to_run == "full":
+    #     # G28 (gap): P1 orchestration
+    #     p1_orch_visitor = _P1OrchestrationVisitor(module_adg, rel)
+    #     p1_orch_visitor.visit(tree)
+    #     edges.extend(p1_orch_visitor.edges)
+    #
+    #     # G29 (gap): P2 execution capability
+    #     p2_exec_visitor = _P2ExecutionCapabilityVisitor(module_adg, rel)
+    #     p2_exec_visitor.visit(tree)
+    #     edges.extend(p2_exec_visitor.edges)
+    #
+    #     # G30 (gap): P3 orchestration & healing
+    #     p3_orch_visitor = _P3OrchestrationHealingVisitor(module_adg, rel)
+    #     p3_orch_visitor.visit(tree)
+    #     edges.extend(p3_orch_visitor.edges)
+    #
+    #     # G32 (gap): P3 learning maturity
+    #     p3_learn_visitor = _P3LearningMaturityVisitor(module_adg, rel)
+    #     p3_learn_visitor.visit(tree)
+    #     edges.extend(p3_learn_visitor.edges)
+    #
+    #     # G33 (gap): P4 observability & governance
+    #     p4_obs_visitor = _P4ObservabilityGovernanceVisitor(module_adg, rel)
+    #     p4_obs_visitor.visit(tree)
+    #     edges.extend(p4_obs_visitor.edges)
 
-        # G20 (gap): Policy state observation (observes_policy_state, observes_runtime_state, snapshots_state)
-        pso_visitor = _PolicyStateObserverVisitor(module_adg, rel)
-        pso_visitor.visit(tree)
-        edges.extend(pso_visitor.edges)
+    # All final visitors (DISABLED - legacy visitors)
+    # if visitors_to_run == "full":
+    #     # G31 (gap): P4 state, telemetry & learning
+    #     p4_state_visitor = _P4StateTelemetryVisitor(module_adg, rel)
+    #     p4_state_visitor.visit(tree)
+    #     edges.extend(p4_state_visitor.edges)
+    #
+    #     # G27 (gap): Learning / prompt provenance
+    #     learning_prov_visitor = _LearningProvenanceVisitor(module_adg, rel)
+    #     learning_prov_visitor.visit(tree)
+    #     edges.extend(learning_prov_visitor.edges)
 
-        # G21 (gap): Anti-pattern registry (registers_antipattern, classifies_antipattern)
-        ap_reg_visitor = _AntipatternRegistryVisitor(module_adg, rel)
-        ap_reg_visitor.visit(tree)
-        edges.extend(ap_reg_visitor.edges)
+    # W1c: Module definition visitor — emit module→func/class decomposes_into
+    # Phase 3a: Module definition visitor (DISABLED - legacy visitor removed)
+    # mod_def_visitor = _ModuleDefinitionVisitor(module_adg, rel)
+    # mod_def_visitor.visit(tree)
+    # edges.extend(mod_def_visitor.edges)
 
-        # G22 (gap): Healing orchestrator (dispatches_healing_run, confirms_heal, aborts_heal)
-        healing_orch_visitor = _HealingOrchestratorVisitor(module_adg, rel)
-        healing_orch_visitor.visit(tree)
-        edges.extend(healing_orch_visitor.edges)
+    # Phase 3a: Block decomposition (DISABLED - legacy visitor removed)
+    # block_visitor = _BlockDecompositionVisitor(module_adg, rel)
+    # block_visitor.visit(tree)
+    # edges.extend(block_visitor.edges)
 
-        # G23 (gap): Non-determinism primitive detection (uses_wall_clock, uses_random, uses_uuid)
-        nondet_visitor = _NondeterminismVisitor(module_adg, rel)
-        nondet_visitor.visit(tree)
-        edges.extend(nondet_visitor.edges)
+    # Phase 3b: Type surface collection — type enrichment
+    type_collector = _TypeSurfaceCollector(rel)
+    type_collector.visit(tree)
+    type_surface_map = type_collector.type_map  # returned to caller
 
-        # G24 (gap): External HTTP / network egress (external_http_call)
-        http_visitor = _ExternalHttpVisitor(module_adg, rel)
-        http_visitor.visit(tree)
-        edges.extend(http_visitor.edges)
+    # Phase 3c: Test → Execution linkage (DISABLED - legacy visitor removed)
+    # test_link_visitor = _TestExecutionLinkageVisitor(module_adg, rel)
+    # test_link_visitor.visit(tree)
+    # edges.extend(test_link_visitor.edges)
 
-        # G25 (gap): Agent-to-agent dispatch (agent_executes_agent)
-        agent_dispatch_visitor = _AgentDispatchVisitor(module_adg, rel)
-        agent_dispatch_visitor.visit(tree)
-        edges.extend(agent_dispatch_visitor.edges)
-
-        # G28 (gap): P1 orchestration governance (routes_to_agent, orchestrates_workflow,
-        #            dispatches_execution_plan, validates_agent_capability, checks_agent_registry)
-        p1_orch_visitor = _P1OrchestrationGovernanceVisitor(module_adg, rel)
-        p1_orch_visitor.visit(tree)
-        edges.extend(
-            p1_orch_visitor.edges
-        )  # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime
-
-        # G26 (gap): L5 validation proof edges (validated_by_registry, validated_by_safety_plane,
-        #            validated_by_llm_gateway, execution_terminates_at_uwg, references_policy_hash)
-        l5_proof_visitor = _L5ValidationProofVisitor(module_adg, rel)
-        l5_proof_visitor.visit(tree)
-        edges.extend(l5_proof_visitor.edges)
-
-    # All P-series visitors (only in full mode)
-    if visitors_to_run == "full":
-        # G28 (gap): P1 orchestration (routes_to_agent, dispatches_execution_plan,
-        #            validates_agent_capability, checks_agent_registry)
-        p1_orch_visitor = _P1OrchestrationVisitor(module_adg, rel)
-        p1_orch_visitor.visit(tree)
-        edges.extend(p1_orch_visitor.edges)
-
-        # G29 (gap): P2 execution capability (authorize_and_execute, validates_capability,
-        #            routes_to_capability, writes_via_uwg, blocks_direct_write,
-        #            records_tool_invocation, captures_execution_output)
-        p2_exec_visitor = _P2ExecutionCapabilityVisitor(module_adg, rel)
-        p2_exec_visitor.visit(tree)
-        edges.extend(p2_exec_visitor.edges)
-
-        # G30 (gap): P3 orchestration & healing (dispatches_agent, coordinates_agents,
-        #            records_workflow_lineage, records_healing_outcome, escalates_failure)
-        p3_orch_visitor = _P3OrchestrationHealingVisitor(module_adg, rel)
-        p3_orch_visitor.visit(tree)
-        edges.extend(p3_orch_visitor.edges)
-
-        # G32 (gap): P3 learning maturity (captures_pattern, records_learning_event,
-        #            writes_learning_snapshot, feeds_meta_learning, updates_routing_strategy,
-        #            improves_agent_policy, stores_learning_state)
-        p3_learn_visitor = _P3LearningMaturityVisitor(module_adg, rel)
-        p3_learn_visitor.visit(tree)
-        edges.extend(p3_learn_visitor.edges)
-
-        # G33 (gap): P4 observability & governance (emits_metric_event, records_incident_event,
-        #            captures_runtime_anomaly, writes_observability_log, updates_monitoring_state,
-        #            triggers_alert, links_incident_trace)
-        p4_obs_visitor = _P4ObservabilityGovernanceVisitor(module_adg, rel)
-        p4_obs_visitor.visit(tree)
-        edges.extend(p4_obs_visitor.edges)
-
-    # All final visitors (only in full mode)
-    if visitors_to_run == "full":
-        # G31 (gap): P4 state, telemetry & learning (records_telemetry_event,
-        #            captures_evaluation_metric, stores_embedding,
-        #            updates_meta_learning_state, links_execution_to_snapshot)
-        p4_state_visitor = _P4StateTelemetryVisitor(module_adg, rel)
-        p4_state_visitor.visit(tree)
-        edges.extend(p4_state_visitor.edges)
-
-        # G27 (gap): Learning / prompt provenance (proposal_commits_routing, prompt_template_used_by,
-        #            instruction_injection_source, produces_preference_pair, requires_human_review)
-        learning_prov_visitor = _LearningProvenanceVisitor(module_adg, rel)
-        learning_prov_visitor.visit(tree)
-        edges.extend(learning_prov_visitor.edges)
-
-        # W1c: Module definition visitor — emit module→func/class decomposes_into
-        mod_def_visitor = _ModuleDefinitionVisitor(module_adg, rel)
-        mod_def_visitor.visit(tree)
-        edges.extend(mod_def_visitor.edges)
-
-        # Phase 3a: Block decomposition — node granularity
-        block_visitor = _BlockDecompositionVisitor(module_adg, rel)
-        block_visitor.visit(tree)
-        edges.extend(block_visitor.edges)
-
-        # Phase 3b: Type surface collection — type enrichment
-        type_collector = _TypeSurfaceCollector(rel)
-        type_collector.visit(tree)
-        type_surface_map = type_collector.type_map  # returned to caller
-
-        # Phase 3c: Test → Execution linkage
-        test_link_visitor = _TestExecutionLinkageVisitor(module_adg, rel)
-        test_link_visitor.visit(tree)
-        edges.extend(test_link_visitor.edges)
-
-        # Phase 1.4: Hollow file annotation
-        hollow_annotator = _HollowFileAnnotator(module_adg, rel)
-        hollow_annotator.visit(tree)
+    # Phase 1.4: Hollow file annotation
+    hollow_annotator = _HollowFileAnnotator(module_adg, rel)
+    hollow_annotator.visit(tree)
 
     # Initialize surface_evidence
     surface_evidence = {}
@@ -2171,7 +1646,7 @@ def _scan_file(
     if visitors_to_run == "full":
         unique_execution_edges = set(exec_visitor.edges)
         surface_evidence = {
-            "decomposes_into_expected_count": len(set(block_visitor.edges)),
+            "decomposes_into_expected_count": 0,  # Disabled: block_visitor
             "controls_flow_expected_count": sum(
                 1 for edge in unique_execution_edges if edge.relation_type == "controls_flow"
             ),
@@ -2184,7 +1659,7 @@ def _scan_file(
             "resolves_callsite_expected_count": sum(
                 1 for edge in unique_execution_edges if edge.relation_type == "resolves_callsite"
             ),
-            "tests_execution_of_expected_count": len(set(test_link_visitor.edges)),
+            "tests_execution_of_expected_count": 0,  # Disabled: test_link_visitor
             "type_surface_candidate_count": len(type_surface_map),
         }
     else:
@@ -2210,7 +1685,7 @@ def _scan_file(
     return edges, False, type_surface_map, surface_evidence
 
 
-from agentic_core.adg.extraction.semantic_maps import _SEMANTIC_TYPE_MAP, _SEMANTIC_FALLBACK
+from agentic_core.adg.extraction.semantic_maps import _SEMANTIC_FALLBACK, _SEMANTIC_TYPE_MAP
 
 
 def _stamp_semantic_types_with_stats(edges: list[Edge]) -> tuple[list[Edge], dict[str, int]]:
@@ -2980,45 +2455,4 @@ __all__ = [
     "_SymbolInventoryVisitor",
     "_UnusedImportVisitor",
     "_tag_dead_imports",
-    "_detect_cycles",
-    "_DecoratorVisitor",
-    "_ImportVisitor",
-    "_TypeAnnotationVisitor",
-    "_DuplicateMethodVisitor",
-    "_UnreachableCodeAfterRaiseVisitor",
-    "_is_property_accessor",
 ]
-
-
-
-
-
-
-
-def _is_test_file(filepath: Path) -> bool:
-    return filepath.name.startswith("test_") or filepath.name.endswith("_test.py")
-
-
-
-# WAVE1: Enhanced semantic precision
-# Execution edges now classified into specific types:
-# - controls_flow (for if/for/while statements)
-# - flows_to (for data flow)
-# - emits_side_effect (for function calls with side effects)
-# - resolves_callsite (for function call resolution)
-# Applied: 2026-03-30
-
-
-# WAVE2: Violation categorization tuning
-# Multi-exception tuples now correctly classified:
-# - except (A, B): → specific (not bare)
-# - except Exception: → broad (with logging ok)
-# - except: → bare (flagged for review)
-# Applied: 2026-03-30
-
-
-
-
-def link_type_surface(type_surface, node_id):
-    """Link type surface to node - placeholder for test compatibility."""
-    pass
