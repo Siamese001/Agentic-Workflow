@@ -68,31 +68,10 @@ for e in import_edges:
 
 # For each key file: get node info + its import targets (what it imports)
 # and import sources (who imports it)
-def get_imports_of(node_id):
-    rows = conn.execute(
-        "SELECT n.resolved_path, e.symbol FROM edges e JOIN nodes n ON e.dst_id=n.id "
-        "WHERE e.src_id=? AND e.relation_type='imports'",
-        (node_id,),
-    ).fetchall()
-    return rows
 
 
-def get_imported_by(node_id):
-    rows = conn.execute(
-        "SELECT n.resolved_path, e.symbol FROM edges e JOIN nodes n ON e.src_id=n.id "
-        "WHERE e.dst_id=? AND e.relation_type='imports'",
-        (node_id,),
-    ).fetchall()
-    return rows
 
 
-def get_violations(node_id):
-    rows = conn.execute(
-        "SELECT n.resolved_path, e.symbol FROM edges e JOIN nodes n ON e.dst_id=n.id "
-        "WHERE e.src_id=? AND e.relation_type='violates'",
-        (node_id,),
-    ).fetchall()
-    return rows
 
 
 print("=" * 70)

@@ -9,14 +9,6 @@ REPO = Path(__file__).resolve().parent.parent
 SKIP = {".git", ".venv", "venv", "__pycache__", ".pytest_cache"}
 
 
-def whitelist_for(validator_name: str) -> str:
-    hits = [p for p in REPO.rglob(validator_name)
-            if not any(s in p.parts for s in SKIP)]
-    if not hits:
-        return "NOT FOUND"
-    content = hits[0].read_text(encoding="utf-8")
-    m = re.search(r'WHITELIST_COMMENT\s*=\s*["\']([^"\']+)["\']', content)
-    return m.group(1) if m else "NOT FOUND"
 
 
 validators = {

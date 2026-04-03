@@ -18,9 +18,6 @@ id_to_node = {int(k): v for k, v in nodes.items()}
 print(f'Nodes: {len(nodes)}  Edges: {len(edges)}')
 HEAL_PATTERNS = ['healing_tier_router', 'healing_tier_dispatcher', 'healing_tier_config', 'healing_tier_types', 'healing_provider_adapters', 'healing_event_emitter', 'qwen_vllm_inference', 'qwen_circuit_breaker', 'qwen_gpu_validator', 'qwen_health', 'qwen_determinism', 'qwen_meta_learning', 'tiering_allowlist', 'remediation_dispatcher', 'execute_ssot', 'vllm_routing_predicates', 'bmg_embedding_similarity', 'hardened_gemini_executor', 'SovereignLLMGateway', 'HardenedGeminiExecutor']
 
-def matches(nd: dict) -> bool:
-    name = (nd.get('n') or nd.get('p') or '').lower()
-    return any(p.lower() in name for p in HEAL_PATTERNS)
 heal_ids = {int(k) for k, v in nodes.items() if matches(v)}
 print(f'\nHealing/routing nodes matched: {len(heal_ids)}')
 sorted_nodes = sorted([(nid, id_to_node[nid]) for nid in heal_ids if id_to_node[nid].get('t') == 'module'], key=lambda x: (x[1].get('l', ''), x[1].get('n', '')))
