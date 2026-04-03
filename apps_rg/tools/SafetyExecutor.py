@@ -12,11 +12,47 @@ meets security standards for job alignment.
 
 from __future__ import annotations
 
-# from archives.legacy_root_folders.runtime.runtime_utils import invoke_model, SandboxConfig  # DEPRECATED: Archive import removed to protect archives from validation edits
-# from archives.legacy_root_folders.core.routing import RoutingPolicy  # DEPRECATED: Archive import removed to protect archives from validation edits
-# from archives.legacy_root_folders.core.models.models import ComplexityLevel  # DEPRECATED: Archive import removed to protect archives from validation edits
-# from archives.legacy_resume_gen.Agentic_Workflow-10_10.config.meta_profile import MetaProfileSnapshot  # DEPRECATED: Archive import removed to protect archives from validation edits
-# from archives.legacy_resume_gen.Agentic_Workflow-10_10.tests.sandbox.test_sandbox_observability import record_event, record_exception  # DEPRECATED: Archive import removed to protect archives from validation edits
+from dataclasses import dataclass
+from typing import Any
+
+
+@dataclass
+class ComplexityLevel:
+    """Stub for ComplexityLevel - originally from archives."""
+    LOW: str = "low"
+    MEDIUM: str = "medium"
+    HIGH: str = "high"
+
+
+class RoutingPolicy:
+    """Stub for RoutingPolicy - originally from archives."""
+    def select_model(self, Task: str, complexity: str, meta_profile: Any | None = None) -> str:
+        return "default_model"
+
+
+class SandboxConfig:
+    """Stub for SandboxConfig - originally from archives."""
+    pass
+
+
+class MetaProfileSnapshot:
+    """Stub for MetaProfileSnapshot - originally from archives."""
+    pass
+
+
+def record_event(event_type: str, data: dict[str, Any]) -> None:
+    """Stub for record_event - originally from archives."""
+    pass
+
+
+def record_exception(event_type: str, exc: Exception) -> None:
+    """Stub for record_exception - originally from archives."""
+    pass
+
+
+def invoke_model(model: str, prompt: str, sandbox: SandboxConfig) -> str:
+    """Stub for invoke_model - originally from archives."""
+    return ""
 
 
 class SafetyExecutor:

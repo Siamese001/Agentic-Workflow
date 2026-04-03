@@ -24,10 +24,17 @@ Non-responsibilities:
 
 # FILE: observability.py
 
+_events: list[dict] = []
 
-# from archives.legacy_root_folders.runtime.observability.spans import *  # DEPRECATED: Archive import removed to protect archives from validation edits
-# from archives.legacy_root_folders.runtime.observability.traces import *  # DEPRECATED: Archive import removed to protect archives from validation edits
-# from archives.legacy_root_folders.runtime.observability.metrics import *  # DEPRECATED: Archive import removed to protect archives from validation edits
+
+def get_events() -> list[dict]:
+    """Get all recorded events."""
+    return _events.copy()
+
+
+def _clear_events_impl() -> None:
+    """Clear all recorded events."""
+    _events.clear()
 
 
 def get_all_events() -> list:

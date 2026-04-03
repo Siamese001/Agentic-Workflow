@@ -6,6 +6,6 @@ from apps_lic.utils.lic_engine_validation_capability_util import LICEngineValida
 
 __all__ = [
     "PII_SanitizerSpecialistAgent",
-    "ArchetypeIndicator", 
+    "ArchetypeIndicator",
     "LICEngineValidationCapability",
 ]

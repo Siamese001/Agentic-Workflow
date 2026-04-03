@@ -26,8 +26,17 @@ The actual ranking algorithms are delegated to runtime_utils.Ranking.
 This file wraps those behaviors and exposes a stable API.
 """
 
-
-# from archives.legacy_root_folders.runtime.runtime_utils import Ranking  # DEPRECATED: Archive import removed to protect archives from validation edits
+class _Ranking:
+    """Stub for _Ranking - originally from archives.runtime.runtime_utils."""
+    @staticmethod
+    def bm25_rank(items: list[dict[str, object]]) -> list[dict[str, object]]:
+        return list(items)
+    @staticmethod
+    def dense_rank(items: list[dict[str, object]]) -> list[dict[str, object]]:
+        return list(items)
+    @staticmethod
+    def hybrid_rank(items: list[dict[str, object]]) -> list[dict[str, object]]:
+        return list(items)
 
 
 def bm25(items: list[dict[str, object]]) -> list[dict[str, object]]:
