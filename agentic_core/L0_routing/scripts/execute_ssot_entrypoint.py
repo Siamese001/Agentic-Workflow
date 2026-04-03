@@ -273,19 +273,19 @@ Examples:
 
     # [FENCE SELF-CHECK MODE]
     if args.fence_self_check:
-        from agentic_core.L0_routing.scripts.execute_ssot import run_fence_self_check
+        from agentic_core.L0_routing.scripts.execute_ssot_cli import run_fence_self_check
 
         run_fence_self_check()
         return 0
 
     # [PLAN MODE]
     if args.plan:
-        from agentic_core.L0_routing.scripts.execute_ssot import print_execution_plan
+        from agentic_core.L0_routing.scripts.execute_ssot_cli import print_execution_plan
 
         print_execution_plan(arbitrate_plan=args.arbitrate_plan, ptc_plan=args.ptc_plan)
         return 0
 
-    from agentic_core.L0_routing.scripts.execute_ssot import (
+    from agentic_core.L0_routing.scripts.execute_ssot_cli import (
         REPO_ROOT,
         _apply_v15_enforcement_flag,
         _configure_logging,

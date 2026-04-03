@@ -1,8 +1,9 @@
 # __init__.py
-"""execute_ssot package - Wave 1 modularization.
+"""execute_ssot package - Wave 3 modularization.
 
 This package contains the modularized components of the execute_ssot script,
-extracted during Wave 1 of the modularization initiative.
+with all imports migrated to modular files (execute_ssot_cli, execute_ssot_engine, etc.)
+instead of the monolithic execute_ssot.py.
 """
 
 __version__ = "1.0.0"
@@ -75,9 +76,9 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 # Import extracted modules for convenience
 from .execute_ssot_context import HealContext
 from .execute_ssot_engine import SovereignDecisionEngine
-from .execute_ssot_validators import PreFlightValidator, NonInteractiveGuard
-from .execute_ssot_state import RuntimeStateManager
 from .execute_ssot_reporting import ExecutionReporter
+from .execute_ssot_state import RuntimeStateManager
+from .execute_ssot_validators import NonInteractiveGuard, PreFlightValidator
 
 __all__ = [
     # Legacy exports
