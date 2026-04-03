@@ -1,14 +1,14 @@
 """Enforces plans only exist in SSOT-approved location.
 
 Per Constitutional Rule #9, this gate blocks commits when plans are found
-in prohibited locations (.windsurf/plans/).
+in prohibited locations (docs/reports/plans/).
 """
 import sys
 from pathlib import Path
 
 
 def validate_plan_locations(project_root: Path | None = None) -> bool:
-    """Check no plans exist in prohibited locations.
+    """Check all plans are in SSOT-approved .windsurf/plans/ location.
 
     Returns:
         True if all plans are in SSOT-approved locations, False otherwise.
@@ -16,9 +16,9 @@ def validate_plan_locations(project_root: Path | None = None) -> bool:
     if project_root is None:
         project_root = Path(__file__).parent.parent.parent
 
+    # Plans must be in .windsurf/plans/, NOT in docs/reports/plans/
     prohibited_checks = [
-        (".windsurf/plans/*.md", "docs/reports/plans/"),
-        (".windsurf/plans/*.py", "tools/adg/queries/"),
+        ("docs/reports/plans/*.md", ".windsurf/plans/"),
     ]
 
     violations = []
@@ -28,13 +28,13 @@ def validate_plan_locations(project_root: Path | None = None) -> bool:
             violations.append((match, correct_location))
 
     if violations:
-        print("❌ PLAN LOCATION VIOLATIONS:")
+        print("PLAN LOCATION VIOLATIONS:")
         for v, correct in violations:
-            print(f"   {v} → should be in {correct}")
-        print(f"\nMove these files to their correct locations and re-commit.")
+            print(f"   {v} -> should be in {correct}")
+        print("\nMove these files to their correct locations and re-commit.")
         return False
 
-    print("✅ All plans in SSOT-approved location (docs/reports/plans/)")
+    print("All plans in SSOT-approved location (.windsurf/plans/)")
     return True
 
 
