@@ -269,7 +269,7 @@ class UniversalWriteGateway:
 
     def __init__(
         self,
-        replay_mode: bool = False,
+        replay_mode: bool = True,
         policy_hash: str = "",
         actor_id: str = "uwg",
         run_id: str = "",

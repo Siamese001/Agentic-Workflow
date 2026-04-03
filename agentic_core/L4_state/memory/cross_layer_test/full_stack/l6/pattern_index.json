@@ -1,5 +1,5 @@
 {
-  "runtime_adg_1775171178_7556eeae": {
+  "runtime_adg_1775177492_7b8575eb": {
     "component_distribution": {
       "CognitivePlane": 1,
       "DAGEngine": 1,
@@ -12,7 +12,7 @@
     },
     "error_patterns": [],
     "extraction_metadata": {
-      "timestamp": 1775171178,
+      "timestamp": 1775177492,
       "total_nodes": 8
     },
     "layer_distribution": {
@@ -34,44 +34,44 @@
     "timing_patterns": {
       "fast_operations": [
         {
-          "component": "Tool.validate_safety",
+          "component": "Tool.route_request",
           "duration_ms": 0.0,
-          "node_id": "42d6cb5c6ed4e94b"
-        },
-        {
-          "component": "CognitivePlane",
-          "duration_ms": 0.0,
-          "node_id": "452ec40a3193ca54"
-        },
-        {
-          "component": "DAGEngine",
-          "duration_ms": 0.0,
-          "node_id": "5f811cb929645f8b"
+          "node_id": "0b49f149c4d4db78"
         },
         {
           "component": "Tool.execute_action",
           "duration_ms": 0.0,
-          "node_id": "6facaa5090e5e945"
+          "node_id": "21b8ede6c7e1e6a8"
         },
         {
           "component": "Tool.record_metric",
           "duration_ms": 0.0,
-          "node_id": "a091250e8fe46024"
+          "node_id": "5a76ea3aa5c40c7b"
         },
         {
-          "component": "NervousSystem",
+          "component": "CognitivePlane",
           "duration_ms": 0.0,
-          "node_id": "daea58ba4c73a942"
+          "node_id": "93b7d82fbcc7f0cf"
+        },
+        {
+          "component": "DAGEngine",
+          "duration_ms": 0.0,
+          "node_id": "94ca9750aa8085fc"
+        },
+        {
+          "component": "Tool.validate_safety",
+          "duration_ms": 0.0,
+          "node_id": "a50780ee12c2ff5f"
         },
         {
           "component": "Tool.read_state",
           "duration_ms": 0.0,
-          "node_id": "dfc9e3b11fcff454"
+          "node_id": "e3ee33c2954d8234"
         },
         {
-          "component": "Tool.route_request",
+          "component": "NervousSystem",
           "duration_ms": 0.0,
-          "node_id": "ee8971105e503a67"
+          "node_id": "e79808ef193159b4"
         }
       ],
       "slow_operations": []

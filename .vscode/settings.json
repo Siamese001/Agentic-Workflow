@@ -10,7 +10,9 @@
     "python.testing.autoDiscoverEnabled": true,
     "python.analysis.exclude": [
         "**/archives/**",
+        "**/archives/healing_backups/**",
         "**/.healing_backups/**",
+        "**/artifacts/**",
         "**/artifacts/adg/**/*.sqlite",
         "**/__pycache__/**",
         "**/.pytest_cache/**",
@@ -18,8 +20,13 @@
     ],
     "python.analysis.ignore": [
         "**/archives/**",
-        "**/.healing_backups/**"
+        "**/archives/healing_backups/**",
+        "**/.healing_backups/**",
+        "**/artifacts/**"
     ],
+    "python.analysis.diagnosticSeverityOverrides": {
+        "reportUnusedExpression": "none"
+    },
     "github.copilot.enable": {
         "*": true,
         "yaml": false,
@@ -62,6 +69,9 @@
     "gitlens.autocomplete.enabled": false,
     "gitlens.integrations.enabled": false,
     "files.exclude": {
+        "**/archives/**": true,
+        "**/.healing_backups/**": true,
+        "**/artifacts/**": true,
         "**/docs/**/*.png": true,
         "**/docs/**/*.jpg": true,
         "**/docs/**/*.jpeg": true,
@@ -70,6 +80,9 @@
         "**/docs/**/*.pdf": true
     },
     "files.watcherExclude": {
+        "**/archives/**": true,
+        "**/.healing_backups/**": true,
+        "**/artifacts/**": true,
         "**/docs/**/*.png": true,
         "**/docs/**/*.jpg": true,
         "**/docs/**/*.jpeg": true,
@@ -78,6 +91,9 @@
         "**/docs/**/*.pdf": true
     },
     "search.exclude": {
+        "**/archives/**": true,
+        "**/.healing_backups/**": true,
+        "**/artifacts/**": true,
         "**/docs/**/*.png": true,
         "**/docs/**/*.jpg": true,
         "**/docs/**/*.jpeg": true,
