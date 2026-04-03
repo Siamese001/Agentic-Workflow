@@ -35,6 +35,7 @@ from tools.adg.accelerators.orchestrator import (
     run_fast_test,
     run_hardening_p0,
     run_hardening_p1,
+    run_hardening_p2,
     run_incremental_update,
     run_testing,
 )
@@ -92,9 +93,7 @@ def _build_parser() -> argparse.ArgumentParser:
     update_parser = incr_sub.add_parser("update", help="Incremental update")
     update_parser.add_argument("--changed", nargs="+", required=True)
 
-    incr_sub.add_parser("scan", help="Incremental scan").add_argument(
-        "--cache", action="store_true"
-    )
+    incr_sub.add_parser("scan", help="Incremental scan").add_argument("--cache", action="store_true")
 
     # --- fast ---
     fast_parser = sub.add_parser("fast", help="Fast test runner")
@@ -131,7 +130,7 @@ def main(argv: list[str] | None = None) -> int:
         elif args.hardening_command == "p1":
             return run_hardening_p1(args.apply)
         elif args.hardening_command == "p2":
-            return run_hardening_p1(args.apply)  # p2 uses same runner
+            return run_hardening_p2(args.apply)
         return 1
 
     elif args.command == "incremental":
