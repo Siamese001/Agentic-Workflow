@@ -1526,6 +1526,32 @@ def build_sovereign_territories() -> dict[str, TerritoryDefinition]:
         "allowed_extensions": [".py", ".json", ".md"],
     }
 
+    # Infrastructure territory — restored from commit 02169159bf deletion
+    territories["infrastructure"] = {
+        "depth": 2,
+        "purpose": "Infrastructure hardening modules — cross-cutting system optimization and security frameworks.",
+        "subfolders": {
+            "hardening": {
+                "purpose": "System hardening implementations: optimizers, security frameworks, distributed state, query routing.",
+                "allowed_suffixes": [
+                    "_optimizer.py",
+                    "_framework.py",
+                    "_manager.py",
+                    "_router.py",
+                    "_contracts.py",
+                    "_coherence.py",
+                    "_state.py",
+                ],
+                "forbidden_suffixes": ["_test.py", "_spec.py"],
+            },
+        },
+        "required_dirs": ["infrastructure/hardening"],
+        "forbidden_patterns": ["infrastructure/tests", "infrastructure/temp"],
+        "no_cross_layer_imports": False,
+        "allowed_extensions": [".py"],
+        "allow_root_py": False,
+    }
+
     return territories
 
 
