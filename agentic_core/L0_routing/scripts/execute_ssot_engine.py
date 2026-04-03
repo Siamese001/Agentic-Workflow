@@ -4,8 +4,16 @@ This module contains the main SovereignDecisionEngine class which orchestrates
 the compliance and healing process across all architectural layers.
 """
 
+from __future__ import annotations
+
 import logging
 from typing import Any
+
+from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+    _emit_records_execution_trace,
+    _emit_phase_transition,
+    LayerSegment,
+)
 
 
 class SovereignDecisionEngine:
@@ -201,7 +209,12 @@ class SovereignDecisionEngine:
         Returns:
             Tuple of (overall_success, final_results)
         """
-        try:
+        # PTC: Workflow initialization
+        _emit_records_execution_trace(
+            str(id(self)),
+            LayerSegment.L2_EXECUTION,
+            "execute_ssot.workflow.init"
+        )
             # Initialize heal context
             from .execute_ssot_context import HealContext
             self.heal_context = HealContext(
@@ -211,8 +224,18 @@ class SovereignDecisionEngine:
             )
 
             # Phase 1: Discovery
+            _emit_records_execution_trace(
+                str(id(self)),
+                LayerSegment.L1_COGNITION,
+                "execute_ssot.phase.discovery.start"
+            )
             try:
                 success, findings = self.run_discovery_phase(self.heal_context)
+                _emit_records_execution_trace(
+                    str(id(self)),
+                    LayerSegment.L1_COGNITION,
+                    f"execute_ssot.phase.discovery.end:success={success}"
+                )
                 if not success:
                     return False, {"phase": "discovery", "error": "Discovery failed", "context": self.heal_context}
                 self.heal_context.record_phase_result("discovery", findings)
@@ -220,8 +243,18 @@ class SovereignDecisionEngine:
                 return False, {"phase": "discovery", "error": f"Discovery exception: {str(e)}", "context": self.heal_context}
 
             # Phase 2: Validation
+            _emit_records_execution_trace(
+                str(id(self)),
+                LayerSegment.L1_COGNITION,
+                "execute_ssot.phase.validation.start"
+            )
             try:
                 success, validated = self.run_validation_phase(self.heal_context, findings)
+                _emit_records_execution_trace(
+                    str(id(self)),
+                    LayerSegment.L1_COGNITION,
+                    f"execute_ssot.phase.validation.end:success={success}"
+                )
                 if not success:
                     return False, {"phase": "validation", "error": "Validation failed", "context": self.heal_context}
                 self.heal_context.record_phase_result("validation", validated)
@@ -229,8 +262,18 @@ class SovereignDecisionEngine:
                 return False, {"phase": "validation", "error": f"Validation exception: {str(e)}", "context": self.heal_context}
 
             # Phase 3: Alignment
+            _emit_records_execution_trace(
+                str(id(self)),
+                LayerSegment.L3_ORCHESTRATION,
+                "execute_ssot.phase.alignment.start"
+            )
             try:
                 success, alignments = self.run_alignment_phase(self.heal_context, validated)
+                _emit_records_execution_trace(
+                    str(id(self)),
+                    LayerSegment.L3_ORCHESTRATION,
+                    f"execute_ssot.phase.alignment.end:success={success}"
+                )
                 if not success:
                     return False, {"phase": "alignment", "error": "Alignment failed", "context": self.heal_context}
                 self.heal_context.record_phase_result("alignment", alignments)
@@ -238,8 +281,18 @@ class SovereignDecisionEngine:
                 return False, {"phase": "alignment", "error": f"Alignment exception: {str(e)}", "context": self.heal_context}
 
             # Phase 4: Healing
+            _emit_records_execution_trace(
+                str(id(self)),
+                LayerSegment.L2_EXECUTION,
+                "execute_ssot.phase.healing.start"
+            )
             try:
                 success, healing_results = self.run_healing_phase(self.heal_context, alignments)
+                _emit_records_execution_trace(
+                    str(id(self)),
+                    LayerSegment.L2_EXECUTION,
+                    f"execute_ssot.phase.healing.end:success={success}"
+                )
                 if not success:
                     return False, {"phase": "healing", "error": "Healing failed", "context": self.heal_context}
                 self.heal_context.record_phase_result("healing", healing_results)
@@ -247,12 +300,28 @@ class SovereignDecisionEngine:
                 return False, {"phase": "healing", "error": f"Healing exception: {str(e)}", "context": self.heal_context}
 
             # Phase 5: Reporting
+            _emit_records_execution_trace(
+                str(id(self)),
+                LayerSegment.L4_STATE,
+                "execute_ssot.phase.reporting.start"
+            )
             try:
                 success, report = self.run_reporting_phase(self.heal_context, healing_results)
+                _emit_records_execution_trace(
+                    str(id(self)),
+                    LayerSegment.L4_STATE,
+                    f"execute_ssot.phase.reporting.end:success={success}"
+                )
                 self.heal_context.record_phase_result("reporting", report)
             except Exception as e:
                 return False, {"phase": "reporting", "error": f"Reporting exception: {str(e)}", "context": self.heal_context}
 
+            # PTC: Workflow completion
+            _emit_records_execution_trace(
+                str(id(self)),
+                LayerSegment.L2_EXECUTION,
+                "execute_ssot.workflow.complete"
+            )
             return True, {
                 "heal_context": self.heal_context,
                 "phase_results": self.heal_context.phase_results,
