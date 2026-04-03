@@ -14,7 +14,6 @@ import json
 import logging
 from typing import Any
 
-from agentic_core.L5_safety.types.hardening_errors import MutationReplayIntegrityViolation
 
 from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     LayerSegment,
@@ -177,6 +176,7 @@ logger = logging.getLogger(__name__)
 
 
 def _snapshot_hash(snapshot: dict[str, Any]) -> str:
+    from agentic_core.L5_safety.types.hardening_errors import MutationReplayIntegrityViolation
     from agentic_core.L5_safety.types.hardening_errors import MutationReplayIntegrityViolation
     from agentic_core.L5_safety.types.hardening_errors import MutationReplayIntegrityViolation
     from agentic_core.L5_safety.types.hardening_errors import MutationReplayIntegrityViolation  # noqa: F401

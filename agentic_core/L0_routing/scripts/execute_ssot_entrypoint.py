@@ -268,6 +268,9 @@ Examples:
     if getattr(args, "scan_only", False):
         args.heal = False
 
+    # Set dry_run based on heal state (for backward compatibility with execute_ssot.py)
+    args.dry_run = not args.heal
+
     # [FENCE SELF-CHECK MODE]
     if args.fence_self_check:
         from agentic_core.L0_routing.scripts.execute_ssot import run_fence_self_check

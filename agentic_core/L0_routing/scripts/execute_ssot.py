@@ -2935,6 +2935,11 @@ class SovereignDecisionEngine:
         if not success:
             logging.warning(f"Sovereignty released with FAILURE status for {agent_name}")
 
+    def reset_call_path(self) -> None:
+        """Reset the call path tracking to allow agent reuse across phases."""
+        self._call_path.clear()
+        logger.debug("[SovereignDecisionEngine] Call path reset for next phase")
+
 
 AutonomousDecisionEngine = SovereignDecisionEngine
 EnhancedAutonomousDecisionEngine = SovereignDecisionEngine
@@ -3954,6 +3959,10 @@ def execute_phase3_alignment(agents, territory, decision_engine, state_mgr, ctx:
 def execute_phase3_alignment_impl(agents, territory, decision_engine, state_mgr, ctx: "HealContext" = None):
     """PHASE 3: STRUCTURAL ALIGNMENT - Implementation"""
     logger.info(f"=== PHASE 3: ALIGNMENT - {territory} ===")
+    
+    # Reset call path to allow HierarchyHealerAgent reuse after Phase 1 validation
+    decision_engine.reset_call_path()
+    
     state_mgr.update_agent("HierarchyHealerAgent", "L5 - Safety")
     from agentic_core.L5_safety.reasoning.hierarchy_validator import (
         HierarchyValidatorAgent as _HierarchyAgentValidator,
@@ -3972,6 +3981,22 @@ def execute_phase3_alignment_impl(agents, territory, decision_engine, state_mgr,
         "repo_root": str(REPO_ROOT),
     }
     violations = _hier_check["violations_count"]
+    
+    # ALWAYS run test structure mirror validation for tests territory (regardless of hierarchy violations)
+    _test_mirror_violations = 0
+    _test_mirror_created = 0
+    if territory == "tests" and ctx is not None and ctx.heal:
+        _hier_healer_cls = agents.get("hierarchy")
+        if _hier_healer_cls is not None:
+            _hier_healer_instance = _hier_healer_cls(project_root=REPO_ROOT)
+            mirror_result = _hier_healer_instance.validate_test_structure_mirror(
+                dry_run=False, execute=True
+            )
+            _test_mirror_violations = mirror_result.get("violations_found", 0)
+            _test_mirror_created = mirror_result.get("folders_created", 0)
+            if _test_mirror_created > 0:
+                logger.info(f"[TEST MIRROR] Created {_test_mirror_created} test folders")
+    
     if violations > 0:
         confidence = decision_engine.calculate_healing_confidence(violations, ["HIERARCHY"], territory)
         proceed, reason = decision_engine.should_proceed_with_healing(
@@ -4080,10 +4105,15 @@ def execute_phase3_alignment_impl(agents, territory, decision_engine, state_mgr,
                 routing_tier="DETERMINISTIC",
                 routing_score=confidence.value if hasattr(confidence, "value") else 0.0,
                 confidence=confidence.value if hasattr(confidence, "value") else 0.0,
-                fix_summary=f"Skipped hierarchy healing in {territory}: {reason}",
+                fix_summary=f"Skipped hierarchy healing in {territory}: {reason} | Test mirror: {_test_mirror_violations} missing folders, {_test_mirror_created} created",
                 outcome="SKIPPED",
             )
     else:
+        # No hierarchy violations
+        _fix_summary = f"No hierarchy violations in {territory}"
+        if _test_mirror_violations > 0:
+            _fix_summary += f" | Test mirror: {_test_mirror_violations} missing folders, {_test_mirror_created} created"
+
         state_mgr.complete_agent("HierarchyHealerAgent", True, "No violations found")
         _record_healing_action(
             state_mgr,
@@ -4092,7 +4122,7 @@ def execute_phase3_alignment_impl(agents, territory, decision_engine, state_mgr,
             routing_tier="DETERMINISTIC",
             routing_score=1.0,
             confidence=1.0,
-            fix_summary=f"No hierarchy violations in {territory}",    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging
+            fix_summary=_fix_summary,
             outcome="SUCCESS",
         )
     return None

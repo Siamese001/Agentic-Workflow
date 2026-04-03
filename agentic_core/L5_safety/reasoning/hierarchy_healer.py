@@ -1808,7 +1808,12 @@ class HierarchyHealerAgent(SovereignBaseAgent):
 
         # Phase 2: Territory root violation scanning (Ultra-hardened)
         if target_territory:
-            search_path = self.project_root / AGENTIC_CORE_DIR / target_territory
+            # Determine search path: agentic_core/territory for core territories,
+            # or direct path for root-level territories (tests, apps_*, etc.)
+            if target_territory == TESTS_DIR or target_territory.startswith("apps_"):
+                search_path = self.project_root / target_territory
+            else:
+                search_path = self.project_root / AGENTIC_CORE_DIR / target_territory
             Logger.info(f"HierarchyAgent: 🎯 ULTRA SCAN: Territory root violations in {target_territory}")
 
             if not search_path.exists():
@@ -1851,7 +1856,7 @@ class HierarchyHealerAgent(SovereignBaseAgent):
         "observability": "agentic_core/L6_observability",
     }
 
-    def heal_root_violations(self, dry_run: bool = True) -> dict[str, Any]:
+    def heal_root_violations(self, dry_run: bool = True, target_territory: str | None = None) -> dict[str, Any]:
         """
         Heal root directory SSOT violations.
 
@@ -1859,9 +1864,11 @@ class HierarchyHealerAgent(SovereignBaseAgent):
         1. Move .archived files to .healing_backups/root_archived/
         2. [DEPRECATED] scripts/ and logs/ are now valid roots (no merge)
         3. Add coverage_html/ to .gitignore or move to reports/
+        4. Handle territory root files (when target_territory specified)
 
         Args:
             dry_run: If True, only preview actions
+            target_territory: If specified, scans that territory's root for violations
 
         Returns:
             Dict with healing results
@@ -1872,11 +1879,12 @@ class HierarchyHealerAgent(SovereignBaseAgent):
             "logs_files_moved": 0,
             "coverage_handled": False,
             "folders_removed": 0,
+            "territory_files_relocated": 0,
             "errors": [],
             "actions": [],
         }
 
-        scan_results = self.scan_root_violations()
+        scan_results = self.scan_root_violations(target_territory=target_territory)
 
         if scan_results["violations_found"] == 0:
             results["message"] = "No root violations to heal"
@@ -1926,6 +1934,49 @@ class HierarchyHealerAgent(SovereignBaseAgent):
         # 2. [UPDATED] scripts/ and logs/ are valid - no action taken unless explicitly forbidden
         pass
 
+        # 3. Handle territory root files (e.g., tests/ root files that should be in subfolders)
+        territory_root_files = scan_results.get("territory_root_files", [])
+        if territory_root_files and target_territory:
+            Logger.info(f"HierarchyAgent: Processing {len(territory_root_files)} files at {target_territory} root")
+            archives_dir = self.project_root / ARCHIVES_DIR / "healing_backups" / f"{target_territory}_root_archived"
+            if not dry_run:
+                _wg.ensure_dir(archives_dir)
+            
+            for violation in territory_root_files:
+                filename = violation.get("file", "")
+                src = self.project_root / target_territory / filename
+                dst = archives_dir / filename
+                
+                action = {
+                    "type": "ARCHIVE_TERRITORY_ROOT_FILE",
+                    "source": str(src),
+                    "destination": str(dst),
+                    "applied": False,
+                }
+                
+                if not dry_run and src.exists():
+                    try:
+                        gk_result = self.gatekeeper.safe_move(
+                            src,
+                            dst,
+                            self.agent_name,
+                            f"Archive file from {target_territory} root (should be in subfolder)",
+                        )
+                        if gk_result.success:
+                            action["applied"] = True
+                            results["territory_files_relocated"] += 1
+                            Logger.info(f"   [✓] ARCHIVED: {filename} from {target_territory} root")
+                        elif gk_result.approval_status == "DENIED":
+                            Logger.info(f"   [SKIPPED] User declined: {filename}")
+                        else:
+                            action["error"] = gk_result.error
+                            results["errors"].append(f"Failed to archive {filename}: {gk_result.error}")
+                    except (RuntimeError, OSError) as e:
+                        action["error"] = str(e)
+                        results["errors"].append(f"Failed to archive {filename}: {e}")
+                
+                results["actions"].append(action)
+
         # 4. Handle coverage_html/ - add to .gitignore
         if "coverage_html" in scan_results["forbidden_folders"]:
             coverage_result = self._handle_coverage_html(dry_run)
@@ -1935,7 +1986,8 @@ class HierarchyHealerAgent(SovereignBaseAgent):
         results["message"] = (
             f"Moved {results['archived_files_moved']} archived files, "
             f"{results['scripts_files_moved']} scripts, "
-            f"{results['logs_files_moved']} logs. "
+            f"{results['logs_files_moved']} logs, "
+            f"{results['territory_files_relocated']} territory root files. "
             f"Coverage: {'handled' if results['coverage_handled'] else 'pending'}. "
             f"Folders removed: {results['folders_removed']}"
         )

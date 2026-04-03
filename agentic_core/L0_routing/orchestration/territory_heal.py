@@ -16,7 +16,6 @@ if str(REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(REPO_ROOT))
 
 from agentic_core.L0_routing.orchestration.territory_healing_coordinator import (
-    TerritoryHealingCoordinator,
     create_default_coordinator,
 )
 

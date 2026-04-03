@@ -7,16 +7,14 @@ bypasses or complex workarounds.
 """
 
 import logging
-from pathlib import Path
-from typing import Any
 from dataclasses import dataclass, field
+from pathlib import Path
 
 from agentic_core.base_agents.territory_healer_protocol import (
-    TerritoryHealerProtocol,
     HealingContext,
-    ScanResult,
     HealingResult,
-    Violation,
+    ScanResult,
+    TerritoryHealerProtocol,
 )
 
 logger = logging.getLogger("TerritoryHealingCoordinator")

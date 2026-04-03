@@ -7,13 +7,12 @@ simplified territory-level healing interface.
 
 import logging
 from pathlib import Path
-from typing import Any
 
 from agentic_core.base_agents.territory_healer_protocol import (
-    TerritoryHealerProtocol,
     HealingContext,
-    ScanResult,
     HealingResult,
+    ScanResult,
+    TerritoryHealerProtocol,
     Violation,
 )
 
@@ -327,7 +326,9 @@ class FilesystemReconcilerAdapter(TerritoryHealerProtocol):
 
     def _get_agent(self):
         if self._agent is None:
-            from agentic_core.L5_safety.reasoning.filesystem_ssot_reconciler import FilesystemSSOTReconcilerAgent
+            from agentic_core.L5_safety.reasoning.filesystem_ssot_reconciler import (
+                FilesystemSSOTReconcilerAgent,
+            )
             self._agent = FilesystemSSOTReconcilerAgent(project_root=self.project_root)
         return self._agent
 
@@ -394,7 +395,9 @@ class FilesystemReconcilerAdapter(TerritoryHealerProtocol):
 
 def create_adapter_coordinator(project_root: Path | None = None) -> "TerritoryHealingCoordinator":
     """Create coordinator with all adapters registered."""
-    from agentic_core.L0_routing.orchestration.territory_healing_coordinator import TerritoryHealingCoordinator
+    from agentic_core.L0_routing.orchestration.territory_healing_coordinator import (
+        TerritoryHealingCoordinator,
+    )
 
     root = project_root or Path.cwd()
     coordinator = TerritoryHealingCoordinator(root)

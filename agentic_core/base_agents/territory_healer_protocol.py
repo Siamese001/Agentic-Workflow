@@ -5,9 +5,9 @@ This protocol defines the simplified interface that all healing agents must impl
 to support territory-level healing without bypasses or complex workarounds.
 """
 
-from typing import Protocol, Any
-from pathlib import Path
 from dataclasses import dataclass
+from pathlib import Path
+from typing import Any, Protocol
 
 
 @dataclass
