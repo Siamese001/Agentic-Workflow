@@ -1,5 +1,5 @@
 {
-  "runtime_adg_1775252148_59a7e63f": {
+  "runtime_adg_1775253485_1fe40d8e": {
     "component_distribution": {
       "CognitivePlane": 1,
       "DAGEngine": 1,
@@ -12,7 +12,7 @@
     },
     "error_patterns": [],
     "extraction_metadata": {
-      "timestamp": 1775252148,
+      "timestamp": 1775253485,
       "total_nodes": 8
     },
     "layer_distribution": {
@@ -34,44 +34,44 @@
     "timing_patterns": {
       "fast_operations": [
         {
-          "component": "Tool.validate_safety",
-          "duration_ms": 0.0,
-          "node_id": "0c0827b74f09280b"
-        },
-        {
-          "component": "Tool.record_metric",
-          "duration_ms": 0.0,
-          "node_id": "120ba093a9666522"
-        },
-        {
-          "component": "Tool.execute_action",
-          "duration_ms": 0.0,
-          "node_id": "2d58bb1bd0c6ad17"
-        },
-        {
           "component": "Tool.route_request",
           "duration_ms": 0.0,
-          "node_id": "3a9623aa0946c07e"
+          "node_id": "439823419e6d41bc"
+        },
+        {
+          "component": "NervousSystem",
+          "duration_ms": 0.0,
+          "node_id": "5ff4c31ff9f872b7"
         },
         {
           "component": "Tool.read_state",
           "duration_ms": 0.0,
-          "node_id": "3fa09acdb5a63978"
+          "node_id": "6750d958f25d60b1"
         },
         {
           "component": "CognitivePlane",
           "duration_ms": 0.0,
-          "node_id": "9578d352e3bac1e2"
+          "node_id": "907107ecdd6f64ea"
         },
         {
-          "component": "NervousSystem",
-          "duration_ms": 0.552,
-          "node_id": "a9860c1a6122d188"
+          "component": "Tool.validate_safety",
+          "duration_ms": 0.0,
+          "node_id": "b45a522b1d3e819b"
+        },
+        {
+          "component": "Tool.record_metric",
+          "duration_ms": 0.0,
+          "node_id": "d25f880cc5d40b1a"
+        },
+        {
+          "component": "Tool.execute_action",
+          "duration_ms": 0.0,
+          "node_id": "ecc57af6ff6e4c7c"
         },
         {
           "component": "DAGEngine",
           "duration_ms": 0.0,
-          "node_id": "ed22632e093136c4"
+          "node_id": "fa22a4be887f11c9"
         }
       ],
       "slow_operations": []
