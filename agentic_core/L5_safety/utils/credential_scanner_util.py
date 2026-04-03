@@ -204,6 +204,11 @@ class CredentialScanner:
         self.scannable_extensions = scannable_extensions or DEFAULT_SCANNABLE_EXTENSIONS.copy()
         self.excluded_paths = excluded_paths or DEFAULT_EXCLUDED_PATHS.copy()
         self.matches: list[CredentialMatch] = []
+        # Compile regex patterns once for performance
+        self._compiled_patterns: dict[str, tuple[re.Pattern, str, float]] = {
+            name: (re.compile(regex), severity, confidence)
+            for name, (regex, severity, confidence) in self.patterns.items()
+        }
     
     def _get_scannable_files(self, root_path: Path) -> list[Path]:
         """Get list of files to scan."""
@@ -230,8 +235,8 @@ class CredentialScanner:
             content = file_path.read_text(encoding="utf-8", errors="ignore")
             lines = content.split("\n")
             for line_num, line in enumerate(lines, start=1):
-                for pattern_name, (regex, severity, confidence) in self.patterns.items():
-                    matches = re.finditer(regex, line)
+                for pattern_name, (compiled_regex, severity, confidence) in self._compiled_patterns.items():
+                    matches = compiled_regex.finditer(line)
                     for _match in matches:
                         if _is_false_positive(line, pattern_name):
                             continue
@@ -246,7 +251,7 @@ class CredentialScanner:
                             )
                         )
         except (OSError, UnicodeDecodeError) as e:
-            Logger.debug(f"[CREDENTIAL SCAN] Error scanning {file_path}: {e}")
+            Logger.debug("[CREDENTIAL SCAN] Error scanning %s: %s", file_path, e)
     
     def scan_for_credentials(
         self,

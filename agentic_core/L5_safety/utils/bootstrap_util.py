@@ -69,9 +69,10 @@ def verify_redis_connection(redis_client: Any | None = None) -> bool:
     
     try:
         redis_client.set("bootstrap_check", "ok", ex=5)
-        return redis_client.get("bootstrap_check") == "ok"
-    except Exception as e:
-        Logger.warning(f"Redis connection failed: {e}")
+        result = redis_client.get("bootstrap_check")
+        return isinstance(result, str) and result == "ok"
+    except (ConnectionError, TimeoutError, OSError) as e:
+        Logger.warning("Redis connection failed: %s", e)
         return False
 
 
@@ -156,7 +157,16 @@ def heal_bootstrap_issues(
             violations_fixed.append("Redis connection verified")
         
         # Check critical files
-        present, missing = verify_critical_files(Path(target_path) if target_path else project_root)
+        check_path = Path(target_path) if target_path else project_root
+        if not check_path.exists():
+            errors.append(f"Path does not exist: {check_path}")
+            return {
+                "violations_found": violations_found,
+                "violations_fixed": violations_fixed,
+                "errors": errors,
+                "skipped": skipped,
+            }
+        present, missing = verify_critical_files(check_path)
         for file_path in missing:
             violations_found.append(f"Missing critical file: {file_path}")
             errors.append(f"Cannot heal missing file: {file_path}")

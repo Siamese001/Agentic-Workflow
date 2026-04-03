@@ -204,9 +204,8 @@ class CodeValidator:
                     func_lines = []
                     indent_level = len(line) - len(line.lstrip())
                     
+                    # Start from current line index (i-1 due to enumerate starting at 1)
                     for j in range(i, len(lines)):
-                        if j >= len(lines):
-                            break
                         current_line = lines[j]
                         if current_line.strip() == "":
                             continue

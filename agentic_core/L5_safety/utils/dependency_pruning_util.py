@@ -95,7 +95,9 @@ def find_unused_deptry(project_root: Path) -> list[str]:
     try:
         data: dict[str, Any] = json.loads(result.stdout)
         return data.get("unused", [])
-    except (json.JSONDecodeError, Exception):
+    except json.JSONDecodeError:
+        return []
+    except (KeyError, TypeError):
         return []
 
 
