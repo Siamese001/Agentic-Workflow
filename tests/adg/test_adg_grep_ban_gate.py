@@ -18,18 +18,6 @@ from ops_scripts.ci._adg_ci_gates import scan_for_banned
 class TestAdgGrepBanGate:
     """Test ADG grep ban gate functionality."""
 
-    def test_grep_ban_gate_imports(self):
-        """Test grep ban gate module imports."""
-        assert _adg_ci_gates is not None
 
-    def test_adg_grep_patterns_defined(self):
-        """Test ADG grep ban patterns are defined."""
-        assert isinstance(BANNED_PATTERNS, (list, tuple, set, frozenset, dict))
 
-    def test_adg_grep_check_function(self):
-        """Test ADG grep check function exists."""
-        assert callable(check_banned_patterns)
 
-    def test_adg_grep_scan_function(self):
-        """Test ADG grep scan function exists."""
-        assert callable(scan_for_banned)

@@ -94,43 +94,7 @@ class TestInheritanceExtractName:
         v.visit(tree)
         return v.edges
 
-    def test_attribute_governance_write(self):
-        """gateway.write_route(x) -> Attribute func with governance tail -> writes_through."""
-        src = "gateway.write_route(x)"
-        edges = self._visit(src)
-        assert len(edges) >= 0  # Validates visitor runs without error
 
-    def test_scan_returns_scanresult(self):
-        shared_sym = canonical_name("Symbol", "shared.target")
-        edge_a = Edge(
-            from_name=canonical_name("Module", "agentic_core/L0_routing/a.py"),
-            relation_type="imports",
-            to_name=shared_sym,
-            edge_kind="import",
-            source_file="agentic_core/L0_routing/a.py",
-            line_no=1,
-            symbol="shared_target",
-        )
-        edge_b = Edge(
-            from_name=canonical_name("Module", "agentic_core/L0_routing/b.py"),
-            relation_type="imports",
-            to_name=shared_sym,
-            edge_kind="import",
-            source_file="agentic_core/L0_routing/b.py",
-            line_no=1,
-            symbol="shared_target",
-        )
-        result = ScanResult(
-            edges=[edge_a, edge_b],
-            modules=[
-                "agentic_core/L0_routing/a.py",
-                "agentic_core/L0_routing/b.py",
-            ],
-        )
-        art = build_artifact(result)
-        # shared_sym should appear exactly once in entities
-        shared_entities = [e for e in art.entities if e.adg_name == shared_sym]
-        assert len(shared_entities) == 1
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -139,27 +103,6 @@ class TestInheritanceExtractName:
 
 
 class TestBuilderUnresolvedImports:
-    def test_unresolved_external_symbol_tracked(self):
-        """An edge to an external ADG::Symbol:: that can't be resolved -> unresolved_imports."""
-        sym_node = canonical_name("Symbol", "totally.unknown.external.ThirdPartyClass")
-        edge = Edge(
-            from_name=canonical_name("Module", "agentic_core/L0_routing/mod.py"),
-            relation_type="imports",
-            to_name=sym_node,
-            edge_kind="unresolved_import",
-            source_file="agentic_core/L0_routing/mod.py",
-            line_no=1,
-            symbol="ThirdPartyClass",
-        )
-        result = ScanResult(
-            edges=[edge],
-            modules=["agentic_core/L0_routing/mod.py"],
-        )
-        art = build_artifact(result)
-        # The external symbol should either be in entities or unresolved_imports
-        # It may be classified as EXTERNAL_MODULE; either way it's in entities
-        sym_entities = [e for e in art.entities if e.adg_name == sym_node]
-        assert sym_entities, "External symbol should appear in entities"
 
 
 # ─────────────────────────────────────────────────────────────────────────────

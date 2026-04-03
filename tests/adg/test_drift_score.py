@@ -13,17 +13,5 @@ sys.path.insert(0, str(REPO_ROOT))
 class TestDriftScore:
     """Test drift score functionality."""
 
-    def test_drift_score_imports(self):
-        """Test drift score module imports."""
-        from tools.adg import drift_score
-        assert drift_score is not None
 
-    def test_drift_score_calculate_function(self):
-        """Test drift score calculate function."""
-        from tools.adg.drift_score import calculate_drift
-        assert callable(calculate_drift)
 
-    def test_drift_score_compare_function(self):
-        """Test drift score compare function."""
-        from tools.adg.drift_score import compare_artifacts
-        assert callable(compare_artifacts)

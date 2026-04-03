@@ -39,7 +39,3 @@ class TestAcceleratorConstants:
 
 class TestAcceleratorProxies:
     """Test accelerator proxy imports."""
-
-
-
-

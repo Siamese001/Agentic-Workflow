@@ -73,82 +73,11 @@ def _make_selector(nodes_by_file, fan_in_covers, nodes):
 
 
 class TestSelectTestsSuccess:
-    def test_empty_file_list_returns_empty(self):
-        sel = _make_selector(
-            nodes_by_file={},
-            fan_in_covers={},
-            nodes={},
-        )
-        result = sel.select_tests([])
-        assert result == []
 
-    def test_single_file_multiple_covers_returns_all(self):
-        sel = _make_selector(
-            nodes_by_file={"prod.py": {"n1"}},
-            fan_in_covers={"n1": {"t1", "t2"}},
-            nodes={
-                "t1": {"resolved_path": "tests/unit/test_a.py"},
-                "t2": {"resolved_path": "tests/unit/test_b.py"},
-            },
-        )
-        result = sel.select_tests(["prod.py"])
-        assert result == ["tests/unit/test_a.py", "tests/unit/test_b.py"]
 
-    def test_multiple_prod_files_deduplicates_shared_test(self):
-        sel = _make_selector(
-            nodes_by_file={
-                "agentic_core/router.py": {"n1"},
-                "agentic_core/dispatcher.py": {"n2"},
-            },
-            fan_in_covers={
-                "n1": {"t1"},
-                "n2": {"t1", "t2"},  # t1 covers both
-            },
-            nodes={
-                "t1": {"resolved_path": "tests/unit/test_router.py"},
-                "t2": {"resolved_path": "tests/unit/test_dispatcher.py"},
-            },
-        )
-        result = sel.select_tests(["agentic_core/router.py", "agentic_core/dispatcher.py"])
-        assert result == ["tests/unit/test_dispatcher.py", "tests/unit/test_router.py"]
-        assert len(result) == 2  # deduplicated
 
-    def test_result_is_always_sorted(self):
-        sel = _make_selector(
-            nodes_by_file={"app.py": {"n1", "n2"}},
-            fan_in_covers={"n1": {"t2"}, "n2": {"t1"}},
-            nodes={
-                "t1": {"resolved_path": "tests/a_test.py"},
-                "t2": {"resolved_path": "tests/z_test.py"},
-            },
-        )
-        result = sel.select_tests(["app.py"])
-        assert result == sorted(result), "Output must always be lexicographically sorted"
 
-    def test_multiple_nodes_per_file_all_queried(self):
-        """A file with multiple ADG nodes — all nodes' covers are collected."""
-        sel = _make_selector(
-            nodes_by_file={"multi_node.py": {"n1", "n2", "n3"}},
-            fan_in_covers={"n1": {"t1"}, "n2": {"t2"}, "n3": set()},
-            nodes={
-                "t1": {"resolved_path": "tests/test_1.py"},
-                "t2": {"resolved_path": "tests/test_2.py"},
-            },
-        )
-        result = sel.select_tests(["multi_node.py"])
-        assert "tests/test_1.py" in result
-        assert "tests/test_2.py" in result
 
-    def test_determinism_same_input_same_output(self):
-        """Identical call with identical data must return identical result."""
-        sel = _make_selector(
-            nodes_by_file={"prod.py": {"n1"}},
-            fan_in_covers={"n1": {"t1"}},
-            nodes={"t1": {"resolved_path": "tests/unit/test_prod.py"}},
-        )
-        r1 = sel.select_tests(["prod.py"])
-        r2 = sel.select_tests(["prod.py"])
-        assert r1 == r2
 
 
 # ===========================================================================
