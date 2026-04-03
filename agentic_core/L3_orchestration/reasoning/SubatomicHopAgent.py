@@ -1,221 +1,35 @@
+"""Subatomic Hop Agent - Backward compatibility shim.
+
+DEPRECATED: This agent has been converted to a utility script.
+Use agentic_core.L3_orchestration.utils.subatomic_hop_util instead.
+
+This module maintains backward compatibility by delegating to the utility.
+Will be removed in a future release.
+"""
+
 from __future__ import annotations
 
-import logging
-from dataclasses import dataclass
-
-from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
-from agentic_core.L0_routing.enforcement.runtime_guard import runtime_guard
-from agentic_core.L0_routing.types.guardian_contract_types import is_v15_enforced
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-    _emit_agent_executes_agent,
-    _emit_authorize_and_execute,
-    _emit_blocks_direct_write,
-    _emit_captures_evaluation_metric,
-    _emit_captures_execution_output,
-    _emit_checks_agent_registry,
-    _emit_coordinates_agents,
-    _emit_dispatches_agent,
-    _emit_dispatches_execution_plan,
-    _emit_dispatches_healing_run,  # noqa: E402
-    _emit_escalates_failure,
-    _emit_escalates_to_human,  # noqa: E402
-    _emit_gated_by_confidence,
-    _emit_hard_fails_untranscripted,
-    _emit_invokes_evaluation,
-    _emit_links_execution_to_snapshot,
-    _emit_observes_runtime_state,
-    _emit_orchestrates_workflow,
-    _emit_reads_policy_state,  # noqa: E402
-    _emit_records_healing_outcome,
-    _emit_records_telemetry_event,
-    _emit_records_tool_invocation,
-    _emit_records_workflow_lineage,
-    _emit_routes_through,  # noqa: E402
-    _emit_routes_to_agent,
-    _emit_routes_to_capability,
-    _emit_signs_execution_trace,  # noqa: E402
-    _emit_stores_embedding,
-    _emit_transcripts_response,
-    _emit_updates_meta_learning_state,
-    _emit_validates_agent_capability,
-    _emit_validates_capability,
-    _emit_verifies_boundary,
-    _emit_verifies_policy,
-    _emit_writes_via_uwg,
-    emit_determinism_digest,  # noqa: E402
-    emit_replay_key,  # noqa: E402
-)
-
-emit_replay_key("p0", "SubatomicHopAgent")
-emit_determinism_digest("p0", "SubatomicHopAgent")
-
-_emit_dispatches_healing_run("p1", "SubatomicHopAgent", "L3")
-_emit_routes_through("p1", "SubatomicHopAgent", "L3")
-_emit_checks_agent_registry("p1", "SubatomicHopAgent", "agent_registry")
-_emit_validates_agent_capability("p1", "SubatomicHopAgent", "capability")
-_emit_dispatches_execution_plan("p1", "SubatomicHopAgent", "exec_plan")
-_emit_agent_executes_agent("p1", "SubatomicHopAgent", "sub_agent")
-_emit_routes_to_agent("p1", "SubatomicHopAgent", "target_agent")
-_emit_verifies_policy("p1", "SubatomicHopAgent", "policy_check")
-_emit_observes_runtime_state("p1", "SubatomicHopAgent", "runtime_state")
-_emit_verifies_boundary("p1", "SubatomicHopAgent", "boundary_check")
-_emit_transcripts_response("p1", "SubatomicHopAgent", "transcript")
-_emit_hard_fails_untranscripted("p1", "SubatomicHopAgent")
-_emit_gated_by_confidence("p1", "SubatomicHopAgent", "confidence_gate")
-_emit_escalates_to_human("p1", "SubatomicHopAgent", "L3")
-_emit_reads_policy_state("p1", "SubatomicHopAgent", "L3")
-
-_emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
-_emit_authorize_and_execute("p2", "SubatomicHopAgent", "execution_auth")
-_emit_validates_capability("p2", "SubatomicHopAgent", "capability_check")
-_emit_routes_to_capability("p2", "SubatomicHopAgent", "capability_route")
-_emit_writes_via_uwg("p2", "SubatomicHopAgent", "uwg_write")
-_emit_blocks_direct_write("p2", "SubatomicHopAgent", "direct_write_block")
-_emit_records_tool_invocation("p2", "SubatomicHopAgent", "tool_invocation")
-_emit_captures_execution_output("p2", "SubatomicHopAgent", "exec_output")
-_emit_dispatches_agent("p3", "SubatomicHopAgent", "agent_dispatch")
-_emit_coordinates_agents("p3", "SubatomicHopAgent", "agent_coordination")
-_emit_records_workflow_lineage("p3", "SubatomicHopAgent", "workflow_lineage")
-_emit_records_healing_outcome("p3", "SubatomicHopAgent", "healing_outcome")
-_emit_escalates_failure("p3", "SubatomicHopAgent", "failure_escalation")
-_emit_orchestrates_workflow("p3", "SubatomicHopAgent", "workflow_orchestration")
-_emit_dispatches_healing_run("p3", "SubatomicHopAgent", "healing_dispatch")
-_emit_invokes_evaluation("p3", "SubatomicHopAgent", "evaluation_signal")
-_emit_records_telemetry_event("p4", "SubatomicHopAgent", "telemetry_event")
-_emit_captures_evaluation_metric("p4", "SubatomicHopAgent", "eval_metric")
-_emit_stores_embedding("p4", "SubatomicHopAgent", "embedding_store")
-_emit_updates_meta_learning_state("p4", "SubatomicHopAgent", "meta_learning")
-_emit_links_execution_to_snapshot("p4", "SubatomicHopAgent", "exec_snapshot_link")
-
-"Brief description of functionality and purpose."
-"Brief description of functionality and purpose."
-import uuid
+import warnings
 from typing import Any
 
-from agentic_core.L2_execution.determinism.execution_proof_emitter import ExecutionProofEmitter
-from agentic_core.L2_execution.providers import get_clock
-
-_proof_emitter = ExecutionProofEmitter("L3.SubatomicHopAgent")
-
-from agentic_core.runtime.core.telemetry import TraceEvent
-from agentic_core.runtime.types.core_contracts_types import AgentPlan
-
-Logger: Any = logging.getLogger(__name__)
-
-
-class SovereignDependencyError(Exception):
-    """Raised when a required dependency is not injected into a Sovereign component."""
-
-    pass
-
-
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-    LayerSegment,
-    _emit_agent_executes_agent,
-    _emit_applies_guardrail,
-    _emit_captures_pattern,
-    _emit_captures_runtime_anomaly,
-    _emit_checks_agent_registry,
-    _emit_dispatches_execution_plan,
-    _emit_emits_metric_event,
-    _emit_execution_terminates_at_uwg,
-    _emit_feeds_meta_learning,
-    _emit_gated_by_confidence,
-    _emit_hard_fails_untranscripted,
-    _emit_improves_agent_policy,
-    _emit_invokes_eval,
-    _emit_links_incident_trace,
-    _emit_observes_runtime_state,
-    _emit_proposal_commits_routing,
-    _emit_pulls_context,
-    _emit_reads_environ,
-    _emit_reads_runtime_state,
-    _emit_records_execution_trace,
-    _emit_records_incident_event,
-    _emit_records_learning_event,
-    _emit_routes_to_agent,
-    _emit_snapshots_state,
-    _emit_stores_learning_state,
-    _emit_transcripts_response,
-    _emit_triggers_alert,
-    _emit_updates_monitoring_state,
-    _emit_updates_routing_strategy,
-    _emit_validated_by_safety_plane,
-    _emit_validates_agent_capability,
-    _emit_verifies_boundary,
-    _emit_verifies_policy,
-    _emit_writes_learning_snapshot,
-    _emit_writes_observability_log,
-    _emit_writes_through,
+from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
+from agentic_core.L3_orchestration.utils.subatomic_hop_util import (
+    validate_dependencies as _validate_dependencies,
+    create_hop_context as _create_hop_context,
+    run_self_tests as _run_self_tests,
+    ensure_dependency as _ensure_dependency,
+    SovereignDependencyError,
+    SubatomicHopResult,
+    HopContext,
 )
-from agentic_core.utils.decorators_compat_util import standard_heal
-from agentic_core.utils.timeout_decorator_util import timeout
-
-_emit_emits_metric_event("SubatomicHopAgent", "p4obs", "metric_1")
-_emit_emits_metric_event("SubatomicHopAgent", "p4obs", "metric_2")
-_emit_emits_metric_event("SubatomicHopAgent", "p4obs", "metric_3")
-_emit_emits_metric_event("SubatomicHopAgent", "p4obs", "metric_4")
-_emit_emits_metric_event("SubatomicHopAgent", "p4obs", "metric_5")
-_emit_emits_metric_event("SubatomicHopAgent", "p4obs", "metric_6")
-_emit_records_incident_event("SubatomicHopAgent", "p4obs", "incident")
-_emit_captures_runtime_anomaly("SubatomicHopAgent", "p4obs", "anomaly")
-_emit_writes_observability_log("SubatomicHopAgent", "p4obs", "obs_log")
-_emit_updates_monitoring_state("SubatomicHopAgent", "p4obs", "mon_state")
-_emit_triggers_alert("SubatomicHopAgent", "p4obs", "alert")
-_emit_links_incident_trace("SubatomicHopAgent", "p4obs", "trace_link")
-_emit_captures_pattern("SubatomicHopAgent", "p3lm", "pattern")
-_emit_records_learning_event("SubatomicHopAgent", "p3lm", "learning_event")
-_emit_writes_learning_snapshot("SubatomicHopAgent", "p3lm", "snapshot")
-_emit_feeds_meta_learning("SubatomicHopAgent", "p3lm", "meta_feed")
-_emit_updates_routing_strategy("SubatomicHopAgent", "p3lm", "routing")
-_emit_improves_agent_policy("SubatomicHopAgent", "p3lm", "policy")
-_emit_stores_learning_state("SubatomicHopAgent", "p3lm", "state")
-_emit_records_execution_trace("SubatomicHopAgent", "L0_ROUTING", "p2_trace_1")
-_emit_records_execution_trace("SubatomicHopAgent", "L1_REASONING", "p2_trace_2")
-_emit_records_execution_trace("SubatomicHopAgent", "L2_EXECUTION", "p2_trace_3")
-_emit_records_execution_trace("SubatomicHopAgent", "L3_ORCHESTRATION", "p2_trace_4")
-_emit_records_execution_trace("SubatomicHopAgent", "L4_STATE", "p2_trace_5")
-_emit_reads_environ("SubatomicHopAgent", "env_read", "p2_env_1")
-_emit_reads_environ("SubatomicHopAgent", "env_read", "p2_env_2")
-_emit_reads_runtime_state("SubatomicHopAgent", "runtime_state", "p2_rt_1")
-_emit_reads_runtime_state("SubatomicHopAgent", "runtime_state", "p2_rt_2")
-_emit_pulls_context("p1", "SubatomicHopAgent", "context_pull")
-_emit_pulls_context("p1", "SubatomicHopAgent", "context_pull_2")
-_emit_execution_terminates_at_uwg("p1", "SubatomicHopAgent", "uwg_term")
-_emit_execution_terminates_at_uwg("p1", "SubatomicHopAgent", "uwg_term_2")
-_emit_writes_through("p1", "SubatomicHopAgent", "write_through")
-_emit_writes_through("p1", "SubatomicHopAgent", "write_through_2")
-_emit_validated_by_safety_plane("p1", "SubatomicHopAgent", "safety_validation")
-_emit_invokes_eval("p1", "SubatomicHopAgent", "eval_call")
-_emit_proposal_commits_routing("p1", "SubatomicHopAgent", "routing_commit")
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import emit_determinism_digest
-
-emit_determinism_digest("trace_SubatomicHopAgent", "SubatomicHopAgent_dispatch_entry")
-emit_determinism_digest("trace_SubatomicHopAgent", "SubatomicHopAgent_dispatch_exit")
-emit_determinism_digest("trace_SubatomicHopAgent", "SubatomicHopAgent_tool_invoke")
-emit_determinism_digest("trace_SubatomicHopAgent", "SubatomicHopAgent_tool_complete")
-emit_determinism_digest("trace_SubatomicHopAgent", "SubatomicHopAgent_agent_entry")
-emit_determinism_digest("trace_SubatomicHopAgent", "SubatomicHopAgent_agent_exit")
-emit_determinism_digest("trace_SubatomicHopAgent", "SubatomicHopAgent_uwg_write")
-emit_determinism_digest("trace_SubatomicHopAgent", "SubatomicHopAgent_trace_sign")
-emit_determinism_digest("trace_SubatomicHopAgent", "SubatomicHopAgent_guardrail_check")
-emit_determinism_digest("trace_SubatomicHopAgent", "SubatomicHopAgent_policy_verify")
-_emit_writes_through("p1", "SubatomicHopAgent", "uwg_governed_write")
-_emit_writes_through("p1", "SubatomicHopAgent", "uwg_governed_write_2")
-_emit_pulls_context("p1", "SubatomicHopAgent", "context_retrieval")
-_emit_pulls_context("p1", "SubatomicHopAgent", "context_retrieval_2")
-emit_determinism_digest("trace_SubatomicHopAgent", "SubatomicHopAgent_dispatch")
-emit_determinism_digest("trace_SubatomicHopAgent", "SubatomicHopAgent_complete")
-_emit_validated_by_safety_plane("p1", "SubatomicHopAgent", "safety_validation")
 
 
-@dataclass
 class SubatomicHopAgent(SovereignBaseAgent):
     """
-    Sovereign SubatomicHop with Dependency Injection.
+    DEPRECATED: Subatomic Hop Agent - now delegates to subatomic_hop_util.
 
-    This is a 'Pure Engine.' It has no knowledge of higher layers (L3-L5)
-    at the import level. All required logic is injected at runtime.
+    This class is maintained for backward compatibility only.
+    New code should use agentic_core.L3_orchestration.utils.subatomic_hop_util directly.
     """
 
     def __init__(
@@ -224,434 +38,39 @@ class SubatomicHopAgent(SovereignBaseAgent):
         config: dict,
         storage: Any | None = None,
         genealogy: Any | None = None,
-        PiiVault: Any | None = None,
-        CostGovernor: Any | None = None,
-        overseer: Any | None = None,
-        membrane: Any | None = None,
-        airlock: Any | None = None,
-        SupremeCourt: Any | None = None,
-        mcp_manager: Any | None = None,
-        sandbox: Any | None = None,
-        StructuredEngineAgent: Any | None = None,
-        gatekeeper: Any | None = None,
-        telemetry: Any | None = None,
-    ) -> None:
-        """Initialize SubatomicHop with injected dependencies.
-
-        Args:
-            role: Agent role identifier
-            config: configuration dictionary
-            storage: LocalDiskAdapter instance (injected)
-            genealogy: GenealogyRegistry instance (injected)
-            PiiVault: PIIVault instance (injected)
-            CostGovernor: CostGovernor instance (injected)
-            overseer: ConstitutionalOverseer instance (injected)
-            membrane: InputMembrane instance (injected)
-            airlock: AirlockProtocol instance (injected)
-            SupremeCourt: SupremeCourt instance (injected)
-            mcp_manager: MCPConnectionManager instance (injected)
-            sandbox: DockerSandbox instance (injected)
-            StructuredEngineAgent: StructuredEngineAgent instance (injected)
-            gatekeeper: semantic_gatekeeper instance (injected)
-            telemetry: TelemetryRecorder instance (injected)
-
-        Raises:
-            SovereignDependencyError: If required dependencies are Missing
-        """
-        import uuid as _uuid  # noqa: PLC0415
-
-        _emit_snapshots_state(str(_uuid.uuid4()), "SubatomicHopAgent.__init__", "state_snapshot")
-        import uuid as _uuid  # noqa: PLC0415
-
-        _emit_applies_guardrail(str(_uuid.uuid4()), "SubatomicHopAgent.__init__", "p0_governance")
-        self.role = role
-        self.id = str(uuid.uuid4())
-        self.config = config
-        self.storage = self._ensure_dep(storage, "LocalDiskAdapter")
-        self.genealogy = self._ensure_dep(genealogy, "GenealogyRegistry")
-        self.pii = self._ensure_dep(PiiVault, "PIIVault")
-        self.governor = self._ensure_dep(CostGovernor, "CostGovernor")
-        self.overseer = self._ensure_dep(overseer, "ConstitutionalOverseer")
-        self.membrane = self._ensure_dep(membrane, "InputMembrane")
-        self.airlock = self._ensure_dep(airlock, "AirlockProtocol")
-        self.SupremeCourt = self._ensure_dep(SupremeCourt, "SupremeCourt")
-        self.mcp = self._ensure_dep(mcp_manager, "MCPConnectionManager")
-        self.sandbox = self._ensure_dep(sandbox, "DockerSandbox")
-        self.StructuredEngineAgent = self._ensure_dep(StructuredEngineAgent, "StructuredEngineAgent")
-        self.gatekeeper = self._ensure_dep(gatekeeper, "semantic_gatekeeper")
-        self.telemetry = self._ensure_dep(telemetry, "TelemetryRecorder")
-
-    def _run_self_tests(self) -> bool:
-        """Phase 1: Self-testing for L3 compliance."""
-        assert hasattr(self, "role"), "Missing role"
-        assert hasattr(self, "config"), "Missing config"
-        return True
-
-    # guardian: allow-type-erasure
-    def _ensure_dep(self, dep: Any, name: str) -> Any:
-        """Validate that a required dependency was injected.
-
-        Args:
-            dep: The dependency instance
-            name: Human-readable name for error messages
-
-        Returns:
-            The validated dependency
-
-        Raises:
-            SovereignDependencyError: If dependency is None
-        """
-        if dep is None:
-            raise SovereignDependencyError(
-                f"SubatomicHop Missing critical tool: {name}. Orchestration layer must inject this dependency to maintain Gravity Compliance."
-            )
-        return dep
-
-    def _v15_build_operation_manifest(
-        self, operation: str, target_layer: str = "L3"
-    ) -> SurgicalManifest | None:
-        """§8.1b — Construct SurgicalManifest for hop-level operation (AGGREGATE)."""
-        if not is_v15_enforced():
-            return None
-        import hashlib as _hl
-
-        from agentic_core.L0_routing.enforcement.traceability_contracts import generate_trace_id
-        from agentic_core.L0_routing.types.determinism_types import FixConstraint, SurgicalManifest
-
-        _hex8 = _hl.sha256(f"{self.__class__.__name__}:{operation}".encode()).hexdigest()[:8].upper()
-        trace_id = generate_trace_id(_hex8)
-        ast_snippet = f"{self.__class__.__name__}.{operation}()"
-        return SurgicalManifest(
-            schema_version="1.0.0",
-            correlation_id=trace_id,
-            node_id=self.__class__.__name__,
-            target_layer=target_layer,
-            ast_snippet=ast_snippet,
-            serialization_canon="engine_operation",
-            fix_constraint=FixConstraint.RELAXED,
-            manifest_hash=_hl.sha256(ast_snippet.encode()).hexdigest(),
-            change_history=(),
-            provenance_chain=(trace_id,),
-        )
-
-    @runtime_guard("B.run.SubatomicHopAgent")
-    # guardian: allow-type-erasure
-    async def run(self, context: dict) -> Any:
-        """Execute the hop with zero-trust protections."""
-        with _proof_emitter.proof_op("run"):
-            pass
-        manifest = self._v15_build_operation_manifest("run")
-        if manifest is not None:
-            import hashlib as _hl
-
-            from agentic_core.L0_routing.enforcement.execution_gateway import V15ExecutionGateway
-
-            gateway = V15ExecutionGateway()
-
-            def _noop_heal(m):
-                return {"status": "audit_pass", "errors": 0}
-
-            def _state_hash():
-                _h = _hl.sha256(f"{self.__class__.__name__}:{self.id}".encode()).hexdigest()
-                return (_h, _h, _h)
-
-            try:
-                gateway.execute(
-                    execution_input=manifest,
-                    heal_fn=_noop_heal,
-                    state_hash_fn=_state_hash,
-                    trace_id=manifest.correlation_id,
-                    agent_id="orchestrator_engine",
-                )
-            # guardian: allow-silent-swallow
-            except (RuntimeError, ValueError) as exc:
-                Logger.warning("[V15] Gateway audit failed (LOG_ONLY): %s", exc)
-        trace_id: Any = context.get("trace_id", self.id)
-        return await self._run_with_zero_trust(context, trace_id)
-
-    # guardian: allow-type-erasure
-    async def _run_with_zero_trust(self, context: dict, trace_id: str) -> Any:
-        """Internal method with all L5.5 Zero Trust protections applied."""
-        try:
-            await self._preflight_checks(context, trace_id)
-            plan, think_cost = await self._execute_think_stage(context, trace_id)
-            results, act_cost = await self._execute_act_stage(plan, trace_id)
-            validated_output = await self._execute_critique_stage(results, trace_id)
-            final_output = await self._execute_commit_stage(validated_output, trace_id)
-            self.telemetry.record(
-                TraceEvent(
-                    trace_id=trace_id,
-                    span_id=f"{self.id}_complete",
-                    ROLE=self.role,
-                    event_type="SUCCESS",
-                    PAYLOAD={"total_cost": think_cost + act_cost, "zero_trust": True},
-                    TIMESTAMP=get_clock().now_epoch(),
-                )
-            )
-            return final_output
-        except Exception as e:
-            self._handle_error(trace_id, e)
-            raise
-        finally:
-            await self._cleanup(trace_id)
-
-    async def _preflight_checks(self, context: dict, trace_id: str) -> None:
-        """Pre-flight validation and setup."""
-        context_hash = str(hash(str(context)))
-        self.genealogy.register_attempt(trace_id, str(context.get("Task", "")), context_hash)
-        await self.mcp.connect(self.role)
-        sanitized_context = await self._sanitize_input(context, trace_id)
-        context.update(sanitized_context)
-        self.telemetry.record(
-            TraceEvent(
-                trace_id=trace_id,
-                span_id=f"{self.id}_preflight",
-                ROLE=self.role,
-                event_type="PREFLIGHT_COMPLETE",
-                PAYLOAD={"checks": ["genealogy", "mcp", "membrane"]},
-                TIMESTAMP=get_clock().now_epoch(),
-            )
-        )
-
-    # guardian: allow-type-erasure
-    async def _sanitize_input(self, context: dict, trace_id: str) -> dict:
-        """Sanitize all inputs through the membrane."""
-        sanitized = {}
-        for key, value in context.items():
-            if isinstance(value, str):
-                sanitized_value = await self.membrane.sanitize(value, f"context_{key}")
-                sanitized[key] = sanitized_value
-                if sanitized_value != value:
-                    self.telemetry.record(
-                        TraceEvent(
-                            trace_id=trace_id,
-                            span_id=key,
-                            ROLE=self.role,
-                            event_type="CONTENT_SANITIZED",
-                            PAYLOAD={"original_length": len(value), "sanitized_length": len(sanitized_value)},
-                            TIMESTAMP=get_clock().now_epoch(),
-                        )
-                    )
-            else:
-                sanitized[key] = value
-        return sanitized
-
-    async def _execute_think_stage(self, context: dict, trace_id: str) -> tuple[AgentPlan, float]:
-        """Execute the thinking stage with multi-model consensus."""
-        risk_level = self._assess_task_risk(context.get("Task", ""))
-        await self._check_past_failures(context.get("Task", ""))
-        try:
-            Verdict = await self.SupremeCourt.deliberate(
-                CONTEXT=str(context), GOAL=context.get("Task", ""), risk_level=risk_level
-            )
-            plan = AgentPlan(
-                reasoning=Verdict.reasoning,
-                tool_calls=[{"name": "execute_plan", "args": {"plan": Verdict.chosen_plan}}],
-            )
-            think_cost = self.governor.track("gpt-4", 300, 150)
-            self.telemetry.record(
-                TraceEvent(
-                    trace_id=trace_id,
-                    span_id=f"{self.id}_consensus",
-                    ROLE=self.role,
-                    event_type="CONSENSUS_REACHED",
-                    PAYLOAD={
-                        "consensus_score": Verdict.consensus_score,
-                        "safe_to_proceed": Verdict.safe_to_proceed,
-                        "cost": think_cost,
-                    },
-                    TIMESTAMP=get_clock().now_epoch(),
-                )
-            )
-            return (plan, think_cost)
-        except ValueError as e:
-            self.telemetry.record(
-                TraceEvent(
-                    trace_id=trace_id,
-                    span_id=f"{self.id}_consensus_failed",
-                    ROLE=self.role,
-                    event_type="CONSENSUS_FAILED",
-                    PAYLOAD={"error": str(e)},
-                    TIMESTAMP=get_clock().now_epoch(),
-                )
-            )
-            raise
-
-    def _assess_task_risk(self, Task: str) -> str:
-        """Assess the risk level of a Task."""
-        task_lower = Task.lower()
-        high_risk_keywords = ["delete", "remove", "drop", "truncate", "destroy"]
-        if any(keyword in task_lower for keyword in high_risk_keywords):
-            return "high"
-        elif any(keyword in task_lower for keyword in ["modify", "update", "change"]):
-            return "medium"
-        else:
-            return "low"
-
-    async def _check_past_failures(self, Task: str) -> str:
-        """Check telemetry for past failures on similar tasks."""
-        from agentic_core.mixins.safety_mixin import StateAnalysisMixin
-
-        try:
-            result = StateAnalysisMixin._check_past_failures([])
-            return result["recommendation"]
-        # guardian: allow-silent-swallow
-        except (RuntimeError, ValueError):
-            return "Unable to check past failures"
-
-    async def _execute_act_stage(self, plan: AgentPlan, trace_id: str) -> tuple[list, float]:
-        """Execute the action stage with airlock protection."""
-        results = []
-        total_cost = 0.0
-        for call in plan.tool_calls:
-            tool_name = call.get("name", "unknown")
-            tool_args = call.get("args", {})
-            try:
-                await self.airlock.acquire_permission(tool_name, tool_args)
-                if tool_name == "run_python" or tool_args.get("code"):
-                    code = tool_args.get("code", "")
-                    result = self.sandbox.run_code(code)
-                    results.append({"tool": "sandbox", "result": result})
-                else:
-                    result = await self.mcp.call_tool(tool_name, tool_args)
-                    if isinstance(result, str):
-                        result = await self.membrane.sanitize(result, f"tool_output_{tool_name}")
-                    results.append({"tool": tool_name, "result": result})
-                total_cost += self.governor.track("tool_execution", 10, 10)
-            except Exception as e:
-                raise
-                self.telemetry.record(
-                    TraceEvent(
-                        trace_id=trace_id,
-                        span_id=f"{self.id}_airlock_blocked",
-                        ROLE=self.role,
-                        event_type="AIRLOCK_BLOCKED",
-                        PAYLOAD={"tool": tool_name, "error": str(e)},
-                        TIMESTAMP=get_clock().now_epoch(),
-                    )
-                )
-                raise
-        self.telemetry.record(
-            TraceEvent(
-                trace_id=trace_id,
-                span_id=f"{self.id}_act",
-                ROLE=self.role,
-                event_type="ACT_COMPLETE",
-                PAYLOAD={
-                    "tool_count": len(plan.tool_calls),
-                    "total_cost": total_cost,
-                    "airlock_checks": len(plan.tool_calls),
-                },
-                TIMESTAMP=get_clock().now_epoch(),
-            )
-        )
-        return (results, total_cost)
-
-    async def _execute_critique_stage(self, results: list, trace_id: str) -> str:
-        """Apply L5 safety checks with membrane sanitization."""
-        output_text = f"Plan executed. Results: {results}"
-        sanitized_output = await self.membrane.sanitize(output_text, "agent_output")
-        await self.overseer.verify(sanitized_output)
-        if self.governor.spend > self.governor.limit:
-            raise Exception(
-                f"Budget exceeded: ${self.governor.limit:.2f} (current: ${self.governor.spend:.2f})"
-            )
-        self.telemetry.record(
-            TraceEvent(
-                trace_id=trace_id,
-                span_id=f"{self.id}_critique",
-                ROLE=self.role,
-                event_type="CRITIQUE_COMPLETE",
-                PAYLOAD={"budget_used": self.governor.spend, "sanitized": True},
-                TIMESTAMP=get_clock().now_epoch(),
-            )
-        )
-        return sanitized_output
-
-    async def _execute_commit_stage(self, output_text: str, trace_id: str) -> str:
-        """Commit results to storage."""
-        final_output = self.pii.restore(trace_id, output_text)
-        await self.storage.write_blob(
-            f"hops/{self.id}.txt",
-            final_output.encode(),
-            METADATA={
-                "trace_id": trace_id,
-                "role": self.role,
-                "timestamp": get_clock().now_epoch(),
-                "zero_trust": True,
-            },
-        )
-        self.telemetry.record(
-            TraceEvent(
-                trace_id=trace_id,
-                span_id=f"{self.id}_commit",
-                ROLE=self.role,
-                event_type="COMMIT_COMPLETE",
-                PAYLOAD={"storage_key": f"hops/{self.id}.txt"},
-                TIMESTAMP=get_clock().now_epoch(),
-            )
-        )
-        return final_output
-
-    def _handle_error(self, trace_id: str, error: Exception) -> None:
-        """Handle execution errors with unified telemetry."""
-        error_type = type(error).__name__
-        self.telemetry.record(
-            TraceEvent(
-                trace_id=trace_id,
-                span_id=f"{self.id}_error",
-                ROLE=self.role,
-                event_type="BUDGET_EXCEEDED" if error_type == "BudgetExceededError" else "EXECUTION_ERROR",
-                PAYLOAD={"error": str(error), "type": error_type},
-                TIMESTAMP=get_clock().now_epoch(),
-            )
-        )
-
-    async def _cleanup(self, trace_id: str) -> None:
-        """Cleanup resources."""
-        await self.mcp.cleanup()
-        self.telemetry.record(
-            TraceEvent(
-                trace_id=trace_id,
-                span_id=f"{self.id}_cleanup",
-                ROLE=self.role,
-                event_type="CLEANUP_COMPLETE",
-                PAYLOAD={"zero_trust": True},
-                TIMESTAMP=get_clock().now_epoch(),
-            )
-        )
-
-    @timeout(300)
-    @standard_heal
-    # guardian: allow-magic-config
-    def heal_repository(
-        self,
-        dry_run: bool = True,
-        execute: bool = False,
-        depth: int = 0,
-        max_depth: int = 3,
-        _call_path: set | None = None,
         **kwargs,
-    ) -> dict[str, int]:
-        """L3 orchestration agent - operational only."""
-        import uuid  # noqa: PLC0415
+    ):
+        """Initialize SubatomicHopAgent (deprecated, use subatomic_hop_util instead)."""
+        super().__init__(name="SubatomicHopAgent", layer="L3")
 
-        _emit_records_execution_trace(
-            str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, "SubatomicHopAgent.heal_repository"
+        warnings.warn(
+            "SubatomicHopAgent is deprecated. Use agentic_core.L3_orchestration.utils.subatomic_hop_util instead.",
+            DeprecationWarning,
+            stacklevel=2,
         )
-        if _call_path is None:
-            super().heal_repository()
-        agent_name = self.__class__.__name__
-        if agent_name in _call_path:
-            return {"errors": 1, "cycle_detected": True}
-        if depth > max_depth:
-            return {"errors": 1, "depth_limited": True}
-        _call_path.add(agent_name)
-        try:
-            print(f"[{agent_name}] L3 orchestration - operational only")
-            return {"skipped": 1}
-        finally:
-            _call_path.discard(agent_name)
 
-    def heal(self, violation, **kwargs):
-        return super().heal(violation, **kwargs)
+        self.role = role
+        self.config = config
+        self.storage = storage
+        self.genealogy = genealogy
+
+    def validate_dependencies(self) -> SubatomicHopResult:
+        """Validate that required dependencies are present."""
+        return _validate_dependencies(
+            role=self.role,
+            config=self.config,
+            storage=self.storage,
+            genealogy=self.genealogy,
+        )
+
+    def create_hop_context(self) -> HopContext:
+        """Create a hop context for routing."""
+        return _create_hop_context(self.role, self.config)
+
+    def run_self_tests(self) -> bool:
+        """Phase 1: Self-testing for L3 compliance."""
+        return _run_self_tests(self.role, self.config)
+
+    def ensure_dep(self, dep: Any, name: str) -> Any:
+        """Validate that a required dependency was injected."""
+        return _ensure_dependency(dep, name)
