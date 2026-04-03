@@ -53,9 +53,9 @@ Use this BEFORE choosing a write target path.
 
 | "I need to write..." | → Use path |
 |---|---|
-| A plan for MRO refactoring | `docs/reports/plans/MRO-refactoring-plan-<hex>.md` |
-| Evidence for a repair session | `docs/reports/plans/<topic>_evidence.md` |
-| An RCA for import failures | `docs/reports/plans/RCA_import_failures.md` |
+| A plan for MRO refactoring | `.windsurf/plans/MRO-refactoring-plan-<hex>.md` |
+| Evidence for a repair session | `.windsurf/plans/<topic>_evidence.md` |
+| An RCA for import failures | `.windsurf/plans/RCA_import_failures.md` |
 | A freeze report | `data/freeze_reports/06_new_freeze_report.json` |
 | A new CI validator script | `ops_scripts/ci/validate_<topic>.py` |
 | A new test for shim contract | `tests/unit_min_deps/test_<name>_shim_contract.py` |

@@ -75,7 +75,7 @@ Reject writes to IDE system directories for project artifacts:
 
 | Path Pattern | Verdict |
 |---|---|
-| `.windsurf/plans/` | ❌ FORBIDDEN for plans — use `docs/reports/plans/` |
+| `.windsurf/plans/` | ✅ APPROVED for plans, evidence, RCAs |
 | `.windsurf/skills/` | ✅ Only for skill SKILL.md and supporting files |
 | `.windsurf/workflows/` | ✅ Only for workflow .md files |
 | `.windsurf/rules/` | ✅ Only for .windsurfrules |

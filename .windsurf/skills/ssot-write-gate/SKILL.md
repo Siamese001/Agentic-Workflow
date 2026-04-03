@@ -1,6 +1,6 @@
 ---
 name: ssot-write-gate
-description: Validates artifact target paths against SSOT sovereign territories before any file write. Use before writing any .md, .json, or .py artifact to disk. Blocks writes to user home directories, .windsurf/plans/, or any path outside PROJECT_ROOT_WHITELIST. Resolves canonical paths by artifact type.
+description: Validates artifact target paths against SSOT sovereign territories before any file write. Use before writing any .md, .json, or .py artifact to disk. Blocks writes to user home directories, paths outside PROJECT_ROOT_WHITELIST, or any non-SSOT location. Resolves canonical paths by artifact type.
 enforcement_layer: pre-commit
 enforcement_timing: after_work
 enforcement_type: structural
@@ -27,18 +27,14 @@ Validates every artifact write target against SSOT sovereign territories before 
 
 1. **Repository root check** — Path MUST be under `c:\Git\Agentic-Workflow\`
 2. **Whitelist check** — First path component MUST be in `PROJECT_ROOT_WHITELIST`:
-   `agentic_core`, `apps_rg`, `apps_lic`, `apps_shared`, `ops_scripts`, `tests`, `docs`, `data`, `tools`, `artifacts`, `system_learning`
+   `agentic_core`, `apps_rg`, `apps_lic`, `apps_shared`, `ops_scripts`, `tests`, `docs`, `data`, `tools`, `artifacts`, `system_learning`, `.windsurf`
 3. **Artifact type check** — Artifact type MUST match canonical directory per `artifact_type_resolver.md`
-4. **No IDE-system paths** — NEVER write to `.cursor/`, `.vscode/` for project artifacts
+4. **No user-home paths** — NEVER write to paths under `C:\Users\<username>\`
 
 ## Canonical Paths Quick Reference
 
 | Artifact Type | Canonical Path |
 |---|---|
-| Path Pattern | Verdict |
-|---|---|
-| `.windsurf/plans/` | APPROVED for plans, evidence, RCAs |
-| `.windsurf/skills/` | Only for skill SKILL.md and supporting files |
 | Plans / evidence / RCAs | `.windsurf/plans/` |
 | Governance reports | `docs/reports/governance/` |
 | Telemetry | `docs/reports/telemetry/` |
