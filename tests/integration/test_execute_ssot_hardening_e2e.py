@@ -484,7 +484,7 @@ class TestExecuteSsotFailureModesHardening:
 
     def test_empty_healing_actions_returns_empty_result(self):
         """Empty healing actions should return empty MetaLearningResult."""
-        from agentic_core.L0_routing.scripts.execute_ssot import (
+        from agentic_core.L0_routing.scripts.execute_ssot_meta import (
             MetaLearningResult,
             _fire_meta_learning_intake_required,
         )
@@ -500,7 +500,7 @@ class TestExecuteSsotFailureModesHardening:
 
     def test_invalid_query_handling(self):
         """Invalid queries should not crash retrieval."""
-        from agentic_core.L0_routing.scripts.execute_ssot import _retrieve_execution_context
+        from agentic_core.L0_routing.scripts.execute_ssot_retrieval import _retrieve_execution_context
 
         invalid_queries = [
             None,
@@ -518,7 +518,7 @@ class TestExecuteSsotFailureModesHardening:
 
     def test_cache_corruption_recovery(self):
         """Cache should handle corrupted entries gracefully."""
-        from agentic_core.L0_routing.scripts.execute_ssot import (
+        from agentic_core.L0_routing.scripts.execute_ssot_retrieval import (
             _L1_EXACT_CACHE,
             _retrieve_execution_context,
         )

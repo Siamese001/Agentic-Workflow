@@ -76,7 +76,14 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 # Import extracted modules for convenience
 from .execute_ssot_context import HealContext
 from .execute_ssot_engine import SovereignDecisionEngine
+from .execute_ssot_meta import MetaLearningResult, MetaLearningError
 from .execute_ssot_reporting import ExecutionReporter
+from .execute_ssot_retrieval import (
+    _L1_EXACT_CACHE,
+    _L2_SEMANTIC_CACHE,
+    _retrieve_execution_context,
+    _store_in_retrieval_cache,
+)
 from .execute_ssot_state import RuntimeStateManager
 from .execute_ssot_validators import NonInteractiveGuard, PreFlightValidator
 
@@ -91,6 +98,14 @@ __all__ = [
     "NonInteractiveGuard",
     "RuntimeStateManager",
     "ExecutionReporter",
+    # Retrieval and caching
+    "_L1_EXACT_CACHE",
+    "_L2_SEMANTIC_CACHE",
+    "_retrieve_execution_context",
+    "_store_in_retrieval_cache",
+    # Meta-learning
+    "MetaLearningResult",
+    "MetaLearningError",
 ]
 
 _emit_emits_metric_event("__init__", "p4obs", "metric_1")
