@@ -153,14 +153,20 @@ class TestGenerateSummary:
         """Test summary with matches."""
         matches = [
             CredentialMatch(
-                file_path="test.py", line_number=1,
-                line_content="key='secret'", pattern_type="generic_api_key",
-                severity="high", confidence=0.95,
+                file_path="test.py",
+                line_number=1,
+                line_content="key='secret'",
+                pattern_type="generic_api_key",
+                severity="high",
+                confidence=0.95,
             ),
             CredentialMatch(
-                file_path="test.py", line_number=2,
-                line_content="key='secret2'", pattern_type="aws_access_key",
-                severity="high", confidence=0.85,
+                file_path="test.py",
+                line_number=2,
+                line_content="key='secret2'",
+                pattern_type="aws_access_key",
+                severity="high",
+                confidence=0.85,
             ),
         ]
         summary = _generate_summary(matches)
@@ -185,9 +191,12 @@ class TestGenerateRecommendations:
         """Test recommendations with high severity match."""
         matches = [
             CredentialMatch(
-                file_path="test.py", line_number=1,
-                line_content="key='secret'", pattern_type="generic_api_key",
-                severity="high", confidence=0.9,
+                file_path="test.py",
+                line_number=1,
+                line_content="key='secret'",
+                pattern_type="generic_api_key",
+                severity="high",
+                confidence=0.9,
             ),
         ]
         recs = _generate_recommendations(matches)
@@ -199,9 +208,12 @@ class TestGenerateRecommendations:
         """Test recommendations with private key."""
         matches = [
             CredentialMatch(
-                file_path="test.py", line_number=1,
-                line_content="key", pattern_type="rsa_private_key",
-                severity="high", confidence=1.0,
+                file_path="test.py",
+                line_number=1,
+                line_content="key",
+                pattern_type="rsa_private_key",
+                severity="high",
+                confidence=1.0,
             ),
         ]
         recs = _generate_recommendations(matches)
@@ -212,9 +224,12 @@ class TestGenerateRecommendations:
         """Test recommendations with AWS credentials."""
         matches = [
             CredentialMatch(
-                file_path="test.py", line_number=1,
-                line_content="AKIA...", pattern_type="aws_access_key",
-                severity="high", confidence=0.95,
+                file_path="test.py",
+                line_number=1,
+                line_content="AKIA...",
+                pattern_type="aws_access_key",
+                severity="high",
+                confidence=0.95,
             ),
         ]
         recs = _generate_recommendations(matches)
@@ -232,7 +247,7 @@ class TestCredentialScanner:
         assert len(scanner.patterns) == len(DEFAULT_PATTERNS)
         assert len(scanner.scannable_extensions) == len(DEFAULT_SCANNABLE_EXTENSIONS)
         assert len(scanner.excluded_paths) == len(DEFAULT_EXCLUDED_PATHS)
-        assert hasattr(scanner, '_compiled_patterns')
+        assert hasattr(scanner, "_compiled_patterns")
 
     def test_scanner_compiled_patterns(self):
         """Test that patterns are compiled."""
@@ -242,7 +257,7 @@ class TestCredentialScanner:
         # Check first pattern is compiled
         first_key = list(scanner._compiled_patterns.keys())[0]
         compiled, severity, confidence = scanner._compiled_patterns[first_key]
-        assert hasattr(compiled, 'finditer')  # Compiled regex has finditer
+        assert hasattr(compiled, "finditer")  # Compiled regex has finditer
 
     def test_scanner_custom_patterns(self):
         """Test scanner with custom patterns."""
@@ -407,7 +422,6 @@ class TestScanFile:
 
 
 class TestScanForCredentials:
-
     def test_scan_for_credentials_empty_directory(self, tmp_path):
         """Test scanning empty directory."""
         scanner = CredentialScanner()
