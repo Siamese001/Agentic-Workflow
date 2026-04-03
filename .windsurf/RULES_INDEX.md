@@ -1,6 +1,6 @@
 # Windsurf Rules & CI Gates — Master Index
 
-**Last Updated**: 2026-03-11
+**Last Updated**: 2026-04-03
 **Purpose**: Comprehensive mapping of all constitutional rules, skills, and CI enforcement gates
 
 > **2026-03-11 CONSOLIDATION:** `.windsurfrules` reduced from 3906 → ~400 lines. All Python implementation code removed — it already lives in `ops_scripts/ci/`. Rules file now contains hard rules, forbidden/required patterns, and CI script cross-references only. 4 previously unwired CI gates added to `run_contract_gates.py`.
@@ -28,21 +28,13 @@
 
 | # | Skill | Layer | Timing | Type | CI Gate | Pre-commit Hook | Status |
 |---|-------|-------|--------|------|---------|----------------|--------|
-| 1 | **Dependency Graph Analysis** (merged AST-First Gate) | Windsurf | Before work | Behavioural | None | None | ✅ ENFORCED (Windsurf only, tier-aware) |
-| 2 | **Dedup Guard** | Both | Before work | Behavioural + Structural | `check_dedup_violations.py` (proxy) | T3a-dedup | ✅ ENFORCED |
-| 3 | **Evidence Bundle** | Windsurf | During work | Behavioural | None | None | ✅ WORKFLOW-ENFORCED |
-| 4 | **Import Hygiene** | Both | After work | Structural | Ruff F401, `validate_import_dependencies.py` | T2a, T4a | ✅ ENFORCED |
-| 5 | **Layer Boundary Guard** | Pre-commit | After work | Structural | ADG GV edges | None | ✅ ENFORCED |
-| 6 | **MCP Tool Verify** | Windsurf | During work | Behavioural | None | None | ✅ RUNTIME-ENFORCED |
-| 7 | **Progress Display** | Windsurf | During work | Behavioural | None | None | ✅ ENFORCED (Windsurf only) |
-| 8 | **Pytest Integrity** | Pre-commit | After work | Structural | `adg_ci_lane_gate.py --fail-on-skip` | T3a-skip | ✅ ENFORCED |
-| 9 | **Rollback Gate** | Both | Before work | Behavioural + Structural | `check_rollback_checkpoints.py` (artifact) | T3a-rollback | ✅ ENFORCED |
-| 10 | **Scope Guard** | Windsurf | Before work | Behavioural | None | None | ✅ ENFORCED (Windsurf only) |
-| 11 | **Script Sprawl Guard** | Both | Before work | Behavioural + Structural | `check_script_sprawl.py` | T3a-sprawl | ✅ ENFORCED |
-| 12 | **Shim Discipline** | Both | Before work | Behavioural + Structural | `check_shim_discipline.py` | T3a-shim | ✅ ENFORCED |
-| 13 | **SSOT Write Gate** | Pre-commit | After work | Structural | `validate_report_location.py` | T3b | ✅ ENFORCED |
-| 14 | **Test Rigor Enforcement** | Pre-commit | After work | Structural | `adg_ci_lane_gate.py` | T3a-skip | ✅ ENFORCED |
-| 15 | **HITL Decision Gate** | Windsurf | During work | Behavioural | None | None | ✅ ENFORCED (Windsurf only) |
+| 1 | **graph-analysis** | Windsurf | Before work | Behavioural + Structural | None | None | ✅ ENFORCED |
+| 2 | **boundary-enforcement** | Pre-commit | After work | Structural | ADG GV edges | T2a, T4a | ✅ ENFORCED |
+| 3 | **operational-gates** | Both | Before work | Behavioural + Structural | `check_rollback_checkpoints.py` | T3a-rollback | ✅ ENFORCED |
+| 4 | **testing-framework** | Pre-commit | After work | Structural | `adg_ci_lane_gate.py` | T3a-skip | ✅ ENFORCED |
+| 5 | **artifact-management** | Pre-commit | After work | Structural | `validate_report_location.py` | T3b | ✅ ENFORCED |
+
+**Note**: 30 individual skills consolidated into these 5 canonical skills per SVP Engineering principles. See [Consolidation Note](#skill-consolidation-2026-04-03) below.
 
 **Key**:
 - **Layer**: Windsurf (AI-time only) | Pre-commit (commit-time only) | Both (dual enforcement)
@@ -51,6 +43,46 @@
 - **CI Gate**: Script name or "None" if Windsurf-only enforcement
 - **(proxy)** = Pre-commit can only detect symptoms, not full violation
 - **(artifact)** = Pre-commit verifies artifact exists, not process compliance
+
+---
+
+## Skill Consolidation (2026-04-03)
+
+**Previous State**: 30 individual skill directories + 2 duplicate directories = 32 total
+**Current State**: 5 consolidated canonical skills
+**Archived Skills**: 30 individual skills archived to `tools/archive/.windsurf/skills/`
+**Rationale**: SVP Engineering principle — operational simplicity through reduced moving parts
+
+### Consolidation Mapping
+
+| Canonical Skill | Replaces (Archived) |
+|-----------------|---------------------|
+| `graph-analysis` | `dependency-graph-analysis`, `scope-guard`, `dedup-guard` |
+| `boundary-enforcement` | `layer-boundary-guard`, `import-hygiene`, `shim-discipline` |
+| `operational-gates` | `rollback-gate`, `mcp-tool-verify` |
+| `testing-framework` | `test-rigor-enforcement`, `pytest-integrity` |
+| `artifact-management` | `evidence-bundle`, `ssot-write-gate`, `progress-display` |
+
+### Also Archived (Non-Consolidated Skills)
+
+The following CI-specific and utility skills were also archived (not consolidated into canonical skills):
+- `agent-deletion-gate`
+- `ci-grep-ban`
+- `ci-guardian-comments`
+- `ci-hollow-file`
+- `ci-integration`
+- `ci-layer-sovereignty`
+- `ci-schema-validation`
+- `guardian-exemption-validator`
+- `hitl-decision-validator`
+- `performance-monitor`
+- `plan-validation`
+- `powershell-guard`
+- `pre-write-orchestrator`
+- `redis-hitl-gate`
+- `repair-gate-validator`
+- `script-sprawl-guard`
+- `skill-status-dashboard`
 
 ---
 
@@ -177,7 +209,7 @@
 | Category | Total | Enforced | Partial | Missing |
 |----------|-------|----------|---------|---------|
 | Constitutional Rules | 5 | 5 | 0 | 0 |
-| Skills | 15 | 15 | 0 | 0 |
+| Skills | 5 | 5 | 0 | 0 |
 | CI Gates | 41 | 41 | 0 | 0 |
 | Pre-commit Hooks | 25+ | 25+ | 0 | 0 |
 
@@ -223,6 +255,7 @@ Include justification keywords in commit message:
 **Next Audit**: 2026-04-11
 
 **Changelog**:
+- 2026-04-03: **SKILLS CONSOLIDATION** — Archived 30 individual skills to `tools/archive/.windsurf/skills/`. Consolidated into 5 canonical skills per SVP Engineering principle: `graph-analysis` (replaces dependency-graph-analysis, scope-guard, dedup-guard), `boundary-enforcement` (replaces layer-boundary-guard, import-hygiene, shim-discipline), `operational-gates` (replaces rollback-gate, mcp-tool-verify), `testing-framework` (replaces test-rigor-enforcement, pytest-integrity), `artifact-management` (replaces evidence-bundle, ssot-write-gate, progress-display). Updated Skills table to show 5 consolidated skills. Coverage remains 100%.
 - 2026-03-25: **PROGRESS DISPLAY ENFORCEMENT** — Added `progress-display` skill with mandatory colored progress bars and percentage displays for all operations >5s. Updated §5.3 with detailed progress reporting requirements including ANSI color codes, ETA display, and standardized progress bar formats. Skill provides terminal protocol, color scheme reference, and implementation guide for integration across all Windsurf operations.
 - 2026-03-14: **HITL (HUMAN-IN-THE-LOOP) ENFORCEMENT** — Added §8.5 HITL Framework to `.windsurfrules` and Constitutional Rule #8. Created comprehensive rule (`.windsurf/rules/hitl-enforcement.md`) with 10 mandatory decision triggers. Created workflow (`/hitl-decision-gate`) with option presentation templates. HITL required for: architecture decisions, refactoring scope, anti-patterns, test repair, dependencies, deletions, config changes, error handling, performance trade-offs, ADG timing. Registered as constitutional rule with Windsurf-only enforcement (behavioral, no CI gate).
 - 2026-03-12: **TEST FAILURE TRIAGE PROTOCOL** — Added canonical 5-check decision tree (`docs/technical/TEST_FAILURE_decision_tree.md`). Registered as §2.5 constitutional rule. Added CI condition 8b (`check_broken_test_fix_semantic_equivalence`) to `check_ci_integrity.py`. Updated `adg-repair-discipline.md` with triage step before repair loop. Updated `test-rigor-enforcement` skill with triage trigger. Reference added to `.windsurfrules` §2.5 without duplicating taxonomy.
