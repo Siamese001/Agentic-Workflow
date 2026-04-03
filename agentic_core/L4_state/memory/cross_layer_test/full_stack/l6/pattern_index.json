@@ -1,5 +1,5 @@
 {
-  "runtime_adg_1775231758_0e7d8dba": {
+  "runtime_adg_1775252148_59a7e63f": {
     "component_distribution": {
       "CognitivePlane": 1,
       "DAGEngine": 1,
@@ -12,7 +12,7 @@
     },
     "error_patterns": [],
     "extraction_metadata": {
-      "timestamp": 1775231758,
+      "timestamp": 1775252148,
       "total_nodes": 8
     },
     "layer_distribution": {
@@ -34,44 +34,44 @@
     "timing_patterns": {
       "fast_operations": [
         {
-          "component": "Tool.route_request",
-          "duration_ms": 4.612,
-          "node_id": "4710d23ba05d3a7f"
-        },
-        {
-          "component": "NervousSystem",
-          "duration_ms": 4.612,
-          "node_id": "d2ae54c063e0c107"
-        },
-        {
-          "component": "Tool.read_state",
-          "duration_ms": 0.0,
-          "node_id": "042a6c0f4b950e16"
-        },
-        {
           "component": "Tool.validate_safety",
           "duration_ms": 0.0,
-          "node_id": "1f0d86e8a7a5b9fb"
-        },
-        {
-          "component": "DAGEngine",
-          "duration_ms": 0.0,
-          "node_id": "3bdd414f372b9245"
-        },
-        {
-          "component": "Tool.execute_action",
-          "duration_ms": 0.0,
-          "node_id": "417c9fe984ebdeba"
+          "node_id": "0c0827b74f09280b"
         },
         {
           "component": "Tool.record_metric",
           "duration_ms": 0.0,
-          "node_id": "6d2d29dbd149c091"
+          "node_id": "120ba093a9666522"
+        },
+        {
+          "component": "Tool.execute_action",
+          "duration_ms": 0.0,
+          "node_id": "2d58bb1bd0c6ad17"
+        },
+        {
+          "component": "Tool.route_request",
+          "duration_ms": 0.0,
+          "node_id": "3a9623aa0946c07e"
+        },
+        {
+          "component": "Tool.read_state",
+          "duration_ms": 0.0,
+          "node_id": "3fa09acdb5a63978"
         },
         {
           "component": "CognitivePlane",
           "duration_ms": 0.0,
-          "node_id": "911742832526a83b"
+          "node_id": "9578d352e3bac1e2"
+        },
+        {
+          "component": "NervousSystem",
+          "duration_ms": 0.552,
+          "node_id": "a9860c1a6122d188"
+        },
+        {
+          "component": "DAGEngine",
+          "duration_ms": 0.0,
+          "node_id": "ed22632e093136c4"
         }
       ],
       "slow_operations": []
