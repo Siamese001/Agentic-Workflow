@@ -7,7 +7,6 @@ auto-generates __all__ from detected exports.
 from __future__ import annotations
 
 import ast
-import re
 from pathlib import Path
 
 from tools.adg.repair.base_rule import BaseRepairRule

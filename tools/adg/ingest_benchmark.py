@@ -6,7 +6,6 @@ import time
 import redis
 import sqlite3
 import json
-from collections import defaultdict
 
 # Test configurations
 BATCH_SIZE = 5000

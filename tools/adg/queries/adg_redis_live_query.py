@@ -4,7 +4,6 @@ Queries HASH nodes via Python redis-py (MCP can only GET strings).
 Focuses on edge types surfaced in the snapshot graph_plane_counts.
 """
 import redis
-import json
 
 r = redis.Redis(host='localhost', port=6379, db=0)
 

@@ -9,9 +9,8 @@ import sys
 import json
 import ast
 import logging
-import shutil
 from pathlib import Path
-from typing import List, Dict, Any, Set, Tuple
+from typing import List, Dict, Any
 from datetime import datetime
 from collections import defaultdict
 

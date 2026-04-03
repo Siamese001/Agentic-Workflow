@@ -7,16 +7,12 @@ Separates graph facts from policy findings.
 
 from __future__ import annotations
 
-import hashlib
 import json
 import logging
-import sqlite3
 import time
 from abc import ABC, abstractmethod
-from pathlib import Path
 from typing import Any
 
-import redis
 
 from agentic_core.adg.contracts.query_contracts import (
     FindingPacket,

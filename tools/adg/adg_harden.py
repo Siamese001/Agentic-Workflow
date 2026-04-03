@@ -26,7 +26,6 @@ import json
 import logging
 import sys
 from pathlib import Path
-from typing import Any
 
 logging.basicConfig(level=logging.INFO, format="%(levelname)s: %(message)s")
 _logger = logging.getLogger(__name__)

@@ -13,10 +13,9 @@ Usage:
 """
 
 import argparse
-import sys
 import warnings
 from pathlib import Path
-from typing import List, Dict, Any, Set, Optional, Tuple
+from typing import List, Dict, Any, Optional
 
 # Try to import ADG Query Bridge
 try:

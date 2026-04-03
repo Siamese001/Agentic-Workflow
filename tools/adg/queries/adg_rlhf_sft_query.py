@@ -2,7 +2,6 @@
 Focused Redis hot-cache query: RLHF and SFT gaps only.
 """
 import redis
-import json
 
 r = redis.Redis(host='localhost', port=6379, db=0)
 

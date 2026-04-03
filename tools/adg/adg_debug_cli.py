@@ -16,14 +16,7 @@ from __future__ import annotations
 import argparse
 import json
 import sys
-from pathlib import Path
-from typing import Any
 
-from agentic_core.adg.contracts.query_contracts import (
-    EdgeQueryResult,
-    FindingSeverity,
-    NodeQueryResult,
-)
 from tools.adg.services import (
     ADGQueryService,
     BoundaryViolationCheck,

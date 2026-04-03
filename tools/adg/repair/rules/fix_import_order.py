@@ -8,8 +8,6 @@ Reorders imports to follow the project's import ordering policy:
 
 from __future__ import annotations
 
-import ast
-import re
 from pathlib import Path
 
 from tools.adg.repair.base_rule import BaseRepairRule
