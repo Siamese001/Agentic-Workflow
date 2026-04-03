@@ -55,7 +55,7 @@ class TestFilesystemOutOfRepoArg:
                 "filesystem": {
                     "_comment": _VALID_COMMENT,
                     "command": "npx",
-                    "args": ["-y", "@modelcontextprotocol/server-filesystem", "C:\\Users\\amita\\projects"],
+                    "args": ["-y", "@modelcontextprotocol/server-filesystem", "/repo/projects"],
                     "disabled": False,
                 }
             }
@@ -160,7 +160,7 @@ class TestForbiddenPathFragments:
                 "some_server": {
                     "command": "python",
                     "args": ["tool.py"],
-                    "cwd": "C:\\Users\\amita\\projects",
+                    "cwd": "/repo/projects",
                 }
             }
         }
@@ -235,7 +235,7 @@ class TestAdversarialBypass:
                 "filesystem": {
                     "_comment": _VALID_COMMENT,
                     "command": "npx",
-                    "args": ["-y", "@modelcontextprotocol/server-filesystem", "C:\\USERS\\amita\\projects"],
+                    "args": ["-y", "@modelcontextprotocol/server-filesystem", "C:\\USERS\\user\\projects"],
                     "disabled": False,
                 }
             }
@@ -245,13 +245,13 @@ class TestAdversarialBypass:
         assert any("FILESYSTEM_OUT_OF_REPO_ARG" in x or "FORBIDDEN_PATH" in x for x in v)
 
     def test_forward_slash_users_path_caught(self, tmp_path: Path) -> None:
-        """Mixed-slash bypass: C:/Users/amita/... must still be caught."""
+        """Mixed-slash bypass: C:/Users/user/... must still be caught."""
         cfg = {
             "mcpServers": {
                 "filesystem": {
                     "_comment": _VALID_COMMENT,
                     "command": "npx",
-                    "args": ["-y", "@modelcontextprotocol/server-filesystem", "C:/Users/amita/projects"],
+                    "args": ["-y", "@modelcontextprotocol/server-filesystem", "C:/Users/user/projects"],
                     "disabled": False,
                 }
             }
@@ -377,7 +377,7 @@ class TestAdversarialBypass:
                 "rogue_server": {
                     "command": "python",
                     "args": ["tool.py"],
-                    "cwd": "C:\\Users\\amita\\.windsurf\\plans",
+                    "cwd": "C:/Users/user/.windsurf/plans",
                 },
             }
         }
@@ -456,7 +456,7 @@ class TestIdempotency:
                 "filesystem": {
                     "_comment": _VALID_COMMENT,
                     "command": "npx",
-                    "args": ["-y", "@modelcontextprotocol/server-filesystem", "C:\\Users\\amita\\projects"],
+                    "args": ["-y", "@modelcontextprotocol/server-filesystem", "/repo/projects"],
                     "disabled": False,
                 }
             }
@@ -557,7 +557,7 @@ class TestIdempotency:
                 "some_server": {
                     "command": "python",
                     "args": ["tool.py"],
-                    "cwd": "C:\\Users\\amita\\projects",
+                    "cwd": "/repo/projects",
                 }
             }
         }
@@ -630,7 +630,7 @@ class TestIdempotency:
                 "filesystem": {
                     "_comment": _VALID_COMMENT,
                     "command": "npx",
-                    "args": ["-y", "@modelcontextprotocol/server-filesystem", "C:\\USERS\\amita\\projects"],
+                    "args": ["-y", "@modelcontextprotocol/server-filesystem", "C:\\USERS\\user\\projects"],
                     "disabled": False,
                 }
             }
@@ -640,13 +640,13 @@ class TestIdempotency:
         assert any("FILESYSTEM_OUT_OF_REPO_ARG" in x or "FORBIDDEN_PATH" in x for x in v)
 
     def test_forward_slash_users_path_caught(self, tmp_path: Path) -> None:
-        """Mixed-slash bypass: C:/Users/amita/... must still be caught."""
+        """Mixed-slash bypass: C:/Users/user/... must still be caught."""
         cfg = {
             "mcpServers": {
                 "filesystem": {
                     "_comment": _VALID_COMMENT,
                     "command": "npx",
-                    "args": ["-y", "@modelcontextprotocol/server-filesystem", "C:/Users/amita/projects"],
+                    "args": ["-y", "@modelcontextprotocol/server-filesystem", "C:/Users/user/projects"],
                     "disabled": False,
                 }
             }
@@ -772,7 +772,7 @@ class TestIdempotency:
                 "rogue_server": {
                     "command": "python",
                     "args": ["tool.py"],
-                    "cwd": "C:\\Users\\amita\\.windsurf\\plans",
+                    "cwd": "C:/Users/user/.windsurf/plans",
                 },
             }
         }
