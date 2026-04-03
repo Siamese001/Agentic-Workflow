@@ -1,715 +1,99 @@
+"""Toolsmith Agent - Backward compatibility shim.
+
+DEPRECATED: This agent has been converted to a utility script.
+Use agentic_core.L2_execution.utils.toolsmith_util instead.
+
+This module maintains backward compatibility by delegating to the utility.
+Will be removed in a future release.
+"""
+
 from __future__ import annotations
 
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-    # noqa: E402,
-    # noqa: E402
-    _emit_escalates_failure,
-    # noqa: E402
-    _emit_gated_by_confidence,
-    # noqa: E402
-    _emit_records_healing_outcome,
-    # noqa: E402
-    _emit_routes_to_agent,
-    # noqa: E402
-    emit_replay_key,
-    _emit_agent_executes_agent,
-    _emit_authorize_and_execute,
-    _emit_blocks_direct_write,
-    _emit_captures_evaluation_metric,
-    _emit_captures_execution_output,
-    _emit_checks_agent_registry,
-    _emit_coordinates_agents,
-    _emit_dispatches_agent,
-    _emit_dispatches_execution_plan,
-    _emit_dispatches_healing_run,
-    _emit_escalates_to_human,
-    _emit_hard_fails_untranscripted,
-    _emit_invokes_evaluation,
-    _emit_links_execution_to_snapshot,
-    _emit_observes_runtime_state,
-    _emit_orchestrates_workflow,
-    _emit_reads_policy_state,
-    _emit_records_telemetry_event,
-    _emit_records_tool_invocation,
-    _emit_records_workflow_lineage,
-    _emit_routes_through,
-    _emit_routes_to_capability,
-    _emit_signs_execution_trace,
-    _emit_stores_embedding,
-    _emit_transcripts_response,
-    _emit_updates_meta_learning_state,
-    _emit_validates_agent_capability,
-    _emit_validates_capability,
-    _emit_verifies_boundary,
-    _emit_verifies_policy,
-    _emit_writes_via_uwg,
-    emit_determinism_digest
-)
-
-emit_replay_key("p0", "ToolsmithAgent")
-emit_determinism_digest("p0", "ToolsmithAgent")
-
-_emit_dispatches_healing_run("p1", "ToolsmithAgent", "L2")
-_emit_routes_through("p1", "ToolsmithAgent", "L2")
-_emit_checks_agent_registry("p1", "ToolsmithAgent", "agent_registry")
-_emit_validates_agent_capability("p1", "ToolsmithAgent", "capability")
-_emit_dispatches_execution_plan("p1", "ToolsmithAgent", "exec_plan")
-_emit_agent_executes_agent("p1", "ToolsmithAgent", "sub_agent")
-_emit_routes_to_agent("p1", "ToolsmithAgent", "target_agent")
-_emit_verifies_policy("p1", "ToolsmithAgent", "policy_check")
-_emit_observes_runtime_state("p1", "ToolsmithAgent", "runtime_state")
-_emit_verifies_boundary("p1", "ToolsmithAgent", "boundary_check")
-_emit_transcripts_response("p1", "ToolsmithAgent", "transcript")
-_emit_hard_fails_untranscripted("p1", "ToolsmithAgent")
-_emit_gated_by_confidence("p1", "ToolsmithAgent", "confidence_gate")
-_emit_escalates_to_human("p1", "ToolsmithAgent", "L2")
-_emit_reads_policy_state("p1", "ToolsmithAgent", "L2")
-_emit_authorize_and_execute("p2", "ToolsmithAgent", "execution_auth")
-_emit_validates_capability("p2", "ToolsmithAgent", "capability_check")
-_emit_routes_to_capability("p2", "ToolsmithAgent", "capability_route")
-_emit_writes_via_uwg("p2", "ToolsmithAgent", "uwg_write")
-_emit_blocks_direct_write("p2", "ToolsmithAgent", "direct_write_block")
-_emit_records_tool_invocation("p2", "ToolsmithAgent", "tool_invocation")
-_emit_captures_execution_output("p2", "ToolsmithAgent", "exec_output")
-_emit_dispatches_agent("p3", "ToolsmithAgent", "agent_dispatch")
-_emit_coordinates_agents("p3", "ToolsmithAgent", "agent_coordination")
-_emit_records_workflow_lineage("p3", "ToolsmithAgent", "workflow_lineage")
-_emit_records_healing_outcome("p3", "ToolsmithAgent", "healing_outcome")
-_emit_escalates_failure("p3", "ToolsmithAgent", "failure_escalation")
-_emit_orchestrates_workflow("p3", "ToolsmithAgent", "workflow_orchestration")
-_emit_dispatches_healing_run("p3", "ToolsmithAgent", "healing_dispatch")
-_emit_invokes_evaluation("p3", "ToolsmithAgent", "evaluation_signal")
-_emit_records_telemetry_event("p4", "ToolsmithAgent", "telemetry_event")
-_emit_captures_evaluation_metric("p4", "ToolsmithAgent", "eval_metric")
-_emit_stores_embedding("p4", "ToolsmithAgent", "embedding_store")
-_emit_updates_meta_learning_state("p4", "ToolsmithAgent", "meta_learning")
-_emit_links_execution_to_snapshot("p4", "ToolsmithAgent", "exec_snapshot_link")
-
-"\nToolsmithAgent - L2 Tool Creation Agent\n\n"
-import logging
-import uuid
-from dataclasses import dataclass, field
-from datetime import datetime
+import warnings
 from typing import Any
 
-from agentic_core.L2_execution.tools.write_gateway import write_json, write_text
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
-from agentic_core.utils.timeout_decorator_util import timeout
-
-Logger = logging.getLogger(__name__)
-
-
-@dataclass
-class ToolSpec:
-    """Specification for a tool."""
-
-    name: str
-    description: str
-    parameters: dict[str, dict]
-    function: Any
-    category: str = "general"
-    version: str = "1.0.0"
-    created_at: datetime = field(default_factory=datetime.utcnow)
-
-    # guardian: allow-type-erasure
-    def to_dict(self) -> dict:
-        """Convert to dictionary."""
-        import uuid as _uuid  # noqa: PLC0415
-
-        _emit_snapshots_state(str(_uuid.uuid4()), "ToolSpec.to_dict", "state_snapshot")
-        import hashlib as _hashlib  # noqa: PLC0415
-        import uuid as _uuid  # noqa: PLC0415
-
-        _tid = str(_uuid.uuid4())
-        _emit_signs_execution_trace(_tid, _hashlib.sha256(_tid.encode()).hexdigest()[:12], "p0_trace", 0)
-        import uuid as _uuid  # noqa: PLC0415
-
-        _emit_applies_guardrail(str(_uuid.uuid4()), "ToolSpec.to_dict", "p0_governance")
-        return {
-            "name": self.name,
-            "description": self.description,
-            "parameters": self.parameters,
-            "category": self.category,
-            "version": self.version,
-            "created_at": self.created_at.isoformat(),
-        }
-
-
-@dataclass
-class GeneratedTool:
-    """A dynamically generated tool."""
-
-    spec: ToolSpec
-    code: str
-    imports: list[str]
-    dependencies: list[str]
-    test_code: str | None = None
-
-    # guardian: allow-type-erasure
-    def to_dict(self) -> dict:
-        """Convert to dictionary."""
-        return {
-            "spec": self.spec.to_dict(),
-            "code": self.code,
-            "imports": self.imports,
-            "dependencies": self.dependencies,
-            "has_tests": bool(self.test_code),
-        }
-
-
-class tool_template:
-    """Template for generating tools."""
-
-    FUNCTION_TEMPLATE: Any = '\nfrom agentic_core.mixins.subatomic_testing_mixin import SubatomicTestingMixin\nasync def {name}({params}) -> {return_type}:\n    """\n    {description}\n\n    Args:\n{param_docs}\n    Returns:\n        {return_description}\n    """\n    # Implementation\n    {implementation}\n'
-    CLASS_TEMPLATE: Any = '\nclass {name}:\n    """\n    {description}\n    """\n\n    def __init__(self{init_params}) -> None:\n        """Initialize the {name} tool."""\n{init_body}\n    async def execute{method_params} -> {return_type}:\n        """\n        Execute the tool.\n\n        Args:\n{method_param_docs}\n        Returns:\n            {return_description}\n        """\n        # Implementation\n        {method_implementation}\n'
-
-
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-    _emit_agent_executes_agent,
-    _emit_applies_guardrail,
-    _emit_captures_pattern,
-    _emit_captures_runtime_anomaly,
-    _emit_checks_agent_registry,
-    _emit_dispatches_execution_plan,
-    _emit_emits_metric_event,
-    _emit_execution_terminates_at_uwg,
-    _emit_feeds_meta_learning,
-    _emit_gated_by_confidence,
-    _emit_hard_fails_untranscripted,
-    _emit_improves_agent_policy,
-    _emit_invokes_eval,
-    _emit_links_incident_trace,
-    _emit_observes_runtime_state,
-    _emit_proposal_commits_routing,
-    _emit_pulls_context,
-    _emit_reads_environ,
-    _emit_reads_runtime_state,
-    _emit_records_execution_trace,
-    _emit_records_incident_event,
-    _emit_records_learning_event,
-    _emit_routes_to_agent,
-    _emit_signs_execution_trace,
-    _emit_snapshots_state,
-    _emit_stores_learning_state,
-    _emit_transcripts_response,
-    _emit_triggers_alert,
-    _emit_updates_monitoring_state,
-    _emit_updates_routing_strategy,
-    _emit_validated_by_safety_plane,
-    _emit_validates_agent_capability,
-    _emit_verifies_boundary,
-    _emit_verifies_policy,
-    _emit_writes_learning_snapshot,
-    _emit_writes_observability_log,
-    _emit_writes_through,
+from agentic_core.L2_execution.utils.toolsmith_util import (
+    ToolSpec as _ToolSpec,
+    GeneratedTool as _GeneratedTool,
+    get_tool_template as _get_tool_template,
+    list_builtin_templates as _list_builtin_templates,
+    generate_tool_from_template as _generate_tool_from_template,
+    validate_tool_code as _validate_tool_code,
+    get_tool_categories as _get_tool_categories,
+    create_tool_spec as _create_tool_spec,
 )
-from agentic_core.utils.decorators_compat_util import standard_heal
 
-_emit_emits_metric_event("ToolsmithAgent", "p4obs", "metric_1")
-_emit_emits_metric_event("ToolsmithAgent", "p4obs", "metric_2")
-_emit_emits_metric_event("ToolsmithAgent", "p4obs", "metric_3")
-_emit_emits_metric_event("ToolsmithAgent", "p4obs", "metric_4")
-_emit_emits_metric_event("ToolsmithAgent", "p4obs", "metric_5")
-_emit_emits_metric_event("ToolsmithAgent", "p4obs", "metric_6")
-_emit_records_incident_event("ToolsmithAgent", "p4obs", "incident")
-_emit_captures_runtime_anomaly("ToolsmithAgent", "p4obs", "anomaly")
-_emit_writes_observability_log("ToolsmithAgent", "p4obs", "obs_log")
-_emit_updates_monitoring_state("ToolsmithAgent", "p4obs", "mon_state")
-_emit_triggers_alert("ToolsmithAgent", "p4obs", "alert")
-_emit_links_incident_trace("ToolsmithAgent", "p4obs", "trace_link")
-_emit_captures_pattern("ToolsmithAgent", "p3lm", "pattern")
-_emit_records_learning_event("ToolsmithAgent", "p3lm", "learning_event")
-_emit_writes_learning_snapshot("ToolsmithAgent", "p3lm", "snapshot")
-_emit_feeds_meta_learning("ToolsmithAgent", "p3lm", "meta_feed")
-_emit_updates_routing_strategy("ToolsmithAgent", "p3lm", "routing")
-_emit_improves_agent_policy("ToolsmithAgent", "p3lm", "policy")
-_emit_stores_learning_state("ToolsmithAgent", "p3lm", "state")
-_emit_records_execution_trace("ToolsmithAgent", "L0_ROUTING", "p2_trace_1")
-_emit_records_execution_trace("ToolsmithAgent", "L1_REASONING", "p2_trace_2")
-_emit_records_execution_trace("ToolsmithAgent", "L2_EXECUTION", "p2_trace_3")
-_emit_records_execution_trace("ToolsmithAgent", "L3_ORCHESTRATION", "p2_trace_4")
-_emit_records_execution_trace("ToolsmithAgent", "L4_STATE", "p2_trace_5")
-_emit_reads_environ("ToolsmithAgent", "env_read", "p2_env_1")
-_emit_reads_environ("ToolsmithAgent", "env_read", "p2_env_2")
-_emit_reads_runtime_state("ToolsmithAgent", "runtime_state", "p2_rt_1")
-_emit_reads_runtime_state("ToolsmithAgent", "runtime_state", "p2_rt_2")
-_emit_pulls_context("p1", "ToolsmithAgent", "context_pull")
-_emit_pulls_context("p1", "ToolsmithAgent", "context_pull_2")
-_emit_execution_terminates_at_uwg("p1", "ToolsmithAgent", "uwg_term")
-_emit_execution_terminates_at_uwg("p1", "ToolsmithAgent", "uwg_term_2")
-_emit_writes_through("p1", "ToolsmithAgent", "write_through")
-_emit_writes_through("p1", "ToolsmithAgent", "write_through_2")
-_emit_validated_by_safety_plane("p1", "ToolsmithAgent", "safety_validation")
-_emit_invokes_eval("p1", "ToolsmithAgent", "eval_call")
-_emit_proposal_commits_routing("p1", "ToolsmithAgent", "routing_commit")
+
+class ToolSpec:
+    """DEPRECATED: Use agentic_core.L2_execution.utils.toolsmith_util.ToolSpec instead."""
+    
+    def __init__(self, **kwargs):
+        warnings.warn("ToolSpec is deprecated. Use toolsmith_util.ToolSpec instead.", DeprecationWarning)
+        self._impl = _ToolSpec(**kwargs)
+
+
+class GeneratedTool:
+    """DEPRECATED: Use agentic_core.L2_execution.utils.toolsmith_util.GeneratedTool instead."""
+    
+    def __init__(self, **kwargs):
+        warnings.warn("GeneratedTool is deprecated. Use toolsmith_util.GeneratedTool instead.", DeprecationWarning)
+        self._impl = _GeneratedTool(**kwargs)
 
 
 class ToolsmithAgent(SovereignBaseAgent):
     """
-    Creates and manages tools dynamically.
-    Features:
-    - Generates tools from specifications
-    - Validates tool implementations
-    - Manages tool registry
-    - Provides tool templates
+    DEPRECATED: Toolsmith Agent - now delegates to toolsmith_util.
+
+    This class is maintained for backward compatibility only.
+    New code should use agentic_core.L2_execution.utils.toolsmith_util directly.
     """
 
-    def __post_init__(self) -> None:
-        """Initialize the ToolsmithAgent."""
-        super().__post_init__()
-        self.tools: dict[str, GeneratedTool] = {}
+    def __init__(self):
+        """Initialize ToolsmithAgent (deprecated, use toolsmith_util instead)."""
+        super().__init__(name="ToolsmithAgent", layer="L2")
+
+        warnings.warn(
+            "ToolsmithAgent is deprecated. Use agentic_core.L2_execution.utils.toolsmith_util instead.",
+            DeprecationWarning,
+            stacklevel=2,
+        )
+
+        self.tools: dict[str, Any] = {}
         self.templates: dict[str, str] = {}
-        self.categories = {
-            "file": "File manipulation tools",
-            "network": "Network and API tools",
-            "data": "Data processing tools",
-            "validation": "Validation and checking tools",
-            "utility": "General utility tools",
-        }
-        self._load_templates()
-        Logger.info("ToolsmithAgent initialized")
+        self.categories = _get_tool_categories()
 
-    # guardian: allow-type-erasure
-    def _load_templates(self) -> Any:
-        """Load tool generation templates."""
-        self.templates.update(
-            {
-                "file_reader": tool_template.FUNCTION_TEMPLATE.format(
-                    name="read_file",
-                    params="file_path: str, encoding: str = 'utf-8'",
-                    return_type="str",
-                    description="Read contents of a file",
-                    param_docs="        file_path: Path to the file\n        encoding: File encoding",
-                    return_description="File contents as string",
-                    implementation="    with open(file_path, 'r', encoding=encoding) as f:\n        return f.read()",
-                ),
-                "file_writer": tool_template.FUNCTION_TEMPLATE.format(
-                    name="write_file",
-                    params="file_path: str, content: str, encoding: str = 'utf-8'",
-                    return_type="bool",
-                    description="Write content to a file",
-                    param_docs="        file_path: Path to the file\n        content: Content to write\n        encoding: File encoding",
-                    return_description="True if successful",
-                    implementation="    try:\n        with open(file_path, 'w', encoding=encoding) as f:\n            f.write(content)\n        return True\n    except Exception as e:\n        Logger.error(f\"Failed to write file: {e}\")\n        return False",
-                ),
-                "json_validator": tool_template.FUNCTION_TEMPLATE.format(
-                    name="validate_json",
-                    params="data: Any, schema: Dict",
-                    return_type="Dict[str, Any]",
-                    description="Validate data against JSON schema",
-                    param_docs="        data: Data to validate\n        schema: JSON schema",
-                    return_description="Validation result",
-                    implementation='    try:\n        import jsonschema\n        jsonschema.validate(data, schema)\n        return {"valid": True, "errors": []}\n    except Exception as e:\n        return {"valid": False, "errors": [str(e)]}',
-                ),
-            }
-        )
+    def get_tool_template(self, template_name: str) -> str | None:
+        """Get a built-in tool template."""
+        return _get_tool_template(template_name)
 
-    def create_tool_from_spec(self, spec: ToolSpec) -> GeneratedTool:
-        """
-        Create a tool from a specification.
+    def list_builtin_templates(self) -> dict[str, str]:
+        """List all available built-in templates."""
+        return _list_builtin_templates()
 
-        Args:
-            spec: Tool specification
-
-        Returns:
-            Generated tool
-        """
-
-        _emit_records_execution_trace(
-            str(uuid.uuid4()),
-            LayerSegment.L3_ORCHESTRATION,
-            f"ToolsmithAgent.create_tool_from_spec:{spec.name}",
-        )
-        # guardian: allow-config-with-logic
-        if self._is_simple_function(spec):
-            code: Any = self._generate_function_code(spec)
-        else:
-            code: Any = self._generate_class_code(spec)
-        imports: Any = self._extract_imports(code)
-        dependencies: Any = self._identify_dependencies(code)
-        test_code: Any = self._generate_test_code(spec)
-        tool: Any = GeneratedTool(
-            spec=spec, code=code, imports=imports, dependencies=dependencies, test_code=test_code
-        )
-        self.tools[spec.name] = tool
-        Logger.info(f"Created tool: {spec.name}")
-        return tool
-
-    def _is_simple_function(self, spec: ToolSpec) -> bool:
-        """Check if tool should be a simple function."""
-        return len(spec.parameters) <= 5 and spec.category != "complex"
-
-    def _generate_function_code(self, spec: ToolSpec) -> str:
-        """Generate function code for a tool."""
-        params = []
-        param_docs = []
-        for param_name, param_info in spec.parameters.items():
-            param_type = param_info.get("type", "Any")
-            default = param_info.get("default")
-            if default is not None:
-                params.append(f"{param_name}: {param_type} = {default}")
-            else:
-                params.append(f"{param_name}: {param_type}")
-            param_docs.append(f"        {param_name}: {param_info.get('description', 'No description')}")
-        param_str = ", ".join(params)
-        param_doc_str = "\n".join(param_docs)
-        implementation = self._get_implementation(spec)
-        return tool_template.FUNCTION_TEMPLATE.format(
-            name=spec.name,
-            params=param_str,
-            return_type=spec.parameters.get("return", {}).get("type", "Any"),
-            description=spec.description,
-            param_docs=param_doc_str,
-            return_description=spec.parameters.get("return", {}).get("description", "Result"),
-            implementation=implementation,
-        )
-
-    def _generate_class_code(self, spec: ToolSpec) -> str:
-        """Generate class code for a complex tool."""
-        init_params = []
-        init_body = []
-        for param_name, param_info in spec.parameters.items():
-            if param_info.get("required", True):
-                init_params.append(f", {param_name}: {param_info.get('type', 'Any')}")
-                init_body.append(f"        self.{param_name} = {param_name}")
-        init_param_str = "".join(init_params)
-        init_body_str = "\n".join(init_body)
-        method_params = ""
-        method_param_docs = ""
-        return tool_template.CLASS_TEMPLATE.format(
-            name=spec.name,
-            description=spec.description,
-            init_params=init_param_str,
-            init_body=init_body_str,
-            method_params=method_params,
-            method_param_docs=method_param_docs,
-            return_type=spec.parameters.get("return", {}).get("type", "Any"),
-            return_description=spec.parameters.get("return", {}).get("description", "Result"),
-            method_implementation="pass  # TODO: Implement",
-        )
-
-    def _get_implementation(self, spec: ToolSpec) -> str:
-        """Get implementation code based on tool category and name."""
-        template_key = f"{spec.category}_{spec.name}"
-        if template_key in self.templates:
-            return self.templates[template_key].split("Implementation:\n")[-1].strip()
-        if "read" in spec.name.lower():
-            return '    # Read operation\n    try:\n        result = await perform_read_operation()\n        return result\n    except Exception as e:\n        Logger.error(f"Read failed: {e}")\n        raise'
-        elif "write" in spec.name.lower():
-            return '    # Write operation\n    try:\n        result = await perform_write_operation()\n        return result\n    except Exception as e:\n        Logger.error(f"Write failed: {e}")\n        raise'
-        elif "validate" in spec.name.lower():
-            return '    # Validation logic\n    try:\n        # Perform validation\n        is_valid = check_validity()\n        return {"valid": is_valid}\n    except Exception as e:\n        Logger.error(f"Validation failed: {e}")\n        return {"valid": False, "error": str(e)}'
-        else:
-            return '    # TODO: Implement tool logic\n    raise NotImplementedError("Tool implementation pending")'
-
-    def _extract_imports(self, code: str) -> list[str]:
-        """Extract import statements from code."""
-        imports = []
-        lines = code.split("\n")
-        for line in lines:
-            line = line.strip()
-            if line.startswith("import ") or line.startswith("from "):
-                imports.append(line)
-        return imports
-
-    def _identify_dependencies(self, code: str) -> list[str]:
-        """Identify external dependencies from code."""
-        dependencies = []
-        patterns = [
-            "import jsonschema",
-            "import requests",
-            "import pandas",
-            "import numpy",
-            "from fastapi",
-            "from pydantic",
-        ]
-        for pattern in patterns:
-            if pattern in code:
-                lib = pattern.split()[-1].split(".")[0]
-                if lib not in dependencies:
-                    dependencies.append(lib)
-        return dependencies
-
-    def _generate_test_code(self, spec: ToolSpec) -> str:
-        """Generate test code for the tool."""
-        test_name = f"test_{spec.name}"
-        return f'\nasync def {test_name}():\n    """Test the {spec.name} tool."""\n    # TODO: Implement test\n    pass\n'
-
-    def create_file_tool(self, name: str, operation: str) -> GeneratedTool:
-        """
-        Create a file manipulation tool.
-
-        Args:
-            name: Tool name
-            operation: Operation type (read/write/delete)
-
-        Returns:
-            Generated tool
-        """
-        spec: Any = ToolSpec(
-            name=f"{operation}_{name}",
-            description=f"{operation.capitalize()} {name} file",
-            parameters={"file_path": {"type": "str", "description": "Path to the file", "required": True}},
-            function=lambda x: x,
-            category="file",
-        )
-        return self.create_tool_from_spec(spec)
-
-    def create_api_tool(self, name: str, endpoint: str, method: str = "GET") -> GeneratedTool:
-        """
-        Create an API interaction tool.
-
-        Args:
-            name: Tool name
-            endpoint: API endpoint
-            method: HTTP method
-
-        Returns:
-            Generated tool
-        """
-        spec: Any = ToolSpec(
-            name=f"{method.lower()}_{name}",
-            description=f"Make {method} request to {endpoint}",
-            parameters={
-                "url": {"type": "str", "description": "Request URL", "required": True},
-                "headers": {"type": "Dict[str, str]", "description": "Request headers", "required": False},
-                "data": {"type": "Any", "description": "Request data", "required": False},
-            },
-            function=lambda x: x,
-            category="network",
-        )
-        return self.create_tool_from_spec(spec)
-
-    def get_tool(self, name: str) -> GeneratedTool | None:
-        """Get a registered tool by name."""
-        return self.tools.get(name)
-
-    def list_tools(self, category: str = None) -> list[dict]:
-        """
-        List all tools.
-
-        Args:
-            category: Filter by category
-
-        Returns:
-            List of tool specifications
-        """
-        tools: Any = []
-        for tool in self.tools.values():
-            if category is None or tool.spec.category == category:
-                tools.append(tool.spec.to_dict())
-        return tools
-
-    def save_tool(self, name: str, directory: Path = None) -> bool:
-        """
-        Save a tool to file.
-
-        Args:
-            name: Tool name
-            directory: Output directory
-
-        Returns:
-            True if saved successfully
-        """
-        tool: Any = self.get_tool(name)
-        if not tool:
-            return False
-        directory: Any = directory or Path("generated_tools")
-        directory.mkdir(exist_ok=True)
-        file_path: Any = directory / f"{name}.py"
-        write_text(str(file_path), tool.code)
-        if tool.test_code:
-            test_path: Any = directory / f"test_{name}.py"
-            write_text(str(test_path), tool.test_code)
-        spec_path: Any = directory / f"{name}_spec.json"
-        write_json(str(spec_path), tool.spec.to_dict())
-        Logger.info(f"Saved tool {name} to {directory}")
-        return True
-
-    # guardian: allow-type-erasure
-    def get_statistics(self) -> dict:
-        """Get tool creation statistics."""
-        stats: Any = {
-            "total_tools": len(self.tools),
-            "by_category": {},
-            "with_tests": 0,
-            "categories": list(self.categories.keys()),
-        }
-        for tool in self.tools.values():
-            cat: Any = tool.spec.category
-            stats["by_category"][cat] = stats["by_category"].get(cat, 0) + 1
-            if tool.test_code:
-                stats["with_tests"] += 1
-        return stats
-
-    @timeout(180)
-    @standard_heal
-    # guardian: allow-magic-config
-    def heal_repository(
+    def generate_tool_from_template(
         self,
-        dry_run: bool = True,
-        execute: bool = False,
-        depth: int = 0,
-        max_depth: int = 3,
-        _call_path: set | None = None,
-    ) -> dict[str, int]:
-        """
-        Wired Toolsmith Healing - Validates tool specifications and repairs broken tool files.
+        template_name: str,
+        category: str = "general",
+        custom_params: dict[str, Any] | None = None,
+    ) -> Any | None:
+        """Generate a tool from a template."""
+        return _generate_tool_from_template(template_name, category, custom_params)
 
-        WIRED CAPABILITIES:
-        - validate_tool_specs(): Checks JSON/YAML tool definitions for schema compliance.
-        - _reconcile_tool_files(): Ensures tool Python files match their registered specs.
-        - save_tool(): Commits repairs to the filesystem if authorized.
-        """
-        super().heal_repository(dry_run=dry_run, execute=execute)
-        if _call_path is None:
-            _call_path = set()
-        agent_name = self.__class__.__name__
-        if agent_name in _call_path or depth > max_depth:
-            return {"errors": 1, "skipped": 1}
-        _call_path.add(agent_name)
-        metrics = {"violations": 0, "fixed": 0, "errors": 0, "skipped": 0}
-        try:
-            if hasattr(self, "validate_tool_specs"):
-                spec_results = self.validate_tool_specs(dry_run=dry_run)
-                metrics["violations"] += spec_results.get("violations", 0)
-                metrics["fixed"] += spec_results.get("fixed", 0)
-            if hasattr(self, "_reconcile_tool_files"):
-                file_results = self._reconcile_tool_files(dry_run=dry_run)
-                metrics["violations"] += file_results.get("violations", 0)
-                metrics["fixed"] += file_results.get("fixed", 0)
-            if execute and (not dry_run) and getattr(self, "staged_tools", None):
-                if hasattr(self, "save_tool"):
-                    for tool_name in self.staged_tools:
-                        self.save_tool(tool_name)
-                        metrics["fixed"] += 1
-        except Exception as e:
-            raise
-            Logger.error(f"[{agent_name}] Toolsmith Healing Failed: {str(e)}")
-            metrics["errors"] += 1
-        finally:
-            _call_path.discard(agent_name)
-        return metrics
+    def validate_tool_code(self, code: str) -> dict[str, Any]:
+        """Validate generated tool code."""
+        return _validate_tool_code(code)
 
-    TERRITORY_SEED_CONTENT: dict[str, dict[str, str]] = {
-        "agentic_core/prompt_governance/meta_prompts": {
-            "convergence_planning.jinja": "{# Meta-Prompt: Convergence Planning #}\nYou are the Sovereign Planner. Analyze current violations and output a JSON plan for next missions.\n"
-        },
-        "agentic_core/prompt_governance/rendering": {
-            "SovereignPromptRenderer.py": "# SovereignPromptRenderer - Dynamic Assembly\nclass SovereignPromptRenderer:\n    def render(self, template_name, context=None):\n        pass\n"
-        },
-        "agentic_core/schemas/models": {
-            "base_models.py": "from pydantic import BaseModel\nclass SovereignBaseModel(BaseModel):\n    pass\n"
-        },
-    }
+    def get_tool_categories(self) -> dict[str, str]:
+        """Get available tool categories."""
+        return _get_tool_categories()
 
-    # guardian: allow-type-erasure
-    async def seed_territory(self, project_root: Path, dry_run: bool = False) -> dict[str, Any]:
-        """
-        # CRITICAL FIRST: Shared HealerMixin chain (diagnostics, rollback, MCP hardening)
-        super().heal_repository()
-
-        SUPPLEMENTED FROM OrganicTerritorySeederAgent — enhances territory seeding capability — merged 2025-12-30
-
-        Seed organic content in empty territories (Ghost Territories).
-
-        Targets empty non-code folders and injects sovereign-compliant starter assets.
-
-        Args:
-            project_root: Root path of the project
-            dry_run: If True, only report what would be seeded without writing
-
-        Returns:
-            Dict with seeding results: {seeded: [], skipped: [], errors: []}
-        """
-        results = {"seeded": [], "skipped": [], "errors": []}
-        for rel_path, files in self.TERRITORY_SEED_CONTENT.items():
-            target_dir = project_root / rel_path
-            if not target_dir.exists():
-                results["skipped"].append(f"{rel_path} (dir not found)")
-                continue
-            contents = [p.name for p in target_dir.iterdir() if p.name not in {"__init__.py", ".gitkeep"}]
-            if contents:
-                results["skipped"].append(f"{rel_path} (already populated)")
-                continue
-            for filename, content in files.items():
-                file_path = target_dir / filename
-                if file_path.exists():
-                    results["skipped"].append(str(file_path.relative_to(project_root)))
-                    continue
-                if dry_run:    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging
-                    results["seeded"].append(f"[DRY RUN] {file_path.relative_to(project_root)}")
-                else:
-                    try:
-                        write_text(str(file_path), content)
-                        results["seeded"].append(str(file_path.relative_to(project_root)))
-                        Logger.info(f"Seeded: {file_path.relative_to(project_root)}")
-                    except OSError as e:    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging
-                        results["errors"].append(f"{filename}: {e}")
-        return results
-
-    # guardian: allow-type-erasure
-    def heal(self, violation: dict[str, Any]) -> dict[str, Any]:
-        """
-        Heal violations detected by ToolsmithAgent.
-
-        Args:
-            violation: Dictionary containing violation details with keys:
-                - file: Path to the file with the violation
-                - type: Type of violation detected
-                - message: Description of the violation
-
-        Returns:
-            Dictionary with keys:
-                - status: 'success', 'partial_success', 'failed', or 'skipped'
-                - details: Human-readable summary
-                - artifacts: List of modified files
-                - errors: List of error messages
-        """
-        violation.get("file") or violation.get("file_path")
-        violation_type = violation.get("type", "unknown")
-        try:
-            return {
-                "status": "skipped",
-                "details": f"ToolsmithAgent heal() not yet implemented for {violation_type}",
-                "artifacts": [],
-                "errors": [],
-            }
-        except (ValueError, TypeError) as e:
-            return {
-                "status": "failed",
-                "details": f"ToolsmithAgent heal() failed: {str(e)}",
-                "artifacts": [],
-                "errors": [str(e)],
-            }
-
-
-_ToolsmithAgent: ToolsmithAgent | None = None
-
-
-def get_ToolsmithAgent() -> ToolsmithAgent:
-    """Get or create the global ToolsmithAgent instance."""
-    global _ToolsmithAgent
-    if _ToolsmithAgent is None:
-        _ToolsmithAgent = ToolsmithAgent()
-    return _ToolsmithAgent
-
-
-# guardian: allow-type-erasure
-def initialize_ToolsmithAgent() -> Any:
-    """Initialize the ToolsmithAgent system."""
-    get_ToolsmithAgent()
-    Logger.info("ToolsmithAgent system initialized")
-
-
-def create_file_tool(name: str, operation: str) -> GeneratedTool:
-    """Create a file manipulation tool."""
-    agent: Any = get_ToolsmithAgent()
-    return agent.create_file_tool(name, operation)
-
-
-def create_api_tool(name: str, endpoint: str, method: str = "GET") -> GeneratedTool:
-    """Create an API interaction tool."""
-    agent: Any = get_ToolsmithAgent()
-    return agent.create_api_tool(name, endpoint, method)
+    def create_tool_spec(
+        self,
+        name: str,
+        description: str,
+        parameters: dict[str, dict],
+        category: str = "general",
+    ) -> Any:
+        """Create a tool specification."""
+        return _create_tool_spec(name, description, parameters, category)
