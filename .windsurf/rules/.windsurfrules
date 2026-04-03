@@ -49,7 +49,7 @@ trigger: always_on
 | **T0 — Question** | No code changes (explain, review, advise) | Use ADG hot cache if available. No ceremony. | None required |
 | **T1 — Trivial** | ≤1 file, ≤20 lines, obvious scope (typo, docstring, config value, add assertion) | Verify with scoped tests. ADG cache query optional. | No `DEPENDENCY_GRAPH` section needed |
 | **T2 — Scoped** | 2–5 files, single layer | Query ADG cache for blast radius. Run scoped tests. | Brief scope note with graph justification |
-| **T3 — Architectural** | >5 files, cross-layer, governance, or new feature | Full AST dependency graph protocol. Invoke skill `dependency-graph-analysis`. | Full `## DEPENDENCY_GRAPH` section mandatory |
+| **T3 — Architectural** | >5 files, cross-layer, governance, or new feature | Full AST dependency graph protocol. Invoke skill `graph-analysis`. | Full `## DEPENDENCY_GRAPH` section mandatory |
 
 ### Core Principle (all tiers)
 
@@ -57,7 +57,7 @@ AST dependency graph is the **PRIMARY** analysis primitive. Text search is secon
 
 ### T2/T3 Protocol
 
-1. **Build/query AST dependency graph FIRST** — invoke skill `dependency-graph-analysis`
+1. **Build/query AST dependency graph FIRST** — invoke skill `graph-analysis`
 2. **Use graph as PRIMARY evidence** — text search only for literal/constant confirmation
 3. **Block work if graph cannot be built** — fail-closed, record errors, mark conclusions partial, STOP
 4. **Document graph in evidence** — `## DEPENDENCY_GRAPH` section mandatory for T3; brief scope note for T2
@@ -76,7 +76,7 @@ User may explicitly override tier: "this is just a simple fix" → T1. "full ana
 
 ## §1. TESTING FRAMEWORK
 
-**ENFORCEMENT:** skill `test-rigor-enforcement` for ALL code generation.
+**ENFORCEMENT:** skill `testing-framework` for ALL code generation.
 
 ### 1.1 Coverage Requirements
 
@@ -219,7 +219,7 @@ Baseline: `tests/_config/test_count_baseline.json`. Count drops = FAIL. xfail in
 
 ## §2. ADG FRAMEWORK
 
-**ENFORCEMENT:** skill `dependency-graph-analysis` for ALL code investigation.
+**ENFORCEMENT:** skill `graph-analysis` for ALL code investigation.
 
 ### 2.1 Dependency Graph Requirements
 
@@ -485,9 +485,9 @@ All queries, searches, and long-running operations MUST have explicit timeout pa
 - **Color-coded indicators**: 🟢 Green (success), 🔵 Blue (in-progress), 🟡 Yellow (warning/slow), 🔴 Red (error), ⚪ White (neutral)
 - **ETA display** for operations >30s (formatted as Xs, Xm, or Xh)
 - **Current item tracking** with descriptive status messages
-- **ANSI color codes** for terminal compatibility (see `.windsurf/skills/progress-display/color_scheme_reference.md`)
+- **ANSI color codes** for terminal compatibility (see `tools/archive/.windsurf/skills/progress-display/color_scheme_reference.md`)
 
-**Progress Display Enforcement:** Skill `progress-display` MUST be invoked for all operations >5s. Use standardized formats and color schemes from the skill protocol.
+**Progress Display Enforcement:** Skill `artifact-management` MUST be invoked for all operations >5s. Use standardized formats and color schemes from the skill protocol.
 
 **Bounded Operations Enforcement:** All file analysis operations MUST include:
 - **Maximum file limits** (default: 1000 files, configurable)
