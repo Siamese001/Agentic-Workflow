@@ -204,13 +204,13 @@ Examples:
   python -m agentic_core.L0_routing.scripts.execute_ssot_entrypoint --scan-only
 
   # Single territory with healing
-  python -m agentic_core.L0_routing.scripts.execute_ssot_entrypoint --heal --territory L5_safety
+  python -m agentic_core.L0_routing.scripts.execute_ssot_entrypoint --territory L5_safety
 
   # Dry-run validation (explicit alias for scan-only)
   python -m agentic_core.L0_routing.scripts.execute_ssot_entrypoint --validate
 
   # Human-in-the-loop mode
-  python -m agentic_core.L0_routing.scripts.execute_ssot_entrypoint --heal --interactive
+  python -m agentic_core.L0_routing.scripts.execute_ssot_entrypoint --interactive
 """,
     )
     # --- Mode flags ---
@@ -223,14 +223,11 @@ Examples:
     parser.add_argument("--agents", type=str, default=None, help="Comma-separated agent keys to run")
     parser.add_argument("--capture-baseline", action="store_true", help="Capture new Golden Baseline")
     # --- Behaviour flags ---
+    # NOTE: UWG has heal jurisdiction - agents should not override
     parser.add_argument(
-        "--heal",
+        "--scan-only",
         action="store_true",
-        default=True,
-        help="Enable active healing (mutations applied). Default: True. Use --scan-only to disable.",
-    )
-    parser.add_argument(
-        "--scan-only", action="store_true", help="Scan/report only — no mutations (disables default healing)"
+        help="Scan/report only — no mutations (disables healing)",
     )
     parser.add_argument(
         "--validate", action="store_true", help="Validation-only mode (implies scan-only, no mutations)"
@@ -264,12 +261,11 @@ Examples:
     parser.add_argument("--legacy", action="store_true", help=argparse.SUPPRESS)
     args = parser.parse_args()
 
-    # Handle --scan-only: disable default healing
-    if getattr(args, "scan_only", False):
-        args.heal = False
+    # UWG heal jurisdiction: dry_run enabled only via --scan-only or --validate
+    args.dry_run = args.scan_only or args.validate
 
-    # Set dry_run based on heal state (for backward compatibility with execute_ssot.py)
-    args.dry_run = not args.heal
+    # Set heal flag for backward compatibility (UWG controls actual heal behavior)
+    args.heal = not args.dry_run
 
     # [FENCE SELF-CHECK MODE]
     if args.fence_self_check:
