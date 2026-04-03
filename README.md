@@ -39,32 +39,45 @@ These are **enforced system invariants**.
 ```
 User / API Request
         ↓
-┌─────────────────────────────────────────┐
-│  L0: Routing                            │
-│  Deterministic entry + policy binding   │
-└─────────────────┬───────────────────────┘
-                  ↓
-┌─────────────────────────┐    ┌──────────────────┐
-│  L1: Cognition          │◄───│  L4: State       │
-│  Bounded LLM reasoning  │    │  (ADG + Policy)  │
-└──────────┬──────────────┘    └────────┬─────────┘
-           ↓                            │
-┌─────────────────────────┐             │
-│  L2: Execution Sandbox  │             │
-│  Controlled tool calls  │             │
-└──────────┬──────────────┘             │
-           ↓                            │
-┌─────────────────────────┐    ┌────────┴─────────┐
-│  L3: Orchestration      │───→│  L5: Governance  │
-│  Multi-agent workflows  │    │  Policy engine   │
-└──────────┬──────────────┘    └────────┬─────────┘
-           ↓                            ↓
-┌──────────────────────────────────────────────────┐
-│  L6: Observability & Determinism Proof           │
-└──────────────────────────────────────────────────┘
+┌─────────────────────────────────────────────────────────────────────┐
+│  L1: Cognition — Librarian                                            │
+│  Bounded LLM reasoning → execution plan                                 │
+└────────────────────────────┬──────────────────────────────────────────┘
+                             ↓
+┌─────────────────────────────────────────────────────────────────────┐
+│  L0: Routing — Dispatcher                                             │
+│  Route authority: cache → RAG → action → fallback                       │
+└────────────┬─────────────────┬─────────────────────────────┬────────────┘
+             ↓                 ↓                             ↓
+    ┌────────────────┐ ┌──────────────┐          ┌──────────────────────┐
+    │ R1: Cache Hit    │ │ R3: Agentic  │          │ R4/R5: Action/       │
+    │ (short-circuit)  │ │ RAG → C0       │          │ Fallback             │
+    └────────┬───────┘ └───────┬──────┘          └──────────┬───────────┘
+             ↓                 ↓                             ↓
+    [RETURN] │          ┌──────────────┐              ┌──────────────────────┐
+             └─────────►│ L4: State    │              │ L3: Orchestrator     │
+                        │ (Archivist)  │              │ (Sec Head) [opt]     │
+                        └───────┬──────┘              └──────────┬───────────┘
+                                │                               ↓
+                        ┌───────┴──────┐              ┌──────────────────────┐
+                        │ C0: Context  │              │ L2: Execution        │
+                        │ Engine       │              │ (Execution Staff)    │
+                        └──────────────┘              └──────────┬───────────┘
+                                                                  ↓
+                        ┌──────────────────────────────────────────────────────┐
+                        │ L5: Governance — Safety Officer (cross-cutting)      │
+                        │ Policy enforcement at all control points               │
+                        └───────────────────────┬───────────────────────────────┘
+                                                ↓
+                        ┌──────────────────────────────────────────────────────┐
+                        │ L6: Observability — Observer (shadow evaluation)     │
+                        │ Replay, telemetry, future-run learning               │
+                        └──────────────────────────────────────────────────────┘
 ```
 
-Each layer has a **single responsibility**, preventing cross-layer corruption and enabling deterministic behavior.
+**Primary Runtime Path:** L1 → L0 → [opt L3] → L2 | L0 routing invokes C0 context assembly
+
+**State Mutation Path:** L2 output → [L5 validation] → UWG → L4 (sole write authority)
 
 ---
 
@@ -185,15 +198,10 @@ Enterprise-grade compliance and safety by default.
 A fully queryable system graph representing:
 
 * execution flow
-
 * state dependencies
-
 * tool interactions
-
-* ~69K nodes
-
-* ~500K+ edges
-
+* ~264K nodes
+* ~929K edges
 * SQLite-backed for deterministic inspection
 
 **Result:**
@@ -261,6 +269,83 @@ WHY IT IS PROVABLE
 
 ---
 
+## Architecture Deep Dive — L0 to L6
+
+The system operates through **six distinct architectural layers**, each with a single accountability and clear authority boundaries.
+
+### Layer Personas & Responsibilities
+
+| Layer | Persona | Core Function | Authority |
+|-------|---------|---------------|-----------|
+| **L0** | Dispatcher | Route authority — determines execution path (cache, RAG, action, fallback) | Routing decisions only |
+| **L1** | Librarian | Reasoning loop — formulates execution plans and dispatches to routing | Plan formulation |
+| **L2** | Execution Staff | Tool and action execution — interfaces with external systems | Sandboxed execution only |
+| **L3** | Orchestrator | Multi-step coordination — manages complex L2 execution chains | Optional; when complexity requires |
+| **L4** | Archivist | Authoritative state — durable writes via UWG only | Read-broad, write-strict |
+| **L5** | Safety Officer | Cross-cutting policy plane — enforces guardrails across all runtime/exit points | Veto authority everywhere |
+| **L6** | Observer | Shadow evaluation — monitors telemetry for future-run system learning | Read-only, no runtime mutation |
+
+### Primary Runtime Flow
+
+```
+User/API Request
+      ↓
+┌─────────────────────────────────────────────────────────┐
+│ [1] REQUEST INTAKE                                      │
+│     Ingress validation (optional pre-layer envelope)    │
+└─────────────────────────────────────────────────────────┘
+      ↓
+┌─────────────────────────────────────────────────────────┐
+│ [2] L1 REASONING (Librarian)                           │
+│     Formulates execution plan                          │
+│     ↓ dispatches to L0                                  │
+└─────────────────────────────────────────────────────────┘
+      ↓
+┌─────────────────────────────────────────────────────────┐
+│ [3] L0 ROUTING (Dispatcher)                            │
+│     D1: Exact cache hit? → R1A short-circuit            │
+│     D2: Semantic cache valid? → R1B short-circuit       │
+│     D3: Need grounded context? → R3 Agentic RAG → C0    │
+│     D4: Need external action? → R4 Action / R5 Fallback │
+└─────────────────────────────────────────────────────────┘
+      ↓
+┌─────────────────────────────────────────────────────────┐
+│ C0 CONTEXT ENGINE (Ref Desk)                             │
+│     Retrieves and grounds only — never routes/executes │
+│     Reads from L4 State / returns evidence to Prompt    │
+│     Assembly → dispatches to [4]                        │
+└─────────────────────────────────────────────────────────┘
+      ↓
+┌─────────────────────────────────────────────────────────┐
+│ [4] RUNTIME DISPATCH                                   │
+│     Simple execution → direct to L2                   │
+│     Multi-step required → L3 Orchestrator → L2        │
+└─────────────────────────────────────────────────────────┘
+      ↓
+┌─────────────────────────────────────────────────────────┐
+│ [5] LIVE POST-L2 CONTROL                               │
+│     Live Evaluation Spine: policy, schema, trajectory │
+│     EXIT SPINE: allow / deny / reroute / escalate     │
+│     COMMIT → UWG → L4 (only state mutation path)      │
+└─────────────────────────────────────────────────────────┘
+      ↓
+┌─────────────────────────────────────────────────────────┐
+│ [6] SHADOW EVALUATION + LEARNING                       │
+│     Never current-run mutation                         │
+│     Future-run influence via telemetry, regression      │
+│     testing, and approved rollout paths                 │
+└─────────────────────────────────────────────────────────┘
+```
+
+### Key Control Points
+
+- **L5 Policy Plane** (cross-cutting): Authority over all stages [1]→[6], EXIT, and UWG
+- **UWG (Universal Write Gateway)**: The sole path for any state mutation → L4
+- **HITL Integration**: Embedded at exit spine, not bolted on
+- **Zero Current-Run Learning**: All system learning is shadowed and promoted via approved paths only
+
+---
+
 ## Enterprise Impact
 
 | Capability              | Outcome                 |
@@ -317,3 +402,15 @@ This is a **deterministic AI control plane** that enables:
 * safe autonomous execution
 
 **AI that behaves like software, not experiments.**
+
+---
+
+## Documentation
+
+* **Full Process Map (v28):** `docs/reference/agentic_process_mapping_v28.md` — Complete ASCII runtime flow with L0-L6 personas, decision points, and control spines
+* **Architecture ADRs:** `docs/architecture/adr/` — Architectural decision records
+* **Standards:** `docs/STANDARDS.md` — Code and design standards
+
+---
+
+*Last updated: April 2026*
