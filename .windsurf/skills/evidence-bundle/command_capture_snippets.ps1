@@ -5,7 +5,7 @@
 # ============================================================
 
 # --- SETUP: Define evidence file path ONCE at session start ---
-$E = "docs/reports/plans/<phase_evidence_file>.md"
+$E = ".windsurf/plans/<phase_evidence_file>.md"
 
 # ============================================================
 # MANDATORY: AST DEPENDENCY GRAPH (§0 DEFAULT ANALYSIS MODE)

@@ -153,7 +153,7 @@ If AST parsing fails:
 
 ### Command
 ```powershell
-$E = "docs/reports/plans/<this_file>.md"
+$E = ".windsurf/plans/<this_file>.md"
 git diff --name-only HEAD | Tee-Object -FilePath $E -Append
 ```
 

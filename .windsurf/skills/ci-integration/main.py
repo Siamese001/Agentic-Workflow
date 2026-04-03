@@ -19,7 +19,7 @@ class CIIntegration:
     def __init__(self):
         self.skills_dir = Path(".windsurf/skills")
         self.ci_dir = Path("ops_scripts/ci")
-        self.reports_dir = Path("docs/reports/plans")
+        self.reports_dir = Path(".windsurf/plans")
         self.contract_gates = self.ci_dir / "run_contract_gates.py"
 
     def validate_skill_compliance(self, skill_filter: str | None = None) -> dict:
@@ -446,7 +446,7 @@ def main():
         report = integration.generate_compliance_report()
 
         # Save report
-        report_file = Path("docs/reports/plans/pre-write-hooks-compliance.md")
+        report_file = Path(".windsurf/plans/pre-write-hooks-compliance.md")
         report_file.parent.mkdir(parents=True, exist_ok=True)
         report_file.write_text(report, encoding="utf-8")
 

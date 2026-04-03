@@ -82,7 +82,7 @@ Every artifact reference in a response MUST use backtick citation format: `` `@<
 
 ### Evidence Contract
 
-Each phase produces exactly one evidence file under `docs/reports/plans/`.
+Each phase produces exactly one evidence file under `.windsurf/plans/`.
 
 **Commands executed via:** `subprocess.run(argv, shell=False, encoding="utf-8", errors="replace")`
 **PowerShell invocation is FORBIDDEN.**
@@ -157,7 +157,7 @@ tracker.complete(f"Processed {total_items} items")
 - **§8:** All plans and reports MUST reside in `.windsurf/plans/`
 - **§2.1:** Evidence files MUST be within repository sovereign territories
 - **§5.3:** Query timeout & progress reporting requirements
-- **DOCS_REPORTS_PLANS constant:** `agentic_core/L5_safety/config/structure_blueprint_config.py`
+- **IDE system paths:** `.windsurf/plans/`, `.windsurf/skills/`, `.windsurf/workflows/`
 
 ## Enforcement Scripts
 

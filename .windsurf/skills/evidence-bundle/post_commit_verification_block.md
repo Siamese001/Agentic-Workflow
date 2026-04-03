@@ -5,7 +5,7 @@ Deterministic minimal verification. Run after every commit. Capture all outputs.
 ## Commands (copy-pasteable)
 
 ```powershell
-$E = "docs/reports/plans/<phase_evidence_file>.md"
+$E = ".windsurf/plans/<phase_evidence_file>.md"
 
 git status --porcelain 2>&1 | Tee-Object -FilePath $E -Append
 git show --name-only HEAD 2>&1 | Tee-Object -FilePath $E -Append

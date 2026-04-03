@@ -1,5 +1,5 @@
 {
-  "runtime_adg_1775253485_1fe40d8e": {
+  "runtime_adg_1775256685_19b0ddf5": {
     "component_distribution": {
       "CognitivePlane": 1,
       "DAGEngine": 1,
@@ -12,7 +12,7 @@
     },
     "error_patterns": [],
     "extraction_metadata": {
-      "timestamp": 1775253485,
+      "timestamp": 1775256685,
       "total_nodes": 8
     },
     "layer_distribution": {
@@ -34,44 +34,44 @@
     "timing_patterns": {
       "fast_operations": [
         {
-          "component": "Tool.route_request",
+          "component": "CognitivePlane",
           "duration_ms": 0.0,
-          "node_id": "439823419e6d41bc"
+          "node_id": "1bcb1174e54d4154"
         },
         {
           "component": "NervousSystem",
           "duration_ms": 0.0,
-          "node_id": "5ff4c31ff9f872b7"
+          "node_id": "1fde74c3abf6c74d"
         },
         {
           "component": "Tool.read_state",
           "duration_ms": 0.0,
-          "node_id": "6750d958f25d60b1"
-        },
-        {
-          "component": "CognitivePlane",
-          "duration_ms": 0.0,
-          "node_id": "907107ecdd6f64ea"
+          "node_id": "449f61c70a475873"
         },
         {
           "component": "Tool.validate_safety",
           "duration_ms": 0.0,
-          "node_id": "b45a522b1d3e819b"
+          "node_id": "75aa2214b87e326e"
         },
         {
           "component": "Tool.record_metric",
           "duration_ms": 0.0,
-          "node_id": "d25f880cc5d40b1a"
+          "node_id": "7f0c7fe6b607bd04"
         },
         {
-          "component": "Tool.execute_action",
+          "component": "Tool.route_request",
           "duration_ms": 0.0,
-          "node_id": "ecc57af6ff6e4c7c"
+          "node_id": "a71b2efed00a786a"
         },
         {
           "component": "DAGEngine",
           "duration_ms": 0.0,
-          "node_id": "fa22a4be887f11c9"
+          "node_id": "c9f0e9cb7779ff6a"
+        },
+        {
+          "component": "Tool.execute_action",
+          "duration_ms": 0.0,
+          "node_id": "db750135194f44a7"
         }
       ],
       "slow_operations": []

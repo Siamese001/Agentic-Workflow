@@ -10,7 +10,7 @@ import sys
 from pathlib import Path
 
 # --- SETUP: Define evidence file path ONCE at session start ---
-E = Path("docs/reports/plans/<evidence_file>.md")
+E = Path(".windsurf/plans/<evidence_file>.md")
 
 # ============================================================
 # CORE CAPTURE HELPER
