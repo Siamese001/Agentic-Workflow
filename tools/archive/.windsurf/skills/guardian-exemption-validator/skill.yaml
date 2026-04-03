@@ -1,0 +1,11 @@
+name: guardian-exemption-validator
+description: Validates guardian exemption comments have specific justifications
+version: 1.0.0
+parameters:
+  comment:
+    type: string
+    description: The guardian comment to validate
+  file_path:
+    type: string
+    description: The file containing the comment
+entrypoint: main.py

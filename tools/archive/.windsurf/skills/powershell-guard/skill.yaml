@@ -1,0 +1,11 @@
+name: powershell-guard
+description: Prevents PowerShell command execution in favor of subprocess.run(shell=False)
+version: 1.0.0
+parameters:
+  command:
+    type: string
+    description: The shell command to validate
+  file_path:
+    type: string
+    description: The file where the command will be executed
+entrypoint: main.py

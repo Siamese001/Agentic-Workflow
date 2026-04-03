@@ -1,0 +1,8 @@
+name: agent-deletion-guard
+description: Prevents unauthorized deletion of *Agent.py files
+version: 1.0.0
+parameters:
+  file_path:
+    type: string
+    description: The file being deleted
+entrypoint: main.py

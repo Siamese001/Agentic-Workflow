@@ -1,0 +1,11 @@
+name: ci-integration
+description: Extends CI gates for skill validation and compliance reporting
+version: 1.0.0
+parameters:
+  mode:
+    type: string
+    description: Integration mode (validate, report, health-check)
+  skill_filter:
+    type: string
+    description: Filter for specific skills (optional)
+entrypoint: main.py

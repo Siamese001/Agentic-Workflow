@@ -1,0 +1,11 @@
+name: plan-validation
+description: Validates plan documents against §10 standards before writing
+version: 1.0.0
+parameters:
+  content:
+    type: string
+    description: The plan content to validate
+  file_path:
+    type: string
+    description: The path where the plan will be saved
+entrypoint: main.py
