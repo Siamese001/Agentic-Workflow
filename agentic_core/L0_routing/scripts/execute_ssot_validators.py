@@ -71,7 +71,14 @@ class NonInteractiveGuard:
 
         Returns:
             True if operation is allowed
+
+        Raises:
+            ValueError: If args is None or operation is empty
         """
+        if self.args is None:
+            raise ValueError("Args cannot be None")
+        if not operation:
+            raise ValueError("Operation cannot be empty")
         # Check if non-interactive
         if hasattr(self.args, 'non_interactive') and self.args.non_interactive:
             blocked = ['prompt', 'confirm', 'interactive_config']

@@ -90,7 +90,7 @@ class ExecutionReporter:
 
         return "\n".join(lines)
 
-    def save_report(self, filepath: str, data: Dict[str, Any], format: str = "json") -> bool:
+    def save_report(self, filepath: str, data: Dict[str, Any], format: str = "json") -> tuple[bool, Optional[str]]:
         """Save report to file.
 
         Args:
@@ -99,18 +99,28 @@ class ExecutionReporter:
             format: Output format (json, markdown)
 
         Returns:
-            True if save successful
+            Tuple of (success, error_message)
         """
+        if not filepath:
+            return False, "Filepath cannot be empty"
+        
+        if not data:
+            return False, "Data cannot be empty"
+        
         try:
             if format == "json":
                 content = self.generate_json_report(data)
             elif format == "markdown":
                 content = self.generate_markdown_report(data)
             else:
-                content = str(data)
+                return False, f"Unsupported format: {format}"
 
             with open(filepath, 'w', encoding='utf-8') as f:
                 f.write(content)
-            return True
-        except Exception:
-            return False
+            return True, None
+        except UnicodeEncodeError as e:
+            return False, f"Encoding error: {str(e)}"
+        except IOError as e:
+            return False, f"IO error: {str(e)}"
+        except Exception as e:
+            return False, f"Unexpected error: {str(e)}"

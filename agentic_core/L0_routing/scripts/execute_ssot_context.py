@@ -28,9 +28,15 @@ class HealContext:
         """Record the result of a phase execution."""
         self.phase_results[phase] = result
 
-    def get_phase_result(self, phase: str) -> Any:
-        """Get the result of a specific phase."""
-        return self.phase_results.get(phase)
+    def get_phase_result(self, phase: str) -> tuple[Any, bool]:
+        """Get the result of a specific phase.
+
+        Returns:
+            Tuple of (result, found) where found indicates if phase exists
+        """
+        if phase in self.phase_results:
+            return self.phase_results[phase], True
+        return None, False
 
     def add_alignment(self, alignment: Any) -> None:
         """Add an alignment result to the context."""

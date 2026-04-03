@@ -5,6 +5,8 @@ This package contains the modularized components of the execute_ssot script,
 extracted during Wave 1 of the modularization initiative.
 """
 
+__version__ = "1.0.0"
+
 from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402

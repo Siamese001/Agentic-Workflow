@@ -96,47 +96,65 @@ class SovereignDecisionEngine:
         Returns:
             Tuple of (overall_success, final_results)
         """
-        # Initialize heal context
-        from .execute_ssot_context import HealContext
-        self.heal_context = HealContext(
-            targets=targets,
-            registry=self.registry,
-            args=self.args
-        )
+        try:
+            # Initialize heal context
+            from .execute_ssot_context import HealContext
+            self.heal_context = HealContext(
+                targets=targets,
+                registry=self.registry,
+                args=self.args
+            )
 
-        # Phase 1: Discovery
-        success, findings = self.run_discovery_phase(self.heal_context)
-        if not success:
-            return False, {"phase": "discovery", "error": "Discovery failed"}
-        self.heal_context.record_phase_result("discovery", findings)
+            # Phase 1: Discovery
+            try:
+                success, findings = self.run_discovery_phase(self.heal_context)
+                if not success:
+                    return False, {"phase": "discovery", "error": "Discovery failed", "context": self.heal_context}
+                self.heal_context.record_phase_result("discovery", findings)
+            except Exception as e:
+                return False, {"phase": "discovery", "error": f"Discovery exception: {str(e)}", "context": self.heal_context}
 
-        # Phase 2: Validation
-        success, validated = self.run_validation_phase(self.heal_context, findings)
-        if not success:
-            return False, {"phase": "validation", "error": "Validation failed"}
-        self.heal_context.record_phase_result("validation", validated)
+            # Phase 2: Validation
+            try:
+                success, validated = self.run_validation_phase(self.heal_context, findings)
+                if not success:
+                    return False, {"phase": "validation", "error": "Validation failed", "context": self.heal_context}
+                self.heal_context.record_phase_result("validation", validated)
+            except Exception as e:
+                return False, {"phase": "validation", "error": f"Validation exception: {str(e)}", "context": self.heal_context}
 
-        # Phase 3: Alignment
-        success, alignments = self.run_alignment_phase(self.heal_context, validated)
-        if not success:
-            return False, {"phase": "alignment", "error": "Alignment failed"}
-        self.heal_context.record_phase_result("alignment", alignments)
+            # Phase 3: Alignment
+            try:
+                success, alignments = self.run_alignment_phase(self.heal_context, validated)
+                if not success:
+                    return False, {"phase": "alignment", "error": "Alignment failed", "context": self.heal_context}
+                self.heal_context.record_phase_result("alignment", alignments)
+            except Exception as e:
+                return False, {"phase": "alignment", "error": f"Alignment exception: {str(e)}", "context": self.heal_context}
 
-        # Phase 4: Healing
-        success, healing_results = self.run_healing_phase(self.heal_context, alignments)
-        if not success:
-            return False, {"phase": "healing", "error": "Healing failed"}
-        self.heal_context.record_phase_result("healing", healing_results)
+            # Phase 4: Healing
+            try:
+                success, healing_results = self.run_healing_phase(self.heal_context, alignments)
+                if not success:
+                    return False, {"phase": "healing", "error": "Healing failed", "context": self.heal_context}
+                self.heal_context.record_phase_result("healing", healing_results)
+            except Exception as e:
+                return False, {"phase": "healing", "error": f"Healing exception: {str(e)}", "context": self.heal_context}
 
-        # Phase 5: Reporting
-        success, report = self.run_reporting_phase(self.heal_context, healing_results)
-        self.heal_context.record_phase_result("reporting", report)
+            # Phase 5: Reporting
+            try:
+                success, report = self.run_reporting_phase(self.heal_context, healing_results)
+                self.heal_context.record_phase_result("reporting", report)
+            except Exception as e:
+                return False, {"phase": "reporting", "error": f"Reporting exception: {str(e)}", "context": self.heal_context}
 
-        return True, {
-            "heal_context": self.heal_context,
-            "phase_results": self.heal_context.phase_results,
-            "final_report": report
-        }
+            return True, {
+                "heal_context": self.heal_context,
+                "phase_results": self.heal_context.phase_results,
+                "final_report": report
+            }
+        except Exception as e:
+            return False, {"phase": "workflow", "error": f"Workflow exception: {str(e)}", "context": getattr(self, 'heal_context', None)}
 
     def save_checkpoint(self) -> None:
         """Save current state as checkpoint for recovery."""

@@ -103,14 +103,14 @@ class RuntimeStateManager:
             return None
         return self.checkpoints[-1]
 
-    def save_to_disk(self, filepath: str) -> bool:
+    def save_to_disk(self, filepath: str) -> tuple[bool, Optional[str]]:
         """Save current state to disk.
 
         Args:
             filepath: Path to save state
 
         Returns:
-            True if save successful
+            Tuple of (success, error_message)
         """
         try:
             data = {
@@ -121,18 +121,18 @@ class RuntimeStateManager:
             }
             with open(filepath, 'w') as f:
                 json.dump(data, f, indent=2)
-            return True
-        except Exception:
-            return False
+            return True, None
+        except Exception as e:
+            return False, str(e)
 
-    def load_from_disk(self, filepath: str) -> bool:
+    def load_from_disk(self, filepath: str) -> tuple[bool, Optional[str]]:
         """Load state from disk.
 
         Args:
             filepath: Path to load state from
 
         Returns:
-            True if load successful
+            Tuple of (success, error_message)
         """
         try:
             with open(filepath, 'r') as f:
@@ -141,9 +141,9 @@ class RuntimeStateManager:
             self.checkpoints = data.get("checkpoints", [])
             self.current_phase = data.get("current_phase")
             self.start_time = data.get("start_time")
-            return True
-        except Exception:
-            return False
+            return True, None
+        except Exception as e:
+            return False, str(e)
 
     def get_elapsed_time(self) -> float:
         """Get elapsed time since initialization.
