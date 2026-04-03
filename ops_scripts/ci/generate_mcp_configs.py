@@ -15,7 +15,7 @@ import sys
 from pathlib import Path
 from typing import Any
 
-REPO_ROOT = Path(r"C:\Git\Agentic-Workflow")
+REPO_ROOT = Path(__file__).resolve().parents[3]
 MANIFEST_PATH = REPO_ROOT / ".windsurf" / "mcp_manifest.json"
 WORKSPACE_CONFIG_PATH = REPO_ROOT / ".windsurf" / "mcp_config.json"
 USER_GLOBAL_CONFIG_PATH = Path.home() / ".codeium" / "windsurf" / "mcp_config.json"

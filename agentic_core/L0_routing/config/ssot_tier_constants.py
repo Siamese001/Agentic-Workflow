@@ -181,4 +181,29 @@ __all__ = [
     "SSOT_SCORE_THRESHOLD_DET",
     "SSOT_SCORE_THRESHOLD_QWEN",
     "QWEN_14B_MODEL_ID",
+    "AGENTIC_CORE_LAYERS",
+    "APPS_PACKAGES",
+]
+
+# Architecture layer constants - SSOT for layer naming
+AGENTIC_CORE_LAYERS = [
+    "L0_routing",
+    "L1_cognition",
+    "L2_execution",
+    "L3_orchestration",
+    "L4_state",
+    "L5_safety",
+    "L6_observability",
+]
+
+# Application package constants - SSOT for app package naming
+APPS_PACKAGES = [
+    "apps_lic",
+    "apps_rg",
+    "apps_eval",
+    "apps_exec",
+    "apps_research",
+    "apps_rfp",
+    "apps_shared",
+    "apps_underwriting_ai",
 ]

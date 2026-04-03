@@ -22,6 +22,12 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
 
+# Import SSOT constants for layer and app package names
+from agentic_core.L0_routing.config.ssot_tier_constants import (
+    AGENTIC_CORE_LAYERS,
+    APPS_PACKAGES,
+)
+
 
 @dataclass
 class GapReport:
@@ -79,27 +85,6 @@ class RetrievalAccelerator:
         "routes_through",
         "emits_metric_event",
         "execution_terminates_at_uwg",
-    ]
-
-    AGENTIC_CORE_LAYERS = [
-        "L0_routing",
-        "L1_cognition",
-        "L2_execution",
-        "L3_orchestration",
-        "L4_state",
-        "L5_safety",
-        "L6_observability",
-    ]
-
-    APPS_PACKAGES = [
-        "apps_lic",
-        "apps_rg",
-        "apps_eval",
-        "apps_exec",
-        "apps_research",
-        "apps_rfp",
-        "apps_shared",
-        "apps_underwriting_ai",
     ]
 
     RETRIEVAL_SYMBOLS = [
@@ -182,7 +167,7 @@ class RetrievalAccelerator:
         cur = self.conn.cursor()
         coverage = {}
         placeholders = ",".join("?" * len(self.RETRIEVAL_RELATIONS))
-        for layer in self.AGENTIC_CORE_LAYERS:
+        for layer in AGENTIC_CORE_LAYERS:
             pat = f"%/{layer}/%"
             cur.execute(
                 f"SELECT relation_type, COUNT(*) FROM edges "
@@ -201,7 +186,7 @@ class RetrievalAccelerator:
         cur = self.conn.cursor()
         coverage = {}
         placeholders = ",".join("?" * len(self.RETRIEVAL_RELATIONS))
-        for app in self.APPS_PACKAGES:
+        for app in APPS_PACKAGES:
             pat = f"%{app}/%"
             cur.execute(
                 f"SELECT relation_type, COUNT(*) FROM edges "
@@ -282,7 +267,7 @@ class RetrievalAccelerator:
         cur = self.conn.cursor()
         wiring = {}
         layers = ["L1_cognition", "L2_execution", "L3_orchestration", "L4_state", "L5_safety"]
-        for app in self.APPS_PACKAGES:
+        for app in APPS_PACKAGES:
             app_wiring = {}
             for layer in layers:
                 cur.execute(
