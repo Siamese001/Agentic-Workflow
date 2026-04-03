@@ -197,11 +197,11 @@ def main() -> int:
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="""\
 Examples:
-  # Active healing (mutations applied)
-  python -m agentic_core.L0_routing.scripts.execute_ssot_entrypoint --heal
-
-  # Scan/report only — safe default (no --heal)
+  # Default: healing enabled (mutations applied)
   python -m agentic_core.L0_routing.scripts.execute_ssot_entrypoint
+
+  # Scan/report only — disable healing
+  python -m agentic_core.L0_routing.scripts.execute_ssot_entrypoint --scan-only
 
   # Single territory with healing
   python -m agentic_core.L0_routing.scripts.execute_ssot_entrypoint --heal --territory L5_safety
@@ -226,11 +226,11 @@ Examples:
     parser.add_argument(
         "--heal",
         action="store_true",
-        default=False,
-        help="Enable active healing (mutations applied). Absence = scan/report only.",
+        default=True,
+        help="Enable active healing (mutations applied). Default: True. Use --scan-only to disable.",
     )
     parser.add_argument(
-        "--dry-run", action="store_true", help="Scan/report only — no mutations (alias for omitting --heal)"
+        "--scan-only", action="store_true", help="Scan/report only — no mutations (disables default healing)"
     )
     parser.add_argument(
         "--validate", action="store_true", help="Validation-only mode (implies scan-only, no mutations)"
@@ -263,6 +263,10 @@ Examples:
     parser.add_argument("-v", "--verbose", action="count", default=0, help="Increase log verbosity")
     parser.add_argument("--legacy", action="store_true", help=argparse.SUPPRESS)
     args = parser.parse_args()
+
+    # Handle --scan-only: disable default healing
+    if getattr(args, "scan_only", False):
+        args.heal = False
 
     # [FENCE SELF-CHECK MODE]
     if args.fence_self_check:

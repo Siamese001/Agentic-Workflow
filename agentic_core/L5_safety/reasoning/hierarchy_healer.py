@@ -1690,6 +1690,12 @@ class HierarchyHealerAgent(SovereignBaseAgent):
             root_result = self.heal_root_violations(dry_run=dry_run)
             result["root_healing"] = root_result
 
+            # 3. Test Structure Mirror Validation (NEW)
+            test_mirror_result = self.validate_test_structure_mirror(
+                dry_run=dry_run, execute=execute
+            )
+            result["test_mirror_validation"] = test_mirror_result
+
             # Merge metrics
             metrics = {
                 "violations": result.get("summary", {}).get("violations_found", 0)
@@ -2082,6 +2088,104 @@ class HierarchyHealerAgent(SovereignBaseAgent):
 
         result["actions"].append(action)
         return result
+
+    def validate_test_structure_mirror(
+        self,
+        dry_run: bool = True,
+        execute: bool = False,
+    ) -> dict[str, Any]:
+        """
+        Validate that test directories mirror source directories per SSOT.
+
+        Mirrors all TEST_MIRROR_ROOTS (agentic_core, apps_*, system_learning)
+        from structure_blueprint config.
+
+        Args:
+            dry_run: If True, only report violations without fixing
+            execute: If True and dry_run=False, create missing test folders
+
+        Returns:
+            Dict with validation results and actions taken
+        """
+        from agentic_core.L5_safety.config.structure_blueprint.ssot import (
+            TEST_MIRROR_ROOTS,
+            TEST_CANONICAL_LOCATION_MAP,
+        )
+
+        results = {
+            "violations_found": 0,
+            "folders_missing": [],
+            "folders_created": 0,
+            "roots_checked": [],
+            "errors": [],
+            "actions": [],
+        }
+
+        # Check all mirrored roots from SSOT config
+        for source_root in TEST_MIRROR_ROOTS:
+            test_base = TEST_CANONICAL_LOCATION_MAP.get(source_root)
+            if not test_base:
+                continue
+
+            source_path = self.project_root / source_root
+            test_path = self.project_root / test_base
+
+            results["roots_checked"].append(source_root)
+
+            if not source_path.exists():
+                continue  # Source doesn't exist, nothing to mirror
+
+            # Get all directories in source (excluding __pycache__)
+            source_dirs = {
+                d.relative_to(source_path)
+                for d in source_path.rglob("*")
+                if d.is_dir() and "__pycache__" not in str(d)
+            }
+
+            # Get all directories in test path
+            test_dirs = set()
+            if test_path.exists():
+                test_dirs = {
+                    d.relative_to(test_path)
+                    for d in test_path.rglob("*")
+                    if d.is_dir() and "__pycache__" not in str(d)
+                }
+
+            # Find missing test directories
+            missing = source_dirs - test_dirs
+            results["violations_found"] += len(missing)
+
+            if missing:
+                Logger.info(f"HierarchyAgent: {source_root} - {len(missing)} missing test folders")
+                for rel_dir in sorted(missing):
+                    target_dir = test_path / rel_dir
+                    results["folders_missing"].append(str(target_dir.relative_to(self.project_root)))
+                    action = {
+                        "type": "CREATE_TEST_FOLDER",
+                        "root": source_root,
+                        "target": str(target_dir.relative_to(self.project_root)),
+                        "applied": False,
+                    }
+
+                    if not dry_run and execute:
+                        try:
+                            target_dir.mkdir(parents=True, exist_ok=True)
+                            # Create __init__.py for Python package
+                            init_file = target_dir / "__init__.py"
+                            init_file.touch()
+                            action["applied"] = True
+                            results["folders_created"] += 1
+                            Logger.info(f"   [✓] CREATED: {target_dir}")
+                        except (RuntimeError, OSError) as e:
+                            action["error"] = str(e)
+                            results["errors"].append(f"Failed to create {target_dir}: {e}")
+
+                    results["actions"].append(action)
+
+        if results["violations_found"] == 0:
+            Logger.info("HierarchyAgent: All test structures mirror sources - no violations")
+
+        return results
 
 
 # Singleton getter for canon_validator compatibility

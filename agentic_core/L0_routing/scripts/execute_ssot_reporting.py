@@ -103,10 +103,10 @@ class ExecutionReporter:
         """
         if not filepath:
             return False, "Filepath cannot be empty"
-        
+
         if not data:
             return False, "Data cannot be empty"
-        
+
         try:
             if format == "json":
                 content = self.generate_json_report(data)
