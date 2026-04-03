@@ -1,0 +1,578 @@
+[
+  {
+    "adg_name": "ADG::Module::tests/adg/conftest.py",
+    "resolved_path": "tests/adg/conftest.py",
+    "layer": "L_TEST",
+    "entity_type": "module",
+    "id": 5992,
+    "span_line": 0
+  },
+  {
+    "adg_name": "ADG::Module::tests/adg/test_accelerator_wiring.py",
+    "resolved_path": "tests/adg/test_accelerator_wiring.py",
+    "layer": "L_TEST",
+    "entity_type": "module",
+    "id": 5993,
+    "span_line": 0
+  },
+  {
+    "adg_name": "ADG::Module::tests/adg/test_adg_accelerator_consolidation.py",
+    "resolved_path": "tests/adg/test_adg_accelerator_consolidation.py",
+    "layer": "L_TEST",
+    "entity_type": "module",
+    "id": 5994,
+    "span_line": 0
+  },
+  {
+    "adg_name": "ADG::Module::tests/adg/test_adg_accelerator_hardening.py",
+    "resolved_path": "tests/adg/test_adg_accelerator_hardening.py",
+    "layer": "L_TEST",
+    "entity_type": "module",
+    "id": 5995,
+    "span_line": 0
+  },
+  {
+    "adg_name": "ADG::Module::tests/adg/test_adg_accelerator_medium_low.py",
+    "resolved_path": "tests/adg/test_adg_accelerator_medium_low.py",
+    "layer": "L_TEST",
+    "entity_type": "module",
+    "id": 5996,
+    "span_line": 0
+  },
+  {
+    "adg_name": "ADG::Module::tests/adg/test_adg_accelerators_edge_cases.py",
+    "resolved_path": "tests/adg/test_adg_accelerators_edge_cases.py",
+    "layer": "L_TEST",
+    "entity_type": "module",
+    "id": 5997,
+    "span_line": 0
+  },
+  {
+    "adg_name": "ADG::Module::tests/adg/test_adg_analysis_modules.py",
+    "resolved_path": "tests/adg/test_adg_analysis_modules.py",
+    "layer": "L_TEST",
+    "entity_type": "module",
+    "id": 5998,
+    "span_line": 0
+  },
+  {
+    "adg_name": "ADG::Module::tests/adg/test_adg_antipattern_fixer.py",
+    "resolved_path": "tests/adg/test_adg_antipattern_fixer.py",
+    "layer": "L_TEST",
+    "entity_type": "module",
+    "id": 5999,
+    "span_line": 0
+  },
+  {
+    "adg_name": "ADG::Module::tests/adg/test_adg_artifact_optimizations.py",
+    "resolved_path": "tests/adg/test_adg_artifact_optimizations.py",
+    "layer": "L_TEST",
+    "entity_type": "module",
+    "id": 6000,
+    "span_line": 0
+  },
+  {
+    "adg_name": "ADG::Module::tests/adg/test_adg_artifact_verification.py",
+    "resolved_path": "tests/adg/test_adg_artifact_verification.py",
+    "layer": "L_TEST",
+    "entity_type": "module",
+    "id": 6001,
+    "span_line": 0
+  },
+  {
+    "adg_name": "ADG::Module::tests/adg/test_adg_confidence.py",
+    "resolved_path": "tests/adg/test_adg_confidence.py",
+    "layer": "L_TEST",
+    "entity_type": "module",
+    "id": 6002,
+    "span_line": 0
+  },
+  {
+    "adg_name": "ADG::Module::tests/adg/test_adg_coverage_final_push.py",
+    "resolved_path": "tests/adg/test_adg_coverage_final_push.py",
+    "layer": "L_TEST",
+    "entity_type": "module",
+    "id": 6003,
+    "span_line": 0
+  },
+  {
+    "adg_name": "ADG::Module::tests/adg/test_adg_coverage_supplement.py",
+    "resolved_path": "tests/adg/test_adg_coverage_supplement.py",
+    "layer": "L_TEST",
+    "entity_type": "module",
+    "id": 6004,
+    "span_line": 0
+  },
+  {
+    "adg_name": "ADG::Module::tests/adg/test_adg_data_quality.py",
+    "resolved_path": "tests/adg/test_adg_data_quality.py",
+    "layer": "L_TEST",
+    "entity_type": "module",
+    "id": 6005,
+    "span_line": 0
+  },
+  {
+    "adg_name": "ADG::Module::tests/adg/test_adg_final_coverage.py",
+    "resolved_path": "tests/adg/test_adg_final_coverage.py",
+    "layer": "L_TEST",
+    "entity_type": "module",
+    "id": 6006,
+    "span_line": 0
+  },
+  {
+    "adg_name": "ADG::Module::tests/adg/test_adg_g17_g22_completeness_accuracy.py",
+    "resolved_path": "tests/adg/test_adg_g17_g22_completeness_accuracy.py",
+    "layer": "L_TEST",
+    "entity_type": "module",
+    "id": 6007,
+    "span_line": 0
+  },
+  {
+    "adg_name": "ADG::Module::tests/adg/test_adg_g23_g27_completeness_accuracy.py",
+    "resolved_path": "tests/adg/test_adg_g23_g27_completeness_accuracy.py",
+    "layer": "L_TEST",
+    "entity_type": "module",
+    "id": 6008,
+    "span_line": 0
+  },
+  {
+    "adg_name": "ADG::Module::tests/adg/test_adg_g7_g16_completeness_accuracy.py",
+    "resolved_path": "tests/adg/test_adg_g7_g16_completeness_accuracy.py",
+    "layer": "L_TEST",
+    "entity_type": "module",
+    "id": 6009,
+    "span_line": 0
+  },
+  {
+    "adg_name": "ADG::Module::tests/adg/test_adg_g7_g16_creative_extensions.py",
+    "resolved_path": "tests/adg/test_adg_g7_g16_creative_extensions.py",
+    "layer": "L_TEST",
+    "entity_type": "module",
+    "id": 6010,
+    "span_line": 0
+  },
+  {
+    "adg_name": "ADG::Module::tests/adg/test_adg_gap_g7_g16.py",
+    "resolved_path": "tests/adg/test_adg_gap_g7_g16.py",
+    "layer": "L_TEST",
+    "entity_type": "module",
+    "id": 6011,
+    "span_line": 0
+  },
+  {
+    "adg_name": "ADG::Module::tests/adg/test_adg_gap_implementations.py",
+    "resolved_path": "tests/adg/test_adg_gap_implementations.py",
+    "layer": "L_TEST",
+    "entity_type": "module",
+    "id": 6012,
+    "span_line": 0
+  },
+  {
+    "adg_name": "ADG::Module::tests/adg/test_adg_gap_remediation_novel.py",
+    "resolved_path": "tests/adg/test_adg_gap_remediation_novel.py",
+    "layer": "L_TEST",
+    "entity_type": "module",
+    "id": 6013,
+    "span_line": 0
+  },
+  {
+    "adg_name": "ADG::Module::tests/adg/test_adg_gap_remediation_p0_p4.py",
+    "resolved_path": "tests/adg/test_adg_gap_remediation_p0_p4.py",
+    "layer": "L_TEST",
+    "entity_type": "module",
+    "id": 6014,
+    "span_line": 0
+  },
+  {
+    "adg_name": "ADG::Module::tests/adg/test_adg_grep_ban_gate.py",
+    "resolved_path": "tests/adg/test_adg_grep_ban_gate.py",
+    "layer": "L_TEST",
+    "entity_type": "module",
+    "id": 6015,
+    "span_line": 0
+  },
+  {
+    "adg_name": "ADG::Module::tests/adg/test_adg_hardening_advanced.py",
+    "resolved_path": "tests/adg/test_adg_hardening_advanced.py",
+    "layer": "L_TEST",
+    "entity_type": "module",
+    "id": 6016,
+    "span_line": 0
+  },
+  {
+    "adg_name": "ADG::Module::tests/adg/test_adg_hardening_comprehensive.py",
+    "resolved_path": "tests/adg/test_adg_hardening_comprehensive.py",
+    "layer": "L_TEST",
+    "entity_type": "module",
+    "id": 6017,
+    "span_line": 0
+  },
+  {
+    "adg_name": "ADG::Module::tests/adg/test_adg_hardening_scripts.py",
+    "resolved_path": "tests/adg/test_adg_hardening_scripts.py",
+    "layer": "L_TEST",
+    "entity_type": "module",
+    "id": 6018,
+    "span_line": 0
+  },
+  {
+    "adg_name": "ADG::Module::tests/adg/test_adg_hardening_verification.py",
+    "resolved_path": "tests/adg/test_adg_hardening_verification.py",
+    "layer": "L_TEST",
+    "entity_type": "module",
+    "id": 6019,
+    "span_line": 0
+  },
+  {
+    "adg_name": "ADG::Module::tests/adg/test_adg_infusion_phases_verification.py",
+    "resolved_path": "tests/adg/test_adg_infusion_phases_verification.py",
+    "layer": "L_TEST",
+    "entity_type": "module",
+    "id": 6020,
+    "span_line": 0
+  },
+  {
+    "adg_name": "ADG::Module::tests/adg/test_adg_mcp_audit_rules.py",
+    "resolved_path": "tests/adg/test_adg_mcp_audit_rules.py",
+    "layer": "L_TEST",
+    "entity_type": "module",
+    "id": 6021,
+    "span_line": 0
+  },
+  {
+    "adg_name": "ADG::Module::tests/adg/test_adg_missing_edges.py",
+    "resolved_path": "tests/adg/test_adg_missing_edges.py",
+    "layer": "L_TEST",
+    "entity_type": "module",
+    "id": 6022,
+    "span_line": 0
+  },
+  {
+    "adg_name": "ADG::Module::tests/adg/test_adg_node_types.py",
+    "resolved_path": "tests/adg/test_adg_node_types.py",
+    "layer": "L_TEST",
+    "entity_type": "module",
+    "id": 6023,
+    "span_line": 0
+  },
+  {
+    "adg_name": "ADG::Module::tests/adg/test_adg_p3_enhancements.py",
+    "resolved_path": "tests/adg/test_adg_p3_enhancements.py",
+    "layer": "L_TEST",
+    "entity_type": "module",
+    "id": 6024,
+    "span_line": 0
+  },
+  {
+    "adg_name": "ADG::Module::tests/adg/test_adg_p6_enhancements.py",
+    "resolved_path": "tests/adg/test_adg_p6_enhancements.py",
+    "layer": "L_TEST",
+    "entity_type": "module",
+    "id": 6025,
+    "span_line": 0
+  },
+  {
+    "adg_name": "ADG::Module::tests/adg/test_adg_projection_creative.py",
+    "resolved_path": "tests/adg/test_adg_projection_creative.py",
+    "layer": "L_TEST",
+    "entity_type": "module",
+    "id": 6026,
+    "span_line": 0
+  },
+  {
+    "adg_name": "ADG::Module::tests/adg/test_adg_residual_gaps.py",
+    "resolved_path": "tests/adg/test_adg_residual_gaps.py",
+    "layer": "L_TEST",
+    "entity_type": "module",
+    "id": 6027,
+    "span_line": 0
+  },
+  {
+    "adg_name": "ADG::Module::tests/adg/test_adg_scan_roundtrip.py",
+    "resolved_path": "tests/adg/test_adg_scan_roundtrip.py",
+    "layer": "L_TEST",
+    "entity_type": "module",
+    "id": 6028,
+    "span_line": 0
+  },
+  {
+    "adg_name": "ADG::Module::tests/adg/test_adg_search_enhancements.py",
+    "resolved_path": "tests/adg/test_adg_search_enhancements.py",
+    "layer": "L_TEST",
+    "entity_type": "module",
+    "id": 6029,
+    "span_line": 0
+  },
+  {
+    "adg_name": "ADG::Module::tests/adg/test_adg_stale_guard.py",
+    "resolved_path": "tests/adg/test_adg_stale_guard.py",
+    "layer": "L_TEST",
+    "entity_type": "module",
+    "id": 6030,
+    "span_line": 0
+  },
+  {
+    "adg_name": "ADG::Module::tests/adg/test_adg_test_selector.py",
+    "resolved_path": "tests/adg/test_adg_test_selector.py",
+    "layer": "L_TEST",
+    "entity_type": "module",
+    "id": 6031,
+    "span_line": 0
+  },
+  {
+    "adg_name": "ADG::Module::tests/adg/test_adg_type_check.py",
+    "resolved_path": "tests/adg/test_adg_type_check.py",
+    "layer": "L_TEST",
+    "entity_type": "module",
+    "id": 6032,
+    "span_line": 0
+  },
+  {
+    "adg_name": "ADG::Module::tests/adg/test_adg_visitors_rigorous.py",
+    "resolved_path": "tests/adg/test_adg_visitors_rigorous.py",
+    "layer": "L_TEST",
+    "entity_type": "module",
+    "id": 6033,
+    "span_line": 0
+  },
+  {
+    "adg_name": "ADG::Module::tests/adg/test_archive_old_adg.py",
+    "resolved_path": "tests/adg/test_archive_old_adg.py",
+    "layer": "L_TEST",
+    "entity_type": "module",
+    "id": 6034,
+    "span_line": 0
+  },
+  {
+    "adg_name": "ADG::Module::tests/adg/test_bge_embedding_embedders.py",
+    "resolved_path": "tests/adg/test_bge_embedding_embedders.py",
+    "layer": "L_TEST",
+    "entity_type": "module",
+    "id": 6035,
+    "span_line": 0
+  },
+  {
+    "adg_name": "ADG::Module::tests/adg/test_bge_embedding_registry.py",
+    "resolved_path": "tests/adg/test_bge_embedding_registry.py",
+    "layer": "L_TEST",
+    "entity_type": "module",
+    "id": 6036,
+    "span_line": 0
+  },
+  {
+    "adg_name": "ADG::Module::tests/adg/test_bge_embedding_types.py",
+    "resolved_path": "tests/adg/test_bge_embedding_types.py",
+    "layer": "L_TEST",
+    "entity_type": "module",
+    "id": 6037,
+    "span_line": 0
+  },
+  {
+    "adg_name": "ADG::Module::tests/adg/test_case_memory_architecture.py",
+    "resolved_path": "tests/adg/test_case_memory_architecture.py",
+    "layer": "L_TEST",
+    "entity_type": "module",
+    "id": 6038,
+    "span_line": 0
+  },
+  {
+    "adg_name": "ADG::Module::tests/adg/test_case_memory_creative.py",
+    "resolved_path": "tests/adg/test_case_memory_creative.py",
+    "layer": "L_TEST",
+    "entity_type": "module",
+    "id": 6039,
+    "span_line": 0
+  },
+  {
+    "adg_name": "ADG::Module::tests/adg/test_ci_gap_enforcement.py",
+    "resolved_path": "tests/adg/test_ci_gap_enforcement.py",
+    "layer": "L_TEST",
+    "entity_type": "module",
+    "id": 6040,
+    "span_line": 0
+  },
+  {
+    "adg_name": "ADG::Module::tests/adg/test_drift_creative.py",
+    "resolved_path": "tests/adg/test_drift_creative.py",
+    "layer": "L_TEST",
+    "entity_type": "module",
+    "id": 6041,
+    "span_line": 0
+  },
+  {
+    "adg_name": "ADG::Module::tests/adg/test_drift_lifecycle.py",
+    "resolved_path": "tests/adg/test_drift_lifecycle.py",
+    "layer": "L_TEST",
+    "entity_type": "module",
+    "id": 6042,
+    "span_line": 0
+  },
+  {
+    "adg_name": "ADG::Module::tests/adg/test_drift_ratchet_gate.py",
+    "resolved_path": "tests/adg/test_drift_ratchet_gate.py",
+    "layer": "L_TEST",
+    "entity_type": "module",
+    "id": 6043,
+    "span_line": 0
+  },
+  {
+    "adg_name": "ADG::Module::tests/adg/test_drift_scoped_test_runner.py",
+    "resolved_path": "tests/adg/test_drift_scoped_test_runner.py",
+    "layer": "L_TEST",
+    "entity_type": "module",
+    "id": 6044,
+    "span_line": 0
+  },
+  {
+    "adg_name": "ADG::Module::tests/adg/test_drift_score.py",
+    "resolved_path": "tests/adg/test_drift_score.py",
+    "layer": "L_TEST",
+    "entity_type": "module",
+    "id": 6045,
+    "span_line": 0
+  },
+  {
+    "adg_name": "ADG::Module::tests/adg/test_hardening_invariants.py",
+    "resolved_path": "tests/adg/test_hardening_invariants.py",
+    "layer": "L_TEST",
+    "entity_type": "module",
+    "id": 6046,
+    "span_line": 0
+  },
+  {
+    "adg_name": "ADG::Module::tests/adg/test_llm_judge_gemini_e2e_novel.py",
+    "resolved_path": "tests/adg/test_llm_judge_gemini_e2e_novel.py",
+    "layer": "L_TEST",
+    "entity_type": "module",
+    "id": 6047,
+    "span_line": 0
+  },
+  {
+    "adg_name": "ADG::Module::tests/adg/test_llm_judge_gemini_integration.py",
+    "resolved_path": "tests/adg/test_llm_judge_gemini_integration.py",
+    "layer": "L_TEST",
+    "entity_type": "module",
+    "id": 6048,
+    "span_line": 0
+  },
+  {
+    "adg_name": "ADG::Module::tests/adg/test_llm_judge_novel.py",
+    "resolved_path": "tests/adg/test_llm_judge_novel.py",
+    "layer": "L_TEST",
+    "entity_type": "module",
+    "id": 6049,
+    "span_line": 0
+  },
+  {
+    "adg_name": "ADG::Module::tests/adg/test_llm_judge_system.py",
+    "resolved_path": "tests/adg/test_llm_judge_system.py",
+    "layer": "L_TEST",
+    "entity_type": "module",
+    "id": 6050,
+    "span_line": 0
+  },
+  {
+    "adg_name": "ADG::Module::tests/adg/test_memory_mcp_adapter.py",
+    "resolved_path": "tests/adg/test_memory_mcp_adapter.py",
+    "layer": "L_TEST",
+    "entity_type": "module",
+    "id": 6051,
+    "span_line": 0
+  },
+  {
+    "adg_name": "ADG::Module::tests/adg/test_meta_learning_bus_creative.py",
+    "resolved_path": "tests/adg/test_meta_learning_bus_creative.py",
+    "layer": "L_TEST",
+    "entity_type": "module",
+    "id": 6052,
+    "span_line": 0
+  },
+  {
+    "adg_name": "ADG::Module::tests/adg/test_meta_learning_bus_engines.py",
+    "resolved_path": "tests/adg/test_meta_learning_bus_engines.py",
+    "layer": "L_TEST",
+    "entity_type": "module",
+    "id": 6053,
+    "span_line": 0
+  },
+  {
+    "adg_name": "ADG::Module::tests/adg/test_meta_learning_bus_pipeline.py",
+    "resolved_path": "tests/adg/test_meta_learning_bus_pipeline.py",
+    "layer": "L_TEST",
+    "entity_type": "module",
+    "id": 6054,
+    "span_line": 0
+  },
+  {
+    "adg_name": "ADG::Module::tests/adg/test_meta_learning_bus_types.py",
+    "resolved_path": "tests/adg/test_meta_learning_bus_types.py",
+    "layer": "L_TEST",
+    "entity_type": "module",
+    "id": 6055,
+    "span_line": 0
+  },
+  {
+    "adg_name": "ADG::Module::tests/adg/test_policy_guardrail_embedder.py",
+    "resolved_path": "tests/adg/test_policy_guardrail_embedder.py",
+    "layer": "L_TEST",
+    "entity_type": "module",
+    "id": 6056,
+    "span_line": 0
+  },
+  {
+    "adg_name": "ADG::Module::tests/adg/test_prompt_provenance_engines.py",
+    "resolved_path": "tests/adg/test_prompt_provenance_engines.py",
+    "layer": "L_TEST",
+    "entity_type": "module",
+    "id": 6057,
+    "span_line": 0
+  },
+  {
+    "adg_name": "ADG::Module::tests/adg/test_prompt_provenance_integration.py",
+    "resolved_path": "tests/adg/test_prompt_provenance_integration.py",
+    "layer": "L_TEST",
+    "entity_type": "module",
+    "id": 6058,
+    "span_line": 0
+  },
+  {
+    "adg_name": "ADG::Module::tests/adg/test_prompt_provenance_types.py",
+    "resolved_path": "tests/adg/test_prompt_provenance_types.py",
+    "layer": "L_TEST",
+    "entity_type": "module",
+    "id": 6059,
+    "span_line": 0
+  },
+  {
+    "adg_name": "ADG::Module::tests/adg/test_sqlite_memory_store.py",
+    "resolved_path": "tests/adg/test_sqlite_memory_store.py",
+    "layer": "L_TEST",
+    "entity_type": "module",
+    "id": 6060,
+    "span_line": 0
+  },
+  {
+    "adg_name": "ADG::Module::tests/adg/test_surface_linking_example.py",
+    "resolved_path": "tests/adg/test_surface_linking_example.py",
+    "layer": "L_TEST",
+    "entity_type": "module",
+    "id": 6061,
+    "span_line": 0
+  },
+  {
+    "adg_name": "ADG::Module::tests/adg/test_visitor_modularization.py",
+    "resolved_path": "tests/adg/test_visitor_modularization.py",
+    "layer": "L_TEST",
+    "entity_type": "module",
+    "id": 6062,
+    "span_line": 0
+  },
+  {
+    "adg_name": "ADG::Module::tests/adg/test_zip_creation.py",
+    "resolved_path": "tests/adg/test_zip_creation.py",
+    "layer": "L_TEST",
+    "entity_type": "module",
+    "id": 6063,
+    "span_line": 0
+  }
+]

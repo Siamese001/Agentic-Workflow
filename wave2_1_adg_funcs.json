@@ -1,0 +1,3750 @@
+{
+  "adg_database": "artifacts\\adg\\adg_indexed_04032026_1923.sqlite",
+  "unused_functions": [
+    {
+      "name": "ADG1608FinalFix",
+      "line": 21,
+      "file": "tools\\adg_1608_final_fix.py",
+      "type": "ClassDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "main",
+      "line": 274,
+      "file": "tools\\adg_1608_final_fix.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "add_policy_verification_edges",
+      "line": 29,
+      "file": "tools\\adg_1608_final_fix.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "add_dispatches_execution_plan_edges",
+      "line": 67,
+      "file": "tools\\adg_1608_final_fix.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "create_test_nodes_and_links",
+      "line": 105,
+      "file": "tools\\adg_1608_final_fix.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "verify_fixes",
+      "line": 196,
+      "file": "tools\\adg_1608_final_fix.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "close",
+      "line": 269,
+      "file": "tools\\adg_1608_final_fix.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "add_missing_emitters",
+      "line": 24,
+      "file": "tools\\adg_1608_hardening_wire.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "add_visitor_to_scanner",
+      "line": 152,
+      "file": "tools\\adg_1608_hardening_wire.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "wire_critical_modules",
+      "line": 251,
+      "file": "tools\\adg_1608_hardening_wire.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "main",
+      "line": 258,
+      "file": "tools\\adg_1608_hardening_wire.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "ADG1653ComprehensiveFix",
+      "line": 12,
+      "file": "tools\\adg_1653_comprehensive_fix.py",
+      "type": "ClassDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "main",
+      "line": 266,
+      "file": "tools\\adg_1653_comprehensive_fix.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "fix_all_issues",
+      "line": 21,
+      "file": "tools\\adg_1653_comprehensive_fix.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "fix_null_layers",
+      "line": 67,
+      "file": "tools\\adg_1653_comprehensive_fix.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "fix_null_identities",
+      "line": 120,
+      "file": "tools\\adg_1653_comprehensive_fix.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "fix_edge_classifications",
+      "line": 143,
+      "file": "tools\\adg_1653_comprehensive_fix.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "add_missing_relations",
+      "line": 184,
+      "file": "tools\\adg_1653_comprehensive_fix.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "verify_fixes",
+      "line": 235,
+      "file": "tools\\adg_1653_comprehensive_fix.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "ADG1653FinalCompleteFix",
+      "line": 11,
+      "file": "tools\\adg_1653_final_complete_fix.py",
+      "type": "ClassDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "main",
+      "line": 182,
+      "file": "tools\\adg_1653_final_complete_fix.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "fix_all_remaining_issues",
+      "line": 19,
+      "file": "tools\\adg_1653_final_complete_fix.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "add_determinism_seed_edges",
+      "line": 48,
+      "file": "tools\\adg_1653_final_complete_fix.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "add_policy_verification_edges",
+      "line": 65,
+      "file": "tools\\adg_1653_final_complete_fix.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "add_unresolved_import_edge",
+      "line": 82,
+      "file": "tools\\adg_1653_final_complete_fix.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "add_test_surface",
+      "line": 96,
+      "file": "tools\\adg_1653_final_complete_fix.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "final_symbol_layer_propagation",
+      "line": 128,
+      "file": "tools\\adg_1653_final_complete_fix.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "verify_final_state",
+      "line": 147,
+      "file": "tools\\adg_1653_final_complete_fix.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "ADG1653FinalFix",
+      "line": 11,
+      "file": "tools\\adg_1653_final_fix.py",
+      "type": "ClassDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "main",
+      "line": 213,
+      "file": "tools\\adg_1653_final_fix.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "fix_remaining_issues",
+      "line": 19,
+      "file": "tools\\adg_1653_final_fix.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "add_critical_relations",
+      "line": 44,
+      "file": "tools\\adg_1653_final_fix.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "fix_edge_classifications_complete",
+      "line": 89,
+      "file": "tools\\adg_1653_final_fix.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "add_lineage_edges",
+      "line": 112,
+      "file": "tools\\adg_1653_final_fix.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "fix_symbol_layer_propagation",
+      "line": 156,
+      "file": "tools\\adg_1653_final_fix.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "verify_final_state",
+      "line": 180,
+      "file": "tools\\adg_1653_final_fix.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "ADG1653FinalGapClosure",
+      "line": 30,
+      "file": "tools\\adg_1653_final_gap_closure.py",
+      "type": "ClassDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "main",
+      "line": 531,
+      "file": "tools\\adg_1653_final_gap_closure.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "run_all_checks",
+      "line": 40,
+      "file": "tools\\adg_1653_final_gap_closure.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "check_report_sqlite_parity",
+      "line": 85,
+      "file": "tools\\adg_1653_final_gap_closure.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "check_boundary_zero_tolerance",
+      "line": 155,
+      "file": "tools\\adg_1653_final_gap_closure.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "check_replay_determinism",
+      "line": 212,
+      "file": "tools\\adg_1653_final_gap_closure.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "check_symbol_layer_propagation",
+      "line": 277,
+      "file": "tools\\adg_1653_final_gap_closure.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "check_core_edge_coverage",
+      "line": 320,
+      "file": "tools\\adg_1653_final_gap_closure.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "check_test_surface_binding",
+      "line": 385,
+      "file": "tools\\adg_1653_final_gap_closure.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "final_system_lock",
+      "line": 461,
+      "file": "tools\\adg_1653_final_gap_closure.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "ADG1653FinalPass",
+      "line": 11,
+      "file": "tools\\adg_1653_final_pass.py",
+      "type": "ClassDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "main",
+      "line": 154,
+      "file": "tools\\adg_1653_final_pass.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "run_final_pass",
+      "line": 19,
+      "file": "tools\\adg_1653_final_pass.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "add_policy_verification_all_core",
+      "line": 44,
+      "file": "tools\\adg_1653_final_pass.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "add_execution_plan_dispatch_all_core",
+      "line": 62,
+      "file": "tools\\adg_1653_final_pass.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "add_test_linkage_all_core",
+      "line": 80,
+      "file": "tools\\adg_1653_final_pass.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "accept_symbol_layer_violations",
+      "line": 107,
+      "file": "tools\\adg_1653_final_pass.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "verify_final_state",
+      "line": 114,
+      "file": "tools\\adg_1653_final_pass.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "ADG1653LayerFix",
+      "line": 11,
+      "file": "tools\\adg_1653_layer_fix.py",
+      "type": "ClassDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "main",
+      "line": 158,
+      "file": "tools\\adg_1653_layer_fix.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "fix_layers_and_relations",
+      "line": 19,
+      "file": "tools\\adg_1653_layer_fix.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "convert_layer_names",
+      "line": 40,
+      "file": "tools\\adg_1653_layer_fix.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "add_missing_relations",
+      "line": 57,
+      "file": "tools\\adg_1653_layer_fix.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "add_lineage_edges",
+      "line": 101,
+      "file": "tools\\adg_1653_layer_fix.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "verify_fixes",
+      "line": 124,
+      "file": "tools\\adg_1653_layer_fix.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "analyze_violations_by_category",
+      "line": 181,
+      "file": "tools\\adg_antipattern_analyzer.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "analyze_silent_swallowers",
+      "line": 204,
+      "file": "tools\\adg_antipattern_analyzer.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "analyze_path_fragility",
+      "line": 237,
+      "file": "tools\\adg_antipattern_analyzer.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "analyze_global_mutation",
+      "line": 268,
+      "file": "tools\\adg_antipattern_analyzer.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "main",
+      "line": 296,
+      "file": "tools\\adg_antipattern_analyzer.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "cmd_check_phase",
+      "line": 38,
+      "file": "tools\\adg_ci_gate.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "cmd_cluster_status",
+      "line": 61,
+      "file": "tools\\adg_ci_gate.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "cmd_scoped_tests",
+      "line": 89,
+      "file": "tools\\adg_ci_gate.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "cmd_litmus",
+      "line": 114,
+      "file": "tools\\adg_ci_gate.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "cmd_advance_phase",
+      "line": 158,
+      "file": "tools\\adg_ci_gate.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "main",
+      "line": 166,
+      "file": "tools\\adg_ci_gate.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "load_classification",
+      "line": 102,
+      "file": "tools\\adg_ci_lane_gate.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "get_files_for_lane",
+      "line": 120,
+      "file": "tools\\adg_ci_lane_gate.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "run_pytest",
+      "line": 129,
+      "file": "tools\\adg_ci_lane_gate.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "lane_unit_strict",
+      "line": 169,
+      "file": "tools\\adg_ci_lane_gate.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "lane_degraded_path",
+      "line": 199,
+      "file": "tools\\adg_ci_lane_gate.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "lane_integration_infra",
+      "line": 211,
+      "file": "tools\\adg_ci_lane_gate.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "lane_violations",
+      "line": 222,
+      "file": "tools\\adg_ci_lane_gate.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "main",
+      "line": 305,
+      "file": "tools\\adg_ci_lane_gate.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "cleanup_adg_directory",
+      "line": 9,
+      "file": "tools\\adg_cleanup_directory.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "cmd_build",
+      "line": 355,
+      "file": "tools\\adg_cli.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "cmd_health",
+      "line": 482,
+      "file": "tools\\adg_cli.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "cmd_stats",
+      "line": 578,
+      "file": "tools\\adg_cli.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "cmd_diff",
+      "line": 618,
+      "file": "tools\\adg_cli.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "cmd_impact_file",
+      "line": 645,
+      "file": "tools\\adg_cli.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "cmd_impact_symbol",
+      "line": 656,
+      "file": "tools\\adg_cli.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "cmd_who_uses",
+      "line": 705,
+      "file": "tools\\adg_cli.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "cmd_neighbors",
+      "line": 744,
+      "file": "tools\\adg_cli.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "cmd_ownership",
+      "line": 782,
+      "file": "tools\\adg_cli.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "cmd_config_consumers",
+      "line": 838,
+      "file": "tools\\adg_cli.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "cmd_scoped_tests",
+      "line": 878,
+      "file": "tools\\adg_cli.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "cmd_test_coverage",
+      "line": 920,
+      "file": "tools\\adg_cli.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "cmd_missing_tests",
+      "line": 981,
+      "file": "tools\\adg_cli.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "cmd_guardian_scope",
+      "line": 1023,
+      "file": "tools\\adg_cli.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "cmd_execution_impact",
+      "line": 1194,
+      "file": "tools\\adg_cli.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "cmd_safe_healing_scope",
+      "line": 1226,
+      "file": "tools\\adg_cli.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "cmd_healing_radius",
+      "line": 1294,
+      "file": "tools\\adg_cli.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "cmd_suggest_placement",
+      "line": 1352,
+      "file": "tools\\adg_cli.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "cmd_context_file",
+      "line": 1368,
+      "file": "tools\\adg_cli.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "cmd_context_symbol",
+      "line": 1379,
+      "file": "tools\\adg_cli.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "main",
+      "line": 1395,
+      "file": "tools\\adg_cli.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "validate_node_coverage",
+      "line": 57,
+      "file": "tools\\adg_execution_grade_validation.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "validate_edge_reality",
+      "line": 147,
+      "file": "tools\\adg_execution_grade_validation.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "validate_denominator_integrity",
+      "line": 216,
+      "file": "tools\\adg_execution_grade_validation.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "validate_scanner_vs_reality",
+      "line": 298,
+      "file": "tools\\adg_execution_grade_validation.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "validate_violation_traces",
+      "line": 419,
+      "file": "tools\\adg_execution_grade_validation.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "validate_determinism",
+      "line": 480,
+      "file": "tools\\adg_execution_grade_validation.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "validate_no_synthetics",
+      "line": 550,
+      "file": "tools\\adg_execution_grade_validation.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "validate_13_gaps",
+      "line": 606,
+      "file": "tools\\adg_execution_grade_validation.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "validate_uwg_alignment",
+      "line": 675,
+      "file": "tools\\adg_execution_grade_validation.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "validate_ordering",
+      "line": 722,
+      "file": "tools\\adg_execution_grade_validation.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "main",
+      "line": 771,
+      "file": "tools\\adg_execution_grade_validation.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "ADGFinalGapValidator",
+      "line": 31,
+      "file": "tools\\adg_final_gap_validation.py",
+      "type": "ClassDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "main",
+      "line": 571,
+      "file": "tools\\adg_final_gap_validation.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "validate_full_scan_reconciliation",
+      "line": 60,
+      "file": "tools\\adg_final_gap_validation.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "validate_critical_path_boundary",
+      "line": 121,
+      "file": "tools\\adg_final_gap_validation.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "validate_replay_convergence",
+      "line": 176,
+      "file": "tools\\adg_final_gap_validation.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "validate_symbol_layer_propagation",
+      "line": 250,
+      "file": "tools\\adg_final_gap_validation.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "validate_critical_edge_distribution",
+      "line": 302,
+      "file": "tools\\adg_final_gap_validation.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "validate_test_surface_binding",
+      "line": 371,
+      "file": "tools\\adg_final_gap_validation.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "validate_final_system_lock",
+      "line": 448,
+      "file": "tools\\adg_final_gap_validation.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "run_triple_build_validation",
+      "line": 508,
+      "file": "tools\\adg_final_gap_validation.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "find_latest_adg",
+      "line": 35,
+      "file": "tools\\adg_import_only_audit.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "ast_is_import_only",
+      "line": 43,
+      "file": "tools\\adg_import_only_audit.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "main",
+      "line": 120,
+      "file": "tools\\adg_import_only_audit.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "main",
+      "line": 231,
+      "file": "tools\\adg_incremental_update.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "cmd_who_uses",
+      "line": 252,
+      "file": "tools\\adg_insight_cli.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "cmd_depends_on",
+      "line": 276,
+      "file": "tools\\adg_insight_cli.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "cmd_blast_radius",
+      "line": 325,
+      "file": "tools\\adg_insight_cli.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "cmd_territory",
+      "line": 334,
+      "file": "tools\\adg_insight_cli.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "cmd_agents_for",
+      "line": 352,
+      "file": "tools\\adg_insight_cli.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "cmd_config_reads",
+      "line": 392,
+      "file": "tools\\adg_insight_cli.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "cmd_unresolved",
+      "line": 409,
+      "file": "tools\\adg_insight_cli.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "cmd_coverage",
+      "line": 418,
+      "file": "tools\\adg_insight_cli.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "main",
+      "line": 439,
+      "file": "tools\\adg_insight_cli.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "IntelligentThresholdFixer",
+      "line": 190,
+      "file": "tools\\adg_intelligent_burndown.py",
+      "type": "ClassDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "main",
+      "line": 380,
+      "file": "tools\\adg_intelligent_burndown.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "analyze_file_dependencies",
+      "line": 254,
+      "file": "tools\\adg_intelligent_burndown.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "fix_file_ast",
+      "line": 274,
+      "file": "tools\\adg_intelligent_burndown.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "generate_report",
+      "line": 333,
+      "file": "tools\\adg_intelligent_burndown.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "main",
+      "line": 13,
+      "file": "tools\\adg_investigate_failures.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "infer_layer",
+      "line": 26,
+      "file": "tools\\adg_layer_annotation_fix.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "add_layer_to_file",
+      "line": 35,
+      "file": "tools\\adg_layer_annotation_fix.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "main",
+      "line": 87,
+      "file": "tools\\adg_layer_annotation_fix.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "ADGPrecisionPass",
+      "line": 29,
+      "file": "tools\\adg_precision_pass.py",
+      "type": "ClassDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "main",
+      "line": 495,
+      "file": "tools\\adg_precision_pass.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "run_all_checks",
+      "line": 39,
+      "file": "tools\\adg_precision_pass.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "check_report_sqlite_parity",
+      "line": 88,
+      "file": "tools\\adg_precision_pass.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "check_boundary_zero_tolerance",
+      "line": 123,
+      "file": "tools\\adg_precision_pass.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "check_replay_determinism",
+      "line": 171,
+      "file": "tools\\adg_precision_pass.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "check_symbol_layer_propagation",
+      "line": 223,
+      "file": "tools\\adg_precision_pass.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "check_core_edge_coverage",
+      "line": 266,
+      "file": "tools\\adg_precision_pass.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "check_test_surface_binding",
+      "line": 345,
+      "file": "tools\\adg_precision_pass.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "final_system_lock",
+      "line": 379,
+      "file": "tools\\adg_precision_pass.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "calculate_database_hash",
+      "line": 408,
+      "file": "tools\\adg_precision_pass.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "save_comprehensive_report",
+      "line": 424,
+      "file": "tools\\adg_precision_pass.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "save_ci_gate_reports",
+      "line": 433,
+      "file": "tools\\adg_precision_pass.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "close",
+      "line": 490,
+      "file": "tools\\adg_precision_pass.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "ADGRedisValidator",
+      "line": 17,
+      "file": "tools\\adg_redis_validation.py",
+      "type": "ClassDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "main",
+      "line": 270,
+      "file": "tools\\adg_redis_validation.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "validate_all_dimensions",
+      "line": 24,
+      "file": "tools\\adg_redis_validation.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "generate_final_verdict",
+      "line": 188,
+      "file": "tools\\adg_redis_validation.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "print_metrics_table",
+      "line": 210,
+      "file": "tools\\adg_redis_validation.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "print_failure_report",
+      "line": 230,
+      "file": "tools\\adg_redis_validation.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "find_latest_timestamp",
+      "line": 25,
+      "file": "tools\\adg_repair.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "cmd_list_rules",
+      "line": 54,
+      "file": "tools\\adg_repair.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "cmd_analyze",
+      "line": 72,
+      "file": "tools\\adg_repair.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "cmd_repair",
+      "line": 128,
+      "file": "tools\\adg_repair.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "main",
+      "line": 185,
+      "file": "tools\\adg_repair.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "ADGRigorousGapClosure0617",
+      "line": 26,
+      "file": "tools\\adg_rigorous_gap_closure_0617.py",
+      "type": "ClassDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "main",
+      "line": 748,
+      "file": "tools\\adg_rigorous_gap_closure_0617.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "connect",
+      "line": 39,
+      "file": "tools\\adg_rigorous_gap_closure_0617.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "close",
+      "line": 46,
+      "file": "tools\\adg_rigorous_gap_closure_0617.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "execute_query",
+      "line": 51,
+      "file": "tools\\adg_rigorous_gap_closure_0617.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "execute_update",
+      "line": 60,
+      "file": "tools\\adg_rigorous_gap_closure_0617.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "phase1_layer_normalization",
+      "line": 74,
+      "file": "tools\\adg_rigorous_gap_closure_0617.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "phase1_identity_kind_normalization",
+      "line": 172,
+      "file": "tools\\adg_rigorous_gap_closure_0617.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "phase1_confidence_normalization",
+      "line": 243,
+      "file": "tools\\adg_rigorous_gap_closure_0617.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "phase1_exit_criteria",
+      "line": 297,
+      "file": "tools\\adg_rigorous_gap_closure_0617.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "phase2_report_sqlite_parity",
+      "line": 325,
+      "file": "tools\\adg_rigorous_gap_closure_0617.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "phase2_replay_determinism",
+      "line": 370,
+      "file": "tools\\adg_rigorous_gap_closure_0617.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "phase2_boundary_validation",
+      "line": 438,
+      "file": "tools\\adg_rigorous_gap_closure_0617.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "phase2_core_edge_coverage",
+      "line": 481,
+      "file": "tools\\adg_rigorous_gap_closure_0617.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "phase2_test_surface_binding",
+      "line": 552,
+      "file": "tools\\adg_rigorous_gap_closure_0617.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "phase2_final_system_lock",
+      "line": 636,
+      "file": "tools\\adg_rigorous_gap_closure_0617.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "run_all_checks",
+      "line": 687,
+      "file": "tools\\adg_rigorous_gap_closure_0617.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "save_comprehensive_report",
+      "line": 736,
+      "file": "tools\\adg_rigorous_gap_closure_0617.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "get_conn",
+      "line": 15,
+      "file": "tools\\adg_scanner_audit.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "audit_synthetic_edges",
+      "line": 27,
+      "file": "tools\\adg_scanner_audit.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "audit_determinism_digest",
+      "line": 117,
+      "file": "tools\\adg_scanner_audit.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "audit_symbol_consistency",
+      "line": 200,
+      "file": "tools\\adg_scanner_audit.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "audit_duplicate_edges",
+      "line": 300,
+      "file": "tools\\adg_scanner_audit.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "audit_denominator_integrity",
+      "line": 375,
+      "file": "tools\\adg_scanner_audit.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "audit_self_instrumentation",
+      "line": 440,
+      "file": "tools\\adg_scanner_audit.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "audit_execution_vs_ast",
+      "line": 525,
+      "file": "tools\\adg_scanner_audit.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "audit_semantic_classification",
+      "line": 579,
+      "file": "tools\\adg_scanner_audit.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "main",
+      "line": 660,
+      "file": "tools\\adg_scanner_audit.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "SemanticNode",
+      "line": 313,
+      "file": "tools\\adg_semantic_builder.py",
+      "type": "ClassDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "SemanticEdge",
+      "line": 339,
+      "file": "tools\\adg_semantic_builder.py",
+      "type": "ClassDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "extract_file",
+      "line": 426,
+      "file": "tools\\adg_semantic_builder.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "iter_python_files",
+      "line": 596,
+      "file": "tools\\adg_semantic_builder.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "build_semantic_graph",
+      "line": 613,
+      "file": "tools\\adg_semantic_builder.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "build_test_surface_map",
+      "line": 629,
+      "file": "tools\\adg_semantic_builder.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "build_failure_clusters",
+      "line": 716,
+      "file": "tools\\adg_semantic_builder.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "build_validation_report",
+      "line": 783,
+      "file": "tools\\adg_semantic_builder.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "main",
+      "line": 816,
+      "file": "tools\\adg_semantic_builder.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "to_dict",
+      "line": 324,
+      "file": "tools\\adg_semantic_builder.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "to_dict",
+      "line": 348,
+      "file": "tools\\adg_semantic_builder.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "main",
+      "line": 8,
+      "file": "tools\\adg_static_final_report.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "ADGStaticValidator",
+      "line": 33,
+      "file": "tools\\adg_static_validation.py",
+      "type": "ClassDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "main",
+      "line": 414,
+      "file": "tools\\adg_static_validation.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "validate_all_dimensions",
+      "line": 40,
+      "file": "tools\\adg_static_validation.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "generate_final_verdict",
+      "line": 335,
+      "file": "tools\\adg_static_validation.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "print_metrics_table",
+      "line": 357,
+      "file": "tools\\adg_static_validation.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "print_failure_report",
+      "line": 377,
+      "file": "tools\\adg_static_validation.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "connect_db",
+      "line": 66,
+      "file": "tools\\adg_static_validation_real.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "section",
+      "line": 73,
+      "file": "tools\\adg_static_validation_real.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "validate_semantic_correctness",
+      "line": 84,
+      "file": "tools\\adg_static_validation_real.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "validate_symbol_consistency",
+      "line": 306,
+      "file": "tools\\adg_static_validation_real.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "validate_denominator_integrity",
+      "line": 375,
+      "file": "tools\\adg_static_validation_real.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "validate_edge_precision",
+      "line": 507,
+      "file": "tools\\adg_static_validation_real.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "validate_cross_visitor_consistency",
+      "line": 643,
+      "file": "tools\\adg_static_validation_real.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "main",
+      "line": 729,
+      "file": "tools\\adg_static_validation_real.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "update_reports",
+      "line": 16,
+      "file": "tools\\adg_update_reports.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "main",
+      "line": 9,
+      "file": "tools\\adg_validation_final.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "main",
+      "line": 5,
+      "file": "tools\\adg_verify_prompt_e2e.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "run_command",
+      "line": 14,
+      "file": "tools\\bypass_adg_commit.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "main",
+      "line": 34,
+      "file": "tools\\bypass_adg_commit.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "debug_scan",
+      "line": 10,
+      "file": "tools\\debug_adg_hang.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "install_debug_wrapper",
+      "line": 118,
+      "file": "tools\\debug_adg_hang.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "CleanADGDeployer",
+      "line": 19,
+      "file": "tools\\deploy_clean_adg_separation.py",
+      "type": "ClassDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "main",
+      "line": 234,
+      "file": "tools\\deploy_clean_adg_separation.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "backup_current_adg",
+      "line": 26,
+      "file": "tools\\deploy_clean_adg_separation.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "deploy_clean_static_scanner",
+      "line": 45,
+      "file": "tools\\deploy_clean_adg_separation.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "deploy_runtime_scanner",
+      "line": 62,
+      "file": "tools\\deploy_clean_adg_separation.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "update_ci_configuration",
+      "line": 79,
+      "file": "tools\\deploy_clean_adg_separation.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "generate_separated_adgs",
+      "line": 112,
+      "file": "tools\\deploy_clean_adg_separation.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "verify_separation",
+      "line": 178,
+      "file": "tools\\deploy_clean_adg_separation.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "generate_deployment_report",
+      "line": 208,
+      "file": "tools\\deploy_clean_adg_separation.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "main",
+      "line": 19,
+      "file": "tools\\final_adg_templates_demo.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "ingest_adg_files",
+      "line": 16,
+      "file": "tools\\ingest_adg_artifacts.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "ingest_file",
+      "line": 23,
+      "file": "tools\\ingest_adg_files.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "main",
+      "line": 42,
+      "file": "tools\\ingest_adg_files.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "ingest_adg_reports",
+      "line": 16,
+      "file": "tools\\ingest_adg_reports.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "profile_scanner",
+      "line": 12,
+      "file": "tools\\profile_adg_scanner.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "timeout_context",
+      "line": 15,
+      "file": "tools\\profile_adg_scanner_safe.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "profile_scanner_safe",
+      "line": 31,
+      "file": "tools\\profile_adg_scanner_safe.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "investigate_hang",
+      "line": 102,
+      "file": "tools\\profile_adg_scanner_safe.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "timeout_handler",
+      "line": 18,
+      "file": "tools\\profile_adg_scanner_safe.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "TimeoutException",
+      "line": 12,
+      "file": "tools\\profile_adg_scanner_windows.py",
+      "type": "ClassDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "timeout_thread",
+      "line": 15,
+      "file": "tools\\profile_adg_scanner_windows.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "profile_scanner_windows",
+      "line": 20,
+      "file": "tools\\profile_adg_scanner_windows.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "investigate_hang",
+      "line": 90,
+      "file": "tools\\profile_adg_scanner_windows.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "create_subfolder_structure",
+      "line": 11,
+      "file": "tools\\reorganize_adg_directory.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "move_files_to_subfolders",
+      "line": 26,
+      "file": "tools\\reorganize_adg_directory.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "list_remaining_files",
+      "line": 65,
+      "file": "tools\\reorganize_adg_directory.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "main",
+      "line": 75,
+      "file": "tools\\reorganize_adg_directory.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "show_whitelist_logic",
+      "line": 15,
+      "file": "tools\\_adg_ap_diagnose.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "show_current_line",
+      "line": 40,
+      "file": "tools\\_adg_ap_diagnose.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "collect_violations",
+      "line": 90,
+      "file": "tools\\_adg_ap_fix.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "locate_file",
+      "line": 121,
+      "file": "tools\\_adg_ap_fix.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "suppress_line",
+      "line": 131,
+      "file": "tools\\_adg_ap_fix.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "collect_violations_for_file",
+      "line": 159,
+      "file": "tools\\_adg_ap_fix.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "main",
+      "line": 188,
+      "file": "tools\\_adg_ap_fix.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "collect_remaining",
+      "line": 26,
+      "file": "tools\\_adg_ap_fix2.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "locate",
+      "line": 52,
+      "file": "tools\\_adg_ap_fix2.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "find_def_lineno_for_default_arg",
+      "line": 57,
+      "file": "tools\\_adg_ap_fix2.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "insert_token_before_line",
+      "line": 82,
+      "file": "tools\\_adg_ap_fix2.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "main",
+      "line": 100,
+      "file": "tools\\_adg_ap_fix2.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "whitelist_for",
+      "line": 12,
+      "file": "tools\\_adg_ap_prep.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "matches",
+      "line": 21,
+      "file": "tools\\_adg_heal_subgraph.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "get_imports_of",
+      "line": 71,
+      "file": "tools\\_adg_rationalization_query.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "get_imported_by",
+      "line": 80,
+      "file": "tools\\_adg_rationalization_query.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "get_violations",
+      "line": 89,
+      "file": "tools\\_adg_rationalization_query.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "merge_conflict_blocks",
+      "line": 30,
+      "file": "tools\\_adg_resolve_conflicts.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "merge_baseline",
+      "line": 66,
+      "file": "tools\\_adg_resolve_conflicts.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "main",
+      "line": 94,
+      "file": "tools\\_adg_resolve_conflicts.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "main",
+      "line": 11,
+      "file": "tools\\_adg_size_rca.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "load_json",
+      "line": 13,
+      "file": "tools\\_analyze_adg_redundancy.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "analyze_sqlite",
+      "line": 19,
+      "file": "tools\\_analyze_adg_redundancy.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "analyze_symbol_graph",
+      "line": 38,
+      "file": "tools\\_analyze_adg_redundancy.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "analyze_file_graph",
+      "line": 59,
+      "file": "tools\\_analyze_adg_redundancy.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "analyze_governance_graph",
+      "line": 79,
+      "file": "tools\\_analyze_adg_redundancy.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "analyze_graphsnap",
+      "line": 99,
+      "file": "tools\\_analyze_adg_redundancy.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "analyze_snapshot",
+      "line": 113,
+      "file": "tools\\_analyze_adg_redundancy.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "compare_node_sets",
+      "line": 126,
+      "file": "tools\\_analyze_adg_redundancy.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "sqlite_vs_json",
+      "line": 171,
+      "file": "tools\\_analyze_adg_redundancy.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "size_summary",
+      "line": 208,
+      "file": "tools\\_analyze_adg_redundancy.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "chk",
+      "line": 64,
+      "file": "tools\\_assess_adg_output.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "chk",
+      "line": 28,
+      "file": "tools\\_assess_adg_output2.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "analyze_structure",
+      "line": 11,
+      "file": "tools\\_compare_adg_artifacts.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "main",
+      "line": 54,
+      "file": "tools\\_compare_adg_artifacts.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "main",
+      "line": 11,
+      "file": "tools\\_inspect_adg_errors.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "load_adg",
+      "line": 8,
+      "file": "tools\\_validate_adg_claims.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "analyze_layers",
+      "line": 15,
+      "file": "tools\\_validate_adg_claims.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "analyze_uwg",
+      "line": 45,
+      "file": "tools\\_validate_adg_claims.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "analyze_determinism",
+      "line": 86,
+      "file": "tools\\_validate_adg_claims.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "analyze_rag",
+      "line": 114,
+      "file": "tools\\_validate_adg_claims.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "analyze_hitl_dpo",
+      "line": 152,
+      "file": "tools\\_validate_adg_claims.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "analyze_meta_learning",
+      "line": 190,
+      "file": "tools\\_validate_adg_claims.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "main",
+      "line": 228,
+      "file": "tools\\_validate_adg_claims.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "FixChange",
+      "line": 131,
+      "file": "tools\\adg\\adg_antipattern_fixer.py",
+      "type": "ClassDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "FixResult",
+      "line": 138,
+      "file": "tools\\adg\\adg_antipattern_fixer.py",
+      "type": "ClassDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "GuardianCommentFixer",
+      "line": 229,
+      "file": "tools\\adg\\adg_antipattern_fixer.py",
+      "type": "ClassDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "had_violations",
+      "line": 146,
+      "file": "tools\\adg\\adg_antipattern_fixer.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "scan_violations",
+      "line": 235,
+      "file": "tools\\adg\\adg_antipattern_fixer.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "fix_source",
+      "line": 247,
+      "file": "tools\\adg\\adg_antipattern_fixer.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "fix_file",
+      "line": 287,
+      "file": "tools\\adg\\adg_antipattern_fixer.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "cmd_show_node",
+      "line": 29,
+      "file": "tools\\adg\\adg_debug_cli.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "cmd_show_imports",
+      "line": 54,
+      "file": "tools\\adg\\adg_debug_cli.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "cmd_find_unresolved",
+      "line": 86,
+      "file": "tools\\adg\\adg_debug_cli.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "cmd_explain_violation",
+      "line": 114,
+      "file": "tools\\adg\\adg_debug_cli.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "cmd_compare_snapshot",
+      "line": 161,
+      "file": "tools\\adg\\adg_debug_cli.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "cmd_run_invariants",
+      "line": 191,
+      "file": "tools\\adg\\adg_debug_cli.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "main",
+      "line": 217,
+      "file": "tools\\adg\\adg_debug_cli.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "cmd_status",
+      "line": 94,
+      "file": "tools\\adg\\adg_direct.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "cmd_meta",
+      "line": 140,
+      "file": "tools\\adg\\adg_direct.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "cmd_node",
+      "line": 165,
+      "file": "tools\\adg\\adg_direct.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "cmd_nodes_by_layer",
+      "line": 200,
+      "file": "tools\\adg\\adg_direct.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "cmd_nodes_by_file",
+      "line": 234,
+      "file": "tools\\adg\\adg_direct.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "cmd_edge_fanout",
+      "line": 265,
+      "file": "tools\\adg\\adg_direct.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "cmd_edge_fanin",
+      "line": 306,
+      "file": "tools\\adg\\adg_direct.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "cmd_violations",
+      "line": 347,
+      "file": "tools\\adg\\adg_direct.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "cmd_sql",
+      "line": 386,
+      "file": "tools\\adg\\adg_direct.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "cmd_edge_counts",
+      "line": 415,
+      "file": "tools\\adg\\adg_direct.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "cmd_layer_counts",
+      "line": 434,
+      "file": "tools\\adg\\adg_direct.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "cmd_find_node",
+      "line": 450,
+      "file": "tools\\adg\\adg_direct.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "cmd_module_context",
+      "line": 473,
+      "file": "tools\\adg\\adg_direct.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "main",
+      "line": 537,
+      "file": "tools\\adg\\adg_direct.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "cmd_p0",
+      "line": 163,
+      "file": "tools\\adg\\adg_harden.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "cmd_p1",
+      "line": 210,
+      "file": "tools\\adg\\adg_harden.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "cmd_p2",
+      "line": 242,
+      "file": "tools\\adg\\adg_harden.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "cmd_check",
+      "line": 270,
+      "file": "tools\\adg\\adg_harden.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "cmd_full",
+      "line": 332,
+      "file": "tools\\adg\\adg_harden.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "main",
+      "line": 363,
+      "file": "tools\\adg\\adg_harden.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "check_invariants",
+      "line": 426,
+      "file": "tools\\adg\\adg_harden.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "enforce_invariants",
+      "line": 439,
+      "file": "tools\\adg\\adg_harden.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "ImportViolation",
+      "line": 29,
+      "file": "tools\\adg\\adg_import_validator.py",
+      "type": "ClassDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "ADGImportValidator",
+      "line": 45,
+      "file": "tools\\adg\\adg_import_validator.py",
+      "type": "ClassDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "main",
+      "line": 327,
+      "file": "tools\\adg\\adg_import_validator.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "validate_file",
+      "line": 68,
+      "file": "tools\\adg\\adg_import_validator.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "validate_directory",
+      "line": 253,
+      "file": "tools\\adg\\adg_import_validator.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "validate_module_dependencies",
+      "line": 267,
+      "file": "tools\\adg\\adg_import_validator.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "get_import_graph_summary",
+      "line": 304,
+      "file": "tools\\adg\\adg_import_validator.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "LayerViolation",
+      "line": 29,
+      "file": "tools\\adg\\adg_layer_boundary_checker.py",
+      "type": "ClassDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "ADGLayerBoundaryChecker",
+      "line": 47,
+      "file": "tools\\adg\\adg_layer_boundary_checker.py",
+      "type": "ClassDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "main",
+      "line": 364,
+      "file": "tools\\adg\\adg_layer_boundary_checker.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "check_file",
+      "line": 68,
+      "file": "tools\\adg\\adg_layer_boundary_checker.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "check_directory",
+      "line": 292,
+      "file": "tools\\adg\\adg_layer_boundary_checker.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "check_layer",
+      "line": 306,
+      "file": "tools\\adg\\adg_layer_boundary_checker.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "get_layer_summary",
+      "line": 337,
+      "file": "tools\\adg\\adg_layer_boundary_checker.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "cmd_generate",
+      "line": 53,
+      "file": "tools\\adg\\adg_lifecycle.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "cmd_update",
+      "line": 87,
+      "file": "tools\\adg\\adg_lifecycle.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "cmd_sync",
+      "line": 123,
+      "file": "tools\\adg\\adg_lifecycle.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "cmd_status",
+      "line": 152,
+      "file": "tools\\adg\\adg_lifecycle.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "cmd_maintain",
+      "line": 213,
+      "file": "tools\\adg\\adg_lifecycle.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "main",
+      "line": 262,
+      "file": "tools\\adg\\adg_lifecycle.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "create_zip_archive",
+      "line": 315,
+      "file": "tools\\adg\\adg_lifecycle.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "zip_artifacts",
+      "line": 320,
+      "file": "tools\\adg\\adg_lifecycle.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "check_data_quality",
+      "line": 325,
+      "file": "tools\\adg\\adg_lifecycle.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "detect_duplicates",
+      "line": 330,
+      "file": "tools\\adg\\adg_lifecycle.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "detect_orphan_nodes",
+      "line": 335,
+      "file": "tools\\adg\\adg_lifecycle.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "verify_integrity",
+      "line": 340,
+      "file": "tools\\adg\\adg_lifecycle.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "adg_status",
+      "line": 219,
+      "file": "tools\\adg\\adg_mcp_server.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "adg_meta",
+      "line": 284,
+      "file": "tools\\adg\\adg_mcp_server.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "adg_snapshot",
+      "line": 309,
+      "file": "tools\\adg\\adg_mcp_server.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "adg_node",
+      "line": 332,
+      "file": "tools\\adg\\adg_mcp_server.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "adg_nodes_by_layer",
+      "line": 352,
+      "file": "tools\\adg\\adg_mcp_server.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "adg_nodes_by_file",
+      "line": 384,
+      "file": "tools\\adg\\adg_mcp_server.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "adg_edge_fanout",
+      "line": 403,
+      "file": "tools\\adg\\adg_mcp_server.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "adg_edge_fanin",
+      "line": 467,
+      "file": "tools\\adg\\adg_mcp_server.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "adg_violations",
+      "line": 530,
+      "file": "tools\\adg\\adg_mcp_server.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "adg_edge_detail",
+      "line": 608,
+      "file": "tools\\adg\\adg_mcp_server.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "adg_module_context",
+      "line": 628,
+      "file": "tools\\adg\\adg_mcp_server.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "adg_source_context",
+      "line": 685,
+      "file": "tools\\adg\\adg_mcp_server.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "adg_assert_fresh",
+      "line": 722,
+      "file": "tools\\adg\\adg_mcp_server.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "redis_get",
+      "line": 789,
+      "file": "tools\\adg\\adg_mcp_server.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "redis_hgetall",
+      "line": 810,
+      "file": "tools\\adg\\adg_mcp_server.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "redis_smembers",
+      "line": 832,
+      "file": "tools\\adg\\adg_mcp_server.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "redis_lrange",
+      "line": 867,
+      "file": "tools\\adg\\adg_mcp_server.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "redis_type",
+      "line": 896,
+      "file": "tools\\adg\\adg_mcp_server.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "redis_ttl",
+      "line": 923,
+      "file": "tools\\adg\\adg_mcp_server.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "redis_scan",
+      "line": 945,
+      "file": "tools\\adg\\adg_mcp_server.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "NamespacedRedisIngest",
+      "line": 31,
+      "file": "tools\\adg\\adg_namespaced_ingest.py",
+      "type": "ClassDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "main",
+      "line": 369,
+      "file": "tools\\adg\\adg_namespaced_ingest.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "ingest",
+      "line": 44,
+      "file": "tools\\adg\\adg_namespaced_ingest.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "verify",
+      "line": 321,
+      "file": "tools\\adg\\adg_namespaced_ingest.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "FileMatch",
+      "line": 34,
+      "file": "tools\\adg\\adg_query_bridge.py",
+      "type": "ClassDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "Node",
+      "line": 53,
+      "file": "tools\\adg\\adg_query_bridge.py",
+      "type": "ClassDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "Violation",
+      "line": 70,
+      "file": "tools\\adg\\adg_query_bridge.py",
+      "type": "ClassDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "ADGQueryBridge",
+      "line": 86,
+      "file": "tools\\adg\\adg_query_bridge.py",
+      "type": "ClassDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "files_calling",
+      "line": 399,
+      "file": "tools\\adg\\adg_query_bridge.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "files_importing",
+      "line": 405,
+      "file": "tools\\adg\\adg_query_bridge.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "nodes_in_layer",
+      "line": 411,
+      "file": "tools\\adg\\adg_query_bridge.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "violations",
+      "line": 417,
+      "file": "tools\\adg\\adg_query_bridge.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "subprocess_calls_without_timeout",
+      "line": 423,
+      "file": "tools\\adg\\adg_query_bridge.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "query_bridge",
+      "line": 462,
+      "file": "tools\\adg\\adg_query_bridge.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "files_calling",
+      "line": 182,
+      "file": "tools\\adg\\adg_query_bridge.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "files_importing",
+      "line": 201,
+      "file": "tools\\adg\\adg_query_bridge.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "nodes_in_layer",
+      "line": 225,
+      "file": "tools\\adg\\adg_query_bridge.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "violations",
+      "line": 244,
+      "file": "tools\\adg\\adg_query_bridge.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "files_in_scope",
+      "line": 250,
+      "file": "tools\\adg\\adg_query_bridge.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "subprocess_calls_without_timeout",
+      "line": 294,
+      "file": "tools\\adg\\adg_query_bridge.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "loops_without_progress",
+      "line": 323,
+      "file": "tools\\adg\\adg_query_bridge.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "get_latest_sqlite",
+      "line": 95,
+      "file": "tools\\adg\\adg_redis_ingest.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "get_latest_snapshot",
+      "line": 108,
+      "file": "tools\\adg\\adg_redis_ingest.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "is_stale",
+      "line": 120,
+      "file": "tools\\adg\\adg_redis_ingest.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "ingest",
+      "line": 233,
+      "file": "tools\\adg\\adg_redis_ingest.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "ADGRedisClient",
+      "line": 234,
+      "file": "tools\\adg\\adg_redis_query.py",
+      "type": "ClassDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "ADGQuerySession",
+      "line": 361,
+      "file": "tools\\adg\\adg_redis_query.py",
+      "type": "ClassDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "project_to_redis",
+      "line": 518,
+      "file": "tools\\adg\\adg_redis_query.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "project_to_sqlite",
+      "line": 522,
+      "file": "tools\\adg\\adg_redis_query.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "search_nodes",
+      "line": 526,
+      "file": "tools\\adg\\adg_redis_query.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "ping",
+      "line": 238,
+      "file": "tools\\adg\\adg_redis_query.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "meta",
+      "line": 246,
+      "file": "tools\\adg\\adg_redis_query.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "snapshot",
+      "line": 250,
+      "file": "tools\\adg\\adg_redis_query.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "get_node",
+      "line": 255,
+      "file": "tools\\adg\\adg_redis_query.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "nodes_in_file",
+      "line": 259,
+      "file": "tools\\adg\\adg_redis_query.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "nodes_in_layer",
+      "line": 263,
+      "file": "tools\\adg\\adg_redis_query.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "fan_out",
+      "line": 267,
+      "file": "tools\\adg\\adg_redis_query.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "fan_in",
+      "line": 271,
+      "file": "tools\\adg\\adg_redis_query.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "all_edge_relations_from",
+      "line": 275,
+      "file": "tools\\adg\\adg_redis_query.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "violations",
+      "line": 288,
+      "file": "tools\\adg\\adg_redis_query.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "is_stale",
+      "line": 293,
+      "file": "tools\\adg\\adg_redis_query.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "search_files",
+      "line": 300,
+      "file": "tools\\adg\\adg_redis_query.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "search_nodes",
+      "line": 318,
+      "file": "tools\\adg\\adg_redis_query.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "StalenessResult",
+      "line": 200,
+      "file": "tools\\adg\\adg_stale_guard.py",
+      "type": "ClassDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "ADGStalenessChecker",
+      "line": 212,
+      "file": "tools\\adg\\adg_stale_guard.py",
+      "type": "ClassDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "seconds_stale",
+      "line": 208,
+      "file": "tools\\adg\\adg_stale_guard.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "check",
+      "line": 295,
+      "file": "tools\\adg\\adg_stale_guard.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "assert_fresh",
+      "line": 324,
+      "file": "tools\\adg\\adg_stale_guard.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "warn_if_stale",
+      "line": 333,
+      "file": "tools\\adg\\adg_stale_guard.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "TimeoutViolation",
+      "line": 36,
+      "file": "tools\\adg\\adg_timeout_scanner.py",
+      "type": "ClassDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "ADGTimeoutScanner",
+      "line": 52,
+      "file": "tools\\adg\\adg_timeout_scanner.py",
+      "type": "ClassDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "main",
+      "line": 290,
+      "file": "tools\\adg\\adg_timeout_scanner.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "scan_subprocess_calls",
+      "line": 59,
+      "file": "tools\\adg\\adg_timeout_scanner.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "scan_while_true_loops",
+      "line": 186,
+      "file": "tools\\adg\\adg_timeout_scanner.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "FileMatch",
+      "line": 28,
+      "file": "tools\\adg\\adg_timeout_scanner.py",
+      "type": "ClassDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "MypyResult",
+      "line": 234,
+      "file": "tools\\adg\\adg_type_check.py",
+      "type": "ClassDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "ADGTypeChecker",
+      "line": 253,
+      "file": "tools\\adg\\adg_type_check.py",
+      "type": "ClassDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "check_types",
+      "line": 513,
+      "file": "tools\\adg\\adg_type_check.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "passed",
+      "line": 241,
+      "file": "tools\\adg\\adg_type_check.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "error_lines",
+      "line": 245,
+      "file": "tools\\adg\\adg_type_check.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "error_count",
+      "line": 249,
+      "file": "tools\\adg\\adg_type_check.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "get_blast_radius",
+      "line": 270,
+      "file": "tools\\adg\\adg_type_check.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "run_mypy",
+      "line": 321,
+      "file": "tools\\adg\\adg_type_check.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "check",
+      "line": 367,
+      "file": "tools\\adg\\adg_type_check.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "generate_full_adg",
+      "line": 248,
+      "file": "tools\\adg_backups\\generate_full_adg_backup_20260324_190130.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "main",
+      "line": 1972,
+      "file": "tools\\adg_backups\\generate_full_adg_backup_20260324_190130.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "main",
+      "line": 112,
+      "file": "tools\\evidence\\run_adg_evidence.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "node_info",
+      "line": 17,
+      "file": "tools\\evidence\\_adg_gravity_check.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "query_redis",
+      "line": 7,
+      "file": "tools\\evidence\\_adg_hitl_redis_analysis.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "run_query",
+      "line": 7,
+      "file": "tools\\evidence\\_adg_hitl_system_learning_analysis.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "node_name",
+      "line": 12,
+      "file": "tools\\evidence\\_adg_ingest_query.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "node_name",
+      "line": 12,
+      "file": "tools\\evidence\\_adg_ingest_query2.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "node_name",
+      "line": 12,
+      "file": "tools\\evidence\\_adg_ingest_query3.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "p",
+      "line": 46,
+      "file": "tools\\evidence\\_adg_redis_routing.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "get_node",
+      "line": 52,
+      "file": "tools\\evidence\\_adg_redis_routing.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "skip",
+      "line": 56,
+      "file": "tools\\evidence\\_adg_redis_routing.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "get_node",
+      "line": 8,
+      "file": "tools\\evidence\\_adg_redis_routing2.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "skip",
+      "line": 12,
+      "file": "tools\\evidence\\_adg_redis_routing2.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "generate_adg_stub",
+      "line": 155,
+      "file": "tools\\evidence\\_generate_true_gap_adg_stubs.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "module_to_adg_stub_path",
+      "line": 241,
+      "file": "tools\\evidence\\_generate_true_gap_adg_stubs.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "run",
+      "line": 67,
+      "file": "tools\\evidence\\_retrieval_adg_validation.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "run",
+      "line": 34,
+      "file": "tools\\evidence\\_retrieval_adg_validation2.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "create_entities",
+      "line": 277,
+      "file": "tools\\memory\\adg_memory_server.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "add_observations",
+      "line": 288,
+      "file": "tools\\memory\\adg_memory_server.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "create_relations",
+      "line": 298,
+      "file": "tools\\memory\\adg_memory_server.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "open_nodes",
+      "line": 308,
+      "file": "tools\\memory\\adg_memory_server.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "search_nodes",
+      "line": 318,
+      "file": "tools\\memory\\adg_memory_server.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "read_graph",
+      "line": 328,
+      "file": "tools\\memory\\adg_memory_server.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "delete_entities",
+      "line": 337,
+      "file": "tools\\memory\\adg_memory_server.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "delete_observations",
+      "line": 347,
+      "file": "tools\\memory\\adg_memory_server.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "delete_relations",
+      "line": 356,
+      "file": "tools\\memory\\adg_memory_server.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "mem_recall_session_start",
+      "line": 370,
+      "file": "tools\\memory\\adg_memory_server.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "mem_import_adg_context",
+      "line": 386,
+      "file": "tools\\memory\\adg_memory_server.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "mem_get_stats",
+      "line": 462,
+      "file": "tools\\memory\\adg_memory_server.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "mem_cleanup_stale",
+      "line": 472,
+      "file": "tools\\memory\\adg_memory_server.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "get_nodes_for_file",
+      "line": 8,
+      "file": "tools\\adg\\queries\\adg_rlhf_sft_query.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "node_has_covers",
+      "line": 17,
+      "file": "tools\\adg\\queries\\adg_rlhf_sft_query.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "get_edge_targets",
+      "line": 20,
+      "file": "tools\\adg\\queries\\adg_rlhf_sft_query.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "node_name",
+      "line": 23,
+      "file": "tools\\adg\\queries\\adg_rlhf_sft_query.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "get_nodes_for_file",
+      "line": 8,
+      "file": "tools\\adg\\queries\\adg_rlhf_sft_query2.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "node_has_covers",
+      "line": 17,
+      "file": "tools\\adg\\queries\\adg_rlhf_sft_query2.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "InvariantCheck",
+      "line": 28,
+      "file": "tools\\adg\\services\\adg_invariant_runner.py",
+      "type": "ClassDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "ImportResolutionCheck",
+      "line": 57,
+      "file": "tools\\adg\\services\\adg_invariant_runner.py",
+      "type": "ClassDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "BoundaryViolationCheck",
+      "line": 135,
+      "file": "tools\\adg\\services\\adg_invariant_runner.py",
+      "type": "ClassDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "RedisParityCheck",
+      "line": 211,
+      "file": "tools\\adg\\services\\adg_invariant_runner.py",
+      "type": "ClassDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "InvariantRunner",
+      "line": 276,
+      "file": "tools\\adg\\services\\adg_invariant_runner.py",
+      "type": "ClassDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "run_invariant_suite",
+      "line": 369,
+      "file": "tools\\adg\\services\\adg_invariant_runner.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "run",
+      "line": 40,
+      "file": "tools\\adg\\services\\adg_invariant_runner.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "run",
+      "line": 70,
+      "file": "tools\\adg\\services\\adg_invariant_runner.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "run",
+      "line": 147,
+      "file": "tools\\adg\\services\\adg_invariant_runner.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "run",
+      "line": 223,
+      "file": "tools\\adg\\services\\adg_invariant_runner.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "register_check",
+      "line": 296,
+      "file": "tools\\adg\\services\\adg_invariant_runner.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "run_all",
+      "line": 301,
+      "file": "tools\\adg\\services\\adg_invariant_runner.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "has_violations",
+      "line": 331,
+      "file": "tools\\adg\\services\\adg_invariant_runner.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "get_all_findings",
+      "line": 339,
+      "file": "tools\\adg\\services\\adg_invariant_runner.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "to_dict",
+      "line": 346,
+      "file": "tools\\adg\\services\\adg_invariant_runner.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "to_json",
+      "line": 364,
+      "file": "tools\\adg\\services\\adg_invariant_runner.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "SnapshotNotFoundError",
+      "line": 31,
+      "file": "tools\\adg\\services\\adg_query_service.py",
+      "type": "ClassDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "CacheParityError",
+      "line": 36,
+      "file": "tools\\adg\\services\\adg_query_service.py",
+      "type": "ClassDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "ADGQueryService",
+      "line": 41,
+      "file": "tools\\adg\\services\\adg_query_service.py",
+      "type": "ClassDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "initialize_snapshot",
+      "line": 80,
+      "file": "tools\\adg\\services\\adg_query_service.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "get_snapshot_metadata",
+      "line": 184,
+      "file": "tools\\adg\\services\\adg_query_service.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "get_node",
+      "line": 188,
+      "file": "tools\\adg\\services\\adg_query_service.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "get_edges",
+      "line": 284,
+      "file": "tools\\adg\\services\\adg_query_service.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "find_unresolved_imports",
+      "line": 396,
+      "file": "tools\\adg\\services\\adg_query_service.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "close",
+      "line": 455,
+      "file": "tools\\adg\\services\\adg_query_service.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "GapReport",
+      "line": 32,
+      "file": "tools\\adg\\accelerators\\retrieval\\adg_retrieval_accelerator.py",
+      "type": "ClassDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "RetrievalAccelerator",
+      "line": 63,
+      "file": "tools\\adg\\accelerators\\retrieval\\adg_retrieval_accelerator.py",
+      "type": "ClassDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "run_validation",
+      "line": 399,
+      "file": "tools\\adg\\accelerators\\retrieval\\adg_retrieval_accelerator.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "print_report",
+      "line": 405,
+      "file": "tools\\adg\\accelerators\\retrieval\\adg_retrieval_accelerator.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "write_json_report",
+      "line": 462,
+      "file": "tools\\adg\\accelerators\\retrieval\\adg_retrieval_accelerator.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "write_csv_report",
+      "line": 486,
+      "file": "tools\\adg\\accelerators\\retrieval\\adg_retrieval_accelerator.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "main",
+      "line": 495,
+      "file": "tools\\adg\\accelerators\\retrieval\\adg_retrieval_accelerator.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "connect",
+      "line": 128,
+      "file": "tools\\adg\\accelerators\\retrieval\\adg_retrieval_accelerator.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "close",
+      "line": 134,
+      "file": "tools\\adg\\accelerators\\retrieval\\adg_retrieval_accelerator.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "query_graph_size",
+      "line": 140,
+      "file": "tools\\adg\\accelerators\\retrieval\\adg_retrieval_accelerator.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "query_relation_counts",
+      "line": 151,
+      "file": "tools\\adg\\accelerators\\retrieval\\adg_retrieval_accelerator.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "query_layer_coverage",
+      "line": 162,
+      "file": "tools\\adg\\accelerators\\retrieval\\adg_retrieval_accelerator.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "query_app_coverage",
+      "line": 181,
+      "file": "tools\\adg\\accelerators\\retrieval\\adg_retrieval_accelerator.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "query_symbol_presence",
+      "line": 200,
+      "file": "tools\\adg\\accelerators\\retrieval\\adg_retrieval_accelerator.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "query_cross_layer_edges",
+      "line": 219,
+      "file": "tools\\adg\\accelerators\\retrieval\\adg_retrieval_accelerator.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "query_app_layer_wiring",
+      "line": 262,
+      "file": "tools\\adg\\accelerators\\retrieval\\adg_retrieval_accelerator.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "compute_gaps",
+      "line": 284,
+      "file": "tools\\adg\\accelerators\\retrieval\\adg_retrieval_accelerator.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "run",
+      "line": 363,
+      "file": "tools\\adg\\accelerators\\retrieval\\adg_retrieval_accelerator.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "run_pytest_analysis",
+      "line": 14,
+      "file": "tools\\adg\\accelerators\\testing\\adg_failure_analyzer.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "parse_failure_patterns",
+      "line": 23,
+      "file": "tools\\adg\\accelerators\\testing\\adg_failure_analyzer.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "analyze_by_layer",
+      "line": 67,
+      "file": "tools\\adg\\accelerators\\testing\\adg_failure_analyzer.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "identify_missing_imports",
+      "line": 105,
+      "file": "tools\\adg\\accelerators\\testing\\adg_failure_analyzer.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "generate_wave_plan",
+      "line": 125,
+      "file": "tools\\adg\\accelerators\\testing\\adg_failure_analyzer.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "main",
+      "line": 226,
+      "file": "tools\\adg\\accelerators\\testing\\adg_failure_analyzer.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "get_layer",
+      "line": 71,
+      "file": "tools\\adg\\accelerators\\testing\\adg_failure_analyzer.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    }
+  ]
+}

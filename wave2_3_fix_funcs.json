@@ -1,0 +1,215 @@
+{
+  "adg_database": "artifacts\\adg\\adg_indexed_04032026_1923.sqlite",
+  "unused_functions": [
+    {
+      "name": "fix_file",
+      "line": 41,
+      "file": "tools\\batch_fix_100.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "get_broken_files",
+      "line": 62,
+      "file": "tools\\batch_fix_100.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "main",
+      "line": 81,
+      "file": "tools\\batch_fix_100.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "batch_fix_remaining",
+      "line": 9,
+      "file": "tools\\batch_fix_remaining.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "fix_file",
+      "line": 43,
+      "file": "tools\\batch_fix_swe15.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "get_broken_files",
+      "line": 64,
+      "file": "tools\\batch_fix_swe15.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "process_wave",
+      "line": 85,
+      "file": "tools\\batch_fix_swe15.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "main",
+      "line": 114,
+      "file": "tools\\batch_fix_swe15.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "fix_unexpected_indent",
+      "line": 8,
+      "file": "tools\\batch_fix_syntax_errors.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "main",
+      "line": 35,
+      "file": "tools\\batch_fix_syntax_errors.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "batch_fix_wave11",
+      "line": 9,
+      "file": "tools\\batch_fix_wave11.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "batch_fix_wave12",
+      "line": 9,
+      "file": "tools\\batch_fix_wave12.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "batch_fix_wave13",
+      "line": 9,
+      "file": "tools\\batch_fix_wave13.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "batch_fix_wave14",
+      "line": 9,
+      "file": "tools\\batch_fix_wave14.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "batch_fix_wave15",
+      "line": 9,
+      "file": "tools\\batch_fix_wave15.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "batch_fix_wave16",
+      "line": 9,
+      "file": "tools\\batch_fix_wave16.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "batch_fix_wave17",
+      "line": 9,
+      "file": "tools\\batch_fix_wave17.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "batch_fix_wave18",
+      "line": 9,
+      "file": "tools\\batch_fix_wave18.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "simple_fix",
+      "line": 34,
+      "file": "tools\\bulk_fix_eager.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "main",
+      "line": 113,
+      "file": "tools\\bulk_fix_eager.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "find_first_import_block_end",
+      "line": 41,
+      "file": "tools\\fix_ac_nameerrors.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "try_fix_file",
+      "line": 62,
+      "file": "tools\\fix_ac_nameerrors.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "main",
+      "line": 96,
+      "file": "tools\\fix_ac_nameerrors.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "parse_ok",
+      "line": 18,
+      "file": "tools\\fix_all_ac_errors.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "fix_self_shadow",
+      "line": 27,
+      "file": "tools\\fix_all_ac_errors.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "add_import_or_stub",
+      "line": 83,
+      "file": "tools\\fix_all_ac_errors.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "fix_import_error",
+      "line": 155,
+      "file": "tools\\fix_all_ac_errors.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "main",
+      "line": 171,
+      "file": "tools\\fix_all_ac_errors.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "get_all_errors",
+      "line": 18,
+      "file": "tools\\fix_all_remaining.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "add_import_before_line",
+      "line": 60,
+      "file": "tools\\fix_all_remaining.py",
+      "type": "FunctionDef",
+      "reason": "No ADG call edges found"
+    }
+  ]
+}

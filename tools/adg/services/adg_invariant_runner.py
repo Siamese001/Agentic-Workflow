@@ -27,15 +27,15 @@ logger = logging.getLogger(__name__)
 
 class InvariantCheck(ABC):
     """Base class for invariant checks.
-    
+
     Each check implements a specific invariant validation against
     the ADG graph. Checks are deterministic and reproducible.
     """
-    
+
     def __init__(self, name: str, description: str) -> None:
         self.name = name
         self.description = description
-        
+
     @abstractmethod
     def run(
         self,
@@ -43,11 +43,11 @@ class InvariantCheck(ABC):
         policy_pack: dict[str, Any],
     ) -> InvariantResult:
         """Run the invariant check.
-        
+
         Args:
             query_service: Initialized ADG query service
             policy_pack: Policy configuration for the check
-            
+
         Returns:
             InvariantResult with findings (if any)
         """
@@ -56,17 +56,17 @@ class InvariantCheck(ABC):
 
 class ImportResolutionCheck(InvariantCheck):
     """Check that all imports resolve to valid module entities.
-    
+
     Detects unresolved imports where destination is a symbol
     rather than a module (e.g., apps_lic -> archives imports).
     """
-    
+
     def __init__(self) -> None:
         super().__init__(
             name="import_resolution",
             description="Validate all imports resolve to module entities",
         )
-        
+
     def run(
         self,
         query_service: ADGQueryService,
@@ -74,19 +74,19 @@ class ImportResolutionCheck(InvariantCheck):
     ) -> InvariantResult:
         """Run import resolution check."""
         start_time = time.time()
-        
+
         # Get scope from policy pack (optional)
         scope = policy_pack.get("scope")
-        
+
         # Find unresolved imports via query service
         unresolved = query_service.find_unresolved_imports(scope)
-        
+
         findings: list[FindingPacket] = []
         for imp in unresolved:
             # Skip certain patterns based on policy
             if self._is_allowed_unresolved(imp, policy_pack):
                 continue
-                
+
             finding = FindingPacket(
                 finding_id=f"unresolved_import_{imp.edge_id}",
                 finding_type="unresolved_import",
@@ -107,9 +107,9 @@ class ImportResolutionCheck(InvariantCheck):
                 snapshot_id=query_service.get_snapshot_metadata().snapshot_id if query_service.get_snapshot_metadata() else None,
             )
             findings.append(finding)
-            
+
         duration_ms = (time.time() - start_time) * 1000
-        
+
         return InvariantResult(
             invariant_name=self.name,
             passed=len(findings) == 0,
@@ -118,7 +118,7 @@ class ImportResolutionCheck(InvariantCheck):
             duration_ms=duration_ms,
             snapshot_id=query_service.get_snapshot_metadata().snapshot_id if query_service.get_snapshot_metadata() else None,
         )
-        
+
     def _is_allowed_unresolved(
         self,
         imp: UnresolvedImport,
@@ -134,16 +134,16 @@ class ImportResolutionCheck(InvariantCheck):
 
 class BoundaryViolationCheck(InvariantCheck):
     """Check for forbidden cross-boundary imports.
-    
+
     Detects imports from forbidden sources (e.g., apps_* -> archives).
     """
-    
+
     def __init__(self) -> None:
         super().__init__(
             name="boundary_violation",
             description="Detect forbidden cross-boundary imports",
         )
-        
+
     def run(
         self,
         query_service: ADGQueryService,
@@ -151,7 +151,7 @@ class BoundaryViolationCheck(InvariantCheck):
     ) -> InvariantResult:
         """Run boundary violation check."""
         start_time = time.time()
-        
+
         # Get forbidden patterns from policy
         forbidden_patterns = policy_pack.get(
             "forbidden_patterns",
@@ -161,15 +161,15 @@ class BoundaryViolationCheck(InvariantCheck):
             "protected_scopes",
             ["apps_lic", "apps_rg", "apps_eval", "apps_exec", "apps_research", "apps_rfp"],
         )
-        
+
         findings: list[FindingPacket] = []
         total_checked = 0
-        
+
         # Check each protected scope
         for scope in protected_scopes:
             unresolved = query_service.find_unresolved_imports(scope)
             total_checked += len(unresolved)
-            
+
             for imp in unresolved:
                 # Check if import matches forbidden patterns
                 if any(pat in imp.symbol for pat in forbidden_patterns):
@@ -195,9 +195,9 @@ class BoundaryViolationCheck(InvariantCheck):
                         snapshot_id=query_service.get_snapshot_metadata().snapshot_id if query_service.get_snapshot_metadata() else None,
                     )
                     findings.append(finding)
-                    
+
         duration_ms = (time.time() - start_time) * 1000
-        
+
         return InvariantResult(
             invariant_name=self.name,
             passed=len(findings) == 0,
@@ -210,16 +210,16 @@ class BoundaryViolationCheck(InvariantCheck):
 
 class RedisParityCheck(InvariantCheck):
     """Check that Redis cache matches SQLite for the snapshot.
-    
+
     Verifies node count, edge count, and sampled edge hashes.
     """
-    
+
     def __init__(self) -> None:
         super().__init__(
             name="redis_parity",
             description="Verify Redis cache matches SQLite snapshot",
         )
-        
+
     def run(
         self,
         query_service: ADGQueryService,
@@ -227,9 +227,9 @@ class RedisParityCheck(InvariantCheck):
     ) -> InvariantResult:
         """Run Redis parity check."""
         start_time = time.time()
-        
+
         findings: list[FindingPacket] = []
-        
+
         # Get metadata
         meta = query_service.get_snapshot_metadata()
         if not meta:
@@ -240,7 +240,7 @@ class RedisParityCheck(InvariantCheck):
                 checked_count=0,
                 duration_ms=0,
             )
-            
+
         # Check coherence flag
         if not meta.projection_coherent:
             finding = FindingPacket(
@@ -260,9 +260,9 @@ class RedisParityCheck(InvariantCheck):
                 snapshot_id=meta.snapshot_id,
             )
             findings.append(finding)
-            
+
         duration_ms = (time.time() - start_time) * 1000
-        
+
         return InvariantResult(
             invariant_name=self.name,
             passed=len(findings) == 0,
@@ -275,59 +275,59 @@ class RedisParityCheck(InvariantCheck):
 
 class InvariantRunner:
     """Runner for ADG invariant checks.
-    
+
     Orchestrates multiple invariant checks against a snapshot
     and produces structured results.
-    
+
     Usage:
         runner = InvariantRunner()
         runner.register_check(ImportResolutionCheck())
         runner.register_check(BoundaryViolationCheck())
-        
+
         with ADGQueryService() as service:
             service.initialize_snapshot("04022026_2140")
             results = runner.run_all(service, policy_pack)
     """
-    
+
     def __init__(self) -> None:
         self.checks: list[InvariantCheck] = []
         self.results: list[InvariantResult] = []
-        
+
     def register_check(self, check: InvariantCheck) -> None:
         """Register an invariant check."""
         self.checks.append(check)
         logger.info(f"Registered invariant check: {check.name}")
-        
+
     def run_all(
         self,
         query_service: ADGQueryService,
         policy_pack: dict[str, Any] | None = None,
     ) -> list[InvariantResult]:
         """Run all registered checks.
-        
+
         Args:
             query_service: Initialized ADG query service
             policy_pack: Optional policy configuration
-            
+
         Returns:
             List of InvariantResult for each check
         """
         policy = policy_pack or {"name": "default"}
         self.results = []
-        
+
         for check in self.checks:
             logger.info(f"Running check: {check.name}")
             result = check.run(query_service, policy)
             self.results.append(result)
-            
+
             status = "PASS" if result.passed else "FAIL"
             logger.info(
                 f"Check {check.name}: {status} "
                 f"({len(result.findings)} findings, {result.checked_count} checked)"
             )
-            
+
         return self.results
-        
+
     def has_violations(self, min_severity: FindingSeverity = FindingSeverity.HIGH) -> bool:
         """Check if any results have violations at or above severity threshold."""
         for result in self.results:
@@ -335,14 +335,14 @@ class InvariantRunner:
                 if finding.severity.value in ["high", "critical"]:
                     return True
         return False
-        
+
     def get_all_findings(self) -> list[FindingPacket]:
         """Get all findings from all checks."""
         findings: list[FindingPacket] = []
         for result in self.results:
             findings.extend(result.findings)
         return findings
-        
+
     def to_dict(self) -> dict[str, Any]:
         """Convert all results to dictionary for JSON serialization."""
         return {
@@ -360,7 +360,7 @@ class InvariantRunner:
                 for r in self.results
             ],
         }
-        
+
     def to_json(self, indent: int = 2) -> str:
         """Convert all results to JSON string."""
         return json.dumps(self.to_dict(), indent=indent, default=str)
@@ -373,23 +373,23 @@ def run_invariant_suite(
     adg_dir: str | None = None,
 ) -> list[InvariantResult]:
     """Convenience function to run full invariant suite.
-    
+
     Args:
         snapshot_id: ADG snapshot ID to check
         policy_pack: Optional policy configuration
         redis_url: Redis connection URL
         adg_dir: Directory containing ADG SQLite files
-        
+
     Returns:
         List of InvariantResult for each check
     """
     runner = InvariantRunner()
-    
+
     # Register standard checks
     runner.register_check(ImportResolutionCheck())
     runner.register_check(BoundaryViolationCheck())
     runner.register_check(RedisParityCheck())
-    
+
     with ADGQueryService(redis_url=redis_url, adg_dir=adg_dir) as service:
         service.initialize_snapshot(snapshot_id)
         return runner.run_all(service, policy_pack)

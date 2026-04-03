@@ -1,0 +1,90 @@
+{
+  "adg_database": "artifacts\\adg\\adg_indexed_04032026_1923.sqlite",
+  "directory": "tests/adg",
+  "unused_tests": [
+    {
+      "name": "test_run_testing_accelerator",
+      "line": 25,
+      "file": "tests\\adg\\test_accelerator_wiring.py",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "test_run_hardening_p0_with_layer",
+      "line": 35,
+      "file": "tests\\adg\\test_accelerator_wiring.py",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "test_run_hardening_p0_with_apply",
+      "line": 47,
+      "file": "tests\\adg\\test_accelerator_wiring.py",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "test_run_hardening_p1",
+      "line": 56,
+      "file": "tests\\adg\\test_accelerator_wiring.py",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "test_run_incremental_update",
+      "line": 65,
+      "file": "tests\\adg\\test_accelerator_wiring.py",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "test_run_fast_test",
+      "line": 75,
+      "file": "tests\\adg\\test_accelerator_wiring.py",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "test_run_hardening_p0_returns_error_code",
+      "line": 86,
+      "file": "tests\\adg\\test_accelerator_wiring.py",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "test_dimension_config_structure",
+      "line": 97,
+      "file": "tests\\adg\\test_accelerator_wiring.py",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "test_layer_dirs_mapping",
+      "line": 110,
+      "file": "tests\\adg\\test_accelerator_wiring.py",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "test_p1_symbols_defined",
+      "line": 120,
+      "file": "tests\\adg\\test_accelerator_wiring.py",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "test_testing_proxy_exports",
+      "line": 137,
+      "file": "tests\\adg\\test_accelerator_wiring.py",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "test_test_selector_proxy_exports",
+      "line": 144,
+      "file": "tests\\adg\\test_accelerator_wiring.py",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "test_p0_proxy_exports",
+      "line": 152,
+      "file": "tests\\adg\\test_accelerator_wiring.py",
+      "reason": "No ADG call edges found"
+    },
+    {
+      "name": "test_p1_proxy_exports",
+      "line": 159,
+      "file": "tests\\adg\\test_accelerator_wiring.py",
+      "reason": "No ADG call edges found"
+    }
+  ]
+}

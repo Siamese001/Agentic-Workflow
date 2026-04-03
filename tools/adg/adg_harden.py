@@ -425,7 +425,7 @@ if __name__ == "__main__":
 
 def check_invariants() -> dict:
     """Check ADG hardening invariants.
-    
+
     Returns:
         Dict with invariant check results
     """
@@ -438,10 +438,10 @@ def check_invariants() -> dict:
 
 def enforce_invariants(fix: bool = False) -> dict:
     """Enforce ADG hardening invariants.
-    
+
     Args:
         fix: If True, attempt to fix violations
-        
+
     Returns:
         Dict with enforcement results
     """

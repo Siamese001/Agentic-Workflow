@@ -32,7 +32,7 @@ def main():
         JOIN edges e ON n.id = e.src_id
         WHERE e.relation_type = 'exports'
         AND n.id NOT IN (
-            SELECT DISTINCT dst_id FROM edges 
+            SELECT DISTINCT dst_id FROM edges
             WHERE relation_type IN ('calls', 'imports', 'reads_from', 'writes_to')
         )
         GROUP BY n.id
@@ -66,7 +66,7 @@ def main():
         JOIN nodes dst ON e.dst_id = dst.id
         WHERE e.relation_type = 'imports'
         AND dst.id NOT IN (
-            SELECT DISTINCT src_id FROM edges 
+            SELECT DISTINCT src_id FROM edges
             WHERE relation_type IN ('exports', 'calls')
         )
         ORDER BY e.source_file
@@ -85,7 +85,7 @@ def main():
         JOIN edges e ON n.id = e.src_id
         WHERE e.relation_type = 'exports'
         AND n.id NOT IN (
-            SELECT DISTINCT dst_id FROM edges 
+            SELECT DISTINCT dst_id FROM edges
             WHERE relation_type IN ('calls', 'imports', 'reads_from', 'writes_to')
         )
         GROUP BY n.layer
@@ -95,7 +95,7 @@ def main():
         print(f"  {r['layer']}: {r['count']} dead exports")
 
     conn.close()
-    
+
     # Save full results to JSON
     output = {
         'adg_database': str(db_path),
@@ -107,7 +107,7 @@ def main():
     output_path.parent.mkdir(parents=True, exist_ok=True)
     with open(output_path, 'w') as f:
         json.dump(output, f, indent=2)
-    
+
     print(f'\nFull results saved to: {output_path}')
     return 0
 
