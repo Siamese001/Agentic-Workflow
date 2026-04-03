@@ -4,6 +4,7 @@ Windsurf Skill: Plan Validation
 Validates plan documents against §10 standards before writing.
 """
 
+from typing import Any
 import re
 import sys
 from pathlib import Path
@@ -51,8 +52,11 @@ def validate_token_estimates(content: str) -> tuple[bool, list[str]]:
     """Validate token estimates are present and reasonable."""
     issues = []
 
-    # Check for token estimates in wave table
-    token_pattern = r"\|\s*\*\*Wave\s+\d+\*\*\s*\|[^|]*\|[^|]*\|\s*(\d+,?\d*)\s*\|"
+    # Check for token estimates in wave table - matches formats like:
+    # | W1 | P1 | Test | 5,000 | None | Ready | 6 modules |
+    # | Wave 1 | P1 | Test | 5,000 | None | Ready | 6 modules |
+    # | **Wave 1** | P1 | Test | 5,000 | None | Ready | 6 modules |
+    token_pattern = r"\|\s*(?:\*\*)?(?:Wave\s+)?\w+\d+(?:\*\*)?\s*\|[^|]*\|[^|]*\|\s*(\d[\d,]*)\s*\|"
     matches = re.findall(token_pattern, content)
 
     if not matches:
@@ -74,15 +78,43 @@ def validate_success_criteria(content: str) -> tuple[bool, list[str]]:
 
     # Look for success criteria column
     lines = content.split("\n")
-    for line in lines:
+    header_idx = None
+    for i, line in enumerate(lines):
         if "|" in line and "Success Criteria" in line:
-            # Check next few lines for criteria
-            idx = lines.index(line)
-            for i in range(idx + 2, min(idx + 8, len(lines))):
-                if "|" in lines[i] and "---" not in lines[i]:
-                    criteria = lines[i].split("|")[-2].strip()
-                    if not criteria or criteria.lower() in ["tbd", "todo", ""]:
-                        issues.append(f"Empty or placeholder success criteria: {criteria}")
+            header_idx = i
+            break
+
+    if header_idx is None:
+        return True, []  # No success criteria column found (optional)
+
+    # Find separator line and then data rows
+    separator_idx = None
+    for i in range(header_idx + 1, min(header_idx + 5, len(lines))):
+        if "|---" in lines[i]:
+            separator_idx = i
+            break
+
+    if separator_idx is None:
+        issues.append("Missing table separator after header")
+        return False, issues
+
+    # Check data rows after separator
+    data_rows_checked = 0
+    for i in range(separator_idx + 1, len(lines)):
+        line = lines[i]
+        if "|" not in line:
+            break  # End of table
+        if "---" in line:
+            continue  # Skip additional separators
+
+        cells = line.split("|")
+        if len(cells) >= 7:  # Has success criteria column
+            criteria = cells[-2].strip()  # Second-to-last column
+            if not criteria or criteria.lower() in ["tbd", "todo", ""]:
+                issues.append(f"Row {i}: Empty or placeholder success criteria")
+        data_rows_checked += 1
+        if data_rows_checked > 20:  # Safety limit
+            break
 
     return len(issues) == 0, issues
 
@@ -107,7 +139,7 @@ def validate_plan_location(file_path: str) -> tuple[bool, list[str]]:
     return True, []
 
 
-def validate_plan_format(content: str, file_path: str) -> dict[str, any]:
+def validate_plan_format(content: str, file_path: str) -> dict[str, Any]:
     """Main validation entry point."""
     result = {"valid": True, "issues": [], "warnings": []}
 
@@ -128,7 +160,7 @@ def validate_plan_format(content: str, file_path: str) -> dict[str, any]:
     return result
 
 
-def main(content: str, file_path: str) -> dict[str, any]:
+def main(content: str, file_path: str) -> dict[str, Any]:
     """Windsurf skill entry point."""
     return validate_plan_format(content, file_path)
 
@@ -142,7 +174,7 @@ if __name__ == "__main__":
     # Test mode
     if len(sys.argv) > 1:
         test_file = sys.argv[1]
-        with open(test_file) as f:
+        with open(test_file, encoding='utf-8') as f:
             content = f.read()
 
         result = validate_plan_format(content, test_file)

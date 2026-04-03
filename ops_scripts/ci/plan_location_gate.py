@@ -18,8 +18,7 @@ def get_staged_files(project_root: Path) -> list[Path]:
         cwd=project_root,
     )
     if result.returncode != 0:
-        print(f"Warning: Could not get staged files: {result.stderr}")
-        return []
+        raise RuntimeError(f"Git command failed: {result.stderr}")
 
     files = [project_root / f for f in result.stdout.strip().split("\n") if f]
     return files
