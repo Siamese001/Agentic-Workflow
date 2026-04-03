@@ -449,7 +449,9 @@ def generate_full_adg(
         if len(seed_files) >= 5:
             break
     if not seed_files:
-        seed_files = list(result.modules[:5])    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation
+        seed_files = list(
+            result.modules[:5]
+        )  # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation
     impact_report = predict_impact(result, seed_files)
     imp_summary = impact_summary(impact_report)
 
@@ -808,6 +810,8 @@ def _extract_timestamp(filename: str) -> str | None:
     return None
 
     # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging
+
+
 def _parse_timestamp(ts: str) -> datetime:
     """Parse timestamp string to datetime.
 
@@ -872,7 +876,9 @@ def _archive_old_artifacts(adg_dir: Path, current_ts: str, keep_runs: int = 1) -
                 # Extract timestamp from zip filename: adg_run_03132026_0512.zip    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime
                 ts = path.stem.replace("adg_run_", "")
             else:
-                ts = _extract_timestamp(path.name)    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging
+                ts = _extract_timestamp(
+                    path.name
+                )  # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging
 
             if ts:
                 runs[ts].append(path)
@@ -1164,7 +1170,11 @@ def _violation_propagation_stats(conn: sqlite3.Connection) -> dict[str, int | fl
     importers_of: dict[str, set[str]] = defaultdict(set)
     violating_modules: set[str] = set()
 
-    for src_name, relation_type, dst_name in rows:    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging
+    for (
+        src_name,
+        relation_type,
+        dst_name,
+    ) in rows:  # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging
         if relation_type == "imports" and src_name.startswith("ADG::Module::"):
             for prefix in _key_prefixes(_symbol_to_module_key(dst_name)):
                 importers_of[prefix].add(src_name)
@@ -1179,7 +1189,9 @@ def _violation_propagation_stats(conn: sqlite3.Connection) -> dict[str, int | fl
         visited: set[str] = {violating_module}
         frontier = {
             importer
-            for importer in importers_of.get(violating_key, set())    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging
+            for importer in importers_of.get(
+                violating_key, set()
+            )  # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging
             if importer not in violating_modules and importer not in visited
         }
         visited |= frontier
@@ -1188,7 +1200,9 @@ def _violation_propagation_stats(conn: sqlite3.Connection) -> dict[str, int | fl
         for _depth in range(2, 4):
             next_frontier: set[str] = set()
             for node in frontier:
-                node_key = _module_to_key(node)    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging
+                node_key = _module_to_key(
+                    node
+                )  # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging
                 for importer in importers_of.get(node_key, set()):
                     if importer not in visited:
                         visited.add(importer)
@@ -1205,7 +1219,7 @@ def _violation_propagation_stats(conn: sqlite3.Connection) -> dict[str, int | fl
             "SELECT symbol, COUNT(*) FROM edges WHERE relation_type='violation_propagates_through' GROUP BY symbol"
         ).fetchall()
     )
-    return {    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging
+    return {  # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging
         "eligible_edge_count": eligible_edge_count,
         "eligible_target_module_count": len(eligible_module_targets),
         "actual_edge_count": actual_edge_count,
@@ -1347,7 +1361,9 @@ def _cleanup_validation_files(adg_dir: Path, current_ts: str) -> None:
                 except OSError as e:
                     print(f"[ADG] Cleanup: error removing {val_file.name}: {e}")
 
-    if cleaned_count > 0:    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging
+    if (
+        cleaned_count > 0
+    ):  # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging
         print(f"[ADG] Cleanup: removed {cleaned_count} old validation/manifest files")
 
 
@@ -1767,18 +1783,77 @@ def _generate_standardized_reports(
         "external_to_internal",
         "unresolved_boundary",
     ]
+
+    # Query for unresolved imports dynamically from SQLite
+    # Find imports where dst_id doesn't resolve to a known module
+    unresolved_imports_by_prefix = {"agentic_core/L0_": 0, "agentic_core/L2_": 0, "agentic_core/L5_": 0}
+    apps_prefixes = [
+        "apps_lic",
+        "apps_rg",
+        "apps_eval",
+        "apps_exec",
+        "apps_research",
+        "apps_rfp",
+        "apps_shared",
+    ]
+    for app in apps_prefixes:
+        unresolved_imports_by_prefix[app] = 0
+    total_unresolved = 0
+    critical_path_unresolved = 0
+
+    try:
+        cursor = conn.execute(
+            """
+            SELECT e.src_id, e.dst_id, e.symbol, n.adg_name, n.layer, n.resolved_path
+            FROM edges e
+            JOIN nodes n ON e.src_id = n.id
+            WHERE e.relation_type = 'imports'
+            AND e.dst_id NOT IN (SELECT id FROM nodes WHERE entity_type = 'module')
+            LIMIT 1000
+            """
+        )
+        for row in cursor.fetchall():
+            total_unresolved += 1
+            adg_name = row["adg_name"] or ""
+            layer = row["layer"] or ""
+            resolved_path = row["resolved_path"] or ""
+
+            # Count by agentic_core layers
+            if layer == "L0_routing" or adg_name.startswith("L0_"):
+                unresolved_imports_by_prefix["agentic_core/L0_"] += 1
+                critical_path_unresolved += 1
+            elif layer == "L2_execution" or adg_name.startswith("L2_"):
+                unresolved_imports_by_prefix["agentic_core/L2_"] += 1
+                critical_path_unresolved += 1
+            elif layer == "L5_safety" or adg_name.startswith("L5_"):
+                unresolved_imports_by_prefix["agentic_core/L5_"] += 1
+                critical_path_unresolved += 1
+
+            # Count by apps packages
+            for app in apps_prefixes:
+                if app in adg_name or app in resolved_path:
+                    unresolved_imports_by_prefix[app] += 1
+                    break
+    except Exception as e:
+        print(f"[ADG] Warning: Failed to query unresolved imports: {e}")
+
     boundary_report = {
         "timestamp": ts,
         "schema_version": "1.0",
         "boundary_edge_counts": {
             edge_type: stored_edge_counts.get(edge_type, 0) for edge_type in boundary_edge_types
         },
-        "unresolved_imports": {"agentic_core/L0_": 0, "agentic_core/L2_": 0, "agentic_core/L5_": 0},
-        "core_path_analysis": {},
+        "unresolved_imports": unresolved_imports_by_prefix,
+        "core_path_analysis": {
+            "agentic_core/L0_": {"total_imports": unresolved_imports_by_prefix.get("agentic_core/L0_", 0)},
+            "agentic_core/L2_": {"total_imports": unresolved_imports_by_prefix.get("agentic_core/L2_", 0)},
+            "agentic_core/L5_": {"total_imports": unresolved_imports_by_prefix.get("agentic_core/L5_", 0)},
+            "apps_packages": {app: unresolved_imports_by_prefix.get(app, 0) for app in apps_prefixes},
+        },
         "boundary_metrics": {
-            "total_unresolved": 0,
-            "critical_path_unresolved": 0,
-            "boundary_completeness": "incomplete",
+            "total_unresolved": total_unresolved,
+            "critical_path_unresolved": critical_path_unresolved,
+            "boundary_completeness": "complete" if total_unresolved == 0 else "has_violations",
         },
     }
 
@@ -2136,12 +2211,8 @@ def main() -> None:
     parser.add_argument(
         "--batch-size", type=int, default=100, help="Batch size for file processing (default: 100)"
     )
-    parser.add_argument(
-        "--repair", action="store_true", help="Run repair orchestrator after ADG generation"
-    )
-    parser.add_argument(
-        "--repair-dry-run", action="store_true", help="Show repairs without applying them"
-    )
+    parser.add_argument("--repair", action="store_true", help="Run repair orchestrator after ADG generation")
+    parser.add_argument("--repair-dry-run", action="store_true", help="Show repairs without applying them")
 
     args = parser.parse_args()
 
