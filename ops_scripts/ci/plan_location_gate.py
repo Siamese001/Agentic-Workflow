@@ -3,6 +3,7 @@
 Per Constitutional Rule #9, this gate blocks commits when plans are found
 in prohibited locations (docs/reports/plans/).
 """
+
 import sys
 from pathlib import Path
 
