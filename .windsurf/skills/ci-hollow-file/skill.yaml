@@ -1,8 +1,0 @@
-name: ci-hollow-file
-description: Detects hollow files during creation/editing
-version: 1.0.0
-parameters:
-  file:
-    type: string
-    description: File to check for hollow file detection
-entrypoint: main.py

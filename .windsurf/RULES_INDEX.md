@@ -11,7 +11,7 @@
 
 | Rule | Layer | Timing | Type | Location | Status |
 |------|-------|--------|------|----------|--------|
-| **§0: DEFAULT ANALYSIS MODE (Tier-Aware)** | Windsurf | Before work | Behavioural | `.windsurf/skills/dependency-graph-analysis/` | ✅ ENFORCED |
+| **§0: DEFAULT ANALYSIS MODE (Tier-Aware)** | Windsurf | Before work | Behavioural | `.windsurf/skills/graph-analysis/` | ✅ ENFORCED |
 | **§ADG-1: ADG Repair Discipline** | Windsurf | Before work | Behavioural | `.windsurf/rules/adg-repair-discipline.md` | ✅ ENFORCED |
 | **§2.5: Test Failure Triage Protocol** | Both | Before repair | Behavioural + Structural | `docs/technical/TEST_FAILURE_decision_tree.md` | ✅ ENFORCED (CI: cond. 8b) |
 | **§8.5: HITL Enforcement** | Windsurf | During work | Behavioural | `.windsurf/rules/hitl-enforcement.md` | ✅ ENFORCED |

@@ -1,8 +1,0 @@
-name: ci-schema-validation
-description: Validates ADG schema field names via CI script
-version: 1.0.0
-parameters:
-  file:
-    type: string
-    description: File to check for ADG schema validation
-entrypoint: main.py

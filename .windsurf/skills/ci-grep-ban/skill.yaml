@@ -1,8 +1,0 @@
-name: ci-grep-ban
-description: Enforces ADG grep ban via existing CI script
-version: 1.0.0
-parameters:
-  files:
-    type: list
-    description: List of files to check for grep violations
-entrypoint: main.py
