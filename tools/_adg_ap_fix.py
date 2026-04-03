@@ -99,9 +99,10 @@ CATEGORY_TOKENS: dict[str, str] = {
 
 # ── Main ──────────────────────────────────────────────────────────────────
 
-
-
-
+def main():
+    """Stub main function - anti-pattern fix logic removed in function cleanup."""
+    print("_adg_ap_fix: Functionality removed in cleanup pass")
+    return 0
 
 if __name__ == "__main__":
     main()
