@@ -24,10 +24,9 @@ USAGE:
     health = manager.get_cluster_health()
 """
 
-import json
 import logging
 import time
-from collections import defaultdict, deque
+from collections import deque
 from dataclasses import dataclass, field
 from typing import Any, Dict, List, Optional, Tuple, Union
 from enum import Enum

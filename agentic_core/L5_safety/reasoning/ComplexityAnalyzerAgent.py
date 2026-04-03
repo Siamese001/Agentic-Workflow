@@ -18,7 +18,6 @@ from agentic_core.L5_safety.utils.complexity_analyzer_util import (
     ComplexityAnalyzer as _ComplexityAnalyzer,
     ComplexityViolation,
     ComplexityConfig,
-    ComplexityReport,
     calculate_cyclomatic_complexity as _calculate_cyclomatic_complexity,
 )
 

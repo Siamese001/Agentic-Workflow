@@ -16,7 +16,6 @@ from typing import Any
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 from agentic_core.L3_orchestration.utils.state_management_util import (
     StateManager as _StateManager,
-    StateEntry,
     IntegrityReport,
 )
 

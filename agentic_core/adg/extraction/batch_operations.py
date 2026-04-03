@@ -16,7 +16,6 @@ import redis
 
 from agentic_core.L2_execution.optimization import (
     BatchProcessor,
-    StreamingBatchProcessor,
 )
 
 logger = logging.getLogger(__name__)

@@ -17,7 +17,6 @@ from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 from agentic_core.L5_safety.utils.credential_scanner_util import (
     CredentialScanner as _CredentialScanner,
     CredentialMatch,
-    CredentialScanResult,
 )
 
 

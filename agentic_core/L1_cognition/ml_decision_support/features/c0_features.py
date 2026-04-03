@@ -8,11 +8,11 @@ semantic density, source reliability, completeness, and cache metrics.
 
 import hashlib
 import math
-from datetime import datetime, timedelta
-from typing import Dict, Any, Optional, List
+from datetime import datetime
+from typing import Dict, Any
 
 from .base_extractor import DeterministicFeatureExtractor
-from ..config.feature_schemas import FeatureSchemas, FeatureSchema
+from ..config.feature_schemas import FeatureSchemas
 
 
 class C0FeatureExtractor(DeterministicFeatureExtractor):

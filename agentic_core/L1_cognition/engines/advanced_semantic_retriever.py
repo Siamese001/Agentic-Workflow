@@ -5,14 +5,14 @@ Integrates Wave 4 components: Query Routing, Multi-Query Fusion, and Reranking.
 
 import asyncio
 import logging
-from typing import List, Dict, Any, Optional, Tuple
+from typing import List, Dict, Any, Optional
 from dataclasses import dataclass
 import time
 
 from .query_router import QueryRouter, QueryType
 from .multi_query_fusion import MultiQueryFusion, FusionResult
 from .reranking_engine import RerankingEngine, RerankingResult
-from .semantic_retriever import SemanticRetriever, RetrievalQuery, RetrievalResult
+from .semantic_retriever import SemanticRetriever, RetrievalResult
 
 logger = logging.getLogger(__name__)
 

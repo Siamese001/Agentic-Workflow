@@ -5,8 +5,8 @@ Token bucket rate limiting for requests.
 
 import logging
 import time
-from dataclasses import dataclass, field
-from typing import Any, Dict, List, Optional
+from dataclasses import dataclass
+from typing import Any, Dict, Optional
 from collections import defaultdict
 
 from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (

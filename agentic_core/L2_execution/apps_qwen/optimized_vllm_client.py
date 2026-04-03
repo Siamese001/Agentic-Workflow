@@ -12,7 +12,6 @@ from __future__ import annotations
 
 import asyncio
 import hashlib
-import json
 import logging
 import time
 from dataclasses import dataclass
@@ -23,7 +22,6 @@ import aiohttp
 import aiohttp.client_exceptions
 
 from agentic_core.L2_execution.healers.healing_tier_config import QWEN_GPU_MEM_UTIL
-from agentic_core.L2_execution.healers.qwen_health import get_gpu_memory_info
 
 logger = logging.getLogger(__name__)
 

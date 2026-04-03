@@ -10,12 +10,11 @@ import pickle
 import numpy as np
 from pathlib import Path
 from typing import Dict, List, Optional, Any, Tuple
-from datetime import datetime, timedelta
+from datetime import datetime
 
 from .base_model import BaseMLModel, ModelPrediction, ModelInput, PredictionType, DecisionMode
 from ..config.model_registry import DecisionMode
 from ..features.l1_features import L1FeatureExtractor
-from ..config.feature_schemas import FeatureSchemas
 
 
 class L1CapacityPlanner(BaseMLModel):

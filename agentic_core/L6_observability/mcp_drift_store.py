@@ -14,7 +14,7 @@ from __future__ import annotations
 
 import json
 import time
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
@@ -24,7 +24,6 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_emits_metric_event,
     _emit_records_execution_trace,
     _emit_records_telemetry_event,
-    _emit_stores_embedding,
     emit_determinism_digest,
     emit_replay_key,
 )

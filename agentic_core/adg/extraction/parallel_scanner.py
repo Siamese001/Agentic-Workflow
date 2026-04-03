@@ -23,7 +23,6 @@ from typing import Any, Callable
 from agentic_core.L2_execution.optimization import (
     AMDCPUOptimizer,
     CPUConfig,
-    get_cpu_optimizer,
 )
 
 logger = logging.getLogger(__name__)

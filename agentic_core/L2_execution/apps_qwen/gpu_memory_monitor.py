@@ -12,7 +12,6 @@ import time
 from dataclasses import dataclass
 from typing import Any, Callable, Optional
 
-import psutil
 
 logger = logging.getLogger(__name__)
 

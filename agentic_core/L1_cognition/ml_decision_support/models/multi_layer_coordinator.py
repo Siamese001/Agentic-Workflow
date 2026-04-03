@@ -14,7 +14,7 @@ from collections import defaultdict
 
 from .base_model import BaseMLModel, ModelPrediction, ModelInput, PredictionType, DecisionMode
 from ..config.model_registry import DecisionMode
-from ..config.feature_schemas import FeatureSchemas, FeatureSchema
+from ..config.feature_schemas import FeatureSchema
 
 
 class MultiLayerCoordinator(BaseMLModel):
@@ -90,7 +90,7 @@ class MultiLayerCoordinator(BaseMLModel):
 
     def _create_coordinator_schema(self) -> FeatureSchema:
         """Create feature schema for multi-layer coordinator."""
-        from ..config.feature_schemas import FeatureSchema, FeatureDefinition, FeatureType, NullHandling
+        from ..config.feature_schemas import FeatureSchema, FeatureDefinition, FeatureType
 
         features = [
             FeatureDefinition(

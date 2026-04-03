@@ -16,7 +16,6 @@ from typing import Any
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 from agentic_core.L5_safety.utils.dependency_pruning_util import (
     DependencyPruner as _DependencyPruner,
-    PruningResult,
     find_unused_deptry,
     remove_from_requirements_txt,
 )

@@ -26,7 +26,7 @@ import psutil
 import threading
 import time
 from collections import deque
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from queue import Queue, Empty
 from typing import Any, Dict, List, Optional
 

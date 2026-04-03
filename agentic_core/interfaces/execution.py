@@ -1,5 +1,5 @@
 """Execution interfaces - Stub implementation for test compatibility."""
-from typing import Any, Callable, Coroutine, Dict, Optional, Protocol
+from typing import Any, Optional
 from enum import Enum
 
 

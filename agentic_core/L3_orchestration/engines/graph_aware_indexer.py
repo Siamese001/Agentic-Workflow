@@ -18,7 +18,6 @@ import hashlib
 import json
 import logging
 from dataclasses import dataclass, field
-from pathlib import Path
 from typing import Any, Optional
 
 from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (

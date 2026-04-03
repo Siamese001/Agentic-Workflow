@@ -4,9 +4,7 @@ Retains routing authority based on explicit policies.
 Computes budgets and thresholds for retrieval decisions.
 """
 
-import hashlib
 import logging
-import time
 from dataclasses import dataclass, field
 from enum import Enum
 from typing import Any, Dict, List, Optional

@@ -230,7 +230,6 @@ class _SandboxAirlockVisitor(BaseStructuralVisitor):
     def visit_Call(self, node: ast.Call) -> None:
         """Extract sandbox airlock edges from call expressions."""
         from agentic_core.adg.schema_util import (
-            canonical_name,
             SANDBOX_ENVELOPE_CLASSES,
             CAPABILITY_TOKEN_CLASSES,
             WORK_CONTRACT_METHODS,

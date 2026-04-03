@@ -1,7 +1,6 @@
 """Learning maturity visitors for G26-G27, G32 gaps."""
 
 import ast
-from typing import Any
 
 from agentic_core.adg.extraction.edge_builder import Edge
 from agentic_core.adg.extraction.visitors import BaseStructuralVisitor, VisitorContext, register_visitor

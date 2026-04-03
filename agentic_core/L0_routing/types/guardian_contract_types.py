@@ -34,17 +34,12 @@ from agentic_core.L0_routing.enforcement.mutation_prohibition import assert_no_p
 # Import V15 exceptions from zero-dependency module (breaks circular import)
 from agentic_core.L0_routing.types.v15_exceptions import (
     V15EnforcementError,
-    V15HardFailAbort,
-    V15SoftFailAbort,
     is_v15_enforced,
-    is_v15_hard_fail,
-    is_v15_soft_fail,
 )
 
 from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     LayerSegment,
     _emit_agent_executes_agent,
-    _emit_applies_guardrail,
     _emit_authorize_and_execute,
     _emit_blocks_direct_write,
     _emit_captures_evaluation_metric,
@@ -72,8 +67,6 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_routes_through,  # noqa: E402
     _emit_routes_to_agent,
     _emit_routes_to_capability,
-    _emit_signs_execution_trace,
-    _emit_snapshots_state,
     _emit_stores_embedding,
     _emit_transcripts_response,
     _emit_updates_meta_learning_state,

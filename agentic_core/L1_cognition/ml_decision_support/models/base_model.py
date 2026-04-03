@@ -5,17 +5,15 @@ Abstract base class for all ML models in the decision support layer.
 Ensures consistent interface, governance compliance, and auditability.
 """
 
-import pickle
-import time
 from abc import ABC, abstractmethod
 from datetime import datetime
 from enum import Enum
-from typing import Dict, List, Optional, Any, Union, Tuple
-from dataclasses import dataclass, asdict
+from typing import Dict, List, Optional, Any, Tuple
+from dataclasses import dataclass
 from pathlib import Path
 
 from agentic_core.L_CONTRACTS.lifecycle_trace_contract import _emit_records_execution_trace
-from ..config.model_registry import DecisionMode, ModelStatus
+from ..config.model_registry import DecisionMode
 
 
 class PredictionType(Enum):

@@ -5,8 +5,8 @@ Stale item eviction, access log updates, and zero generation cost for cache hits
 
 import logging
 import time
-from dataclasses import dataclass, field
-from typing import Any, Dict, List, Optional, Set
+from dataclasses import dataclass
+from typing import Any, Dict, List, Optional
 from collections import OrderedDict
 
 from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (

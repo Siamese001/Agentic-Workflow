@@ -19,11 +19,10 @@ USAGE:
     # Access dashboard at http://localhost:8080
 """
 
-import json
 import logging
 import threading
 import time
-from datetime import datetime, timedelta
+from datetime import datetime
 from typing import Any, Dict, List, Optional
 from dataclasses import dataclass, field
 

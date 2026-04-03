@@ -10,8 +10,7 @@ import asyncio
 import logging
 import mmap
 from dataclasses import dataclass
-from pathlib import Path
-from typing import Any, BinaryIO
+from typing import Any
 
 import aiofiles
 

@@ -6,9 +6,8 @@ behavioral patterns, system metrics, anomaly indicators,
 and detection optimization signals.
 """
 
-import math
-from datetime import datetime, timedelta
-from typing import Dict, Any, Optional, List
+from datetime import datetime
+from typing import Dict, Any
 
 from .base_extractor import DeterministicFeatureExtractor
 from ..config.feature_schemas import FeatureSchemas, FeatureSchema
@@ -36,7 +35,7 @@ class AdvancedL6FeatureExtractor(DeterministicFeatureExtractor):
 
     def _create_advanced_l6_schema(self) -> FeatureSchema:
         """Create feature schema for advanced L6 detector."""
-        from ..config.feature_schemas import FeatureSchema, FeatureDefinition, FeatureType, NullHandling
+        from ..config.feature_schemas import FeatureSchema, FeatureDefinition, FeatureType
 
         features = [
             FeatureDefinition(

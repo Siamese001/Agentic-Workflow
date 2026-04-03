@@ -11,7 +11,6 @@ from typing import Any
 from agentic_core.L0_routing.types.l0_instruction_packet import InstructionPacket
 from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     LayerSegment,
-    _emit_applies_guardrail,
     _emit_authorize_and_execute,
     _emit_blocks_direct_write,
     _emit_captures_evaluation_metric,
@@ -37,7 +36,6 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_routes_through,
     _emit_routes_to_agent,
     _emit_routes_to_capability,
-    _emit_snapshots_state,
     _emit_stores_embedding,
     _emit_transcripts_response,
     _emit_updates_meta_learning_state,

@@ -6,8 +6,8 @@ extraction, community detection, search, and guardrail settings.
 
 from __future__ import annotations
 
-from dataclasses import dataclass, field
-from typing import Dict, List, Optional
+from dataclasses import dataclass
+from typing import Optional
 
 @dataclass
 class GraphRAGConfig:

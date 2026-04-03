@@ -24,7 +24,6 @@ except ImportError:
 from .base_model import BaseMLModel, ModelPrediction, ModelInput, PredictionType, DecisionMode
 from ..config.model_registry import DecisionMode
 from ..features.advanced_c0_features import AdvancedC0FeatureExtractor
-from ..config.feature_schemas import FeatureSchemas
 
 
 class AdvancedC0Reranker(BaseMLModel):

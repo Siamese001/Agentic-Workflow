@@ -24,7 +24,6 @@ except ImportError:
 from .base_model import BaseMLModel, ModelPrediction, ModelInput, PredictionType, DecisionMode
 from ..config.model_registry import DecisionMode
 from ..features.c1_features import C1FeatureExtractor
-from ..config.feature_schemas import FeatureSchemas
 
 
 class C1QueryOptimizer(BaseMLModel):

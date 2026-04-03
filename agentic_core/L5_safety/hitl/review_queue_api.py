@@ -12,15 +12,12 @@ Reference: docs/reference/HITL/HITL Implementations v2.md
 
 from __future__ import annotations
 
-import json
 import logging
-from dataclasses import asdict
 from typing import Any
 
 from flask import Flask, jsonify, request
 
 from agentic_core.L5_safety.hitl.hitl_escalation_activator import (
-    EscalationPriority,
     EscalationRequest,
     get_hitl_escalation_activator,
 )
@@ -39,10 +36,6 @@ def _get_runtime_graph():
         _runtime_graph = RuntimeGraph()
     return _runtime_graph
 
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-    LayerSegment,
-    _emit_records_execution_trace,
-)
 
 logger = logging.getLogger(__name__)
 

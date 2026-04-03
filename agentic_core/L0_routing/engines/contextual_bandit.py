@@ -9,21 +9,18 @@ from __future__ import annotations
 
 import numpy as np
 import logging
-from typing import Dict, List, Tuple, Optional, Any
+from typing import Dict, List, Optional, Any
 from dataclasses import dataclass, field
-from collections import defaultdict
 import json
 import time
 
 from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-    _emit_captures_pattern,
     _emit_records_learning_event,
     _emit_feeds_meta_learning,
     _emit_updates_routing_strategy,
     _emit_stores_learning_state,
     _emit_records_execution_trace,
     _emit_emits_metric_event,
-    _emit_observes_runtime_state,
 )
 
 logger = logging.getLogger(__name__)

@@ -6,9 +6,7 @@ clustering, and community report generation in GraphRAG.
 
 from __future__ import annotations
 
-from dataclasses import dataclass, field
-from datetime import datetime
-from typing import Any, Dict, List, Optional, Set
+from dataclasses import dataclass
 
 # Placeholder for community types - full implementation was created and scanned by ADG
 # This file serves as a marker that the implementation was completed

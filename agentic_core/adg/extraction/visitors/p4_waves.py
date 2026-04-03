@@ -1,7 +1,6 @@
 """P4 observability & telemetry wave visitors for G31, G33-G35 gaps."""
 
 import ast
-from typing import Any
 
 from agentic_core.adg.extraction.edge_builder import Edge
 from agentic_core.adg.extraction.visitors import BaseStructuralVisitor, VisitorContext, register_visitor

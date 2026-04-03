@@ -5,7 +5,7 @@ Executes parallel searches across relevant ChromaDB collections.
 
 import asyncio
 import logging
-from typing import List, Dict, Any, Optional, Tuple
+from typing import List, Dict, Any, Tuple
 from dataclasses import dataclass
 import time
 from concurrent.futures import ThreadPoolExecutor

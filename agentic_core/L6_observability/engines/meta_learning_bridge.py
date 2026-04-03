@@ -37,7 +37,6 @@ from pathlib import Path
 from typing import Any
 
 from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-    LayerSegment,
     _emit_feeds_meta_learning,
     _emit_records_learning_event,
     _emit_stores_learning_state,

@@ -23,7 +23,6 @@ except ImportError:
 from .base_model import BaseMLModel, ModelPrediction, ModelInput, PredictionType, DecisionMode
 from ..config.model_registry import DecisionMode
 from ..features.advanced_l0_features import AdvancedL0FeatureExtractor
-from ..config.feature_schemas import FeatureSchemas
 
 
 class AdvancedL0Router(BaseMLModel):

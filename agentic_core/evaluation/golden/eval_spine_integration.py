@@ -10,7 +10,7 @@ import logging
 from concurrent.futures import Future, ThreadPoolExecutor
 from typing import Any, Optional
 
-from agentic_core.runtime.eval_spine import EvalSpine, EvalSpineReport
+from agentic_core.runtime.eval_spine import EvalSpine
 from agentic_core.evaluation.golden.golden_evaluator import (
     GoldenDatasetEvaluator,
     GoldenEvalResult,

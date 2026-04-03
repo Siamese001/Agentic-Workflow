@@ -7,8 +7,7 @@ optimization opportunities, and performance trends.
 """
 
 import math
-from datetime import datetime, timedelta
-from typing import Dict, Any, Optional, List
+from typing import Dict, Any
 
 from .base_extractor import DeterministicFeatureExtractor
 from ..config.feature_schemas import FeatureSchemas, FeatureSchema
@@ -37,7 +36,7 @@ class L4FeatureExtractor(DeterministicFeatureExtractor):
 
     def _create_l4_schema(self) -> FeatureSchema:
         """Create feature schema for L4 performance optimizer."""
-        from ..config.feature_schemas import FeatureSchema, FeatureDefinition, FeatureType, NullHandling
+        from ..config.feature_schemas import FeatureSchema, FeatureDefinition, FeatureType
 
         features = [
             FeatureDefinition(

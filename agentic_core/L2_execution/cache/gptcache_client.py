@@ -9,14 +9,8 @@ from __future__ import annotations
 import hashlib
 import logging
 import os
-import time
 from typing import Any, Optional
 
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-    LayerSegment,
-    _emit_records_execution_trace,
-    _emit_stores_embedding,
-)
 from agentic_core.L2_execution.healers.bmg_embedding_similarity import bmg_embed_text
 
 Logger = logging.getLogger(__name__)

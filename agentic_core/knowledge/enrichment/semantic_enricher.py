@@ -25,9 +25,7 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     LayerSegment,
     _emit_records_execution_trace,
     _emit_stores_embedding,
-    _emit_updates_meta_learning_state,
 )
-from agentic_core.embeddings.embedding_input_guard import GuardedText
 
 Logger = logging.getLogger(__name__)
 

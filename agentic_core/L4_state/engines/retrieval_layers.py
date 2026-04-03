@@ -23,7 +23,7 @@ from openai import OpenAI
 # Add project root to path for imports
 sys.path.insert(0, str(Path(__file__).parent.parent.parent.parent))
 
-from agentic_core.cache import get_hot_cache, build_rag_topk_key
+from agentic_core.cache import get_hot_cache
 from agentic_core.L4_state.config.memory_store_config import MemoryStoreConfig
 
 Logger = logging.getLogger(__name__)

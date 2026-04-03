@@ -6,8 +6,8 @@ optimization and policy-driven decision boundaries.
 
 import logging
 import time
-from dataclasses import dataclass, field
-from typing import Any, Dict, List, Optional
+from dataclasses import dataclass
+from typing import Any, Dict, Optional
 from collections import deque
 
 from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (

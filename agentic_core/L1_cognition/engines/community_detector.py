@@ -6,7 +6,7 @@ for knowledge graphs, with hierarchical clustering support.
 
 from __future__ import annotations
 
-from typing import Any, Dict, List, Optional
+from typing import Optional
 
 from agentic_core.L1_cognition.types.community_types import CommunityDetectionConfig
 

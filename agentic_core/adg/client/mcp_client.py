@@ -26,7 +26,6 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_dispatches_agent,
     _emit_dispatches_execution_plan,
     _emit_dispatches_healing_run,
-    _emit_escalates_failure,
     _emit_escalates_to_human,
     _emit_gated_by_confidence,
     _emit_hard_fails_untranscripted,

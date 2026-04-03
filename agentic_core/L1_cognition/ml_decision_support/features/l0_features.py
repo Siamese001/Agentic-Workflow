@@ -7,11 +7,10 @@ path success history, system load, semantic similarity, and policy metadata.
 """
 
 import hashlib
-from typing import Dict, Any, Optional, List
-from datetime import datetime
+from typing import Dict, Any
 
 from .base_extractor import DeterministicFeatureExtractor
-from ..config.feature_schemas import FeatureSchemas, FeatureSchema
+from ..config.feature_schemas import FeatureSchemas
 
 
 class L0FeatureExtractor(DeterministicFeatureExtractor):

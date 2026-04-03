@@ -28,7 +28,6 @@ from agentic_core.L5_safety.types.human_decision_artifact_types import (
 )
 from agentic_core.L6_observability.engines.hitl_dpo_pair_generator import (
     DefaultDeterministicDPOPairGenerator,
-    DPOPair,
 )
 from agentic_core.L6_observability.types.dpo_types import DPOExampleId
 from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
@@ -46,7 +45,6 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_improves_agent_policy,
     _emit_links_execution_to_snapshot,
     _emit_links_incident_trace,
-    _emit_observes_runtime_state,
     _emit_orchestrates_workflow,
     _emit_reads_policy_state,
     _emit_records_execution_trace,
@@ -64,7 +62,6 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_updates_monitoring_state,
     _emit_updates_routing_strategy,
     _emit_validated_by_safety_plane,
-    _emit_validates_agent_capability,
     _emit_writes_learning_snapshot,
     _emit_writes_observability_log,
     _emit_writes_through,

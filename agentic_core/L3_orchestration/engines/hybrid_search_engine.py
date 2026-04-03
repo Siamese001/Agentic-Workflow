@@ -19,7 +19,6 @@ from typing import Any, Optional
 from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     LayerSegment,
     _emit_records_execution_trace,
-    _emit_stores_embedding,
 )
 
 Logger = logging.getLogger(__name__)
@@ -138,7 +137,6 @@ class HybridSearchEngine:
             return results
 
         try:
-            import chromadb
 
             # Get embedding if not provided
             if query_embedding is None:

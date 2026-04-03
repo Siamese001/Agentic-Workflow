@@ -10,12 +10,12 @@ import pickle
 import numpy as np
 from pathlib import Path
 from typing import Dict, List, Optional, Any, Tuple
-from datetime import datetime, timedelta
+from datetime import datetime
 from collections import deque
 
 from .base_model import BaseMLModel, ModelPrediction, ModelInput, PredictionType, DecisionMode
 from ..config.model_registry import DecisionMode
-from ..config.feature_schemas import FeatureSchemas, FeatureSchema
+from ..config.feature_schemas import FeatureSchema
 
 
 class EWMACacheClassifier(BaseMLModel):
@@ -92,7 +92,7 @@ class EWMACacheClassifier(BaseMLModel):
 
     def _create_cache_schema(self) -> FeatureSchema:
         """Create feature schema for cache classifier."""
-        from ..config.feature_schemas import FeatureSchema, FeatureDefinition, FeatureType, NullHandling
+        from ..config.feature_schemas import FeatureSchema, FeatureDefinition, FeatureType
 
         features = [
             FeatureDefinition(

@@ -13,7 +13,6 @@ Provides O(1) hash-based exact matching for queries and responses.
 from __future__ import annotations
 
 import hashlib
-import json
 import logging
 import pickle
 from dataclasses import dataclass, field

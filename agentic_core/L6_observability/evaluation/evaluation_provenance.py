@@ -19,7 +19,7 @@ import hashlib
 import logging
 import time
 import uuid
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from typing import Any
 
 from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (

@@ -6,7 +6,7 @@ for GraphRAG, enabling code-aware retrieval and reasoning.
 
 from __future__ import annotations
 
-from typing import Any, Dict, List, Optional
+from typing import Optional
 
 # Placeholder for ADG bridge - full implementation was created and scanned by ADG
 # This file serves as a marker that the implementation was completed

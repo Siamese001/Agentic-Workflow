@@ -6,7 +6,7 @@ Tagging for query attribution and analysis.
 import logging
 import re
 from dataclasses import dataclass, field
-from typing import Any, Dict, List, Optional, Set
+from typing import Any, Dict, List, Optional
 
 from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     LayerSegment,

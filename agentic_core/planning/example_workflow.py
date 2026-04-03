@@ -5,7 +5,6 @@ This example shows how to integrate the ContextWindowEstimator into a typical
 planning workflow that executes multiple phases and waves.
 """
 
-import json
 import logging
 from pathlib import Path
 from typing import Dict, List, Any, Optional

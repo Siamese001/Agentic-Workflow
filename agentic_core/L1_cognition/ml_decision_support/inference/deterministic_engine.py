@@ -6,14 +6,12 @@ governance compliance, and audit logging.
 """
 
 import time
-from datetime import datetime
-from typing import Dict, List, Optional, Any, Union
+from typing import Dict, List, Optional, Any
 from dataclasses import dataclass
-from pathlib import Path
 
 from agentic_core.L_CONTRACTS.lifecycle_trace_contract import _emit_records_execution_trace
 from ..config.model_registry import DecisionMode
-from ..models.base_model import BaseMLModel, ModelPrediction, ModelInput
+from ..models.base_model import BaseMLModel, ModelPrediction
 from ..inference.shadow_logger import ShadowLogger, ShadowMode
 from ..inference.replay_harness import ReplayHarness
 

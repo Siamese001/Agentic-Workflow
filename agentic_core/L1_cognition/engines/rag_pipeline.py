@@ -8,14 +8,13 @@ from __future__ import annotations
 
 import uuid
 from datetime import datetime
-from typing import Any, Dict, List, Optional, Set, Tuple
+from typing import Any, Dict, List, Optional
 
 from agentic_core.L1_cognition.config.graphrag_config import get_config
 from agentic_core.L1_cognition.engines.context_assembler import create_context_assembler
 from agentic_core.L1_cognition.engines.prompt_template_manager import create_prompt_template_manager
 from agentic_core.L1_cognition.engines.search_fusion_engine import SearchFusionEngine
 from agentic_core.L1_cognition.types.rag_types import (
-    GenerationRequest,
     GenerationResult,
     RAGConfig,
     RAGContext,
@@ -23,11 +22,8 @@ from agentic_core.L1_cognition.types.rag_types import (
     RAGQuery,
     RAGResponse,
 )
-from agentic_core.L1_cognition.types.search_types import SearchQuery
 from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-    LayerSegment,
     _emit_agent_executes_agent,
-    _emit_applies_guardrail,
     _emit_authorize_and_execute,
     _emit_blocks_direct_write,
     _emit_captures_evaluation_metric,
@@ -42,11 +38,9 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_gated_by_confidence,
     _emit_hard_fails_untranscripted,
     _emit_invokes_evaluation,
-    _emit_links_execution_to_snapshot,
     _emit_observes_runtime_state,
     _emit_orchestrates_workflow,
     _emit_reads_policy_state,  # noqa: E402
-    _emit_records_execution_trace,
     _emit_records_healing_outcome,
     _emit_records_telemetry_event,
     _emit_records_tool_invocation,
@@ -54,11 +48,8 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_routes_through,  # noqa: E402
     _emit_routes_to_agent,
     _emit_routes_to_capability,
-    _emit_signs_execution_trace,
-    _emit_snapshots_state,
     _emit_stores_embedding,
     _emit_transcripts_response,
-    _emit_updates_meta_learning_state,
     _emit_validates_agent_capability,
     _emit_validates_capability,
     _emit_verifies_boundary,

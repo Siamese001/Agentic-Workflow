@@ -17,8 +17,6 @@ from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 from agentic_core.L5_safety.utils.code_detector_util import (
     CodeDetector as _CodeDetector,
     Detection as _Detection,
-    DetectionType,
-    Severity,
 )
 
 

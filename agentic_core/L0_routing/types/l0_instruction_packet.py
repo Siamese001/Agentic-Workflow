@@ -28,7 +28,6 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_observes_runtime_state,
     _emit_orchestrates_workflow,
     _emit_reads_policy_state,
-    _emit_records_execution_trace,
     _emit_records_healing_outcome,
     _emit_records_telemetry_event,
     _emit_records_tool_invocation,

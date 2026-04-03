@@ -19,11 +19,10 @@ USAGE:
     # Access 3D visualization at http://localhost:8081
 """
 
-import json
 import logging
 import math
 import time
-from collections import defaultdict, deque
+from collections import defaultdict
 from dataclasses import dataclass, field
 from typing import Any, Dict, List, Optional, Tuple, Set
 from enum import Enum

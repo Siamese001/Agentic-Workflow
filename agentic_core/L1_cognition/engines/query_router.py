@@ -4,10 +4,9 @@ Intelligent query routing to relevant ChromaDB collections.
 """
 
 import logging
-from typing import List, Dict, Any, Set, Optional
+from typing import List, Dict, Any
 from dataclasses import dataclass
 from enum import Enum
-import re
 
 logger = logging.getLogger(__name__)
 

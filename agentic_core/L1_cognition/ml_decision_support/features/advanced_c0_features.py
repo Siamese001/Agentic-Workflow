@@ -7,8 +7,8 @@ and retrieval optimization signals.
 """
 
 import math
-from datetime import datetime, timedelta
-from typing import Dict, Any, Optional, List
+from datetime import datetime
+from typing import Dict, Any
 
 from .base_extractor import DeterministicFeatureExtractor
 from ..config.feature_schemas import FeatureSchemas, FeatureSchema
@@ -36,7 +36,7 @@ class AdvancedC0FeatureExtractor(DeterministicFeatureExtractor):
 
     def _create_advanced_c0_schema(self) -> FeatureSchema:
         """Create feature schema for advanced C0 reranker."""
-        from ..config.feature_schemas import FeatureSchema, FeatureDefinition, FeatureType, NullHandling
+        from ..config.feature_schemas import FeatureSchema, FeatureDefinition, FeatureType
 
         features = [
             FeatureDefinition(

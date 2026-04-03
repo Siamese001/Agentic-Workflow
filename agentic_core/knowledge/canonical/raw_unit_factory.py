@@ -8,7 +8,6 @@ import hashlib
 import logging
 import uuid
 from datetime import datetime
-from pathlib import Path
 from typing import Dict, List, Optional, Tuple
 
 from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (

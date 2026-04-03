@@ -19,7 +19,6 @@ except ImportError:
 from .base_model import BaseMLModel, ModelPrediction, ModelInput, PredictionType, DecisionMode
 from ..config.model_registry import DecisionMode
 from ..features.l5_features import L5FeatureExtractor
-from ..config.feature_schemas import FeatureSchemas
 
 
 class L5RiskCalibrator(BaseMLModel):

@@ -6,9 +6,8 @@ conflict resolution, and graph lineage preservation for Pipeline B Phase B2.
 
 import json
 import logging
-from datetime import datetime
 from pathlib import Path
-from typing import Dict, List, Optional, Set, Tuple
+from typing import Dict, List, Optional, Set
 
 from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     LayerSegment,
@@ -17,9 +16,7 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 
 from .canonical_types import (
     CanonicalRawUnit,
-    CanonicalIdentifier,
     CanonicalDiff,
-    CanonicalUnitStatus,
 )
 
 log = logging.getLogger(__name__)

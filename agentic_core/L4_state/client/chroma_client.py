@@ -8,7 +8,6 @@ from typing import List, Dict, Any, Optional
 import logging
 from pathlib import Path
 import hashlib
-import numpy as np
 
 logger = logging.getLogger(__name__)
 

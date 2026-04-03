@@ -15,12 +15,6 @@ from typing import Any, Callable
 
 from agentic_core.L2_execution.optimization import (
     get_file_processor,
-    BatchProcessor,
-    shutdown_file_processor,
-)
-from agentic_core.adg.extraction.parallel_scanner import (
-    get_parallel_scanner,
-    shutdown_parallel_scanner,
 )
 
 logger = logging.getLogger(__name__)

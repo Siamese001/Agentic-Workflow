@@ -18,7 +18,6 @@ from agentic_core.L3_orchestration.utils.subatomic_hop_util import (
     create_hop_context as _create_hop_context,
     run_self_tests as _run_self_tests,
     ensure_dependency as _ensure_dependency,
-    SovereignDependencyError,
     SubatomicHopResult,
     HopContext,
 )

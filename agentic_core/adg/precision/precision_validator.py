@@ -6,13 +6,10 @@ Enforces hard gates and non-regression guarantees.
 """
 
 from dataclasses import dataclass, field
-from typing import Dict, List, Any, Optional
-import json
-import time
+from typing import Dict, Any, Optional
 
 from .precision_schema import (
-    PrecisionConfig, PrecisionMetrics, ValidationReport,
-    SemanticEdgeType
+    PrecisionConfig, PrecisionMetrics, ValidationReport
 )
 
 @dataclass

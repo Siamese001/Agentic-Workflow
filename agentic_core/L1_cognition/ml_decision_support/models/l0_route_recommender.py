@@ -19,7 +19,6 @@ from sklearn.pipeline import Pipeline
 from .base_model import BaseMLModel, ModelPrediction, ModelInput, PredictionType, DecisionMode
 from ..config.model_registry import DecisionMode
 from ..features.l0_features import L0FeatureExtractor
-from ..config.feature_schemas import FeatureSchemas
 
 
 class L0RouteRecommender(BaseMLModel):

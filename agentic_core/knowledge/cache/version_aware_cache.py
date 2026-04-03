@@ -6,7 +6,7 @@ Multi-factor cache with semantic lookup, freshness management, and ACL integrati
 import logging
 import time
 from dataclasses import dataclass, field
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any, Dict, List, Optional
 
 from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     LayerSegment,
@@ -14,8 +14,8 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_records_telemetry_event,
 )
 
-from agentic_core.knowledge.cache.catalog_keymaker import CatalogKeymaker, CacheKey
-from agentic_core.knowledge.cache.policy_evaluator import PolicyEvaluator, PolicyResult
+from agentic_core.knowledge.cache.catalog_keymaker import CatalogKeymaker
+from agentic_core.knowledge.cache.policy_evaluator import PolicyEvaluator
 from agentic_core.knowledge.cache.fast_terminal import FastTerminal
 
 log = logging.getLogger(__name__)

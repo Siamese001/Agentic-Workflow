@@ -57,7 +57,7 @@ class _PromptSlotVisitor(BaseStructuralVisitor):
 
     def visit_Call(self, node: ast.Call) -> None:
         """Extract prompt slot edges from call expressions."""
-        from agentic_core.adg.schema_util import PROMPT_FIELD_TO_SLOT, canonical_name
+        from agentic_core.adg.schema_util import canonical_name
         from agentic_core.adg.extraction.static_scanner import Edge as _Edge
 
         func_sym = self._sym(node.func)

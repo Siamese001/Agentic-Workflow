@@ -6,7 +6,6 @@ Freshness checking, exact ACL verification, and perfect match detection.
 import logging
 import time
 from dataclasses import dataclass, field
-from datetime import datetime
 from typing import Any, Dict, List, Optional
 
 from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (

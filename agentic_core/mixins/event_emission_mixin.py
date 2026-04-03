@@ -14,7 +14,6 @@ _SOURCE = Path(__file__).resolve().parent.parent / "runtime" / "types" / "sovere
 _spec = importlib.util.spec_from_file_location("agentic_core.runtime.types.sovereign_events_types", _SOURCE)
 _mod = importlib.util.module_from_spec(_spec)
 _spec.loader.exec_module(_mod)
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import _emit_records_execution_traces
 event_emission_mixin = _mod.event_emission_mixin
 SovereignEvent = _mod.SovereignEvent
 __all__ = ["event_emission_mixin", "SovereignEvent"]

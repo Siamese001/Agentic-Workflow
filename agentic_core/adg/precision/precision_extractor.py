@@ -10,12 +10,10 @@ import hashlib
 from collections import defaultdict, deque
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Dict, List, Set, Optional, Any
+from typing import Dict, List
 
 from .precision_schema import (
-    PrecisionNodeType, NodeSpan, PrecisionNodeAttributes,
-    SemanticEdgeType, SemanticEdgeAttributes,
-    TypeSurface, VariableAttributes, PrecisionGraph,
+    NodeSpan, SemanticEdgeType, PrecisionGraph,
     PrecisionConfig, PrecisionMetrics
 )
 

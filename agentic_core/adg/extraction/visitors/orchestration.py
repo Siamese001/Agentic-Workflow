@@ -1,7 +1,6 @@
 """Orchestration visitors for P1-P3 orchestration and healing gaps (G22, G28-G30)."""
 
 import ast
-from typing import Any
 
 from agentic_core.adg.extraction.edge_builder import Edge
 from agentic_core.adg.extraction.visitors import BaseStructuralVisitor, VisitorContext, register_visitor

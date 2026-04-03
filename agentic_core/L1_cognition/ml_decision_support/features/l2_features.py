@@ -7,8 +7,8 @@ escalation history, healing complexity, and availability metrics.
 """
 
 import math
-from datetime import datetime, timedelta
-from typing import Dict, Any, Optional, List
+from datetime import datetime
+from typing import Dict, Any
 
 from .base_extractor import DeterministicFeatureExtractor
 from ..config.feature_schemas import FeatureSchemas, FeatureSchema
@@ -37,7 +37,7 @@ class L2FeatureExtractor(DeterministicFeatureExtractor):
 
     def _create_l2_schema(self) -> FeatureSchema:
         """Create feature schema for L2 healer selector."""
-        from ..config.feature_schemas import FeatureSchema, FeatureDefinition, FeatureType, NullHandling
+        from ..config.feature_schemas import FeatureSchema, FeatureDefinition, FeatureType
 
         features = [
             FeatureDefinition(

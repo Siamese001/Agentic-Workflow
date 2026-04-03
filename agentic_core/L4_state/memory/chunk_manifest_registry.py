@@ -15,7 +15,6 @@ Provides persistent storage for enriched chunk manifests with:
 
 from __future__ import annotations
 
-import hashlib
 import json
 import logging
 import sqlite3
@@ -27,11 +26,7 @@ from typing import Any, Optional
 from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     LayerSegment,
     _emit_records_execution_trace,
-    _emit_pulls_context,
-    _emit_reads_through,
-    _emit_writes_through,
     _emit_stores_embedding,
-    _emit_captures_evaluation_metric,
     _emit_records_learning_event,
 )
 

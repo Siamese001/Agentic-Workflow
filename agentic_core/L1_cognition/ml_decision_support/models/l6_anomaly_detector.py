@@ -21,7 +21,6 @@ except ImportError:
 from .base_model import BaseMLModel, ModelPrediction, ModelInput, PredictionType, DecisionMode
 from ..config.model_registry import DecisionMode
 from ..features.l6_features import L6FeatureExtractor
-from ..config.feature_schemas import FeatureSchemas
 
 
 class L6AnomalyDetector(BaseMLModel):

@@ -7,8 +7,7 @@ and routing optimization signals.
 """
 
 import math
-from datetime import datetime, timedelta
-from typing import Dict, Any, Optional, List
+from typing import Dict, Any
 
 from .base_extractor import DeterministicFeatureExtractor
 from ..config.feature_schemas import FeatureSchemas, FeatureSchema
@@ -36,7 +35,7 @@ class AdvancedL0FeatureExtractor(DeterministicFeatureExtractor):
 
     def _create_advanced_l0_schema(self) -> FeatureSchema:
         """Create feature schema for advanced L0 router."""
-        from ..config.feature_schemas import FeatureSchema, FeatureDefinition, FeatureType, NullHandling
+        from ..config.feature_schemas import FeatureSchema, FeatureDefinition, FeatureType
 
         features = [
             FeatureDefinition(

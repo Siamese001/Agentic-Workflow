@@ -30,16 +30,6 @@ Design rationale:
 from __future__ import annotations
 
 # Import canonical constants from L0 (L0 can be imported by any layer)
-from agentic_core.L0_routing.config.path_constants import (
-    BATCH_SIZE,
-    BUFFER_SIZE,
-    DEFAULT_SLEEP,
-    DEFAULT_TIMEOUT,
-    MAX_DEPTH,
-    MAX_FILES,
-    MAX_RETRIES,
-    THRESHOLD,
-)
 
 import warnings
 from collections.abc import Mapping, Sequence

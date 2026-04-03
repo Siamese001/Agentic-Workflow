@@ -15,11 +15,10 @@ Usage:
 
 from __future__ import annotations
 
-import ast
 import logging
 import os
 import re
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
@@ -28,7 +27,6 @@ from agentic_core.L0_routing.config.path_constants import (
     ARCHIVES_DIR,
     REPORTS_DIR,
     SOVEREIGN_EXCLUDED_FOLDERS,
-    THRESHOLD,
 )
 from agentic_core.L0_routing.enforcement.mutation_prohibition import assert_no_persistent_write
 

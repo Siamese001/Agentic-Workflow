@@ -18,7 +18,6 @@ from sklearn.pipeline import Pipeline
 from .base_model import BaseMLModel, ModelPrediction, ModelInput, PredictionType, DecisionMode
 from ..config.model_registry import DecisionMode
 from ..features.l2_features import L2FeatureExtractor
-from ..config.feature_schemas import FeatureSchemas
 
 
 class L2HealerSelector(BaseMLModel):

@@ -13,7 +13,7 @@ from datetime import datetime, timedelta
 from typing import Dict, Any, Optional, List
 
 from .base_extractor import DeterministicFeatureExtractor
-from ..config.feature_schemas import FeatureSchemas, FeatureSchema
+from ..config.feature_schemas import FeatureSchemas
 
 
 class L6FeatureExtractor(DeterministicFeatureExtractor):

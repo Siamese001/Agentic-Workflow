@@ -8,7 +8,7 @@ import hashlib
 import json
 import logging
 from dataclasses import dataclass, field
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, Optional
 
 from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     LayerSegment,

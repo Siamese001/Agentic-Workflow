@@ -7,11 +7,10 @@ and rollback capability with full audit logging.
 
 import hashlib
 import json
-import time
 from datetime import datetime
 from enum import Enum
 from pathlib import Path
-from typing import Dict, List, Optional, Any, Tuple
+from typing import Dict, List, Optional, Any
 from dataclasses import dataclass, asdict
 
 # from agentic_core.L4_canonical.state.snapshot_manager import SnapshotManager

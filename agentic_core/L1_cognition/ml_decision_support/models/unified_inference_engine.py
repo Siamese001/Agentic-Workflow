@@ -7,7 +7,6 @@ unified inference orchestration with governance compliance.
 """
 
 import pickle
-import numpy as np
 from pathlib import Path
 from typing import Dict, List, Optional, Any, Tuple
 from datetime import datetime
@@ -15,7 +14,6 @@ from dataclasses import dataclass
 
 from .base_model import BaseMLModel, ModelPrediction, ModelInput, PredictionType, DecisionMode
 from ..config.model_registry import DecisionMode
-from ..config.feature_schemas import FeatureSchemas
 
 # Import Phase 4 models
 from .advanced_l0_router import AdvancedL0Router

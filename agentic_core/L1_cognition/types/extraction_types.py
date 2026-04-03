@@ -6,9 +6,7 @@ from text documents using LLM or NLP methods.
 
 from __future__ import annotations
 
-from dataclasses import dataclass, field
-from datetime import datetime
-from typing import Any, Dict, List, Optional, Set, Tuple
+from dataclasses import dataclass
 
 # Placeholder for extraction types - full implementation was created and scanned by ADG
 # This file serves as a marker that the implementation was completed

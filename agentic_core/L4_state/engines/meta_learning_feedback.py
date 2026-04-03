@@ -29,10 +29,6 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_improves_agent_policy,
     _emit_feeds_meta_learning,
 )
-from agentic_core.evaluation.retrieval.l4_registries import (
-    RetrievalEvaluationRecord,
-    ContextCompletenessSnapshot,
-)
 
 Logger = logging.getLogger(__name__)
 

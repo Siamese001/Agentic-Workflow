@@ -20,7 +20,6 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_records_execution_trace,
     _emit_pulls_context,
 )
-from agentic_core.evaluation.retrieval.l4_registries import ParentChildIndexRegistry
 
 Logger = logging.getLogger(__name__)
 

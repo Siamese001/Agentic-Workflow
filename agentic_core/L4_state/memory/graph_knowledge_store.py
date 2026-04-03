@@ -6,7 +6,7 @@ with FTS5 search and graph traversal capabilities.
 
 from __future__ import annotations
 
-from typing import Any, Dict, List, Optional
+from typing import List, Optional
 
 from agentic_core.L4_state.types.graph_store_types import GraphEntity, IGraphStore
 

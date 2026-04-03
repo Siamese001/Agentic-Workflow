@@ -19,7 +19,6 @@ import time
 import uuid
 from dataclasses import dataclass
 from enum import Enum
-from typing import Any
 
 from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_applies_guardrail,
