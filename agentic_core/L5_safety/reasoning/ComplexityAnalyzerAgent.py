@@ -1,449 +1,75 @@
-"""
-ComplexityAnalyzerAgent - Facade Shell for Zero-Loss Consolidation.
+"""Complexity Analyzer Agent - Backward compatibility shim.
 
-L5 Sovereign Guardian for Cognitive Complexity.
-Converted to Facade: 2026-01-31 (Phase 5 Consolidation)
+DEPRECATED: This agent has been converted to a utility script.
+Use agentic_core.L5_safety.utils.complexity_analyzer_util instead.
 
-FACADE PATTERN: Delegates to UnifiedAgent while preserving 100% legacy compatibility.
-All original imports and signatures work without modification.
-
-Rationale:
-    - Enforces McCabe Cyclomatic Complexity limits.
-    - Detects "God Functions" (too many lines/branches).
-    - Hardened with Atomic Reporting and SovereignBase integration.
+This module maintains backward compatibility by delegating to the utility.
+Will be removed in a future release.
 """
 
 from __future__ import annotations
 
-import ast
-import logging
-import threading
-import uuid
-from dataclasses import dataclass
+import warnings
 from pathlib import Path
 from typing import Any
 
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
-from agentic_core.L0_routing.config.path_constants import TESTS_DIR
-from agentic_core.L3_orchestration.reasoning.UnifiedAgent import (
-    ValidationResult,
-    ValidatorStrategy,
+from agentic_core.L5_safety.utils.complexity_analyzer_util import (
+    ComplexityAnalyzer as _ComplexityAnalyzer,
+    ComplexityViolation,
+    ComplexityConfig,
+    ComplexityReport,
+    calculate_cyclomatic_complexity as _calculate_cyclomatic_complexity,
 )
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-    LayerSegment,
-    _emit_agent_executes_agent,
-    _emit_applies_guardrail,  # noqa: E402
-    _emit_authorize_and_execute,
-    _emit_blocks_direct_write,
-    _emit_captures_evaluation_metric,
-    _emit_captures_execution_output,
-    _emit_checks_agent_registry,
-    _emit_coordinates_agents,
-    _emit_dispatches_agent,
-    _emit_dispatches_execution_plan,
-    _emit_dispatches_healing_run,  # noqa: E402
-    _emit_escalates_failure,
-    _emit_escalates_to_human,  # noqa: E402
-    _emit_gated_by_confidence,
-    _emit_hard_fails_untranscripted,
-    _emit_invokes_evaluation,
-    _emit_links_execution_to_snapshot,
-    _emit_observes_runtime_state,
-    _emit_orchestrates_workflow,
-    _emit_reads_policy_state,  # noqa: E402
-    _emit_records_execution_trace,
-    _emit_records_healing_outcome,
-    _emit_records_telemetry_event,
-    _emit_records_tool_invocation,
-    _emit_records_workflow_lineage,
-    _emit_routes_through,  # noqa: E402
-    _emit_routes_to_agent,
-    _emit_routes_to_capability,
-    _emit_signs_execution_trace,
-    _emit_snapshots_state,
-    _emit_stores_embedding,
-    _emit_transcripts_response,
-    _emit_updates_meta_learning_state,
-    _emit_validated_by_safety_plane,
-    _emit_validates_agent_capability,
-    _emit_validates_capability,
-    _emit_verifies_boundary,
-    _emit_verifies_policy,
-    _emit_writes_via_uwg,
-    emit_determinism_digest,  # noqa: E402
-    emit_replay_key,  # noqa: E402
-)
-
-_emit_authorize_and_execute("p2", "ComplexityAnalyzerAgent", "execution_auth")
-_emit_validates_capability("p2", "ComplexityAnalyzerAgent", "capability_check")
-_emit_routes_to_capability("p2", "ComplexityAnalyzerAgent", "capability_route")
-_emit_writes_via_uwg("p2", "ComplexityAnalyzerAgent", "uwg_write")
-_emit_blocks_direct_write("p2", "ComplexityAnalyzerAgent", "direct_write_block")
-_emit_records_tool_invocation("p2", "ComplexityAnalyzerAgent", "tool_invocation")
-_emit_captures_execution_output("p2", "ComplexityAnalyzerAgent", "exec_output")
-_emit_dispatches_agent("p3", "ComplexityAnalyzerAgent", "agent_dispatch")
-_emit_coordinates_agents("p3", "ComplexityAnalyzerAgent", "agent_coordination")
-_emit_records_workflow_lineage("p3", "ComplexityAnalyzerAgent", "workflow_lineage")
-_emit_records_healing_outcome("p3", "ComplexityAnalyzerAgent", "healing_outcome")
-_emit_escalates_failure("p3", "ComplexityAnalyzerAgent", "failure_escalation")
-_emit_orchestrates_workflow("p3", "ComplexityAnalyzerAgent", "workflow_orchestration")
-_emit_dispatches_healing_run("p3", "ComplexityAnalyzerAgent", "healing_dispatch")
-_emit_invokes_evaluation("p3", "ComplexityAnalyzerAgent", "evaluation_signal")
-_emit_records_telemetry_event("p4", "ComplexityAnalyzerAgent", "telemetry_event")
-_emit_captures_evaluation_metric("p4", "ComplexityAnalyzerAgent", "eval_metric")
-_emit_stores_embedding("p4", "ComplexityAnalyzerAgent", "embedding_store")
-_emit_updates_meta_learning_state("p4", "ComplexityAnalyzerAgent", "meta_learning")
-_emit_links_execution_to_snapshot("p4", "ComplexityAnalyzerAgent", "exec_snapshot_link")
-from agentic_core.utils.decorators_compat_util import standard_heal
-
-emit_replay_key("p0", "ComplexityAnalyzerAgent")
-emit_determinism_digest("p0", "ComplexityAnalyzerAgent")
-
-_emit_dispatches_healing_run("p1", "ComplexityAnalyzerAgent", "L5")
-_emit_routes_through("p1", "ComplexityAnalyzerAgent", "L5")
-_emit_checks_agent_registry("p1", "ComplexityAnalyzerAgent", "agent_registry")
-_emit_validates_agent_capability("p1", "ComplexityAnalyzerAgent", "capability")
-_emit_dispatches_execution_plan("p1", "ComplexityAnalyzerAgent", "exec_plan")
-_emit_agent_executes_agent("p1", "ComplexityAnalyzerAgent", "sub_agent")
-_emit_routes_to_agent("p1", "ComplexityAnalyzerAgent", "target_agent")
-_emit_verifies_policy("p1", "ComplexityAnalyzerAgent", "policy_check")
-_emit_observes_runtime_state("p1", "ComplexityAnalyzerAgent", "runtime_state")
-_emit_verifies_boundary("p1", "ComplexityAnalyzerAgent", "boundary_check")
-_emit_transcripts_response("p1", "ComplexityAnalyzerAgent", "transcript")
-_emit_hard_fails_untranscripted("p1", "ComplexityAnalyzerAgent")
-_emit_gated_by_confidence("p1", "ComplexityAnalyzerAgent", "confidence_gate")
-_emit_escalates_to_human("p1", "ComplexityAnalyzerAgent", "L5")
-_emit_reads_policy_state("p1", "ComplexityAnalyzerAgent", "L5")
-
-_emit_applies_guardrail("p0", "ComplexityAnalyzerAgent", "p0_governance")
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-    _emit_agent_executes_agent,
-    _emit_captures_pattern,
-    _emit_captures_runtime_anomaly,
-    _emit_checks_agent_registry,
-    _emit_dispatches_execution_plan,
-    _emit_emits_metric_event,
-    _emit_execution_terminates_at_uwg,
-    _emit_feeds_meta_learning,
-    _emit_gated_by_confidence,
-    _emit_hard_fails_untranscripted,
-    _emit_improves_agent_policy,
-    _emit_invokes_eval,
-    _emit_links_incident_trace,
-    _emit_observes_runtime_state,
-    _emit_proposal_commits_routing,
-    _emit_pulls_context,
-    _emit_reads_environ,
-    _emit_reads_runtime_state,
-    _emit_records_execution_trace,
-    _emit_records_incident_event,
-    _emit_records_learning_event,
-    _emit_routes_to_agent,
-    _emit_stores_learning_state,
-    _emit_transcripts_response,
-    _emit_triggers_alert,
-    _emit_updates_monitoring_state,
-    _emit_updates_routing_strategy,
-    _emit_validated_by_safety_plane,
-    _emit_validates_agent_capability,
-    _emit_verifies_boundary,
-    _emit_verifies_policy,
-    _emit_writes_learning_snapshot,
-    _emit_writes_observability_log,
-    _emit_writes_through,
-)
-
-_emit_emits_metric_event("ComplexityAnalyzerAgent", "p4obs", "metric_1")
-_emit_emits_metric_event("ComplexityAnalyzerAgent", "p4obs", "metric_2")
-_emit_emits_metric_event("ComplexityAnalyzerAgent", "p4obs", "metric_3")
-_emit_emits_metric_event("ComplexityAnalyzerAgent", "p4obs", "metric_4")
-_emit_emits_metric_event("ComplexityAnalyzerAgent", "p4obs", "metric_5")
-_emit_emits_metric_event("ComplexityAnalyzerAgent", "p4obs", "metric_6")
-_emit_records_incident_event("ComplexityAnalyzerAgent", "p4obs", "incident")
-_emit_captures_runtime_anomaly("ComplexityAnalyzerAgent", "p4obs", "anomaly")
-_emit_writes_observability_log("ComplexityAnalyzerAgent", "p4obs", "obs_log")
-_emit_updates_monitoring_state("ComplexityAnalyzerAgent", "p4obs", "mon_state")
-_emit_triggers_alert("ComplexityAnalyzerAgent", "p4obs", "alert")
-_emit_links_incident_trace("ComplexityAnalyzerAgent", "p4obs", "trace_link")
-_emit_captures_pattern("ComplexityAnalyzerAgent", "p3lm", "pattern")
-_emit_records_learning_event("ComplexityAnalyzerAgent", "p3lm", "learning_event")
-_emit_writes_learning_snapshot("ComplexityAnalyzerAgent", "p3lm", "snapshot")
-_emit_feeds_meta_learning("ComplexityAnalyzerAgent", "p3lm", "meta_feed")
-_emit_updates_routing_strategy("ComplexityAnalyzerAgent", "p3lm", "routing")
-_emit_improves_agent_policy("ComplexityAnalyzerAgent", "p3lm", "policy")
-_emit_stores_learning_state("ComplexityAnalyzerAgent", "p3lm", "state")
-_emit_records_execution_trace("ComplexityAnalyzerAgent", "L0_ROUTING", "p2_trace_1")
-_emit_records_execution_trace("ComplexityAnalyzerAgent", "L1_REASONING", "p2_trace_2")
-_emit_records_execution_trace("ComplexityAnalyzerAgent", "L2_EXECUTION", "p2_trace_3")
-_emit_records_execution_trace("ComplexityAnalyzerAgent", "L3_ORCHESTRATION", "p2_trace_4")
-_emit_records_execution_trace("ComplexityAnalyzerAgent", "L4_STATE", "p2_trace_5")
-_emit_reads_environ("ComplexityAnalyzerAgent", "env_read", "p2_env_1")
-_emit_reads_environ("ComplexityAnalyzerAgent", "env_read", "p2_env_2")
-_emit_reads_runtime_state("ComplexityAnalyzerAgent", "runtime_state", "p2_rt_1")
-_emit_reads_runtime_state("ComplexityAnalyzerAgent", "runtime_state", "p2_rt_2")
-_emit_pulls_context("p1", "ComplexityAnalyzerAgent", "context_pull")
-_emit_pulls_context("p1", "ComplexityAnalyzerAgent", "context_pull_2")
-_emit_execution_terminates_at_uwg("p1", "ComplexityAnalyzerAgent", "uwg_term")
-_emit_execution_terminates_at_uwg("p1", "ComplexityAnalyzerAgent", "uwg_term_2")
-_emit_writes_through("p1", "ComplexityAnalyzerAgent", "write_through")
-_emit_writes_through("p1", "ComplexityAnalyzerAgent", "write_through_2")
-_emit_validated_by_safety_plane("p1", "ComplexityAnalyzerAgent", "safety_validation")
-_emit_invokes_eval("p1", "ComplexityAnalyzerAgent", "eval_call")
-_emit_proposal_commits_routing("p1", "ComplexityAnalyzerAgent", "routing_commit")
-
-Logger = logging.getLogger(__name__)
-
-
-class ComplexityAnalyzerStrategy(ValidatorStrategy):
-    """
-    Complexity analysis strategy preserving original ComplexityAnalyzerAgent logic.
-
-    FACADE PATTERN: Encapsulates the complexity analysis logic while delegating
-    to the unified strategy pattern.
-    """
-
-    def __init__(self, config: dict[str, Any]) -> None:
-        """Initialize with complexity analysis configuration."""
-        import uuid as _uuid  # noqa: PLC0415
-
-        _emit_snapshots_state(str(_uuid.uuid4()), "ComplexityAnalyzerStrategy.__init__", "state_snapshot")
-        super().__init__(config)
-        self.max_cyclomatic_complexity = config.get("max_cyclomatic_complexity", 10)
-        self.max_function_length = config.get("max_function_length", 50)
-        self.max_arguments = config.get("max_arguments", 6)
-
-    async def execute(self, agent: Any, **kwargs: Any) -> ValidationResult:
-        """Execute complexity analysis via unified strategy."""
-        _emit_validated_by_safety_plane(str(uuid.uuid4()), "ComplexityAnalyzerStrategy.execute", "L5_POLICY")
-        import uuid as _uuid  # noqa: PLC0415
-
-        _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L5_POLICY, "ComplexityAnalyzerStrategy.execute")
-        import hashlib as _hashlib  # noqa: PLC0415
-
-        _seg_hash = _hashlib.sha256(f"{_trace_id}:ComplexityAnalyzerStrategy.execute".encode()).hexdigest()[
-            :24
-        ]
-        _emit_signs_execution_trace(_trace_id, _seg_hash, _seg_hash, 0)
-
-        agent.log_info("Executing complexity analysis...")
-
-        # Delegate to the actual analyzer methods on the agent
-        target_path = kwargs.get("target_path")
-        if target_path and hasattr(agent, "analyze_repository"):
-            report = agent.analyze_repository(Path(target_path))
-            violations = report.get("violations", [])
-            return ValidationResult(
-                passed=len(violations) == 0,
-                issues=[f"{v['function_name']}: {v['type']}" for v in violations],
-                suggestions=["Refactor complex functions"],
-                metadata={"report": report},
-            )
-
-        return ValidationResult(
-            passed=True,
-            issues=[],
-            suggestions=[],
-            metadata={"agent": "ComplexityAnalyzerAgent"},
-        )
-
-
-@dataclass
-class ComplexityViolation:
-    file_path: Path
-    function_name: str
-    line_number: int
-    complexity: int
-    max_allowed: int
-    type: str  # 'CYCLOMATIC', 'LENGTH', 'ARGUMENTS'
-    severity: str
-
-
-@dataclass
-class ComplexityConfig:
-    max_cyclomatic_complexity: int = 10  # Standard strict limit
-    max_function_length: int = 50  # Lines of code
-    max_arguments: int = 6  # Function arguments
-    ignore_tests: bool = True
-    project_root: Path | None = None
 
 
 class ComplexityAnalyzerAgent(SovereignBaseAgent):
     """
-    [L5 VALIDATOR] static analysis for code complexity.
-    Prevents cognitive overload and unverifiable logic.
+    DEPRECATED: Complexity Analyzer Agent - now delegates to complexity_analyzer_util.
 
-    FACADE SHELL: Delegates to UnifiedAgent with ComplexityAnalyzerStrategy.
-    SIGNATURE COMPATIBILITY: 100% preserved - no breaking changes.
+    This class is maintained for backward compatibility only.
+    New code should use agentic_core.L5_safety.utils.complexity_analyzer_util directly.
     """
 
-    def __init__(self, config: ComplexityConfig | None = None):
-        self._complexity_config = config or ComplexityConfig()
-        self.project_root = self._complexity_config.project_root or Path.cwd()
-        self._lock = threading.RLock()
-        self._violations: list[ComplexityViolation] = []
+    def __init__(self, config: ComplexityConfig | None = None) -> None:
+        """Initialize ComplexityAnalyzerAgent (deprecated, use complexity_analyzer_util instead)."""
+        super().__init__(name="ComplexityAnalyzerAgent", layer="L5")
 
-        # [PHASE 5] Initialize unified analyzer strategy
-        self._unified_strategy: ComplexityAnalyzerStrategy | None = ComplexityAnalyzerStrategy(
-            {
-                "max_cyclomatic_complexity": self._complexity_config.max_cyclomatic_complexity,
-                "max_function_length": self._complexity_config.max_function_length,
-                "max_arguments": self._complexity_config.max_arguments,
-            },
+        warnings.warn(
+            "ComplexityAnalyzerAgent is deprecated. Use agentic_core.L5_safety.utils.complexity_analyzer_util instead.",
+            DeprecationWarning,
+            stacklevel=2,
         )
 
-    # guardian: allow-type-erasure
-    def analyze_repository(self, target_path: Path = None) -> dict[str, Any]:
+        self._config = config or ComplexityConfig()
+        self._analyzer = _ComplexityAnalyzer(self._config)
+        self.project_root = self._config.project_root or Path.cwd()
+
+    def analyze_repository(self, target_path: Path | None = None) -> dict[str, Any]:
         """Entry point for full scan."""
-        import uuid as _uuid  # noqa: PLC0415
-
-        _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(
-            _trace_id, LayerSegment.L5_POLICY, "ComplexityAnalyzerAgent.analyze_repository"
-        )
-        import hashlib as _hashlib  # noqa: PLC0415
-
-        _seg_hash = _hashlib.sha256(
-            f"{_trace_id}:ComplexityAnalyzerAgent.analyze_repository".encode()
-        ).hexdigest()[:24]
-        _emit_signs_execution_trace(_trace_id, _seg_hash, _seg_hash, 0)
-
-        target = target_path or self.project_root
-        self._violations = []
-
-        files = list(target.rglob("*.py"))
-        for file_path in files:
-            if self._complexity_config.ignore_tests and (
-                "test" in file_path.name or TESTS_DIR in file_path.parts
-            ):
-                continue
-            self.analyze_file(file_path)
-
-        return {
-            "total_files": len(files),
-            "violations": [v.__dict__ for v in self._violations],
-            "status": "FAIL" if self._violations else "PASS",
-        }
+        report = self._analyzer.analyze_repository(target_path)
+        return report.to_dict()
 
     def analyze_file(self, file_path: Path) -> list[ComplexityViolation]:
         """Analyze a single file for complexity metrics."""
-        if not file_path.exists():
-            return []
+        return self._analyzer.analyze_file(file_path)
 
-        try:
-            content = file_path.read_text(encoding="utf-8")
-            tree = ast.parse(content)
-        # guardian: allow-silent-swallow
-        except (ValueError, TypeError) as e:
-            Logger.error(f"Failed to parse {file_path}: {e}")
-            return []
-
-        violations = []
-        for node in ast.walk(tree):
-            if isinstance(node, ast.FunctionDef | ast.AsyncFunctionDef):
-                # 1. Cyclomatic Complexity
-                complexity = self._calculate_complexity(node)
-                if complexity > self._complexity_config.max_cyclomatic_complexity:
-                    v = ComplexityViolation(
-                        file_path=file_path,
-                        function_name=node.name,
-                        line_number=node.lineno,
-                        complexity=complexity,
-                        max_allowed=self._complexity_config.max_cyclomatic_complexity,
-                        type="CYCLOMATIC",
-                        severity="CRITICAL" if complexity > 20 else "WARNING",
-                    )
-                    violations.append(v)
-
-                # 2. Function Length
-                length = node.end_lineno - node.lineno
-                if length > self._complexity_config.max_function_length:
-                    violations.append(
-                        ComplexityViolation(
-                            file_path=file_path,
-                            function_name=node.name,
-                            line_number=node.lineno,
-                            complexity=length,
-                            max_allowed=self._complexity_config.max_function_length,
-                            type="LENGTH",
-                            severity="WARNING",
-                        ),
-                    )
-
-                # 3. Argument Count
-                arg_count = len(node.args.args)
-                if arg_count > self._complexity_config.max_arguments:
-                    violations.append(
-                        ComplexityViolation(
-                            file_path=file_path,
-                            function_name=node.name,
-                            line_number=node.lineno,
-                            complexity=arg_count,
-                            max_allowed=self._complexity_config.max_arguments,
-                            type="ARGUMENTS",
-                            severity="INFO",
-                        ),
-                    )
-
-        with self._lock:
-            self._violations.extend(violations)
-        return violations
-
-    def _calculate_complexity(self, node: ast.AST) -> int:
+    def _calculate_complexity(self, node: Any) -> int:
         """Computes McCabe Cyclomatic Complexity."""
-        complexity = 1
-        for child in ast.walk(node):
-            # Branching nodes
-            if isinstance(
-                child,
-                ast.If
-                | ast.While
-                | ast.For
-                | ast.AsyncFor
-                | ast.ExceptHandler
-                | ast.With
-                | ast.AsyncWith
-                | ast.Assert,
-            ):
-                complexity += 1
-            # Boolean operators (and/or counts as branches)
-            elif isinstance(child, ast.BoolOp):
-                complexity += len(child.values) - 1
-        return complexity
+        import ast
+        if isinstance(node, ast.AST):
+            return _calculate_cyclomatic_complexity(node)
+        return 1
 
-    @standard_heal
-    # guardian: allow-type-erasure
-    def heal_repository(self, dry_run: bool = True, execute: bool = False, **kwargs) -> dict[str, Any]:
-        """
-        Sovereign Interface.
-        Note: Complexity cannot be auto-healed safely, only reported.
-        """
-        report = self.analyze_repository(self.project_root)
-        Logger.info(f"[Complexity] Found {len(report['violations'])} violations.")
-        return {
-            "violations_found": len(report["violations"]),
-            "violations_fixed": 0,  # Cannot auto-fix complexity
-            "report": report,
-        }
+    def heal_repository(
+        self,
+        dry_run: bool = True,
+        execute: bool = False,
+        **kwargs: Any,
+    ) -> dict[str, Any]:
+        """Sovereign Interface - report complexity issues."""
+        return self._analyzer.heal_repository(dry_run, execute, **kwargs)
 
-    # guardian: allow-type-erasure
-    def heal(self, violation: dict) -> dict:
-        """Heal complexity violations using standard_heal decorator pattern.
-
-        Args:
-            violation: Dictionary containing violation details with keys:
-                - type: Type of violation (cyclomatic, length, arguments)
-                - path: Path to the violating file
-                - function_name: Name of the complex function
-
-        Returns:
-            Dictionary with healing results following standard_heal format.
-        """
-        Logger.info("[COMPLEXITY_ANALYZER] Complexity violations require manual refactoring")
-        return {
-            "violations_fixed": 0,
-            "violations_found": 1,
-            "errors": 0,
-            "skipped": 1,
-            "reason": "Complexity violations require manual refactoring",
-        }
+    def heal(self, violation: dict[str, Any]) -> dict[str, Any]:
+        """Heal complexity violations."""
+        return self._analyzer.heal(violation)
