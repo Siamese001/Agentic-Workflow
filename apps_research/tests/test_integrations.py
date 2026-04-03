@@ -5,7 +5,6 @@ import unittest
 
 from apps_research.integrations import ExecutionAdapter, ObservabilityAdapter
 from apps_research.types import (
-    ResearchConfig,
     ResearchRequest,
     ResearchResult,
     ResearchSection,

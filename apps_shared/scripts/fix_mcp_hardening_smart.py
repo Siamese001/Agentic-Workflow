@@ -1,5 +1,5 @@
 """Fix MCP hardening smart - Stub implementation for test compatibility."""
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict
 
 
 def fix_mcp_hardening(config_path: str) -> Dict[str, Any]:

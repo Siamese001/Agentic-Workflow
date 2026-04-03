@@ -1,6 +1,5 @@
 """Circuit Breaker - Stub implementation for test compatibility."""
 from dataclasses import dataclass
-from typing import Any
 
 
 @dataclass

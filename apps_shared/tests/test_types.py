@@ -5,7 +5,6 @@ SVP Infrastructure Testing - Core type definitions.
 """
 import unittest
 
-from pydantic import ValidationError
 
 from apps_shared.types.risk_level_types import RiskLevel
 

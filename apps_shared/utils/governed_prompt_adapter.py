@@ -13,7 +13,6 @@ import hmac
 import logging
 from typing import Any
 
-from agentic_core.L2_execution.providers import get_clock
 from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     LayerSegment,
     _emit_authorize_and_execute,

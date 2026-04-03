@@ -26,7 +26,6 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 from apps_shared.config.operational_config import (
     is_allowed_duplicate,
     is_excluded_path,
-    should_scan_directory,
 )
 
 _log = logging.getLogger(__name__)

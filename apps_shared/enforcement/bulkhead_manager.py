@@ -1,6 +1,6 @@
 """Bulkhead Manager - Stub implementation for test compatibility."""
 from enum import Enum
-from typing import Any, Callable, Awaitable
+from typing import Any, Callable
 
 class TaskPriority(Enum):
     LOW = 1

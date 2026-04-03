@@ -83,7 +83,6 @@ from apps_rfp.types.rfp_types import (
     ProposalSection,
     RfpRequest,
     RiskItem,
-    RiskSeverity,
     RoadmapPhase,
 )
 

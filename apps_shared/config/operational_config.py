@@ -11,11 +11,9 @@ import sys
 from pathlib import Path
 
 from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-    LayerSegment,
     _emit_applies_guardrail,
     _emit_reads_environ,
     _emit_reads_policy_state,
-    _emit_records_execution_trace,
     _emit_snapshots_state,
     _emit_validates_capability,
     emit_determinism_digest,

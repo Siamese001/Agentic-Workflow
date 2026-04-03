@@ -6,16 +6,12 @@ import unittest
 from pydantic import ValidationError
 
 from apps_research.types import (
-    ArtifactMode,
-    AudienceStyle,
-    ClaimType,
     ComparisonRow,
     ResearchConfig,
     ResearchRequest,
     ResearchResult,
     ResearchRunSummary,
     ResearchSection,
-    ResearchStatus,
     SourceEntry,
 )
 

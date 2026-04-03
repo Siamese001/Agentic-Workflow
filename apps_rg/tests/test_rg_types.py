@@ -7,16 +7,12 @@ from pydantic import ValidationError
 
 from apps_rg.types import (
     ExperienceEntry,
-    ExperienceLevel,
     ResumeConfig,
-    ResumeFormat,
     ResumeRequest,
     ResumeResult,
     ResumeRunSummary,
     ResumeSection,
-    ResumeStatus,
     SkillMatch,
-    TargetIndustry,
 )
 
 

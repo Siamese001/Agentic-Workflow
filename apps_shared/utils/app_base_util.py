@@ -32,7 +32,6 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_gated_by_confidence,
     _emit_hard_fails_untranscripted,
     _emit_invokes_evaluation,
-    _emit_links_execution_to_snapshot,
     _emit_observes_runtime_state,
     _emit_orchestrates_workflow,
     _emit_reads_policy_state,  # noqa: E402
@@ -47,7 +46,6 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_snapshots_state,  # noqa: E402
     _emit_stores_embedding,
     _emit_transcripts_response,
-    _emit_updates_meta_learning_state,
     _emit_validates_agent_capability,
     _emit_validates_capability,
     _emit_verifies_boundary,

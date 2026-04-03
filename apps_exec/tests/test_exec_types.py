@@ -6,12 +6,8 @@ import unittest
 from pydantic import ValidationError
 
 from apps_exec.types import (
-    AudiencePersona,
     BriefSection,
-    BriefStatus,
-    BriefTone,
     CapabilityEvidence,
-    EmphasisArea,
     ExecBriefConfig,
     ExecBriefRequest,
     ExecBriefResult,

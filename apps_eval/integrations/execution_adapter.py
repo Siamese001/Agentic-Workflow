@@ -16,13 +16,10 @@ from typing import Any
 from apps_eval.types import EvalRequest, EvalResult
 
 # L1 retrieval wiring (Turn 2, Wave 6): Import creates ADG edge to L1_cognition
-from agentic_core.L1_cognition.retrieval import QueryRetrievalBridge
 
 # L3 retrieval wiring (Turn 2, Wave 17): Import creates ADG edge to L3_orchestration
-from agentic_core.L3_orchestration.retrieval import ContextRetrievalOrchestrator
 
 # L4 retrieval wiring (Turn 3, Wave 22): Import creates ADG edge to L4_state
-from agentic_core.L4_state.retrieval import L4StateRetrievalBridge
 
 _log = logging.getLogger(__name__)
 

@@ -6,7 +6,6 @@ Phase 5A - Security Hardening
 """
 
 import hashlib
-import hmac
 import logging
 import re
 import secrets

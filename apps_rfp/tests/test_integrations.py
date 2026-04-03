@@ -6,11 +6,8 @@ import unittest
 from apps_rfp.integrations import ExecutionAdapter, ObservabilityAdapter
 from apps_rfp.types import (
     ProposalSection,
-    RfpConfig,
     RfpRequest,
     RfpResult,
-    RoadmapPhase,
-    RiskItem,
 )
 
 

@@ -1,6 +1,6 @@
 """Retry Policy - Stub implementation for test compatibility."""
 from dataclasses import dataclass
-from typing import Any, Callable, Awaitable
+from typing import Any, Callable
 
 
 @dataclass

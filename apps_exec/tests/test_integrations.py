@@ -6,10 +6,8 @@ import unittest
 from apps_exec.integrations import ExecutionAdapter, ObservabilityAdapter
 from apps_exec.types import (
     BriefSection,
-    ExecBriefConfig,
     ExecBriefRequest,
     ExecBriefResult,
-    CapabilityEvidence,
 )
 
 

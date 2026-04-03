@@ -1,6 +1,6 @@
 """Model Router - Stub implementation for reasoning compatibility."""
 from enum import Enum
-from typing import Any, Callable, Awaitable
+from typing import Any
 
 
 class TaskType(Enum):

@@ -6,16 +6,13 @@ import unittest
 from pydantic import ValidationError
 
 from apps_rfp.types import (
-    ArchitecturePosture,
     AssumptionItem,
     ProposalSection,
-    ProposalStatus,
     RfpConfig,
     RfpRequest,
     RfpResult,
     RfpRunSummary,
     RiskItem,
-    RiskSeverity,
     RoadmapPhase,
 )
 

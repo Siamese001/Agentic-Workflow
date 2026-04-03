@@ -4,7 +4,7 @@ Test RG Integrations.
 import unittest
 
 from apps_rg.integrations import ExecutionAdapter, ObservabilityAdapter
-from apps_rg.types import ResumeConfig, ResumeRequest, ResumeResult, ResumeSection
+from apps_rg.types import ResumeRequest, ResumeResult, ResumeSection
 
 
 class TestExecutionAdapter(unittest.TestCase):

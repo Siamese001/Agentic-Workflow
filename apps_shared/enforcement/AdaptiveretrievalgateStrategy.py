@@ -10,7 +10,6 @@ import re
 from pydantic import BaseModel, Field
 
 # L5 retrieval wiring (Turn 3, Wave 34): Import creates ADG edge to L5_safety
-from agentic_core.L5_safety.retrieval import RetrievalSafetyGate
 
 from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     LayerSegment,

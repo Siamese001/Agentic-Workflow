@@ -2,7 +2,6 @@
 Test Base Eval Engine.
 """
 import unittest
-from unittest.mock import MagicMock, patch
 
 from apps_eval.engines.base_eval_engine import BaseEvalEngine
 from apps_eval.types import EvalRequest, EvalResult

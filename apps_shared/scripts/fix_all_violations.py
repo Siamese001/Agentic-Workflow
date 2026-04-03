@@ -1,11 +1,8 @@
 """Comprehensive fixer for cognitive density and micro-fragment violations."""
 
-import ast
 import logging
-from pathlib import Path
 from typing import Any
 
-from apps_shared.utils.ConfigurationService import ConfigurationService
 
 from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,

@@ -6,7 +6,7 @@ and guide sequential thinking for various software engineering tasks.
 """
 
 from dataclasses import dataclass
-from typing import List, Dict, Any
+from typing import List, Dict
 from enum import Enum
 
 class SequentialThinkingTemplate(Enum):

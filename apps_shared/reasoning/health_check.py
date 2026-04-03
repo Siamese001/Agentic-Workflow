@@ -1,7 +1,7 @@
 """Health Check - Stub implementation for reasoning compatibility."""
 from enum import Enum
 from dataclasses import dataclass
-from typing import Any, Callable, Awaitable
+from typing import Any
 
 
 class HealthStatus(Enum):

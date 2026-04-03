@@ -22,13 +22,11 @@ from pathlib import Path
 from typing import Any
 
 from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-    LayerSegment,
     _emit_records_execution_trace,
     _emit_dispatches_agent,
     _emit_coordinates_agents,
     _emit_orchestrates_workflow,
     _emit_applies_guardrail,
-    _emit_validates_agent_capability,
     _emit_captures_pattern,
     _emit_stores_embedding,
 )
@@ -39,7 +37,6 @@ from apps_exec.reasoning.brief_decomposition_agent import (
     BriefDecomposition,
 )
 from apps_exec.engines.brief_retrieval_engine import (
-    BriefRetrievalEngine,
     create_retrieval_engine,
 )
 from apps_exec.services.repo_signal_service import RepoSignalService
@@ -48,7 +45,6 @@ from apps_exec.reasoning.brief_orchestrator import (
 )
 from apps_exec.validators.brief_style_validator import (
     BriefValidationAgent,
-    QualityGate,
 )
 
 _log = logging.getLogger(__name__)

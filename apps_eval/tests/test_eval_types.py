@@ -11,8 +11,6 @@ from apps_eval.types import (
     EvalResult,
     EvalRunSummary,
     RegressionRecord,
-    RegressionVerdict,
-    ScenarioOutcome,
     ScenarioResult,
     ScorecardRow,
     SuiteResult,

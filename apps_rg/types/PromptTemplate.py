@@ -48,7 +48,6 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_proposal_commits_routing,
     _emit_pulls_context,
     _emit_reads_environ,
-    _emit_reads_policy_state,  # noqa: E402
     _emit_reads_runtime_state,
     _emit_records_execution_trace,
     _emit_records_healing_outcome,
@@ -61,7 +60,6 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_routes_to_agent,
     _emit_routes_to_capability,
     _emit_signs_execution_trace,  # noqa: E402
-    _emit_snapshots_state,  # noqa: E402
     _emit_stores_embedding,
     _emit_stores_learning_state,
     _emit_transcripts_response,
@@ -81,20 +79,6 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     emit_determinism_digest,  # noqa: E402
     emit_replay_key,  # noqa: E402
 )
-from agentic_core.prompt_governance.contracts.slot_contracts import (
-    SLOT_ORDER,
-    SlotC0,
-    SlotD0,
-    SlotE0,
-    SlotH0,
-    SlotI0,
-    SlotM0,
-    SlotR0,
-    SlotS0,
-    SlotU0,
-    SlotY0,
-)
-from agentic_core.prompt_governance.core.prompt_assembler import PromptAssembler
 
 _emit_applies_guardrail("p0", "PromptTemplate", "p0_governance")
 _emit_emits_metric_event("PromptTemplate", "p4obs", "metric_1")

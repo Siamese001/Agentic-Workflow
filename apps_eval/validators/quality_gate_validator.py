@@ -12,7 +12,7 @@ from __future__ import annotations
 import logging
 from typing import Any
 
-from apps_eval.types import EvalResult, SuiteResult
+from apps_eval.types import EvalResult
 
 _log = logging.getLogger(__name__)
 
