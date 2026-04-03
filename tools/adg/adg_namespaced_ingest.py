@@ -61,8 +61,13 @@ class NamespacedRedisIngest:
         meta_key = f"adg:snapshot:{snapshot_id}:meta"
         if not force and self.redis_client.exists(meta_key):
             logger.info(f"Snapshot {snapshot_id} already ingested. Use --force to overwrite.")
-            existing = self.redis_client.get(meta_key)
-            return json.loads(existing) if existing else {}
+            existing_data = self.redis_client.get(meta_key)
+            if existing_data:
+                try:
+                    return json.loads(existing_data)
+                except json.JSONDecodeError as e:
+                    logger.warning(f"Failed to parse existing metadata: {e}")
+            return {}
             
         logger.info(f"Ingesting snapshot {snapshot_id} into namespaced Redis...")
         
@@ -306,9 +311,11 @@ class NamespacedRedisIngest:
             self.redis_client.set("adg:meta", data)
             
     def _compute_digest(self, path: Path) -> str:
-        """Compute SHA256 digest of file."""
+        """Compute SHA256 digest of file (streaming for large files)."""
         h = hashlib.sha256()
-        h.update(path.read_bytes())
+        with open(path, "rb") as f:
+            while chunk := f.read(8192):
+                h.update(chunk)
         return h.hexdigest()[:16]
         
     def verify(self, snapshot_id: str) -> dict[str, Any]:
@@ -338,7 +345,13 @@ class NamespacedRedisIngest:
         # Get metadata
         meta_key = f"adg:snapshot:{snapshot_id}:meta"
         meta_data = self.redis_client.get(meta_key)
-        meta = json.loads(meta_data) if meta_data else {}
+        meta: dict[str, Any] = {}
+        if meta_data:
+            try:
+                meta = json.loads(meta_data)
+            except json.JSONDecodeError as e:
+                logger.warning(f"Failed to parse metadata JSON: {e}")
+                meta = {}
         
         return {
             "snapshot_id": snapshot_id,

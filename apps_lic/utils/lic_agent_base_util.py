@@ -69,16 +69,14 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     emit_replay_key,  # noqa: E402
 )
 from apps_shared.utils.app_base_util import AppBase
-from archives.healing_backups.location_violations.meta_learning import (
-    HealingPattern,
+from agentic_core.L1_cognition.engines.meta_client import (
+    MetaLearningClient,
+    get_meta_learning_client,
+)
+from agentic_core.L1_cognition.types.client_types import HealingPattern
+from agentic_core.L1_cognition.utils.guardrails_util import (
     MetaLearningGuardrails,
     get_guardrails,
-)
-from archives.healing_backups.location_violations.meta_learning import (
-    SovereignMetaLearningClient as MetaLearningClient,
-)
-from archives.healing_backups.location_violations.meta_learning import (
-    get_sovereign_meta_client as get_meta_learning_client,
 )
 
 _emit_applies_guardrail("p0", "lic_agent_base_util", "p0_governance")

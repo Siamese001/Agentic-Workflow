@@ -56,6 +56,15 @@ def main():
     if not validate_pre_write_hooks():
         sys.exit(1)
 
+    # Gate: No archives/ imports in production code (Rule 12)
+    print("🔍 Checking for archives/ imports in production code...")
+    returncode, stdout, stderr = run_cmd([sys.executable, str(ROOT / "ops_scripts/ci/check_no_archives_imports.py")], cwd=ROOT)
+    if returncode != 0:
+        print(stdout)
+        print(stderr)
+        sys.exit(1)
+    print("✅ No archives/ imports found")
+
     # Continue with existing logic...
     return 0
 

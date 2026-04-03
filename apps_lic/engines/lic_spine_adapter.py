@@ -65,7 +65,7 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_verifies_policy,
     _emit_writes_via_uwg,
 )
-from archives.healing_backups.location_violations.execution import CIDRegistry
+from agentic_core.L2_execution.cid_registry import CIDRegistry
 
 _emit_authorize_and_execute("p2", "lic_spine_adapter", "execution_auth")
 _emit_validates_capability("p2", "lic_spine_adapter", "capability_check")

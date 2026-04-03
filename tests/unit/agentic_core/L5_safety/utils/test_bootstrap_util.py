@@ -10,7 +10,6 @@ Tests the bootstrap utility functions including:
 
 from __future__ import annotations
 
-from pathlib import Path
 from unittest.mock import Mock, patch
 
 import pytest
@@ -61,9 +60,7 @@ class TestVerifyCriticalFiles:
 
     def test_verify_critical_files_all_present(self, tmp_path):
         """Test when all critical files exist."""
-        from agentic_core.L5_safety.utils.bootstrap_util import (
-            verify_critical_files, CRITICAL_FILES
-        )
+        from agentic_core.L5_safety.utils.bootstrap_util import CRITICAL_FILES, verify_critical_files
 
         # Create required files based on CRITICAL_FILES
         for file_path in CRITICAL_FILES:
@@ -80,9 +77,7 @@ class TestVerifyCriticalFiles:
 
     def test_verify_critical_files_some_missing(self, tmp_path):
         """Test when some critical files are missing."""
-        from agentic_core.L5_safety.utils.bootstrap_util import (
-            verify_critical_files, CRITICAL_FILES
-        )
+        from agentic_core.L5_safety.utils.bootstrap_util import CRITICAL_FILES, verify_critical_files
 
         # Only create first file
         first_file = CRITICAL_FILES[0]
@@ -98,9 +93,7 @@ class TestVerifyCriticalFiles:
 
     def test_verify_critical_files_empty_directory(self, tmp_path):
         """Test with empty directory."""
-        from agentic_core.L5_safety.utils.bootstrap_util import (
-            verify_critical_files, CRITICAL_FILES
-        )
+        from agentic_core.L5_safety.utils.bootstrap_util import CRITICAL_FILES, verify_critical_files
 
         present, missing = verify_critical_files(tmp_path)
 
@@ -113,9 +106,7 @@ class TestRunBootstrap:
 
     def test_run_bootstrap_returns_result_object(self, tmp_path):
         """Test bootstrap returns BootstrapResult."""
-        from agentic_core.L5_safety.utils.bootstrap_util import (
-            run_bootstrap, BootstrapResult
-        )
+        from agentic_core.L5_safety.utils.bootstrap_util import BootstrapResult, run_bootstrap
 
         result = run_bootstrap(tmp_path)
 
@@ -143,9 +134,7 @@ class TestHealBootstrapIssues:
 
     def test_heal_bootstrap_issues_valid_path(self, tmp_path):
         """Test healing with valid path."""
-        from agentic_core.L5_safety.utils.bootstrap_util import (
-            heal_bootstrap_issues, CRITICAL_FILES
-        )
+        from agentic_core.L5_safety.utils.bootstrap_util import CRITICAL_FILES, heal_bootstrap_issues
 
         # Create required files
         for file_path in CRITICAL_FILES:

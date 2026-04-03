@@ -57,7 +57,7 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_verifies_policy,
     _emit_writes_via_uwg,
 )
-from archives.healing_backups.location_violations.hardening_mixin import HardeningMixin, TokenLimitError
+from agentic_core.mixins.hardening_mixin import HardeningMixin, TokenLimitError
 
 _emit_reads_policy_state("p0", "HardenedanthropicexecutorStrategy", "policy_binding")
 _emit_snapshots_state("p0", "HardenedanthropicexecutorStrategy", "state_snapshot")

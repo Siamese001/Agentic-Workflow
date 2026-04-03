@@ -164,14 +164,21 @@ class ADGQueryService:
         status_key = f"adg:snapshot:{self._current_snapshot}:meta"
         data = self.redis_client.get(status_key)
         if data:
-            return json.loads(data)
+            try:
+                return json.loads(data)
+            except json.JSONDecodeError as e:
+                logger.warning(f"Failed to parse Redis metadata JSON: {e}")
+                return None
 
         # Fallback to legacy adg:status (non-namespaced)
         legacy = self.redis_client.get("adg:status")
         if legacy:
-            parsed = json.loads(legacy)
-            if parsed.get("timestamp") == self._current_snapshot:
-                return parsed
+            try:
+                parsed = json.loads(legacy)
+                if parsed.get("timestamp") == self._current_snapshot:
+                    return parsed
+            except json.JSONDecodeError as e:
+                logger.warning(f"Failed to parse legacy status JSON: {e}")
         return None
 
     def get_snapshot_metadata(self) -> SnapshotMetadata | None:
