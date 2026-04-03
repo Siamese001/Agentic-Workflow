@@ -63,7 +63,9 @@ from agentic_core.L2_execution.optimization.cpu_optimizer import (
 # ---------------------------------------------------------------------------
 # Config
 # ---------------------------------------------------------------------------
-ADG_DIR = r"c:\Git\Agentic-Workflow\artifacts\adg"
+from tools.adg.shared_modules.path_resolver import get_adg_dir
+
+ADG_DIR = str(get_adg_dir())
 REDIS_HOST = "localhost"
 REDIS_PORT = 6379
 REDIS_DB = 0

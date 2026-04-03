@@ -58,7 +58,15 @@ class GapReport:
 class RetrievalAccelerator:
     """ADG retrieval wiring validation accelerator."""
 
-    DEFAULT_SQLITE = r"C:\Git\Agentic-Workflow\artifacts\adg\adg_indexed_03312026_1808.sqlite"
+    DEFAULT_SQLITE = None  # Resolved dynamically via path_resolver
+
+    def _get_sqlite_path(self) -> str:
+        """Resolve SQLite path dynamically using path_resolver."""
+        from tools.adg.shared_modules.path_resolver import latest_sqlite
+        path = latest_sqlite()
+        if path:
+            return str(path)
+        raise FileNotFoundError("No ADG SQLite file found in artifacts/adg/")
 
     RETRIEVAL_RELATIONS = [
         "pulls_context",
@@ -113,20 +121,24 @@ class RetrievalAccelerator:
         "faiss",
         "chroma",
         "l4d",
-        "l4e",
-        "manifest",
-        "semantic_cache",
-        "parent_child",
-        "adaptive_retrieval",
-        "retrieval_gate",
-        "guardrail",
-        "rag_evaluator",
-        "evaluation_cache",
-        "retrieval_eval",
     ]
 
     def __init__(self, sqlite_path: str | None = None) -> None:
-        self.sqlite_path = sqlite_path or self.DEFAULT_SQLITE
+        """Initialize accelerator with optional explicit SQLite path.
+
+        Args:
+            sqlite_path: Explicit path, or None to auto-resolve latest
+        """
+        if sqlite_path:
+            self.sqlite_path = sqlite_path
+        else:
+            # Resolve dynamically using path_resolver
+            from tools.adg.shared_modules.path_resolver import latest_sqlite
+
+            path = latest_sqlite()
+            if not path:
+                raise FileNotFoundError("No ADG SQLite file found in artifacts/adg/")
+            self.sqlite_path = str(path)
         self.conn: sqlite3.Connection | None = None
 
     def connect(self) -> None:

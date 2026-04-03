@@ -83,8 +83,10 @@ _log = logging.getLogger("adg_mcp")
 # ---------------------------------------------------------------------------
 # Configuration — all overridable via env vars
 # ---------------------------------------------------------------------------
+from tools.adg.shared_modules.path_resolver import get_adg_dir
+
 _REDIS_URL: str = os.environ.get("ADG_REDIS_URL", "redis://localhost:6379/0")
-_ADG_DIR: Path = Path(os.environ.get("ADG_DIR", r"C:\Git\Agentic-Workflow\artifacts\adg"))
+_ADG_DIR: Path = get_adg_dir()
 _PAGE_SIZE: int = int(os.environ.get("ADG_MCP_PAGE_SIZE", "500"))
 _CACHE_META_TTL: float = float(os.environ.get("ADG_MCP_CACHE_META_TTL", "5"))
 

@@ -39,8 +39,10 @@ from typing import Any
 # ---------------------------------------------------------------------------
 # Config
 # ---------------------------------------------------------------------------
+from tools.adg.shared_modules.path_resolver import get_adg_dir
+
 _REDIS_URL = os.environ.get("ADG_REDIS_URL", "redis://localhost:6379/0")
-_ADG_DIR = Path(os.environ.get("ADG_DIR", r"C:\Git\Agentic-Workflow\artifacts\adg"))
+_ADG_DIR = get_adg_dir()
 
 
 # ---------------------------------------------------------------------------
