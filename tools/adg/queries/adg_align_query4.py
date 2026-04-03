@@ -1,6 +1,14 @@
 import sqlite3
+import sys
+from pathlib import Path
 
-DB = r"C:\Git\Agentic-Workflow\artifacts\adg\adg_indexed_03132026_1949.sqlite"
+# Add repo root to path for imports
+sys.path.insert(0, str(Path(__file__).resolve().parents[3]))
+from tools.adg.shared_modules.path_resolver import latest_sqlite
+
+DB = str(latest_sqlite())
+if not DB or DB == "None":
+    raise FileNotFoundError("No ADG SQLite file found. Run: python tools/generate_full_adg.py")
 db = sqlite3.connect(DB)
 db.row_factory = sqlite3.Row
 cur = db.cursor()

@@ -21,7 +21,7 @@ import sys
 import time
 from pathlib import Path
 
-REPO_ROOT = Path(r"C:\Git\Agentic-Workflow")
+REPO_ROOT = Path(__file__).resolve().parents[3]
 SSOT_PATH = REPO_ROOT / ".windsurf" / "mcp_config.json"
 GLOBAL_PATH = Path.home() / ".codeium" / "windsurf" / "mcp_config.json"
 BACKUP_DIR = GLOBAL_PATH.parent / "mcp_config_backups"
