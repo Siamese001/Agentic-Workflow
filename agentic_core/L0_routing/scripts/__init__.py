@@ -1,4 +1,10 @@
 # __init__.py
+"""execute_ssot package - Wave 1 modularization.
+
+This package contains the modularized components of the execute_ssot script,
+extracted during Wave 1 of the modularization initiative.
+"""
+
 from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
@@ -63,6 +69,26 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     emit_determinism_digest,  # noqa: E402
     emit_replay_key,  # noqa: E402
 )
+
+# Import extracted modules for convenience
+from .execute_ssot_context import HealContext
+from .execute_ssot_engine import SovereignDecisionEngine
+from .execute_ssot_validators import PreFlightValidator, NonInteractiveGuard
+from .execute_ssot_state import RuntimeStateManager
+from .execute_ssot_reporting import ExecutionReporter
+
+__all__ = [
+    # Legacy exports
+    "emit_determinism_digest",
+    "emit_replay_key",
+    # Extracted modules
+    "HealContext",
+    "SovereignDecisionEngine",
+    "PreFlightValidator",
+    "NonInteractiveGuard",
+    "RuntimeStateManager",
+    "ExecutionReporter",
+]
 
 _emit_emits_metric_event("__init__", "p4obs", "metric_1")
 _emit_emits_metric_event("__init__", "p4obs", "metric_2")
