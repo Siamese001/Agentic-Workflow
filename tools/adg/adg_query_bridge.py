@@ -19,15 +19,9 @@ from typing import Any
 
 # Try to import ADG Redis MCP
 try:
-    from mcp1_adg_redis import (
-        adg_edge_fanin,
-        adg_node,
-        adg_nodes_by_layer,
-        adg_status,
-        adg_violations,
-    )
-
-    ADG_REDIS_AVAILABLE = True
+    # MCP tools are accessed via the MCP protocol, not as Python imports
+    # Redis access is handled via direct connection or SQLite fallback
+    ADG_REDIS_AVAILABLE = False
 except ImportError as e:
     warnings.warn(f"ADG Redis MCP unavailable: {e}", stacklevel=2)
     ADG_REDIS_AVAILABLE = False
@@ -102,16 +96,8 @@ class ADGQueryBridge:
     def _check_adg_status(self) -> dict[str, Any]:
         """Check ADG Redis cache status."""
         if self._cache_status is None:
-            if not ADG_REDIS_AVAILABLE:
-                self._cache_status = {"is_fresh": False, "error": "ADG Redis MCP unavailable"}
-                return self._cache_status
-
-            try:
-                self._cache_status = adg_status()
-                logger.info(f"ADG Redis status: {'FRESH' if self._cache_status.get('is_fresh') else 'STALE'}")
-            except Exception as e:
-                logger.warning(f"ADG Redis unavailable: {e}")
-                self._cache_status = {"is_fresh": False, "error": str(e)}
+            # Redis MCP unavailable - always use SQLite fallback
+            self._cache_status = {"is_fresh": False, "error": "ADG Redis MCP unavailable"}
         return self._cache_status
 
     def _get_sqlite_path(self) -> Path | None:
@@ -190,43 +176,14 @@ class ADGQueryBridge:
         if results:
             return results[0]["id"]
 
-        # Try Redis if available
-        if ADG_REDIS_AVAILABLE:
-            try:
-                # This is a simplified approach - in practice might need more sophisticated matching
-                node = adg_node(symbol)
-                if node:
-                    return node.get("id")
-            except Exception:
-                pass
-
+        # Redis unavailable - use SQLite only
         return None
 
     def files_calling(self, symbol: str) -> list[FileMatch]:
         """Find files that call the given symbol."""
         status = self._check_adg_status()
 
-        # Try Redis first if cache is fresh
-        if status.get("is_fresh") and ADG_REDIS_AVAILABLE:
-            try:
-                node_id = self._find_node_by_symbol(symbol)
-                if node_id:
-                    callers = adg_edge_fanin(node_id, "calls")
-                    matches = []
-                    for edge in callers:
-                        matches.append(
-                            FileMatch(
-                                file_path=edge.get("source_file", "unknown"),
-                                line_number=edge.get("line_no"),
-                                symbol=edge.get("symbol"),
-                                context=edge.get("relation_type"),
-                            )
-                        )
-                    return matches
-            except Exception as e:
-                logger.warning(f"Redis query failed, falling back to SQLite: {e}")
-
-        # Fallback to SQLite
+        # Redis unavailable - use SQLite fallback only
         columns = self._get_table_columns("edges")
         if "relation_type" not in columns or "symbol" not in columns:
             return []
@@ -245,27 +202,7 @@ class ADGQueryBridge:
         """Find files that import the given module."""
         status = self._check_adg_status()
 
-        # Try Redis first if cache is fresh
-        if status.get("is_fresh") and ADG_REDIS_AVAILABLE:
-            try:
-                node_id = self._find_node_by_symbol(module)
-                if node_id:
-                    importers = adg_edge_fanin(node_id, "imports")
-                    matches = []
-                    for edge in importers:
-                        matches.append(
-                            FileMatch(
-                                file_path=edge.get("source_file", "unknown"),
-                                line_number=edge.get("line_no"),
-                                symbol=edge.get("symbol"),
-                                context=edge.get("relation_type"),
-                            )
-                        )
-                    return matches
-            except Exception as e:
-                logger.warning(f"Redis query failed, falling back to SQLite: {e}")
-
-        # Fallback to SQLite
+        # Redis unavailable - use SQLite fallback only
         columns = self._get_table_columns("edges")
         if "relation_type" not in columns or "symbol" not in columns:
             return []
@@ -287,30 +224,7 @@ class ADGQueryBridge:
 
     def nodes_in_layer(self, layer: str) -> list[Node]:
         """Get all nodes in the specified layer."""
-        status = self._check_adg_status()
-
-        # Try Redis first if cache is fresh
-        if status.get("is_fresh") and ADG_REDIS_AVAILABLE:
-            try:
-                node_ids = adg_nodes_by_layer(layer)
-                nodes = []
-                for node_id in node_ids:
-                    node_data = adg_node(node_id)
-                    if node_data:
-                        nodes.append(
-                            Node(
-                                node_id=node_id,
-                                label=node_data.get("label", ""),
-                                layer=node_data.get("layer", ""),
-                                entity_type=node_data.get("entity_type", ""),
-                                file_path=node_data.get("resolved_path"),
-                            )
-                        )
-                return nodes
-            except Exception as e:
-                logger.warning(f"Redis query failed, falling back to SQLite: {e}")
-
-        # Fallback to SQLite
+        # Redis unavailable - use SQLite only
         columns = self._get_table_columns("nodes")
         if "layer" not in columns:
             return []
@@ -329,30 +243,8 @@ class ADGQueryBridge:
 
     def violations(self) -> list[Violation]:
         """Get all anti-pattern violations."""
-        status = self._check_adg_status()
-
-        # Try Redis first if cache is fresh
-        if status.get("is_fresh") and ADG_REDIS_AVAILABLE:
-            try:
-                violations_data = adg_violations()
-                violations = []
-                for v in violations_data:
-                    violations.append(
-                        Violation(
-                            file_path=v.get("file_path", "unknown"),
-                            line_number=v.get("line_number", 0),
-                            category=v.get("category", "unknown"),
-                            evidence=v.get("evidence", ""),
-                            symbol=v.get("symbol"),
-                        )
-                    )
-                return violations
-            except Exception as e:
-                logger.warning(f"Redis query failed, falling back to SQLite: {e}")
-
-        # Fallback: Check if violations are stored in SQLite
-        # Note: This depends on the specific ADG schema
-        logger.info("Violations not available in SQLite, using AST fallback")
+        # Redis unavailable - use AST fallback directly
+        logger.info("Violations not available in Redis/SQLite, using AST fallback")
         return self._violations_ast_fallback()
 
     def files_in_scope(self, directories: list[str]) -> list[Path]:
