@@ -4,9 +4,8 @@ This module contains cache management and context retrieval functionality
 that was previously in the monolithic execute_ssot.py file.
 """
 
-from typing import Any, Dict, Optional
+from typing import Any, Dict
 import hashlib
-import time
 
 # L1 Exact Match Cache - stores exact query results
 _L1_EXACT_CACHE: Dict[str, Dict[str, Any]] = {}

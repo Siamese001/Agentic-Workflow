@@ -20,7 +20,7 @@ class MetaLearningResult:
     """
     records_persisted: int = 0
     proposals: Tuple = ()
-    errors: List[str] = None
+    errors: Optional[List[str]] = None
     
     def __post_init__(self):
         if self.errors is None:
@@ -35,7 +35,7 @@ class MetaLearningError(Exception):
 def _fire_meta_learning_intake_required(
     state: Any,
     timestamp: int,
-    output_dir: Path,
+    _output_dir: Path,
     healing_actions: Optional[List[Dict]] = None
 ) -> MetaLearningResult:
     """Process healing actions for meta-learning intake.
@@ -77,7 +77,7 @@ def _fire_meta_learning_intake_required(
                 }
                 proposals.append(proposal)
                 records_persisted += 1
-        except Exception as e:
+        except (AttributeError, TypeError, KeyError) as e:
             errors.append(f"Failed to process action: {e}")
     
     return MetaLearningResult(
