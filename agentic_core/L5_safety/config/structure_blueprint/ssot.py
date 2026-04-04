@@ -872,6 +872,9 @@ ROOT_ALLOWED_PATTERNS: Final[Sequence[Pattern]] = [
 SOVEREIGN_EXCLUDED_FOLDERS: frozenset[str] = frozenset(
     {
         ".git",
+        ".github",
+        ".hypothesis",
+        ".windsurf",
         ".venv",
         "venv",
         "venv_stable",
@@ -883,6 +886,7 @@ SOVEREIGN_EXCLUDED_FOLDERS: frozenset[str] = frozenset(
         ".tox",
         "archives",
         "archive",  # Also exclude singular form (tools/archive/)
+        "artifacts",  # ADG output artifacts
         "legacy_code",
         "legacy_engines",
         "legacy_resume_gen",
