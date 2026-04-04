@@ -168,15 +168,51 @@ repos:
         require_serial: true
 
   # ============================================================================
-  # TIER 2-3: Auto-Fixers & Formatters (clean code before analysis)
+  # TIER 2: P0-P3 Tiered Ruff Lint (Security/Bugs/Style/Format)
+  # Uses priority_definitions.json SSOT for rule selection
   # ============================================================================
   - repo: https://github.com/astral-sh/ruff-pre-commit
     rev: v0.14.13
     hooks:
+      # -- T2-P0: Critical (Security/Safety/Runtime) — BLOCKING ------------
       - id: ruff
-        name: "T2: Ruff Lint & Auto-Fix"
-        args: [--fix]
+        name: "T2-P0: Ruff Critical (Security/Safety/Runtime)"
+        args:
+          - --select=F821,F401,B012,B904,S102,S307,S601,F541,B013,B015
+          - --fix
         exclude: ops_scripts/ci/check_anti_patterns\.py
+        stages: [pre-commit]
+
+      # -- T2-P1: High (Bug Patterns/Code Quality) — BLOCKING ----------------
+      - id: ruff
+        name: "T2-P1: Ruff High (Bug Patterns/Code Quality)"
+        args:
+          - --select=B002,B006,B009,B010,B019,B027,S105,S106,S107,S108,S311,S324,S603,S607,UP028,C401,C402,C403,C404,B904
+          - --fix
+        exclude: ops_scripts/ci/check_anti_patterns\.py
+        stages: [pre-commit]
+
+      # -- T2-P2: Medium (Style/Organization) — WARNING ----------------------
+      - id: ruff
+        name: "T2-P2: Ruff Medium (Style/Organization)"
+        args:
+          - --select=E402,E721,E731,F811,B007,B011,B023,B024,B028,C405,C406,C408,C409,C410,C411,COM812,COM819,I001
+          - --fix
+          - --exit-zero
+        exclude: ops_scripts/ci/check_anti_patterns\.py
+        stages: [pre-commit]
+
+      # -- T2-P3: Low (Formatting/Python3) — INFO ----------------------------
+      - id: ruff
+        name: "T2-P3: Ruff Low (Formatting/Python3)"
+        args:
+          - --select=E501,W291,W292,W293,W505,T201,T203,UP001,UP003,UP004,UP005,UP008,UP009,UP010
+          - --fix
+          - --exit-zero
+        exclude: ops_scripts/ci/check_anti_patterns\.py
+        stages: [pre-commit]
+
+      # -- T3: Ruff Format ----------------------------------------------------
       - id: ruff-format
         name: "T3: Ruff Format"
         exclude: '.*\.md$|ops_scripts/ci/check_anti_patterns\.py'

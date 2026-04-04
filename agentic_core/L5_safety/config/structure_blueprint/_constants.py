@@ -1075,10 +1075,58 @@ def build_sovereign_territories() -> dict[str, TerritoryDefinition]:
         "depth": 2,
         "purpose": "Universal test suites organized by Type then Domain.",
         "subfolders": {
-            "core": {"purpose": "Core framework-level tests"},
-            "goldens": {"purpose": "Golden test data for snapshot comparisons"},
-            "helpers": {"purpose": "Shared test helper modules"},
-            "misc": {"purpose": "Miscellaneous test utilities"},
+            "_config": {"purpose": "Test-suite configuration (conftest helpers, marker registries)"},
+            "adg": {"purpose": "ADG-specific tests and graph validation checks"},
+            "architecture": {
+                "purpose": "Structural invariant tests — AST-based, no filesystem mutations",
+            },
+            "ci": {"purpose": "CI and compliance gate tests"},
+            "e2e": {
+                "purpose": "Full system user-flow simulations",
+                "subfolders": [
+                    "scenarios",
+                    "flows",
+                    "snapshots",
+                    "agentic_core",
+                    "apps_lic",
+                    "apps_rg",
+                    "misc",
+                    "ops_scripts",
+                ],
+            },
+            "evaluation": {"purpose": "Evaluation pipeline and scoring tests"},
+            "governance": {"purpose": "Governance policy and lifecycle tests"},
+            "guardian": {
+                "purpose": "Architectural compliance validation (Red Shield validation gate)",
+                "constitutional_rules": [
+                    "Guardian tests are COMPLEMENTARY to unit/e2e tests, NOT replacements",
+                    "Guardian validates architectural compliance, NOT functional correctness",
+                    "Guardian tests do NOT fulfill 100% coverage requirements",
+                    "Guardian tests use AST-based analysis, NEVER string regex",
+                    "Guardian tests NEVER delete files based on filename patterns",
+                ],
+            },
+            "infrastructure": {"purpose": "Infrastructure-layer verification tests"},
+            "integration": {
+                "purpose": "Component interaction tests mirroring source structure",
+                "mirror_source": True,
+                "exclude_from_depth_rules": True,
+                "subfolders": {},
+                "forbidden_zones": ["misc", "temp", "old", "deprecated", "archive", "scratch"],
+            },
+            "integration_full_deps": {
+                "purpose": "Heavy-dependency integration tests requiring full runtime deps",
+            },
+            "ops_scripts": {"purpose": "Tests for ops_scripts territory and CI hooks"},
+            "performance": {"purpose": "Performance benchmarking and profiling tests"},
+            "smoke": {"purpose": "Smoke and startup-path sanity tests"},
+            "system_learning": {
+                "purpose": "Higher-level functional tests for system_learning (embedding, meta-learning, pattern analysis). Canonical unit mirror: tests/unit/system_learning/.",
+                "subfolders": {
+                    "engines": {"purpose": "Tests for system_learning engine implementations"},
+                    "ports": {"purpose": "Tests for system_learning port interfaces"},
+                },
+            },
             "unit_min_deps": {
                 "purpose": "Minimal-dependency unit tests (no heavy imports)",
                 "exclude_from_depth_rules": True,
@@ -1161,6 +1209,7 @@ def build_sovereign_territories() -> dict[str, TerritoryDefinition]:
                             "base_agents": [],
                             "config": [],
                             "core": [],
+                            "embeddings": [],
                             "interfaces": [],
                             "knowledge": [],
                             "prompt_governance": [],
@@ -1232,74 +1281,6 @@ def build_sovereign_territories() -> dict[str, TerritoryDefinition]:
                     },
                 },
                 "forbidden_zones": ["misc", "temp", "old", "deprecated", "archive", "scratch"],
-            },
-            "integration": {
-                "purpose": "Component interaction tests mirroring source structure",
-                "mirror_source": True,
-                "exclude_from_depth_rules": True,
-                "subfolders": {},
-                "forbidden_zones": ["misc", "temp", "old", "deprecated", "archive", "scratch"],
-            },
-            "e2e": {
-                "purpose": "Full system user-flow simulations",
-                "subfolders": [
-                    "scenarios",
-                    "flows",
-                    "snapshots",
-                    "agentic_core",
-                    "apps_lic",
-                    "apps_rg",
-                    "misc",
-                    "ops_scripts",
-                ],
-            },
-            "guardian": {
-                "purpose": "Architectural compliance validation (Red Shield validation gate)",
-                "constitutional_rules": [
-                    "Guardian tests are COMPLEMENTARY to unit/e2e tests, NOT replacements",
-                    "Guardian validates architectural compliance, NOT functional correctness",
-                    "Guardian tests do NOT fulfill 100% coverage requirements",
-                    "Guardian tests use AST-based analysis, NEVER string regex",
-                    "Guardian tests NEVER delete files based on filename patterns",
-                ],
-            },
-            "fixtures": {"purpose": "Shared Pytest fixtures", "subfolders": ["data", "mocks", "factories"]},
-            "snapshots": {"purpose": "Test snapshot data for comparison and regression testing"},
-            "behavioral": {"purpose": "Behavioral and acceptance testing"},
-            "stress": {"purpose": "Stress and load testing"},
-            "performance": {"purpose": "Performance benchmarking and profiling tests"},
-            # ---- Non-mirror specialist categories (all declared here as canonical) ----
-            "_config": {"purpose": "Test-suite configuration (conftest helpers, marker registries)"},
-            "architecture": {
-                "purpose": "Structural invariant tests — AST-based, no filesystem mutations",
-            },
-            "contracts": {
-                "purpose": "Interface contract and API boundary tests",
-                "forbidden_patterns": [r".*Agent\.py$", r"^fake_.*\.py$"],
-                "subfolders": {
-                    "fixtures": {
-                        "purpose": "Synthetic AST-only fixture agents for negative tests — never imported at runtime"
-                    },
-                },
-            },
-            "enforcement": {"purpose": "Enforcement rule and guardrail tests"},
-            "governance": {"purpose": "Governance policy and lifecycle tests"},
-            "integration_full_deps": {
-                "purpose": "Heavy-dependency integration tests requiring full runtime deps",
-            },
-            "scripts": {"purpose": "Script-level entrypoint tests"},
-            "sovereign_hardening": {"purpose": "Sovereign integrity and lockdown tests"},
-            "ssot_equivalence": {"purpose": "SSOT drift and equivalence tests"},
-            "support": {
-                "purpose": "Shared test infrastructure — base classes, helpers, shared fixtures",
-                "forbidden_patterns": [r".*Agent\.py$"],
-            },
-            "system_learning": {
-                "purpose": "Higher-level functional tests for system_learning (embedding, meta-learning, pattern analysis). Canonical unit mirror: tests/unit/system_learning/.",
-                "subfolders": {
-                    "engines": {"purpose": "Tests for system_learning engine implementations"},
-                    "ports": {"purpose": "Tests for system_learning port interfaces"},
-                },
             },
         },
         "volatile": False,

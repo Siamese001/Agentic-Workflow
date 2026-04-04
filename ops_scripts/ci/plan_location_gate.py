@@ -1,7 +1,7 @@
 """Enforces plans only exist in SSOT-approved location.
 
-Per Constitutional Rule #9, this gate blocks commits when NEW plans are found
-in prohibited locations (docs/reports/plans/). Existing plans are grandfathered.
+Per constitutional plan-location rules, this gate blocks commits when NEW plans
+are found in prohibited locations (for example `.windsurf/plans/`).
 """
 
 import subprocess
@@ -15,6 +15,7 @@ def get_staged_files(project_root: Path) -> list[Path]:
         ["git", "diff", "--cached", "--name-only", "--diff-filter=ACM"],
         capture_output=True,
         text=True,
+        check=False,
         cwd=project_root,
     )
     if result.returncode != 0:
@@ -25,7 +26,7 @@ def get_staged_files(project_root: Path) -> list[Path]:
 
 
 def validate_plan_locations(project_root: Path | None = None) -> bool:
-    """Check new/staged plans are in SSOT-approved .windsurf/plans/ location.
+    """Check new/staged plans are in SSOT-approved docs/reports/plans/ location.
 
     Returns:
         True if all staged plans are in SSOT-approved locations, False otherwise.
@@ -38,21 +39,23 @@ def validate_plan_locations(project_root: Path | None = None) -> bool:
         print("No staged files to check")
         return True
 
-    # Check only staged .md files in docs/reports/plans/ (prohibited)
+    # Check staged .md files in prohibited plan locations.
     violations = []
     for file_path in staged_files:
         str_path = str(file_path).replace("\\", "/")
-        if "/docs/reports/plans/" in str_path and file_path.suffix == ".md":
+        is_markdown = file_path.suffix == ".md"
+        in_windsurf_plans = "/.windsurf/plans/" in str_path
+        if is_markdown and in_windsurf_plans:
             violations.append(file_path)
 
     if violations:
         print("PLAN LOCATION VIOLATIONS (new/modified plans):")
         for v in violations:
-            print(f"   {v} -> should be in .windsurf/plans/")
-        print("\nMove these files to .windsurf/plans/ and re-commit.")
+            print(f"   {v} -> should be in docs/reports/plans/")
+        print("\nMove these files to docs/reports/plans/ and re-commit.")
         return False
 
-    print("All staged plans in SSOT-approved location (.windsurf/plans/)")
+    print("All staged plans in SSOT-approved location (docs/reports/plans/)")
     return True
 
 

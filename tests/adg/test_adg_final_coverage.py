@@ -103,6 +103,7 @@ class TestInheritanceExtractName:
 
 
 class TestBuilderUnresolvedImports:
+    pass
 
 
 # ─────────────────────────────────────────────────────────────────────────────

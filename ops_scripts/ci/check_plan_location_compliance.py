@@ -199,15 +199,16 @@ class PlanLocationComplianceChecker:
         """Check for plan location violations."""
         violations = []
 
-        # Check for .windsurf/plans directory
+        # Check for markdown plan artifacts under prohibited location.
         windsurf_plans = PROJECT_ROOT / ".windsurf" / "plans"
         if windsurf_plans.exists():
-            violations.append({
-                "type": "windsurf_plans_exists",
-                "directory": str(windsurf_plans),
-                "message": ".windsurf/plans directory exists (violates Constitutional Rule #0)",
-                "severity": "error"
-            })
+            for md_file in sorted(windsurf_plans.rglob("*.md")):
+                violations.append({
+                    "type": "plan_in_prohibited_location",
+                    "file": str(md_file),
+                    "message": f"Plan markdown in prohibited location: {md_file}",
+                    "severity": "error"
+                })
 
         # Ensure SSOT plans directory exists
         ssot_plans = PROJECT_ROOT / "docs" / "reports" / "plans"

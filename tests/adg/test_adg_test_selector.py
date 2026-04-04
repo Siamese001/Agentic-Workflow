@@ -73,6 +73,7 @@ def _make_selector(nodes_by_file, fan_in_covers, nodes):
 
 
 class TestSelectTestsSuccess:
+    pass
 
 
 

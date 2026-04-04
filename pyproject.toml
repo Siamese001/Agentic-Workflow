@@ -199,6 +199,12 @@ exclude = [
 ]
 
 [tool.ruff.lint]
+# P0-P4 Tiered Selectors (from priority_definitions.json SSOT)
+# P0 (Critical - 10 rules): F821,F401,B012,B904,S102,S307,S601,F541,B013,B015
+# P1 (High - 20 rules): B002,B006,B009,B010,B019,B027,S105,S106,S107,S108,S311,S324,S603,S607,UP028,C401,C402,C403,C404,B904
+# P2 (Medium - 18 rules): E402,E721,E731,F811,B007,B011,B023,B024,B028,C405,C406,C408,C409,C410,C411,COM812,COM819,I001
+# P3 (Low - 14 rules): E501,W291,W292,W293,W505,T201,T203,UP001,UP003,UP004,UP005,UP008,UP009,UP010
+# P4 (Info - 10 rules): D100,D101,D102,D103,ERA001,F403,F822,A001,A002,A004
 select = [
     "E",   # pycodestyle errors
     "W",   # pycodestyle warnings

@@ -1,0 +1,330 @@
+{
+  "version": "1.0.0",
+  "updated": "2026-04-04",
+  "description": "Single Source of Truth for P0-P4 priority definitions across ruff, ADG, and precommit systems",
+  "totals": {
+    "ruff_rules": 74,
+    "adg_dimensions": 52,
+    "precommit_gates": 11
+  },
+  "priorities": {
+    "P0": {
+      "level": "CRITICAL",
+      "blocking": true,
+      "description": "Security, safety, runtime errors - must block commits",
+      "ruff": {
+        "rule_count": 11,
+        "select": [
+          "F821",
+          "F401",
+          "B012",
+          "B904",
+          "S102",
+          "S307",
+          "S601",
+          "F541",
+          "B013",
+          "B015"
+        ],
+        "rules": {
+          "E999": {"name": "SyntaxError", "category": "Syntax"},
+          "F821": {"name": "undefined-name", "category": "Runtime"},
+          "F401": {"name": "unused-import", "category": "Import"},
+          "B012": {"name": "return-in-finally", "category": "Exception"},
+          "B904": {"name": "raise-without-from-inside-except", "category": "Exception"},
+          "S102": {"name": "exec-builtin", "category": "Security"},
+          "S307": {"name": "blacklisted-md5/sha1", "category": "Security"},
+          "S601": {"name": "paramiko-call", "category": "Security"},
+          "B301": {"name": "Python 3.10+ deprecation", "category": "Runtime"},
+          "F541": {"name": "f-string-missing-placeholders", "category": "Bug"},
+          "B013": {"name": "redundant-tuple-in-exception", "category": "Bug"},
+          "B015": {"name": "useless-comparison", "category": "Bug"}
+        }
+      },
+      "adg": {
+        "dimension_count": 7,
+        "dimensions": [
+          {"name": "records_execution_trace", "relation": "records_execution_trace", "description": "Execution trace coverage"},
+          {"name": "applies_guardrail", "relation": "applies_guardrail", "description": "Safety plane application"},
+          {"name": "reads_policy_state", "relation": "reads_policy_state", "description": "Policy binding reads"},
+          {"name": "emits_replay_key", "relation": "emits_replay_key", "description": "Replay key emission"},
+          {"name": "emits_determinism_digest", "relation": "emits_determinism_digest", "description": "Determinism tracking"},
+          {"name": "signs_execution_trace", "relation": "signs_execution_trace", "description": "Execution signing"},
+          {"name": "snapshots_state", "relation": "snapshots_state", "description": "State snapshots"}
+        ]
+      },
+      "precommit": {
+        "gates": ["T2-P0", "T13.5"],
+        "actions": {"T2-P0": "ruff check P0 rules - exit 1 on violations", "T13.5": "ADG layer violation gate - blocking"}
+      }
+    },
+    "P1": {
+      "level": "HIGH",
+      "blocking": true,
+      "description": "Bug patterns, code quality - must block commits",
+      "ruff": {
+        "rule_count": 20,
+        "select": [
+          "B002",
+          "B006",
+          "B009",
+          "B010",
+          "B019",
+          "B027",
+          "S105",
+          "S106",
+          "S107",
+          "S108",
+          "S311",
+          "S324",
+          "S603",
+          "S607",
+          "UP028",
+          "C401",
+          "C402",
+          "C403",
+          "C404",
+          "B904"
+        ],
+        "rules": {
+          "B002": {"name": "unary-increment", "category": "Bug"},
+          "B006": {"name": "mutable-argument-default", "category": "Bug"},
+          "B009": {"name": "getattr-with-constant", "category": "Bug"},
+          "B010": {"name": "setattr-with-constant", "category": "Bug"},
+          "B019": {"name": "cached-property-on-class", "category": "Bug"},
+          "B027": {"name": "empty-method-without-abstract", "category": "Bug"},
+          "B904": {"name": "raise-without-from-inside-except", "category": "Exception"},
+          "S105": {"name": "hardcoded-password-string", "category": "Security"},
+          "S106": {"name": "hardcoded-password-func-arg", "category": "Security"},
+          "S107": {"name": "hardcoded-password-default", "category": "Security"},
+          "S108": {"name": "hardcoded-temp-file", "category": "Security"},
+          "S311": {"name": "non-cryptographic-random", "category": "Security"},
+          "S324": {"name": "hashlib-insecure-hash", "category": "Security"},
+          "S603": {"name": "subprocess-without-shell", "category": "Security"},
+          "S607": {"name": "start-process-with-partial-path", "category": "Security"},
+          "UP028": {"name": "yield-for-loop", "category": "Performance"},
+          "C401": {"name": "unnecessary-generator-set", "category": "Performance"},
+          "C402": {"name": "unnecessary-generator-dict", "category": "Performance"},
+          "C403": {"name": "unnecessary-list-comprehension-set", "category": "Performance"},
+          "C404": {"name": "unnecessary-list-comprehension-dict", "category": "Performance"}
+        }
+      },
+      "adg": {
+        "dimension_count": 11,
+        "dimensions": [
+          {"name": "routes_through", "relation": "routes_through", "description": "Routing plane"},
+          {"name": "validates_agent_capability", "relation": "validates_agent_capability", "description": "Capability validation"},
+          {"name": "routes_to_capability", "relation": "routes_to_capability", "description": "Capability routing"},
+          {"name": "dispatches_agent", "relation": "dispatches_agent", "description": "Agent dispatch"},
+          {"name": "dispatches_execution_plan", "relation": "dispatches_execution_plan", "description": "Execution plan dispatch"},
+          {"name": "dispatches_healing_run", "relation": "dispatches_healing_run", "description": "Healing dispatch"},
+          {"name": "orchestrates_workflow", "relation": "orchestrates_workflow", "description": "Workflow orchestration"},
+          {"name": "coordinates_agents", "relation": "coordinates_agents", "description": "Agent coordination"},
+          {"name": "observes_runtime_state", "relation": "observes_runtime_state", "description": "Runtime observation"},
+          {"name": "gates_by_confidence", "relation": "gates_by_confidence", "description": "Confidence gating"},
+          {"name": "hard_fails_untranscripted", "relation": "hard_fails_untranscripted", "description": "Untranscripted failure"}
+        ]
+      },
+      "precommit": {
+        "gates": ["T2-P1", "T13"],
+        "actions": {"T2-P1": "ruff check P1 rules - exit 1 on violations", "T13": "ADG burndown gate - anti-pattern ratchet"}
+      }
+    },
+    "P2": {
+      "level": "MEDIUM",
+      "blocking": false,
+      "description": "Style, organization - warning only",
+      "ruff": {
+        "rule_count": 18,
+        "select": [
+          "E402",
+          "E721",
+          "E731",
+          "F811",
+          "B007",
+          "B011",
+          "B023",
+          "B024",
+          "B028",
+          "C405",
+          "C406",
+          "C408",
+          "C409",
+          "C410",
+          "C411",
+          "COM812",
+          "COM819",
+          "I001"
+        ],
+        "rules": {
+          "E402": {"name": "import-not-at-top", "category": "Style"},
+          "E721": {"name": "type-comparison", "category": "Style"},
+          "E731": {"name": "lambda-assignment", "category": "Style"},
+          "F811": {"name": "redefined-while-unused", "category": "Style"},
+          "B007": {"name": "unused-loop-control-variable", "category": "Clean"},
+          "B011": {"name": "assert-false", "category": "Clean"},
+          "B023": {"name": "function-uses-loop-variable", "category": "Clean"},
+          "B024": {"name": "abstract-base-class-without-abstract-method", "category": "Clean"},
+          "B028": {"name": "no-explicit-stacklevel", "category": "Clean"},
+          "C405": {"name": "unnecessary-literal-set", "category": "Clean"},
+          "C406": {"name": "unnecessary-literal-dict", "category": "Clean"},
+          "C408": {"name": "unnecessary-call", "category": "Clean"},
+          "C409": {"name": "unnecessary-literal-within-tuple-call", "category": "Clean"},
+          "C410": {"name": "unnecessary-literal-within-list-call", "category": "Clean"},
+          "C411": {"name": "unnecessary-list-call", "category": "Clean"},
+          "COM812": {"name": "trailing-comma-missing", "category": "Style"},
+          "COM819": {"name": "trailing-comma-prohibited", "category": "Style"},
+          "I001": {"name": "unsorted-imports", "category": "Organization"}
+        }
+      },
+      "adg": {
+        "dimension_count": 7,
+        "dimensions": [
+          {"name": "validates_capability", "relation": "validates_capability", "description": "Capability validation"},
+          {"name": "authorize_and_execute", "relation": "authorize_and_execute", "description": "Execution authorization"},
+          {"name": "agent_executes_agent", "relation": "agent_executes_agent", "description": "Agent delegation"},
+          {"name": "transcripts_response", "relation": "transcripts_response", "description": "Response transcription"},
+          {"name": "stores_embedding", "relation": "stores_embedding", "description": "Embedding storage"},
+          {"name": "updates_meta_learning_state", "relation": "updates_meta_learning_state", "description": "Meta-learning updates"},
+          {"name": "links_execution_to_snapshot", "relation": "links_execution_to_snapshot", "description": "Execution linkage"}
+        ]
+      },
+      "precommit": {
+        "gates": ["T2-P2", "T6", "T7"],
+        "actions": {"T2-P2": "ruff check P2 rules - exit 0 warn only", "T6": "hollow-file-gate - AST semantic check", "T7": "report-loc - SSOT path check"}
+      }
+    },
+    "P3": {
+      "level": "LOW",
+      "blocking": false,
+      "description": "Formatting, observability - info only",
+      "ruff": {
+        "rule_count": 14,
+        "select": [
+          "E501",
+          "W291",
+          "W292",
+          "W293",
+          "W505",
+          "T201",
+          "T203",
+          "UP001",
+          "UP003",
+          "UP004",
+          "UP005",
+          "UP008",
+          "UP009",
+          "UP010"
+        ],
+        "rules": {
+          "E501": {"name": "line-too-long", "category": "Format"},
+          "W291": {"name": "trailing-whitespace", "category": "Format"},
+          "W292": {"name": "no-newline-at-end-of-file", "category": "Format"},
+          "W293": {"name": "blank-line-with-whitespace", "category": "Format"},
+          "W505": {"name": "doc-line-too-long", "category": "Format"},
+          "T201": {"name": "print", "category": "Debug"},
+          "T203": {"name": "pprint", "category": "Debug"},
+          "UP001": {"name": "unicode-literals", "category": "Py3"},
+          "UP003": {"name": "type-of-comparison", "category": "Py3"},
+          "UP004": {"name": "useless-object-inheritance", "category": "Py3"},
+          "UP005": {"name": "deprecated-unittest-alias", "category": "Py3"},
+          "UP008": {"name": "super-with-arguments", "category": "Py3"},
+          "UP009": {"name": "encoding-utf8", "category": "Py3"},
+          "UP010": {"name": "unnecessary-future-import", "category": "Py3"}
+        }
+      },
+      "adg": {
+        "dimension_count": 13,
+        "dimensions": [
+          {"name": "captures_evaluation_metric", "relation": "captures_evaluation_metric", "description": "Evaluation metrics"},
+          {"name": "captures_execution_output", "relation": "captures_execution_output", "description": "Output capture"},
+          {"name": "escalates_to_human", "relation": "escalates_to_human", "description": "Human escalation"},
+          {"name": "escalates_failure", "relation": "escalates_failure", "description": "Failure escalation"},
+          {"name": "records_healing_outcome", "relation": "records_healing_outcome", "description": "Healing outcomes"},
+          {"name": "records_telemetry_event", "relation": "records_telemetry_event", "description": "Telemetry"},
+          {"name": "records_tool_invocation", "relation": "records_tool_invocation", "description": "Tool calls"},
+          {"name": "records_workflow_lineage", "relation": "records_workflow_lineage", "description": "Lineage"},
+          {"name": "blocks_direct_write", "relation": "blocks_direct_write", "description": "Direct write blocks"},
+          {"name": "routes_to_agent", "relation": "routes_to_agent", "description": "Agent routing"},
+          {"name": "verifies_boundary", "relation": "verifies_boundary", "description": "Boundary verification"},
+          {"name": "verifies_policy", "relation": "verifies_policy", "description": "Policy verification"},
+          {"name": "checks_agent_registry", "relation": "checks_agent_registry", "description": "Registry checks"}
+        ]
+      },
+      "precommit": {
+        "gates": ["T2-P3", "T3", "T19"],
+        "actions": {"T2-P3": "ruff check P3 rules - exit 0 info only", "T3": "ruff-format - auto-format", "T19": "adg-stale - cache freshness warning"}
+      }
+    },
+    "P4": {
+      "level": "INFO",
+      "blocking": false,
+      "description": "Documentation, guidance - no enforcement",
+      "ruff": {
+        "rule_count": 10,
+        "select": [
+          "D100",
+          "D101",
+          "D102",
+          "D103",
+          "ERA001",
+          "F403",
+          "F822",
+          "A001",
+          "A002",
+          "A004"
+        ],
+        "rules": {
+          "D100": {"name": "missing-docstring-public-module", "category": "Docs"},
+          "D101": {"name": "missing-docstring-public-class", "category": "Docs"},
+          "D102": {"name": "missing-docstring-public-method", "category": "Docs"},
+          "D103": {"name": "missing-docstring-public-function", "category": "Docs"},
+          "ERA001": {"name": "commented-out-code", "category": "Docs"},
+          "F403": {"name": "import-star-used", "category": "Init"},
+          "F822": {"name": "undefined-export-all", "category": "Init"},
+          "A001": {"name": "builtin-variable-shadowing", "category": "Init"},
+          "A002": {"name": "builtin-argument-shadowing", "category": "Init"},
+          "A004": {"name": "builtin-import-shadowing", "category": "Init"}
+        }
+      },
+      "adg": {
+        "dimension_count": 14,
+        "dimensions": [
+          {"name": "emits_metric_event", "relation": "emits_metric_event", "description": "Metrics emission"},
+          {"name": "records_incident_event", "relation": "records_incident_event", "description": "Incident logging"},
+          {"name": "captures_runtime_anomaly", "relation": "captures_runtime_anomaly", "description": "Anomaly capture"},
+          {"name": "writes_observability_log", "relation": "writes_observability_log", "description": "Observability logs"},
+          {"name": "updates_monitoring_state", "relation": "updates_monitoring_state", "description": "Monitoring state"},
+          {"name": "triggers_alert", "relation": "triggers_alert", "description": "Alert triggering"},
+          {"name": "links_incident_trace", "relation": "links_incident_trace", "description": "Incident linkage"},
+          {"name": "captures_pattern", "relation": "captures_pattern", "description": "Pattern capture"},
+          {"name": "records_learning_event", "relation": "records_learning_event", "description": "Learning events"},
+          {"name": "writes_learning_snapshot", "relation": "writes_learning_snapshot", "description": "Learning snapshots"},
+          {"name": "feeds_meta_learning", "relation": "feeds_meta_learning", "description": "Meta-learning feeds"},
+          {"name": "updates_routing_strategy", "relation": "updates_routing_strategy", "description": "Strategy updates"},
+          {"name": "improves_agent_policy", "relation": "improves_agent_policy", "description": "Policy improvement"},
+          {"name": "stores_learning_state", "relation": "stores_learning_state", "description": "Learning state"}
+        ]
+      },
+      "precommit": {
+        "gates": ["T5"],
+        "actions": {"T5": "adg-ci-gates - manual CI only"}
+      }
+    }
+  },
+  "metadata": {
+    "generated_by": "p0-p4-ssot-consolidated-mapping-54f977.md",
+    "token_estimates": {
+      "ruff_rules": "3K",
+      "adg_dimensions": "5K",
+      "precommit_gates": "2K",
+      "total": "10K"
+    },
+    "per_file_ignores": {
+      "tests/**/*": ["S101", "S105", "S106", "S107", "B011"],
+      "tools/**/*": ["T201", "T203"],
+      "**/__init__.py": ["F403", "F822", "A001", "A002", "A004"],
+      "ops_scripts/**/*": ["T201", "T203", "S603", "S607", "S108"]
+    }
+  }
+}
