@@ -15,14 +15,14 @@ from contextlib import contextmanager
 from dataclasses import dataclass, field
 from typing import Any, Callable, Generator
 
-from agentic_core.L2_execution.types.ml_write_intent_types import is_commit_sandbox_active
-from agentic_core.L2_execution.types.tool_intent_types import ToolIntent, ToolViolation
 from agentic_core.L2_execution.contracts.l2_execution_contract import (
     L2ExecutionAgent,
     L2ExecutionContext,
     L2ExecutionPhase,
     L2PhaseResult,
 )
+from agentic_core.L2_execution.types.ml_write_intent_types import is_commit_sandbox_active
+from agentic_core.L2_execution.types.tool_intent_types import ToolIntent, ToolViolation
 from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     LayerSegment,
     _emit_agent_executes_agent,
@@ -270,6 +270,7 @@ class ToolResult:
         return json.dumps(doc, sort_keys=True, separators=(",", ":")).encode()
 
     def to_dict(self) -> dict[str, Any]:
+        """Convert ToolResult to dictionary representation."""
         return {
             "schema_version": self.schema_version,
             "tool_name": self.tool_name,
@@ -573,7 +574,7 @@ class ToolIntentExecutor(L2ExecutionAgent):
     # Backward Compatibility: Legacy execute() method
     # ========================================================================
     @contextmanager
-    def __enter__(self) -> Generator["ToolIntentExecutor", None, None]:
+    def __enter__(self) -> Generator[ToolIntentExecutor, None, None]:
         """Context manager entry - preserves legacy usage."""
         yield self
 

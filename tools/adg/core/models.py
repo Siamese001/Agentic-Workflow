@@ -1,5 +1,6 @@
 """ADG Core Models — Pydantic models for type-safe ADG entities."""
-from typing import Any, Dict, List, Optional
+from typing import Any
+
 from pydantic import BaseModel, Field
 
 
@@ -8,9 +9,9 @@ class ADGNode(BaseModel):
     id: str
     adg_name: str
     entity_type: str
-    layer: Optional[str] = None
-    file_path: Optional[str] = None
-    resolved_path: Optional[str] = None
+    layer: str | None = None
+    file_path: str | None = None
+    resolved_path: str | None = None
 
     class Config:
         extra = "allow"  # Allow additional fields from SQLite
@@ -23,9 +24,9 @@ class ADGEdge(BaseModel):
     dst_id: str
     relation_type: str
     edge_kind: str
-    source_file: Optional[str] = None
-    line_no: Optional[int] = None
-    symbol: Optional[str] = None
+    source_file: str | None = None
+    line_no: int | None = None
+    symbol: str | None = None
 
     class Config:
         extra = "allow"
@@ -34,9 +35,9 @@ class ADGEdge(BaseModel):
 class ADGResponse(BaseModel):
     """Unified response shape regardless of backend."""
     status: str = "ok"
-    data: Dict[str, Any]
+    data: dict[str, Any]
     backend_used: str = Field(..., description="redis|sqlite")
-    cache_meta: Dict[str, Any] = Field(default_factory=dict)
+    cache_meta: dict[str, Any] = Field(default_factory=dict)
 
 
 class HealthStatus(BaseModel):

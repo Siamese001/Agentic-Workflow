@@ -1,0 +1,60 @@
+=== ADG Metadata ===
+  schema_version: 4.0.0
+  commit_sha: 7be2f9d4ef1dfa53ccdceba054d99e2c2aa40218
+  repo_state_hash: 50d92b2aca1f52960a4b29aaa6772354fc693596
+  scanner_digest: 2c9eeb1a9b4d4e3c3601b418deea8283c8c8d2ce8de2fe5f8fff6e02116bb2c5
+  artifact_digest: 6b1e04b22104dcd013c48a809d1e12482938d5f696c26ce907a0c492ce29050a
+  total_nodes: 185720
+  total_edges: 742966
+
+=== L2 Execution Layer Modules ===
+Total L2 nodes: 4154
+
+--- By Entity Type ---
+
+symbol: 3758
+  - ADG::Symbol::agentic_core.L2_execution (agentic_core/L2_execution/__init__.py)
+  - ADG::Symbol::agentic_core.L2_execution.UniversalWriteGateway (agentic_core/L2_execution/UniversalWriteGateway.py)
+  - ADG::Symbol::agentic_core.L2_execution.UniversalWriteGateway.MutationRecord (agentic_core/L2_execution/UniversalWriteGateway.py)
+  - ADG::Symbol::agentic_core.L2_execution.UniversalWriteGateway.SimulationResult (agentic_core/L2_execution/UniversalWriteGateway.py)
+  - ADG::Symbol::agentic_core.L2_execution.UniversalWriteGateway.ToolNotAllowedError (agentic_core/L2_execution/UniversalWriteGateway.py)
+  ... and 3753 more
+
+module: 393
+  - ADG::Module::agentic_core/L2_execution/UniversalWriteGateway.py (agentic_core/L2_execution/UniversalWriteGateway.py)
+  - ADG::Module::agentic_core/L2_execution/__init__.py (agentic_core/L2_execution/__init__.py)
+  - ADG::Module::agentic_core/L2_execution/adaptation/__init__.py (agentic_core/L2_execution/adaptation/__init__.py)
+  - ADG::Module::agentic_core/L2_execution/adaptation/adaptation_orchestrator.py (agentic_core/L2_execution/adaptation/adaptation_orchestrator.py)
+  - ADG::Module::agentic_core/L2_execution/adaptation/execution_adaptation.py (agentic_core/L2_execution/adaptation/execution_adaptation.py)
+  ... and 388 more
+
+gateway: 3
+  - ADG::Symbol::EmbeddingSovereignAgent (agentic_core/L2_execution/reasoning/EmbeddingSovereignAgent.py)
+  - ADG::Symbol::SovereignLLMGateway (agentic_core/L2_execution/enforcement/SovereignLLMGateway.py)
+  - ADG::Symbol::UniversalWriteGateway (agentic_core/L2_execution/UniversalWriteGateway.py)
+
+=== L2 Agent/Executor Classes ===
+Total: 0
+
+=== L2 Key Relationships ===
+Outgoing edges:
+  - imports: 15898
+  - reads_from: 5291
+  - decomposes_into: 3289
+  - exports: 1079
+  - reads_runtime_state: 765
+  - reads_policy_state: 642
+  - calls: 400
+  - reads_env: 399
+  - decorated_by: 270
+  - emits_determinism_digest: 218
+  - belongs_to_layer: 216
+  - dead_imports: 200
+  - implements: 169
+  - writes_to: 125
+  - antipattern: 101
+
+=== L2 Nodes with No Outgoing edges ===
+Count: 0
+
+=== Analysis Complete ===

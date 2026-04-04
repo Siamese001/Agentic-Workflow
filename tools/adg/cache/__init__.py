@@ -16,7 +16,7 @@ REDIS_TIMEOUT_MS = 75
 class RedisCache:
     """Read-through cache with tight timeout budget."""
 
-    _client: Optional[redis.Redis] = None
+    _client: redis.Redis | None = None
     _available: bool = False
     _cache_version: str = "v1"  # Bump on schema changes
 
@@ -41,7 +41,7 @@ class RedisCache:
             self._available = False
             self._client = None
 
-    def health(self) -> Tuple[str, Dict[str, Any]]:
+    def health(self) -> tuple[str, dict[str, Any]]:
         """Return Redis health status."""
         if not self._available or not self._client:
             return "unavailable", {"reason": "not connected"}
@@ -59,7 +59,7 @@ class RedisCache:
         """Generate versioned cache key."""
         return f"adg:{self._cache_version}:{adg_snapshot_id}:{base}"
 
-    def get_node(self, node_id: str, adg_snapshot_id: str) -> Optional[ADGNode]:
+    def get_node(self, node_id: str, adg_snapshot_id: str) -> ADGNode | None:
         """Try Redis first, return None on miss or timeout."""
         if not self._available:
             return None
@@ -86,7 +86,7 @@ class RedisCache:
             logger.debug(f"Redis set_node failed: {e}")
 
     def get_edge_fanout(self, src_id: str, relation_type: str,
-                        adg_snapshot_id: str) -> Optional[List[ADGEdge]]:
+                        adg_snapshot_id: str) -> list[ADGEdge] | None:
         """Try Redis for edges."""
         if not self._available:
             return None
@@ -110,7 +110,7 @@ class RedisCache:
         return None
 
     def set_edge_fanout(self, src_id: str, relation_type: str,
-                       edges: List[ADGEdge], adg_snapshot_id: str) -> None:
+                       edges: list[ADGEdge], adg_snapshot_id: str) -> None:
         """Cache edges in Redis."""
         if not self._available:
             return
