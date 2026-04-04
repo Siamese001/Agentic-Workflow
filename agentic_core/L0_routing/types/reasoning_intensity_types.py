@@ -225,6 +225,11 @@ class ReasoningIntensityProfile:
     token_budget_per_stage: tuple[StageTokenBudget, ...]
     allowed_modes: tuple[str, ...]
     profile_hash: str
+    # ADG complexity bindings for on-the-fly optimization
+    complexity_hash: str = ""  # SHA256 of ADG complexity surface
+    adg_complexity_tier: str = "moderate"  # simple, moderate, complex, deep
+    adg_node_count: int = 0  # Number of ADG nodes in module's call graph
+    adg_edge_count: int = 0  # Number of ADG edges in module's call graph
 
     def __post_init__(self) -> None:
         if not self.reasoning_profile_version:
@@ -248,6 +253,10 @@ class ReasoningIntensityProfile:
                 {"stage_id": b.stage_id, "max_tokens": b.max_tokens} for b in self.token_budget_per_stage
             ],
             allowed_modes=sorted(self.allowed_modes),
+            complexity_hash=self.complexity_hash,
+            adg_complexity_tier=self.adg_complexity_tier,
+            adg_node_count=self.adg_node_count,
+            adg_edge_count=self.adg_edge_count,
         )
         if self.profile_hash != expected:
             raise ValueError(
@@ -339,6 +348,10 @@ def _compute_profile_hash(
     enable_reflection: bool,
     token_budget_per_stage: list[dict[str, int]],
     allowed_modes: list[str],
+    complexity_hash: str = "",
+    adg_complexity_tier: str = "moderate",
+    adg_node_count: int = 0,
+    adg_edge_count: int = 0,
 ) -> str:
     """Compute SHA256 over deterministic canonical serialization of profile parameters."""
     import uuid as _uuid  # noqa: PLC0415
@@ -366,6 +379,10 @@ def _compute_profile_hash(
             "enable_reflection": enable_reflection,
             "token_budget_per_stage": sorted(token_budget_per_stage, key=lambda x: x["stage_id"]),
             "allowed_modes": sorted(allowed_modes),
+            "complexity_hash": complexity_hash,
+            "adg_complexity_tier": adg_complexity_tier,
+            "adg_node_count": adg_node_count,
+            "adg_edge_count": adg_edge_count,
         },
         sort_keys=True,
         separators=(",", ":"),
@@ -396,6 +413,10 @@ def build_profile_hash(
     enable_reflection: bool,
     token_budget_per_stage: list[StageTokenBudget],
     allowed_modes: list[str],
+    complexity_hash: str = "",
+    adg_complexity_tier: str = "moderate",
+    adg_node_count: int = 0,
+    adg_edge_count: int = 0,
 ) -> str:
     """Compute the profile_hash for use before constructing ReasoningIntensityProfile."""
     return _compute_profile_hash(
@@ -409,6 +430,10 @@ def build_profile_hash(
             {"stage_id": b.stage_id, "max_tokens": b.max_tokens} for b in token_budget_per_stage
         ],
         allowed_modes=sorted(allowed_modes),
+        complexity_hash=complexity_hash,
+        adg_complexity_tier=adg_complexity_tier,
+        adg_node_count=adg_node_count,
+        adg_edge_count=adg_edge_count,
     )
 
 
@@ -449,8 +474,58 @@ TIER_PARAMETER_TABLE: dict[ReasoningTier, dict[str, Any]] = {
         "token_budget_multiplier": 2.0,
     },
 }
+
+# ADG complexity tier mapping for on-the-fly reasoning optimization
+ADG_COMPLEXITY_TIER_TABLE: dict[str, dict[str, Any]] = {
+    "simple": {
+        "adg_complexity_tier": "simple",
+        "max_adg_nodes": 100,
+        "max_adg_edges": 500,
+        "reasoning_path_id": "simple_cot",
+        "description": "Simple queries with minimal call graph complexity",
+    },
+    "moderate": {
+        "adg_complexity_tier": "moderate",
+        "max_adg_nodes": 500,
+        "max_adg_edges": 2500,
+        "reasoning_path_id": "moderate_cot_hybrid",
+        "description": "Moderate complexity with balanced reasoning depth",
+    },
+    "complex": {
+        "adg_complexity_tier": "complex",
+        "max_adg_nodes": 2000,
+        "max_adg_edges": 10000,
+        "reasoning_path_id": "complex_tot_reflexion",
+        "description": "Complex queries requiring full reasoning capabilities",
+    },
+    "deep": {
+        "adg_complexity_tier": "deep",
+        "max_adg_nodes": float("inf"),
+        "max_adg_edges": float("inf"),
+        "reasoning_path_id": "deep_full_reasoning",
+        "description": "Deep complexity queries with maximum reasoning depth",
+    },
+}
+
+
+def compute_complexity_tier(adg_node_count: int, adg_edge_count: int) -> str:
+    """
+    Compute ADG complexity tier from node and edge counts.
+
+    Args:
+        adg_node_count: Number of ADG nodes in module's call graph
+        adg_edge_count: Number of ADG edges in module's call graph
+
+    Returns:
+        Complexity tier string: "simple", "moderate", "complex", or "deep"
+    """
+    for tier, config in ADG_COMPLEXITY_TIER_TABLE.items():
+        if adg_node_count <= config["max_adg_nodes"] and adg_edge_count <= config["max_adg_edges"]:
+            return tier
+    return "deep"
 __all__ = [
     "TIER_PARAMETER_TABLE",
+    "ADG_COMPLEXITY_TIER_TABLE",
     "ReasoningConstraintViolation",
     "ReasoningEnforcementTelemetry",
     "ReasoningIntensityProfile",
@@ -459,4 +534,5 @@ __all__ = [
     "StageTokenBudget",
     "build_envelope_hash",
     "build_profile_hash",
+    "compute_complexity_tier",
 ]

@@ -67,6 +67,95 @@ class ProviderConfig:
     extra_headers: dict[str, str] = field(default_factory=dict)
 
 
+@dataclass(frozen=True)
+class ReasoningPath:
+    """Dynamic reasoning path configuration based on ADG complexity tier."""
+
+    path_id: str
+    use_cot: bool
+    cot_paths: int
+    use_tot: bool
+    tot_branches: int
+    tot_depth: int
+    use_reflexion: bool
+    max_reflexion_loops: int
+    self_consistency_samples: int
+    temperature: float
+    adg_complexity_tier: str  # simple, moderate, complex, deep
+    estimated_latency_ms: int  # Estimated latency for telemetry
+
+
+@dataclass
+class PathSelectionResult:
+    """Result of dynamic reasoning path selection."""
+
+    path: ReasoningPath
+    selection_reason: str
+    profile_hash: str | None = None
+    complexity_tier: str | None = None
+
+
+# Dynamic reasoning path configurations by ADG complexity tier
+REASONING_PATH_TABLE: dict[str, ReasoningPath] = {
+    "simple": ReasoningPath(
+        path_id="simple_cot",
+        use_cot=True,
+        cot_paths=1,
+        use_tot=False,
+        tot_branches=0,
+        tot_depth=0,
+        use_reflexion=False,
+        max_reflexion_loops=0,
+        self_consistency_samples=1,
+        temperature=0.3,
+        adg_complexity_tier="simple",
+        estimated_latency_ms=500,
+    ),
+    "moderate": ReasoningPath(
+        path_id="moderate_cot_hybrid",
+        use_cot=True,
+        cot_paths=2,
+        use_tot=True,
+        tot_branches=2,
+        tot_depth=1,
+        use_reflexion=False,
+        max_reflexion_loops=0,
+        self_consistency_samples=2,
+        temperature=0.5,
+        adg_complexity_tier="moderate",
+        estimated_latency_ms=1500,
+    ),
+    "complex": ReasoningPath(
+        path_id="complex_tot_reflexion",
+        use_cot=True,
+        cot_paths=3,
+        use_tot=True,
+        tot_branches=3,
+        tot_depth=2,
+        use_reflexion=True,
+        max_reflexion_loops=1,
+        self_consistency_samples=3,
+        temperature=0.6,
+        adg_complexity_tier="complex",
+        estimated_latency_ms=3000,
+    ),
+    "deep": ReasoningPath(
+        path_id="deep_full_reasoning",
+        use_cot=True,
+        cot_paths=4,
+        use_tot=True,
+        tot_branches=5,
+        tot_depth=3,
+        use_reflexion=True,
+        max_reflexion_loops=2,
+        self_consistency_samples=6,
+        temperature=0.7,
+        adg_complexity_tier="deep",
+        estimated_latency_ms=6000,
+    ),
+}
+
+
 @dataclass
 class TelemetryRecord:
     """Single telemetry record for an LLM call."""
@@ -324,6 +413,184 @@ class SovereignLLMGateway:
         """Create default provider implementation."""
         # Placeholder - actual implementations would be in separate modules
         return _PlaceholderProvider(config)
+
+    def select_reasoning_path(
+        self,
+        complexity_tier: str = "moderate",
+        profile_hash: str | None = None,
+        latency_budget_ms: int | None = None,
+    ) -> PathSelectionResult:
+        """
+        Dynamically select reasoning path based on ADG complexity tier.
+
+        Args:
+            complexity_tier: ADG complexity tier (simple, moderate, complex, deep)
+            profile_hash: Optional L0-stamped profile hash for traceability
+            latency_budget_ms: Optional latency constraint for path selection
+
+        Returns:
+            PathSelectionResult with selected path and selection metadata
+        """
+        # Normalize complexity tier
+        tier = complexity_tier.lower() if complexity_tier else "moderate"
+
+        # Validate tier against available paths
+        if tier not in REASONING_PATH_TABLE:
+            _LOGGER.warning("Unknown complexity tier '%s', falling back to 'moderate'", tier)
+            tier = "moderate"
+
+        path = REASONING_PATH_TABLE[tier]
+
+        # If latency budget specified, check if path fits
+        if latency_budget_ms is not None and path.estimated_latency_ms > latency_budget_ms:
+            # Fall back to simpler path if available
+            fallback_order = ["simple", "moderate", "complex", "deep"]
+            current_idx = fallback_order.index(tier) if tier in fallback_order else 1
+
+            for fallback_tier in fallback_order[:current_idx]:
+                fallback_path = REASONING_PATH_TABLE[fallback_tier]
+                if fallback_path.estimated_latency_ms <= latency_budget_ms:
+                    _LOGGER.info(
+                        "Latency budget %dms exceeded by '%s' (%dms), falling back to '%s' (%dms)",
+                        latency_budget_ms,
+                        path.path_id,
+                        path.estimated_latency_ms,
+                        fallback_path.path_id,
+                        fallback_path.estimated_latency_ms,
+                    )
+                    path = fallback_path
+                    tier = fallback_tier
+                    break
+
+        selection_reason = f"ADG complexity tier '{tier}' selected"
+        if latency_budget_ms:
+            selection_reason += f" within {latency_budget_ms}ms latency budget"
+
+        return PathSelectionResult(
+            path=path,
+            selection_reason=selection_reason,
+            profile_hash=profile_hash,
+            complexity_tier=tier,
+        )
+
+    def generate_with_reasoning(
+        self,
+        artifact: CompiledPromptArtifact,
+        complexity_tier: str = "moderate",
+        profile_hash: str | None = None,
+        latency_budget_ms: int | None = None,
+        provider: ProviderType | None = None,
+        **kwargs,
+    ) -> dict[str, Any]:
+        """
+        Generate LLM response with dynamic reasoning path selection.
+
+        1. Selects reasoning path based on ADG complexity tier
+        2. Verifies artifact signature
+        3. Selects provider
+        4. Makes LLM call with circuit breaker
+        5. Records telemetry with path selection metadata
+        """
+        # Step 1: Select reasoning path
+        path_result = self.select_reasoning_path(
+            complexity_tier=complexity_tier,
+            profile_hash=profile_hash,
+            latency_budget_ms=latency_budget_ms,
+        )
+        path = path_result.path
+
+        # Step 2: Verify signature
+        if self._verify_signatures:
+            if not artifact.verify_signature(self._secret_key):
+                raise SignatureVerificationError(
+                    f"Artifact signature verification failed: {artifact.trace_id}"
+                )
+
+        # Step 3: Select provider
+        provider_type = provider or self._default_provider
+        if provider_type is None:
+            raise GatewayError("No provider specified and no default set")
+
+        if provider_type not in self._providers:
+            raise GatewayError(f"Provider not registered: {provider_type.name}")
+
+        provider_impl, config = self._providers[provider_type]
+
+        # Step 4: Execute with circuit breaker and reasoning configuration
+        start_time = time.time()
+        success = False
+        error_type = None
+        error_message = None
+        tokens_out = 0
+
+        try:
+            # Apply reasoning configuration to generation
+            reasoning_kwargs = {
+                "temperature": path.temperature,
+                "cot_paths": path.cot_paths if path.use_cot else 0,
+                "tot_branches": path.tot_branches if path.use_tot else 0,
+                "tot_depth": path.tot_depth if path.use_tot else 0,
+                "reflexion_loops": path.max_reflexion_loops if path.use_reflexion else 0,
+                "self_consistency_samples": path.self_consistency_samples,
+            }
+            # Merge with user-provided kwargs (user values take precedence)
+            reasoning_kwargs.update(kwargs)
+
+            response = self._circuit_breaker.call(
+                provider_impl.generate,
+                artifact.final_system_string,
+                artifact.final_user_string,
+                artifact.allowed_tools_schema,
+                **reasoning_kwargs,
+            )
+            success = True
+            tokens_out = response.get("tokens_used", 0)
+
+            # Add reasoning path metadata to response
+            response["_reasoning_path"] = {
+                "path_id": path.path_id,
+                "complexity_tier": path.adg_complexity_tier,
+                "cot_used": path.use_cot,
+                "tot_used": path.use_tot,
+                "reflexion_used": path.use_reflexion,
+                "self_consistency": path.self_consistency_samples,
+            }
+            return response
+
+        except CircuitBreakerOpenError:
+            error_type = "circuit_breaker_open"
+            error_message = "Circuit breaker is open"
+            raise
+
+        except Exception as e:
+            error_type = type(e).__name__
+            error_message = str(e)
+            raise ProviderError(f"Provider call failed: {e}") from e
+
+        finally:
+            # Step 5: Record telemetry with reasoning path metadata
+            latency_ms = (time.time() - start_time) * 1000
+            record = TelemetryRecord.create(
+                trace_id=artifact.trace_id,
+                provider=provider_type,
+                model=config.model,
+                tokens_in=artifact.tokens,
+                tokens_out=tokens_out,
+                latency_ms=latency_ms,
+                success=success,
+                error_type=error_type,
+                error_message=error_message,
+                metadata={
+                    "slots_used": artifact.slots_used,
+                    "signature_present": bool(artifact.signature),
+                    "reasoning_path_id": path.path_id,
+                    "complexity_tier": path.adg_complexity_tier,
+                    "profile_hash": profile_hash,
+                    "latency_budget_ms": latency_budget_ms,
+                    "selection_reason": path_result.selection_reason,
+                },
+            )
+            self._ledger.record(record)
 
     def generate(
         self, artifact: CompiledPromptArtifact, provider: ProviderType | None = None, **kwargs

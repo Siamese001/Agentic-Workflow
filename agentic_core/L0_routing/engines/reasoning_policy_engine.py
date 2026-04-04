@@ -20,6 +20,7 @@ from __future__ import annotations
 import hashlib
 import json
 import logging
+import time
 from dataclasses import dataclass
 from typing import Any
 
@@ -418,6 +419,71 @@ class ReasoningPolicyEngine:
             policy_hash=self._policy_hash,
             envelope_hash=envelope_hash,
         )
+
+    def calibrate_from_outcomes(
+        self,
+        outcome_aggregates: list[dict[str, Any]],
+        current_adg_stats: dict[str, int] | None = None,
+    ) -> dict[str, Any]:
+        """
+        Calibrate complexity tier thresholds from L6 outcome aggregates.
+
+        This method accepts pre-versioned, windowed aggregates from L6
+        ReasoningOutcomeTracker and computes calibration adjustments.
+        It does NOT modify current run behavior — adjustments apply to
+        future profile computations only.
+
+        Args:
+            outcome_aggregates: List of OutcomeAggregate dicts from L6
+            current_adg_stats: Optional ADG stats (node_count, edge_count)
+
+        Returns:
+            Calibration report with suggested adjustments
+        """
+        import uuid as _uuid  # noqa: PLC0415
+
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L0_ROUTING, "ReasoningPolicyEngine.calibrate_from_outcomes"
+        )
+
+        calibration_report = {
+            "timestamp": time.time(),
+            "policy_hash": self._policy_hash,
+            "outcome_count": len(outcome_aggregates),
+            "tier_adjustments": {},
+            "adg_integration": current_adg_stats or {},
+        }
+
+        for aggregate in outcome_aggregates:
+            tier = aggregate.get("complexity_tier", "moderate")
+            path_id = aggregate.get("path_id", "unknown")
+            avg_latency = aggregate.get("avg_latency_ms", 0)
+            error_rate = aggregate.get("error_rate", 0)
+            p95_latency = aggregate.get("p95_latency_ms", 0)
+
+            # Compute calibration signal
+            adjustment = {"latency_ms": avg_latency, "error_rate": error_rate, "p95_ms": p95_latency}
+
+            # If high error rate, suggest more conservative tier
+            if error_rate > 0.1:  # 10% error threshold
+                adjustment["suggested_action"] = "increase_depth"
+                adjustment["reason"] = f"Error rate {error_rate:.2%} exceeds 10% threshold"
+            elif avg_latency < 500 and error_rate < 0.05:  # Fast and reliable
+                adjustment["suggested_action"] = "maintain_or_reduce"
+                adjustment["reason"] = f"Low latency ({avg_latency:.0f}ms) and low error rate"
+            else:
+                adjustment["suggested_action"] = "maintain"
+                adjustment["reason"] = "Performance within acceptable bounds"
+
+            calibration_report["tier_adjustments"][f"{tier}:{path_id}"] = adjustment
+
+        logger.info(
+            "ReasoningPolicyEngine: calibration complete, %d aggregates processed",
+            len(outcome_aggregates),
+        )
+
+        return calibration_report
 
 
 __all__ = [

@@ -209,6 +209,8 @@ class LocationValidatorAgent(SovereignBaseAgent):
     def __post_init__(self):
         """Initialize validator with project root validation."""
         super().__post_init__()
+        if isinstance(self.project_root, str):
+            self.project_root = Path(self.project_root)
         self.project_root = self.project_root.resolve()
 
     # guardian: allow-type-erasure

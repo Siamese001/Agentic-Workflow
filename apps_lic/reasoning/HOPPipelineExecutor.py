@@ -218,13 +218,43 @@ class HOPPipelineExecutor(HOPStageCapability, LICAgentBase):
 
         Domain logic for each stage is preserved via the stage registry.
         reasoning_profile (if present) is forwarded as a read-only constraint.
+        ADG complexity tier from profile drives dynamic reasoning path selection.
         """
         import uuid  # noqa: PLC0415
 
         _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, f"HOPPipelineExecutor._process:stage_{self.stage_id}")
+
+        # Extract complexity tier from reasoning profile for dynamic path selection
+        complexity_tier = "moderate"  # default
+        profile_hash = None
+        if self.reasoning_profile is not None:
+            complexity_tier = getattr(self.reasoning_profile, 'adg_complexity_tier', 'moderate')
+            profile_hash = getattr(self.reasoning_profile, 'profile_hash', None)
+            # Emit telemetry about reasoning path selection
+            _emit_records_telemetry_event(
+                str(uuid.uuid4()),
+                {
+                    "stage_id": self.stage_id,
+                    "stage_name": self.stage_name,
+                    "complexity_tier": complexity_tier,
+                    "profile_hash": profile_hash,
+                    "adg_node_count": getattr(self.reasoning_profile, 'adg_node_count', 0),
+                    "adg_edge_count": getattr(self.reasoning_profile, 'adg_edge_count', 0),
+                }
+            )
+
         from apps_lic.engines import hop_stage_registry
 
         handler = hop_stage_registry.get_stage_handler(self.stage_id)
         if handler is None:
             return {"stage": self.stage_id, "error": f"No handler for stage {self.stage_id}"}
-        return handler(self, context or {}, reasoning_profile=self.reasoning_profile, **kwargs)
+
+        # Pass complexity_tier and profile to stage handler for dynamic reasoning
+        return handler(
+            self,
+            context or {},
+            reasoning_profile=self.reasoning_profile,
+            complexity_tier=complexity_tier,
+            profile_hash=profile_hash,
+            **kwargs
+        )

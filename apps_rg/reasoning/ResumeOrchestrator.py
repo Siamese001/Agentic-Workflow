@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import uuid
+from typing import TYPE_CHECKING
 
 from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     LayerSegment,
@@ -150,16 +151,48 @@ _emit_updates_meta_learning_state("p4", "ResumeOrchestrator", "meta_learning")
 _emit_links_execution_to_snapshot("p4", "ResumeOrchestrator", "exec_snapshot_link")
 
 
-class ResumeOrchestrator:
-    """Orchestrate the multi-hop resume generation workflow."""
+if TYPE_CHECKING:
+    from agentic_core.L0_routing.types.reasoning_intensity_types import ReasoningIntensityProfile
 
-    def __init__(self, master_resume: dict, test_mode: bool = False) -> None:
-        """Initialize the orchestrator."""
+
+class ResumeOrchestrator:
+    """Orchestrate the multi-hop resume generation workflow with dynamic reasoning.
+
+    Supports L0-stamped ReasoningIntensityProfile for ADG-informed dynamic
+    reasoning path selection (COT/TOT/Reflexion) based on query complexity.
+    """
+
+    def __init__(
+        self,
+        master_resume: dict,
+        test_mode: bool = False,
+        reasoning_profile: ReasoningIntensityProfile | None = None,
+    ) -> None:
+        """Initialize the orchestrator with optional reasoning profile."""
         self.master_resume = master_resume
         self.test_mode = test_mode
+        self.reasoning_profile = reasoning_profile
         self.hop_checkpoints: list[HopCheckpoint] = []
         self.constraints = ContentConstraintsConfig()
         self.jd_enforcer = JDEnforcementValidator()
+
+        # Extract ADG complexity tier from profile for dynamic path selection
+        if self.reasoning_profile is not None:
+            self.complexity_tier = getattr(self.reasoning_profile, 'adg_complexity_tier', 'moderate')
+            self.profile_hash = getattr(self.reasoning_profile, 'profile_hash', None)
+            _emit_records_telemetry_event(
+                str(uuid.uuid4()),
+                {
+                    "orchestrator": "ResumeOrchestrator",
+                    "complexity_tier": self.complexity_tier,
+                    "profile_hash": self.profile_hash,
+                    "adg_node_count": getattr(self.reasoning_profile, 'adg_node_count', 0),
+                    "adg_edge_count": getattr(self.reasoning_profile, 'adg_edge_count', 0),
+                }
+            )
+        else:
+            self.complexity_tier = "moderate"  # default
+            self.profile_hash = None
 
     def run(self, JobDescription: str) -> dict[str, object]:
         """Execute the full resume generation workflow."""
@@ -191,7 +224,23 @@ class ResumeOrchestrator:
         self.hop_checkpoints.append(HopCheckpoint(hop_id=hop_id, status=status))
 
 
-def orchestrate_resume(master_resume: dict, JobDescription: str) -> dict[str, object]:
-    """Single public function - pure routing between atoms."""
-    orchestrator = ResumeOrchestrator(master_resume)
+def orchestrate_resume(
+    master_resume: dict,
+    JobDescription: str,
+    reasoning_profile: ReasoningIntensityProfile | None = None,
+) -> dict[str, object]:
+    """Single public function - pure routing between atoms with dynamic reasoning.
+
+    Args:
+        master_resume: The master resume data
+        JobDescription: The job description to tailor against
+        reasoning_profile: Optional L0-stamped profile for ADG-informed reasoning
+
+    Returns:
+        Dict with status, enriched_data, and checkpoints
+    """
+    orchestrator = ResumeOrchestrator(
+        master_resume=master_resume,
+        reasoning_profile=reasoning_profile,
+    )
     return orchestrator.run(JobDescription)

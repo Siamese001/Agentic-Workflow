@@ -383,6 +383,8 @@ class FileClassificationHealerAgent(*BASE_CLASSES):
         if HAS_SOVEREIGN_BASE and hasattr(super(), "__post_init__"):
             super().__post_init__()
         # [HARDENING] Ensure path is absolute for resolve() calls
+        if isinstance(self.project_root, str):
+            self.project_root = Path(self.project_root)
         self.project_root = self.project_root.resolve()
         self.stats = {
             "analyzed": 0,

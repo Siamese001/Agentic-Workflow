@@ -288,6 +288,8 @@ class SovereignBaseAgent(
             return
 
         if project_root is not None:
+            if isinstance(project_root, str):
+                project_root = Path(project_root)
             self.project_root = project_root
         elif not hasattr(self, "project_root") or self.project_root is None:
             self.project_root = Path.cwd()

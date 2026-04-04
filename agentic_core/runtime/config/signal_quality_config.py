@@ -89,7 +89,6 @@ from enum import Enum
 from typing import Any
 
 from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-from agentic_core.config.core.constants_config import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
     LayerSegment,
     _emit_agent_executes_agent,
     _emit_captures_pattern,
@@ -128,6 +127,7 @@ from agentic_core.config.core.constants_config import BATCH_SIZE, BUFFER_SIZE, D
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from agentic_core.config.core.constants_config import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
 
 _emit_emits_metric_event("signal_quality_config", "p4obs", "metric_1")
 _emit_emits_metric_event("signal_quality_config", "p4obs", "metric_2")

@@ -80,7 +80,6 @@ from dataclasses import dataclass
 from typing import Any
 
 from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-from agentic_core.config.core.constants_config import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
     LayerSegment,
     _emit_agent_executes_agent,
     _emit_captures_pattern,
@@ -119,6 +118,7 @@ from agentic_core.config.core.constants_config import BATCH_SIZE, BUFFER_SIZE, D
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from agentic_core.config.core.constants_config import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
 
 _emit_emits_metric_event("shared_infrastructure_config", "p4obs", "metric_1")
 _emit_emits_metric_event("shared_infrastructure_config", "p4obs", "metric_2")
@@ -171,7 +171,7 @@ _emit_transcripts_response("p1", "shared_infrastructure_config", "transcript")
 _emit_hard_fails_untranscripted("p1", "shared_infrastructure_config")
 _emit_gated_by_confidence("p1", "shared_infrastructure_config", "confidence_gate")
 
-Logger: Any = logging.getLogger(__name__)
+Logger = logging.getLogger(__name__)
 
 
 @dataclass
