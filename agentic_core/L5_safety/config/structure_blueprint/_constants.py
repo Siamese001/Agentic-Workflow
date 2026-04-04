@@ -1089,7 +1089,6 @@ def build_sovereign_territories() -> dict[str, TerritoryDefinition]:
                     "agentic_core",
                     "apps_lic",
                     "apps_rg",
-                    "misc",
                     "ops_scripts",
                 ],
             },
@@ -1112,9 +1111,6 @@ def build_sovereign_territories() -> dict[str, TerritoryDefinition]:
                 "exclude_from_depth_rules": True,
                 "subfolders": {},
                 "forbidden_zones": ["misc", "temp", "old", "deprecated", "archive", "scratch"],
-            },
-            "integration_full_deps": {
-                "purpose": "Heavy-dependency integration tests requiring full runtime deps",
             },
             "ops_scripts": {"purpose": "Tests for ops_scripts territory and CI hooks"},
             "performance": {"purpose": "Performance benchmarking and profiling tests"},
