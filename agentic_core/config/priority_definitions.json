@@ -27,7 +27,6 @@
           "B015"
         ],
         "rules": {
-          "E999": {"name": "SyntaxError", "category": "Syntax"},
           "F821": {"name": "undefined-name", "category": "Runtime"},
           "F401": {"name": "unused-import", "category": "Import"},
           "B012": {"name": "return-in-finally", "category": "Exception"},
@@ -35,7 +34,6 @@
           "S102": {"name": "exec-builtin", "category": "Security"},
           "S307": {"name": "blacklisted-md5/sha1", "category": "Security"},
           "S601": {"name": "paramiko-call", "category": "Security"},
-          "B301": {"name": "Python 3.10+ deprecation", "category": "Runtime"},
           "F541": {"name": "f-string-missing-placeholders", "category": "Bug"},
           "B013": {"name": "redundant-tuple-in-exception", "category": "Bug"},
           "B015": {"name": "useless-comparison", "category": "Bug"}
