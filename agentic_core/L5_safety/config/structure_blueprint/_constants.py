@@ -1283,7 +1283,7 @@ def build_sovereign_territories() -> dict[str, TerritoryDefinition]:
                 "forbidden_zones": ["misc", "temp", "old", "deprecated", "archive", "scratch"],
             },
         },
-        "volatile": False,
+        "volatile": True,  # Tests are volatile/output (excluded from Production Lens)
     }
 
     # Other territories
