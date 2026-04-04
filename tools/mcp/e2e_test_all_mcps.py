@@ -542,7 +542,7 @@ def example():
                 try:
                     with open(coverage_file) as f:
                         coverage_data = json.load(f)
-                except:
+                except Exception:
                     pass
 
             result["tests"].append({
@@ -875,7 +875,7 @@ def example():
             # Clean up any existing collection
             try:
                 client.delete_collection("e2e_test")
-            except:
+            except Exception:
                 pass
 
             collection = client.create_collection("e2e_test")
@@ -1057,7 +1057,7 @@ def example():
             # Clean up
             try:
                 client.delete_collection("perf_test")
-            except:
+            except Exception:
                 pass
 
             collection = client.create_collection("perf_test")
@@ -1171,7 +1171,7 @@ def example():
 
             try:
                 client.delete_collection("integration_test")
-            except:
+            except Exception:
                 pass
 
             collection = client.create_collection("integration_test")
@@ -1241,7 +1241,7 @@ def example():
 
             try:
                 client.delete_collection("workflow_test")
-            except:
+            except Exception:
                 pass
 
             collection = client.create_collection("workflow_test")

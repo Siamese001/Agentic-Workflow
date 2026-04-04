@@ -148,7 +148,7 @@ def file_is_import_only(fp: Path) -> tuple[bool, int, str, str | None]:
     try:
         source = fp.read_text(encoding='utf-8')
         tree = ast.parse(source)
-    except:
+    except Exception:
         return False, 0, "", None
 
     test_funcs = [n for n in ast.walk(tree) if isinstance(n, (ast.FunctionDef, ast.AsyncFunctionDef)) and n.name.startswith('test_')]

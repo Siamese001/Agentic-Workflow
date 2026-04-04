@@ -467,7 +467,7 @@ def main():
     try:
         status_result = json.loads(result.stdout)
         print(f"✅ Wrapper status: {status_result['success']}")
-    except:
+    except Exception:
         print(f"❌ Wrapper status failed: {result.stdout}")
 
     print("\n=== Summary ===")

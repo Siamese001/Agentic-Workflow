@@ -129,7 +129,7 @@ def test_mcp_server_without_redis() -> dict[str, Any]:
             try:
                 response = json.loads(stdout.strip())
                 has_tools = "result" in response
-            except:
+            except Exception:
                 has_tools = False
 
             return {

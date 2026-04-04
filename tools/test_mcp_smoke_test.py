@@ -60,7 +60,7 @@ class MCPSmokeTester:
                     timeout=5
                 )
                 version = version_result.stdout.strip() if version_result.returncode == 0 else 'unknown'
-            except:
+            except Exception:
                 version = 'unknown'
 
             # Test 3: Package validation
@@ -143,7 +143,7 @@ class MCPSmokeTester:
                 else:
                     import_status = 'import_error'
                     import_message = import_result.stderr[:200]
-            except:
+            except Exception:
                 import_status = 'import_error'
                 import_message = 'Import test failed'
 
@@ -158,7 +158,7 @@ class MCPSmokeTester:
             try:
                 with open(script_path, encoding='utf-8') as f:
                     script_info['lines'] = len(f.readlines())
-            except:
+            except Exception:
                 pass
 
             return {

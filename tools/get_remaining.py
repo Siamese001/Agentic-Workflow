@@ -21,7 +21,7 @@ def get_remaining_files():
             ast.parse(content)
         except SyntaxError:
             broken_files.append(f)
-        except:
+        except Exception:
             continue
 
     # Skip first 714 files (already fixed)

@@ -24,7 +24,7 @@ def final_verification():
             ast.parse(content)
         except SyntaxError:
             broken_files.append(f)
-        except:
+        except Exception:
             continue
 
     print(f"Total test files: {len(total_files)}")

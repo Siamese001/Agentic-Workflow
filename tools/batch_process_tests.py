@@ -155,7 +155,7 @@ class BatchProcessor:
                 if isinstance(node, ast.FunctionDef) and node.name.startswith("test_"):
                     count += 1
             return count
-        except:
+        except Exception:
             return 0
 
     def _validate_batch(self, files: list[str]) -> bool:

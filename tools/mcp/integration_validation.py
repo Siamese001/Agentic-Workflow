@@ -435,7 +435,7 @@ Returns:
 
             try:
                 client.delete_collection("docs")
-            except:
+            except Exception:
                 pass
 
             collection = client.create_collection("docs")
@@ -618,7 +618,7 @@ Returns:
 
             try:
                 client.delete_collection("api_data")
-            except:
+            except Exception:
                 pass
 
             collection = client.create_collection("api_data")
@@ -723,7 +723,7 @@ print(f'Total: {total}')
 
             try:
                 client.delete_collection("processed_data")
-            except:
+            except Exception:
                 pass
 
             collection = client.create_collection("processed_data")

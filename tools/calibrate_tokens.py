@@ -68,7 +68,7 @@ class TestClassName:
             tokens = estimate_tokens(content)
             sample_sizes.append(tokens)
             count += 1
-        except:
+        except Exception:
             continue
 
     if sample_sizes:

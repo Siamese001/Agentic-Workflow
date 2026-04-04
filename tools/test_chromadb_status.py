@@ -92,7 +92,7 @@ def main():
             print('✅ Git status: Working tree clean')
         else:
             print('⚠️  Git status: Uncommitted changes')
-    except:
+    except Exception:
         print('⚠️  Could not check git status')
 
 if __name__ == "__main__":

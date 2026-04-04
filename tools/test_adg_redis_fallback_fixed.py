@@ -74,7 +74,7 @@ def test_adg_redis_functions() -> dict[str, Any]:
         try:
             redis_client = adg_mcp_server._redis()
             redis_connected = True
-        except:
+        except Exception:
             redis_connected = False
 
         return {
@@ -175,7 +175,7 @@ def test_mcp_server_stdio() -> dict[str, Any]:
                 response = json.loads(stdout.strip())
                 server_responded = True
                 has_tools = "result" in response and isinstance(response["result"], list)
-            except:
+            except Exception:
                 server_responded = False
                 has_tools = False
 

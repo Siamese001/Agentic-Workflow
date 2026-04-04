@@ -45,7 +45,7 @@ def ingest_adg_reports():
     try:
         collection = client.get_collection("adg_artifacts")
         logger.info("Using existing collection: adg_artifacts")
-    except:
+    except Exception:
         collection = client.create_collection(
             name="adg_artifacts",
             metadata={"description": "ADG artifact reports and analyses"}

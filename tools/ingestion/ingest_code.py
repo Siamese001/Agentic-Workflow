@@ -191,7 +191,7 @@ def ingest_code(source_dir: str, collection_name: str, mock_embeddings: bool = T
     try:
         collection = client.get_collection(collection_name)
         logger.info(f"Using existing collection: {collection_name}")
-    except:
+    except Exception:
         collection = client.create_collection(
             name=collection_name, metadata={"description": "Python source code chunks"}
         )

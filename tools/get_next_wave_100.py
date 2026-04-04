@@ -21,7 +21,7 @@ def get_next_wave(wave_num: int, count: int = 100):
             ast.parse(content)
         except SyntaxError:
             broken_files.append(f)
-        except:
+        except Exception:
             continue
 
     start_idx = (wave_num - 1) * count

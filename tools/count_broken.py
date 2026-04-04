@@ -17,7 +17,7 @@ for f in sorted(tests_dir.rglob('test_*.py')):
             'error': str(e),
             'line': e.lineno or 0
         })
-    except:
+    except Exception:
         continue
 
 print(f'Total broken files: {len(broken_files)}')
