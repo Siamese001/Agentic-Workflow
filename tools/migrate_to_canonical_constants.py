@@ -38,20 +38,20 @@ CANONICAL_IMPORT = "from agentic_core.config.core.constants_config import "
 
 def find_constant_definitions(filepath: Path) -> List[Tuple[int, str, str]]:
     """Find all constant definitions in a file.
-    
+
     Returns list of (line_number, constant_name, full_line)
     """
     results = []
     content = filepath.read_text(encoding='utf-8')
     lines = content.split('\n')
-    
+
     for i, line in enumerate(lines, 1):
         for const in CANONICAL_CONSTANTS:
             # Match lines like: MAX_RETRIES = 3  or  MAX_RETRIES: int = 3
             if re.match(rf'^\s*{const}\s*[=:]\s*[^#\n]+', line):
                 results.append((i, const, line))
                 break
-    
+
     return results
 
 
@@ -62,27 +62,27 @@ def has_canonical_import(content: str) -> bool:
 
 def migrate_file(filepath: Path, dry_run: bool = True) -> dict:
     """Migrate a single file.
-    
+
     Returns dict with migration details.
     """
     content = filepath.read_text(encoding='utf-8')
     original_content = content
-    
+
     # Find constant definitions
     definitions = find_constant_definitions(filepath)
     if not definitions:
         return {'file': str(filepath), 'changed': False, 'constants_found': 0}
-    
+
     constants_to_import = set(d[1] for d in definitions)
-    
+
     # Check if already has canonical import
     already_imports = has_canonical_import(content)
-    
+
     # Remove constant definitions
     lines = content.split('\n')
     new_lines = []
     removed_lines = []
-    
+
     for i, line in enumerate(lines, 1):
         should_remove = False
         for const in CANONICAL_CONSTANTS:
@@ -92,9 +92,9 @@ def migrate_file(filepath: Path, dry_run: bool = True) -> dict:
                 break
         if not should_remove:
             new_lines.append(line)
-    
+
     content = '\n'.join(new_lines)
-    
+
     # Add import if not already present
     if not already_imports and constants_to_import:
         # Find a good place to add import (after other imports, before code)
@@ -102,16 +102,16 @@ def migrate_file(filepath: Path, dry_run: bool = True) -> dict:
         for i, line in enumerate(new_lines):
             if line.startswith('import ') or line.startswith('from '):
                 import_idx = i + 1
-        
+
         import_line = f"{CANONICAL_IMPORT}{', '.join(sorted(constants_to_import))}"
         new_lines.insert(import_idx, import_line)
         content = '\n'.join(new_lines)
-    
+
     changed = content != original_content
-    
+
     if not dry_run and changed:
         filepath.write_text(content, encoding='utf-8')
-    
+
     return {
         'file': str(filepath),
         'changed': changed,
@@ -128,15 +128,15 @@ def main():
     parser.add_argument('--apply', action='store_true', help='Apply changes')
     parser.add_argument('--files', nargs='+', help='Specific files to migrate')
     parser.add_argument('--batch-size', type=int, default=50, help='Max files to process')
-    
+
     args = parser.parse_args()
-    
+
     if not args.check and not args.apply and not args.files:
         parser.print_help()
         sys.exit(1)
-    
+
     dry_run = not args.apply
-    
+
     # Get files to process
     if args.files:
         files = [Path(f) for f in args.files]
@@ -144,10 +144,10 @@ def main():
         # Find all Python files in agentic_core that might have constants
         files = list(Path('agentic_core').rglob('*.py'))
         files = [f for f in files if f.is_file()]
-    
+
     if args.batch_size:
         files = files[:args.batch_size]
-    
+
     # Process files
     results = []
     for filepath in files:
@@ -157,11 +157,11 @@ def main():
                 results.append(result)
         except Exception as e:
             results.append({'file': str(filepath), 'error': str(e)})
-    
+
     # Summary
     changed_files = [r for r in results if r.get('changed')]
     total_constants = sum(r.get('constants_found', 0) for r in results)
-    
+
     print(f"\n{'='*60}")
     print(f"Migration Summary ({'DRY RUN' if dry_run else 'APPLIED'})")
     print(f"{'='*60}")
@@ -169,14 +169,14 @@ def main():
     print(f"Files with constants: {len(results)}")
     print(f"Files changed: {len(changed_files)}")
     print(f"Total constants found: {total_constants}")
-    
+
     if changed_files:
         print(f"\nChanged files:")
         for r in changed_files[:20]:  # Show first 20
             print(f"  - {r['file']}: {r['constants']}")
         if len(changed_files) > 20:
             print(f"  ... and {len(changed_files) - 20} more")
-    
+
     return results
 
 
