@@ -463,36 +463,103 @@ TESTS_E2E_DIR: str = "tests/e2e"
 TESTS_AUTOGEN_DIR: str = "tests/unit_min_deps"
 
 # ---------------------------------------------------------------------------
+# WILDCARD APPS DISCOVERY
+# Auto-detects apps_* folders without requiring manual SSOT edits
+# ---------------------------------------------------------------------------
+
+def _discover_apps_wildcard_folders(repo_root: Path | None = None) -> frozenset[str]:
+    """Discover all apps_* folders at repo root dynamically.
+    
+    This enables automatic adoption of new app territories without
+    requiring manual updates to SSOT constants.
+    
+    Args:
+        repo_root: Repository root path. If None, uses get_validated_project_root().
+        
+    Returns:
+        Frozenset of apps_* folder names found at repo root.
+    """
+    if repo_root is None:
+        try:
+            repo_root = get_validated_project_root()
+        except ValueError:
+            return frozenset()
+    
+    apps_folders = set()
+    try:
+        for item in repo_root.iterdir():
+            if item.is_dir() and item.name.startswith("apps_"):
+                apps_folders.add(item.name)
+    except (OSError, PermissionError):
+        pass
+    
+    return frozenset(apps_folders)
+
+
+# Base mirror roots that are NOT dynamically discovered (stable)
+_BASE_MIRROR_ROOTS: frozenset[str] = frozenset(
+    {
+        "agentic_core",
+        "system_learning",
+    }
+)
+
+# ---------------------------------------------------------------------------
 # TEST PLACEMENT SSOT
 # Single canonical map: source root → mirror test directory.
 # LocationHealerAgent, TestGeneratorAgent, and all validators MUST import
 # from here instead of hardcoding test paths.
+# 
+# NOTE: apps_* folders are auto-discovered via _discover_apps_wildcard_folders()
+# to avoid requiring manual SSOT edits when adding new app territories.
 # ---------------------------------------------------------------------------
-TEST_MIRROR_ROOTS: frozenset[str] = frozenset(
-    {
-        "agentic_core",
-        "apps_eval",
-        "apps_exec",
-        "apps_lic",
-        "apps_research",
-        "apps_rfp",
-        "apps_rg",
-        "apps_shared",
-        "system_learning",
-    }
-)
 TEST_MIRROR_BASE: str = "tests/unit"
-TEST_CANONICAL_LOCATION_MAP: dict[str, str] = {
-    "agentic_core": "tests/unit/agentic_core",
-    "apps_eval": "tests/unit/apps_eval",
-    "apps_exec": "tests/unit/apps_exec",
-    "apps_lic": "tests/unit/apps_lic",
-    "apps_research": "tests/unit/apps_research",
-    "apps_rfp": "tests/unit/apps_rfp",
-    "apps_rg": "tests/unit/apps_rg",
-    "apps_shared": "tests/unit/apps_shared",
-    "system_learning": "tests/unit/system_learning",
-}
+
+
+def get_test_mirror_roots(repo_root: Path | None = None) -> frozenset[str]:
+    """Return all test mirror roots including dynamically discovered apps_* folders."""
+    discovered = _discover_apps_wildcard_folders(repo_root)
+    return _BASE_MIRROR_ROOTS | discovered
+
+
+# Legacy constant for backward compatibility (evaluated at import time)
+# New code should use get_test_mirror_roots() for dynamic discovery
+# Uses try/except to handle circular import during module load
+try:
+    TEST_MIRROR_ROOTS: frozenset[str] = _BASE_MIRROR_ROOTS | _discover_apps_wildcard_folders()
+except NameError:
+    # get_validated_project_root not yet defined during module load
+    TEST_MIRROR_ROOTS = _BASE_MIRROR_ROOTS
+
+
+def _build_test_canonical_location_map(repo_root: Path | None = None) -> dict[str, str]:
+    """Build canonical test location map with wildcard apps_* support."""
+    base_map = {
+        "agentic_core": "tests/unit/agentic_core",
+        "system_learning": "tests/unit/system_learning",
+    }
+    
+    try:
+        discovered = _discover_apps_wildcard_folders(repo_root)
+        for app_name in discovered:
+            base_map[app_name] = f"tests/unit/{app_name}"
+    except NameError:
+        # get_validated_project_root not yet defined during module load
+        pass
+    
+    return base_map
+
+
+# Legacy map for backward compatibility
+# Uses try/except to handle circular import during module load
+try:
+    TEST_CANONICAL_LOCATION_MAP: dict[str, str] = _build_test_canonical_location_map()
+except NameError:
+    # Fallback during module load
+    TEST_CANONICAL_LOCATION_MAP = {
+        "agentic_core": "tests/unit/agentic_core",
+        "system_learning": "tests/unit/system_learning",
+    }
 
 
 def get_canonical_test_path(source_path: Path, repo_root: Path) -> Path:
@@ -522,7 +589,10 @@ def get_canonical_test_path(source_path: Path, repo_root: Path) -> Path:
         return root / TESTS_AUTOGEN_DIR / f"test_{src.stem}.py"
 
     source_root = parts[0]
-    mirror_base = TEST_CANONICAL_LOCATION_MAP.get(source_root)
+    
+    # Use dynamic discovery for wildcard apps_* support
+    location_map = _build_test_canonical_location_map(repo_root)
+    mirror_base = location_map.get(source_root)
     if mirror_base is None:
         return root / TESTS_AUTOGEN_DIR / f"test_{src.stem}.py"
 
@@ -619,14 +689,6 @@ VARIABLE_DEPTH_SUBFOLDERS: frozenset[str] = frozenset(
         "prompt_governance",
         "runtime",
         "knowledge",
-        "agentic_core",
-        "apps_eval",
-        "apps_exec",
-        "apps_lic",
-        "apps_research",
-        "apps_rfp",
-        "apps_rg",
-        "apps_shared",
         "ops_scripts",
         "tests",
         "docs",
@@ -635,7 +697,7 @@ VARIABLE_DEPTH_SUBFOLDERS: frozenset[str] = frozenset(
         "archives",
         ".gravity_state",
         ".backup",
-    },
+    }
 )
 
 
@@ -667,59 +729,62 @@ def get_subfolder_metadata() -> Mapping[str, Mapping[str, Any]]:
 
 
 @lru_cache(maxsize=1)
-def get_apps_rg_subfolder_map() -> Mapping[str, Sequence[str]]:
-    """Return APPS_RG_SUBFOLDER_MAP from derived module."""
-    from agentic_core.L5_safety.config.structure_blueprint.derived import APPS_RG_SUBFOLDER_MAP
+def get_apps_wildcard_subfolder_map(app_name: str) -> Mapping[str, Sequence[str]]:
+    """Return subfolder map for any apps_* folder via dynamic derivation.
+    
+    This enables automatic support for new app territories without requiring
+    manual SSOT updates. Uses the same derivation logic as explicit apps.
+    
+    Args:
+        app_name: The apps_* folder name (e.g., 'apps_rg', 'apps_new')
+        
+    Returns:
+        Mapping of subfolder names to their nested structure.
+    """
+    from agentic_core.L5_safety.config.structure_blueprint.derived import _derive_apps_subfolder_map
+    return _derive_apps_subfolder_map(app_name)
 
-    return APPS_RG_SUBFOLDER_MAP
+
+@lru_cache(maxsize=1)
+def get_apps_rg_subfolder_map() -> Mapping[str, Sequence[str]]:
+    """Return APPS_RG_SUBFOLDER_MAP - now uses wildcard discovery."""
+    return get_apps_wildcard_subfolder_map("apps_rg")
 
 
 @lru_cache(maxsize=1)
 def get_apps_lic_subfolder_map() -> Mapping[str, Sequence[str]]:
-    """Return APPS_LIC_SUBFOLDER_MAP from derived module."""
-    from agentic_core.L5_safety.config.structure_blueprint.derived import APPS_LIC_SUBFOLDER_MAP
-
-    return APPS_LIC_SUBFOLDER_MAP
+    """Return APPS_LIC_SUBFOLDER_MAP - now uses wildcard discovery."""
+    return get_apps_wildcard_subfolder_map("apps_lic")
 
 
 @lru_cache(maxsize=1)
 def get_apps_shared_subfolder_map() -> Mapping[str, Sequence[str]]:
-    """Return APPS_SHARED_SUBFOLDER_MAP from derived module."""
-    from agentic_core.L5_safety.config.structure_blueprint.derived import APPS_SHARED_SUBFOLDER_MAP
-
-    return APPS_SHARED_SUBFOLDER_MAP
+    """Return APPS_SHARED_SUBFOLDER_MAP - now uses wildcard discovery."""
+    return get_apps_wildcard_subfolder_map("apps_shared")
 
 
 @lru_cache(maxsize=1)
 def get_apps_eval_subfolder_map() -> Mapping[str, Sequence[str]]:
-    """Return APPS_EVAL_SUBFOLDER_MAP from derived module."""
-    from agentic_core.L5_safety.config.structure_blueprint.derived import APPS_EVAL_SUBFOLDER_MAP
-
-    return APPS_EVAL_SUBFOLDER_MAP
+    """Return APPS_EVAL_SUBFOLDER_MAP - now uses wildcard discovery."""
+    return get_apps_wildcard_subfolder_map("apps_eval")
 
 
 @lru_cache(maxsize=1)
 def get_apps_exec_subfolder_map() -> Mapping[str, Sequence[str]]:
-    """Return APPS_EXEC_SUBFOLDER_MAP from derived module."""
-    from agentic_core.L5_safety.config.structure_blueprint.derived import APPS_EXEC_SUBFOLDER_MAP
-
-    return APPS_EXEC_SUBFOLDER_MAP
+    """Return APPS_EXEC_SUBFOLDER_MAP - now uses wildcard discovery."""
+    return get_apps_wildcard_subfolder_map("apps_exec")
 
 
 @lru_cache(maxsize=1)
 def get_apps_research_subfolder_map() -> Mapping[str, Sequence[str]]:
-    """Return APPS_RESEARCH_SUBFOLDER_MAP from derived module."""
-    from agentic_core.L5_safety.config.structure_blueprint.derived import APPS_RESEARCH_SUBFOLDER_MAP
-
-    return APPS_RESEARCH_SUBFOLDER_MAP
+    """Return APPS_RESEARCH_SUBFOLDER_MAP - now uses wildcard discovery."""
+    return get_apps_wildcard_subfolder_map("apps_research")
 
 
 @lru_cache(maxsize=1)
 def get_apps_rfp_subfolder_map() -> Mapping[str, Sequence[str]]:
-    """Return APPS_RFP_SUBFOLDER_MAP from derived module."""
-    from agentic_core.L5_safety.config.structure_blueprint.derived import APPS_RFP_SUBFOLDER_MAP
-
-    return APPS_RFP_SUBFOLDER_MAP
+    """Return APPS_RFP_SUBFOLDER_MAP - now uses wildcard discovery."""
+    return get_apps_wildcard_subfolder_map("apps_rfp")
 
 
 # ============================================================================
