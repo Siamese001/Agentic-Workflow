@@ -331,7 +331,7 @@ ask_user_question(
 >   - **Pros**: No risk of regression, stability maintained
 >   - **Cons**: Issue persists, may accumulate technical debt
 >
-> **⭐ RECOMMENDED**: Option with narrowest scope that addresses root cause — SVP priority: zero-regression validation requires full test pass before any configuration commit.
+> **⭐ RECOMMENDED**: Option A — SVP priority: zero-regression validation requires full test pass before any configuration commit.
 >
 > **RESULT**: Apply configuration change with comprehensive test validation.
 >
