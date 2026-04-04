@@ -83,8 +83,8 @@ references:
   # Main constitutional rules file
   CONSTITUTIONAL_RULES: ".windsurf/rules/.windsurfrules"
 
-  # Consolidated rules file
-  CONSOLIDATED_RULES: ".windsurf/rules/.windsurfrules.consolidated"
+  # Consolidated rules file (archived - now auto-generated from modular sources)
+  CONSOLIDATED_RULES: "tools/archive/.windsurfrules.consolidated.bak"
 
   # Plan location rule (covers location + format + overwrite — single file)
   PLAN_LOCATION_RULE: ".windsurf/rules/plan-location.md"
