@@ -52,20 +52,35 @@ class L2EmbeddingSovereignAgent(L2ExecutionAgent):
         self._gateway = _EmbeddingSovereignAgent()
 
     def l2_init(self, context: L2ExecutionContext) -> L2PhaseResult:
-        content = context.inputs.get("content")
-        if not isinstance(content, str) or not content.strip():
+        """Initialize embedding operation context.
+        
+        Validates content input and prepares for embedding generation.
+        """
+        try:
+            content = context.inputs.get("content")
+            if not isinstance(content, str) or not content.strip():
+                return L2PhaseResult(
+                    phase=L2ExecutionPhase.INIT,
+                    success=False,
+                    metadata={"error": "Missing or invalid content"},
+                )
+            return L2PhaseResult(
+                phase=L2ExecutionPhase.INIT,
+                success=True,
+                metadata={"content_length": len(content)},
+            )
+        except Exception as e:
             return L2PhaseResult(
                 phase=L2ExecutionPhase.INIT,
                 success=False,
-                metadata={"error": "Missing or invalid content"},
+                metadata={"error": f"INIT failed: {type(e).__name__}: {e}"},
             )
-        return L2PhaseResult(
-            phase=L2ExecutionPhase.INIT,
-            success=True,
-            metadata={"content_length": len(content)},
-        )
 
     def l2_execute(self, context: L2ExecutionContext) -> L2PhaseResult:
+        """Execute embedding generation.
+        
+        Runs async embedding generation and handles exceptions.
+        """
         import asyncio
 
         content = context.inputs.get("content")
@@ -79,6 +94,9 @@ class L2EmbeddingSovereignAgent(L2ExecutionAgent):
             )
 
         try:
+            if not self._gateway:
+                raise RuntimeError("Gateway not initialized")
+
             loop = asyncio.new_event_loop()
             asyncio.set_event_loop(loop)
             embedding = loop.run_until_complete(
@@ -96,10 +114,21 @@ class L2EmbeddingSovereignAgent(L2ExecutionAgent):
             return L2PhaseResult(
                 phase=L2ExecutionPhase.EXECUTE,
                 success=False,
-                metadata={"error": type(e).__name__, "recoverable": True},
+                metadata={"error": f"Execute failed: {type(e).__name__}: {e}"},
             )
 
     def l2_evaluate_and_heal(self, context: L2ExecutionContext) -> L2PhaseResult:
+        """
+        Evaluate execution result and apply healing if needed.
+
+        If the previous execution failed, attempt to heal by retrying with a fallback provider.
+
+        Args:
+            context (L2ExecutionContext): The execution context.
+
+        Returns:
+            L2PhaseResult: The result of the evaluation and healing phase.
+        """
         last_result = context.phase_results.get(L2ExecutionPhase.EXECUTE)
         if not last_result or last_result.success:
             return L2PhaseResult(
@@ -108,19 +137,37 @@ class L2EmbeddingSovereignAgent(L2ExecutionAgent):
                 metadata={"heal_skipped": "execute_success"},
             )
 
-        context.retry_count += 1
-        fallback = "bge-m3" if context.inputs.get("provider") != "bge-m3" else "gemini"
-        context.inputs["provider"] = fallback
-        retry_result = self.l2_execute(context)
+        try:
+            context.retry_count += 1
+            fallback = "bge-m3" if context.inputs.get("provider") != "bge-m3" else "gemini"
+            context.inputs["provider"] = fallback
+            retry_result = self.l2_execute(context)
 
-        return L2PhaseResult(
-            phase=L2ExecutionPhase.EVALUATE_HEAL,
-            success=retry_result.success,
-            output=retry_result.output,
-            metadata={"heal_attempted": True, "fallback_provider": fallback},
-        )
+            return L2PhaseResult(
+                phase=L2ExecutionPhase.EVALUATE_HEAL,
+                success=retry_result.success,
+                output=retry_result.output,
+                metadata={"heal_attempted": True, "fallback_provider": fallback},
+            )
+        except Exception as e:
+            return L2PhaseResult(
+                phase=L2ExecutionPhase.EVALUATE_HEAL,
+                success=False,
+                metadata={"error": f"Heal failed: {type(e).__name__}: {e}"},
+            )
 
     def l2_synthesize(self, context: L2ExecutionContext) -> L2PhaseResult:
+        """
+        Synthesize the final result.
+
+        If the execution was successful, return the output. Otherwise, return an error.
+
+        Args:
+            context (L2ExecutionContext): The execution context.
+
+        Returns:
+            L2PhaseResult: The final result of the synthesis phase.
+        """
         execute_result = context.phase_results.get(L2ExecutionPhase.EXECUTE)
         if not execute_result or not execute_result.success:
             return L2PhaseResult(
@@ -153,18 +200,29 @@ class L2RedisSovereignAgent(L2ExecutionAgent):
         self._agent = _RedisSovereignAgent(project_root=Path("."))
 
     def l2_init(self, context: L2ExecutionContext) -> L2PhaseResult:
-        operation = context.inputs.get("operation")
-        if operation not in ["get", "set", "delete", "exists"]:
+        """Initialize Redis operation context.
+        
+        Validates operation type and prepares for cache operations.
+        """
+        try:
+            operation = context.inputs.get("operation")
+            if operation not in ["get", "set", "delete", "exists"]:
+                return L2PhaseResult(
+                    phase=L2ExecutionPhase.INIT,
+                    success=False,
+                    metadata={"error": f"Invalid operation: {operation}"},
+                )
+            return L2PhaseResult(
+                phase=L2ExecutionPhase.INIT,
+                success=True,
+                metadata={"operation": operation},
+            )
+        except Exception as e:
             return L2PhaseResult(
                 phase=L2ExecutionPhase.INIT,
                 success=False,
-                metadata={"error": f"Invalid operation: {operation}"},
+                metadata={"error": f"INIT failed: {type(e).__name__}: {e}"},
             )
-        return L2PhaseResult(
-            phase=L2ExecutionPhase.INIT,
-            success=True,
-            metadata={"operation": operation},
-        )
 
     def l2_execute(self, context: L2ExecutionContext) -> L2PhaseResult:
         operation = context.inputs.get("operation")
@@ -243,20 +301,35 @@ class L2SovereignMCPGatewayAgent(L2ExecutionAgent):
         self._agent = _SovereignMCPGatewayAgent()
 
     def l2_init(self, context: L2ExecutionContext) -> L2PhaseResult:
-        tool_name = context.inputs.get("tool_name")
-        if not tool_name:
+        """Initialize MCP gateway operation context.
+        
+        Validates tool_name input and prepares for MCP tool invocation.
+        """
+        try:
+            tool_name = context.inputs.get("tool_name")
+            if not tool_name:
+                return L2PhaseResult(
+                    phase=L2ExecutionPhase.INIT,
+                    success=False,
+                    metadata={"error": "Missing tool_name"},
+                )
+            return L2PhaseResult(
+                phase=L2ExecutionPhase.INIT,
+                success=True,
+                metadata={"tool_name": tool_name},
+            )
+        except Exception as e:
             return L2PhaseResult(
                 phase=L2ExecutionPhase.INIT,
                 success=False,
-                metadata={"error": "Missing tool_name"},
+                metadata={"error": f"INIT failed: {type(e).__name__}: {e}"},
             )
-        return L2PhaseResult(
-            phase=L2ExecutionPhase.INIT,
-            success=True,
-            metadata={"tool_name": tool_name},
-        )
 
     def l2_execute(self, context: L2ExecutionContext) -> L2PhaseResult:
+        """Execute MCP tool invocation.
+        
+        Invokes the specified tool with given parameters.
+        """
         tool_name = context.inputs.get("tool_name")
         params = context.inputs.get("params", {})
 
@@ -324,18 +397,29 @@ class L2StructuredEngineAgent(L2ExecutionAgent):
         self._agent = _StructuredEngineAgent()
 
     def l2_init(self, context: L2ExecutionContext) -> L2PhaseResult:
-        intent = context.inputs.get("intent")
-        if not intent:
+        """Initialize structured engine operation context.
+        
+        Validates intent input for processing.
+        """
+        try:
+            intent = context.inputs.get("intent")
+            if not intent:
+                return L2PhaseResult(
+                    phase=L2ExecutionPhase.INIT,
+                    success=False,
+                    metadata={"error": "Missing intent"},
+                )
+            return L2PhaseResult(
+                phase=L2ExecutionPhase.INIT,
+                success=True,
+                metadata={"intent_type": type(intent).__name__},
+            )
+        except Exception as e:
             return L2PhaseResult(
                 phase=L2ExecutionPhase.INIT,
                 success=False,
-                metadata={"error": "Missing intent"},
+                metadata={"error": f"INIT failed: {type(e).__name__}: {e}"},
             )
-        return L2PhaseResult(
-            phase=L2ExecutionPhase.INIT,
-            success=True,
-            metadata={"intent_type": type(intent).__name__},
-        )
 
     def l2_execute(self, context: L2ExecutionContext) -> L2PhaseResult:
         intent = context.inputs.get("intent")
@@ -404,18 +488,29 @@ class L2SubAtomicRegistryAgent(L2ExecutionAgent):
         self._agent = _SubAtomicRegistryAgent()
 
     def l2_init(self, context: L2ExecutionContext) -> L2PhaseResult:
-        registry_operation = context.inputs.get("registry_operation")
-        if registry_operation not in ["register", "lookup", "unregister"]:
+        """Initialize registry operation context.
+        
+        Validates registry operation type and prepares for execution.
+        """
+        try:
+            registry_operation = context.inputs.get("registry_operation")
+            if registry_operation not in ["register", "lookup", "unregister"]:
+                return L2PhaseResult(
+                    phase=L2ExecutionPhase.INIT,
+                    success=False,
+                    metadata={"error": f"Invalid operation: {registry_operation}"},
+                )
+            return L2PhaseResult(
+                phase=L2ExecutionPhase.INIT,
+                success=True,
+                metadata={"operation": registry_operation},
+            )
+        except Exception as e:
             return L2PhaseResult(
                 phase=L2ExecutionPhase.INIT,
                 success=False,
-                metadata={"error": f"Invalid operation: {registry_operation}"},
+                metadata={"error": f"INIT failed: {type(e).__name__}: {e}"},
             )
-        return L2PhaseResult(
-            phase=L2ExecutionPhase.INIT,
-            success=True,
-            metadata={"operation": registry_operation},
-        )
 
     def l2_execute(self, context: L2ExecutionContext) -> L2PhaseResult:
         operation = context.inputs.get("registry_operation")

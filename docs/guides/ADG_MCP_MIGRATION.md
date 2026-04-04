@@ -2,7 +2,11 @@
 
 ## Overview
 
-This guide covers migrating from the old `adg_redis` MCP server to the new `adg_sqlite` MCP server. The new server follows a hardened architecture with SQLite as the canonical source and Redis as an optional read-through cache.
+This guide covers migrating from the old `adg_redis` MCP server to the new `adg_sqlite` MCP server. 
+
+**Core Principle:** SQLite is the source of truth, Redis is optional acceleration, and `adg_sqlite` is the only ADG MCP surface that should be enabled.
+
+The new server provides a single ADG MCP surface with SQLite as the canonical L4 authority and Redis as an internal optional accelerator only.
 
 ## Quick Comparison
 
