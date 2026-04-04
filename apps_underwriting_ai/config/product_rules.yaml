@@ -1,0 +1,111 @@
+# Product Rules
+# Defines product-specific underwriting rules
+
+products:
+  term_loan:
+    term_limits:
+      min_months: 12
+      max_months: 84
+      preferred_range: [24, 60]
+
+    collateral_requirements:
+      required_for_amount_above: 1000000
+      preferred_types: ["real_estate", "equipment"]
+      lien_position: "first"
+
+    guarantee_expectations:
+      required_for_amount_above: 500000
+      personal_guaranty: true
+      spousal_guaranty: false
+
+    pricing_guardrails:
+      min_spread: 250  # bps
+      max_spread: 800
+      base_rate: "SOFR"
+
+    amortization:
+      must_fully_amortize: true
+      max_interest_only_months: 0
+      min_principal_reduction_first_year: 0.10  # 10%
+
+  revolver:
+    term_limits:
+      min_months: 12
+      max_months: 36
+      typical: 12
+
+    collateral_requirements:
+      required: true
+      eligible_types: ["ar", "inventory"]
+      advance_rates:
+        ar: 0.80
+        inventory: 0.60
+        equipment: 0.70
+      lien_position: "first"
+
+    guarantee_expectations:
+      required_for_amount_above: 500000
+      personal_guaranty: true
+
+    pricing_guardrails:
+      min_spread: 150
+      max_spread: 500
+      base_rate: "SOFR"
+      unused_line_fee: 0.0035  # 35 bps annual
+
+    reporting:
+      borrowing_base_frequency: "monthly"
+      financial_statement_frequency: "quarterly"
+      annual_audit: true
+
+  equipment_finance:
+    term_limits:
+      min_months: 12
+      max_months: 84
+      match_asset_life: true
+
+    collateral_requirements:
+      required: true
+      collateral: "financed_equipment"
+      lien_position: "first"
+      security_interest: "purchase_money"
+
+    guarantee_expectations:
+      required_for_amount_above: 250000
+      personal_guaranty: true
+
+    pricing_guardrails:
+      min_spread: 200
+      max_spread: 600
+
+    advance_rate:
+      new_equipment: 0.80
+      used_equipment: 0.65
+      soft_costs: 0.15  # Can finance up to 15% soft costs
+
+  sba_like:
+    term_limits:
+      real_estate: 300  # 25 years
+      equipment: 120   # 10 years
+      working_capital: 120  # 10 years
+
+    collateral_requirements:
+      all_available_assets: true
+      real_estate: "if_available"
+      personal_guaranty: true  # SBA requires personal guaranty for owners > 20%
+
+    guarantee_expectations:
+      personal_guaranty: true
+      owner_threshold_pct: 20  # Owners of 20%+ must guaranty
+
+    pricing_guardrails:
+      max_spread: 275  # SBA sets maximum
+      base_rate: "Prime"
+      guarantee_fee: 0.02  # 2% upfront
+
+    requirements:
+      business_size_eligible: true
+      for_profit: true
+      owner_invested_equity: true
+      unable_to_obtain_credit_elsewhere: true
+      credit_elsewhere_test: true

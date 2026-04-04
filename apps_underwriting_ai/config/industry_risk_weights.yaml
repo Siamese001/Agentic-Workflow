@@ -1,0 +1,123 @@
+# Industry Risk Weights
+# Deterministic risk scores by NAICS code prefix
+
+# Risk scale: 0.0 (lowest risk) to 1.0 (highest risk)
+industry_risk_weights:
+  # Agriculture, Forestry, Fishing, Hunting (NAICS 11)
+  "11": 0.65
+
+  # Mining, Quarrying, Oil and Gas (NAICS 21)
+  "211": 0.45  # Oil & gas extraction
+  "213": 0.50  # Mining support
+
+  # Utilities (NAICS 22)
+  "22": 0.25
+
+  # Construction (NAICS 23)
+  "23": 0.55
+  "236": 0.60  # Construction of buildings
+
+  # Manufacturing (NAICS 31-33)
+  "31": 0.45
+  "32": 0.45
+  "33": 0.45
+  "311": 0.40  # Food manufacturing
+  "312": 0.35  # Beverage/tobacco
+  "325": 0.35  # Chemicals
+  "332": 0.50  # Fabricated metal
+  "334": 0.35  # Computer/electronic
+  "336": 0.40  # Transportation equipment
+
+  # Wholesale Trade (NAICS 42)
+  "42": 0.45
+  "423": 0.45  # Merchant wholesalers
+
+  # Retail Trade (NAICS 44-45)
+  "44": 0.60
+  "45": 0.60
+  "445": 0.55  # Food/beverage stores
+  "448": 0.65  # Clothing stores
+  "451": 0.60  # Sporting goods, hobby
+  "452": 0.55  # General merchandise
+
+  # Transportation and Warehousing (NAICS 48-49)
+  "48": 0.50
+  "49": 0.50
+  "484": 0.50  # Truck transportation
+  "488": 0.45  # Support activities
+  "492": 0.45  # Couriers/express
+
+  # Information (NAICS 51)
+  "51": 0.35
+  "511": 0.30  # Software publishers
+  "517": 0.35  # Telecommunications
+
+  # Finance and Insurance (NAICS 52)
+  "52": 0.30
+  "522": 0.30  # Credit intermediation
+  "524": 0.35  # Insurance
+
+  # Real Estate and Rental/Leasing (NAICS 53)
+  "53": 0.50
+  "531": 0.50  # Real estate
+
+  # Professional, Scientific, Technical Services (NAICS 54)
+  "54": 0.35
+  "541": 0.30  # Professional services
+  "5411": 0.30  # Legal
+  "5412": 0.30  # Accounting
+  "5413": 0.35  # Architecture/engineering
+  "5415": 0.30  # Computer systems design
+
+  # Management of Companies (NAICS 55)
+  "55": 0.35
+
+  # Administrative and Support (NAICS 56)
+  "56": 0.50
+  "561": 0.50  # Administrative/support
+
+  # Educational Services (NAICS 61)
+  "61": 0.40
+  "611": 0.40  # Educational services
+
+  # Health Care and Social Assistance (NAICS 62)
+  "62": 0.35
+  "621": 0.30  # Ambulatory health care
+  "622": 0.35  # Hospitals
+  "623": 0.45  # Nursing/residential
+
+  # Arts, Entertainment, Recreation (NAICS 71)
+  "71": 0.65
+  "711": 0.60  # Performing arts
+  "713": 0.70  # Amusement/gambling
+  "7132": 0.85  # Gambling - restricted
+
+  # Accommodation and Food Services (NAICS 72)
+  "72": 0.65
+  "721": 0.60  # Accommodation
+  "722": 0.70  # Food services - higher risk
+  "7221": 0.75  # Full-service restaurants
+  "7222": 0.70  # Limited-service eating
+
+  # Other Services (NAICS 81)
+  "81": 0.55
+  "811": 0.50  # Repair/maintenance
+  "812": 0.60  # Personal/laundry services
+  "813": 0.45  # Religious/grantmaking
+
+# Default risk score for unknown industries
+default_risk_score: 0.50
+
+# Special handling
+special_categories:
+  cannabis_related:
+    naics_patterns:
+      - "111998"  # Other crop farming (includes cannabis where legal)
+    risk_score: 0.90
+    requires_special_approval: true
+
+  cryptocurrency:
+    naics_patterns:
+      - "519130"  # Internet publishing
+    risk_score: 0.85
+    requires_special_approval: true

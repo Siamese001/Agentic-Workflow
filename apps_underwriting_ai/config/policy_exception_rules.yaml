@@ -1,0 +1,102 @@
+# Policy Exception Rules
+# Defines when policy exceptions are permitted and approval requirements
+
+exception_categories:
+  dscr_below_minimum:
+    description: "DSCR below policy minimum"
+    allowed_range: [1.00, 1.25]
+    auto_permitted: false
+    requires_approval: true
+    approver_levels:
+      - "Senior Underwriter"  # DSCR 1.15-1.25
+      - "Regional Credit Officer"  # DSCR 1.00-1.15
+      - "Credit Committee"  # DSCR < 1.00
+    mitigants_required:
+      - "strong_collateral"
+      - "strong_guarantor"
+      - "historical_performance"
+
+  leverage_above_maximum:
+    description: "Debt/EBITDA above policy maximum"
+    allowed_range: [3.50, 5.00]
+    auto_permitted: false
+    requires_approval: true
+    approver_levels:
+      - "Senior Underwriter"  # up to 4.0x
+      - "Regional Credit Officer"  # up to 5.0x
+    mitigants_required:
+      - "asset_backed"
+      - "contracted_revenue"
+      - "declining_trend_reversal"
+
+  fico_below_minimum:
+    description: "Personal FICO below policy minimum"
+    allowed_range: [620, 680]
+    auto_permitted: false
+    requires_approval: true
+    approver_levels:
+      - "Senior Underwriter"  # FICO 650-680
+      - "Regional Credit Officer"  # FICO 620-650
+    mitigants_required:
+      - "strong_business_cash_flow"
+      - "additional_collateral"
+
+  ltv_above_maximum:
+    description: "LTV above policy maximum"
+    allowed_range: [0.80, 0.90]
+    auto_permitted: false
+    requires_approval: true
+    approver_levels:
+      - "Senior Underwriter"  # up to 85%
+      - "Regional Credit Officer"  # up to 90%
+    mitigants_required:
+      - "strong_amortization"
+      - "additional_collateral"
+
+  ineligible_collateral:
+    description: "Collateral type not in eligible list"
+    auto_permitted: false
+    requires_approval: true
+    approver_levels:
+      - "Credit Committee"
+    mitigants_required:
+      - "strong_other_collateral"
+      - "personal_guaranty"
+      - "strong_cash_flow"
+
+human_review_triggers:
+  dscr_below_1.25:
+    description: "DSCR below 1.25x"
+    action: "escalate"
+
+  debt_to_ebitda_above_3.5:
+    description: "Debt/EBITDA above 3.5x"
+    action: "escalate"
+
+  fico_below_680:
+    description: "FICO below 680"
+    action: "escalate"
+
+  requested_amount_above_5mm:
+    description: "Request above $5M"
+    action: "escalate"
+
+  restricted_industry:
+    description: "Borrower in restricted industry"
+    action: "escalate"
+
+  watchlist_hit:
+    description: "Sanctions or watchlist match"
+    action: "escalate"
+
+  policy_exception_multiple:
+    description: "Multiple policy exceptions (>2)"
+    action: "escalate"
+
+  complex_structure:
+    description: "Complex or unusual loan structure"
+    action: "escalate"
+
+  contradicting_evidence:
+    description: "Significant data contradictions"
+    action: "pend"
