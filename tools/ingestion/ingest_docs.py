@@ -12,8 +12,10 @@ Usage:
 import argparse
 import hashlib
 import json
+import fnmatch
 import logging
 import os
+import random
 import re
 import sys
 from pathlib import Path
@@ -260,8 +262,6 @@ class EmbeddingGenerator:
         if self.mock_embeddings:
             # Generate mock embeddings
             Logger.info(f"Generating {len(texts)} mock embeddings ({self.vector_dimensions}d)")
-            import random
-
             return [[random.uniform(-1, 1) for _ in range(self.vector_dimensions)] for _ in texts]
 
         if self.embedding_provider == "bge-m3" and self.embedding_client:
@@ -271,6 +271,9 @@ class EmbeddingGenerator:
 
     def _generate_bge_m3_embeddings(self, texts: list[str]) -> list[list[float]]:
         """Generate embeddings using BGE-M3 via embedding factory."""
+        if not texts:
+            return []
+
         Logger.info(f"Generating {len(texts)} BGE-M3 embeddings")
 
         # Use the underlying model directly for batch encoding
@@ -292,6 +295,7 @@ class EmbeddingGenerator:
             return embeddings
         except Exception as e:
             Logger.error(f"BGE-M3 embedding generation failed: {e}")
+            Logger.warning(f"Falling back to zero embeddings - {len(texts)} chunks will have invalid embeddings")
             # Fallback to zero embeddings
             return [[0.0] * self.vector_dimensions for _ in texts]
 
@@ -406,6 +410,9 @@ class VectorDBIngestor:
 
 def find_markdown_files(source_dir: Path, exclude_patterns: list[str] = None) -> list[Path]:
     """Find all markdown files in the source directory."""
+    if exclude_patterns is not None and not isinstance(exclude_patterns, list):
+        raise TypeError(f"exclude_patterns must be a list, got {type(exclude_patterns).__name__}")
+
     source_dir = source_dir.resolve()
     markdown_files = []
     exclude_patterns = exclude_patterns or []
@@ -419,8 +426,6 @@ def find_markdown_files(source_dir: Path, exclude_patterns: list[str] = None) ->
         rel_path = file_path.relative_to(source_dir)
         excluded = False
         for pattern in exclude_patterns:
-            import fnmatch
-
             if fnmatch.fnmatch(str(rel_path), pattern) or fnmatch.fnmatch(str(file_path), pattern):
                 excluded = True
                 break
