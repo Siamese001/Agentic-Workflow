@@ -1,5 +1,5 @@
 ---
-description: MCP config SSOT — Workspace config is source of truth, synced to global
+description: MCP config SSOT — config/mcp_servers.yaml is source of truth, synced to global
 tags: [ssot, mcp, config]
 ---
 
@@ -8,45 +8,65 @@ tags: [ssot, mcp, config]
 ## Source of Truth Location
 
 ```
-.windsurf/mcp_config.json (workspace, version-controlled)
+config/mcp_servers.yaml (workspace, version-controlled)
 ```
 
-The workspace config is the **SSOT**. The global config at `C:\Users\amita\.codeium\windsurf\mcp_config.json` is a **read-only deployment target** that Windsurf reads at startup.
+The YAML configuration file is the **SSOT** for all MCP server definitions and tool mappings. The global config at `C:\Users\amita\.codeium\windsurf\mcp_config.json` is a **read-only deployment target** that Windsurf reads at startup.
 
 ## Hard Constraints
 
-- **NEVER** edit the global file directly — always edit workspace first
-- **AFTER** every edit to `.windsurf/mcp_config.json`, run: `python tools/adg/sync_global_config.py`
-- **ALL** Python MCP servers MUST have `"cwd": "C:\\Git\\Agentic-Workflow"`
-- **Drift check** (no writes): `python tools/adg/sync_global_config.py --check`
+- **NEVER** edit the global file directly — always edit `config/mcp_servers.yaml` first
+- **AFTER** every edit to `config/mcp_servers.yaml`, run: `python tools/adg/sync_yaml_to_global.py`
+- **ALL** Python MCP servers MUST have `"cwd": "C:\\Git\\Agentic-Workflow"` in the YAML
+- **Drift check** (no writes): `python tools/adg/sync_yaml_to_global.py --check`
 
-## Why Workspace-First
+## Why YAML SSOT
 
-1. Workspace config is version-controlled and reviewable in PRs
-2. CI can validate and gate changes before they reach global
-3. Multiple config changes can be batched and tested
-4. Rollback is possible via git history
+1. YAML supports comments and is human-readable
+2. Tool mappings are explicit with descriptions
+3. CI can validate schema with Pydantic before syncing
+4. Hot-reload capable without IDE restart
+5. Single file defines servers, tools, aliases, and validation rules
 
 ## Validation
 
 ```
-python ops_scripts/ci/validate_mcp_config.py
+python ops_scripts/ci/validate_mcp_yaml.py
 ```
 
-Exit 0 = global config matches workspace SSOT, Exit 1 = drift detected.
+Exit 0 = YAML is valid and complete, Exit 1 = validation failed.
+
+## Sync to Global Config
+
+```
+python tools/adg/sync_yaml_to_global.py
+```
+
+This converts `config/mcp_servers.yaml` to Windsurf's JSON format and writes to the global config path.
 
 ## Enforcement Layers
 
 | Layer | Mechanism |
 |-------|-----------|
 | Windsurf rule | `.windsurf/rules/mcp-config-ssot.md` (this file) |
-| Workflow | `.windsurf/workflows/mcp-config-sync.md` (invoke with `/mcp-config-sync`) |
-| Git hook | `.git/hooks/post-commit` — auto-syncs when `mcp_config.json` is committed |
-| Sync script | `tools/adg/sync_global_config.py` (validates, backs up, syncs, verifies) |
+| Workflow | `.windsurf/workflows/mcp-yaml-sync.md` (invoke with `/mcp-yaml-sync`) |
+| Git hook | `.git/hooks/post-commit` — auto-syncs when `config/mcp_servers.yaml` is committed |
+| Sync script | `tools/adg/sync_yaml_to_global.py` (validates, backs up, syncs, verifies) |
+| Validation | `ops_scripts/ci/validate_mcp_yaml.py` (CI gate) |
+
+## Deprecated Files (DO NOT EDIT)
+
+| File | Status | Action |
+|------|--------|--------|
+| `.windsurf/mcp_config.json` | DEPRECATED | Read-only redirect notice |
+| `mcp_config.json` (repo root) | DEPRECATED | Will be removed |
+| `tools/adg/sync_global_config.py` | REMOVED | Use `sync_yaml_to_global.py` |
 
 ## References
 
-- Workspace SSOT: `.windsurf/mcp_config.json`
+- YAML SSOT: `config/mcp_servers.yaml`
 - Global target (read-only): `C:\Users\amita\.codeium\windsurf\mcp_config.json`
-- Sync script: `tools/adg/sync_global_config.py`
-- RCA: `docs/reports/plans/RCA_dual_mcp_config_divergence.md`
+- Sync script: `tools/adg/sync_yaml_to_global.py`
+- Validation script: `ops_scripts/ci/validate_mcp_yaml.py`
+- Loader module: `agentic_core/config/mcp_loader.py`
+- RCA: `docs/reports/plans/RCA_enhanced_http_vector_db_unused.md`

@@ -1,11 +1,10 @@
 """Tests for plan_location_gate.py CI script.
 
-Happy path: staged files in SSOT location
+Happy path: staged files in correct location
 Failure path: staged files in prohibited location
 Edge case: no staged files, non-.md files, windows vs posix paths
 """
 
-import subprocess
 import sys
 from pathlib import Path
 from unittest.mock import MagicMock, patch
@@ -26,7 +25,7 @@ class TestGetStagedFiles:
             mock_run.return_value = MagicMock(
                 returncode=0,
                 stdout="file1.md\nfile2.py\n",
-                stderr=""
+                stderr="",
             )
             result = get_staged_files(tmp_path)
 
@@ -41,7 +40,7 @@ class TestGetStagedFiles:
             mock_run.return_value = MagicMock(
                 returncode=1,
                 stdout="",
-                stderr="fatal: not a git repository"
+                stderr="fatal: not a git repository",
             )
 
             with pytest.raises(RuntimeError, match="Git command failed"):
@@ -53,7 +52,7 @@ class TestGetStagedFiles:
             mock_run.return_value = MagicMock(
                 returncode=0,
                 stdout="",
-                stderr=""
+                stderr="",
             )
             result = get_staged_files(tmp_path)
 
@@ -67,30 +66,30 @@ class TestValidatePlanLocations:
         """Happy path: all files in correct location."""
         with patch("plan_location_gate.get_staged_files") as mock_get:
             mock_get.return_value = [
-                tmp_path / "docs" / "reports" / "plans" / "test_plan.md"
+                tmp_path / ".windsurf" / "plans" / "test_plan.md",
             ]
             result = validate_plan_locations(tmp_path)
 
             assert result is True
 
     def test_failure_path_prohibited_location(self, tmp_path, capsys):
-        """Failure path: file in .windsurf/plans/ violates policy."""
+        """Failure path: file in docs/reports/plans/ violates policy."""
         with patch("plan_location_gate.get_staged_files") as mock_get:
             mock_get.return_value = [
-                tmp_path / ".windsurf" / "plans" / "bad_plan.md"
+                tmp_path / "docs" / "reports" / "plans" / "bad_plan.md",
             ]
             result = validate_plan_locations(tmp_path)
             captured = capsys.readouterr()
 
             assert result is False
             assert "PLAN LOCATION VIOLATIONS" in captured.out
-            assert "should be in docs/reports/plans/" in captured.out
+            assert "should be in .windsurf/plans/" in captured.out
 
     def test_edge_case_non_md_files_ignored(self, tmp_path):
         """Edge case: non-.md files in prohibited location are ignored."""
         with patch("plan_location_gate.get_staged_files") as mock_get:
             mock_get.return_value = [
-                tmp_path / ".windsurf" / "plans" / "data.json"
+                tmp_path / "docs" / "reports" / "plans" / "data.json",
             ]
             result = validate_plan_locations(tmp_path)
 
@@ -108,7 +107,7 @@ class TestValidatePlanLocations:
         """Edge case: Windows backslash paths normalized correctly."""
         with patch("plan_location_gate.get_staged_files") as mock_get:
             # Simulate Windows path with backslashes
-            bad_file = tmp_path / ".windsurf" / "plans" / "bad.md"
+            bad_file = tmp_path / "docs" / "reports" / "plans" / "bad.md"
             mock_get.return_value = [bad_file]
             result = validate_plan_locations(tmp_path)
 
