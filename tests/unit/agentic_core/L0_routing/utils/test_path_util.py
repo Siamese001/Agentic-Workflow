@@ -1,33 +1,31 @@
 """Test PathUtil functionality."""
 
-import sys
 from pathlib import Path
-from unittest.mock import patch
 
 import pytest
 
-REPO_ROOT = Path(__file__).parent.parent.parent
-sys.path.insert(0, str(REPO_ROOT))
-
 
 @pytest.mark.unit
-class TestPathUtil:
+class TestPathUtilBasics:
     """Test PathUtil functionality."""
 
-    def test_path_util_imports(self):
-        """Test path_util module imports."""
+    def test_get_validated_project_root_returns_real_path(self):
+        """Test get_validated_project_root returns valid, existing Path."""
         from agentic_core.L0_routing.utils.path_util import get_validated_project_root
-        assert get_validated_project_root is not None
+        result = get_validated_project_root()
+        assert isinstance(result, Path)
+        assert result.exists()
+        assert result.is_dir()
+        # Verify it's actually the project root by checking for key files
+        assert (result / "agentic_core").exists() or (result / "pyproject.toml").exists()
 
-    def test_path_util_class(self):
-        """Test Path class exists in path_util module."""
-        from pathlib import Path
-        assert Path is not None
-
-    def test_path_util_callable(self):
-        """Test path_util functions are callable."""
+    def test_get_validated_project_root_consistent(self):
+        """Test get_validated_project_root returns consistent results."""
         from agentic_core.L0_routing.utils.path_util import get_validated_project_root
-        assert callable(get_validated_project_root)
+        result1 = get_validated_project_root()
+        result2 = get_validated_project_root()
+        assert result1 == result2
+        assert str(result1) == str(result2)
 
 
 @pytest.mark.unit
@@ -170,10 +168,21 @@ class TestPathUtilityFunctions:
         assert result.name == "test.py"
 
     def test_safe_path_join_raises_outside_project(self):
-        """Test safe_path_join raises for paths outside project."""
+        """Test safe_path_join raises for paths outside project via .. traversal."""
         from agentic_core.L0_routing.utils.path_util import safe_path_join
         project_root = Path("C:/test/project")
-        # This should raise because .. goes outside project
+        # Test that .. is correctly resolved and detected as outside project
         with pytest.raises(ValueError) as exc_info:
             safe_path_join(project_root, "..", "outside.py")
         assert "SAFETY VIOLATION" in str(exc_info.value)
+
+    def test_safe_path_join_resolves_relative_components(self):
+        """Test safe_path_join correctly resolves . and .. components."""
+        from agentic_core.L0_routing.utils.path_util import safe_path_join
+        project_root = Path("C:/test/project")
+        # . should be allowed (stays within project)
+        result = safe_path_join(project_root, ".", "test.py")
+        assert result == Path("C:/test/project/test.py")
+        # subdir/.. should resolve to project root
+        result2 = safe_path_join(project_root, "subdir", "..", "test.py")
+        assert result2 == Path("C:/test/project/test.py")
