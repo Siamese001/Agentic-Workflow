@@ -13,11 +13,16 @@ import json
 import uuid
 from contextlib import contextmanager
 from dataclasses import dataclass, field
-from typing import Any, Callable
+from typing import Any, Callable, Generator
 
-from agentic_core.L2_execution.enforcement.guardrail_gate import Generator
 from agentic_core.L2_execution.types.ml_write_intent_types import is_commit_sandbox_active
 from agentic_core.L2_execution.types.tool_intent_types import ToolIntent, ToolViolation
+from agentic_core.L2_execution.contracts.l2_execution_contract import (
+    L2ExecutionAgent,
+    L2ExecutionContext,
+    L2ExecutionPhase,
+    L2PhaseResult,
+)
 from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     LayerSegment,
     _emit_agent_executes_agent,
@@ -276,12 +281,19 @@ class ToolResult:
         }
 
 
-class ToolIntentExecutor:
+class ToolIntentExecutor(L2ExecutionAgent):
     """
     Executes a ToolIntent inside the L2.2 commit sandbox.
 
-    Usage
-    -----
+    Implements L2ExecutionContract:
+    - L2.1 INIT: Pre-commit setup, sandbox validation
+    - L2.2 EXECUTE: Core tool invocation with policy checks
+    - L2.3 EVALUATE_HEAL: Error classification and retry
+    - L2.4 SYNTHESIZE: ToolResult packaging
+
+    Backward Compatibility
+    ----------------------
+    Legacy usage preserved:
     with ToolIntentExecutor() as executor:
         result = executor.execute(intent, fn=my_tool_fn)
 
@@ -292,59 +304,321 @@ class ToolIntentExecutor:
     - fn is called with intent.args; must return a dict with at least "output_summary".
     """
 
-    @contextmanager
-    def __enter__(self) -> Generator[ToolIntentExecutor, None, None]:
-        yield self
+    agent_id: str = "ToolIntentExecutor"
 
-    def __exit__(self, *args: Any) -> None:
-        pass
+    def __init__(self):
+        super().__init__(agent_id=self.agent_id)
+        self._current_intent: ToolIntent | None = None
+        self._current_fn: Callable[[dict[str, Any]], dict[str, Any]] | None = None
 
-    def execute(self, intent: ToolIntent, fn: Callable[[dict[str, Any]], dict[str, Any]]) -> ToolResult:
+    # ========================================================================
+    # L2.1: INIT - Pre-commit setup and validation
+    # ========================================================================
+    def l2_init(self, context: L2ExecutionContext) -> L2PhaseResult:
         """
-        Execute a ToolIntent.
+        L2.1: Initialize tool execution context.
 
-        Parameters
-        ----------
-        intent : ToolIntent
-        fn     : callable(args: dict) -> dict
-            Must return a dict with at least "output_summary" (str) and
-            optionally "anchor_ids" (list[str]).
-
-        Raises
-        ------
-        ToolViolation(code="TOOL_WRITE_OUTSIDE_SANDBOX")
-            If intent.requires_commit and sandbox is not active.
+        Validates:
+        - Sandbox state for mutating operations
+        - Tool intent structure
+        - Capability requirements
         """
-        import uuid as _uuid  # noqa: PLC0415
+        intent = context.inputs.get("intent")
+        fn = context.inputs.get("fn")
 
-        _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L2_EXECUTION, "ToolIntentExecutor.execute")
-        import hashlib as _hashlib  # noqa: PLC0415
+        if not isinstance(intent, ToolIntent):
+            return L2PhaseResult(
+                phase=L2ExecutionPhase.INIT,
+                success=False,
+                failure_signal=None,
+                metadata={"error": "Missing or invalid ToolIntent"},
+            )
 
-        _seg_hash = _hashlib.sha256(f"{_trace_id}:ToolIntentExecutor.execute".encode()).hexdigest()[:24]
+        if not callable(fn):
+            return L2PhaseResult(
+                phase=L2ExecutionPhase.INIT,
+                success=False,
+                failure_signal=None,
+                metadata={"error": "Missing or invalid function"},
+            )
+
+        # E2: Validate sandbox for mutating operations
+        if intent.requires_commit and (not is_commit_sandbox_active()):
+            return L2PhaseResult(
+                phase=L2ExecutionPhase.INIT,
+                success=False,
+                failure_signal=None,
+                metadata={
+                    "error": "TOOL_WRITE_OUTSIDE_SANDBOX",
+                    "tool": intent.tool_name,
+                    "capability": intent.capability.value,
+                },
+            )
+
+        # Store for later phases
+        self._current_intent = intent
+        self._current_fn = fn
+
+        _trace_id = str(uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L2_EXECUTION, "ToolIntentExecutor.l2_init")
+
+        return L2PhaseResult(
+            phase=L2ExecutionPhase.INIT,
+            success=True,
+            metadata={
+                "tool_name": intent.tool_name,
+                "requires_commit": intent.requires_commit,
+                "sandbox_active": is_commit_sandbox_active(),
+            },
+        )
+
+    # ========================================================================
+    # L2.2: EXECUTE - Core tool invocation
+    # ========================================================================
+    def l2_execute(self, context: L2ExecutionContext) -> L2PhaseResult:
+        """
+        L2.2: Execute the tool with authorization.
+
+        Emits lifecycle traces for observability.
+        """
+        intent = self._current_intent
+        fn = self._current_fn
+
+        if not intent or not fn:
+            return L2PhaseResult(
+                phase=L2ExecutionPhase.EXECUTE,
+                success=False,
+                failure_signal=None,
+                metadata={"error": "INIT phase not completed"},
+            )
+
+        _trace_id = str(uuid.uuid4())
+        _emit_records_execution_trace(_trace_id, LayerSegment.L2_EXECUTION, "ToolIntentExecutor.l2_execute")
+        _seg_hash = hashlib.sha256(f"{_trace_id}:l2_execute".encode()).hexdigest()[:24]
         _emit_signs_execution_trace(_trace_id, _seg_hash, _seg_hash, 0)
 
-        if intent.requires_commit and (not is_commit_sandbox_active()):
-            raise ToolViolation(
-                code="TOOL_WRITE_OUTSIDE_SANDBOX",
-                detail=f"tool '{intent.tool_name}' requires commit sandbox (capability={intent.capability.value})",
+        try:
+            # Authorize and execute
+            _ectx = _make_execution_context(intent.args_hash, intent.tool_name)
+            _invoke_authorize_and_execute(
+                _ectx,
+                lambda p: p,
+                "default",
+                intent.args_hash,
+                target_name=intent.tool_name,
             )
-        _ectx = _make_execution_context(intent.args_hash, intent.tool_name)
-        _invoke_authorize_and_execute(
-            _ectx,
-            lambda p: p,
-            "default",
-            intent.args_hash,
-            target_name=intent.tool_name,
+
+            # Execute the tool
+            raw = fn(intent.args)
+
+            return L2PhaseResult(
+                phase=L2ExecutionPhase.EXECUTE,
+                success=True,
+                output=raw,
+                metadata={
+                    "tool_name": intent.tool_name,
+                    "has_output_summary": "output_summary" in raw,
+                    "has_anchor_ids": "anchor_ids" in raw,
+                },
+            )
+
+        except ToolViolation as e:
+            return L2PhaseResult(
+                phase=L2ExecutionPhase.EXECUTE,
+                success=False,
+                failure_signal=None,
+                metadata={
+                    "error": e.code,
+                    "detail": e.detail,
+                    "recoverable": False,
+                },
+            )
+        except Exception as e:
+            return L2PhaseResult(
+                phase=L2ExecutionPhase.EXECUTE,
+                success=False,
+                failure_signal=None,
+                metadata={
+                    "error": type(e).__name__,
+                    "detail": str(e),
+                    "recoverable": True,  # May be recoverable via healing
+                },
+            )
+
+    # ========================================================================
+    # L2.3: EVALUATE/HEAL - Post-execution evaluation
+    # ========================================================================
+    def l2_evaluate_and_heal(self, context: L2ExecutionContext) -> L2PhaseResult:
+        """
+        L2.3: Evaluate execution result and apply healing if needed.
+
+        For tool execution, healing may involve:
+        - Retry with modified parameters
+        - Fallback to alternative tool
+        - Escalation on terminal failures
+        """
+        last_result = context.phase_results.get(L2ExecutionPhase.EXECUTE)
+        if not last_result:
+            return L2PhaseResult(
+                phase=L2ExecutionPhase.EVALUATE_HEAL,
+                success=False,
+                metadata={"error": "No execute phase result"},
+            )
+
+        if last_result.success:
+            return L2PhaseResult(
+                phase=L2ExecutionPhase.EVALUATE_HEAL,
+                success=True,
+                metadata={"heal_skipped": "execute_success"},
+            )
+
+        # Check if recoverable
+        metadata = last_result.metadata or {}
+        recoverable = metadata.get("recoverable", False)
+
+        if not recoverable:
+            return L2PhaseResult(
+                phase=L2ExecutionPhase.EVALUATE_HEAL,
+                success=False,
+                failure_signal=None,
+                metadata={
+                    "heal_skipped": "not_recoverable",
+                    "error": metadata.get("error"),
+                },
+            )
+
+        # Default healing: retry once (subclasses may override)
+        context.retry_count += 1
+        retry_result = self.l2_execute(context)
+
+        return L2PhaseResult(
+            phase=L2ExecutionPhase.EVALUATE_HEAL,
+            success=retry_result.success,
+            output=retry_result.output,
+            failure_signal=retry_result.failure_signal if not retry_result.success else None,
+            metadata={
+                "heal_attempted": True,
+                "heal_tier": "LOCAL_AGENT",
+                "retry_count": context.retry_count,
+            },
         )
-        raw = fn(intent.args)
+
+    # ========================================================================
+    # L2.4: SYNTHESIZE - Result packaging
+    # ========================================================================
+    def l2_synthesize(self, context: L2ExecutionContext) -> L2PhaseResult:
+        """
+        L2.4: Package execution result into ToolResult.
+
+        E5: Seal the final folder with execution artifacts.
+        """
+        execute_result = context.phase_results.get(L2ExecutionPhase.EXECUTE)
+        if not execute_result:
+            return L2PhaseResult(
+                phase=L2ExecutionPhase.SYNTHESIZE,
+                success=False,
+                metadata={"error": "No execute phase result"},
+            )
+
+        intent = self._current_intent
+        if not intent:
+            return L2PhaseResult(
+                phase=L2ExecutionPhase.SYNTHESIZE,
+                success=False,
+                metadata={"error": "No intent stored"},
+            )
+
+        if not execute_result.success:
+            # Failed execution - return minimal result
+            return L2PhaseResult(
+                phase=L2ExecutionPhase.SYNTHESIZE,
+                success=False,
+                output=ToolResult(
+                    schema_version=_SCHEMA_VERSION,
+                    tool_name=intent.tool_name,
+                    args_hash=intent.args_hash,
+                    success=False,
+                    output_summary=str(execute_result.metadata.get("error", "Unknown error")),
+                    anchor_ids=[],
+                ),
+                failure_signal=execute_result.failure_signal,
+                metadata={"status": "failed_execution"},
+            )
+
+        # Successful execution
+        raw = execute_result.output or {}
         output_summary = str(raw.get("output_summary", ""))
         anchor_ids: list[str] = list(raw.get("anchor_ids", []))
-        return ToolResult(
+
+        tool_result = ToolResult(
             schema_version=_SCHEMA_VERSION,
             tool_name=intent.tool_name,
             args_hash=intent.args_hash,
             success=raw.get("success", True),
             output_summary=output_summary,
             anchor_ids=anchor_ids,
+        )
+
+        return L2PhaseResult(
+            phase=L2ExecutionPhase.SYNTHESIZE,
+            success=True,
+            output=tool_result,
+            metadata={
+                "status": "success",
+                "result_hash": tool_result.result_hash,
+            },
+        )
+
+    # ========================================================================
+    # Backward Compatibility: Legacy execute() method
+    # ========================================================================
+    @contextmanager
+    def __enter__(self) -> Generator["ToolIntentExecutor", None, None]:
+        """Context manager entry - preserves legacy usage."""
+        yield self
+
+    def __exit__(self, *args: Any) -> None:
+        """Context manager exit - preserves legacy usage."""
+        pass
+
+    def execute(self, intent: ToolIntent, fn: Callable[[dict[str, Any]], dict[str, Any]]) -> ToolResult:
+        """
+        Execute a ToolIntent (backward compatible API).
+
+        This method uses the new 4-phase contract internally while
+        maintaining the legacy interface.
+
+        Parameters
+        ----------
+        intent : ToolIntent
+            Tool intent to execute
+        fn : callable
+            Tool function to invoke
+
+        Returns
+        -------
+        ToolResult
+            Execution result
+        """
+        result = self.run_l2_phases(
+            inputs={"intent": intent, "fn": fn},
+            heal_enabled=False,  # Legacy mode: no healing
+            trace_id=str(uuid.uuid4()),
+        )
+
+        # Extract ToolResult from phase results
+        if result.get("success"):
+            synth = result.get("phase_results", {}).get("SYNTHESIZE", {})
+            tool_result = synth.get("output")
+            if isinstance(tool_result, ToolResult):
+                return tool_result
+
+        # Fallback: construct from error info
+        return ToolResult(
+            schema_version=_SCHEMA_VERSION,
+            tool_name=intent.tool_name,
+            args_hash=intent.args_hash,
+            success=False,
+            output_summary=result.get("interrupted_at", "Unknown failure"),
+            anchor_ids=[],
         )
