@@ -1,0 +1,204 @@
+# Structure Blueprint — Territory Definitions
+schema_version: "1.0.0"
+last_updated: "2026-04-04"
+
+territories:
+  agentic_core:
+    depth: 2
+    purpose: "Core framework logic (L0-L6)"
+    subfolders:
+      L0_routing:
+        depth: 2
+        purpose: "Route election, capability arbitration, policy-aware dispatch"
+        subfolders:
+          config:
+            purpose: "Configuration, settings, constants"
+            allowed_suffixes: ["_config.py", "_settings.py"]
+            forbidden_suffixes: ["_types.py"]
+          types:
+            purpose: "Data models, enums, protocols, schemas"
+            allowed_suffixes: ["_types.py", "_protocol.py", "_schema.py", "_model.py", "_spec.py"]
+            forbidden_suffixes: ["_config.py", "_engine.py", "_agent.py"]
+          reasoning:
+            purpose: "Decision-making agents, engines, planners, strategists"
+          enforcement:
+            purpose: "Constraint execution, guardrails, governors, gates"
+          validators:
+            purpose: "Passive auditing, compliance checks, structural validators"
+          utils:
+            purpose: "Helper functions, mixins, shared utilities"
+      L1_cognition:
+        depth: 2
+        purpose: "Intent analysis, context expansion"
+        subfolders:
+          config: {purpose: "Configuration"}
+          types: {purpose: "Data models"}
+          reasoning: {purpose: "Decision agents"}
+          enforcement: {purpose: "Guardrails"}
+          utils: {purpose: "Helpers"}
+      L2_execution:
+        depth: 2
+        purpose: "Tool execution, action orchestration"
+        subfolders:
+          config: {purpose: "Configuration"}
+          types: {purpose: "Data models"}
+          reasoning: {purpose: "Decision agents"}
+          enforcement: {purpose: "Guardrails"}
+          utils: {purpose: "Helpers"}
+      L3_orchestration:
+        depth: 2
+        purpose: "Multi-agent coordination, workflow state"
+        subfolders:
+          config: {purpose: "Configuration"}
+          types: {purpose: "Data models"}
+          reasoning: {purpose: "Decision agents"}
+          enforcement: {purpose: "Guardrails"}
+          utils: {purpose: "Helpers"}
+      L4_state:
+        depth: 2
+        purpose: "Memory, embeddings, retrieval"
+        subfolders:
+          config: {purpose: "Configuration"}
+          types: {purpose: "Data models"}
+          reasoning: {purpose: "Decision agents"}
+          enforcement: {purpose: "Guardrails"}
+          utils: {purpose: "Helpers"}
+      L5_safety:
+        depth: 2
+        purpose: "Guardrails, validation, policy enforcement"
+        subfolders:
+          config: {purpose: "Configuration"}
+          types: {purpose: "Data models"}
+          reasoning: {purpose: "Decision agents"}
+          enforcement: {purpose: "Guardrails"}
+          validators: {purpose: "Validators"}
+          utils: {purpose: "Helpers"}
+      L6_observability:
+        depth: 2
+        purpose: "Telemetry, logging, monitoring"
+        subfolders:
+          config: {purpose: "Configuration"}
+          types: {purpose: "Data models"}
+          reasoning: {purpose: "Decision agents"}
+          enforcement: {purpose: "Guardrails"}
+          utils: {purpose: "Helpers"}
+
+  apps_eval:
+    depth: 2
+    purpose: "Evaluation application"
+    subfolders:
+      config: {depth: 2, purpose: "Configuration"}
+      engines: {depth: 2, purpose: "Execution engines"}
+      reasoning: {depth: 2, purpose: "Decision agents"}
+      data: {depth: 2, purpose: "Data files"}
+
+  apps_exec:
+    depth: 2
+    purpose: "Execution application"
+    subfolders:
+      config: {depth: 2, purpose: "Configuration"}
+      engines: {depth: 2, purpose: "Execution engines"}
+      reasoning: {depth: 2, purpose: "Decision agents"}
+
+  apps_lic:
+    depth: 2
+    purpose: "License management application"
+    subfolders:
+      config: {depth: 2, purpose: "Configuration"}
+      engines: {depth: 2, purpose: "Execution engines"}
+      reasoning: {depth: 2, purpose: "Decision agents"}
+
+  apps_research:
+    depth: 2
+    purpose: "Research application"
+    subfolders:
+      config: {depth: 2, purpose: "Configuration"}
+      engines: {depth: 2, purpose: "Execution engines"}
+      reasoning: {depth: 2, purpose: "Decision agents"}
+
+  apps_rfp:
+    depth: 2
+    purpose: "RFP application"
+    subfolders:
+      config: {depth: 2, purpose: "Configuration"}
+      engines: {depth: 2, purpose: "Execution engines"}
+      reasoning: {depth: 2, purpose: "Decision agents"}
+      data: {depth: 2, purpose: "Sample RFPs"}
+
+  apps_rg:
+    depth: 2
+    purpose: "Resume generation application"
+    subfolders:
+      config: {depth: 2, purpose: "Configuration"}
+      engines: {depth: 2, purpose: "Execution engines"}
+      reasoning: {depth: 2, purpose: "Decision agents"}
+
+  apps_shared:
+    depth: 2
+    purpose: "Shared application utilities"
+    subfolders:
+      config: {depth: 2, purpose: "Configuration"}
+      data: {depth: 2, purpose: "Shared data"}
+      enforcement: {depth: 2, purpose: "Shared enforcement"}
+      data_adapters: {depth: 2, purpose: "Data adapters"}
+
+  tests:
+    depth: 2
+    purpose: "Test suites"
+    subfolders:
+      unit:
+        depth: 3
+        purpose: "Unit tests"
+        subfolders:
+          agentic_core: {depth: 4, purpose: "Core tests"}
+          apps_*: {depth: 4, purpose: "App tests (wildcard)"}
+      integration: {depth: 3, purpose: "Integration tests"}
+      e2e: {depth: 3, purpose: "End-to-end tests"}
+      apps_*:
+        depth: 3
+        purpose: "App-specific tests (wildcard)"
+
+  system_learning:
+    depth: 2
+    purpose: "Meta-learning and system improvement"
+    subfolders:
+      adapters: {depth: 2, purpose: "Learning adapters"}
+      arbitration: {depth: 2, purpose: "Arbitration engines"}
+      confidence: {depth: 2, purpose: "Confidence scoring"}
+      config: {depth: 2, purpose: "Configuration"}
+
+  tools:
+    depth: 1
+    purpose: "Development and operational tools"
+    volatile: true
+    subfolders:
+      adg: {depth: 2, purpose: "ADG tools"}
+      mcp: {depth: 2, purpose: "MCP servers"}
+
+  ops_scripts:
+    depth: 2
+    purpose: "CI/CD and operational scripts"
+    subfolders:
+      ci: {depth: 3, purpose: "CI scripts"}
+      dev_tools: {depth: 3, purpose: "Development tools"}
+      environment: {depth: 3, purpose: "Environment scripts"}
+
+# Wildcard territories (pattern-based matching)
+wildcards:
+  apps_*:
+    pattern: "^apps_.*$"
+    depth: 2
+    purpose: "Application territories (eval, exec, lic, research, rfp, rg)"
+    subfolders:
+      config: {purpose: "Configuration"}
+      engines: {purpose: "Execution engines"}
+      reasoning: {purpose: "Decision agents"}
+      data: {purpose: "Data files"}
+
+  tests/apps_*:
+    pattern: "^tests/apps_.*$"
+    depth: 3
+    purpose: "App-specific test territories"
+    subfolders:
+      unit: {purpose: "Unit tests"}
+      integration: {purpose: "Integration tests"}

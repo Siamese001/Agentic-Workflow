@@ -35,6 +35,14 @@ from collections.abc import Mapping, Sequence
 from types import MappingProxyType
 from typing import Any, Final, TypedDict
 
+# Import YAML loader for data extraction
+from agentic_core.L5_safety.config.structure_blueprint.yaml_loader import (
+    load_territories,
+    load_layer_overrides,
+    get_territory,
+    match_wildcard_territory,
+)
+
 # ============================================================================
 # TYPE DEFINITIONS
 # ============================================================================

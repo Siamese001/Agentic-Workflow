@@ -1,0 +1,94 @@
+# Structure Blueprint — Layer Overrides
+schema_version: "1.0.0"
+last_updated: "2026-04-04"
+
+# Layer-specific template overrides
+overrides:
+  L0_routing:
+    purpose: "Core Logic & Routing + Control-Plane Core — ingestion, route election, capability arbitration, policy-aware dispatch; plus boot integrity, SSOT discovery, and guardian runner health checks."
+    forbidden_capabilities:
+      - debate
+      - synthesis
+      - complex_reasoning
+      - multi_agent_coordination
+    routing_rules:
+      "*_guardian.py": enforcement
+      "*_boot*.py": enforcement
+      "*_routing*.py": enforcement
+      "*_dispatch*.py": enforcement
+      "*_config.py": config
+      "*_types.py": types
+      "*Agent.py": reasoning
+    extra_subfolders:
+      scripts:
+        purpose: "Operational scripts (Zero-Ambiguity Standard)"
+        subfolders:
+          .github: {purpose: "GitHub workflow scripts"}
+          ci: {purpose: "CI/CD pipeline scripts"}
+          config: {purpose: "Configuration scripts"}
+          installation: {purpose: "Installation and setup scripts"}
+          general_scripts: {purpose: "General maintenance scripts"}
+      logs:
+        purpose: "Guardian and audit log outputs (JSON reports)"
+        allowed_extensions: [".json", ".log"]
+
+  L1_cognition:
+    purpose: "Intent Analysis, Context Expansion"
+    forbidden_capabilities: []
+    routing_rules:
+      "*_classifier.py": reasoning
+      "*_expander.py": reasoning
+      "*_embedder.py": reasoning
+      "*_config.py": config
+      "*_types.py": types
+
+  L2_execution:
+    purpose: "Tool Execution, Action Orchestration"
+    forbidden_capabilities: []
+    routing_rules:
+      "*_engine.py": reasoning
+      "*_executor.py": reasoning
+      "*_adapter.py": reasoning
+      "*_config.py": config
+      "*_types.py": types
+
+  L3_orchestration:
+    purpose: "Multi-Agent Coordination, Workflow State"
+    forbidden_capabilities: []
+    routing_rules:
+      "*_orchestrator.py": reasoning
+      "*_coordinator.py": reasoning
+      "*_config.py": config
+      "*_types.py": types
+
+  L4_state:
+    purpose: "Memory, Embeddings, Retrieval"
+    forbidden_capabilities: []
+    routing_rules:
+      "*_store.py": reasoning
+      "*_cache.py": reasoning
+      "*_memory.py": reasoning
+      "*_config.py": config
+      "*_types.py": types
+
+  L5_safety:
+    purpose: "Guardrails, Validation, Policy Enforcement"
+    forbidden_capabilities: []
+    routing_rules:
+      "*_validator.py": validators
+      "*_guardian.py": enforcement
+      "*_policy.py": enforcement
+      "*_audit*.py": validators
+      "*_config.py": config
+      "*_types.py": types
+
+  L6_observability:
+    purpose: "Telemetry, Logging, Monitoring"
+    forbidden_capabilities: []
+    routing_rules:
+      "*_logger.py": reasoning
+      "*_monitor.py": reasoning
+      "*_reporter.py": reasoning
+      "*_dashboard*.py": reasoning
+      "*_config.py": config
+      "*_types.py": types
