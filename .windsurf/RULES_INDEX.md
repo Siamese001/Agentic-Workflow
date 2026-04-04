@@ -1,6 +1,6 @@
 # Windsurf Rules & CI Gates — Master Index
 
-**Last Updated**: 2026-04-03
+**Last Updated**: 2026-04-04
 **Purpose**: Comprehensive mapping of all constitutional rules, skills, and CI enforcement gates
 
 > **2026-03-11 CONSOLIDATION:** `.windsurfrules` reduced from 3906 → ~400 lines. All Python implementation code removed — it already lives in `ops_scripts/ci/`. Rules file now contains hard rules, forbidden/required patterns, and CI script cross-references only. 4 previously unwired CI gates added to `run_contract_gates.py`.
@@ -15,11 +15,13 @@
 | **§ADG-1: ADG Repair Discipline** | Windsurf | Before work | Behavioural | `.windsurf/rules/adg-repair-discipline.md` | ✅ ENFORCED |
 | **§2.5: Test Failure Triage Protocol** | Both | Before repair | Behavioural + Structural | `docs/technical/TEST_FAILURE_decision_tree.md` | ✅ ENFORCED (CI: cond. 8b) |
 | **§8.5: HITL Enforcement** | Windsurf | During work | Behavioural | `.windsurf/rules/hitl-enforcement.md` | ✅ ENFORCED |
+| **§10.0: Wave/Micro-Wave Plan Model** | Windsurf | Before plan draft | Behavioural | `.windsurfrules` §10.0 + Constitutional Rule #13 | ✅ ENFORCED |
 | **Plan Location Rule** | Pre-commit | After work | Structural | `.windsurf/rules/plan-location.md` | ✅ ENFORCED |
 
 **Notes**:
 - §0: CI gate removed (was misplaced — process rule cannot be verified at commit time)
 - §ADG-1: Pre-commit gate reverted to manual stage (repair phase state is session context)
+- §10.0: Windsurf-only behavioural enforcement — fires before any plan content is drafted; mandates wave decomposition, ≤15 modules/micro-wave, wave summary table first, token estimates per wave
 - Plan Location: Pure structural rule — file path observable at commit time
 
 ---
@@ -255,6 +257,7 @@ Include justification keywords in commit message:
 **Next Audit**: 2026-04-11
 
 **Changelog**:
+- 2026-04-04: **RCA FIX — WAVE/MICRO-WAVE PLAN MODEL NOT AUTO-EMPLOYED** — Root cause: §10 was reactive (validated existing plans) with no proactive trigger at plan-creation time; micro-wave discipline (≤15 modules/wave) was never codified in any rule file; template wave table columns mismatched §10.1 spec. Fix: Added Constitutional Rule #13 to `.windsurfrules` floor + §10.0 "Plan Creation Protocol" pre-draft trigger section (fires before any content is drafted) + same rule (#11) to `.windsurfrules.consolidated` + §10 section appended to consolidated file + template updated to §10.1 column spec with micro-wave sub-table example + RULES_INDEX updated with §10.0 entry.
 - 2026-04-03: **SKILLS CONSOLIDATION** — Archived 30 individual skills to `tools/archive/.windsurf/skills/`. Consolidated into 5 canonical skills per SVP Engineering principle: `graph-analysis` (replaces dependency-graph-analysis, scope-guard, dedup-guard), `boundary-enforcement` (replaces layer-boundary-guard, import-hygiene, shim-discipline), `operational-gates` (replaces rollback-gate, mcp-tool-verify), `testing-framework` (replaces test-rigor-enforcement, pytest-integrity), `artifact-management` (replaces evidence-bundle, ssot-write-gate, progress-display). Updated Skills table to show 5 consolidated skills. Coverage remains 100%.
 - 2026-03-25: **PROGRESS DISPLAY ENFORCEMENT** — Added `progress-display` skill with mandatory colored progress bars and percentage displays for all operations >5s. Updated §5.3 with detailed progress reporting requirements including ANSI color codes, ETA display, and standardized progress bar formats. Skill provides terminal protocol, color scheme reference, and implementation guide for integration across all Windsurf operations.
 - 2026-03-14: **HITL (HUMAN-IN-THE-LOOP) ENFORCEMENT** — Added §8.5 HITL Framework to `.windsurfrules` and Constitutional Rule #8. Created comprehensive rule (`.windsurf/rules/hitl-enforcement.md`) with 10 mandatory decision triggers. Created workflow (`/hitl-decision-gate`) with option presentation templates. HITL required for: architecture decisions, refactoring scope, anti-patterns, test repair, dependencies, deletions, config changes, error handling, performance trade-offs, ADG timing. Registered as constitutional rule with Windsurf-only enforcement (behavioral, no CI gate).
