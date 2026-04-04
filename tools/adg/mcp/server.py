@@ -5,12 +5,12 @@ This server follows the hardened design:
 - Redis = optional read-through cache only
 - Clean transport, no import-time backend wiring
 """
+
 from __future__ import annotations
 
-import json
 import logging
-import sys
-from typing import Any, Optional
+import os
+from typing import Any
 
 from mcp.server.fastmcp import FastMCP
 
@@ -18,33 +18,29 @@ from tools.adg.core.service import ADGService
 from tools.adg.mcp.health import HealthDiagnostics
 
 # ---------------------------------------------------------------------------
-# Diagnostic logging to stderr (visible in IDE logs, never pollutes stdio)
+# Diagnostic logging to file (never pollutes stdio transport)
 # ---------------------------------------------------------------------------
-logging.basicConfig(
-    stream=sys.stderr,
-    level=logging.INFO,
-    format="[adg_mcp %(levelname)s %(asctime)s] %(message)s",
-    datefmt="%H:%M:%S",
-)
+_log_file = os.path.expanduser("~/adg_mcp_server.log")
+logging.basicConfig(filename=_log_file, level=logging.INFO, format="[%(asctime)s] %(levelname)s: %(message)s")
 _log = logging.getLogger("adg_mcp")
 
 # ---------------------------------------------------------------------------
 # Global service instance (initialized at startup, not import)
 # ---------------------------------------------------------------------------
-_service: Optional[ADGService] = None
-_health: Optional[HealthDiagnostics] = None
+_service: ADGService | None = None
+_health: HealthDiagnostics | None = None
 
 
 def _init_service() -> ADGService:
     """Initialize ADGService with SQLite mandatory, Redis optional."""
     global _service, _health
-    
+
     if _service is None:
         _log.info("Initializing ADGService...")
         _service = ADGService()
         _health = HealthDiagnostics(_service)
         _log.info("ADGService ready: %s", _service.health().mode)
-    
+
     return _service
 
 
@@ -66,10 +62,11 @@ _log.info("FastMCP instance created")
 # MCP Tools
 # ---------------------------------------------------------------------------
 
+
 @mcp.tool()
 def adg_health() -> dict[str, Any]:
     """PRIMARY health check — always call this first.
-    
+
     Returns: mode, sqlite status, redis status, cache capability,
     schema version, ADG snapshot ID.
     """
@@ -85,7 +82,7 @@ def adg_health() -> dict[str, Any]:
 @mcp.tool()
 def adg_status() -> dict[str, Any]:
     """Get ADG snapshot status.
-    
+
     Returns: timestamp, node_count, edge_count, sqlite_path.
     """
     try:
@@ -104,7 +101,7 @@ def adg_status() -> dict[str, Any]:
 @mcp.tool()
 def adg_node(node_id: str) -> dict[str, Any]:
     """Get node by ID.
-    
+
     Tries Redis cache first (75ms timeout), falls back to SQLite.
     Returns node attributes with backend_used metadata.
     """
@@ -124,7 +121,7 @@ def adg_node(node_id: str) -> dict[str, Any]:
 @mcp.tool()
 def adg_nodes_by_layer(layer: str, limit: int = 100) -> dict[str, Any]:
     """Get nodes by layer.
-    
+
     SQLite-only query (lists not cached in Redis).
     """
     try:
@@ -143,7 +140,7 @@ def adg_nodes_by_layer(layer: str, limit: int = 100) -> dict[str, Any]:
 @mcp.tool()
 def adg_nodes_by_file(file_path: str, limit: int = 100) -> dict[str, Any]:
     """Get nodes by file path.
-    
+
     SQLite-only query.
     """
     try:
@@ -160,10 +157,9 @@ def adg_nodes_by_file(file_path: str, limit: int = 100) -> dict[str, Any]:
 
 
 @mcp.tool()
-def adg_edge_fanout(src_id: str, relation_type: str, 
-                    limit: int = 30) -> dict[str, Any]:
+def adg_edge_fanout(src_id: str, relation_type: str, limit: int = 30) -> dict[str, Any]:
     """Get outgoing edges from src_id via relation_type.
-    
+
     Tries Redis cache first, falls back to SQLite with cache backfill.
     """
     try:
@@ -180,10 +176,9 @@ def adg_edge_fanout(src_id: str, relation_type: str,
 
 
 @mcp.tool()
-def adg_edge_fanin(tgt_id: str, relation_type: str,
-                   limit: int = 30) -> dict[str, Any]:
+def adg_edge_fanin(tgt_id: str, relation_type: str, limit: int = 30) -> dict[str, Any]:
     """Get incoming edges to tgt_id via relation_type.
-    
+
     SQLite-only query.
     """
     try:
@@ -202,7 +197,7 @@ def adg_edge_fanin(tgt_id: str, relation_type: str,
 @mcp.tool()
 def adg_violations(limit: int = 100) -> dict[str, Any]:
     """Get anti-pattern violations.
-    
+
     SQLite-only query.
     """
     try:
@@ -235,14 +230,5 @@ def adg_violations(limit: int = 100) -> dict[str, Any]:
 # ---------------------------------------------------------------------------
 
 if __name__ == "__main__":
-    _log.info("Starting adg_mcp server (stdio transport)...")
-    
-    # Pre-initialize service to fail fast if SQLite missing
-    try:
-        _init_service()
-    except Exception as e:
-        _log.error("FATAL: Could not initialize ADGService: %s", e)
-        sys.exit(1)
-    
+    # Lazy init - don't block startup
     mcp.run(transport="stdio")
-    _log.info("Server exited")
