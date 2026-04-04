@@ -56,31 +56,31 @@ HITL-APPROVED: <count> new anti-pattern violations
    - Committing with `--no-verify`
 3. **NEVER** use generic justifications like "needed for functionality"
 
-## Approval Protocol - Cascade Interactive Prompt
+## Approval Protocol - Cascade Interactive Prompt (STAR Format)
 
-When the ADG burndown gate detects new anti-pattern violations, Cascade MUST use the `ask_user_question` tool to present an interactive approval prompt with toggle options.
+When the ADG burndown gate detects new anti-pattern violations, Cascade MUST use the `ask_user_question` tool to present an interactive approval prompt with pros/cons for each option and a ⭐ recommendation.
 
 ### Implementation
 
 ```python
 ask_user_question(
-    question="ADG Burndown Gate detected {count} new anti-pattern violations. Review details and approve?",
+    question="ADG Burndown Gate detected {count} new anti-pattern violations. Review options and select approach?",
     options=[
         {
             "label": "Approve All",
-            "description": "Accept all {count} violations and add guardian comments"
+            "description": "Accept all {count} violations and add guardian comments. Pros: Unblocks immediate work, fast resolution. Cons: Increases technical debt, may hide real issues. ⭐ RECOMMENDED if violations are unavoidable and well-documented."
         },
         {
             "label": "Reject All",
-            "description": "Revert changes - no anti-patterns allowed"
+            "description": "Revert changes - no anti-patterns allowed. Pros: Maintains code quality, zero new debt. Cons: Work blocked until alternative implementation found. ⭐ RECOMMENDED if alternatives exist."
         },
         {
             "label": "Review Details",
-            "description": "Show detailed breakdown before deciding"
+            "description": "Show detailed breakdown before deciding. Pros: Informed decision with full context. Cons: Takes additional time. ⭐ RECOMMENDED for first-time or complex violations."
         },
         {
             "label": "Approve Selectively",
-            "description": "Choose which violations to accept"
+            "description": "Choose which violations to accept. Pros: Balanced approach, only necessary violations approved. Cons: Requires careful review of each violation."
         }
     ],
     allowMultiple=False

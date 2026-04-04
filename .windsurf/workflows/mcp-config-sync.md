@@ -43,7 +43,6 @@ MCP servers only reload on IDE restart. After sync, restart Windsurf to pick up 
 ## STEP 4: Verify MCP servers respond
 
 Call any MCP tool to confirm servers are live:
-- `adg_status` — verifies adg_redis server
 - `mem_get_stats` — verifies memory server
 
 ---

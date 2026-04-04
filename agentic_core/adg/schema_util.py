@@ -706,6 +706,7 @@ LAYER_PREFIXES: dict[str, str] = {
     "system_learning": "L_SL",
     "tools": "L_TOOLS",
     "ops_scripts": "L_OPS",
+    "infrastructure": "L_INFRA",
     "tests": "L_TEST",
 }
 ALLOWED_LAYER_EDGES: frozenset[tuple[str, str]] = frozenset(
@@ -801,6 +802,21 @@ ALLOWED_LAYER_EDGES: frozenset[tuple[str, str]] = frozenset(
         ("L_RUNTIME", "L2"),
         ("L_PG", "L0"),
         ("L_PG", "L1"),
+        # L_INFRA can import from all layers (cross-cutting hardening)
+        ("L_INFRA", "L0"),
+        ("L_INFRA", "L1"),
+        ("L_INFRA", "L2"),
+        ("L_INFRA", "L3"),
+        ("L_INFRA", "L4"),
+        ("L_INFRA", "L5"),
+        ("L_INFRA", "L6"),
+        ("L_INFRA", "L_SHARED"),
+        ("L_INFRA", "L_RUNTIME"),
+        ("L_INFRA", "L_PG"),
+        ("L_INFRA", "L_SL"),
+        ("L_INFRA", "L_TOOLS"),
+        ("L_INFRA", "L_OPS"),
+        ("L_INFRA", "L_APP"),
         # L_SHARED is a cross-cutting layer; it may import L0 path constants,
         # L_RUNTIME exception types, L5 SSOT constants, and L_APP re-exports.
         ("L_SHARED", "L0"),

@@ -214,6 +214,8 @@ Examples:
 """,
     )
     # --- Mode flags ---
+    parser.add_argument("--heal", action="store_true", help="Enable healing/mutation mode")
+    parser.add_argument("--targets", type=str, nargs="+", help="Target paths to scan/heal")
     parser.add_argument("--territory", type=str, help="Specific territory to scan")
     parser.add_argument(
         "--domains", action="store_true", help="Scan all major domains (explicit; now also the default)"
@@ -258,6 +260,7 @@ Examples:
         "--v15-enforcement", type=int, choices=(0, 1), default=None, help="Override V15_ENFORCEMENT"
     )
     parser.add_argument("-v", "--verbose", action="count", default=0, help="Increase log verbosity")
+    parser.add_argument("--verbosity", type=int, default=0, help="Verbosity level (0-3)")
     parser.add_argument("--legacy", action="store_true", help=argparse.SUPPRESS)
     args = parser.parse_args()
 

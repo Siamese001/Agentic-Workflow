@@ -84,6 +84,7 @@ from agentic_core.L0_routing.config.path_constants import (
     APPS_RFP_DIR,
     APPS_RG_DIR,
     APPS_SHARED_DIR,
+    INFRASTRUCTURE_DIR,
     OPS_SCRIPTS_DIR,
     SYSTEM_LEARNING_DIR,
     TESTS_DIR,
@@ -315,6 +316,7 @@ _STRUCTURAL_SCAN_ROOTS: tuple[str, ...] = (
 )
 
 _NON_STRUCTURAL_SCAN_ROOTS: tuple[str, ...] = (
+    INFRASTRUCTURE_DIR,
     SYSTEM_LEARNING_DIR,
     TOOLS_DIR,
     TESTS_DIR,  # H1

@@ -45,7 +45,7 @@ from agentic_core.L0_routing.config.path_constants import DEFAULT_TIMEOUT, MAX_R
 
 # get_agent_dispatch_registry imported lazily to avoid L0->L3 layer violation
 
-# L2 import deferred to avoid layer boundary violation (L0ΓåÆL2)
+# L2 import deferred to avoid layer boundary violation (L0→L2)
 # from agentic_core.L2_execution.providers import get_clock
 
 _clock_cache = None
@@ -434,7 +434,7 @@ def _get_sovereign_excluded_folders():
 
 
 def _get_uwg():
-    """Lazy loader ΓÇö avoids circular import at module level."""
+    """Lazy loader — avoids circular import at module level."""
     from agentic_core.interfaces.write_gateway import get_write_gateway
 
     return get_write_gateway()
@@ -480,7 +480,7 @@ def _get_location_healer_agent():
 def _fire_meta_learning_intake(state_mgr: "RuntimeStateManager", now_utc: int) -> None:
     """Wire HealingOutcomeIntakeAdapter and MetaLearningPipeline after each run.
 
-    Both imports are guarded ΓÇö if archived modules are not yet restored (pre-Wave 0B)
+    Both imports are guarded — if archived modules are not yet restored (pre-Wave 0B)
     this is a safe no-op. After Wave 0B restoration the full pipeline activates.
     """
     adapter = None
@@ -825,7 +825,7 @@ def _fire_meta_learning_intake(state_mgr: "RuntimeStateManager", now_utc: int) -
 # =============================================================================
 # SYSTEM LEARNING LAZY IMPORTS - Phase 3 Implementation
 # =============================================================================
-# All system_learning imports are lazy (inside functions) to avoid L0ΓåÆL_SL
+# All system_learning imports are lazy (inside functions) to avoid L0→L_SL
 # layer gravity violation. See _fire_meta_learning_intake() and
 # _fire_meta_learning_intake_required() for usage.
 # =============================================================================    # guardian: File operations should check existence before access    # guardian: File operations should check existence before access    # guardian: File operations should check existence before access    # guardian: File operations should check existence before access    # guardian: File operations should check existence before access    # guardian: File operations should check existence before access    # guardian: File operations should check existence before access    # guardian: File operations should check existence before access    # guardian: File operations should check existence before access    # guardian: File operations should check existence before access    # guardian: File operations should check existence before access    # guardian: File operations should check existence before access    # guardian: File operations should check existence before access    # guardian: File operations should check existence before access    # guardian: File operations should check existence before access    # guardian: File operations should check existence before access    # guardian: File operations should check existence before access    # guardian: File operations should check existence before access    # guardian: File operations should check existence before access    # guardian: File operations should check existence before access    # guardian: File operations should check existence before access    # guardian: File operations should check existence before access    # guardian: File operations should check existence before access    # guardian: File operations should check existence before access    # guardian: File operations should check existence before access    # guardian: File operations should check existence before access    # guardian: File operations should check existence before access    # guardian: File operations should check existence before access    # guardian: File operations should check existence before access    # guardian: File operations should check existence before access    # guardian: File operations should check existence before access    # guardian: File operations should check existence before access    # guardian: File operations should check existence before access    # guardian: File operations should check existence before access    # guardian: File operations should check existence before access    # guardian: File operations should check existence before access    # guardian: File operations should check existence before access    # guardian: File operations should check existence before access    # guardian: File operations should check existence before access    # guardian: File operations should check existence before access    # guardian: File operations should check existence before access    # guardian: File operations should check existence before access    # guardian: File operations should check existence before access    # guardian: File operations should check existence before access    # guardian: File operations should check existence before access
@@ -1186,7 +1186,7 @@ def _preflight_import_check() -> None:
 
     This function checks that the execute_ssot_entrypoint can be imported
     and that _legacy_main symbol exists without invoking any runtime behavior.
-    Also validates BGE embedding availability ΓÇö BGE is a mandatory dependency.
+    Also validates BGE embedding availability — BGE is a mandatory dependency.
     Raises RuntimeError with detailed message if any check fails.
 
     NOTE: Called at startup in _legacy_main to fail-fast on missing symbols.
@@ -1446,7 +1446,7 @@ def _maybe_force_utf8_logging_handlers() -> None:
 
 
 def _v15_build_ssot_manifest():
-    """┬º8.1e ΓÇö Construct SurgicalManifest for SSOT bootstrap entry.
+    """§8.1e — Construct SurgicalManifest for SSOT bootstrap entry.
 
     Returns None when V15 enforcement is off (zero overhead).
     Bootstrap-safe: lazy imports with fail-closed semantics.
@@ -1483,7 +1483,7 @@ def _v15_build_ssot_manifest():
 
 
 def _v15_ssot_gateway_audit(manifest, trace_id: str) -> None:
-    """┬º8.1e ΓÇö Invoke gateway.execute in LOG_ONLY mode for SSOT audit trail."""
+    """§8.1e — Invoke gateway.execute in LOG_ONLY mode for SSOT audit trail."""
     if manifest is None:
         return
     try:
@@ -1736,7 +1736,7 @@ class RoutingDecision:
 
 
 def compute_routing_decision(inputs: RoutingInputs) -> RoutingDecision:
-    """Pure SSOT routing function ΓÇö strict gate order, no side effects.
+    """Pure SSOT routing function — strict gate order, no side effects.
 
     ADG behavioral score integration:
       adg_behavioral_score < 0.4 (script-like) overrides deterministic_coverage=True
@@ -1976,7 +1976,7 @@ def _normalize_finding_id(finding: dict, validator: str, index: int) -> str:
     """Generate normalized finding ID: {validator}:{path}:{rule}:{index}.
 
     Per hostile audit Section B3: Finding IDs must be normalized and deterministic.
-    Per .windsurfrules ┬º1.7: Identical input ΓåÆ identical output.
+    Per .windsurfrules §1.7: Identical input → identical output.
     """
     path = finding.get("file", finding.get("path", "UNKNOWN"))
     rule = finding.get("type", finding.get("rule", "UNKNOWN"))
@@ -1991,7 +1991,7 @@ def _write_pre_validation_json(
 
     Per hostile audit Section C2: Pre-heal state must be captured in structured artifact.
     Per hostile audit Section B3: Findings must have normalized IDs and validator provenance.
-    Per .windsurfrules ┬º2.2: Evidence must be deterministic, ASCII-only.
+    Per .windsurfrules §2.2: Evidence must be deterministic, ASCII-only.
     """
     from datetime import datetime, timezone
 
@@ -2207,12 +2207,12 @@ class HealContext:
 
     @property
     def enable_llm(self) -> bool:
-        """LLM arbitration is always active when healing ΓÇö not a separate flag."""
+        """LLM arbitration is always active when healing — not a separate flag."""
         return self.heal
 
     @property
     def dry_run(self) -> bool:
-        """Convenience alias ΓÇö inverted heal for legacy call sites."""
+        """Convenience alias — inverted heal for legacy call sites."""
         return not self.heal
 
     @classmethod
@@ -2523,7 +2523,7 @@ class SovereignDecisionEngine:
                         )
                 if _advisory:
                     logger.debug(
-                        "[B3-Advisory] top=%d sim=%.4f (advisory_only=%s) ΓÇö routing unchanged",
+                        "[B3-Advisory] top=%d sim=%.4f (advisory_only=%s) — routing unchanged",
                         len(_advisory),
                         _advisory[0].similarity,
                         _advisory[0].advisory_only,
@@ -2592,7 +2592,7 @@ class SovereignDecisionEngine:
             return (False, f"Healing depth limit exceeded for {agent_name}")
         if self._healing_count >= self._max_healing_operations:
             logger.warning(
-                "[BUDGET] Healing budget exhausted (%d/%d) ΓÇö %s blocked",
+                "[BUDGET] Healing budget exhausted (%d/%d) — %s blocked",
                 self._healing_count,
                 self._max_healing_operations,
                 agent_name,
@@ -2615,7 +2615,7 @@ class SovereignDecisionEngine:
         Uses GPU-accelerated BAAI/bge-m3 cosine similarity for pattern matching
         when agent_name is in BMG_EMBEDDING_AGENT_KEYS.
 
-        adg_behavioral_score [0.0ΓÇô1.0] from ADGBehavioralIndex:
+        adg_behavioral_score [0.0–1.0] from ADGBehavioralIndex:
           <0.4  script-like: +0.05 confidence boost (deterministic agents are easier to heal)
           >0.7  agent-like:  -0.05 confidence penalty (adaptive agents require more caution)
           0.5   unknown:     no adjustment
@@ -2789,7 +2789,7 @@ class SovereignDecisionEngine:
                 self.decisions_made.append(decision_data)
                 return (True, final_reason)
             else:
-                logger.info("[ROUTING] Qwen declined %s (S=%d) ΓÇö denying", agent_name, routing.score)
+                logger.info("[ROUTING] Qwen declined %s (S=%d) — denying", agent_name, routing.score)
                 final_reason = f"LLM Override: QWEN14B-DECLINED ({confidence.value:.2f}, S={routing.score}): agent logic governs"
                 decision_data["decision"] = False
                 decision_data["reason"] = final_reason
@@ -2803,7 +2803,7 @@ class SovereignDecisionEngine:
             return (False, reason)
         target_model = decision_data.get("model", routing.model_id)
         logger.info(
-            "[GEMINI] Invoking %s for %s (S=%d gate=%s) ΓÇö high-complexity arbitration",
+            "[GEMINI] Invoking %s for %s (S=%d gate=%s) — high-complexity arbitration",
             target_model,
             agent_name,
             routing.score,
@@ -2851,7 +2851,7 @@ class SovereignDecisionEngine:
             return (True, f"HITL-AUTO-APPROVED: --heal active ({confidence.value:.2f})")
         if not sys.stdin.isatty():
             reason = f"HITL-DEFER (non-interactive, {confidence.value:.2f})"
-            print(f"  Non-interactive environment ΓÇö auto-DEFER: {agent_name}")
+            print(f"  Non-interactive environment — auto-DEFER: {agent_name}")
             # guardian: allow-silent-swallow - acceptable exception handling
             print(border + "\n")    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging
             return (False, reason)
@@ -3132,7 +3132,7 @@ def execute_phase2_reconciliation(
             agent_cls = agents.get(agent_key)
             if agent_cls is None:
                 logging.warning(
-                    f"Phase 2: agent key '{agent_key}' not in registry ΓÇö skipping {len(agent_violations)} violations"
+                    f"Phase 2: agent key '{agent_key}' not in registry — skipping {len(agent_violations)} violations"
                 )
                 failed_fixes.extend(
                     {"violation": v, "reason": f"Agent '{agent_key}' not registered", "status": "blocked"}
@@ -3176,7 +3176,7 @@ def execute_phase2_reconciliation(
                     agent_key, f"[{reason.split('(')[0].strip()}] Healing {len(agent_violations)} violations"    # guardian: FuturesTimeoutError should be handled with specific context    # guardian: FuturesTimeoutError should be handled with specific context    # guardian: FuturesTimeoutError should be handled with specific context    # guardian: FuturesTimeoutError should be handled with specific context    # guardian: FuturesTimeoutError should be handled with specific context    # guardian: FuturesTimeoutError should be handled with specific context    # guardian: FuturesTimeoutError should be handled with specific context    # guardian: FuturesTimeoutError should be handled with specific context    # guardian: FuturesTimeoutError should be handled with specific context    # guardian: FuturesTimeoutError should be handled with specific context    # guardian: FuturesTimeoutError should be handled with specific context    # guardian: FuturesTimeoutError should be handled with specific context    # guardian: FuturesTimeoutError should be handled with specific context    # guardian: FuturesTimeoutError should be handled with specific context    # guardian: FuturesTimeoutError should be handled with specific context    # guardian: FuturesTimeoutError should be handled with specific context    # guardian: FuturesTimeoutError should be handled with specific context    # guardian: FuturesTimeoutError should be handled with specific context    # guardian: FuturesTimeoutError should be handled with specific context    # guardian: FuturesTimeoutError should be handled with specific context    # guardian: FuturesTimeoutError should be handled with specific context    # guardian: FuturesTimeoutError should be handled with specific context    # guardian: FuturesTimeoutError should be handled with specific context    # guardian: FuturesTimeoutError should be handled with specific context    # guardian: FuturesTimeoutError should be handled with specific context    # guardian: FuturesTimeoutError should be handled with specific context    # guardian: FuturesTimeoutError should be handled with specific context    # guardian: FuturesTimeoutError should be handled with specific context    # guardian: FuturesTimeoutError should be handled with specific context    # guardian: FuturesTimeoutError should be handled with specific context    # guardian: FuturesTimeoutError should be handled with specific context    # guardian: FuturesTimeoutError should be handled with specific context    # guardian: FuturesTimeoutError should be handled with specific context    # guardian: FuturesTimeoutError should be handled with specific context    # guardian: FuturesTimeoutError should be handled with specific context    # guardian: FuturesTimeoutError should be handled with specific context    # guardian: FuturesTimeoutError should be handled with specific context    # guardian: FuturesTimeoutError should be handled with specific context    # guardian: FuturesTimeoutError should be handled with specific context    # guardian: FuturesTimeoutError should be handled with specific context    # guardian: FuturesTimeoutError should be handled with specific context    # guardian: FuturesTimeoutError should be handled with specific context    # guardian: FuturesTimeoutError should be handled with specific context    # guardian: FuturesTimeoutError should be handled with specific context    # guardian: FuturesTimeoutError should be handled with specific context    # guardian: FuturesTimeoutError should be handled with specific context    # guardian: FuturesTimeoutError should be handled with specific context    # guardian: FuturesTimeoutError should be handled with specific context    # guardian: FuturesTimeoutError should be handled with specific context    # guardian: FuturesTimeoutError should be handled with specific context    # guardian: FuturesTimeoutError should be handled with specific context    # guardian: FuturesTimeoutError should be handled with specific context    # guardian: FuturesTimeoutError should be handled with specific context    # guardian: FuturesTimeoutError should be handled with specific context    # guardian: FuturesTimeoutError should be handled with specific context    # guardian: FuturesTimeoutError should be handled with specific context    # guardian: FuturesTimeoutError should be handled with specific context    # guardian: FuturesTimeoutError should be handled with specific context    # guardian: FuturesTimeoutError should be handled with specific context
                 )
                 logging.warning(
-                    "Phase 2: [%s] ΓåÆ calling heal_repository(dry_run=False, execute=True) for %d violations [routing: %s]",
+                    "Phase 2: [%s] → calling heal_repository(dry_run=False, execute=True) for %d violations [routing: %s]",
                     agent_key,
                     len(agent_violations),
                     reason.split("(")[0].strip(),
@@ -3198,7 +3198,7 @@ def execute_phase2_reconciliation(
                         fix_result = _future.result(timeout=_HEAL_TIMEOUT_S)
                     except FuturesTimeoutError:
                         logging.error(
-                            "Phase 2: [%s] TIMEOUT after %ds ΓÇö heal_repository hung. Skipping.",
+                            "Phase 2: [%s] TIMEOUT after %ds — heal_repository hung. Skipping.",
                             agent_key,
                             _HEAL_TIMEOUT_S,
                         )
@@ -3249,7 +3249,7 @@ def execute_phase2_reconciliation(
                         outcome="SUCCESS",
                     )
                 logging.warning(
-                    "Phase 2: [%s] Γ£ô heal_repository() complete ΓÇö result keys: %s",
+                    "Phase 2: [%s] ✓ heal_repository() complete — result keys: %s",
                     agent_key,
                     list(fix_result.keys()),
                 )
@@ -3392,10 +3392,10 @@ class RuntimeStateManager:
     def update_agent(self, agent_name: str, layer: str):
         self.state["current_agent"] = agent_name
         self.state["current_layer"] = layer
-        self.add_event("agent_start", f"ΓåÆ Executing {agent_name} ({layer})")
+        self.add_event("agent_start", f"→ Executing {agent_name} ({layer})")
 
     def skip_agent(self, agent_name: str, reason: str):
-        """Records agent as skipped ΓÇö confidence gate or HITL rejected execution."""
+        """Records agent as skipped — confidence gate or HITL rejected execution."""
         self.state["skipped_agents"].append(
             {"agent": agent_name, "time": datetime.now().isoformat(), "reason": reason}
         )
@@ -3409,7 +3409,7 @@ class RuntimeStateManager:
         self.state["completed_agents"].append(
             {"agent": agent_name, "time": datetime.now().isoformat(), "success": success, "details": details}
         )
-        self.add_event("agent_end", f"{('Γ£ô' if success else 'Γ¥î')} Completed {agent_name}")
+        self.add_event("agent_end", f"{('✓' if success else '❌')} Completed {agent_name}")
 
     def add_event(self, event_type: str, message: str):
         self.state["events"].append(
@@ -3466,7 +3466,7 @@ class RuntimeStateManager:
                 # guardian: allow-silent-swallow - acceptable exception handling
                 self._persistence_disabled = True
                 logger.critical(
-                    f"[RuntimeStateManager] L0 mutation prohibition active ΓÇö runtime state persistence DISABLED for this run (fail-closed). Reason: {err_str}"
+                    f"[RuntimeStateManager] L0 mutation prohibition active — runtime state persistence DISABLED for this run (fail-closed). Reason: {err_str}"
                 )
                 try:
                     # guardian: allow-path-string
@@ -3693,7 +3693,7 @@ def execute_phase1_discovery_impl(agents, territory, decision_engine, state_mgr,
     location_validator = _get_location_validator_agent()(project_root=REPO_ROOT)
     repo_root_resolved = REPO_ROOT.resolve()
     territory_path = (repo_root_resolved / territory).resolve()
-    # Canonicalize L-layer territories: L0_routing ΓåÆ agentic_core/L0_routing
+    # Canonicalize L-layer territories: L0_routing → agentic_core/L0_routing
     if not territory_path.exists() and territory.startswith(
         ("L0_", "L1_", "L2_", "L3_", "L4_", "L5_", "L6_")
     ):
@@ -3755,7 +3755,7 @@ def execute_phase1_discovery_impl(agents, territory, decision_engine, state_mgr,
     state_mgr.state["adg_territory_score"] = _adg_territory_score
     # --- end ADG enrichment ---
     if violations:
-        logger.info("≡ƒºá Using CognitiveDispositionAgent for enhanced violation analysis...")
+        logger.info("🧠 Using CognitiveDispositionAgent for enhanced violation analysis...")
         import asyncio
 
         loop = asyncio.new_event_loop()
@@ -3765,7 +3765,7 @@ def execute_phase1_discovery_impl(agents, territory, decision_engine, state_mgr,
         )
         state_mgr.state["cognitive_dispositions"] = [d.__dict__ for d in cognitive_dispositions]
         confidence = enhanced_confidence
-        logger.info(f"≡ƒºá Enhanced confidence with cognitive analysis: {confidence.value:.2f}")
+        logger.info(f"🧠 Enhanced confidence with cognitive analysis: {confidence.value:.2f}")
     else:
         confidence = decision_engine.calculate_healing_confidence(
             len(violations),
@@ -4026,7 +4026,7 @@ def execute_phase3_alignment_impl(agents, territory, decision_engine, state_mgr,
                     )
                     return {"total_healed": 0, "status": "HITL_ABORTED"}
                 else:
-                    logger.info("[HITL] %s ΓÇö HierarchyHealerAgent skipped", _hitl.reason)
+                    logger.info("[HITL] %s — HierarchyHealerAgent skipped", _hitl.reason)
                     state_mgr.add_event("hitl", f"HierarchyHealerAgent: {_hitl.reason}")
                     state_mgr.complete_agent("HierarchyHealerAgent", False, f"HITL: {_hitl.reason}")
                     _record_healing_action(
@@ -4099,7 +4099,7 @@ def execute_phase3_alignment_impl(agents, territory, decision_engine, state_mgr,
 
 
 def _run_gravity_repair_global(agents, state_mgr, ctx: "HealContext" = None):
-    """Run GravityLeakRepairAgent once globally ΓÇö gravity (layer inversions) is repo-wide."""
+    """Run GravityLeakRepairAgent once globally — gravity (layer inversions) is repo-wide."""
     state_mgr.update_agent("GravityLeakHealerAgent", "L5 - Safety")
     from agentic_core.L5_safety.reasoning.gravity_validator import (
         GravityValidatorAgent as _GravityValidatorAgent,
@@ -4537,17 +4537,17 @@ def execute_phase7_final_impl(agents, territory, state_mgr, decision_engine=None
     compliance_rate = file_stats.get("compliance_rate", 0)
     file_types = file_stats.get("file_types", {})
     markdown_summary = [
-        f"# ≡ƒ¢í∩╕Å Sovereign Compliance Report: {territory}",
+        f"# 🛡️ Sovereign Compliance Report: {territory}",
         f"**Date:** {datetime.now().strftime('%Y-%m-%d %H:%M:%S')} | **Status:** {status}",
         "",
-        "## ≡ƒôè Executive Summary",
+        "## 📊 Executive Summary",
         "",
         f"* **Confidence Score:** {confidence_avg:.1%}",
         f"* **Violations Detected:** {violation_count}",
         f"* **Integrity Drift:** {drift_count}",
         f"* **Violations Fixed:** {detailed_cert['metrics']['violations_fixed']}",
         "",
-        "## ≡ƒôü Scan Scope",
+        "## 📁 Scan Scope",
         "",
         f"* **Total Files Scanned:** {total_files}",
         f"* **Files Compliant:** {file_stats.get('valid_files', 0)}",
@@ -4561,7 +4561,7 @@ def execute_phase7_final_impl(agents, territory, state_mgr, decision_engine=None
         for ext, count in sorted(file_types.items()):
             ext_display = ext if ext else "(no extension)"
             markdown_summary.append(f"* **{ext_display}:** {count} files")
-    markdown_summary.extend(["", "## ≡ƒÜ¿ Violations Detected", ""])
+    markdown_summary.extend(["", "## 🚨 Violations Detected", ""])
     if violation_count > 0:
         markdown_summary.extend(
             [
@@ -4597,7 +4597,7 @@ def execute_phase7_final_impl(agents, territory, state_mgr, decision_engine=None
     markdown_summary.extend(
         [
             "",
-            "## ≡ƒºá AI Governance Log",
+            "## 🧠 AI Governance Log",
             "",
             "| Agent | Score | Tier | Model | Gate | Confidence | Outcome | Fix Applied |",
             "| :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |",
@@ -4632,7 +4632,7 @@ def execute_phase7_final_impl(agents, territory, state_mgr, decision_engine=None
     save_comprehensive_reports(
         territory, detailed_cert, markdown_summary, files_affected, state_mgr.project_root
     )
-    logger.info(f"≡ƒô£ CERTIFICATE ISSUED: {territory}")
+    logger.info(f"📜 CERTIFICATE ISSUED: {territory}")
     state_mgr.complete_agent("ArchitectureGovernorAgent", True, "Certificate Issued")
     total_v = len(detailed_cert.get("violations", []))
     return detailed_cert
@@ -4673,12 +4673,12 @@ def save_comprehensive_reports(
         with open(md_path, "w", encoding="utf-8") as f:
             f.write("\n".join(markdown_summary))
             if files_affected:
-                f.write("\n\n### ≡ƒôé Affected Files\n\n")
+                f.write("\n\n### 📂 Affected Files\n\n")
                 for f_sorted in sorted(files_affected):
                     f.write(f"* `{f_sorted}`\n")
             else:
                 f.write("\n\n*No files required remediation.*\n")
-        logger.info("≡ƒôü Final compliance reports saved:")
+        logger.info("📁 Final compliance reports saved:")
         logger.info(f"   JSON: {json_path.relative_to(project_root)}")
         logger.info(f"   Markdown: {md_path.relative_to(project_root)}")
     except (OSError, TypeError, ValueError) as e:
@@ -4806,7 +4806,7 @@ def save_aggregate_report(targets: list[str], project_root: Path) -> Path | None
         with open(agg_path, "w", encoding="utf-8") as f:
             assert_no_persistent_write("L0", "json.dump")
             json.dump(aggregate, f, indent=2, default=_agg_json_serialise, ensure_ascii=False)
-        logger.info(f"≡ƒôè Aggregate compliance report saved: {agg_path.relative_to(project_root)}")
+        logger.info(f"📊 Aggregate compliance report saved: {agg_path.relative_to(project_root)}")
         logger.info(
             f"   Territories: {len(territory_summaries)} | Unique violations: {len(deduplicated_violations)} | Fixed: {total_violations_fixed} | Status: {overall_status}"
         )
@@ -4952,7 +4952,7 @@ CANONICAL_ROSTER_KEYS = frozenset(
 def get_execution_plan() -> list[dict]:
     """Return the deterministic, ordered execution plan.
 
-    Pure introspection ΓÇö no side effects, no file mutations.
+    Pure introspection — no side effects, no file mutations.
     """
     return EXECUTION_PLAN
 
@@ -4976,7 +4976,7 @@ def _emit_pipeline_digest(adapters: "dict[str, object]", territory: str, ctx: "H
 
     Returns the 64-char hex digest string.
     When SSOT_ORCH_NEGCTRL_TAMPER=1 the digest payload is perturbed so the
-    output differs from a clean run ΓÇö used by the negative-control test.
+    output differs from a clean run — used by the negative-control test.
     """
     from agentic_core.L2_execution.protocol import emit_pipeline_digest as _emit
 
@@ -5064,7 +5064,7 @@ def _print_healing_heatmap(
 def _print_meta_learning_summary(
     state_mgr: "SovereignStateMgr", decision_engine: "SovereignDecisionEngine"
 ) -> None:
-    """Print meta-learning bus additions summary ΓÇö what this run teaches the next run."""
+    """Print meta-learning bus additions summary — what this run teaches the next run."""
     from collections import Counter
 
     _W = 78
@@ -5153,7 +5153,7 @@ def _print_meta_learning_summary(
         _row("Medium (0.40-0.74) :", f"{n_qwen:>3} patterns  -> reinforce QWEN preference")
         _row("Low   (<0.40) :", f"{n_gemini:>3} patterns  -> raise GEMINI prior for similar failures")
     else:
-        _row("Confidence data :", "(unavailable ΓÇö no decision records)")
+        _row("Confidence data :", "(unavailable — no decision records)")
     _sec("TIER ROUTING THIS RUN")
     if tier_counts:
         _row("Routing breakdown :", "  ".join((f"{t}={c}" for t, c in tier_counts.most_common())))
@@ -5165,7 +5165,7 @@ def _print_meta_learning_summary(
         for ag, ct in failure_agents.most_common(5):
             _row(f"  {ag} :", f"{ct} failure(s)  -> next run will avoid this agent for similar inputs")
     else:
-        _row("failure_prior++ :", "(none ΓÇö no failures recorded this run)")
+        _row("failure_prior++ :", "(none — no failures recorded this run)")
     _sec("STRATEGY WEIGHTS (carried to next run)")
     if weights:
         for k, v in sorted(weights.items()):
@@ -5279,7 +5279,7 @@ def _print_run_manifest(state_mgr: "RuntimeStateManager", targets: list[str]) ->
     gaps = 0
     print("")
     print("=" * _W)
-    print("  RUN MANIFEST ΓÇö AGENT & PHASE COVERAGE")
+    print("  RUN MANIFEST — AGENT & PHASE COVERAGE")
     print("  Zero-tolerance: every expected agent/phase must appear below as RAN")
     print("=" * _W)
     print("")
@@ -5289,18 +5289,18 @@ def _print_run_manifest(state_mgr: "RuntimeStateManager", targets: list[str]) ->
         errs = error_msgs.get("__global__", [])
         agent_errs = [e for e in errs if agent in e]
         if agent in completed and agent not in failed_agents:
-            print(f"  Γ£ô  {agent}")
+            print(f"  ✓  {agent}")
         elif agent in failed_agents:
-            print(f"  Γ£ù  {agent}  [FAILED: {failed_agents[agent]}]")    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging
+            print(f"  ✗  {agent}  [FAILED: {failed_agents[agent]}]")    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging
             gaps += 1
         elif agent in skipped_agents:
-            print(f"  ΓÜá  {agent}  [SKIPPED: {skipped_agents[agent]}]")
+            print(f"  ⚠  {agent}  [SKIPPED: {skipped_agents[agent]}]")
             gaps += 1
         elif agent_errs:
-            print(f"  Γ£ù  {agent}  [ERROR: {agent_errs[0][:120]}]")
+            print(f"  ✗  {agent}  [ERROR: {agent_errs[0][:120]}]")
             gaps += 1
         else:
-            print(f"  Γ£ù  {agent}  [DID NOT RUN ΓÇö no record in completed_agents]")
+            print(f"  ✗  {agent}  [DID NOT RUN — no record in completed_agents]")
             gaps += 1
     print("")
     print("  PER-TERRITORY AGENTS")
@@ -5312,37 +5312,37 @@ def _print_run_manifest(state_mgr: "RuntimeStateManager", targets: list[str]) ->
         print(f"  Territory: {territory}")
         if crashed:
             crash_msg = next((e for e in t_errs if "Crash in" in e), "unknown crash")
-            print(f"    Γ£ù  [TERRITORY CRASHED: {crash_msg[:160]}]")
+            print(f"    ✗  [TERRITORY CRASHED: {crash_msg[:160]}]")
             gaps += len(PER_TERRITORY_AGENTS) + len(PER_TERRITORY_PHASES)
             continue
         if p1_fail:
             p1_msg = next((e for e in t_errs if "Phase 1" in e), "Phase 1 failed")
-            print(f"    Γ£ù  Phase1:Discovery  [FAILED: {p1_msg[:160]}]")
-            print("    Γ£ù  [ALL DOWNSTREAM PHASES SKIPPED ΓÇö Phase 1 did not produce drift report]")
+            print(f"    ✗  Phase1:Discovery  [FAILED: {p1_msg[:160]}]")
+            print("    ✗  [ALL DOWNSTREAM PHASES SKIPPED — Phase 1 did not produce drift report]")
             gaps += len(PER_TERRITORY_AGENTS) + len(PER_TERRITORY_PHASES)    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging
             continue
         for agent in PER_TERRITORY_AGENTS:
             a_errs = [e for e in t_errs if agent in e]
             if agent in completed and agent not in failed_agents:
-                print(f"    Γ£ô  {agent}")
+                print(f"    ✓  {agent}")
             elif agent in failed_agents:
-                print(f"    Γ£ù  {agent}  [FAILED: {str(failed_agents[agent])[:120]}]")
+                print(f"    ✗  {agent}  [FAILED: {str(failed_agents[agent])[:120]}]")
                 gaps += 1
             elif agent in skipped_agents:
-                print(f"    ΓÜá  {agent}  [SKIPPED: {str(skipped_agents[agent])[:120]}]")
+                print(f"    ⚠  {agent}  [SKIPPED: {str(skipped_agents[agent])[:120]}]")
                 gaps += 1
             elif a_errs:
-                print(f"    Γ£ù  {agent}  [ERROR: {a_errs[0][:120]}]")
+                print(f"    ✗  {agent}  [ERROR: {a_errs[0][:120]}]")
                 gaps += 1
             else:
-                print(f"    Γ£ù  {agent}  [DID NOT RUN]")
+                print(f"    ✗  {agent}  [DID NOT RUN]")
                 gaps += 1
     print("")
     print("  " + "-" * 40)
     if gaps == 0:
-        print("  Γ£ô  ALL EXPECTED AGENTS AND PHASES RAN SUCCESSFULLY")
+        print("  ✓  ALL EXPECTED AGENTS AND PHASES RAN SUCCESSFULLY")
     else:
-        print(f"  Γ£ù  {gaps} AGENT/PHASE EXECUTION GAP(S) DETECTED ΓÇö SEE ABOVE")
+        print(f"  ✗  {gaps} AGENT/PHASE EXECUTION GAP(S) DETECTED — SEE ABOVE")
         print("     Re-run with the same flags; gaps indicate errors that must be resolved.")
     print("=" * _W)
     print("")
@@ -5429,7 +5429,7 @@ def _collect_llm_call_trace(
         if agent not in seen_agents:
             _blocker_type = "feature_flag" if llm_disabled else "not_executed"
             _blocker_msg = (
-                "LLM disabled (enable_llm=False) ΓÇö routing decision overridden to DETERMINISTIC"
+                "LLM disabled (enable_llm=False) — routing decision overridden to DETERMINISTIC"
                 if llm_disabled
                 else "LLM call expected by routing decision but not recorded in healing_actions"
             )
@@ -5587,7 +5587,7 @@ def _build_calibration_proof(
           2. Case-insensitive exact match
           3. Any healing-action agent whose lower-case name starts with the key
           4. Any healing-action agent whose lower-case name contains the key
-          5. Default ΓåÆ empty string (no outcome recorded ΓåÆ not SUCCESS)
+          5. Default → empty string (no outcome recorded → not SUCCESS)
         """
         if agent_key in outcome_map:
             return outcome_map[agent_key]
@@ -5805,7 +5805,7 @@ def _write_mandatory_json_output(
             _ag_partials = sum(
                 1 for _a in healing_actions if _a.get("agent") == _ag and _a.get("outcome") == "PARTIAL"
             )
-            _partial_note = f" *(PARTIAL├ù{_ag_partials})*" if _ag_partials else ""
+            _partial_note = f" *(PARTIAL×{_ag_partials})*" if _ag_partials else ""
             print(f"| {_ag}{_partial_note} | {_d} | {_q} | {_g} | {_t} | {_bge_ag} |")
             if _ag_partials:
                 _partial_agents.append(_ag)
@@ -5827,8 +5827,8 @@ def _write_mandatory_json_output(
         _bge_rn = _bge_arch_counts.get("routing_novelty", 0)
         _bge_sc = _bge_arch_counts.get("semantic_cache", 0)
         _bge_status = "ACTIVE" if _bge_model != "hash-fallback-v1" else "DISABLED (hash-fallback)"
-        print(f"| meta_learning/embed (2├ù/action) | {_bge_me} | {_bge_status} |")
-        print(f"| routing/novelty_score (1├ù/decision) | {_bge_rn} | {_bge_status} |")
+        print(f"| meta_learning/embed (2×/action) | {_bge_me} | {_bge_status} |")
+        print(f"| routing/novelty_score (1×/decision) | {_bge_rn} | {_bge_status} |")
         print(f"| semantic_cache/lookup | {_bge_sc} | {_bge_status} |")
         print(f"| **TOTAL** | **{sum(_bge_arch_counts.values())}** | **{_bge_status}** |")
         print("")
@@ -5942,7 +5942,7 @@ def _write_heal_run_complete(
             _found = int(_m.group(2))
             if _fixed > _found:
                 _parse_errors.append(
-                    f"{_a.get('agent', '?')}: fix_summary='{_summary}' ΓÇö fixed({_fixed}) > found({_found}) is impossible; likely reversed number format. SKIPPED."
+                    f"{_a.get('agent', '?')}: fix_summary='{_summary}' — fixed({_fixed}) > found({_found}) is impossible; likely reversed number format. SKIPPED."
                 )
                 continue
             _summaries_parsed += 1
@@ -6056,15 +6056,15 @@ def _write_heal_run_complete(
             else "PASS"
             if llm_rate >= 0.8
             else "FAIL",
-            "blocker": "AUDIT: expected_calls=0 ΓÇö LLM routing untested this run. All violations resolved DETERMINISTICALLY. Gate passes vacuously (0/0=1.0). Trigger LLM workload to validate path."
+            "blocker": "AUDIT: expected_calls=0 — LLM routing untested this run. All violations resolved DETERMINISTICALLY. Gate passes vacuously (0/0=1.0). Trigger LLM workload to validate path."
             if llm_trace["stats"]["expected_calls"] == 0
             else (
                 lambda _stats=llm_trace["stats"], _llm_on=getattr(decision_engine, "enable_llm", True): (
                     f"{_stats['expected_calls']} call(s) routed to LLM, {_stats['actual_calls']} executed"
                     + (
-                        " ΓÇö LLM disabled (enable_llm=False)"
+                        " — LLM disabled (enable_llm=False)"
                         if not _llm_on
-                        else " ΓÇö not_executed (routing decided LLM but no llm_call_evidence written)"
+                        else " — not_executed (routing decided LLM but no llm_call_evidence written)"
                     )
                 )
             )()
@@ -6082,7 +6082,7 @@ def _write_heal_run_complete(
             else "PASS"
             if calib_max_err <= 0.15
             else "FAIL",
-            "blocker": "AUDIT: No LLM tiers in calibration data. DETERMINISTIC routing has no confidence variance ΓÇö err=0.0 is a tautology not a calibration result. Requires LLM invocations."
+            "blocker": "AUDIT: No LLM tiers in calibration data. DETERMINISTIC routing has no confidence variance — err=0.0 is a tautology not a calibration result. Requires LLM invocations."
             if calib_max_err is None
             else None
             if calib_max_err <= 0.15
@@ -6099,7 +6099,7 @@ def _write_heal_run_complete(
             else "PASS"
             if success_delta >= 0.0
             else "FAIL",
-            "blocker": "AUDIT: No prior run stored in state ΓÇö delta cannot be computed. This gate requires 2+ runs to produce real signal."
+            "blocker": "AUDIT: No prior run stored in state — delta cannot be computed. This gate requires 2+ runs to produce real signal."
             if success_delta is None
             else None
             if success_delta >= 0.0
@@ -6116,7 +6116,7 @@ def _write_heal_run_complete(
             else "PASS"
             if (reuse_success_rate or 0.0) >= 0.75
             else "FAIL",
-            "blocker": "AUDIT: FAISS index not populated ΓÇö pattern matching unavailable."
+            "blocker": "AUDIT: FAISS index not populated — pattern matching unavailable."
             if reuse_success_rate is None
             else None
             if reuse_success_rate >= 0.75
@@ -6150,7 +6150,7 @@ def _write_heal_run_complete(
             else "PASS"
             if file_mod_proven
             else "FAIL",
-            "blocker": "AUDIT: No agent uses subphase.heal.proof infrastructure. File modification before/after hashes are NOT being written ΓÇö cannot prove what changed."
+            "blocker": "AUDIT: No agent uses subphase.heal.proof infrastructure. File modification before/after hashes are NOT being written — cannot prove what changed."
             if file_mod_proven is None
             else None
             if file_mod_proven
@@ -6167,7 +6167,7 @@ def _write_heal_run_complete(
             else "PASS"
             if llm_calls_proven
             else "FAIL",
-            "blocker": "AUDIT: No LLM calls made this run ΓÇö cryptographic proof gate has no data to verify."
+            "blocker": "AUDIT: No LLM calls made this run — cryptographic proof gate has no data to verify."
             if llm_calls_proven is None
             else None
             if llm_calls_proven
@@ -6216,7 +6216,7 @@ def _write_heal_run_complete(
             else "FAIL",
             "blocker": f"AUDIT: {_summaries_with_text} fix_summary strings found but NONE matched '(Fixed|Healed|Resolved|Repaired) N of M'. Agents use non-standard format. "
             + (f" Parse errors: {_parse_errors[:2]}" if _parse_errors else "")
-            + " Gate cannot evaluate ΓÇö add standard fix_summary format to all agents."
+            + " Gate cannot evaluate — add standard fix_summary format to all agents."
             if _regex_parse_failure
             else "AUDIT: No fix_summary matched. Either no violations were found this run or all agents lack fix_summary fields entirely."
             if _healing_effectiveness is None
@@ -6235,7 +6235,7 @@ def _write_heal_run_complete(
             else "PASS"
             if not _zero_fix_agents
             else "FAIL",
-            "blocker": f"AUDIT: Cannot evaluate zero-fix penalty ΓÇö no fix_summary strings parsed. {_summaries_with_text} summaries exist but regex matched 0."
+            "blocker": f"AUDIT: Cannot evaluate zero-fix penalty — no fix_summary strings parsed. {_summaries_with_text} summaries exist but regex matched 0."
             if _regex_parse_failure
             else _zero_fix_blocker,
             "severity": "critical",
@@ -6357,13 +6357,13 @@ def _write_heal_run_complete(
             print(
                 f"| {_gi} | {g.get('criterion', '')[:35]} | {g.get('target', '')[:10]} | {_act_str} | {_status} | {_note} |"
             )
-        _t4_sig_note = f"ΓÜá LOW SIGNAL: {n_na} gates N/A" if _low_signal_warning else ""
+        _t4_sig_note = f"⚠ LOW SIGNAL: {n_na} gates N/A" if _low_signal_warning else ""
         _overall_row = f"| | **OVERALL** | **{len(gate_criteria)} gates** | **PASS={n_pass} N/A={n_na} FAIL={n_fail}** | **{overall_status}** | {_t4_sig_note} |"
         print(_overall_row)
         if _low_signal_warning:
             print("")
             print(
-                f"  ΓÜá LOW SIGNAL WARNING: {n_na}/{len(gate_criteria)} gates are N/A. Enable BGE embeddings + trigger LLM workload to get real gate signal."
+                f"  ⚠ LOW SIGNAL WARNING: {n_na}/{len(gate_criteria)} gates are N/A. Enable BGE embeddings + trigger LLM workload to get real gate signal."
             )
         print("")
         print("Table 5: Coverage and Capability Summary")
@@ -6381,11 +6381,11 @@ def _write_heal_run_complete(
             "N/A (VACUOUS 0/0)" if _llm_exp == 0 else f"{llm_trace['stats']['execution_rate']:.4f}"
         )
         print(
-            f"| LLM Execution Rate | {_llm_rate_str} | {('N/A ΓÇö no LLM workload' if _llm_exp == 0 else 'OK')} |"
+            f"| LLM Execution Rate | {_llm_rate_str} | {('N/A — no LLM workload' if _llm_exp == 0 else 'OK')} |"
         )
         _rr_str = f"{reuse_success_rate:.4f}" if reuse_success_rate is not None else "N/A"
         print(
-            f"| Pattern Reuse Rate | {_rr_str} | {('N/A ΓÇö FAISS index empty' if reuse_success_rate is None else 'OK')} |"
+            f"| Pattern Reuse Rate | {_rr_str} | {('N/A — FAISS index empty' if reuse_success_rate is None else 'OK')} |"
         )
         _heff_str = f"{_healing_effectiveness:.4f}" if _healing_effectiveness is not None else "N/A"
         print(
@@ -6398,7 +6398,7 @@ def _write_heal_run_complete(
             f"| Success Rate (raw) | {cur_success_raw} | all {len(healing_actions)} actions incl. PARTIAL/SKIPPED |"
         )
         print(
-            f"| Meta-Learning Records | {_ml_records} | {('PASS' if _ml_pipeline_ran else 'FAIL ΓÇö no records written')} |"
+            f"| Meta-Learning Records | {_ml_records} | {('PASS' if _ml_pipeline_ran else 'FAIL — no records written')} |"
         )
         print(f"| BGE Embeddings | {ml.get('bge_model', 'BAAI/bge-m3-v1')} | ACTIVE |")
         print(
@@ -6413,7 +6413,7 @@ def _write_heal_run_complete(
 def _write_failure_forensics(
     state_mgr: "SovereignStateMgr", decision_engine: "SovereignDecisionEngine"
 ) -> None:
-    """Write failure_forensics.json ΓÇö detailed drill-down for failed/blocked/misrouted agents.
+    """Write failure_forensics.json — detailed drill-down for failed/blocked/misrouted agents.
 
     Only written when there are failures, blockers, or misrouted agents.
     If all agents succeed and nothing is blocked, the file is not written.
@@ -6629,7 +6629,7 @@ def _print_executive_summary(complete_output: dict) -> None:
             lines.append(f"    expected: {exp}  actual: {act}  rate: {rate:.4f}  blocked: {blocked}")
             if exp == 0:
                 lines.append(
-                    "    AUDIT: Gate passes vacuously (0/0=1.0). No LLM workload ΓÇö all violations within DETERMINISTIC threshold. To test LLM path, introduce violations above routing score threshold."
+                    "    AUDIT: Gate passes vacuously (0/0=1.0). No LLM workload — all violations within DETERMINISTIC threshold. To test LLM path, introduce violations above routing score threshold."
                 )
         elif criterion == "Confidence Calibration Error":
             _llm_exp_g3 = llm_stats.get("expected_calls", 0)
@@ -6663,7 +6663,7 @@ def _print_executive_summary(complete_output: dict) -> None:
             lines.append(f"    prev_run  : {prev_id}")
             if prev_sr is None:
                 lines.append(
-                    "    AUDIT: prev_rate=None ΓÇö no baseline. Gate requires 2+ runs for real signal."
+                    "    AUDIT: prev_rate=None — no baseline. Gate requires 2+ runs for real signal."
                 )
         elif criterion == "Pattern Reuse Success Rate":
             avail = pattern_reuse.get("patterns_available", 0)
@@ -6673,7 +6673,7 @@ def _print_executive_summary(complete_output: dict) -> None:
             rate_str = f"{rate:.4f}" if rate is not None else "N/A"
             lines.append(f"    available: {avail}  matched: {matched}  applied: {applied}  rate: {rate_str}")
             if avail == 0:
-                lines.append("    NOTE: FAISS index empty ΓÇö run with --heal to build corpus")
+                lines.append("    NOTE: FAISS index empty — run with --heal to build corpus")
         elif criterion == "Healing Effectiveness Rate":
             if _heal_rows:
                 for _ag, _terr, _fx, _fd, _tag in _heal_rows:
@@ -6767,7 +6767,7 @@ def _print_executive_summary(complete_output: dict) -> None:
     _n_fail_es = es.get("criteria_failed", n_fail)
     _n_na_es = es.get("criteria_na", n_na)
     _low_sig = es.get("low_signal_warning", False)
-    _sig_note = f"ΓÜá LOW SIGNAL: {_n_na_es} gates N/A" if _low_sig else "Signal sufficient"
+    _sig_note = f"⚠ LOW SIGNAL: {_n_na_es} gates N/A" if _low_sig else "Signal sufficient"
     _total_gates = len(gate_criteria)
     print(
         f"| **OVERALL** | **{_total_gates} gates** | **PASS={_n_pass_es} N/A={_n_na_es} FAIL={_n_fail_es}/{_total_gates}** | **{overall}** | {_sig_note} |"
@@ -6781,7 +6781,7 @@ def _print_executive_summary(complete_output: dict) -> None:
             agent = b.get("agent", "?")
             flag = b.get("flag", "") or b.get("blocker_type", "?")
             rem = b.get("remediation", "")
-            print(f"  {i}. [{b.get('blocker_type', '?').upper():<18}] {agent} ΓÇö {flag}")
+            print(f"  {i}. [{b.get('blocker_type', '?').upper():<18}] {agent} — {flag}")
             if rem:
                 print(f"     Remediation: {rem}")
     print("")
@@ -6795,14 +6795,14 @@ def _print_executive_summary(complete_output: dict) -> None:
     )
     print(f"  {'Agent coverage proof':<40} OK ({exec_count}/{exp_count} agents, ratio={cov_ratio:.4f})")
     print("")
-    print("KNOWN CAPABILITY GAPS (auditor-identified ΓÇö require remediation)")
+    print("KNOWN CAPABILITY GAPS (auditor-identified — require remediation)")
     print(sep)
     _known_gaps: list[tuple[str, str, str]] = []
     if llm_stats.get("expected_calls", 0) == 0:
         _known_gaps.append(
             (
                 "LLM Routing Untested",
-                "All routing decisions DETERMINISTIC ΓÇö QWEN/GEMINI paths never invoked in this run.",
+                "All routing decisions DETERMINISTIC — QWEN/GEMINI paths never invoked in this run.",
                 "Introduce violations above routing score threshold to exercise LLM tiers.",
             )
         )
@@ -6899,7 +6899,7 @@ def _print_executive_summary(complete_output: dict) -> None:
     _pr_matched = pattern_reuse.get("patterns_matched", 0)
     _pr_applied = pattern_reuse.get("patterns_applied", 0)
     print("")
-    print("THIS RUN ΓÇö Agent Findings")
+    print("THIS RUN — Agent Findings")
     print(sep)
     _agent_summaries: dict = {}
     for _a in _run_actions:
@@ -6909,7 +6909,7 @@ def _print_executive_summary(complete_output: dict) -> None:
         _agent_summaries.setdefault(_ag, []).append((_fs, _oc, _a.get("territory", "")))
     for _ag, _items in sorted(_agent_summaries.items()):
         for _fs, _oc, _terr in _items:
-            _tag = "Γ£ô" if _oc == "SUCCESS" else "Γ£ù"
+            _tag = "✓" if _oc == "SUCCESS" else "✗"
             _terr_str = f" [{_terr}]" if _terr and _terr != "__global__" else ""
             print(f"  {_tag} {_ag}{_terr_str}: {_fs}")
     print("")
@@ -6917,21 +6917,21 @@ def _print_executive_summary(complete_output: dict) -> None:
     print(sep)
     _weights_initialized = not _prev_weights and bool(_cur_weights)
     if _cur_weights:
-        _status_note = "INITIALIZED (no prior run ΓÇö not a real shift)" if _weights_initialized else "EVOLVED"
+        _status_note = "INITIALIZED (no prior run — not a real shift)" if _weights_initialized else "EVOLVED"
         print(f"  Status: {_status_note}")
         print("  | Strategy | Previous | Current | Shift | Signal |")
         print("  |----------|----------|---------|-------|--------|")
         for _s, _w in sorted(_cur_weights.items()):
             _prev_w = _prev_weights.get(_s, 0.0)
             _shift = _weight_shift.get(_s, 0.0)
-            _arrow = "Γû▓" if _shift > 0 else "Γû╝" if _shift < 0 else "ΓÇö"
+            _arrow = "▲" if _shift > 0 else "▼" if _shift < 0 else "—"
             _sig = (
                 "init" if _weights_initialized else "up" if _shift > 0 else "down" if _shift < 0 else "stable"
             )
             print(f"  | {_s} | {_prev_w:.3f} | {_w:.3f} | {_arrow} {abs(_shift):.3f} | {_sig} |")
         print("  Interpretation: Higher weight = strategy preferred for ambiguous routing decisions.")
         if _weights_initialized:
-            print("  NOTE: Shifts shown are initialization deltas (0.0 ΓåÆ 1.0), not real learning.")
+            print("  NOTE: Shifts shown are initialization deltas (0.0 → 1.0), not real learning.")
             print("  Real weight evolution requires 2+ runs with LLM invocations.")
     else:
         print("  No strategy weights recorded (all decisions DETERMINISTIC this run).")
@@ -6939,16 +6939,16 @@ def _print_executive_summary(complete_output: dict) -> None:
     print("SUCCESS RATE TRAJECTORY")
     print(sep)
     if _prev_sr is not None and _cur_sr is not None:
-        _arrow = "Γû▓" if (_delta or 0) > 0 else "Γû╝" if (_delta or 0) < 0 else "ΓÇö"
+        _arrow = "▲" if (_delta or 0) > 0 else "▼" if (_delta or 0) < 0 else "—"
         print(f"  Previous run : {_prev_sr:.4f}")
         print(f"  This run     : {_cur_sr:.4f}  ({_arrow} {abs(_delta or 0):.4f})")
         print(f"  Trend        : {_trend}")
         if (_delta or 0) < -0.05:
-            print("  ΓÜá Significant regression detected. Review failure forensics.")
+            print("  ⚠ Significant regression detected. Review failure forensics.")
         elif (_delta or 0) > 0.05:
-            print("  Γ£ô Meaningful improvement. Winning strategies will be upweighted.")
+            print("  ✓ Meaningful improvement. Winning strategies will be upweighted.")
     elif _cur_sr is not None:
-        print(f"  This run     : {_cur_sr:.4f}  (no prior baseline ΓÇö first recorded run)")
+        print(f"  This run     : {_cur_sr:.4f}  (no prior baseline — first recorded run)")
         print("  Next run     : this rate becomes the baseline for delta calculation.")
     else:
         print("  No success rate data available this run.")
@@ -6957,7 +6957,7 @@ def _print_executive_summary(complete_output: dict) -> None:
     print(sep)
     if _pr_matched > 0:
         print(
-            f"  {_pr_matched} patterns matched from corpus  ΓåÆ  {_pr_applied} applied  (reuse_rate={pattern_reuse.get('reuse_success_rate') or 'N/A'})"
+            f"  {_pr_matched} patterns matched from corpus  →  {_pr_applied} applied  (reuse_rate={pattern_reuse.get('reuse_success_rate') or 'N/A'})"
         )
         print("  Future runs: matched patterns are preferred before attempting novel fixes.")
     else:
@@ -6977,23 +6977,23 @@ def _print_executive_summary(complete_output: dict) -> None:
     print(sep)
     _changes: list[str] = []
     if _cur_sr is not None:
-        _changes.append(f"ΓÇó Success rate baseline set to {_cur_sr:.4f} ΓÇö delta tracking active.")
+        _changes.append(f"• Success rate baseline set to {_cur_sr:.4f} — delta tracking active.")
     if _pr_applied > 0:
         _changes.append(
-            f"ΓÇó {_pr_applied} applied patterns reinforced in corpus ΓÇö reuse probability increases."
+            f"• {_pr_applied} applied patterns reinforced in corpus — reuse probability increases."
         )
     if _fv_count > 0:
-        _changes.append(f"ΓÇó {_fv_count} failure vectors loaded ΓÇö routing will avoid repeat failure modes.")
+        _changes.append(f"• {_fv_count} failure vectors loaded — routing will avoid repeat failure modes.")
     _zero_fix_agents = [r for r in _heal_rows if r[4] == "ZERO-FIX"]
     if _zero_fix_agents:
         _zf_names = ", ".join(r[0] for r in _zero_fix_agents)
-        _changes.append(f"ΓÇó Zero-fix penalty recorded for: {_zf_names} ΓÇö will be flagged if repeated.")
+        _changes.append(f"• Zero-fix penalty recorded for: {_zf_names} — will be flagged if repeated.")
     skipped_now = coverage.get("skipped_agents", {}).get("agents", [])
     if skipped_now:
-        _changes.append(f"ΓÇó Skipped agents {skipped_now} ΓÇö will retry if block condition resolves.")
+        _changes.append(f"• Skipped agents {skipped_now} — will retry if block condition resolves.")
     if not _changes:
-        _changes.append("ΓÇó All gates PASS and no regressions ΓÇö system state is stable.")
-        _changes.append("ΓÇó Corpus will accumulate this run's patterns for future reuse.")
+        _changes.append("• All gates PASS and no regressions — system state is stable.")
+        _changes.append("• Corpus will accumulate this run's patterns for future reuse.")
     for _c in _changes:
         print(f"  {_c}")
     try:
@@ -7183,7 +7183,7 @@ def _legacy_main(
     validator = PreFlightValidator(project_root, dry_run=args.dry_run)
     env_ok, env_errors = validator.run_checks()
     if not env_ok:
-        logger.critical("≡ƒ¢æ PRE-FLIGHT CHECK FAILED:")
+        logger.critical("🛑 PRE-FLIGHT CHECK FAILED:")
         for err in env_errors:
             logger.error(f"  - {err}")
         if not args.list_agents:
@@ -7198,13 +7198,13 @@ def _legacy_main(
         print(f"\nTotal: {len(agents_list)} agents")
         return
     if args.capture_baseline:
-        print("\n≡ƒöÆ INITIATING BASELINE CAPTURE PROTOCOL...")
+        print("\n🔒 INITIATING BASELINE CAPTURE PROTOCOL...")
         try:
             from agentic_core.L0_routing.utils.subprocess_runner_util import invoke_arch_governor
 
             result = invoke_arch_governor(action="capture_baseline", project_root=project_root)
             if result.get("success"):
-                print(f"Γ£¿ Golden Baseline captured at: {result.get('manifest_path')}")
+                print(f"✨ Golden Baseline captured at: {result.get('manifest_path')}")
                 sys.exit(0)
             else:    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation
                 logger.error(f"Baseline capture failed: {result.get('error')}")
@@ -7297,17 +7297,17 @@ def _legacy_main(
         else:
             integrity_errors = roster_result.get("integrity_errors", [])
             if integrity_errors:
-                logger.critical("≡ƒ¢æ SOVEREIGN CONTRACT BREACH - AGENT INTEGRITY FAILED:")
+                logger.critical("🛑 SOVEREIGN CONTRACT BREACH - AGENT INTEGRITY FAILED:")
                 for err in integrity_errors:
                     logger.error(f"  - {err}")
                 if not args.list_agents:
                     sys.exit(1)
             else:
                 error_msg = roster_result.get("error", "Unknown error")
-                logger.critical(f"≡ƒ¢æ FATAL: Mandatory agent or dependency missing: {error_msg}")
+                logger.critical(f"🛑 FATAL: Mandatory agent or dependency missing: {error_msg}")
                 sys.exit(1)
     except (ImportError, AttributeError, TypeError, ValueError) as e:
-        logger.critical(f"≡ƒ¢æ FATAL: Agent roster validation failed: {e}")
+        logger.critical(f"🛑 FATAL: Agent roster validation failed: {e}")
         sys.exit(1)
     (
         ArchitectureGovernorAgent,
@@ -7383,7 +7383,7 @@ def _legacy_main(
             except (ImportError, AttributeError, OSError) as _gap_b_exc:
                 logger.warning("[GAP-B] set_mutation_ledger_path failed (non-fatal): %s", _gap_b_exc)
             if is_autonomous:
-                logger.info(f"≡ƒöì [PHASE 8] Running integrity check (Scope: {targets})...")
+                logger.info(f"🔍 [PHASE 8] Running integrity check (Scope: {targets})...")
                 try:
                     from agentic_core.L0_routing.utils.subprocess_runner_util import invoke_arch_governor
 
@@ -7393,14 +7393,14 @@ def _legacy_main(
                         state_mgr.state["compliance_report_audit"] = audit_results
                         stats = audit_results.get("stats", {})
                         if stats.get("violations_found", 0) > 0:
-                            logger.warning(f"ΓÜá∩╕Å  {stats['violations_found']} total violations identified.")
+                            logger.warning(f"⚠️  {stats['violations_found']} total violations identified.")
                         if stats.get("drift_detected", 0) > 0:
-                            logger.error(f"≡ƒ¢æ CRITICAL: {stats['drift_detected']} integrity drift detected.")
+                            logger.error(f"🛑 CRITICAL: {stats['drift_detected']} integrity drift detected.")
                             if args.validate:
                                 state_mgr.finish_mission(status="failed_integrity")
                                 sys.exit(1)
                             else:
-                                logger.warning("ΓÜá∩╕Å  Proceeding with caution (Heal mode active)...")
+                                logger.warning("⚠️  Proceeding with caution (Heal mode active)...")
                     else:
                         logger.warning(f"Integrity check failed: {result.get('error')}")
                 except (ImportError, AttributeError, TypeError, ValueError) as e:
@@ -7413,7 +7413,7 @@ def _legacy_main(
                         {"total_experiences": 1, "experience": "L3 Mission Complete"}
                     )
                     state_mgr.finish_mission("completed")
-                    logger.info("≡ƒÄë L3 MISSION COMPLETED")
+                    logger.info("🎉 L3 MISSION COMPLETED")
                     return l3_results
             _agentic_core_sublayer_prefixes = ("L0_", "L1_", "L2_", "L3_", "L4_", "L5_", "L6_")
             _SCAN_ONLY_TERRITORIES = [
@@ -7473,7 +7473,7 @@ def _legacy_main(
                             )
                             return None
                         elif _hygiene_hitl.choice != HitlChoice.YES:
-                            logger.info("[HITL] %s ΓÇö RootHygieneHealerAgent skipped", _hygiene_hitl.reason)
+                            logger.info("[HITL] %s — RootHygieneHealerAgent skipped", _hygiene_hitl.reason)
                             state_mgr.add_event("hitl", f"RootHygieneHealerAgent: {_hygiene_hitl.reason}")
                         else:
                             for _v in hygiene_violations:
@@ -7534,7 +7534,7 @@ def _legacy_main(
                 logger.info(f"{'=' * 60}")
                 if territory in _DATA_ONLY_TERRITORIES and ctx.heal:
                     logger.info(
-                        f"[SKIP] {territory} is a data/artifact territory ΓÇö bypassing full pipeline (scan-only)"
+                        f"[SKIP] {territory} is a data/artifact territory — bypassing full pipeline (scan-only)"
                     )
                     results.append({"territory": territory, "status": "scan_only_skipped"})
                     continue
@@ -7600,9 +7600,9 @@ def _legacy_main(
                         )
                         raw = phase2_result.get("_raw_result", {})
                         if raw.get("modifications"):
-                            logger.info(f"Γ£à Phase 2: {len(raw['modifications'])} fixes applied")
+                            logger.info(f"✅ Phase 2: {len(raw['modifications'])} fixes applied")
                         if raw.get("failures"):
-                            logger.warning(f"ΓÜá∩╕Å Phase 2: {len(raw['failures'])} fixes failed")
+                            logger.warning(f"⚠️ Phase 2: {len(raw['failures'])} fixes failed")
                         _p2_fixed = phase2_result.get("violations_fixed", 0)
                         state_mgr.state["phase2_violations_fixed"] = (
                             state_mgr.state.get("phase2_violations_fixed", 0) + _p2_fixed
@@ -7626,10 +7626,10 @@ def _legacy_main(
                                     f"[POST-VALIDATION] Failed to write post_validation.json: {_post_err}"
                                 )
                         if phase3_result["status"] == "clean":
-                            logger.info("Γ£à Phase 3: All files pass validation")
+                            logger.info("✅ Phase 3: All files pass validation")
                         else:
                             remaining_count = len(phase3_result.get("remaining_violations", []))
-                            logger.warning(f"ΓÜá∩╕Å Phase 3: {remaining_count} issues detected")
+                            logger.warning(f"⚠️ Phase 3: {remaining_count} issues detected")
                         execute_phase3_alignment(agents, territory, decision_engine, state_mgr, effective_ctx)
                         classification_violations = state_mgr.state.get("classification_violations", [])
                         total_violations = (len(p1_loc) if p1_loc else 0) + len(classification_violations)
@@ -7710,7 +7710,7 @@ def _legacy_main(
                         )
                         logger.info(f"=== PHASE 6: ADDITIONAL AGENTS - {territory} ===")
                         state_mgr.state["conversational_violations"] = []
-                        logger.info(f"≡ƒñû Triggering Observability Probe: {territory}")
+                        logger.info(f"🤖 Triggering Observability Probe: {territory}")
                         state_mgr.update_agent("ObservabilityProbeExecutorAgent", "L6 - Observability")
                         try:
                             conversational_agent = agents.get("observability_probe", lambda **_: None)(
@@ -7837,12 +7837,12 @@ def _legacy_main(
                         state_mgr.add_event("error", f"Phase 1 failure in {territory}")
                 except RuntimeError as runtime_err:
                     if "Interactive prompt blocked" in str(runtime_err):
-                        logger.critical(f"≡ƒ¢æ BLOCKED INTERACTIVE PROMPT in {territory}: {runtime_err}")
+                        logger.critical(f"🛑 BLOCKED INTERACTIVE PROMPT in {territory}: {runtime_err}")
                         state_mgr.add_event("error", f"Blocked Prompt in {territory}")
                         continue
                     raise runtime_err
                 except (ImportError, AttributeError, TypeError, ValueError, OSError) as e:
-                    logger.error(f"Γ¥î Protocol crashed on {territory}: {e}\n{traceback.format_exc()}")
+                    logger.error(f"❌ Protocol crashed on {territory}: {e}\n{traceback.format_exc()}")
                     state_mgr.add_event("error", f"Crash in {territory}: {type(e).__name__}: {str(e)[:500]}")
                     if is_autonomous:
                         continue
@@ -7864,7 +7864,7 @@ def _legacy_main(
             except (ImportError, AttributeError, TypeError) as _det_exc:
                 logger.warning(f"[DETERMINISM-DIGEST] emission failed: {_det_exc}")
             logger.info(f"\n{'=' * 60}")
-            logger.info("≡ƒÄë UNIFIED PROTOCOL COMPLETED")
+            logger.info("🎉 UNIFIED PROTOCOL COMPLETED")
             logger.info(f"{'=' * 60}")
             logger.info(f"Territories processed: {len(results)}/{len(targets)}")
             logger.info(f"Decisions made: {len(decision_engine.decisions_made)}")
@@ -7890,7 +7890,7 @@ def _legacy_main(
             except (ImportError, AttributeError, TypeError, ValueError) as _rm_exc:
                 logger.error(f"[RUN MANIFEST] Output failed (non-fatal): {_rm_exc}")
             print("\n" + "=" * 80)
-            print("Γåô  END OF PIPELINE ΓÇö MANDATORY OBSERVABILITY OUTPUT BELOW")
+            print("↓  END OF PIPELINE — MANDATORY OBSERVABILITY OUTPUT BELOW")
             print("=" * 80 + "\n")
             _write_mandatory_json_output(state_mgr, decision_engine)
             _complete_output = _write_heal_run_complete(state_mgr, decision_engine)
@@ -7900,13 +7900,13 @@ def _legacy_main(
             sys.stdout.flush()
             return results
     except (ImportError, AttributeError, TypeError, ValueError, OSError) as fatal_e:
-        logger.critical(f"≡ƒöÑ FATAL PROTOCOL ERROR: {fatal_e}")
+        logger.critical(f"🔥 FATAL PROTOCOL ERROR: {fatal_e}")
         traceback.print_exc()
         _fire_meta_learning_intake(state_mgr, now_utc=int(_get_clock().now_epoch()))
         state_mgr.finish_mission(status="fatal_error")
         try:
             print("\n" + "=" * 80)
-            print("Γåô  FATAL ERROR ΓÇö MANDATORY OBSERVABILITY OUTPUT (PARTIAL RUN)")
+            print("↓  FATAL ERROR — MANDATORY OBSERVABILITY OUTPUT (PARTIAL RUN)")
             print("=" * 80 + "\n")
             _write_mandatory_json_output(state_mgr, decision_engine)
             _complete_output = _write_heal_run_complete(state_mgr, decision_engine)

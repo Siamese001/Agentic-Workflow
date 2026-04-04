@@ -663,20 +663,12 @@ class SovereignDecisionEngine:
             return False, []
 
     def run_validation_phase(self, context: Any, findings: list) -> tuple[bool, Any]:
-        """Validate discovered issues.
-
-        Returns:
-            Tuple of (success, validated_findings)
-        """
+        """Validate discovered issues using extracted validation function."""
         self.logger.info(f"Starting validation phase with {len(findings)} findings")
-
         try:
-            validated = []
-            for finding in findings:
-                # Validate each finding
-                if self._validate_finding(finding):
-                    validated.append(finding)
-
+            # Call extracted validation function
+            result = execute_phase4_architectural_validation(findings, [])
+            validated = result.get("validated", [])
             self.logger.info(f"Validated {len(validated)} findings")
             return True, validated
         except Exception as e:
@@ -693,20 +685,11 @@ class SovereignDecisionEngine:
         return True
 
     def run_alignment_phase(self, context: Any, validated: list) -> tuple[bool, Any]:
-        """Determine healing strategy for validated issues.
-
-        Returns:
-            Tuple of (success, alignment_plan)
-        """
+        """Determine healing strategy using extracted alignment function."""
         self.logger.info(f"Starting alignment phase with {len(validated)} validated issues")
-
         try:
-            alignments = []
-            for issue in validated:
-                alignment = self._determine_healing_strategy(issue)
-                if alignment:
-                    alignments.append(alignment)
-
+            # Call extracted alignment function
+            alignments = execute_phase3_alignment(validated)
             self.logger.info(f"Created {len(alignments)} alignment strategies")
             return True, alignments
         except Exception as e:
@@ -724,25 +707,16 @@ class SovereignDecisionEngine:
         return {"issue": issue, "strategy": "manual_review", "priority": "medium"}
 
     def run_healing_phase(self, context: Any, alignments: list) -> tuple[bool, Any]:
-        """Execute healing actions.
-
-        Returns:
-            Tuple of (success, healing_results)
-        """
+        """Execute healing actions using extracted healing function."""
         self.logger.info(f"Starting healing phase with {len(alignments)} alignments")
-
         try:
-            results = []
-            for alignment in alignments:
-                result = self._execute_healing(alignment)
-                results.append(result)
-
-            # Check if all healings succeeded
-            all_success = all(r.get("success", False) for r in results if isinstance(r, dict))
-
-            self.logger.info(
-                f"Healing completed: {len([r for r in results if isinstance(r, dict) and r.get('success')])}/{len(results)} succeeded"
-            )
+            # Call extracted healing function with dry_run from args
+            dry_run = getattr(self.args, 'dry_run', True)
+            project_root = context.targets[0] if context.targets else "."
+            result = execute_phase5_healing(alignments, project_root, dry_run=dry_run)
+            results = result.get("results", [])
+            all_success = result.get("success_count", 0) == result.get("total", 0)
+            self.logger.info(f"Healing completed: {result.get('success_count', 0)}/{result.get('total', 0)} succeeded")
             return all_success, results
         except Exception as e:
             self.logger.error(f"Healing failed: {e}")

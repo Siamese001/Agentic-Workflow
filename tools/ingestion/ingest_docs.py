@@ -16,6 +16,7 @@ import logging
 import os
 import re
 import sys
+import asyncio
 from pathlib import Path
 
 import chromadb
@@ -25,6 +26,15 @@ from openai import OpenAI
 sys.path.insert(0, str(Path(__file__).parent.parent.parent))
 
 from agentic_core.L4_state.config.memory_store_config import MemoryStoreConfig
+
+# Import embedding factory for BGE-M3 support
+try:
+    from agentic_core.embeddings.embedding_factory import create_embedding_client
+    from agentic_core.embeddings.embedding_input_guard import GuardedText
+    EMBEDDING_FACTORY_AVAILABLE = True
+except ImportError:
+    EMBEDDING_FACTORY_AVAILABLE = False
+    logging.warning("Embedding factory not available - BGE-M3 support disabled")
 
 # Configure logging
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
@@ -209,38 +219,80 @@ class DocumentChunker:
 
 
 class EmbeddingGenerator:
-    """Generates embeddings using OpenAI API or mock embeddings for testing."""
+    """Generates embeddings using OpenAI API, BGE-M3, or mock embeddings for testing."""
 
-    def __init__(self, model: str = "text-embedding-ada-002", mock_embeddings: bool = False):
+    def __init__(self, model: str = "text-embedding-ada-002", mock_embeddings: bool = False, embedding_provider: str = "openai"):
         self.model = model
         self.mock_embeddings = mock_embeddings
+        self.embedding_provider = embedding_provider
+        self.embedding_client = None
+        self.vector_dimensions = 1536  # Default for OpenAI
 
-        if not mock_embeddings:
-            # Check for OpenAI API key
+        if mock_embeddings:
+            Logger.info("Using mock embeddings for testing")
+            self.vector_dimensions = 1536
+        elif embedding_provider == "bge-m3":
+            if not EMBEDDING_FACTORY_AVAILABLE:
+                raise ValueError("Embedding factory not available. Cannot use BGE-M3 provider.")
+            Logger.info("Using BGE-M3 embeddings via embedding factory")
+            self.embedding_client = create_embedding_client("bge-m3")
+            self.vector_dimensions = getattr(self.embedding_client, 'observed_dimension', 1024)
+            Logger.info(f"BGE-M3 client initialized with {self.vector_dimensions} dimensions")
+        else:
+            # Default OpenAI
             api_key = os.getenv("OPENAI_API_KEY")
             if not api_key:
                 raise ValueError(
                     "OPENAI_API_KEY environment variable not set. "
                     "Please set it with: export OPENAI_API_KEY=your_key_here "
-                    "or use --mock-embeddings for testing"
+                    "or use --mock-embeddings for testing "
+                    "or use --embedding-provider bge-m3 for local embeddings"
                 )
-
             self.client = OpenAI(api_key=api_key)
-        else:
-            Logger.info("Using mock embeddings for testing")
+            self.vector_dimensions = 1536
 
     def generate_embeddings(self, texts: list[str]) -> list[list[float]]:
         """Generate embeddings for a list of texts."""
         if self.mock_embeddings:
-            # Generate mock embeddings (1536-dimensional vectors)
-            Logger.info(f"Generating {len(texts)} mock embeddings")
+            # Generate mock embeddings
+            Logger.info(f"Generating {len(texts)} mock embeddings ({self.vector_dimensions}d)")
             import random
+            return [[random.uniform(-1, 1) for _ in range(self.vector_dimensions)] for _ in texts]
 
-            return [[random.uniform(-1, 1) for _ in range(1536)] for _ in texts]
+        if self.embedding_provider == "bge-m3" and self.embedding_client:
+            return self._generate_bge_m3_embeddings(texts)
 
+        return self._generate_openai_embeddings(texts)
+
+    def _generate_bge_m3_embeddings(self, texts: list[str]) -> list[list[float]]:
+        """Generate embeddings using BGE-M3 via embedding factory."""
+        Logger.info(f"Generating {len(texts)} BGE-M3 embeddings")
+
+        # Use the underlying model directly for batch encoding
+        try:
+            # Access the sentence-transformers model directly
+            model = self.embedding_client.model
+            embeddings = model.encode(
+                texts,
+                convert_to_numpy=True,
+                normalize_embeddings=True,
+                batch_size=32,
+                show_progress_bar=False,
+            ).tolist()
+
+            # Stable float32 casting
+            embeddings = [[float(x) for x in emb] for emb in embeddings]
+
+            Logger.info(f"Successfully generated {len(embeddings)} BGE-M3 embeddings")
+            return embeddings
+        except Exception as e:
+            Logger.error(f"BGE-M3 embedding generation failed: {e}")
+            # Fallback to zero embeddings
+            return [[0.0] * self.vector_dimensions for _ in texts]
+
+    def _generate_openai_embeddings(self, texts: list[str]) -> list[list[float]]:
+        """Generate embeddings using OpenAI API."""
         embeddings = []
-
-        # Process in batches to handle rate limits
         batch_size = 100
         for i in range(0, len(texts), batch_size):
             batch = texts[i : i + batch_size]
@@ -251,18 +303,17 @@ class EmbeddingGenerator:
                 Logger.info(f"Generated embeddings for batch {i // batch_size + 1}")
             except Exception as e:
                 Logger.error(f"Failed to generate embeddings for batch {i // batch_size + 1}: {e}")
-                # Add zero embeddings as fallback
                 embeddings.extend([[0.0] * 1536] * len(batch))
-
         return embeddings
 
 
 class VectorDBIngestor:
     """Handles ingestion into ChromaDB vector store."""
 
-    def __init__(self, collection_name: str = "docs", persist_directory: str = None):
+    def __init__(self, collection_name: str = "docs", persist_directory: str = None, vector_dimensions: int = 1536):
         self.collection_name = collection_name
         self.config = MemoryStoreConfig()
+        self.vector_dimensions = vector_dimensions
 
         # Initialize ChromaDB client with persistent storage
         if persist_directory:
@@ -275,7 +326,7 @@ class VectorDBIngestor:
 
         try:
             self.collection = self.client.get_or_create_collection(name=collection_name)
-            Logger.info(f"Initialized ChromaDB collection: {collection_name}")
+            Logger.info(f"Initialized ChromaDB collection: {collection_name} ({vector_dimensions}d)")
         except Exception as e:
             Logger.error(f"Failed to initialize ChromaDB collection '{collection_name}': {e}")
             raise
@@ -338,7 +389,7 @@ class VectorDBIngestor:
             return {
                 "collection_name": self.collection_name,
                 "total_chunks": count,
-                "vector_dimensions": self.config.VECTOR_DIMENSIONS,
+                "vector_dimensions": self.vector_dimensions,
                 "vector_metric": self.config.VECTOR_METRIC,
             }
         except Exception as e:
@@ -366,6 +417,7 @@ def main():
     parser.add_argument("--collection-name", default="docs", help="ChromaDB collection name")
     parser.add_argument("--dry-run", action="store_true", help="Preview without ingesting")
     parser.add_argument("--mock-embeddings", action="store_true", help="Use mock embeddings for testing")
+    parser.add_argument("--embedding-provider", default="openai", choices=["openai", "bge-m3"], help="Embedding provider to use")
     parser.add_argument("--limit", type=int, help="Limit number of files to process (for testing)")
 
     args = parser.parse_args()
@@ -384,8 +436,11 @@ def main():
 
     # Initialize components
     chunker = DocumentChunker()
-    embedding_generator = EmbeddingGenerator(mock_embeddings=args.mock_embeddings)
-    ingestor = VectorDBIngestor(args.collection_name)
+    embedding_generator = EmbeddingGenerator(
+        mock_embeddings=args.mock_embeddings,
+        embedding_provider=args.embedding_provider
+    )
+    ingestor = VectorDBIngestor(args.collection_name, vector_dimensions=embedding_generator.vector_dimensions)
 
     # Process documents
     all_chunks = []

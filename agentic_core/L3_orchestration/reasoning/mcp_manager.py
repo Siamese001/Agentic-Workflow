@@ -176,51 +176,69 @@ _emit_validated_by_safety_plane("p1", "mcp_manager", "safety_validation")
 _emit_invokes_eval("p1", "mcp_manager", "eval_call")
 _emit_proposal_commits_routing("p1", "mcp_manager", "routing_commit")
 
+import builtins
+import json
+import logging
+from pathlib import Path
+from typing import Any
+
+# Import the MCP loader for YAML SSOT
+try:
+    from agentic_core.config.mcp_loader import MCPLoader, get_cached_loader
+    _MCP_LOADER_AVAILABLE = True
+except ImportError:
+    _MCP_LOADER_AVAILABLE = False
+    MCPLoader = None
+    get_cached_loader = None
+
 Logger: Any = logging.getLogger(__name__)
 
 # ---------------------------------------------------------------------------
-# Tool dispatch table  — maps logical tool names to live Windsurf callables.
-# Each entry is resolved lazily so missing tools never crash at import time.
+# MCP Tool Registry - Dynamic loading from config/mcp_servers.yaml (SSOT)
+#
+# The _TOOL_DISPATCH table is now loaded dynamically from the YAML configuration
+# to ensure all MCP references come from a single source of truth.
+#
+# Legacy hardcoded prefixes (for reference):
+#   mcp0_* = GitKraken (git, issues, PRs)
+#   mcp1_* = adg_sqlite (ADG graph operations)
+#   mcp2_* = brave-search (web, local, news, video, image search)
+#   mcp3_* = deepwiki (repo documentation)
+#   mcp4_* = enhanced_http (HTTP requests)
+#   mcp5_* = filesystem (file operations)
+#   mcp6_* = memory (knowledge graph)
+#   mcp7_* = sequential-thinking (problem solving)
+#   mcp8_* = vector_db (embeddings, collections)
 # ---------------------------------------------------------------------------
 
-_TOOL_DISPATCH: dict[str, str] = {
-    # Filesystem (mcp8_*)
-    "read_file": "mcp8_read_text_file",
-    "write_file": "mcp8_write_file",
-    "edit_file": "mcp8_edit_file",
-    "move_file": "mcp8_move_file",
-    "create_directory": "mcp8_create_directory",
-    "list_directory": "mcp8_list_directory",
-    # Memory (mcp11_*)
-    "create_entities": "mcp11_create_entities",
-    "create_relations": "mcp11_create_relations",
-    "add_observations": "mcp11_add_observations",
-    "search_nodes": "mcp11_search_nodes",
-    "read_graph": "mcp11_read_graph",
-    # Brave Search (mcp1_*)
-    "brave_search": "mcp1_brave_web_search",
-    "brave_web_search": "mcp1_brave_web_search",
-    "brave_local_search": "mcp1_brave_local_search",
-    # Playwright (mcp8_* — current Windsurf registration prefix)
-    "playwright_navigate": "mcp8_playwright_navigate",
-    "playwright_screenshot": "mcp8_playwright_screenshot",
-    "playwright_get_text": "mcp8_playwright_get_visible_text",
-    "playwright_click": "mcp8_playwright_click",
-    "playwright_fill": "mcp8_playwright_fill",
-    "playwright_get_html": "mcp8_playwright_get_visible_html",
-    "playwright_press_key": "mcp8_playwright_press_key",
-    # Redis operations (adg_redis custom server)
-    "redis_get": "redis_get",
-    "redis_set": "redis_set",
-    "redis_delete": "redis_delete",
-    # Fetch (mcp4_*)
-    "fetch": "mcp4_fetch",
-    # DeepWiki (mcp3_*)
-    "deepwiki_ask": "mcp3_ask_question",
-    "deepwiki_structure": "mcp3_read_wiki_structure",
-    # Sequential thinking
-    "sequential_thinking": "mcp8_sequentialthinking",
-}
+# Cache for the tool dispatch mapping
+_TOOL_DISPATCH_CACHE: dict[str, str] | None = None
+
+
+def _get_tool_dispatch() -> dict[str, str]:
+    """Get tool dispatch table, loading from YAML if necessary.
+
+    Returns:
+        Dictionary mapping logical tool names to MCP function names.
+        Falls back to empty dict if loader unavailable.
+    """
+    global _TOOL_DISPATCH_CACHE
+
+    if _TOOL_DISPATCH_CACHE is not None:
+        return _TOOL_DISPATCH_CACHE
+
+    if _MCP_LOADER_AVAILABLE and get_cached_loader:
+        try:
+            loader = get_cached_loader()
+            _TOOL_DISPATCH_CACHE = loader.get_tool_mapping()
+            Logger.debug(f"[MCPManager] Loaded {len(_TOOL_DISPATCH_CACHE)} tools from YAML SSOT")
+            return _TOOL_DISPATCH_CACHE
+        except Exception as e:
+            Logger.warning(f"[MCPManager] Failed to load from YAML: {e}. Using fallback.")
+
+    # Fallback: return empty dict (tools won't resolve, but won't crash)
+    _TOOL_DISPATCH_CACHE = {}
+    return _TOOL_DISPATCH_CACHE
 
 
 def _resolve_tool(tool_name: str) -> Any:
@@ -236,7 +254,11 @@ def _resolve_tool(tool_name: str) -> Any:
     import uuid as _uuid  # noqa: PLC0415
 
     _emit_applies_guardrail(str(_uuid.uuid4()), "_resolve_tool", "p0_governance")
-    mapped = _TOOL_DISPATCH.get(tool_name)
+
+    # Get dispatch table from YAML SSOT (cached)
+    tool_dispatch = _get_tool_dispatch()
+    mapped = tool_dispatch.get(tool_name)
+
     if mapped is None:
         Logger.debug(f"[MCPManager] No dispatch mapping for tool '{tool_name}'")
         return None

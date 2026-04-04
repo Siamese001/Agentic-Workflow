@@ -127,7 +127,7 @@ python tools/adg/adg_test_selector.py <file> [<file> ...]
 ```
 Output: exact pytest nodeids ready to run
 
-**B) For comprehensive test planning (Accelerator #6 — MANDATORY):**
+**B) For comprehensive test planning (Accelerator #5 — MANDATORY):**
 ```
 # Gap analysis — REQUIRED before any refactor
 python tools/adg_test_accelerator.py gap [--top 20] [--layer L5]
@@ -179,7 +179,7 @@ Baseline: `tests/_config/test_count_baseline.json`. Count drops = FAIL. xfail in
 
 ### 1.6 Agent Deletion Policy
 
-**Zero-tolerance for unauthorized agent deletion.** Deleting any `*Agent.py` requires: `AGENT-DELETION-AUTHORIZED` commit marker, replacement specified, 90-day deprecation period, zero active references. Enforcement: pre-commit hook `guard-agent-deletion`. **Full protocol and example:** Workflow `/agent-deletion-gate`.
+**Zero-tolerance for unauthorized agent deletion.** Deleting any `*Agent.py` requires: `AGENT-DELETION-AUTHORIZED` commit marker, replacement specified, 90-day deprecation period, zero active references. Enforcement: pre-commit hook `guard_agent_deletion`. **Full protocol and example:** Workflow `/agent-deletion-gate`.
 
 ### 1.8 Enforcement Registry
 
@@ -196,11 +196,11 @@ Baseline: `tests/_config/test_count_baseline.json`. Count drops = FAIL. xfail in
 | Critical infrastructure | `ops_scripts/ci/check_utility_silent_swallowers.py` |
 | ADG test acceleration | `tools/adg_test_accelerator.py` | Mandatory for T2/T3; validates test coverage, collection safety, parallel groups |
 | Timeout progress | `ops_scripts/ci/validate_timeout_progress.py`, `ops_scripts/ci/validate_timeout_recovery.py` |
-| No PowerShell | `ops_scripts/ci/check_no_powershell.py` |
-| ADG artifact ingestion | `ops_scripts/ci/check_adg_artifacts_ingested.py` |
+| No PowerShell | `ops_scripts/ci/check_powershell_ban.py` |
+| ADG artifact ingestion | `ops_scripts/ci/check_adg_ingestion.py` |
 | RCA auto-closure | `ops_scripts/ci/check_rca_closure.py` |
 | Zero-loss refactor | `ops_scripts/ci/zero_loss_refactor_verifier.py` |
-| Agent deletion authorization | `ops_scripts/ci/guard-agent-deletion.py` |
+| Agent deletion authorization | `ops_scripts/ci/guard_agent_deletion.py` |
 | Terminal process cleanup | `ops_scripts/ci/check_terminal_cleanup.py` |
 | Pytest config SSOT | `ops_scripts/ci/_validate_pytest_config.py` | Blocks commits with pytest.ini/pyproject.toml drift; see `.windsurf/rules/pytest-config-ssot.md` |
 
@@ -231,7 +231,7 @@ Baseline: `tests/_config/test_count_baseline.json`. Count drops = FAIL. xfail in
 
 **ADG SCHEMA FREEZE:** On first ADG access, freeze the confirmed field name mapping. Reuse it for ALL subsequent accesses in the same run. Re-probing after freeze = violation. Schema inconsistency mid-run = HARD FAIL. Use canonical field names on first attempt — no trial-and-error. Pre-flight schema check REQUIRED before first field access.
 
-**Canonical field name table:** See `docs/reference/adg_mcp_reference.md` § ADG Schema Canonical Field Names.
+**Canonical field name table:** See `docs/guides/ADG_MCP_MIGRATION.md` § ADG Schema Canonical Field Names.
 
 ### 2.3 Fail-Closed Discipline ← **THE HARD RULE**
 
@@ -286,9 +286,9 @@ Commit message footer MUST include: `repair_class: <class>`
 
 ### 2.6 ADG Accelerator Tools, MCP Servers & Memory
 
-**Six accelerator tools** MUST be used as primary defaults for their respective tasks. Bypassing them in favour of raw Redis/grep/full-suite mypy/manual test selection is a §2.3 violation: `adg_antipattern_fixer.py`, `adg_stale_guard.py`, `adg_redis_query.py`, `adg_type_check.py`, `adg_test_selector.py`, **`adg_test_accelerator.py`**.
+**Five accelerator tools** MUST be used as primary defaults for their respective tasks. Bypassing them in favour of raw grep/full-suite mypy/manual test selection is a §2.3 violation: `adg_antipattern_fixer.py`, `adg_stale_guard.py`, `adg_type_check.py`, `adg_test_selector.py`, **`adg_test_accelerator.py`**.
 
-**Accelerator #6 mandatory triggers:**
+**Accelerator #5 mandatory triggers:**
 | Trigger | Command | Enforcement |
 |---------|---------|-------------|
 | Any production file change | `scope --changed <file>` | T2/T3: required; T0/T1: optional |
@@ -297,17 +297,17 @@ Commit message footer MUST include: `repair_class: <class>`
 | Parallel test run | `groups --workers N` | Required for pytest-xdist |
 | Phase completion | `report --out <path>` | Required for evidence artifact |
 
-**Custom MCP servers** (`adg_redis` and `memory`) MUST be green before any refactoring session. Call `adg_status` first on every session. Call `mem_recall_session_start` at session start. Marketplace Redis and memory servers are disabled.
+**Custom MCP servers** (`memory`) MUST be green before any refactoring session. Call `mem_recall_session_start` at session start. Marketplace memory servers are disabled.
 
-**Full tool reference, CLI examples, forbidden substitutions, config entries, and fix protocol:** See `docs/reference/adg_mcp_reference.md`.
+**Full tool reference, CLI examples, forbidden substitutions, config entries, and fix protocol:** See `docs/guides/ADG_MCP_MIGRATION.md` and `tools/adg/` directory.
 
 ### 2.7 Tool Selection Hierarchy
 
 Query Type → Tool Selection:
-1. "Which files import X?" → ADG Redis: adg_edge_fanin(node, "imports")
-2. "What does file X call?" → ADG Redis: adg_edge_fanout(node, "calls")
-3. "Which layer is X in?" → ADG Redis: adg_node(id) → layer field
-4. "Does X violate anti-patterns?" → ADG Redis: adg_violations()
+1. "Which files import X?" → ADG SQLite: `SELECT * FROM edges WHERE relation_type = 'imports'`
+2. "What does file X call?" → ADG SQLite: `SELECT * FROM edges WHERE src_id = '<file>'`
+3. "Which layer is X in?" → ADG SQLite: `SELECT layer FROM nodes WHERE id = '<file>'`
+4. "Does X violate anti-patterns?" → ADG SQLite: `SELECT * FROM violations WHERE file_path LIKE '%<file>%'`
 5. "Find all subprocess.run calls" → ADG SQLite: edges WHERE symbol LIKE 'subprocess.run%'
 6. "Find string literal 'foo'" → grep (ADG doesn't index literals)
 7. "Parse single fresh file" → AST (file not yet in ADG)
@@ -316,9 +316,9 @@ Query Type → Tool Selection:
 Decision Matrix:
 | Need | Tool | When |
 |------|------|------|
-| Relationship query | ADG Redis | Cache is hot (adg_status → fresh) |
-| Relationship query | ADG SQLite | Cache stale, SQLite exists |
-| Bulk symbol search | ADG SQLite | SQL query faster than Redis scan |
+| Relationship query | ADG SQLite | SQLite exists and is fresh |
+| Relationship query | ADG SQLite | Cache needs refresh, use SQLite directly |
+| Bulk symbol search | ADG SQLite | SQL query faster than regex scan |
 | Fresh-file structure | AST parse | File changed since last ADG regen |
 | String literal/comment | grep/regex | ADG doesn't index these |
 | File discovery | ADG nodes_by_file/layer | Replaces glob/rglob |
@@ -630,7 +630,7 @@ When facing a decision point with multiple valid approaches, Windsurf MUST:
 HITL is REQUIRED for:
 - Multiple architectural approaches (inheritance vs composition, layer placement, pattern selection)
 - Refactoring scope affecting >3 files or crossing layer boundaries
-- Anti-pattern introduction (see `/antipattern-hitl-gate`)
+- Anti-pattern introduction (see `/anti-pattern-hitl-gate`)
 - Test failures with multiple valid repair classes (§2.5)
 - Adding external dependencies (PyPI packages, system deps, MCP servers)
 - File/module deletion (especially *Agent.py per §1.6)

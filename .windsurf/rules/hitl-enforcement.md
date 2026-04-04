@@ -75,14 +75,31 @@ ask_user_question(
 
 **TRIGGER**: When multiple architectural approaches are viable
 
-**REQUIRED PROMPT**:
-> I've identified N approaches for `<task>`:
+**REQUIRED PROMPT (STAR Format)**:
+
+> **SITUATION**: Facing architectural choice for `<task>` with multiple valid approaches.
 >
-> **Option A**: `<approach>` — `<trade-offs>`
-> **Option B**: `<approach>` — `<trade-offs>`
-> **Option C**: `<approach>` — `<trade-offs>`
+> **TASK**: Select the optimal approach aligned with SVP Engineering priorities.
 >
-> Which approach should I use?
+> **OPTIONS**:
+>
+> **Option A**: `<approach>`
+>   - **Pros**: `<benefits>`
+>   - **Cons**: `<drawbacks>`
+>
+> **Option B**: `<approach>`
+>   - **Pros**: `<benefits>`
+>   - **Cons**: `<drawbacks>`
+>
+> **Option C**: `<approach>` (if applicable)
+>   - **Pros**: `<benefits>`
+>   - **Cons**: `<drawbacks>`
+>
+> **⭐ RECOMMENDED**: Option `<X>` — Aligns with SVP priority `<(a) operational simplicity | (b) dependency hygiene | (c) archival discipline | (d) documentation | (e) zero-regression validation>`.
+>
+> **RESULT**: Execute chosen approach with full test coverage.
+>
+> Which approach should I use? (A/B/C)
 
 **EXAMPLES**:
 - Choosing between inheritance vs composition
@@ -94,14 +111,31 @@ ask_user_question(
 
 **TRIGGER**: When refactoring could affect multiple files or modules
 
-**REQUIRED PROMPT**:
-> This refactoring can be scoped in N ways:
+**REQUIRED PROMPT (STAR Format)**:
+
+> **SITUATION**: Refactoring `<target>` can be scoped at multiple levels with varying risk.
 >
-> **Option A**: Minimal — `<files>` — `<risk level>`
-> **Option B**: Moderate — `<files>` — `<risk level>`
-> **Option C**: Comprehensive — `<files>` — `<risk level>`
+> **TASK**: Select scope balancing risk, time, and SVP operational simplicity priority.
 >
-> Which scope should I target?
+> **OPTIONS**:
+>
+> **Option A**: Minimal — `<files>`
+>   - **Pros**: Lowest risk, fast validation, minimal blast radius
+>   - **Cons**: May leave related technical debt, requires follow-up
+>
+> **Option B**: Moderate — `<files>`
+>   - **Pros**: Comprehensive within module/layer, addresses related issues
+>   - **Cons**: Higher risk, longer validation time, potential for regression
+>
+> **Option C**: Comprehensive — `<files>`
+>   - **Pros**: Complete elimination of pattern, future-proof
+>   - **Cons**: Maximum risk, extended validation period, may touch unrelated systems
+>
+> **⭐ RECOMMENDED**: Option A (Minimal) — SVP priority: operational simplicity through incremental, low-risk changes with full test validation at each step.
+>
+> **RESULT**: Execute scoped refactoring with zero-regression validation.
+>
+> Which scope should I target? (A/B/C)
 
 **EXAMPLES**:
 - Renaming widely-used function
@@ -113,15 +147,35 @@ ask_user_question(
 
 **TRIGGER**: Before introducing any anti-pattern instance
 
-**REQUIRED PROMPT** (per existing `/antipattern-hitl-gate`):
-> This change will introduce N new `<category>` instance(s) in `<file>`.
+**REQUIRED PROMPT (STAR Format)**:
+
+> **SITUATION**: This change will introduce `<N>` new `<category>` instance(s) in `<file>`, which the anti-pattern scanner will flag.
 >
-> **Option A**: Narrow the exception type — no guardian comment needed
-> **Option B**: Add `# guardian: allow-<category>` — exempt from blocking
+> **TASK**: Select approach that balances immediate need against architectural integrity.
+>
+> **OPTIONS**:
+>
+> **Option A**: Narrow the exception type
+>   - **Pros**: No guardian comment needed, proper exception handling, passes scanner
+>   - **Cons**: Requires understanding the specific error types that may occur
+>
+> **Option B**: Add `# guardian: allow-<category>`
+>   - **Pros**: Quick exemption, unblocks immediate work
+>   - **Cons**: Technical debt, requires HITL approval, tracked in ratchet ceiling, may hide real issues
+>
 > **Option C**: Restructure to avoid the pattern entirely
-> **Option D**: Proceed as-is and accept the ratchet increase
+>   - **Pros**: Cleanest solution, aligns with SVP dependency hygiene priority
+>   - **Cons**: May require significant redesign, longer implementation time
 >
-> Which approach?
+> **Option D**: Proceed as-is and accept the ratchet increase
+>   - **Pros**: No code changes needed, preserves current approach
+>   - **Cons**: Violates architectural standards, increases anti-pattern debt, may block CI
+>
+> **⭐ RECOMMENDED**: Option A (Narrow the exception type) — SVP priority: dependency hygiene through proper exception handling without introducing exemptions.
+>
+> **RESULT**: Implement chosen approach with appropriate validation.
+>
+> Which approach? (A/B/C/D)
 
 **EXAMPLES**:
 - New `except Exception` block
@@ -133,15 +187,39 @@ ask_user_question(
 
 **TRIGGER**: When test failures could be fixed multiple ways
 
-**REQUIRED PROMPT**:
-> Test `<nodeid>` is failing. I've identified N potential fixes:
+**REQUIRED PROMPT (STAR Format)**:
+
+> **SITUATION**: Test `<nodeid>` is failing. Multiple repair classes are applicable.
 >
-> **Option A**: `<production_bug_fix>` — `<description>`
-> **Option B**: `<stale_reference_fix>` — `<description>`
-> **Option C**: `<broken_test_fix>` — `<description>` (semantic equivalence preserved)
-> **Option D**: `<policy_regression_fix>` — `<description>`
+> **TASK**: Select repair class aligned with root cause and SVP zero-regression priority.
 >
-> Which repair class should I apply?
+> **OPTIONS**:
+>
+> **Option A**: `production_bug_fix`
+>   - **Description**: `<description>`
+>   - **Pros**: Addresses root cause, improves system quality, prevents recurrence
+>   - **Cons**: Requires deeper analysis, may have broader impact
+>
+> **Option B**: `stale_reference_fix`
+>   - **Description**: `<description>`
+>   - **Pros**: Quick fix, aligns with current architecture
+>   - **Cons**: Doesn't validate if symbol/path change was intentional
+>
+> **Option C**: `broken_test_fix` (semantic equivalence preserved)
+>   - **Description**: `<description>`
+>   - **Pros**: Maintains test intent while updating for changes
+>   - **Cons**: Risk of weakening test coverage if not careful
+>
+> **Option D**: `policy_regression_fix`
+>   - **Description**: `<description>`
+>   - **Pros**: Corrects governance/policy drift
+>   - **Cons**: May change intended behavior, requires policy review
+>
+> **⭐ RECOMMENDED**: Option A (production_bug_fix) — SVP priority: zero-regression validation through addressing root causes rather than symptom patching.
+>
+> **RESULT**: Apply selected repair class with full test validation.
+>
+> Which repair class should I apply? (A/B/C/D)
 
 **EXAMPLES**:
 - Assertion mismatch (fix code vs fix test)
@@ -153,14 +231,31 @@ ask_user_question(
 
 **TRIGGER**: Before adding new external dependencies
 
-**REQUIRED PROMPT**:
-> To implement `<feature>`, I can:
+**REQUIRED PROMPT (STAR Format)**:
+
+> **SITUATION**: To implement `<feature>`, external dependency or in-house solution is needed.
 >
-> **Option A**: Add dependency `<package>` — `<pros/cons>`
-> **Option B**: Implement in-house — `<pros/cons>`
-> **Option C**: Use existing `<alternative>` — `<pros/cons>`
+> **TASK**: Select approach aligned with SVP dependency hygiene priority.
 >
-> Which approach?
+> **OPTIONS**:
+>
+> **Option A**: Add dependency `<package>`
+>   - **Pros**: Faster implementation, battle-tested, community support
+>   - **Cons**: Increases dependency surface, supply chain risk, potential version conflicts
+>
+> **Option B**: Implement in-house
+>   - **Pros**: Reduces dependencies, full control, tailored to needs, aligns with SVP dependency hygiene
+>   - **Cons**: Development time, maintenance burden, must meet testing standards
+>
+> **Option C**: Use existing `<alternative>`
+>   - **Pros**: No new dependencies, leverages known patterns
+>   - **Cons**: May not fit perfectly, could require workarounds
+>
+> **⭐ RECOMMENDED**: Option B (Implement in-house) — SVP priority: dependency hygiene through eliminating external dependencies unless critical capability gap exists.
+>
+> **RESULT**: Implement chosen approach with full documentation (per SVP priority d).
+>
+> Which approach? (A/B/C)
 
 **EXAMPLES**:
 - New PyPI package
@@ -172,15 +267,39 @@ ask_user_question(
 
 **TRIGGER**: Before deleting any production file
 
-**REQUIRED PROMPT**:
-> File `<path>` can be handled as:
+**REQUIRED PROMPT (STAR Format)**:
 >
-> **Option A**: Delete immediately — `<references>` migrated, `<deprecation_period>` elapsed
-> **Option B**: Deprecate first — add deprecation warning, set 90-day timer
-> **Option C**: Keep as shim — redirect to `<replacement>`, document in shim registry
-> **Option D**: Cancel deletion — `<reason>`
+> **SITUATION**: File `<path>` is candidate for removal. References and deprecation status must be evaluated.
 >
-> Which approach?
+> **TASK**: Select disposition aligned with SVP archival priority.
+>
+> **OPTIONS**:
+>
+> **Option A**: Delete immediately
+>   - **Description**: `<references>` migrated, `<deprecation_period>` elapsed
+>   - **Pros**: Immediate cleanup, reduces clutter
+>   - **Cons**: Irreversible, history lost, risk if references missed
+>
+> **Option B**: Deprecate first
+>   - **Description**: Add deprecation warning, set 90-day timer
+>   - **Pros**: Graceful transition, time for migration, visibility of pending removal
+>   - **Cons**: Code remains active during deprecation period
+>
+> **Option C**: Keep as shim
+>   - **Description**: Redirect to `<replacement>`, document in shim registry
+>   - **Pros**: Backward compatibility preserved, clear migration path
+>   - **Cons**: Maintenance burden of shim layer
+>
+> **Option D**: Archive instead of delete
+>   - **Description**: Move to `tools/archive/`, preserve history
+>   - **Pros**: History preserved, can reference later, aligns with SVP archival discipline
+>   - **Cons**: Repository size slightly larger
+>
+> **⭐ RECOMMENDED**: Option D (Archive) — SVP priority: archival over deletion preserves history in `tools/archive/`.
+>
+> **RESULT**: Execute chosen disposition with appropriate validation.
+>
+> Which approach? (A/B/C/D)
 
 **EXAMPLES**:
 - Agent deletion (§1.6 requirements)
@@ -192,14 +311,31 @@ ask_user_question(
 
 **TRIGGER**: Before modifying governance/policy configuration
 
-**REQUIRED PROMPT**:
-> Configuration `<config_file>` can be updated as:
+**REQUIRED PROMPT (STAR Format)**:
+>
+> **SITUATION**: Configuration `<config_file>` requires update with potential governance impact.
+>
+> **TASK**: Select change option balancing scope against SVP zero-regression priority.
+>
+> **OPTIONS**:
 >
 > **Option A**: `<change>` — affects `<scope>`
-> **Option B**: `<change>` — affects `<scope>`
-> **Option C**: Keep current — `<reason>`
+>   - **Pros**: `<benefits>`
+>   - **Cons**: `<risks>`
 >
-> Which option?
+> **Option B**: `<change>` — affects `<scope>`
+>   - **Pros**: `<benefits>`
+>   - **Cons**: `<risks>`
+>
+> **Option C**: Keep current — `<reason>`
+>   - **Pros**: No risk of regression, stability maintained
+>   - **Cons**: Issue persists, may accumulate technical debt
+>
+> **⭐ RECOMMENDED**: Option with narrowest scope that addresses root cause — SVP priority: zero-regression validation requires full test pass before any configuration commit.
+>
+> **RESULT**: Apply configuration change with comprehensive test validation.
+>
+> Which option? (A/B/C)
 
 **EXAMPLES**:
 - Confidence thresholds
@@ -211,15 +347,39 @@ ask_user_question(
 
 **TRIGGER**: When implementing error handling with multiple valid approaches
 
-**REQUIRED PROMPT**:
-> Error `<error_type>` can be handled as:
+**REQUIRED PROMPT (STAR Format)**:
 >
-> **Option A**: Fail-closed — raise immediately, no fallback
-> **Option B**: Fail-open with logging — log + continue with degraded behavior
-> **Option C**: Retry with backoff — `<retry_config>`
-> **Option D**: Escalate to user — prompt for manual intervention
+> **SITUATION**: Error `<error_type>` requires handling strategy selection.
 >
-> Which strategy?
+> **TASK**: Select strategy aligned with SVP operational simplicity through fail-closed discipline.
+>
+> **OPTIONS**:
+>
+> **Option A**: Fail-closed
+>   - **Description**: Raise immediately, no fallback
+>   - **Pros**: Maximum safety, no silent failures, clear error propagation
+>   - **Cons**: User-facing errors, requires upstream handling
+>
+> **Option B**: Fail-open with logging
+>   - **Description**: Log + continue with degraded behavior
+>   - **Pros**: User experience preserved, operation continues
+>   - **Cons**: Risk of silent data corruption, log may be missed
+>
+> **Option C**: Retry with backoff
+>   - **Description**: `<retry_config>`
+>   - **Pros**: Transient failures resolved automatically
+>   - **Cons**: Complexity, latency, may mask real issues
+>
+> **Option D**: Escalate to user
+>   - **Description**: Prompt for manual intervention
+>   - **Pros**: Human judgment applied, no automated wrong decisions
+>   - **Cons**: Blocks automation, requires human availability
+>
+> **⭐ RECOMMENDED**: Option A (Fail-closed) — SVP priority: operational simplicity through deterministic fail-closed behavior with clear error propagation.
+>
+> **RESULT**: Implement chosen strategy with appropriate test coverage.
+>
+> Which strategy? (A/B/C/D)
 
 **EXAMPLES**:
 - External API failures
@@ -231,14 +391,33 @@ ask_user_question(
 
 **TRIGGER**: When optimization involves correctness/complexity trade-offs
 
-**REQUIRED PROMPT**:
-> Performance can be improved via:
+**REQUIRED PROMPT (STAR Format)**:
 >
-> **Option A**: `<optimization>` — `<speedup>`, `<complexity_increase>`
-> **Option B**: `<optimization>` — `<speedup>`, `<complexity_increase>`
-> **Option C**: Keep current — prioritize simplicity
+> **SITUATION**: Performance improvement opportunity requires balancing speed against complexity.
 >
-> Which approach?
+> **TASK**: Select optimization approach aligned with SVP operational simplicity priority.
+>
+> **OPTIONS**:
+>
+> **Option A**: `<optimization>`
+>   - **Speedup**: `<speedup>`
+>   - **Pros**: Maximum performance gain
+>   - **Cons**: `<complexity_increase>`, maintenance burden, risk of bugs
+>
+> **Option B**: `<optimization>`
+>   - **Speedup**: `<speedup>`
+>   - **Pros**: Moderate gain with controlled complexity
+>   - **Cons**: `<complexity_increase>`, some added complexity
+>
+> **Option C**: Keep current
+>   - **Pros**: Prioritizes simplicity, no new failure modes
+>   - **Cons**: Performance gap remains
+>
+> **⭐ RECOMMENDED**: Option B or C — SVP priority: operational simplicity over premature optimization unless performance is critical path.
+>
+> **RESULT**: Implement chosen optimization with full regression testing.
+>
+> Which approach? (A/B/C)
 
 **EXAMPLES**:
 - Caching strategies
@@ -250,14 +429,31 @@ ask_user_question(
 
 **TRIGGER**: After code changes that may affect ADG
 
-**REQUIRED PROMPT**:
-> ADG may be stale after these changes. I can:
+**REQUIRED PROMPT (STAR Format)**:
 >
-> **Option A**: Regenerate now — blocks current work for ~30s
-> **Option B**: Defer to end of session — faster now, risk of stale analysis
-> **Option C**: Skip — changes don't affect dependency graph
+> **SITUATION**: ADG may be stale after recent changes. Regeneration timing impacts current work velocity.
 >
-> Which timing?
+> **TASK**: Select timing that balances immediate progress against analysis accuracy.
+>
+> **OPTIONS**:
+>
+> **Option A**: Regenerate now
+>   - **Pros**: Guaranteed fresh analysis, accurate dependency graphs
+>   - **Cons**: Blocks current work for ~30s, immediate delay
+>
+> **Option B**: Defer to end of session
+>   - **Pros**: Faster immediate progress, no current interruption
+>   - **Cons**: Risk of stale analysis leading to incorrect decisions
+>
+> **Option C**: Skip
+>   - **Pros**: Maximum velocity, no regeneration time
+>   - **Cons**: Analysis may be outdated, decisions based on stale graph
+>
+> **⭐ RECOMMENDED**: Option A (Regenerate now) — SVP priority: zero-regression validation requires accurate dependency analysis for any significant change.
+>
+> **RESULT**: Execute regeneration and continue with verified-fresh analysis.
+>
+> Which timing? (A/B/C)
 
 **EXAMPLES**:
 - After refactoring imports

@@ -1,8 +1,8 @@
 """Wave 6: Infrastructure — Hardening Core
 
 Tests for:
-- infrastructure/hardening/adaptive_optimizer.py — threshold optimization, cost prediction
-- infrastructure/hardening/distributed_state_manager.py — state sync, conflict resolution
+- infrastructure/adaptive_optimizer.py — threshold optimization, cost prediction
+- infrastructure/distributed_state_manager.py — state sync, conflict resolution
 """
 
 from dataclasses import dataclass

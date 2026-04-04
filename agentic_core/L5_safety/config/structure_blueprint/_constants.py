@@ -1517,29 +1517,27 @@ def build_sovereign_territories() -> dict[str, TerritoryDefinition]:
     }
 
     # Infrastructure territory — restored from commit 02169159bf deletion
+    # Updated: files now live directly in infrastructure/, not infrastructure/hardening/
     territories["infrastructure"] = {
-        "depth": 2,
+        "depth": 1,
         "purpose": "Infrastructure hardening modules — cross-cutting system optimization and security frameworks.",
-        "subfolders": {
-            "hardening": {
-                "purpose": "System hardening implementations: optimizers, security frameworks, distributed state, query routing.",
-                "allowed_suffixes": [
-                    "_optimizer.py",
-                    "_framework.py",
-                    "_manager.py",
-                    "_router.py",
-                    "_contracts.py",
-                    "_coherence.py",
-                    "_state.py",
-                ],
-                "forbidden_suffixes": ["_test.py", "_spec.py"],
-            },
-        },
-        "required_dirs": ["infrastructure/hardening"],
-        "forbidden_patterns": ["infrastructure/tests", "infrastructure/temp"],
+        "subfolders": {},
+        "required_dirs": ["infrastructure"],
+        "forbidden_patterns": ["infrastructure/tests", "infrastructure/temp", "infrastructure/hardening"],
         "no_cross_layer_imports": False,
         "allowed_extensions": [".py"],
-        "allow_root_py": False,
+        "allow_root_py": True,
+        "allowed_suffixes": [
+            "_optimizer.py",
+            "_framework.py",
+            "_manager.py",
+            "_router.py",
+            "_contracts.py",
+            "_coherence.py",
+            "_state.py",
+            "_plan.py",
+        ],
+        "forbidden_suffixes": ["_test.py", "_spec.py"],
     }
 
     return territories

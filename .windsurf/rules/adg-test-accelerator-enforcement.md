@@ -9,7 +9,7 @@ trigger:
 
 ## Overview
 
-This rule mandates the use of `tools/adg_test_accelerator.py` (Accelerator #6) for comprehensive test planning and validation. The accelerator provides five commands: `gap`, `scope`, `groups`, `report`, and `collection-safety`.
+This rule mandates the use of `tools/adg_test_accelerator.py` (Accelerator #5) for comprehensive test planning and validation. The accelerator provides five commands: `gap`, `scope`, `groups`, `report`, and `collection-safety`.
 
 ## When to Run
 

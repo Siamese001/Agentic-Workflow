@@ -149,7 +149,7 @@ Baseline: `tests/_config/test_count_baseline.json`. Count drops = FAIL. xfail in
 
 ### Agent Deletion Policy
 
-**Zero-tolerance for unauthorized agent deletion.** Deleting any `*Agent.py` requires: `AGENT-DELETION-AUTHORIZED` commit marker, replacement specified, 90-day deprecation period, zero active references. Enforcement: pre-commit hook `guard-agent-deletion`. **Full protocol and example:** Workflow `/agent-deletion-gate`.
+**Zero-tolerance for unauthorized agent deletion.** Deleting any `*Agent.py` requires: `AGENT-DELETION-AUTHORIZED` commit marker, replacement specified, 90-day deprecation period, zero active references. Enforcement: pre-commit hook `guard_agent_deletion`. **Full protocol and example:** Workflow `/agent-deletion-gate`.
 
 ---
 
@@ -473,7 +473,7 @@ When facing a decision point with multiple valid approaches, Windsurf MUST:
 HITL is REQUIRED for:
 - Multiple architectural approaches (inheritance vs composition, layer placement, pattern selection)
 - Refactoring scope affecting >3 files or crossing layer boundaries
-- Anti-pattern introduction (see `/antipattern-hitl-gate`)
+- Anti-pattern introduction (see `/anti-pattern-hitl-gate`)
 - Test failures with multiple valid repair classes (§2.5)
 - Adding external dependencies (PyPI packages, system deps, MCP servers)
 - File/module deletion (especially *Agent.py per §1.6)

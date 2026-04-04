@@ -9,8 +9,8 @@
 ===========================================================================================================
 [1] REQUEST INTAKE + ENVELOPE CHECK
 ===========================================================================================================
-- The front door of the system where every request is initially received, checked for basic validity, and verified for access rights before any actual thinking or routing begins.
-- The library security guard and front desk greeter who checks your library card, makes sure you aren't carrying any banned items, and confirms you are allowed inside before you ever speak to a librarian.
+- **Technical**: Ingress validation, auth/identity check, and rate limiting prior to processing.
+- **Analogy**: Security guard checking library cards and bags at the entrance for prohibited items.
 
                                              │ [ External Trigger ]
                                              ▼
@@ -37,8 +37,8 @@
 ===========================================================================================================
 [2] L1 REASONING + PLAN GENERATION
 ===========================================================================================================
-- The core thinking engine that breaks down a complex user request into a step-by-step plan. It gathers necessary rules and background knowledge but never takes direct action itself.
-- The senior reference librarian who listens to your complex research question, figures out exactly which sections of the library contain the answers, and writes down a step-by-step research plan on a notepad.
+- **Technical**: Decomposes complex goals into validated, policy-safe execution plans.
+- **Analogy**: Senior reference librarian drafting a step-by-step research plan on a notepad.
 
                                          │ [ Validated User Request / Goal ]
                                          ▼
@@ -83,8 +83,8 @@
 ===========================================================================================================
 [3] ROUTE DECISION + SWITCHING
 ===========================================================================================================
-- The traffic controller that looks at the plan and decides exactly where each step needs to go—whether that's fetching a quick cached answer, pulling grounded context, or sending it off for external tool execution.
-- The dispatch clerk at the main desk who looks at the senior librarian's notepad and routes the requests: sending a runner to the archives, pointing you to the quick-reference encyclopedia, or requesting an inter-library loan.
+- **Technical**: Routes plan steps to cache, RAG, or external tools based on intent.
+- **Analogy**: Dispatch clerk routing tasks to the archives, quick-reference desk, or loans.
 
  ┌────────────────────────────────────┐
  │ L0 ROUTING (Dispatcher)            │
@@ -93,12 +93,13 @@
                  ▼
  ┌──────────────────────────────────────┐ yes ┌──────────────────────────────┐
  │ D1: Exact cache key hit by policy?   ├───> │ R1A EXACT CACHE              ├───> [ RETURN ]
- └───────────────┬──────────────────────┘     │ Short-circuit execution      │
-              no ▼                            └──────────────────────────────┘
+ │ (Analogy: Pre-answered FAQ card)     │     │ Short-circuit execution      │
+ └───────────────┬──────────────────────┘     └──────────────────────────────┘
+              no ▼
  ┌──────────────────────────────────────┐ yes ┌──────────────────────────────┐
  │ D2: Semantic cache valid by policy?  ├───> │ R1B SEMANTIC CACHE           ├───> [ RETURN ]
  └───────────────┬──────────────────────┘     │ Short-circuit execution      │
-              no ▼                            └──────────────────────────────┘
+              no ▼
  ┌──────────────────────────────────────┐ yes ┌────────────────────────────────┐
  │ D3: Requires grounded context?       ├───> │ R3 AGENTIC RAG                 │
  └───────────────┬──────────────────────┘     │ Returns context only           │
@@ -126,9 +127,8 @@
 ===========================================================================================================
 [4] LIVE TASK DISPATCH & EXECUTION (The Library Stacks)
 ===========================================================================================================
-- The active phase where work is done, but nothing is permanently saved yet.
-- Library Analogy: Assistants enter the restricted stacks to gather info, fix minor mistakes, 
-  and seal findings for review. They cannot write in the permanent catalog themselves.
+- **Technical**: Stateless execution of sub-tasks using tools with error-correction loops.
+- **Analogy**: Assistants gathering data in stacks; fixing minor errors without editing the catalog.
 
                                                  │ [ Handed down from Front Desk ]
                                                  ▼
@@ -227,8 +227,8 @@
 ===========================================================================================================
 [5] LIVE RUNTIME EXIT CONTROL + CURRENT-RUN EVALUATION
 ===========================================================================================================
-- The final quality assurance checkpoint that reviews the completed work to ensure it's safe, accurate, and fully answers the prompt before delivering it to the user and requesting a permanent record be saved.
-- The head librarian who reviews the compiled folder of research before handing it to you, ensuring it directly answers your question and follows all library policies, then signs off to have a copy filed in the permanent records.
+- **Technical**: Final QA audit for accuracy and safety before delivery and L4 commit.
+- **Analogy**: Head librarian’s final review and approval of the research folder.
 
                                              │ [ Sealed L2 Artifacts ]
                                              ▼
@@ -269,8 +269,8 @@
 ===========================================================================================================
 [6] SHADOW EVALUATION + FUTURE-RUN LEARNING
 ===========================================================================================================
-- An asynchronous, background process that reviews past interactions to identify mistakes, improve future performance, and update the system's core instructions and rules.
-- The library board of directors meeting after hours to review the day's visitor logs and complaint box, using those insights to rewrite the employee handbook and reorganize the catalog system for tomorrow.
+- **Technical**: Asynchronous telemetry review for root cause analysis and system evolution.
+- **Analogy**: Board of Directors meeting after-hours to update policies and catalogs.
 
         ┌──────────────────────────────────────────────────────────────────────────────┐
         │ SHADOW EVALUATION & L6 OBSERVABILITY                                         │
@@ -314,127 +314,6 @@
           │ FUTURE RUNTIME SURFACES UPDATED                                               │
           │ (Prompts, Policies, Baselines, and Logic upgraded for subsequent runs only)   │
           └───────────────────────────────────────────────────────────────────────────────┘
-
-==============================================================================================================================
-[4.1] L2 MODULE BREAKOUT — EXECUTION COMPONENT MAP
-==============================================================================================================================
-Canonical mapping of L2 execution modules to process map phases E1-E5.
-Generated: 2026-04-03 | ADG Source: adg_indexed_04032026_1923.sqlite
-
-----------------------------------------------------------------------------------------------------------------------------
-[4.1.1] Phase E1 — PRE-COMMIT / PREP DESK (L2.1 INIT)
-----------------------------------------------------------------------------------------------------------------------------
-MODULE                                           │ FUNCTION                        │ CONTRACT METHOD
-─────────────────────────────────────────────────┼─────────────────────────────────┼─────────────────────────────
-L2ExecutionAgent (base)                          │ Phase orchestration             │ run_l2_phases()
-L2EmbeddingSovereignAgent                        │ Embedding context setup         │ l2_init()
-L2RedisSovereignAgent                            │ Redis connection init           │ l2_init()
-L2SovereignMCPGatewayAgent                      │ MCP tool binding                │ l2_init()
-L2StructuredEngineAgent                          │ Intent validation               │ l2_init()
-L2SubAtomicRegistryAgent                         │ Registry lookup                 │ l2_init()
-ToolIntentExecutor                               │ Sandbox validation              │ l2_init()
-
-Responsibilities:
-- Environment/capabilities/budget locking
-- Idempotency key binding  
-- Blueprint hash binding for healing replay
-- Sandbox state validation (for mutating ops)
-
-----------------------------------------------------------------------------------------------------------------------------
-[4.1.2] Phase E2 — VALIDATE / WORK ORDER CHECK (L2.1 INIT cont.)
-----------------------------------------------------------------------------------------------------------------------------
-MODULE                                           │ FUNCTION                        │ CONTRACT METHOD
-─────────────────────────────────────────────────┼─────────────────────────────────┼─────────────────────────────
-ToolIntentExecutor                               │ Intent + sandbox validation     │ l2_init() → validation
-SovereignLLMGateway                              │ Capability token validation     │ authorize_and_execute()
-UniversalWriteGateway                            │ Write permission check          │ MutationRecord validation
-
-Validation Gates:
-- Integrity & Signature Chain
-- Cap Scope & Env Budget
-- Schema & Side-Effect Class
-- Mutation Type Sanity
-
-FAIL here = Request rejected before any work starts (sealed rejection)
-
-----------------------------------------------------------------------------------------------------------------------------
-[4.1.3] Phase E3 — EXECUTE / DOING THE WORK (L2.2 EXECUTE)
-----------------------------------------------------------------------------------------------------------------------------
-MODULE                                           │ FUNCTION                        │ CONTRACT METHOD
-─────────────────────────────────────────────────┼─────────────────────────────────┼─────────────────────────────
-L2EmbeddingSovereignAgent                        │ Generate embeddings             │ l2_execute()
-L2RedisSovereignAgent                            │ Cache operations                │ l2_execute()
-L2SovereignMCPGatewayAgent                       │ MCP tool invocation             │ l2_execute()
-L2StructuredEngineAgent                          │ Process structured intents      │ l2_execute()
-L2SubAtomicRegistryAgent                         │ Registry operations             │ l2_execute()
-ToolIntentExecutor                               │ Tool invocation with sandbox    │ l2_execute()
-EmbeddingSovereignAgent (legacy)                 │ Async embedding generation      │ get_embedding()
-RedisSovereignAgent (legacy)                     │ Redis get/set/delete            │ cache operations
-
-Execution Model:
-- Bounded invocation with timeout/circuit breaker
-- Isolated execution (sandbox for mutating ops)
-- Execution telemetry emission
-- Result classification: SUCCESS | SOFT_REPAIRABLE | FAIL_TERMINAL
-
-----------------------------------------------------------------------------------------------------------------------------
-[4.1.4] Phase E4 — HEAL LOOP / FIXING MISTAKES (L2.3 EVALUATE_HEAL)
-----------------------------------------------------------------------------------------------------------------------------
-MODULE                                           │ FUNCTION                        │ CONTRACT METHOD
-─────────────────────────────────────────────────┼─────────────────────────────────┼─────────────────────────────
-L2ExecutionAgent (base)                          │ Phase result evaluation         │ should_attempt_heal()
-L2EmbeddingSovereignAgent                        │ Provider fallback (bge→gemini)  │ l2_evaluate_and_heal()
-L2RedisSovereignAgent                            │ Retry with reconnection         │ l2_evaluate_and_heal()
-L2SovereignMCPGatewayAgent                       │ Tool retry / fallback           │ l2_evaluate_and_heal()
-L2StructuredEngineAgent                          │ Intent reprocessing             │ l2_evaluate_and_heal()
-L2SubAtomicRegistryAgent                         │ Registry retry                  │ l2_evaluate_and_heal()
-ToolIntentExecutor                               │ Retry with recovery             │ l2_evaluate_and_heal()
-healing_tier_router.py                           │ Tier-based routing              │ route_by_confidence()
-healing_tier_dispatcher.py                       │ Healing dispatch                │ dispatch_healing()
-
-Healing Tiers:
-- LOCAL_AGENT: In-agent retry (handled by l2_evaluate_and_heal)
-- COORDINATED: Multi-agent healing (via healing_tier_router)
-- ESCALATED: Human-in-the-loop or abort
-
-----------------------------------------------------------------------------------------------------------------------------
-[4.1.5] Phase E5 — SEAL OUTPUT / FINAL FOLDER (L2.4 SYNTHESIZE)
-----------------------------------------------------------------------------------------------------------------------------
-MODULE                                           │ FUNCTION                        │ CONTRACT METHOD
-─────────────────────────────────────────────────┼─────────────────────────────────┼─────────────────────────────
-L2EmbeddingSovereignAgent                        │ Embedding result packaging      │ l2_synthesize()
-L2RedisSovereignAgent                            │ Operation result packaging      │ l2_synthesize()
-L2SovereignMCPGatewayAgent                      │ Tool result packaging           │ l2_synthesize()
-L2StructuredEngineAgent                          │ Intent result packaging         │ l2_synthesize()
-L2SubAtomicRegistryAgent                         │ Registry result packaging       │ l2_synthesize()
-ToolIntentExecutor                               │ ToolResult creation             │ l2_synthesize()
-
-Sealing Requirements:
-- Final answer / artifact attachment
-- Traces / ancestry / lineage
-- Replay keys / validation counters
-- Terminal class: SUCCESS | FAILURE | NEEDS_HELP | REJECTED
-- NO durable commit (L2 only emits sealed artifacts)
-
-----------------------------------------------------------------------------------------------------------------------------
-[4.1.6] L2 Execution Contract Compliance Matrix
-----------------------------------------------------------------------------------------------------------------------------
-AGENT/WRAPPER                    │ l2_init │ l2_execute │ l2_evaluate_and_heal │ l2_synthesize │ STATUS
-───────────────────────────────────┼─────────┼────────────┼──────────────────────┼───────────────┼──────────
-L2EmbeddingSovereignAgent        │    ✓    │     ✓      │          ✓           │       ✓       │ COMPLIANT
-L2RedisSovereignAgent            │    ✓    │     ✓      │          ✓           │       ✓       │ COMPLIANT
-L2SovereignMCPGatewayAgent        │    ✓    │     ✓      │          ✓           │       ✓       │ COMPLIANT
-L2StructuredEngineAgent           │    ✓    │     ✓      │          ✓           │       ✓       │ COMPLIANT
-L2SubAtomicRegistryAgent          │    ✓    │     ✓      │          ✓           │       ✓       │ COMPLIANT
-ToolIntentExecutor                │    ✓    │     ✓      │          ✓           │       ✓       │ COMPLIANT
-EmbeddingSovereignAgent (legacy)   │    ✗    │     ✗      │          ✗           │       ✗       │ LEGACY
-RedisSovereignAgent (legacy)       │    ✗    │     ✗      │          ✗           │       ✗       │ LEGACY
-SovereignMCPGateway (legacy)       │    ✗    │     ✗      │          ✗           │       ✗       │ LEGACY
-StructuredEngineAgent (legacy)    │    ✗    │     ✗      │          ✗           │       ✗       │ LEGACY
-SubAtomicRegistryAgent (legacy)    │    ✗    │     ✗      │          ✗           │       ✗       │ LEGACY
-ToolsmithAgent (deprecated)        │    N/A  │    N/A     │         N/A          │      N/A      │ DEPRECATED
-
-Migration Path: Legacy agents → L2 Wrappers → Full L2ExecutionAgent inheritance
 
 ==============================================================================================================================
 [ LEGEND ] LAYER DEFINITIONS (L0 - L6)
