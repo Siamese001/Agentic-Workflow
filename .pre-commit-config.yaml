@@ -382,6 +382,17 @@ repos:
         require_serial: true
         exclude: (ops_scripts/ci/adg_burndown_gate\.py|ops_scripts/.*|tests/.*|__pycache__/.*|\.nox/.*|archives/.*|\.backup/.*)
 
+      # -- T13.5: ADG Layer Violation Gate ----------------------------------------
+      # Queries ADG for layer boundary violations (violates edges) and reports them.
+      # Non-blocking in warning mode; violations are logged for visibility.
+      - id: adg-layer-violation-gate
+        name: "T13.5: ADG Layer Violation Gate"
+        entry: cmd /c "set PYTHONPATH=.&& python ops_scripts/ci/adg_layer_violation_gate.py --warn"
+        language: system
+        pass_filenames: false
+        always_run: true
+        require_serial: true
+
       # -- T14: ADG Python Ban Gate (Accelerator enforcement) ------------------------
       # Consolidated gate: hard-fail if staged Python files use grep/mypy/pytest as ADG substitutes.
       # Exempt a specific line with: # guardian: allow-<type> -- <justification>
