@@ -1,0 +1,24 @@
+# Token Budget Configuration — SSOT for context window limits
+schema_version: "1.0.0"
+last_updated: "2026-04-04"
+
+models:
+  kimi_k2_5:
+    hard_max_context: 262000
+    safe_operating_cap: 223000
+    warning_threshold: 197000
+    default_reserved_output: 12000
+    default_safety_buffer: 8000
+    token_rates:
+      code: 0.35
+      text: 0.40
+      json: 0.33
+      diff: 0.30
+      log: 0.38
+      system: 0.42
+
+validation:
+  invariants:
+    - "warning_threshold <= safe_operating_cap <= hard_max_context"
+    - "default_reserved_output >= 0"
+    - "default_safety_buffer >= 0"

@@ -13,6 +13,9 @@ import re
 from dataclasses import dataclass, field
 from typing import Any
 
+# Import from YAML SSOT
+from agentic_core.config.core.token_budget_loader import DEFAULT_TOKEN_BUDGET
+
 # Configure logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -20,12 +23,13 @@ logger = logging.getLogger(__name__)
 @dataclass
 class TokenBudget:
     """Token budget configuration for Kimi K2.5"""
-    HARD_MAX_CONTEXT: int = 262000
-    SAFE_OPERATING_CAP: int = 223000
-    WARNING_THRESHOLD: int = 197000
-    DEFAULT_RESERVED_OUTPUT: int = 12000
-    DEFAULT_SAFETY_BUFFER: int = 8000
-    DEFAULT_MAX_INPUT_TARGET: int = 197000
+    # Load defaults from YAML SSOT
+    HARD_MAX_CONTEXT: int = DEFAULT_TOKEN_BUDGET.hard_max_context
+    SAFE_OPERATING_CAP: int = DEFAULT_TOKEN_BUDGET.safe_operating_cap
+    WARNING_THRESHOLD: int = DEFAULT_TOKEN_BUDGET.warning_threshold
+    DEFAULT_RESERVED_OUTPUT: int = DEFAULT_TOKEN_BUDGET.default_reserved_output
+    DEFAULT_SAFETY_BUFFER: int = DEFAULT_TOKEN_BUDGET.default_safety_buffer
+    DEFAULT_MAX_INPUT_TARGET: int = DEFAULT_TOKEN_BUDGET.warning_threshold
 
     def __post_init__(self) -> None:
         if self.HARD_MAX_CONTEXT <= 0:

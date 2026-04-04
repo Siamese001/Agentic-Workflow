@@ -23,8 +23,8 @@ def simplify_file(filepath: Path, dry_run: bool = True) -> dict:
     encoding_guardian_pattern = r'# guardian: Encoding errors should specify fallback encoding strategy'
 
     # Split by function boundaries (lines starting with "def " or "class ")
-    sections = []
-    current_section = []
+    sections: list[list[str]] = []
+    current_section: list[str] = []
     lines = content.split('\n')
 
     for line in lines:

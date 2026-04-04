@@ -13,26 +13,21 @@ def aggressive_cleanup(filepath: Path, dry_run: bool = True) -> dict:
     original_content = content
     original_lines = len(content.split('\n'))
 
-    # Pattern for the repetitive guardian comment
+    # Pattern for the repetitive guardian comment (used in regex substitution below)
     guardian_pattern = r'\s*# guardian: Encoding errors should specify fallback encoding strategy'
 
     # Split content by function definitions (lines starting with "def " at module level)
     lines = content.split('\n')
 
     result_lines = []
-    in_function = False
     function_guardian_found = False
-    indentation_level = 0
 
     for line in lines:
-        # Track if we're entering a new function (0-indented def)
         stripped = line.lstrip()
-        current_indent = len(line) - len(stripped)
 
-        if stripped.startswith('def ') and current_indent == 0:
-            in_function = True
+        # Track function entry (0-indented def)
+        if stripped.startswith('def ') and len(line) - len(stripped) == 0:
             function_guardian_found = False
-            indentation_level = current_indent
 
         # Check for guardian comment
         if 'guardian: Encoding errors should specify fallback encoding strategy' in line:
@@ -80,7 +75,7 @@ def main():
     # Dry run first
     result = aggressive_cleanup(filepath, dry_run=True)
 
-    print(f"Config Store Cleanup (DRY RUN)")
+    print("Config Store Cleanup (DRY RUN)")
     print(f"Original lines: {result['original_lines']}")
     print(f"Would reduce to: {result['new_lines']}")
     print(f"Lines to remove: {result['lines_removed']}")
