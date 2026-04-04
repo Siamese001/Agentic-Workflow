@@ -57,44 +57,6 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     emit_replay_key,  # noqa: E402
 )
 
-emit_replay_key("p0", "content_filter")
-emit_determinism_digest("p0", "content_filter")
-
-_emit_dispatches_healing_run("p1", "content_filter", "L1")
-_emit_routes_through("p1", "content_filter", "L1")
-_emit_checks_agent_registry("p1", "content_filter", "agent_registry")
-_emit_validates_agent_capability("p1", "content_filter", "capability")
-_emit_dispatches_execution_plan("p1", "content_filter", "exec_plan")
-_emit_agent_executes_agent("p1", "content_filter", "sub_agent")
-_emit_routes_to_agent("p1", "content_filter", "target_agent")
-_emit_verifies_policy("p1", "content_filter", "policy_check")
-_emit_observes_runtime_state("p1", "content_filter", "runtime_state")
-_emit_verifies_boundary("p1", "content_filter", "boundary_check")
-_emit_transcripts_response("p1", "content_filter", "transcript")
-_emit_hard_fails_untranscripted("p1", "content_filter")
-_emit_gated_by_confidence("p1", "content_filter", "confidence_gate")
-_emit_escalates_to_human("p1", "content_filter", "L1")
-_emit_reads_policy_state("p1", "content_filter", "L1")
-_emit_authorize_and_execute("p2", "content_filter", "execution_auth")
-_emit_validates_capability("p2", "content_filter", "capability_check")
-_emit_routes_to_capability("p2", "content_filter", "capability_route")
-_emit_writes_via_uwg("p2", "content_filter", "uwg_write")
-_emit_blocks_direct_write("p2", "content_filter", "direct_write_block")
-_emit_records_tool_invocation("p2", "content_filter", "tool_invocation")
-_emit_captures_execution_output("p2", "content_filter", "exec_output")
-_emit_dispatches_agent("p3", "content_filter", "agent_dispatch")
-_emit_coordinates_agents("p3", "content_filter", "agent_coordination")
-_emit_records_workflow_lineage("p3", "content_filter", "workflow_lineage")
-_emit_records_healing_outcome("p3", "content_filter", "healing_outcome")
-_emit_escalates_failure("p3", "content_filter", "failure_escalation")
-_emit_orchestrates_workflow("p3", "content_filter", "workflow_orchestration")
-_emit_dispatches_healing_run("p3", "content_filter", "healing_dispatch")
-_emit_invokes_evaluation("p3", "content_filter", "evaluation_signal")
-_emit_records_telemetry_event("p4", "content_filter", "telemetry_event")
-_emit_captures_evaluation_metric("p4", "content_filter", "eval_metric")
-_emit_stores_embedding("p4", "content_filter", "embedding_store")
-
-
 class ContentFilterEngine:
     """Engine for filtering sensitive content."""
 

@@ -234,5 +234,3 @@ __all__ = [
     'generate_trace_id',
 ]
 
-emit_replay_key("p0", "__init__")
-emit_determinism_digest("p0", "__init__")

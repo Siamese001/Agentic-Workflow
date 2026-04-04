@@ -53,54 +53,18 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     emit_replay_key,  # noqa: E402
 )
 
-_emit_authorize_and_execute("p2", "arbitrator", "execution_auth")
-_emit_validates_capability("p2", "arbitrator", "capability_check")
-_emit_routes_to_capability("p2", "arbitrator", "capability_route")
-_emit_writes_via_uwg("p2", "arbitrator", "uwg_write")
-_emit_blocks_direct_write("p2", "arbitrator", "direct_write_block")
-_emit_records_tool_invocation("p2", "arbitrator", "tool_invocation")
-_emit_captures_execution_output("p2", "arbitrator", "exec_output")
-_emit_dispatches_agent("p3", "arbitrator", "agent_dispatch")
-_emit_coordinates_agents("p3", "arbitrator", "agent_coordination")
-_emit_records_workflow_lineage("p3", "arbitrator", "workflow_lineage")
-_emit_records_healing_outcome("p3", "arbitrator", "healing_outcome")
-_emit_escalates_failure("p3", "arbitrator", "failure_escalation")
-_emit_orchestrates_workflow("p3", "arbitrator", "workflow_orchestration")
-_emit_dispatches_healing_run("p3", "arbitrator", "healing_dispatch")
-_emit_invokes_evaluation("p3", "arbitrator", "evaluation_signal")
-_emit_records_telemetry_event("p4", "arbitrator", "telemetry_event")
-_emit_captures_evaluation_metric("p4", "arbitrator", "eval_metric")
-_emit_stores_embedding("p4", "arbitrator", "embedding_store")
-_emit_updates_meta_learning_state("p4", "arbitrator", "meta_learning")
-_emit_links_execution_to_snapshot("p4", "arbitrator", "exec_snapshot_link")
 from .arbitration_contract import (
     AdvisorProposal,
     ArbitrationDecision,
     ArbitrationInput,
 )
 
-emit_replay_key("p0", "arbitrator")
-emit_determinism_digest("p0", "arbitrator")
-
-_emit_dispatches_healing_run("p1", "arbitrator", "L3")
-_emit_routes_through("p1", "arbitrator", "L3")
-_emit_verifies_policy("p1", "arbitrator", "policy_check")
-_emit_observes_runtime_state("p1", "arbitrator", "runtime_state")
-_emit_verifies_boundary("p1", "arbitrator", "boundary_check")
-_emit_transcripts_response("p1", "arbitrator", "transcript")
-_emit_hard_fails_untranscripted("p1", "arbitrator")
-_emit_gated_by_confidence("p1", "arbitrator", "confidence_gate")
-_emit_escalates_to_human("p1", "arbitrator", "L3")
-_emit_reads_policy_state("p1", "arbitrator", "L3")
 _emit_routes_to_agent("p1", "arbitrator", "L3")
 _emit_orchestrates_workflow("p1", "arbitrator", "L3")
 _emit_dispatches_execution_plan("p1", "arbitrator", "L3")
 _emit_validates_agent_capability("p1", "arbitrator", "L3")
 _emit_checks_agent_registry("p1", "arbitrator", "L3")
 
-_emit_snapshots_state("p0", "arbitrator", "state_snapshot")
-_emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
-_emit_applies_guardrail("p0", "arbitrator", "p0_governance")
 from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
@@ -132,45 +96,6 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
-
-_emit_emits_metric_event("arbitrator", "p4obs", "metric_1")
-_emit_emits_metric_event("arbitrator", "p4obs", "metric_2")
-_emit_emits_metric_event("arbitrator", "p4obs", "metric_3")
-_emit_emits_metric_event("arbitrator", "p4obs", "metric_4")
-_emit_emits_metric_event("arbitrator", "p4obs", "metric_5")
-_emit_emits_metric_event("arbitrator", "p4obs", "metric_6")
-_emit_records_incident_event("arbitrator", "p4obs", "incident")
-_emit_captures_runtime_anomaly("arbitrator", "p4obs", "anomaly")
-_emit_writes_observability_log("arbitrator", "p4obs", "obs_log")
-_emit_updates_monitoring_state("arbitrator", "p4obs", "mon_state")
-_emit_triggers_alert("arbitrator", "p4obs", "alert")
-_emit_links_incident_trace("arbitrator", "p4obs", "trace_link")
-_emit_captures_pattern("arbitrator", "p3lm", "pattern")
-_emit_records_learning_event("arbitrator", "p3lm", "learning_event")
-_emit_writes_learning_snapshot("arbitrator", "p3lm", "snapshot")
-_emit_feeds_meta_learning("arbitrator", "p3lm", "meta_feed")
-_emit_updates_routing_strategy("arbitrator", "p3lm", "routing")
-_emit_improves_agent_policy("arbitrator", "p3lm", "policy")
-_emit_stores_learning_state("arbitrator", "p3lm", "state")
-_emit_records_execution_trace("arbitrator", "L0_ROUTING", "p2_trace_1")
-_emit_records_execution_trace("arbitrator", "L1_REASONING", "p2_trace_2")
-_emit_records_execution_trace("arbitrator", "L2_EXECUTION", "p2_trace_3")
-_emit_records_execution_trace("arbitrator", "L3_ORCHESTRATION", "p2_trace_4")
-_emit_records_execution_trace("arbitrator", "L4_STATE", "p2_trace_5")
-_emit_reads_environ("arbitrator", "env_read", "p2_env_1")
-_emit_reads_environ("arbitrator", "env_read", "p2_env_2")
-_emit_reads_runtime_state("arbitrator", "runtime_state", "p2_rt_1")
-_emit_reads_runtime_state("arbitrator", "runtime_state", "p2_rt_2")
-_emit_pulls_context("p1", "arbitrator", "context_pull")
-_emit_pulls_context("p1", "arbitrator", "context_pull_2")
-_emit_execution_terminates_at_uwg("p1", "arbitrator", "uwg_term")
-_emit_execution_terminates_at_uwg("p1", "arbitrator", "uwg_term_2")
-_emit_writes_through("p1", "arbitrator", "write_through")
-_emit_writes_through("p1", "arbitrator", "write_through_2")
-_emit_validated_by_safety_plane("p1", "arbitrator", "safety_validation")
-_emit_invokes_eval("p1", "arbitrator", "eval_call")
-_emit_proposal_commits_routing("p1", "arbitrator", "routing_commit")
-
 
 class Arbitrator:
     """Deterministic arbitrator for multi-agent decisions."""

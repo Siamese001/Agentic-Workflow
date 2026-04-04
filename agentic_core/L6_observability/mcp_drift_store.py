@@ -42,8 +42,6 @@ def _get_mcp_drift_recorder():
     return MCPServerState, MCPConfigSnapshot, MCPDriftEvent, MCPDriftRecorder, MCPDriftReport, MCPDriftSeverity
 
 # Self-bootstrap emitters
-emit_replay_key("p0", "mcp_l6_observability")
-emit_determinism_digest("p0", "mcp_l6_observability")
 _emit_records_telemetry_event("mcp_l6", "l6_obs", "persistence_active")
 
 

@@ -38,22 +38,9 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 )
 
 # Lifecycle trace emissions
-emit_replay_key("p0", "l3_context_freeze")
-emit_determinism_digest("p0", "l3_context_freeze")
-
-_emit_applies_guardrail("p0", "l3_context_freeze", "p0_governance")
 _emit_reads_policy_state("p0", "l3_context_freeze", "policy_binding")
-_emit_snapshots_state("p0", "l3_context_freeze", "state_snapshot")
-
 # P1 routing emissions
-_emit_routes_through("p1", "l3_context_freeze", "L3")
-_emit_dispatches_healing_run("p1", "l3_context_freeze", "healing_dispatch")
-
 # P3 orchestration emissions
-_emit_records_workflow_lineage("p3", "l3_context_freeze", "workflow_lineage")
-_emit_records_healing_outcome("p3", "l3_context_freeze", "healing_outcome")
-_emit_observes_runtime_state("p3", "l3_context_freeze", "runtime_state")
-
 logger = logging.getLogger(__name__)
 
 

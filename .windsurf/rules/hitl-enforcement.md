@@ -413,7 +413,7 @@ ask_user_question(
 >   - **Pros**: Prioritizes simplicity, no new failure modes
 >   - **Cons**: Performance gap remains
 >
-> **⭐ RECOMMENDED**: Option B or C — SVP priority: operational simplicity over premature optimization unless performance is critical path.
+> **⭐ RECOMMENDED**: Option B — SVP priority: operational simplicity over premature optimization unless performance is critical path.
 >
 > **RESULT**: Implement chosen optimization with full regression testing.
 >

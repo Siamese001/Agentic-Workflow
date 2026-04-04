@@ -79,30 +79,11 @@ def _get_rlhf_optimizer():
     return DefaultRLHFOptimizer, RLHFChangePackage
 
 # Lifecycle trace emissions for P0-P4 governance
-emit_replay_key("p0", "desk_d_governed_board")
-emit_determinism_digest("p0", "desk_d_governed_board")
-
-_emit_applies_guardrail("p0", "desk_d_governed_board", "p0_governance")
 _emit_reads_policy_state("p0", "desk_d_governed_board", "policy_binding")
-_emit_snapshots_state("p0", "desk_d_governed_board", "state_snapshot")
-
 # P1 orchestration emissions
-_emit_routes_through("p1", "desk_d_governed_board", "L6")
-_emit_dispatches_healing_run("p1", "desk_d_governed_board", "L6")
-_emit_validated_by_safety_plane("p1", "desk_d_governed_board", "safety_validation")
-_emit_writes_through("p1", "desk_d_governed_board", "write_through")
-
 # P3 learning emissions
-_emit_records_workflow_lineage("p3", "desk_d_governed_board", "workflow_lineage")
-_emit_orchestrates_workflow("p3", "desk_d_governed_board", "workflow_orchestration")
-_emit_dispatches_agent("p3", "desk_d_governed_board", "agent_dispatch")
-_emit_coordinates_agents("p3", "desk_d_governed_board", "agent_coordination")
-_emit_records_healing_outcome("p3", "desk_d_governed_board", "healing_outcome")
-_emit_escalates_failure("p3", "desk_d_governed_board", "failure_escalation")
-
 # P3 Learning Maturity emissions
 _emit_captures_pattern("p3", "desk_d_governed_board", "pattern_learning")
-_emit_records_learning_event("p3", "desk_d_governed_board", "learning_event")
 _emit_writes_learning_snapshot("p3", "desk_d_governed_board", "learning_snapshot")
 _emit_feeds_meta_learning("p3", "desk_d_governed_board", "meta_learning_feed")
 _emit_updates_routing_strategy("p3", "desk_d_governed_board", "routing_strategy_update")
@@ -110,19 +91,12 @@ _emit_improves_agent_policy("p3", "desk_d_governed_board", "policy_improvement")
 _emit_stores_learning_state("p3", "desk_d_governed_board", "learning_state")
 
 # P4 telemetry emissions
-_emit_records_telemetry_event("p4", "desk_d_governed_board", "telemetry_event")
-_emit_captures_evaluation_metric("p4", "desk_d_governed_board", "eval_metric")
-_emit_stores_embedding("p4", "desk_d_governed_board", "embedding_store")
 _emit_updates_meta_learning_state("p4", "desk_d_governed_board", "meta_learning_state")
 _emit_links_execution_to_snapshot("p4", "desk_d_governed_board", "snapshot_link")
 
 # P4 observability emissions
-_emit_emits_metric_event("p4obs", "desk_d_governed_board", "metric_1")
-_emit_emits_metric_event("p4obs", "desk_d_governed_board", "metric_2")
-_emit_emits_metric_event("p4obs", "desk_d_governed_board", "metric_3")
 _emit_records_incident_event("p4obs", "desk_d_governed_board", "incident_event")
 _emit_captures_runtime_anomaly("p4obs", "desk_d_governed_board", "anomaly_capture")
-_emit_writes_observability_log("p4obs", "desk_d_governed_board", "obs_log")
 _emit_updates_monitoring_state("p4obs", "desk_d_governed_board", "monitoring_state")
 _emit_triggers_alert("p4obs", "desk_d_governed_board", "alert_trigger")
 _emit_links_incident_trace("p4obs", "desk_d_governed_board", "incident_trace")

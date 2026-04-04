@@ -54,44 +54,6 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     emit_replay_key,  # noqa: E402
 )
 
-emit_replay_key("p0", "context_assembler")
-emit_determinism_digest("p0", "context_assembler")
-
-_emit_dispatches_healing_run("p1", "context_assembler", "L1")
-_emit_routes_through("p1", "context_assembler", "L1")
-_emit_checks_agent_registry("p1", "context_assembler", "agent_registry")
-_emit_validates_agent_capability("p1", "context_assembler", "capability")
-_emit_dispatches_execution_plan("p1", "context_assembler", "exec_plan")
-_emit_agent_executes_agent("p1", "context_assembler", "sub_agent")
-_emit_routes_to_agent("p1", "context_assembler", "target_agent")
-_emit_verifies_policy("p1", "context_assembler", "policy_check")
-_emit_observes_runtime_state("p1", "context_assembler", "runtime_state")
-_emit_verifies_boundary("p1", "context_assembler", "boundary_check")
-_emit_transcripts_response("p1", "context_assembler", "transcript")
-_emit_hard_fails_untranscripted("p1", "context_assembler")
-_emit_gated_by_confidence("p1", "context_assembler", "confidence_gate")
-_emit_escalates_to_human("p1", "context_assembler", "L1")
-_emit_reads_policy_state("p1", "context_assembler", "L1")
-_emit_authorize_and_execute("p2", "context_assembler", "execution_auth")
-_emit_validates_capability("p2", "context_assembler", "capability_check")
-_emit_routes_to_capability("p2", "context_assembler", "capability_route")
-_emit_writes_via_uwg("p2", "context_assembler", "uwg_write")
-_emit_blocks_direct_write("p2", "context_assembler", "direct_write_block")
-_emit_records_tool_invocation("p2", "context_assembler", "tool_invocation")
-_emit_captures_execution_output("p2", "context_assembler", "exec_output")
-_emit_dispatches_agent("p3", "context_assembler", "agent_dispatch")
-_emit_coordinates_agents("p3", "context_assembler", "agent_coordination")
-_emit_records_workflow_lineage("p3", "context_assembler", "workflow_lineage")
-_emit_records_healing_outcome("p3", "context_assembler", "healing_outcome")
-_emit_escalates_failure("p3", "context_assembler", "failure_escalation")
-_emit_orchestrates_workflow("p3", "context_assembler", "workflow_orchestration")
-_emit_dispatches_healing_run("p3", "context_assembler", "healing_dispatch")
-_emit_invokes_evaluation("p3", "context_assembler", "evaluation_signal")
-_emit_records_telemetry_event("p4", "context_assembler", "telemetry_event")
-_emit_captures_evaluation_metric("p4", "context_assembler", "eval_metric")
-_emit_stores_embedding("p4", "context_assembler", "embedding_store")
-
-
 class ContextAssembler:
     """Assembles context from search results for RAG generation."""
 
