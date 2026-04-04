@@ -1,0 +1,116 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Structure Blueprint Territory Configuration",
+  "type": "object",
+  "required": ["schema_version", "territories"],
+  "properties": {
+    "schema_version": {
+      "type": "string",
+      "description": "Schema version for this configuration file"
+    },
+    "last_updated": {
+      "type": "string",
+      "format": "date",
+      "description": "Date of last update"
+    },
+    "territories": {
+      "type": "object",
+      "description": "Territory definitions",
+      "minProperties": 1,
+      "additionalProperties": {
+        "$ref": "#/definitions/territory"
+      }
+    },
+    "wildcards": {
+      "type": "object",
+      "description": "Wildcard territory patterns",
+      "additionalProperties": {
+        "type": "object",
+        "required": ["pattern", "depth", "purpose"],
+        "properties": {
+          "pattern": {
+            "type": "string",
+            "description": "Regex pattern for matching territory names"
+          },
+          "depth": {
+            "type": "integer",
+            "minimum": 1,
+            "description": "Directory depth for this wildcard"
+          },
+          "purpose": {
+            "type": "string",
+            "description": "Description of wildcard territory purpose"
+          },
+          "subfolders": {
+            "type": "object",
+            "description": "Subfolder definitions for wildcard matches"
+          }
+        }
+      }
+    }
+  },
+  "definitions": {
+    "territory": {
+      "type": "object",
+      "required": ["depth", "purpose"],
+      "properties": {
+        "depth": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "Directory depth for this territory"
+        },
+        "purpose": {
+          "type": "string",
+          "description": "Description of territory purpose"
+        },
+        "subfolders": {
+          "type": "object",
+          "description": "Subfolder definitions",
+          "additionalProperties": {
+            "$ref": "#/definitions/subfolder"
+          }
+        },
+        "volatile": {
+          "type": "boolean",
+          "description": "Whether this territory is volatile (can be modified)"
+        }
+      }
+    },
+    "subfolder": {
+      "type": "object",
+      "properties": {
+        "depth": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "purpose": {
+          "type": "string"
+        },
+        "allowed_suffixes": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "forbidden_suffixes": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "allowed_extensions": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "subfolders": {
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "#/definitions/subfolder"
+          }
+        }
+      }
+    }
+  }
+}

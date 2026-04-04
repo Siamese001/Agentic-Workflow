@@ -1,0 +1,74 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Token Budget Configuration",
+  "type": "object",
+  "required": ["schema_version", "models"],
+  "properties": {
+    "schema_version": {
+      "type": "string",
+      "description": "Schema version for this configuration file"
+    },
+    "last_updated": {
+      "type": "string",
+      "format": "date",
+      "description": "Date of last update"
+    },
+    "models": {
+      "type": "object",
+      "description": "Model-specific token budget configurations",
+      "minProperties": 1,
+      "additionalProperties": {
+        "type": "object",
+        "required": ["hard_max_context", "safe_operating_cap", "warning_threshold"],
+        "properties": {
+          "hard_max_context": {
+            "type": "integer",
+            "minimum": 1,
+            "description": "Absolute maximum context window size"
+          },
+          "safe_operating_cap": {
+            "type": "integer",
+            "minimum": 1,
+            "description": "Safe operating limit for context"
+          },
+          "warning_threshold": {
+            "type": "integer",
+            "minimum": 1,
+            "description": "Warning threshold for context usage"
+          },
+          "default_reserved_output": {
+            "type": "integer",
+            "minimum": 0,
+            "description": "Default reserved tokens for output"
+          },
+          "default_safety_buffer": {
+            "type": "integer",
+            "minimum": 0,
+            "description": "Default safety buffer tokens"
+          },
+          "token_rates": {
+            "type": "object",
+            "description": "Token estimation rates by content type",
+            "additionalProperties": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1
+            }
+          }
+        }
+      }
+    },
+    "validation": {
+      "type": "object",
+      "properties": {
+        "invariants": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Validation invariants as strings"
+        }
+      }
+    }
+  }
+}

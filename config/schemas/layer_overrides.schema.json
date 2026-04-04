@@ -1,0 +1,78 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Structure Blueprint Layer Overrides Configuration",
+  "type": "object",
+  "required": ["schema_version", "overrides"],
+  "properties": {
+    "schema_version": {
+      "type": "string",
+      "description": "Schema version for this configuration file"
+    },
+    "last_updated": {
+      "type": "string",
+      "format": "date",
+      "description": "Date of last update"
+    },
+    "overrides": {
+      "type": "object",
+      "description": "Layer override definitions",
+      "minProperties": 1,
+      "additionalProperties": {
+        "$ref": "#/definitions/layer_override"
+      }
+    }
+  },
+  "definitions": {
+    "layer_override": {
+      "type": "object",
+      "required": ["purpose"],
+      "properties": {
+        "purpose": {
+          "type": "string",
+          "description": "Description of layer purpose"
+        },
+        "forbidden_capabilities": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "List of forbidden capabilities for this layer"
+        },
+        "routing_rules": {
+          "type": "object",
+          "description": "File pattern to subfolder routing rules",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "extra_subfolders": {
+          "type": "object",
+          "description": "Additional subfolder definitions for this layer",
+          "additionalProperties": {
+            "$ref": "#/definitions/subfolder"
+          }
+        }
+      }
+    },
+    "subfolder": {
+      "type": "object",
+      "properties": {
+        "purpose": {
+          "type": "string"
+        },
+        "allowed_extensions": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "subfolders": {
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "#/definitions/subfolder"
+          }
+        }
+      }
+    }
+  }
+}
