@@ -62,6 +62,28 @@ class TestDynamicExecutionVisitor:
         assert visitor is not None
         assert hasattr(visitor, "extract_edges")
 
+    def test_extract_edges_with_exec_call(self):
+        """Test that _DynamicExecutionVisitor extracts edges from exec() calls."""
+        import ast
+
+        from agentic_core.adg.extraction.static_scanner import canonical_name
+
+        ctx = VisitorContext(
+            module_adg_name=canonical_name("Module", "pkg/test.py"),
+            source_file="pkg/test.py",
+        )
+        visitor = _DynamicExecutionVisitor(ctx)
+
+        src = "exec('print(1)')"
+        tree = ast.parse(src)
+        visitor.visit(tree)
+        edges = visitor.extract_edges()
+
+        # Should find dynamic execution edge (actual: 'invokes_dynamic')
+        assert any(e.relation_type in ("dynamic_exec", "invokes_dynamic") for e in edges), (
+            f"Expected 'dynamic_exec' or 'invokes_dynamic' edge, got: {[e.relation_type for e in edges]}"
+        )
+
 
 class TestImportVisitor:
     """Test _ImportVisitor extraction."""
@@ -72,6 +94,50 @@ class TestImportVisitor:
         visitor = _ImportVisitor(ctx)
         assert visitor is not None
         assert hasattr(visitor, "extract_edges")
+
+    def test_extract_edges_import(self):
+        """Test that _ImportVisitor extracts edges from import statements."""
+        import ast
+
+        from agentic_core.adg.extraction.static_scanner import canonical_name
+
+        ctx = VisitorContext(
+            module_adg_name=canonical_name("Module", "pkg/test.py"),
+            source_file="pkg/test.py",
+        )
+        visitor = _ImportVisitor(ctx)
+
+        src = "import os"
+        tree = ast.parse(src)
+        visitor.visit(tree)
+        edges = visitor.extract_edges()
+
+        # Should find imports edge
+        assert any(e.relation_type == "imports" for e in edges), (
+            f"Expected 'imports' edge, got: {[e.relation_type for e in edges]}"
+        )
+
+    def test_extract_edges_from_import(self):
+        """Test that _ImportVisitor extracts edges from from...import statements."""
+        import ast
+
+        from agentic_core.adg.extraction.static_scanner import canonical_name
+
+        ctx = VisitorContext(
+            module_adg_name=canonical_name("Module", "pkg/test.py"),
+            source_file="pkg/test.py",
+        )
+        visitor = _ImportVisitor(ctx)
+
+        src = "from typing import Dict"
+        tree = ast.parse(src)
+        visitor.visit(tree)
+        edges = visitor.extract_edges()
+
+        # Should find imports edge
+        assert any(e.relation_type == "imports" for e in edges), (
+            f"Expected 'imports' edge from from_import, got: {[e.relation_type for e in edges]}"
+        )
 
 
 class TestBaseStructuralVisitor:
