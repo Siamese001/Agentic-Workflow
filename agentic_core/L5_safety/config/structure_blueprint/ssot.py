@@ -882,6 +882,7 @@ SOVEREIGN_EXCLUDED_FOLDERS: frozenset[str] = frozenset(
         ".mypy_cache",
         ".tox",
         "archives",
+        "archive",  # Also exclude singular form (tools/archive/)
         "legacy_code",
         "legacy_engines",
         "legacy_resume_gen",
