@@ -534,4 +534,3 @@ class V15ExecutionGateway:
 
 
 __all__ = ["GatewayResult", "V15ExecutionGateway"]
-

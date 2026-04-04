@@ -74,14 +74,6 @@ _emit_stores_embedding("p4", "model_provider_config", "embedding_store")
 _emit_updates_meta_learning_state("p4", "model_provider_config", "meta_learning")
 _emit_links_execution_to_snapshot("p4", "model_provider_config", "exec_snapshot_link")
 
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300  # 5 minutes
 # Configuration constants
 
 """
@@ -104,6 +96,7 @@ from agentic_core.L0_routing.config import (
     AGENTIC_CORE_DIR,
 )
 from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+from agentic_core.config.core.constants_config import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
     LayerSegment,
     _emit_agent_executes_agent,
     _emit_captures_pattern,

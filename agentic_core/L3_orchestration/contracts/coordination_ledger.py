@@ -565,4 +565,3 @@ __all__ = [
     "InvalidOwnershipTransition",
     "InvalidStageTransition",
 ]
-

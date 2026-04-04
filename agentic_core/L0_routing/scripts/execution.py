@@ -451,4 +451,3 @@ def get_strategy(workflow_type: str) -> ExecutionStrategy:
         if strategy.can_handle(workflow_type):
             return strategy
     return STRATEGY_REGISTRY["dag"]
-

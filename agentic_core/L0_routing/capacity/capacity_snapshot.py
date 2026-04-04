@@ -517,4 +517,3 @@ __all__ = [
     "LACK_OF_ALTERNATIVES",
     "UNAVAILABLE_EXCLUDED",
 ]
-

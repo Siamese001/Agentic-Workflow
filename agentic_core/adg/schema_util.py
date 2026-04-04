@@ -21,6 +21,7 @@ from __future__ import annotations
 
 from functools import lru_cache
 from typing import Literal
+from agentic_core.config.core.constants_config import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, MAX_DEPTH, MAX_RETRIES, THRESHOLD
 
 
 # Local stub to avoid L_TOOLS->L_RUNTIME dependency while maintaining ADG instrumentation
@@ -29,12 +30,6 @@ def _emit_reads_through(source: str, target: str, context: str) -> None:
     pass
 
 # Configuration constants required by tests
-BATCH_SIZE = 1000
-BUFFER_SIZE = 8192
-DEFAULT_SLEEP = 0.1
-MAX_DEPTH = 50
-MAX_RETRIES = 3
-THRESHOLD = 0.95
 
 ADG_NS = "ADG"
 EntityType = Literal[

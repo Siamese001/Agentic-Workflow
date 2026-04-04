@@ -3,14 +3,6 @@ architecture_governor_healer — HEALER_REGISTRY entry for architecture_governan
 
 L2.3 healing subsystem: applies architectural governance fixes (naming,
 import compliance, layer gravity) via ArchitectureGovernorAgent. Registered
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300  # 5 minutes
 # Configuration constants
 
 in HEALER_REGISTRY under check_id "architecture_governance".
@@ -105,6 +97,7 @@ _emit_stores_embedding("p4", "architecture_governor_healer", "embedding_store")
 _emit_updates_meta_learning_state("p4", "architecture_governor_healer", "meta_learning")
 _emit_links_execution_to_snapshot("p4", "architecture_governor_healer", "exec_snapshot_link")
 from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+from agentic_core.config.core.constants_config import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,

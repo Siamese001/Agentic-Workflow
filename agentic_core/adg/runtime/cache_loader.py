@@ -60,6 +60,7 @@ _emit_applies_guardrail("p0", "cache_loader", "p0_governance")
 _emit_reads_policy_state("p0", "cache_loader", "policy_binding")
 _emit_snapshots_state("p0", "cache_loader", "state_snapshot")
 from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+from agentic_core.config.core.constants_config import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, MAX_DEPTH, MAX_RETRIES, THRESHOLD
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
@@ -173,12 +174,6 @@ _emit_updates_meta_learning_state("p4", "cache_loader", "meta_learning")
 _emit_links_execution_to_snapshot("p4", "cache_loader", "exec_snapshot_link")
 
 # Configuration constants required by tests
-BATCH_SIZE = 1000
-BUFFER_SIZE = 8192
-DEFAULT_SLEEP = 0.1
-MAX_DEPTH = 50
-MAX_RETRIES = 3
-THRESHOLD = 0.95
 
 logger = logging.getLogger(__name__)
 _CACHE_PATH = Path("artifacts/adg/scan_result_cache.json")

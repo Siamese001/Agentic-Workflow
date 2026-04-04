@@ -60,6 +60,7 @@ _emit_applies_guardrail("p0", "mcp_client", "p0_governance")
 _emit_reads_policy_state("p0", "mcp_client", "policy_binding")
 _emit_snapshots_state("p0", "mcp_client", "state_snapshot")
 from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+from agentic_core.config.core.constants_config import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, MAX_DEPTH, MAX_RETRIES, THRESHOLD
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
@@ -158,12 +159,6 @@ _emit_writes_via_uwg("p2", "mcp_client", "uwg_write")
 _emit_blocks_direct_write("p2", "mcp_client", "direct_write_block")
 
 # Configuration constants required by tests
-BATCH_SIZE = 1000
-BUFFER_SIZE = 8192
-DEFAULT_SLEEP = 0.1
-MAX_DEPTH = 50
-MAX_RETRIES = 3
-THRESHOLD = 0.95
 
 logger = logging.getLogger(__name__)
 _emit_records_tool_invocation("p2", "mcp_client", "tool_invocation")

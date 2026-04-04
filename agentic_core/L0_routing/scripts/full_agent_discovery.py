@@ -6,14 +6,6 @@ With Advanced AST Analysis & Architectural Integrity Verification
 COMPLETE SSOT REFACTOR: All directory constants and paths MUST be imported
 from structure_blueprint.py. NO hardcoded strings allowed.
 
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300  # 5 minutes
 # Configuration constants
 
 This script serves as the canonical entry point for agent discovery operations.
@@ -256,6 +248,7 @@ _emit_validated_by_safety_plane("p1", "full_agent_discovery", "safety_validation
 _emit_invokes_eval("p1", "full_agent_discovery", "eval_call")
 _emit_proposal_commits_routing("p1", "full_agent_discovery", "routing_commit")
 from agentic_core.L_CONTRACTS.lifecycle_trace_contract import emit_determinism_digest
+from agentic_core.config.core.constants_config import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
 
 emit_determinism_digest("trace_full_agent_discovery", "full_agent_discovery_dispatch_entry")
 emit_determinism_digest("trace_full_agent_discovery", "full_agent_discovery_dispatch_exit")

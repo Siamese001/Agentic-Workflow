@@ -95,7 +95,7 @@ ask_user_question(
 >   - **Pros**: `<benefits>`
 >   - **Cons**: `<drawbacks>`
 >
-> **⭐ RECOMMENDED**: Option `<X>` — Aligns with SVP priority `<(a) operational simplicity | (b) dependency hygiene | (c) archival discipline | (d) documentation | (e) zero-regression validation>`.
+> **⭐ RECOMMENDED**: Option A — SVP priority: (a) operational simplicity through reduced moving parts, (b) dependency hygiene, (c) archival discipline, (d) documentation, (e) zero-regression validation.
 >
 > **RESULT**: Execute chosen approach with full test coverage.
 >

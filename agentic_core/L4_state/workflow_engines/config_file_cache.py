@@ -100,6 +100,7 @@ _emit_stores_embedding("p4", "config_file_cache", "embedding_store")
 _emit_updates_meta_learning_state("p4", "config_file_cache", "meta_learning")
 _emit_links_execution_to_snapshot("p4", "config_file_cache", "exec_snapshot_link")
 from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+from agentic_core.config.core.constants_config import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
@@ -174,14 +175,6 @@ _emit_validated_by_safety_plane("p1", "config_file_cache", "safety_validation")
 _emit_invokes_eval("p1", "config_file_cache", "eval_call")
 _emit_proposal_commits_routing("p1", "config_file_cache", "routing_commit")
 
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300  # 5 minutes
 # Configuration constants
 
 logger = logging.getLogger(__name__)

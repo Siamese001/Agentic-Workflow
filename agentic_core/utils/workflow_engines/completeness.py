@@ -20,13 +20,9 @@ import json
 from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
 from typing import Any
+from agentic_core.config.core.constants_config import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, MAX_RETRIES, THRESHOLD
 
 # Configuration constants
-BATCH_SIZE = 1000
-BUFFER_SIZE = 8192
-DEFAULT_SLEEP = 0.1
-MAX_RETRIES = 3
-THRESHOLD = 0.95
 
 
 @dataclass(frozen=True)

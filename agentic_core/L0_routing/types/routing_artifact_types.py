@@ -486,4 +486,3 @@ __all__ = [
     "TokenGateResult",
     "VigilanceTier",
 ]
-

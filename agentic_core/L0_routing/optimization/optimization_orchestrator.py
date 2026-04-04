@@ -718,4 +718,3 @@ __all__ = [
     "route_candidate_ranked",
     "routing_governance_approved",
 ]
-

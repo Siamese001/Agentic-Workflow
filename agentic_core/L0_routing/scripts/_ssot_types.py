@@ -471,4 +471,3 @@ class HealContext:
             trace_id=trace_id,
             execution_mode=execution_mode,
         )
-

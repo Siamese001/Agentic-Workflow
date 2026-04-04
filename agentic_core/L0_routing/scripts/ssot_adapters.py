@@ -482,4 +482,3 @@ def build_adapters(agents: dict[str, Any], project_root: Path) -> dict[str, Any]
                 continue
         adapters[key] = adapter_cls(agent_instance)
     return adapters
-
