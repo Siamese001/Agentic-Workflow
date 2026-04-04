@@ -16,7 +16,6 @@ import logging
 import os
 import re
 import sys
-import asyncio
 from pathlib import Path
 
 import chromadb
@@ -30,7 +29,7 @@ from agentic_core.L4_state.config.memory_store_config import MemoryStoreConfig
 # Import embedding factory for BGE-M3 support
 try:
     from agentic_core.embeddings.embedding_factory import create_embedding_client
-    from agentic_core.embeddings.embedding_input_guard import GuardedText
+
     EMBEDDING_FACTORY_AVAILABLE = True
 except ImportError:
     EMBEDDING_FACTORY_AVAILABLE = False
@@ -221,7 +220,12 @@ class DocumentChunker:
 class EmbeddingGenerator:
     """Generates embeddings using OpenAI API, BGE-M3, or mock embeddings for testing."""
 
-    def __init__(self, model: str = "text-embedding-ada-002", mock_embeddings: bool = False, embedding_provider: str = "openai"):
+    def __init__(
+        self,
+        model: str = "text-embedding-ada-002",
+        mock_embeddings: bool = False,
+        embedding_provider: str = "openai",
+    ):
         self.model = model
         self.mock_embeddings = mock_embeddings
         self.embedding_provider = embedding_provider
@@ -236,7 +240,7 @@ class EmbeddingGenerator:
                 raise ValueError("Embedding factory not available. Cannot use BGE-M3 provider.")
             Logger.info("Using BGE-M3 embeddings via embedding factory")
             self.embedding_client = create_embedding_client("bge-m3")
-            self.vector_dimensions = getattr(self.embedding_client, 'observed_dimension', 1024)
+            self.vector_dimensions = getattr(self.embedding_client, "observed_dimension", 1024)
             Logger.info(f"BGE-M3 client initialized with {self.vector_dimensions} dimensions")
         else:
             # Default OpenAI
@@ -257,6 +261,7 @@ class EmbeddingGenerator:
             # Generate mock embeddings
             Logger.info(f"Generating {len(texts)} mock embeddings ({self.vector_dimensions}d)")
             import random
+
             return [[random.uniform(-1, 1) for _ in range(self.vector_dimensions)] for _ in texts]
 
         if self.embedding_provider == "bge-m3" and self.embedding_client:
@@ -310,7 +315,9 @@ class EmbeddingGenerator:
 class VectorDBIngestor:
     """Handles ingestion into ChromaDB vector store."""
 
-    def __init__(self, collection_name: str = "docs", persist_directory: str = None, vector_dimensions: int = 1536):
+    def __init__(
+        self, collection_name: str = "docs", persist_directory: str = None, vector_dimensions: int = 1536
+    ):
         self.collection_name = collection_name
         self.config = MemoryStoreConfig()
         self.vector_dimensions = vector_dimensions
@@ -397,16 +404,29 @@ class VectorDBIngestor:
             return {}
 
 
-def find_markdown_files(source_dir: Path) -> list[Path]:
+def find_markdown_files(source_dir: Path, exclude_patterns: list[str] = None) -> list[Path]:
     """Find all markdown files in the source directory."""
     source_dir = source_dir.resolve()
     markdown_files = []
+    exclude_patterns = exclude_patterns or []
 
     for file_path in source_dir.rglob("*.md"):
         # Skip certain directories
         if any(skip in str(file_path) for skip in [".git", "__pycache__", "node_modules"]):
             continue
-        markdown_files.append(file_path.resolve())
+
+        # Check exclude glob patterns
+        rel_path = file_path.relative_to(source_dir)
+        excluded = False
+        for pattern in exclude_patterns:
+            import fnmatch
+
+            if fnmatch.fnmatch(str(rel_path), pattern) or fnmatch.fnmatch(str(file_path), pattern):
+                excluded = True
+                break
+
+        if not excluded:
+            markdown_files.append(file_path.resolve())
 
     return sorted(markdown_files)
 
@@ -417,7 +437,15 @@ def main():
     parser.add_argument("--collection-name", default="docs", help="ChromaDB collection name")
     parser.add_argument("--dry-run", action="store_true", help="Preview without ingesting")
     parser.add_argument("--mock-embeddings", action="store_true", help="Use mock embeddings for testing")
-    parser.add_argument("--embedding-provider", default="openai", choices=["openai", "bge-m3"], help="Embedding provider to use")
+    parser.add_argument(
+        "--embedding-provider",
+        default="openai",
+        choices=["openai", "bge-m3"],
+        help="Embedding provider to use",
+    )
+    parser.add_argument(
+        "--exclude-glob", action="append", help="Glob pattern to exclude (can be used multiple times)"
+    )
     parser.add_argument("--limit", type=int, help="Limit number of files to process (for testing)")
 
     args = parser.parse_args()
@@ -428,7 +456,7 @@ def main():
         return 1
 
     # Find markdown files
-    markdown_files = find_markdown_files(source_dir)
+    markdown_files = find_markdown_files(source_dir, args.exclude_glob)
     if args.limit:
         markdown_files = markdown_files[: args.limit]
 
@@ -437,8 +465,7 @@ def main():
     # Initialize components
     chunker = DocumentChunker()
     embedding_generator = EmbeddingGenerator(
-        mock_embeddings=args.mock_embeddings,
-        embedding_provider=args.embedding_provider
+        mock_embeddings=args.mock_embeddings, embedding_provider=args.embedding_provider
     )
     ingestor = VectorDBIngestor(args.collection_name, vector_dimensions=embedding_generator.vector_dimensions)
 
