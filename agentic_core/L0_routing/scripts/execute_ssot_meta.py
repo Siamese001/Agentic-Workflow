@@ -59,6 +59,10 @@ def _fire_meta_learning_intake_required(
         else:
             healing_actions = []
 
+    # GAP FIX: Validate timestamp is positive
+    if timestamp <= 0:
+        raise ValueError(f"Timestamp must be positive, got {timestamp}")
+
     # If no healing actions, return empty result
     if not healing_actions:
         return MetaLearningResult(records_persisted=0, proposals=())

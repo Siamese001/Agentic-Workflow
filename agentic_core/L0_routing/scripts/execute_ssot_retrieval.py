@@ -136,6 +136,10 @@ def _retrieve_execution_context(query: str, timestamp: int) -> dict[str, Any]:
         - 'cached': Whether result came from cache
         - 'timestamp': The retrieval timestamp
     """
+    # GAP FIX: Reject empty query string
+    if not query or not query.strip():
+        raise ValueError("Query cannot be empty")
+
     query_hash = _get_query_hash(query)
 
     # Check L1 exact cache first

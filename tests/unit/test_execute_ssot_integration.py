@@ -208,6 +208,60 @@ class TestExecuteSsotMetaLearningIntakeReal:
         # Test _fire_meta_learning_intake_required is callable
         assert callable(_fire_meta_learning_intake_required)
 
+    def test_meta_learning_intake_rejects_invalid_timestamp(self):
+        """Verify _fire_meta_learning_intake_required rejects invalid timestamp (GAP FIX G1)."""
+        from agentic_core.L0_routing.scripts.execute_ssot_meta import (
+            _fire_meta_learning_intake_required,
+            MetaLearningError,
+        )
+
+        class MockState:
+            def __init__(self):
+                self.state = {'healing_actions': []}
+
+        # Test zero timestamp
+        with pytest.raises(ValueError, match="Timestamp must be positive"):
+            _fire_meta_learning_intake_required(MockState(), 0, __import__('pathlib').Path('/tmp'))
+
+        # Test negative timestamp
+        with pytest.raises(ValueError, match="Timestamp must be positive"):
+            _fire_meta_learning_intake_required(MockState(), -1, __import__('pathlib').Path('/tmp'))
+
+    def test_meta_learning_intake_handles_non_dict_actions(self):
+        """Verify _fire_meta_learning_intake_required handles non-dict actions gracefully (GAP FIX G5)."""
+        from agentic_core.L0_routing.scripts.execute_ssot_meta import (
+            _fire_meta_learning_intake_required,
+            MetaLearningResult,
+        )
+
+        class MockState:
+            def __init__(self):
+                self.state = {'healing_actions': []}
+
+        # Test with non-dict actions (list, string, None) - should be silently skipped
+        result = _fire_meta_learning_intake_required(
+            MockState(),
+            1234567890,
+            __import__('pathlib').Path('/tmp'),
+            healing_actions=["not a dict", 123, None, {'type': 'valid_action'}]
+        )
+
+        # Only the valid dict action should be processed
+        assert result.records_persisted == 1
+        assert len(result.proposals) == 1
+        assert result.proposals[0]['action_type'] == 'valid_action'
+
+    def test_meta_learning_error_exception_exists(self):
+        """Verify MetaLearningError exception class exists and is usable (GAP FIX G6)."""
+        from agentic_core.L0_routing.scripts.execute_ssot_meta import MetaLearningError
+
+        # Verify it's an Exception subclass
+        assert issubclass(MetaLearningError, Exception)
+
+        # Verify it can be raised and caught
+        with pytest.raises(MetaLearningError):
+            raise MetaLearningError("test error")
+
 
 class TestExecuteSsotRetrievalHooks:
     """Test 4: Retrieval profile integration hooks."""
@@ -323,6 +377,73 @@ class TestExecuteSsotRetrievalHooks:
         for i in range(MAX_CACHE_SIZE, MAX_CACHE_SIZE + 5):
             query_hash = hashlib.sha256(f"query_{i}".encode()).hexdigest()[:16]
             assert query_hash in _L1_EXACT_CACHE, f"New entry {i} should still exist"
+
+    def test_clear_retrieval_cache_clears_all(self):
+        """Verify _clear_retrieval_cache clears both L1 and L2 caches (GAP FIX G2)."""
+        from agentic_core.L0_routing.scripts.execute_ssot_retrieval import (
+            _store_in_retrieval_cache,
+            _clear_retrieval_cache,
+            _L1_EXACT_CACHE,
+            _L2_SEMANTIC_CACHE,
+        )
+
+        # Clear and populate both caches
+        _L1_EXACT_CACHE.clear()
+        _L2_SEMANTIC_CACHE.clear()
+
+        _store_in_retrieval_cache("l1_query", {"data": "l1"}, 1000, cache_type="L1")
+        _store_in_retrieval_cache("l2_query", {"data": "l2"}, 1000, cache_type="L2")
+
+        # Verify caches have entries
+        assert len(_L1_EXACT_CACHE) == 1
+        assert len(_L2_SEMANTIC_CACHE) == 1
+
+        # Clear all caches
+        _clear_retrieval_cache()
+
+        # Verify both caches are empty
+        assert len(_L1_EXACT_CACHE) == 0, "L1 cache should be empty after clear"
+        assert len(_L2_SEMANTIC_CACHE) == 0, "L2 cache should be empty after clear"
+
+    def test_get_cache_stats_returns_correct_counts(self):
+        """Verify _get_cache_stats returns correct L1 and L2 counts (GAP FIX G3)."""
+        from agentic_core.L0_routing.scripts.execute_ssot_retrieval import (
+            _store_in_retrieval_cache,
+            _get_cache_stats,
+            _clear_retrieval_cache,
+            _L1_EXACT_CACHE,
+            _L2_SEMANTIC_CACHE,
+        )
+
+        # Clear caches first
+        _clear_retrieval_cache()
+
+        # Verify empty stats
+        stats = _get_cache_stats()
+        assert stats["L1_count"] == 0
+        assert stats["L2_count"] == 0
+
+        # Add entries to both caches
+        _store_in_retrieval_cache("l1_1", {"data": 1}, 1000, cache_type="L1")
+        _store_in_retrieval_cache("l1_2", {"data": 2}, 1000, cache_type="L1")
+        _store_in_retrieval_cache("l2_1", {"data": 3}, 1000, cache_type="L2")
+
+        # Verify updated stats
+        stats = _get_cache_stats()
+        assert stats["L1_count"] == 2, f"Expected L1_count=2, got {stats['L1_count']}"
+        assert stats["L2_count"] == 1, f"Expected L2_count=1, got {stats['L2_count']}"
+
+    def test_retrieve_execution_context_rejects_empty_query(self):
+        """Verify _retrieve_execution_context rejects empty query (GAP FIX G4)."""
+        from agentic_core.L0_routing.scripts.execute_ssot_retrieval import (
+            _retrieve_execution_context,
+        )
+
+        with pytest.raises(ValueError, match="Query cannot be empty"):
+            _retrieve_execution_context("", 1234567890)
+
+        with pytest.raises(ValueError, match="Query cannot be empty"):
+            _retrieve_execution_context("   ", 1234567890)
 
     def test_execute_ssot_has_retrieval_hooks(self):
         """Verify execute_ssot.py has retrieval integration hooks."""
