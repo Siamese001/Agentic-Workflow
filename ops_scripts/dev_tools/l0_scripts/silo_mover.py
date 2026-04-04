@@ -19,7 +19,12 @@ from agentic_core.L0_routing.config.path_constants import (
 )
 
 try:
-    from agentic_core.L0_routing.scripts.full_agent_discovery import AGENTIC_CORE_DIR, SCRIPTS_DIR, TESTS_DIR, OPS_SCRIPTS_DIR
+    from agentic_core.L0_routing.scripts.full_agent_discovery import (
+        AGENTIC_CORE_DIR,
+        OPS_SCRIPTS_DIR,
+        SCRIPTS_DIR,
+        TESTS_DIR,
+    )
 # guardian: allow-silent-swallow - optional dependency
 except ImportError:
     AGENTIC_CORE_DIR = AGENTIC_CORE_DIR

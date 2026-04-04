@@ -13,9 +13,9 @@ import ast
 import json
 import re
 import sys
+from dataclasses import asdict, dataclass
 from pathlib import Path
-from typing import Dict, List, Set, Tuple, Any
-from dataclasses import dataclass, asdict
+from typing import Any
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent.parent
 sys.path.insert(0, str(PROJECT_ROOT))
@@ -38,9 +38,9 @@ class TestVisitor(ast.NodeVisitor):
 
     def __init__(self, file_path: str):
         self.file_path = file_path
-        self.tests: List[TestInventory] = []
+        self.tests: list[TestInventory] = []
         self.current_function = None
-        self.imports: Set[str] = set()
+        self.imports: set[str] = set()
 
     def visit_Import(self, node: ast.Import):
         for alias in node.names:
@@ -204,7 +204,7 @@ class TestVisitor(ast.NodeVisitor):
         ))
 
 
-def find_test_files(root_dir: Path) -> List[Path]:
+def find_test_files(root_dir: Path) -> list[Path]:
     """Find all test files in the repository."""
     test_files = []
 
@@ -228,10 +228,10 @@ def find_test_files(root_dir: Path) -> List[Path]:
     return sorted(list(unique_files))
 
 
-def scan_test_file(file_path: Path) -> List[TestInventory]:
+def scan_test_file(file_path: Path) -> list[TestInventory]:
     """Scan a single test file for patterns."""
     try:
-        with open(file_path, 'r', encoding='utf-8') as f:
+        with open(file_path, encoding='utf-8') as f:
             content = f.read()
 
         tree = ast.parse(content, filename=str(file_path))
@@ -248,7 +248,7 @@ def scan_test_file(file_path: Path) -> List[TestInventory]:
         return []
 
 
-def build_inventory() -> Dict[str, Any]:
+def build_inventory() -> dict[str, Any]:
     """Build complete test inventory."""
     print("🔍 Building complete test surface inventory...")
 
@@ -322,7 +322,7 @@ def main():
 
     # Print summary
     summary = inventory["summary"]
-    print(f"\n📊 SUMMARY:")
+    print("\n📊 SUMMARY:")
     print(f"  Total tests: {inventory['metadata']['total_tests']}")
     print(f"  Skip types: {summary['skip_types']}")
     print(f"  Categories: {summary['categories']}")

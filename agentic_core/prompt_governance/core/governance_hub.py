@@ -1,6 +1,4 @@
 
-from agentic_core.prompt_governance.security.detectors.injection_detector import InjectionDetector
-from agentic_core.prompt_governance.security.detectors.pii_scrubber import PIIScrubber
 from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     LayerSegment,
     _emit_agent_executes_agent,
@@ -44,6 +42,8 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     emit_determinism_digest,  # noqa: E402
     emit_replay_key,  # noqa: E402
 )
+from agentic_core.prompt_governance.security.detectors.injection_detector import InjectionDetector
+from agentic_core.prompt_governance.security.detectors.pii_scrubber import PIIScrubber
 
 _emit_applies_guardrail("p0", "governance_hub", "p0_governance")
 _emit_reads_policy_state("p0", "governance_hub", "policy_binding")

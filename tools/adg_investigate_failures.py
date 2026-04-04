@@ -2,9 +2,8 @@
 """Investigate root causes of each validation failure."""
 
 import sqlite3
-import ast
-from pathlib import Path
 from collections import Counter
+from pathlib import Path
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
 DB_PATH = PROJECT_ROOT / "artifacts" / "adg" / "adg_indexed_03242026_1825.sqlite"
@@ -112,7 +111,7 @@ def main():
         top = parts[0] if parts else "?"
         missing_dirs[top] += 1
 
-    print(f"\n  Missing files by top directory:")
+    print("\n  Missing files by top directory:")
     for d, cnt in missing_dirs.most_common(15):
         print(f"    {d}: {cnt}")
 
@@ -142,7 +141,7 @@ def main():
         WHERE entity_type = 'symbol'
         LIMIT 10
     """)
-    print(f"\n  Sample symbol node names:")
+    print("\n  Sample symbol node names:")
     for (name,) in c.fetchall():
         print(f"    {name}")
 
@@ -204,7 +203,7 @@ def main():
     total = sum(cnt for _, cnt in all_types)
 
     print(f"  Total edges: {total}")
-    print(f"\n  Full edge type distribution:")
+    print("\n  Full edge type distribution:")
     for rel, cnt in all_types:
         pct = cnt / total * 100
         print(f"    {rel:45} {cnt:>8} ({pct:5.2f}%)")

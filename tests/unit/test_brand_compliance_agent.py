@@ -25,6 +25,7 @@ class TestBrandComplianceAgent:
     def test_brand_compliance_agent_class(self):
         """Test BrandComplianceAgent class exists and is RGValidationExecutor."""
         from apps_rg.reasoning.BrandComplianceAgent import BrandComplianceAgent
+
         from apps_rg.reasoning.RGValidationExecutor import RGValidationExecutor
 
         assert BrandComplianceAgent is not None

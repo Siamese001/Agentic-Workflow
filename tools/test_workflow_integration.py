@@ -6,6 +6,7 @@ Test Sequential Thinking Workflow Integration
 from agentic_core.planning.sequential_thinking_workflow import SequentialThinkingEnhancedWorkflow
 from agentic_core.planning.token_estimator import TokenBudget
 
+
 def test_workflow_integration():
     """Test workflow integration with various scenarios."""
 
@@ -66,7 +67,7 @@ def test_workflow_integration():
     print(f'Total Context Window: {budget.HARD_MAX_CONTEXT:,} tokens')
     print(f'Safe Operating Cap: {budget.SAFE_OPERATING_CAP:,} tokens')
     print(f'Warning Threshold: {budget.WARNING_THRESHOLD:,} tokens')
-    print(f'Sequential Thinking Budget: 30,000 tokens (20% allocation)')
+    print('Sequential Thinking Budget: 30,000 tokens (20% allocation)')
 
     # Test template selection
     print('\n📝 Template Selection Test')

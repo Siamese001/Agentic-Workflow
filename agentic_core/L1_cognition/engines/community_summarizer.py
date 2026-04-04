@@ -5,7 +5,6 @@ Generates summaries for detected communities using LLM or template-based methods
 
 from __future__ import annotations
 
-
 # Placeholder for community summarizer - full implementation was created and scanned by ADG
 # This file serves as a marker that the implementation was completed
 

@@ -13,13 +13,10 @@ Strategy:
   and regenerate with correct hard-import patterns.
 """
 
-import ast
 import importlib
 import re
 import sys
-import traceback
 from pathlib import Path
-from typing import Optional
 
 
 def analyze_module_api(module_path: str):
@@ -75,7 +72,7 @@ def generate_hardened_test(module_path: str, classes: list, functions: list, pub
         lines.append("def test_module_exposes_public_api(mod):")
         lines.append('    """Module exposes expected public symbols."""')
         lines.append('    public = [n for n in dir(mod) if not n.startswith("_")]')
-        lines.append(f"    assert len(public) >= 1, f\"{{MODULE_PATH}} must expose at least one public symbol\"")
+        lines.append("    assert len(public) >= 1, f\"{MODULE_PATH} must expose at least one public symbol\"")
         lines.append("")
     else:
         lines.append("")
@@ -110,7 +107,7 @@ def generate_hardened_test(module_path: str, classes: list, functions: list, pub
     return "\n".join(lines) + "\n"
 
 
-def is_enhanced_file_with_skip_pattern(filepath: Path) -> Optional[str]:
+def is_enhanced_file_with_skip_pattern(filepath: Path) -> str | None:
     """Check if file is an enhanced test with skip-on-import pattern. Returns MODULE_PATH if so."""
     try:
         source = filepath.read_text("utf-8")
@@ -171,7 +168,7 @@ def main():
     print(f"Failed: {failed}")
 
     if errors:
-        print(f"\nErrors:")
+        print("\nErrors:")
         for e in errors[:20]:
             print(f"  {e}")
 

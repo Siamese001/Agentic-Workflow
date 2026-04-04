@@ -7,8 +7,8 @@ Every plan step must pass through this hook before calling Kimi 2.5.
 
 import json
 import logging
-from typing import Dict, List, Any, Optional
 from pathlib import Path
+from typing import Any
 
 from .token_estimator import ContextWindowEstimator, TokenEstimate
 
@@ -23,8 +23,8 @@ class PlanningPreflightHook:
     """
 
     def __init__(self,
-                 estimator: Optional[ContextWindowEstimator] = None,
-                 budget_file: Optional[Path] = None):
+                 estimator: ContextWindowEstimator | None = None,
+                 budget_file: Path | None = None):
         self.estimator = estimator or ContextWindowEstimator()
         self.budget_file = budget_file or Path("docs/reports/plans/token_budget_log.json")
         self.budget_history = []
@@ -34,7 +34,7 @@ class PlanningPreflightHook:
         """Load previous budget estimates from file"""
         if self.budget_file.exists():
             try:
-                with open(self.budget_file, 'r') as f:
+                with open(self.budget_file) as f:
                     self.budget_history = json.load(f)
             except Exception as e:
                 logger.warning(f"Failed to load budget history: {e}")
@@ -53,11 +53,11 @@ class PlanningPreflightHook:
                        plan_step: str,
                        system_prompt: str,
                        user_prompt: str,
-                       files: List[Dict[str, Any]],
-                       diffs: List[Dict[str, Any]],
-                       logs: List[Dict[str, Any]],
-                       retrieved_context: List[Dict[str, Any]],
-                       prior_steps: List[str],
+                       files: list[dict[str, Any]],
+                       diffs: list[dict[str, Any]],
+                       logs: list[dict[str, Any]],
+                       retrieved_context: list[dict[str, Any]],
+                       prior_steps: list[str],
                        **kwargs) -> TokenEstimate:
         """
         Perform preflight token budget check for a plan step.
@@ -111,7 +111,7 @@ class PlanningPreflightHook:
         # Return estimate for caller to use
         return estimate
 
-    def get_budget_summary(self) -> Dict[str, Any]:
+    def get_budget_summary(self) -> dict[str, Any]:
         """Get summary of budget usage across all steps"""
         if not self.budget_history:
             return {"total_steps": 0, "message": "No budget history available"}

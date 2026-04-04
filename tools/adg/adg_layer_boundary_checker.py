@@ -15,7 +15,7 @@ Usage:
 import argparse
 import warnings
 from pathlib import Path
-from typing import List, Dict, Any, Optional
+from typing import Any
 
 # Try to import ADG Query Bridge
 try:
@@ -65,7 +65,7 @@ class ADGLayerBoundaryChecker:
         self.apps_prefixes = ["apps_lic", "apps_rg", "apps_shared", "apps_eval", "apps_exec", "apps_research", "apps_rfp"]
         self.l_layer_prefix = "L"
 
-    def check_file(self, file_path: str) -> List[LayerViolation]:
+    def check_file(self, file_path: str) -> list[LayerViolation]:
         """Check layer boundaries in a specific file."""
         violations = []
         file_path_obj = Path(file_path)
@@ -91,7 +91,7 @@ class ADGLayerBoundaryChecker:
 
         return violations
 
-    def _check_file_with_adg(self, file_path: Path) -> List[LayerViolation]:
+    def _check_file_with_adg(self, file_path: Path) -> list[LayerViolation]:
         """Check file layer boundaries using ADG."""
         violations = []
         rel_path = str(file_path.relative_to(self.repo_root))
@@ -131,7 +131,7 @@ class ADGLayerBoundaryChecker:
 
         return violations
 
-    def _determine_layer_from_path(self, file_path: str) -> Optional[str]:
+    def _determine_layer_from_path(self, file_path: str) -> str | None:
         """Determine the layer from a file path."""
         parts = file_path.split('/')
 
@@ -147,12 +147,12 @@ class ADGLayerBoundaryChecker:
 
         return None
 
-    def _extract_imports_ast(self, file_path: Path) -> List[Dict[str, Any]]:
+    def _extract_imports_ast(self, file_path: Path) -> list[dict[str, Any]]:
         """Extract imports using AST parsing."""
         import ast
 
         try:
-            with open(file_path, 'r', encoding='utf-8') as f:
+            with open(file_path, encoding='utf-8') as f:
                 content = f.read()
 
             tree = ast.parse(content, filename=str(file_path))
@@ -182,7 +182,7 @@ class ADGLayerBoundaryChecker:
         except SyntaxError:
             return []
 
-    def _get_module_layer_from_adg(self, module_name: str) -> Optional[str]:
+    def _get_module_layer_from_adg(self, module_name: str) -> str | None:
         """Get the layer for a module using ADG."""
         if not ADG_AVAILABLE:
             return None
@@ -202,7 +202,7 @@ class ADGLayerBoundaryChecker:
         return None
 
     def _check_layer_violation(self, source_layer: str, target_layer: str,
-                              module_name: str, line_num: int, file_path: str) -> List[LayerViolation]:
+                              module_name: str, line_num: int, file_path: str) -> list[LayerViolation]:
         """Check if an import violates layer sovereignty rules."""
         violations = []
 
@@ -238,7 +238,7 @@ class ADGLayerBoundaryChecker:
         return violations
 
     def _check_pattern_violation(self, source_layer: str, module_name: str,
-                                line_num: int, file_path: str) -> List[LayerViolation]:
+                                line_num: int, file_path: str) -> list[LayerViolation]:
         """Check for violations based on module name patterns when ADG lookup fails."""
         violations = []
 
@@ -252,7 +252,7 @@ class ADGLayerBoundaryChecker:
 
         return violations
 
-    def _check_file_with_ast_fallback(self, file_path: Path) -> List[LayerViolation]:
+    def _check_file_with_ast_fallback(self, file_path: Path) -> list[LayerViolation]:
         """Check file layer boundaries using AST fallback when ADG is unavailable."""
         violations = []
         rel_path = str(file_path.relative_to(self.repo_root))
@@ -289,7 +289,7 @@ class ADGLayerBoundaryChecker:
 
         return violations
 
-    def check_directory(self, directory: str) -> List[LayerViolation]:
+    def check_directory(self, directory: str) -> list[LayerViolation]:
         """Check layer boundaries in all Python files in a directory."""
         violations = []
         dir_path = self.repo_root / directory
@@ -303,7 +303,7 @@ class ADGLayerBoundaryChecker:
 
         return violations
 
-    def check_layer(self, layer: str) -> List[LayerViolation]:
+    def check_layer(self, layer: str) -> list[LayerViolation]:
         """Check all files in a specific layer for boundary violations."""
         violations = []
 
@@ -334,7 +334,7 @@ class ADGLayerBoundaryChecker:
 
         return violations
 
-    def get_layer_summary(self) -> Dict[str, Any]:
+    def get_layer_summary(self) -> dict[str, Any]:
         """Get a summary of layer information."""
         if not ADG_AVAILABLE:
             return {"error": "ADG not available"}
@@ -407,8 +407,8 @@ def main():
         ]
         print(json.dumps(output, indent=2))
     else:
-        print(f"ADG Layer Boundary Checker Results")
-        print(f"=================================")
+        print("ADG Layer Boundary Checker Results")
+        print("=================================")
         print(f"Found {len(violations)} layer boundary violations")
         print()
 

@@ -5,7 +5,6 @@ Target: 1,715 LOW severity violations that are acceptable but need documentation
 """
 
 import json
-import re
 from pathlib import Path
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
@@ -20,7 +19,7 @@ class GuardianCommentAdder:
         self.errors = 0
 
         # Load violations report
-        with open(PROJECT_ROOT / "tools" / "silent_swallower_report.json", 'r') as f:
+        with open(PROJECT_ROOT / "tools" / "silent_swallower_report.json") as f:
             report = json.load(f)
             self.violations = [v for v in report['violations'] if v['severity'] == 'LOW']
 

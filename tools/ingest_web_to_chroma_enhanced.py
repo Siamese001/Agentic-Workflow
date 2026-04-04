@@ -13,7 +13,6 @@ import time
 import uuid
 from pathlib import Path
 from urllib.parse import urlparse
-from typing import Dict, List, Optional, Tuple
 
 import chromadb
 import requests
@@ -144,7 +143,7 @@ class EnhancedWebRAGIngestionPipeline:
         # Default fallback
         return "other"
 
-    def read_urls_with_metadata(self) -> List[Tuple[str, Dict]]:
+    def read_urls_with_metadata(self) -> list[tuple[str, dict]]:
         """
         Read URLs from the input file with source type metadata.
 
@@ -173,7 +172,7 @@ class EnhancedWebRAGIngestionPipeline:
         logger.info(f"Loaded {len(url_entries)} URLs from {self.urls_file}")
         return url_entries
 
-    def fetch_content(self, url: str, retry_once: bool = True) -> Optional[str]:
+    def fetch_content(self, url: str, retry_once: bool = True) -> str | None:
         """
         Fetch HTML content from a URL with retry logic.
 
@@ -200,7 +199,7 @@ class EnhancedWebRAGIngestionPipeline:
                 return self.fetch_content(url, retry_once=False)
             return None
 
-    def extract_clean_text(self, html: str, url: str) -> Tuple[str, str]:
+    def extract_clean_text(self, html: str, url: str) -> tuple[str, str]:
         """
         Extract clean text content from HTML.
 
@@ -250,7 +249,7 @@ class EnhancedWebRAGIngestionPipeline:
 
         return clean_text, title
 
-    def chunk_text(self, text: str, chunk_size: int = 700, overlap: int = 100) -> List[str]:
+    def chunk_text(self, text: str, chunk_size: int = 700, overlap: int = 100) -> list[str]:
         """
         Split text into overlapping chunks.
 
@@ -286,7 +285,7 @@ class EnhancedWebRAGIngestionPipeline:
         """Generate SHA256 hash of content for deduplication."""
         return hashlib.sha256(content.encode('utf-8')).hexdigest()
 
-    def process_url(self, url: str, url_metadata: Dict) -> int:
+    def process_url(self, url: str, url_metadata: dict) -> int:
         """
         Process a single URL and store chunks in ChromaDB with enhanced metadata.
 
@@ -439,7 +438,7 @@ class EnhancedWebRAGIngestionPipeline:
             count = self.collection.count()
             logger.info(f"\nTotal chunks in collection: {count}")
 
-    def query_chroma(self, query: str, n_results: int = 5, source_type: Optional[str] = None):
+    def query_chroma(self, query: str, n_results: int = 5, source_type: str | None = None):
         """
         Query the ChromaDB collection with optional source type filtering.
 

@@ -1,6 +1,5 @@
-import re
 
-with open('agentic_core/adg/extraction/static_scanner.py', 'r') as f:
+with open('agentic_core/adg/extraction/static_scanner.py') as f:
     content = f.read()
 
 # Count lines before

@@ -5,11 +5,10 @@ This wave runs final validation and prepares to commit all progress
 from the additional sub-waves.
 """
 
-import pathlib
 import ast
+import pathlib
 import subprocess
 import sys
-from typing import Dict, List, Tuple
 
 
 class Wave22FinalValidation:
@@ -26,7 +25,7 @@ class Wave22FinalValidation:
             'progress_improvement': 0
         }
 
-    def run_final_validation(self) -> Dict:
+    def run_final_validation(self) -> dict:
         """Run final validation."""
         # Check current syntax status
         self._check_syntax_status()
@@ -93,10 +92,10 @@ class Wave22FinalValidation:
         print(f"Syntax errors: {self.stats['syntax_errors']}")
         print(f"Success rate: {self.stats['valid_files']/self.stats['total_files']*100:.1f}%")
 
-        print(f"\nTest collection:")
+        print("\nTest collection:")
         print(f"Pytest collection: {'✅ Success' if self.stats['test_collection_success'] else '⚠️ Failed'}")
 
-        print(f"\n🎯 FINAL STATUS:")
+        print("\n🎯 FINAL STATUS:")
         if self.stats['valid_files'] >= 2708:
             print("✅ EXCELLENT: Test suite significantly restored!")
         elif self.stats['valid_files'] >= 2500:
@@ -106,8 +105,8 @@ class Wave22FinalValidation:
         else:
             print("⚠️ NEEDS WORK: More fixes needed")
 
-        print(f"\n📈 PROGRESS FROM WAVES 20-22:")
-        print(f"Additional files fixed: +2")
+        print("\n📈 PROGRESS FROM WAVES 20-22:")
+        print("Additional files fixed: +2")
         print(f"Total valid files: {self.stats['valid_files']}")
 
         print("="*60)

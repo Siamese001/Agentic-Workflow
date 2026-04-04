@@ -3,7 +3,9 @@
 
 import time
 from pathlib import Path
+
 from agentic_core.adg.extraction.static_scanner import ADGStaticScanner
+
 
 def test_selective_mode():
     """Test that selective mode optimizes production code scanning."""
@@ -73,7 +75,7 @@ def test_selective_mode():
         reduction_percent = (edge_reduction / len(result_full.edges)) * 100 if result_full.edges else 0
         time_improvement = full_time - selective_time
 
-        print(f"=== Results ===")
+        print("=== Results ===")
         print(f"Edges reduced: {edge_reduction} ({reduction_percent:.1f}%)")
         print(f"Time improvement: {time_improvement:.2f} seconds")
 

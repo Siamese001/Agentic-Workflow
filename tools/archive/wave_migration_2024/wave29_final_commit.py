@@ -5,11 +5,8 @@ This wave provides final validation and prepares to commit all progress
 from the additional sub-waves.
 """
 
-import pathlib
 import ast
-import subprocess
-import sys
-from typing import Dict, List, Tuple
+import pathlib
 
 
 class Wave29FinalCommit:
@@ -27,7 +24,7 @@ class Wave29FinalCommit:
             'waves_completed': 29
         }
 
-    def run_final_validation(self) -> Dict:
+    def run_final_validation(self) -> dict:
         """Run final validation."""
         # Check current syntax status
         self._check_syntax_status()
@@ -74,12 +71,12 @@ class Wave29FinalCommit:
         print(f"Syntax errors: {self.stats['syntax_errors']}")
         print(f"Success rate: {self.stats['success_rate']:.1f}%")
 
-        print(f"\n🎯 FINAL ACHIEVEMENT:")
+        print("\n🎯 FINAL ACHIEVEMENT:")
         print(f"Waves completed: {self.stats['waves_completed']}")
         print(f"Files restored: {self.stats['progress_achieved']}")
         print(f"Progress from start: 0% → {self.stats['success_rate']:.1f}%")
 
-        print(f"\n📈 STATUS CLASSIFICATION:")
+        print("\n📈 STATUS CLASSIFICATION:")
         if self.stats['success_rate'] >= 45.0:
             print("✅ OUTSTANDING: Excellent test suite restoration!")
         elif self.stats['success_rate'] >= 40.0:
@@ -91,7 +88,7 @@ class Wave29FinalCommit:
         else:
             print("⚠️ NEEDS WORK: More fixes needed")
 
-        print(f"\n🛠️ METHODOLOGY ACHIEVEMENTS:")
+        print("\n🛠️ METHODOLOGY ACHIEVEMENTS:")
         print("✅ Emergency response: COMPLETE")
         print("✅ Phased approach: VALIDATED")
         print("✅ De-risked methodology: PROVEN")
@@ -99,10 +96,10 @@ class Wave29FinalCommit:
         print("✅ Comprehensive toolset: ESTABLISHED")
         print("✅ Measurable progress: ACHIEVED")
 
-        print(f"\n⚠️ REMAINING WORK:")
+        print("\n⚠️ REMAINING WORK:")
         print(f"Files needing fixes: {self.stats['syntax_errors']}")
         print(f"Remaining percentage: {100 - self.stats['success_rate']:.1f}%")
-        print(f"Test collection: Needs optimization (timeout issues)")
+        print("Test collection: Needs optimization (timeout issues)")
 
         print("="*60)
 

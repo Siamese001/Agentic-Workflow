@@ -8,7 +8,6 @@ import hashlib
 import logging
 import uuid
 from datetime import datetime
-from typing import Dict, List, Optional, Tuple
 
 from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     LayerSegment,
@@ -16,19 +15,18 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 )
 
 from .canonical_types import (
-    CanonicalRawUnit,
+    CanonicalDiff,
     CanonicalIdentifier,
     CanonicalLineage,
     CanonicalMetadata,
-    CanonicalUnitType,
+    CanonicalRawUnit,
     CanonicalUnitStatus,
-    CanonicalDiff,
+    CanonicalUnitType,
 )
 
 # Import ingestion components
 try:
     from agentic_core.knowledge.ingestion.modality_types import ContentMetadata, ContentType, DocumentModality
-    from agentic_core.knowledge.ingestion.modality_types import DocumentModality
 except ImportError:
     # Fallback for testing
     ContentMetadata = None
@@ -48,19 +46,19 @@ class RawUnitFactory:
 
     def __init__(self):
         """Initialize the raw unit factory."""
-        self._unit_counter: Dict[str, int] = {}
-        self._checksum_cache: Dict[str, str] = {}
+        self._unit_counter: dict[str, int] = {}
+        self._checksum_cache: dict[str, str] = {}
 
     def create_from_content(
         self,
         content: str,
         unit_type: CanonicalUnitType,
-        source_file: Optional[str] = None,
-        parent_id: Optional[str] = None,
-        extraction_method: Optional[str] = None,
-        content_metadata: Optional[ContentMetadata] = None,
-        custom_tags: Optional[List[str]] = None,
-        custom_attributes: Optional[Dict[str, str]] = None,
+        source_file: str | None = None,
+        parent_id: str | None = None,
+        extraction_method: str | None = None,
+        content_metadata: ContentMetadata | None = None,
+        custom_tags: list[str] | None = None,
+        custom_attributes: dict[str, str] | None = None,
     ) -> CanonicalRawUnit:
         """Create a canonical raw unit from content.
 
@@ -149,10 +147,10 @@ class RawUnitFactory:
     def create_child_units(
         self,
         parent_unit: CanonicalRawUnit,
-        child_contents: List[str],
+        child_contents: list[str],
         child_type: CanonicalUnitType,
-        extraction_method: Optional[str] = None,
-    ) -> List[CanonicalRawUnit]:
+        extraction_method: str | None = None,
+    ) -> list[CanonicalRawUnit]:
         """Create child units from a parent unit.
 
         Args:
@@ -192,8 +190,8 @@ class RawUnitFactory:
         self,
         existing_unit: CanonicalRawUnit,
         new_content: str,
-        change_reason: Optional[str] = None,
-    ) -> Tuple[CanonicalRawUnit, CanonicalDiff]:
+        change_reason: str | None = None,
+    ) -> tuple[CanonicalRawUnit, CanonicalDiff]:
         """Create a new version of an existing unit.
 
         Args:
@@ -268,7 +266,7 @@ class RawUnitFactory:
         log.info(f"Created version {new_unit.identifier.version} for unit {new_unit.identifier.unit_id}")
         return new_unit, diff
 
-    def tombstone_unit(self, unit: CanonicalRawUnit, reason: Optional[str] = None) -> CanonicalRawUnit:
+    def tombstone_unit(self, unit: CanonicalRawUnit, reason: str | None = None) -> CanonicalRawUnit:
         """Create a tombstoned version of a unit.
 
         Args:
@@ -345,9 +343,9 @@ class RawUnitFactory:
         self,
         content: str,
         unit_type: CanonicalUnitType,
-        content_metadata: Optional[ContentMetadata],
-        custom_tags: Optional[List[str]],
-        custom_attributes: Optional[Dict[str, str]],
+        content_metadata: ContentMetadata | None,
+        custom_tags: list[str] | None,
+        custom_attributes: dict[str, str] | None,
     ) -> CanonicalMetadata:
         """Create metadata for a canonical unit."""
         # Base metadata from content analysis
@@ -398,7 +396,7 @@ class RawUnitFactory:
 
 
 # Global factory instance
-_global_factory: Optional[RawUnitFactory] = None
+_global_factory: RawUnitFactory | None = None
 
 
 def get_raw_unit_factory() -> RawUnitFactory:
@@ -412,7 +410,7 @@ def get_raw_unit_factory() -> RawUnitFactory:
 def create_canonical_unit(
     content: str,
     unit_type: CanonicalUnitType,
-    source_file: Optional[str] = None,
+    source_file: str | None = None,
     **kwargs,
 ) -> CanonicalRawUnit:
     """Convenience function to create a canonical unit."""

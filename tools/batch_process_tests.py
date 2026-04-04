@@ -6,7 +6,7 @@ import pathlib
 import subprocess
 import sys
 from datetime import datetime
-from typing import List, Dict, Any
+from typing import Any
 
 # Add tools directory to path for imports
 sys.path.insert(0, str(pathlib.Path(__file__).parent))

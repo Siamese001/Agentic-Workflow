@@ -11,7 +11,6 @@ from typing import Literal
 
 from pydantic import BaseModel, Field, field_validator
 
-
 ResearchStatus = Literal["pending", "generating", "gate_checking", "complete", "failed", "dry_run"]
 
 ArtifactMode = Literal["brief", "comparison", "trend", "position", "thought_leadership"]

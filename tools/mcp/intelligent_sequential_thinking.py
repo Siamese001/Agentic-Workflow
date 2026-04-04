@@ -6,12 +6,12 @@ Analyzes task complexity and automatically invokes the sequential thinking MCP
 only when structured reasoning is actually needed.
 """
 
+import json
 import os
 import re
-import json
-from typing import Dict, Any, Optional, List, Tuple
-from dataclasses import dataclass, asdict
+from dataclasses import asdict, dataclass
 from enum import Enum
+from typing import Any
 
 
 class ComplexityLevel(Enum):
@@ -29,7 +29,7 @@ class TaskAnalysis:
     confidence: float  # 0.0 to 1.0
     reasoning_required: bool
     suggested_thoughts: int  # How many thoughts to use (0 if not needed)
-    factors: List[str]  # Why this decision was made
+    factors: list[str]  # Why this decision was made
 
 
 class TaskComplexityAnalyzer:
@@ -198,7 +198,7 @@ class TaskComplexityAnalyzer:
                 return True
         return False
 
-    def _calculate_complexity(self, prompt: str) -> Tuple[int, List[str]]:
+    def _calculate_complexity(self, prompt: str) -> tuple[int, list[str]]:
         """Calculate complexity score and return factors."""
         score = 0
         factors = []
@@ -237,7 +237,7 @@ class TaskComplexityAnalyzer:
         conj_count = sum(1 for c in conjunctions if c in prompt)
         if conj_count > 3:
             score += 2
-            factors.append(f"Complex sentence structure (+2)")
+            factors.append("Complex sentence structure (+2)")
 
         return score, factors
 
@@ -261,7 +261,7 @@ class IntelligentSequentialThinker:
         self.auto_invoke = os.environ.get('SEQUENTIAL_THINKING_AUTO_TRIGGER', 'true').lower() == 'true'
         self.threshold = os.environ.get('SEQUENTIAL_THINKING_COMPLEXITY_THRESHOLD', 'moderate')
 
-    def process_prompt(self, prompt: str) -> Dict[str, Any]:
+    def process_prompt(self, prompt: str) -> dict[str, Any]:
         """
         Process a prompt and determine if sequential thinking should be invoked.
 
@@ -348,7 +348,7 @@ Reason: Task is simple enough for direct response.
 Factors:
 {factors_str}"""
 
-    def _create_tool_arguments(self, prompt: str, analysis: TaskAnalysis) -> Dict[str, Any]:
+    def _create_tool_arguments(self, prompt: str, analysis: TaskAnalysis) -> dict[str, Any]:
         """Create the tool arguments for sequential thinking invocation."""
         return {
             'thought': f"Starting structured analysis of: {prompt[:200]}{'...' if len(prompt) > 200 else ''}",
@@ -362,7 +362,7 @@ Factors:
             'needsMoreThoughts': True
         }
 
-    def wrap_prompt_if_needed(self, prompt: str) -> Tuple[str, bool]:
+    def wrap_prompt_if_needed(self, prompt: str) -> tuple[str, bool]:
         """
         Wrap a prompt with sequential thinking instruction if needed.
 
@@ -406,7 +406,7 @@ def should_use_sequential_thinking(prompt: str) -> bool:
     return result['invoke_sequential_thinking']
 
 
-def intelligent_sequential_think(prompt: str) -> Dict[str, Any]:
+def intelligent_sequential_think(prompt: str) -> dict[str, Any]:
     """
     Main entry point - intelligently decides and prepares sequential thinking.
 

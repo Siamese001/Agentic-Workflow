@@ -9,7 +9,6 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
-from agentic_core.mixins.inspection_capability_mixin import InspectionCapability
 from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
@@ -74,6 +73,7 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     emit_determinism_digest,  # noqa: E402
     emit_replay_key,  # noqa: E402
 )
+from agentic_core.mixins.inspection_capability_mixin import InspectionCapability
 
 _emit_emits_metric_event("InspectorExecutor", "p4obs", "metric_1")
 _emit_emits_metric_event("InspectorExecutor", "p4obs", "metric_2")

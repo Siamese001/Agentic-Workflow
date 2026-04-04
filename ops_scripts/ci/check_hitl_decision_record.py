@@ -1,6 +1,7 @@
 import sys
 from pathlib import Path
 
+
 def check_hitl_record(file_path: Path) -> bool:
     """Checks if a markdown file contains a HITL_DECISION_RECORD section."""
     content = file_path.read_text(encoding="utf-8")

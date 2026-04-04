@@ -18,16 +18,16 @@ from __future__ import annotations
 import logging
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import Any, Optional
+from typing import Any
 
 from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     LayerSegment,
-    _emit_records_execution_trace,
     _emit_captures_evaluation_metric,
+    _emit_feeds_meta_learning,
+    _emit_improves_agent_policy,
+    _emit_records_execution_trace,
     _emit_records_learning_event,
     _emit_updates_routing_strategy,
-    _emit_improves_agent_policy,
-    _emit_feeds_meta_learning,
 )
 
 Logger = logging.getLogger(__name__)
@@ -262,7 +262,7 @@ class CompletenessAnalyzer:
         self,
         query: str,
         retrieved_contexts: list[dict[str, Any]],
-        answer_quality: Optional[float] = None,
+        answer_quality: float | None = None,
     ) -> CompletenessAnalysis:
         """Analyze completeness of retrieved context.
 
@@ -367,8 +367,8 @@ class CompletenessRAGProposer:
 
     def __init__(
         self,
-        evaluator: Optional[EvaluationRunner] = None,
-        analyzer: Optional[CompletenessAnalyzer] = None,
+        evaluator: EvaluationRunner | None = None,
+        analyzer: CompletenessAnalyzer | None = None,
     ):
         """Initialize CompletenessRAGProposer.
 
@@ -667,9 +667,9 @@ class CompletenessRAGProposer:
 
 
 # Global instances
-_global_evaluator: Optional[EvaluationRunner] = None
-_global_analyzer: Optional[CompletenessAnalyzer] = None
-_global_proposer: Optional[CompletenessRAGProposer] = None
+_global_evaluator: EvaluationRunner | None = None
+_global_analyzer: CompletenessAnalyzer | None = None
+_global_proposer: CompletenessRAGProposer | None = None
 
 
 def get_global_evaluator() -> EvaluationRunner:

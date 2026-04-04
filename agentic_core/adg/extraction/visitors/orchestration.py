@@ -22,14 +22,14 @@ class _HealingOrchestratorVisitor(BaseStructuralVisitor):
 
     def visit_Call(self, node: ast.Call) -> None:
         """Extract healing orchestrator edges from call expressions."""
+        from agentic_core.adg.extraction.static_scanner import Edge as _Edge
         from agentic_core.adg.schema_util import (
-            canonical_name,
+            HEALING_DECISION_SYMBOLS,
             HEALING_ORCHESTRATOR_SYMBOLS,
             HEALING_TRIGGER_SYMBOLS,
-            HEALING_DECISION_SYMBOLS,
             HEALING_VALIDATION_SYMBOLS,
+            canonical_name,
         )
-        from agentic_core.adg.extraction.static_scanner import Edge as _Edge
 
         sym = self._get_call_symbol(node.func)
         tail = sym.split(".")[-1] if sym else ""
@@ -99,11 +99,11 @@ class _P1OrchestrationVisitor(BaseStructuralVisitor):
 
     def visit_Call(self, node: ast.Call) -> None:
         """Extract P1 orchestration edges."""
-        from agentic_core.adg.schema_util import (
-            canonical_name,
-            P1_ORCHESTRATION_SYMBOLS,
-        )
         from agentic_core.adg.extraction.static_scanner import Edge as _Edge
+        from agentic_core.adg.schema_util import (
+            P1_ORCHESTRATION_SYMBOLS,
+            canonical_name,
+        )
 
         sym = self._get_call_symbol(node.func)
         tail = sym.split(".")[-1] if sym else ""
@@ -137,11 +137,11 @@ class _P2ExecutionCapabilityVisitor(BaseStructuralVisitor):
 
     def visit_Call(self, node: ast.Call) -> None:
         """Extract P2 execution capability edges."""
-        from agentic_core.adg.schema_util import (
-            canonical_name,
-            P2_EXECUTION_SYMBOLS,
-        )
         from agentic_core.adg.extraction.static_scanner import Edge as _Edge
+        from agentic_core.adg.schema_util import (
+            P2_EXECUTION_SYMBOLS,
+            canonical_name,
+        )
 
         sym = self._get_call_symbol(node.func)
         tail = sym.split(".")[-1] if sym else ""
@@ -175,12 +175,12 @@ class _P3OrchestrationHealingVisitor(BaseStructuralVisitor):
 
     def visit_Call(self, node: ast.Call) -> None:
         """Extract P3 orchestration & healing edges."""
-        from agentic_core.adg.schema_util import (
-            canonical_name,
-            P3_ORCHESTRATION_SYMBOLS,
-            P3_HEALING_SYMBOLS,
-        )
         from agentic_core.adg.extraction.static_scanner import Edge as _Edge
+        from agentic_core.adg.schema_util import (
+            P3_HEALING_SYMBOLS,
+            P3_ORCHESTRATION_SYMBOLS,
+            canonical_name,
+        )
 
         sym = self._get_call_symbol(node.func)
         tail = sym.split(".")[-1] if sym else ""

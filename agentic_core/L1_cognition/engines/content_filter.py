@@ -8,7 +8,7 @@ from __future__ import annotations
 
 import re
 from datetime import datetime
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 from agentic_core.L1_cognition.config.graphrag_config import get_config
 from agentic_core.L1_cognition.types.guardrail_types import (
@@ -98,7 +98,7 @@ _emit_stores_embedding("p4", "content_filter", "embedding_store")
 class ContentFilterEngine:
     """Engine for filtering sensitive content."""
 
-    def __init__(self, config: Optional[GuardrailConfig] = None) -> None:
+    def __init__(self, config: GuardrailConfig | None = None) -> None:
         """Initialize the content filter engine.
 
         Args:
@@ -108,13 +108,13 @@ class ContentFilterEngine:
         self.graphrag_config = get_config()
 
         # Filter storage
-        self.filters: Dict[str, ContentFilter] = {}
+        self.filters: dict[str, ContentFilter] = {}
 
         # Initialize default filters
         self._initialize_default_filters()
 
         # Statistics
-        self._filter_stats: Dict[str, List[float]] = {
+        self._filter_stats: dict[str, list[float]] = {
             "filter_time": [],
             "filter_matches": {},
             "content_type_matches": {}
@@ -276,7 +276,7 @@ class ContentFilterEngine:
         content: str,
         content_id: str,
         content_type: str,
-        context: Optional[str] = None
+        context: str | None = None
     ) -> GuardrailReport:
         """Filter content for policy violations.
 
@@ -453,7 +453,7 @@ class ContentFilterEngine:
 
         return "; ".join(evidence_parts) if evidence_parts else "Content matched filter criteria"
 
-    def _extract_matched_content(self, content: str, filter: ContentFilter) -> Optional[str]:
+    def _extract_matched_content(self, content: str, filter: ContentFilter) -> str | None:
         """Extract the specific content that matched the filter."""
         if filter.pattern:
             matches = re.findall(filter.pattern, content, re.IGNORECASE)
@@ -476,7 +476,7 @@ class ContentFilterEngine:
         self,
         content_id: str,
         content_type: str,
-        checks: List[GuardrailCheck],
+        checks: list[GuardrailCheck],
         start_time: datetime
     ) -> GuardrailReport:
         """Create a comprehensive guardrail report."""
@@ -534,15 +534,15 @@ class ContentFilterEngine:
 
         return report
 
-    def get_filters(self) -> List[ContentFilter]:
+    def get_filters(self) -> list[ContentFilter]:
         """Get all content filters."""
         return list(self.filters.values())
 
-    def get_filters_by_category(self, category: str) -> List[ContentFilter]:
+    def get_filters_by_category(self, category: str) -> list[ContentFilter]:
         """Get filters by category."""
         return [f for f in self.filters.values() if f.category == category]
 
-    def get_filter(self, filter_id: str) -> Optional[ContentFilter]:
+    def get_filter(self, filter_id: str) -> ContentFilter | None:
         """Get a specific filter."""
         return self.filters.get(filter_id)
 
@@ -553,7 +553,7 @@ class ContentFilterEngine:
             return True
         return False
 
-    def get_filter_stats(self) -> Dict[str, Any]:
+    def get_filter_stats(self) -> dict[str, Any]:
         """Get filter statistics."""
         stats = {}
 
@@ -583,7 +583,7 @@ class ContentFilterEngine:
 
 # Factory function
 def create_content_filter_engine(
-    config: Optional[GuardrailConfig] = None
+    config: GuardrailConfig | None = None
 ) -> ContentFilterEngine:
     """Create a content filter engine."""
     return ContentFilterEngine(config)

@@ -6,10 +6,9 @@ Shows how to integrate the pipeline with system_learning components
 
 import sys
 import time
-import threading
-from pathlib import Path
 from datetime import datetime
-from typing import Dict, List, Any
+from pathlib import Path
+from typing import Any
 
 # Add root to path for imports
 ROOT = Path(__file__).resolve().parents[1]
@@ -17,11 +16,10 @@ sys.path.insert(0, str(ROOT))
 
 from tools.continuous_learning_pipeline import (
     AutomatedLearningPipeline,
-    LearningEvent,
-    LearningSignal,
     get_global_pipeline,
-    set_global_pipeline
+    set_global_pipeline,
 )
+
 
 class MockActivator:
     """Mock version of system_learning/stores/activator.py"""
@@ -70,9 +68,9 @@ class MockActivator:
         print(f"✅ Version {version} activated successfully")
         return result
 
-    def store_checkpoint(self, checkpoint_data: Dict):
+    def store_checkpoint(self, checkpoint_data: dict):
         """Mock checkpoint storage with learning integration."""
-        print(f"💾 Storing checkpoint...")
+        print("💾 Storing checkpoint...")
 
         # Simulate checkpoint work
         time.sleep(0.2)
@@ -86,7 +84,7 @@ class MockActivator:
                 expires_in_seconds=300  # 5 minutes
             )
 
-        print(f"✅ Checkpoint stored")
+        print("✅ Checkpoint stored")
 
 class MockConfigProvider:
     """Mock version of system_learning/stores/config_provider.py"""
@@ -133,7 +131,7 @@ class MockConfigProvider:
         print(f"✅ Config updated: {config_key} = {config_value} (impact: {impact['level']})")
         return {"success": True, "impact": impact}
 
-    def _assess_impact(self, key: str, old_val: Any, new_val: Any) -> Dict:
+    def _assess_impact(self, key: str, old_val: Any, new_val: Any) -> dict:
         """Mock impact assessment."""
         high_impact_keys = ["learning_rate", "batch_size", "model_version"]
 
@@ -149,7 +147,7 @@ class MockMetaAdapter:
         self.pipeline = get_global_pipeline()
         self.processing_count = 0
 
-    def process_learning_signal(self, signal_data: Dict):
+    def process_learning_signal(self, signal_data: dict):
         """Mock learning signal processing with integration."""
         print(f"🧠 Processing learning signal: {signal_data.get('type', 'unknown')}")
 
@@ -311,7 +309,7 @@ class MockUserInteractionLearner:
         self.session_id = f"session_{int(time.time())}"
         self.interaction_count = 0
 
-    def process_user_interaction(self, user_input: str, system_response: str, user_feedback: Dict = None):
+    def process_user_interaction(self, user_input: str, system_response: str, user_feedback: dict = None):
         """Mock user interaction processing with learning."""
         self.interaction_count += 1
         print(f"👤 Processing user interaction #{self.interaction_count}")

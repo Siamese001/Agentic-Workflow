@@ -11,7 +11,6 @@ from agentic_core.L1_cognition.types.react_trace_types import (
     ReplayGuard,
     assert_c0_informational,
 )
-from agentic_core.patterns.base import BaseReasoningPattern
 from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     LayerSegment,
     _emit_agent_executes_agent,
@@ -55,6 +54,7 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     emit_determinism_digest,  # noqa: E402
     emit_replay_key,  # noqa: E402
 )
+from agentic_core.patterns.base import BaseReasoningPattern
 
 _emit_authorize_and_execute("p2", "react_strategy", "execution_auth")
 _emit_validates_capability("p2", "react_strategy", "capability_check")

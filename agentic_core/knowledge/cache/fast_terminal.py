@@ -5,9 +5,9 @@ Stale item eviction, access log updates, and zero generation cost for cache hits
 
 import logging
 import time
-from dataclasses import dataclass
-from typing import Any, Dict, List, Optional
 from collections import OrderedDict
+from dataclasses import dataclass
+from typing import Any
 
 from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     LayerSegment,
@@ -48,10 +48,10 @@ class FastTerminal:
         self.default_ttl = default_ttl
 
         # LRU cache using OrderedDict
-        self._cache: OrderedDict[str, Dict[str, Any]] = OrderedDict()
+        self._cache: OrderedDict[str, dict[str, Any]] = OrderedDict()
 
         # Access log (circular buffer)
-        self._access_log: List[AccessLogEntry] = []
+        self._access_log: list[AccessLogEntry] = []
         self._max_log_size = 1000
 
         # Statistics
@@ -60,7 +60,7 @@ class FastTerminal:
 
         log.info(f"FastTerminal initialized (max_size={max_size})")
 
-    def lookup(self, key: str) -> Optional[Dict[str, Any]]:
+    def lookup(self, key: str) -> dict[str, Any] | None:
         """Lookup cache entry by key.
 
         Args:
@@ -103,8 +103,8 @@ class FastTerminal:
     def store(
         self,
         key: str,
-        data: Dict[str, Any],
-        ttl: Optional[float] = None,
+        data: dict[str, Any],
+        ttl: float | None = None,
     ) -> bool:
         """Store data in cache.
 
@@ -181,7 +181,7 @@ class FastTerminal:
         log.info(f"Evicted {len(stale_keys)} stale entries")
         return len(stale_keys)
 
-    def get_stats(self) -> Dict[str, Any]:
+    def get_stats(self) -> dict[str, Any]:
         """Get cache statistics.
 
         Returns:
@@ -210,7 +210,7 @@ class FastTerminal:
         log.info(f"Cleared {count} cache entries")
         return count
 
-    def _is_expired(self, entry: Dict[str, Any]) -> bool:
+    def _is_expired(self, entry: dict[str, Any]) -> bool:
         """Check if entry is expired."""
         age = time.time() - entry.get("timestamp", 0)
         return age > entry.get("ttl", self.default_ttl)
@@ -238,7 +238,7 @@ class FastTerminal:
 
 
 # Global instance
-_global_terminal: Optional[FastTerminal] = None
+_global_terminal: FastTerminal | None = None
 
 
 def get_fast_terminal() -> FastTerminal:

@@ -4,22 +4,15 @@ Tests edge cases, error conditions, resilience, and security scenarios.
 """
 
 import json
-import os
-import shutil
-import stat
-import tempfile
 import time
 from pathlib import Path
-from unittest.mock import MagicMock, patch
+from unittest.mock import patch
 
 import pytest
 
 from agentic_core.adg.runtime import (
     MCPConfigSnapshot,
-    MCPDriftEvent,
     MCPDriftRecorder,
-    MCPDriftReport,
-    MCPDriftSeverity,
     MCPDriftType,
     MCPServerState,
 )

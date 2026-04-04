@@ -3,9 +3,9 @@
 Pre-commit hook for validation enforcement.
 """
 
-import sys
 import subprocess
-from pathlib import Path
+import sys
+
 
 def main():
     """Run validation before commit."""

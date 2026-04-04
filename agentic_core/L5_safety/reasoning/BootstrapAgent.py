@@ -15,9 +15,13 @@ from typing import Any
 
 from agentic_core.base_agents.L0RoutingBase import L0RoutingBase
 from agentic_core.L5_safety.utils.bootstrap_util import (
-    verify_redis_connection as _verify_redis_connection,
-    run_bootstrap as _run_bootstrap,
     heal_bootstrap_issues as _heal_bootstrap_issues,
+)
+from agentic_core.L5_safety.utils.bootstrap_util import (
+    run_bootstrap as _run_bootstrap,
+)
+from agentic_core.L5_safety.utils.bootstrap_util import (
+    verify_redis_connection as _verify_redis_connection,
 )
 
 

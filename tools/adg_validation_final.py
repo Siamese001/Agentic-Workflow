@@ -88,7 +88,7 @@ def main():
     synthetic_edges = 0
     duplicate_ratio = 0.0
 
-    print(f"\n📊 FINAL METRICS")
+    print("\n📊 FINAL METRICS")
     print("=" * 60)
     print(f"Semantic Accuracy:          {semantic_accuracy:.3f}")
     print(f"Symbol Alignment Rate:     {symbol_alignment:.3f}")
@@ -111,7 +111,7 @@ def main():
         'duplicate_ratio': duplicate_ratio == 0.0
     }
 
-    print(f"\n🎯 CRITERIA CHECK")
+    print("\n🎯 CRITERIA CHECK")
     print("=" * 60)
     for criterion, passed in criteria.items():
         status = "✅ PASS" if passed else "❌ FAIL"
@@ -136,7 +136,7 @@ def main():
         if 'signal_ratio' in failures:
             print(f"   → Signal ratio {signal_ratio:.3f} below 0.90 threshold")
         if 'denominator_integrity' in failures:
-            print(f"   → Denominator integrity check failed")
+            print("   → Denominator integrity check failed")
 
 if __name__ == "__main__":
     main()

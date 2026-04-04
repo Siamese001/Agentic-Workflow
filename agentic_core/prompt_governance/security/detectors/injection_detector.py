@@ -5,8 +5,6 @@ import re
 import time
 from typing import Any
 
-from agentic_core.prompt_governance.security.utils.normalization_util import normalize_and_decode
-from agentic_core.runtime.exceptions.SovereignError import SecurityViolationError
 from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     LayerSegment,
     _emit_agent_executes_agent,
@@ -50,6 +48,8 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     emit_determinism_digest,  # noqa: E402
     emit_replay_key,  # noqa: E402
 )
+from agentic_core.prompt_governance.security.utils.normalization_util import normalize_and_decode
+from agentic_core.runtime.exceptions.SovereignError import SecurityViolationError
 
 _emit_applies_guardrail("p0", "injection_detector", "p0_governance")
 _emit_reads_policy_state("p0", "injection_detector", "policy_binding")

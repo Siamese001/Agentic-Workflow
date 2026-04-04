@@ -3,10 +3,10 @@
 Defines types and enums for canonical raw unit management.
 """
 
-from enum import Enum
 from dataclasses import dataclass
 from datetime import datetime
-from typing import Optional, Dict, Any, List
+from enum import Enum
+from typing import Any
 
 
 class CanonicalUnitType(Enum):
@@ -42,7 +42,7 @@ class CanonicalIdentifier:
     def __str__(self) -> str:
         return f"{self.unit_id}:v{self.version}"
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Convert to dictionary for serialization."""
         return {
             "unit_id": self.unit_id,
@@ -55,11 +55,11 @@ class CanonicalIdentifier:
 @dataclass
 class CanonicalLineage:
     """Lineage information for canonical units."""
-    parent_id: Optional[str] = None
-    children_ids: List[str] = None
-    source_file: Optional[str] = None
-    extraction_method: Optional[str] = None
-    processing_chain: List[str] = None
+    parent_id: str | None = None
+    children_ids: list[str] = None
+    source_file: str | None = None
+    extraction_method: str | None = None
+    processing_chain: list[str] = None
 
     def __post_init__(self):
         if self.children_ids is None:
@@ -67,7 +67,7 @@ class CanonicalLineage:
         if self.processing_chain is None:
             self.processing_chain = []
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Convert to dictionary for serialization."""
         return {
             "parent_id": self.parent_id,
@@ -85,10 +85,10 @@ class CanonicalMetadata:
     modality: str
     size_bytes: int
     token_count: int
-    language: Optional[str] = None
+    language: str | None = None
     encoding: str = "utf-8"
-    tags: List[str] = None
-    custom_attributes: Dict[str, Any] = None
+    tags: list[str] = None
+    custom_attributes: dict[str, Any] = None
 
     def __post_init__(self):
         if self.tags is None:
@@ -96,7 +96,7 @@ class CanonicalMetadata:
         if self.custom_attributes is None:
             self.custom_attributes = {}
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Convert to dictionary for serialization."""
         return {
             "content_type": self.content_type,
@@ -140,7 +140,7 @@ class CanonicalRawUnit:
         """Get size estimate in bytes."""
         return len(self.content.encode(self.metadata.encoding))
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Convert to dictionary for serialization."""
         return {
             "identifier": self.identifier.to_dict(),
@@ -152,7 +152,7 @@ class CanonicalRawUnit:
         }
 
     @classmethod
-    def from_dict(cls, data: Dict[str, Any]) -> "CanonicalRawUnit":
+    def from_dict(cls, data: dict[str, Any]) -> "CanonicalRawUnit":
         """Create from dictionary."""
         identifier_data = data["identifier"]
         identifier = CanonicalIdentifier(
@@ -196,12 +196,12 @@ class CanonicalRawUnit:
 @dataclass
 class CanonicalDiff:
     """Difference between two canonical units."""
-    old_unit: Optional[CanonicalRawUnit]
+    old_unit: CanonicalRawUnit | None
     new_unit: CanonicalRawUnit
     change_type: str  # "created", "updated", "deleted", "tombstoned"
-    changes: List[str]
+    changes: list[str]
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Convert to dictionary for serialization."""
         return {
             "old_unit_id": self.old_unit.identifier.unit_id if self.old_unit else None,

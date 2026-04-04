@@ -10,7 +10,6 @@ VIOLATION: NO MAGIC STRINGS. ALL PROMPTS/CONFIGS MUST BE ACCESSED VIA THIS REGIS
 from __future__ import annotations
 
 from pydantic import BaseModel, Field
-from typing import Dict, List
 
 from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_applies_guardrail,
@@ -33,8 +32,8 @@ class ExecBriefPromptEntry(BaseModel):
     description: str
     system_prompt: str
     user_template: str
-    required_context: List[str] = Field(default_factory=list)
-    optional_context: List[str] = Field(default_factory=list)
+    required_context: list[str] = Field(default_factory=list)
+    optional_context: list[str] = Field(default_factory=list)
     target_audience: str = "executive"
     max_tokens: int = 2000
     temperature: float = 0.3
@@ -46,7 +45,7 @@ class ExecBriefNodeEntry(BaseModel):
     node_id: str
     description: str
     stage: str  # ingestion, extraction, synthesis, drafting, review
-    capabilities: List[str] = Field(default_factory=list)
+    capabilities: list[str] = Field(default_factory=list)
     timeout_seconds: int = 300
     retry_policy: str = "exponential_backoff"
     version: str = "1.0"
@@ -65,7 +64,7 @@ class ExecBriefGlobalRule(BaseModel):
 # FROZEN SNAPSHOT (Immutable Knowledge)
 # -----------------------------------------------------------------------------
 
-_EXEC_BRIEF_PROMPTS: Dict[str, ExecBriefPromptEntry] = {
+_EXEC_BRIEF_PROMPTS: dict[str, ExecBriefPromptEntry] = {
     "exec_brief_intro": ExecBriefPromptEntry(
         prompt_id="exec_brief_intro",
         description="Generate executive brief introduction",
@@ -178,7 +177,7 @@ Format: Structured bullet points with source citations.""",
     ),
 }
 
-_EXEC_BRIEF_NODES: Dict[str, ExecBriefNodeEntry] = {
+_EXEC_BRIEF_NODES: dict[str, ExecBriefNodeEntry] = {
     "ingestion": ExecBriefNodeEntry(
         node_id="ingestion",
         description="Document ingestion and preprocessing",
@@ -226,7 +225,7 @@ _EXEC_BRIEF_NODES: Dict[str, ExecBriefNodeEntry] = {
     ),
 }
 
-_EXEC_BRIEF_RULES: Dict[str, ExecBriefGlobalRule] = {
+_EXEC_BRIEF_RULES: dict[str, ExecBriefGlobalRule] = {
     "max_length": ExecBriefGlobalRule(
         rule_id="max_length",
         description="Executive brief must not exceed 2 pages",
@@ -254,9 +253,9 @@ _EXEC_BRIEF_RULES: Dict[str, ExecBriefGlobalRule] = {
 class ExecSovereignKnowledge(BaseModel):
     """Immutable frozen snapshot of exec brief domain knowledge."""
     version: str = "1.0"
-    prompts: Dict[str, ExecBriefPromptEntry]
-    nodes: Dict[str, ExecBriefNodeEntry]
-    rules: Dict[str, ExecBriefGlobalRule]
+    prompts: dict[str, ExecBriefPromptEntry]
+    nodes: dict[str, ExecBriefNodeEntry]
+    rules: dict[str, ExecBriefGlobalRule]
 
 
 # -----------------------------------------------------------------------------
@@ -318,12 +317,12 @@ def get_global_rule(rule_id: str) -> ExecBriefGlobalRule:
     return FROZEN_SNAPSHOT.rules[rule_id]
 
 
-def list_all_prompts() -> List[str]:
+def list_all_prompts() -> list[str]:
     """Return list of all available prompt IDs."""
     return list(FROZEN_SNAPSHOT.prompts.keys())
 
 
-def list_all_nodes() -> List[str]:
+def list_all_nodes() -> list[str]:
     """Return list of all available node IDs."""
     return list(FROZEN_SNAPSHOT.nodes.keys())
 

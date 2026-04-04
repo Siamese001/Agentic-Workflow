@@ -14,25 +14,17 @@ from __future__ import annotations
 
 import hashlib
 import json
-import os
-import tempfile
 import time
-import uuid
-from pathlib import Path
-from typing import Any, Dict, List, Optional, Tuple
-from unittest.mock import MagicMock, patch
-
-import pytest
+from typing import Any
+from unittest.mock import MagicMock
 
 from tests.e2e.conftest import (
     DeterminismValidator,
     Layer,
     LayerBoundaryValidator,
     RobustnessResult,
-    TestExecutionContext,
     record_test_result,
 )
-
 
 # =============================================================================
 # UWG Authority Chain Tests
@@ -375,7 +367,7 @@ class TestDeterminismProof:
     def test_identical_input_identical_output(self) -> None:
         """Verify determinism: identical input → identical output."""
 
-        def deterministic_operation(input_data: Dict[str, Any]) -> str:
+        def deterministic_operation(input_data: dict[str, Any]) -> str:
             """Mock deterministic operation."""
             # Deterministic: same input always produces same output
             serialized = json.dumps(input_data, sort_keys=True)

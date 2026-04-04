@@ -5,10 +5,8 @@ This wave focuses on fixing indentation problems that are causing
 syntax errors after the basic cleanup.
 """
 
-import pathlib
-import re
 import ast
-from typing import Dict, List, Tuple
+import pathlib
 
 
 class Wave2IndentationFix:
@@ -24,9 +22,9 @@ class Wave2IndentationFix:
             'syntax_errors_fixed': 0,
             'failed_files': 0
         }
-        self.failed_files: List[Tuple[str, str]] = []
+        self.failed_files: list[tuple[str, str]] = []
 
-    def process_files(self) -> Dict:
+    def process_files(self) -> dict:
         """Process files with Wave 2 indentation fix."""
         # Only process files in tests/ directory, exclude archives
         test_files = []
@@ -102,7 +100,7 @@ class Wave2IndentationFix:
 
         return '\n'.join(fixed_lines)
 
-    def _has_unexpected_indent(self, line: str, stripped: str, all_lines: List[str], current_idx: int) -> bool:
+    def _has_unexpected_indent(self, line: str, stripped: str, all_lines: list[str], current_idx: int) -> bool:
         """Check if line has unexpected indentation."""
         # Check for orphaned import content at wrong indentation
         if (stripped.startswith(('from ', 'import ')) and
@@ -137,7 +135,7 @@ class Wave2IndentationFix:
         print(f"Failed files: {len(self.failed_files)}")
 
         if self.failed_files:
-            print(f"\nFailed files (first 5):")
+            print("\nFailed files (first 5):")
             for file_path, error in self.failed_files[:5]:
                 print(f"  {file_path}: {error}")
             if len(self.failed_files) > 5:

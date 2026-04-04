@@ -7,7 +7,7 @@ import logging
 import time
 from dataclasses import dataclass
 from enum import Enum
-from typing import Any, Dict, Optional
+from typing import Any
 
 from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     LayerSegment,
@@ -128,7 +128,7 @@ class BackpressureController:
         else:  # CRITICAL
             return 0.5
 
-    def get_stats(self) -> Dict[str, Any]:
+    def get_stats(self) -> dict[str, Any]:
         """Get backpressure statistics.
 
         Returns:
@@ -186,7 +186,7 @@ class BackpressureController:
 
 
 # Global instance
-_global_controller: Optional[BackpressureController] = None
+_global_controller: BackpressureController | None = None
 
 
 def get_backpressure_controller() -> BackpressureController:

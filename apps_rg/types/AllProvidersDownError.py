@@ -9,8 +9,6 @@ Phase 2 - Resilient Routing Layer
 import logging
 from typing import Any
 
-from apps_rg.engines.hardened_openai_executor import HardenedOpenAIExecutor
-from apps_rg.engines.HardenedAnthropicExecutor import HardenedAnthropicExecutor
 from apps_shared.utils.Provider import Provider
 
 from agentic_core.interfaces.observability import CircuitBreakerState, SystemTelemetry
@@ -57,6 +55,8 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     emit_determinism_digest,  # noqa: E402
     emit_replay_key,  # noqa: E402
 )
+from apps_rg.engines.hardened_openai_executor import HardenedOpenAIExecutor
+from apps_rg.engines.HardenedAnthropicExecutor import HardenedAnthropicExecutor
 
 _emit_authorize_and_execute("p2", "AllProvidersDownError", "execution_auth")
 _emit_validates_capability("p2", "AllProvidersDownError", "capability_check")

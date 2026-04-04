@@ -16,7 +16,7 @@ import hashlib
 import logging
 import pickle
 from dataclasses import dataclass, field
-from typing import Any, Optional
+from typing import Any
 
 from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     LayerSegment,
@@ -50,7 +50,7 @@ class L1ExactCache:
 
     def __init__(
         self,
-        redis_client: Optional[Any] = None,
+        redis_client: Any | None = None,
         default_ttl: int = 3600,
         key_prefix: str = "l1_exact:",
     ):
@@ -84,7 +84,7 @@ class L1ExactCache:
         query_hash = hashlib.sha256(normalized.encode()).hexdigest()
         return f"{self.key_prefix}{query_hash}"
 
-    def get(self, query: str) -> Optional[CacheHit]:
+    def get(self, query: str) -> CacheHit | None:
         """Get cached response for query.
 
         Args:
@@ -142,8 +142,8 @@ class L1ExactCache:
         self,
         query: str,
         response: str,
-        ttl: Optional[int] = None,
-        metadata: Optional[dict[str, Any]] = None,
+        ttl: int | None = None,
+        metadata: dict[str, Any] | None = None,
     ) -> bool:
         """Cache response for query.
 
@@ -293,7 +293,7 @@ class L1CacheManager:
     - completions: LLM completions
     """
 
-    def __init__(self, redis_client: Optional[Any] = None):
+    def __init__(self, redis_client: Any | None = None):
         """Initialize L1 Cache Manager.
 
         Args:
@@ -328,8 +328,8 @@ class L1CacheManager:
 
 
 # Global instance
-_global_l1_cache: Optional[L1ExactCache] = None
-_global_l1_manager: Optional[L1CacheManager] = None
+_global_l1_cache: L1ExactCache | None = None
+_global_l1_manager: L1CacheManager | None = None
 
 
 def get_global_l1_cache() -> L1ExactCache:
@@ -348,12 +348,12 @@ def get_global_l1_manager() -> L1CacheManager:
     return _global_l1_manager
 
 
-def l1_cache_get(query: str) -> Optional[str]:
+def l1_cache_get(query: str) -> str | None:
     """Convenience function for L1 cache get."""
     hit = get_global_l1_cache().get(query)
     return hit.response if hit else None
 
 
-def l1_cache_set(query: str, response: str, ttl: Optional[int] = None) -> bool:
+def l1_cache_set(query: str, response: str, ttl: int | None = None) -> bool:
     """Convenience function for L1 cache set."""
     return get_global_l1_cache().set(query, response, ttl)

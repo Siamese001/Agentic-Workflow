@@ -17,12 +17,12 @@ import time
 from pathlib import Path
 from typing import Any
 
+from agentic_core.L5_safety.config.structure_blueprint.ssot import (
+    get_validated_project_root,
+)
 from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     emit_determinism_digest,
     record_execution_trace,
-)
-from agentic_core.L5_safety.config.structure_blueprint.ssot import (
-    get_validated_project_root,
 )
 from system_learning.runtime_adg.snapshot import RuntimeADGSnapshot
 
@@ -296,7 +296,7 @@ and system evolution based on execution patterns.
         try:
             with open(self._evolution_log_path, "a", encoding="utf-8") as f:
                 f.write(json.dumps(event, separators=(",", ":")) + "\n")
-        except (OSError, IOError) as e:
+        except OSError as e:
             # Log to stderr if file write fails
             import sys
             print(f"Warning: Failed to write evolution log: {e}", file=sys.stderr)
@@ -395,7 +395,7 @@ and system evolution based on execution patterns.
             return []
 
         events = []
-        with open(self._evolution_log_path, "r", encoding="utf-8") as f:
+        with open(self._evolution_log_path, encoding="utf-8") as f:
             for line in f:
                 try:
                     event = json.loads(line.strip())

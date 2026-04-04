@@ -42,13 +42,6 @@ from typing import Any
 logging.basicConfig(level=logging.INFO, format="%(levelname)s: %(message)s")
 _logger = logging.getLogger(__name__)
 
-from agentic_core.L2_execution.optimization.cpu_optimizer import (
-    CPUConfig,
-    OperatingProfile,
-    WorkloadClass,
-    get_cpu_optimizer,
-    get_recommended_defaults,
-)
 from agentic_core.adg.analysis.hotspot_index_types import HotspotIndex
 from agentic_core.adg.analysis.test_gap_types import detect_test_gaps
 from agentic_core.adg.extraction.static_scanner import ADGStaticScanner, ScanResult
@@ -445,7 +438,7 @@ def cmd_collection_safety(args: argparse.Namespace, idx: ADGIndex) -> int:
             out_path.parent.mkdir(parents=True, exist_ok=True)
             out_path.write_text(json.dumps(report, indent=2), encoding="utf-8")
             _logger.info(f"Collection safety report written to: {out_path}")
-        except (OSError, IOError) as e:
+        except OSError as e:
             _logger.error(f"Failed to write report: {e}")
             return 1
     else:
@@ -598,7 +591,7 @@ def cmd_report(args: argparse.Namespace, idx: ADGIndex) -> int:
         print(f"Uncovered modules: {len(report.uncovered_modules)}/{report.total_production_modules}")
         print(f"Syntax errors    : {idx.result.manifest.syntax_error_count}")
         return 0
-    except (OSError, IOError) as e:
+    except OSError as e:
         _logger.error(f"Failed to write report: {e}")
         return 1
 

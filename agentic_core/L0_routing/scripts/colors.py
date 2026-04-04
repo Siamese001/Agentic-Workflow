@@ -7,25 +7,13 @@ from pathlib import Path
 
 from agentic_core.L0_routing.config.path_constants import MAX_DEPTH
 
+
 # Lazy import to avoid L0->L3 gravity violation
 def _get_registry():
     from agentic_core.L3_orchestration.registry.agent_dispatch_registry import get_agent_dispatch_registry
     return get_agent_dispatch_registry()
 
 from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-    # noqa: E402,
-    # noqa: E402
-    _emit_escalates_failure,
-    # noqa: E402
-    _emit_gated_by_confidence,
-    # noqa: E402
-    _emit_records_healing_outcome,
-    # noqa: E402
-    _emit_routes_to_agent,
-    # noqa: E402
-    _emit_stores_embedding,
-    # noqa: E402
-    emit_replay_key,
     _emit_agent_executes_agent,
     _emit_authorize_and_execute,
     _emit_blocks_direct_write,
@@ -36,20 +24,31 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_dispatches_agent,
     _emit_dispatches_execution_plan,
     _emit_dispatches_healing_run,
+    # noqa: E402,
+    # noqa: E402
+    _emit_escalates_failure,
     _emit_escalates_to_human,
+    # noqa: E402
+    _emit_gated_by_confidence,
     _emit_hard_fails_untranscripted,
     _emit_invokes_evaluation,
     _emit_links_execution_to_snapshot,
     _emit_observes_runtime_state,
     _emit_orchestrates_workflow,
     _emit_reads_policy_state,
+    # noqa: E402
+    _emit_records_healing_outcome,
     _emit_records_telemetry_event,
     _emit_records_tool_invocation,
     _emit_records_workflow_lineage,
     _emit_routes_through,
+    # noqa: E402
+    _emit_routes_to_agent,
     _emit_routes_to_capability,
     _emit_signs_execution_trace,
     _emit_snapshots_state,
+    # noqa: E402
+    _emit_stores_embedding,
     _emit_transcripts_response,
     _emit_updates_meta_learning_state,
     _emit_validates_agent_capability,
@@ -57,7 +56,9 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_verifies_boundary,
     _emit_verifies_policy,
     _emit_writes_via_uwg,
-    emit_determinism_digest
+    emit_determinism_digest,
+    # noqa: E402
+    emit_replay_key,
 )
 
 emit_replay_key("p0", "colors")
@@ -309,7 +310,7 @@ def _save_runtime_state(project_root_path: Path):
         assert_no_persistent_write("L0", "write_text")
         state_path.write_text(_json.dumps(_runtime_state, indent=2, default=str), encoding="utf-8")
     # guardian: allow-silent-swallow
-    except (OSError, IOError) as e:  # guardian: allow-specific -- runtime state save failure silently continues
+    except OSError as e:  # guardian: allow-specific -- runtime state save failure silently continues
         pass
 
 
@@ -567,7 +568,6 @@ def main():
         print("\n[*] Running Autonomy Compliance Report...")
         try:
             from agentic_core.config.autonomy_targets import get_target
-
             from agentic_core.L0_routing.seams.safety_validators_seam import load_autonomy_guardian
 
             get_autonomy_guardian = load_autonomy_guardian().get_autonomy_guardian

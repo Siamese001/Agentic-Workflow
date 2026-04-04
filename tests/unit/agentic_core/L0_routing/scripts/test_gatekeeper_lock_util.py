@@ -6,7 +6,6 @@ import importlib
 
 import pytest
 
-
 MODULE_PATH = "agentic_core.L0_routing.scripts.gatekeeper_lock_util"
 
 

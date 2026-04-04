@@ -20,11 +20,20 @@ class TestSlotContracts:
 
     def test_all_slot_dataclasses_exist(self):
         """Test all 10 slot dataclasses are importable and frozen."""
-        from agentic_core.prompt_governance.contracts.slot_contracts import (
-            SlotS0, SlotD0, SlotM0, SlotI0, SlotE0,
-            SlotC0, SlotY0, SlotU0, SlotH0, SlotR0
-        )
         from dataclasses import is_dataclass
+
+        from agentic_core.prompt_governance.contracts.slot_contracts import (
+            SlotC0,
+            SlotD0,
+            SlotE0,
+            SlotH0,
+            SlotI0,
+            SlotM0,
+            SlotR0,
+            SlotS0,
+            SlotU0,
+            SlotY0,
+        )
 
         slots = [SlotS0, SlotD0, SlotM0, SlotI0, SlotE0, SlotC0, SlotY0, SlotU0, SlotH0, SlotR0]
         for slot_class in slots:
@@ -78,7 +87,8 @@ class TestSlotContracts:
     def test_validate_slot_order_missing_slot(self):
         """Test validate_slot_order raises for missing slot."""
         from agentic_core.prompt_governance.contracts.slot_contracts import (
-            validate_slot_order, SlotOrderViolation
+            SlotOrderViolation,
+            validate_slot_order,
         )
         prompt = "<SLOT_S0></SLOT_S0><SLOT_D0></SLOT_D0>"  # Missing M0-R0
         with pytest.raises(SlotOrderViolation) as exc_info:
@@ -88,7 +98,8 @@ class TestSlotContracts:
     def test_validate_slot_order_misordered(self):
         """Test validate_slot_order raises for misordered slots."""
         from agentic_core.prompt_governance.contracts.slot_contracts import (
-            validate_slot_order, SlotOrderViolation
+            SlotOrderViolation,
+            validate_slot_order,
         )
         # Include all slots but D0 before S0 (misordered)
         prompt = "<SLOT_D0></SLOT_D0><SLOT_S0></SLOT_S0><SLOT_M0></SLOT_M0><SLOT_I0></SLOT_I0><SLOT_E0></SLOT_E0><SLOT_C0></SLOT_C0><SLOT_Y0></SLOT_Y0><SLOT_U0></SLOT_U0><SLOT_H0></SLOT_H0><SLOT_R0></SLOT_R0>"

@@ -15,7 +15,7 @@ class TestHitlGates:
 
     def test_hitl_gate_imports(self):
         """Test HitlGate module imports."""
-        from agentic_core.L5_safety.enforcement.hitl_gate import HitlGate, HitlChoice, HitlDecision
+        from agentic_core.L5_safety.enforcement.hitl_gate import HitlChoice, HitlDecision, HitlGate
         assert HitlGate is not None
         assert HitlChoice is not None
         assert HitlDecision is not None
@@ -23,7 +23,9 @@ class TestHitlGates:
     def test_hitl_escalation_imports(self):
         """Test HITL escalation components."""
         from agentic_core.L5_safety.hitl.hitl_escalation_activator import (
-            HITLEscalationActivator, EscalationRequest, EscalationPriority
+            EscalationPriority,
+            EscalationRequest,
+            HITLEscalationActivator,
         )
         assert HITLEscalationActivator is not None
         assert EscalationRequest is not None

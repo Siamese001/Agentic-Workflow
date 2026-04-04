@@ -11,6 +11,7 @@ sys.path.insert(0, str(REPO_ROOT))
 
 try:
     from pydantic import BaseModel
+
     from apps_research.engines.base_research_engine import BaseResearchEngine
 except ImportError as _import_err:
     pytest.skip(f"base_research_engine not available: {_import_err}", allow_module_level=True)

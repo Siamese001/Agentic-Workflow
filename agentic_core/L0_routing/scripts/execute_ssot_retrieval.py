@@ -4,14 +4,14 @@ This module contains cache management and context retrieval functionality
 that was previously in the monolithic execute_ssot.py file.
 """
 
-from typing import Any, Dict
 import hashlib
+from typing import Any
 
 # L1 Exact Match Cache - stores exact query results
-_L1_EXACT_CACHE: Dict[str, Dict[str, Any]] = {}
+_L1_EXACT_CACHE: dict[str, dict[str, Any]] = {}
 
 # L2 Semantic Cache - stores semantic query results (would use embeddings in full implementation)
-_L2_SEMANTIC_CACHE: Dict[str, Dict[str, Any]] = {}
+_L2_SEMANTIC_CACHE: dict[str, dict[str, Any]] = {}
 
 
 def _get_query_hash(query: str) -> str:
@@ -28,7 +28,7 @@ def _get_query_hash(query: str) -> str:
 
 def _store_in_retrieval_cache(
     query: str,
-    context: Dict[str, Any],
+    context: dict[str, Any],
     timestamp: int,
     cache_type: str = "L1"
 ) -> None:
@@ -46,14 +46,14 @@ def _store_in_retrieval_cache(
         "cached_at": timestamp,
         "query": query,
     }
-    
+
     if cache_type == "L1":
         _L1_EXACT_CACHE[query_hash] = entry
     elif cache_type == "L2":
         _L2_SEMANTIC_CACHE[query_hash] = entry
 
 
-def _retrieve_execution_context(query: str, timestamp: int) -> Dict[str, Any]:
+def _retrieve_execution_context(query: str, timestamp: int) -> dict[str, Any]:
     """Retrieve execution context for a query, using cache if available.
     
     Args:
@@ -68,7 +68,7 @@ def _retrieve_execution_context(query: str, timestamp: int) -> Dict[str, Any]:
         - 'timestamp': The retrieval timestamp
     """
     query_hash = _get_query_hash(query)
-    
+
     # Check L1 exact cache first
     if query_hash in _L1_EXACT_CACHE:
         entry = _L1_EXACT_CACHE[query_hash]
@@ -79,7 +79,7 @@ def _retrieve_execution_context(query: str, timestamp: int) -> Dict[str, Any]:
                 "cached": True,
                 "timestamp": timestamp,
             }
-    
+
     # Check L2 semantic cache
     if query_hash in _L2_SEMANTIC_CACHE:
         entry = _L2_SEMANTIC_CACHE[query_hash]
@@ -90,7 +90,7 @@ def _retrieve_execution_context(query: str, timestamp: int) -> Dict[str, Any]:
                 "cached": True,
                 "timestamp": timestamp,
             }
-    
+
     # No cache hit - would perform actual retrieval here
     return {
         "context": None,
@@ -106,7 +106,7 @@ def _clear_retrieval_cache() -> None:
     _L2_SEMANTIC_CACHE.clear()
 
 
-def _get_cache_stats() -> Dict[str, int]:
+def _get_cache_stats() -> dict[str, int]:
     """Get cache statistics.
     
     Returns:

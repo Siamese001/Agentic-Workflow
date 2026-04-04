@@ -1,6 +1,6 @@
 import json
 
-with open('artifacts/current_skip_analysis.json', 'r') as f:
+with open('artifacts/current_skip_analysis.json') as f:
     data = json.load(f)
 
 # Find actual skipped tests

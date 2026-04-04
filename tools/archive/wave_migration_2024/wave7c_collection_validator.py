@@ -7,11 +7,9 @@ to ensure all tests can be collected successfully.
 """
 
 import json
-import subprocess
 import re
+import subprocess
 from pathlib import Path
-from typing import Dict, List, Set, Tuple
-from collections import defaultdict, Counter
 
 
 class TestCollectionValidator:
@@ -21,7 +19,7 @@ class TestCollectionValidator:
         self.collection_results = {}
         self.fixes_applied = 0
 
-    def run_test_collection(self) -> Dict:
+    def run_test_collection(self) -> dict:
         """Run pytest collection and analyze results."""
         print("=== Running Test Collection Analysis ===")
 
@@ -120,7 +118,7 @@ class TestCollectionValidator:
                 'collection_issues': []
             }
 
-    def fix_collection_issues(self, issues: List[Dict]) -> Dict:
+    def fix_collection_issues(self, issues: list[dict]) -> dict:
         """Fix common collection issues."""
         fixes_applied = 0
         fix_details = []
@@ -143,7 +141,7 @@ class TestCollectionValidator:
                         if conftest_path.exists():
                             try:
                                 # Try to parse the conftest file
-                                with open(conftest_path, 'r') as f:
+                                with open(conftest_path) as f:
                                     content = f.read()
 
                                 # Basic syntax check
@@ -154,7 +152,7 @@ class TestCollectionValidator:
                                 fixed_content = self._fix_conftest_issues(content)
                                 conftest_path.write_text(fixed_content, encoding='utf-8')
                                 fixes_applied += 1
-                                fix_details.append(f"Fixed conftest.py syntax issues")
+                                fix_details.append("Fixed conftest.py syntax issues")
                                 break
 
             elif issue['type'] == 'syntax_error':
@@ -327,7 +325,7 @@ def resolve_collection_issues():
         print(f"  - {detail}")
 
     # Final collection validation
-    print(f"\n3. Running final collection validation...")
+    print("\n3. Running final collection validation...")
     final_result = validator.run_test_collection()
 
     print(f"Final collection: {'✅ SUCCESS' if final_result['success'] else '❌ FAILED'}")
@@ -339,7 +337,7 @@ def resolve_collection_issues():
     improvement = final_result['collected_tests'] - initial_result['collected_tests']
     error_reduction = initial_result['errors'] - final_result['errors']
 
-    print(f"\n=== Wave 7c Summary ===")
+    print("\n=== Wave 7c Summary ===")
     print(f"Initial collected tests: {initial_result['collected_tests']}")
     print(f"Final collected tests: {final_result['collected_tests']}")
     print(f"Improvement: +{improvement} tests")
@@ -371,7 +369,7 @@ def resolve_collection_issues():
     with open('artifacts/wave7c_collection_fix_results.json', 'w') as f:
         json.dump(output, f, indent=2)
 
-    print(f"\nDetailed results saved to: artifacts/wave7c_collection_fix_results.json")
+    print("\nDetailed results saved to: artifacts/wave7c_collection_fix_results.json")
 
     return output
 
@@ -382,9 +380,9 @@ def main():
 
     success = results['summary']['overall_success']
 
-    print(f"\n=== Wave 7c Complete ===")
+    print("\n=== Wave 7c Complete ===")
     if success:
-        print(f"✅ Wave 7c SUCCESSFUL - 100% collection success achieved")
+        print("✅ Wave 7c SUCCESSFUL - 100% collection success achieved")
         print(f"Collected {results['summary']['final_collected']} tests successfully")
     else:
         print(f"⚠️  Wave 7c PARTIAL - {results['summary']['final_collected']} tests collected, {results['summary']['final_result']['errors']} errors remain")

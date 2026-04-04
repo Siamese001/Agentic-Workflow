@@ -1,10 +1,10 @@
 #!/usr/bin/env python
 """Full Activation - No Mocks End-to-End Test Suite"""
 
+import hashlib
+import json
 import sys
 import time
-import json
-import hashlib
 from pathlib import Path
 
 print('='*70)
@@ -16,10 +16,10 @@ all_tests_passed = True
 # Test 1: Dependencies Installed
 print('\n[TEST 1] DEPENDENCIES INSTALLED')
 try:
-    import gptcache
     import chromadb
-    import redis
+    import gptcache
     import openai
+    import redis
     print('    ✓ gptcache: INSTALLED')
     print('    ✓ chromadb: INSTALLED')
     print('    ✓ redis: INSTALLED')
@@ -52,11 +52,11 @@ except Exception as e:
 # Test 3: GPTCache Client (No Mocks)
 print('\n[TEST 3] GPTCACHE CLIENT - REAL IMPLEMENTATION')
 try:
-    from agentic_core.L2_execution.cache.gptcache_client import GPTCacheClient
-
     # Force real implementation by checking gptcache is available
     from gptcache import Cache
     from gptcache.adapter.api import init_similar_cache
+
+    from agentic_core.L2_execution.cache.gptcache_client import GPTCacheClient
 
     cache = GPTCacheClient(
         cache_dir="artifacts/gptcache_test",

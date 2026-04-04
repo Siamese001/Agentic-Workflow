@@ -8,9 +8,6 @@ detection emitters, and meta-learning services with proper feature flag integrat
 import logging
 from typing import Any
 
-from agentic_core.utils.dependency_resolver import DynamicLoader
-from agentic_core.utils.feature_flags import FeatureFlagManager
-
 from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     LayerSegment,
     _emit_agent_executes_agent,
@@ -54,6 +51,8 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     emit_determinism_digest,
     emit_replay_key,
 )
+from agentic_core.utils.dependency_resolver import DynamicLoader
+from agentic_core.utils.feature_flags import FeatureFlagManager
 
 _emit_authorize_and_execute("p2", "component_util", "execution_auth")
 _emit_validates_capability("p2", "component_util", "capability_check")

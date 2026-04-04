@@ -27,12 +27,12 @@ Logger = logging.getLogger(__name__)
 @dataclass
 class FormatResult:
     """Result of formatting a file."""
-    
+
     file_path: Path
     changed: bool
     action: str | None = None
     error: str | None = None
-    
+
     def to_dict(self) -> dict[str, Any]:
         """Convert to dictionary."""
         return {
@@ -45,7 +45,7 @@ class FormatResult:
 
 class CodeFormatter:
     """Deterministic code formatting without agent overhead."""
-    
+
     def __init__(
         self,
         black_args: list[str] | None = None,
@@ -59,7 +59,7 @@ class CodeFormatter:
         """
         self.black_args = black_args or ["--quiet"]
         self.ruff_args = ruff_args or ["check", "--fix", "--quiet"]
-    
+
     def format_file(self, file_path: str | Path) -> FormatResult:
         """Format a single file using Black and Ruff.
         
@@ -70,23 +70,23 @@ class CodeFormatter:
             FormatResult with formatting outcome
         """
         path = Path(file_path)
-        
+
         if not path.exists():
             return FormatResult(
                 file_path=path,
                 changed=False,
                 error="File not found",
             )
-        
+
         if not path.suffix == ".py":
             return FormatResult(
                 file_path=path,
                 changed=False,
                 error="Not a Python file",
             )
-        
+
         changed = False
-        
+
         # Run Black
         try:
             black_cmd = ["black"] + self.black_args + [str(path)]
@@ -96,7 +96,7 @@ class CodeFormatter:
                 text=True,
                 check=False,
             )
-            
+
             if result.returncode == 0 and "reformatted" in result.stderr:
                 changed = True
                 Logger.info(f"Black reformatted: {path}")
@@ -104,7 +104,7 @@ class CodeFormatter:
             Logger.warning("Black not installed or not in PATH")
         except subprocess.SubprocessError as e:
             Logger.error(f"Black error: {e}")
-        
+
         # Run Ruff
         try:
             ruff_cmd = ["ruff"] + self.ruff_args + [str(path)]
@@ -114,20 +114,20 @@ class CodeFormatter:
                 text=True,
                 check=False,
             )
-            
+
             if result.returncode == 0:
                 Logger.debug(f"Ruff check passed: {path}")
         except FileNotFoundError:
             Logger.warning("Ruff not installed or not in PATH")
         except subprocess.SubprocessError as e:
             Logger.error(f"Ruff error: {e}")
-        
+
         return FormatResult(
             file_path=path,
             changed=changed,
             action="formatted" if changed else None,
         )
-    
+
     def format_files(self, file_paths: list[str | Path]) -> list[FormatResult]:
         """Format multiple files.
         
@@ -138,7 +138,7 @@ class CodeFormatter:
             List of FormatResult objects
         """
         return [self.format_file(fp) for fp in file_paths]
-    
+
     def check_tools_available(self) -> dict[str, bool]:
         """Check if formatting tools are available.
         
@@ -146,7 +146,7 @@ class CodeFormatter:
             Dictionary with tool availability status
         """
         tools = {}
-        
+
         for tool in ["black", "ruff"]:
             try:
                 subprocess.run(
@@ -157,7 +157,7 @@ class CodeFormatter:
                 tools[tool] = True
             except FileNotFoundError:
                 tools[tool] = False
-        
+
         return tools
 
 
@@ -215,7 +215,7 @@ def heal(violation: dict[str, Any]) -> dict[str, Any]:
     """
     violation_type = violation.get("type", "unknown")
     file_path = violation.get("file_path")
-    
+
     if violation_type == "formatting_violation" and file_path:
         result = format_file(file_path)
         return {
@@ -224,7 +224,7 @@ def heal(violation: dict[str, Any]) -> dict[str, Any]:
             "artifacts": [file_path] if result["changed"] else [],
             "errors": [result["error"]] if result.get("error") else [],
         }
-    
+
     return {
         "status": "skipped",
         "details": f"Unknown violation: {violation_type}",
@@ -236,21 +236,21 @@ def heal(violation: dict[str, Any]) -> dict[str, Any]:
 def main():
     """Main entry point for Code Formatter Utility."""
     import argparse
-    
+
     parser = argparse.ArgumentParser(description="Code Formatter Utility")
     parser.add_argument("files", nargs="+", help="Python files to format")
     parser.add_argument("--check", action="store_true", help="Check tool availability")
     parser.add_argument("--verbose", "-v", action="store_true")
-    
+
     args = parser.parse_args()
-    
+
     if args.verbose:
         logging.basicConfig(level=logging.DEBUG)
     else:
         logging.basicConfig(level=logging.INFO)
-    
+
     formatter = CodeFormatter()
-    
+
     if args.check:
         tools = formatter.check_tools_available()
         print("Tool availability:")
@@ -258,16 +258,16 @@ def main():
             status = "✓" if available else "✗"
             print(f"  {status} {tool}")
         return
-    
+
     results = formatter.format_files(args.files)
-    
+
     changed_count = sum(1 for r in results if r.changed)
     error_count = sum(1 for r in results if r.error)
-    
+
     print(f"Files processed: {len(results)}")
     print(f"  Changed: {changed_count}")
     print(f"  Errors: {error_count}")
-    
+
     for r in results:
         if r.changed:
             print(f"  ✓ Formatted: {r.file_path}")

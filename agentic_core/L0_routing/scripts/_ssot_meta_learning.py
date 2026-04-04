@@ -356,7 +356,7 @@ def _fire_meta_learning_intake(state_mgr: "object", now_utc: int, repo_root: Pat
                     timestamp_utc=now_utc,
                     trace_id=_tid,
                 )
-            except (OSError, IOError, TypeError, ValueError) as e:
+            except (OSError, TypeError, ValueError) as e:
                 logging.debug("[MetaLearning] Cognitive disposition persistence failed (non-fatal): %s", e)
 
         # Emit ADG behavioral score for routing confidence monitor
@@ -653,7 +653,7 @@ def _fire_meta_learning_intake(state_mgr: "object", now_utc: int, repo_root: Pat
         )
 
         logging.debug("[MetaLearning] Execute_SSOT phase outcomes persisted to system learning")
-    except (OSError, IOError, TypeError, ValueError, AttributeError) as e:
+    except (OSError, TypeError, ValueError, AttributeError) as e:
         logging.debug("[MetaLearning] Phase outcome persistence failed (non-fatal): %s", e)
 
     # Wave B-6: Serialize repair routes for optimization proposals
@@ -671,7 +671,7 @@ def _fire_meta_learning_intake(state_mgr: "object", now_utc: int, repo_root: Pat
                 trace_id=_tid if '_tid' in locals() else "unknown",
             )
             logging.debug("[MetaLearning] Repair routes serialized for optimization proposals")
-    except (OSError, IOError, TypeError, ValueError) as e:
+    except (OSError, TypeError, ValueError) as e:
         logging.debug("[MetaLearning] Repair route serialization failed (non-fatal): %s", e)
     except ImportError as _imp_err:
         logging.debug("[MetaLearning] Pipeline not yet available (pre-Wave 0B): %s", _imp_err)

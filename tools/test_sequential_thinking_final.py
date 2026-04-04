@@ -5,8 +5,8 @@ This demonstrates the tool working with real repository analysis.
 """
 
 import json
-import time
 from pathlib import Path
+
 
 def create_final_test():
     """Create a comprehensive final test for sequential thinking."""
@@ -19,7 +19,7 @@ def create_final_test():
     config_path = Path(__file__).parent / ".windsurf" / "mcp_config.json"
 
     if config_path.exists():
-        with open(config_path, 'r') as f:
+        with open(config_path) as f:
             config = json.load(f)
 
         seq_config = config.get("mcpServers", {}).get("sequential-thinking", {})
@@ -141,9 +141,9 @@ def create_final_test():
         print("3. Verify structured thinking output with proper progression")
         print("4. Apply to real repository problems and analysis")
 
-        print(f"\n📝 Test Scenario File:")
+        print("\n📝 Test Scenario File:")
         print(f"   {test_file}")
-        print(f"   Use this input when testing the sequential_thinking tool")
+        print("   Use this input when testing the sequential_thinking tool")
 
         return True
     else:

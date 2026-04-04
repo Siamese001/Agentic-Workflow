@@ -3,10 +3,10 @@
 CI integration for validation enforcement.
 """
 
-import sys
-import json
 import subprocess
+import sys
 from pathlib import Path
+
 
 def run_validation():
     """Run validation and output CI-friendly results."""

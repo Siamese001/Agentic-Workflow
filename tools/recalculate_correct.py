@@ -3,8 +3,8 @@
 Recalculate with correct math - we're REPLACING files, not reading original content.
 """
 
-import pathlib
 import tiktoken
+
 
 def estimate_tokens(text: str) -> int:
     """Estimate tokens using GPT-4 tokenizer."""
@@ -97,7 +97,7 @@ class TestAcceleratorWiring:
     print(f"- Process {files_per_wave} files per wave (not 7!)")
     print(f"- Complete in {waves_needed} waves (not 236!)")
     print(f"- Each wave uses ~{instruction_overhead + (template_tokens * files_per_wave):.0f} tokens")
-    print(f"- Much more efficient!")
+    print("- Much more efficient!")
 
 if __name__ == '__main__':
     recalculate_correctly()

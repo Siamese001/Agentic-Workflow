@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Add System Learning classes to execute_ssot.py"""
 
-with open('agentic_core/L0_routing/scripts/execute_ssot.py', 'r', encoding='utf-8') as f:
+with open('agentic_core/L0_routing/scripts/execute_ssot.py', encoding='utf-8') as f:
     content = f.read()
 
 # Check if classes already exist

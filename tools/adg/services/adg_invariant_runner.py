@@ -13,7 +13,6 @@ import time
 from abc import ABC, abstractmethod
 from typing import Any
 
-
 from agentic_core.adg.contracts.query_contracts import (
     FindingPacket,
     FindingSeverity,

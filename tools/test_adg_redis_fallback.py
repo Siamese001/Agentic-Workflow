@@ -11,9 +11,8 @@ import os
 import sqlite3
 import subprocess
 import sys
-import time
 from pathlib import Path
-from typing import Any, Dict
+from typing import Any
 
 # Add project root to path
 sys.path.insert(0, str(Path(__file__).parent))
@@ -31,7 +30,7 @@ def test_redis_connection() -> bool:
         return False
 
 
-def test_adg_mcp_server_direct() -> Dict[str, Any]:
+def test_adg_mcp_server_direct() -> dict[str, Any]:
     """Test ADG MCP server directly via Python import."""
     try:
         # Import the server module
@@ -62,7 +61,7 @@ def test_adg_mcp_server_direct() -> Dict[str, Any]:
         }
 
 
-def test_adg_mcp_server_subprocess() -> Dict[str, Any]:
+def test_adg_mcp_server_subprocess() -> dict[str, Any]:
     """Test ADG MCP server via subprocess (simulates MCP client)."""
     try:
         server_path = Path(__file__).parent / "tools" / "adg" / "adg_mcp_server.py"
@@ -95,7 +94,7 @@ def test_adg_mcp_server_subprocess() -> Dict[str, Any]:
         }
 
 
-def test_adg_status_with_redis_down() -> Dict[str, Any]:
+def test_adg_status_with_redis_down() -> dict[str, Any]:
     """Test adg_status tool behavior when Redis is down."""
     try:
         # Simulate Redis being unavailable by using wrong port
@@ -127,7 +126,7 @@ def test_adg_status_with_redis_down() -> Dict[str, Any]:
         os.environ['ADG_REDIS_URL'] = 'redis://localhost:6379/0'
 
 
-def test_adg_cache_meta_with_redis_down() -> Dict[str, Any]:
+def test_adg_cache_meta_with_redis_down() -> dict[str, Any]:
     """Test _cache_meta function when Redis is down."""
     try:
         # Simulate Redis being unavailable
@@ -157,7 +156,7 @@ def test_adg_cache_meta_with_redis_down() -> Dict[str, Any]:
         os.environ['ADG_REDIS_URL'] = 'redis://localhost:6379/0'
 
 
-def test_adg_sqlite_fallback() -> Dict[str, Any]:
+def test_adg_sqlite_fallback() -> dict[str, Any]:
     """Test if ADG SQLite data is available as fallback."""
     try:
         adg_dir = Path(__file__).parent / "artifacts" / "adg"
@@ -201,7 +200,7 @@ def test_adg_sqlite_fallback() -> Dict[str, Any]:
         }
 
 
-def test_ingest_script_fallback() -> Dict[str, Any]:
+def test_ingest_script_fallback() -> dict[str, Any]:
     """Test if ingest script can rebuild Redis cache from SQLite."""
     try:
         ingest_path = Path(__file__).parent / "tools" / "adg" / "adg_redis_ingest.py"
@@ -234,7 +233,7 @@ def test_ingest_script_fallback() -> Dict[str, Any]:
         }
 
 
-def test_mcp_config_fallback() -> Dict[str, Any]:
+def test_mcp_config_fallback() -> dict[str, Any]:
     """Test MCP configuration for fallback scenarios."""
     try:
         mcp_config_path = Path(__file__).parent / ".windsurf" / "mcp_config.json"
@@ -245,7 +244,7 @@ def test_mcp_config_fallback() -> Dict[str, Any]:
                 "error": "MCP config not found"
             }
 
-        with open(mcp_config_path, 'r') as f:
+        with open(mcp_config_path) as f:
             config = json.load(f)
 
         adg_redis_config = config.get("mcpServers", {}).get("adg_redis", {})

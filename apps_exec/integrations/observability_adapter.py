@@ -12,7 +12,7 @@ from __future__ import annotations
 import logging
 from typing import Any
 
-from apps_exec.types import ExecBriefRequest, ExecBriefResult, BriefSection
+from apps_exec.types import BriefSection, ExecBriefRequest, ExecBriefResult
 
 _log = logging.getLogger(__name__)
 

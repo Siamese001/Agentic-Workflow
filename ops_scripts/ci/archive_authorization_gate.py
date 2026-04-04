@@ -1,5 +1,6 @@
-import sys
 import argparse
+import sys
+
 
 def main():
     """Placeholder for the archive authorization gate."""

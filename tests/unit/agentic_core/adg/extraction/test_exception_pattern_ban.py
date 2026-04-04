@@ -6,7 +6,6 @@ Bans exception-based control flow for StopIteration and GeneratorExit in core al
 import ast
 import inspect
 from pathlib import Path
-from typing import List, Tuple
 
 import pytest
 
@@ -60,11 +59,11 @@ class TestExceptionControlFlowBan:
                 all_violations.append(f"{visitor.name}: {violations}")
 
         assert not all_violations, (
-            f"Visitor classes use banned exception control flow:\n" +
+            "Visitor classes use banned exception control flow:\n" +
             "\n".join(all_violations)
         )
 
-    def _find_exception_control_flow(self, tree: ast.AST, banned: set) -> List[str]:
+    def _find_exception_control_flow(self, tree: ast.AST, banned: set) -> list[str]:
         """Find try/except blocks catching banned exceptions for control flow."""
         violations = []
 
@@ -91,7 +90,7 @@ class TestExceptionControlFlowBan:
 
         return violations
 
-    def _find_exception_control_flow_in_node(self, node: ast.AST, banned: set) -> List[str]:
+    def _find_exception_control_flow_in_node(self, node: ast.AST, banned: set) -> list[str]:
         """Find banned exception handling within a specific node."""
         violations = []
 
@@ -105,7 +104,7 @@ class TestExceptionControlFlowBan:
 
         return violations
 
-    def _contains_iterator_operation(self, body: List[ast.AST]) -> bool:
+    def _contains_iterator_operation(self, body: list[ast.AST]) -> bool:
         """Check if code block contains next() calls or iterator operations."""
         for node in ast.walk(ast.Module(body=body, type_ignores=[])):
             if isinstance(node, ast.Call):
@@ -209,7 +208,7 @@ class TestExceptionHandlingDocumentation:
         ]
 
         assert not critical_undocumented, (
-            f"Found undocumented exception handling for critical exceptions:\n" +
+            "Found undocumented exception handling for critical exceptions:\n" +
             "\n".join(f"  Line {e['line']}: catches {e['exceptions']} without # guardian:"
                      for e in critical_undocumented[:10])
         )

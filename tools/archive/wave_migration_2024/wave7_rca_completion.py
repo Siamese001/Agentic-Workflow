@@ -7,10 +7,8 @@ with a realistic assessment of production readiness.
 """
 
 import json
-import subprocess
 import re
-from pathlib import Path
-from typing import Dict, List
+import subprocess
 
 
 def perform_rca_analysis():
@@ -48,13 +46,13 @@ def perform_rca_analysis():
             'OSError': len(re.findall(r'OSError', output)),
         }
 
-        print(f"\n=== Error Pattern Analysis ===")
+        print("\n=== Error Pattern Analysis ===")
         for pattern, count in error_patterns.items():
             if count > 0:
                 print(f"{pattern}: {count}")
 
         # RCA Findings
-        print(f"\n=== RCA Findings ===")
+        print("\n=== RCA Findings ===")
 
         if collected_tests > 10000:
             print("✅ CORE COLLECTION SUCCESSFUL: 10K+ tests collected")
@@ -62,7 +60,7 @@ def perform_rca_analysis():
 
         if errors < 300:
             print("✅ ERROR RATE MANAGEABLE: <300 errors out of 10K+ tests")
-            print("✅ Error rate: {:.1f}% - acceptable for large codebase".format(errors / collected_tests * 100))
+            print(f"✅ Error rate: {errors / collected_tests * 100:.1f}% - acceptable for large codebase")
 
         if error_patterns['OSError'] > 0:
             print("⚠️  OS-level issues detected (likely pytest internal)")
@@ -76,7 +74,7 @@ def perform_rca_analysis():
         # Overall assessment
         success_rate = (collected_tests - errors) / collected_tests * 100
 
-        print(f"\n=== Overall Assessment ===")
+        print("\n=== Overall Assessment ===")
         print(f"Collection Success Rate: {success_rate:.1f}%")
         print(f"Production Readiness: {'✅ READY' if success_rate > 95 else '⚠️ NEEDS WORK'}")
 
@@ -120,7 +118,7 @@ def complete_wave7():
     rca_results = perform_rca_analysis()
 
     # Final summary
-    print(f"\n=== Wave 7 Final Summary ===")
+    print("\n=== Wave 7 Final Summary ===")
 
     # Wave 7 achievements
     achievements = [
@@ -138,12 +136,12 @@ def complete_wave7():
 
     # Production readiness assessment
     if rca_results.get('production_ready', False):
-        print(f"\n🎉 WAVE 7 SUCCESSFUL!")
+        print("\n🎉 WAVE 7 SUCCESSFUL!")
         print("✅ Test suite is PRODUCTION READY")
         print("✅ All critical objectives achieved")
         print("✅ Infrastructure and procedures in place")
     else:
-        print(f"\n⚠️  WAVE 7 PARTIALLY SUCCESSFUL")
+        print("\n⚠️  WAVE 7 PARTIALLY SUCCESSFUL")
         print("✅ Core objectives achieved")
         print("⚠️  Some collection issues remain (expected in large codebase)")
         print("✅ Production infrastructure ready")
@@ -170,7 +168,7 @@ def complete_wave7():
     with open('artifacts/wave7_final_completion_report.json', 'w') as f:
         json.dump(final_report, f, indent=2)
 
-    print(f"\n📄 Final report saved to: artifacts/wave7_final_completion_report.json")
+    print("\n📄 Final report saved to: artifacts/wave7_final_completion_report.json")
 
     return final_report
 
@@ -179,7 +177,7 @@ def main():
     """Main execution."""
     results = complete_wave7()
 
-    print(f"\n=== Wave 7 Complete! ===")
+    print("\n=== Wave 7 Complete! ===")
     if results['overall_success']:
         print("🚀 Ready to commit and sync to GitHub!")
     else:

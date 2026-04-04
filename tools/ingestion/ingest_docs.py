@@ -10,9 +10,9 @@ Usage:
 """
 
 import argparse
+import fnmatch
 import hashlib
 import json
-import fnmatch
 import logging
 import os
 import random

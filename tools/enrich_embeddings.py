@@ -11,11 +11,8 @@ Output: agentic_best_practices_semantic collection (enriched semantic units)
 
 import argparse
 import hashlib
-import json
 import re
-import sys
 from pathlib import Path
-from typing import Dict, List, Optional, Set, Tuple
 
 import chromadb
 from chromadb.config import Settings
@@ -53,7 +50,7 @@ class SemanticEnricher:
     def __init__(self):
         self.concept_patterns = self._build_concept_patterns()
 
-    def _build_concept_patterns(self) -> Set[str]:
+    def _build_concept_patterns(self) -> set[str]:
         """Build regex patterns for concept extraction."""
         patterns = set()
         for concept in self.CONCEPT_INDICATORS:
@@ -83,7 +80,7 @@ class SemanticEnricher:
             return first_sentence[:47] + "..."
         return first_sentence or "Untitled"
 
-    def _extract_key_concepts(self, text: str) -> List[str]:
+    def _extract_key_concepts(self, text: str) -> list[str]:
         """Extract key concepts using simple NLP heuristics."""
         concepts = []
         text_lower = text.lower()
@@ -102,7 +99,7 @@ class SemanticEnricher:
         # Limit to top concepts
         return list(dict.fromkeys(concepts))[:8]  # Remove duplicates, limit to 8
 
-    def _detect_agentic_patterns(self, text: str) -> List[str]:
+    def _detect_agentic_patterns(self, text: str) -> list[str]:
         """Detect agentic AI patterns in text."""
         patterns = []
         text_lower = text.lower()
@@ -135,7 +132,7 @@ class SemanticEnricher:
 
         return "Implementation guidance for agentic systems"
 
-    def _generate_query_expansion(self, text: str) -> List[str]:
+    def _generate_query_expansion(self, text: str) -> list[str]:
         """Generate query expansion terms."""
         expansion_terms = []
         text_lower = text.lower()
@@ -152,7 +149,7 @@ class SemanticEnricher:
 
         return list(dict.fromkeys(expansion_terms))[:10]  # Remove duplicates, limit to 10
 
-    def enrich_chunk(self, chunk_text: str, metadata: Dict) -> Dict:
+    def enrich_chunk(self, chunk_text: str, metadata: dict) -> dict:
         """Transform raw chunk into structured semantic representation."""
         # Clean text
         cleaned_text = re.sub(r'\s+', ' ', chunk_text.strip())
@@ -241,7 +238,7 @@ class SemanticPipeline:
         except Exception:
             return False
 
-    def _batch_embed(self, texts: List[str], batch_size: int = 32) -> List[List[float]]:
+    def _batch_embed(self, texts: list[str], batch_size: int = 32) -> list[list[float]]:
         """Batch embed texts using BGE-M3."""
         embeddings = []
 
@@ -252,7 +249,7 @@ class SemanticPipeline:
 
         return embeddings
 
-    def _process_chunk(self, chunk_id: str, chunk_text: str, metadata: Dict) -> Optional[Dict]:
+    def _process_chunk(self, chunk_id: str, chunk_text: str, metadata: dict) -> dict | None:
         """Process a single chunk through enrichment pipeline."""
         try:
             # Enrich chunk
@@ -287,7 +284,7 @@ class SemanticPipeline:
             self.stats['errors'] += 1
             return None
 
-    def run(self, limit: Optional[int] = None, sample_size: int = 0):
+    def run(self, limit: int | None = None, sample_size: int = 0):
         """Run the semantic enrichment pipeline."""
         print("Starting semantic enrichment pipeline...")
         print(f"Source collection: {self.source_collection.name}")
@@ -369,7 +366,7 @@ class SemanticPipeline:
             print(processed_chunks[0]['text'])
             print("-------------------------------")
 
-    def query_semantic(self, query: str, n_results: int = 5) -> List[Dict]:
+    def query_semantic(self, query: str, n_results: int = 5) -> list[dict]:
         """Query the semantic collection with expansion."""
         # Expand query
         expanded_terms = []
@@ -440,7 +437,7 @@ def main():
         pipeline.run(limit=args.limit, sample_size=args.sample)
 
         # Print final statistics
-        print(f"\n--- Final Statistics ---")
+        print("\n--- Final Statistics ---")
         print(f"Processed: {pipeline.stats['processed']}")
         print(f"Enriched: {pipeline.stats['enriched']}")
         print(f"Skipped: {pipeline.stats['skipped']}")

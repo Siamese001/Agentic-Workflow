@@ -4,6 +4,7 @@
 import ast
 from pathlib import Path
 
+
 def file_is_import_only(fp):
     try:
         source = fp.read_text(encoding='utf-8')

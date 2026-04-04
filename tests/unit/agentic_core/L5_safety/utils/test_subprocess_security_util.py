@@ -3,8 +3,6 @@
 """
 from __future__ import annotations
 
-import pytest
-
 
 class TestSecurityViolationErrorContract:
     def test_is_class(self):

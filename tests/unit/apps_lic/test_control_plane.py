@@ -25,6 +25,6 @@ class TestControlPlane:
 
     def test_control_plane_callable(self):
         """Test control_plane functions are callable."""
-        from apps_lic.engines.control_plane import PolicyDecision, PolicyAction
+        from apps_lic.engines.control_plane import PolicyAction, PolicyDecision
         assert callable(PolicyDecision)
         assert callable(PolicyAction)

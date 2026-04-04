@@ -425,7 +425,7 @@ class CoreSynthesisExecutor:
 
             return True
 
-        except (OSError, IOError, ValueError) as e:  # guardian: allow-specific -- logic merge failure returns False
+        except (OSError, ValueError) as e:  # guardian: allow-specific -- logic merge failure returns False
             print(f"❌ Failed to merge logic into {target_path}: {e}")
             return False
 

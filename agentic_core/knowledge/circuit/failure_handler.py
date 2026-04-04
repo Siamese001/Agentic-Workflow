@@ -8,7 +8,7 @@ import random
 import time
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import Any, Callable, Dict, List, Optional, Type
+from typing import Any, Callable
 
 from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     LayerSegment,
@@ -33,8 +33,8 @@ class RetryConfig:
     base_delay: float = 1.0
     max_delay: float = 60.0
     strategy: RetryStrategy = RetryStrategy.EXPONENTIAL
-    retryable_exceptions: List[Type[Exception]] = field(default_factory=lambda: [Exception])
-    on_retry: Optional[Callable[[int, Exception], None]] = None
+    retryable_exceptions: list[type[Exception]] = field(default_factory=lambda: [Exception])
+    on_retry: Callable[[int, Exception], None] | None = None
 
 
 class FailureHandler:
@@ -44,14 +44,14 @@ class FailureHandler:
     backoff and failure logging for resilient operations.
     """
 
-    def __init__(self, config: Optional[RetryConfig] = None):
+    def __init__(self, config: RetryConfig | None = None):
         """Initialize the failure handler.
 
         Args:
             config: Optional retry configuration
         """
         self.config = config or RetryConfig()
-        self._failure_log: List[Dict[str, Any]] = []
+        self._failure_log: list[dict[str, Any]] = []
 
         log.info(f"FailureHandler initialized (max_retries={self.config.max_retries})")
 
@@ -153,7 +153,7 @@ class FailureHandler:
         }
         self._failure_log.append(failure_entry)
 
-    def get_failure_log(self) -> List[Dict[str, Any]]:
+    def get_failure_log(self) -> list[dict[str, Any]]:
         """Get the failure log.
 
         Returns:
@@ -173,7 +173,7 @@ class FailureHandler:
 
 
 # Global instance
-_global_handler: Optional[FailureHandler] = None
+_global_handler: FailureHandler | None = None
 
 
 def get_failure_handler() -> FailureHandler:

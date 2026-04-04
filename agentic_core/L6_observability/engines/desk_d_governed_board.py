@@ -68,6 +68,8 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     emit_determinism_digest,
     emit_replay_key,
 )
+
+
 # Lazy import to avoid L6->L_SL gravity violation
 def _get_rlhf_optimizer():
     from system_learning.engines.rlhf_optimizer_impl import (

@@ -21,7 +21,7 @@ Usage:
 import argparse
 import subprocess
 import sys
-from pathlib import Path
+
 
 def get_phase_directories(phase):
     """Get directories for a specific phase."""
@@ -94,9 +94,9 @@ def run_all_tests():
     cmd = 'python -m pytest tests/smoke/ --tb=short -v'
 
     print(f"\n{'='*80}")
-    print(f"RUNNING ALL SMOKE TESTS (CANONICAL)")
+    print("RUNNING ALL SMOKE TESTS (CANONICAL)")
     print(f"{'='*80}")
-    print(f"This runs tests from ALL 40 directories")
+    print("This runs tests from ALL 40 directories")
     print(f"\nCommand: {cmd}\n")
 
     result = run_command(cmd)

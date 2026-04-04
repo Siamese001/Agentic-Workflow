@@ -17,20 +17,21 @@ from __future__ import annotations
 
 import logging
 from dataclasses import dataclass, field
-from typing import Any, Optional
+from typing import Any
 
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-    LayerSegment,
-    _emit_records_execution_trace,
-    _emit_reads_through,
-    _emit_stores_embedding,
-    _emit_captures_evaluation_metric,
-    _emit_records_learning_event,
-)
 from agentic_core.L3_orchestration.engines.adg_integration import (
     ADGQueryClient,
     get_global_adg_client,
 )
+from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_captures_evaluation_metric,
+    _emit_reads_through,
+    _emit_records_execution_trace,
+    _emit_records_learning_event,
+    _emit_stores_embedding,
+)
+
 # ParentChildExpander, ExpansionContext, L4ERetrievalIntegrator, ChunkManifestRegistry, EnrichedChunkManifest
 # imported lazily to avoid L3->L4 violation
 
@@ -65,10 +66,10 @@ class GraphRetrievalContext:
     source: str  # 'vector', 'lexical', 'l4e_expansion'
 
     # L4D manifest data
-    manifest: Optional[EnrichedChunkManifest] = None
+    manifest: EnrichedChunkManifest | None = None
 
     # ADG edge hydration
-    adg_hydration: Optional[ADGEdgeHydration] = None
+    adg_hydration: ADGEdgeHydration | None = None
 
     # Parent-child expansion metadata
     expansion_depth: int = 0
@@ -104,7 +105,7 @@ class ADGEdgeHydrator:
     pulls_context edges for retrieved chunks.
     """
 
-    def __init__(self, adg_client: Optional[ADGQueryClient] = None):
+    def __init__(self, adg_client: ADGQueryClient | None = None):
         """Initialize ADG edge hydrator.
 
         Args:
@@ -117,7 +118,7 @@ class ADGEdgeHydrator:
     def hydrate(
         self,
         chunk_id: str,
-        source_file: Optional[str] = None,
+        source_file: str | None = None,
     ) -> ADGEdgeHydration:
         """Hydrate a chunk with REAL ADG edges.
 
@@ -155,7 +156,7 @@ class ADGEdgeHydrator:
     def hydrate_batch(
         self,
         chunk_ids: list[str],
-        source_files: Optional[dict[str, str]] = None,
+        source_files: dict[str, str] | None = None,
     ) -> dict[str, ADGEdgeHydration]:
         """Hydrate multiple chunks with ADG edges.
 
@@ -242,10 +243,10 @@ class GraphRetrievalEngine:
 
     def __init__(
         self,
-        vector_db_client: Optional[Any] = None,
-        l4e_expander: Optional[ParentChildExpander] = None,
-        adg_hydrator: Optional[ADGEdgeHydrator] = None,
-        l4d_registry: Optional[ChunkManifestRegistry] = None,
+        vector_db_client: Any | None = None,
+        l4e_expander: ParentChildExpander | None = None,
+        adg_hydrator: ADGEdgeHydrator | None = None,
+        l4d_registry: ChunkManifestRegistry | None = None,
     ):
         """Initialize graph retrieval engine.
 
@@ -549,7 +550,7 @@ class RetrievalWithGraphIntegration:
 
     def __init__(
         self,
-        retrieval_engine: Optional[GraphRetrievalEngine] = None,
+        retrieval_engine: GraphRetrievalEngine | None = None,
     ):
         """Initialize retrieval with graph integration.
 
@@ -599,8 +600,8 @@ class RetrievalWithGraphIntegration:
 
 
 # Global instances
-_global_engine: Optional[GraphRetrievalEngine] = None
-_global_integration: Optional[RetrievalWithGraphIntegration] = None
+_global_engine: GraphRetrievalEngine | None = None
+_global_integration: RetrievalWithGraphIntegration | None = None
 
 
 def get_global_engine() -> GraphRetrievalEngine:
@@ -654,7 +655,7 @@ class RetrievalContextComposer:
     expansion into a unified context for prompt assembly.
     """
 
-    def __init__(self, retrieval_engine: Optional[GraphRetrievalEngine] = None):
+    def __init__(self, retrieval_engine: GraphRetrievalEngine | None = None):
         """Initialize context composer.
 
         Args:

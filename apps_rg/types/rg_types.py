@@ -11,7 +11,6 @@ from typing import Literal
 
 from pydantic import BaseModel, Field, field_validator
 
-
 ResumeStatus = Literal["pending", "analyzing", "generating", "reviewing", "complete", "failed"]
 
 ResumeFormat = Literal["standard", "ats_optimized", "executive", "creative"]

@@ -128,7 +128,7 @@ def validate_node_coverage(conn):
     print(f"  execution_node_coverage = {coverage:.6f}")
     print(f"  PASS: {passed} (threshold >= 0.90)")
     if missing_samples:
-        print(f"\n  Sample missing nodes:")
+        print("\n  Sample missing nodes:")
         for s in missing_samples:
             print(s)
 
@@ -158,7 +158,7 @@ def validate_edge_reality(conn):
     results_by_type = {}
 
     for etype in edge_types_to_check:
-        cur.execute(f"""
+        cur.execute("""
             SELECT source_file, line_no, symbol, relation_type
             FROM edges
             WHERE relation_type = ? AND line_no > 1
@@ -274,7 +274,7 @@ def validate_denominator_integrity(conn):
     print(f"  ADG source_file count:     {adg_file_count:,}")
     print(f"  ADG module node count:     {adg_module_count:,}")
     print(f"  File coverage ratio:       {file_coverage:.4f}")
-    print(f"\n  Denominator edge counts:")
+    print("\n  Denominator edge counts:")
     for dt, count in denom_types.items():
         print(f"    {dt}: {count:,}")
     print(f"\n  Independent call-file estimate: ~{estimated_files_with_calls:,} "
@@ -563,8 +563,8 @@ def validate_no_synthetics(conn):
     ]
 
     total_p1608 = 0
-    print(f"\n  Relation Type                        Count")
-    print(f"  " + "-" * 50)
+    print("\n  Relation Type                        Count")
+    print("  " + "-" * 50)
     for rt in p1608_types:
         count = cur.execute(
             "SELECT COUNT(*) FROM edges WHERE relation_type = ?", (rt,)
@@ -629,7 +629,7 @@ def validate_13_gaps(conn):
 
     all_passed = True
     print(f"\n  {'#':>3} {'Gap':40s} {'Count':>8} {'Line>1':>8} {'AST%':>8} {'Status'}")
-    print(f"  " + "-" * 80)
+    print("  " + "-" * 80)
 
     gap_results = {}
     for i, (gap_type, phase) in enumerate(gaps, 1):
@@ -681,7 +681,7 @@ def validate_uwg_alignment(conn):
 
     # Check that UWG-related edges exist and are AST-backed
     uwg_types = ["writes_via_uwg", "blocks_direct_write", "writes_to", "emits_side_effect"]
-    print(f"\n  UWG-related edge types:")
+    print("\n  UWG-related edge types:")
     total_uwg = 0
     total_ast_backed = 0
     for ut in uwg_types:
@@ -809,7 +809,7 @@ def main():
     }
 
     print(f"\n  {'Metric':40s} {'Value':>12} {'Pass'}")
-    print(f"  " + "-" * 60)
+    print("  " + "-" * 60)
     all_pass = True
     for key, val in metrics.items():
         section_key = {
@@ -860,7 +860,7 @@ def main():
                       "uwg_alignment": "s9_uwg",
                       "ordering_match_rate": "s10_ordering",
                   }[k]]["passed"]]
-        print(f"\n  >> SCANNER MODEL INCOMPLETE")
+        print("\n  >> SCANNER MODEL INCOMPLETE")
         print(f"  >> Failed metrics: {', '.join(failed)}")
 
     print()

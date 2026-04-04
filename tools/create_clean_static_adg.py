@@ -22,15 +22,13 @@ NEVER includes:
 
 import sys
 from pathlib import Path
-from typing import Dict, List, Tuple
 
 # Add project root to path
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(PROJECT_ROOT))
 
 from agentic_core.adg.artifact.builder_types import ADGArtifact, build_artifact
-from agentic_core.adg.extraction.static_scanner import ADGStaticScanner, _iter_python_files, Edge
-from agentic_core.adg.schema import RelationType
+from agentic_core.adg.extraction.static_scanner import ADGStaticScanner, Edge
 
 # STATIC-ONLY relation types (design-time structure)
 STATIC_RELATIONS = {
@@ -124,7 +122,7 @@ RUNTIME_RELATIONS = {
 }
 
 
-def filter_static_edges(edges: List[Edge]) -> List[Edge]:
+def filter_static_edges(edges: list[Edge]) -> list[Edge]:
     """Filter out all runtime edges, keeping only static structure."""
     static_edges = []
     runtime_filtered = 0
@@ -236,8 +234,9 @@ def main():
             sys.exit(1)
 
         # Write clean ADG
+        from datetime import datetime, timedelta, timezone
+
         from agentic_core.adg.artifact.ArtifactPaths import write_all_artifacts
-        from datetime import datetime, timezone, timedelta
 
         # Timestamp
         est = timezone(timedelta(hours=-4))

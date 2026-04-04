@@ -120,7 +120,7 @@ def test_full_pipeline_integration() -> bool:
         print("✓ Full observability pipeline works end-to-end")
         print(f"  - Processed {len(spans)} spans")
         print(f"  - Created snapshot: {snapshot_id[:16]}...")
-        print(f"  - Linked to meta-learning")
+        print("  - Linked to meta-learning")
         return True
 
     except Exception as e:
@@ -169,35 +169,16 @@ def test_all_waves_present() -> bool:
     """Verify all Waves 0-5 components are importable."""
     try:
         print("  Verifying Wave 0 (Prometheus Metrics)")
-        from agentic_core.L6_observability import AGENTIC_REGISTRY
 
         print("  Verifying Wave 1 (Tracing Decorators)")
-        from agentic_core.mixins.tracing_decorators import (
-            trace_cognitive,
-            trace_action,
-            trace_tool,
-        )
 
         print("  Verifying Wave 2 (Semantic Edges)")
-        from system_learning.runtime_adg.materializer import (
-            RuntimeADGMaterializer,
-            _extract_semantic_edges,
-        )
 
         print("  Verifying Wave 3 (Auto-Persistence)")
-        from agentic_core.L6_observability import (
-            AutoPersistenceTracingAdapter,
-            get_auto_persistence_tracer,
-        )
 
         print("  Verifying Wave 4 (Meta-Learning Bridge)")
-        from agentic_core.L6_observability import (
-            L6MetaLearningBridge,
-            get_meta_learning_bridge,
-        )
 
         print("  Verifying Wave 5 (Metrics Emission)")
-        from agentic_core.mixins.L6MetricsEmissionMixin import L6MetricsEmissionMixin
 
         print("✓ All Waves 0-5 components are present and importable")
         return True

@@ -7,14 +7,12 @@ Validates real-world integration patterns and use cases for all MCP servers
 import asyncio
 import json
 import logging
-import os
 import subprocess
 import sys
-import time
 import tempfile
+import time
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Tuple
-import statistics
+from typing import Any
 
 # Configure logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
@@ -153,7 +151,7 @@ jobs:
 
         logger.info(f"Created test project with {len(test_files)} files")
 
-    async def _validate_integration_scenario(self, scenario: str) -> Dict[str, Any]:
+    async def _validate_integration_scenario(self, scenario: str) -> dict[str, Any]:
         """Validate a specific integration scenario"""
         results = {
             "scenario": scenario,
@@ -191,7 +189,7 @@ jobs:
 
         return results
 
-    async def _validate_ci_cd_pipeline(self) -> List[Dict[str, Any]]:
+    async def _validate_ci_cd_pipeline(self) -> list[dict[str, Any]]:
         """Validate CI/CD pipeline integration"""
         steps = []
 
@@ -285,7 +283,7 @@ jobs:
 
         return steps
 
-    async def _validate_development_workflow(self) -> List[Dict[str, Any]]:
+    async def _validate_development_workflow(self) -> list[dict[str, Any]]:
         """Validate development workflow integration"""
         steps = []
 
@@ -378,7 +376,7 @@ if __name__ == '__main__':
 
         return steps
 
-    async def _validate_documentation_generation(self) -> List[Dict[str, Any]]:
+    async def _validate_documentation_generation(self) -> list[dict[str, Any]]:
         """Validate documentation generation integration"""
         steps = []
 
@@ -473,7 +471,7 @@ Returns:
 
         return steps
 
-    async def _validate_code_analysis(self) -> List[Dict[str, Any]]:
+    async def _validate_code_analysis(self) -> list[dict[str, Any]]:
         """Validate code analysis integration"""
         steps = []
 
@@ -527,7 +525,7 @@ Returns:
             start_time = time.time()
 
             # Count lines of code
-            with open(self.temp_workspace / "src/main.py", 'r') as f:
+            with open(self.temp_workspace / "src/main.py") as f:
                 loc = len(f.readlines())
 
             # Count test files
@@ -546,7 +544,7 @@ Returns:
 
         return steps
 
-    async def _validate_api_integration(self) -> List[Dict[str, Any]]:
+    async def _validate_api_integration(self) -> list[dict[str, Any]]:
         """Validate API integration scenarios"""
         steps = []
 
@@ -656,7 +654,7 @@ Returns:
 
         return steps
 
-    async def _validate_data_processing(self) -> List[Dict[str, Any]]:
+    async def _validate_data_processing(self) -> list[dict[str, Any]]:
         """Validate data processing integration"""
         steps = []
 
@@ -760,7 +758,7 @@ print(f'Total: {total}')
 
         return steps
 
-    async def _validate_testing_workflow(self) -> List[Dict[str, Any]]:
+    async def _validate_testing_workflow(self) -> list[dict[str, Any]]:
         """Validate testing workflow integration"""
         steps = []
 
@@ -841,7 +839,7 @@ print(f'Total: {total}')
 
         return steps
 
-    async def _validate_deployment_validation(self) -> List[Dict[str, Any]]:
+    async def _validate_deployment_validation(self) -> list[dict[str, Any]]:
         """Validate deployment workflow integration"""
         steps = []
 
@@ -937,7 +935,7 @@ print(f'Total: {total}')
                 for server in servers:
                     mcp_usage[server] = mcp_usage.get(server, 0) + 1
 
-        logger.info(f"\n🔧 MCP Server Usage:")
+        logger.info("\n🔧 MCP Server Usage:")
         for server, count in sorted(mcp_usage.items()):
             logger.info(f"  {server}: {count} uses")
 

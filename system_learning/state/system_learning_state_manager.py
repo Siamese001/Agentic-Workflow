@@ -38,7 +38,6 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_snapshots_state,
     _emit_stores_learning_state,
     _emit_triggers_alert,
-    _emit_updates_monitoring_state,
     _emit_writes_learning_snapshot,
     _emit_writes_observability_log,
 )

@@ -7,17 +7,13 @@ Validates full integration with agentic_core and all apps_* folders.
 from __future__ import annotations
 
 import json
-import os
 import sys
 from pathlib import Path
-
-import pytest
 from typing import Any
 
 REPO_ROOT = Path(__file__).parent.parent.parent.parent
 sys.path.insert(0, str(REPO_ROOT))
 
-from apps_shared.config.environment_config import EnvironmentConfig
 from apps_shared.config.operational_config import (
     is_allowed_duplicate,
     is_excluded_path,

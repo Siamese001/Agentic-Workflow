@@ -7,7 +7,7 @@ extraction, community detection, search, and guardrail settings.
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import Optional
+
 
 @dataclass
 class GraphRAGConfig:
@@ -22,7 +22,7 @@ class GraphRAGConfig:
     guardrail_strict_mode: bool = False
 
 # Global configuration instance
-_global_config: Optional[GraphRAGConfig] = None
+_global_config: GraphRAGConfig | None = None
 
 def get_config() -> GraphRAGConfig:
     """Get the global GraphRAG configuration."""

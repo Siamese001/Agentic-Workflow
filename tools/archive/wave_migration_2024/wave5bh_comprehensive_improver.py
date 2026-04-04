@@ -10,8 +10,6 @@ import ast
 import json
 import re
 from pathlib import Path
-from typing import Dict, List, Set, Tuple
-from collections import defaultdict, Counter
 
 
 class TestQualityImprover(ast.NodeTransformer):
@@ -90,7 +88,7 @@ class TestQualityImprover(ast.NodeTransformer):
         return tree
 
 
-def improve_test_file(file_path: Path) -> Dict:
+def improve_test_file(file_path: Path) -> dict:
     """Improve a single test file's quality."""
     try:
         content = file_path.read_text(encoding='utf-8')
@@ -356,7 +354,7 @@ def create_test_scenario(name: str, **kwargs):
             new_conftest_content = '\n'.join(lines)
             conftest_path.write_text(new_conftest_content, encoding='utf-8')
 
-            print(f"Updated conftest.py to import factories")
+            print("Updated conftest.py to import factories")
 
     return factories_path
 
@@ -366,7 +364,7 @@ def improve_test_suite():
     print("=== Wave 5b-5h: Comprehensive Test Quality Improvements ===")
 
     # Load the analysis from Wave 5a
-    with open('artifacts/test_quality_analysis.json', 'r') as f:
+    with open('artifacts/test_quality_analysis.json') as f:
         data = json.load(f)
 
     files_with_issues = [r for r in data['all_results'] if r.get('total_issues', 0) > 0]
@@ -393,7 +391,7 @@ def improve_test_suite():
 
             print(f"  ✅ Improved - {prints_removed} prints replaced, {sleeps_commented} sleeps commented")
         elif result['success'] and not result['changes_made']:
-            print(f"  ⚪ No changes needed")
+            print("  ⚪ No changes needed")
         else:
             print(f"  ❌ Failed - {result.get('error', 'Unknown error')}")
 
@@ -408,7 +406,7 @@ def improve_test_suite():
     total_prints_removed = sum(r.get('actual_improvements', {}).get('prints_removed', 0) for r in results)
     total_sleeps_commented = sum(r.get('actual_improvements', {}).get('sleeps_commented', 0) for r in results)
 
-    print(f"\n=== Wave 5b-5h Summary ===")
+    print("\n=== Wave 5b-5h Summary ===")
     print(f"Files processed: {total}")
     print(f"Successfully improved: {successful}")
     print(f"Files with changes: {with_changes}")
@@ -430,7 +428,7 @@ def improve_test_suite():
     with open('artifacts/wave5bh_improvement_results.json', 'w') as f:
         json.dump(output, f, indent=2)
 
-    print(f"\nDetailed results saved to: artifacts/wave5bh_improvement_results.json")
+    print("\nDetailed results saved to: artifacts/wave5bh_improvement_results.json")
 
     return output
 
@@ -439,7 +437,7 @@ def main():
     """Main execution."""
     results = improve_test_suite()
 
-    print(f"\n=== Wave 5 Complete! ===")
+    print("\n=== Wave 5 Complete! ===")
     print("✅ Test quality improvements completed")
     print("✅ Test data factories created")
     print("✅ Print statements replaced with logging")

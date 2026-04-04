@@ -9,6 +9,7 @@ MAX_FILES = 1000
 DEFAULT_TIMEOUT = 300
 import unittest
 
+
 class GeneratedTest(unittest.TestCase):
     """Generated test class for agentic_core.L0_routing.enforcement."""
 
@@ -20,8 +21,9 @@ class GeneratedTest(unittest.TestCase):
 
     def test_enforce_protected_root(self):
         """Test enforce_protected_root function."""
-        from agentic_core.L0_routing.enforcement import enforce_protected_root
         from pathlib import Path
+
+        from agentic_core.L0_routing.enforcement import enforce_protected_root
         # enforce_protected_root returns None, just test it doesn't raise
         try:
             enforce_protected_root(Path("/test/path"))

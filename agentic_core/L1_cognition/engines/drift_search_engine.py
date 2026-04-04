@@ -7,7 +7,7 @@ strategy that combines semantic, structural, and reasoning-based search.
 from __future__ import annotations
 
 from datetime import datetime
-from typing import TYPE_CHECKING, Dict, List, Optional, Tuple
+from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
     from agentic_core.L4_state.types.graph_store_types import GraphEntity, IGraphStore
@@ -100,7 +100,7 @@ class DRIFTSearchEngine:
     def __init__(
         self,
         graph_store: IGraphStore,
-        config: Optional[DRIFTSearchConfig] = None
+        config: DRIFTSearchConfig | None = None
     ) -> None:
         """Initialize the DRIFT search engine.
 
@@ -113,7 +113,7 @@ class DRIFTSearchEngine:
         self.graphrag_config = get_config()
 
         # Learning feedback storage
-        self._feedback_history: Dict[str, List[Tuple[float, datetime]]] = {}
+        self._feedback_history: dict[str, list[tuple[float, datetime]]] = {}
 
     async def search(self, query: SearchQuery) -> SearchResponse:
         """Perform DRIFT search for the given query.
@@ -191,7 +191,7 @@ class DRIFTSearchEngine:
                 errors=[f"DRIFT search failed: {str(e)}"]
             )
 
-    async def _semantic_search(self, query: SearchQuery) -> List[SearchResult]:
+    async def _semantic_search(self, query: SearchQuery) -> list[SearchResult]:
         """Perform semantic search using embeddings."""
         # Find entities using text search (placeholder for embedding-based search)
         search_result = await self.graph_store.search_entities(
@@ -220,7 +220,7 @@ class DRIFTSearchEngine:
 
         return results
 
-    async def _structural_search(self, query: SearchQuery) -> List[SearchResult]:
+    async def _structural_search(self, query: SearchQuery) -> list[SearchResult]:
         """Perform structural search based on graph topology."""
         # Find seed entities first
         seed_search = await self.graph_store.search_entities(
@@ -265,7 +265,7 @@ class DRIFTSearchEngine:
 
         return results
 
-    async def _reasoning_search(self, query: SearchQuery) -> List[SearchResult]:
+    async def _reasoning_search(self, query: SearchQuery) -> list[SearchResult]:
         """Perform reasoning-based search with multi-hop inference."""
         # This is a simplified reasoning search
         # In practice, you'd use actual reasoning chains
@@ -341,14 +341,14 @@ class DRIFTSearchEngine:
 
     async def _dynamic_fusion(
         self,
-        semantic_results: List[SearchResult],
-        structural_results: List[SearchResult],
-        reasoning_results: List[SearchResult],
+        semantic_results: list[SearchResult],
+        structural_results: list[SearchResult],
+        reasoning_results: list[SearchResult],
         query: SearchQuery
-    ) -> List[SearchResult]:
+    ) -> list[SearchResult]:
         """Dynamically fuse results from multiple strategies."""
         # Group results by entity ID
-        entity_scores: Dict[str, Dict[str, float]] = {}
+        entity_scores: dict[str, dict[str, float]] = {}
 
         # Collect scores from each strategy
         for result in semantic_results:
@@ -423,9 +423,9 @@ class DRIFTSearchEngine:
 
     async def _adaptive_traversal(
         self,
-        results: List[SearchResult],
+        results: list[SearchResult],
         query: SearchQuery
-    ) -> List[SearchResult]:
+    ) -> list[SearchResult]:
         """Apply adaptive traversal to expand result context."""
         if not self.config.adaptive_hop_selection:
             return results
@@ -452,9 +452,9 @@ class DRIFTSearchEngine:
 
     def _context_aware_pruning(
         self,
-        results: List[SearchResult],
+        results: list[SearchResult],
         query: SearchQuery
-    ) -> List[SearchResult]:
+    ) -> list[SearchResult]:
         """Apply context-aware pruning to remove redundant results."""
         if not self.config.context_aware_pruning:
             return results
@@ -474,7 +474,7 @@ class DRIFTSearchEngine:
 
         return pruned
 
-    def _apply_filters(self, results: List[SearchResult], query: SearchQuery) -> List[SearchResult]:
+    def _apply_filters(self, results: list[SearchResult], query: SearchQuery) -> list[SearchResult]:
         """Apply final filters to results."""
         filtered = []
 
@@ -542,7 +542,7 @@ class DRIFTSearchEngine:
 # Factory function
 def create_drift_search_engine(
     graph_store: IGraphStore,
-    config: Optional[DRIFTSearchConfig] = None
+    config: DRIFTSearchConfig | None = None
 ) -> DRIFTSearchEngine:
     """Create a DRIFT search engine."""
     return DRIFTSearchEngine(graph_store, config)

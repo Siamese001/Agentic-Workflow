@@ -6,15 +6,18 @@ Tests the complete Wave 4 implementation with query routing, fusion, and reranki
 
 import asyncio
 import sys
-from pathlib import Path
 import time
+from pathlib import Path
 
 # Add agentic_core to path
 sys.path.insert(0, str(Path(__file__).parent / "agentic_core"))
 
-from L1_cognition.engines.advanced_semantic_retriever import AdvancedSemanticRetriever, AdvancedRetrievalRequest
-from L1_cognition.engines.query_router import QueryRouter
+from L1_cognition.engines.advanced_semantic_retriever import (
+    AdvancedRetrievalRequest,
+    AdvancedSemanticRetriever,
+)
 from L1_cognition.engines.multi_query_fusion import MultiQueryFusion
+from L1_cognition.engines.query_router import QueryRouter
 from L1_cognition.engines.reranking_engine import RerankingEngine
 
 
@@ -214,7 +217,7 @@ async def test_advanced_retrieval():
                     print(f"  Reranking time: {response.reranking_result.execution_time_ms:.2f}ms")
 
                 # Show top results
-                print(f"  Top results:")
+                print("  Top results:")
                 for i, result in enumerate(response.final_results[:2], 1):
                     print(f"    {i}. [{result.collection}] {result.content[:40]}...")
                     if hasattr(result, 'score'):
@@ -283,7 +286,7 @@ async def test_fusion_strategies():
         successful_strategies = {k: v for k, v in strategy_results.items() if 'error' not in v}
 
         if successful_strategies:
-            print(f"\nStrategy Comparison Summary:")
+            print("\nStrategy Comparison Summary:")
             for strategy, results in successful_strategies.items():
                 print(f"  {strategy}: {results['results_count']} results, {results['execution_time']:.2f}ms")
 
@@ -338,7 +341,7 @@ async def test_performance():
 
         total_time = time.time() - start_time
 
-        print(f"\nPerformance Summary:")
+        print("\nPerformance Summary:")
         print(f"  Total queries: {len(perf_queries)}")
         print(f"  Successful: {successful_queries}")
         print(f"  Total results: {total_results}")

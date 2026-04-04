@@ -11,7 +11,6 @@ from typing import Literal
 
 from pydantic import BaseModel, Field, field_validator
 
-
 ProposalStatus = Literal["pending", "generating", "gate_checking", "complete", "failed", "dry_run"]
 
 ArchitecturePosture = Literal["cloud-first", "hybrid", "sovereign", "regulated"]

@@ -25,10 +25,10 @@ class _CallVisitor(BaseStructuralVisitor):
         # Import symbols at runtime to avoid circular imports
         from agentic_core.adg.schema_util import (
             EMBEDDING_SYMBOLS,
-            WRITE_SIDE_EFFECT_SYMBOLS,
-            WRITE_SIDE_EFFECT_EXCLUSIONS,
             NETWORK_SYMBOLS,
             PROVIDER_SDK_SYMBOLS,
+            WRITE_SIDE_EFFECT_EXCLUSIONS,
+            WRITE_SIDE_EFFECT_SYMBOLS,
         )
         self._embedding_symbols = EMBEDDING_SYMBOLS
         self._write_symbols = WRITE_SIDE_EFFECT_SYMBOLS
@@ -45,12 +45,12 @@ class _CallVisitor(BaseStructuralVisitor):
             if tail.startswith("_emit_") or tail.startswith("emit_"):
                 self.generic_visit(node)
                 return
-            
+
             edge_kind, relation = self._classify_call(sym)
             if edge_kind:
-                from agentic_core.adg.schema_util import canonical_name
                 from agentic_core.adg.extraction.static_scanner import Edge as _Edge
-                
+                from agentic_core.adg.schema_util import canonical_name
+
                 to_name = canonical_name("Symbol", sym)
                 self.edges.append(
                     _Edge(
@@ -93,11 +93,11 @@ class _CallVisitor(BaseStructuralVisitor):
             return "write", "writes_to"
         if sym in self._network_symbols or any(sym.startswith(n.split(".")[0]) for n in self._network_symbols):
             return "network", "invokes_provider"
-        
+
         base = sym.split(".")[0]
         if base in {s.split(".")[0] for s in self._provider_symbols}:
             return "network", "invokes_provider"
-        
+
         return "", ""
 
     def extract_edges(self) -> list[Edge]:
@@ -124,7 +124,7 @@ class _AntipatternVisitor(BaseStructuralVisitor):
     def visit_ExceptHandler(self, node: ast.ExceptHandler) -> None:
         """Detect antipatterns in exception handlers."""
         handler_type = self._get_exception_type(node.type)
-        
+
         # Check for broad exception catch
         if handler_type in self._broad_exceptions:
             self._antipatterns.append((
@@ -132,11 +132,11 @@ class _AntipatternVisitor(BaseStructuralVisitor):
                 "broad_exception_catch",
                 handler_type or "Exception",
             ))
-        
+
         # Analyze handler body for antipatterns
         if node.body:
             body_lines = [n.lineno for n in node.body]
-            
+
             # Check for empty/pass-only handlers (silent swallow)
             if self._is_silent_swallow(node.body):
                 self._antipatterns.append((
@@ -144,7 +144,7 @@ class _AntipatternVisitor(BaseStructuralVisitor):
                     "silent_exception_swallow",
                     handler_type or "Exception",
                 ))
-            
+
             # Check for log-and-swallow
             if self._is_log_and_swallow(node.body):
                 self._antipatterns.append((
@@ -152,7 +152,7 @@ class _AntipatternVisitor(BaseStructuralVisitor):
                     "log_and_swallow",
                     handler_type or "Exception",
                 ))
-            
+
             # Check for return None after exception
             if self._is_return_none_after_exception(node.body):
                 self._antipatterns.append((
@@ -160,7 +160,7 @@ class _AntipatternVisitor(BaseStructuralVisitor):
                     "return_none_swallow",
                     handler_type or "Exception",
                 ))
-        
+
         self.generic_visit(node)
 
     def _get_exception_type(self, type_node: ast.expr | None) -> str | None:
@@ -214,9 +214,9 @@ class _AntipatternVisitor(BaseStructuralVisitor):
 
     def extract_edges(self) -> list[Edge]:
         """Convert antipattern detections to edges."""
-        from agentic_core.adg.schema_util import canonical_name
         from agentic_core.adg.extraction.static_scanner import Edge as _Edge
-        
+        from agentic_core.adg.schema_util import canonical_name
+
         for line_no, category, symbol in self._antipatterns:
             self.edges.append(
                 _Edge(

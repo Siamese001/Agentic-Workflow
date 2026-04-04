@@ -4,14 +4,9 @@ Comprehensive Repository Analysis for Persistent Memory Opportunities
 Identifies files and data that should be stored in persistent memory to unlock system learning
 """
 
-import os
 import json
-import sqlite3
-from pathlib import Path
 from datetime import datetime
-from typing import Dict, List, Set, Tuple
-import ast
-import re
+from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 
@@ -38,7 +33,7 @@ class PersistentMemoryAnalyzer:
             "recommendations": []
         }
 
-    def scan_repository(self) -> Dict:
+    def scan_repository(self) -> dict:
         """Scan entire repository for persistent memory opportunities."""
         print("\n" + "=" * 80)
         print("SCANNING REPOSITORY FOR PERSISTENT MEMORY OPPORTUNITIES")
@@ -963,12 +958,12 @@ def main():
 
     print(f"🗄️ Schema design saved: {schema_file.name}")
 
-    print(f"\n🎯 NEXT STEPS:")
+    print("\n🎯 NEXT STEPS:")
     print(f"1. Review the analysis results in {analysis_file.name}")
     print(f"2. Implement the unified schema from {schema_file.name}")
-    print(f"3. Prioritize HIGH and CRITICAL recommendations")
-    print(f"4. Design migration strategy for existing data")
-    print(f"5. Implement incremental rollout with fallback")
+    print("3. Prioritize HIGH and CRITICAL recommendations")
+    print("4. Design migration strategy for existing data")
+    print("5. Implement incremental rollout with fallback")
 
 
 if __name__ == "__main__":

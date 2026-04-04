@@ -3,7 +3,6 @@
 
 import json
 from collections import Counter
-from pathlib import Path
 
 with open("artifacts/test_surface_inventory.json") as f:
     report = json.load(f)

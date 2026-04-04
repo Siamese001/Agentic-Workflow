@@ -6,22 +6,21 @@ Enforces hard gates and non-regression guarantees.
 """
 
 from dataclasses import dataclass, field
-from typing import Dict, Any, Optional
+from typing import Any
 
-from .precision_schema import (
-    PrecisionConfig, PrecisionMetrics, ValidationReport
-)
+from .precision_schema import PrecisionConfig, PrecisionMetrics, ValidationReport
+
 
 @dataclass
 class PrecisionValidator:
     """Validates precision hardening results against requirements"""
 
     config: PrecisionConfig = field(default_factory=PrecisionConfig)
-    validation_report: Optional[ValidationReport] = None
+    validation_report: ValidationReport | None = None
 
     def validate_precision_graphs(
         self,
-        precision_graphs: Dict[str, Any],
+        precision_graphs: dict[str, Any],
         original_node_count: int,
         original_edge_count: int,
         original_violation_count: int
@@ -72,7 +71,7 @@ class PrecisionValidator:
             report.error_message = f"Validation error: {str(e)}"
             return report
 
-    def _validate_hard_gates(self, metrics: PrecisionMetrics) -> Dict[str, bool]:
+    def _validate_hard_gates(self, metrics: PrecisionMetrics) -> dict[str, bool]:
         """Validate hard gate thresholds (Section 11)"""
 
         return {
@@ -101,11 +100,11 @@ class PrecisionValidator:
 
     def _validate_non_regression(
         self,
-        precision_graphs: Dict[str, Any],
+        precision_graphs: dict[str, Any],
         original_node_count: int,
         original_edge_count: int,
         original_violation_count: int
-    ) -> Dict[str, bool]:
+    ) -> dict[str, bool]:
         """Validate non-regression guarantees (Section 14)"""
 
         return {
@@ -133,7 +132,7 @@ class PrecisionValidator:
             print(f"Error: {report.error_message}")
 
         if report.metrics:
-            print(f"\nPrecision Metrics:")
+            print("\nPrecision Metrics:")
             print(f"  Block Level Coverage: {report.metrics.block_level_coverage_ratio:.3f}")
             print(f"  Lineage Completeness: {report.metrics.lineage_completeness_score:.3f}")
             print(f"  Control Path Coverage: {report.metrics.control_path_coverage:.3f}")
@@ -145,12 +144,12 @@ class PrecisionValidator:
             print(f"  Graph Hash: {report.metrics.graph_hash}")
 
         if report.hard_gates_passed:
-            print(f"\nHard Gate Status:")
+            print("\nHard Gate Status:")
             for gate, passed in report.hard_gates_passed.items():
                 status = "✅ PASS" if passed else "❌ FAIL"
                 print(f"  {gate}: {status}")
 
-        print(f"\nNon-Regression Checks:")
+        print("\nNon-Regression Checks:")
         print(f"  Backward Compatibility: {'✅' if report.backward_compatibility_check else '❌'}")
         print(f"  Existing Queries Functional: {'✅' if report.existing_queries_functional else '❌'}")
         print(f"  Violation Count Preserved: {'✅' if report.violation_count_preserved else '❌'}")

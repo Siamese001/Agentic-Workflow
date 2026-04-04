@@ -5,8 +5,8 @@ Summarize all completed work and provide final status.
 """
 
 import json
-from pathlib import Path
 from datetime import datetime
+from pathlib import Path
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
 
@@ -41,7 +41,7 @@ class FinalComplianceReporter:
             if report_file.exists():
                 try:
                     if report_path.endswith('.json'):
-                        with open(report_file, 'r') as f:
+                        with open(report_file) as f:
                             self.report_data[report_name] = json.load(f)
                     else:
                         # For Python scripts, just note they exist
@@ -336,13 +336,13 @@ class FinalComplianceReporter:
         for step in report['next_steps']:
             summary += f"1. {step}\n"
 
-        summary += f"""
+        summary += """
 ## 📚 Lessons Learned
 """
         for lesson in report['lessons_learned']:
             summary += f"- {lesson}\n"
 
-        summary += f"""
+        summary += """
 ## 🎯 Recommendations
 """
         for rec in report['recommendations']:
@@ -378,12 +378,12 @@ def main():
     print(f"📊 Progress: {report['executive_summary']['overall_progress']:.1f}%")
     print(f"🎯 Critical fixes: {'COMPLETE' if report['completion_status']['critical_complete'] else 'INCOMPLETE'}")
 
-    print(f"\n📁 Reports created:")
-    print(f"   JSON: docs/reports/plans/final_architectural_compliance_report_03242026.json")
-    print(f"   Markdown: docs/reports/plans/final_architectural_compliance_report_03242026.md")
+    print("\n📁 Reports created:")
+    print("   JSON: docs/reports/plans/final_architectural_compliance_report_03242026.json")
+    print("   Markdown: docs/reports/plans/final_architectural_compliance_report_03242026.md")
 
     if not report['completion_status']['overall_complete']:
-        print(f"\n📝 REMAINING WORK:")
+        print("\n📝 REMAINING WORK:")
         remaining = report.get('remaining_work', {})
         if 'silent_swallowers' in remaining:
             ss = remaining['silent_swallowers']

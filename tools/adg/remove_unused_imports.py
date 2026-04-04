@@ -91,7 +91,7 @@ def main():
 
     args = parser.parse_args()
 
-    with open(args.input, 'r', encoding='utf-8') as f:
+    with open(args.input, encoding='utf-8') as f:
         targets = json.load(f)
 
     if args.dry_run:

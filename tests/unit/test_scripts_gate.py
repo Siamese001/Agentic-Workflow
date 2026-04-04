@@ -14,7 +14,6 @@ import pytest
 
 from agentic_core.L0_routing.config import SCRIPTS_FORBIDDEN_PATTERNS
 
-
 MAX_RETRIES = 3
 DEFAULT_SLEEP = 1.0
 THRESHOLD = 0.95

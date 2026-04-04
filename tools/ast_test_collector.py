@@ -13,11 +13,10 @@ Compliance: Windsurf Constitutional Rule §4.3 - No grep/regex for structural lo
 import ast
 import json
 import sys
-import subprocess
-from pathlib import Path
-from typing import Dict, List, Set, Tuple, Any
 from dataclasses import dataclass
 from enum import Enum
+from pathlib import Path
+from typing import Any
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 
@@ -49,7 +48,7 @@ class ASTTestCollector:
         self.repo_root = repo_root
         self.tests_dir = repo_root / "tests"
 
-    def collect_all_tests(self) -> List[TestNode]:
+    def collect_all_tests(self) -> list[TestNode]:
         """Collect all test nodes using pure AST parsing."""
         test_nodes = []
 
@@ -63,7 +62,7 @@ class ASTTestCollector:
 
         return test_nodes
 
-    def _parse_test_file(self, file_path: Path) -> List[TestNode]:
+    def _parse_test_file(self, file_path: Path) -> list[TestNode]:
         """Parse a single test file using AST."""
         source = file_path.read_text(encoding="utf-8", errors="replace")
         tree = ast.parse(source, filename=str(file_path))
@@ -104,7 +103,7 @@ class ASTTestCollector:
             has_logic=has_logic
         )
 
-    def _analyze_skip_decorators(self, node: ast.FunctionDef) -> Tuple[bool, str]:
+    def _analyze_skip_decorators(self, node: ast.FunctionDef) -> tuple[bool, str]:
         """Analyze AST decorators for skip markers."""
         for decorator in node.decorator_list:
             if isinstance(decorator, ast.Name):
@@ -161,7 +160,7 @@ class ASTTestCollector:
                 return True
         return False
 
-    def reconcile_with_adg(self, test_nodes: List[TestNode], adg_suspect_files: Set[str]) -> List[TestNode]:
+    def reconcile_with_adg(self, test_nodes: list[TestNode], adg_suspect_files: set[str]) -> list[TestNode]:
         """Phase 2: AST execution persona reconciles ADG findings."""
         reconciled = []
 
@@ -182,7 +181,7 @@ class ASTTestCollector:
 
         return reconciled
 
-    def generate_deterministic_truth(self, reconciled_nodes: List[TestNode]) -> Dict[str, Any]:
+    def generate_deterministic_truth(self, reconciled_nodes: list[TestNode]) -> dict[str, Any]:
         """Phase 3: Generate verified C0 context for enhancement targeting."""
         summary = {
             "total_tests": len(reconciled_nodes),
@@ -216,19 +215,19 @@ class ASTTestCollector:
 
         return summary
 
-    def print_summary(self, summary: Dict[str, Any]) -> None:
+    def print_summary(self, summary: dict[str, Any]) -> None:
         """Print collection summary in Windsurf-compatible format."""
-        print(f"AST Test Collection Results:")
+        print("AST Test Collection Results:")
         print(f"  Total tests: {summary['total_tests']}")
         print(f"  Active tests: {summary['active']}")
         print(f"  Skipped tests: {summary['skipped']}")
         print()
-        print(f"By Type (ADG vs AST Reconciliation):")
+        print("By Type (ADG vs AST Reconciliation):")
         print(f"  Behavioral tests (both see): {summary['by_type']['behavioral']}")
         print(f"  Dynamic-only tests (AST sees): {summary['by_type']['dynamic_only']}")
         print(f"  Structural-only files (ADG sees): {summary['by_type']['structural_only']}")
         print()
-        print(f"Phase 3 Deterministic Truth:")
+        print("Phase 3 Deterministic Truth:")
         print(f"  Target files for enhancement: {len(summary['target_files'])}")
         print(f"  Suspect files to discard: {len(summary['suspect_files'])}")
 

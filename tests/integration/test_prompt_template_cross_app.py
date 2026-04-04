@@ -148,9 +148,9 @@ class TestCrossAppPromptTemplateWiring:
     def test_all_apps_node_configs(self):
         """All apps have K-node configurations accessible via get_node_config()."""
         from apps_exec.engines.base_exec_engine import BaseExecEngine
+        from apps_lic.engines.control_plane import ControlPlane
         from apps_research.engines.base_research_engine import BaseResearchEngine
         from apps_rfp.engines.base_rfp_engine import BaseRfpEngine
-        from apps_lic.engines.control_plane import ControlPlane
 
         # Test node configs from each app (skip apps_rg due to import issues)
         engines = [

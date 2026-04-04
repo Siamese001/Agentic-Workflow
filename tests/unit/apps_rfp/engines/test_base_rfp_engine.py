@@ -11,6 +11,7 @@ sys.path.insert(0, str(REPO_ROOT))
 
 try:
     from pydantic import BaseModel
+
     from apps_rfp.engines.base_rfp_engine import BaseRfpEngine
 except ImportError as _import_err:
     pytest.skip(f"base_rfp_engine not available: {_import_err}", allow_module_level=True)

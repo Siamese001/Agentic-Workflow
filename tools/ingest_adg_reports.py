@@ -6,8 +6,8 @@ Ingest ADG reports from docs/reports into ChromaDB
 import hashlib
 import logging
 from pathlib import Path
+
 import chromadb
-from chromadb.utils import embedding_functions
 
 # Setup logging
 logging.basicConfig(level=logging.INFO)
@@ -62,7 +62,7 @@ def ingest_adg_reports():
             continue
 
         try:
-            with open(file_path, 'r', encoding='utf-8') as f:
+            with open(file_path, encoding='utf-8') as f:
                 content = f.read()
 
             # Create chunk ID

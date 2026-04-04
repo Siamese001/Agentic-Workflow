@@ -7,9 +7,8 @@ Validates full integration with agentic_core and structure blueprint.
 from __future__ import annotations
 
 import pytest
-from typing import Any
 
-from apps_research.config.agent_spec_config import ResearchAgentSpecs, load_research_specs
+from apps_research.config.agent_spec_config import load_research_specs
 from apps_research.reasoning import (
     InsightExtractionAgent,
     KnowledgeSynthesisAgent,

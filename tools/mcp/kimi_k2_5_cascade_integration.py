@@ -7,13 +7,11 @@ whenever Kimi K2.5 is used in cascade chat mode. It hooks into the prompt
 processing pipeline and forces sequential thinking to be invoked.
 """
 
-import os
-import sys
 import json
-import subprocess
+import os
+from dataclasses import asdict, dataclass
 from pathlib import Path
-from typing import Optional, Dict, Any, List, Callable
-from dataclasses import dataclass, asdict
+from typing import Any
 
 
 @dataclass
@@ -24,9 +22,9 @@ class SequentialThinkingRequest:
     totalThoughts: int = 25
     nextThoughtNeeded: bool = True
     isRevision: bool = False
-    revisesThought: Optional[int] = None
-    branchFromThought: Optional[int] = None
-    branchId: Optional[str] = None
+    revisesThought: int | None = None
+    branchFromThought: int | None = None
+    branchId: str | None = None
     needsMoreThoughts: bool = True
 
 
@@ -53,7 +51,7 @@ class SequentialThinkingMCPInvoker:
         """Check if sequential thinking server is available."""
         return Path(self.server_path).exists()
 
-    def invoke_sequential_thinking(self, prompt: str, thought_number: int = 1) -> Optional[Dict[str, Any]]:
+    def invoke_sequential_thinking(self, prompt: str, thought_number: int = 1) -> dict[str, Any] | None:
         """
         ACTIVELY invoke the sequential thinking MCP tool.
 
@@ -120,7 +118,7 @@ Understanding the full scope of the request and identifying key components that 
         else:
             return "LOW - Quick response sufficient"
 
-    def get_mcp_tool_call(self, prompt: str) -> Dict[str, Any]:
+    def get_mcp_tool_call(self, prompt: str) -> dict[str, Any]:
         """
         Get the MCP tool call specification for sequential thinking.
 
@@ -252,7 +250,7 @@ This ensures structured, step-by-step reasoning.
 Type your request to begin.
 """
 
-    def process_user_prompt(self, prompt: str) -> Dict[str, Any]:
+    def process_user_prompt(self, prompt: str) -> dict[str, Any]:
         """
         Process a user prompt in cascade chat.
 
@@ -317,7 +315,7 @@ def wrap_kimi_k25_prompt(prompt: str) -> str:
     return result['wrapped_prompt']
 
 
-def force_sequential_thinking_in_cascade(prompt: str) -> Dict[str, Any]:
+def force_sequential_thinking_in_cascade(prompt: str) -> dict[str, Any]:
     """
     Force sequential thinking in cascade chat and return full processing info.
 
@@ -378,4 +376,4 @@ if __name__ == '__main__':
             print(f"   Tool call: {result['tool_call'].get('name', 'N/A')}")
             print()
 
-    print(f"\nAll prompts processed. Sequential thinking will be enforced.")
+    print("\nAll prompts processed. Sequential thinking will be enforced.")

@@ -9,14 +9,15 @@ This script applies all sequential thinking forcing strategies:
 4. Validates installation
 """
 
-import os
-import sys
 import json
+import os
 import shutil
 import subprocess
-from pathlib import Path
-from typing import Dict, List, Any
+import sys
 from datetime import datetime
+from pathlib import Path
+from typing import Any, Dict, List
+
 
 class SequentialThinkingDeployer:
     """Deployer for sequential thinking MCP configuration."""
@@ -128,7 +129,7 @@ class SequentialThinkingDeployer:
             print(f"❌ Failed to create directories: {e}")
             return False
 
-    def validate_installation(self) -> Dict[str, bool]:
+    def validate_installation(self) -> dict[str, bool]:
         """Validate sequential thinking installation."""
         results = {}
 
@@ -341,7 +342,7 @@ cp .backup/sequential_thinking/user_mcp_config_backup.json C:\\Users\\amita\\.co
             print("❌ Deployment completed with issues")
             print("Please check the validation results above")
 
-        print(f"\n📄 Full report: docs/reports/sequential_thinking_deployment_report.md")
+        print("\n📄 Full report: docs/reports/sequential_thinking_deployment_report.md")
 
         return all_passed
 

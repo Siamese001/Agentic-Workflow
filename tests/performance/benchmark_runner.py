@@ -13,16 +13,15 @@ import signal
 import sys
 import time
 from dataclasses import dataclass, field
-from typing import Any, Optional
+from typing import Any
 
 from agentic_core.L2_execution.apps_qwen import (
-    OptimizedVLLMClient,
+    CircuitBreakerConfig,
     HardenedVLLMClient,
+    OptimizedVLLMClient,
+    RetryConfig,
     VLLMRequest,
     get_gpu_monitor,
-    CircuitBreakerConfig,
-    RetryConfig,
-    GPUMemoryInfo,
 )
 
 logging.basicConfig(
@@ -67,7 +66,7 @@ class LiveMetrics:
     latency_p50_ms: float
     gpu_memory_used_mb: float
     gpu_utilization_percent: float
-    circuit_state: Optional[str] = None
+    circuit_state: str | None = None
 
 
 class BenchmarkRunner:
@@ -431,7 +430,7 @@ class BenchmarkRunner:
         requests_completed: int,
         requests_failed: int,
         latencies: list[float],
-        circuit_state: Optional[str] = None,
+        circuit_state: str | None = None,
     ) -> None:
         """Record live metrics snapshot."""
         gpu_info = self._gpu_monitor.get_current_memory()
@@ -514,10 +513,10 @@ class BenchmarkRunner:
             json.dump(report, f, indent=2)
 
         logger.info(f"\n{'=' * 70}")
-        logger.info(f"BENCHMARK COMPLETE")
+        logger.info("BENCHMARK COMPLETE")
         logger.info(f"{'=' * 70}")
         logger.info(f"Report saved: {report_path}")
-        logger.info(f"\nSummary:")
+        logger.info("\nSummary:")
         for key, value in report["summary"].items():
             logger.info(f"  {key}: {value}")
 

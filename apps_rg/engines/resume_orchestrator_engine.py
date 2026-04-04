@@ -78,12 +78,11 @@ _emit_captures_evaluation_metric("p4", "resume_orchestrator_engine", "eval_metri
 _emit_stores_embedding("p4", "resume_orchestrator_engine", "embedding_store")
 _emit_updates_meta_learning_state("p4", "resume_orchestrator_engine", "meta_learning")
 _emit_links_execution_to_snapshot("p4", "resume_orchestrator_engine", "exec_snapshot_link")
-from apps_rg.engines.content_quality_engine import ContentQualityEngine
-
 from apps_rg.engines.ats_compatibility_engine import ATSCompatibilityEngine
 from apps_rg.engines.base_rg_engine import BaseRGEngine
 from apps_rg.engines.clerk_extraction_engine import ClerkExtractionEngine
 from apps_rg.engines.content_optimizer_engine import ContentOptimizerEngine
+from apps_rg.engines.content_quality_engine import ContentQualityEngine
 from apps_rg.engines.data_enrichment_engine import DataEnrichmentEngine
 from apps_rg.engines.gap_closure_engine import GapClosureEngine
 from apps_rg.engines.section_ranker_engine import SectionRankerEngine

@@ -14,10 +14,16 @@ from typing import Any
 
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 from agentic_core.L3_orchestration.utils.coverage_util import (
-    calculate_coverage_metrics as _calculate_coverage_metrics,
-    compute_proportions as _compute_proportions,
-    shannon_entropy as _shannon_entropy,
     CoverageMetrics,
+)
+from agentic_core.L3_orchestration.utils.coverage_util import (
+    calculate_coverage_metrics as _calculate_coverage_metrics,
+)
+from agentic_core.L3_orchestration.utils.coverage_util import (
+    compute_proportions as _compute_proportions,
+)
+from agentic_core.L3_orchestration.utils.coverage_util import (
+    shannon_entropy as _shannon_entropy,
 )
 
 

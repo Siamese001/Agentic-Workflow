@@ -9,10 +9,8 @@ identifying all test files, skip patterns, and baseline metrics.
 import ast
 import json
 import re
+from collections import Counter, defaultdict
 from pathlib import Path
-from typing import Dict, List, Set, Tuple
-from collections import defaultdict, Counter
-import subprocess
 
 
 class TestSuiteInventory:
@@ -26,7 +24,7 @@ class TestSuiteInventory:
         self.imports = defaultdict(set)
         self.markers = set()
 
-    def scan_test_files(self) -> Dict:
+    def scan_test_files(self) -> dict:
         """Scan all test files in the repository."""
         print("=== Scanning Test Files ===")
 
@@ -74,7 +72,7 @@ class TestSuiteInventory:
 
         return inventory
 
-    def identify_skip_patterns(self) -> Dict:
+    def identify_skip_patterns(self) -> dict:
         """Identify all skip patterns in test files."""
         print("=== Identifying Skip Patterns ===")
 
@@ -143,7 +141,7 @@ class TestSuiteInventory:
 
         return skip_patterns
 
-    def analyze_test_methods(self) -> Dict:
+    def analyze_test_methods(self) -> dict:
         """Analyze all test methods."""
         print("=== Analyzing Test Methods ===")
 
@@ -205,7 +203,7 @@ class TestSuiteInventory:
 
         return test_methods
 
-    def analyze_fixtures(self) -> Dict:
+    def analyze_fixtures(self) -> dict:
         """Analyze all fixtures."""
         print("=== Analyzing Fixtures ===")
 
@@ -261,7 +259,7 @@ class TestSuiteInventory:
 
         return fixtures
 
-    def analyze_imports(self) -> Dict:
+    def analyze_imports(self) -> dict:
         """Analyze import patterns."""
         print("=== Analyzing Imports ===")
 
@@ -321,7 +319,7 @@ class TestSuiteInventory:
         else:
             return 'very_large'
 
-    def _analyze_python_version(self, file_path: Path) -> Dict:
+    def _analyze_python_version(self, file_path: Path) -> dict:
         """Analyze Python version requirements."""
         try:
             content = file_path.read_text(encoding='utf-8')
@@ -355,7 +353,7 @@ class TestSuiteInventory:
         except Exception:
             return {}
 
-    def _analyze_file_structure(self, file_path: Path) -> Dict:
+    def _analyze_file_structure(self, file_path: Path) -> dict:
         """Analyze file structure."""
         try:
             content = file_path.read_text(encoding='utf-8')
@@ -473,7 +471,7 @@ class TestSuiteInventory:
                             return keyword.value.id
         return 'function'  # default scope
 
-    def generate_wave1a_report(self) -> Dict:
+    def generate_wave1a_report(self) -> dict:
         """Generate comprehensive Wave 1a report."""
         print("=== Generating Wave 1a Inventory Report ===")
 
@@ -519,7 +517,7 @@ def main():
 
     # Print summary
     summary = report['summary']
-    print(f"\n=== Wave 1a Summary ===")
+    print("\n=== Wave 1a Summary ===")
     print(f"Total test files: {summary['total_test_files']}")
     print(f"Total test methods: {summary['total_test_methods']}")
     print(f"Total fixtures: {summary['total_fixtures']}")
@@ -528,7 +526,7 @@ def main():
     print(f"Hollowed tests: {summary['hollowed_tests']}")
     print(f"Files with skips: {summary['files_with_skips']}")
 
-    print(f"\n📄 Report saved to: artifacts/wave1a_inventory_report.json")
+    print("\n📄 Report saved to: artifacts/wave1a_inventory_report.json")
 
     return report
 

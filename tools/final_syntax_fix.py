@@ -5,10 +5,9 @@ This script uses pattern recognition to fix all remaining syntax errors
 from the migration process.
 """
 
+import ast
 import pathlib
 import re
-import ast
-from typing import Dict, List, Tuple, Set
 
 
 class FinalSyntaxFixer:
@@ -29,9 +28,9 @@ class FinalSyntaxFixer:
             },
             'files_with_errors': 0
         }
-        self.failed_files: List[Tuple[str, str]] = []
+        self.failed_files: list[tuple[str, str]] = []
 
-    def fix_active_test_files(self) -> Dict:
+    def fix_active_test_files(self) -> dict:
         """Fix all syntax errors in active test files."""
         # Only process files in tests/ directory, exclude archives
         test_files = []
@@ -153,7 +152,7 @@ class FinalSyntaxFixer:
                 line.strip().startswith('#  # MOVED:') or
                 re.match(r'^\s*#\s*#\s*MOVED:.*$', line))
 
-    def _skip_legacy_comment_block(self, lines: List[str], start_idx: int) -> int:
+    def _skip_legacy_comment_block(self, lines: list[str], start_idx: int) -> int:
         """Skip entire legacy comment block."""
         i = start_idx + 1
         while i < len(lines):
@@ -213,7 +212,7 @@ class FinalSyntaxFixer:
         """Fix bad indentation by removing it."""
         return line.strip()
 
-    def _clean_empty_lines(self, lines: List[str]) -> List[str]:
+    def _clean_empty_lines(self, lines: list[str]) -> list[str]:
         """Clean up multiple consecutive empty lines."""
         cleaned_lines = []
         prev_empty = False
@@ -242,7 +241,7 @@ class FinalSyntaxFixer:
         print(f"Failed files: {len(self.failed_files)}")
 
         if self.failed_files:
-            print(f"\nFailed files (first 10):")
+            print("\nFailed files (first 10):")
             for file_path, error in self.failed_files[:10]:
                 print(f"  {file_path}: {error}")
             if len(self.failed_files) > 10:

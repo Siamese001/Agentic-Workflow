@@ -84,7 +84,7 @@ def test_all_components():
         from tools.monitoring.mcp_usage_tracker import MCPUsageTracker
         tracker = MCPUsageTracker()
         metrics = tracker.get_sequential_thinking_metrics()
-        print(f"   ✅ Usage tracker operational")
+        print("   ✅ Usage tracker operational")
         print(f"   📊 Total usage: {metrics['total_usage']}")
         print(f"   📊 Success rate: {metrics['success_rate']:.1%}")
         print(f"   📊 Total tokens: {metrics['total_tokens']:,}")

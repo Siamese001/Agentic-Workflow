@@ -36,7 +36,7 @@ import json
 import sqlite3
 import sys
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Set, Tuple
+from typing import Any
 
 # Add project root to path for imports
 sys.path.insert(0, str(Path(__file__).parent.parent.parent))
@@ -89,8 +89,8 @@ class ADGLayerAuthorityVerifier:
     def __init__(self, adg_dir: Path):
         self.adg_dir = Path(adg_dir)
         self.sqlite_path = self._find_sqlite_database()
-        self.errors: List[str] = []
-        self.warnings: List[str] = []
+        self.errors: list[str] = []
+        self.warnings: list[str] = []
 
     def _find_sqlite_database(self) -> Path:
         """Find the latest SQLite database."""
@@ -111,7 +111,7 @@ class ADGLayerAuthorityVerifier:
         except Exception as e:
             raise LayerAuthorityError(f"Failed to get layer for node {node_id}: {e}")
 
-    def _check_layer_violation_edge(self, src_layer: str, dst_layer: str, relation_type: str) -> Optional[str]:
+    def _check_layer_violation_edge(self, src_layer: str, dst_layer: str, relation_type: str) -> str | None:
         """Check if an edge violates layer authority rules."""
 
         # Skip external modules
@@ -139,7 +139,7 @@ class ADGLayerAuthorityVerifier:
 
         return None
 
-    def _verify_layer_authority_compliance(self) -> Dict[str, Any]:
+    def _verify_layer_authority_compliance(self) -> dict[str, Any]:
         """Verify layer authority compliance across all edges."""
         print("🏗️  Verifying layer authority compliance...")
 
@@ -205,7 +205,7 @@ class ADGLayerAuthorityVerifier:
         except Exception as e:
             raise LayerAuthorityError(f"Layer authority compliance check failed: {e}")
 
-    def _verify_uwg_termination_for_writes(self) -> Dict[str, Any]:
+    def _verify_uwg_termination_for_writes(self) -> dict[str, Any]:
         """Verify all write operations terminate at UWG."""
         print("🛡️  Verifying UWG termination for write operations...")
 
@@ -265,7 +265,7 @@ class ADGLayerAuthorityVerifier:
         except Exception as e:
             raise LayerAuthorityError(f"UWG termination verification failed: {e}")
 
-    def _verify_l4_identity_completeness(self) -> Dict[str, Any]:
+    def _verify_l4_identity_completeness(self) -> dict[str, Any]:
         """Verify L4 modules have complete identity."""
         print("🎯 Verifying L4 identity completeness...")
 
@@ -328,7 +328,7 @@ class ADGLayerAuthorityVerifier:
         except Exception as e:
             raise LayerAuthorityError(f"L4 identity verification failed: {e}")
 
-    def _verify_unauthorized_write_detection(self) -> Dict[str, Any]:
+    def _verify_unauthorized_write_detection(self) -> dict[str, Any]:
         """Verify detection of unauthorized writes."""
         print("🚫 Verifying unauthorized write detection...")
 
@@ -378,7 +378,7 @@ class ADGLayerAuthorityVerifier:
         except Exception as e:
             raise LayerAuthorityError(f"Unauthorized write detection failed: {e}")
 
-    def verify(self) -> Dict[str, Any]:
+    def verify(self) -> dict[str, Any]:
         """Run complete layer authority verification."""
         print("🔍 Starting ADG Layer Authority Verification...")
         print(f"📁 ADG Directory: {self.adg_dir}")

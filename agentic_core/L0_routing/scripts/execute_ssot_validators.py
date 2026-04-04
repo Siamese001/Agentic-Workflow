@@ -3,7 +3,7 @@
 This module contains PreFlightValidator and NonInteractiveGuard classes.
 """
 
-from typing import Any, List, Tuple
+from typing import Any
 
 
 class PreFlightValidator:
@@ -12,10 +12,10 @@ class PreFlightValidator:
     def __init__(self, args: Any, console: Any = None):
         self.args = args
         self.console = console
-        self.errors: List[str] = []
-        self.warnings: List[str] = []
+        self.errors: list[str] = []
+        self.warnings: list[str] = []
 
-    def validate(self) -> Tuple[bool, List[str], List[str]]:
+    def validate(self) -> tuple[bool, list[str], list[str]]:
         """Run all pre-flight validations.
 
         Returns:
@@ -61,7 +61,7 @@ class NonInteractiveGuard:
 
     def __init__(self, args: Any):
         self.args = args
-        self.blocked_operations: List[str] = []
+        self.blocked_operations: list[str] = []
 
     def check_operation(self, operation: str) -> bool:
         """Check if an operation is allowed in non-interactive mode.
@@ -87,6 +87,6 @@ class NonInteractiveGuard:
                 return False
         return True
 
-    def get_blocked_operations(self) -> List[str]:
+    def get_blocked_operations(self) -> list[str]:
         """Get list of operations blocked in current mode."""
         return self.blocked_operations.copy()

@@ -6,7 +6,7 @@ in the monolithic execute_ssot.py file.
 
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any
 
 
 @dataclass
@@ -19,9 +19,9 @@ class MetaLearningResult:
         errors: List of any errors encountered
     """
     records_persisted: int = 0
-    proposals: Tuple = ()
-    errors: Optional[List[str]] = None
-    
+    proposals: tuple = ()
+    errors: list[str] | None = None
+
     def __post_init__(self):
         if self.errors is None:
             self.errors = []
@@ -36,7 +36,7 @@ def _fire_meta_learning_intake_required(
     state: Any,
     timestamp: int,
     _output_dir: Path,
-    healing_actions: Optional[List[Dict]] = None
+    healing_actions: list[dict] | None = None
 ) -> MetaLearningResult:
     """Process healing actions for meta-learning intake.
     
@@ -55,15 +55,15 @@ def _fire_meta_learning_intake_required(
             healing_actions = state.state.get('healing_actions', [])
         else:
             healing_actions = []
-    
+
     # If no healing actions, return empty result
     if not healing_actions:
         return MetaLearningResult(records_persisted=0, proposals=())
-    
+
     records_persisted = 0
     proposals = []
     errors = []
-    
+
     for action in healing_actions:
         try:
             # Process each healing action
@@ -79,7 +79,7 @@ def _fire_meta_learning_intake_required(
                 records_persisted += 1
         except (AttributeError, TypeError, KeyError) as e:
             errors.append(f"Failed to process action: {e}")
-    
+
     return MetaLearningResult(
         records_persisted=records_persisted,
         proposals=tuple(proposals),

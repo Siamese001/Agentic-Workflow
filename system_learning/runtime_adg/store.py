@@ -11,15 +11,14 @@ from __future__ import annotations
 
 import json
 from pathlib import Path
-from typing import Any
 
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-    emit_determinism_digest,
-    record_execution_trace,
-)
 from agentic_core.L5_safety.config.structure_blueprint.ssot import (
     L4_APPROVED_FOLDERS,
     get_validated_project_root,
+)
+from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+    emit_determinism_digest,
+    record_execution_trace,
 )
 from system_learning.runtime_adg.snapshot import (
     RuntimeADGEdge,

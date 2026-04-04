@@ -3,8 +3,8 @@
 Recalibrated plan based on actual token usage.
 """
 
-import pathlib
 import tiktoken
+
 
 def estimate_tokens(text: str) -> int:
     """Estimate tokens using GPT-4 tokenizer."""

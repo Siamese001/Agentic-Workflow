@@ -3,12 +3,7 @@ Wave 2: Parser Failure Audit Test
 Verifies that SyntaxError and OSError during AST parsing are logged at ERROR level.
 """
 
-import ast
 import logging
-from pathlib import Path
-from unittest.mock import Mock, patch
-
-import pytest
 
 from agentic_core.adg.extraction.static_scanner import _scan_file
 

@@ -2,11 +2,11 @@
 """Categorize collection errors by attempting to import each test file."""
 
 import importlib
+import re
 import subprocess
 import sys
-import re
-from pathlib import Path
 from collections import Counter
+from pathlib import Path
 
 # Get list of error files from pytest
 result = subprocess.run(

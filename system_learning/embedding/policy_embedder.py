@@ -3,7 +3,7 @@
 
 class PolicyGuardrailEmbedder:
     """Placeholder policy guardrail embedder class."""
-    
+
     def embed(self, text):
         """Placeholder embed method."""
         return []

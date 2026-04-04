@@ -6,14 +6,12 @@ This script converts guardian swallow patterns to proper pytest fixtures
 across all remaining layers (L1-L6).
 """
 
-import ast
 import json
 import re
 from pathlib import Path
-from typing import Dict, List, Set
 
 
-def convert_guardian_swallow_patterns(file_path: Path) -> Dict:
+def convert_guardian_swallow_patterns(file_path: Path) -> dict:
     """Convert guardian swallow patterns to fixtures using regex and simple transformations."""
     try:
         content = file_path.read_text(encoding='utf-8')
@@ -101,7 +99,7 @@ def convert_guardian_swallow_patterns(file_path: Path) -> Dict:
         }
 
 
-def convert_layer_files(layer_name: str, files: List[Dict]) -> List[Dict]:
+def convert_layer_files(layer_name: str, files: list[dict]) -> list[dict]:
     """Convert guardian swallow patterns for a specific layer."""
     print(f"\n=== Converting {layer_name} Guardian Swallow Patterns ===")
 
@@ -126,7 +124,7 @@ def convert_layer_files(layer_name: str, files: List[Dict]) -> List[Dict]:
 
             print(f"    ✅ Converted - {patterns} patterns, {exceptions} exceptions")
         elif result['success'] and not result['changes_made']:
-            print(f"    ⚪ No changes needed")
+            print("    ⚪ No changes needed")
         else:
             print(f"    ❌ Failed - {result.get('error', 'Unknown error')}")
 
@@ -145,7 +143,7 @@ def main():
     print("=== Wave 4c-h: Comprehensive Guardian Swallow to Fixture Conversion ===")
 
     # Load the analysis from Wave 4a
-    with open('artifacts/guardian_swallow_analysis.json', 'r') as f:
+    with open('artifacts/guardian_swallow_analysis.json') as f:
         data = json.load(f)
 
     all_results = []
@@ -158,7 +156,7 @@ def main():
 
     # Process "other" files (non-layer specific)
     if data['layers']['other']:
-        print(f"\n=== Converting Other Files Guardian Swallow Patterns ===")
+        print("\n=== Converting Other Files Guardian Swallow Patterns ===")
         other_files = [f for f in data['layers']['other'] if f.get('needs_conversion', False)]
 
         # Limit to top 20 "other" files to avoid excessive changes
@@ -189,7 +187,7 @@ def main():
     total_patterns = sum(r.get('patterns_converted', 0) for r in all_results)
     total_exceptions = sum(r.get('exceptions_converted', 0) for r in all_results)
 
-    print(f"\n=== Wave 4c-h Overall Summary ===")
+    print("\n=== Wave 4c-h Overall Summary ===")
     print(f"Files processed: {total}")
     print(f"Successfully converted: {successful}")
     print(f"Files with changes: {with_changes}")
@@ -211,7 +209,7 @@ def main():
     with open('artifacts/wave4ch_conversion_results.json', 'w') as f:
         json.dump(output, f, indent=2)
 
-    print(f"\nDetailed results saved to: artifacts/wave4ch_conversion_results.json")
+    print("\nDetailed results saved to: artifacts/wave4ch_conversion_results.json")
 
 
 if __name__ == '__main__':

@@ -7,23 +7,24 @@ and query rewrite suggestions.
 """
 
 import pickle
-import numpy as np
-from pathlib import Path
-from typing import Dict, List, Optional, Any, Tuple
 from datetime import datetime
+from pathlib import Path
+from typing import Any
+
+import numpy as np
 
 try:
     from sklearn.ensemble import GradientBoostingClassifier
-    from sklearn.preprocessing import StandardScaler
     from sklearn.pipeline import Pipeline
+    from sklearn.preprocessing import StandardScaler
 except ImportError:
     GradientBoostingClassifier = None
     StandardScaler = None
     Pipeline = None
 
-from .base_model import BaseMLModel, ModelPrediction, ModelInput, PredictionType, DecisionMode
 from ..config.model_registry import DecisionMode
 from ..features.c1_features import C1FeatureExtractor
+from .base_model import BaseMLModel, DecisionMode, ModelInput, ModelPrediction, PredictionType
 
 
 class C1QueryOptimizer(BaseMLModel):
@@ -54,7 +55,7 @@ class C1QueryOptimizer(BaseMLModel):
     # Reverse mapping
     REVERSE_OPTIMIZATION_MAPPING = {v: k for k, v in OPTIMIZATION_MAPPING.items()}
 
-    def __init__(self, model_file_path: Optional[Path] = None):
+    def __init__(self, model_file_path: Path | None = None):
         if GradientBoostingClassifier is None:
             raise ImportError("scikit-learn is required for C1QueryOptimizer")
 
@@ -246,11 +247,11 @@ class C1QueryOptimizer(BaseMLModel):
 
     def optimize_query(
         self,
-        query_context: Dict[str, Any],
+        query_context: dict[str, Any],
         trace_id: str,
         replay_key: str,
         policy_hash: str
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """
         Get comprehensive query optimization recommendations.
 
@@ -326,11 +327,11 @@ class C1QueryOptimizer(BaseMLModel):
 
     def analyze_query_plan(
         self,
-        query_plan: Dict[str, Any],
+        query_plan: dict[str, Any],
         trace_id: str,
         replay_key: str,
         policy_hash: str
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """
         Analyze query execution plan and provide insights.
 
@@ -400,11 +401,11 @@ class C1QueryOptimizer(BaseMLModel):
 
     def recommend_indexes(
         self,
-        query_context: Dict[str, Any],
+        query_context: dict[str, Any],
         trace_id: str,
         replay_key: str,
         policy_hash: str
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """
         Generate index recommendations based on query analysis.
 
@@ -511,9 +512,9 @@ class C1QueryOptimizer(BaseMLModel):
     def _generate_optimization_recommendations(
         self,
         action: str,
-        context: Dict[str, Any],
-        features: Dict[str, float]
-    ) -> List[str]:
+        context: dict[str, Any],
+        features: dict[str, float]
+    ) -> list[str]:
         """Generate action-specific optimization recommendations."""
         recommendations = []
 
@@ -585,7 +586,7 @@ class C1QueryOptimizer(BaseMLModel):
 
         return recommendations
 
-    def _generate_optimized_query(self, action: str, original_query: str, context: Dict[str, Any]) -> Optional[str]:
+    def _generate_optimized_query(self, action: str, original_query: str, context: dict[str, Any]) -> str | None:
         """Generate optimized query based on action."""
         if not original_query or action == "No_Optimization":
             return None
@@ -611,9 +612,9 @@ class C1QueryOptimizer(BaseMLModel):
     def _calculate_performance_impact(
         self,
         action: str,
-        context: Dict[str, Any],
-        features: Dict[str, float]
-    ) -> Dict[str, Any]:
+        context: dict[str, Any],
+        features: dict[str, float]
+    ) -> dict[str, Any]:
         """Calculate expected performance impact of optimization."""
         # Base impact estimates by action type
         impact_estimates = {
@@ -695,7 +696,7 @@ class C1QueryOptimizer(BaseMLModel):
 
         return effort_estimates.get(action, "Medium")
 
-    def _assess_optimization_risk(self, action: str, context: Dict[str, Any]) -> str:
+    def _assess_optimization_risk(self, action: str, context: dict[str, Any]) -> str:
         """Assess implementation risk for optimization action."""
         # Base risk levels
         risk_levels = {
@@ -721,7 +722,7 @@ class C1QueryOptimizer(BaseMLModel):
 
         return base_risk
 
-    def _extract_plan_features(self, query_plan: Dict[str, Any]) -> Dict[str, float]:
+    def _extract_plan_features(self, query_plan: dict[str, Any]) -> dict[str, float]:
         """Extract features from query execution plan."""
         operations = query_plan.get('operations', [])
 
@@ -735,7 +736,7 @@ class C1QueryOptimizer(BaseMLModel):
 
         return features
 
-    def _generate_plan_suggestions(self, query_plan: Dict[str, Any], insights: List[Dict[str, Any]]) -> List[str]:
+    def _generate_plan_suggestions(self, query_plan: dict[str, Any], insights: list[dict[str, Any]]) -> list[str]:
         """Generate suggestions based on plan analysis."""
         suggestions = []
 
@@ -757,7 +758,7 @@ class C1QueryOptimizer(BaseMLModel):
 
         return suggestions
 
-    def _determine_optimization_priority(self, insights: List[Dict[str, Any]]) -> str:
+    def _determine_optimization_priority(self, insights: list[dict[str, Any]]) -> str:
         """Determine optimization priority based on insights."""
         high_severity = len([i for i in insights if i.get('severity') == 'high'])
         medium_severity = len([i for i in insights if i.get('severity') == 'medium'])
@@ -783,7 +784,7 @@ class C1QueryOptimizer(BaseMLModel):
         else:
             return 0.1  # 10% improvement
 
-    def get_feature_importance(self, model_input: ModelInput) -> List[Dict[str, Any]]:
+    def get_feature_importance(self, model_input: ModelInput) -> list[dict[str, Any]]:
         """Get feature importance for explainability."""
         if not self.is_loaded or not self.pipeline:
             return []
@@ -821,7 +822,7 @@ class C1QueryOptimizer(BaseMLModel):
             # Failed to compute importance
             return []
 
-    def _extract_feature_vector(self, features: Dict[str, Any]) -> Optional[np.ndarray]:
+    def _extract_feature_vector(self, features: dict[str, Any]) -> np.ndarray | None:
         """Extract features in the correct order for the model."""
         if not self.feature_names:
             return None
@@ -837,7 +838,7 @@ class C1QueryOptimizer(BaseMLModel):
         except Exception as e:
             return None
 
-    def preprocess_features(self, features: Dict[str, Any]) -> Tuple[Dict[str, Any], List[str]]:
+    def preprocess_features(self, features: dict[str, Any]) -> tuple[dict[str, Any], list[str]]:
         """Preprocess features for Gradient Boosting."""
         processed_features, preprocessing_steps = super().preprocess_features(features)
 
@@ -859,8 +860,8 @@ class C1QueryOptimizer(BaseMLModel):
 
     def train_model(
         self,
-        training_data: List[Dict[str, Any]],
-        feature_names: List[str],
+        training_data: list[dict[str, Any]],
+        feature_names: list[str],
         training_data_digest: str = ""
     ) -> None:
         """

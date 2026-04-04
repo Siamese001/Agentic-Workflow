@@ -4,9 +4,7 @@ Wires remaining orphaned prompt_governance modules into the governed lifecycle.
 """
 
 import logging
-from pathlib import Path
 
-from agentic_core.L2_execution.providers import get_clock
 from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     LayerSegment,
     _emit_records_execution_trace,
@@ -25,9 +23,6 @@ def activate_orphaned_modules() -> dict[str, bool]:
 
     # Module 1: governance_hub
     try:
-        from agentic_core.prompt_governance.core.governance_hub import (
-            GovernanceHub,
-        )
 
         _emit_records_execution_trace(
             "phase9_activation",
@@ -42,9 +37,6 @@ def activate_orphaned_modules() -> dict[str, bool]:
 
     # Module 2: injection_detector
     try:
-        from agentic_core.prompt_governance.security.detectors.injection_detector import (
-            InjectionDetector,
-        )
 
         _emit_records_execution_trace(
             "phase9_activation",
@@ -59,9 +51,6 @@ def activate_orphaned_modules() -> dict[str, bool]:
 
     # Module 3: pattern_repository
     try:
-        from agentic_core.prompt_governance.security.detectors.pattern_repository import (
-            PatternRepository,
-        )
 
         _emit_records_execution_trace(
             "phase9_activation",
@@ -76,9 +65,6 @@ def activate_orphaned_modules() -> dict[str, bool]:
 
     # Module 4: evaluation_loader
     try:
-        from agentic_core.prompt_governance.core.evaluation_loader import (
-            EvaluationLoader,
-        )
 
         _emit_records_execution_trace(
             "phase9_activation",
@@ -93,9 +79,6 @@ def activate_orphaned_modules() -> dict[str, bool]:
 
     # Module 5: meta_prompt_renderer
     try:
-        from agentic_core.prompt_governance.rendering.meta_prompt_renderer import (
-            MetaPromptRenderer,
-        )
 
         _emit_records_execution_trace(
             "phase9_activation",

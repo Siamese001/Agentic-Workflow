@@ -1,6 +1,5 @@
 """Unit tests for system_learning.engines.rag_optimizer."""
 
-import pytest
 
 
 

@@ -1,6 +1,6 @@
 """Instruction Packet Types - Stub implementation for test compatibility."""
 from dataclasses import dataclass
-from typing import Any, Dict, Optional
+from typing import Any
 
 
 @dataclass
@@ -8,14 +8,14 @@ class InstructionPacket:
     """Instruction packet."""
     packet_id: str = ""
     instruction: str = ""
-    context: Dict[str, Any] = None
-    metadata: Optional[Dict[str, Any]] = None
-    trace_id: Optional[str] = None
-    path: Optional[str] = None
-    intent_class: Optional[str] = None
-    prompt: Optional[str] = None
-    config: Optional[Dict[str, Any]] = None
-    required_mixins: Optional[tuple] = None
+    context: dict[str, Any] = None
+    metadata: dict[str, Any] | None = None
+    trace_id: str | None = None
+    path: str | None = None
+    intent_class: str | None = None
+    prompt: str | None = None
+    config: dict[str, Any] | None = None
+    required_mixins: tuple | None = None
 
     def __post_init__(self):
         if self.context is None:
@@ -27,8 +27,8 @@ class PromptInstructionPacket:
     """Prompt instruction packet."""
     packet_id: str
     prompt: str
-    context: Dict[str, Any]
-    metadata: Optional[Dict[str, Any]] = None
+    context: dict[str, Any]
+    metadata: dict[str, Any] | None = None
 
 
 __all__ = ["InstructionPacket", "PromptInstructionPacket"]

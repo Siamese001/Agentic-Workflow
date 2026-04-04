@@ -2,10 +2,8 @@
 """Comprehensive RAG pipeline document ingestion validation test."""
 
 import asyncio
-import json
-import tempfile
 from pathlib import Path
-from typing import Any, Dict, List
+from typing import Any
 
 
 class RAGIngestionValidator:
@@ -16,7 +14,7 @@ class RAGIngestionValidator:
         self.ingestion_results = []
         self.retrieval_results = []
 
-    def create_test_documents(self) -> List[Path]:
+    def create_test_documents(self) -> list[Path]:
         """Create various test documents for ingestion."""
         test_dir = Path("test_rag_documents")
         test_dir.mkdir(exist_ok=True)
@@ -143,7 +141,7 @@ PR-204,This claim/service is being held for review,276,1.8%
         self.test_docs = documents
         return documents
 
-    async def test_ingestion(self, orchestrator) -> Dict[str, Any]:
+    async def test_ingestion(self, orchestrator) -> dict[str, Any]:
         """Test document ingestion for all formats."""
         print("\n[INGESTION TEST] Testing document ingestion...")
 
@@ -180,7 +178,7 @@ PR-204,This claim/service is being held for review,276,1.8%
                         "error": "Empty result",
                         "format": doc_path.suffix
                     }
-                    print(f"    ✗ Failed: Empty result")
+                    print("    ✗ Failed: Empty result")
 
             except Exception as e:
                 ingestion_results[doc_path.name] = {
@@ -200,7 +198,7 @@ PR-204,This claim/service is being held for review,276,1.8%
             "details": ingestion_results
         }
 
-    async def test_retrieval(self, orchestrator) -> Dict[str, Any]:
+    async def test_retrieval(self, orchestrator) -> dict[str, Any]:
         """Test document retrieval with various queries."""
         print("\n[RETRIEVAL TEST] Testing document retrieval...")
 
@@ -246,7 +244,7 @@ PR-204,This claim/service is being held for review,276,1.8%
                         "error": "No results",
                         "result_count": 0
                     }
-                    print(f"    ✗ No results found")
+                    print("    ✗ No results found")
 
             except Exception as e:
                 retrieval_results[query] = {
@@ -266,7 +264,7 @@ PR-204,This claim/service is being held for review,276,1.8%
             "details": retrieval_results
         }
 
-    def validate_content_quality(self) -> Dict[str, Any]:
+    def validate_content_quality(self) -> dict[str, Any]:
         """Validate the quality of ingested content."""
         print("\n[QUALITY TEST] Validating content quality...")
 
@@ -341,7 +339,7 @@ async def test_rag_ingestion_e2e():
 
         # Summary
         print("\n[RAG E2E] ✅ RAG pipeline ingestion validation completed!")
-        print(f"[RAG E2E] Summary:")
+        print("[RAG E2E] Summary:")
         print(f"  - Ingestion: {ingestion_result['successful']}/{ingestion_result['total']} "
               f"({ingestion_result['success_rate']:.1%})")
         print(f"  - Retrieval: {retrieval_result['successful']}/{retrieval_result['total']} "
@@ -357,9 +355,9 @@ async def test_rag_ingestion_e2e():
         )
 
         if success:
-            print(f"[RAG E2E] ✅ All validation criteria met!")
+            print("[RAG E2E] ✅ All validation criteria met!")
         else:
-            print(f"[RAG E2E] ⚠ Some validation criteria not met")
+            print("[RAG E2E] ⚠ Some validation criteria not met")
 
         return success
 

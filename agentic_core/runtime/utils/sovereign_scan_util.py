@@ -220,9 +220,8 @@ class SovereignScanner:
             Logger.debug("Returning cached repository map")
             return self._root_map
         Logger.info("Performing single-pass repository scan...")
-        from agentic_core.utils.file_cache import FileCache
-
         from agentic_core.config.core.registry_config import SOVEREIGN_REGISTRY
+        from agentic_core.utils.file_cache import FileCache
 
         cache = FileCache.get_instance(self.project_root)
         self._all_files = list(cache.get_python_files())

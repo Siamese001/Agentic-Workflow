@@ -10,12 +10,9 @@ import hashlib
 from collections import defaultdict, deque
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Dict, List
 
-from .precision_schema import (
-    NodeSpan, SemanticEdgeType, PrecisionGraph,
-    PrecisionConfig, PrecisionMetrics
-)
+from .precision_schema import NodeSpan, PrecisionConfig, PrecisionGraph, PrecisionMetrics, SemanticEdgeType
+
 
 class PrecisionExtractor(ast.NodeVisitor):
     """AST visitor for extracting precision graph elements"""
@@ -31,14 +28,14 @@ class PrecisionExtractor(ast.NodeVisitor):
         self.control_path_stack = deque()
 
         # Track variable definitions and usage
-        self.variable_definitions: Dict[str, ast.AST] = {}
-        self.variable_usage: Dict[str, List[ast.AST]] = defaultdict(list)
+        self.variable_definitions: dict[str, ast.AST] = {}
+        self.variable_usage: dict[str, list[ast.AST]] = defaultdict(list)
 
         # Track side effects
-        self.side_effect_calls: List[ast.Call] = []
+        self.side_effect_calls: list[ast.Call] = []
 
         # Track control flow
-        self.control_branches: List[ast.AST] = []
+        self.control_branches: list[ast.AST] = []
 
     def extract(self) -> PrecisionGraph:
         """Extract precision graph from AST"""
@@ -91,7 +88,7 @@ class PrecisionHardeningEngine:
     """Orchestrates precision hardening across multiple files"""
 
     config: PrecisionConfig = field(default_factory=PrecisionConfig)
-    precision_graphs: Dict[str, PrecisionGraph] = field(default_factory=dict)
+    precision_graphs: dict[str, PrecisionGraph] = field(default_factory=dict)
 
     def harden_file(self, file_path: str) -> PrecisionGraph:
         """Apply precision hardening to a single file"""
@@ -101,7 +98,7 @@ class PrecisionHardeningEngine:
             raise FileNotFoundError(f"File not found: {file_path}")
 
         try:
-            with open(path, 'r', encoding='utf-8') as f:
+            with open(path, encoding='utf-8') as f:
                 source_code = f.read()
 
             extractor = PrecisionExtractor(str(path), source_code)
@@ -113,7 +110,7 @@ class PrecisionHardeningEngine:
         except Exception as e:
             raise RuntimeError(f"Failed to harden {file_path}: {e}")
 
-    def harden_directory(self, directory: str, pattern: str = "*.py") -> Dict[str, PrecisionGraph]:
+    def harden_directory(self, directory: str, pattern: str = "*.py") -> dict[str, PrecisionGraph]:
         """Apply precision hardening to all Python files in directory"""
 
         results = {}

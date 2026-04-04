@@ -4,7 +4,6 @@ Standalone validation runner for test suite enforcement.
 """
 
 import sys
-import json
 from pathlib import Path
 
 # Add the tools directory to path

@@ -14,18 +14,11 @@ Standards Compliance:
 
 from __future__ import annotations
 
-import hashlib
-import json
-import os
-import tempfile
-import time
-import uuid
 from pathlib import Path
 from typing import Any
-from unittest.mock import MagicMock, Mock, patch
+from unittest.mock import MagicMock
 
 import pytest
-
 
 # ---------------------------------------------------------------------------
 # Lazy import fixtures - avoid collection-time import errors
@@ -34,8 +27,11 @@ import pytest
 @pytest.fixture(scope="session")
 def graphrag_indexer_imports():
     from agentic_core.L3_orchestration.engines.graph_aware_indexer import (
-        GraphAwareIndexer, ADGEdgeExtractor, ADGEdgeBinding,
-        index_document, get_global_indexer,
+        ADGEdgeBinding,
+        ADGEdgeExtractor,
+        GraphAwareIndexer,
+        get_global_indexer,
+        index_document,
     )
     return {
         "GraphAwareIndexer": GraphAwareIndexer,
@@ -49,7 +45,8 @@ def graphrag_indexer_imports():
 @pytest.fixture(scope="session")
 def chunk_registry_imports():
     from agentic_core.L4_state.memory.chunk_manifest_registry import (
-        ChunkManifestRegistry, EnrichedChunkManifest,
+        ChunkManifestRegistry,
+        EnrichedChunkManifest,
     )
     return {
         "ChunkManifestRegistry": ChunkManifestRegistry,
@@ -61,6 +58,8 @@ def chunk_registry_imports():
 def l4_registries_imports():
     from agentic_core.evaluation.retrieval.l4_registries import (
         ChunkManifestRegistry as InMemoryChunkRegistry,
+    )
+    from agentic_core.evaluation.retrieval.l4_registries import (
         ParentChildIndexRegistry,
         ParentChildLink,
     )
@@ -74,8 +73,12 @@ def l4_registries_imports():
 @pytest.fixture(scope="session")
 def retrieval_integration_imports():
     from agentic_core.L3_orchestration.engines.l4e_retrieval_integration import (
-        GraphRetrievalEngine, ADGEdgeHydrator, GraphRetrievalContext,
-        RetrievalWithGraphIntegration, search, get_global_engine,
+        ADGEdgeHydrator,
+        GraphRetrievalContext,
+        GraphRetrievalEngine,
+        RetrievalWithGraphIntegration,
+        get_global_engine,
+        search,
     )
     return {
         "GraphRetrievalEngine": GraphRetrievalEngine,
@@ -90,7 +93,9 @@ def retrieval_integration_imports():
 @pytest.fixture(scope="session")
 def parent_child_imports():
     from agentic_core.L4_state.engines.parent_child_expansion import (
-        ParentChildExpander, L4ERetrievalIntegrator, ExpansionContext,
+        ExpansionContext,
+        L4ERetrievalIntegrator,
+        ParentChildExpander,
     )
     return {
         "ParentChildExpander": ParentChildExpander,
@@ -102,8 +107,12 @@ def parent_child_imports():
 @pytest.fixture(scope="session")
 def meta_learning_imports():
     from agentic_core.L4_state.engines.meta_learning_feedback import (
-        CompletenessRAGProposer, EvaluationRunner, CompletenessAnalyzer,
-        FeedbackTrigger, FeedbackProposal, CompletenessChangePackage,
+        CompletenessAnalyzer,
+        CompletenessChangePackage,
+        CompletenessRAGProposer,
+        EvaluationRunner,
+        FeedbackProposal,
+        FeedbackTrigger,
         get_global_proposer,
     )
     return {

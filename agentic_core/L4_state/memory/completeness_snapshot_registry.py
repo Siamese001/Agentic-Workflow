@@ -22,13 +22,13 @@ import sqlite3
 from dataclasses import dataclass, field
 from datetime import datetime
 from pathlib import Path
-from typing import Any, Optional
+from typing import Any
 
 from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     LayerSegment,
+    _emit_feeds_meta_learning,
     _emit_records_execution_trace,
     _emit_writes_learning_snapshot,
-    _emit_feeds_meta_learning,
 )
 
 Logger = logging.getLogger(__name__)
@@ -162,7 +162,7 @@ class CompletenessSnapshotRegistry:
         self,
         query: str,
         retrieved_contexts: list[dict[str, Any]],
-        query_terms: Optional[list[str]] = None,
+        query_terms: list[str] | None = None,
     ) -> ContextCompletenessMetrics:
         """Compute context completeness metrics.
 
@@ -240,7 +240,7 @@ class CompletenessSnapshotRegistry:
         trace_id: str,
         query: str,
         retrieved_contexts: list[dict[str, Any]],
-        retrieval_config: Optional[dict[str, Any]] = None,
+        retrieval_config: dict[str, Any] | None = None,
         session_id: str = "",
         user_id: str = "",
     ) -> CompletenessSnapshot:
@@ -370,7 +370,7 @@ class CompletenessSnapshotRegistry:
         finally:
             conn.close()
 
-    def get_snapshot(self, snap_id: str) -> Optional[CompletenessSnapshot]:
+    def get_snapshot(self, snap_id: str) -> CompletenessSnapshot | None:
         """Retrieve snapshot by ID."""
         conn = sqlite3.connect(self.db_path)
         cursor = conn.cursor()
@@ -408,7 +408,7 @@ class CompletenessSnapshotRegistry:
     def get_low_completeness_snapshots(
         self,
         threshold: float = 0.5,
-        since: Optional[str] = None,
+        since: str | None = None,
     ) -> list[CompletenessSnapshot]:
         """Get snapshots with low completeness scores.
 
@@ -444,7 +444,7 @@ class CompletenessSnapshotRegistry:
 
     def get_aggregated_completeness(
         self,
-        since: Optional[str] = None,
+        since: str | None = None,
     ) -> dict[str, Any]:
         """Get aggregated completeness metrics.
 
@@ -555,7 +555,7 @@ class CompletenessSnapshotRegistry:
 
 
 # Global instance
-_global_snapshot_registry: Optional[CompletenessSnapshotRegistry] = None
+_global_snapshot_registry: CompletenessSnapshotRegistry | None = None
 
 
 def get_global_snapshot_registry() -> CompletenessSnapshotRegistry:

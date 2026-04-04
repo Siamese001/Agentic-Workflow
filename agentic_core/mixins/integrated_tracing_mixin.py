@@ -30,7 +30,8 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     emit_determinism_digest,
     record_execution_trace,
 )
-from agentic_core.mixins.tracing_mixin import TracingMixin, SpanContext
+from agentic_core.mixins.tracing_mixin import SpanContext, TracingMixin
+
 
 # Lazy imports to avoid L_SHARED->L_SL/L_APP gravity violations
 def _get_tracer():

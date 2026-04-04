@@ -14,7 +14,7 @@ import sys
 import time
 from datetime import datetime
 from pathlib import Path
-from typing import Dict, List, Any
+from typing import Any
 
 ROOT = Path(__file__).resolve().parents[1]
 
@@ -33,7 +33,7 @@ class ADGSimpleE2ETest:
             "overall_success": True
         }
 
-    def run_all_tests(self) -> Dict[str, Any]:
+    def run_all_tests(self) -> dict[str, Any]:
         """Run simple E2E tests."""
         print("=" * 80)
         print("ADG SIMPLE END-TO-END TEST")
@@ -67,7 +67,7 @@ class ADGSimpleE2ETest:
 
         return self.results
 
-    def verify_directory_structure(self) -> Dict[str, Any]:
+    def verify_directory_structure(self) -> dict[str, Any]:
         """Verify ADG directory structure."""
         result = {"success": True, "details": {}}
 
@@ -89,14 +89,14 @@ class ADGSimpleE2ETest:
             "sample_files": files[:10]  # First 10 files
         }
 
-        print(f"  ADG directory: ✅")
+        print("  ADG directory: ✅")
         print(f"  Total items: {len(items)}")
         print(f"  Files: {len(files)}")
         print(f"  Directories: {len(dirs)}")
 
         return result
 
-    def test_database_access(self) -> Dict[str, Any]:
+    def test_database_access(self) -> dict[str, Any]:
         """Test database access and basic functionality."""
         result = {"success": True, "details": {}}
 
@@ -134,7 +134,7 @@ class ADGSimpleE2ETest:
                 "accessible": True
             }
 
-            print(f"  Database access: ✅")
+            print("  Database access: ✅")
             print(f"  Database: {db_path.name}")
             print(f"  Nodes: {node_count:,}")
             print(f"  Edges: {edge_count:,}")
@@ -149,7 +149,7 @@ class ADGSimpleE2ETest:
 
         return result
 
-    def verify_artifacts_exist(self) -> Dict[str, Any]:
+    def verify_artifacts_exist(self) -> dict[str, Any]:
         """Verify key artifacts exist."""
         result = {"success": True, "details": {}}
 
@@ -173,7 +173,7 @@ class ADGSimpleE2ETest:
             "total_artifacts": len(json_files) + len(sqlite_files) + len(zip_files)
         }
 
-        print(f"  Artifacts verification: ✅")
+        print("  Artifacts verification: ✅")
         print(f"  JSON files: {len(json_files)}")
         print(f"  SQLite files: {len(sqlite_files)}")
         print(f"  ZIP files: {len(zip_files)}")
@@ -182,7 +182,7 @@ class ADGSimpleE2ETest:
 
         return result
 
-    def test_precision_pass(self) -> Dict[str, Any]:
+    def test_precision_pass(self) -> dict[str, Any]:
         """Test precision pass execution."""
         result = {"success": True, "details": {}}
 
@@ -215,7 +215,7 @@ class ADGSimpleE2ETest:
                 "total_checks": len(precision_results.get("checks", {}))
             }
 
-            print(f"  Precision pass: ✅" if result["details"]["precision_success"] else "❌")
+            print("  Precision pass: ✅" if result["details"]["precision_success"] else "❌")
             print(f"  Duration: {precision_duration:.1f}s")
             print(f"  Database: {db_path.name}")
             print(f"  Checks passed: {result['details']['checks_passed']}/{result['details']['total_checks']}")
@@ -227,7 +227,7 @@ class ADGSimpleE2ETest:
 
         return result
 
-    def test_basic_queries(self) -> Dict[str, Any]:
+    def test_basic_queries(self) -> dict[str, Any]:
         """Test basic database queries."""
         result = {"success": True, "details": {}}
 
@@ -271,7 +271,7 @@ class ADGSimpleE2ETest:
                 "total_queries": len(queries)
             }
 
-            print(f"  Basic queries: ✅")
+            print("  Basic queries: ✅")
             print(f"  Queries successful: {result['details']['queries_successful']}/{result['details']['total_queries']}")
 
             # Show some sample results

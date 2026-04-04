@@ -39,7 +39,7 @@ for stype, count in execution_semantic_types:
 # Check validation threshold
 print('\n=== VALIDATION ANALYSIS ===')
 print(f'Generic semantic ratio: {execution_generic}/{execution_total} = {execution_generic/execution_total if execution_total > 0 else 0:.4f}')
-print(f'Expected threshold: < 0.01 (1%)')
+print('Expected threshold: < 0.01 (1%)')
 print(f'Actual ratio: {execution_generic/execution_total if execution_total > 0 else 0:.4f}')
 
 # Check if this is the issue

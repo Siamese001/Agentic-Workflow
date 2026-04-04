@@ -3,10 +3,11 @@
 Direct test of token estimator enforcement using preflight hook
 """
 
-from agentic_core.planning.preflight_hook import PlanningPreflightHook, TokenBudgetExceededError
-from agentic_core.planning.token_estimator import ContextWindowEstimator, TokenBudget
 import tempfile
 from pathlib import Path
+
+from agentic_core.planning.preflight_hook import PlanningPreflightHook, TokenBudgetExceededError
+
 
 def test_normal_enforcement():
     """Test normal token budget enforcement"""
@@ -31,7 +32,7 @@ def test_normal_enforcement():
             prior_steps=[]
         )
 
-        print(f"✅ Normal content passed:")
+        print("✅ Normal content passed:")
         print(f"  - Status: {estimate.status}")
         print(f"  - Action: {estimate.action}")
         print(f"  - Total tokens: {estimate.total_projected_tokens:,}")
@@ -69,7 +70,7 @@ def test_compression_trigger():
             prior_steps=["prior step " * 50] * 3
         )
 
-        print(f"✅ Large content handled:")
+        print("✅ Large content handled:")
         print(f"  - Status: {estimate.status}")
         print(f"  - Action: {estimate.action}")
         print(f"  - Total tokens: {estimate.total_projected_tokens:,}")
@@ -117,14 +118,14 @@ def test_budget_exceeded():
                 prior_steps=[massive_content] * 10
             )
 
-            print(f"❌ Unexpected success - budget should have been exceeded")
+            print("❌ Unexpected success - budget should have been exceeded")
             print(f"  - Status: {estimate.status}")
             print(f"  - Total tokens: {estimate.total_projected_tokens:,}")
 
         except TokenBudgetExceededError as e:
-            print(f"✅ Budget correctly enforced:")
+            print("✅ Budget correctly enforced:")
             print(f"  - Error: {str(e)}")
-            print(f"  - Hard limit exceeded - execution blocked")
+            print("  - Hard limit exceeded - execution blocked")
 
     except Exception as e:
         print(f"❌ Budget exceeded test failed: {e}")
@@ -181,7 +182,7 @@ def test_decorator_enforcement():
 
         # Check budget summary
         summary = hook.get_budget_summary()
-        print(f"\n📊 Decorator Budget Summary:")
+        print("\n📊 Decorator Budget Summary:")
         print(f"  - Total steps: {summary['total_steps']}")
         print(f"  - Average tokens: {summary['average_tokens_per_step']:.0f}")
         print(f"  - Status distribution: {summary['status_distribution']}")

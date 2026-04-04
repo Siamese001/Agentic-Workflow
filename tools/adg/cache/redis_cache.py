@@ -93,11 +93,11 @@ class RedisCache:
         try:
             key = self._key(f"edge:{src_id}:{relation_type}", adg_snapshot_id)
             edge_ids = self._client.smembers(key)
-            
+
             # Check if key exists (distinguish empty set from key not existing)
             if not self._client.exists(key):
                 return None  # Cache miss - key doesn't exist
-            
+
             # Key exists but may be empty (no edges for this relation)
             if not edge_ids:
                 return []  # Cache hit, but no edges

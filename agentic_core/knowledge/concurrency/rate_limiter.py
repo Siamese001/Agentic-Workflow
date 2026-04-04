@@ -5,9 +5,9 @@ Token bucket rate limiting for requests.
 
 import logging
 import time
-from dataclasses import dataclass
-from typing import Any, Dict, Optional
 from collections import defaultdict
+from dataclasses import dataclass
+from typing import Any
 
 from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     LayerSegment,
@@ -33,7 +33,7 @@ class RateLimiter:
     token bucket algorithm.
     """
 
-    def __init__(self, config: Optional[RateLimitConfig] = None):
+    def __init__(self, config: RateLimitConfig | None = None):
         """Initialize the rate limiter.
 
         Args:
@@ -42,7 +42,7 @@ class RateLimiter:
         self.config = config or RateLimitConfig()
 
         # Per-client token buckets
-        self._buckets: Dict[str, Dict[str, Any]] = defaultdict(
+        self._buckets: dict[str, dict[str, Any]] = defaultdict(
             lambda: {
                 "tokens": self.config.burst_size,
                 "last_update": time.time(),
@@ -122,7 +122,7 @@ class RateLimiter:
         needed = cost - bucket["tokens"]
         return needed / self.config.requests_per_second
 
-    def get_stats(self, client_id: Optional[str] = None) -> Dict[str, Any]:
+    def get_stats(self, client_id: str | None = None) -> dict[str, Any]:
         """Get rate limiter statistics.
 
         Args:
@@ -150,7 +150,7 @@ class RateLimiter:
 
 
 # Global instance
-_global_limiter: Optional[RateLimiter] = None
+_global_limiter: RateLimiter | None = None
 
 
 def get_rate_limiter() -> RateLimiter:

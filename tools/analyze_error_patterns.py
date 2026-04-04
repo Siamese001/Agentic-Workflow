@@ -4,7 +4,7 @@
 import json
 from collections import Counter
 
-with open('C:/Git/Agentic-Workflow/syntax_error_report.json', 'r') as f:
+with open('C:/Git/Agentic-Workflow/syntax_error_report.json') as f:
     report = json.load(f)
 
 # Count error patterns

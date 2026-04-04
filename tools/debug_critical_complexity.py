@@ -11,9 +11,8 @@ from pathlib import Path
 repo_root = Path(__file__).parent
 sys.path.append(str(repo_root))
 
-from agentic_core.config.adg_template_enforcement_config import (
-    ENFORCEMENT_RULES, get_enforcement_template
-)
+from agentic_core.config.adg_template_enforcement_config import ENFORCEMENT_RULES, get_enforcement_template
+
 
 def debug_critical_complexity():
     """Debug why critical complexity enforcement isn't working."""
@@ -31,7 +30,7 @@ def debug_critical_complexity():
     print(f"Testing: {step_config['type']} with {step_config['complexity']} complexity")
 
     # Check enforcement rules
-    print(f"\n📋 Enforcement Rules:")
+    print("\n📋 Enforcement Rules:")
     print(f"   Critical Template: {ENFORCEMENT_RULES['complexity_enforcement']['critical']}")
 
     # Check if task type is in direct ADG tasks
@@ -47,13 +46,13 @@ def debug_critical_complexity():
 
     # Get enforcement template
     enforced_template = get_enforcement_template(step_config['type'], step_config)
-    print(f"\n🎯 Enforcement Result:")
-    print(f"   Expected: SWE_SYSTEM_RESTRUCTURING")
+    print("\n🎯 Enforcement Result:")
+    print("   Expected: SWE_SYSTEM_RESTRUCTURING")
     print(f"   Actual: {enforced_template}")
     print(f"   Match: {enforced_template == 'SWE_SYSTEM_RESTRUCTURING'}")
 
     # Debug the enforcement logic step by step
-    print(f"\n🔧 Step-by-Step Logic:")
+    print("\n🔧 Step-by-Step Logic:")
 
     # Step 1: Check direct ADG tasks
     if step_config['type'] in ENFORCEMENT_RULES['direct_adg_tasks']:
@@ -80,16 +79,16 @@ def debug_critical_complexity():
         print("   3. ❌ Critical complexity not detected")
 
     # The issue is precedence order!
-    print(f"\n🎯 ROOT CAUSE IDENTIFIED:")
-    print(f"   ❌ SWE task mapping has HIGHER precedence than complexity enforcement")
-    print(f"   ❌ 'implementation' is mapped to 'SWE_DEPENDENCY_GRAPH_ANALYSIS' in SWE mapping")
-    print(f"   ❌ Complexity rules are checked AFTER SWE mapping")
-    print(f"   ❌ So critical complexity never gets a chance to enforce")
+    print("\n🎯 ROOT CAUSE IDENTIFIED:")
+    print("   ❌ SWE task mapping has HIGHER precedence than complexity enforcement")
+    print("   ❌ 'implementation' is mapped to 'SWE_DEPENDENCY_GRAPH_ANALYSIS' in SWE mapping")
+    print("   ❌ Complexity rules are checked AFTER SWE mapping")
+    print("   ❌ So critical complexity never gets a chance to enforce")
 
     # Solution: Change precedence order
-    print(f"\n💡 SOLUTION:")
-    print(f"   ✅ Check complexity enforcement BEFORE SWE task mapping")
-    print(f"   ✅ Critical complexity should override all other rules")
+    print("\n💡 SOLUTION:")
+    print("   ✅ Check complexity enforcement BEFORE SWE task mapping")
+    print("   ✅ Critical complexity should override all other rules")
 
     return enforced_template
 

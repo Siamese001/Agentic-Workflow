@@ -3,6 +3,7 @@ import json
 import sys
 from pathlib import Path
 
+
 # This is a placeholder for the actual ADG query logic.
 # In a real implementation, this would connect to Redis or SQLite.
 class ADGQuerier:

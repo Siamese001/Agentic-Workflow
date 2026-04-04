@@ -6,12 +6,11 @@ Generates API-specific behavioral tests for tiny stub files.
 
 import ast
 import importlib
-from pathlib import Path
-from typing import List, Tuple, Optional
 import re
+from pathlib import Path
 
 
-def extract_module_from_source(source: str) -> Optional[str]:
+def extract_module_from_source(source: str) -> str | None:
     """Extract the module being imported from the source code."""
     lines = source.splitlines()
     for line in lines:
@@ -28,7 +27,7 @@ def extract_module_from_source(source: str) -> Optional[str]:
     return None
 
 
-def analyze_module_api(module_path: str) -> Tuple[List[str], List[str], List[str]]:
+def analyze_module_api(module_path: str) -> tuple[list[str], list[str], list[str]]:
     """Analyze a module to extract its public API."""
     try:
         mod = importlib.import_module(module_path)
@@ -57,8 +56,8 @@ def analyze_module_api(module_path: str) -> Tuple[List[str], List[str], List[str
     return public_symbols, classes, functions
 
 
-def generate_enhanced_test(module_path: str, classes: List[Tuple[str, str]],
-                          functions: List[Tuple[str, str]]) -> str:
+def generate_enhanced_test(module_path: str, classes: list[tuple[str, str]],
+                          functions: list[tuple[str, str]]) -> str:
     """Generate API-specific behavioral tests for a module."""
 
     # Extract module name for display
@@ -144,7 +143,7 @@ if __name__ == "__main__":
     return test_content
 
 
-def file_is_import_only(fp: Path) -> Tuple[bool, int, str, Optional[str]]:
+def file_is_import_only(fp: Path) -> tuple[bool, int, str, str | None]:
     """Check if a file is an import-only test."""
     try:
         source = fp.read_text(encoding='utf-8')
@@ -161,7 +160,7 @@ def file_is_import_only(fp: Path) -> Tuple[bool, int, str, Optional[str]]:
     return True, lines, source, module_path
 
 
-def enhance_batch(file_paths: List[str]) -> Tuple[int, int, List[str]]:
+def enhance_batch(file_paths: list[str]) -> tuple[int, int, list[str]]:
     """Enhance a batch of import-only test files."""
     enhanced = 0
     failed = 0
@@ -201,7 +200,7 @@ if __name__ == "__main__":
         sys.exit(1)
 
     batch_file = sys.argv[1]
-    with open(batch_file, 'r') as f:
+    with open(batch_file) as f:
         file_paths = [line.strip() for line in f if line.strip()]
 
     enhanced, failed, errors = enhance_batch(file_paths)

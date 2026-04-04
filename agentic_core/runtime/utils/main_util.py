@@ -79,8 +79,6 @@ _emit_links_execution_to_snapshot("p4", "main_util", "exec_snapshot_link")
 import logging
 from typing import Any
 
-from .runtime_bootstrapper_util import runtime_bootstrapper
-
 from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
@@ -119,6 +117,8 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+
+from .runtime_bootstrapper_util import runtime_bootstrapper
 
 _emit_emits_metric_event("main_util", "p4obs", "metric_1")
 _emit_emits_metric_event("main_util", "p4obs", "metric_2")

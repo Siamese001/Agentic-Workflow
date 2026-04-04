@@ -5,7 +5,6 @@ Tests for tracing decorators (@trace_cognitive, @trace_action, @trace_tool, @tra
 
 from __future__ import annotations
 
-import time
 import sys
 from typing import Any
 
@@ -215,8 +214,9 @@ def test_decorator_without_tracing() -> bool:
 def test_decorator_preserves_signature() -> bool:
     """Test that decorators preserve function signatures."""
     try:
-        from agentic_core.mixins.tracing_decorators import trace_cognitive
         import inspect
+
+        from agentic_core.mixins.tracing_decorators import trace_cognitive
 
         def original_function(query: str, limit: int = 10) -> dict:
             """Original docstring."""

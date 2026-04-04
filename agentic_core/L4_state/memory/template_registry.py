@@ -43,7 +43,7 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_validates_capability,
     _emit_verifies_boundary,
     _emit_verifies_policy,
-    _emit_writes_via_uwg
+    _emit_writes_via_uwg,
 )
 from agentic_core.prompt_governance.contracts.template_manifest_types import (
     TemplateManifest,

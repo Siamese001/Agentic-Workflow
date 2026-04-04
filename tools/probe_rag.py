@@ -1,4 +1,5 @@
 from pathlib import Path
+
 from agentic_core.knowledge.engine.rag_orchestrator import SovereignRagOrchestrator
 
 # Test 1: Happy path

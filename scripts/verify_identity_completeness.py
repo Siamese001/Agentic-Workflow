@@ -47,7 +47,7 @@ import json
 import sqlite3
 import sys
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Set, Tuple
+from typing import Any
 
 # Add project root to path for imports
 sys.path.insert(0, str(Path(__file__).parent.parent.parent))
@@ -92,8 +92,8 @@ class ADGIdentityCompletenessVerifier:
     def __init__(self, adg_dir: Path):
         self.adg_dir = Path(adg_dir)
         self.sqlite_path = self._find_sqlite_database()
-        self.errors: List[str] = []
-        self.warnings: List[str] = []
+        self.errors: list[str] = []
+        self.warnings: list[str] = []
 
     def _find_sqlite_database(self) -> Path:
         """Find the latest SQLite database."""
@@ -103,7 +103,7 @@ class ADGIdentityCompletenessVerifier:
 
         return max(sqlite_files, key=lambda p: p.stat().st_mtime)
 
-    def _get_table_columns(self, table_name: str) -> Set[str]:
+    def _get_table_columns(self, table_name: str) -> set[str]:
         """Get column names for a table."""
         try:
             with sqlite3.connect(self.sqlite_path) as conn:
@@ -381,7 +381,7 @@ class ADGIdentityCompletenessVerifier:
 
         print("   ✅ Unresolved import traceability verified")
 
-    def _calculate_identity_completeness_metrics(self) -> Dict[str, Any]:
+    def _calculate_identity_completeness_metrics(self) -> dict[str, Any]:
         """Calculate identity completeness metrics."""
         print("📈 Calculating identity completeness metrics...")
 
@@ -430,7 +430,7 @@ class ADGIdentityCompletenessVerifier:
 
         return metrics
 
-    def verify(self) -> Dict[str, Any]:
+    def verify(self) -> dict[str, Any]:
         """Run complete identity completeness verification."""
         print("🔍 Starting ADG Identity Completeness Verification...")
         print(f"📁 ADG Directory: {self.adg_dir}")
@@ -487,7 +487,7 @@ class ADGIdentityCompletenessVerifier:
             # Print summary metrics
             node_comp = metrics.get("node_field_completeness", {})
             edge_comp = metrics.get("edge_field_completeness", {})
-            print(f"📊 Schema completeness:")
+            print("📊 Schema completeness:")
             print(f"   Node fields: {node_comp.get('required_fields', 0)}/{node_comp.get('total_required', 0)} required, {node_comp.get('enhanced_fields', 0)}/{node_comp.get('total_enhanced', 0)} enhanced")
             print(f"   Edge fields: {edge_comp.get('required_fields', 0)}/{edge_comp.get('total_required', 0)} required, {edge_comp.get('enhanced_fields', 0)}/{edge_comp.get('total_enhanced', 0)} enhanced")
 

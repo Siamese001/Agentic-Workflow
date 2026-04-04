@@ -3,9 +3,9 @@
 import pytest
 
 from agentic_core.prompt_governance.core.tier_instructional_enrichment import (
+    TIER_ENRICHMENT_TABLE,
     EnrichmentTier,
     InstructionalEnrichment,
-    TIER_ENRICHMENT_TABLE,
     enrich_i0_for_tier,
     get_tier_enrichment,
 )

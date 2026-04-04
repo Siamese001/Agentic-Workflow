@@ -2,7 +2,7 @@
 """Verify MCP config fix"""
 import json
 
-with open(r'C:\Users\amita\.codeium\windsurf\mcp_config.json', 'r') as f:
+with open(r'C:\Users\amita\.codeium\windsurf\mcp_config.json') as f:
     config = json.load(f)
 
 adg = config.get('mcpServers', {}).get('adg_redis', {})

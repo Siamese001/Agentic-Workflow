@@ -5,10 +5,9 @@ This wave focuses on fixing incomplete code blocks that are
 causing syntax errors and preventing test execution.
 """
 
+import ast
 import pathlib
 import re
-import ast
-from typing import Dict, List, Tuple
 
 
 class Wave26BlockFix:
@@ -24,9 +23,9 @@ class Wave26BlockFix:
             'syntax_errors_fixed': 0,
             'failed_files': 0
         }
-        self.failed_files: List[Tuple[str, str]] = []
+        self.failed_files: list[tuple[str, str]] = []
 
-    def process_files(self) -> Dict:
+    def process_files(self) -> dict:
         """Process files with Wave 26 block fix."""
         # Only process files with syntax errors
         test_files = []
@@ -112,7 +111,7 @@ class Wave26BlockFix:
         return (re.match(r'^(def|class|if|elif|else|for|while|try|except|finally|with)\b', stripped) and
                 not stripped.endswith(':'))
 
-    def _complete_block(self, line: str, stripped: str) -> List[str]:
+    def _complete_block(self, line: str, stripped: str) -> list[str]:
         """Complete an incomplete block."""
         # Add colon and appropriate content
         completed_line = stripped + ':'
@@ -161,7 +160,7 @@ class Wave26BlockFix:
         print(f"Failed files: {len(self.failed_files)}")
 
         if self.failed_files:
-            print(f"\nFailed files (first 3):")
+            print("\nFailed files (first 3):")
             for file_path, error in self.failed_files[:3]:
                 print(f"  {file_path}: {error}")
             if len(self.failed_files) > 3:

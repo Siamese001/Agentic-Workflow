@@ -1,9 +1,10 @@
 #!/usr/bin/env python
 """Redis Key-Value Layer 1 Acceleration Proof of Operation"""
 
-import redis
-import time
 import json
+import time
+
+import redis
 
 r = redis.from_url('redis://localhost:6379/0', decode_responses=True)
 

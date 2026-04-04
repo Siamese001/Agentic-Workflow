@@ -7,15 +7,14 @@ to uncover any issues, following Windsurf rules directives.
 Fixed version addressing module import and path escaping issues.
 """
 
+import json
+import shutil
 import subprocess
 import sys
-import json
-import time
 import tempfile
-import shutil
+import time
 from pathlib import Path
-from typing import Dict, List, Optional, Any
-import traceback
+
 
 class MCPRobustTesterFixed:
     """Robust testing for Filesystem and Memory MCP (Fixed)"""
@@ -66,7 +65,7 @@ class MCPRobustTesterFixed:
             except Exception as e:
                 print(f"Warning: Could not cleanup test directory: {e}")
 
-    def run_mcp_function(self, server_name: str, function_name: str, args: List[str], timeout: int = 30) -> Dict:
+    def run_mcp_function(self, server_name: str, function_name: str, args: list[str], timeout: int = 30) -> dict:
         """Run MCP function with proper error handling"""
         try:
             # Create a Python script that calls the MCP function
@@ -186,7 +185,7 @@ except Exception as e:
                 f.write(content)
 
             # Read file
-            with open(test_file, 'r', encoding='utf-8') as f:
+            with open(test_file, encoding='utf-8') as f:
                 read_content = f.read()
 
             if read_content == content:
@@ -231,7 +230,7 @@ except Exception as e:
             with open(special_file, 'w', encoding='utf-8') as f:
                 f.write(special_content)
 
-            with open(special_file, 'r', encoding='utf-8') as f:
+            with open(special_file, encoding='utf-8') as f:
                 read_content = f.read()
 
             if read_content == special_content:
@@ -478,8 +477,8 @@ except Exception as e:
 
         # Test 2: Concurrent operations simulation
         try:
-            import threading
             import queue
+            import threading
 
             results_queue = queue.Queue()
             memory_graph = {"entities": {}, "relations": []}
@@ -549,14 +548,14 @@ except Exception as e:
         passed_tests = len([r for r in self.test_results if r['success']])
         failed_tests = len(self.errors_found)
 
-        print(f"\n=== Test Summary ===")
+        print("\n=== Test Summary ===")
         print(f"Total Tests: {total_tests}")
         print(f"Passed: {passed_tests}")
         print(f"Failed: {failed_tests}")
         print(f"Success Rate: {(passed_tests/total_tests)*100:.1f}%")
 
         if self.errors_found:
-            print(f"\n=== Errors Found ===")
+            print("\n=== Errors Found ===")
             for error in self.errors_found:
                 print(f"❌ {error['test_name']}: {error['error']}")
 

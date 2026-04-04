@@ -28,6 +28,7 @@ from agentic_core.L1_cognition.knowledge.reasoning_knowledge import (
     get_reasoning_knowledge_registry,
     reset_reasoning_knowledge_registry,
 )
+
 # ActionClass, PolicyEnforcementError, enforce_policy_before_action imported lazily to avoid L1->L5 violation
 from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     LayerSegment,

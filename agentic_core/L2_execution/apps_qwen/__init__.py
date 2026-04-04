@@ -23,13 +23,39 @@ Usage:
 
 from __future__ import annotations
 
+# Configuration
+from agentic_core.L2_execution.apps_qwen.apps_qwen_config import AppsQwenConfig
+
 # Core gateway and request/response types
 from agentic_core.L2_execution.apps_qwen.apps_qwen_gateway import (
     AppsQwenGateway,
     AppsQwenRequest,
     AppsQwenResponse,
-    get_apps_qwen_gateway,
     close_apps_qwen_gateway,
+    get_apps_qwen_gateway,
+)
+
+# Telemetry
+from agentic_core.L2_execution.apps_qwen.apps_qwen_telemetry import apps_qwen_telemetry
+
+# GPU memory monitoring
+from agentic_core.L2_execution.apps_qwen.gpu_memory_monitor import (
+    GPUMemoryInfo,
+    GPUMemoryMonitor,
+    GPURecommendation,
+    get_gpu_monitor,
+    stop_gpu_monitor,
+)
+
+# Hardened vLLM client
+from agentic_core.L2_execution.apps_qwen.hardened_vllm_client import (
+    CircuitBreaker,
+    CircuitBreakerConfig,
+    CircuitBreakerOpenError,
+    CircuitState,
+    HardenedVLLMClient,
+    HardeningMetrics,
+    RetryConfig,
 )
 
 # Optimized vLLM client
@@ -37,35 +63,9 @@ from agentic_core.L2_execution.apps_qwen.optimized_vllm_client import (
     OptimizedVLLMClient,
     VLLMRequest,
     VLLMResponse,
-    get_vllm_client,
     close_vllm_client,
+    get_vllm_client,
 )
-
-# Hardened vLLM client
-from agentic_core.L2_execution.apps_qwen.hardened_vllm_client import (
-    HardenedVLLMClient,
-    CircuitBreaker,
-    CircuitBreakerConfig,
-    RetryConfig,
-    HardeningMetrics,
-    CircuitState,
-    CircuitBreakerOpenError,
-)
-
-# GPU memory monitoring
-from agentic_core.L2_execution.apps_qwen.gpu_memory_monitor import (
-    GPUMemoryInfo,
-    GPURecommendation,
-    GPUMemoryMonitor,
-    get_gpu_monitor,
-    stop_gpu_monitor,
-)
-
-# Configuration
-from agentic_core.L2_execution.apps_qwen.apps_qwen_config import AppsQwenConfig
-
-# Telemetry
-from agentic_core.L2_execution.apps_qwen.apps_qwen_telemetry import apps_qwen_telemetry
 
 __version__ = "1.0.0"
 

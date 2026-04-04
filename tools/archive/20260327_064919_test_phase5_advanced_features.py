@@ -17,23 +17,27 @@ USAGE:
     python test_phase5_advanced_features.py
 """
 
-import json
 import logging
 import time
 import unittest
-from collections import defaultdict
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 import numpy as np
 import pandas as pd
 
+from agentic_core.cloud_native.cloud_native_manager import (
+    AutoScalingConfig,
+    HealthStatus,
+    ResourceMetrics,
+    ResourceType,
+    get_global_cloud_native_manager,
+)
+
 # Module-level imports so all test methods can reference these types
 from agentic_core.gateway.api_gateway_integration import (
-    get_global_gateway, GatewayType, GatewayConfig,
-)
-from agentic_core.cloud_native.cloud_native_manager import (
-    get_global_cloud_native_manager, AutoScalingConfig,
-    ResourceMetrics, ResourceType, HealthStatus,
+    GatewayConfig,
+    GatewayType,
+    get_global_gateway,
 )
 
 # Configure logging
@@ -576,11 +580,11 @@ class TestPhase5Kubernetes(unittest.TestCase):
 
         Logger.info("✅ Monitoring manifests structure valid")
 
-    def _load_yaml_manifest(self, filename: str) -> Dict[str, Any]:
+    def _load_yaml_manifest(self, filename: str) -> dict[str, Any]:
         """Load the first YAML document from a (possibly multi-doc) manifest file."""
         try:
             import yaml
-            with open(f"{self.k8s_dir}/{filename}", 'r') as f:
+            with open(f"{self.k8s_dir}/{filename}") as f:
                 docs = [d for d in yaml.safe_load_all(f) if d is not None]
             if not docs:
                 self.fail(f"No YAML documents found in {filename}")
@@ -588,11 +592,11 @@ class TestPhase5Kubernetes(unittest.TestCase):
         except Exception as e:
             self.fail(f"Failed to load {filename}: {e}")
 
-    def _load_all_yaml_manifests(self, filename: str) -> List[Dict[str, Any]]:
+    def _load_all_yaml_manifests(self, filename: str) -> list[dict[str, Any]]:
         """Load all YAML documents from a file."""
         try:
             import yaml
-            with open(f"{self.k8s_dir}/{filename}", 'r') as f:
+            with open(f"{self.k8s_dir}/{filename}") as f:
                 return list(yaml.safe_load_all(f))
         except Exception as e:
             self.fail(f"Failed to load {filename}: {e}")
@@ -857,10 +861,10 @@ class TestPhase5Integration(unittest.TestCase):
     def setUp(self):
         """Set up integration tests."""
         # Initialize all components
-        from system_learning.ml_integration.anomaly_detection import get_global_ml_detector
-        from agentic_core.visualization.trace_3d_visualizer import get_global_3d_visualizer
-        from agentic_core.gateway.api_gateway_integration import get_global_gateway
         from agentic_core.cloud_native.cloud_native_manager import get_global_cloud_native_manager
+        from agentic_core.gateway.api_gateway_integration import get_global_gateway
+        from agentic_core.visualization.trace_3d_visualizer import get_global_3d_visualizer
+        from system_learning.ml_integration.anomaly_detection import get_global_ml_detector
         from system_learning.ml_integration.training_pipeline import get_global_ml_pipeline
 
         self.ml_detector = get_global_ml_detector()
@@ -1068,7 +1072,7 @@ def run_phase5_tests():
     errors = len(result.errors)
     passed = total_tests - failures - errors
 
-    Logger.info(f"\n📊 Phase 5 Test Results:")
+    Logger.info("\n📊 Phase 5 Test Results:")
     Logger.info(f"   Total tests: {total_tests}")
     Logger.info(f"   Passed: {passed}")
     Logger.info(f"   Failed: {failures}")

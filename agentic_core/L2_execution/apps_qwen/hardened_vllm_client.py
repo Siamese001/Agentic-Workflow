@@ -16,7 +16,7 @@ import random
 import time
 from dataclasses import dataclass, field
 from enum import Enum, auto
-from typing import Any, Callable, Optional
+from typing import Any, Callable
 
 from agentic_core.L2_execution.apps_qwen.optimized_vllm_client import (
     OptimizedVLLMClient,
@@ -92,7 +92,7 @@ class CircuitBreaker:
         self.state = CircuitState.CLOSED
         self.failure_count = 0
         self.success_count = 0
-        self.last_failure_time: Optional[float] = None
+        self.last_failure_time: float | None = None
         self.half_open_calls = 0
         self._lock = asyncio.Lock()
 
@@ -164,8 +164,8 @@ class HardenedVLLMClient:
     def __init__(
         self,
         base_client: OptimizedVLLMClient,
-        retry_config: Optional[RetryConfig] = None,
-        circuit_config: Optional[CircuitBreakerConfig] = None,
+        retry_config: RetryConfig | None = None,
+        circuit_config: CircuitBreakerConfig | None = None,
     ):
         self.base_client = base_client
         self.retry_config = retry_config or RetryConfig()
@@ -218,7 +218,7 @@ class HardenedVLLMClient:
 
     async def _infer_with_retry(self, request: VLLMRequest) -> VLLMResponse:
         """Execute inference with retry logic."""
-        last_error: Optional[Exception] = None
+        last_error: Exception | None = None
 
         for attempt in range(self.retry_config.max_retries + 1):
             try:
@@ -272,7 +272,7 @@ class HardenedVLLMClient:
 
         return delay
 
-    def _is_client_error(self, error_message: Optional[str]) -> bool:
+    def _is_client_error(self, error_message: str | None) -> bool:
         """Check if error is a client error (don't retry)."""
         if not error_message:
             return False
@@ -286,7 +286,7 @@ class HardenedVLLMClient:
         error_lower = error_message.lower()
         return any(indicator in error_lower for indicator in client_indicators)
 
-    def _is_oom_error(self, error_message: Optional[str]) -> bool:
+    def _is_oom_error(self, error_message: str | None) -> bool:
         """Check if error is GPU OOM."""
         if not error_message:
             return False

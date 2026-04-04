@@ -100,7 +100,7 @@ def test_mcp_startup(name: str, config: dict) -> dict:
     )
 
     if not is_local_python:
-        print(f"  [SKIP] Not a local Python MCP (no cwd validation needed)")
+        print("  [SKIP] Not a local Python MCP (no cwd validation needed)")
         result["startup_ok"] = True  # Assume OK for non-local
         result["health_ok"] = True
         return result
@@ -118,7 +118,7 @@ def test_mcp_startup(name: str, config: dict) -> dict:
         print(f"  [WARN] {result['error']}")
 
     # Start the MCP
-    print(f"  [STARTUP] Launching subprocess...")
+    print("  [STARTUP] Launching subprocess...")
     proc = start_mcp_subprocess(name, config)
 
     if proc is None:
@@ -148,10 +148,10 @@ def test_mcp_startup(name: str, config: dict) -> dict:
         # Note: Real implementation would use MCP protocol
         # For now, just mark as needs manual verification
         result["health_ok"] = "REQUIRES_MANUAL_CHECK"
-        print(f"  [INFO] Health probe requires MCP protocol - manual verification needed")
+        print("  [INFO] Health probe requires MCP protocol - manual verification needed")
     else:
         result["health_ok"] = True
-        print(f"  [OK] No health probe defined, startup sufficient")
+        print("  [OK] No health probe defined, startup sufficient")
 
     # Cleanup
     proc.terminate()

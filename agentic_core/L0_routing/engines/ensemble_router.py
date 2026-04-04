@@ -7,21 +7,22 @@ accuracy and confidence estimation through model combination.
 
 from __future__ import annotations
 
-import numpy as np
-import logging
-from typing import Dict, List, Tuple, Optional, Any
-from dataclasses import dataclass
-from abc import ABC, abstractmethod
 import json
+import logging
 import time
+from abc import ABC, abstractmethod
 from collections import defaultdict
+from dataclasses import dataclass
+from typing import Any
+
+import numpy as np
 
 from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-    _emit_records_learning_event,
-    _emit_feeds_meta_learning,
-    _emit_stores_learning_state,
-    _emit_records_execution_trace,
     _emit_dispatches_agent,
+    _emit_feeds_meta_learning,
+    _emit_records_execution_trace,
+    _emit_records_learning_event,
+    _emit_stores_learning_state,
 )
 
 logger = logging.getLogger(__name__)
@@ -33,9 +34,9 @@ class RoutingPrediction:
     agent_name: str
     confidence: float
     uncertainty: float
-    reasoning: Optional[str] = None
-    features_used: Optional[Dict[str, float]] = None
-    model_metadata: Optional[Dict[str, Any]] = None
+    reasoning: str | None = None
+    features_used: dict[str, float] | None = None
+    model_metadata: dict[str, Any] | None = None
 
 @dataclass
 class EnsembleFeatures:
@@ -58,8 +59,8 @@ class EnsembleFeatures:
     uncertainty_correlation: float
 
     # Model-specific features
-    model_weights: Dict[str, float]
-    model_reliability: Dict[str, float]
+    model_weights: dict[str, float]
+    model_reliability: dict[str, float]
 
     def to_vector(self) -> np.ndarray:
         """Convert features to vector for meta-learner"""
@@ -84,7 +85,7 @@ class EnsembleDecision:
     confidence: float
     uncertainty: float
     ensemble_features: EnsembleFeatures
-    base_predictions: List[RoutingPrediction]
+    base_predictions: list[RoutingPrediction]
     meta_confidence: float
     reasoning: str
     decision_time: float
@@ -100,7 +101,7 @@ class BaseRoutingModel(ABC):
         self.success_count = 0
 
     @abstractmethod
-    def predict(self, query: str, context: Dict[str, Any]) -> RoutingPrediction:
+    def predict(self, query: str, context: dict[str, Any]) -> RoutingPrediction:
         """Make routing prediction"""
         pass
 
@@ -122,7 +123,7 @@ class IntentEmbeddingModel(BaseRoutingModel):
         super().__init__("intent_embedding", weight)
         self.classifier = classifier
 
-    def predict(self, query: str, context: Dict[str, Any]) -> RoutingPrediction:
+    def predict(self, query: str, context: dict[str, Any]) -> RoutingPrediction:
         """Predict using embedding classifier"""
         try:
             result = self.classifier.classify(query)
@@ -168,11 +169,11 @@ class IntentEmbeddingModel(BaseRoutingModel):
 class RuleBasedModel(BaseRoutingModel):
     """Rule-based routing model"""
 
-    def __init__(self, rules: Dict[str, Any], weight: float = 0.8):
+    def __init__(self, rules: dict[str, Any], weight: float = 0.8):
         super().__init__("rule_based", weight)
         self.rules = rules
 
-    def predict(self, query: str, context: Dict[str, Any]) -> RoutingPrediction:
+    def predict(self, query: str, context: dict[str, Any]) -> RoutingPrediction:
         """Predict using rule-based logic"""
         query_lower = query.lower()
 
@@ -298,8 +299,8 @@ class EnsembleRouter:
 
     def __init__(
         self,
-        base_models: Optional[List[BaseRoutingModel]] = None,
-        meta_learner: Optional[MetaLearner] = None,
+        base_models: list[BaseRoutingModel] | None = None,
+        meta_learner: MetaLearner | None = None,
         ensemble_strategy: str = "weighted_voting"
     ):
         """
@@ -317,10 +318,10 @@ class EnsembleRouter:
         # Performance tracking
         self.prediction_count = 0
         self.success_count = 0
-        self.decision_history: List[EnsembleDecision] = []
+        self.decision_history: list[EnsembleDecision] = []
 
         # Model weights (dynamic)
-        self.model_weights: Dict[str, float] = {}
+        self.model_weights: dict[str, float] = {}
         self._update_model_weights()
 
         _emit_stores_learning_state("ensemble_router", "initialization", {
@@ -347,7 +348,7 @@ class EnsembleRouter:
             reliability = model.get_reliability()
             self.model_weights[model.model_name] = (model.weight * reliability) / total_weight
 
-    def _extract_ensemble_features(self, predictions: List[RoutingPrediction]) -> EnsembleFeatures:
+    def _extract_ensemble_features(self, predictions: list[RoutingPrediction]) -> EnsembleFeatures:
         """Extract features from base model predictions"""
 
         if not predictions:
@@ -417,7 +418,7 @@ class EnsembleRouter:
             model_reliability={m.model_name: m.get_reliability() for m in self.base_models}
         )
 
-    def route(self, query: str, context: Dict[str, Any]) -> EnsembleDecision:
+    def route(self, query: str, context: dict[str, Any]) -> EnsembleDecision:
         """
         Make routing decision using ensemble.
 
@@ -505,7 +506,7 @@ class EnsembleRouter:
 
         return decision
 
-    def _weighted_voting(self, predictions: List[RoutingPrediction]) -> Tuple[str, float]:
+    def _weighted_voting(self, predictions: list[RoutingPrediction]) -> tuple[str, float]:
         """Weighted voting based on model reliability"""
         agent_scores = defaultdict(float)
 
@@ -522,7 +523,7 @@ class EnsembleRouter:
 
         return top_agent, confidence
 
-    def _meta_learning_decision(self, predictions: List[RoutingPrediction], features: EnsembleFeatures) -> Tuple[str, float]:
+    def _meta_learning_decision(self, predictions: list[RoutingPrediction], features: EnsembleFeatures) -> tuple[str, float]:
         """Use meta-learner for final decision"""
         # Get meta-learner confidence
         meta_confidence = self.meta_learner.forward(features)
@@ -546,7 +547,7 @@ class EnsembleRouter:
 
         return top_agent, confidence
 
-    def _simple_voting(self, predictions: List[RoutingPrediction]) -> Tuple[str, float]:
+    def _simple_voting(self, predictions: list[RoutingPrediction]) -> tuple[str, float]:
         """Simple majority voting"""
         agent_counts = defaultdict(int)
         for pred in predictions:
@@ -596,7 +597,7 @@ class EnsembleRouter:
             return 0.0
         return self.success_count / self.prediction_count
 
-    def get_model_performance(self) -> Dict[str, Dict[str, float]]:
+    def get_model_performance(self) -> dict[str, dict[str, float]]:
         """Get performance metrics for all models"""
         performance = {}
         for model in self.base_models:

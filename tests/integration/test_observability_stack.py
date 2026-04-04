@@ -4,10 +4,10 @@ Integration tests for the observability stack (Wave 4 validation).
 Tests end-to-end flow: App → OTel Collector → Prometheus/Jaeger → Grafana
 """
 
+import time
+
 import pytest
 import requests
-import time
-from typing import Any
 
 
 class TestObservabilityStack:
@@ -80,6 +80,7 @@ class TestObservabilityStack:
         3. Queries Jaeger for the trace
         """
         import uuid
+
         from apps_shared.reasoning.BaseDispatchAgent import BaseDispatchAgent
 
         # Generate unique trace ID for this test
@@ -119,8 +120,9 @@ class TestADGObservabilityEdges:
     def test_adg_emits_metric_event_edges(self):
         """Verify ADG has emits_metric_event edges from agents."""
         try:
-            from agentic_core.adg.runtime.behavioral_index import ADGBehavioralIndex
             from pathlib import Path
+
+            from agentic_core.adg.runtime.behavioral_index import ADGBehavioralIndex
 
             idx = ADGBehavioralIndex.from_latest(Path.cwd())
             if idx is None:

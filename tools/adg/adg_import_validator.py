@@ -15,7 +15,7 @@ Usage:
 import argparse
 import warnings
 from pathlib import Path
-from typing import List, Dict, Any, Set
+from typing import Any
 
 # Try to import ADG Query Bridge
 try:
@@ -52,7 +52,7 @@ class ADGImportValidator:
         # Known stdlib modules (simplified list)
         self.stdlib_modules = self._load_stdlib_modules()
 
-    def _load_stdlib_modules(self) -> Set[str]:
+    def _load_stdlib_modules(self) -> set[str]:
         """Load a basic set of stdlib modules."""
         return {
             'os', 'sys', 'pathlib', 'json', 're', 'ast', 'argparse', 'logging',
@@ -65,7 +65,7 @@ class ADGImportValidator:
             'unittest', 'pytest', 'mock', 'io', 'contextlib', 'weakref'
         }
 
-    def validate_file(self, file_path: str) -> List[ImportViolation]:
+    def validate_file(self, file_path: str) -> list[ImportViolation]:
         """Validate imports in a specific file."""
         violations = []
         file_path_obj = Path(file_path)
@@ -95,7 +95,7 @@ class ADGImportValidator:
 
         return violations
 
-    def _validate_file_with_adg(self, file_path: Path) -> List[ImportViolation]:
+    def _validate_file_with_adg(self, file_path: Path) -> list[ImportViolation]:
         """Validate file imports using ADG."""
         violations = []
         rel_path = str(file_path.relative_to(self.repo_root)) if file_path.is_relative_to(self.repo_root) else str(file_path)
@@ -120,12 +120,12 @@ class ADGImportValidator:
 
         return violations
 
-    def _extract_imports_ast(self, file_path: Path) -> List[Dict[str, Any]]:
+    def _extract_imports_ast(self, file_path: Path) -> list[dict[str, Any]]:
         """Extract imports using AST parsing."""
         import ast
 
         try:
-            with open(file_path, 'r', encoding='utf-8') as f:
+            with open(file_path, encoding='utf-8') as f:
                 content = f.read()
 
             tree = ast.parse(content, filename=str(file_path))
@@ -155,7 +155,7 @@ class ADGImportValidator:
         except SyntaxError as e:
             raise ValueError(f"Syntax error in {file_path}: {e}")
 
-    def _validate_module_with_adg(self, module_name: str, line_num: int, file_path: str) -> List[ImportViolation]:
+    def _validate_module_with_adg(self, module_name: str, line_num: int, file_path: str) -> list[ImportViolation]:
         """Validate a module using ADG data."""
         violations = []
 
@@ -212,7 +212,7 @@ class ADGImportValidator:
         except Exception:
             return False
 
-    def _validate_file_with_ast_fallback(self, file_path: Path) -> List[ImportViolation]:
+    def _validate_file_with_ast_fallback(self, file_path: Path) -> list[ImportViolation]:
         """Validate file imports using AST fallback when ADG is unavailable."""
         violations = []
         rel_path = str(file_path.relative_to(self.repo_root)) if file_path.is_relative_to(self.repo_root) else str(file_path)
@@ -250,7 +250,7 @@ class ADGImportValidator:
 
         return violations
 
-    def validate_directory(self, directory: str) -> List[ImportViolation]:
+    def validate_directory(self, directory: str) -> list[ImportViolation]:
         """Validate imports in all Python files in a directory."""
         violations = []
         dir_path = self.repo_root / directory
@@ -264,7 +264,7 @@ class ADGImportValidator:
 
         return violations
 
-    def validate_module_dependencies(self, module_name: str) -> List[ImportViolation]:
+    def validate_module_dependencies(self, module_name: str) -> list[ImportViolation]:
         """Validate dependencies for a specific module."""
         violations = []
 
@@ -301,7 +301,7 @@ class ADGImportValidator:
 
         return violations
 
-    def get_import_graph_summary(self) -> Dict[str, Any]:
+    def get_import_graph_summary(self) -> dict[str, Any]:
         """Get a summary of the import graph."""
         if not ADG_AVAILABLE:
             return {"error": "ADG not available"}
@@ -367,8 +367,8 @@ def main():
         ]
         print(json.dumps(output, indent=2))
     else:
-        print(f"ADG Import Validator Results")
-        print(f"===========================")
+        print("ADG Import Validator Results")
+        print("===========================")
         print(f"Found {len(violations)} import violations")
         print()
 

@@ -7,7 +7,7 @@ import logging
 import time
 from dataclasses import dataclass
 from enum import Enum
-from typing import Any, Callable, Dict, Optional
+from typing import Any, Callable
 
 from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     LayerSegment,
@@ -45,7 +45,7 @@ class CircuitBreaker:
     def __init__(
         self,
         name: str,
-        config: Optional[CircuitBreakerConfig] = None,
+        config: CircuitBreakerConfig | None = None,
     ):
         """Initialize the circuit breaker.
 
@@ -59,7 +59,7 @@ class CircuitBreaker:
         self._state = CircuitState.CLOSED
         self._failure_count = 0
         self._success_count = 0
-        self._last_failure_time: Optional[float] = None
+        self._last_failure_time: float | None = None
         self._half_open_calls = 0
 
         log.info(f"CircuitBreaker '{name}' initialized")
@@ -173,7 +173,7 @@ class CircuitBreaker:
         self._success_count = 0
         self._half_open_calls = 0
 
-    def get_stats(self) -> Dict[str, Any]:
+    def get_stats(self) -> dict[str, Any]:
         """Get circuit breaker statistics.
 
         Returns:
@@ -194,7 +194,7 @@ class CircuitBreakerOpen(Exception):
 
 
 # Global registry
-_circuit_breakers: Dict[str, CircuitBreaker] = {}
+_circuit_breakers: dict[str, CircuitBreaker] = {}
 
 
 def get_circuit_breaker(name: str) -> CircuitBreaker:

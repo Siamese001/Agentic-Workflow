@@ -10,8 +10,6 @@ from datetime import datetime
 from pathlib import Path
 from typing import Any
 
-from apps_shared.utils.ConfigurationService import ConfigurationService
-
 from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
@@ -76,6 +74,7 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     emit_determinism_digest,  # noqa: E402
     emit_replay_key,  # noqa: E402
 )
+from apps_shared.utils.ConfigurationService import ConfigurationService
 
 _emit_emits_metric_event("manage_false_positives", "p4obs", "metric_1")
 _emit_emits_metric_event("manage_false_positives", "p4obs", "metric_2")

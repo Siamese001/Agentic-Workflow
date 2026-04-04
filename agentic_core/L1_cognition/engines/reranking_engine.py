@@ -4,10 +4,11 @@ Applies LightGBM model trained on EvalSpine feedback for result reranking.
 """
 
 import logging
-from typing import List, Dict, Any, Optional, Tuple
 from dataclasses import dataclass
-import numpy as np
 from datetime import datetime
+from typing import Any
+
+import numpy as np
 
 from .multi_query_fusion import FusionResult
 from .semantic_retriever import RetrievalResult
@@ -32,12 +33,12 @@ class RerankingFeatures:
 @dataclass
 class RerankingResult:
     """Result from reranking process."""
-    original_results: List[RetrievalResult]
-    reranked_results: List[RetrievalResult]
-    reranking_scores: List[float]
-    features_used: List[str]
+    original_results: list[RetrievalResult]
+    reranked_results: list[RetrievalResult]
+    reranking_scores: list[float]
+    features_used: list[str]
     execution_time_ms: float
-    model_info: Dict[str, Any]
+    model_info: dict[str, Any]
 
 
 class RerankingEngine:
@@ -48,7 +49,7 @@ class RerankingEngine:
     to improve search result ranking.
     """
 
-    def __init__(self, model_path: Optional[str] = None):
+    def __init__(self, model_path: str | None = None):
         """
         Initialize reranking engine.
 
@@ -299,7 +300,7 @@ class RerankingEngine:
             file_type_relevance=file_type_relevance
         )
 
-    def _ml_rerank(self, results: List[RetrievalResult], features_list: List[RerankingFeatures]) -> Tuple[List[RetrievalResult], List[float]]:
+    def _ml_rerank(self, results: list[RetrievalResult], features_list: list[RerankingFeatures]) -> tuple[list[RetrievalResult], list[float]]:
         """Rerank using LightGBM model."""
         try:
             # Convert features to numpy array
@@ -331,7 +332,7 @@ class RerankingEngine:
             # Fallback to rule-based
             return self._rule_based_rerank(results, features_list)
 
-    def _rule_based_rerank(self, results: List[RetrievalResult], features_list: List[RerankingFeatures]) -> Tuple[List[RetrievalResult], List[float]]:
+    def _rule_based_rerank(self, results: list[RetrievalResult], features_list: list[RerankingFeatures]) -> tuple[list[RetrievalResult], list[float]]:
         """Rerank using rule-based approach."""
         # Calculate composite scores
         scores = []
@@ -359,10 +360,10 @@ class RerankingEngine:
 
     def create_training_data(
         self,
-        queries: List[str],
-        results_list: List[List[RetrievalResult]],
-        relevance_labels: List[List[int]]
-    ) -> Tuple[np.ndarray, np.ndarray]:
+        queries: list[str],
+        results_list: list[list[RetrievalResult]],
+        relevance_labels: list[list[int]]
+    ) -> tuple[np.ndarray, np.ndarray]:
         """
         Create training data for reranking model.
 
@@ -402,7 +403,7 @@ class RerankingEngine:
 
         return np.array(features), np.array(labels)
 
-    def get_reranking_stats(self) -> Dict[str, Any]:
+    def get_reranking_stats(self) -> dict[str, Any]:
         """Get reranking engine statistics."""
         return {
             "model_loaded": self.model is not None,

@@ -2,8 +2,9 @@
 """Recheck all waves for import-only test elimination."""
 
 import ast
-from pathlib import Path
 import re
+from pathlib import Path
+
 
 def extract_module_from_source(source):
     lines = source.splitlines()

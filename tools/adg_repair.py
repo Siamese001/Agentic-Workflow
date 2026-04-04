@@ -151,7 +151,7 @@ def cmd_repair(args: argparse.Namespace) -> int:
 
     # Run orchestrator
     print(f"\n{'=' * 60}")
-    print(f"ADG Repair Orchestrator")
+    print("ADG Repair Orchestrator")
     print(f"{'=' * 60}")
     print(f"ADG Dir: {adg_dir}")
     print(f"Timestamp: {timestamp}")

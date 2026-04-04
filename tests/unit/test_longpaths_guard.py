@@ -9,16 +9,12 @@ import pytest
 
 from agentic_core.L0_routing.config.path_constants import L0_ROUTING_DIR
 
-
 EXECUTE_SSOT_PATH = Path(__file__).parent.parent.parent / L0_ROUTING_DIR / "scripts" / "execute_ssot.py"
 
 
 @pytest.mark.unit_min_deps
 def test_longpaths_bypass_guard_present():
     """Wave 5: execute_ssot.py must check AGENTIC_BYPASS_LONGPATHS_CHECK before emitting warning."""
-    from agentic_core.L0_routing.config.path_constants import (
-        L0_ROUTING_DIR,
-    )
 
     src = EXECUTE_SSOT_PATH.read_text(encoding="utf-8", errors="replace")
     assert "AGENTIC_BYPASS_LONGPATHS_CHECK" in src, (

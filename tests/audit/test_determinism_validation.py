@@ -1,12 +1,13 @@
 """Determinism Validation Tests - Verify test outputs are consistent across runs."""
 
-import pytest
-import time
-import random
 import hashlib
+import random
 import tempfile
+import time
 from pathlib import Path
-from unittest.mock import patch, MagicMock
+from unittest.mock import patch
+
+import pytest
 
 
 class TestTimeDependenceElimination:
@@ -70,8 +71,8 @@ class TestRandomnessElimination:
 
         try:
             # Import modules that might use randomness
-            import tempfile
             import pathlib
+            import tempfile
 
             # Get some deterministic result
             result1 = tempfile.gettempdir()
@@ -230,8 +231,9 @@ class TestConsistentOutputs:
     def test_consistent_object_creation(self):
         """Object creation should be deterministic."""
         try:
-            from agentic_core.L2_execution.tools.write_gateway import WriteAmplificationError
             from pathlib import Path
+
+            from agentic_core.L2_execution.tools.write_gateway import WriteAmplificationError
 
             objects = []
             for _ in range(3):
@@ -303,10 +305,8 @@ class TestCacheConsistency:
 
         try:
             # Import multiple times
-            import tempfile
             module1 = sys.modules[module_name]
 
-            import tempfile
             module2 = sys.modules[module_name]
 
             # Should be the same module object

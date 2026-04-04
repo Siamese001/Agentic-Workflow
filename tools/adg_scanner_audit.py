@@ -1,11 +1,9 @@
 """ADG Scanner Integrity Audit — read-only, no modifications."""
 import ast
 import hashlib
-import json
 import os
 import sqlite3
 import sys
-from collections import Counter, defaultdict
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -101,7 +99,7 @@ def audit_synthetic_edges(conn):
             synth, total = p1608_counts[rt]
             print(f"    {rt}: {synth} synthetic out of {total} total")
     else:
-        print(f"\n  OK: No P1608 synthetic types overlap with gap numerators")
+        print("\n  OK: No P1608 synthetic types overlap with gap numerators")
 
     return {
         'synthetic_edge_ratio': synth_ratio,
@@ -150,7 +148,7 @@ def audit_determinism_digest(conn):
     # Read the scanner digest computation
     print("\n  Checking scanner digest computation...")
     scanner_path = ROOT / "agentic_core" / "adg" / "extraction" / "static_scanner.py"
-    with open(scanner_path, 'r', encoding='utf-8') as f:
+    with open(scanner_path, encoding='utf-8') as f:
         scanner_src = f.read()
 
     # Find digest/hash computation
@@ -230,7 +228,7 @@ def audit_symbol_consistency(conn):
         LIMIT 20
     """)
     sample_from = [r[0] for r in cur.fetchall()]
-    print(f"\n  Sample src node adg_name patterns:")
+    print("\n  Sample src node adg_name patterns:")
     for fn in sample_from[:10]:
         print(f"    {fn}")
 
@@ -244,7 +242,7 @@ def audit_symbol_consistency(conn):
         LIMIT 10
     """)
     top_modules = cur.fetchall()
-    print(f"\n  Top modules by edge type diversity:")
+    print("\n  Top modules by edge type diversity:")
     for mod, cnt in top_modules:
         print(f"    {mod}: {cnt} distinct edge types")
 
@@ -283,7 +281,7 @@ def audit_symbol_consistency(conn):
     print(f"  symbol_alignment_rate: {alignment_rate:.6f}")
 
     if fragmented:
-        print(f"\n  Sample fragmented locations:")
+        print("\n  Sample fragmented locations:")
         for sf, ln, syms, cnt in fragmented[:5]:
             print(f"    {sf}:{ln} -> {cnt} symbols: {syms[:100]}")
 
@@ -343,7 +341,7 @@ def audit_duplicate_edges(conn):
     print(f"  duplicate_edge_ratio: {dupe_ratio:.6f}")
 
     if dupes:
-        print(f"\n  Top duplicates:")
+        print("\n  Top duplicates:")
         for sid, did, rt, ek, cnt in dupes[:10]:
             print(f"    [{cnt}x] {rt}/{ek}: src={sid} -> dst={did}")
 
@@ -359,7 +357,7 @@ def audit_duplicate_edges(conn):
     """)
     dep_dupes = cur.fetchall()
     if dep_dupes:
-        print(f"\n  dispatches_execution_plan duplicates (P1608 vs P1Orch):")
+        print("\n  dispatches_execution_plan duplicates (P1608 vs P1Orch):")
         for row in dep_dupes[:5]:
             print(f"    [{row[6]}x] src={row[0]} -> dst={row[1]} (sym={row[4]}, ln={row[5]})")
 
@@ -413,7 +411,7 @@ def audit_denominator_integrity(conn):
         GROUP BY symbol ORDER BY cnt DESC LIMIT 10
     """)
     ret_symbols = cur.fetchall()
-    print(f"\n  records_execution_trace top symbols:")
+    print("\n  records_execution_trace top symbols:")
     for sym, cnt in ret_symbols:
         print(f"    {sym}: {cnt}")
 
@@ -424,7 +422,7 @@ def audit_denominator_integrity(conn):
         GROUP BY symbol ORDER BY cnt DESC LIMIT 10
     """)
     ag_symbols = cur.fetchall()
-    print(f"\n  applies_guardrail top symbols:")
+    print("\n  applies_guardrail top symbols:")
     for sym, cnt in ag_symbols:
         print(f"    {sym}: {cnt}")
 
@@ -484,7 +482,7 @@ def audit_self_instrumentation(conn):
     print(f"  self_generated_edge_ratio: {self_ratio:.6f}")
 
     if self_emit_edges:
-        print(f"\n  Self-emit edge types:")
+        print("\n  Self-emit edge types:")
         for rt, cnt in self_emit_edges:
             print(f"    {rt}: {cnt}")
 
@@ -507,7 +505,7 @@ def audit_self_instrumentation(conn):
     """)
     bootstrap_edges = cur.fetchall()
     if bootstrap_edges:
-        print(f"\n  Scanner module-level edges (lines 1-400, likely bootstrap):")
+        print("\n  Scanner module-level edges (lines 1-400, likely bootstrap):")
         for rt, sym, ln, cnt in bootstrap_edges:
             print(f"    L{ln}: {rt} / {sym} [{cnt}]")
 
@@ -550,7 +548,7 @@ def audit_execution_vs_ast(conn):
         LIMIT 20
     """)
     line1_types = cur.fetchall()
-    print(f"\n  Top relation types at line_no=1:")
+    print("\n  Top relation types at line_no=1:")
     for rt, cnt in line1_types:
         print(f"    {rt}: {cnt:,}")
 
@@ -562,7 +560,7 @@ def audit_execution_vs_ast(conn):
         LIMIT 20
     """)
     line0_types = cur.fetchall()
-    print(f"\n  Top relation types at line_no=0:")
+    print("\n  Top relation types at line_no=0:")
     for rt, cnt in line0_types:
         print(f"    {rt}: {cnt:,}")
 
@@ -619,12 +617,12 @@ def audit_semantic_classification(conn):
 
     verified = 0
     checked = 0
-    print(f"\n  AST verification of flows_to samples:")
+    print("\n  AST verification of flows_to samples:")
     for sf, ln, sym, sid, did in flow_samples:
         fpath = ROOT / sf
         if fpath.exists():
             try:
-                with open(fpath, 'r', encoding='utf-8', errors='replace') as f:
+                with open(fpath, encoding='utf-8', errors='replace') as f:
                     src = f.read()
                 tree = ast.parse(src, filename=str(fpath))
                 # Check if line_no has an assignment

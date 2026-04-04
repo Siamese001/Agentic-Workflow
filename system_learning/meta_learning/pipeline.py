@@ -3,7 +3,7 @@
 
 class MetaLearningPipeline:
     """Placeholder class for test compatibility."""
-    
+
     def run(self):
         """Placeholder method."""
         pass

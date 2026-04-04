@@ -3,7 +3,7 @@
 
 class PolicyEmbedder:
     """Placeholder embedder class."""
-    
+
     def embed(self, text):
         """Placeholder embed method."""
         return []

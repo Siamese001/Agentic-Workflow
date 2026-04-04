@@ -7,7 +7,7 @@ import logging
 import threading
 import time
 from dataclasses import dataclass
-from typing import Any, Dict, Optional
+from typing import Any
 
 from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     LayerSegment,
@@ -32,7 +32,7 @@ class ConcurrencyManager:
     limiting and token bucket rate limiting.
     """
 
-    def __init__(self, config: Optional[ConcurrencyConfig] = None):
+    def __init__(self, config: ConcurrencyConfig | None = None):
         """Initialize the concurrency manager.
 
         Args:
@@ -50,7 +50,7 @@ class ConcurrencyManager:
 
         log.info(f"ConcurrencyManager initialized (max_concurrent={self.config.max_concurrent})")
 
-    def acquire(self, timeout: Optional[float] = None) -> bool:
+    def acquire(self, timeout: float | None = None) -> bool:
         """Acquire a concurrency slot.
 
         Args:
@@ -109,7 +109,7 @@ class ConcurrencyManager:
 
         self._last_update = now
 
-    def get_stats(self) -> Dict[str, Any]:
+    def get_stats(self) -> dict[str, Any]:
         """Get concurrency statistics.
 
         Returns:
@@ -126,7 +126,7 @@ class ConcurrencyManager:
 
 
 # Global instance
-_global_manager: Optional[ConcurrencyManager] = None
+_global_manager: ConcurrencyManager | None = None
 
 
 def get_concurrency_manager() -> ConcurrencyManager:

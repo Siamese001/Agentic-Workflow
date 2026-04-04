@@ -10,8 +10,8 @@ import logging
 import time
 from collections import defaultdict, deque
 from dataclasses import dataclass, field
-from typing import Any, Dict, List, Optional
 from threading import Lock
+from typing import Any
 
 from system_learning.config.feature_flags import get_feature_flags
 
@@ -25,9 +25,9 @@ class PerformanceMetric:
     metric_name: str
     value: float
     timestamp_utc: int
-    tags: Dict[str, str] = field(default_factory=dict)
+    tags: dict[str, str] = field(default_factory=dict)
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Convert to dictionary for serialization."""
         return {
             "metric_name": self.metric_name,
@@ -69,21 +69,21 @@ class PerformanceMonitor:
         self._max_history_size = max_history_size
         self._metrics_lock = Lock()
         self._metrics_history: deque[PerformanceMetric] = deque(maxlen=max_history_size)
-        self._signal_counters: Dict[str, Dict[str, int]] = defaultdict(lambda: {
+        self._signal_counters: dict[str, dict[str, int]] = defaultdict(lambda: {
             "total": 0,
             "success": 0,
             "failure": 0,
         })
-        self._latency_samples: Dict[str, deque[float]] = defaultdict(lambda: deque(maxlen=1000))
+        self._latency_samples: dict[str, deque[float]] = defaultdict(lambda: deque(maxlen=1000))
         self._last_health_check = 0
-        self._health_cache: Optional[SignalHealthMetrics] = None
+        self._health_cache: SignalHealthMetrics | None = None
         self._health_cache_ttl = 30000  # 30 seconds cache TTL
 
     def record_metric(
         self,
         metric_name: str,
         value: float,
-        tags: Optional[Dict[str, str]] = None,
+        tags: dict[str, str] | None = None,
     ) -> None:
         """Record a performance metric.
 
@@ -117,7 +117,7 @@ class PerformanceMonitor:
         signal_type: str,
         success: bool,
         latency_ms: float,
-        tags: Optional[Dict[str, str]] = None,
+        tags: dict[str, str] | None = None,
     ) -> None:
         """Record signal processing metrics.
 
@@ -158,7 +158,7 @@ class PerformanceMonitor:
             tags=tags,
         )
 
-    def get_signal_health(self, signal_type: Optional[str] = None) -> SignalHealthMetrics:
+    def get_signal_health(self, signal_type: str | None = None) -> SignalHealthMetrics:
         """Get health metrics for signal processing.
 
         Args:
@@ -244,9 +244,9 @@ class PerformanceMonitor:
 
     def get_metrics_summary(
         self,
-        metric_name: Optional[str] = None,
-        since_utc: Optional[int] = None,
-    ) -> Dict[str, Any]:
+        metric_name: str | None = None,
+        since_utc: int | None = None,
+    ) -> dict[str, Any]:
         """Get summary of performance metrics.
 
         Args:
@@ -292,7 +292,7 @@ class PerformanceMonitor:
 
         return summary
 
-    def check_alert_conditions(self) -> List[Dict[str, Any]]:
+    def check_alert_conditions(self) -> list[dict[str, Any]]:
         """Check for alert conditions.
 
         Returns:
@@ -392,7 +392,7 @@ class PerformanceMonitor:
 
 
 # Global performance monitor instance
-_performance_monitor: Optional[PerformanceMonitor] = None
+_performance_monitor: PerformanceMonitor | None = None
 
 
 def get_performance_monitor() -> PerformanceMonitor:
@@ -419,7 +419,7 @@ def record_signal_latency(signal_type: str, latency_ms: float, success: bool = T
     monitor.record_signal_processing(signal_type, success, latency_ms)
 
 
-def check_system_health() -> Dict[str, Any]:
+def check_system_health() -> dict[str, Any]:
     """Check overall system health.
 
     Returns:

@@ -333,7 +333,6 @@ class TestBOMBuilderEdgeCases(unittest.TestCase):
         """Test builder with empty user input."""
         from agentic_core.L0_routing.engines.prompt_bom_builder import PromptBOMBuilder
         from agentic_core.L0_routing.types.l0_instruction_packet import InstructionPacket
-        from agentic_core.prompt_governance.contracts import PromptBOM
 
         builder = PromptBOMBuilder()
 

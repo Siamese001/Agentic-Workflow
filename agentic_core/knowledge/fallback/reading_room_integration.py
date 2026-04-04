@@ -5,7 +5,7 @@ Context window management, reasoning path application, and safety guardrail eval
 
 import logging
 from dataclasses import dataclass, field
-from typing import Any, Dict, Optional
+from typing import Any
 
 from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     LayerSegment,
@@ -24,7 +24,7 @@ class ReadingRoomResult:
     reasoning_path: str
     safety_checks_passed: bool
     truncation_applied: bool
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    metadata: dict[str, Any] = field(default_factory=dict)
 
 
 class ReadingRoomIntegration:
@@ -150,7 +150,7 @@ class ReadingRoomIntegration:
         citations = getattr(evidence_contract, 'citations', [])
 
         output_parts = [
-            f"Based on the available information, here's what I found:\n",
+            "Based on the available information, here's what I found:\n",
             context[:500],  # First 500 chars of context
             f"\n\nSources: {len(citations)} documents",
         ]
@@ -159,7 +159,7 @@ class ReadingRoomIntegration:
 
 
 # Global instance
-_global_reading_room: Optional[ReadingRoomIntegration] = None
+_global_reading_room: ReadingRoomIntegration | None = None
 
 
 def get_reading_room_integration() -> ReadingRoomIntegration:

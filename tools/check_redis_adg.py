@@ -2,6 +2,7 @@
 """Check Redis ADG status."""
 
 import sys
+
 sys.path.append('C:/Git/Agentic-Workflow/tools/adg')
 from adg_redis_query import check_adg_status
 

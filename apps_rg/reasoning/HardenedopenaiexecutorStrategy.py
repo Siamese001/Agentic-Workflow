@@ -13,12 +13,9 @@ Phase 1 - Pillar 8: Tool Ecosystem (Resilience Middleware)
 import logging
 from dataclasses import dataclass
 
-from apps_rg.utils.agent_executor import AgentMessage, AgentResponse
-
 from agentic_core.interfaces.gateway import GenerationRequest
 from agentic_core.interfaces.observability import SystemTelemetry
 from agentic_core.L2_execution.providers import get_clock
-from agentic_core.mixins.hardening_mixin import HardeningMixin
 from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     LayerSegment,
     _emit_agent_executes_agent,
@@ -59,6 +56,8 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_verifies_policy,
     _emit_writes_via_uwg,
 )
+from agentic_core.mixins.hardening_mixin import HardeningMixin
+from apps_rg.utils.agent_executor import AgentMessage, AgentResponse
 
 _emit_reads_policy_state("p0", "HardenedopenaiexecutorStrategy", "policy_binding")
 _emit_snapshots_state("p0", "HardenedopenaiexecutorStrategy", "state_snapshot")

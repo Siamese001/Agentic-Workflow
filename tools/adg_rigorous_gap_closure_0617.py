@@ -11,12 +11,12 @@ OPERATING RULES:
 - PHASED EXECUTION REQUIRED (data → then precision)
 """
 
+import hashlib
 import json
 import sqlite3
-import hashlib
-from pathlib import Path
 from datetime import datetime
-from typing import Dict, Any, List, Tuple
+from pathlib import Path
+from typing import Any
 
 ROOT = Path(__file__).resolve().parents[1]
 SQLITE_PATH = ROOT / "artifacts" / "adg" / "adg_indexed_03232026_0617.sqlite"
@@ -48,7 +48,7 @@ class ADGRigorousGapClosure0617:
         if self.conn:
             self.conn.close()
 
-    def execute_query(self, query: str, params=None) -> List[sqlite3.Row]:
+    def execute_query(self, query: str, params=None) -> list[sqlite3.Row]:
         """Execute SQL query and return results."""
         cursor = self.conn.cursor()
         if params:
@@ -71,7 +71,7 @@ class ADGRigorousGapClosure0617:
     # PHASE 1 — DATA INTEGRITY (HARD BLOCKER)
     # ======================================================================
 
-    def phase1_layer_normalization(self) -> Dict[str, Any]:
+    def phase1_layer_normalization(self) -> dict[str, Any]:
         """1) LAYER NORMALIZATION (CRITICAL FAILURE)"""
         print("=" * 80)
         print("PHASE 1.1 — LAYER NORMALIZATION (CRITICAL FAILURE)")
@@ -169,7 +169,7 @@ class ADGRigorousGapClosure0617:
 
         return result
 
-    def phase1_identity_kind_normalization(self) -> Dict[str, Any]:
+    def phase1_identity_kind_normalization(self) -> dict[str, Any]:
         """2) IDENTITY_KIND NORMALIZATION"""
         print("\n" + "=" * 80)
         print("PHASE 1.2 — IDENTITY_KIND NORMALIZATION")
@@ -240,7 +240,7 @@ class ADGRigorousGapClosure0617:
 
         return result
 
-    def phase1_confidence_normalization(self) -> Dict[str, Any]:
+    def phase1_confidence_normalization(self) -> dict[str, Any]:
         """3) CONFIDENCE NORMALIZATION"""
         print("\n" + "=" * 80)
         print("PHASE 1.3 — CONFIDENCE NORMALIZATION")
@@ -322,7 +322,7 @@ class ADGRigorousGapClosure0617:
     # PHASE 2 — PRECISION + SYSTEM LOCK
     # ======================================================================
 
-    def phase2_report_sqlite_parity(self) -> Dict[str, Any]:
+    def phase2_report_sqlite_parity(self) -> dict[str, Any]:
         """4) REPORT ↔ SQLITE HARD PARITY"""
         print("\n" + "=" * 80)
         print("PHASE 2.1 — REPORT ↔ SQLITE HARD PARITY")
@@ -367,7 +367,7 @@ class ADGRigorousGapClosure0617:
         result["success"] = True
         return result
 
-    def phase2_replay_determinism(self) -> Dict[str, Any]:
+    def phase2_replay_determinism(self) -> dict[str, Any]:
         """5) REPLAY — STRICT DETERMINISM PROOF"""
         print("\n" + "=" * 80)
         print("PHASE 2.2 — REPLAY — STRICT DETERMINISM PROOF")
@@ -435,7 +435,7 @@ class ADGRigorousGapClosure0617:
 
         return result
 
-    def phase2_boundary_validation(self) -> Dict[str, Any]:
+    def phase2_boundary_validation(self) -> dict[str, Any]:
         """6) BOUNDARY — REGRESSION CHECK ONLY"""
         print("\n" + "=" * 80)
         print("PHASE 2.3 — BOUNDARY — REGRESSION CHECK ONLY")
@@ -478,7 +478,7 @@ class ADGRigorousGapClosure0617:
 
         return result
 
-    def phase2_core_edge_coverage(self) -> Dict[str, Any]:
+    def phase2_core_edge_coverage(self) -> dict[str, Any]:
         """7) CORE EDGE COVERAGE — VALIDATION ONLY"""
         print("\n" + "=" * 80)
         print("PHASE 2.4 — CORE EDGE COVERAGE — VALIDATION ONLY")
@@ -496,7 +496,7 @@ class ADGRigorousGapClosure0617:
         """, critical_layers)
 
         required_edges = ['determinism_seed', 'determinism_digest_emit', 'policy_verification', 'execution_plan_dispatch']
-        coverage_stats = {edge: 0 for edge in required_edges}
+        coverage_stats = dict.fromkeys(required_edges, 0)
         modules_without_coverage = []
 
         for module in critical_modules:
@@ -549,7 +549,7 @@ class ADGRigorousGapClosure0617:
 
         return result
 
-    def phase2_test_surface_binding(self) -> Dict[str, Any]:
+    def phase2_test_surface_binding(self) -> dict[str, Any]:
         """8) TEST SURFACE — HARD BINDING VALIDATION"""
         print("\n" + "=" * 80)
         print("PHASE 2.5 — TEST SURFACE — HARD BINDING VALIDATION")
@@ -633,7 +633,7 @@ class ADGRigorousGapClosure0617:
 
         return result
 
-    def phase2_final_system_lock(self) -> Dict[str, Any]:
+    def phase2_final_system_lock(self) -> dict[str, Any]:
         """9) FINAL SYSTEM LOCK"""
         print("\n" + "=" * 80)
         print("PHASE 2.6 — FINAL SYSTEM LOCK")
@@ -668,7 +668,7 @@ class ADGRigorousGapClosure0617:
         result["details"] = report
 
         print(f"Final state: {node_count} nodes, {edge_count} edges, {edge_types} edge types")
-        print(f"Data integrity:")
+        print("Data integrity:")
         print(f"  No null layers: {blank_layers == 0}")
         print(f"  No null identities: {blank_identity == 0}")
         print(f"  No null confidence: {blank_confidence == 0}")
@@ -684,7 +684,7 @@ class ADGRigorousGapClosure0617:
 
         return result
 
-    def run_all_checks(self) -> Dict[str, Any]:
+    def run_all_checks(self) -> dict[str, Any]:
         """Run complete rigorous gap closure."""
         print("=" * 80)
         print("ADG RIGOROUS GAP CLOSURE (0617 — DATA INTEGRITY → PRECISION LOCK)")
@@ -752,7 +752,7 @@ def main():
     # Find most recent SQLite database
     sqlite_files = list((ROOT / "artifacts" / "adg").glob("*.sqlite"))
     if not sqlite_files:
-        print(f"❌ No SQLite database found in artifacts/adg/")
+        print("❌ No SQLite database found in artifacts/adg/")
         return
 
     sqlite_files.sort(key=lambda x: x.stat().st_mtime, reverse=True)

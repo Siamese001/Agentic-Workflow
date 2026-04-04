@@ -13,7 +13,7 @@ from __future__ import annotations
 
 import logging
 from dataclasses import dataclass, field
-from typing import Any, Optional
+from typing import Any
 
 # BM25Index imported lazily to avoid L3->L4 violation
 from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
@@ -44,8 +44,8 @@ class HybridSearchEngine:
 
     def __init__(
         self,
-        chroma_client: Optional[Any] = None,
-        bm25_index: Optional[BM25Index] = None,
+        chroma_client: Any | None = None,
+        bm25_index: BM25Index | None = None,
         vector_weight: float = 0.7,
         lexical_weight: float = 0.3,
         top_k: int = 10,
@@ -71,9 +71,9 @@ class HybridSearchEngine:
     def search(
         self,
         query: str,
-        query_embedding: Optional[list[float]] = None,
+        query_embedding: list[float] | None = None,
         collection_name: str = "docs",
-        filter_dict: Optional[dict[str, Any]] = None,
+        filter_dict: dict[str, Any] | None = None,
     ) -> list[HybridSearchResult]:
         """Execute hybrid search (4a+4b parallel).
 
@@ -115,9 +115,9 @@ class HybridSearchEngine:
     def _vector_search(
         self,
         query: str,
-        query_embedding: Optional[list[float]],
+        query_embedding: list[float] | None,
         collection_name: str,
-        filter_dict: Optional[dict[str, Any]],
+        filter_dict: dict[str, Any] | None,
     ) -> dict[str, HybridSearchResult]:
         """Execute vector search (4a).
 
@@ -274,7 +274,7 @@ class HybridSearchEngine:
 
         return sorted_results
 
-    def _generate_query_embedding(self, query: str) -> Optional[list[float]]:
+    def _generate_query_embedding(self, query: str) -> list[float] | None:
         """Generate embedding for query (🔵 intent_vec).
 
         Args:
@@ -284,11 +284,11 @@ class HybridSearchEngine:
             Query embedding vector
         """
         try:
-            from agentic_core.embeddings.embedding_factory import create_embedding_client
-            from agentic_core.embeddings.embedding_input_guard import GuardedText
-
             # Use BGE-M3 or OpenAI based on config
             import asyncio
+
+            from agentic_core.embeddings.embedding_factory import create_embedding_client
+            from agentic_core.embeddings.embedding_input_guard import GuardedText
 
             client = create_embedding_client("bge-m3")
             guarded = GuardedText(raw_text=query, redacted_text=query)
@@ -313,7 +313,7 @@ class HybridSearchEngine:
 
 
 # Global instance
-_global_hybrid_engine: Optional[HybridSearchEngine] = None
+_global_hybrid_engine: HybridSearchEngine | None = None
 
 
 def get_global_hybrid_engine() -> HybridSearchEngine:
@@ -326,7 +326,7 @@ def get_global_hybrid_engine() -> HybridSearchEngine:
 
 def hybrid_search(
     query: str,
-    query_embedding: Optional[list[float]] = None,
+    query_embedding: list[float] | None = None,
     top_k: int = 10,
 ) -> list[HybridSearchResult]:
     """Convenience function for hybrid search."""

@@ -7,8 +7,6 @@ from agentic_core.L0_routing.enforcement.runtime_guard import (
     runtime_guard,
 )
 from agentic_core.L0_routing.types.guardian_contract_types import is_v15_enforced
-from agentic_core.patterns.base import BaseReasoningPattern
-from agentic_core.runtime.exceptions import ToolExecutionError, ToolNotFoundError
 from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     LayerSegment,
     _emit_agent_executes_agent,
@@ -52,6 +50,8 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     emit_determinism_digest,  # noqa: E402
     emit_replay_key,  # noqa: E402
 )
+from agentic_core.patterns.base import BaseReasoningPattern
+from agentic_core.runtime.exceptions import ToolExecutionError, ToolNotFoundError
 
 _emit_authorize_and_execute("p2", "agent_engine", "execution_auth")
 _emit_validates_capability("p2", "agent_engine", "capability_check")

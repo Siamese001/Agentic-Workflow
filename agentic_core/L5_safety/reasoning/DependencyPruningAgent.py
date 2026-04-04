@@ -16,6 +16,8 @@ from typing import Any
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 from agentic_core.L5_safety.utils.dependency_pruning_util import (
     DependencyPruner as _DependencyPruner,
+)
+from agentic_core.L5_safety.utils.dependency_pruning_util import (
     find_unused_deptry,
     remove_from_requirements_txt,
 )
@@ -65,7 +67,7 @@ class DependencyPruningAgent(SovereignBaseAgent):
         """Execute L5 safety healing operations."""
         self.dry_run = dry_run
         self._pruner.dry_run = dry_run
-        
+
         result = self._pruner.heal_repository(dry_run)
         return result
 

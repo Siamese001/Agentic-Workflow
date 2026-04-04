@@ -58,6 +58,8 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     emit_determinism_digest,
     emit_replay_key,
 )
+
+
 # Lazy imports to avoid L0->L_PG gravity violations
 def _get_prompt_bom():
     from agentic_core.prompt_governance.contracts import PromptBOM
@@ -68,7 +70,9 @@ def _get_compiled_artifact():
     return CompiledPromptArtifact
 
 def _get_neutralizer():
-    from agentic_core.prompt_governance.security.assembly_injection_neutralizer import AssemblyInjectionNeutralizer
+    from agentic_core.prompt_governance.security.assembly_injection_neutralizer import (
+        AssemblyInjectionNeutralizer,
+    )
     return AssemblyInjectionNeutralizer
 
 def _validate_slot_order(*args, **kwargs):

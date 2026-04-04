@@ -8,7 +8,6 @@ import ast
 import pathlib
 import re
 import sys
-from typing import List, Dict, Set, Optional
 
 # Target import patterns to migrate
 TARGET_IMPORT_RE = re.compile(
@@ -38,7 +37,7 @@ class FixedImportMigrator:
             'imports_moved': 0,
         }
 
-    def migrate_directory(self, test_dir: str) -> Dict:
+    def migrate_directory(self, test_dir: str) -> dict:
         """Migrate all test files in a directory."""
         test_path = self.repo_root / test_dir
         if not test_path.exists():
@@ -115,7 +114,7 @@ class FixedImportMigrator:
                 return TARGET_IMPORT_RE.match(line) is not None
         return False
 
-    def _analyze_import_usage(self, tree: ast.AST, imports: List[ast.AST]) -> Dict[str, List[str]]:
+    def _analyze_import_usage(self, tree: ast.AST, imports: list[ast.AST]) -> dict[str, list[str]]:
         """Analyze which imported symbols are used in which test functions/fixtures."""
         usage = {}
 
@@ -143,8 +142,8 @@ class FixedImportMigrator:
 
         return usage
 
-    def _generate_migrated_content(self, content: str, imports: List[ast.AST],
-                                 usage: Dict[str, List[str]]) -> str:
+    def _generate_migrated_content(self, content: str, imports: list[ast.AST],
+                                 usage: dict[str, list[str]]) -> str:
         """Generate new content with imports moved into functions."""
         lines = content.splitlines()
 

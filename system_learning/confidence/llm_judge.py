@@ -5,10 +5,10 @@ from typing import Any
 
 class LLMJudge:
     """Generic LLM-based judge."""
-    
+
     def __init__(self, model: str | None = None):
         self.model = model or "default"
-    
+
     def evaluate(self, prompt: str, response: str) -> dict[str, Any]:
         """Evaluate prompt/response pair.
         
@@ -25,7 +25,7 @@ class LLMJudge:
             "feedback": "Evaluation passed",
             "criteria_met": 4
         }
-    
+
     def score(self, output: str, criteria: dict[str, Any] | None = None) -> float:
         """Score output.
         

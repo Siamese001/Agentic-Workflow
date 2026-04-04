@@ -11,9 +11,9 @@ VIOLATION TYPES:
 """
 
 import json
-from pathlib import Path
-from typing import Dict, List, Any
 from dataclasses import dataclass
+from pathlib import Path
+from typing import Any
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent.parent
 
@@ -41,15 +41,15 @@ class ViolationDetector:
             'system_learning', 'infrastructure', 'artifacts', 'data'
         }
 
-    def detect_violations(self, inventory_file: str, classification_file: str) -> List[TestViolation]:
+    def detect_violations(self, inventory_file: str, classification_file: str) -> list[TestViolation]:
         """Detect all violations in the test suite."""
         print("🔍 Detecting test violations...")
 
         # Load data
-        with open(inventory_file, 'r') as f:
+        with open(inventory_file) as f:
             inventory = json.load(f)
 
-        with open(classification_file, 'r') as f:
+        with open(classification_file) as f:
             classification = json.load(f)
 
         # Create lookup maps
@@ -81,7 +81,7 @@ class ViolationDetector:
 
         return self.violations
 
-    def _check_skip_violations(self, test_data: Dict, cls_data: Dict):
+    def _check_skip_violations(self, test_data: dict, cls_data: dict):
         """Check for improper skip patterns."""
         skip_type = test_data['skip_type']
         dependency = test_data['dependency']
@@ -110,7 +110,7 @@ class ViolationDetector:
                 line_number=test_data['line_number']
             ))
 
-    def _check_core_violations(self, test_data: Dict, cls_data: Dict):
+    def _check_core_violations(self, test_data: dict, cls_data: dict):
         """Check for core test violations."""
         category = cls_data.get('category', 'CORE')
         skip_type = test_data['skip_type']
@@ -139,7 +139,7 @@ class ViolationDetector:
                 line_number=test_data['line_number']
             ))
 
-    def _check_first_party_violations(self, test_data: Dict, cls_data: Dict):
+    def _check_first_party_violations(self, test_data: dict, cls_data: dict):
         """Check for first-party import violations."""
         dependency = test_data['dependency']
         skip_type = test_data['skip_type']
@@ -159,7 +159,7 @@ class ViolationDetector:
                     ))
                     break
 
-    def _check_marker_violations(self, test_data: Dict, cls_data: Dict):
+    def _check_marker_violations(self, test_data: dict, cls_data: dict):
         """Check for marker violations."""
         # This would need actual file analysis to detect missing markers
         # For now, flag tests with low confidence that should have explicit markers
@@ -178,7 +178,7 @@ class ViolationDetector:
             ))
 
 
-def generate_violation_report(violations: List[TestViolation]) -> Dict[str, Any]:
+def generate_violation_report(violations: list[TestViolation]) -> dict[str, Any]:
     """Generate comprehensive violation report."""
     print(f"📋 Generating violation report for {len(violations)} violations...")
 
@@ -254,21 +254,21 @@ def main():
 
     # Print summary
     summary = report["summary"]
-    print(f"\n📊 VIOLATIONS SUMMARY:")
+    print("\n📊 VIOLATIONS SUMMARY:")
     print(f"  Total violations: {report['metadata']['total_violations']}")
 
-    print(f"\nBy severity:")
+    print("\nBy severity:")
     for severity, count in summary["by_severity"].items():
         print(f"  {severity}: {count}")
 
-    print(f"\nBy type:")
+    print("\nBy type:")
     for vtype, count in summary["by_type"].items():
         print(f"  {vtype}: {count}")
 
     # Show high-priority violations
     high_priority_violations = [v for v in violations if v.severity == 'HIGH']
     if high_priority_violations:
-        print(f"\n🚨 HIGH PRIORITY VIOLATIONS (sample):")
+        print("\n🚨 HIGH PRIORITY VIOLATIONS (sample):")
         for violation in high_priority_violations[:5]:
             print(f"  {violation.file_path}:{violation.test_name}")
             print(f"    {violation.description}")

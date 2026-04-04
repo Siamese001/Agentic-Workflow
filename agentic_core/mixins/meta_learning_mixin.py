@@ -21,7 +21,6 @@ import logging
 from collections.abc import Callable
 from typing import Any
 
-from agentic_core.mixins.meta_learning_contract_mixin import BaseMetaLearner
 from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
@@ -64,6 +63,7 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     emit_determinism_digest,  # noqa: E402
     emit_replay_key,  # noqa: E402
 )
+from agentic_core.mixins.meta_learning_contract_mixin import BaseMetaLearner
 
 _emit_authorize_and_execute("p2", "meta_learning_mixin", "execution_auth")
 _emit_validates_capability("p2", "meta_learning_mixin", "capability_check")

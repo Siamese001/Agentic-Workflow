@@ -6,19 +6,20 @@ quality, and usage patterns to improve retrieval precision.
 """
 
 import pickle
-import numpy as np
-from pathlib import Path
-from typing import Dict, List, Optional, Any, Tuple
 from datetime import datetime
+from pathlib import Path
+from typing import Any
+
+import numpy as np
 
 try:
     import lightgbm as lgb
 except ImportError:
     lgb = None
 
-from .base_model import BaseMLModel, ModelPrediction, ModelInput, PredictionType, DecisionMode
 from ..config.model_registry import DecisionMode
 from ..features.c0_features import C0FeatureExtractor
+from .base_model import BaseMLModel, DecisionMode, ModelInput, ModelPrediction, PredictionType
 
 
 class C0RetrievalReranker(BaseMLModel):
@@ -36,7 +37,7 @@ class C0RetrievalReranker(BaseMLModel):
     Always operates in advisory mode - final ranking decisions remain with C0.
     """
 
-    def __init__(self, model_file_path: Optional[Path] = None):
+    def __init__(self, model_file_path: Path | None = None):
         if lgb is None:
             raise ImportError("LightGBM is required for C0RetrievalRanker")
 
@@ -230,13 +231,13 @@ class C0RetrievalReranker(BaseMLModel):
 
     def rerank_documents(
         self,
-        query: Dict[str, Any],
-        documents: List[Dict[str, Any]],
+        query: dict[str, Any],
+        documents: list[dict[str, Any]],
         trace_id: str,
         replay_key: str,
         policy_hash: str,
-        max_documents: Optional[int] = None
-    ) -> List[Dict[str, Any]]:
+        max_documents: int | None = None
+    ) -> list[dict[str, Any]]:
         """
         Rerank a list of documents based on relevance scores.
 
@@ -322,7 +323,7 @@ class C0RetrievalReranker(BaseMLModel):
         # Return top documents
         return document_scores[:max_docs]
 
-    def get_feature_importance(self, model_input: ModelInput) -> List[Dict[str, Any]]:
+    def get_feature_importance(self, model_input: ModelInput) -> list[dict[str, Any]]:
         """Get feature importance for explainability."""
         if not self.is_loaded or not self.feature_importances:
             return []
@@ -356,7 +357,7 @@ class C0RetrievalReranker(BaseMLModel):
             # Failed to compute importance
             return []
 
-    def _extract_feature_vector(self, features: Dict[str, Any]) -> Optional[np.ndarray]:
+    def _extract_feature_vector(self, features: dict[str, Any]) -> np.ndarray | None:
         """Extract features in the correct order for the model."""
         if not self.feature_names:
             return None
@@ -404,7 +405,7 @@ class C0RetrievalReranker(BaseMLModel):
         confidence = base_confidence + variance_factor + completeness_factor
         return round(min(1.0, max(0.0, confidence)), 3)
 
-    def preprocess_features(self, features: Dict[str, Any]) -> Tuple[Dict[str, Any], List[str]]:
+    def preprocess_features(self, features: dict[str, Any]) -> tuple[dict[str, Any], list[str]]:
         """Preprocess features for LightGBM."""
         processed_features, preprocessing_steps = super().preprocess_features(features)
 
@@ -426,10 +427,10 @@ class C0RetrievalReranker(BaseMLModel):
 
     def train_model(
         self,
-        training_data: List[Dict[str, Any]],
-        feature_names: List[str],
+        training_data: list[dict[str, Any]],
+        feature_names: list[str],
         training_data_digest: str = "",
-        lgb_params: Optional[Dict[str, Any]] = None
+        lgb_params: dict[str, Any] | None = None
     ) -> None:
         """
         Train the LightGBM model.
@@ -499,8 +500,8 @@ class C0RetrievalReranker(BaseMLModel):
 
     def predict_from_context(
         self,
-        query: Dict[str, Any],
-        document: Dict[str, Any],
+        query: dict[str, Any],
+        document: dict[str, Any],
         trace_id: str,
         replay_key: str,
         policy_hash: str,

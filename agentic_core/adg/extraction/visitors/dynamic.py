@@ -119,7 +119,7 @@ class _ImportVisitor(BaseStructuralVisitor):
         line_no: int,
         context: str,
         is_from_import: bool = False,
-    ) -> "Edge":
+    ) -> Edge:
         """Create an import edge."""
         from agentic_core.adg.schema_util import canonical_name
 

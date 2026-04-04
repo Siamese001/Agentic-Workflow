@@ -27,7 +27,6 @@ from agentic_core.prompt_governance.core.template_catalog import (
     get_templates_for_agent,
 )
 
-
 # ---------------------------------------------------------------------------
 # Shared fixtures
 # ---------------------------------------------------------------------------

@@ -7,7 +7,7 @@ and their summaries to find relevant information at a higher level.
 from __future__ import annotations
 
 from datetime import datetime
-from typing import TYPE_CHECKING, List, Optional
+from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
     from agentic_core.L4_state.types.graph_store_types import GraphCommunity, IGraphStore
@@ -100,7 +100,7 @@ class GlobalSearchEngine:
     def __init__(
         self,
         graph_store: IGraphStore,
-        config: Optional[GlobalSearchConfig] = None
+        config: GlobalSearchConfig | None = None
     ) -> None:
         """Initialize the global search engine.
 
@@ -178,7 +178,7 @@ class GlobalSearchEngine:
                 errors=[f"Global search failed: {str(e)}"]
             )
 
-    async def _search_communities(self, query: SearchQuery) -> List[SearchResult]:
+    async def _search_communities(self, query: SearchQuery) -> list[SearchResult]:
         """Search communities by their summaries and descriptions."""
         # Get all communities (simplified - in practice, you'd use search)
         communities = []
@@ -216,9 +216,9 @@ class GlobalSearchEngine:
 
     async def _search_within_communities(
         self,
-        community_results: List[SearchResult],
+        community_results: list[SearchResult],
         query: SearchQuery
-    ) -> List[SearchResult]:
+    ) -> list[SearchResult]:
         """Search for entities within the top communities."""
         entity_results = []
 
@@ -245,7 +245,7 @@ class GlobalSearchEngine:
         community: GraphCommunity,
         query: SearchQuery,
         community_boost: float
-    ) -> List[SearchResult]:
+    ) -> list[SearchResult]:
         """Search for entities within a specific community."""
         entity_results = []
 
@@ -342,10 +342,10 @@ class GlobalSearchEngine:
 
     async def _combine_results(
         self,
-        community_results: List[SearchResult],
-        entity_results: List[SearchResult],
+        community_results: list[SearchResult],
+        entity_results: list[SearchResult],
         query: SearchQuery
-    ) -> List[SearchResult]:
+    ) -> list[SearchResult]:
         """Combine community and entity results."""
         combined = []
 
@@ -365,7 +365,7 @@ class GlobalSearchEngine:
 
         return combined
 
-    def _apply_filters(self, results: List[SearchResult], query: SearchQuery) -> List[SearchResult]:
+    def _apply_filters(self, results: list[SearchResult], query: SearchQuery) -> list[SearchResult]:
         """Apply final filters to results."""
         filtered = []
 
@@ -394,7 +394,7 @@ class GlobalSearchEngine:
 # Factory function
 def create_global_search_engine(
     graph_store: IGraphStore,
-    config: Optional[GlobalSearchConfig] = None
+    config: GlobalSearchConfig | None = None
 ) -> GlobalSearchEngine:
     """Create a global search engine."""
     return GlobalSearchEngine(graph_store, config)

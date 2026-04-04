@@ -4,24 +4,21 @@ Tests for Context Window Estimator
 Tests the token estimation accuracy, compression policies, and integration.
 """
 
-import pytest
 import json
 from pathlib import Path
-from unittest.mock import patch, MagicMock
+
+import pytest
 
 
 # Lazy imports to avoid collection-time conflicts
 @pytest.fixture
 def token_estimator_classes():
+    from agentic_core.planning.preflight_hook import PlanningPreflightHook, TokenBudgetExceededError
     from agentic_core.planning.token_estimator import (
+        ContextSource,
         ContextWindowEstimator,
         TokenBudget,
         TokenEstimate,
-        ContextSource
-    )
-    from agentic_core.planning.preflight_hook import (
-        PlanningPreflightHook,
-        TokenBudgetExceededError
     )
     return ContextWindowEstimator, TokenBudget, TokenEstimate, ContextSource, PlanningPreflightHook, TokenBudgetExceededError
 
@@ -31,8 +28,10 @@ class TestContextWindowEstimator:
 
     def setup_method(self):
         """Setup test fixtures"""
-        from agentic_core.planning.token_estimator import ContextWindowEstimator, TokenBudget, ContextSource, TokenEstimate
-        from agentic_core.planning.preflight_hook import PlanningPreflightHook, TokenBudgetExceededError
+        from agentic_core.planning.token_estimator import (
+            ContextWindowEstimator,
+            TokenBudget,
+        )
         self.estimator = ContextWindowEstimator()
         self.budget = TokenBudget()
 
@@ -243,7 +242,7 @@ INFO: Process completed
 
 def test_log_trimming():
     """Test log trimming to errors only"""
-    from agentic_core.planning.token_estimator import ContextWindowEstimator, ContextSource
+    from agentic_core.planning.token_estimator import ContextSource, ContextWindowEstimator
     estimator = ContextWindowEstimator()
     log_content = '''
 INFO: Starting process
@@ -267,7 +266,7 @@ INFO: Process finished
 
 def test_retrieval_chunk_reduction():
     """Test retrieval chunk reduction"""
-    from agentic_core.planning.token_estimator import ContextWindowEstimator, ContextSource
+    from agentic_core.planning.token_estimator import ContextSource, ContextWindowEstimator
     estimator = ContextWindowEstimator()
     many_chunks = [
         ContextSource('retrieval', f'chunk_{i}', 50, metadata={'chunk_id': f'chunk_{i}'})
@@ -432,7 +431,7 @@ class TestPlanningPreflightHook:
         # Verify cleared
         assert len(self.hook.budget_history) == 0
         assert self.budget_file.exists()
-        with open(self.budget_file, 'r') as f:
+        with open(self.budget_file) as f:
             assert json.load(f) == []
 
 class TestTokenBudgetDecorator:
@@ -477,7 +476,7 @@ class TestTokenBudgetDecorator:
 
     def test_decorator_block(self):
         """Test decorator with blocked execution"""
-        from agentic_core.planning.preflight_hook import require_token_budget, TokenBudgetExceededError
+        from agentic_core.planning.preflight_hook import TokenBudgetExceededError, require_token_budget
 
         @require_token_budget(self.hook)
         def test_function(plan_step, system_prompt, **kwargs):

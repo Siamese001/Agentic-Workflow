@@ -21,13 +21,12 @@ from __future__ import annotations
 
 import hashlib
 import json
-import os
 import sqlite3
 import subprocess
 import sys
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Set
+from typing import Any
 
 # Add project root to path for imports
 sys.path.insert(0, str(Path(__file__).parent.parent.parent))
@@ -56,8 +55,8 @@ class ADGProvenanceVerifier:
     def __init__(self, adg_dir: Path):
         self.adg_dir = Path(adg_dir)
         self.repo_root = self._find_repo_root()
-        self.errors: List[str] = []
-        self.warnings: List[str] = []
+        self.errors: list[str] = []
+        self.warnings: list[str] = []
 
     def _find_repo_root(self) -> Path:
         """Find repository root by searching for .git directory."""
@@ -82,7 +81,7 @@ class ADGProvenanceVerifier:
         except subprocess.CalledProcessError as e:
             raise ProvenanceVerificationError(f"Failed to get git commit SHA: {e}")
 
-    def _get_git_status(self) -> Dict[str, Any]:
+    def _get_git_status(self) -> dict[str, Any]:
         """Get git status for dirty working directory detection."""
         try:
             result = subprocess.run(
@@ -99,7 +98,7 @@ class ADGProvenanceVerifier:
         except subprocess.CalledProcessError as e:
             raise ProvenanceVerificationError(f"Failed to get git status: {e}")
 
-    def _calculate_file_inventory_digest(self, file_paths: List[Path]) -> str:
+    def _calculate_file_inventory_digest(self, file_paths: list[Path]) -> str:
         """Calculate SHA256 digest of file inventory with deterministic ordering."""
         # Sort paths for deterministic ordering
         sorted_paths = sorted(str(p.relative_to(self.repo_root)) for p in file_paths)
@@ -112,15 +111,15 @@ class ADGProvenanceVerifier:
         inventory_json = json.dumps(inventory_data, sort_keys=True, separators=(',', ':'))
         return hashlib.sha256(inventory_json.encode()).hexdigest()
 
-    def _load_json_artifact(self, artifact_path: Path) -> Dict[str, Any]:
+    def _load_json_artifact(self, artifact_path: Path) -> dict[str, Any]:
         """Load and parse JSON artifact."""
         try:
-            with open(artifact_path, 'r', encoding='utf-8') as f:
+            with open(artifact_path, encoding='utf-8') as f:
                 return json.load(f)
         except Exception as e:
             raise ProvenanceVerificationError(f"Failed to load {artifact_path}: {e}")
 
-    def _load_sqlite_meta(self, sqlite_path: Path) -> Dict[str, Any]:
+    def _load_sqlite_meta(self, sqlite_path: Path) -> dict[str, Any]:
         """Load metadata from SQLite ADG database."""
         try:
             with sqlite3.connect(sqlite_path) as conn:
@@ -146,7 +145,7 @@ class ADGProvenanceVerifier:
         except Exception as e:
             raise ProvenanceVerificationError(f"Failed to load SQLite metadata from {sqlite_path}: {e}")
 
-    def _verify_required_fields(self, artifact_name: str, metadata: Dict[str, Any]) -> None:
+    def _verify_required_fields(self, artifact_name: str, metadata: dict[str, Any]) -> None:
         """Verify all required provenance fields are present."""
         missing = self.REQUIRED_FIELDS - set(metadata.keys())
         if missing:
@@ -154,7 +153,7 @@ class ADGProvenanceVerifier:
                 f"{artifact_name} missing required fields: {sorted(missing)}"
             )
 
-    def _verify_non_null_fields(self, artifact_name: str, metadata: Dict[str, Any]) -> None:
+    def _verify_non_null_fields(self, artifact_name: str, metadata: dict[str, Any]) -> None:
         """Verify critical fields are non-null and non-empty."""
         critical_fields = {"commit_sha", "artifact_digest", "scan_timestamp_utc", "repo_root"}
 
@@ -199,7 +198,7 @@ class ADGProvenanceVerifier:
                 f"{artifact_name} repo_root ({repo_root}) does not match actual root ({actual_root})"
             )
 
-    def _collect_adg_artifacts(self) -> Dict[str, Path]:
+    def _collect_adg_artifacts(self) -> dict[str, Path]:
         """Collect all ADG artifacts for verification."""
         artifacts = {}
 
@@ -227,7 +226,7 @@ class ADGProvenanceVerifier:
 
         return artifacts
 
-    def _verify_cross_artifact_consistency(self, all_metadata: Dict[str, Dict[str, Any]]) -> None:
+    def _verify_cross_artifact_consistency(self, all_metadata: dict[str, dict[str, Any]]) -> None:
         """Verify critical fields match across all artifacts."""
         # Fields that must be identical across artifacts
         consistent_fields = {
@@ -251,7 +250,7 @@ class ADGProvenanceVerifier:
                     f"Field {field} inconsistent across artifacts: {values}"
                 )
 
-    def verify(self) -> Dict[str, Any]:
+    def verify(self) -> dict[str, Any]:
         """Run complete provenance verification."""
         print("🔍 Starting ADG Provenance Verification...")
         print(f"📁 ADG Directory: {self.adg_dir}")
@@ -263,7 +262,7 @@ class ADGProvenanceVerifier:
             self.warnings.append(
                 f"Working directory is dirty with {len(git_status['changed_files'])} changed files"
             )
-            print(f"⚠️  Warning: Working directory is dirty")
+            print("⚠️  Warning: Working directory is dirty")
 
         # Collect artifacts
         artifacts = self._collect_adg_artifacts()

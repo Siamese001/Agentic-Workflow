@@ -13,7 +13,7 @@ import json
 import logging
 from dataclasses import dataclass, field
 from datetime import datetime
-from typing import Any, Optional
+from typing import Any
 
 from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     LayerSegment,
@@ -50,9 +50,9 @@ class CompletenessChangePackage:
     status: str = "pending"  # pending, approved, rejected, escalated
 
     # L5 Board response
-    board_decision: Optional[str] = None
-    decision_rationale: Optional[str] = None
-    decided_at: Optional[str] = None
+    board_decision: str | None = None
+    decision_rationale: str | None = None
+    decided_at: str | None = None
 
 
 class L5BoardBridge:
@@ -61,7 +61,7 @@ class L5BoardBridge:
     Routes proposals to L5 Board for decision per C0 RULE.
     """
 
-    def __init__(self, board_endpoint: Optional[str] = None):
+    def __init__(self, board_endpoint: str | None = None):
         """Initialize L5 Board bridge.
 
         Args:
@@ -192,7 +192,7 @@ class L5BoardBridge:
 
     def get_decided_packages(
         self,
-        since: Optional[str] = None,
+        since: str | None = None,
     ) -> list[CompletenessChangePackage]:
         """Get decided packages."""
         packages = self._decided_packages
@@ -262,7 +262,7 @@ class CompletenessRAGProposerBridge:
     Integrates Pipeline D proposals with L5 Board governance.
     """
 
-    def __init__(self, l5_bridge: Optional[L5BoardBridge] = None):
+    def __init__(self, l5_bridge: L5BoardBridge | None = None):
         """Initialize proposer bridge."""
         self.l5_bridge = l5_bridge or L5BoardBridge()
 
@@ -300,8 +300,8 @@ class CompletenessRAGProposerBridge:
 
 
 # Global instance
-_global_l5_bridge: Optional[L5BoardBridge] = None
-_global_proposer_bridge: Optional[CompletenessRAGProposerBridge] = None
+_global_l5_bridge: L5BoardBridge | None = None
+_global_proposer_bridge: CompletenessRAGProposerBridge | None = None
 
 
 def get_global_l5_bridge() -> L5BoardBridge:

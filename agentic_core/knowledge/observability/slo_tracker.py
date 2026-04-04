@@ -5,9 +5,9 @@ SLI/SLO tracking for service level objectives.
 
 import logging
 import time
-from dataclasses import dataclass, field
-from typing import Any, Dict, List, Optional
 from collections import deque
+from dataclasses import dataclass, field
+from typing import Any
 
 from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     LayerSegment,
@@ -25,7 +25,7 @@ class SLOResult:
     actual: float
     is_met: bool
     window_seconds: float
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    metadata: dict[str, Any] = field(default_factory=dict)
 
 
 class SLOTracker:
@@ -81,7 +81,7 @@ class SLOTracker:
         self._outcomes.append((now, success))
         self._trim_old_data(now)
 
-    def check_slos(self) -> List[SLOResult]:
+    def check_slos(self) -> list[SLOResult]:
         """Check all SLOs.
 
         Returns:
@@ -167,7 +167,7 @@ class SLOTracker:
 
 
 # Global instance
-_global_tracker: Optional[SLOTracker] = None
+_global_tracker: SLOTracker | None = None
 
 
 def get_slo_tracker() -> SLOTracker:

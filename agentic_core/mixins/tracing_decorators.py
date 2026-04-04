@@ -34,8 +34,8 @@ from typing import Any, Callable, TypeVar
 from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     LayerSegment,
     _emit_records_execution_trace,
-    emit_replay_key,
     emit_determinism_digest,
+    emit_replay_key,
 )
 
 # Bootstrap ADG edge emission
@@ -53,7 +53,7 @@ def _get_tracing_instance(args: tuple[Any, ...]) -> Any | None:
         return None
     instance = args[0]
     # Check for start_span method (indicates tracing capability)
-    if hasattr(instance, "start_span") and callable(getattr(instance, "start_span")):
+    if hasattr(instance, "start_span") and callable(instance.start_span):
         return instance
     return None
 

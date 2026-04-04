@@ -8,14 +8,14 @@ from __future__ import annotations
 
 import logging
 from concurrent.futures import Future, ThreadPoolExecutor
-from typing import Any, Optional
+from typing import Any
 
-from agentic_core.runtime.eval_spine import EvalSpine
 from agentic_core.evaluation.golden.golden_evaluator import (
     GoldenDatasetEvaluator,
     GoldenEvalResult,
     get_evaluator,
 )
+from agentic_core.runtime.eval_spine import EvalSpine
 
 Logger = logging.getLogger(__name__)
 
@@ -33,7 +33,7 @@ class GoldenEvalIntegration:
     def __init__(
         self,
         eval_spine: EvalSpine,
-        evaluator: Optional[GoldenDatasetEvaluator] = None,
+        evaluator: GoldenDatasetEvaluator | None = None,
         max_workers: int = 2,
     ):
         """Initialize integration.
@@ -52,7 +52,7 @@ class GoldenEvalIntegration:
         self,
         query: str,
         actual_output: str,
-        actual_actions: Optional[list[dict]] = None,
+        actual_actions: list[dict] | None = None,
     ) -> Future[list[GoldenEvalResult]]:
         """Submit golden dataset evaluation asynchronously.
 
@@ -77,7 +77,7 @@ class GoldenEvalIntegration:
         self,
         query: str,
         actual_output: str,
-        actual_actions: Optional[list[dict]],
+        actual_actions: list[dict] | None,
     ) -> list[GoldenEvalResult]:
         """Synchronous evaluation (runs in thread pool)."""
         try:

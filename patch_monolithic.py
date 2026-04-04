@@ -4,7 +4,7 @@
 import sys
 
 # Read monolithic
-with open('execute_ssot_monolithic.py', 'r', encoding='utf-8', errors='ignore') as f:
+with open('execute_ssot_monolithic.py', encoding='utf-8', errors='ignore') as f:
     code = f.read()
 
 # Replace the guard block - use simple string replacement

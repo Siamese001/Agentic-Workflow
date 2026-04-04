@@ -26,9 +26,9 @@ def validate_imports() -> dict[str, bool]:
     # Pipeline B imports
     try:
         from agentic_core.L3_orchestration.engines.graph_aware_indexer import (
-            GraphAwareIndexer,
-            ADGEdgeExtractor,
             ADGEdgeBinding,
+            ADGEdgeExtractor,
+            GraphAwareIndexer,
         )
         results["pipeline_b.graph_aware_indexer"] = True
     except ImportError as e:
@@ -38,9 +38,9 @@ def validate_imports() -> dict[str, bool]:
     # Pipeline C imports
     try:
         from agentic_core.L3_orchestration.engines.l4e_retrieval_integration import (
-            GraphRetrievalEngine,
             ADGEdgeHydrator,
             GraphRetrievalContext,
+            GraphRetrievalEngine,
         )
         results["pipeline_c.l4e_retrieval"] = True
     except ImportError as e:
@@ -50,9 +50,9 @@ def validate_imports() -> dict[str, bool]:
     # Pipeline D imports
     try:
         from agentic_core.L4_state.engines.meta_learning_feedback import (
+            CompletenessAnalyzer,
             CompletenessRAGProposer,
             EvaluationRunner,
-            CompletenessAnalyzer,
             FeedbackTrigger,
         )
         results["pipeline_d.meta_learning"] = True
@@ -75,9 +75,9 @@ def validate_imports() -> dict[str, bool]:
     try:
         from agentic_core.evaluation.retrieval.l4_registries import (
             ChunkManifest,
-            ParentChildLink,
             ChunkManifestRegistry,
             ParentChildIndexRegistry,
+            ParentChildLink,
         )
         results["l4_registries"] = True
     except ImportError as e:
@@ -87,9 +87,9 @@ def validate_imports() -> dict[str, bool]:
     # Parent-child expansion
     try:
         from agentic_core.L4_state.engines.parent_child_expansion import (
-            ParentChildExpander,
             ExpansionContext,
             L4ERetrievalIntegrator,
+            ParentChildExpander,
         )
         results["parent_child_expansion"] = True
     except ImportError as e:
@@ -105,16 +105,16 @@ def validate_lifecycle_contracts() -> dict[str, bool]:
 
     try:
         from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-            _emit_records_execution_trace,
+            _emit_captures_evaluation_metric,
+            _emit_feeds_meta_learning,
+            _emit_improves_agent_policy,
             _emit_pulls_context,
             _emit_reads_through,
-            _emit_writes_through,
-            _emit_stores_embedding,
-            _emit_captures_evaluation_metric,
+            _emit_records_execution_trace,
             _emit_records_learning_event,
+            _emit_stores_embedding,
             _emit_updates_routing_strategy,
-            _emit_improves_agent_policy,
-            _emit_feeds_meta_learning,
+            _emit_writes_through,
         )
         results["lifecycle_contracts"] = True
     except ImportError as e:
@@ -130,8 +130,8 @@ def validate_pipeline_b_functionality() -> dict[str, bool]:
 
     try:
         from agentic_core.L3_orchestration.engines.graph_aware_indexer import (
-            GraphAwareIndexer,
             ADGEdgeBinding,
+            GraphAwareIndexer,
         )
 
         # Create indexer
@@ -174,8 +174,8 @@ def validate_pipeline_c_functionality() -> dict[str, bool]:
 
     try:
         from agentic_core.L4_state.engines.parent_child_expansion import (
-            ParentChildExpander,
             ExpansionContext,
+            ParentChildExpander,
         )
 
         # Create expander
@@ -212,9 +212,9 @@ def validate_pipeline_d_functionality() -> dict[str, bool]:
 
     try:
         from agentic_core.L4_state.engines.meta_learning_feedback import (
+            CompletenessAnalyzer,
             CompletenessRAGProposer,
             EvaluationRunner,
-            CompletenessAnalyzer,
         )
 
         # Create components

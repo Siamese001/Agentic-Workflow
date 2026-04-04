@@ -23,7 +23,6 @@ from agentic_core.L5_safety.hitl.decision_logger import (
     HITLDecision,
     get_decision_logger,
 )
-from agentic_core.runtime.execution_trace import get_active_execution_trace
 from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     LayerSegment,
     _emit_agent_executes_agent,
@@ -67,6 +66,7 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     emit_determinism_digest,  # noqa: E402
     emit_replay_key,  # noqa: E402
 )
+from agentic_core.runtime.execution_trace import get_active_execution_trace
 
 emit_replay_key("p0", "hitl_escalation_activator")
 emit_determinism_digest("p0", "hitl_escalation_activator")

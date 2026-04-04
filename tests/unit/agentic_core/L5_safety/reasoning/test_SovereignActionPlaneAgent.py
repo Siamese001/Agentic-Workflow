@@ -3,8 +3,6 @@
 """
 from __future__ import annotations
 
-import pytest
-
 
 class TestSovereignToolsmithContract:
     def test_is_class(self):

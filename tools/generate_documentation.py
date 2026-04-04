@@ -16,15 +16,11 @@ import argparse
 import logging
 import sys
 from pathlib import Path
-from typing import List, Optional
-from datetime import datetime
 
 sys.path.append(str(Path(__file__).parent.parent))
 
 from agentic_core.core.documentation_framework import (
-    DocumentationManager,
     DocumentationType,
-    DocumentationQuality,
     documentation_manager,
 )
 
@@ -36,7 +32,7 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 
-def generate_api_documentation(source_paths: List[Path], output_dir: Path) -> bool:
+def generate_api_documentation(source_paths: list[Path], output_dir: Path) -> bool:
     """Generate API documentation from Python source files."""
     logger.info("Generating API documentation...")
 
@@ -843,7 +839,7 @@ def validate_documentation(docs_dir: Path) -> bool:
 
     for md_file in md_files:
         try:
-            with open(md_file, 'r', encoding='utf-8') as f:
+            with open(md_file, encoding='utf-8') as f:
                 content = f.read()
 
             # Simple validation (in real implementation, would use proper parsing)

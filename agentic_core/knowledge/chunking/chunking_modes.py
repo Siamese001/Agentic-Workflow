@@ -14,7 +14,7 @@ from __future__ import annotations
 import re
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
-from typing import Any, Optional
+from typing import Any
 
 from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     LayerSegment,
@@ -469,7 +469,7 @@ class ChunkingEngine:
         self.default_strategy = default_strategy
         self._chunkers: dict[str, ChunkingStrategy] = {}
 
-    def get_chunker(self, strategy: Optional[str] = None) -> ChunkingStrategy:
+    def get_chunker(self, strategy: str | None = None) -> ChunkingStrategy:
         """Get chunker for strategy.
 
         Args:
@@ -492,7 +492,7 @@ class ChunkingEngine:
         self,
         text: str,
         doc_id: str = "",
-        strategy: Optional[str] = None,
+        strategy: str | None = None,
     ) -> list[Chunk]:
         """Chunk text using specified strategy.
 
@@ -535,7 +535,7 @@ class ChunkingEngine:
     def chunk_batch(
         self,
         documents: list[tuple[str, str]],  # (doc_id, text) pairs
-        strategy: Optional[str] = None,
+        strategy: str | None = None,
     ) -> dict[str, list[Chunk]]:
         """Chunk multiple documents.
 
@@ -553,7 +553,7 @@ class ChunkingEngine:
 
 
 # Global instance
-_global_chunking_engine: Optional[ChunkingEngine] = None
+_global_chunking_engine: ChunkingEngine | None = None
 
 
 def get_global_chunking_engine() -> ChunkingEngine:

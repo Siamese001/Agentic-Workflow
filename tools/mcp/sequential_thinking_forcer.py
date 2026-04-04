@@ -7,7 +7,6 @@ It's designed to be used as a wrapper around any request to ensure the tool is c
 """
 
 import json
-from typing import Dict, Any
 
 
 def create_forced_sequential_thinking_prompt(user_request: str) -> str:

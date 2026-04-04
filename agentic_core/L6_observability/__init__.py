@@ -58,6 +58,19 @@ from agentic_core.L6_observability.dashboard.dashboard_orchestrator import (
     query_exposed,
     snapshot_persisted,
 )
+
+# Wave 3: Auto-Persistence Tracing Adapter
+from agentic_core.L6_observability.engines.auto_persistence_adapter import (
+    AutoPersistenceTracingAdapter,
+    get_auto_persistence_tracer,
+)
+
+# Wave 4: Meta-Learning Bridge
+from agentic_core.L6_observability.engines.meta_learning_bridge import (
+    L6MetaLearningBridge,
+    MetaLearningRecord,
+    get_meta_learning_bridge,
+)
 from agentic_core.L6_observability.engines.metrics_server import (
     MetricsServerContext,
     get_metrics_endpoint_url,
@@ -76,26 +89,6 @@ from agentic_core.L6_observability.mcp_drift_store import (
 # Wave 0: Prometheus Metrics
 from agentic_core.L6_observability.metrics.prometheus_metrics import (
     AGENTIC_REGISTRY,
-)
-from agentic_core.L6_observability.engines.metrics_server import (
-    start_metrics_server,
-    stop_metrics_server,
-    MetricsServerContext,
-    get_metrics_endpoint_url,
-    get_server_status,
-)
-
-# Wave 3: Auto-Persistence Tracing Adapter
-from agentic_core.L6_observability.engines.auto_persistence_adapter import (
-    AutoPersistenceTracingAdapter,
-    get_auto_persistence_tracer,
-)
-
-# Wave 4: Meta-Learning Bridge
-from agentic_core.L6_observability.engines.meta_learning_bridge import (
-    L6MetaLearningBridge,
-    MetaLearningRecord,
-    get_meta_learning_bridge,
 )
 
 # Wave 0: Performance

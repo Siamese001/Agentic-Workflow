@@ -5,7 +5,7 @@ Advanced reranking with scoring, coverage evaluation, and evidence-based ranking
 
 import logging
 from dataclasses import dataclass, field
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     LayerSegment,
@@ -26,7 +26,7 @@ class RerankResult:
     coverage_score: float
     authority_score: float
     content: str = ""
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    metadata: dict[str, Any] = field(default_factory=dict)
 
 
 class SeniorLibrarianReranker:
@@ -61,9 +61,9 @@ class SeniorLibrarianReranker:
     def rerank(
         self,
         query: str,
-        candidates: List[Any],
+        candidates: list[Any],
         top_k: int = 10,
-    ) -> List[RerankResult]:
+    ) -> list[RerankResult]:
         """Rerank retrieved candidates.
 
         Args:
@@ -161,7 +161,7 @@ class SeniorLibrarianReranker:
 
 
 # Global instance
-_global_reranker: Optional[SeniorLibrarianReranker] = None
+_global_reranker: SeniorLibrarianReranker | None = None
 
 
 def get_senior_librarian_reranker() -> SeniorLibrarianReranker:

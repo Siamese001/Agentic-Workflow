@@ -47,7 +47,6 @@ from agentic_core.L3_orchestration.visualization.visualization_updater import (
     record_owner_transition,
     record_workflow_completion,
 )
-from agentic_core.runtime.execution_trace import get_active_execution_trace
 from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     LayerSegment,
     _emit_agent_executes_agent,
@@ -91,6 +90,7 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     emit_determinism_digest,  # noqa: E402
     emit_replay_key,  # noqa: E402
 )
+from agentic_core.runtime.execution_trace import get_active_execution_trace
 
 emit_replay_key("p0", "agent_handoff")
 emit_determinism_digest("p0", "agent_handoff")

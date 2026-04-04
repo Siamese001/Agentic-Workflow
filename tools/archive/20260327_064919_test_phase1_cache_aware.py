@@ -1,10 +1,12 @@
 #!/usr/bin/env python3
 """Test Phase 1.3: cache-aware scan mode selection."""
 
-import time
 import json
+import time
 from pathlib import Path
+
 from agentic_core.adg.extraction.static_scanner import ADGStaticScanner
+
 
 def test_cache_aware_mode():
     """Test that cache-aware mode selection optimizes scanning based on cache state."""
@@ -31,7 +33,7 @@ def test_cache_aware_mode():
         )
 
         print(f"  Selected mode: {scanner_no_cache.scan_mode}")
-        print(f"  Expected: full")
+        print("  Expected: full")
         print(f"  Result: {'✓' if scanner_no_cache.scan_mode == 'full' else '✗'}")
         print()
 
@@ -92,7 +94,7 @@ def test_cache_aware_mode():
         # Test 5: Cache analysis validation
         print("Test 5: Cache analysis validation")
         if cache_file.exists():
-            with open(cache_file, 'r') as f:
+            with open(cache_file) as f:
                 cache_data = json.load(f)
 
             cache_stats = cache_data.get("stats", {})

@@ -11,12 +11,13 @@ import json
 import sys
 import time
 from pathlib import Path
-from typing import Dict, Any
+from typing import Any
 
 # Add project root to path
 sys.path.insert(0, str(Path(__file__).parent.parent.parent))
 
 from agentic_core.adg.precision import PrecisionHardeningEngine, PrecisionValidator
+
 
 class PrecisionHardeningOrchestrator:
     """Orchestrates complete precision hardening process"""
@@ -26,7 +27,7 @@ class PrecisionHardeningOrchestrator:
         self.validator = PrecisionValidator()
         self.adg_state = self._load_adg_state()
 
-    def _load_adg_state(self) -> Dict[str, Any]:
+    def _load_adg_state(self) -> dict[str, Any]:
         """Load current ADG state for non-regression checks"""
 
         # Try to load from Redis cache
@@ -47,7 +48,7 @@ class PrecisionHardeningOrchestrator:
                 "timestamp": "03232026_1025",
             }
 
-    def apply_precision_hardening(self, target_dir: str = ".") -> Dict[str, Any]:
+    def apply_precision_hardening(self, target_dir: str = ".") -> dict[str, Any]:
         """Apply precision hardening to target directory"""
 
         print(f"🔧 Applying precision hardening to: {target_dir}")
@@ -64,7 +65,7 @@ class PrecisionHardeningOrchestrator:
 
     def validate_hardening(
         self,
-        precision_graphs: Dict[str, Any]
+        precision_graphs: dict[str, Any]
     ) -> Any:
         """Validate precision hardening results"""
 
@@ -86,7 +87,7 @@ class PrecisionHardeningOrchestrator:
 
     def generate_artifacts(
         self,
-        precision_graphs: Dict[str, Any],
+        precision_graphs: dict[str, Any],
         report: Any
     ) -> None:
         """Generate precision hardening artifacts (Section 13)"""

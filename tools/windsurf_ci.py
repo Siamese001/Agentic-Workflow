@@ -4,17 +4,17 @@ Windsurf Native CI for Plans
 Runs CI validation directly in Windsurf using existing hooks and tools.
 """
 
-import os
-import sys
 import json
-from pathlib import Path
+import sys
 from datetime import datetime
+from pathlib import Path
 
 # Add repo root to path
 repo_root = Path(__file__).parent.parent
 sys.path.insert(0, str(repo_root))
 
 from tools.ci_validate_plans import CIPlanValidator
+
 
 def run_windsurf_ci():
     """Run CI validation directly in Windsurf."""

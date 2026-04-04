@@ -4,11 +4,11 @@ Test script for Sequential Thinking MCP server integration.
 This script tests the sequential thinking functionality with repository-specific context.
 """
 
-import subprocess
 import json
+import subprocess
 import sys
-import time
 from pathlib import Path
+
 
 def run_npx_command(command_args):
     """Run npx command and return result."""
@@ -76,7 +76,7 @@ def test_repository_context():
         "total_modules": sum(1 for d in repo_root.rglob("*/") if (d / "__init__.py").exists())
     }
 
-    print(f"📊 Repository context gathered:")
+    print("📊 Repository context gathered:")
     print(f"   - Python files: {context['python_files_count']}")
     print(f"   - Markdown files: {context['markdown_files_count']}")
     print(f"   - Python modules: {context['total_modules']}")
@@ -122,7 +122,7 @@ def test_mcp_config():
         return False
 
     try:
-        with open(config_path, 'r') as f:
+        with open(config_path) as f:
             config = json.load(f)
 
         if "sequential-thinking" in config.get("mcpServers", {}):

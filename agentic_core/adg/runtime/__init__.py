@@ -1,15 +1,6 @@
 """ADG Runtime package — indexed query engine, cache loader, and runtime graph infrastructure."""
 from pathlib import Path
 
-from agentic_core.adg.runtime.mcp_drift_recorder import (
-    MCPConfigSnapshot,
-    MCPDriftEvent,
-    MCPDriftRecorder,
-    MCPDriftReport,
-    MCPDriftSeverity,
-    MCPDriftType,
-    MCPServerState,
-)
 from agentic_core.adg.runtime.antipattern_registry import (
     AntipatternCategory,
     AntipatternRecord,
@@ -116,6 +107,15 @@ from agentic_core.adg.runtime.jit_context import (
     FreezeState,
     JITContextSession,
     JITContextSynchronizer,
+)
+from agentic_core.adg.runtime.mcp_drift_recorder import (
+    MCPConfigSnapshot,
+    MCPDriftEvent,
+    MCPDriftRecorder,
+    MCPDriftReport,
+    MCPDriftSeverity,
+    MCPDriftType,
+    MCPServerState,
 )
 from agentic_core.adg.runtime.mutation_transport import (
     CommitPhase,

@@ -6,15 +6,13 @@ This script reproduces the MCP Redis hanging issues during hot cache ingestion
 and tests potential fixes.
 """
 
-import subprocess
-import sys
 import json
+import subprocess
 import time
-import signal
 from pathlib import Path
-from typing import Dict, Optional
 
-def run_command_with_timeout(cmd: str, cwd: str, timeout: int = 30) -> Dict:
+
+def run_command_with_timeout(cmd: str, cwd: str, timeout: int = 30) -> dict:
     """Run command with timeout and proper signal handling"""
     try:
         result = subprocess.run(
@@ -31,7 +29,7 @@ def run_command_with_timeout(cmd: str, cwd: str, timeout: int = 30) -> Dict:
         }
     except subprocess.TimeoutExpired:
         # Kill the process group
-        subprocess.run(f"taskkill /F /IM python.exe", shell=True, capture_output=True)
+        subprocess.run("taskkill /F /IM python.exe", shell=True, capture_output=True)
         return {
             "success": False,
             "stdout": "",

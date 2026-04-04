@@ -3,8 +3,6 @@
 """
 from __future__ import annotations
 
-import pytest
-
 
 def test_module_importable():
         """Module review_protocol_util must be importable or skip gracefully."""

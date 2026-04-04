@@ -5,10 +5,9 @@ This script handles the specific pattern where imports were moved
 but left at module level without proper indentation.
 """
 
+import ast
 import pathlib
 import re
-import ast
-from typing import Dict, List, Tuple
 
 
 class AdvancedSyntaxFixer:
@@ -25,9 +24,9 @@ class AdvancedSyntaxFixer:
             'unmatched_parens_removed': 0,
             'files_with_errors': 0
         }
-        self.failed_files: List[Tuple[str, str]] = []
+        self.failed_files: list[tuple[str, str]] = []
 
-    def fix_active_test_files(self) -> Dict:
+    def fix_active_test_files(self) -> dict:
         """Fix syntax errors in active test files using advanced techniques."""
         # Only process files in tests/ directory, exclude archives
         test_files = []
@@ -132,7 +131,7 @@ class AdvancedSyntaxFixer:
 
         return '\n'.join(fixed_lines)
 
-    def _move_imports_to_first_test_function(self, lines: List[str], imports: List[str]) -> List[str]:
+    def _move_imports_to_first_test_function(self, lines: list[str], imports: list[str]) -> list[str]:
         """Move orphaned imports to the first test function."""
         result_lines = []
         imports_moved = False
@@ -178,7 +177,7 @@ class AdvancedSyntaxFixer:
         print(f"Failed files: {len(self.failed_files)}")
 
         if self.failed_files:
-            print(f"\nFailed files (first 10):")
+            print("\nFailed files (first 10):")
             for file_path, error in self.failed_files[:10]:
                 print(f"  {file_path}: {error}")
             if len(self.failed_files) > 10:

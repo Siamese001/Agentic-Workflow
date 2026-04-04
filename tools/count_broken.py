@@ -1,5 +1,5 @@
-import pathlib
 import ast
+import pathlib
 
 broken_files = []
 tests_dir = pathlib.Path('tests')

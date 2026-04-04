@@ -6,15 +6,16 @@ providing unified recommendations and conflict resolution.
 """
 
 import pickle
-import numpy as np
-from pathlib import Path
-from typing import Dict, List, Optional, Any, Tuple
-from datetime import datetime
 from collections import defaultdict
+from datetime import datetime
+from pathlib import Path
+from typing import Any
 
-from .base_model import BaseMLModel, ModelPrediction, ModelInput, PredictionType, DecisionMode
-from ..config.model_registry import DecisionMode
+import numpy as np
+
 from ..config.feature_schemas import FeatureSchema
+from ..config.model_registry import DecisionMode
+from .base_model import BaseMLModel, DecisionMode, ModelInput, ModelPrediction, PredictionType
 
 
 class MultiLayerCoordinator(BaseMLModel):
@@ -46,7 +47,7 @@ class MultiLayerCoordinator(BaseMLModel):
     # Reverse mapping
     REVERSE_DECISION_MAPPING = {v: k for k, v in DECISION_MAPPING.items()}
 
-    def __init__(self, model_file_path: Optional[Path] = None):
+    def __init__(self, model_file_path: Path | None = None):
         super().__init__(
             model_name="multi_layer_coordinator",
             model_version="1.0",
@@ -90,7 +91,7 @@ class MultiLayerCoordinator(BaseMLModel):
 
     def _create_coordinator_schema(self) -> FeatureSchema:
         """Create feature schema for multi-layer coordinator."""
-        from ..config.feature_schemas import FeatureSchema, FeatureDefinition, FeatureType
+        from ..config.feature_schemas import FeatureDefinition, FeatureSchema, FeatureType
 
         features = [
             FeatureDefinition(
@@ -335,11 +336,11 @@ class MultiLayerCoordinator(BaseMLModel):
 
     def coordinate_layers(
         self,
-        layer_predictions: Dict[str, Dict[str, Any]],
+        layer_predictions: dict[str, dict[str, Any]],
         trace_id: str,
         replay_key: str,
         policy_hash: str
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """
         Coordinate decisions across all ML layers.
 
@@ -402,12 +403,12 @@ class MultiLayerCoordinator(BaseMLModel):
 
     def resolve_conflicts(
         self,
-        conflicting_layers: List[str],
-        layer_predictions: Dict[str, Dict[str, Any]],
+        conflicting_layers: list[str],
+        layer_predictions: dict[str, dict[str, Any]],
         trace_id: str,
         replay_key: str,
         policy_hash: str
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """
         Resolve conflicts between layer recommendations.
 
@@ -471,7 +472,7 @@ class MultiLayerCoordinator(BaseMLModel):
             'recommended_actions': [s['action'] for s in resolution_strategies]
         }
 
-    def _extract_coordinator_features(self, layer_predictions: Dict[str, Dict[str, Any]]) -> Dict[str, float]:
+    def _extract_coordinator_features(self, layer_predictions: dict[str, dict[str, Any]]) -> dict[str, float]:
         """Extract features for coordinator from layer predictions."""
         features = {}
 
@@ -541,7 +542,7 @@ class MultiLayerCoordinator(BaseMLModel):
 
         return probabilities
 
-    def _analyze_conflicts(self, layer_predictions: Dict[str, Dict[str, Any]]) -> Dict[str, Any]:
+    def _analyze_conflicts(self, layer_predictions: dict[str, dict[str, Any]]) -> dict[str, Any]:
         """Analyze conflicts between layer predictions."""
         conflicts = []
 
@@ -585,9 +586,9 @@ class MultiLayerCoordinator(BaseMLModel):
     def _generate_coordinated_recommendations(
         self,
         decision: str,
-        layer_predictions: Dict[str, Dict[str, Any]],
-        conflicts: Dict[str, Any]
-    ) -> List[str]:
+        layer_predictions: dict[str, dict[str, Any]],
+        conflicts: dict[str, Any]
+    ) -> list[str]:
         """Generate coordinated recommendations based on decision."""
         recommendations = []
 
@@ -648,9 +649,9 @@ class MultiLayerCoordinator(BaseMLModel):
 
     def _assess_overall_risk(
         self,
-        layer_predictions: Dict[str, Dict[str, Any]],
-        conflicts: Dict[str, Any]
-    ) -> Dict[str, Any]:
+        layer_predictions: dict[str, dict[str, Any]],
+        conflicts: dict[str, Any]
+    ) -> dict[str, Any]:
         """Assess overall risk of coordinated decision."""
         risk_factors = {
             'confidence_risk': 0.0,
@@ -696,9 +697,9 @@ class MultiLayerCoordinator(BaseMLModel):
     def _create_execution_plan(
         self,
         decision: str,
-        layer_predictions: Dict[str, Dict[str, Any]],
-        recommendations: List[str]
-    ) -> Dict[str, Any]:
+        layer_predictions: dict[str, dict[str, Any]],
+        recommendations: list[str]
+    ) -> dict[str, Any]:
         """Create execution plan based on coordinated decision."""
         execution_steps = []
 
@@ -738,7 +739,7 @@ class MultiLayerCoordinator(BaseMLModel):
             'requires_approval': decision in ["Escalate", "Manual_Review", "Block_All"]
         }
 
-    def _estimate_layer_effort(self, layer: str, action: Optional[str]) -> int:
+    def _estimate_layer_effort(self, layer: str, action: str | None) -> int:
         """Estimate implementation effort for layer action."""
         effort_map = {
             "L0": 2,  # Route changes
@@ -760,7 +761,7 @@ class MultiLayerCoordinator(BaseMLModel):
 
         return base_effort
 
-    def get_feature_importance(self, model_input: ModelInput) -> List[Dict[str, Any]]:
+    def get_feature_importance(self, model_input: ModelInput) -> list[dict[str, Any]]:
         """Get feature importance for explainability."""
         # For ensemble model, use layer weights as importance
         feature_names = self.feature_names or list(model_input.features.keys())
@@ -798,7 +799,7 @@ class MultiLayerCoordinator(BaseMLModel):
 
         return feature_importance[:10]
 
-    def _extract_feature_vector(self, features: Dict[str, Any]) -> Optional[np.ndarray]:
+    def _extract_feature_vector(self, features: dict[str, Any]) -> np.ndarray | None:
         """Extract features in the correct order for the model."""
         if not self.feature_names:
             return None
@@ -814,7 +815,7 @@ class MultiLayerCoordinator(BaseMLModel):
         except Exception as e:
             return None
 
-    def preprocess_features(self, features: Dict[str, Any]) -> Tuple[Dict[str, Any], List[str]]:
+    def preprocess_features(self, features: dict[str, Any]) -> tuple[dict[str, Any], list[str]]:
         """Preprocess features for ensemble model."""
         processed_features, preprocessing_steps = super().preprocess_features(features)
 
@@ -836,8 +837,8 @@ class MultiLayerCoordinator(BaseMLModel):
 
     def train_model(
         self,
-        training_data: List[Dict[str, Any]],
-        feature_names: List[str],
+        training_data: list[dict[str, Any]],
+        feature_names: list[str],
         training_data_digest: str = ""
     ) -> None:
         """

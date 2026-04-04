@@ -7,20 +7,21 @@ Balances exploration vs exploitation while maintaining confidence estimates.
 
 from __future__ import annotations
 
-import numpy as np
-import logging
-from typing import Dict, List, Optional, Any
-from dataclasses import dataclass, field
 import json
+import logging
 import time
+from dataclasses import dataclass, field
+from typing import Any
+
+import numpy as np
 
 from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-    _emit_records_learning_event,
-    _emit_feeds_meta_learning,
-    _emit_updates_routing_strategy,
-    _emit_stores_learning_state,
-    _emit_records_execution_trace,
     _emit_emits_metric_event,
+    _emit_feeds_meta_learning,
+    _emit_records_execution_trace,
+    _emit_records_learning_event,
+    _emit_stores_learning_state,
+    _emit_updates_routing_strategy,
 )
 
 logger = logging.getLogger(__name__)
@@ -45,7 +46,7 @@ class BanditContext:
 
     # ADG features
     adg_territory_score: float
-    confidence_tiers: Dict[str, int]
+    confidence_tiers: dict[str, int]
 
     def to_vector(self) -> np.ndarray:
         """Convert context to feature vector"""
@@ -89,7 +90,7 @@ class BanditDecision:
     uncertainty: float
     expected_reward: float
     context_used: BanditContext
-    all_arm_scores: Dict[str, float]
+    all_arm_scores: dict[str, float]
 
 class LinUCBBandit:
     """
@@ -103,7 +104,7 @@ class LinUCBBandit:
         self,
         context_dim: int = 50,
         alpha: float = 1.0,
-        arms: Optional[List[str]] = None,
+        arms: list[str] | None = None,
         decay_factor: float = 0.99
     ):
         """
@@ -120,7 +121,7 @@ class LinUCBBandit:
         self.decay_factor = decay_factor
 
         # Initialize arms
-        self.arms: Dict[str, BanditArm] = {}
+        self.arms: dict[str, BanditArm] = {}
         if arms:
             for arm_id in arms:
                 self.arms[arm_id] = BanditArm(
@@ -134,11 +135,11 @@ class LinUCBBandit:
         # Learning state
         self.round_count = 0
         self.total_reward = 0.0
-        self.reward_history: List[float] = []
-        self.decision_history: List[BanditDecision] = []
+        self.reward_history: list[float] = []
+        self.decision_history: list[BanditDecision] = []
 
         # Metrics
-        self.regret_history: List[float] = []
+        self.regret_history: list[float] = []
         self.exploration_rate = 0.1
 
         _emit_stores_learning_state("linucb_bandit", "initialization", {
@@ -299,7 +300,7 @@ class LinUCBBandit:
             "exploration_rate": self.exploration_rate
         })
 
-    def get_arm_statistics(self) -> Dict[str, Dict[str, float]]:
+    def get_arm_statistics(self) -> dict[str, dict[str, float]]:
         """Get statistics for all arms"""
         stats = {}
         for arm_id, arm in self.arms.items():
@@ -357,7 +358,7 @@ class LinUCBBandit:
 
     def load_state(self, filepath: str):
         """Load bandit state from file"""
-        with open(filepath, 'r') as f:
+        with open(filepath) as f:
             state = json.load(f)
 
         self.context_dim = state["context_dim"]
@@ -412,9 +413,9 @@ class LinUCBBandit:
 def create_bandit_context(
     intent_embedding: np.ndarray,
     intent_text: str,
-    user_history: Dict[str, Any],
-    system_metrics: Dict[str, Any],
-    adg_metrics: Dict[str, Any]
+    user_history: dict[str, Any],
+    system_metrics: dict[str, Any],
+    adg_metrics: dict[str, Any]
 ) -> BanditContext:
     """Create bandit context from various inputs"""
 
@@ -454,7 +455,7 @@ def calculate_routing_reward(
     selected_agent: str,
     task_completed: bool,
     completion_time: float,
-    user_satisfaction: Optional[float] = None
+    user_satisfaction: float | None = None
 ) -> float:
     """Calculate reward for routing decision"""
 

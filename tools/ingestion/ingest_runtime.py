@@ -6,14 +6,13 @@ Wave 3 Implementation: Execution & History Intelligence
 Ingests runtime execution evidence and traces into ChromaDB.
 """
 
-import sys
-from pathlib import Path
-import json
 import hashlib
-from typing import List, Dict, Any, Optional, Tuple
+import json
 import logging
-import sqlite3
+import sys
 from datetime import datetime
+from pathlib import Path
+from typing import Any
 
 # Add agentic_core to path
 sys.path.insert(0, str(Path(__file__).parent.parent.parent / "agentic_core"))
@@ -89,7 +88,7 @@ class RuntimeEvidenceIngestion:
                 continue
 
             try:
-                with open(file_path, 'r', encoding='utf-8') as f:
+                with open(file_path, encoding='utf-8') as f:
                     content = f.read()
 
                 if not content.strip():
@@ -245,7 +244,7 @@ class RuntimeEvidenceIngestion:
                 doc_content += f"Errors: {', '.join(scenario['errors'])}\n"
 
             # Add synthetic execution details
-            doc_content += f"\nExecution Details:\n"
+            doc_content += "\nExecution Details:\n"
             for j, operation in enumerate(scenario['operations']):
                 op_duration = scenario['duration'] // len(scenario['operations'])
                 doc_content += f"  Step {j+1}: {operation} ({op_duration}ms)\n"
@@ -338,7 +337,7 @@ class RuntimeEvidenceIngestion:
 
         return len(documents)
 
-    def _parse_runtime_evidence(self, content: str, file_path: Path) -> Dict[str, Any]:
+    def _parse_runtime_evidence(self, content: str, file_path: Path) -> dict[str, Any]:
         """Parse runtime evidence from file content."""
         evidence_info = {
             "type": "unknown",
@@ -422,7 +421,7 @@ class RuntimeEvidenceIngestion:
 
         return evidence_info
 
-    def run_ingestion(self) -> Dict[str, int]:
+    def run_ingestion(self) -> dict[str, int]:
         """Run complete Wave 3 runtime ingestion."""
         logger.info("Starting Wave 3: Runtime Evidence ingestion...")
 

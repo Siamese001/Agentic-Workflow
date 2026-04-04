@@ -6,19 +6,20 @@ balancing compliance requirements with business impact and operational efficienc
 """
 
 import pickle
-import numpy as np
-from pathlib import Path
-from typing import Dict, List, Optional, Any, Tuple
 from datetime import datetime
+from pathlib import Path
+from typing import Any
+
+import numpy as np
 
 try:
     import xgboost as xgb
 except ImportError:
     xgb = None
 
-from .base_model import BaseMLModel, ModelPrediction, ModelInput, PredictionType, DecisionMode
 from ..config.model_registry import DecisionMode
 from ..features.l5_features import L5FeatureExtractor
+from .base_model import BaseMLModel, DecisionMode, ModelInput, ModelPrediction, PredictionType
 
 
 class L5RiskCalibrator(BaseMLModel):
@@ -46,7 +47,7 @@ class L5RiskCalibrator(BaseMLModel):
     # Reverse mapping
     REVERSE_RISK_MAPPING = {v: k for k, v in RISK_MAPPING.items()}
 
-    def __init__(self, model_file_path: Optional[Path] = None):
+    def __init__(self, model_file_path: Path | None = None):
         if xgb is None:
             raise ImportError("XGBoost is required for L5RiskCalibrator")
 
@@ -255,8 +256,8 @@ class L5RiskCalibrator(BaseMLModel):
 
     def calibrate_policy_risk(
         self,
-        policy: Dict[str, Any],
-        context: Dict[str, Any],
+        policy: dict[str, Any],
+        context: dict[str, Any],
         trace_id: str,
         replay_key: str,
         policy_hash: str
@@ -316,12 +317,12 @@ class L5RiskCalibrator(BaseMLModel):
 
     def get_risk_recommendations(
         self,
-        policy: Dict[str, Any],
-        context: Dict[str, Any],
+        policy: dict[str, Any],
+        context: dict[str, Any],
         trace_id: str,
         replay_key: str,
         policy_hash: str
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """
         Get comprehensive risk recommendations for policy decisions.
 
@@ -378,7 +379,7 @@ class L5RiskCalibrator(BaseMLModel):
             'prediction_metadata': prediction.model_metadata
         }
 
-    def get_feature_importance(self, model_input: ModelInput) -> List[Dict[str, Any]]:
+    def get_feature_importance(self, model_input: ModelInput) -> list[dict[str, Any]]:
         """Get feature importance for explainability."""
         if not self.is_loaded or not self.feature_importances:
             return []
@@ -415,9 +416,9 @@ class L5RiskCalibrator(BaseMLModel):
     def _generate_risk_recommendations(
         self,
         prediction: ModelPrediction,
-        features: Dict[str, Any],
-        policy: Dict[str, Any]
-    ) -> List[str]:
+        features: dict[str, Any],
+        policy: dict[str, Any]
+    ) -> list[str]:
         """Generate risk-based recommendations."""
         recommendations = []
         risk_level = prediction.prediction
@@ -471,7 +472,7 @@ class L5RiskCalibrator(BaseMLModel):
 
         return recommendations
 
-    def _extract_feature_vector(self, features: Dict[str, Any]) -> Optional[np.ndarray]:
+    def _extract_feature_vector(self, features: dict[str, Any]) -> np.ndarray | None:
         """Extract features in the correct order for the model."""
         if not self.feature_names:
             return None
@@ -495,7 +496,7 @@ class L5RiskCalibrator(BaseMLModel):
         except Exception as e:
             return None
 
-    def preprocess_features(self, features: Dict[str, Any]) -> Tuple[Dict[str, Any], List[str]]:
+    def preprocess_features(self, features: dict[str, Any]) -> tuple[dict[str, Any], list[str]]:
         """Preprocess features for XGBoost."""
         processed_features, preprocessing_steps = super().preprocess_features(features)
 
@@ -517,10 +518,10 @@ class L5RiskCalibrator(BaseMLModel):
 
     def train_model(
         self,
-        training_data: List[Dict[str, Any]],
-        feature_names: List[str],
+        training_data: list[dict[str, Any]],
+        feature_names: list[str],
         training_data_digest: str = "",
-        xgb_params: Optional[Dict[str, Any]] = None
+        xgb_params: dict[str, Any] | None = None
     ) -> None:
         """
         Train the XGBoost model.

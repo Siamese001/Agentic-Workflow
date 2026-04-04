@@ -3,8 +3,9 @@
 
 import json
 
+
 def analyze_inventory():
-    with open('tools/test_enforcement/test_inventory.json', 'r') as f:
+    with open('tools/test_enforcement/test_inventory.json') as f:
         inventory = json.load(f)
 
     print('📊 INVENTORY SUMMARY:')

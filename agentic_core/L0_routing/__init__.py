@@ -6,8 +6,6 @@ Provides routing, capacity governance, and policy enforcement for request routin
 """
 
 # P1 Core exports
-from agentic_core.L0_routing.P1_core import P1Core, P1RoutingProtocol
-
 # P3/L0 Routing Capacity Governance exports
 from agentic_core.L0_routing.capacity.capacity_aware_router import (
     RoutingCapacityContext,
@@ -62,6 +60,7 @@ from agentic_core.L0_routing.optimization.routing_optimization import (
     # Dataclass field exports for ADG scanner detection
     routing_optimization_id,
 )
+from agentic_core.L0_routing.P1_core import P1Core, P1RoutingProtocol
 from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402

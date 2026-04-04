@@ -197,7 +197,6 @@ def run_orchestrator_mission(project_root: Path, targets: list[str], execute: bo
     _emit_records_execution_trace(_trace_id, LayerSegment.L5_POLICY, "run_orchestrator_mission")
     try:
         from agentic_core.L3_orchestration.ConsolidatedOrchestratorAgent import get_consolidated_orchestrator
-
         from agentic_core.L5_safety.reasoning.ArchitectureGovernorAgent import ArchitectureGovernorAgent
         from agentic_core.L5_safety.reasoning.GravityLeakRepairAgent import GravityLeakRepairAgent
         from agentic_core.L5_safety.reasoning.hierarchy_healer import HierarchyAgent

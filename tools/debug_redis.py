@@ -8,7 +8,7 @@ print('=== Redis Key Analysis ===')
 
 # Get a sample of keys
 keys = r.scan(match='*', count=100)[1]
-print(f'\nSample keys (first 20):')
+print('\nSample keys (first 20):')
 for k in keys[:20]:
     print(f'  {k}')
 

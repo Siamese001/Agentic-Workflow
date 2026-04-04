@@ -3,7 +3,7 @@
 
 class PromptProvenanceIntegrator:
     """Placeholder prompt provenance integrator class."""
-    
+
     def integrate(self, data):
         """Placeholder integrate method."""
         return {}

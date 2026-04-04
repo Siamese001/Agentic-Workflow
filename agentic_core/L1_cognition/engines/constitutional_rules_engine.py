@@ -7,7 +7,7 @@ generation with rule evaluation and enforcement.
 from __future__ import annotations
 
 from datetime import datetime
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any
 
 from agentic_core.L1_cognition.config.graphrag_config import get_config
 from agentic_core.L1_cognition.types.guardrail_types import (
@@ -97,7 +97,7 @@ _emit_stores_embedding("p4", "constitutional_rules_engine", "embedding_store")
 class ConstitutionalRulesEngine:
     """Engine for evaluating constitutional AI rules."""
 
-    def __init__(self, config: Optional[GuardrailConfig] = None) -> None:
+    def __init__(self, config: GuardrailConfig | None = None) -> None:
         """Initialize the constitutional rules engine.
 
         Args:
@@ -107,13 +107,13 @@ class ConstitutionalRulesEngine:
         self.graphrag_config = get_config()
 
         # Rule storage
-        self.rules: Dict[str, ConstitutionalRule] = {}
+        self.rules: dict[str, ConstitutionalRule] = {}
 
         # Initialize default constitutional rules
         self._initialize_default_rules()
 
         # Statistics
-        self._evaluation_stats: Dict[str, List[float]] = {
+        self._evaluation_stats: dict[str, list[float]] = {
             "evaluation_time": [],
             "rule_violations": {},
             "severity_counts": {}
@@ -260,7 +260,7 @@ class ConstitutionalRulesEngine:
         content: str,
         content_id: str,
         content_type: str,
-        context: Optional[str] = None
+        context: str | None = None
     ) -> GuardrailReport:
         """Evaluate content against all constitutional rules.
 
@@ -334,8 +334,8 @@ class ConstitutionalRulesEngine:
     def _get_applicable_rules(
         self,
         content_type: str,
-        context: Optional[str] = None
-    ) -> List[ConstitutionalRule]:
+        context: str | None = None
+    ) -> list[ConstitutionalRule]:
         """Get rules applicable to the content type and context."""
         applicable = []
 
@@ -396,7 +396,7 @@ class ConstitutionalRulesEngine:
         self,
         rule: ConstitutionalRule,
         content: str
-    ) -> Tuple[bool, float, str, str]:
+    ) -> tuple[bool, float, str, str]:
         """Simple rule evaluation using keyword matching.
 
         In practice, you'd use more sophisticated methods like:
@@ -490,7 +490,7 @@ class ConstitutionalRulesEngine:
         self,
         content_id: str,
         content_type: str,
-        checks: List[GuardrailCheck],
+        checks: list[GuardrailCheck],
         start_time: datetime
     ) -> GuardrailReport:
         """Create a comprehensive guardrail report."""
@@ -548,15 +548,15 @@ class ConstitutionalRulesEngine:
 
         return report
 
-    def get_rules(self) -> List[ConstitutionalRule]:
+    def get_rules(self) -> list[ConstitutionalRule]:
         """Get all constitutional rules."""
         return list(self.rules.values())
 
-    def get_rules_by_category(self, category: str) -> List[ConstitutionalRule]:
+    def get_rules_by_category(self, category: str) -> list[ConstitutionalRule]:
         """Get rules by category."""
         return [rule for rule in self.rules.values() if rule.category == category]
 
-    def get_rule(self, rule_id: str) -> Optional[ConstitutionalRule]:
+    def get_rule(self, rule_id: str) -> ConstitutionalRule | None:
         """Get a specific rule."""
         return self.rules.get(rule_id)
 
@@ -567,7 +567,7 @@ class ConstitutionalRulesEngine:
             return True
         return False
 
-    def get_evaluation_stats(self) -> Dict[str, Any]:
+    def get_evaluation_stats(self) -> dict[str, Any]:
         """Get evaluation statistics."""
         stats = {}
 
@@ -597,7 +597,7 @@ class ConstitutionalRulesEngine:
 
 # Factory function
 def create_constitutional_rules_engine(
-    config: Optional[GuardrailConfig] = None
+    config: GuardrailConfig | None = None
 ) -> ConstitutionalRulesEngine:
     """Create a constitutional rules engine."""
     return ConstitutionalRulesEngine(config)

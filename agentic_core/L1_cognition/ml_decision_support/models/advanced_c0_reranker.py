@@ -7,23 +7,24 @@ and sophisticated relevance scoring.
 """
 
 import pickle
-import numpy as np
-from pathlib import Path
-from typing import Dict, List, Optional, Any, Tuple
 from datetime import datetime
+from pathlib import Path
+from typing import Any
+
+import numpy as np
 
 try:
     from sklearn.ensemble import GradientBoostingClassifier
-    from sklearn.preprocessing import StandardScaler
     from sklearn.pipeline import Pipeline
+    from sklearn.preprocessing import StandardScaler
 except ImportError:
     GradientBoostingClassifier = None
     StandardScaler = None
     Pipeline = None
 
-from .base_model import BaseMLModel, ModelPrediction, ModelInput, PredictionType, DecisionMode
 from ..config.model_registry import DecisionMode
 from ..features.advanced_c0_features import AdvancedC0FeatureExtractor
+from .base_model import BaseMLModel, DecisionMode, ModelInput, ModelPrediction, PredictionType
 
 
 class AdvancedC0Reranker(BaseMLModel):
@@ -54,7 +55,7 @@ class AdvancedC0Reranker(BaseMLModel):
     # Reverse mapping
     REVERSE_RERANKING_MAPPING = {v: k for k, v in RERANKING_MAPPING.items()}
 
-    def __init__(self, model_file_path: Optional[Path] = None):
+    def __init__(self, model_file_path: Path | None = None):
         if GradientBoostingClassifier is None:
             raise ImportError("scikit-learn is required for AdvancedC0Reranker")
 
@@ -258,11 +259,11 @@ class AdvancedC0Reranker(BaseMLModel):
 
     def rerank_intelligently(
         self,
-        reranking_context: Dict[str, Any],
+        reranking_context: dict[str, Any],
         trace_id: str,
         replay_key: str,
         policy_hash: str
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """
         Get intelligent reranking recommendation.
 
@@ -337,11 +338,11 @@ class AdvancedC0Reranker(BaseMLModel):
 
     def analyze_semantic_relevance(
         self,
-        semantic_context: Dict[str, Any],
+        semantic_context: dict[str, Any],
         trace_id: str,
         replay_key: str,
         policy_hash: str
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """
         Analyze semantic relevance for intelligent reranking.
 
@@ -396,11 +397,11 @@ class AdvancedC0Reranker(BaseMLModel):
 
     def apply_attention_mechanism(
         self,
-        attention_context: Dict[str, Any],
+        attention_context: dict[str, Any],
         trace_id: str,
         replay_key: str,
         policy_hash: str
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """
         Apply attention mechanism for relevance scoring.
 
@@ -455,11 +456,11 @@ class AdvancedC0Reranker(BaseMLModel):
 
     def evaluate_document_quality(
         self,
-        quality_context: Dict[str, Any],
+        quality_context: dict[str, Any],
         trace_id: str,
         replay_key: str,
         policy_hash: str
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """
         Evaluate document quality for intelligent reranking.
 
@@ -515,9 +516,9 @@ class AdvancedC0Reranker(BaseMLModel):
     def _generate_reranking_recommendations(
         self,
         strategy: str,
-        context: Dict[str, Any],
-        features: Dict[str, float]
-    ) -> List[str]:
+        context: dict[str, Any],
+        features: dict[str, float]
+    ) -> list[str]:
         """Generate strategy-specific reranking recommendations."""
         recommendations = []
 
@@ -591,9 +592,9 @@ class AdvancedC0Reranker(BaseMLModel):
 
     def _analyze_reranking_factors(
         self,
-        context: Dict[str, Any],
-        features: Dict[str, float]
-    ) -> Dict[str, Any]:
+        context: dict[str, Any],
+        features: dict[str, float]
+    ) -> dict[str, Any]:
         """Analyze reranking factors and their impact."""
         factor_analysis = {
             'primary_factors': [],
@@ -653,9 +654,9 @@ class AdvancedC0Reranker(BaseMLModel):
     def _predict_relevance_improvement(
         self,
         strategy: str,
-        context: Dict[str, Any],
-        features: Dict[str, float]
-    ) -> Dict[str, Any]:
+        context: dict[str, Any],
+        features: dict[str, float]
+    ) -> dict[str, Any]:
         """Predict relevance improvement for the chosen strategy."""
         # Base improvement estimates by strategy
         improvement_estimates = {
@@ -730,7 +731,7 @@ class AdvancedC0Reranker(BaseMLModel):
 
         return adjusted_improvement
 
-    def _get_alternative_strategies(self, probability_distribution: Dict[str, float]) -> List[Dict[str, Any]]:
+    def _get_alternative_strategies(self, probability_distribution: dict[str, float]) -> list[dict[str, Any]]:
         """Get alternative reranking strategies with probabilities."""
         alternatives = []
 
@@ -767,23 +768,23 @@ class AdvancedC0Reranker(BaseMLModel):
         else:
             return "Low"
 
-    def _assess_query_document_alignment(self, semantic_context: Dict[str, Any]) -> float:
+    def _assess_query_document_alignment(self, semantic_context: dict[str, Any]) -> float:
         """Assess alignment between query and document."""
         return semantic_context.get('query_document_alignment', 0.5)
 
-    def _evaluate_semantic_coherence(self, semantic_context: Dict[str, Any]) -> float:
+    def _evaluate_semantic_coherence(self, semantic_context: dict[str, Any]) -> float:
         """Evaluate semantic coherence of the document."""
         return semantic_context.get('semantic_coherence', 0.5)
 
-    def _determine_topic_relevance(self, semantic_context: Dict[str, Any]) -> float:
+    def _determine_topic_relevance(self, semantic_context: dict[str, Any]) -> float:
         """Determine topic relevance to the query."""
         return semantic_context.get('topic_relevance', 0.5)
 
-    def _calculate_concept_coverage(self, semantic_context: Dict[str, Any]) -> float:
+    def _calculate_concept_coverage(self, semantic_context: dict[str, Any]) -> float:
         """Calculate concept coverage of the document."""
         return semantic_context.get('concept_coverage', 0.5)
 
-    def _recommend_semantic_strategy(self, semantic_analysis: Dict[str, Any]) -> str:
+    def _recommend_semantic_strategy(self, semantic_analysis: dict[str, Any]) -> str:
         """Recommend reranking strategy based on semantic analysis."""
         alignment = semantic_analysis['query_document_alignment']
         coherence = semantic_analysis['semantic_coherence']
@@ -797,7 +798,7 @@ class AdvancedC0Reranker(BaseMLModel):
         else:
             return 'Standard_Rerank'
 
-    def _analyze_attention_distribution(self, attention_context: Dict[str, Any]) -> str:
+    def _analyze_attention_distribution(self, attention_context: dict[str, Any]) -> str:
         """Analyze attention distribution pattern."""
         attention_weights = attention_context.get('attention_weights', [])
 
@@ -815,7 +816,7 @@ class AdvancedC0Reranker(BaseMLModel):
         else:
             return 'distributed'
 
-    def _identify_key_terms_attention(self, attention_context: Dict[str, Any]) -> List[str]:
+    def _identify_key_terms_attention(self, attention_context: dict[str, Any]) -> list[str]:
         """Identify key terms with high attention."""
         attention_patterns = attention_context.get('attention_patterns', {})
         key_terms = []
@@ -826,15 +827,15 @@ class AdvancedC0Reranker(BaseMLModel):
 
         return key_terms
 
-    def _evaluate_attention_consistency(self, attention_context: Dict[str, Any]) -> float:
+    def _evaluate_attention_consistency(self, attention_context: dict[str, Any]) -> float:
         """Evaluate consistency of attention patterns."""
         return attention_context.get('attention_consistency', 0.5)
 
-    def _assess_attention_relevance(self, attention_context: Dict[str, Any]) -> float:
+    def _assess_attention_relevance(self, attention_context: dict[str, Any]) -> float:
         """Assess relevance of attention patterns."""
         return attention_context.get('attention_relevance', 0.5)
 
-    def _recommend_attention_strategy(self, attention_analysis: Dict[str, Any]) -> str:
+    def _recommend_attention_strategy(self, attention_analysis: dict[str, Any]) -> str:
         """Recommend reranking strategy based on attention analysis."""
         distribution = attention_analysis['attention_distribution']
         consistency = attention_analysis['attention_consistency']
@@ -846,23 +847,23 @@ class AdvancedC0Reranker(BaseMLModel):
         else:
             return 'Standard_Rerank'
 
-    def _assess_source_credibility(self, quality_context: Dict[str, Any]) -> float:
+    def _assess_source_credibility(self, quality_context: dict[str, Any]) -> float:
         """Assess credibility of the document source."""
         return quality_context.get('source_credibility', 0.5)
 
-    def _evaluate_content_quality(self, quality_context: Dict[str, Any]) -> float:
+    def _evaluate_content_quality(self, quality_context: dict[str, Any]) -> float:
         """Evaluate quality of the document content."""
         return quality_context.get('content_quality', 0.5)
 
-    def _check_information_completeness(self, quality_context: Dict[str, Any]) -> float:
+    def _check_information_completeness(self, quality_context: dict[str, Any]) -> float:
         """Check completeness of information in the document."""
         return quality_context.get('information_completeness', 0.5)
 
-    def _evaluate_freshness_relevance(self, quality_context: Dict[str, Any]) -> float:
+    def _evaluate_freshness_relevance(self, quality_context: dict[str, Any]) -> float:
         """Evaluate relevance of document freshness."""
         return quality_context.get('freshness_relevance', 0.5)
 
-    def _recommend_quality_strategy(self, quality_analysis: Dict[str, Any]) -> str:
+    def _recommend_quality_strategy(self, quality_analysis: dict[str, Any]) -> str:
         """Recommend reranking strategy based on quality analysis."""
         credibility = quality_analysis['source_credibility']
         content_quality = quality_analysis['content_quality']
@@ -874,7 +875,7 @@ class AdvancedC0Reranker(BaseMLModel):
         else:
             return 'Standard_Rerank'
 
-    def get_feature_importance(self, model_input: ModelInput) -> List[Dict[str, Any]]:
+    def get_feature_importance(self, model_input: ModelInput) -> list[dict[str, Any]]:
         """Get feature importance for explainability."""
         if not self.is_loaded or not self.pipeline:
             return []
@@ -912,7 +913,7 @@ class AdvancedC0Reranker(BaseMLModel):
             # Failed to compute importance
             return []
 
-    def _extract_feature_vector(self, features: Dict[str, Any]) -> Optional[np.ndarray]:
+    def _extract_feature_vector(self, features: dict[str, Any]) -> np.ndarray | None:
         """Extract features in the correct order for the model."""
         if not self.feature_names:
             return None
@@ -928,7 +929,7 @@ class AdvancedC0Reranker(BaseMLModel):
         except Exception as e:
             return None
 
-    def preprocess_features(self, features: Dict[str, Any]) -> Tuple[Dict[str, Any], List[str]]:
+    def preprocess_features(self, features: dict[str, Any]) -> tuple[dict[str, Any], list[str]]:
         """Preprocess features for Transformer-inspired model."""
         processed_features, preprocessing_steps = super().preprocess_features(features)
 
@@ -950,8 +951,8 @@ class AdvancedC0Reranker(BaseMLModel):
 
     def train_model(
         self,
-        training_data: List[Dict[str, Any]],
-        feature_names: List[str],
+        training_data: list[dict[str, Any]],
+        feature_names: list[str],
         training_data_digest: str = ""
     ) -> None:
         """

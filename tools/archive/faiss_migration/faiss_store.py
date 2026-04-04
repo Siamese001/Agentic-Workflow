@@ -14,12 +14,11 @@ Supports:
 from __future__ import annotations
 
 import hashlib
-import json
 import logging
 import pickle
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Any, Optional, Union
+from typing import Any
 
 import numpy as np
 
@@ -60,7 +59,7 @@ class FaissVectorStore:
         index_type: str = "IVF",  # IVF, HNSW, Flat
         nlist: int = 100,  # IVF clusters
         metric: str = "cosine",  # cosine, l2, ip
-        persist_path: Optional[str] = None,
+        persist_path: str | None = None,
         normalize: bool = False,
     ):
         """Initialize FAISS vector store.
@@ -80,7 +79,7 @@ class FaissVectorStore:
         self.persist_path = persist_path
         self.normalize = normalize
 
-        self._index: Optional[Any] = None
+        self._index: Any | None = None
         self._documents: dict[str, VectorDocument] = {}
         self._id_to_idx: dict[str, int] = {}
         self._next_idx = 0
@@ -185,7 +184,7 @@ class FaissVectorStore:
         self,
         query_vector: np.ndarray,
         k: int = 10,
-        filter_fn: Optional[callable] = None,
+        filter_fn: callable | None = None,
     ) -> list[dict[str, Any]]:
         """Search for similar vectors.
 
@@ -293,7 +292,7 @@ class FaissVectorStore:
         """Alias for delete method."""
         return self.delete(doc_id)
 
-    def get_document(self, doc_id: str) -> Optional[VectorDocument]:
+    def get_document(self, doc_id: str) -> VectorDocument | None:
         """Get a document by ID.
 
         Args:
@@ -318,7 +317,7 @@ class FaissVectorStore:
             return vector
         return vector / norm
 
-    def persist(self, path: Optional[str] = None) -> bool:
+    def persist(self, path: str | None = None) -> bool:
         """Persist index and metadata to disk.
 
         Args:
@@ -371,7 +370,7 @@ class FaissVectorStore:
             Logger.error(f"Failed to persist FAISS index: {e}")
             return False
 
-    def load(self, path: Optional[str] = None) -> bool:
+    def load(self, path: str | None = None) -> bool:
         """Load index and metadata from disk.
 
         Args:
@@ -464,7 +463,7 @@ class FaissEmbeddingStore:
         chunk_id: str,
         embedding: list[float],
         content: str,
-        metadata: Optional[dict[str, Any]] = None,
+        metadata: dict[str, Any] | None = None,
     ) -> bool:
         """Store a single embedding.
 
@@ -522,7 +521,7 @@ class FaissEmbeddingStore:
 
 
 # Global instance
-_global_faiss_store: Optional[FaissEmbeddingStore] = None
+_global_faiss_store: FaissEmbeddingStore | None = None
 
 
 def get_global_faiss_store() -> FaissEmbeddingStore:
@@ -537,7 +536,7 @@ def store_embedding(
     chunk_id: str,
     embedding: list[float],
     content: str,
-    metadata: Optional[dict[str, Any]] = None,
+    metadata: dict[str, Any] | None = None,
 ) -> bool:
     """Convenience function to store embedding."""
     return get_global_faiss_store().store_embedding(

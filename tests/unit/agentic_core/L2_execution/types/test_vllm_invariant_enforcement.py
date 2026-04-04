@@ -32,4 +32,3 @@ def test_adapter_fail_violation_triggers_gemini_with_violations_attached():
     """Test that FAIL violation triggers Gemini fallback with violations in telemetry.
 
     """
-    from unittest.mock import patch

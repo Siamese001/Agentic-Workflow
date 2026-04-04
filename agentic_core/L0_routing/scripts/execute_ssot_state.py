@@ -3,9 +3,9 @@
 This module contains RuntimeStateManager for managing execution state and checkpoints.
 """
 
-from typing import Any, Dict, List, Optional
 import json
 import time
+from typing import Any
 
 
 class RuntimeStateManager:
@@ -18,14 +18,14 @@ class RuntimeStateManager:
     - Progress tracking
     """
 
-    def __init__(self, checkpoint_dir: Optional[str] = None):
+    def __init__(self, checkpoint_dir: str | None = None):
         self.checkpoint_dir = checkpoint_dir
-        self.state: Dict[str, Any] = {}
-        self.checkpoints: List[Dict] = []
-        self.current_phase: Optional[str] = None
-        self.start_time: Optional[float] = None
+        self.state: dict[str, Any] = {}
+        self.checkpoints: list[dict] = []
+        self.current_phase: str | None = None
+        self.start_time: float | None = None
 
-    def initialize(self, initial_state: Dict[str, Any]) -> None:
+    def initialize(self, initial_state: dict[str, Any]) -> None:
         """Initialize state manager with initial state.
 
         Args:
@@ -56,7 +56,7 @@ class RuntimeStateManager:
         """
         self.state[key] = value
 
-    def create_checkpoint(self, phase: str, metadata: Optional[Dict] = None) -> int:
+    def create_checkpoint(self, phase: str, metadata: dict | None = None) -> int:
         """Create a checkpoint for the current phase.
 
         Args:
@@ -93,7 +93,7 @@ class RuntimeStateManager:
         self.current_phase = checkpoint["phase"]
         return True
 
-    def get_latest_checkpoint(self) -> Optional[Dict]:
+    def get_latest_checkpoint(self) -> dict | None:
         """Get the latest checkpoint.
 
         Returns:
@@ -103,7 +103,7 @@ class RuntimeStateManager:
             return None
         return self.checkpoints[-1]
 
-    def save_to_disk(self, filepath: str) -> tuple[bool, Optional[str]]:
+    def save_to_disk(self, filepath: str) -> tuple[bool, str | None]:
         """Save current state to disk.
 
         Args:
@@ -125,7 +125,7 @@ class RuntimeStateManager:
         except Exception as e:
             return False, str(e)
 
-    def load_from_disk(self, filepath: str) -> tuple[bool, Optional[str]]:
+    def load_from_disk(self, filepath: str) -> tuple[bool, str | None]:
         """Load state from disk.
 
         Args:
@@ -135,7 +135,7 @@ class RuntimeStateManager:
             Tuple of (success, error_message)
         """
         try:
-            with open(filepath, 'r') as f:
+            with open(filepath) as f:
                 data = json.load(f)
             self.state = data.get("state", {})
             self.checkpoints = data.get("checkpoints", [])

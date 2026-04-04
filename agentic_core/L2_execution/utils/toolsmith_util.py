@@ -26,7 +26,7 @@ Logger = logging.getLogger(__name__)
 @dataclass
 class ToolSpec:
     """Specification for a tool."""
-    
+
     name: str
     description: str
     parameters: dict[str, dict]
@@ -34,7 +34,7 @@ class ToolSpec:
     category: str = "general"
     version: str = "1.0.0"
     created_at: datetime = field(default_factory=datetime.utcnow)
-    
+
     def to_dict(self) -> dict[str, Any]:
         """Convert to dictionary."""
         return {
@@ -50,13 +50,13 @@ class ToolSpec:
 @dataclass
 class GeneratedTool:
     """A dynamically generated tool."""
-    
+
     spec: ToolSpec
     code: str
     imports: list[str] = field(default_factory=list)
     dependencies: list[str] = field(default_factory=list)
     test_code: str | None = None
-    
+
     def to_dict(self) -> dict[str, Any]:
         """Convert to dictionary."""
         return {
@@ -182,17 +182,17 @@ def generate_tool_from_template(
     template_code = get_tool_template(template_name)
     if not template_code:
         return None
-    
+
     # Extract function name from template
     name = template_name
-    
+
     spec = ToolSpec(
         name=name,
         description=f"Auto-generated {template_name} tool",
         parameters={},
         category=category,
     )
-    
+
     return GeneratedTool(
         spec=spec,
         code=template_code,
@@ -211,7 +211,7 @@ def validate_tool_code(code: str) -> dict[str, Any]:
         Validation result dictionary
     """
     import ast
-    
+
     try:
         ast.parse(code)
         return {

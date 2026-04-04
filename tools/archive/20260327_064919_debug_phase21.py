@@ -2,15 +2,17 @@
 """Debug Phase 2.1 test setup."""
 
 import json
+
+# Import the module we're testing
+import sys
 import tempfile
 from pathlib import Path
 from unittest.mock import patch
 
-# Import the module we're testing
-import sys
 sys.path.insert(0, str(Path(__file__).parent / "tools"))
 
 from fix_high_severity_silent_swallowers import HighSeveritySilentSwallowerFixer
+
 
 def debug_phase21():
     """Debug Phase 2.1 setup."""

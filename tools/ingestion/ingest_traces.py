@@ -16,7 +16,6 @@ import logging
 import os
 import sys
 from pathlib import Path
-from typing import Dict, List, Optional
 
 import chromadb
 from openai import OpenAI
@@ -37,12 +36,12 @@ class TraceChunker:
     def __init__(self, max_trace_length: int = 2000):
         self.max_trace_length = max_trace_length
 
-    def chunk_trace_file(self, file_path: Path) -> List[Dict]:
+    def chunk_trace_file(self, file_path: Path) -> list[dict]:
         """Process JSONL file and convert each trace to a chunk."""
         chunks = []
 
         try:
-            with open(file_path, 'r', encoding='utf-8') as f:
+            with open(file_path, encoding='utf-8') as f:
                 for line_num, line in enumerate(f, 1):
                     line = line.strip()
                     if not line:
@@ -68,7 +67,7 @@ class TraceChunker:
         Logger.info(f"Generated {len(chunks)} trace chunks")
         return chunks
 
-    def _process_trace(self, trace_data: Dict, line_num: int) -> Optional[Dict]:
+    def _process_trace(self, trace_data: dict, line_num: int) -> dict | None:
         """Process a single trace and convert to chunk format."""
         # Extract key fields with fallbacks
         trace_id = trace_data.get('trace_id', f'trace_{line_num}')
@@ -143,7 +142,7 @@ class TraceChunker:
             'metadata': metadata
         }
 
-    def _determine_trace_type(self, trace_data: Dict, content: str) -> str:
+    def _determine_trace_type(self, trace_data: dict, content: str) -> str:
         """Determine the type of trace based on content and structure."""
         # Check for explicit type field
         if 'type' in trace_data:
@@ -192,7 +191,7 @@ class EmbeddingGenerator:
         else:
             Logger.info("Using mock embeddings for testing")
 
-    def generate_embeddings(self, texts: List[str]) -> List[List[float]]:
+    def generate_embeddings(self, texts: list[str]) -> list[list[float]]:
         """Generate embeddings for a list of texts."""
         if self.mock_embeddings:
             # Generate mock embeddings (1536-dimensional vectors)
@@ -245,7 +244,7 @@ class VectorDBIngestor:
             Logger.error(f"Failed to initialize ChromaDB collection '{collection_name}': {e}")
             raise
 
-    def ingest_chunks(self, chunks: List[Dict], embeddings: List[List[float]]) -> int:
+    def ingest_chunks(self, chunks: list[dict], embeddings: list[list[float]]) -> int:
         """Ingest chunks and embeddings into ChromaDB."""
         if len(chunks) != len(embeddings):
             raise ValueError("Number of chunks and embeddings must match")
@@ -292,7 +291,7 @@ class VectorDBIngestor:
         Logger.info(f"Successfully ingested {total_ingested} traces into ChromaDB")
         return total_ingested
 
-    def get_collection_stats(self) -> Dict:
+    def get_collection_stats(self) -> dict:
         """Get statistics about the collection."""
         try:
             count = self.collection.count()
@@ -311,7 +310,7 @@ def count_traces_in_file(file_path: Path) -> int:
     """Count the number of traces in a JSONL file."""
     count = 0
     try:
-        with open(file_path, 'r', encoding='utf-8') as f:
+        with open(file_path, encoding='utf-8') as f:
             for line in f:
                 if line.strip():
                     count += 1

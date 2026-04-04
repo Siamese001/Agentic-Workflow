@@ -7,15 +7,16 @@ and content relevance.
 """
 
 import pickle
-import numpy as np
-from pathlib import Path
-from typing import Dict, List, Optional, Any, Tuple
-from datetime import datetime
 from collections import deque
+from datetime import datetime
+from pathlib import Path
+from typing import Any
 
-from .base_model import BaseMLModel, ModelPrediction, ModelInput, PredictionType, DecisionMode
-from ..config.model_registry import DecisionMode
+import numpy as np
+
 from ..config.feature_schemas import FeatureSchema
+from ..config.model_registry import DecisionMode
+from .base_model import BaseMLModel, DecisionMode, ModelInput, ModelPrediction, PredictionType
 
 
 class EWMACacheClassifier(BaseMLModel):
@@ -44,7 +45,7 @@ class EWMACacheClassifier(BaseMLModel):
     # Reverse mapping
     REVERSE_CACHE_MAPPING = {v: k for k, v in CACHE_MAPPING.items()}
 
-    def __init__(self, model_file_path: Optional[Path] = None):
+    def __init__(self, model_file_path: Path | None = None):
         super().__init__(
             model_name="semantic_cache_classifier",
             model_version="1.0",
@@ -92,7 +93,7 @@ class EWMACacheClassifier(BaseMLModel):
 
     def _create_cache_schema(self) -> FeatureSchema:
         """Create feature schema for cache classifier."""
-        from ..config.feature_schemas import FeatureSchema, FeatureDefinition, FeatureType
+        from ..config.feature_schemas import FeatureDefinition, FeatureSchema, FeatureType
 
         features = [
             FeatureDefinition(
@@ -332,8 +333,8 @@ class EWMACacheClassifier(BaseMLModel):
     def update_cache_entry(
         self,
         cache_id: str,
-        access_event: Dict[str, Any],
-        current_time: Optional[datetime] = None
+        access_event: dict[str, Any],
+        current_time: datetime | None = None
     ) -> None:
         """
         Update cache entry with new access event.
@@ -442,7 +443,7 @@ class EWMACacheClassifier(BaseMLModel):
         trace_id: str,
         replay_key: str,
         policy_hash: str
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """
         Get comprehensive cache management recommendations.
 
@@ -489,7 +490,7 @@ class EWMACacheClassifier(BaseMLModel):
             'priority': self._get_cache_priority(prediction.prediction, ewma_score)
         }
 
-    def _extract_features_from_entry(self, cache_id: str) -> Dict[str, float]:
+    def _extract_features_from_entry(self, cache_id: str) -> dict[str, float]:
         """Extract features from cache entry data."""
         entry = self.cache_entries.get(cache_id, {})
         access_history = self.access_history.get(cache_id, deque())
@@ -620,7 +621,7 @@ class EWMACacheClassifier(BaseMLModel):
         confidence = base_confidence * variance_factor * history_factor
         return round(min(1.0, max(0.0, confidence)), 3)
 
-    def _extract_feature_vector(self, features: Dict[str, Any]) -> Optional[np.ndarray]:
+    def _extract_feature_vector(self, features: dict[str, Any]) -> np.ndarray | None:
         """Extract features in the correct order for the model."""
         try:
             feature_vector = []
@@ -646,9 +647,9 @@ class EWMACacheClassifier(BaseMLModel):
     def _generate_cache_recommendations(
         self,
         classification: str,
-        entry: Dict[str, Any],
+        entry: dict[str, Any],
         ewma_score: float
-    ) -> List[str]:
+    ) -> list[str]:
         """Generate cache management recommendations."""
         recommendations = []
 
@@ -693,7 +694,7 @@ class EWMACacheClassifier(BaseMLModel):
 
         return recommendations
 
-    def _calculate_cache_statistics(self, cache_id: str) -> Dict[str, Any]:
+    def _calculate_cache_statistics(self, cache_id: str) -> dict[str, Any]:
         """Calculate statistics for cache entry."""
         entry = self.cache_entries.get(cache_id, {})
         access_history = self.access_history.get(cache_id, deque())
@@ -726,7 +727,7 @@ class EWMACacheClassifier(BaseMLModel):
         else:
             return "Low"
 
-    def get_feature_importance(self, model_input: ModelInput) -> List[Dict[str, Any]]:
+    def get_feature_importance(self, model_input: ModelInput) -> list[dict[str, Any]]:
         """Get feature importance for explainability."""
         # For EWMA, importance is based on feature weights
         weights = {
@@ -761,7 +762,7 @@ class EWMACacheClassifier(BaseMLModel):
 
         return feature_importance
 
-    def preprocess_features(self, features: Dict[str, Any]) -> Tuple[Dict[str, Any], List[str]]:
+    def preprocess_features(self, features: dict[str, Any]) -> tuple[dict[str, Any], list[str]]:
         """Preprocess features for EWMA."""
         processed_features, preprocessing_steps = super().preprocess_features(features)
 
@@ -790,7 +791,7 @@ class EWMACacheClassifier(BaseMLModel):
 
     def train_model(
         self,
-        training_data: List[Dict[str, Any]],
+        training_data: list[dict[str, Any]],
         training_data_digest: str = ""
     ) -> None:
         """

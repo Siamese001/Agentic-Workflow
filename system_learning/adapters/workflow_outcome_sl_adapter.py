@@ -7,6 +7,7 @@ Captures workflow execution patterns for meta-learning analysis.
 import logging
 from typing import Any
 
+
 # Lazy import to avoid L_SL->L3 gravity violation
 def _get_workflow_outcome():
     from agentic_core.L3_orchestration.learning.workflow_learning_bridge import WorkflowOutcome
@@ -82,7 +83,9 @@ def get_workflow_outcome_sl_adapter() -> WorkflowOutcomeSLAdapter:
 def register_with_workflow_bridge() -> None:
     """Register the SL adapter with the WorkflowLearningBridge."""
     try:
-        from agentic_core.L3_orchestration.learning.workflow_learning_bridge import get_workflow_learning_bridge
+        from agentic_core.L3_orchestration.learning.workflow_learning_bridge import (
+            get_workflow_learning_bridge,
+        )
 
         bridge = get_workflow_learning_bridge()
         adapter = get_workflow_outcome_sl_adapter()

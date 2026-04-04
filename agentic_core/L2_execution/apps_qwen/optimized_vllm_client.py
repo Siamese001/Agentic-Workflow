@@ -15,7 +15,7 @@ import hashlib
 import logging
 import time
 from dataclasses import dataclass
-from typing import Any, Optional
+from typing import Any
 from urllib.parse import urljoin
 
 import aiohttp
@@ -33,8 +33,8 @@ class VLLMRequest:
     max_tokens: int = 2048
     temperature: float = 0.1
     top_p: float = 1.0
-    stop: Optional[list[str]] = None
-    request_id: Optional[str] = None
+    stop: list[str] | None = None
+    request_id: str | None = None
 
 
 @dataclass(frozen=True)
@@ -45,7 +45,7 @@ class VLLMResponse:
     model: str
     tokens_used: int
     latency_ms: float
-    error_message: Optional[str] = None
+    error_message: str | None = None
     cached: bool = False
 
 
@@ -85,11 +85,11 @@ class OptimizedVLLMClient:
         # Batching queue
         self._batch_queue: asyncio.Queue[VLLMRequest] = asyncio.Queue()
         self._batch_results: dict[str, asyncio.Future[VLLMResponse]] = {}
-        self._batch_task: Optional[asyncio.Task] = None
+        self._batch_task: asyncio.Task | None = None
 
         # HTTP session with keep-alive
-        self._session: Optional[aiohttp.ClientSession] = None
-        self._connector: Optional[aiohttp.TCPConnector] = None
+        self._session: aiohttp.ClientSession | None = None
+        self._connector: aiohttp.TCPConnector | None = None
 
         # Metrics
         self._requests_total = 0
@@ -434,7 +434,7 @@ class OptimizedVLLMClient:
 
 
 # Singleton instance for apps layer
-_vllm_client: Optional[OptimizedVLLMClient] = None
+_vllm_client: OptimizedVLLMClient | None = None
 
 
 async def get_vllm_client() -> OptimizedVLLMClient:

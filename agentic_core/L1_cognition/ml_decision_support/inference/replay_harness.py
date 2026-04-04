@@ -7,12 +7,13 @@ and detecting drift over time.
 
 import json
 import time
+from dataclasses import asdict, dataclass
 from datetime import datetime
 from pathlib import Path
-from typing import Dict, List, Optional, Any
-from dataclasses import dataclass, asdict
+from typing import Any
 
 from agentic_core.L_CONTRACTS.lifecycle_trace_contract import _emit_records_execution_trace
+
 from ..models.base_model import ModelPrediction
 
 
@@ -26,7 +27,7 @@ class ReplayResult:
     prediction_difference: Any
     replay_timestamp: datetime
     replay_success: bool
-    error_message: Optional[str] = None
+    error_message: str | None = None
 
 
 @dataclass
@@ -34,7 +35,7 @@ class ReplaySession:
     """Session for batch replay operations."""
     session_id: str
     start_time: datetime
-    end_time: Optional[datetime] = None
+    end_time: datetime | None = None
     total_replays: int = 0
     successful_replays: int = 0
     failed_replays: int = 0
@@ -58,17 +59,17 @@ class ReplayHarness:
         self.replay_log_path = Path(replay_log_path)
         self.replay_log_path.mkdir(parents=True, exist_ok=True)
         self.replay_log_file = self.replay_log_path / "replay_results.jsonl"
-        self.active_sessions: Dict[str, ReplaySession] = {}
+        self.active_sessions: dict[str, ReplaySession] = {}
 
     def replay_prediction(
         self,
         model,
-        original_context: Dict[str, Any],
+        original_context: dict[str, Any],
         original_trace_id: str,
         original_replay_key: str,
         original_policy_hash: str,
-        original_semantic_clock: Optional[int] = None,
-        original_prediction: Optional[ModelPrediction] = None
+        original_semantic_clock: int | None = None,
+        original_prediction: ModelPrediction | None = None
     ) -> ReplayResult:
         """
         Replay a single prediction to verify determinism.
@@ -169,8 +170,8 @@ class ReplayHarness:
     def replay_batch(
         self,
         model,
-        replay_cases: List[Dict[str, Any]],
-        session_id: Optional[str] = None
+        replay_cases: list[dict[str, Any]],
+        session_id: str | None = None
     ) -> ReplaySession:
         """
         Replay multiple predictions in a batch.
@@ -234,9 +235,9 @@ class ReplayHarness:
     def validate_determinism(
         self,
         model,
-        test_cases: List[Dict[str, Any]],
+        test_cases: list[dict[str, Any]],
         tolerance: float = 0.001
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """
         Validate model determinism across multiple test cases.
 
@@ -283,10 +284,10 @@ class ReplayHarness:
     def detect_drift(
         self,
         model,
-        historical_cases: List[Dict[str, Any]],
-        current_cases: List[Dict[str, Any]],
+        historical_cases: list[dict[str, Any]],
+        current_cases: list[dict[str, Any]],
         drift_threshold: float = 0.1
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """
         Detect model drift by comparing historical and current predictions.
 
@@ -377,7 +378,7 @@ class ReplayHarness:
 
         return conf2 - conf1
 
-    def _calculate_average_confidence(self, cases: List[Dict[str, Any]]) -> float:
+    def _calculate_average_confidence(self, cases: list[dict[str, Any]]) -> float:
         """Calculate average confidence from cases."""
         confidences = []
 
@@ -390,8 +391,8 @@ class ReplayHarness:
 
     def _calculate_prediction_distribution_drift(
         self,
-        historical_cases: List[Dict[str, Any]],
-        current_cases: List[Dict[str, Any]]
+        historical_cases: list[dict[str, Any]],
+        current_cases: list[dict[str, Any]]
     ) -> float:
         """Calculate drift in prediction distributions."""
         # Get prediction distributions
@@ -409,7 +410,7 @@ class ReplayHarness:
 
         return drift_sum / len(all_predictions) if all_predictions else 0.0
 
-    def _get_prediction_distribution(self, cases: List[Dict[str, Any]]) -> Dict[str, float]:
+    def _get_prediction_distribution(self, cases: list[dict[str, Any]]) -> dict[str, float]:
         """Get prediction distribution from cases."""
         distribution = {}
 
@@ -467,7 +468,7 @@ class ReplayHarness:
         except Exception as e:
             print(f"Failed to log session summary: {e}")
 
-    def _log_validation_result(self, validation_result: Dict[str, Any]) -> None:
+    def _log_validation_result(self, validation_result: dict[str, Any]) -> None:
         """Log determinism validation result."""
         try:
             _emit_records_execution_trace(
@@ -479,7 +480,7 @@ class ReplayHarness:
         except Exception as e:
             print(f"Failed to log validation result: {e}")
 
-    def _log_drift_result(self, drift_result: Dict[str, Any]) -> None:
+    def _log_drift_result(self, drift_result: dict[str, Any]) -> None:
         """Log drift detection result."""
         try:
             _emit_records_execution_trace(
@@ -491,7 +492,7 @@ class ReplayHarness:
         except Exception as e:
             print(f"Failed to log drift result: {e}")
 
-    def get_replay_statistics(self) -> Dict[str, Any]:
+    def get_replay_statistics(self) -> dict[str, Any]:
         """Get overall replay statistics."""
         try:
             total_replays = 0
@@ -499,7 +500,7 @@ class ReplayHarness:
             matches = 0
             mismatches = 0
 
-            with open(self.replay_log_file, 'r', encoding='utf-8') as f:
+            with open(self.replay_log_file, encoding='utf-8') as f:
                 for line in f:
                     try:
                         log_entry = json.loads(line.strip())

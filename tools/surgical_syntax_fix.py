@@ -5,10 +5,9 @@ This script fixes the specific pattern where the migration script
 removed the 'from' statement but left the import content lines.
 """
 
+import ast
 import pathlib
 import re
-import ast
-from typing import Dict, List, Tuple
 
 
 class SurgicalSyntaxFixer:
@@ -24,9 +23,9 @@ class SurgicalSyntaxFixer:
             'orphaned_import_content_removed': 0,
             'files_with_errors': 0
         }
-        self.failed_files: List[Tuple[str, str]] = []
+        self.failed_files: list[tuple[str, str]] = []
 
-    def fix_active_test_files(self) -> Dict:
+    def fix_active_test_files(self) -> dict:
         """Fix syntax errors using surgical approach."""
         # Only process files in tests/ directory, exclude archives
         test_files = []
@@ -157,7 +156,7 @@ class SurgicalSyntaxFixer:
         print(f"Failed files: {len(self.failed_files)}")
 
         if self.failed_files:
-            print(f"\nFailed files (first 10):")
+            print("\nFailed files (first 10):")
             for file_path, error in self.failed_files[:10]:
                 print(f"  {file_path}: {error}")
             if len(self.failed_files) > 10:

@@ -7,9 +7,8 @@ Validates full integration with agentic_core and structure blueprint.
 from __future__ import annotations
 
 import pytest
-from typing import Any
 
-from apps_exec.config.agent_spec_config import ExecAgentSpecs, load_exec_specs
+from apps_exec.config.agent_spec_config import load_exec_specs
 from apps_exec.reasoning import (
     BriefAssemblyAgent,
     ExecOrchestrator,

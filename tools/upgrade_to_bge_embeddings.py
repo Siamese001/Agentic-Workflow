@@ -4,11 +4,9 @@ Upgrade ChromaDB collections to use BGE embeddings (recommended)
 BGE models are open-source, free, and high-quality
 """
 
-import os
 import logging
-from pathlib import Path
+
 import chromadb
-from chromadb.utils import embedding_functions
 
 # Setup logging
 logging.basicConfig(level=logging.INFO)

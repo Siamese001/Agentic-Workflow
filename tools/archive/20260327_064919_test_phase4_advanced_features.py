@@ -9,7 +9,7 @@ and dashboard functionality.
 import sys
 import time
 import traceback
-from typing import Any, Dict, List
+
 
 def test_advanced_analytics():
     """Test advanced Runtime ADG analytics functionality."""
@@ -26,7 +26,7 @@ def test_advanced_analytics():
 
         analytics = get_global_analytics()
         results['analytics_init'] = analytics is not None
-        print(f"✅ Advanced analytics initialized successfully")
+        print("✅ Advanced analytics initialized successfully")
 
     except Exception as e:
         results['analytics_init'] = False
@@ -37,7 +37,7 @@ def test_advanced_analytics():
     print("\n2. Testing pattern analysis...")
     try:
         # Create a mock snapshot for testing
-        from system_learning.runtime_adg import RuntimeADGSnapshot, RuntimeADGNode, RuntimeADGEdge
+        from system_learning.runtime_adg import RuntimeADGEdge, RuntimeADGNode, RuntimeADGSnapshot
 
         # Create test nodes
         nodes = [
@@ -100,7 +100,7 @@ def test_advanced_analytics():
         results['pattern_metrics'] = hasattr(insights, 'pattern_metrics')
         results['recommendations'] = hasattr(insights, 'recommendations')
 
-        print(f"✅ Pattern analysis completed:")
+        print("✅ Pattern analysis completed:")
         print(f"   - Performance metrics available: {results['performance_metrics']}")
         print(f"   - Pattern metrics available: {results['pattern_metrics']}")
         print(f"   - Recommendations available: {results['recommendations']}")
@@ -127,7 +127,7 @@ def test_advanced_analytics():
             results['slow_operations'] = len(perf.slow_operations) > 0
             results['fast_operations'] = len(perf.fast_operations) > 0
 
-            print(f"✅ Performance metrics analysis:")
+            print("✅ Performance metrics analysis:")
             print(f"   - Bottlenecks detected: {len(perf.bottleneck_nodes)}")
             print(f"   - Slow operations: {len(perf.slow_operations)}")
             print(f"   - Fast operations: {len(perf.fast_operations)}")
@@ -158,7 +158,7 @@ def test_advanced_analytics():
             results['recommendation_types'] = len(set(r.get('type', 'unknown') for r in recommendations))
             results['high_priority_recs'] = len([r for r in recommendations if r.get('priority') == 'high'])
 
-            print(f"✅ Optimization recommendations:")
+            print("✅ Optimization recommendations:")
             print(f"   - Total recommendations: {len(recommendations)}")
             print(f"   - Recommendation types: {results['recommendation_types']}")
             print(f"   - High priority: {results['high_priority_recs']}")
@@ -187,7 +187,7 @@ def test_advanced_analytics():
         results['trend_data_available'] = len(trends) > 0 if isinstance(trends, dict) else False
 
         if isinstance(trends, dict):
-            print(f"✅ Trend analysis:")
+            print("✅ Trend analysis:")
             print(f"   - Efficiency trend: {trends.get('efficiency_trend', 'unknown')}")
             print(f"   - Complexity trend: {trends.get('complexity_trend', 'unknown')}")
             print(f"   - Reliability trend: {trends.get('reliability_trend', 'unknown')}")
@@ -237,7 +237,7 @@ def test_performance_optimization():
 
         collector = get_global_optimized_collector()
         results['perf_collector_init'] = collector is not None
-        print(f"✅ Performance optimized collector initialized successfully")
+        print("✅ Performance optimized collector initialized successfully")
 
     except Exception as e:
         results['perf_collector_init'] = False
@@ -255,7 +255,7 @@ def test_performance_optimization():
             results['compression_enabled'] = config.compression_enabled
             results['adaptive_scheduling'] = config.adaptive_scheduling
 
-            print(f"✅ Collection configuration:")
+            print("✅ Collection configuration:")
             print(f"   - Batch size: {config.batch_size}")
             print(f"   - Max buffer size: {config.max_buffer_size}")
             print(f"   - Compression enabled: {config.compression_enabled}")
@@ -298,7 +298,7 @@ def test_performance_optimization():
             results['agent_registration'] = True
             results['registered_agents'] = len(collector._registered_agents) > 0
 
-            print(f"✅ Agent registration:")
+            print("✅ Agent registration:")
             print(f"   - Registered agents: {len(collector._registered_agents)}")
 
         else:
@@ -342,7 +342,7 @@ def test_performance_optimization():
             # Stop collection
             collector.stop_collection()
 
-            print(f"✅ Span collection:")
+            print("✅ Span collection:")
             print(f"   - Spans processed per second: {stats.get('performance_metrics', {}).get('spans_per_second', 0)}")
             print(f"   - Memory usage: {stats.get('performance_metrics', {}).get('memory_usage_mb', 0):.1f} MB")
 
@@ -372,7 +372,7 @@ def test_performance_optimization():
             results['span_optimization'] = isinstance(optimized_spans, list)
             results['optimized_span_count'] = len(optimized_spans) > 0
 
-            print(f"✅ Performance optimization features:")
+            print("✅ Performance optimization features:")
             print(f"   - Optimization recommendations: {len(recommendations)}")
             print(f"   - Recommendation types: {results['rec_types']}")
             print(f"   - Span optimization working: {results['span_optimization']}")
@@ -430,7 +430,7 @@ def test_enhanced_monitoring():
 
         observability = get_global_observability()
         results['observability_init'] = observability is not None
-        print(f"✅ Enhanced observability initialized successfully")
+        print("✅ Enhanced observability initialized successfully")
 
     except Exception as e:
         results['observability_init'] = False
@@ -454,7 +454,7 @@ def test_enhanced_monitoring():
             results['health_checks_available'] = hasattr(health, 'checks') if health else False
 
             if health:
-                print(f"✅ Health checks:")
+                print("✅ Health checks:")
                 print(f"   - Health status: {health.status.value}")
                 print(f"   - Health score: {health.score:.1f}")
                 print(f"   - Health checks count: {len(health.checks)}")
@@ -491,7 +491,7 @@ def test_enhanced_monitoring():
 
             results['alert_history'] = isinstance(alert_history, list)
 
-            print(f"✅ Alert system:")
+            print("✅ Alert system:")
             print(f"   - Active alerts: {len(alerts)}")
             print(f"   - Alert history entries: {len(alert_history)}")
 
@@ -526,7 +526,7 @@ def test_enhanced_monitoring():
 
             results['metrics_history'] = isinstance(cpu_history, list)
 
-            print(f"✅ Metrics collection:")
+            print("✅ Metrics collection:")
             print(f"   - Current metrics count: {len(current_metrics)}")
             print(f"   - CPU history entries: {len(cpu_history)}")
 
@@ -556,7 +556,7 @@ def test_enhanced_monitoring():
             results['dashboard_sections'] = len(dashboard_data) > 0 if isinstance(dashboard_data, dict) else False
 
             if isinstance(dashboard_data, dict):
-                print(f"✅ Dashboard data:")
+                print("✅ Dashboard data:")
                 print(f"   - Data sections: {list(dashboard_data.keys())}")
                 print(f"   - System health available: {'system_health' in dashboard_data}")
                 print(f"   - Active alerts available: {'active_alerts' in dashboard_data}")
@@ -611,7 +611,7 @@ def test_distributed_tracing():
 
         coordinator = get_global_coordinator()
         results['coordinator_init'] = coordinator is not None
-        print(f"✅ Distributed tracing coordinator initialized successfully")
+        print("✅ Distributed tracing coordinator initialized successfully")
 
     except Exception as e:
         results['coordinator_init'] = False
@@ -629,7 +629,7 @@ def test_distributed_tracing():
             results['coordination_startup'] = coordinator._coordination_active
             results['service_registered'] = len(coordinator._registered_services) > 0
 
-            print(f"✅ Coordination startup:")
+            print("✅ Coordination startup:")
             print(f"   - Coordination active: {coordinator._coordination_active}")
             print(f"   - Registered services: {len(coordinator._registered_services)}")
 
@@ -658,7 +658,7 @@ def test_distributed_tracing():
             results['span_id_available'] = hasattr(context, 'span_id')
             results['service_name_set'] = context.service_name == "test-service"
 
-            print(f"✅ Trace context creation:")
+            print("✅ Trace context creation:")
             print(f"   - Trace ID: {context.trace_id}")
             print(f"   - Span ID: {context.span_id}")
             print(f"   - Service name: {context.service_name}")
@@ -704,7 +704,7 @@ def test_distributed_tracing():
             results['trace_propagation'] = isinstance(propagation_success, bool)
             results['propagation_attempted'] = True
 
-            print(f"✅ Trace propagation:")
+            print("✅ Trace propagation:")
             print(f"   - Propagation success: {propagation_success}")
             print(f"   - Registered services: {len(coordinator._registered_services)}")
 
@@ -733,7 +733,7 @@ def test_distributed_tracing():
             results['traces_created'] = stats.get("statistics", {}).get("traces_created", 0) >= 0
 
             if isinstance(stats, dict):
-                print(f"✅ Coordination statistics:")
+                print("✅ Coordination statistics:")
                 print(f"   - Coordination active: {stats.get('coordination_active')}")
                 print(f"   - Registered services: {stats.get('registered_services')}")
                 print(f"   - Active traces: {stats.get('active_traces')}")
@@ -791,7 +791,7 @@ def test_analytics_dashboard():
 
         dashboard = get_global_dashboard()
         results['dashboard_init'] = dashboard is not None
-        print(f"✅ Analytics dashboard initialized successfully")
+        print("✅ Analytics dashboard initialized successfully")
 
     except Exception as e:
         results['dashboard_init'] = False
@@ -810,7 +810,7 @@ def test_analytics_dashboard():
                 'system_health', 'active_traces', 'performance_metrics', 'alerts', 'service_health', 'optimization'
             ])
 
-            print(f"✅ Default widgets:")
+            print("✅ Default widgets:")
             print(f"   - Total widgets: {len(widgets)}")
             print(f"   - Widget types: {list(widgets.keys())}")
             print(f"   - All required widgets present: {results['required_widgets']}")
@@ -837,7 +837,7 @@ def test_analytics_dashboard():
 
             results['dashboard_startup'] = dashboard._dashboard_active
 
-            print(f"✅ Dashboard startup:")
+            print("✅ Dashboard startup:")
             print(f"   - Dashboard active: {dashboard._dashboard_active}")
             print(f"   - Dashboard URL: http://{dashboard._config.host}:{dashboard._config.port}")
 
@@ -857,7 +857,7 @@ def test_analytics_dashboard():
     try:
         if 'dashboard' in locals() and dashboard:
             # Test adding a widget
-            from agentic_core.dashboard.analytics_dashboard import DashboardWidget, ChartData
+            from agentic_core.dashboard.analytics_dashboard import DashboardWidget
 
             test_widget = DashboardWidget(
                 widget_id="test_widget",
@@ -878,7 +878,7 @@ def test_analytics_dashboard():
             results['add_widget'] = add_success and widget_added
             results['remove_widget'] = remove_success and widget_removed
 
-            print(f"✅ Widget management:")
+            print("✅ Widget management:")
             print(f"   - Add widget: {add_success}")
             print(f"   - Widget added: {widget_added}")
             print(f"   - Remove widget: {remove_success}")
@@ -917,7 +917,7 @@ def test_analytics_dashboard():
             results['dashboard_summary'] = isinstance(summary, dict)
 
             if isinstance(dashboard_data, dict):
-                print(f"✅ Dashboard data export:")
+                print("✅ Dashboard data export:")
                 print(f"   - Data sections: {list(dashboard_data.keys())}")
                 print(f"   - Widgets in data: {len(dashboard_data.get('widgets', {}))}")
                 print(f"   - Real-time data points: {len(dashboard_data.get('real_time_data', {}))}")

@@ -26,9 +26,9 @@ except ImportError as e:
 # MCP imports
 try:
     from mcp.server import Server
+    from mcp.server.lowlevel.server import NotificationOptions
     from mcp.server.models import InitializationOptions
     from mcp.server.stdio import stdio_server
-    from mcp.server.lowlevel.server import NotificationOptions
     from mcp.types import (
         CallToolRequest,
         CallToolResult,
@@ -409,7 +409,7 @@ class VectorDBMCPServer:
                 content=[TextContent(type="text", text="ChromaDB client not initialized")],
                 isError=True
             )
-        
+
         # Lazy load embedding model
         if not self._ensure_embedding_model():
             return CallToolResult(
@@ -476,7 +476,7 @@ class VectorDBMCPServer:
                 content=[TextContent(type="text", text="ChromaDB client not initialized")],
                 isError=True
             )
-        
+
         # Lazy load embedding model
         if not self._ensure_embedding_model():
             return CallToolResult(
@@ -643,7 +643,7 @@ class VectorDBMCPServer:
                 content=[TextContent(type="text", text="ChromaDB client not initialized")],
                 isError=True
             )
-        
+
         # Lazy load embedding model
         if not self._ensure_embedding_model():
             return CallToolResult(

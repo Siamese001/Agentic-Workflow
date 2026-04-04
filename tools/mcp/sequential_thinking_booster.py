@@ -6,9 +6,8 @@ Aggressive tool prioritization that enforces sequential thinking dominance over 
 
 import json
 import sys
-import os
 from pathlib import Path
-from typing import List, Dict, Any
+from typing import Any
 
 # HARDENED: Tool categories with strict priority enforcement
 CRITICAL_TOOLS = ['sequential_thinking', 'mcp7_sequentialthinking']
@@ -16,7 +15,7 @@ CORE_TOOLS = ['filesystem', 'adg_redis', 'memory', 'adg_status', 'adg_meta']
 SUPPRESSED_TOOLS = ['chat', 'cascade_chat', 'simple_chat', 'fallback_chat']
 REASONING_TOOLS = ['analysis', 'reasoning', 'planning', 'dependency', 'graph', 'architecture', 'debug']
 
-def boost_sequential_thinking(tools_list: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+def boost_sequential_thinking(tools_list: list[dict[str, Any]]) -> list[dict[str, Any]]:
     """Boost sequential thinking with AGGRESSIVE priority - suppresses cascade chat."""
     critical_tools = []
     reasoning_tools = []
@@ -47,7 +46,7 @@ def boost_sequential_thinking(tools_list: List[Dict[str, Any]]) -> List[Dict[str
     # Suppressed tools (chat) go to the END (lowest priority)
     return critical_tools + reasoning_tools + core_tools + other_tools + suppressed_tools
 
-def apply_kimi_k2_5_boosting(tools_list: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+def apply_kimi_k2_5_boosting(tools_list: list[dict[str, Any]]) -> list[dict[str, Any]]:
     """Apply HARDENED Kimi K2.5 boosting rules - suppresses chat, enforces sequential dominance."""
 
     # HARDENED: Kimi K2.5 prioritized tool categories (expanded)
@@ -156,7 +155,7 @@ def main():
     print(f"  Sequential thinking (ABSOLUTE PRIORITY): {len([t for t in boosted_tools if 'sequential' in t.get('name', '').lower()])}")
     print(f"  Kimi K2.5 relevant tools: {len([t for t in boosted_tools if any(cat in t.get('name', '').lower() or cat in t.get('description', '').lower() for cat in ['sequential', 'analysis', 'reasoning', 'planning', 'dependency', 'graph', 'architecture', 'debug', 'thinking', 'validation', 'audit', 'compliance', 'governance', 'safety'])])}")
     print(f"  Cascade/Chat tools (SUPPRESSED): {len([t for t in boosted_tools if any(pat in t.get('name', '').lower() for pat in ['chat', 'cascade', 'fallback'])])}")
-    print(f"  DOMINANCE MODE: ENABLED - Sequential thinking prioritized ABOVE cascade chat")
+    print("  DOMINANCE MODE: ENABLED - Sequential thinking prioritized ABOVE cascade chat")
     print("=" * 60)
 
 if __name__ == "__main__":

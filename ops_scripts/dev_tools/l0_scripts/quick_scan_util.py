@@ -98,8 +98,6 @@ def progress_bar(current, total, width=40):
     color = G if percent > 0.7 else Y if percent > 0.3 else R
     sys.stdout.write(f'\r{color}[{bar}]{X} {current}/{total} ({percent * 100:.1f}%)')
     sys.stdout.flush()
-from agentic_core.utils.ssot_discovery_validator import get_python_files
-
 from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
@@ -138,6 +136,7 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from agentic_core.utils.ssot_discovery_validator import get_python_files
 
 _emit_emits_metric_event("quick_scan_util", "p4obs", "metric_1")
 _emit_emits_metric_event("quick_scan_util", "p4obs", "metric_2")

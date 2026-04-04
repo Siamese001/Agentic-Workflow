@@ -31,8 +31,8 @@ class _TestTraceabilityVisitor(BaseStructuralVisitor):
 
     def visit_Import(self, node: ast.Import) -> None:
         """Extract test coverage edges from imports in test files."""
-        from agentic_core.adg.schema_util import canonical_name
         from agentic_core.adg.extraction.static_scanner import Edge as _Edge
+        from agentic_core.adg.schema_util import canonical_name
 
         # Only process if this is a test file
         if not any(indicator in self._source_file for indicator in self._test_file_indicators):
@@ -57,8 +57,8 @@ class _TestTraceabilityVisitor(BaseStructuralVisitor):
 
     def visit_ImportFrom(self, node: ast.ImportFrom) -> None:
         """Extract test coverage edges from from-imports in test files."""
-        from agentic_core.adg.schema_util import canonical_name
         from agentic_core.adg.extraction.static_scanner import Edge as _Edge
+        from agentic_core.adg.schema_util import canonical_name
 
         # Only process if this is a test file
         if not any(indicator in self._source_file for indicator in self._test_file_indicators):
@@ -120,8 +120,8 @@ class _TypeAnnotationVisitor(BaseStructuralVisitor):
 
     def visit_FunctionDef(self, node: ast.FunctionDef) -> None:
         """Extract type annotation edges from function definitions."""
-        from agentic_core.adg.schema_util import canonical_name
         from agentic_core.adg.extraction.static_scanner import Edge as _Edge
+        from agentic_core.adg.schema_util import canonical_name
 
         # Return type annotation
         if node.returns:
@@ -158,8 +158,8 @@ class _TypeAnnotationVisitor(BaseStructuralVisitor):
 
     def visit_AnnAssign(self, node: ast.AnnAssign) -> None:
         """Extract type annotation edges from annotated assignments."""
-        from agentic_core.adg.schema_util import canonical_name
         from agentic_core.adg.extraction.static_scanner import Edge as _Edge
+        from agentic_core.adg.schema_util import canonical_name
 
         if node.annotation:
             for name in self._extract_annotation_names(node.annotation):
@@ -208,8 +208,8 @@ class _DecoratorVisitor(BaseStructuralVisitor):
 
     def visit_FunctionDef(self, node: ast.FunctionDef) -> None:
         """Extract decorator edges from function definitions."""
-        from agentic_core.adg.schema_util import canonical_name
         from agentic_core.adg.extraction.static_scanner import Edge as _Edge
+        from agentic_core.adg.schema_util import canonical_name
 
         for decorator in node.decorator_list:
             name = self._get_decorator_name(decorator)
@@ -229,8 +229,8 @@ class _DecoratorVisitor(BaseStructuralVisitor):
 
     def visit_ClassDef(self, node: ast.ClassDef) -> None:
         """Extract decorator edges from class definitions."""
-        from agentic_core.adg.schema_util import canonical_name
         from agentic_core.adg.extraction.static_scanner import Edge as _Edge
+        from agentic_core.adg.schema_util import canonical_name
 
         for decorator in node.decorator_list:
             name = self._get_decorator_name(decorator)
@@ -263,8 +263,8 @@ class _SymbolInventoryVisitor(BaseStructuralVisitor):
 
     def visit_FunctionDef(self, node: ast.FunctionDef) -> None:
         """Extract exports for public functions."""
-        from agentic_core.adg.schema_util import canonical_name
         from agentic_core.adg.extraction.static_scanner import Edge as _Edge
+        from agentic_core.adg.schema_util import canonical_name
 
         if not node.name.startswith("_"):
             self.edges.append(
@@ -282,8 +282,8 @@ class _SymbolInventoryVisitor(BaseStructuralVisitor):
 
     def visit_AsyncFunctionDef(self, node: ast.AsyncFunctionDef) -> None:
         """Extract exports for public async functions."""
-        from agentic_core.adg.schema_util import canonical_name
         from agentic_core.adg.extraction.static_scanner import Edge as _Edge
+        from agentic_core.adg.schema_util import canonical_name
 
         if not node.name.startswith("_"):
             self.edges.append(
@@ -301,8 +301,8 @@ class _SymbolInventoryVisitor(BaseStructuralVisitor):
 
     def visit_ClassDef(self, node: ast.ClassDef) -> None:
         """Extract exports for public classes."""
-        from agentic_core.adg.schema_util import canonical_name
         from agentic_core.adg.extraction.static_scanner import Edge as _Edge
+        from agentic_core.adg.schema_util import canonical_name
 
         if not node.name.startswith("_"):
             self.edges.append(
@@ -355,8 +355,8 @@ class _UnusedImportVisitor(BaseStructuralVisitor):
 
     def extract_edges(self) -> list[Edge]:
         """Emit edges for unused imports."""
-        from agentic_core.adg.schema_util import canonical_name
         from agentic_core.adg.extraction.static_scanner import Edge as _Edge
+        from agentic_core.adg.schema_util import canonical_name
 
         unused = set(self._imported_names.keys()) - self._used_names
         for name in unused:

@@ -5,8 +5,10 @@ Tests DNA contract enforcement using AST visitors implemented inline
 (CanonDependencySentinelAgent is not yet a standalone importable module).
 """
 from __future__ import annotations
+
 import ast
 from dataclasses import dataclass
+
 
 @dataclass
 class Violation:

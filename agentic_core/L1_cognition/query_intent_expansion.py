@@ -11,7 +11,7 @@ from __future__ import annotations
 
 import re
 from dataclasses import dataclass, field
-from typing import Any, Optional
+from typing import Any
 
 from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     LayerSegment,
@@ -313,7 +313,7 @@ class QueryPreprocessor:
 
 
 # Global instance
-_global_preprocessor: Optional[QueryPreprocessor] = None
+_global_preprocessor: QueryPreprocessor | None = None
 
 
 def get_global_preprocessor() -> QueryPreprocessor:

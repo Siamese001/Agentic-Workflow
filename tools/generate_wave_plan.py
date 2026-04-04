@@ -5,7 +5,7 @@ import json
 from pathlib import Path
 
 # Load remaining placeholders
-with open('remaining_placeholders.json', 'r') as f:
+with open('remaining_placeholders.json') as f:
     all_files = json.load(f)
 
 # Organize into waves of 38 files each

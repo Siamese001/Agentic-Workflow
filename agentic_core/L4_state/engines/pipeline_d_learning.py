@@ -14,14 +14,14 @@ from __future__ import annotations
 
 import logging
 from dataclasses import dataclass, field
-from typing import Any, Optional
+from typing import Any
 
 from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     LayerSegment,
-    _emit_records_execution_trace,
     _emit_captures_evaluation_metric,
-    _emit_updates_meta_learning_state,
     _emit_feeds_meta_learning,
+    _emit_records_execution_trace,
+    _emit_updates_meta_learning_state,
 )
 
 Logger = logging.getLogger(__name__)
@@ -33,7 +33,7 @@ class EvaluationSignal:
     signal_type: str  # 'completeness', 'fragmentation', 'groundedness', 'lexical_gap', 'signal_volume'
     score: float
     threshold: float
-    trigger_action: Optional[str] = None
+    trigger_action: str | None = None
     metadata: dict[str, Any] = field(default_factory=dict)
 
 
@@ -546,7 +546,7 @@ class PipelineDEvaluationRunner:
 
 
 # Global instance
-_global_pipeline_d: Optional[PipelineDEvaluationRunner] = None
+_global_pipeline_d: PipelineDEvaluationRunner | None = None
 
 
 def get_global_pipeline_d() -> PipelineDEvaluationRunner:

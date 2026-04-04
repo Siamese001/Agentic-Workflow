@@ -3,8 +3,6 @@
 """
 from __future__ import annotations
 
-import pytest
-
 
 class TestExecutionStatusContract:
     def test_is_enum(self):

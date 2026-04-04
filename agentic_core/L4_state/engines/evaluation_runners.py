@@ -15,12 +15,12 @@ import logging
 from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
 from datetime import datetime
-from typing import Any, Optional
+from typing import Any
 
 from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     LayerSegment,
-    _emit_records_execution_trace,
     _emit_captures_evaluation_metric,
+    _emit_records_execution_trace,
 )
 
 Logger = logging.getLogger(__name__)
@@ -56,7 +56,7 @@ class ShadowEvaluationRunner(EvaluationRunner):
 
     def __init__(
         self,
-        relevance_judgments: Optional[dict[str, list[str]]] = None,
+        relevance_judgments: dict[str, list[str]] | None = None,
     ):
         """Initialize shadow runner.
 
@@ -168,7 +168,7 @@ class ReplayEvaluationRunner(EvaluationRunner):
 
     def __init__(
         self,
-        history_store: Optional[Any] = None,
+        history_store: Any | None = None,
     ):
         """Initialize replay runner.
 
@@ -180,9 +180,9 @@ class ReplayEvaluationRunner(EvaluationRunner):
 
     async def replay(
         self,
-        query_ids: Optional[list[str]] = None,
-        since: Optional[str] = None,
-        new_config: Optional[dict[str, Any]] = None,
+        query_ids: list[str] | None = None,
+        since: str | None = None,
+        new_config: dict[str, Any] | None = None,
     ) -> list[EvaluationRun]:
         """Replay historical queries.
 
@@ -244,8 +244,8 @@ class ReplayEvaluationRunner(EvaluationRunner):
 
     def _get_historical_queries(
         self,
-        query_ids: Optional[list[str]],
-        since: Optional[str],
+        query_ids: list[str] | None,
+        since: str | None,
     ) -> list[dict[str, Any]]:
         """Get historical queries to replay."""
         # Placeholder - would query from history store
@@ -265,7 +265,7 @@ class EvaluationOrchestrator:
         self,
         query: str,
         retrieved_chunks: list[str],
-    ) -> Optional[EvaluationRun]:
+    ) -> EvaluationRun | None:
         """Run shadow evaluation for a live query.
 
         Args:
@@ -285,8 +285,8 @@ class EvaluationOrchestrator:
 
     async def replay_batch(
         self,
-        since: Optional[str] = None,
-        new_config: Optional[dict[str, Any]] = None,
+        since: str | None = None,
+        new_config: dict[str, Any] | None = None,
     ) -> list[EvaluationRun]:
         """Run replay evaluation batch.
 
@@ -303,7 +303,7 @@ class EvaluationOrchestrator:
 
     def get_aggregated_metrics(
         self,
-        mode: Optional[str] = None,
+        mode: str | None = None,
     ) -> dict[str, Any]:
         """Get aggregated metrics across evaluations.
 
@@ -374,7 +374,7 @@ class EvaluationOrchestrator:
 
 
 # Global instance
-_global_eval_orchestrator: Optional[EvaluationOrchestrator] = None
+_global_eval_orchestrator: EvaluationOrchestrator | None = None
 
 
 def get_global_eval_orchestrator() -> EvaluationOrchestrator:
@@ -385,6 +385,6 @@ def get_global_eval_orchestrator() -> EvaluationOrchestrator:
     return _global_eval_orchestrator
 
 
-async def shadow_evaluate(query: str, retrieved: list[str]) -> Optional[EvaluationRun]:
+async def shadow_evaluate(query: str, retrieved: list[str]) -> EvaluationRun | None:
     """Convenience function for shadow evaluation."""
     return await get_global_eval_orchestrator().shadow_evaluate(query, retrieved)

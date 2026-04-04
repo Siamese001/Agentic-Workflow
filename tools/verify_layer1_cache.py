@@ -1,12 +1,16 @@
 #!/usr/bin/env python3
 """Comprehensive Layer 1 (Redis) + Layer 2 (Semantic) Cache Verification"""
 import sys
+
 sys.path.insert(0, r'C:\Git\Agentic-Workflow')
 
 from tools.adg.adg_mcp_server import (
-    adg_status, adg_meta, adg_assert_fresh,
-    redis_scan, redis_hgetall, redis_smembers,
-    redis_type, redis_ttl
+    adg_status,
+    redis_hgetall,
+    redis_scan,
+    redis_smembers,
+    redis_ttl,
+    redis_type,
 )
 
 print("=" * 70)
@@ -22,7 +26,7 @@ if status.get('status') == 'ok':
     print(f"  Edges: {data['edge_count']:,}")
     print(f"  Is Fresh: {data['is_fresh']}")
     print(f"  Age: {data['age_seconds']:.1f} seconds")
-    print(f"  ✅ HOT CACHE - Ready for O(1) lookups")
+    print("  ✅ HOT CACHE - Ready for O(1) lookups")
 else:
     print(f"  ❌ Cache error: {status.get('message')}")
 
@@ -45,7 +49,7 @@ if meta.get('status') == 'ok':
     print(f"  Fields: {data['field_count']}")
     print(f"  Timestamp: {data['fields'].get('timestamp')}")
     print(f"  SQLite: {data['fields'].get('sqlite_path', 'N/A')[-40:]}")
-    print(f"  ✅ O(1) HASH access working")
+    print("  ✅ O(1) HASH access working")
 
 # 4. Layer Sets (SMEMBERS - O(N) where N=set size)
 print("\n[4] LAYER INDEXING (SET operations)")
@@ -61,8 +65,8 @@ ttl = redis_ttl("adg:meta")
 if ttl.get('status') == 'ok':
     data = ttl['data']
     if data['persistent']:
-        print(f"  adg:meta: Persistent (no expiry)")
-        print(f"  ✅ Data survives until explicit deletion")
+        print("  adg:meta: Persistent (no expiry)")
+        print("  ✅ Data survives until explicit deletion")
 
 # 6. Type Validation
 print("\n[6] TYPE SAFETY")

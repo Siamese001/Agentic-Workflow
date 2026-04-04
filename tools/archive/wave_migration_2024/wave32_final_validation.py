@@ -5,11 +5,10 @@ This wave provides final validation and prepares to commit all progress
 from the additional optimization waves.
 """
 
-import pathlib
 import ast
+import pathlib
 import subprocess
 import sys
-from typing import Dict, List, Tuple
 
 
 class Wave32FinalValidation:
@@ -28,7 +27,7 @@ class Wave32FinalValidation:
             'test_collection_attempt': False
         }
 
-    def run_final_validation(self) -> Dict:
+    def run_final_validation(self) -> dict:
         """Run final validation."""
         # Check current syntax status
         self._check_syntax_status()
@@ -100,12 +99,12 @@ class Wave32FinalValidation:
         print(f"Syntax errors: {self.stats['syntax_errors']}")
         print(f"Success rate: {self.stats['success_rate']:.1f}%")
 
-        print(f"\n🎯 FINAL ACHIEVEMENT:")
+        print("\n🎯 FINAL ACHIEVEMENT:")
         print(f"Waves completed: {self.stats['waves_completed']}")
         print(f"Files restored: {self.stats['progress_achieved']}")
         print(f"Progress from start: 0% → {self.stats['success_rate']:.1f}%")
 
-        print(f"\n📈 STATUS CLASSIFICATION:")
+        print("\n📈 STATUS CLASSIFICATION:")
         if self.stats['success_rate'] >= 45.0:
             print("✅ OUTSTANDING: Excellent test suite restoration!")
         elif self.stats['success_rate'] >= 40.0:
@@ -117,7 +116,7 @@ class Wave32FinalValidation:
         else:
             print("⚠️ NEEDS WORK: More fixes needed")
 
-        print(f"\n🛠️ METHODOLOGY ACHIEVEMENTS:")
+        print("\n🛠️ METHODOLOGY ACHIEVEMENTS:")
         print("✅ Emergency response: COMPLETE")
         print("✅ Phased approach: VALIDATED")
         print("✅ De-risked methodology: PROVEN")
@@ -126,15 +125,15 @@ class Wave32FinalValidation:
         print("✅ Measurable progress: ACHIEVED")
         print("✅ Optimization attempts: COMPLETED")
 
-        print(f"\n⚠️ REMAINING WORK:")
+        print("\n⚠️ REMAINING WORK:")
         print(f"Files needing fixes: {self.stats['syntax_errors']}")
         print(f"Remaining percentage: {100 - self.stats['success_rate']:.1f}%")
-        print(f"Test collection: Needs further optimization")
+        print("Test collection: Needs further optimization")
 
-        print(f"\n🎉 OVERALL SUCCESS:")
+        print("\n🎉 OVERALL SUCCESS:")
         print(f"MAJOR ACHIEVEMENT: {self.stats['success_rate']:.1f}% test suite restored!")
-        print(f"From completely broken to significantly functional!")
-        print(f"32-wave methodology proven effective!")
+        print("From completely broken to significantly functional!")
+        print("32-wave methodology proven effective!")
 
         print("="*60)
 

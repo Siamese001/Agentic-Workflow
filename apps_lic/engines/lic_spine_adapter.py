@@ -24,6 +24,7 @@ from agentic_core.interfaces.spine import (
     ReEntryLoop,
 )
 from agentic_core.L0_routing.meta_control.meta_learning_bus import MetaLearningBus
+from agentic_core.L2_execution.cid_registry import CIDRegistry
 from agentic_core.L2_execution.providers import get_clock
 from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
@@ -65,7 +66,6 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_verifies_policy,
     _emit_writes_via_uwg,
 )
-from agentic_core.L2_execution.cid_registry import CIDRegistry
 
 _emit_authorize_and_execute("p2", "lic_spine_adapter", "execution_auth")
 _emit_validates_capability("p2", "lic_spine_adapter", "capability_check")

@@ -8,7 +8,7 @@ import hashlib
 import logging
 import time
 from dataclasses import dataclass, field
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     LayerSegment,
@@ -23,11 +23,11 @@ log = logging.getLogger(__name__)
 class QueryVector:
     """Vector representation of a query."""
     query_text: str
-    vector: List[float]
+    vector: list[float]
     model: str
     dimension: int
     timestamp: float = field(default_factory=time.time)
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    metadata: dict[str, Any] = field(default_factory=dict)
 
     def __post_init__(self):
         self.dimension = len(self.vector) if self.vector else 0
@@ -60,7 +60,7 @@ class QueryVectorizer:
         self.batch_size = batch_size
 
         # Initialize cache
-        self._vector_cache: Dict[str, QueryVector] = {}
+        self._vector_cache: dict[str, QueryVector] = {}
         self._cache_size = cache_size
 
         # Mock embedding function (replace with actual API)
@@ -124,9 +124,9 @@ class QueryVectorizer:
 
     def vectorize_batch(
         self,
-        queries: List[str],
+        queries: list[str],
         use_cache: bool = True,
-    ) -> List[QueryVector]:
+    ) -> list[QueryVector]:
         """Generate vectors for multiple queries.
 
         Args:
@@ -177,7 +177,7 @@ class QueryVectorizer:
         log.info(f"Cleared {count} entries from vector cache")
         return count
 
-    def get_cache_stats(self) -> Dict[str, int]:
+    def get_cache_stats(self) -> dict[str, int]:
         """Get cache statistics.
 
         Returns:
@@ -205,9 +205,9 @@ class QueryVectorizer:
 
     def _process_batch(
         self,
-        queries: List[str],
+        queries: list[str],
         use_cache: bool,
-    ) -> List[QueryVector]:
+    ) -> list[QueryVector]:
         """Process a batch of queries."""
         results = []
 
@@ -217,7 +217,7 @@ class QueryVectorizer:
 
         return results
 
-    def _mock_embedding(self, text: str) -> List[float]:
+    def _mock_embedding(self, text: str) -> list[float]:
         """Mock embedding function for testing.
 
         In production, replace with actual embedding API call.
@@ -243,7 +243,7 @@ class QueryVectorizer:
 
 
 # Global instance
-_global_vectorizer: Optional[QueryVectorizer] = None
+_global_vectorizer: QueryVectorizer | None = None
 
 
 def get_query_vectorizer() -> QueryVectorizer:

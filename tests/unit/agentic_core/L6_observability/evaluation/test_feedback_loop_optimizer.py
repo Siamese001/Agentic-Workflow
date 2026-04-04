@@ -14,13 +14,10 @@ Tests:
 
 from __future__ import annotations
 
-import time
-
 import pytest
 
 from agentic_core.L6_observability.evaluation.feedback_loop_optimizer import (
     BackpressureState,
-    FeedbackLoopMetrics,
     FeedbackLoopOptimizer,
     get_feedback_optimizer,
     reset_feedback_optimizer,

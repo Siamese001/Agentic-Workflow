@@ -1,6 +1,5 @@
 """Tests that legacy loader import paths resolve after compatibility shims are in place."""
 
-import importlib
 
 
 def test_import_manager_agent_now_succeeds():

@@ -3,7 +3,7 @@
 
 class PromptProvenanceEngine:
     """Placeholder prompt provenance engine class."""
-    
+
     def trace(self, data):
         """Placeholder trace method."""
         return {}

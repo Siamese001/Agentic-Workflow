@@ -7,14 +7,15 @@ training data collection, and model improvement without affecting live traffic.
 
 import json
 import time
+from dataclasses import asdict, dataclass
 from datetime import datetime
-from pathlib import Path
-from typing import Dict, List, Optional, Any
-from dataclasses import dataclass, asdict
 from enum import Enum
+from pathlib import Path
+from typing import Any
 
 from agentic_core.L_CONTRACTS.lifecycle_trace_contract import _emit_records_execution_trace
-from ..models.base_model import ModelPrediction, ModelInput
+
+from ..models.base_model import ModelInput, ModelPrediction
 
 
 class ShadowMode(Enum):
@@ -33,10 +34,10 @@ class ShadowLogEntry:
     policy_hash: str
     model_name: str
     model_version: str
-    model_input: Dict[str, Any]
-    model_prediction: Dict[str, Any]
-    actual_decision: Optional[Dict[str, Any]] = None
-    comparison_result: Optional[Dict[str, Any]] = None
+    model_input: dict[str, Any]
+    model_prediction: dict[str, Any]
+    actual_decision: dict[str, Any] | None = None
+    comparison_result: dict[str, Any] | None = None
     logging_mode: ShadowMode = ShadowMode.LOG_ONLY
     session_id: str = ""
 
@@ -45,10 +46,10 @@ class ShadowLogEntry:
 class ComparisonResult:
     """Result of comparing ML prediction with actual decision."""
     predictions_match: bool
-    confidence_difference: Optional[float] = None
-    path_difference: Optional[str] = None
-    ml_better: Optional[bool] = None
-    actual_outcome: Optional[Dict[str, Any]] = None
+    confidence_difference: float | None = None
+    path_difference: str | None = None
+    ml_better: bool | None = None
+    actual_outcome: dict[str, Any] | None = None
     improvement_opportunity: bool = False
 
 
@@ -88,7 +89,7 @@ class ShadowLogger:
         model_input: ModelInput,
         model_prediction: ModelPrediction,
         logging_mode: ShadowMode = ShadowMode.LOG_ONLY,
-        actual_decision: Optional[Dict[str, Any]] = None
+        actual_decision: dict[str, Any] | None = None
     ) -> str:
         """
         Log a model prediction in shadow mode.
@@ -137,10 +138,10 @@ class ShadowLogger:
 
     def log_batch_predictions(
         self,
-        predictions: List[tuple[ModelInput, ModelPrediction]],
+        predictions: list[tuple[ModelInput, ModelPrediction]],
         logging_mode: ShadowMode = ShadowMode.LOG_ONLY,
-        actual_decisions: Optional[List[Dict[str, Any]]] = None
-    ) -> List[str]:
+        actual_decisions: list[dict[str, Any]] | None = None
+    ) -> list[str]:
         """
         Log multiple predictions efficiently.
 
@@ -170,9 +171,9 @@ class ShadowLogger:
     def compare_with_actual(
         self,
         trace_id: str,
-        actual_decision: Dict[str, Any],
-        actual_outcome: Optional[Dict[str, Any]] = None
-    ) -> Optional[ComparisonResult]:
+        actual_decision: dict[str, Any],
+        actual_outcome: dict[str, Any] | None = None
+    ) -> ComparisonResult | None:
         """
         Compare a shadow prediction with actual decision.
 
@@ -204,7 +205,7 @@ class ShadowLogger:
 
         return comparison
 
-    def get_shadow_statistics(self) -> Dict[str, Any]:
+    def get_shadow_statistics(self) -> dict[str, Any]:
         """Get shadow logging statistics."""
         return {
             **self.stats,
@@ -217,7 +218,7 @@ class ShadowLogger:
             }
         }
 
-    def get_improvement_opportunities(self, limit: int = 100) -> List[Dict[str, Any]]:
+    def get_improvement_opportunities(self, limit: int = 100) -> list[dict[str, Any]]:
         """
         Get cases where ML predictions could improve decisions.
 
@@ -230,7 +231,7 @@ class ShadowLogger:
         opportunities = []
 
         try:
-            with open(self.comparison_log_file, 'r', encoding='utf-8') as f:
+            with open(self.comparison_log_file, encoding='utf-8') as f:
                 for line in f:
                     if len(opportunities) >= limit:
                         break
@@ -246,7 +247,7 @@ class ShadowLogger:
 
     def export_training_data(
         self,
-        output_file: Optional[Path] = None,
+        output_file: Path | None = None,
         min_confidence: float = 0.7,
         include_comparisons: bool = True
     ) -> Path:
@@ -268,7 +269,7 @@ class ShadowLogger:
         training_examples = []
 
         try:
-            with open(self.shadow_log_file, 'r', encoding='utf-8') as f:
+            with open(self.shadow_log_file, encoding='utf-8') as f:
                 for line in f:
                     entry = json.loads(line.strip())
 
@@ -304,7 +305,7 @@ class ShadowLogger:
     def _compare_predictions(
         self,
         model_prediction: ModelPrediction,
-        actual_decision: Dict[str, Any]
+        actual_decision: dict[str, Any]
     ) -> ComparisonResult:
         """Compare ML prediction with actual decision."""
         # Extract decision values
@@ -458,10 +459,10 @@ class ShadowLogger:
         timestamp = int(time.time() * 1000)
         return f"shadow_session_{timestamp}"
 
-    def _find_prediction_by_trace_id(self, trace_id: str) -> Optional[Dict[str, Any]]:
+    def _find_prediction_by_trace_id(self, trace_id: str) -> dict[str, Any] | None:
         """Find shadow prediction by trace ID."""
         try:
-            with open(self.shadow_log_file, 'r', encoding='utf-8') as f:
+            with open(self.shadow_log_file, encoding='utf-8') as f:
                 for line in f:
                     entry = json.loads(line.strip())
                     if entry.get('trace_id') == trace_id:
@@ -472,7 +473,7 @@ class ShadowLogger:
 
         return None
 
-    def _reconstruct_prediction(self, prediction_dict: Dict[str, Any]) -> ModelPrediction:
+    def _reconstruct_prediction(self, prediction_dict: dict[str, Any]) -> ModelPrediction:
         """Reconstruct ModelPrediction object from dictionary."""
         # This is a simplified reconstruction
         # In practice, you'd want to fully reconstruct the object
@@ -491,10 +492,10 @@ class ShadowLogger:
         with open(self.comparison_log_file, 'a', encoding='utf-8') as f:
             f.write(json.dumps(comparison_data) + '\n')
 
-    def _get_session_start_time(self) -> Optional[str]:
+    def _get_session_start_time(self) -> str | None:
         """Get session start time from first log entry."""
         try:
-            with open(self.shadow_log_file, 'r', encoding='utf-8') as f:
+            with open(self.shadow_log_file, encoding='utf-8') as f:
                 first_line = f.readline()
                 if first_line:
                     entry = json.loads(first_line.strip())

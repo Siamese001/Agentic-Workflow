@@ -5,11 +5,10 @@ This wave runs a final validation test and commits all progress
 from the simplified sub-waves approach.
 """
 
-import pathlib
 import ast
+import pathlib
 import subprocess
 import sys
-from typing import Dict, List, Tuple
 
 
 class Wave19FinalTest:
@@ -26,7 +25,7 @@ class Wave19FinalTest:
             'test_successes': 0
         }
 
-    def run_final_test(self) -> Dict:
+    def run_final_test(self) -> dict:
         """Run final test validation."""
         # Check final syntax status
         self._check_final_syntax_status()
@@ -92,7 +91,7 @@ class Wave19FinalTest:
         print(f"Syntax errors: {self.stats['syntax_errors']}")
         print(f"Success rate: {self.stats['valid_files']/self.stats['total_files']*100:.1f}%")
 
-        print(f"\nTest results:")
+        print("\nTest results:")
         print(f"Test attempts: {self.stats['test_attempts']}")
         print(f"Test successes: {self.stats['test_successes']}")
 

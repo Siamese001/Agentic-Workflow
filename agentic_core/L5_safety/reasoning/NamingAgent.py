@@ -14,7 +14,6 @@ logger = logging.getLogger(__name__)
 
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 from agentic_core.L5_safety.config.structure_blueprint import PROJECT_ROOT_METADATA
-from agentic_core.mixins.prompt_rendering_mixin import PromptRenderingMixin
 from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     LayerSegment,
     _emit_agent_executes_agent,
@@ -59,6 +58,7 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     emit_determinism_digest,  # noqa: E402
     emit_replay_key,  # noqa: E402
 )
+from agentic_core.mixins.prompt_rendering_mixin import PromptRenderingMixin
 
 emit_replay_key("p0", "NamingAgent")
 emit_determinism_digest("p0", "NamingAgent")

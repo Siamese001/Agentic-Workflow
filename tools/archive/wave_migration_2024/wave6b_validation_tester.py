@@ -10,9 +10,8 @@ import json
 import subprocess
 import sys
 import tempfile
-from pathlib import Path
-from typing import Dict, List, Tuple
 from dataclasses import dataclass
+from pathlib import Path
 
 
 @dataclass
@@ -38,7 +37,7 @@ class ValidationTester:
             'total_duration': 0.0
         }
 
-    def run_all_tests(self) -> Dict:
+    def run_all_tests(self) -> dict:
         """Run all validation enforcement tests."""
         print("=== Running Validation Enforcement Tests ===")
 
@@ -282,7 +281,7 @@ for issue in enforcer.results[:5]:  # First 5 issues
                     print("✓ Validation rules test passed")
                 else:
                     self.test_stats['failed_tests'] += 1
-                    print(f"✗ Validation rules test failed")
+                    print("✗ Validation rules test failed")
                     print(f"Stdout: {result.stdout[:200]}...")
                     if result.stderr:
                         print(f"Stderr: {result.stderr[:200]}...")
@@ -350,7 +349,7 @@ print(f'Score calculation passed: {{80 <= score <= 100}}')
                 print("✓ Compliance scoring test passed")
             else:
                 self.test_stats['failed_tests'] += 1
-                print(f"✗ Compliance scoring test failed")
+                print("✗ Compliance scoring test failed")
                 print(f"Stdout: {result.stdout[:200]}...")
                 if result.stderr:
                     print(f"Stderr: {result.stderr[:200]}...")
@@ -406,7 +405,7 @@ print(f'Error handling test: {\"error\" in result}')
                 print("✓ Error handling test passed")
             else:
                 self.test_stats['failed_tests'] += 1
-                print(f"✗ Error handling test failed")
+                print("✗ Error handling test failed")
                 print(f"Stdout: {result.stdout[:200]}...")
                 if result.stderr:
                     print(f"Stderr: {result.stderr[:200]}...")
@@ -465,7 +464,7 @@ print(f'Performance test passed: {{duration < 5.0}}')
                 print("✓ Performance test passed")
             else:
                 self.test_stats['failed_tests'] += 1
-                print(f"✗ Performance test failed")
+                print("✗ Performance test failed")
                 print(f"Stdout: {result.stdout[:200]}...")
                 if result.stderr:
                     print(f"Stderr: {result.stderr[:200]}...")
@@ -479,7 +478,7 @@ print(f'Performance test passed: {{duration < 5.0}}')
             self.test_stats['total_tests'] += 1
             print(f"✗ Performance test error: {e}")
 
-    def _generate_test_summary(self) -> Dict:
+    def _generate_test_summary(self) -> dict:
         """Generate test summary."""
         total_tests = self.test_stats['total_tests']
         passed_tests = self.test_stats['passed_tests']
@@ -542,7 +541,7 @@ print(f'Performance test passed: {{duration < 5.0}}')
 
         # Print summary
         summary = report['summary']
-        print(f"\n=== Validation Test Summary ===")
+        print("\n=== Validation Test Summary ===")
         print(f"Total tests: {summary['total_tests']}")
         print(f"Passed tests: {summary['passed_tests']}")
         print(f"Failed tests: {summary['failed_tests']}")
@@ -551,7 +550,7 @@ print(f'Performance test passed: {{duration < 5.0}}')
         print(f"Average duration: {summary['average_duration']}s")
 
         if summary['failed_tests'] > 0:
-            print(f"\nFailed tests:")
+            print("\nFailed tests:")
             for test in summary['test_results_detail']:
                 if not test['passed']:
                     print(f"  - {test['name']} (exit code: {test['exit_code']})")
@@ -566,7 +565,7 @@ def main():
     tester = ValidationTester()
     report = tester.generate_test_report()
 
-    print(f"\n=== Wave 6b Summary ===")
+    print("\n=== Wave 6b Summary ===")
     print(f"Validation enforcement tools tested: {len(report['enforcement_tools_tested'])}")
     print(f"Test success rate: {report['summary']['success_rate']}%")
 

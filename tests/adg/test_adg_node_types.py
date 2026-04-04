@@ -8,8 +8,6 @@ import pytest
 REPO_ROOT = Path(__file__).parent.parent.parent
 sys.path.insert(0, str(REPO_ROOT))
 
-from agentic_core.adg.schema import NodeType
-from agentic_core.adg.schema import NODE_TYPES
 
 
 @pytest.mark.unit

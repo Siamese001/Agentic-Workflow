@@ -41,7 +41,6 @@ from agentic_core.L5_safety.escalation.escalation_orchestrator import (
 from agentic_core.L5_safety.escalation.escalation_orchestrator import (
     TraceContext as EscalationTraceContext,
 )
-from agentic_core.runtime.execution_trace import get_active_execution_trace
 from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     LayerSegment,
     _emit_agent_executes_agent,
@@ -107,6 +106,7 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     emit_determinism_digest,
     emit_replay_key,
 )
+from agentic_core.runtime.execution_trace import get_active_execution_trace
 
 _emit_emits_metric_event("policy_action_contract", "p4obs", "metric_1")
 _emit_emits_metric_event("policy_action_contract", "p4obs", "metric_2")

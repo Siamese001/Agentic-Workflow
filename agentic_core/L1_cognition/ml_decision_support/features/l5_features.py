@@ -7,10 +7,10 @@ business impact, stakeholder criticality, and audit requirements.
 """
 
 from datetime import datetime, timedelta
-from typing import Dict, Any
+from typing import Any
 
+from ..config.feature_schemas import FeatureSchema, FeatureSchemas
 from .base_extractor import DeterministicFeatureExtractor
-from ..config.feature_schemas import FeatureSchemas, FeatureSchema
 
 
 class L5FeatureExtractor(DeterministicFeatureExtractor):
@@ -36,7 +36,7 @@ class L5FeatureExtractor(DeterministicFeatureExtractor):
 
     def _create_l5_schema(self) -> FeatureSchema:
         """Create feature schema for L5 risk calibrator."""
-        from ..config.feature_schemas import FeatureSchema, FeatureDefinition, FeatureType
+        from ..config.feature_schemas import FeatureDefinition, FeatureSchema, FeatureType
 
         features = [
             FeatureDefinition(
@@ -131,7 +131,7 @@ class L5FeatureExtractor(DeterministicFeatureExtractor):
         self.register_extraction_function("regulatory_change_frequency", self._extract_regulatory_change_frequency)
         self.register_extraction_function("precedent_strength", self._extract_precedent_strength)
 
-    def _extract_policy_complexity_score(self, context: Dict[str, Any]) -> float:
+    def _extract_policy_complexity_score(self, context: dict[str, Any]) -> float:
         """Extract policy complexity score (0.0-1.0)."""
         policy = context.get("policy", {})
 
@@ -189,7 +189,7 @@ class L5FeatureExtractor(DeterministicFeatureExtractor):
 
         return round(min(1.0, score), 3)
 
-    def _extract_compliance_risk_level(self, context: Dict[str, Any]) -> float:
+    def _extract_compliance_risk_level(self, context: dict[str, Any]) -> float:
         """Extract compliance risk level (0.0-1.0)."""
         policy = context.get("policy", {})
         regulations = context.get("regulations", {})
@@ -252,7 +252,7 @@ class L5FeatureExtractor(DeterministicFeatureExtractor):
 
         return round(min(1.0, score), 3)
 
-    def _extract_historical_false_positive_rate(self, context: Dict[str, Any]) -> float:
+    def _extract_historical_false_positive_rate(self, context: dict[str, Any]) -> float:
         """Extract historical false positive rate (0.0-1.0)."""
         policy = context.get("policy", {})
         history = context.get("history", {})
@@ -280,7 +280,7 @@ class L5FeatureExtractor(DeterministicFeatureExtractor):
 
         return 0.1  # Default conservative estimate
 
-    def _extract_historical_false_negative_rate(self, context: Dict[str, Any]) -> float:
+    def _extract_historical_false_negative_rate(self, context: dict[str, Any]) -> float:
         """Extract historical false negative rate (0.0-1.0)."""
         policy = context.get("policy", {})
         history = context.get("history", {})
@@ -308,7 +308,7 @@ class L5FeatureExtractor(DeterministicFeatureExtractor):
 
         return 0.05  # Default conservative estimate
 
-    def _extract_business_impact_score(self, context: Dict[str, Any]) -> float:
+    def _extract_business_impact_score(self, context: dict[str, Any]) -> float:
         """Extract business impact score (0.0-1.0)."""
         policy = context.get("policy", {})
 
@@ -362,7 +362,7 @@ class L5FeatureExtractor(DeterministicFeatureExtractor):
 
         return round(min(1.0, score), 3)
 
-    def _extract_stakeholder_criticality(self, context: Dict[str, Any]) -> float:
+    def _extract_stakeholder_criticality(self, context: dict[str, Any]) -> float:
         """Extract stakeholder criticality (0.0-1.0)."""
         policy = context.get("policy", {})
 
@@ -405,7 +405,7 @@ class L5FeatureExtractor(DeterministicFeatureExtractor):
 
         return round(min(1.0, average_criticality), 3)
 
-    def _extract_audit_requirement_level(self, context: Dict[str, Any]) -> float:
+    def _extract_audit_requirement_level(self, context: dict[str, Any]) -> float:
         """Extract audit requirement level (0.0-1.0)."""
         policy = context.get("policy", {})
 
@@ -446,7 +446,7 @@ class L5FeatureExtractor(DeterministicFeatureExtractor):
 
         return round(min(1.0, requirement_score), 3)
 
-    def _extract_risk_mitigation_effectiveness(self, context: Dict[str, Any]) -> float:
+    def _extract_risk_mitigation_effectiveness(self, context: dict[str, Any]) -> float:
         """Extract risk mitigation effectiveness (0.0-1.0)."""
         policy = context.get("policy", {})
 
@@ -480,7 +480,7 @@ class L5FeatureExtractor(DeterministicFeatureExtractor):
 
         return round(min(1.0, average_effectiveness), 3)
 
-    def _extract_regulatory_change_frequency(self, context: Dict[str, Any]) -> float:
+    def _extract_regulatory_change_frequency(self, context: dict[str, Any]) -> float:
         """Extract regulatory change frequency (0.0-1.0)."""
         environment = context.get("environment", {})
 
@@ -512,7 +512,7 @@ class L5FeatureExtractor(DeterministicFeatureExtractor):
 
         return round(frequency_score, 3)
 
-    def _extract_precedent_strength(self, context: Dict[str, Any]) -> float:
+    def _extract_precedent_strength(self, context: dict[str, Any]) -> float:
         """Extract precedent strength (0.0-1.0)."""
         policy = context.get("policy", {})
 

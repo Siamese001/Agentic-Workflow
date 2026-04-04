@@ -15,6 +15,7 @@ except Exception as e:
 # Failure path - non-existent directory
 print("\n=== RUNTIME ADG FAILURE PATH ===")
 import shutil
+
 if Path("artifacts/runtime_adg_backup").exists():
     shutil.rmtree("artifacts/runtime_adg_backup")
 shutil.move("artifacts/runtime_adg", "artifacts/runtime_adg_backup")

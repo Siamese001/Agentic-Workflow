@@ -22,27 +22,27 @@ from pathlib import Path
 from typing import Any
 
 from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-    _emit_records_execution_trace,
-    _emit_dispatches_agent,
-    _emit_coordinates_agents,
-    _emit_orchestrates_workflow,
     _emit_applies_guardrail,
     _emit_captures_pattern,
+    _emit_coordinates_agents,
+    _emit_dispatches_agent,
+    _emit_orchestrates_workflow,
+    _emit_records_execution_trace,
     _emit_stores_embedding,
-)
-
-# Import enterprise components
-from apps_exec.reasoning.brief_decomposition_agent import (
-    BriefDecompositionAgent,
-    BriefDecomposition,
 )
 from apps_exec.engines.brief_retrieval_engine import (
     create_retrieval_engine,
 )
-from apps_exec.services.repo_signal_service import RepoSignalService
+
+# Import enterprise components
+from apps_exec.reasoning.brief_decomposition_agent import (
+    BriefDecomposition,
+    BriefDecompositionAgent,
+)
 from apps_exec.reasoning.brief_orchestrator import (
     MultiAgentBriefEngine,
 )
+from apps_exec.services.repo_signal_service import RepoSignalService
 from apps_exec.validators.brief_style_validator import (
     BriefValidationAgent,
 )
@@ -409,7 +409,7 @@ Deterministic AI differentiator in market dominated by probabilistic systems. Go
         """Write the brief report as markdown."""
         lines: list[str] = []
 
-        lines.append(f"# Enterprise Executive Brief Generation Report")
+        lines.append("# Enterprise Executive Brief Generation Report")
         lines.append(f"**Generated:** {datetime.now().strftime('%Y-%m-%d %H:%M')}")
         lines.append(f"**Trace ID:** `{result.trace_id}`")
         lines.append(f"**Status:** {result.status.upper()}")

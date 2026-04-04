@@ -4,13 +4,14 @@ Layer 1 True Acceleration: Cache Hits, Concurrency, and Scalability
 Per Agentic Retrieval Models v15 - the REAL value of Redis Layer 1
 """
 
-import redis
-import sqlite3
-import time
 import json
-from pathlib import Path
-import threading
 import queue
+import sqlite3
+import threading
+import time
+from pathlib import Path
+
+import redis
 
 r = redis.from_url('redis://localhost:6379/0', decode_responses=True)
 
@@ -208,7 +209,7 @@ print('\nSPEC REQUIREMENT          | PROOF RESULT')
 print('-'*70)
 print(f'Cache hit acceleration    | {cache_speedup:.1f}x faster (repeated queries)')
 print(f'Concurrent scalability    | {concurrent_speedup:.1f}x faster (10 threads)')
-print(f'Batch pipeline ops        | Demonstrated (see Test 3)')
+print('Batch pipeline ops        | Demonstrated (see Test 3)')
 print(f'RAM-first (no disk I/O)   | {scan_speedup:.1f}x faster (large dataset)')
 print('\nLAYER 1 VALUE PROPOSITION:')
 print('  - NOT just raw single-query speed')

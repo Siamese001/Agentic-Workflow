@@ -119,6 +119,7 @@ class TestExecuteSsotSystemLearningHardening:
         """HealingOutcomeAggregator must be deterministic."""
         # Import must succeed - no skip allowed
         from agentic_core.L0_routing.scripts.execute_ssot import HealingOutcomeAggregator
+
         from system_learning.types.healing_outcome_types import HealingOutcomeEvent
 
         # Create two aggregators with same events

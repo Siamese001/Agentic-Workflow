@@ -10,15 +10,14 @@ import ast
 import json
 import re
 from pathlib import Path
-from typing import Dict, List, Set, Tuple
 
 
 class GuardianSwallowAnalyzer(ast.NodeVisitor):
     """AST visitor to identify guardian swallow patterns."""
 
     def __init__(self):
-        self.swallow_patterns: List[Dict] = []
-        self.fixture_patterns: List[Dict] = []
+        self.swallow_patterns: list[dict] = []
+        self.fixture_patterns: list[dict] = []
         self.current_class = None
         self.current_function = None
 
@@ -114,7 +113,7 @@ class GuardianSwallowAnalyzer(ast.NodeVisitor):
         return "unknown"
 
 
-def find_guardian_swallow_patterns(file_path: Path) -> Dict:
+def find_guardian_swallow_patterns(file_path: Path) -> dict:
     """Find guardian swallow patterns in a test file."""
     try:
         content = file_path.read_text(encoding='utf-8')
@@ -171,7 +170,7 @@ def find_guardian_swallow_patterns(file_path: Path) -> Dict:
         }
 
 
-def group_files_by_layer(results: List[Dict]) -> Dict[str, List[Dict]]:
+def group_files_by_layer(results: list[dict]) -> dict[str, list[dict]]:
     """Group analysis results by layer."""
     layers = {
         'L0_routing': [],
@@ -233,14 +232,14 @@ def main():
     total_regex_matches = sum(r.get('regex_matches', 0) for r in results)
     total_fixture_patterns = sum(r.get('total_fixtures', 0) for r in results)
 
-    print(f"\n=== Guardian Swallow Analysis ===")
+    print("\n=== Guardian Swallow Analysis ===")
     print(f"Total test files: {total_files}")
     print(f"Files needing conversion: {files_needing_conversion}")
     print(f"Total swallow patterns: {total_swallow_patterns}")
     print(f"Total regex matches: {total_regex_matches}")
     print(f"Total fixture patterns: {total_fixture_patterns}")
 
-    print(f"\n=== By Layer ===")
+    print("\n=== By Layer ===")
     for layer, files in layers.items():
         if files:
             needs_conversion = len([f for f in files if f.get('needs_conversion', False)])
@@ -264,12 +263,12 @@ def main():
     with open('artifacts/guardian_swallow_analysis.json', 'w') as f:
         json.dump(output, f, indent=2)
 
-    print(f"\nDetailed results saved to: artifacts/guardian_swallow_analysis.json")
+    print("\nDetailed results saved to: artifacts/guardian_swallow_analysis.json")
 
     # Show files needing most conversion
     files_needing = [r for r in results if r.get('needs_conversion', False)]
     if files_needing:
-        print(f"\n=== Top Files Needing Conversion ===")
+        print("\n=== Top Files Needing Conversion ===")
         sorted_files = sorted(files_needing,
                              key=lambda x: x.get('total_swallows', 0) + x.get('regex_matches', 0),
                              reverse=True)

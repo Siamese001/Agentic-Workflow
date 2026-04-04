@@ -1,8 +1,9 @@
 """Pytest configuration for retrieval layers tests."""
 
-import pytest
 import os
 import sys
+
+import pytest
 
 # Add project root to path
 project_root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(__file__))))

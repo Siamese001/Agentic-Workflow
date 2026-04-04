@@ -9,14 +9,15 @@ Usage:
     python mcp_redis_wrapper.py clear
 """
 
-import sys
 import json
+import sys
 from pathlib import Path
 
 # Add the current directory to Python path
 sys.path.insert(0, str(Path(__file__).parent))
 
 from mcp_redis_fix import MCPRedisFix
+
 
 def main():
     if len(sys.argv) < 2:

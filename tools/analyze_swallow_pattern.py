@@ -2,8 +2,8 @@
 """Analyze the guardian:allow-silent-swallow pattern across test files."""
 
 import re
-from pathlib import Path
 from collections import Counter
+from pathlib import Path
 
 pattern_files = []
 for p in sorted(Path("tests").rglob("*.py")):

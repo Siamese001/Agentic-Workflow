@@ -3,7 +3,7 @@
 
 class EmbeddingRegistry:
     """Placeholder embedding registry class."""
-    
+
     def register(self, name, embedder):
         """Placeholder register method."""
         pass

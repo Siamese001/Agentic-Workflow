@@ -3,7 +3,6 @@ Mechanical eager import fixer - converts module-level agentic_core imports
 to lazy fixtures using a simple find-and-replace pattern.
 """
 
-import re
 from pathlib import Path
 
 REPO_ROOT = Path("c:/Git/Agentic-Workflow")

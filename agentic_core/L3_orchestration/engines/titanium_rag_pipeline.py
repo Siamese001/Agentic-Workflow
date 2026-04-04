@@ -13,12 +13,12 @@ from __future__ import annotations
 
 import logging
 from dataclasses import dataclass, field
-from typing import Any, Optional
+from typing import Any
 
 from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     LayerSegment,
-    _emit_records_execution_trace,
     _emit_captures_evaluation_metric,
+    _emit_records_execution_trace,
 )
 
 Logger = logging.getLogger(__name__)
@@ -29,7 +29,7 @@ class TitaniumQuery:
     """Decomposed query for Titanium pipeline."""
     original_query: str
     sub_queries: list[str] = field(default_factory=list)
-    query_embedding: Optional[list[float]] = None
+    query_embedding: list[float] | None = None
     complexity_score: float = 0.5
     requires_decomposition: bool = False
 
@@ -52,7 +52,7 @@ class TitaniumCompressor:
     Compresses retrieved documents while preserving semantic meaning.
     """
 
-    def __init__(self, target_token_count: int = 2000, llm_client: Optional[Any] = None):
+    def __init__(self, target_token_count: int = 2000, llm_client: Any | None = None):
         self.target_token_count = target_token_count
         self.llm_client = llm_client
         self._compression_count = 0
@@ -101,7 +101,7 @@ class QueryDecomposer:
     Identifies when a query requires multi-step retrieval.
     """
 
-    def __init__(self, llm_client: Optional[Any] = None):
+    def __init__(self, llm_client: Any | None = None):
         self.llm_client = llm_client
         self._decomposition_threshold = 0.6
 
@@ -264,8 +264,8 @@ class TitaniumRAGPipeline:
 
     def __init__(
         self,
-        retriever: Optional[Any] = None,
-        llm_client: Optional[Any] = None,
+        retriever: Any | None = None,
+        llm_client: Any | None = None,
         enable_compression: bool = True,
         enable_decomposition: bool = True,
         enable_reranking: bool = True,
@@ -298,7 +298,7 @@ class TitaniumRAGPipeline:
         self,
         query: str,
         top_k: int = 5,
-        enable_compression: Optional[bool] = None,
+        enable_compression: bool | None = None,
     ) -> dict[str, Any]:
         """Execute Titanium RAG retrieval.
 

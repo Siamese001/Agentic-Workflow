@@ -4,7 +4,6 @@
 import json
 import sys
 from pathlib import Path
-from datetime import datetime, timezone
 
 ROOT = Path(__file__).resolve().parents[1]
 
@@ -36,28 +35,28 @@ def add_layer_to_file(file_path: Path, layer: str) -> bool:
     """Add layer annotation to a Python file."""
     if not file_path.exists():
         return False
-    
+
     content = file_path.read_text(encoding="utf-8")
-    
+
     # Check if already has layer annotation
     if "# Layer:" in content:
         return False
-    
+
     # Add layer annotation at the top after docstring if present
     lines = content.split("\n")
-    
+
     # Find insertion point (after module docstring or at start)
     insert_idx = 0
     in_docstring = False
     docstring_quote = None
-    
+
     for i, line in enumerate(lines):
         if i == 0 and line.startswith("#!/"):
             insert_idx = 1
             continue
-        
+
         stripped = line.strip()
-        
+
         # Handle docstrings
         if not in_docstring:
             if stripped.startswith('"""') or stripped.startswith("'''"):
@@ -71,14 +70,14 @@ def add_layer_to_file(file_path: Path, layer: str) -> bool:
             if docstring_quote in stripped:
                 in_docstring = False
                 insert_idx = i + 1
-    
+
     # Insert layer annotation
     layer_comment = f"# Layer: {layer}"
     if insert_idx < len(lines) and lines[insert_idx].strip():
         layer_comment += ""  # Will add newline
-    
+
     lines.insert(insert_idx, layer_comment)
-    
+
     # Write back
     file_path.write_text("\n".join(lines), encoding="utf-8")
     return True
@@ -87,43 +86,43 @@ def add_layer_to_file(file_path: Path, layer: str) -> bool:
 def main():
     """Run layer fix on current ADG."""
     timestamp = "04012026_2215"
-    
+
     # Load layer coverage report
     report_path = ROOT / "artifacts" / "adg" / f"layer_coverage_report_{timestamp}.json"
-    
+
     if not report_path.exists():
         print(f"❌ Report not found: {report_path}")
         sys.exit(1)
-    
+
     report = json.loads(report_path.read_text())
     unknown_modules = report.get("unknown_modules", [])
-    
+
     print("=" * 80)
     print("ADG LAYER ANNOTATION FIX")
     print(f"Timestamp: {timestamp}")
     print(f"Unknown modules: {len(unknown_modules)}")
     print("=" * 80)
-    
+
     fixed_count = 0
     skipped_count = 0
     error_count = 0
-    
+
     for module in unknown_modules:
         resolved_path = module.get("resolved_path", "")
         if not resolved_path:
             continue
-        
+
         # Infer layer
         layer = infer_layer(resolved_path)
         if not layer:
             print(f"  ⚠️ Cannot infer layer: {resolved_path}")
             skipped_count += 1
             continue
-        
+
         # Handle both file paths and symbol paths (e.g., file.py::ClassName)
         file_part = resolved_path.split("::")[0]
         file_path = ROOT / file_part
-        
+
         try:
             if add_layer_to_file(file_path, layer):
                 print(f"  ✅ Added # Layer: {layer} to {file_part}")
@@ -137,17 +136,17 @@ def main():
         except Exception as e:
             print(f"  ❌ Error processing {file_part}: {e}")
             error_count += 1
-    
+
     print("\n" + "=" * 80)
     print("SUMMARY")
     print("=" * 80)
     print(f"Fixed: {fixed_count}")
     print(f"Skipped: {skipped_count}")
     print(f"Errors: {error_count}")
-    
+
     if fixed_count > 0:
-        print(f"\n📝 Next step: Regenerate ADG to pick up layer annotations")
-        print(f"   python tools/generate_full_adg.py")
+        print("\n📝 Next step: Regenerate ADG to pick up layer annotations")
+        print("   python tools/generate_full_adg.py")
 
 
 if __name__ == "__main__":

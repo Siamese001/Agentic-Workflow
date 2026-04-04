@@ -4,7 +4,6 @@ Ingest specific ADG-related files into ChromaDB
 """
 
 import subprocess
-import sys
 
 # List of ADG-related files to ingest
 adg_files = [

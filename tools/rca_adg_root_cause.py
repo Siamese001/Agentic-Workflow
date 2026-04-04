@@ -46,7 +46,7 @@ print(f'Total execution edges: {total_execution}')
 # Calculate the ratio
 ratio = total_generic / total_execution if total_execution > 0 else 0
 print(f'Ratio: {ratio:.6f}')
-print(f'Threshold: < 0.01 (1%)')
+print('Threshold: < 0.01 (1%)')
 
 if ratio >= 0.01:
     print('\n❌ ROOT CAUSE FOUND: Too many execution edges have generic semantic types')

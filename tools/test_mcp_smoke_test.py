@@ -4,11 +4,12 @@ Comprehensive MCP Smoke Test Suite
 Tests all MCP servers for basic functionality and integration.
 """
 
-import subprocess
 import json
-import time
 import os
+import subprocess
+import time
 from pathlib import Path
+
 
 class MCPSmokeTester:
     def __init__(self):
@@ -18,7 +19,7 @@ class MCPSmokeTester:
 
     def load_config(self):
         """Load MCP configuration."""
-        with open(self.config_file, 'r') as f:
+        with open(self.config_file) as f:
             return json.load(f)
 
     def smoke_test_node_server(self, name, config):
@@ -155,7 +156,7 @@ class MCPSmokeTester:
             }
 
             try:
-                with open(script_path, 'r', encoding='utf-8') as f:
+                with open(script_path, encoding='utf-8') as f:
                     script_info['lines'] = len(f.readlines())
             except:
                 pass
@@ -291,7 +292,7 @@ class MCPSmokeTester:
                 print(f'   📄 Script: {info["lines"]} lines, {info["size"]} bytes')
 
         # Test built-in tools
-        print(f'\\n' + '='*50)
+        print('\\n' + '='*50)
         builtin_results = self.test_builtin_tools()
         self.results['builtin_tools'] = builtin_results
 
@@ -302,7 +303,7 @@ class MCPSmokeTester:
 
     def generate_smoke_test_report(self):
         """Generate comprehensive smoke test report."""
-        print(f'\\n📊 Smoke Test Results Summary')
+        print('\\n📊 Smoke Test Results Summary')
         print('=' * 35)
 
         # Count results by status
@@ -329,7 +330,7 @@ class MCPSmokeTester:
             fastest = min(node_servers, key=lambda x: x[1]['startup_time'])
             slowest = max(node_servers, key=lambda x: x[1]['startup_time'])
 
-            print(f'\\n⚡ Performance Summary:')
+            print('\\n⚡ Performance Summary:')
             print(f'   Average startup: {avg_time:.3f}s')
             print(f'   Fastest: {fastest[0]} ({fastest[1]["startup_time"]:.3f}s)')
             print(f'   Slowest: {slowest[0]} ({slowest[1]["startup_time"]:.3f}s)')
@@ -337,13 +338,13 @@ class MCPSmokeTester:
         # Built-in tools status
         if 'builtin_tools' in self.results:
             builtin = self.results['builtin_tools']
-            print(f'\\n🔧 Built-in Tools:')
+            print('\\n🔧 Built-in Tools:')
             for tool_name, result in builtin.items():
                 icon = '✅' if result['status'] == 'available' else '❌'
                 print(f'   {icon} {tool_name}: {result["status"]}')
 
         # Overall health check
-        print(f'\\n🏥 Overall Health Check:')
+        print('\\n🏥 Overall Health Check:')
 
         # Check for critical issues
         critical_issues = []
@@ -356,7 +357,7 @@ class MCPSmokeTester:
         if critical_issues:
             print(f'   ❌ Critical issues found: {", ".join(critical_issues)}')
         else:
-            print(f'   ✅ No critical issues detected')
+            print('   ✅ No critical issues detected')
 
         # Check for warnings
         warnings = []
@@ -369,19 +370,19 @@ class MCPSmokeTester:
         if warnings:
             print(f'   ⚠️  Warnings: {", ".join(warnings)}')
         else:
-            print(f'   ✅ No warnings detected')
+            print('   ✅ No warnings detected')
 
         # Recommendations
-        print(f'\\n💡 Recommendations:')
+        print('\\n💡 Recommendations:')
 
         if critical_issues:
-            print(f'   🔴 Fix critical issues before production use')
+            print('   🔴 Fix critical issues before production use')
 
         if warnings:
-            print(f'   🟡 Address warnings for optimal performance')
+            print('   🟡 Address warnings for optimal performance')
 
         if not critical_issues and not warnings:
-            print(f'   🟢 All systems ready for production use')
+            print('   🟢 All systems ready for production use')
 
         # Save detailed results
         results_file = Path('C:\\Git\\Agentic-Workflow\\mcp_smoke_test_results.json')

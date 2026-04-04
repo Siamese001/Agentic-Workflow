@@ -25,6 +25,8 @@ from datetime import datetime
 from pathlib import Path
 from typing import Any, Optional, Protocol
 
+from agentic_core.L0_routing.types.routing_artifact_types import RoutePath
+from agentic_core.L5_safety.enforcement.circuit_breaker_gate import get_breaker
 from agentic_core.L5_safety.enforcement.context_session import (
     ContextSession,
     ContextSessionManager,
@@ -32,9 +34,6 @@ from agentic_core.L5_safety.enforcement.context_session import (
     classify_risk,
     get_session_manager,
 )
-
-from agentic_core.L0_routing.types.routing_artifact_types import RoutePath
-from agentic_core.L5_safety.enforcement.circuit_breaker_gate import get_breaker
 from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     LayerSegment,
     _emit_agent_executes_agent,

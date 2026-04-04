@@ -8,9 +8,8 @@ focusing on providing proper test doubles and reducing unnecessary skips.
 
 import json
 import re
-from pathlib import Path
-from typing import Dict, List, Set, Tuple
 from collections import defaultdict
+from pathlib import Path
 
 
 class FakeMockSkipReducer:
@@ -27,7 +26,7 @@ class FakeMockSkipReducer:
         }
         self.modifications = []
 
-    def scan_for_fake_mock_skips(self) -> List[Dict]:
+    def scan_for_fake_mock_skips(self) -> list[dict]:
         """Scan for avoidable skips related to fakes and mocks."""
         print("=== Scanning for Fake/Mock Skips ===")
 
@@ -55,7 +54,7 @@ class FakeMockSkipReducer:
 
         for test_file in test_dir.rglob('test_*.py'):
             try:
-                with open(test_file, 'r', encoding='utf-8') as f:
+                with open(test_file, encoding='utf-8') as f:
                     content = f.read()
 
                 lines = content.split('\n')
@@ -149,7 +148,7 @@ class FakeMockSkipReducer:
         else:
             return 'generic'
 
-    def reduce_fake_mock_skips(self, fake_mock_skips: List[Dict]) -> Dict:
+    def reduce_fake_mock_skips(self, fake_mock_skips: list[dict]) -> dict:
         """Reduce avoidable skips related to fakes and mocks."""
         print("=== Reducing Fake/Mock Skips ===")
 
@@ -173,7 +172,7 @@ class FakeMockSkipReducer:
             'modifications': self.modifications
         }
 
-    def _reduce_file_fake_mock_skips(self, file_path: str, skips: List[Dict]):
+    def _reduce_file_fake_mock_skips(self, file_path: str, skips: list[dict]):
         """Reduce fake/mock skips in a single file."""
         self.reduction_stats['files_processed'] += 1
 
@@ -185,7 +184,7 @@ class FakeMockSkipReducer:
 
         try:
             # Read file content
-            with open(full_path, 'r', encoding='utf-8') as f:
+            with open(full_path, encoding='utf-8') as f:
                 content = f.read()
                 original_content = content
 
@@ -239,7 +238,7 @@ class FakeMockSkipReducer:
             print(f"❌ Error processing {file_path}: {e}")
             self.reduction_stats['errors_encountered'] += 1
 
-    def _reduce_fake_mock_skip(self, line: str, skip: Dict) -> Dict:
+    def _reduce_fake_mock_skip(self, line: str, skip: dict) -> dict:
         """Reduce a fake/mock skip with test double implementation."""
         reduction_result = {
             'reduced': False,
@@ -266,7 +265,7 @@ class FakeMockSkipReducer:
 
         return reduction_result
 
-    def _reduce_mock_skip(self, line: str, skip: Dict) -> Dict:
+    def _reduce_mock_skip(self, line: str, skip: dict) -> dict:
         """Reduce mock skip with mock implementation."""
         reduction_result = {
             'reduced': False,
@@ -284,7 +283,7 @@ class FakeMockSkipReducer:
 
         return reduction_result
 
-    def _reduce_fake_skip(self, line: str, skip: Dict) -> Dict:
+    def _reduce_fake_skip(self, line: str, skip: dict) -> dict:
         """Reduce fake skip with fake implementation."""
         reduction_result = {
             'reduced': False,
@@ -302,7 +301,7 @@ class FakeMockSkipReducer:
 
         return reduction_result
 
-    def _reduce_stub_skip(self, line: str, skip: Dict) -> Dict:
+    def _reduce_stub_skip(self, line: str, skip: dict) -> dict:
         """Reduce stub skip with stub implementation."""
         reduction_result = {
             'reduced': False,
@@ -320,7 +319,7 @@ class FakeMockSkipReducer:
 
         return reduction_result
 
-    def _reduce_double_skip(self, line: str, skip: Dict) -> Dict:
+    def _reduce_double_skip(self, line: str, skip: dict) -> dict:
         """Reduce test double skip with implementation."""
         reduction_result = {
             'reduced': False,
@@ -338,7 +337,7 @@ class FakeMockSkipReducer:
 
         return reduction_result
 
-    def _reduce_generic_test_double_skip(self, line: str, skip: Dict) -> Dict:
+    def _reduce_generic_test_double_skip(self, line: str, skip: dict) -> dict:
         """Reduce generic test double skip with implementation."""
         reduction_result = {
             'reduced': False,
@@ -356,7 +355,7 @@ class FakeMockSkipReducer:
 
         return reduction_result
 
-    def generate_test_double_implementations(self, modified_files: List[str]) -> Dict:
+    def generate_test_double_implementations(self, modified_files: list[str]) -> dict:
         """Generate test double implementations for modified files."""
         print("=== Generating Test Double Implementations ===")
 
@@ -370,7 +369,7 @@ class FakeMockSkipReducer:
             full_path = Path('tests') / file_path
 
             try:
-                with open(full_path, 'r', encoding='utf-8') as f:
+                with open(full_path, encoding='utf-8') as f:
                     content = f.read()
 
                 # Add test double implementations
@@ -431,7 +430,7 @@ class FakeMockSkipReducer:
 
         return '\n'.join(improved_lines)
 
-    def validate_reductions(self) -> Dict:
+    def validate_reductions(self) -> dict:
         """Validate that skip reductions were successful."""
         print("=== Validating Fake/Mock Skip Reductions ===")
 
@@ -448,7 +447,7 @@ class FakeMockSkipReducer:
             full_path = Path('tests') / file_path
 
             try:
-                with open(full_path, 'r', encoding='utf-8') as f:
+                with open(full_path, encoding='utf-8') as f:
                     content = f.read()
 
                 # Check that the skip pattern was reduced
@@ -477,7 +476,7 @@ class FakeMockSkipReducer:
 
         return validation
 
-    def generate_wave4b_report(self) -> Dict:
+    def generate_wave4b_report(self) -> dict:
         """Generate Wave 4b reduction report."""
         print("=== Wave 4b: Reduce Avoidable Skips - Fakes and Mocks ===")
 
@@ -522,7 +521,7 @@ class FakeMockSkipReducer:
 
         # Print summary
         summary = report['summary']
-        print(f"\n=== Wave 4b Summary ===")
+        print("\n=== Wave 4b Summary ===")
         print(f"Total fake/mock skips: {summary['total_fake_mock_skips']}")
         print(f"Avoidable skips: {summary['avoidable_skips']}")
         print(f"Files processed: {summary['files_processed']}")
@@ -537,7 +536,7 @@ class FakeMockSkipReducer:
             for issue in validation_results['remaining_issues'][:3]:
                 print(f"  - {issue['file']}: {issue['issue']}")
 
-        print(f"\n📄 Report saved to: artifacts/wave4b_reduction_report.json")
+        print("\n📄 Report saved to: artifacts/wave4b_reduction_report.json")
 
         return report
 

@@ -31,11 +31,11 @@ Logger = logging.getLogger(__name__)
 @dataclass
 class DuplicateGroup:
     """Represents a group of duplicate code blocks."""
-    
+
     group_id: str
     members: list[tuple[Path, str, int, str]]  # (file_path, name, line, code)
     hash_signature: str
-    
+
     def to_dict(self) -> dict[str, Any]:
         """Convert to dictionary."""
         return {
@@ -52,12 +52,12 @@ class DuplicateGroup:
 @dataclass
 class DedupResult:
     """Result of deduplication scan."""
-    
+
     duplicate_groups: dict[str, DuplicateGroup] = field(default_factory=dict)
     total_files_scanned: int = 0
     total_blocks_found: int = 0
     duplicates_detected: int = 0
-    
+
     def to_dict(self) -> dict[str, Any]:
         """Convert to dictionary."""
         return {
@@ -110,7 +110,7 @@ def _hash_block(code: str, use_ast: bool = True) -> str:
             return hashlib.sha256(str(norm_tree).encode()).hexdigest()
         except (SyntaxError, ValueError) as e:
             Logger.debug(f"AST parsing failed, using text normalization: {e}")
-    
+
     normalized = _normalize_code(code)
     return hashlib.sha256(normalized.encode("utf-8")).hexdigest()
 
@@ -123,7 +123,7 @@ def _extract_functions_classes(file_path: Path, min_lines: int = 8) -> list[tupl
     except (OSError, UnicodeDecodeError, SyntaxError) as e:
         Logger.debug(f"Failed to extract blocks from {file_path.name}: {e}")
         return []
-    
+
     blocks = []
     source_lines = source.splitlines()
     for node in ast.iter_child_nodes(tree):
@@ -142,7 +142,7 @@ def _block_similarity(norm_a: str, norm_b: str) -> float:
 
 class CodeDuplicateDetector:
     """Deterministic code duplicate detector."""
-    
+
     def __init__(self, similarity_threshold: float = 1.0, min_lines: int = 8) -> None:
         """Initialize detector.
         
@@ -154,13 +154,13 @@ class CodeDuplicateDetector:
         self.min_lines = min_lines
         self.duplicate_groups: dict[str, DuplicateGroup] = {}
         self._reset_stats()
-    
+
     def _reset_stats(self) -> None:
         """Reset detection statistics."""
         self.extracted_count = 0
         self.consolidated_count = 0
         self.errors: list[str] = []
-    
+
     def scan_for_duplicates(self, python_files: list[str | Path]) -> DedupResult:
         """Scan for duplicate code blocks across files.
         
@@ -173,16 +173,16 @@ class CodeDuplicateDetector:
         self._reset_stats()
         result = DedupResult()
         result.total_files_scanned = len(python_files)
-        
+
         # Collect candidates
         candidates: list[tuple[Path, str, int, str, str, int]] = []
-        
+
         for file_str in python_files:
             file_path = Path(file_str)
             if not file_path.exists():
                 self.errors.append(f"File not found: {file_path}")
                 continue
-            
+
             for name, code, line in _extract_functions_classes(file_path, self.min_lines):
                 norm_str = ""
                 try:
@@ -190,14 +190,14 @@ class CodeDuplicateDetector:
                     norm_str = _normalize_ast_tree(tree)
                 except (SyntaxError, ValueError):
                     norm_str = _normalize_code(code)
-                
+
                 if not norm_str or len(code.splitlines()) < self.min_lines:
                     continue
-                
+
                 len_norm = len(norm_str)
                 candidates.append((file_path, name, line, code, norm_str, len_norm))
                 result.total_blocks_found += 1
-        
+
         # Group by structural hash
         exact_groups: dict[str, list[tuple[Path, str, int, str, str, int]]] = {}
         for cand in candidates:
@@ -205,7 +205,7 @@ class CodeDuplicateDetector:
             if struct_hash not in exact_groups:
                 exact_groups[struct_hash] = []
             exact_groups[struct_hash].append(cand)
-        
+
         # Create duplicate groups
         group_id = 0
         for struct_hash, mems in exact_groups.items():
@@ -218,17 +218,17 @@ class CodeDuplicateDetector:
                     hash_signature=struct_hash,
                 )
                 group_id += 1
-        
+
         result.duplicates_detected = len(self.duplicate_groups)
         result.duplicate_groups = self.duplicate_groups.copy()
-        
+
         return result
-    
+
     def get_duplicate_report(self) -> dict[str, Any]:
         """Get a human-readable report of duplicates."""
         if not self.duplicate_groups:
             return {"status": "ok", "message": "No significant code duplicates detected."}
-        
+
         groups = []
         for group_id, group in self.duplicate_groups.items():
             groups.append({
@@ -236,7 +236,7 @@ class CodeDuplicateDetector:
                 "copies": len(group.members),
                 "locations": [f"{m[0].name}:{m[2]} ({m[1]})" for m in group.members[:3]],
             })
-        
+
         return {
             "status": "duplicates_found",
             "total_groups": len(self.duplicate_groups),

@@ -3,7 +3,7 @@
 
 class BGEEmbedder:
     """Placeholder BGE embedder class."""
-    
+
     def embed(self, text):
         """Placeholder embed method."""
         return []

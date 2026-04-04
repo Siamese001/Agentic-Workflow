@@ -7,11 +7,11 @@ and rollback capability with full audit logging.
 
 import hashlib
 import json
+from dataclasses import asdict, dataclass
 from datetime import datetime
 from enum import Enum
 from pathlib import Path
-from typing import Dict, List, Optional, Any
-from dataclasses import dataclass, asdict
+from typing import Any
 
 # from agentic_core.L4_canonical.state.snapshot_manager import SnapshotManager
 # TODO: Replace with local snapshot management
@@ -47,12 +47,12 @@ class ModelMetadata:
     training_data_digest: str
     feature_schema_digest: str
     model_digest: str
-    metrics: Dict[str, float]
-    thresholds: Dict[str, float]
-    promotion_history: List[Dict[str, Any]]
-    rollback_history: List[Dict[str, Any]]
-    validation_results: Dict[str, Any]
-    compliance_checks: Dict[str, bool]
+    metrics: dict[str, float]
+    thresholds: dict[str, float]
+    promotion_history: list[dict[str, Any]]
+    rollback_history: list[dict[str, Any]]
+    validation_results: dict[str, Any]
+    compliance_checks: dict[str, bool]
 
 
 @dataclass
@@ -61,7 +61,7 @@ class ModelRecord:
     metadata: ModelMetadata
     file_path: Path
     is_active: bool
-    last_used: Optional[datetime]
+    last_used: datetime | None
     usage_count: int
 
 
@@ -85,14 +85,14 @@ class ModelRegistry:
         self.models_dir.mkdir(exist_ok=True)
         # self.snapshot_manager = SnapshotManager()
         # TODO: Replace with local snapshot management
-        self._models: Dict[str, ModelRecord] = {}
+        self._models: dict[str, ModelRecord] = {}
         self._load_registry()
 
     def _load_registry(self) -> None:
         """Load model registry from disk."""
         if self.models_file.exists():
             try:
-                with open(self.models_file, 'r', encoding='utf-8') as f:
+                with open(self.models_file, encoding='utf-8') as f:
                     data = json.load(f)
 
                 for model_id, record_data in data.items():
@@ -151,11 +151,11 @@ class ModelRegistry:
         model_file_path: Path,
         training_data_digest: str,
         feature_schema_digest: str,
-        metrics: Dict[str, float],
-        thresholds: Dict[str, float],
+        metrics: dict[str, float],
+        thresholds: dict[str, float],
         created_by: str,
-        validation_results: Optional[Dict[str, Any]] = None,
-        compliance_checks: Optional[Dict[str, bool]] = None
+        validation_results: dict[str, Any] | None = None,
+        compliance_checks: dict[str, bool] | None = None
     ) -> str:
         """
         Register a new model in the registry.
@@ -336,11 +336,11 @@ class ModelRegistry:
 
         return True
 
-    def get_model(self, model_id: str) -> Optional[ModelRecord]:
+    def get_model(self, model_id: str) -> ModelRecord | None:
         """Get model record by ID."""
         return self._models.get(model_id)
 
-    def get_active_models(self, model_type: Optional[str] = None) -> List[ModelRecord]:
+    def get_active_models(self, model_type: str | None = None) -> list[ModelRecord]:
         """Get all active models, optionally filtered by type."""
         active_models = [
             record for record in self._models.values()
@@ -355,7 +355,7 @@ class ModelRegistry:
 
         return active_models
 
-    def get_production_models(self) -> List[ModelRecord]:
+    def get_production_models(self) -> list[ModelRecord]:
         """Get all production models."""
         return [
             record for record in self._models.values()
@@ -404,7 +404,7 @@ class ModelRegistry:
 
         return True
 
-    def _log_model_event(self, event_type: str, model_id: str, data: Dict[str, Any]) -> None:
+    def _log_model_event(self, event_type: str, model_id: str, data: dict[str, Any]) -> None:
         """Log model events to L4 canonical state."""
         try:
             event = {
@@ -422,7 +422,7 @@ class ModelRegistry:
             # Log failure but don't fail the operation
             print(f"Failed to log model event: {e}")
 
-    def get_registry_stats(self) -> Dict[str, Any]:
+    def get_registry_stats(self) -> dict[str, Any]:
         """Get registry statistics."""
         stats = {
             'total_models': len(self._models),

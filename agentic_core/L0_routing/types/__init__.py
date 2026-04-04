@@ -1,3 +1,18 @@
+# Import artifact validators
+from agentic_core.L0_routing.types.artifact_validators_types import (
+    to_result_artifact_dict,
+    validate_result_artifact,
+)
+
+# Import V15 exceptions from zero-dependency module (breaks circular import)
+from agentic_core.L0_routing.types.v15_exceptions import (
+    V15EnforcementError,
+    V15HardFailAbort,
+    V15SoftFailAbort,
+    is_v15_enforced,
+    is_v15_hard_fail,
+    is_v15_soft_fail,
+)
 from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     LayerSegment,
     _emit_agent_executes_agent,
@@ -62,22 +77,6 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_writes_via_uwg,
     emit_determinism_digest,  # noqa: E402
     emit_replay_key,  # noqa: E402
-)
-
-# Import artifact validators
-from agentic_core.L0_routing.types.artifact_validators_types import (
-    to_result_artifact_dict,
-    validate_result_artifact,
-)
-
-# Import V15 exceptions from zero-dependency module (breaks circular import)
-from agentic_core.L0_routing.types.v15_exceptions import (
-    V15EnforcementError,
-    V15HardFailAbort,
-    V15SoftFailAbort,
-    is_v15_enforced,
-    is_v15_hard_fail,
-    is_v15_soft_fail,
 )
 
 _emit_emits_metric_event("__init__", "p4obs", "metric_1")

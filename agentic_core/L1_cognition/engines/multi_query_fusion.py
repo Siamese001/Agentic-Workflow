@@ -5,13 +5,13 @@ Executes parallel searches across relevant ChromaDB collections.
 
 import asyncio
 import logging
-from typing import List, Dict, Any, Tuple
-from dataclasses import dataclass
 import time
 from concurrent.futures import ThreadPoolExecutor
+from dataclasses import dataclass
+from typing import Any
 
 from .query_router import QueryRouter, RoutingDecision
-from .semantic_retriever import SemanticRetriever, RetrievalQuery, RetrievalResult
+from .semantic_retriever import RetrievalQuery, RetrievalResult, SemanticRetriever
 
 logger = logging.getLogger(__name__)
 
@@ -21,7 +21,7 @@ class FusionQuery:
     """Enhanced query for fusion execution."""
     original_query: str
     routing_decision: RoutingDecision
-    query_variations: List[str]
+    query_variations: list[str]
     max_results_per_collection: int
     fusion_strategy: str
 
@@ -30,11 +30,11 @@ class FusionQuery:
 class FusionResult:
     """Result from multi-query fusion."""
     original_query: str
-    collection_results: Dict[str, List[RetrievalResult]]
+    collection_results: dict[str, list[RetrievalResult]]
     fusion_strategy: str
     total_results: int
     execution_time_ms: float
-    query_variations_used: List[str]
+    query_variations_used: list[str]
 
 
 class MultiQueryFusion:
@@ -128,7 +128,7 @@ class MultiQueryFusion:
 
         return result
 
-    async def _execute_parallel_searches(self, fusion_query: FusionQuery) -> Dict[str, List[RetrievalResult]]:
+    async def _execute_parallel_searches(self, fusion_query: FusionQuery) -> dict[str, list[RetrievalResult]]:
         """Execute parallel searches across collections."""
         collection_results = {}
 
@@ -177,7 +177,7 @@ class MultiQueryFusion:
         collection: str,
         query_text: str,
         fusion_query: FusionQuery
-    ) -> Tuple[str, List[RetrievalResult]]:
+    ) -> tuple[str, list[RetrievalResult]]:
         """Search a single collection."""
         try:
             # Create retrieval query
@@ -196,7 +196,7 @@ class MultiQueryFusion:
             logger.error(f"Failed to search collection {collection}: {e}")
             return collection, []
 
-    def _generate_query_variations(self, query: str) -> List[str]:
+    def _generate_query_variations(self, query: str) -> list[str]:
         """Generate variations of the original query."""
         variations = []
 
@@ -246,10 +246,10 @@ class MultiQueryFusion:
 
     def apply_fusion_strategy(
         self,
-        collection_results: Dict[str, List[RetrievalResult]],
+        collection_results: dict[str, list[RetrievalResult]],
         fusion_strategy: str,
         max_final_results: int = 50
-    ) -> List[RetrievalResult]:
+    ) -> list[RetrievalResult]:
         """
         Apply fusion strategy to merge results from multiple collections.
 
@@ -278,10 +278,10 @@ class MultiQueryFusion:
 
     def _reciprocal_rank_fusion(
         self,
-        collection_results: Dict[str, List[RetrievalResult]],
+        collection_results: dict[str, list[RetrievalResult]],
         max_results: int,
         k: int = 60
-    ) -> List[RetrievalResult]:
+    ) -> list[RetrievalResult]:
         """Apply Reciprocal Rank Fusion (RRF)."""
         # Collect all unique results
         all_results = {}
@@ -323,9 +323,9 @@ class MultiQueryFusion:
 
     def _score_fusion(
         self,
-        collection_results: Dict[str, List[RetrievalResult]],
+        collection_results: dict[str, list[RetrievalResult]],
         max_results: int
-    ) -> List[RetrievalResult]:
+    ) -> list[RetrievalResult]:
         """Apply score-based fusion."""
         all_results = []
 
@@ -359,9 +359,9 @@ class MultiQueryFusion:
 
     def _collection_priority_fusion(
         self,
-        collection_results: Dict[str, List[RetrievalResult]],
+        collection_results: dict[str, list[RetrievalResult]],
         max_results: int
-    ) -> List[RetrievalResult]:
+    ) -> list[RetrievalResult]:
         """Apply collection priority fusion."""
         # Define collection priorities
         priority_order = [
@@ -389,9 +389,9 @@ class MultiQueryFusion:
 
     def _hybrid_fusion(
         self,
-        collection_results: Dict[str, List[RetrievalResult]],
+        collection_results: dict[str, list[RetrievalResult]],
         max_results: int
-    ) -> List[RetrievalResult]:
+    ) -> list[RetrievalResult]:
         """Apply hybrid fusion (combination of strategies)."""
         # First apply collection priority for top candidates
         priority_results = self._collection_priority_fusion(collection_results, max_results // 2)
@@ -408,7 +408,7 @@ class MultiQueryFusion:
 
         return priority_results[:max_results]
 
-    def get_fusion_stats(self) -> Dict[str, Any]:
+    def get_fusion_stats(self) -> dict[str, Any]:
         """Get fusion engine statistics."""
         return {
             "fusion_strategies": self.fusion_strategies,

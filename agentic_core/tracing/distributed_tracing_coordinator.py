@@ -28,8 +28,8 @@ import time
 import uuid
 from collections import defaultdict, deque
 from dataclasses import dataclass, field
-from typing import Any, Dict, List, Optional, Set
 from enum import Enum
+from typing import Any
 
 from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     emit_determinism_digest,
@@ -65,14 +65,14 @@ class TraceContext:
 
     trace_id: str
     span_id: str
-    parent_span_id: Optional[str]
-    baggage: Dict[str, str] = field(default_factory=dict)
+    parent_span_id: str | None
+    baggage: dict[str, str] = field(default_factory=dict)
     service_name: str = ""
     operation_name: str = ""
-    flags: Dict[str, Any] = field(default_factory=dict)
+    flags: dict[str, Any] = field(default_factory=dict)
     timestamp: float = field(default_factory=time.time)
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Convert to dictionary for propagation."""
         return {
             "trace_id": self.trace_id,
@@ -86,7 +86,7 @@ class TraceContext:
         }
 
     @classmethod
-    def from_dict(cls, data: Dict[str, Any]) -> "TraceContext":
+    def from_dict(cls, data: dict[str, Any]) -> "TraceContext":
         """Create from dictionary."""
         return cls(
             trace_id=data["trace_id"],
@@ -108,7 +108,7 @@ class ServiceNode:
     service_id: str
     host: str
     port: int
-    capabilities: Set[str] = field(default_factory=set)
+    capabilities: set[str] = field(default_factory=set)
     health_status: str = "healthy"
     last_heartbeat: float = field(default_factory=time.time)
     trace_count: int = 0
@@ -121,16 +121,16 @@ class DistributedSpan:
 
     trace_id: str
     span_id: str
-    parent_span_id: Optional[str]
+    parent_span_id: str | None
     service_name: str
     operation_name: str
     start_time: float
-    end_time: Optional[float]
-    duration_ms: Optional[float]
+    end_time: float | None
+    duration_ms: float | None
     status: str = "OK"
-    tags: Dict[str, Any] = field(default_factory=dict)
-    logs: List[Dict[str, Any]] = field(default_factory=list)
-    service_node_id: Optional[str] = None
+    tags: dict[str, Any] = field(default_factory=dict)
+    logs: list[dict[str, Any]] = field(default_factory=list)
+    service_node_id: str | None = None
 
 
 class DistributedTracingCoordinator:
@@ -147,17 +147,17 @@ class DistributedTracingCoordinator:
         self._service_id = str(uuid.uuid4())
 
         # Trace management
-        self._active_traces: Dict[str, TraceContext] = {}
+        self._active_traces: dict[str, TraceContext] = {}
         self._trace_history: deque = deque(maxlen=10000)
-        self._span_buffer: Dict[str, List[DistributedSpan]] = defaultdict(list)
+        self._span_buffer: dict[str, list[DistributedSpan]] = defaultdict(list)
 
         # Service management
-        self._registered_services: Dict[str, ServiceNode] = {}
+        self._registered_services: dict[str, ServiceNode] = {}
         self._service_discovery_enabled: bool = True
 
         # Coordination state
         self._coordination_active: bool = False
-        self._coordination_thread: Optional[threading.Thread] = None
+        self._coordination_thread: threading.Thread | None = None
         self._shutdown_requested: bool = False
 
         # Sampling configuration
@@ -186,7 +186,7 @@ class DistributedTracingCoordinator:
 
         # Load balancing
         self._load_balancer_index = 0
-        self._service_load_stats: Dict[str, Dict[str, float]] = defaultdict(lambda: {
+        self._service_load_stats: dict[str, dict[str, float]] = defaultdict(lambda: {
             "request_count": 0,
             "error_rate": 0.0,
             "avg_response_time": 0.0,
@@ -326,7 +326,7 @@ class DistributedTracingCoordinator:
             self._stats["errors"] += 1
             return False
 
-    def _find_service_node(self, service_name: str) -> Optional[ServiceNode]:
+    def _find_service_node(self, service_name: str) -> ServiceNode | None:
         """Find a service node by name using load balancing."""
         matching_nodes = [
             node for node in self._registered_services.values()
@@ -342,7 +342,7 @@ class DistributedTracingCoordinator:
 
         return node
 
-    def _prepare_propagation_data(self, context: TraceContext) -> Dict[str, Any]:
+    def _prepare_propagation_data(self, context: TraceContext) -> dict[str, Any]:
         """Prepare trace context for propagation."""
         if self._propagation_format == TracePropagationFormat.HEADER:
             return {
@@ -362,13 +362,13 @@ class DistributedTracingCoordinator:
         else:
             return context.to_dict()
 
-    def _send_propagation(self, target_node: ServiceNode, propagation_data: Dict[str, Any]) -> bool:
+    def _send_propagation(self, target_node: ServiceNode, propagation_data: dict[str, Any]) -> bool:
         """Send propagation to target node (simplified)."""
         # In a real implementation, this would use HTTP, gRPC, or message queue
         # For now, we simulate successful propagation
         return True
 
-    def receive_propagated_context(self, propagation_data: Dict[str, Any], format_type: TracePropagationFormat) -> Optional[TraceContext]:
+    def receive_propagated_context(self, propagation_data: dict[str, Any], format_type: TracePropagationFormat) -> TraceContext | None:
         """Receive propagated trace context."""
         try:
             if format_type == TracePropagationFormat.HEADER:
@@ -433,11 +433,11 @@ class DistributedTracingCoordinator:
             count = stats["request_count"]
             stats["avg_response_time"] = (current_avg * (count - 1) + span.duration_ms) / count
 
-    def get_trace_spans(self, trace_id: str) -> List[DistributedSpan]:
+    def get_trace_spans(self, trace_id: str) -> list[DistributedSpan]:
         """Get all spans for a trace."""
         return self._span_buffer.get(trace_id, [])
 
-    def get_service_traces(self, service_name: str, limit: int = 100) -> List[str]:
+    def get_service_traces(self, service_name: str, limit: int = 100) -> list[str]:
         """Get trace IDs for a specific service."""
         trace_ids = []
 
@@ -465,7 +465,7 @@ class DistributedTracingCoordinator:
         """Unregister a service node."""
         return self._unregister_service(service_id)
 
-    def get_service_health(self) -> Dict[str, Dict[str, Any]]:
+    def get_service_health(self) -> dict[str, dict[str, Any]]:
         """Get health status of all registered services."""
         health_status = {}
 
@@ -561,7 +561,7 @@ class DistributedTracingCoordinator:
 
         Logger.debug(f"[DISTRIBUTED_TRACING] Active traces: {total_traces}, Total spans: {total_spans}, Avg spans/trace: {avg_spans_per_trace:.1f}")
 
-    def get_coordination_stats(self) -> Dict[str, Any]:
+    def get_coordination_stats(self) -> dict[str, Any]:
         """Get coordination statistics."""
         return {
             "coordination_active": self._coordination_active,
@@ -624,7 +624,7 @@ def propagate_distributed_trace(context: TraceContext, target_service: str) -> b
     return coordinator.propagate_trace_context(context, target_service)
 
 
-def get_distributed_coordination_stats() -> Dict[str, Any]:
+def get_distributed_coordination_stats() -> dict[str, Any]:
     """Get distributed coordination statistics."""
     coordinator = get_global_coordinator()
     return coordinator.get_coordination_stats()

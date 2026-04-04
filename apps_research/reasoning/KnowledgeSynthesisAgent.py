@@ -22,7 +22,6 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     emit_determinism_digest,
     emit_replay_key,
 )
-
 from apps_research.services.synthesis_engine_service import SynthesisEngineService
 
 _log = logging.getLogger(__name__)

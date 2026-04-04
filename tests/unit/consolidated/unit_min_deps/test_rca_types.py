@@ -1,6 +1,5 @@
 """Unit tests for system_learning.types.rca_types."""
 
-import pytest
 
 
 

@@ -6,7 +6,7 @@ State recovery and graceful degradation.
 import logging
 import time
 from dataclasses import dataclass, field
-from typing import Any, Callable, Dict, List, Optional
+from typing import Any, Callable
 
 from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     LayerSegment,
@@ -23,7 +23,7 @@ class RecoveryAction:
     name: str
     action: Callable
     priority: int = 1
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    metadata: dict[str, Any] = field(default_factory=dict)
 
 
 class RecoveryManager:
@@ -35,9 +35,9 @@ class RecoveryManager:
 
     def __init__(self):
         """Initialize the recovery manager."""
-        self._recovery_actions: List[RecoveryAction] = []
-        self._degradation_levels: Dict[str, int] = {}
-        self._recovery_history: List[Dict[str, Any]] = []
+        self._recovery_actions: list[RecoveryAction] = []
+        self._degradation_levels: dict[str, int] = {}
+        self._recovery_history: list[dict[str, Any]] = []
 
         log.info("RecoveryManager initialized")
 
@@ -68,7 +68,7 @@ class RecoveryManager:
 
     def attempt_recovery(
         self,
-        failure_context: Optional[Dict[str, Any]] = None,
+        failure_context: dict[str, Any] | None = None,
     ) -> bool:
         """Attempt recovery using registered actions.
 
@@ -172,8 +172,8 @@ class RecoveryManager:
         self,
         action_name: str,
         success: bool,
-        context: Optional[Dict[str, Any]],
-        error: Optional[str] = None,
+        context: dict[str, Any] | None,
+        error: str | None = None,
     ) -> None:
         """Record a recovery attempt."""
         entry = {
@@ -185,7 +185,7 @@ class RecoveryManager:
         }
         self._recovery_history.append(entry)
 
-    def get_recovery_stats(self) -> Dict[str, Any]:
+    def get_recovery_stats(self) -> dict[str, Any]:
         """Get recovery statistics.
 
         Returns:
@@ -205,7 +205,7 @@ class RecoveryManager:
 
 
 # Global instance
-_global_recovery: Optional[RecoveryManager] = None
+_global_recovery: RecoveryManager | None = None
 
 
 def get_recovery_manager() -> RecoveryManager:

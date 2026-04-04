@@ -6,10 +6,8 @@ These emitter calls exist solely for ADG coverage tracking and add
 ~76 function calls per test file during pytest collection.
 """
 
-import ast
 import re
 from pathlib import Path
-from typing import List, Tuple, Set
 
 # Emitter patterns to strip (top-level calls only)
 EMITTER_PATTERNS = [
@@ -37,12 +35,12 @@ TARGET_FILES = [
     # Additional files will be discovered via pattern matching
 ]
 
-def find_emitter_calls(file_path: Path) -> List[Tuple[int, str]]:
+def find_emitter_calls(file_path: Path) -> list[tuple[int, str]]:
     """Find top-level emitter calls in a Python file."""
     emitter_calls = []
 
     try:
-        with open(file_path, 'r', encoding='utf-8') as f:
+        with open(file_path, encoding='utf-8') as f:
             lines = f.readlines()
     except Exception as e:
         print(f"Error reading {file_path}: {e}")
@@ -63,12 +61,12 @@ def find_emitter_calls(file_path: Path) -> List[Tuple[int, str]]:
 
     return emitter_calls
 
-def strip_emitters_from_file(file_path: Path, dry_run: bool = True) -> Tuple[int, List[str]]:
+def strip_emitters_from_file(file_path: Path, dry_run: bool = True) -> tuple[int, list[str]]:
     """Strip emitter calls from a file. Return (lines_changed, changed_lines)."""
     if not file_path.exists():
         return 0, []
 
-    with open(file_path, 'r', encoding='utf-8') as f:
+    with open(file_path, encoding='utf-8') as f:
         lines = f.readlines()
 
     changed_lines = []
@@ -100,7 +98,7 @@ def strip_emitters_from_file(file_path: Path, dry_run: bool = True) -> Tuple[int
 
     return lines_changed, changed_lines
 
-def find_all_test_files_with_emitters() -> List[Path]:
+def find_all_test_files_with_emitters() -> list[Path]:
     """Find all test files that contain emitter calls."""
     test_files = []
     tests_dir = Path("tests")
@@ -134,7 +132,7 @@ def main():
     if not args.apply and not args.dry_run:
         args.dry_run = True  # Default to dry-run for safety
 
-    print(f"=== Phase 0.1: Bootstrap Emitter Cleanup ===")
+    print("=== Phase 0.1: Bootstrap Emitter Cleanup ===")
     print(f"Mode: {'DRY RUN' if args.dry_run else 'APPLY'}")
     print()
 
@@ -183,7 +181,7 @@ def main():
 
         print()
 
-    print(f"=== Summary ===")
+    print("=== Summary ===")
     print(f"Files processed: {len(target_files)}")
     print(f"Files with changes: {total_files_changed}")
     print(f"Total emitter calls removed: {total_emitters}")

@@ -30,6 +30,7 @@ from pathlib import Path
 from agentic_core.L0_routing.enforcement.mutation_prohibition import assert_no_persistent_write
 from agentic_core.L0_routing.utils.project_root_util import get_validated_project_root
 from agentic_core.L2_execution.tools import write_gateway as _wg
+
 # REPORTS_DIR imported lazily to avoid L3->L5 violation
 from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     LayerSegment,

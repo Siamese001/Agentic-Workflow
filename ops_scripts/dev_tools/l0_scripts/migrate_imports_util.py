@@ -77,7 +77,6 @@ from pathlib import Path
 
 from agentic_core.utils.file_utils_validator import safe_read_file, safe_write_file
 from agentic_core.utils.project_root import get_project_root
-from agentic_core.utils.ssot_discovery_validator import get_python_files
 
 from agentic_core.L0_routing.config.path_constants import (
     BATCH_SIZE,
@@ -127,6 +126,7 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from agentic_core.utils.ssot_discovery_validator import get_python_files
 
 _emit_emits_metric_event("migrate_imports_util", "p4obs", "metric_1")
 _emit_emits_metric_event("migrate_imports_util", "p4obs", "metric_2")

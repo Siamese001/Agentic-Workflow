@@ -6,12 +6,11 @@ This script hardens pytest markers across the test suite,
 focusing on marker standardization, consistency, and proper usage.
 """
 
+import ast
 import json
 import re
-import ast
-from pathlib import Path
-from typing import Dict, List, Set, Tuple
 from collections import defaultdict
+from pathlib import Path
 
 
 class MarkerHardener:
@@ -28,7 +27,7 @@ class MarkerHardener:
         }
         self.modifications = []
 
-    def scan_test_files_for_markers(self) -> List[Dict]:
+    def scan_test_files_for_markers(self) -> list[dict]:
         """Scan test files for pytest markers."""
         print("=== Scanning Test Files for Markers ===")
 
@@ -37,7 +36,7 @@ class MarkerHardener:
 
         for test_file in test_dir.rglob('test_*.py'):
             try:
-                with open(test_file, 'r', encoding='utf-8') as f:
+                with open(test_file, encoding='utf-8') as f:
                     content = f.read()
 
                 markers = self._extract_markers_from_file(content)
@@ -57,7 +56,7 @@ class MarkerHardener:
 
         return test_files_with_markers
 
-    def _extract_markers_from_file(self, content: str) -> List[Dict]:
+    def _extract_markers_from_file(self, content: str) -> list[dict]:
         """Extract markers from a test file."""
         markers = []
 
@@ -77,7 +76,7 @@ class MarkerHardener:
 
         return markers
 
-    def _analyze_decorator(self, decorator: ast.AST, content: str) -> Dict:
+    def _analyze_decorator(self, decorator: ast.AST, content: str) -> dict:
         """Analyze a decorator to determine if it's a pytest marker."""
         marker_info = None
 
@@ -115,7 +114,7 @@ class MarkerHardener:
 
         return marker_info
 
-    def analyze_marker_usage(self, test_files: List[Dict]) -> Dict:
+    def analyze_marker_usage(self, test_files: list[dict]) -> dict:
         """Analyze marker usage patterns."""
         print("=== Analyzing Marker Usage Patterns ===")
 
@@ -159,7 +158,7 @@ class MarkerHardener:
 
         return analysis
 
-    def _check_marker_issues(self, marker: Dict) -> List[Dict]:
+    def _check_marker_issues(self, marker: dict) -> list[dict]:
         """Check for issues with a specific marker."""
         issues = []
         marker_name = marker['name']
@@ -183,7 +182,7 @@ class MarkerHardener:
 
         return issues
 
-    def harden_markers(self, test_files: List[Dict]) -> Dict:
+    def harden_markers(self, test_files: list[dict]) -> dict:
         """Harden markers in test files."""
         print("=== Hardening Markers ===")
 
@@ -200,7 +199,7 @@ class MarkerHardener:
             'modifications': self.modifications
         }
 
-    def _harden_file_markers(self, file_info: Dict, analysis: Dict) -> Dict:
+    def _harden_file_markers(self, file_info: dict, analysis: dict) -> dict:
         """Harden markers in a single file."""
         file_path = file_info['path']
         rel_path = file_info['file']
@@ -209,7 +208,7 @@ class MarkerHardener:
 
         try:
             # Read original content
-            with open(file_path, 'r', encoding='utf-8') as f:
+            with open(file_path, encoding='utf-8') as f:
                 original_content = f.read()
 
             # Generate hardened content
@@ -242,7 +241,7 @@ class MarkerHardener:
             print(f"❌ Error hardening {rel_path}: {e}")
             self.hardening_stats['errors_encountered'] += 1
 
-    def _generate_hardened_content(self, file_info: Dict, analysis: Dict, content: str) -> str:
+    def _generate_hardened_content(self, file_info: dict, analysis: dict, content: str) -> str:
         """Generate hardened content with improved markers."""
         lines = content.split('\n')
         hardened_lines = []
@@ -273,7 +272,7 @@ class MarkerHardener:
 
         return '\n'.join(hardened_lines)
 
-    def _determine_appropriate_markers(self, file_path: str, test_function: str, content: str) -> List[str]:
+    def _determine_appropriate_markers(self, file_path: str, test_function: str, content: str) -> list[str]:
         """Determine appropriate markers for a test."""
         markers = []
         file_path_lower = file_path.lower()
@@ -305,7 +304,7 @@ class MarkerHardener:
 
         return markers
 
-    def validate_marker_hardening(self) -> Dict:
+    def validate_marker_hardening(self) -> dict:
         """Validate that marker hardening was successful."""
         print("=== Validating Marker Hardening ===")
 
@@ -322,7 +321,7 @@ class MarkerHardener:
             full_path = Path('tests') / file_path
 
             try:
-                with open(full_path, 'r', encoding='utf-8') as f:
+                with open(full_path, encoding='utf-8') as f:
                     content = f.read()
 
                 # Check that standard markers are present
@@ -339,7 +338,7 @@ class MarkerHardener:
                 else:
                     validation['remaining_issues'].append({
                         'file': file_path,
-                        'issue': f'No standard markers found'
+                        'issue': 'No standard markers found'
                     })
 
                 validation['files_validated'] += 1
@@ -352,7 +351,7 @@ class MarkerHardener:
 
         return validation
 
-    def generate_wave5b_report(self) -> Dict:
+    def generate_wave5b_report(self) -> dict:
         """Generate Wave 5b hardening report."""
         print("=== Wave 5b: Marker and Config Hardening - Markers ===")
 
@@ -389,7 +388,7 @@ class MarkerHardener:
 
         # Print summary
         summary = report['summary']
-        print(f"\n=== Wave 5b Summary ===")
+        print("\n=== Wave 5b Summary ===")
         print(f"Test files with markers: {summary['test_files_with_markers']}")
         print(f"Files processed: {summary['files_processed']}")
         print(f"Files modified: {summary['files_modified']}")
@@ -402,7 +401,7 @@ class MarkerHardener:
             for issue in validation_results['remaining_issues'][:3]:
                 print(f"  - {issue['file']}: {issue['issue']}")
 
-        print(f"\n📄 Report saved to: artifacts/wave5b_hardening_report.json")
+        print("\n📄 Report saved to: artifacts/wave5b_hardening_report.json")
 
         return report
 

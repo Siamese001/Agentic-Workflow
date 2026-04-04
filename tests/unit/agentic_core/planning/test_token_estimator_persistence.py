@@ -4,13 +4,12 @@ Budget History Persistence and Accuracy Tests for Token Planning Estimator
 Tests for budget history persistence, accuracy, data integrity, and long-term reliability.
 """
 
-import pytest
-import json
-import time
-import tempfile
 import os
+import tempfile
+import time
 from pathlib import Path
-from typing import Dict, List, Any
+
+import pytest
 
 
 # Lazy imports to avoid collection-time conflicts
@@ -395,7 +394,7 @@ class TestBudgetHistoryPersistence:
 
         # Simulate partial write by truncating file
         if self.budget_file.exists():
-            with open(self.budget_file, 'r') as f:
+            with open(self.budget_file) as f:
                 content = f.read()
 
             # Truncate to simulate partial write

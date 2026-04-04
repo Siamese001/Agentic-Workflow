@@ -75,6 +75,7 @@ _emit_links_execution_to_snapshot("p4", "runtime_bootstrapper_util", "exec_snaps
 "Brief description of functionality and purpose."
 from typing import Any
 
+
 # from agentic_core.L0_routing.utils.TelemetryRecorder import TelemetryRecorder
 # TelemetryRecorder not found - using placeholder
 class TelemetryRecorder:

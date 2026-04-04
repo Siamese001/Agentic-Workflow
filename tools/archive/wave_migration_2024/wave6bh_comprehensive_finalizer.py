@@ -7,10 +7,8 @@ and prepares the test suite for production deployment.
 """
 
 import json
-import re
-from pathlib import Path
-from typing import Dict, List
 import subprocess
+from pathlib import Path
 
 
 def create_ci_cd_configuration():
@@ -550,18 +548,18 @@ def finalize_test_suite():
         print(f"  Final validation error: {e}")
 
     # Summary
-    print(f"\n=== Wave 6b-6h Summary ===")
-    print(f"CI/CD configuration: ✅ Created")
-    print(f"Documentation: ✅ Created")
-    print(f"Maintenance procedures: ✅ Created")
-    print(f"Final validator: ✅ Created")
+    print("\n=== Wave 6b-6h Summary ===")
+    print("CI/CD configuration: ✅ Created")
+    print("Documentation: ✅ Created")
+    print("Maintenance procedures: ✅ Created")
+    print("Final validator: ✅ Created")
     print(f"Final validation: {'✅ PASSED' if results.get('final_validation', {}).get('success') else '❌ FAILED'}")
 
     # Save results
     with open('artifacts/wave6bh_finalization_results.json', 'w') as f:
         json.dump(results, f, indent=2)
 
-    print(f"\nDetailed results saved to: artifacts/wave6bh_finalization_results.json")
+    print("\nDetailed results saved to: artifacts/wave6bh_finalization_results.json")
 
     return results
 
@@ -570,7 +568,7 @@ def main():
     """Main execution."""
     results = finalize_test_suite()
 
-    print(f"\n=== Wave 6 Complete! ===")
+    print("\n=== Wave 6 Complete! ===")
     if results.get('final_validation', {}).get('success'):
         print("✅ Test suite is production-ready!")
         print("✅ All CI/CD configurations in place")

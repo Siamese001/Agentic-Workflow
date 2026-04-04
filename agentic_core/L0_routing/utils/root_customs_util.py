@@ -298,7 +298,7 @@ def determine_routing(
 
     # Check against ARTIFACT_ROUTING_MAP (original logic)
     from agentic_core.L0_routing.reasoning.RootCustomsAgent import ARTIFACT_ROUTING_MAP
-    
+
     best_match = None
     best_score = 0
 
@@ -393,7 +393,7 @@ def _determine_legacy_routing(
     function_calls = ast_matches.get("function_calls", [])
 
     from agentic_core.L0_routing.reasoning.RootCustomsAgent import LEGACY_AST_SIGNALS
-    
+
     config = LEGACY_AST_SIGNALS["archives/legacy_code"]
     score = 0
 

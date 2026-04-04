@@ -1,10 +1,9 @@
 """Semantic type classification maps for ADG edges."""
 
-from typing import Dict, Tuple
 
 # Semantic type classification map — maps (edge_kind, relation_type) to
 # semantic_type. Edges with semantic_type already set are left untouched.
-_SEMANTIC_TYPE_MAP: Dict[Tuple[str, str], str] = {
+_SEMANTIC_TYPE_MAP: dict[tuple[str, str], str] = {
     # imports
     ("internal", "imports"): "imports_module",
     ("external", "imports"): "imports_external",
@@ -181,7 +180,7 @@ _SEMANTIC_TYPE_MAP: Dict[Tuple[str, str], str] = {
 }
 
 # Fallback: classify by relation_type alone when (edge_kind, relation_type) not in map
-_SEMANTIC_FALLBACK: Dict[str, str] = {
+_SEMANTIC_FALLBACK: dict[str, str] = {
     "imports": "imports_module",
     "calls": "invokes_function",
     "reads_from": "reads_data",

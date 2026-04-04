@@ -1,5 +1,6 @@
 import sys
 
+
 def main():
     print("ADG Test Gate (Placeholder) - PASSED")
     sys.exit(0)

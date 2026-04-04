@@ -23,13 +23,13 @@ import sqlite3
 from dataclasses import dataclass, field
 from datetime import datetime
 from pathlib import Path
-from typing import Any, Optional
+from typing import Any
 
 from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     LayerSegment,
-    _emit_records_execution_trace,
     _emit_captures_evaluation_metric,
     _emit_feeds_meta_learning,
+    _emit_records_execution_trace,
 )
 
 Logger = logging.getLogger(__name__)
@@ -205,7 +205,7 @@ class RetrievalEvalRegistry:
         retrieved_chunks: list[str],
         relevant_chunks: list[str],
         eval_mode: str = "shadow",
-        retrieval_config: Optional[dict[str, Any]] = None,
+        retrieval_config: dict[str, Any] | None = None,
     ) -> RetrievalEvaluation:
         """Evaluate a retrieval and store results.
 
@@ -390,7 +390,7 @@ class RetrievalEvalRegistry:
         finally:
             conn.close()
 
-    def get_evaluation(self, eval_id: str) -> Optional[RetrievalEvaluation]:
+    def get_evaluation(self, eval_id: str) -> RetrievalEvaluation | None:
         """Retrieve evaluation by ID."""
         conn = sqlite3.connect(self.db_path)
         cursor = conn.cursor()
@@ -427,8 +427,8 @@ class RetrievalEvalRegistry:
 
     def get_aggregated_metrics(
         self,
-        since: Optional[str] = None,
-        eval_mode: Optional[str] = None,
+        since: str | None = None,
+        eval_mode: str | None = None,
     ) -> dict[str, Any]:
         """Get aggregated metrics over time.
 
@@ -522,7 +522,7 @@ class RetrievalEvalRegistry:
 
 
 # Global instance
-_global_eval_registry: Optional[RetrievalEvalRegistry] = None
+_global_eval_registry: RetrievalEvalRegistry | None = None
 
 
 def get_global_eval_registry() -> RetrievalEvalRegistry:

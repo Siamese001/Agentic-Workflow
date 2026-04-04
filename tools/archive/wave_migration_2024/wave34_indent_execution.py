@@ -5,10 +5,9 @@ This wave focuses specifically on fixing indentation issues
 that are blocking test execution.
 """
 
+import ast
 import pathlib
 import re
-import ast
-from typing import Dict, List, Tuple
 
 
 class Wave34IndentExecution:
@@ -24,9 +23,9 @@ class Wave34IndentExecution:
             'syntax_errors_fixed': 0,
             'failed_files': 0
         }
-        self.failed_files: List[Tuple[str, str]] = []
+        self.failed_files: list[tuple[str, str]] = []
 
-    def process_files(self) -> Dict:
+    def process_files(self) -> dict:
         """Process files with Wave 34 indent execution."""
         # Only process files with syntax errors
         test_files = []
@@ -177,7 +176,7 @@ class Wave34IndentExecution:
         print(f"Failed files: {len(self.failed_files)}")
 
         if self.failed_files:
-            print(f"\nFailed files (first 3):")
+            print("\nFailed files (first 3):")
             for file_path, error in self.failed_files[:3]:
                 print(f"  {file_path}: {error}")
             if len(self.failed_files) > 3:

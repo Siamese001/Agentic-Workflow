@@ -10,16 +10,14 @@ Tests the architecture governor validator utility including:
 
 from __future__ import annotations
 
-from pathlib import Path
-
 import pytest
 
 from agentic_core.L5_safety.utils.architecture_governor_validator_util import (
+    CHECK_ID,
     ArchitectureGovernorValidator,
     GovernanceValidationResult,
-    validate_architecture_governance,
     scan_governance,
-    CHECK_ID,
+    validate_architecture_governance,
 )
 
 
@@ -35,7 +33,7 @@ class TestGovernanceValidationResultDataclass:
             territory="test_territory",
             repo_root="/test/repo",
         )
-        
+
         assert result.check_id == "test_check"
         assert result.violations_count == 5
         assert result.evidence == {"detail": "test"}
@@ -51,7 +49,7 @@ class TestGovernanceValidationResultDataclass:
             territory=None,
             repo_root="/test",
         )
-        
+
         assert result.check_id == "architecture_governance"
         assert result.violations_count == 0
         assert result.territory is None
@@ -65,7 +63,7 @@ class TestGovernanceValidationResultDataclass:
             territory=None,
             repo_root="/test",
         )
-        
+
         d = result.to_dict()
         assert d["check_id"] == CHECK_ID
         assert d["violations_count"] == 0
@@ -80,19 +78,19 @@ class TestArchitectureGovernorValidatorInit:
     def test_validator_init_with_path(self, tmp_path):
         """Test validator initialization with Path."""
         validator = ArchitectureGovernorValidator(tmp_path)
-        
+
         assert validator.project_root == tmp_path.resolve()
 
     def test_validator_init_with_string(self, tmp_path):
         """Test validator initialization with string."""
         validator = ArchitectureGovernorValidator(str(tmp_path))
-        
+
         assert validator.project_root == tmp_path.resolve()
 
     def test_validator_init_absolute_path(self, tmp_path):
         """Test validator resolves to absolute path."""
         validator = ArchitectureGovernorValidator(tmp_path)
-        
+
         assert validator.project_root.is_absolute()
 
 
@@ -107,7 +105,7 @@ class TestArchitectureGovernorValidatorScan:
         """
         validator = ArchitectureGovernorValidator(tmp_path)
         result = validator.scan()
-        
+
         # Should return a dict with expected keys
         assert isinstance(result, dict)
         assert "violations_found" in result or "errors" in result
@@ -116,7 +114,7 @@ class TestArchitectureGovernorValidatorScan:
         """Test scan with territory parameter."""
         validator = ArchitectureGovernorValidator(tmp_path)
         result = validator.scan(target_territory="L5_safety")
-        
+
         # Should return a dict
         assert isinstance(result, dict)
 
@@ -128,7 +126,7 @@ class TestArchitectureGovernorValidatorToCheckDict:
         """Test to_check_dict when agent not available."""
         validator = ArchitectureGovernorValidator(tmp_path)
         result = validator.to_check_dict()
-        
+
         # Should return structure even when agent errors
         assert result["check_id"] == CHECK_ID
         assert "evidence" in result
@@ -139,7 +137,7 @@ class TestArchitectureGovernorValidatorToCheckDict:
         """Test to_check_dict with territory."""
         validator = ArchitectureGovernorValidator(tmp_path)
         result = validator.to_check_dict(target_territory="test_territory")
-        
+
         assert result["territory"] == "test_territory"
         assert result["check_id"] == CHECK_ID
 
@@ -152,7 +150,7 @@ class TestArchitectureGovernorValidatorRun:
         validator = ArchitectureGovernorValidator(tmp_path)
         run_result = validator.run()
         check_dict_result = validator.to_check_dict()
-        
+
         # Both should return same structure
         assert run_result["check_id"] == check_dict_result["check_id"]
         assert run_result["repo_root"] == check_dict_result["repo_root"]
@@ -165,7 +163,7 @@ class TestArchitectureGovernorValidatorValidate:
         """Test validate returns GovernanceValidationResult even when agent not available."""
         validator = ArchitectureGovernorValidator(tmp_path)
         result = validator.validate()
-        
+
         assert isinstance(result, GovernanceValidationResult)
         assert result.check_id == CHECK_ID
         assert result.repo_root == str(tmp_path.resolve())
@@ -174,7 +172,7 @@ class TestArchitectureGovernorValidatorValidate:
         """Test validate with target territory."""
         validator = ArchitectureGovernorValidator(tmp_path)
         result = validator.validate(target_territory="L0_routing")
-        
+
         assert result.territory == "L0_routing"
         assert isinstance(result, GovernanceValidationResult)
 
@@ -185,7 +183,7 @@ class TestValidateArchitectureGovernance:
     def test_convenience_function_agent_not_available(self, tmp_path):
         """Test convenience function works even when agent not available."""
         result = validate_architecture_governance(tmp_path)
-        
+
         assert isinstance(result, GovernanceValidationResult)
         assert result.check_id == CHECK_ID
         assert result.repo_root == str(tmp_path.resolve())
@@ -193,7 +191,7 @@ class TestValidateArchitectureGovernance:
     def test_convenience_function_with_territory(self, tmp_path):
         """Test convenience function with territory."""
         result = validate_architecture_governance(tmp_path, target_territory="L1_cognition")
-        
+
         assert result.territory == "L1_cognition"
 
 
@@ -203,7 +201,7 @@ class TestScanGovernance:
     def test_scan_convenience_function(self, tmp_path):
         """Test scan convenience function."""
         result = scan_governance(tmp_path)
-        
+
         # Should return dict
         assert isinstance(result, dict)
 

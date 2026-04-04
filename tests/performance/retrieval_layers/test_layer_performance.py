@@ -3,12 +3,10 @@
 Measures latency, throughput, and resource usage for each layer.
 """
 
-import pytest
-import time
 import statistics
-from typing import List, Dict, Any
-from dataclasses import dataclass
+import time
 from concurrent.futures import ThreadPoolExecutor
+from dataclasses import dataclass
 
 
 @dataclass

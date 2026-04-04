@@ -10,8 +10,6 @@ import ast
 import json
 import re
 from pathlib import Path
-from typing import Dict, List, Set, Tuple
-from collections import defaultdict, Counter
 
 
 class SyntaxErrorFixer(ast.NodeTransformer):
@@ -113,7 +111,7 @@ class SyntaxErrorFixer(ast.NodeTransformer):
         return new_content
 
 
-def fix_syntax_errors_in_file(file_path: Path, error_info: Dict) -> Dict:
+def fix_syntax_errors_in_file(file_path: Path, error_info: dict) -> dict:
     """Fix syntax errors in a specific file."""
     try:
         content = file_path.read_text(encoding='utf-8')
@@ -151,7 +149,7 @@ def fix_all_syntax_errors():
     print("=== Wave 7a: Fix Remaining 33 Syntax Errors ===")
 
     # Load the validation report
-    with open('artifacts/wave6a_validation_report.json', 'r') as f:
+    with open('artifacts/wave6a_validation_report.json') as f:
         validation_report = json.load(f)
 
     syntax_errors = validation_report.get('syntax', {}).get('syntax_errors', [])
@@ -180,13 +178,13 @@ def fix_all_syntax_errors():
                 print(f"    ✅ Fixed - {result['original_error']}")
                 fixed_count += 1
             else:
-                print(f"    ⚪ No changes needed")
+                print("    ⚪ No changes needed")
         else:
             print(f"    ❌ Failed - {result.get('error', 'Unknown error')}")
             failed_count += 1
 
     # Summary
-    print(f"\n=== Wave 7a Summary ===")
+    print("\n=== Wave 7a Summary ===")
     print(f"Total syntax errors: {len(syntax_errors)}")
     print(f"Successfully fixed: {fixed_count}")
     print(f"Failed to fix: {failed_count}")
@@ -206,7 +204,7 @@ def fix_all_syntax_errors():
     with open('artifacts/wave7a_syntax_fix_results.json', 'w') as f:
         json.dump(output, f, indent=2)
 
-    print(f"\nDetailed results saved to: artifacts/wave7a_syntax_fix_results.json")
+    print("\nDetailed results saved to: artifacts/wave7a_syntax_fix_results.json")
 
     return output
 
@@ -217,7 +215,7 @@ def main():
 
     success_rate = results['summary']['fixed'] / results['summary']['total_errors'] if results['summary']['total_errors'] > 0 else 0
 
-    print(f"\n=== Wave 7a Complete ===")
+    print("\n=== Wave 7a Complete ===")
     if success_rate > 0.8:
         print(f"✅ Wave 7a SUCCESSFUL - {success_rate:.1%} of syntax errors fixed")
     else:

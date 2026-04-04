@@ -96,6 +96,7 @@ from agentic_core.L3_orchestration.engines.coordinator_capability_orchestrator i
     WorkflowContext,
     WorkflowResult,
 )
+
 # get_breaker imported lazily to avoid L3->L5 violation
 from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     LayerSegment,

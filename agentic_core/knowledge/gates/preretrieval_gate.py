@@ -5,9 +5,9 @@ Strict pre-filtering to prevent wasted retrieval and cross-scope contamination.
 
 import logging
 from dataclasses import dataclass, field
-from typing import Any, Dict, List, Optional
-from enum import Enum
 from datetime import datetime
+from enum import Enum
+from typing import Any
 
 from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     LayerSegment,
@@ -31,8 +31,8 @@ class FilterResult:
     """Result of filter evaluation."""
     filter_name: str
     passed: bool
-    reason: Optional[str] = None
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    reason: str | None = None
+    metadata: dict[str, Any] = field(default_factory=dict)
 
 
 @dataclass
@@ -40,10 +40,10 @@ class GateDecision:
     """Final gate decision."""
     decision: AccessDecision
     query_id: str
-    allowed_filters: Dict[str, Any] = field(default_factory=dict)
-    denied_filters: List[FilterResult] = field(default_factory=list)
-    scope_metadata: Dict[str, Any] = field(default_factory=dict)
-    reason: Optional[str] = None
+    allowed_filters: dict[str, Any] = field(default_factory=dict)
+    denied_filters: list[FilterResult] = field(default_factory=list)
+    scope_metadata: dict[str, Any] = field(default_factory=dict)
+    reason: str | None = None
 
 
 class PreRetrievalGate:
@@ -55,7 +55,7 @@ class PreRetrievalGate:
 
     def __init__(self):
         """Initialize the pre-retrieval gate."""
-        self._filters: Dict[str, callable] = {}
+        self._filters: dict[str, callable] = {}
         self._setup_default_filters()
         log.info("PreRetrievalGate initialized")
 
@@ -73,8 +73,8 @@ class PreRetrievalGate:
     def evaluate(
         self,
         query_id: str,
-        query_context: Dict[str, Any],
-        required_filters: Optional[List[str]] = None,
+        query_context: dict[str, Any],
+        required_filters: list[str] | None = None,
     ) -> GateDecision:
         """Evaluate query against all filters.
 
@@ -93,8 +93,8 @@ class PreRetrievalGate:
 
         filters_to_apply = required_filters or list(self._filters.keys())
 
-        allowed_filters: Dict[str, Any] = {}
-        denied_filters: List[FilterResult] = []
+        allowed_filters: dict[str, Any] = {}
+        denied_filters: list[FilterResult] = []
 
         for filter_name in filters_to_apply:
             if filter_name not in self._filters:
@@ -159,7 +159,7 @@ class PreRetrievalGate:
             return True
         return False
 
-    def _filter_tenant(self, context: Dict[str, Any]) -> FilterResult:
+    def _filter_tenant(self, context: dict[str, Any]) -> FilterResult:
         """Filter by tenant isolation."""
         tenant_id = context.get("tenant_id")
         if not tenant_id:
@@ -184,7 +184,7 @@ class PreRetrievalGate:
             metadata={"tenant_id": tenant_id},
         )
 
-    def _filter_acl(self, context: Dict[str, Any]) -> FilterResult:
+    def _filter_acl(self, context: dict[str, Any]) -> FilterResult:
         """Filter by access control list."""
         user_perms = context.get("user_permissions", [])
         required_perms = context.get("required_permissions", [])
@@ -210,7 +210,7 @@ class PreRetrievalGate:
             metadata={"permissions": user_perms},
         )
 
-    def _filter_region(self, context: Dict[str, Any]) -> FilterResult:
+    def _filter_region(self, context: dict[str, Any]) -> FilterResult:
         """Filter by geographic region."""
         user_region = context.get("user_region")
         allowed_regions = context.get("allowed_regions", [])
@@ -235,7 +235,7 @@ class PreRetrievalGate:
             metadata={"region": user_region},
         )
 
-    def _filter_confidentiality(self, context: Dict[str, Any]) -> FilterResult:
+    def _filter_confidentiality(self, context: dict[str, Any]) -> FilterResult:
         """Filter by confidentiality level."""
         user_clearance = context.get("user_clearance", "public")
         doc_classification = context.get("document_classification", "public")
@@ -262,7 +262,7 @@ class PreRetrievalGate:
             },
         )
 
-    def _filter_temporal(self, context: Dict[str, Any]) -> FilterResult:
+    def _filter_temporal(self, context: dict[str, Any]) -> FilterResult:
         """Filter by temporal constraints."""
         effective_date = context.get("effective_date")
         expiry_date = context.get("expiry_date")
@@ -296,7 +296,7 @@ class PreRetrievalGate:
             },
         )
 
-    def _filter_freshness(self, context: Dict[str, Any]) -> FilterResult:
+    def _filter_freshness(self, context: dict[str, Any]) -> FilterResult:
         """Filter by data freshness requirements."""
         freshness_band = context.get("freshness_band")  # "realtime", "hourly", "daily"
         last_updated = context.get("last_updated")
@@ -342,7 +342,7 @@ class PreRetrievalGate:
 
 
 # Global instance
-_global_gate: Optional[PreRetrievalGate] = None
+_global_gate: PreRetrievalGate | None = None
 
 
 def get_pre_retrieval_gate() -> PreRetrievalGate:
@@ -355,7 +355,7 @@ def get_pre_retrieval_gate() -> PreRetrievalGate:
 
 def check_access(
     query_id: str,
-    context: Dict[str, Any],
+    context: dict[str, Any],
 ) -> GateDecision:
     """Convenience function to check access."""
     return get_pre_retrieval_gate().evaluate(query_id, context)

@@ -4,11 +4,12 @@ Comprehensive MCP Server Review and Testing
 Analyzes all configured MCP servers and tests their performance/functionality.
 """
 
-import subprocess
 import json
-import time
 import os
+import subprocess
+import time
 from pathlib import Path
+
 
 def test_mcp_server(name, server_config):
     """Test individual MCP server functionality and performance."""
@@ -176,7 +177,7 @@ def main():
 
     # Load configuration
     config_file = Path('C:\\Git\\Agentic-Workflow\\.windsurf\\mcp_config.json')
-    with open(config_file, 'r') as f:
+    with open(config_file) as f:
         config = json.load(f)
 
     servers = config.get('mcpServers', {})
@@ -188,13 +189,13 @@ def main():
         print(f'   {name}: {status} ({command})')
 
     # Get installed packages
-    print(f'\n📦 Installed MCP Packages:')
+    print('\n📦 Installed MCP Packages:')
     installed_packages = get_installed_mcp_packages()
     for package in installed_packages:
         print(f'   {package}')
 
     # Test each server
-    print(f'\n🧪 Testing Each MCP Server')
+    print('\n🧪 Testing Each MCP Server')
     print('=' * 30)
 
     test_results = {}
@@ -221,7 +222,7 @@ def main():
         print(f'   📝 {result["message"]}')
 
     # Performance summary
-    print(f'\n📊 Performance Summary')
+    print('\n📊 Performance Summary')
     print('=' * 25)
 
     success_count = sum(1 for r in test_results.values() if r['success'])
@@ -250,7 +251,7 @@ def main():
         print(f'NPX servers: {len(npx_servers)} configured')
 
     # Optimization recommendations
-    print(f'\n🚀 Optimization Recommendations')
+    print('\n🚀 Optimization Recommendations')
     print('=' * 35)
 
     recommendations = analyze_configuration_optimization(servers, installed_packages)

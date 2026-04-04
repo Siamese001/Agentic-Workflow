@@ -1,10 +1,9 @@
 #!/usr/bin/env python3
 """Clean up ADG directory - keep only latest files and organize properly."""
 
-import os
 import shutil
 from pathlib import Path
-from datetime import datetime
+
 
 def cleanup_adg_directory():
     """Clean up ADG directory structure."""

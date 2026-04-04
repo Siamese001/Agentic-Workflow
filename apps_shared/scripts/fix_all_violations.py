@@ -3,7 +3,6 @@
 import logging
 from typing import Any
 
-
 from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402

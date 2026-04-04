@@ -1,9 +1,10 @@
 #!/usr/bin/env python3
 """Query ADG for dead code and dead imports."""
 
-import sqlite3
 import json
+import sqlite3
 from pathlib import Path
+
 
 def main():
     # Find latest ADG

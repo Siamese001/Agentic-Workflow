@@ -2,14 +2,6 @@ from __future__ import annotations
 
 from agentic_core.L2_execution.tools import write_gateway as _wg
 from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-    # noqa: E402
-    _emit_escalates_failure,
-    # noqa: E402
-    _emit_gated_by_confidence,
-    # noqa: E402
-    _emit_records_healing_outcome,
-    # noqa: E402
-    _emit_routes_to_agent,
     _emit_agent_executes_agent,
     _emit_authorize_and_execute,
     _emit_blocks_direct_write,
@@ -20,17 +12,25 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_dispatches_agent,
     _emit_dispatches_execution_plan,
     _emit_dispatches_healing_run,
+    # noqa: E402
+    _emit_escalates_failure,
     _emit_escalates_to_human,
+    # noqa: E402
+    _emit_gated_by_confidence,
     _emit_hard_fails_untranscripted,
     _emit_invokes_evaluation,
     _emit_links_execution_to_snapshot,
     _emit_observes_runtime_state,
     _emit_orchestrates_workflow,
     _emit_reads_policy_state,
+    # noqa: E402
+    _emit_records_healing_outcome,
     _emit_records_telemetry_event,
     _emit_records_tool_invocation,
     _emit_records_workflow_lineage,
     _emit_routes_through,
+    # noqa: E402
+    _emit_routes_to_agent,
     _emit_routes_to_capability,
     _emit_signs_execution_trace,
     _emit_stores_embedding,
@@ -40,7 +40,7 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_validates_capability,
     _emit_verifies_boundary,
     _emit_verifies_policy,
-    _emit_writes_via_uwg
+    _emit_writes_via_uwg,
 )
 
 _emit_dispatches_healing_run("p1", "mission_runner", "L3")
@@ -242,7 +242,6 @@ def _get_imports():
 
     _emit_applies_guardrail(str(_uuid.uuid4()), "_get_imports", "p0_governance")
     from agentic_core.InterventionServer import FASTAPI_AVAILABLE, approval_event, start_intervention_server
-
     from agentic_core.L5_safety.reasoning.GovernanceAgent import GovernanceAgent as ArchitectureGovernor
 
     return {

@@ -46,7 +46,7 @@ class ViolationSeverity(Enum):
 @dataclass
 class CodeViolation:
     """Represents a code violation."""
-    
+
     file_path: Path
     line_number: int
     enforcement_type: EnforcementType
@@ -54,7 +54,7 @@ class CodeViolation:
     message: str
     suggested_fix: str | None = None
     auto_fixable: bool = False
-    
+
     def to_dict(self) -> dict[str, Any]:
         """Convert to dictionary."""
         return {
@@ -71,7 +71,7 @@ class CodeViolation:
 @dataclass
 class SignedException:
     """Signed exception for cross-layer access."""
-    
+
     exception_id: str
     source_layer: str
     target_layer: str
@@ -85,7 +85,7 @@ class SignedException:
 @dataclass
 class EnforcementConfig:
     """Configuration for code enforcement."""
-    
+
     enable_ssot_sync: bool = True
     enable_standards: bool = True
     enable_patterns: bool = True
@@ -98,9 +98,9 @@ class EnforcementConfig:
 
 class CodeEnforcer:
     """Deterministic code enforcement without agent overhead."""
-    
+
     LAYER_ORDER = {"L0": 0, "L1": 1, "L2": 2, "L3": 3, "L4": 4, "L5": 5, "L6": 6}
-    
+
     def __init__(
         self,
         project_root: Path | None = None,
@@ -117,7 +117,7 @@ class CodeEnforcer:
         self._lock = threading.RLock()
         self._signed_exceptions: dict[str, SignedException] = {}
         self._violations: list[CodeViolation] = []
-        
+
         # Compile patterns
         self._forbidden_patterns = {
             "mutable_default": re.compile(r"def\s+\w+\([^)]*=\s*(\[\]|\{\}|\(\))"),
@@ -126,7 +126,7 @@ class CodeEnforcer:
             "print_statement": re.compile(r"^\s*print\s*\("),
         }
         self._agent_suffix_pattern = re.compile(r"class\s+(\w+)(?:\(|:)")
-    
+
     def validate_file(self, file_path: Path) -> list[CodeViolation]:
         """Validate a file for all enabled enforcement types.
         
@@ -137,37 +137,37 @@ class CodeEnforcer:
             List of code violations found
         """
         violations: list[CodeViolation] = []
-        
+
         if not file_path.exists():
             return violations
-        
+
         try:
             content = file_path.read_text(encoding="utf-8")
         except (ValueError, TypeError, OSError):
             return violations
-        
+
         if self.config.enable_standards:
             violations.extend(self._check_standards(file_path, content))
-        
+
         if self.config.enable_patterns:
             violations.extend(self._check_patterns(file_path, content))
-        
+
         if self.config.enable_type_hints:
             violations.extend(self._check_type_hints(file_path, content))
-        
+
         if self.config.enable_sovereignty:
             violations.extend(self._check_sovereignty_violations(file_path, content))
-        
+
         with self._lock:
             self._violations.extend(violations)
-        
+
         return violations
-    
+
     def _check_standards(self, file_path: Path, content: str) -> list[CodeViolation]:
         """Check code standards compliance."""
         violations = []
         lines = content.split("\n")
-        
+
         for i, line in enumerate(lines, 1):
             match = self._agent_suffix_pattern.search(line)
             if match:
@@ -184,14 +184,14 @@ class CodeEnforcer:
                             auto_fixable=True,
                         )
                     )
-        
+
         return violations
-    
+
     def _check_patterns(self, file_path: Path, content: str) -> list[CodeViolation]:
         """Check for forbidden patterns."""
         violations = []
         lines = content.split("\n")
-        
+
         for pattern_name, pattern in self._forbidden_patterns.items():
             for i, line in enumerate(lines, 1):
                 if pattern.search(line):
@@ -204,18 +204,18 @@ class CodeEnforcer:
                             message=f"Forbidden pattern '{pattern_name}' detected",
                         )
                     )
-        
+
         return violations
-    
+
     def _check_type_hints(self, file_path: Path, content: str) -> list[CodeViolation]:
         """Check for type hint compliance."""
         violations = []
-        
+
         try:
             tree = ast.parse(content)
         except SyntaxError:
             return violations
-        
+
         for node in ast.walk(tree):
             if isinstance(node, ast.FunctionDef):
                 if node.returns is None and not node.name.startswith("_"):
@@ -228,22 +228,22 @@ class CodeEnforcer:
                             message=f"Function '{node.name}' missing return type hint",
                         )
                     )
-        
+
         return violations
-    
+
     def _check_sovereignty_violations(self, file_path: Path, content: str) -> list[CodeViolation]:
         """Check for sovereignty violations (cross-layer access)."""
         violations = []
         file_layer = self._extract_layer(file_path)
-        
+
         if not file_layer:
             return violations
-        
+
         try:
             tree = ast.parse(content)
         except SyntaxError:
             return violations
-        
+
         for node in ast.walk(tree):
             if isinstance(node, ast.Import | ast.ImportFrom):
                 import_layer = self._extract_layer_from_import(node)
@@ -257,9 +257,9 @@ class CodeEnforcer:
                             message=f"Sovereignty violation: {file_layer} importing from {import_layer}",
                         )
                     )
-        
+
         return violations
-    
+
     def _extract_layer(self, path: Path) -> str | None:
         """Extract layer from file path."""
         path_str = str(path)
@@ -267,7 +267,7 @@ class CodeEnforcer:
             if f"/{layer}_" in path_str or f"\\{layer}_" in path_str:
                 return layer
         return None
-    
+
     def _extract_layer_from_import(self, node: ast.AST) -> str | None:
         """Extract layer from import statement."""
         if isinstance(node, ast.ImportFrom) and node.module:
@@ -275,18 +275,18 @@ class CodeEnforcer:
                 if f".{layer}_" in node.module or node.module.startswith(f"{layer}_"):
                     return layer
         return None
-    
+
     def _is_sovereignty_violation(self, source_layer: str, target_layer: str) -> bool:
         """Check if import violates sovereignty rules."""
         source_level = self.LAYER_ORDER.get(source_layer, -1)
         target_level = self.LAYER_ORDER.get(target_layer, -1)
-        
+
         if target_layer in self.config.protected_layers:
             if source_level < target_level:
                 return True
-        
+
         return False
-    
+
     def check_sovereignty(
         self, source_layer: str, target_file: Path, agent_id: str | None = None
     ) -> tuple[bool, str]:
@@ -301,28 +301,28 @@ class CodeEnforcer:
             Tuple of (allowed, reason)
         """
         target_layer = self._extract_layer(target_file)
-        
+
         if not target_layer:
             return (True, "No layer restriction")
-        
+
         if target_layer not in self.config.protected_layers:
             return (True, "Target layer not protected")
-        
+
         source_level = self.LAYER_ORDER.get(source_layer, -1)
         target_level = self.LAYER_ORDER.get(target_layer, -1)
-        
+
         if source_level >= target_level:
             return (True, "Same or higher layer")
-        
+
         if agent_id:
             exception_key = f"{source_layer}:{target_file}"
             if exception_key in self._signed_exceptions:
                 exc = self._signed_exceptions[exception_key]
                 if exc.expires_at is None or datetime.utcnow() < exc.expires_at:
                     return (True, f"Signed exception: {exc.reason}")
-        
+
         return (False, f"Sovereignty violation: {source_layer} cannot modify {target_layer} file")
-    
+
     def grant_exception(
         self,
         source_layer: str,
@@ -344,7 +344,7 @@ class CodeEnforcer:
             The created SignedException
         """
         import secrets
-        
+
         exception = SignedException(
             exception_id=secrets.token_hex(8),
             source_layer=source_layer,
@@ -354,16 +354,16 @@ class CodeEnforcer:
             expires_at=expires_at,
             reason=reason,
         )
-        
+
         exception_key = f"{source_layer}:{target_file}"
         self._signed_exceptions[exception_key] = exception
-        
+
         return exception
-    
+
     def get_violations(self) -> list[CodeViolation]:
         """Get all recorded violations."""
         return self._violations.copy()
-    
+
     def clear_violations(self) -> None:
         """Clear all recorded violations."""
         self._violations = []
@@ -428,7 +428,7 @@ def heal(violation: dict[str, Any]) -> dict[str, Any]:
         Healing result dict
     """
     violation_type = violation.get("type", "unknown")
-    
+
     return {
         "status": "skipped",
         "details": f"Enforcement violations require manual review: {violation_type}",
@@ -441,7 +441,7 @@ def main():
     """Main entry point for Code Enforcer Utility."""
     import argparse
     import logging
-    
+
     parser = argparse.ArgumentParser(description="Code Enforcer Utility")
     parser.add_argument("file", help="Python file to validate")
     parser.add_argument(
@@ -452,24 +452,24 @@ def main():
         help="Validation checks to run",
     )
     parser.add_argument("--verbose", "-v", action="store_true")
-    
+
     args = parser.parse_args()
-    
+
     if args.verbose:
         logging.basicConfig(level=logging.DEBUG)
     else:
         logging.basicConfig(level=logging.INFO)
-    
+
     config = EnforcementConfig(
         enable_standards="all" in args.checks or "standards" in args.checks,
         enable_patterns="all" in args.checks or "patterns" in args.checks,
         enable_type_hints="all" in args.checks or "types" in args.checks,
         enable_sovereignty="all" in args.checks or "sovereignty" in args.checks,
     )
-    
+
     enforcer = CodeEnforcer(config=config)
     violations = enforcer.validate_file(Path(args.file))
-    
+
     print(f"Violations found: {len(violations)}")
     for v in violations:
         print(f"  [{v.severity.name}] {v.enforcement_type.value}:{v.line_number} - {v.message}")

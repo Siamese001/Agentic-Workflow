@@ -27,7 +27,7 @@ Logger = logging.getLogger(__name__)
 @dataclass
 class RecommendationResult:
     """Result of strategic recommendation generation."""
-    
+
     review: str
     recommendations: list[str]
     source: str  # "llm" or "fallback"
@@ -74,7 +74,7 @@ def generate_strategic_prompt(dashboard_data: list[dict[str, Any]]) -> str:
         for r in dashboard_data
         if _safe_get(r, "Avg CC", 0) > 15 and r.get("Territory") != "TOTAL"
     ]
-    
+
     # Get totals
     total_row = next((r for r in dashboard_data if r.get("Territory") == "TOTAL"), {})
     health = _safe_get(total_row, "Health", 0)
@@ -83,7 +83,7 @@ def generate_strategic_prompt(dashboard_data: list[dict[str, Any]]) -> str:
     invocation = _safe_get(total_row, "Invocation %", 0)
     hardened = _safe_get(total_row, "Hardened %", 0)
     test_cov = _safe_get(total_row, "Test %", 0)
-    
+
     prompt = f"""You are a senior agentic systems architect reviewing autonomy metrics.
 Generate:
 1. One paragraph strategic review highlighting cross-layer risks (invocation gaps, MCP hardening, test coverage, complexity, healing discipline).
@@ -123,7 +123,7 @@ def parse_llm_response(response: str) -> dict[str, Any]:
             return json.loads(json_match.group())
     except json.JSONDecodeError:
         pass
-    
+
     # Fallback: return empty structure
     return {"review": "", "recommendations": []}
 
@@ -152,28 +152,28 @@ def generate_fallback_recommendations(dashboard_data: list[dict[str, Any]]) -> R
         for r in dashboard_data
         if _safe_get(r, "Test %", 0) < 80 and r.get("Territory") != "TOTAL"
     ]
-    
+
     recommendations = []
-    
+
     if low_invocation:
         recommendations.append(f"1. Boost Invocation Coverage<br>Focus on: {', '.join(low_invocation[:3])}")
     if low_mcp:
         recommendations.append(f"2. Strengthen MCP Hardening<br>Priority territories: {', '.join(low_mcp[:3])}")
     if low_tests:
         recommendations.append(f"3. Increase Test Coverage<br>Target: {', '.join(low_tests[:3])}")
-    
+
     if not recommendations:
         recommendations.append("1. Maintain Current Performance<br>All metrics within acceptable thresholds")
-    
+
     total_row = next((r for r in dashboard_data if r.get("Territory") == "TOTAL"), {})
     health = _safe_get(total_row, "Health", 0)
-    
+
     review = f"System health at {health:.1f}%. "
     if low_invocation or low_mcp or low_tests:
         review += "Identified gaps in invocation, hardening, or test coverage requiring attention."
     else:
         review += "All autonomy metrics performing within expected parameters."
-    
+
     return RecommendationResult(
         review=review,
         recommendations=recommendations,
@@ -192,7 +192,7 @@ def analyze_dashboard(dashboard_data: list[dict[str, Any]]) -> dict[str, Any]:
     """
     prompt = generate_strategic_prompt(dashboard_data)
     fallback = generate_fallback_recommendations(dashboard_data)
-    
+
     return {
         "prompt": prompt,
         "fallback": {

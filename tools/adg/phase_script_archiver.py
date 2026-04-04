@@ -4,14 +4,14 @@ Archive Phase Scripts - Phase 2 Implementation
 Moves phase-named scripts to tools/archive/ in batches with HITL confirmation.
 """
 
-import os
-import sys
 import json
 import logging
+import os
 import shutil
-from pathlib import Path
-from typing import List, Dict, Any
+import sys
 from datetime import datetime
+from pathlib import Path
+from typing import Any
 
 # Ensure we can import from agentic_core
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..")))
@@ -36,19 +36,19 @@ class PhaseScriptArchiver:
         # Archive log
         self.archive_log = []
 
-    def load_manifest(self, manifest_path: str) -> List[Dict[str, Any]]:
+    def load_manifest(self, manifest_path: str) -> list[dict[str, Any]]:
         """Load the repo hygiene manifest."""
-        with open(manifest_path, 'r') as f:
+        with open(manifest_path) as f:
             data = json.load(f)
         return data['files']
 
-    def get_phase_named_files(self, manifest: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+    def get_phase_named_files(self, manifest: list[dict[str, Any]]) -> list[dict[str, Any]]:
         """Extract phase-named files from manifest."""
         phase_files = [item for item in manifest if item["classification"] == "phase_named"]
         logging.info(f"Found {len(phase_files)} phase-named files to archive")
         return phase_files
 
-    def create_batch(self, files: List[Dict[str, Any]], batch_size: int = 20) -> List[List[Dict[str, Any]]]:
+    def create_batch(self, files: list[dict[str, Any]], batch_size: int = 20) -> list[list[dict[str, Any]]]:
         """Create batches of files for archiving."""
         batches = []
         for i in range(0, len(files), batch_size):
@@ -56,7 +56,7 @@ class PhaseScriptArchiver:
             batches.append(batch)
         return batches
 
-    def archive_file(self, file_info: Dict[str, Any]) -> bool:
+    def archive_file(self, file_info: dict[str, Any]) -> bool:
         """Archive a single file."""
         source_path = self.repo_root / file_info["path"]
 
@@ -91,7 +91,7 @@ class PhaseScriptArchiver:
             logging.error(f"Failed to archive {file_info['path']}: {e}")
             return False
 
-    def archive_batch(self, batch: List[Dict[str, Any]]) -> Dict[str, Any]:
+    def archive_batch(self, batch: list[dict[str, Any]]) -> dict[str, Any]:
         """Archive a batch of files."""
         results = {"success": 0, "failed": 0, "files": []}
 
@@ -151,7 +151,7 @@ def main():
     # Process each batch with HITL confirmation
     for i, batch in enumerate(batches, 1):
         print(f"\n=== HITL GATE: Batch {i}/{len(batches)} ===")
-        print(f"Files to archive in this batch:")
+        print("Files to archive in this batch:")
         for file_info in batch:
             print(f"  - {file_info['path']} ({file_info['reasoning']})")
 
@@ -168,7 +168,7 @@ def main():
 
     # Print summary
     total_archived = sum(1 for entry in archiver.archive_log if entry["status"] == "archived")
-    print(f"\n=== Archive Operation Complete ===")
+    print("\n=== Archive Operation Complete ===")
     print(f"Total phase-named files processed: {len(phase_files)}")
     print(f"Successfully archived: {total_archived}")
     print(f"Archive log: {log_path}")

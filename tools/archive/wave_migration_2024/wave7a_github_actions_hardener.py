@@ -7,10 +7,10 @@ for CI lane hardening and automated test suite validation.
 """
 
 import json
-import yaml
-from pathlib import Path
-from typing import Dict, List, Optional
 from dataclasses import dataclass
+from pathlib import Path
+
+import yaml
 
 
 @dataclass
@@ -18,9 +18,9 @@ class WorkflowConfig:
     """GitHub Actions workflow configuration."""
     name: str
     description: str
-    triggers: List[str]
-    jobs: Dict[str, Dict]
-    environment: Optional[str] = None
+    triggers: list[str]
+    jobs: dict[str, dict]
+    environment: str | None = None
 
 
 class GitHubActionsHardener:
@@ -35,7 +35,7 @@ class GitHubActionsHardener:
             'environments_configured': 0
         }
 
-    def create_ci_workflows(self) -> Dict:
+    def create_ci_workflows(self) -> dict:
         """Create comprehensive CI workflows."""
         print("=== Creating GitHub Actions CI Workflows ===")
 
@@ -510,7 +510,7 @@ class GitHubActionsHardener:
 
         return workflow
 
-    def write_workflow_files(self, workflows_dir: str = ".github/workflows") -> Dict:
+    def write_workflow_files(self, workflows_dir: str = ".github/workflows") -> dict:
         """Write workflow files to GitHub Actions directory."""
         print("=== Writing GitHub Actions Workflow Files ===")
 
@@ -600,7 +600,7 @@ class GitHubActionsHardener:
 
         return yaml.dump(yaml_dict, default_flow_style=False, sort_keys=False)
 
-    def generate_wave7a_report(self) -> Dict:
+    def generate_wave7a_report(self) -> dict:
         """Generate Wave 7a CI lane hardening report."""
         print("=== Wave 7a: CI Lane Hardening - GitHub Actions Setup ===")
 
@@ -642,14 +642,14 @@ class GitHubActionsHardener:
 
         # Print summary
         summary = report['summary']
-        print(f"\n=== Wave 7a Summary ===")
+        print("\n=== Wave 7a Summary ===")
         print(f"Workflows created: {summary['workflows_created']}")
         print(f"Jobs defined: {summary['jobs_defined']}")
         print(f"Steps added: {summary['steps_added']}")
         print(f"Environments configured: {summary['environments_configured']}")
         print(f"Files written: {summary['files_written']}")
 
-        print(f"\n📄 Report saved to: artifacts/wave7a_ci_hardening_report.json")
+        print("\n📄 Report saved to: artifacts/wave7a_ci_hardening_report.json")
 
         return report
 
@@ -659,7 +659,7 @@ def main():
     hardener = GitHubActionsHardener()
     report = hardener.generate_wave7a_report()
 
-    print(f"\n=== Wave 7a Summary ===")
+    print("\n=== Wave 7a Summary ===")
     print(f"CI lanes hardened: {len(report['ci_workflows'])}")
     print(f"Total workflow steps: {report['summary']['steps_added']}")
 

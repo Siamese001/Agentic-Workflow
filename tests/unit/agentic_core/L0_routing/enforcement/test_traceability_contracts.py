@@ -42,7 +42,7 @@ class GeneratedTest(unittest.TestCase):
 
     def test_generate_trace_id_boundary(self):
         """Test generate_trace_id boundary conditions."""
-        from agentic_core.L0_routing.enforcement import generate_trace_id, TraceIDFormatError
+        from agentic_core.L0_routing.enforcement import TraceIDFormatError, generate_trace_id
         # Test invalid hex suffix (non-hex chars) - raises ValueError
         with self.assertRaises(ValueError):
             generate_trace_id("WXYZ1234")

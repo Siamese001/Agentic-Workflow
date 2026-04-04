@@ -3,7 +3,7 @@
 
 import json
 
-with open('C:/Git/Agentic-Workflow/syntax_error_report.json', 'r') as f:
+with open('C:/Git/Agentic-Workflow/syntax_error_report.json') as f:
     report = json.load(f)
 
 print('Config core files:')

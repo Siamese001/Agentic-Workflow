@@ -6,11 +6,10 @@ This script restores hollowed tests by adding meaningful contract assertions,
 focusing on interface contracts, API contracts, and data validation contracts.
 """
 
-import json
 import ast
-from pathlib import Path
-from typing import Dict, List, Set, Tuple
+import json
 from collections import defaultdict
+from pathlib import Path
 
 
 class ContractAssertionRestorer:
@@ -27,7 +26,7 @@ class ContractAssertionRestorer:
         }
         self.modifications = []
 
-    def scan_for_contract_hollowed_tests(self) -> List[Dict]:
+    def scan_for_contract_hollowed_tests(self) -> list[dict]:
         """Scan for hollowed tests that need contract assertions."""
         print("=== Scanning for Contract Hollowed Tests ===")
 
@@ -36,7 +35,7 @@ class ContractAssertionRestorer:
 
         for test_file in test_dir.rglob('test_*.py'):
             try:
-                with open(test_file, 'r', encoding='utf-8') as f:
+                with open(test_file, encoding='utf-8') as f:
                     content = f.read()
 
                 # Parse AST
@@ -109,13 +108,13 @@ class ContractAssertionRestorer:
 
         has_meaningful_content = any(
             line.strip() and not line.strip().startswith('#')
-            and not line.strip() in ['pass', '"""', "'''", '']
+            and line.strip() not in ['pass', '"""', "'''", '']
             for line in method_lines[1:]  # Skip signature line
         )
 
         return is_contract_test and (not has_contract_assertions or not has_meaningful_content)
 
-    def _extract_contract_context(self, test_name: str, file_path: str) -> Dict:
+    def _extract_contract_context(self, test_name: str, file_path: str) -> dict:
         """Extract contract context from test name and file path."""
         context = {
             'test_name': test_name,
@@ -152,7 +151,7 @@ class ContractAssertionRestorer:
 
         return context
 
-    def restore_contract_assertions(self, contract_hollowed: List[Dict]) -> Dict:
+    def restore_contract_assertions(self, contract_hollowed: list[dict]) -> dict:
         """Restore hollowed tests with contract assertions."""
         print("=== Restoring Contract Assertions ===")
 
@@ -172,7 +171,7 @@ class ContractAssertionRestorer:
             'modifications': self.modifications
         }
 
-    def _restore_file_contract_tests(self, file_path: str, contract_tests: List[Dict]):
+    def _restore_file_contract_tests(self, file_path: str, contract_tests: list[dict]):
         """Restore contract tests in a single file."""
         self.restoration_stats['files_processed'] += 1
 
@@ -184,7 +183,7 @@ class ContractAssertionRestorer:
 
         try:
             # Read file content
-            with open(full_path, 'r', encoding='utf-8') as f:
+            with open(full_path, encoding='utf-8') as f:
                 content = f.read()
                 original_content = content
 
@@ -244,7 +243,7 @@ class ContractAssertionRestorer:
             print(f"❌ Error processing {file_path}: {e}")
             self.restoration_stats['errors_encountered'] += 1
 
-    def _restore_contract_test(self, lines: List[str], node: ast.FunctionDef, context: Dict, file_path: str) -> Dict:
+    def _restore_contract_test(self, lines: list[str], node: ast.FunctionDef, context: dict, file_path: str) -> dict:
         """Restore a single contract test method."""
         restoration_result = {
             'restored': False,
@@ -302,7 +301,7 @@ class ContractAssertionRestorer:
 
         return restoration_result
 
-    def _generate_interface_assertions(self, indent_str: str, context: Dict) -> List[str]:
+    def _generate_interface_assertions(self, indent_str: str, context: dict) -> list[str]:
         """Generate assertions for interface contract tests."""
         interface_name = context.get('interface_under_test', 'interface')
         assertions = []
@@ -323,7 +322,7 @@ class ContractAssertionRestorer:
 
         return assertions
 
-    def _generate_schema_assertions(self, indent_str: str, context: Dict) -> List[str]:
+    def _generate_schema_assertions(self, indent_str: str, context: dict) -> list[str]:
         """Generate assertions for schema contract tests."""
         schema_name = context.get('interface_under_test', 'schema')
         assertions = []
@@ -344,7 +343,7 @@ class ContractAssertionRestorer:
 
         return assertions
 
-    def _generate_behavioral_assertions(self, indent_str: str, context: Dict) -> List[str]:
+    def _generate_behavioral_assertions(self, indent_str: str, context: dict) -> list[str]:
         """Generate assertions for behavioral contract tests."""
         contract_name = context.get('interface_under_test', 'contract')
         assertions = []
@@ -365,7 +364,7 @@ class ContractAssertionRestorer:
 
         return assertions
 
-    def _generate_specification_assertions(self, indent_str: str, context: Dict) -> List[str]:
+    def _generate_specification_assertions(self, indent_str: str, context: dict) -> list[str]:
         """Generate assertions for specification contract tests."""
         spec_name = context.get('interface_under_test', 'specification')
         assertions = []
@@ -386,7 +385,7 @@ class ContractAssertionRestorer:
 
         return assertions
 
-    def _generate_contract_core_assertions(self, indent_str: str, context: Dict) -> List[str]:
+    def _generate_contract_core_assertions(self, indent_str: str, context: dict) -> list[str]:
         """Generate assertions for core contract tests."""
         contract_name = context.get('interface_under_test', 'contract')
         assertions = []
@@ -407,7 +406,7 @@ class ContractAssertionRestorer:
 
         return assertions
 
-    def _generate_general_contract_assertions(self, indent_str: str, context: Dict) -> List[str]:
+    def _generate_general_contract_assertions(self, indent_str: str, context: dict) -> list[str]:
         """Generate general contract assertions."""
         contract_name = context.get('interface_under_test', 'contract')
         assertions = []
@@ -428,7 +427,7 @@ class ContractAssertionRestorer:
 
         return assertions
 
-    def validate_contract_restorations(self) -> Dict:
+    def validate_contract_restorations(self) -> dict:
         """Validate that contract test restorations were successful."""
         print("=== Validating Contract Test Restorations ===")
 
@@ -445,7 +444,7 @@ class ContractAssertionRestorer:
             full_path = Path('tests') / file_path
 
             try:
-                with open(full_path, 'r', encoding='utf-8') as f:
+                with open(full_path, encoding='utf-8') as f:
                     content = f.read()
 
                 # Check that contract assertions were added
@@ -482,7 +481,7 @@ class ContractAssertionRestorer:
 
         return validation
 
-    def generate_wave3c_report(self) -> Dict:
+    def generate_wave3c_report(self) -> dict:
         """Generate Wave 3c restoration report."""
         print("=== Wave 3c: Restore Hollowed Tests - Contract Assertions ===")
 
@@ -524,7 +523,7 @@ class ContractAssertionRestorer:
 
         # Print summary
         summary = report['summary']
-        print(f"\n=== Wave 3c Summary ===")
+        print("\n=== Wave 3c Summary ===")
         print(f"Target contract tests: {summary['target_contract_tests']}")
         print(f"Files processed: {summary['files_processed']}")
         print(f"Files modified: {summary['files_modified']}")
@@ -538,7 +537,7 @@ class ContractAssertionRestorer:
             for issue in validation_results['remaining_issues'][:3]:
                 print(f"  - {issue['file']}: {issue['issue']}")
 
-        print(f"\n📄 Report saved to: artifacts/wave3c_restoration_report.json")
+        print("\n📄 Report saved to: artifacts/wave3c_restoration_report.json")
 
         return report
 

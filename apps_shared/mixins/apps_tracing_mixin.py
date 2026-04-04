@@ -37,7 +37,7 @@ except ImportError:
 
 # Import agentic_core tracing for cross-layer bridging
 try:
-    from agentic_core.mixins.tracing_mixin import TracingMixin, SpanContext
+    from agentic_core.mixins.tracing_mixin import SpanContext, TracingMixin
     AGENTIC_CORE_AVAILABLE = True
 except ImportError:
     AGENTIC_CORE_AVAILABLE = False

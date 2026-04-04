@@ -4,7 +4,6 @@ Test ADG-Based Sequential Thinking Templates
 Tests new templates with real ADG data and violations
 """
 
-import os
 import sys
 from pathlib import Path
 
@@ -13,9 +12,13 @@ repo_root = Path(__file__).parent
 sys.path.append(str(repo_root))
 
 from apps_shared.prompts.sequential_thinking_templates import (
-    get_all_templates, render_template, get_template_for_complexity,
-    SequentialThinkingTemplate, get_template
+    SequentialThinkingTemplate,
+    get_all_templates,
+    get_template,
+    get_template_for_complexity,
+    render_template,
 )
+
 
 def test_adg_template_system():
     """Test the ADG-based template system with real data."""

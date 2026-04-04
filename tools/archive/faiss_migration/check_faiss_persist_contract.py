@@ -33,7 +33,6 @@ from pathlib import Path
 
 from agentic_core.L0_routing.config.path_constants import (
     AGENTIC_CORE_DIR,
-    ARCHIVES_DIR,
     SYSTEM_LEARNING_DIR,
     get_validated_project_root,
 )

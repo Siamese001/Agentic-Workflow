@@ -26,13 +26,13 @@ Logger = logging.getLogger(__name__)
 @dataclass
 class GovernanceValidationResult:
     """Result of architecture governance validation."""
-    
+
     check_id: str
     violations_count: int
     evidence: dict[str, Any]
     territory: str | None
     repo_root: str
-    
+
     def to_dict(self) -> dict[str, Any]:
         """Convert to dictionary."""
         return {
@@ -53,7 +53,7 @@ class ArchitectureGovernorValidator:
     This validator runs ArchitectureGovernorAgent in dry-run mode to detect
     architectural governance violations without mutating the codebase.
     """
-    
+
     def __init__(self, project_root: Path) -> None:
         """Initialize validator.
         
@@ -61,7 +61,7 @@ class ArchitectureGovernorValidator:
             project_root: Root directory of the project
         """
         self.project_root = Path(project_root).resolve()
-    
+
     def scan(self, target_territory: str | None = None) -> dict[str, Any]:
         """Run architecture governance scan in dry-run mode.
         
@@ -73,7 +73,7 @@ class ArchitectureGovernorValidator:
         """
         try:
             from agentic_core.L5_safety.reasoning.ArchitectureGovernorAgent import ArchitectureGovernorAgent
-            
+
             agent = ArchitectureGovernorAgent(project_root=self.project_root)
             return agent.heal_repository(
                 dry_run=True,
@@ -88,7 +88,7 @@ class ArchitectureGovernorValidator:
                 "errors": 1,
                 "error_message": "ArchitectureGovernorAgent not available",
             }
-    
+
     def to_check_dict(self, target_territory: str | None = None) -> dict[str, Any]:
         """Return structured check dict for _invoke_healer dispatch.
         
@@ -100,7 +100,7 @@ class ArchitectureGovernorValidator:
         """
         scan_result = self.scan(target_territory=target_territory)
         violations_found = scan_result.get("violations_found", 0)
-        
+
         return {
             "check_id": CHECK_ID,
             "evidence": scan_result,
@@ -108,7 +108,7 @@ class ArchitectureGovernorValidator:
             "territory": target_territory,
             "repo_root": str(self.project_root),
         }
-    
+
     def run(self, target_territory: str | None = None) -> dict[str, Any]:
         """Alias for to_check_dict for orchestrator compatibility.
         
@@ -119,7 +119,7 @@ class ArchitectureGovernorValidator:
             Dictionary with check results
         """
         return self.to_check_dict(target_territory=target_territory)
-    
+
     def validate(self, target_territory: str | None = None) -> GovernanceValidationResult:
         """Validate architecture governance.
         
@@ -130,7 +130,7 @@ class ArchitectureGovernorValidator:
             GovernanceValidationResult with validation results
         """
         result = self.scan(target_territory)
-        
+
         return GovernanceValidationResult(
             check_id=CHECK_ID,
             violations_count=result.get("violations_found", 0),

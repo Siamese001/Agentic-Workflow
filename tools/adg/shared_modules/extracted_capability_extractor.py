@@ -30,7 +30,7 @@ class CapabilityExtractor:
 
     def load_manifest(self, manifest_path: str) -> List[Dict[str, Any]]:
         """Load the repo hygiene manifest."""
-        with open(manifest_path, 'r') as f:
+        with open(manifest_path) as f:
             data = json.load(f)
         return data['files']
 
@@ -56,7 +56,7 @@ class CapabilityExtractor:
                 logging.warning(f"File {file_path} is outside repository root")
                 return None
 
-            with open(abs_path, 'r', encoding='utf-8') as f:
+            with open(abs_path, encoding='utf-8') as f:
                 content = f.read()
 
             tree = ast.parse(content)
@@ -183,7 +183,7 @@ class CapabilityExtractor:
                 f.write(f'"""\nExtracted capability module: {primary_capability}\n')
                 f.write(f'Source: {candidate["file_path"]}\n')
                 f.write(f'Extracted: {datetime.now().isoformat()}\n')
-                f.write(f'"""\n\n')
+                f.write('"""\n\n')
                 f.write(extracted_code)
 
             # Log the extraction
@@ -220,7 +220,7 @@ class CapabilityExtractor:
     def _extract_reusable_code(self, source_path: Path, candidate: Dict[str, Any]) -> str:
         """Extract reusable code from a source file."""
         try:
-            with open(source_path, 'r', encoding='utf-8') as f:
+            with open(source_path, encoding='utf-8') as f:
                 content = f.read()
 
             tree = ast.parse(content)
@@ -295,7 +295,7 @@ def main():
         logging.info("No suitable extraction candidates found")
         return
 
-    print(f"\n=== HITL GATE: Capability Extraction Review ===")
+    print("\n=== HITL GATE: Capability Extraction Review ===")
     print(f"Found {len(candidates)} extraction candidates:")
     for i, candidate in enumerate(candidates[:10], 1):  # Show top 10
         print(f"  {i}. {candidate['file_path']} (score: {candidate['reusable_score']})")
@@ -314,7 +314,7 @@ def main():
         print(f"Classes: {len([c for c in candidate['classes'] if not c['is_private']])}")
 
         # In real implementation, this would wait for user confirmation
-        print(f"Extracting capability...")
+        print("Extracting capability...")
 
         if extractor.extract_capability(candidate):
             successful_extractions += 1
@@ -323,7 +323,7 @@ def main():
     log_path = extractor.save_extraction_log()
 
     # Print summary
-    print(f"\n=== Capability Extraction Complete ===")
+    print("\n=== Capability Extraction Complete ===")
     print(f"Files analyzed: {len(file_analyses)}")
     print(f"Candidates identified: {len(candidates)}")
     print(f"Successful extractions: {successful_extractions}")
@@ -333,7 +333,7 @@ def main():
 
     def load_manifest(self, manifest_path: str) -> List[Dict[str, Any]]:
         """Load the repo hygiene manifest."""
-        with open(manifest_path, 'r') as f:
+        with open(manifest_path) as f:
             data = json.load(f)
         return data['files']
 
@@ -359,7 +359,7 @@ def main():
                 logging.warning(f"File {file_path} is outside repository root")
                 return None
 
-            with open(abs_path, 'r', encoding='utf-8') as f:
+            with open(abs_path, encoding='utf-8') as f:
                 content = f.read()
 
             tree = ast.parse(content)
@@ -448,7 +448,7 @@ def main():
                 f.write(f'"""\nExtracted capability module: {primary_capability}\n')
                 f.write(f'Source: {candidate["file_path"]}\n')
                 f.write(f'Extracted: {datetime.now().isoformat()}\n')
-                f.write(f'"""\n\n')
+                f.write('"""\n\n')
                 f.write(extracted_code)
 
             # Log the extraction

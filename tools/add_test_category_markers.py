@@ -20,7 +20,7 @@ class TestCategoryMarkerAdder:
         self.errors = 0
 
         # Load test inventory
-        with open(PROJECT_ROOT / "tools" / "test_enforcement" / "test_inventory.json", 'r') as f:
+        with open(PROJECT_ROOT / "tools" / "test_enforcement" / "test_inventory.json") as f:
             inventory = json.load(f)
             self.test_files = inventory.get('test_files', [])
 
@@ -142,7 +142,7 @@ def main():
     print(f"❌ Errors: {report['errors']}")
 
     if report['files_processed'] < len(adder.test_files):
-        print(f"\n📝 REMAINING:")
+        print("\n📝 REMAINING:")
         print(f"   {len(adder.test_files) - report['files_processed']} files to process")
     else:
         print("\n🎉 ALL TEST CATEGORY MARKERS ADDED!")

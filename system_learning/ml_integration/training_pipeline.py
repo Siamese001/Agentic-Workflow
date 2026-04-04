@@ -23,15 +23,13 @@ USAGE:
     pipeline.deploy_model(model_id)
 """
 
-import json
 import logging
 import pickle
 import time
 from abc import ABC, abstractmethod
-from collections import defaultdict, deque
 from dataclasses import dataclass, field
-from typing import Any, Dict, List, Optional, Tuple, Union
 from enum import Enum
+from typing import Any
 
 import numpy as np
 import pandas as pd
@@ -85,8 +83,8 @@ class ModelConfig:
     """Model configuration parameters."""
 
     model_type: ModelType
-    hyperparameters: Dict[str, Any] = field(default_factory=dict)
-    feature_columns: List[str] = field(default_factory=list)
+    hyperparameters: dict[str, Any] = field(default_factory=dict)
+    feature_columns: list[str] = field(default_factory=list)
     target_column: str = ""
     test_size: float = 0.2
     random_state: int = 42
@@ -96,7 +94,7 @@ class ModelConfig:
     early_stopping: bool = True
     early_stopping_patience: int = 10
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Convert to dictionary."""
         return {
             "model_type": self.model_type.value,
@@ -128,16 +126,16 @@ class TrainingMetrics:
     mse: float = 0.0
     mae: float = 0.0
     r2_score: float = 0.0
-    confusion_matrix: Optional[List[List[int]]] = None
-    feature_importance: Optional[Dict[str, float]] = None
-    training_loss: List[float] = field(default_factory=list)
-    validation_loss: List[float] = field(default_factory=list)
-    hyperparameters: Dict[str, Any] = field(default_factory=dict)
-    feature_columns: List[str] = field(default_factory=list)
+    confusion_matrix: list[list[int]] | None = None
+    feature_importance: dict[str, float] | None = None
+    training_loss: list[float] = field(default_factory=list)
+    validation_loss: list[float] = field(default_factory=list)
+    hyperparameters: dict[str, Any] = field(default_factory=dict)
+    feature_columns: list[str] = field(default_factory=list)
     target_column: str = "anomaly"
     timestamp: float = field(default_factory=time.time)
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Convert to dictionary."""
         return {
             "model_id": self.model_id,
@@ -171,10 +169,10 @@ class ModelDeployment:
     deployed_at: float
     version: str = "1.0.0"
     environment: str = "production"
-    scaling_config: Dict[str, Any] = field(default_factory=dict)
+    scaling_config: dict[str, Any] = field(default_factory=dict)
     monitoring_enabled: bool = True
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Convert to dictionary."""
         return {
             "model_id": self.model_id,
@@ -233,7 +231,14 @@ class RandomForestModel(BaseMLModel):
         """Train Random Forest model."""
         try:
             from sklearn.ensemble import RandomForestClassifier
-            from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score, roc_auc_score, confusion_matrix
+            from sklearn.metrics import (
+                accuracy_score,
+                confusion_matrix,
+                f1_score,
+                precision_score,
+                recall_score,
+                roc_auc_score,
+            )
 
             start_time = time.time()
 
@@ -320,8 +325,15 @@ class XGBoostModel(BaseMLModel):
     def train(self, X_train: np.ndarray, y_train: np.ndarray, X_val: np.ndarray, y_val: np.ndarray) -> TrainingMetrics:
         """Train XGBoost model."""
         try:
+            from sklearn.metrics import (
+                accuracy_score,
+                confusion_matrix,
+                f1_score,
+                precision_score,
+                recall_score,
+                roc_auc_score,
+            )
             from xgboost import XGBClassifier
-            from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score, roc_auc_score, confusion_matrix
 
             start_time = time.time()
 
@@ -418,8 +430,15 @@ class NeuralNetworkModel(BaseMLModel):
     def train(self, X_train: np.ndarray, y_train: np.ndarray, X_val: np.ndarray, y_val: np.ndarray) -> TrainingMetrics:
         """Train Neural Network model."""
         try:
+            from sklearn.metrics import (
+                accuracy_score,
+                confusion_matrix,
+                f1_score,
+                precision_score,
+                recall_score,
+                roc_auc_score,
+            )
             from sklearn.neural_network import MLPClassifier
-            from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score, roc_auc_score, confusion_matrix
             from sklearn.preprocessing import StandardScaler
 
             start_time = time.time()
@@ -528,17 +547,17 @@ class MLTrainingPipeline:
     def __init__(self) -> None:
         """Initialize ML training pipeline."""
         # Training state
-        self._training_jobs: Dict[str, Dict[str, Any]] = {}
-        self._trained_models: Dict[str, BaseMLModel] = {}
-        self._model_metrics: Dict[str, TrainingMetrics] = {}
-        self._deployments: Dict[str, ModelDeployment] = {}
+        self._training_jobs: dict[str, dict[str, Any]] = {}
+        self._trained_models: dict[str, BaseMLModel] = {}
+        self._model_metrics: dict[str, TrainingMetrics] = {}
+        self._deployments: dict[str, ModelDeployment] = {}
 
         # Data storage
-        self._training_data: Dict[str, pd.DataFrame] = {}
-        self._feature_store: Dict[str, Any] = {}
+        self._training_data: dict[str, pd.DataFrame] = {}
+        self._feature_store: dict[str, Any] = {}
 
         # Configuration
-        self._config: Dict[str, Any] = {
+        self._config: dict[str, Any] = {
             "max_concurrent_jobs": 3,
             "model_storage_path": "models/",
             "auto_deployment": True,
@@ -548,7 +567,7 @@ class MLTrainingPipeline:
         }
 
         # Model registry
-        self._model_registry: Dict[str, ModelConfig] = {
+        self._model_registry: dict[str, ModelConfig] = {
             "random_forest": ModelConfig(
                 model_type=ModelType.RANDOM_FOREST,
                 hyperparameters={
@@ -617,7 +636,7 @@ class MLTrainingPipeline:
             Logger.error(f"[ML_PIPELINE] Failed to add training data {dataset_name}: {e}")
             return False
 
-    def train_anomaly_detection_model(self, dataset_name: str, model_type: str = "random_forest") -> Optional[str]:
+    def train_anomaly_detection_model(self, dataset_name: str, model_type: str = "random_forest") -> str | None:
         """
         Train an anomaly detection model.
 
@@ -700,7 +719,7 @@ class MLTrainingPipeline:
             # Default to Random Forest
             return RandomForestModel(config)
 
-    def evaluate_model(self, model_id: str, test_data: pd.DataFrame) -> Optional[TrainingMetrics]:
+    def evaluate_model(self, model_id: str, test_data: pd.DataFrame) -> TrainingMetrics | None:
         """
         Evaluate a trained model on test data.
 
@@ -728,7 +747,14 @@ class MLTrainingPipeline:
             y_pred_proba = model.predict_proba(X_test)[:, 1]
 
             # Calculate test metrics
-            from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score, roc_auc_score, confusion_matrix
+            from sklearn.metrics import (
+                accuracy_score,
+                confusion_matrix,
+                f1_score,
+                precision_score,
+                recall_score,
+                roc_auc_score,
+            )
 
             test_metrics = TrainingMetrics(
                 model_id=f"{model_id}_test",
@@ -751,7 +777,7 @@ class MLTrainingPipeline:
             Logger.error(f"[ML_PIPELINE] Model evaluation failed: {e}")
             return None
 
-    def deploy_model(self, model_id: str, environment: str = "production") -> Optional[str]:
+    def deploy_model(self, model_id: str, environment: str = "production") -> str | None:
         """
         Deploy a trained model.
 
@@ -790,7 +816,7 @@ class MLTrainingPipeline:
             Logger.error(f"[ML_PIPELINE] Model deployment failed: {e}")
             return None
 
-    def get_model_predictions(self, model_id: str, data: pd.DataFrame) -> Optional[np.ndarray]:
+    def get_model_predictions(self, model_id: str, data: pd.DataFrame) -> np.ndarray | None:
         """
         Get predictions from a deployed model.
 
@@ -821,18 +847,18 @@ class MLTrainingPipeline:
             Logger.error(f"[ML_PIPELINE] Model prediction failed: {e}")
             return None
 
-    def get_model_metrics(self, model_id: Optional[str] = None) -> Union[TrainingMetrics, Dict[str, TrainingMetrics]]:
+    def get_model_metrics(self, model_id: str | None = None) -> TrainingMetrics | dict[str, TrainingMetrics]:
         """Get metrics for a specific model or all models."""
         if model_id:
             return self._model_metrics.get(model_id)
         else:
             return self._model_metrics.copy()
 
-    def get_deployments(self) -> Dict[str, ModelDeployment]:
+    def get_deployments(self) -> dict[str, ModelDeployment]:
         """Get all model deployments."""
         return self._deployments.copy()
 
-    def get_training_status(self) -> Dict[str, Any]:
+    def get_training_status(self) -> dict[str, Any]:
         """Get training pipeline status."""
         return {
             "initialized": self._initialized,
@@ -864,7 +890,7 @@ def initialize_ml_pipeline() -> bool:
     return pipeline.initialize_pipeline()
 
 
-def train_anomaly_detection_model(dataset_name: str, model_type: str = "random_forest") -> Optional[str]:
+def train_anomaly_detection_model(dataset_name: str, model_type: str = "random_forest") -> str | None:
     """
     Train anomaly detection model using global pipeline.
 

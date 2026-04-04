@@ -47,9 +47,9 @@ class ASTComplianceChecker:
     ]
 
     def __init__(self):
-        self.violations: List[Tuple[str, int, str]] = []
+        self.violations: list[tuple[str, int, str]] = []
 
-    def check_directory(self, directory: Union[Path, str]) -> None:
+    def check_directory(self, directory: Path | str) -> None:
         """Check all Python files in a directory for violations."""
         if isinstance(directory, str):
             directory = Path(directory)
@@ -149,7 +149,7 @@ class ASTComplianceChecker:
                 return node.func.value.attr == "subprocess"
         return False
 
-    def _extract_subprocess_args(self, node: ast.Call) -> List[str]:
+    def _extract_subprocess_args(self, node: ast.Call) -> list[str]:
         """Extract command arguments from subprocess call."""
         args = []
 
@@ -168,7 +168,7 @@ class ASTComplianceChecker:
 
         return args
 
-    def _args_contain_grep(self, args: List[str]) -> bool:
+    def _args_contain_grep(self, args: list[str]) -> bool:
         """Check if command arguments contain grep-like tools."""
         grep_tools = {"grep", "rg", "findstr", "Select-String", "egrep", "fgrep"}
         return any(arg in grep_tools for arg in args)

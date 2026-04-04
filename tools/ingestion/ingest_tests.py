@@ -6,13 +6,12 @@ Wave 2 Implementation: Structural & Test Intelligence
 Ingests test files and guardrail patterns into ChromaDB.
 """
 
-import sys
-from pathlib import Path
 import ast
 import hashlib
-from typing import List, Dict, Any, Optional, Tuple
 import logging
 import re
+import sys
+from pathlib import Path
 
 # Add agentic_core to path
 sys.path.insert(0, str(Path(__file__).parent.parent.parent / "agentic_core"))
@@ -82,7 +81,7 @@ class TestsIngestion:
                 continue
 
             try:
-                with open(file_path, 'r', encoding='utf-8') as f:
+                with open(file_path, encoding='utf-8') as f:
                     content = f.read()
 
                 if not content.strip():
@@ -185,7 +184,7 @@ class TestsIngestion:
                 continue
 
             try:
-                with open(file_path, 'r', encoding='utf-8') as f:
+                with open(file_path, encoding='utf-8') as f:
                     content = f.read()
 
                 if not content.strip():
@@ -201,7 +200,7 @@ class TestsIngestion:
                 doc_content += f"Constraints: {len(guardrail_info['constraints'])}\n"
 
                 if guardrail_info['rules']:
-                    doc_content += f"\nRules:\n"
+                    doc_content += "\nRules:\n"
                     for rule in guardrail_info['rules'][:5]:  # First 5 rules
                         doc_content += f"  - {rule}\n"
 
@@ -256,7 +255,7 @@ class TestsIngestion:
 
         return len(documents)
 
-    def _parse_test_file(self, content: str, file_path: Path) -> Dict[str, List[str]]:
+    def _parse_test_file(self, content: str, file_path: Path) -> dict[str, list[str]]:
         """Parse test file structure."""
         try:
             tree = ast.parse(content)
@@ -295,7 +294,7 @@ class TestsIngestion:
             "guardrails": list(set(guardrails))  # Remove duplicates
         }
 
-    def _extract_guardrail_patterns(self, content: str) -> Dict[str, List[str]]:
+    def _extract_guardrail_patterns(self, content: str) -> dict[str, list[str]]:
         """Extract guardrail patterns from code."""
         rules = []
         validations = []
@@ -422,7 +421,7 @@ class TestsIngestion:
         else:
             return "unknown"
 
-    def run_ingestion(self) -> Dict[str, int]:
+    def run_ingestion(self) -> dict[str, int]:
         """Run complete Wave 2 tests ingestion."""
         logger.info("Starting Wave 2: Tests ingestion...")
 

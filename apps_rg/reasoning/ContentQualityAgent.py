@@ -21,8 +21,6 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
-from apps_rg.utils.RGAgentBase import RGAgentBase
-
 from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     LayerSegment,
     _emit_agent_executes_agent,
@@ -66,6 +64,7 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     emit_determinism_digest,  # noqa: E402
     emit_replay_key,  # noqa: E402
 )
+from apps_rg.utils.RGAgentBase import RGAgentBase
 
 _emit_authorize_and_execute("p2", "ContentQualityAgent", "execution_auth")
 _emit_validates_capability("p2", "ContentQualityAgent", "capability_check")

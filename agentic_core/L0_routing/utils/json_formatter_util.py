@@ -4,7 +4,6 @@ import sys
 from datetime import datetime, timezone
 
 from agentic_core.config.settings_config import get_settings
-
 from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     LayerSegment,
     _emit_agent_executes_agent,

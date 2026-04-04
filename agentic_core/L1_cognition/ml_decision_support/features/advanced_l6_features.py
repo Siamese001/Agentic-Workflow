@@ -7,10 +7,10 @@ and detection optimization signals.
 """
 
 from datetime import datetime
-from typing import Dict, Any
+from typing import Any
 
+from ..config.feature_schemas import FeatureSchema, FeatureSchemas
 from .base_extractor import DeterministicFeatureExtractor
-from ..config.feature_schemas import FeatureSchemas, FeatureSchema
 
 
 class AdvancedL6FeatureExtractor(DeterministicFeatureExtractor):
@@ -35,7 +35,7 @@ class AdvancedL6FeatureExtractor(DeterministicFeatureExtractor):
 
     def _create_advanced_l6_schema(self) -> FeatureSchema:
         """Create feature schema for advanced L6 detector."""
-        from ..config.feature_schemas import FeatureSchema, FeatureDefinition, FeatureType
+        from ..config.feature_schemas import FeatureDefinition, FeatureSchema, FeatureType
 
         features = [
             FeatureDefinition(
@@ -130,7 +130,7 @@ class AdvancedL6FeatureExtractor(DeterministicFeatureExtractor):
         self.register_extraction_function("security_anomaly", self._extract_security_anomaly)
         self.register_extraction_function("anomaly_confidence", self._extract_anomaly_confidence)
 
-    def _extract_behavioral_deviation(self, context: Dict[str, Any]) -> float:
+    def _extract_behavioral_deviation(self, context: dict[str, Any]) -> float:
         """Extract behavioral deviation score (0.0 to 1.0)."""
         anomaly = context.get("anomaly", {})
 
@@ -213,7 +213,7 @@ class AdvancedL6FeatureExtractor(DeterministicFeatureExtractor):
 
         return round(min(1.0, total_deviation), 3)
 
-    def _extract_system_metric_anomaly(self, context: Dict[str, Any]) -> float:
+    def _extract_system_metric_anomaly(self, context: dict[str, Any]) -> float:
         """Extract system metric anomaly score (0.0 to 1.0)."""
         anomaly = context.get("anomaly", {})
 
@@ -283,7 +283,7 @@ class AdvancedL6FeatureExtractor(DeterministicFeatureExtractor):
 
         return round(min(1.0, total_anomaly), 3)
 
-    def _extract_temporal_pattern_break(self, context: Dict[str, Any]) -> float:
+    def _extract_temporal_pattern_break(self, context: dict[str, Any]) -> float:
         """Extract temporal pattern break score (0.0 to 1.0)."""
         anomaly = context.get("anomaly", {})
 
@@ -363,7 +363,7 @@ class AdvancedL6FeatureExtractor(DeterministicFeatureExtractor):
 
         return round(min(1.0, total_break), 3)
 
-    def _extract_reconstruction_error(self, context: Dict[str, Any]) -> float:
+    def _extract_reconstruction_error(self, context: dict[str, Any]) -> float:
         """Extract reconstruction error score (0.0 to 1.0)."""
         anomaly = context.get("anomaly", {})
 
@@ -421,7 +421,7 @@ class AdvancedL6FeatureExtractor(DeterministicFeatureExtractor):
 
         return round(min(1.0, total_error), 3)
 
-    def _extract_multivariate_anomaly(self, context: Dict[str, Any]) -> float:
+    def _extract_multivariate_anomaly(self, context: dict[str, Any]) -> float:
         """Extract multivariate anomaly score (0.0 to 1.0)."""
         anomaly = context.get("anomaly", {})
 
@@ -491,7 +491,7 @@ class AdvancedL6FeatureExtractor(DeterministicFeatureExtractor):
 
         return round(min(1.0, total_anomaly), 3)
 
-    def _extract_contextual_anomaly(self, context: Dict[str, Any]) -> float:
+    def _extract_contextual_anomaly(self, context: dict[str, Any]) -> float:
         """Extract contextual anomaly score (0.0 to 1.0)."""
         anomaly = context.get("anomaly", {})
 
@@ -537,7 +537,7 @@ class AdvancedL6FeatureExtractor(DeterministicFeatureExtractor):
 
         return round(min(1.0, total_anomaly), 3)
 
-    def _extract_performance_degradation(self, context: Dict[str, Any]) -> float:
+    def _extract_performance_degradation(self, context: dict[str, Any]) -> float:
         """Extract performance degradation score (0.0 to 1.0)."""
         anomaly = context.get("anomaly", {})
 
@@ -611,7 +611,7 @@ class AdvancedL6FeatureExtractor(DeterministicFeatureExtractor):
 
         return round(min(1.0, total_degradation), 3)
 
-    def _extract_resource_anomaly(self, context: Dict[str, Any]) -> float:
+    def _extract_resource_anomaly(self, context: dict[str, Any]) -> float:
         """Extract resource anomaly score (0.0 to 1.0)."""
         anomaly = context.get("anomaly", {})
 
@@ -681,7 +681,7 @@ class AdvancedL6FeatureExtractor(DeterministicFeatureExtractor):
 
         return round(min(1.0, total_anomaly), 3)
 
-    def _extract_security_anomaly(self, context: Dict[str, Any]) -> float:
+    def _extract_security_anomaly(self, context: dict[str, Any]) -> float:
         """Extract security anomaly score (0.0 to 1.0)."""
         anomaly = context.get("anomaly", {})
 
@@ -739,7 +739,7 @@ class AdvancedL6FeatureExtractor(DeterministicFeatureExtractor):
 
         return round(min(1.0, total_anomaly), 3)
 
-    def _extract_anomaly_confidence(self, context: Dict[str, Any]) -> float:
+    def _extract_anomaly_confidence(self, context: dict[str, Any]) -> float:
         """Extract overall anomaly confidence (0.0 to 1.0)."""
         anomaly = context.get("anomaly", {})
 

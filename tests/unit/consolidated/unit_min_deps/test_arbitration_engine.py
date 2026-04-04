@@ -2,7 +2,6 @@
 
 import pytest
 
-
 MAX_RETRIES = 3
 DEFAULT_SLEEP = 1.0
 THRESHOLD = 0.95

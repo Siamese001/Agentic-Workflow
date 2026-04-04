@@ -4,7 +4,7 @@ Analyze dependencies for Phase 2.1 implementation.
 """
 
 import sqlite3
-import json
+
 
 def analyze_phase21_dependencies():
     """Analyze dependency graph for Phase 2.1 scope."""
@@ -26,13 +26,13 @@ def analyze_phase21_dependencies():
 
     if nodes:
         target_id = nodes[0][0]
-        print(f"### Node Types Included")
+        print("### Node Types Included")
         print("- Python modules (fix scripts)")
         print("- Violation report files (JSON)")
         print("- Target files with ImportError violations")
         print()
 
-        print(f"### Edge Types Analyzed")
+        print("### Edge Types Analyzed")
         print("- imports (module dependencies)")
         print("- calls (function invocations)")
         print("- reads_from (file access)")
@@ -42,7 +42,7 @@ def analyze_phase21_dependencies():
         # Get upstream dependencies (imports)
         cursor.execute('SELECT src_id, relation_type FROM edges WHERE dst_id = ? AND relation_type = "imports"', (target_id,))
         upstream = cursor.fetchall()
-        print(f"### Upstream Dependencies")
+        print("### Upstream Dependencies")
         if upstream:
             for edge in upstream:
                 cursor.execute('SELECT resolved_path FROM nodes WHERE id = ?', (edge[0],))
@@ -56,7 +56,7 @@ def analyze_phase21_dependencies():
         # Get downstream dependents
         cursor.execute('SELECT dst_id, relation_type FROM edges WHERE src_id = ? AND relation_type = "calls"', (target_id,))
         downstream = cursor.fetchall()
-        print(f"### Downstream Dependents")
+        print("### Downstream Dependents")
         if downstream:
             for edge in downstream:
                 cursor.execute('SELECT resolved_path FROM nodes WHERE id = ?', (edge[0],))
@@ -70,7 +70,7 @@ def analyze_phase21_dependencies():
         # Check for test coverage
         cursor.execute('SELECT src_id, relation_type FROM edges WHERE dst_id = ? AND relation_type LIKE "%test%"', (target_id,))
         test_edges = cursor.fetchall()
-        print(f"### Test Surface Implications")
+        print("### Test Surface Implications")
         if test_edges:
             for edge in test_edges:
                 cursor.execute('SELECT resolved_path FROM nodes WHERE id = ?', (edge[0],))

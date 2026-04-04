@@ -4,6 +4,29 @@
 # Import directly from system_learning.types.meta_learning_types, etc.
 
 # Wave 1: Case Compilation types
+from system_learning.engines.approval_gauntlet_engine import (
+    ApprovalDecision,
+    ApprovalGauntletEngine,
+    ApprovalGauntletResult,
+)
+from system_learning.engines.human_calibration_engine import (
+    CalibrationRecord,
+    HumanCalibrationEngine,
+    HumanJudgment,
+)
+
+# Wave 4: Exit Control and Calibration types (defined in engine modules)
+from system_learning.engines.live_exit_control_gate import (
+    ExitControlResult,
+    LiveExitControlGate,
+)
+
+# Wave 3: Rule Drafting types (defined in engine module)
+from system_learning.engines.rule_drafting_engine import (
+    RuleDraftingEngine,
+    RuleDraftingResult,
+    RuleProposal,
+)
 from system_learning.types.case_compilation_types import (
     CaseCompilationResult,
     CompilationInput,
@@ -19,29 +42,6 @@ from system_learning.types.evaluation_spine_types import (
     MetricScore,
     OutcomeEvaluationResult,
     TrajectoryEvaluationResult,
-)
-
-# Wave 3: Rule Drafting types (defined in engine module)
-from system_learning.engines.rule_drafting_engine import (
-    RuleDraftingEngine,
-    RuleDraftingResult,
-    RuleProposal,
-)
-from system_learning.engines.approval_gauntlet_engine import (
-    ApprovalGauntletEngine,
-    ApprovalDecision,
-    ApprovalGauntletResult,
-)
-
-# Wave 4: Exit Control and Calibration types (defined in engine modules)
-from system_learning.engines.live_exit_control_gate import (
-    LiveExitControlGate,
-    ExitControlResult,
-)
-from system_learning.engines.human_calibration_engine import (
-    HumanCalibrationEngine,
-    CalibrationRecord,
-    HumanJudgment,
 )
 
 __all__ = [

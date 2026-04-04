@@ -6,7 +6,7 @@ Freshness checking, exact ACL verification, and perfect match detection.
 import logging
 import time
 from dataclasses import dataclass, field
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     LayerSegment,
@@ -23,17 +23,17 @@ class FreshnessCheck:
     age_seconds: float
     freshness_band: str
     max_age_seconds: float
-    reason: Optional[str] = None
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    reason: str | None = None
+    metadata: dict[str, Any] = field(default_factory=dict)
 
 
 @dataclass
 class ACCheck:
     """Result of ACL verification."""
     allowed: bool
-    user_perms: List[str] = field(default_factory=list)
-    required_perms: List[str] = field(default_factory=list)
-    missing_perms: List[str] = field(default_factory=list)
+    user_perms: list[str] = field(default_factory=list)
+    required_perms: list[str] = field(default_factory=list)
+    missing_perms: list[str] = field(default_factory=list)
 
 
 @dataclass
@@ -43,8 +43,8 @@ class PolicyResult:
     freshness_ok: bool
     acl_ok: bool
     exact_match: bool
-    reasons: List[str] = field(default_factory=list)
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    reasons: list[str] = field(default_factory=list)
+    metadata: dict[str, Any] = field(default_factory=dict)
 
 
 class PolicyEvaluator:
@@ -66,9 +66,9 @@ class PolicyEvaluator:
 
     def evaluate(
         self,
-        cache_entry: Dict[str, Any],
-        query_context: Dict[str, Any],
-        scope_metadata: Dict[str, Any],
+        cache_entry: dict[str, Any],
+        query_context: dict[str, Any],
+        scope_metadata: dict[str, Any],
     ) -> PolicyResult:
         """Evaluate if cache entry can be used.
 
@@ -136,7 +136,7 @@ class PolicyEvaluator:
 
     def check_freshness(
         self,
-        entry_timestamp: Optional[float],
+        entry_timestamp: float | None,
         freshness_band: str,
     ) -> FreshnessCheck:
         """Check if cache entry is fresh.
@@ -169,8 +169,8 @@ class PolicyEvaluator:
 
     def check_acl(
         self,
-        user_permissions: List[str],
-        required_permissions: List[str],
+        user_permissions: list[str],
+        required_permissions: list[str],
     ) -> ACCheck:
         """Check if user has required permissions.
 
@@ -204,7 +204,7 @@ class PolicyEvaluator:
 
 
 # Global instance
-_global_evaluator: Optional[PolicyEvaluator] = None
+_global_evaluator: PolicyEvaluator | None = None
 
 
 def get_policy_evaluator() -> PolicyEvaluator:

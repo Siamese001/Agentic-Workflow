@@ -3,8 +3,6 @@
 """
 from __future__ import annotations
 
-import pytest
-
 
 class TestScanTempArtifactsFunction:
     def test_is_callable(self):

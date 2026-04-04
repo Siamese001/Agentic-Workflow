@@ -27,4 +27,4 @@ class TestSampleClass:
         """Boolean logic test"""
         assert True is True
         assert False is False
-        assert not False is True
+        assert False is not True

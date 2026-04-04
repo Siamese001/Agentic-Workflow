@@ -36,6 +36,7 @@ from agentic_core.L0_routing.scripts._ssot_types import (
     RoutingInputs,
     RoutingTier,
 )
+
 # L2 import deferred to avoid layer boundary violation (L0→L2)
 # from agentic_core.L2_execution.providers import get_clock
 

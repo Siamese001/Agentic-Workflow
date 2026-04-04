@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import pytest
 
+
 def test_module_importable():
     """Module test_skip_detector_validator must be importable."""
     try:

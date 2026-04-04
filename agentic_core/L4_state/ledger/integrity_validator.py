@@ -15,7 +15,6 @@ import uuid
 from pathlib import Path
 from typing import Any
 
-
 from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     LayerSegment,
     _emit_agent_executes_agent,
@@ -179,8 +178,6 @@ _GENESIS_HASH = "0" * 64
 
 def compute_entry_hash(prev_hash: str, entry: dict[str, Any]) -> str:
     """Compute chained SHA256: hash(prev_hash || entry_bytes)."""
-    from agentic_core.L5_safety.types.hardening_errors import LedgerIntegrityViolation
-    from agentic_core.L5_safety.types.hardening_errors import LedgerIntegrityViolation
     import hashlib as _hashlib  # noqa: PLC0415
     import uuid as _uuid  # noqa: PLC0415
 

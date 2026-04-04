@@ -5,6 +5,7 @@ Shows clear before/after with actual token issues and resolutions
 """
 
 import sys
+
 # Force UTF-8 output on Windows to support emoji/unicode
 if sys.platform == "win32":
     sys.stdout.reconfigure(encoding="utf-8")
@@ -13,7 +14,7 @@ if sys.platform == "win32":
 import copy
 import tempfile
 from pathlib import Path
-from typing import Dict, List, Any
+from typing import Any
 
 from agentic_core.planning.preflight_hook import PlanningPreflightHook, TokenBudgetExceededError
 
@@ -35,7 +36,7 @@ class DramaticPlanRevisor:
         if self._temp_dir.exists():
             self._temp_dir.rmdir()
 
-    def create_problematic_plan(self) -> Dict[str, Any]:
+    def create_problematic_plan(self) -> dict[str, Any]:
         """Create a plan that will definitely have token issues"""
         print("🎯 CREATING PROBLEMATIC IMPLEMENTATION PLAN")
         print("=" * 60)
@@ -95,7 +96,7 @@ class DramaticPlanRevisor:
         self._analyze_plan(problematic_plan, "PROBLEMATIC")
         return problematic_plan
 
-    def simulate_problematic_execution(self, plan: Dict[str, Any]) -> Dict[str, Any]:
+    def simulate_problematic_execution(self, plan: dict[str, Any]) -> dict[str, Any]:
         """Simulate execution - expect many issues"""
         print("\n🚀 SIMULATING PROBLEMATIC EXECUTION")
         print("=" * 60)
@@ -179,7 +180,7 @@ class DramaticPlanRevisor:
                     })
                     print(f"      ❌ ERROR: {e}")
 
-        print(f"\n📊 PROBLEMATIC EXECUTION SUMMARY:")
+        print("\n📊 PROBLEMATIC EXECUTION SUMMARY:")
         print(f"   - Total steps: {len(results['step_results'])}")
         print(f"   - Total tokens: {results['total_tokens']:,}")
         print(f"   - Critical failures: {results['critical_failures']}")
@@ -194,8 +195,8 @@ class DramaticPlanRevisor:
 
         return results
 
-    def create_optimized_plan(self, problematic_plan: Dict[str, Any],
-                            problematic_results: Dict[str, Any]) -> Dict[str, Any]:
+    def create_optimized_plan(self, problematic_plan: dict[str, Any],
+                            problematic_results: dict[str, Any]) -> dict[str, Any]:
         """Create optimized plan based on token analysis"""
         print("\n🔧 CREATING OPTIMIZED PLAN")
         print("=" * 60)
@@ -210,7 +211,7 @@ class DramaticPlanRevisor:
         critical_steps = [i["step"] for i in problematic_results["issues"] if i.get("severity") == "CRITICAL"]
         warning_steps = [i["step"] for i in problematic_results["issues"] if i.get("severity") == "WARNING"]
 
-        print(f"📊 OPTIMIZATION ANALYSIS:")
+        print("📊 OPTIMIZATION ANALYSIS:")
         print(f"   - Critical steps to fix: {len(critical_steps)}")
         print(f"   - Warning steps to optimize: {len(warning_steps)}")
 
@@ -268,7 +269,7 @@ class DramaticPlanRevisor:
         self._analyze_plan(optimized_plan, "OPTIMIZED")
         return optimized_plan
 
-    def simulate_optimized_execution(self, optimized_plan: Dict[str, Any]) -> Dict[str, Any]:
+    def simulate_optimized_execution(self, optimized_plan: dict[str, Any]) -> dict[str, Any]:
         """Simulate optimized plan execution"""
         print("\n🚀 SIMULATING OPTIMIZED EXECUTION")
         print("=" * 60)
@@ -324,7 +325,7 @@ class DramaticPlanRevisor:
                             "tokens": estimate.total_projected_tokens,
                             "severity": "CRITICAL"
                         })
-                        print(f"      ❌ STILL CRITICAL: Budget exceeded!")
+                        print("      ❌ STILL CRITICAL: Budget exceeded!")
 
                     elif estimate.status == 'yellow':
                         results["issues"].append({
@@ -333,10 +334,10 @@ class DramaticPlanRevisor:
                             "tokens": estimate.total_projected_tokens,
                             "severity": "WARNING"
                         })
-                        print(f"      ⚠️  STILL WARNING: Compression needed")
+                        print("      ⚠️  STILL WARNING: Compression needed")
 
                     else:
-                        print(f"      ✅ SUCCESS: Within budget!")
+                        print("      ✅ SUCCESS: Within budget!")
 
                 except TokenBudgetExceededError as e:
                     results["issues"].append({
@@ -356,7 +357,7 @@ class DramaticPlanRevisor:
                     })
                     print(f"      ❌ ERROR: {e}")
 
-        print(f"\n📊 OPTIMIZED EXECUTION SUMMARY:")
+        print("\n📊 OPTIMIZED EXECUTION SUMMARY:")
         print(f"   - Total steps: {len(results['step_results'])}")
         print(f"   - Total tokens: {results['total_tokens']:,}")
         print(f"   - Optimizations applied: {results['optimizations_applied']}")
@@ -364,8 +365,8 @@ class DramaticPlanRevisor:
 
         return results
 
-    def compare_dramatic_results(self, problematic_results: Dict[str, Any],
-                                optimized_results: Dict[str, Any]) -> Dict[str, Any]:
+    def compare_dramatic_results(self, problematic_results: dict[str, Any],
+                                optimized_results: dict[str, Any]) -> dict[str, Any]:
         """Compare problematic vs optimized results"""
         print("\n📊 DRAMATIC COMPARISON")
         print("=" * 60)
@@ -393,14 +394,14 @@ class DramaticPlanRevisor:
         prob_success_rate = (prob_steps_succeeded / prob_steps_attempted * 100) if prob_steps_attempted > 0 else 0
         opt_success_rate = (opt_steps_succeeded / prob_steps_attempted * 100) if prob_steps_attempted > 0 else 0
 
-        print(f"🎯 DRAMATIC IMPROVEMENTS:")
+        print("🎯 DRAMATIC IMPROVEMENTS:")
         print(f"   - Issues resolved: {issue_reduction} of {comparison['problematic_issues']}")
         print(f"   - Critical failures resolved: {critical_reduction} of {comparison['problematic_critical']}")
         print(f"   - Success rate: {prob_success_rate:.0f}% → {opt_success_rate:.0f}%")
         print(f"   - Optimized total tokens: {comparison['optimized_tokens']:,}")
 
         # Show before/after status
-        print(f"\n📈 BEFORE vs AFTER:")
+        print("\n📈 BEFORE vs AFTER:")
         print(f"   BEFORE: {prob_steps_succeeded}/{prob_steps_attempted} steps succeeded, {comparison['problematic_issues']} issues ({comparison['problematic_critical']} critical)")
         print(f"   AFTER:  {opt_steps_succeeded}/{prob_steps_attempted} steps succeeded, {comparison['optimized_issues']} issues ({comparison['optimized_critical']} critical)")
 
@@ -411,7 +412,7 @@ class DramaticPlanRevisor:
 
         return comparison
 
-    def _apply_optimizations(self, inputs: Dict[str, Any], optimization: Dict[str, Any]) -> Dict[str, Any]:
+    def _apply_optimizations(self, inputs: dict[str, Any], optimization: dict[str, Any]) -> dict[str, Any]:
         """Apply optimizations to step inputs (deep copy to avoid mutating originals)"""
         optimized_inputs = copy.deepcopy(inputs)
 
@@ -484,7 +485,7 @@ class DramaticPlanRevisor:
 
         return optimized_inputs
 
-    def _analyze_plan(self, plan: Dict[str, Any], plan_type: str):
+    def _analyze_plan(self, plan: dict[str, Any], plan_type: str):
         """Quick analysis of plan"""
         print(f"\n📊 {plan_type} PLAN ANALYSIS:")
 
@@ -495,12 +496,12 @@ class DramaticPlanRevisor:
         print(f"   - Steps: {total_steps}")
 
         if plan_type == "PROBLEMATIC":
-            print(f"   - Expected issues: HIGH (designed to exceed budgets)")
+            print("   - Expected issues: HIGH (designed to exceed budgets)")
         elif plan_type == "OPTIMIZED":
-            print(f"   - Expected issues: LOW (with optimizations applied)")
+            print("   - Expected issues: LOW (with optimizations applied)")
 
     # Content generation methods (designed to be massive)
-    def _create_massive_auth_inputs(self) -> Dict[str, Any]:
+    def _create_massive_auth_inputs(self) -> dict[str, Any]:
         massive_content = "MASSIVE_CONTENT_" + "x" * 10000
 
         return {
@@ -533,7 +534,7 @@ class DramaticPlanRevisor:
             "prior_steps": [massive_content * 5] * 25  # Many prior steps
         }
 
-    def _create_massive_product_inputs(self) -> Dict[str, Any]:
+    def _create_massive_product_inputs(self) -> dict[str, Any]:
         massive_content = "PRODUCT_CONTENT_" + "y" * 10000
 
         return {
@@ -566,7 +567,7 @@ class DramaticPlanRevisor:
             "prior_steps": [massive_content * 4] * 20
         }
 
-    def _create_massive_order_inputs(self) -> Dict[str, Any]:
+    def _create_massive_order_inputs(self) -> dict[str, Any]:
         massive_content = "ORDER_CONTENT_" + "z" * 10000
 
         return {
@@ -625,29 +626,29 @@ def main():
     comparison = revisor.compare_dramatic_results(problematic_results, optimized_results)
 
     # Step 6: Show final summary
-    print(f"\n🎯 DRAMATIC DEMONSTRATION SUMMARY")
+    print("\n🎯 DRAMATIC DEMONSTRATION SUMMARY")
     print("=" * 80)
     print(f"❌ PROBLEMATIC: {comparison['problematic_steps_succeeded']}/{comparison['total_steps_attempted']} steps succeeded, {comparison['problematic_critical']} CRITICAL FAILURES")
     print(f"✅ OPTIMIZED:  {comparison['optimized_steps_succeeded']}/{comparison['total_steps_attempted']} steps succeeded, {comparison['optimized_critical']} CRITICAL FAILURES")
     print(f"📈 IMPROVEMENT: {comparison['prob_success_rate']:.0f}% → {comparison['opt_success_rate']:.0f}% success rate, {comparison['critical_reduction']} critical failures resolved")
 
-    print(f"\n🎉 DRAMATIC IMPACT OF TOKEN ESTIMATOR:")
-    print(f"• Identified critical budget violations before execution")
-    print(f"• Guided specific optimization strategies (splitting, content reduction)")
-    print(f"• Achieved massive token reduction while preserving functionality")
-    print(f"• Resolved critical failures that would block execution")
-    print(f"• Enabled successful plan execution within SWE 1.5 constraints")
+    print("\n🎉 DRAMATIC IMPACT OF TOKEN ESTIMATOR:")
+    print("• Identified critical budget violations before execution")
+    print("• Guided specific optimization strategies (splitting, content reduction)")
+    print("• Achieved massive token reduction while preserving functionality")
+    print("• Resolved critical failures that would block execution")
+    print("• Enabled successful plan execution within SWE 1.5 constraints")
 
-    print(f"\n🔧 REAL-WORLD IMPACT:")
-    print(f"• Prevents context window overflow in complex implementations")
-    print(f"• Enables data-driven plan optimization decisions")
-    print(f"• Provides quantitative feedback for plan revisions")
-    print(f"• Supports iterative improvement based on token analysis")
-    print(f"• Ensures successful execution of large-scale projects")
+    print("\n🔧 REAL-WORLD IMPACT:")
+    print("• Prevents context window overflow in complex implementations")
+    print("• Enables data-driven plan optimization decisions")
+    print("• Provides quantitative feedback for plan revisions")
+    print("• Supports iterative improvement based on token analysis")
+    print("• Ensures successful execution of large-scale projects")
 
-    print(f"\n✅ CONCLUSION:")
-    print(f"The token estimator is ESSENTIAL for complex implementation plans!")
-    print(f"It transforms impossible plans into executable ones through intelligent optimization.")
+    print("\n✅ CONCLUSION:")
+    print("The token estimator is ESSENTIAL for complex implementation plans!")
+    print("It transforms impossible plans into executable ones through intelligent optimization.")
 
     # Cleanup temp files
     revisor.cleanup()

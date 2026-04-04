@@ -48,7 +48,7 @@ class CodeDeduplicationAgent(SovereignBaseAgent):
         """Heal deduplication violations."""
         violation_type = violation.get("type", "")
         file_path = violation.get("file")
-        
+
         if not file_path:
             return {
                 "status": "failed",
@@ -56,7 +56,7 @@ class CodeDeduplicationAgent(SovereignBaseAgent):
                 "artifacts": [],
                 "errors": ["Missing file path"],
             }
-        
+
         if "DUPLICATE" in violation_type or "IDENTICAL" in violation_type:
             return {
                 "status": "manual_required",
@@ -88,12 +88,12 @@ class CodeDeduplicationAgent(SovereignBaseAgent):
     def scan_for_duplicates(self, python_files: list[str]) -> Any:
         """Scan for cross-file duplicates."""
         result = self._detector.scan_for_duplicates(python_files)
-        
+
         # Copy results to agent state
         self.duplicate_groups = {
             k: v.members for k, v in result.duplicate_groups.items()
         }
-        
+
         return result
 
     def _normalize_code(self, code: str) -> str:

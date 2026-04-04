@@ -12,9 +12,9 @@ Classification Rules:
 
 import json
 import re
-from pathlib import Path
-from typing import Dict, List, Set, Any
 from dataclasses import dataclass
+from pathlib import Path
+from typing import Any
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent.parent
 
@@ -26,7 +26,7 @@ class TestClassification:
     category: str
     justification: str
     confidence: float  # 0.0-1.0
-    markers: List[str]
+    markers: list[str]
 
 
 class TestClassifier:
@@ -114,7 +114,7 @@ class TestClassifier:
             'tests/beta/',
         }
 
-    def classify_test(self, test_data: Dict[str, Any]) -> TestClassification:
+    def classify_test(self, test_data: dict[str, Any]) -> TestClassification:
         """Classify a single test."""
         file_path = test_data['file_path']
         test_name = test_data['test_name']
@@ -237,7 +237,7 @@ class TestClassifier:
 
         return current_category, current_justification, current_confidence
 
-    def _apply_final_rules(self, test_data: Dict[str, Any], current_category: str,
+    def _apply_final_rules(self, test_data: dict[str, Any], current_category: str,
                           current_justification: str, current_confidence: float) -> tuple:
         """Apply final classification rules and corrections."""
         file_path = test_data['file_path']
@@ -257,7 +257,7 @@ class TestClassifier:
         # Low confidence tests - analyze more deeply
         return self._deep_classify(test_data, current_category, current_justification, current_confidence)
 
-    def _deep_classify(self, test_data: Dict[str, Any], current_category: str,
+    def _deep_classify(self, test_data: dict[str, Any], current_category: str,
                        current_justification: str, current_confidence: float) -> tuple:
         """Deep classification for low-confidence tests."""
         file_path = test_data['file_path']
@@ -305,12 +305,12 @@ class TestClassifier:
         return any(dep in dependency.lower() for dep in external_deps)
 
 
-def classify_all_tests() -> Dict[str, Any]:
+def classify_all_tests() -> dict[str, Any]:
     """Classify all tests in the inventory."""
     print("🏷️  Classifying tests into MECE categories...")
 
     # Load inventory
-    with open('tools/test_enforcement/test_inventory.json', 'r') as f:
+    with open('tools/test_enforcement/test_inventory.json') as f:
         inventory = json.load(f)
 
     classifier = TestClassifier()
@@ -381,15 +381,15 @@ def main():
 
     # Print summary
     summary = classification_result["summary"]
-    print(f"\n📊 CLASSIFICATION SUMMARY:")
+    print("\n📊 CLASSIFICATION SUMMARY:")
     print(f"  Total tests classified: {classification_result['metadata']['total_tests_classified']}")
 
-    print(f"\nCategories:")
+    print("\nCategories:")
     for category, count in sorted(summary["categories"].items()):
         percentage = (count / classification_result['metadata']['total_tests_classified']) * 100
         print(f"  {category}: {count} ({percentage:.1f}%)")
 
-    print(f"\nConfidence distribution:")
+    print("\nConfidence distribution:")
     for level, count in summary["confidence_distribution"].items():
         percentage = (count / classification_result['metadata']['total_tests_classified']) * 100
         print(f"  {level}: {count} ({percentage:.1f}%)")

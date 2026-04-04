@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """STEP 0-1: Scope lock and gap detection."""
 
-import sqlite3
 import glob
+import sqlite3
 
 files = glob.glob('artifacts/adg/adg_indexed_*.sqlite')
 latest = sorted(files)[-1]

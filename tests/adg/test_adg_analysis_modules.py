@@ -1,6 +1,5 @@
 """Test ADG analysis modules functionality."""
 
-import ast
 import sys
 from pathlib import Path
 

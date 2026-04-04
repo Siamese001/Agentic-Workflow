@@ -8,7 +8,7 @@ import hashlib
 import json
 import logging
 from dataclasses import dataclass, field
-from typing import Any, Dict, Optional
+from typing import Any
 
 from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     LayerSegment,
@@ -22,8 +22,8 @@ log = logging.getLogger(__name__)
 class CacheKey:
     """Multi-factor cache key."""
     key_hash: str
-    factors: Dict[str, Any] = field(default_factory=dict)
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    factors: dict[str, Any] = field(default_factory=dict)
+    metadata: dict[str, Any] = field(default_factory=dict)
 
 
 class CatalogKeymaker:
@@ -42,8 +42,8 @@ class CatalogKeymaker:
     def make_key(
         self,
         query: str,
-        routing_signal: Optional[Dict[str, Any]] = None,
-        scope_metadata: Optional[Dict[str, Any]] = None,
+        routing_signal: dict[str, Any] | None = None,
+        scope_metadata: dict[str, Any] | None = None,
         freshness_band: str = "daily",
     ) -> CacheKey:
         """Generate a multi-factor cache key.
@@ -145,7 +145,7 @@ class CatalogKeymaker:
 
 
 # Global instance
-_global_keymaker: Optional[CatalogKeymaker] = None
+_global_keymaker: CatalogKeymaker | None = None
 
 
 def get_catalog_keymaker() -> CatalogKeymaker:

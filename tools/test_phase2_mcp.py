@@ -5,9 +5,10 @@ Tests Guardian Governance and Pytest Test Orchestration MCP servers.
 """
 
 import asyncio
-import sys
 import importlib.util
+import sys
 from pathlib import Path
+
 
 async def test_guardian_mcp():
     """Test Guardian Governance MCP server."""
@@ -183,7 +184,7 @@ async def test_phase2_mcp_servers():
     guardian_success = await test_guardian_mcp()
     pytest_success = await test_pytest_mcp()
 
-    print(f"\n=== Test Results ===")
+    print("\n=== Test Results ===")
     print(f"Guardian Governance MCP: {'✅ PASS' if guardian_success else '❌ FAIL'}")
     print(f"Pytest Test Orchestration MCP: {'✅ PASS' if pytest_success else '❌ FAIL'}")
 

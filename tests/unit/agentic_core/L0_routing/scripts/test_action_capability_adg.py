@@ -1,6 +1,6 @@
 """ADG-driven tests for L0_routing/scripts/action_capability.py — fan_in=0."""
 from __future__ import annotations
-import pytest
+
 
 class GeneratedTest:
     """Generated test class for agentic_core.L0_routing.scripts."""

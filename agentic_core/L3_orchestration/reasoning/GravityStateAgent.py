@@ -16,7 +16,11 @@ from typing import Any
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 from agentic_core.L3_orchestration.utils.gravity_state_util import (
     GravityStateManager as _GravityStateManager,
+)
+from agentic_core.L3_orchestration.utils.gravity_state_util import (
     load_state as _load_state,
+)
+from agentic_core.L3_orchestration.utils.gravity_state_util import (
     save_state as _save_state,
 )
 

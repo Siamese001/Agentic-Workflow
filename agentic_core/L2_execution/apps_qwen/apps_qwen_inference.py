@@ -8,7 +8,7 @@ from __future__ import annotations
 
 import logging
 import time
-from typing import Any, Dict, Optional
+from typing import Any
 
 from agentic_core.L2_execution.apps_qwen.apps_qwen_config import (
     AppsQwenModelConfig,
@@ -42,8 +42,8 @@ class AppsQwenInferenceWorker:
         prompt: str,
         app_name: str,
         prompt_config: AppsQwenPromptConfig,
-        template_name: Optional[str] = None
-    ) -> Dict[str, Any]:
+        template_name: str | None = None
+    ) -> dict[str, Any]:
         """Perform inference with formatted prompt.
 
         Args:
@@ -105,7 +105,7 @@ class AppsQwenInferenceWorker:
         self,
         prompt: str,
         prompt_config: AppsQwenPromptConfig,
-        template_name: Optional[str]
+        template_name: str | None
     ) -> str:
         """Format prompt using app-specific template.
 
@@ -158,7 +158,7 @@ class AppsQwenInferenceWorker:
             # Fallback: just use the template as-is with prompt appended
             return f"{template}\n\n{prompt}"
 
-    def _mock_inference(self, formatted_prompt: str, app_name: str) -> Dict[str, Any]:
+    def _mock_inference(self, formatted_prompt: str, app_name: str) -> dict[str, Any]:
         """Mock inference for development.
 
         TODO: Replace with actual vLLM API integration
@@ -175,16 +175,16 @@ class AppsQwenInferenceWorker:
 
         # Mock response based on app type
         if app_name == "apps_eval":
-            response_text = f"Code analysis complete. The provided code follows best practices with good structure and documentation. Suggested improvements: add error handling, optimize performance."
+            response_text = "Code analysis complete. The provided code follows best practices with good structure and documentation. Suggested improvements: add error handling, optimize performance."
             confidence = 0.85
         elif app_name == "apps_research":
-            response_text = f"Research synthesis complete. Key findings identified across the dataset with 3 main themes emerging. Recommendations for further study included."
+            response_text = "Research synthesis complete. Key findings identified across the dataset with 3 main themes emerging. Recommendations for further study included."
             confidence = 0.78
         elif app_name == "apps_rg":
-            response_text = f"Resume analysis complete. Candidate matches 85% of job requirements. Strong in technical skills, gap in leadership experience."
+            response_text = "Resume analysis complete. Candidate matches 85% of job requirements. Strong in technical skills, gap in leadership experience."
             confidence = 0.82
         elif app_name == "apps_lic":
-            response_text = f"Lead scoring complete. Lead rated as high priority with 78% conversion probability. Recommended next steps: personalized outreach within 24 hours."
+            response_text = "Lead scoring complete. Lead rated as high priority with 78% conversion probability. Recommended next steps: personalized outreach within 24 hours."
             confidence = 0.79
         else:
             response_text = f"Analysis complete for {app_name}. Request processed successfully."

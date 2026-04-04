@@ -6,8 +6,6 @@ with FTS5 search and graph traversal capabilities.
 
 from __future__ import annotations
 
-from typing import List, Optional
-
 from agentic_core.L4_state.types.graph_store_types import GraphEntity, IGraphStore
 
 
@@ -23,12 +21,12 @@ class SQLiteGraphStore(IGraphStore):
         # Placeholder implementation
         pass
 
-    def get_entity(self, entity_id: str) -> Optional[GraphEntity]:
+    def get_entity(self, entity_id: str) -> GraphEntity | None:
         """Get an entity by ID."""
         # Placeholder implementation
         return None
 
-    def search_entities(self, query: str, limit: int = 10) -> List[GraphEntity]:
+    def search_entities(self, query: str, limit: int = 10) -> list[GraphEntity]:
         """Search for entities."""
         # Placeholder implementation
         return []

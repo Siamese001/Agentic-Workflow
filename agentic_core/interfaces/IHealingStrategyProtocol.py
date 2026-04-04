@@ -211,9 +211,8 @@ class ChaosResilienceStrategy:
         if self._initialized:
             return
         try:
-            from agentic_core.L5_safety.reasoning.ChaosEngineeringAgent_validator import ChaosEngineeringAgent
-
             from agentic_core.L4_state.memory import ValidationContext
+            from agentic_core.L5_safety.reasoning.ChaosEngineeringAgent_validator import ChaosEngineeringAgent
 
             ctx = ValidationContext()
             self._agent = ChaosEngineeringAgent(ctx=ctx)

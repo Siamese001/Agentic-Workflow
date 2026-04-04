@@ -27,7 +27,7 @@ Logger = logging.getLogger(__name__)
 @dataclass
 class JanitorViolation:
     """Structured violation for code janitor healing."""
-    
+
     is_valid: bool
     message: str
     file_path: str | None = None
@@ -35,7 +35,7 @@ class JanitorViolation:
     key_id: int | None = None
     suggested_action: str | None = None
     severity: int = 5
-    
+
     def to_dict(self) -> dict[str, Any]:
         """Convert to dictionary."""
         return {
@@ -51,10 +51,10 @@ class JanitorViolation:
 
 class CodeJanitor:
     """Deterministic code validation without agent overhead."""
-    
+
     # Canon keys validated
     VALIDATION_KEYS = list(range(10, 21))
-    
+
     def __init__(self, python_files: list[str] | None = None) -> None:
         """Initialize the code janitor.
         
@@ -62,11 +62,11 @@ class CodeJanitor:
             python_files: List of Python file paths to validate
         """
         self.python_files = python_files or []
-    
+
     def get_validation_keys(self) -> list[int]:
         """Return canon keys validated by this agent."""
         return self.VALIDATION_KEYS
-    
+
     def validate_syntax(self, file_path: str | None = None) -> tuple[bool, list[str]]:
         """Check for syntax errors in Python files.
         
@@ -78,7 +78,7 @@ class CodeJanitor:
         """
         violations: list[str] = []
         files_to_check = [file_path] if file_path else self.python_files
-        
+
         for fp in files_to_check:
             if not fp:
                 continue
@@ -91,9 +91,9 @@ class CodeJanitor:
             except (RuntimeError, OSError) as e:
                 violations.append(f"{fp}:0: General Error - {e}")
                 continue
-        
+
         return (len(violations) == 0, violations)
-    
+
     def validate_indentation(self, file_path: str | None = None) -> tuple[bool, list[str]]:
         """Check for proper indentation (4 spaces, no tabs).
         
@@ -105,7 +105,7 @@ class CodeJanitor:
         """
         violations: list[str] = []
         files_to_check = [file_path] if file_path else self.python_files
-        
+
         for fp in files_to_check:
             if not fp:
                 continue
@@ -117,16 +117,16 @@ class CodeJanitor:
             except (RuntimeError, OSError) as e:
                 violations.append(f"{fp}:0: General Error - {e}")
                 continue
-        
+
         return (len(violations) == 0, violations)
-    
+
     def _check_line_indentation(
         self, file_path: str, line_num: int, line: str, violations: list[str]
     ) -> None:
         """Check indentation for a single line."""
         if "\t" in line:
             violations.append(f"{file_path}:{line_num}: Tab character found (use 4 spaces)")
-        
+
         stripped_line = line.lstrip(" ")
         if stripped_line and line.startswith(" "):
             leading_spaces = len(line) - len(stripped_line)
@@ -134,7 +134,7 @@ class CodeJanitor:
                 violations.append(
                     f"{file_path}:{line_num}: Indentation not multiple of 4 ({leading_spaces} spaces)"
                 )
-    
+
     def validate_trailing_whitespace(self, file_path: str | None = None) -> tuple[bool, list[str]]:
         """Check for trailing whitespace at end of lines.
         
@@ -146,7 +146,7 @@ class CodeJanitor:
         """
         violations: list[str] = []
         files_to_check = [file_path] if file_path else self.python_files
-        
+
         for fp in files_to_check:
             if not fp:
                 continue
@@ -159,9 +159,9 @@ class CodeJanitor:
             except (RuntimeError, OSError) as e:
                 violations.append(f"{fp}:0: General Error - {e}")
                 continue
-        
+
         return (len(violations) == 0, violations)
-    
+
     def validate_naming_conventions(self, file_path: str | None = None) -> tuple[bool, list[str]]:
         """Check for proper naming conventions.
         
@@ -173,7 +173,7 @@ class CodeJanitor:
         """
         violations: list[str] = []
         files_to_check = [file_path] if file_path else self.python_files
-        
+
         for fp in files_to_check:
             if not fp:
                 continue
@@ -184,9 +184,9 @@ class CodeJanitor:
                     self._check_node_naming_convention(fp, node, violations)
             except (RuntimeError, OSError) as e:
                 violations.append(f"{fp}:0: General Error - {e}")
-        
+
         return (len(violations) == 0, violations)
-    
+
     def _check_node_naming_convention(
         self, file_path: str, node: ast.AST, violations: list[str]
     ) -> None:
@@ -202,7 +202,7 @@ class CodeJanitor:
                     violations.append(
                         f"{file_path}:{node.lineno}: Function '{node.name}' should be snake_case"
                     )
-    
+
     def validate_all(self, file_path: str | None = None) -> dict[str, Any]:
         """Run all validation checks.
         
@@ -213,14 +213,14 @@ class CodeJanitor:
             Dict with validation results
         """
         all_violations: list[JanitorViolation] = []
-        
+
         checks = [
             (10, self.validate_syntax),
             (11, self.validate_indentation),
             (12, self.validate_trailing_whitespace),
             (14, self.validate_naming_conventions),
         ]
-        
+
         for key_id, check_fn in checks:
             passed, violations = check_fn(file_path)
             for v in violations:
@@ -237,7 +237,7 @@ class CodeJanitor:
                         severity=5 if key_id == 10 else 3,
                     )
                 )
-        
+
         return {
             "passed": len(all_violations) == 0,
             "violations_count": len(all_violations),
@@ -335,7 +335,7 @@ def heal(violation: dict[str, Any]) -> dict[str, Any]:
     """
     violation_type = violation.get("type", "unknown")
     file_path = violation.get("file_path")
-    
+
     if violation_type == "syntax_error" and file_path:
         Logger.warning(f"[CodeJanitor] Syntax errors require manual fix: {file_path}")
         return {
@@ -344,7 +344,7 @@ def heal(violation: dict[str, Any]) -> dict[str, Any]:
             "artifacts": [file_path] if file_path else [],
             "errors": [],
         }
-    
+
     elif violation_type == "indentation_error" and file_path:
         Logger.warning(f"[CodeJanitor] Indentation errors require manual fix: {file_path}")
         return {
@@ -353,7 +353,7 @@ def heal(violation: dict[str, Any]) -> dict[str, Any]:
             "artifacts": [file_path] if file_path else [],
             "errors": [],
         }
-    
+
     return {
         "status": "skipped",
         "details": f"Unknown violation: {violation_type}",
@@ -365,24 +365,24 @@ def heal(violation: dict[str, Any]) -> dict[str, Any]:
 def main():
     """Main entry point for Code Janitor Utility."""
     import argparse
-    
+
     parser = argparse.ArgumentParser(description="Code Janitor Utility")
     parser.add_argument("file", help="Python file to validate")
-    parser.add_argument("--checks", nargs="+", 
+    parser.add_argument("--checks", nargs="+",
                         choices=["syntax", "indentation", "whitespace", "naming", "all"],
                         default=["all"],
                         help="Validation checks to run")
     parser.add_argument("--verbose", "-v", action="store_true")
-    
+
     args = parser.parse_args()
-    
+
     if args.verbose:
         logging.basicConfig(level=logging.DEBUG)
     else:
         logging.basicConfig(level=logging.INFO)
-    
+
     file_path = args.file
-    
+
     if "all" in args.checks:
         result = validate_all(file_path)
         print(f"Validation {'PASSED' if result['passed'] else 'FAILED'}")
@@ -399,7 +399,7 @@ def main():
             all_violations.extend(validate_trailing_whitespace(file_path))
         if "naming" in args.checks:
             all_violations.extend(validate_naming_conventions(file_path))
-        
+
         print(f"Violations found: {len(all_violations)}")
         for v in all_violations:
             print(f"  - {v}")

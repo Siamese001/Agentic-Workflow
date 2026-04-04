@@ -3,10 +3,10 @@
 Pipeline C Phase C5: Hybrid retrieval with reranking and evidence contracts.
 """
 
+from .evidence_contract_builder import EvidenceContract, EvidenceContractBuilder
 from .hybrid_recall_stage import HybridRecallStage, RecallResult
-from .senior_librarian_reranker import SeniorLibrarianReranker, RerankResult
-from .parent_child_hydrator import ParentChildHydrator, HydrationResult
-from .evidence_contract_builder import EvidenceContractBuilder, EvidenceContract
+from .parent_child_hydrator import HydrationResult, ParentChildHydrator
+from .senior_librarian_reranker import RerankResult, SeniorLibrarianReranker
 
 __all__ = [
     "HybridRecallStage",

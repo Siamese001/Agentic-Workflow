@@ -6,13 +6,12 @@ Wave 2 Implementation: Structural & Test Intelligence
 Ingests ADG graph relationships and structural patterns into ChromaDB.
 """
 
+import hashlib
+import logging
+import sqlite3
 import sys
 from pathlib import Path
-import sqlite3
-import json
-import hashlib
-from typing import List, Dict, Any, Optional, Tuple
-import logging
+from typing import Any
 
 # Add agentic_core to path
 sys.path.insert(0, str(Path(__file__).parent.parent.parent / "agentic_core"))
@@ -244,7 +243,7 @@ class ADGGraphIngestion:
 
         return description
 
-    def _analyze_layer_coupling(self, cursor: sqlite3.Cursor) -> List[Tuple[str, Dict[str, Any]]]:
+    def _analyze_layer_coupling(self, cursor: sqlite3.Cursor) -> list[tuple[str, dict[str, Any]]]:
         """Analyze coupling between layers."""
         patterns = []
 
@@ -285,7 +284,7 @@ class ADGGraphIngestion:
 
         return patterns
 
-    def _analyze_hub_nodes(self, cursor: sqlite3.Cursor) -> List[Tuple[str, Dict[str, Any]]]:
+    def _analyze_hub_nodes(self, cursor: sqlite3.Cursor) -> list[tuple[str, dict[str, Any]]]:
         """Identify hub nodes with high connectivity."""
         patterns = []
 
@@ -327,7 +326,7 @@ class ADGGraphIngestion:
 
         return patterns
 
-    def _analyze_critical_paths(self, cursor: sqlite3.Cursor) -> List[Tuple[str, Dict[str, Any]]]:
+    def _analyze_critical_paths(self, cursor: sqlite3.Cursor) -> list[tuple[str, dict[str, Any]]]:
         """Identify critical architectural paths."""
         patterns = []
 
@@ -372,7 +371,7 @@ class ADGGraphIngestion:
 
         return patterns
 
-    def run_ingestion(self) -> Dict[str, int]:
+    def run_ingestion(self) -> dict[str, int]:
         """Run complete Wave 2 ADG ingestion."""
         logger.info("Starting Wave 2: ADG Graph ingestion...")
 

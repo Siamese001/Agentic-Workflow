@@ -5,7 +5,6 @@ All tests run with EMBEDDING_ENABLED=false to stay CI-safe.
 
 from __future__ import annotations
 
-import os
 import unittest
 from unittest.mock import MagicMock, patch
 
@@ -90,7 +89,6 @@ from unittest.mock import MagicMock, patch
 
 def _make_memory_item(key: str, vector: list[float], metadata: dict, namespace: str = ""):
     """Build a MemoryItem for injection into InMemoryVectorStore._storage."""
-    import uuid
 
 class TestSovereignSemanticCacheQuery(unittest.TestCase):
     """Tests for the .query() method added in Phase 1."""

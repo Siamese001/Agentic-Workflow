@@ -5,19 +5,19 @@ Comprehensive testing across all phases/waves to ensure no regressions and full 
 Orchestrates Phases 2.1-2.4 and Wave 3.0 with comprehensive reporting.
 """
 
-import json
 import argparse
-from pathlib import Path
+import json
 from datetime import datetime
+from pathlib import Path
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
 
 # Import all phase/wave fixers
 try:
-    from fix_high_severity_silent_swallowers import HighSeveritySilentSwallowerFixer
     from fix_high_severity_remaining import HighSeverityRemainingFixer
-    from fix_medium_severity_swallowers import MediumSeveritySilentSwallowerFixer
+    from fix_high_severity_silent_swallowers import HighSeveritySilentSwallowerFixer
     from fix_low_severity_swallowers import LowSeveritySilentSwallowerFixer
+    from fix_medium_severity_swallowers import MediumSeveritySilentSwallowerFixer
     from guardian_sweep import GuardianSweepFixer
     ALL_FIXERS_AVAILABLE = True
 except ImportError as e:
@@ -36,7 +36,7 @@ class FinalValidationOrchestrator:
         self.total_fixes_applied = 0
 
         # Load violations report
-        with open(self.project_root / "tools" / "silent_swallower_report.json", 'r') as f:
+        with open(self.project_root / "tools" / "silent_swallower_report.json") as f:
             report = json.load(f)
             self.violations = report['violations']
 
@@ -354,7 +354,7 @@ def main():
         result = orchestrator.run_full_validation()
         report = orchestrator.generate_final_report()
 
-        print(f"\n🎉 VALIDATION COMPLETE")
+        print("\n🎉 VALIDATION COMPLETE")
         print(f"   Status: {result['overall_status']}")
         print(f"   Completion: {result['completion_percentage']:.1f}%")
         print(f"   Errors: {result['total_errors']}")

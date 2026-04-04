@@ -89,6 +89,7 @@ sys.path.insert(0, str(PROJECT_ROOT))
 
 # Monkey-patch PreFlightValidator to skip Windows registry check
 import agentic_core.L0_routing.scripts.execute_ssot as execute_ssot_mod
+
 from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,

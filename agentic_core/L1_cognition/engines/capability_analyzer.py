@@ -11,7 +11,6 @@ from agentic_core.L1_cognition.planning.capability_analyzer_types import (
     Recommendation,
     RecommendationType,
 )
-
 from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     LayerSegment,
     _emit_agent_executes_agent,

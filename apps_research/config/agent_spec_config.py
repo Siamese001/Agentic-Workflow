@@ -291,7 +291,7 @@ class ResearchAgentSpecs(BaseModel):
     trace_persistence: bool = True
 
     @model_validator(mode="after")
-    def validate_modes_non_empty(self) -> "ResearchAgentSpecs":
+    def validate_modes_non_empty(self) -> ResearchAgentSpecs:
         """Validate that at least one artifact mode is defined."""
         import uuid as _uuid  # noqa: PLC0415
 

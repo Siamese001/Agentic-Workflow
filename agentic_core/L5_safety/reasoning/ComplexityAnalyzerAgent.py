@@ -16,8 +16,12 @@ from typing import Any
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 from agentic_core.L5_safety.utils.complexity_analyzer_util import (
     ComplexityAnalyzer as _ComplexityAnalyzer,
-    ComplexityViolation,
+)
+from agentic_core.L5_safety.utils.complexity_analyzer_util import (
     ComplexityConfig,
+    ComplexityViolation,
+)
+from agentic_core.L5_safety.utils.complexity_analyzer_util import (
     calculate_cyclomatic_complexity as _calculate_cyclomatic_complexity,
 )
 

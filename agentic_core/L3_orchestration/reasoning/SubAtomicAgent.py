@@ -14,11 +14,17 @@ from typing import Any
 
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 from agentic_core.L3_orchestration.utils.subatomic_agent_util import (
-    heal_violation as _heal_violation,
-    heal_repository as _heal_repository,
-    create_subatomic_impl as _create_subatomic_impl,
-    SubAtomicResult,
     SubAtomicImpl,
+    SubAtomicResult,
+)
+from agentic_core.L3_orchestration.utils.subatomic_agent_util import (
+    create_subatomic_impl as _create_subatomic_impl,
+)
+from agentic_core.L3_orchestration.utils.subatomic_agent_util import (
+    heal_repository as _heal_repository,
+)
+from agentic_core.L3_orchestration.utils.subatomic_agent_util import (
+    heal_violation as _heal_violation,
 )
 
 

@@ -14,7 +14,7 @@ def find_test_functions(file_path: Path) -> list[dict]:
         tree = ast.parse(source)
     except (SyntaxError, UnicodeDecodeError):
         return []
-    
+
     test_funcs = []
     for node in ast.walk(tree):
         if isinstance(node, ast.FunctionDef):
@@ -33,21 +33,21 @@ def find_unused_test_functions(directory: str, adg_db_path: Path) -> list[dict]:
     conn = sqlite3.connect(adg_db_path)
     conn.row_factory = sqlite3.Row
     c = conn.cursor()
-    
+
     unused_tests = []
-    
+
     # Get all test functions from AST
     dir_path = Path(directory)
     for test_file in dir_path.rglob('test_*.py'):
         funcs = find_test_functions(test_file)
-        
+
         for func in funcs:
             # Check if this function has any 'calls' edges TO it
             # In ADG, test functions are called by pytest's test runner
             # If there are NO incoming edges at all, it's truly unused
             func_name = func['name']
             file_path = func['file']
-            
+
             # Query ADG for any edges pointing to this function
             c.execute('''
                 SELECT COUNT(*) as call_count
@@ -57,12 +57,12 @@ def find_unused_test_functions(directory: str, adg_db_path: Path) -> list[dict]:
                 AND n.adg_name LIKE ?
                 AND e.relation_type IN ('calls', 'tests_execution_of')
             ''', (file_path, f'%{func_name}%'))
-            
+
             result = c.fetchone()
             if result and result['call_count'] == 0:
                 func['reason'] = 'No ADG call edges found'
                 unused_tests.append(func)
-    
+
     conn.close()
     return unused_tests
 
@@ -72,32 +72,32 @@ def main():
     if not dbs:
         print('No ADG databases found')
         return 1
-    
+
     adg_db = dbs[-1]
     print(f'Using ADG: {adg_db}')
-    
+
     # Analyze tests/adg/ directory
     print('\nAnalyzing tests/adg/ for unused test functions...')
     unused = find_unused_test_functions('tests/adg', adg_db)
-    
+
     print(f'\nFound {len(unused)} potentially unused test functions:')
     for test in unused[:20]:
         print(f"  {test['file']}:{test['line']} - {test['name']}")
-    
+
     if len(unused) > 20:
         print(f"  ... and {len(unused) - 20} more")
-    
+
     # Save to JSON
     output = {
         'adg_database': str(adg_db),
         'directory': 'tests/adg',
         'unused_tests': unused
     }
-    
+
     output_path = Path('wave1_ast_unused_tests.json')
     with open(output_path, 'w', encoding='utf-8') as f:
         json.dump(output, f, indent=2)
-    
+
     print(f'\nResults saved to: {output_path}')
     return 0
 

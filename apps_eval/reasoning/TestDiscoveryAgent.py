@@ -24,7 +24,6 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     emit_determinism_digest,
     emit_replay_key,
 )
-
 from apps_eval.services.test_discovery_service import TestDiscoveryService
 
 _log = logging.getLogger(__name__)

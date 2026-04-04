@@ -10,7 +10,7 @@ import ast
 import json
 import re
 import sys
-from collections import Counter, defaultdict
+from collections import Counter
 from pathlib import Path
 from typing import Any
 
@@ -25,7 +25,7 @@ THIRD_PARTY = frozenset({
     "httpx", "aiohttp", "requests", "grpc", "protobuf",
     "PIL", "cv2", "spacy", "nltk", "sentence_transformers",
     "litellm", "tiktoken", "tokenizers", "huggingface_hub",
-    "voyageai", "cohere", "fireworks", "groq", "mistralai",
+    "voyageai", "fireworks", "groq", "mistralai",
     "playwright", "selenium", "bs4", "scrapy",
     "ray", "dask", "spark", "pyspark",
     "neo4j", "networkx", "igraph",
@@ -483,7 +483,7 @@ def main():
         json.dump(report, f, indent=2, default=str)
 
     # Print summary to stdout
-    print(f"=== TEST SURFACE INVENTORY ===")
+    print("=== TEST SURFACE INVENTORY ===")
     print(f"Files scanned: {file_count}")
     print(f"Test functions found: {test_count}")
     print(f"Total findings: {len(all_findings)}")

@@ -7,18 +7,18 @@ user context, and system state.
 """
 
 import pickle
-import numpy as np
-from pathlib import Path
-from typing import Dict, List, Optional, Any, Tuple
 from datetime import datetime
+from pathlib import Path
+from typing import Any
 
+import numpy as np
 from sklearn.linear_model import LogisticRegression
-from sklearn.preprocessing import StandardScaler
 from sklearn.pipeline import Pipeline
+from sklearn.preprocessing import StandardScaler
 
-from .base_model import BaseMLModel, ModelPrediction, ModelInput, PredictionType, DecisionMode
 from ..config.model_registry import DecisionMode
 from ..features.l0_features import L0FeatureExtractor
+from .base_model import BaseMLModel, DecisionMode, ModelInput, ModelPrediction, PredictionType
 
 
 class L0RouteRecommender(BaseMLModel):
@@ -47,7 +47,7 @@ class L0RouteRecommender(BaseMLModel):
     # Reverse mapping
     REVERSE_PATH_MAPPING = {v: k for k, v in PATH_MAPPING.items()}
 
-    def __init__(self, model_file_path: Optional[Path] = None):
+    def __init__(self, model_file_path: Path | None = None):
         super().__init__(
             model_name="l0_route_recommender",
             model_version="1.0",
@@ -237,7 +237,7 @@ class L0RouteRecommender(BaseMLModel):
                 policy_hash=policy_hash
             )
 
-    def get_feature_importance(self, model_input: ModelInput) -> List[Dict[str, Any]]:
+    def get_feature_importance(self, model_input: ModelInput) -> list[dict[str, Any]]:
         """Get feature importance for explainability."""
         if not self.is_loaded or not self.pipeline:
             return []
@@ -284,7 +284,7 @@ class L0RouteRecommender(BaseMLModel):
             # Failed to compute importance
             return []
 
-    def _extract_feature_vector(self, features: Dict[str, Any]) -> Optional[np.ndarray]:
+    def _extract_feature_vector(self, features: dict[str, Any]) -> np.ndarray | None:
         """Extract features in the correct order for the model."""
         if not self.feature_names:
             return None
@@ -309,7 +309,7 @@ class L0RouteRecommender(BaseMLModel):
         except Exception as e:
             return None
 
-    def preprocess_features(self, features: Dict[str, Any]) -> Tuple[Dict[str, Any], List[str]]:
+    def preprocess_features(self, features: dict[str, Any]) -> tuple[dict[str, Any], list[str]]:
         """Preprocess features for logistic regression."""
         processed_features, preprocessing_steps = super().preprocess_features(features)
 
@@ -331,8 +331,8 @@ class L0RouteRecommender(BaseMLModel):
 
     def train_model(
         self,
-        training_data: List[Dict[str, Any]],
-        feature_names: List[str],
+        training_data: list[dict[str, Any]],
+        feature_names: list[str],
         training_data_digest: str = ""
     ) -> None:
         """
@@ -388,7 +388,7 @@ class L0RouteRecommender(BaseMLModel):
 
     def predict_from_context(
         self,
-        context: Dict[str, Any],
+        context: dict[str, Any],
         trace_id: str,
         replay_key: str,
         policy_hash: str,
@@ -441,11 +441,11 @@ class L0RouteRecommender(BaseMLModel):
 
     def get_path_recommendations_with_confidence(
         self,
-        context: Dict[str, Any],
+        context: dict[str, Any],
         trace_id: str,
         replay_key: str,
         policy_hash: str
-    ) -> Dict[str, float]:
+    ) -> dict[str, float]:
         """
         Get all path recommendations with confidence scores.
 
@@ -469,4 +469,4 @@ class L0RouteRecommender(BaseMLModel):
             return prediction.probability_distribution
         else:
             # Fallback: return equal probabilities
-            return {path: 0.25 for path in self.class_names}
+            return dict.fromkeys(self.class_names, 0.25)

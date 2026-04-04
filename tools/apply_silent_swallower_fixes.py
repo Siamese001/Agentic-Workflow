@@ -13,7 +13,7 @@ PROJECT_ROOT = Path(__file__).resolve().parent.parent
 
 def load_violations():
     """Load the violations report."""
-    with open(PROJECT_ROOT / "tools" / "silent_swallower_report.json", 'r') as f:
+    with open(PROJECT_ROOT / "tools" / "silent_swallower_report.json") as f:
         return json.load(f)
 
 
@@ -35,13 +35,13 @@ def fix_high_severity_import_errors():
 
         # Read file and suggest fix
         try:
-            with open(file_path, 'r', encoding='utf-8') as f:
+            with open(file_path, encoding='utf-8') as f:
                 lines = f.readlines()
 
             if line_no <= len(lines):
                 original_line = lines[line_no - 1].strip()
                 print(f"    Original: {original_line}")
-                print(f"    Fix: Add guardian comment or use pytest.importorskip in tests")
+                print("    Fix: Add guardian comment or use pytest.importorskip in tests")
         except Exception as e:
             print(f"    Error reading file: {e}")
 
@@ -60,7 +60,7 @@ def fix_high_severity_value_errors():
         line_no = violation['line_number']
 
         print(f"  {file_path}:{line_no} - ValueError")
-        print(f"    Fix: Add input validation or proper error handling")
+        print("    Fix: Add input validation or proper error handling")
 
 
 def fix_broad_exceptions():
@@ -77,12 +77,12 @@ def fix_broad_exceptions():
         line_no = violation['line_number']
 
         print(f"  {file_path}:{line_no} - except Exception")
-        print(f"    Fix: Replace with specific exception types")
+        print("    Fix: Replace with specific exception types")
 
 
 def generate_guardian_comments():
     """Generate guardian comments for legitimate silent swallowers."""
-    print(f"\nGenerating guardian comments for legitimate cases...")
+    print("\nGenerating guardian comments for legitimate cases...")
 
     legitimate_patterns = [
         "File read errors in analysis scripts",

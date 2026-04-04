@@ -7,20 +7,21 @@ capabilities for routing models to adapt to new patterns without catastrophic fo
 
 from __future__ import annotations
 
-import numpy as np
-import logging
-from typing import Dict, List, Tuple, Optional, Any
-from dataclasses import dataclass, field
-from abc import ABC, abstractmethod
 import json
+import logging
 import time
+from abc import ABC, abstractmethod
 from collections import defaultdict, deque
+from dataclasses import dataclass, field
+from typing import Any
+
+import numpy as np
 
 from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+    _emit_improves_agent_policy,
     _emit_records_learning_event,
     _emit_stores_learning_state,
     _emit_writes_learning_snapshot,
-    _emit_improves_agent_policy,
 )
 
 logger = logging.getLogger(__name__)
@@ -30,12 +31,12 @@ class TaskExample:
     """Single example for meta-learning tasks"""
 
     query: str
-    context: Dict[str, Any]
+    context: dict[str, Any]
     target_agent: str
     confidence: float
     success: bool
     timestamp: float = field(default_factory=time.time)
-    features: Optional[Dict[str, float]] = None
+    features: dict[str, float] | None = None
 
 @dataclass
 class MetaLearningTask:
@@ -43,8 +44,8 @@ class MetaLearningTask:
 
     task_id: str
     task_name: str
-    support_examples: List[TaskExample]
-    query_examples: List[TaskExample]
+    support_examples: list[TaskExample]
+    query_examples: list[TaskExample]
     task_type: str  # "few_shot", "adaptation", "continual"
     priority: float = 1.0
     created_at: float = field(default_factory=time.time)
@@ -60,7 +61,7 @@ class AdaptationResult:
     adaptation_time: float
     examples_used: int
     success: bool
-    new_parameters: Optional[Dict[str, Any]] = None
+    new_parameters: dict[str, Any] | None = None
 
 class BaseMetaLearner(ABC):
     """Abstract base class for meta-learning algorithms"""
@@ -68,8 +69,8 @@ class BaseMetaLearner(ABC):
     def __init__(self, model_name: str, adaptation_rate: float = 0.01):
         self.model_name = model_name
         self.adaptation_rate = adaptation_rate
-        self.adaptation_history: List[AdaptationResult] = []
-        self.performance_history: List[float] = []
+        self.adaptation_history: list[AdaptationResult] = []
+        self.performance_history: list[float] = []
 
     @abstractmethod
     def adapt(self, task: MetaLearningTask) -> AdaptationResult:
@@ -77,7 +78,7 @@ class BaseMetaLearner(ABC):
         pass
 
     @abstractmethod
-    def predict(self, query: str, context: Dict[str, Any]) -> Tuple[str, float]:
+    def predict(self, query: str, context: dict[str, Any]) -> tuple[str, float]:
         """Make prediction with adapted model"""
         pass
 
@@ -111,9 +112,9 @@ class MAMLMetaLearner(BaseMetaLearner):
         super().__init__(model_name, adaptation_rate)
         self.inner_steps = inner_steps
         self.meta_parameters = self._initialize_meta_parameters()
-        self.task_specific_parameters: Dict[str, Dict[str, Any]] = {}
+        self.task_specific_parameters: dict[str, dict[str, Any]] = {}
 
-    def _initialize_meta_parameters(self) -> Dict[str, Any]:
+    def _initialize_meta_parameters(self) -> dict[str, Any]:
         """Initialize meta-parameters"""
         return {
             "embedding_weights": np.random.randn(100, 50) * 0.1,
@@ -181,7 +182,7 @@ class MAMLMetaLearner(BaseMetaLearner):
 
         return result
 
-    def predict(self, query: str, context: Dict[str, Any]) -> Tuple[str, float]:
+    def predict(self, query: str, context: dict[str, Any]) -> tuple[str, float]:
         """Make prediction using adapted parameters"""
         # Use meta-parameters if no specific task adaptation
         current_params = self.meta_parameters
@@ -216,7 +217,7 @@ class MAMLMetaLearner(BaseMetaLearner):
             "model_name": self.model_name
         })
 
-    def _evaluate_on_task(self, task: MetaLearningTask, parameters: Optional[Dict[str, Any]] = None) -> float:
+    def _evaluate_on_task(self, task: MetaLearningTask, parameters: dict[str, Any] | None = None) -> float:
         """Evaluate model performance on task"""
         if parameters is None:
             parameters = self.meta_parameters
@@ -232,7 +233,7 @@ class MAMLMetaLearner(BaseMetaLearner):
 
         return correct / total if total > 0 else 0.0
 
-    def _predict_with_parameters(self, query: str, context: Dict[str, Any], parameters: Dict[str, Any]) -> Tuple[str, float]:
+    def _predict_with_parameters(self, query: str, context: dict[str, Any], parameters: dict[str, Any]) -> tuple[str, float]:
         """Predict with specific parameters"""
         query_embedding = self._encode_query(query)
         hidden = query_embedding @ parameters["embedding_weights"]
@@ -261,7 +262,7 @@ class MAMLMetaLearner(BaseMetaLearner):
 
         return embedding
 
-    def _compute_gradient(self, example: TaskExample, parameters: Dict[str, Any]) -> Dict[str, Any]:
+    def _compute_gradient(self, example: TaskExample, parameters: dict[str, Any]) -> dict[str, Any]:
         """Compute gradient for single example (simplified)"""
         # Simplified gradient computation
         gradient = {
@@ -271,7 +272,7 @@ class MAMLMetaLearner(BaseMetaLearner):
         }
         return gradient
 
-    def _update_parameters(self, parameters: Dict[str, Any], gradient: Dict[str, Any]) -> Dict[str, Any]:
+    def _update_parameters(self, parameters: dict[str, Any], gradient: dict[str, Any]) -> dict[str, Any]:
         """Update parameters with gradient"""
         updated = {}
         for key in parameters:
@@ -293,13 +294,13 @@ class ContinualLearner(BaseMetaLearner):
         self.replay_buffer: deque = deque(maxlen=memory_size)
 
         # Elastic weight consolidation
-        self.fisher_information: Dict[str, np.ndarray] = {}
-        self.optimal_parameters: Dict[str, Any] = {}
+        self.fisher_information: dict[str, np.ndarray] = {}
+        self.optimal_parameters: dict[str, Any] = {}
 
         # Current model parameters
         self.current_parameters = self._initialize_parameters()
 
-    def _initialize_parameters(self) -> Dict[str, Any]:
+    def _initialize_parameters(self) -> dict[str, Any]:
         """Initialize model parameters"""
         return {
             "weights": np.random.randn(50, 20) * 0.1,
@@ -365,7 +366,7 @@ class ContinualLearner(BaseMetaLearner):
 
         return result
 
-    def predict(self, query: str, context: Dict[str, Any]) -> Tuple[str, float]:
+    def predict(self, query: str, context: dict[str, Any]) -> tuple[str, float]:
         """Make prediction with continually learned parameters"""
         query_embedding = self._encode_query(query)
 
@@ -454,14 +455,14 @@ class ContinualLearner(BaseMetaLearner):
 
         return embedding
 
-    def _compute_gradient(self, example: TaskExample) -> Dict[str, Any]:
+    def _compute_gradient(self, example: TaskExample) -> dict[str, Any]:
         """Compute gradient (simplified)"""
         return {
             "weights": np.random.randn(50, 20) * 0.01,
             "bias": np.random.randn(20) * 0.01
         }
 
-    def _update_parameters(self, gradient: Dict[str, Any]):
+    def _update_parameters(self, gradient: dict[str, Any]):
         """Update parameters with gradient"""
         for param_name in gradient:
             if param_name in self.current_parameters:
@@ -472,10 +473,10 @@ class TaskScheduler:
 
     def __init__(self, max_concurrent_tasks: int = 3):
         self.max_concurrent_tasks = max_concurrent_tasks
-        self.task_queue: List[MetaLearningTask] = []
-        self.active_tasks: Dict[str, MetaLearningTask] = {}
-        self.completed_tasks: List[MetaLearningTask] = []
-        self.task_priorities: Dict[str, float] = {}
+        self.task_queue: list[MetaLearningTask] = []
+        self.active_tasks: dict[str, MetaLearningTask] = {}
+        self.completed_tasks: list[MetaLearningTask] = []
+        self.task_priorities: dict[str, float] = {}
 
     def add_task(self, task: MetaLearningTask):
         """Add task to scheduler"""
@@ -492,7 +493,7 @@ class TaskScheduler:
             "queue_size": len(self.task_queue)
         })
 
-    def get_next_task(self) -> Optional[MetaLearningTask]:
+    def get_next_task(self) -> MetaLearningTask | None:
         """Get next task to process"""
         if len(self.active_tasks) >= self.max_concurrent_tasks:
             return None
@@ -517,7 +518,7 @@ class TaskScheduler:
                 "completed_tasks": len(self.completed_tasks)
             })
 
-    def get_task_statistics(self) -> Dict[str, Any]:
+    def get_task_statistics(self) -> dict[str, Any]:
         """Get task processing statistics"""
         return {
             "queue_size": len(self.task_queue),
@@ -526,7 +527,7 @@ class TaskScheduler:
             "task_types": self._get_task_type_distribution()
         }
 
-    def _get_task_type_distribution(self) -> Dict[str, int]:
+    def _get_task_type_distribution(self) -> dict[str, int]:
         """Get distribution of task types"""
         distribution = defaultdict(int)
 
@@ -545,8 +546,8 @@ class MetaLearningFramework:
 
     def __init__(
         self,
-        meta_learners: Optional[List[BaseMetaLearner]] = None,
-        task_scheduler: Optional[TaskScheduler] = None,
+        meta_learners: list[BaseMetaLearner] | None = None,
+        task_scheduler: TaskScheduler | None = None,
         adaptation_threshold: float = 0.1
     ):
         """
@@ -562,8 +563,8 @@ class MetaLearningFramework:
         self.adaptation_threshold = adaptation_threshold
 
         # Performance tracking
-        self.adaptation_history: List[AdaptationResult] = []
-        self.framework_performance: List[float] = []
+        self.adaptation_history: list[AdaptationResult] = []
+        self.framework_performance: list[float] = []
 
         # Create default meta-learners if none provided
         if not self.meta_learners:
@@ -581,7 +582,7 @@ class MetaLearningFramework:
         self,
         task_id: str,
         task_name: str,
-        examples: List[TaskExample],
+        examples: list[TaskExample],
         task_type: str = "few_shot",
         priority: float = 1.0
     ) -> MetaLearningTask:
@@ -603,7 +604,7 @@ class MetaLearningFramework:
 
         return task
 
-    def process_adaptation_request(self, task: MetaLearningTask) -> List[AdaptationResult]:
+    def process_adaptation_request(self, task: MetaLearningTask) -> list[AdaptationResult]:
         """Process adaptation request using all meta-learners"""
         results = []
 
@@ -650,14 +651,14 @@ class MetaLearningFramework:
 
         return best_learner or list(self.meta_learners.keys())[0]
 
-    def predict_with_best_learner(self, query: str, context: Dict[str, Any]) -> Tuple[str, float]:
+    def predict_with_best_learner(self, query: str, context: dict[str, Any]) -> tuple[str, float]:
         """Predict using best performing meta-learner"""
         best_learner_name = self.get_best_learner()
         best_learner = self.meta_learners[best_learner_name]
 
         return best_learner.predict(query, context)
 
-    def get_framework_statistics(self) -> Dict[str, Any]:
+    def get_framework_statistics(self) -> dict[str, Any]:
         """Get comprehensive framework statistics"""
         stats = {
             "meta_learners": {},
@@ -713,7 +714,7 @@ class MetaLearningFramework:
 def create_few_shot_task(
     task_id: str,
     task_name: str,
-    examples_data: List[Dict[str, Any]],
+    examples_data: list[dict[str, Any]],
     priority: float = 1.0
 ) -> MetaLearningTask:
     """Create a few-shot learning task from data"""

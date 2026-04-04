@@ -21,9 +21,8 @@ NEVER includes:
 import sqlite3
 import sys
 from dataclasses import dataclass
-from datetime import datetime, timezone, timedelta
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
-from typing import Dict, List
 
 # Add project root to path
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
@@ -48,7 +47,7 @@ class RuntimeTraceCollector:
     """Collect runtime traces from execution evidence."""
 
     def __init__(self):
-        self.runtime_edges: List[RuntimeEdge] = []
+        self.runtime_edges: list[RuntimeEdge] = []
 
     def collect_from_lifecycle_traces(self) -> None:
         """Collect runtime edges from lifecycle trace contract calls."""

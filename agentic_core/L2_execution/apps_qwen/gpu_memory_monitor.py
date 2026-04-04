@@ -10,8 +10,7 @@ import asyncio
 import logging
 import time
 from dataclasses import dataclass
-from typing import Any, Callable, Optional
-
+from typing import Any, Callable
 
 logger = logging.getLogger(__name__)
 
@@ -73,7 +72,7 @@ class GPUMemoryMonitor:
         self._history: list[GPUMemoryInfo] = []
         self._max_history_len = 100
         self._callbacks: list[Callable[[GPUMemoryInfo], None]] = []
-        self._monitor_task: Optional[asyncio.Task] = None
+        self._monitor_task: asyncio.Task | None = None
         self._running = False
 
     def start(self) -> None:
@@ -114,7 +113,7 @@ class GPUMemoryMonitor:
                 logger.error("GPU monitor loop error: %s", e)
                 await asyncio.sleep(self.check_interval_sec)
 
-    def _get_gpu_memory(self) -> Optional[GPUMemoryInfo]:
+    def _get_gpu_memory(self) -> GPUMemoryInfo | None:
         """Get current GPU memory info via nvidia-smi."""
         try:
             import subprocess
@@ -151,7 +150,7 @@ class GPUMemoryMonitor:
 
         return None
 
-    def get_current_memory(self) -> Optional[GPUMemoryInfo]:
+    def get_current_memory(self) -> GPUMemoryInfo | None:
         """Get current GPU memory snapshot."""
         if self._history:
             return self._history[-1]
@@ -231,7 +230,7 @@ class GPUMemoryMonitor:
 
 
 # Singleton monitor instance
-_gpu_monitor: Optional[GPUMemoryMonitor] = None
+_gpu_monitor: GPUMemoryMonitor | None = None
 
 
 def get_gpu_monitor() -> GPUMemoryMonitor:

@@ -10,9 +10,7 @@ import ast
 import pathlib
 import re
 import sys
-import time
 from collections import Counter
-from typing import List, Tuple, Dict
 
 # Import existing ProgressTracker
 sys.path.insert(0, str(pathlib.Path(__file__).parent))
@@ -279,7 +277,7 @@ class BlockFixer:
             self.stats['failed'] += 1
             return False
 
-    def process_wave(self, files: List[pathlib.Path], pattern: str) -> Dict:
+    def process_wave(self, files: list[pathlib.Path], pattern: str) -> dict:
         """Process a wave of files."""
         self.stats = {'total': len(files), 'fixed': 0, 'failed': 0, 'patterns': Counter()}
 
@@ -295,7 +293,7 @@ class BlockFixer:
         return dict(self.stats)
 
 
-def get_broken_files(pattern: str, limit: int = 50) -> List[pathlib.Path]:
+def get_broken_files(pattern: str, limit: int = 50) -> list[pathlib.Path]:
     """Get broken files for a specific pattern."""
     tests_dir = pathlib.Path('tests')
     broken_files = []
@@ -356,18 +354,18 @@ def main():
     fixer = BlockFixer(dry_run=args.dry_run)
     results = fixer.process_wave(files, args.pattern)
 
-    print(f"\nResults:")
+    print("\nResults:")
     print(f"  Total files: {results['total']}")
     print(f"  Fixed: {results['fixed']}")
     print(f"  Failed: {results['failed']}")
     print(f"  Patterns fixed: {dict(results['patterns'])}")
 
     if not args.dry_run and results['fixed'] > 0:
-        print(f"\nTo commit changes:")
-        print(f"  git add tests/")
+        print("\nTo commit changes:")
+        print("  git add tests/")
         commit_msg = f'Wave {args.pattern}: Fix {results["fixed"]} files'
         print(f"  git commit -m '{commit_msg}'")
-        print(f"  git push")
+        print("  git push")
 
 
 if __name__ == '__main__':

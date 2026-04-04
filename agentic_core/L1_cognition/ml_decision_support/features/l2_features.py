@@ -8,10 +8,10 @@ escalation history, healing complexity, and availability metrics.
 
 import math
 from datetime import datetime
-from typing import Dict, Any
+from typing import Any
 
+from ..config.feature_schemas import FeatureSchema, FeatureSchemas
 from .base_extractor import DeterministicFeatureExtractor
-from ..config.feature_schemas import FeatureSchemas, FeatureSchema
 
 
 class L2FeatureExtractor(DeterministicFeatureExtractor):
@@ -37,7 +37,7 @@ class L2FeatureExtractor(DeterministicFeatureExtractor):
 
     def _create_l2_schema(self) -> FeatureSchema:
         """Create feature schema for L2 healer selector."""
-        from ..config.feature_schemas import FeatureSchema, FeatureDefinition, FeatureType
+        from ..config.feature_schemas import FeatureDefinition, FeatureSchema, FeatureType
 
         features = [
             FeatureDefinition(
@@ -132,7 +132,7 @@ class L2FeatureExtractor(DeterministicFeatureExtractor):
         self.register_extraction_function("system_load_factor", self._extract_system_load_factor)
         self.register_extraction_function("time_sensitivity", self._extract_time_sensitivity)
 
-    def _extract_healer_compatibility_score(self, context: Dict[str, Any]) -> float:
+    def _extract_healer_compatibility_score(self, context: dict[str, Any]) -> float:
         """Extract healer compatibility score (0.0-1.0)."""
         healer = context.get("healer", {})
         error = context.get("error", {})
@@ -184,7 +184,7 @@ class L2FeatureExtractor(DeterministicFeatureExtractor):
 
         return round(min(1.0, compatibility_score), 3)
 
-    def _extract_historical_success_rate(self, context: Dict[str, Any]) -> float:
+    def _extract_historical_success_rate(self, context: dict[str, Any]) -> float:
         """Extract historical success rate (0.0-1.0)."""
         healer = context.get("healer", {})
 
@@ -237,7 +237,7 @@ class L2FeatureExtractor(DeterministicFeatureExtractor):
 
         return round(final_rate, 3)
 
-    def _extract_resource_availability(self, context: Dict[str, Any]) -> float:
+    def _extract_resource_availability(self, context: dict[str, Any]) -> float:
         """Extract resource availability (0.0-1.0)."""
         healer = context.get("healer", {})
         system_resources = context.get("system_resources", {})
@@ -279,7 +279,7 @@ class L2FeatureExtractor(DeterministicFeatureExtractor):
 
         return round(max(0.0, min(1.0, overall_availability)), 3)
 
-    def _extract_error_severity_score(self, context: Dict[str, Any]) -> float:
+    def _extract_error_severity_score(self, context: dict[str, Any]) -> float:
         """Extract error severity score (0.0-1.0)."""
         error = context.get("error", {})
 
@@ -332,7 +332,7 @@ class L2FeatureExtractor(DeterministicFeatureExtractor):
 
         return round(min(1.0, score), 3)
 
-    def _extract_healing_complexity(self, context: Dict[str, Any]) -> float:
+    def _extract_healing_complexity(self, context: dict[str, Any]) -> float:
         """Extract healing complexity (0.0-1.0)."""
         error = context.get("error", {})
         healing_context = context.get("healing_context", {})
@@ -390,7 +390,7 @@ class L2FeatureExtractor(DeterministicFeatureExtractor):
 
         return round(min(1.0, score), 3)
 
-    def _extract_escalation_history(self, context: Dict[str, Any]) -> float:
+    def _extract_escalation_history(self, context: dict[str, Any]) -> float:
         """Extract escalation history pattern score (0.0-1.0)."""
         error = context.get("error", {})
         history = context.get("history", {})
@@ -454,7 +454,7 @@ class L2FeatureExtractor(DeterministicFeatureExtractor):
 
         return round(pattern_score, 3)
 
-    def _extract_retry_probability(self, context: Dict[str, Any]) -> float:
+    def _extract_retry_probability(self, context: dict[str, Any]) -> float:
         """Extract retry probability (0.0-1.0)."""
         error = context.get("error", {})
         healing_context = context.get("healing_context", {})
@@ -499,7 +499,7 @@ class L2FeatureExtractor(DeterministicFeatureExtractor):
 
         return round(max(0.0, min(1.0, base_probability)), 3)
 
-    def _extract_rollback_likelihood(self, context: Dict[str, Any]) -> float:
+    def _extract_rollback_likelihood(self, context: dict[str, Any]) -> float:
         """Extract rollback likelihood (0.0-1.0)."""
         healing_context = context.get("healing_context", {})
         history = context.get("history", {})
@@ -533,7 +533,7 @@ class L2FeatureExtractor(DeterministicFeatureExtractor):
 
         return round(max(0.0, min(1.0, base_likelihood)), 3)
 
-    def _extract_system_load_factor(self, context: Dict[str, Any]) -> float:
+    def _extract_system_load_factor(self, context: dict[str, Any]) -> float:
         """Extract system load factor (0.0-1.0)."""
         system_state = context.get("system_state", {})
 
@@ -557,7 +557,7 @@ class L2FeatureExtractor(DeterministicFeatureExtractor):
 
         return round(overall_load, 3)
 
-    def _extract_time_sensitivity(self, context: Dict[str, Any]) -> float:
+    def _extract_time_sensitivity(self, context: dict[str, Any]) -> float:
         """Extract time sensitivity (0.0-1.0)."""
         error = context.get("error", {})
         healing_context = context.get("healing_context", {})

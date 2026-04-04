@@ -6,9 +6,9 @@ optimization and policy-driven decision boundaries.
 
 import logging
 import time
-from dataclasses import dataclass
-from typing import Any, Dict, Optional
 from collections import deque
+from dataclasses import dataclass
+from typing import Any
 
 from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     LayerSegment,
@@ -61,7 +61,7 @@ class HybridThresholdManager:
 
     def get_thresholds(
         self,
-        query_context: Optional[Dict[str, Any]] = None,
+        query_context: dict[str, Any] | None = None,
     ) -> ThresholdConfig:
         """Get current thresholds, optionally adjusted for context.
 
@@ -120,7 +120,7 @@ class HybridThresholdManager:
         self._config = config
         log.info(f"Thresholds updated: vector={config.vector_weight}, sparse={config.sparse_weight}")
 
-    def get_performance_summary(self) -> Dict[str, Any]:
+    def get_performance_summary(self) -> dict[str, Any]:
         """Get performance summary statistics.
 
         Returns:
@@ -139,7 +139,7 @@ class HybridThresholdManager:
     def _adjust_for_context(
         self,
         config: ThresholdConfig,
-        context: Dict[str, Any],
+        context: dict[str, Any],
     ) -> ThresholdConfig:
         """Adjust thresholds based on query context."""
         intent = context.get("intent")
@@ -186,7 +186,7 @@ class HybridThresholdManager:
 
 
 # Global instance
-_global_manager: Optional[HybridThresholdManager] = None
+_global_manager: HybridThresholdManager | None = None
 
 
 def get_hybrid_threshold_manager() -> HybridThresholdManager:
@@ -197,6 +197,6 @@ def get_hybrid_threshold_manager() -> HybridThresholdManager:
     return _global_manager
 
 
-def get_hybrid_thresholds(context: Optional[Dict[str, Any]] = None) -> ThresholdConfig:
+def get_hybrid_thresholds(context: dict[str, Any] | None = None) -> ThresholdConfig:
     """Convenience function to get thresholds."""
     return get_hybrid_threshold_manager().get_thresholds(context)

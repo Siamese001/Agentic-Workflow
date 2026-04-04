@@ -5,10 +5,10 @@ Retrieves relevant context from ChromaDB semantic memory layer.
 
 import asyncio
 import logging
-from typing import List, Dict, Any, Optional, Tuple
+import sys
 from dataclasses import dataclass
 from pathlib import Path
-import sys
+from typing import Any
 
 # Add L4_state to path for imports
 sys.path.insert(0, str(Path(__file__).parent.parent.parent / "L4_state"))
@@ -22,7 +22,7 @@ logger = logging.getLogger(__name__)
 class RetrievalResult:
     """Result from semantic retrieval."""
     content: str
-    metadata: Dict[str, Any]
+    metadata: dict[str, Any]
     score: float
     collection: str
 
@@ -31,8 +31,8 @@ class RetrievalResult:
 class RetrievalQuery:
     """Query for semantic retrieval."""
     text: str
-    collections: List[str]
-    filters: Optional[Dict[str, Any]] = None
+    collections: list[str]
+    filters: dict[str, Any] | None = None
     max_results: int = 10
 
 
@@ -66,7 +66,7 @@ class SemanticRetriever:
         self.available_collections = self.chroma.list_collections()
         logger.info(f"Semantic retriever initialized with collections: {self.available_collections}")
 
-    async def retrieve(self, query: RetrievalQuery) -> List[RetrievalResult]:
+    async def retrieve(self, query: RetrievalQuery) -> list[RetrievalResult]:
         """
         Retrieve relevant documents for a query.
 
@@ -95,7 +95,7 @@ class SemanticRetriever:
         logger.info(f"Retrieved {len(fused_results)} results for query: {query.text[:50]}...")
         return fused_results
 
-    def _route_query(self, query: RetrievalQuery) -> List[str]:
+    def _route_query(self, query: RetrievalQuery) -> list[str]:
         """Route query to appropriate collections based on content."""
         query_lower = query.text.lower()
 
@@ -115,7 +115,7 @@ class SemanticRetriever:
         else:
             return self.collection_routing["general"]
 
-    async def _parallel_query(self, query: RetrievalQuery, collections: List[str]) -> Dict[str, List[RetrievalResult]]:
+    async def _parallel_query(self, query: RetrievalQuery, collections: list[str]) -> dict[str, list[RetrievalResult]]:
         """Execute parallel queries across collections."""
         results = {}
 
@@ -138,7 +138,7 @@ class SemanticRetriever:
 
         return results
 
-    async def _query_collection(self, collection: str, query: RetrievalQuery) -> List[RetrievalResult]:
+    async def _query_collection(self, collection: str, query: RetrievalQuery) -> list[RetrievalResult]:
         """Query a single collection."""
         try:
             # Query ChromaDB
@@ -166,7 +166,7 @@ class SemanticRetriever:
             logger.error(f"Failed to query collection {collection}: {e}")
             raise
 
-    def _fuse_results(self, collection_results: Dict[str, List[RetrievalResult]]) -> List[RetrievalResult]:
+    def _fuse_results(self, collection_results: dict[str, list[RetrievalResult]]) -> list[RetrievalResult]:
         """
         Fuse results from multiple collections using Reciprocal Rank Fusion (RRF).
 
@@ -205,7 +205,7 @@ class SemanticRetriever:
         all_results.sort(key=lambda x: x.score, reverse=True)
         return all_results[:20]  # Return top 20 results
 
-    async def answer_question(self, question: str) -> Tuple[str, List[RetrievalResult]]:
+    async def answer_question(self, question: str) -> tuple[str, list[RetrievalResult]]:
         """
         Answer a question using semantic retrieval.
 
@@ -239,7 +239,7 @@ class SemanticRetriever:
         answer = "\n".join(answer_parts)
         return answer, results
 
-    def get_collection_stats(self) -> Dict[str, Any]:
+    def get_collection_stats(self) -> dict[str, Any]:
         """Get statistics for all collections."""
         stats = {}
         for collection in self.available_collections:

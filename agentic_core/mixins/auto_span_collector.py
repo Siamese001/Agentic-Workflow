@@ -19,10 +19,10 @@ USAGE:
 """
 
 import logging
-import time
 import threading
+import time
 from collections import defaultdict, deque
-from typing import Any, Dict, List, Set
+from typing import Any
 
 from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     emit_determinism_digest,
@@ -56,8 +56,8 @@ class AutoSpanCollector:
 
         # Span storage
         self._span_buffer: deque = deque(maxlen=buffer_size)
-        self._agent_spans: Dict[str, List[Dict[str, Any]]] = defaultdict(list)
-        self._registered_agents: Set[str] = set()
+        self._agent_spans: dict[str, list[dict[str, Any]]] = defaultdict(list)
+        self._registered_agents: set[str] = set()
 
         # Collection state
         self._collection_active: bool = False
@@ -205,7 +205,7 @@ class AutoSpanCollector:
         if len(self._span_buffer) >= self._buffer_size * 0.8:
             self.flush_spans()
 
-    def collect_spans_from_agent(self, agent_id: str, spans: List[Dict[str, Any]]) -> None:
+    def collect_spans_from_agent(self, agent_id: str, spans: list[dict[str, Any]]) -> None:
         """
         Collect spans from a specific agent.
 
@@ -261,7 +261,7 @@ class AutoSpanCollector:
             Logger.error(f"[AUTO_COLLECTOR] Failed to flush spans: {e}")
             return 0
 
-    def _create_runtime_adg_span(self, span: Dict[str, Any]) -> None:
+    def _create_runtime_adg_span(self, span: dict[str, Any]) -> None:
         """
         Create a Runtime ADG span from collected span data.
 
@@ -328,7 +328,7 @@ class AutoSpanCollector:
 
         return total_flushed
 
-    def get_collection_stats(self) -> Dict[str, Any]:
+    def get_collection_stats(self) -> dict[str, Any]:
         """
         Get comprehensive collection statistics.
 
@@ -352,7 +352,7 @@ class AutoSpanCollector:
             "registered_agents": list(self._registered_agents),
         }
 
-    def get_agent_stats(self, agent_id: str) -> Dict[str, Any]:
+    def get_agent_stats(self, agent_id: str) -> dict[str, Any]:
         """
         Get statistics for a specific agent.
 
@@ -407,7 +407,7 @@ def register_agent_for_collection(agent_id: str, agent_instance: Any) -> None:
     collector.register_agent(agent_id, agent_instance)
 
 
-def get_global_collection_stats() -> Dict[str, Any]:
+def get_global_collection_stats() -> dict[str, Any]:
     """Get global collection statistics."""
     collector = get_global_collector()
     return collector.get_collection_stats()

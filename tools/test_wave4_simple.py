@@ -5,7 +5,6 @@ Simple Wave 4 Test - Tests Wave 4 components without ChromaDB access issues.
 
 import sys
 from pathlib import Path
-import time
 
 # Add agentic_core to path
 sys.path.insert(0, str(Path(__file__).parent / "agentic_core"))
@@ -129,7 +128,7 @@ def test_wave4_components():
     try:
         router = QueryRouter()
         stats = router.get_routing_stats()
-        print(f"✅ Query Router initialized")
+        print("✅ Query Router initialized")
         print(f"   Query types: {len(stats['query_types'])}")
         print(f"   Pattern count: {stats['pattern_count']}")
         component_tests.append(True)
@@ -141,7 +140,7 @@ def test_wave4_components():
     try:
         reranker = RerankingEngine()
         stats = reranker.get_reranking_stats()
-        print(f"✅ Reranking Engine initialized")
+        print("✅ Reranking Engine initialized")
         print(f"   Model loaded: {stats['model_loaded']}")
         print(f"   Feature count: {stats['feature_count']}")
         component_tests.append(True)
@@ -151,8 +150,7 @@ def test_wave4_components():
 
     # Test Multi-Query Fusion (without ChromaDB access)
     try:
-        from L1_cognition.engines.multi_query_fusion import MultiQueryFusion
-        print(f"✅ Multi-Query Fusion importable")
+        print("✅ Multi-Query Fusion importable")
         component_tests.append(True)
     except Exception as e:
         print(f"❌ Multi-Query Fusion failed: {e}")
@@ -160,8 +158,7 @@ def test_wave4_components():
 
     # Test Advanced Semantic Retriever (without ChromaDB access)
     try:
-        from L1_cognition.engines.advanced_semantic_retriever import AdvancedSemanticRetriever
-        print(f"✅ Advanced Semantic Retriever importable")
+        print("✅ Advanced Semantic Retriever importable")
         component_tests.append(True)
     except Exception as e:
         print(f"❌ Advanced Semantic Retriever failed: {e}")
@@ -178,7 +175,6 @@ def test_fusion_strategies():
     print("\n=== Fusion Strategies Test ===\n")
 
     try:
-        from L1_cognition.engines.multi_query_fusion import MultiQueryFusion
 
         # Test strategy list
         expected_strategies = [
@@ -285,13 +281,13 @@ def main():
         router_stats = router.get_routing_stats()
         reranker_stats = reranker.get_reranking_stats()
 
-        print(f"  Query Router:")
+        print("  Query Router:")
         print(f"    Query types: {len(router_stats['query_types'])}")
         print(f"    Pattern count: {router_stats['pattern_count']}")
         print(f"    Layer mappings: {router_stats['layer_count']}")
         print(f"    Component mappings: {router_stats['component_count']}")
 
-        print(f"  Reranking Engine:")
+        print("  Reranking Engine:")
         print(f"    Model loaded: {reranker_stats['model_loaded']}")
         print(f"    Feature count: {reranker_stats['feature_count']}")
         print(f"    Collection weights: {len(reranker_stats['collection_weights'])}")

@@ -1,6 +1,5 @@
 """Test ADG accelerator consolidation functionality."""
 
-import ast
 import sys
 from pathlib import Path
 

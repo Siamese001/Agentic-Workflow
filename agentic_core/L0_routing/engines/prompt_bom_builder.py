@@ -45,8 +45,10 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_verifies_policy,
     _emit_writes_via_uwg,
     emit_determinism_digest,
-    emit_replay_key
+    emit_replay_key,
 )
+
+
 # Lazy import to avoid L0->L_PG gravity violation
 def _get_prompt_bom():
     from agentic_core.prompt_governance.contracts.prompt_bom_types import PromptBOM
@@ -107,7 +109,7 @@ class PromptBOMBuilder:
         raw_u0: str,
         raw_c0: dict[str, Any] | None = None,
         template_args: dict[str, Any] | None = None,
-    ) -> "PromptBOM":
+    ) -> PromptBOM:
         """Build PromptBOM from instruction packet.
 
         Args:

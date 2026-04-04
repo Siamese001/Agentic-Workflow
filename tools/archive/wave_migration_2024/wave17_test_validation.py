@@ -5,11 +5,10 @@ This wave runs a subset of tests to validate our current progress
 and identify the specific issues remaining.
 """
 
-import pathlib
 import ast
+import pathlib
 import subprocess
 import sys
-from typing import Dict, List, Tuple
 
 
 class Wave17TestValidation:
@@ -27,7 +26,7 @@ class Wave17TestValidation:
             'tests_failed': 0
         }
 
-    def validate_status(self) -> Dict:
+    def validate_status(self) -> dict:
         """Validate current status and run some tests."""
         # Check syntax status
         self._check_syntax_status()
@@ -101,7 +100,7 @@ class Wave17TestValidation:
         print(f"Syntax errors: {self.stats['syntax_errors']}")
         print(f"Success rate: {self.stats['valid_files']/self.stats['total_files']*100:.1f}%")
 
-        print(f"\nTest subset results:")
+        print("\nTest subset results:")
         print(f"Test categories attempted: {self.stats['tests_run']}")
         print(f"Tests passed: {self.stats['tests_passed']}")
         print(f"Tests failed: {self.stats['tests_failed']}")

@@ -7,6 +7,7 @@ customization.
 
 from __future__ import annotations
 
+
 # Stub classes for missing imports - defined before imports
 class FeedbackLoop:
     """Stub FeedbackLoop."""

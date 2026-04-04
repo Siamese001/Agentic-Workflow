@@ -8,9 +8,6 @@ Phase B: Synthesize Overview (Thematic Framing)
 from dataclasses import dataclass
 from typing import Any
 
-from apps_rg.types.thematic_analysis_node import ThematicAnalysisOutput
-from apps_rg.validators.word_count_enforcer import WordCountEnforcementEngine
-
 from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     LayerSegment,
     _emit_agent_executes_agent,
@@ -54,6 +51,8 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     emit_determinism_digest,  # noqa: E402
     emit_replay_key,  # noqa: E402
 )
+from apps_rg.types.thematic_analysis_node import ThematicAnalysisOutput
+from apps_rg.validators.word_count_enforcer import WordCountEnforcementEngine
 
 _emit_applies_guardrail("p0", "two_phase_generation_node_types", "p0_governance")
 _emit_reads_policy_state("p0", "two_phase_generation_node_types", "policy_binding")

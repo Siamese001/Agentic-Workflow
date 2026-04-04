@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import importlib
+
 import pytest
 
 MODULE_PATH = "agentic_core.knowledge.document_loaders.html_loader"

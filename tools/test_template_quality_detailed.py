@@ -13,6 +13,7 @@ sys.path.append(str(repo_root))
 
 from agentic_core.planning.sequential_thinking_workflow import SequentialThinkingEnhancedWorkflow
 
+
 def analyze_template_quality():
     """Analyze each template's quality in detail."""
 
@@ -216,7 +217,7 @@ def analyze_template_quality():
             })
 
     # Summary
-    print(f"\n📊 QUALITY ANALYSIS SUMMARY")
+    print("\n📊 QUALITY ANALYSIS SUMMARY")
     print("=" * 60)
 
     successful = [r for r in results if r.get('success', False)]
@@ -233,14 +234,14 @@ def analyze_template_quality():
         # Identify templates needing fixes
         need_fixes = [r for r in successful if r['quality_score'] < 100]
         if need_fixes:
-            print(f"\n🔧 TEMPLATES NEEDING FIXES:")
+            print("\n🔧 TEMPLATES NEEDING FIXES:")
             for template in need_fixes:
                 print(f"   ❌ {template['template']}: {template['quality_score']:.1f}%")
                 print(f"      Issues: {len(template['issues'])}")
                 for issue in template['issues'][:3]:
                     print(f"        - {issue}")
         else:
-            print(f"\n🎉 ALL TEMPLATES ARE PERFECT!")
+            print("\n🎉 ALL TEMPLATES ARE PERFECT!")
 
     return results
 
@@ -258,7 +259,7 @@ def main():
     need_fixes = [r for r in successful if r['quality_score'] < 100]
 
     if need_fixes:
-        print(f"\n🔧 QUALITY FIXES REQUIRED")
+        print("\n🔧 QUALITY FIXES REQUIRED")
         print("=" * 60)
         print(f"Templates needing fixes: {len(need_fixes)}")
 
@@ -277,21 +278,21 @@ def main():
             elif 'Missing context:' in issue:
                 issue_counts['missing_context'] = issue_counts.get('missing_context', 0) + 1
 
-        print(f"\nIssue Summary:")
+        print("\nIssue Summary:")
         for issue_type, count in issue_counts.items():
             print(f"   {issue_type}: {count} occurrences")
 
-        print(f"\n💡 RECOMMENDED FIXES:")
+        print("\n💡 RECOMMENDED FIXES:")
         if issue_counts.get('missing_thoughts', 0) > 0:
-            print(f"   1. Fix missing sequential thought structure")
+            print("   1. Fix missing sequential thought structure")
         if issue_counts.get('missing_data', 0) > 0:
-            print(f"   2. Ensure all expected data is in templates")
+            print("   2. Ensure all expected data is in templates")
         if issue_counts.get('missing_context', 0) > 0:
-            print(f"   3. Fix context variable injection")
+            print("   3. Fix context variable injection")
 
         return False
     else:
-        print(f"\n🎉 QUALITY STATUS: PERFECT - 100% ACHIEVED!")
+        print("\n🎉 QUALITY STATUS: PERFECT - 100% ACHIEVED!")
         print("=" * 60)
         print("✅ All templates have perfect quality")
         print("✅ All sequential thoughts present")

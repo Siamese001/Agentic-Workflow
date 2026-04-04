@@ -352,13 +352,13 @@ class _EvalSpineVisitor(BaseRuntimeVisitor):
 
     def visit_Call(self, node: ast.Call) -> None:
         """Extract evaluation spine edges from call expressions."""
+        from agentic_core.adg.extraction.static_scanner import Edge as _Edge
         from agentic_core.adg.schema_util import (
-            canonical_name,
-            EVAL_METRIC_CLASSES,
             DPO_BATCH_CLASSES,
             DRIFT_ALERT_METHODS,
+            EVAL_METRIC_CLASSES,
+            canonical_name,
         )
-        from agentic_core.adg.extraction.static_scanner import Edge as _Edge
 
         sym = self._get_call_symbol(node.func)
         tail = sym.split(".")[-1] if sym else ""

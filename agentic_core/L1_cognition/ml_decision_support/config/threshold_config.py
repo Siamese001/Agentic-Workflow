@@ -7,11 +7,11 @@ gradual rollout control, and automated rollback triggers.
 
 import hashlib
 import json
+from dataclasses import dataclass, field
 from datetime import datetime
 from enum import Enum
-from typing import Dict, List, Optional, Any
-from dataclasses import dataclass, field
 from pathlib import Path
+from typing import Any
 
 # from agentic_core.L4_canonical.state.snapshot_manager import SnapshotManager
 # TODO: Replace with local snapshot management
@@ -44,14 +44,14 @@ class ThresholdDefinition:
     threshold_type: ThresholdType
     description: str
     current_value: float
-    min_value: Optional[float] = None
-    max_value: Optional[float] = None
+    min_value: float | None = None
+    max_value: float | None = None
     rollout_percentage: float = 0.0  # 0-100% of traffic using this threshold
     is_active: bool = False
     created_at: datetime = field(default_factory=datetime.now)
     created_by: str = ""
     version: str = "1.0"
-    validation_rules: Dict[str, Any] = field(default_factory=dict)
+    validation_rules: dict[str, Any] = field(default_factory=dict)
 
 
 @dataclass
@@ -71,8 +71,8 @@ class ThresholdConfig:
     model_version: str
     config_version: str
     description: str
-    thresholds: List[ThresholdDefinition]
-    rollback_conditions: List[RollbackCondition]
+    thresholds: list[ThresholdDefinition]
+    rollback_conditions: list[RollbackCondition]
     created_at: datetime = field(default_factory=datetime.now)
     created_by: str = ""
     config_digest: str = ""
@@ -115,7 +115,7 @@ class ThresholdConfig:
         config_str = json.dumps(config_dict, sort_keys=True)
         return hashlib.sha256(config_str.encode()).hexdigest()
 
-    def get_threshold(self, name: str) -> Optional[ThresholdDefinition]:
+    def get_threshold(self, name: str) -> ThresholdDefinition | None:
         """Get threshold by name."""
         for threshold in self.thresholds:
             if threshold.name == name:
@@ -126,7 +126,7 @@ class ThresholdConfig:
         self,
         name: str,
         new_value: float,
-        rollout_percentage: Optional[float] = None
+        rollout_percentage: float | None = None
     ) -> bool:
         """Update threshold value and rollout."""
         threshold = self.get_threshold(name)
@@ -183,14 +183,14 @@ class ThresholdConfig:
         self.configs_file = self.config_path / "threshold_configs.json"
         # self.snapshot_manager = SnapshotManager()
         # TODO: Replace with local snapshot management
-        self._configs: Dict[str, ThresholdConfig] = {}
+        self._configs: dict[str, ThresholdConfig] = {}
         self._load_configs()
 
     def _load_configs(self) -> None:
         """Load threshold configurations from disk."""
         if self.configs_file.exists():
             try:
-                with open(self.configs_file, 'r', encoding='utf-8') as f:
+                with open(self.configs_file, encoding='utf-8') as f:
                     data = json.load(f)
 
                 for config_key, config_data in data.items():
@@ -295,8 +295,8 @@ class ThresholdConfig:
         model_name: str,
         model_version: str,
         description: str,
-        thresholds: List[ThresholdDefinition],
-        rollback_conditions: Optional[List[RollbackCondition]] = None,
+        thresholds: list[ThresholdDefinition],
+        rollback_conditions: list[RollbackCondition] | None = None,
         created_by: str = ""
     ) -> str:
         """
@@ -354,7 +354,7 @@ class ThresholdConfig:
         model_name: str,
         model_version: str,
         config_version: str = "latest"
-    ) -> Optional[ThresholdConfig]:
+    ) -> ThresholdConfig | None:
         """Get threshold configuration."""
         if config_version == "latest":
             # Find latest version
@@ -404,8 +404,8 @@ class ThresholdConfig:
         self,
         model_name: str,
         model_version: str,
-        metrics: Dict[str, float]
-    ) -> List[RollbackTrigger]:
+        metrics: dict[str, float]
+    ) -> list[RollbackTrigger]:
         """
         Check if any rollback conditions are triggered.
 
@@ -464,7 +464,7 @@ class ThresholdConfig:
         else:
             return False
 
-    def _log_threshold_event(self, event_type: str, config_key: str, data: Dict[str, Any]) -> None:
+    def _log_threshold_event(self, event_type: str, config_key: str, data: dict[str, Any]) -> None:
         """Log threshold events to L4 canonical state."""
         try:
             event = {
@@ -482,7 +482,7 @@ class ThresholdConfig:
             # Log failure but don't fail the operation
             print(f"Failed to log threshold event: {e}")
 
-    def get_default_thresholds(self, model_type: str) -> List[ThresholdDefinition]:
+    def get_default_thresholds(self, model_type: str) -> list[ThresholdDefinition]:
         """Get default thresholds for a model type."""
         defaults = {
             "logistic_regression": [

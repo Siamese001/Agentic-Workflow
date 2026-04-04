@@ -19,7 +19,6 @@ import pytest
 pytestmark = pytest.mark.serial
 
 from agentic_core.cache.redis_coordination_fabric import RedisCoordinationFabric
-from agentic_core.L4_state.memory.cache_admission_gate import CacheAdmissionGate
 
 # ---------------------------------------------------------------------------
 # Shared fixtures
@@ -171,8 +170,8 @@ class TestGraphNeighborhoodMemory:
 
     def _card(self, name="ADG::Module::foo", layer="L2"):
         """Create a test memory card."""
+
         from agentic_core.case_memory.memory_card import MemoryCard
-        from dataclasses import field
 
         return MemoryCard(
             adg_entity_name=name,

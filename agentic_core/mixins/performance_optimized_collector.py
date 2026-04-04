@@ -22,13 +22,14 @@ USAGE:
 import gzip
 import json
 import logging
-import psutil
 import threading
 import time
 from collections import deque
 from dataclasses import dataclass
-from queue import Queue, Empty
-from typing import Any, Dict, List, Optional
+from queue import Empty, Queue
+from typing import Any
+
+import psutil
 
 from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     emit_determinism_digest,
@@ -77,7 +78,7 @@ class PerformanceOptimizedCollector:
     and resource-aware collection strategies.
     """
 
-    def __init__(self, config: Optional[CollectionConfig] = None) -> None:
+    def __init__(self, config: CollectionConfig | None = None) -> None:
         """
         Initialize performance optimized collector.
 
@@ -89,26 +90,26 @@ class PerformanceOptimizedCollector:
         # High-performance buffers
         self._span_buffer: deque = deque(maxlen=self._config.max_buffer_size)
         self._batch_queue: Queue = Queue(maxsize=self._config.batch_size * 2)
-        self._compression_buffer: List[bytes] = []
+        self._compression_buffer: list[bytes] = []
 
         # Processing threads
-        self._processing_threads: List[threading.Thread] = []
-        self._collection_thread: Optional[threading.Thread] = None
-        self._flush_thread: Optional[threading.Thread] = None
+        self._processing_threads: list[threading.Thread] = []
+        self._collection_thread: threading.Thread | None = None
+        self._flush_thread: threading.Thread | None = None
 
         # Performance monitoring
         self._performance_metrics = PerformanceMetrics()
-        self._processing_times: List[float] = []
+        self._processing_times: list[float] = []
         self._last_performance_check = time.time()
 
         # Collection state
         self._collection_active: bool = False
         self._shutdown_requested: bool = False
-        self._registered_agents: Dict[str, Any] = {}
+        self._registered_agents: dict[str, Any] = {}
 
         # Adaptive scheduling
         self._adaptive_interval = self._config.flush_interval_seconds
-        self._system_load_history: List[Dict[str, float]] = []
+        self._system_load_history: list[dict[str, float]] = []
 
         # Runtime ADG integration
         self._runtime_adg_enabled: bool = False
@@ -219,7 +220,7 @@ class PerformanceOptimizedCollector:
 
         Logger.info(f"[PERF_COLLECTOR] Registered agent {agent_id}")
 
-    def collect_spans_from_agent(self, agent_id: str, spans: List[Dict[str, Any]]) -> None:
+    def collect_spans_from_agent(self, agent_id: str, spans: list[dict[str, Any]]) -> None:
         """
         Collect spans from agent with performance optimization.
 
@@ -243,7 +244,7 @@ class PerformanceOptimizedCollector:
                 Logger.warning("[PERF_COLLECTOR] Batch queue full, dropping spans")
                 break
 
-    def _optimize_spans(self, spans: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+    def _optimize_spans(self, spans: list[dict[str, Any]]) -> list[dict[str, Any]]:
         """Optimize spans for efficient processing."""
         optimized = []
 
@@ -350,7 +351,7 @@ class PerformanceOptimizedCollector:
                 batch.clear()
                 time.sleep(1.0)
 
-    def _process_batch(self, batch: List[Dict[str, Any]]) -> None:
+    def _process_batch(self, batch: list[dict[str, Any]]) -> None:
         """Process a batch of spans efficiently."""
         try:
             # Add to buffer
@@ -456,7 +457,7 @@ class PerformanceOptimizedCollector:
         except Exception as e:
             Logger.error(f"[PERF_COLLECTOR] Flush error: {e}")
 
-    def _create_runtime_adg_span(self, span: Dict[str, Any]) -> None:
+    def _create_runtime_adg_span(self, span: dict[str, Any]) -> None:
         """Create Runtime ADG span from optimized span data."""
         try:
             operation_name = span.get("operation_name", "collected_span")
@@ -558,7 +559,7 @@ class PerformanceOptimizedCollector:
             # Fast processing - decrease flush interval
             self._adaptive_interval = max(10.0, self._adaptive_interval * 0.9)
 
-    def get_performance_stats(self) -> Dict[str, Any]:
+    def get_performance_stats(self) -> dict[str, Any]:
         """Get comprehensive performance statistics."""
         self._update_performance_metrics()
 
@@ -585,7 +586,7 @@ class PerformanceOptimizedCollector:
             "system_load": self._system_load_history[-5:] if self._system_load_history else [],
         }
 
-    def get_optimization_recommendations(self) -> List[Dict[str, Any]]:
+    def get_optimization_recommendations(self) -> list[dict[str, Any]]:
         """Get performance optimization recommendations."""
         recommendations = []
 
@@ -682,7 +683,7 @@ def register_agent_for_optimized_collection(agent_id: str, agent_instance: Any) 
     collector.register_agent(agent_id, agent_instance)
 
 
-def get_optimized_collection_stats() -> Dict[str, Any]:
+def get_optimized_collection_stats() -> dict[str, Any]:
     """Get optimized collection statistics."""
     collector = get_global_optimized_collector()
     return collector.get_performance_stats()

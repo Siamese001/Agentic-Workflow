@@ -5,10 +5,10 @@ from typing import Any
 
 class NovelJudge:
     """Judge for evaluating novelty and uniqueness."""
-    
+
     def __init__(self, threshold: float = 0.5):
         self.threshold = threshold
-    
+
     def evaluate(self, content: str, reference: str | None = None) -> dict[str, Any]:
         """Evaluate novelty of content.
         
@@ -25,7 +25,7 @@ class NovelJudge:
             "similarity": 0.25,
             "passed": True
         }
-    
+
     def score(self, content: str) -> float:
         """Score content novelty."""
         return 0.75

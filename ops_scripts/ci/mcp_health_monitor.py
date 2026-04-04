@@ -50,13 +50,13 @@ class MCPHealthResult:
     """Result of a health check."""
     def __init__(self, name: str):
         self.name = name
-        self.startup_ok: Optional[bool] = None
-        self.health_ok: Optional[bool] = None
+        self.startup_ok: bool | None = None
+        self.health_ok: bool | None = None
         self.latency_ms: float = 0.0
         self.stderr: str = ""
         self.stdout: str = ""
-        self.error: Optional[str] = None
-        self.cwd: Optional[str] = None
+        self.error: str | None = None
+        self.cwd: str | None = None
 
     def to_dict(self) -> dict[str, Any]:
         return {
@@ -248,7 +248,7 @@ def watch_mode() -> None:
             if exit_code != 0:
                 print("\n⚠️  Some MCPs are unhealthy - check output above")
 
-            print(f"\n[Next check in 30s...]")
+            print("\n[Next check in 30s...]")
             time.sleep(30)
             print("\n" + "=" * 70)
 

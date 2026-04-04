@@ -10,9 +10,6 @@ Tests the facade conversion of ComplexityAnalyzerAgent including:
 
 from __future__ import annotations
 
-from pathlib import Path
-from unittest.mock import Mock
-
 import pytest
 
 # REMOVED: _emit_records_execution_trace("p0", "evidence", "test_complexity_analyzer_facade")

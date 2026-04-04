@@ -26,8 +26,6 @@ REPO_ROOT = Path(__file__).parent.parent
 sys.path.insert(0, str(REPO_ROOT))
 
 import time
-from typing import Any
-from unittest.mock import MagicMock, patch
 
 import pytest
 
@@ -41,14 +39,12 @@ def _lazy_agentic_core_L5_safety_config_structure_blueprint_ssot_0():
 
 from apps_shared.utils.open_telemetry_tracing_adapter_util import (
     OpenTelemetryTracingAdapter,
-    SpanType,
 )
 from system_learning.runtime_adg import (
-    RuntimeADGMaterializer,
     FileBackedRuntimeADGStore,
     L6MetaLearningBridge,
+    RuntimeADGMaterializer,
 )
-
 
 # =============================================================================
 # Fixtures

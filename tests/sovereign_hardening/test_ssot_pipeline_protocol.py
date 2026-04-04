@@ -25,6 +25,7 @@ def execute_ssot_imports():
         AGENT_PIPELINE,
         run_pipeline,
     )
+
     from agentic_core.L2_execution.protocol import (
         PIPELINE_SUBPHASES,
         SubphaseResult,
@@ -188,7 +189,7 @@ class TestAllSubphasesPresent:
     """Every AgentRunResult must have exactly the four subphase keys."""
 
     def test_all_four_slots_populated(self, ctx, high_confidence_engine, state_mgr, execute_ssot_imports):
-        from unittest.mock import patch, MagicMock
+        from unittest.mock import MagicMock, patch
 
         # Mock get_agent_dispatch_registry which is used internally by run_pipeline
         with patch("agentic_core.L3_orchestration.registry.agent_dispatch_registry.get_agent_dispatch_registry") as mock_registry, \
@@ -240,7 +241,7 @@ class TestGatePreventsUpdateAgentForMutating:
     """When confidence gate fires, update_agent must NOT be called for execute/heal."""
 
     def _run_with_gate_blocked(self, ctx, state_mgr, execute_ssot_imports):
-        from unittest.mock import patch, MagicMock
+        from unittest.mock import MagicMock, patch
 
         # Mock get_agent_dispatch_registry which is used internally by run_pipeline
         with patch("agentic_core.L3_orchestration.registry.agent_dispatch_registry.get_agent_dispatch_registry") as mock_registry, \
@@ -296,7 +297,7 @@ class TestScanModeReadOnly:
         assert scan_ctx.heal is False
 
     def test_scan_mode_does_not_execute(self, scan_ctx, high_confidence_engine, state_mgr, execute_ssot_imports):
-        from unittest.mock import patch, MagicMock
+        from unittest.mock import MagicMock, patch
 
         # Mock get_agent_dispatch_registry which is used internally by run_pipeline
         with patch("agentic_core.L3_orchestration.registry.agent_dispatch_registry.get_agent_dispatch_registry") as mock_registry, \
@@ -348,7 +349,7 @@ class TestFailClosedOnException:
             return SubphaseResult()
 
     def test_exception_in_validate_fails_closed(self, ctx, high_confidence_engine, state_mgr, execute_ssot_imports):
-        from unittest.mock import patch, MagicMock
+        from unittest.mock import MagicMock, patch
 
         # Mock get_agent_dispatch_registry which is used internally by run_pipeline
         with patch("agentic_core.L3_orchestration.registry.agent_dispatch_registry.get_agent_dispatch_registry") as mock_registry, \

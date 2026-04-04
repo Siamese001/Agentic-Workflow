@@ -57,10 +57,10 @@ def _assert_layer4_wiring(payload: dict) -> None:
     repo_signals = payload.get("repo_signals", {})
 
     ci = repo_signals.get("ci", {})
-    _assert(ci.get("workflow_count", 0) >= 30, f"Layer 4: insufficient CI workflows")
+    _assert(ci.get("workflow_count", 0) >= 30, "Layer 4: insufficient CI workflows")
 
     tests = repo_signals.get("tests", {})
-    _assert(tests.get("inventory_entries", 0) > 1000, f"Layer 4: insufficient test inventory")
+    _assert(tests.get("inventory_entries", 0) > 1000, "Layer 4: insufficient test inventory")
 
 
 def _assert_enhanced_system_learning(payload: dict) -> None:
@@ -72,7 +72,7 @@ def _assert_enhanced_system_learning(payload: dict) -> None:
     market_fit = governance.get("market_fit", {})
     if market_fit:
         if "role_fit_score" not in market_fit:
-            print(f"   ⚠️  System learning: market_fit.role_fit_score missing (non-blocking)")
+            print("   ⚠️  System learning: market_fit.role_fit_score missing (non-blocking)")
 
     # ADG signals for pattern capture
     adg = repo_signals.get("adg", {})

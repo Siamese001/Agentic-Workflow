@@ -18,21 +18,19 @@ NEVER captures:
 import ast
 import sqlite3
 import sys
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from pathlib import Path
-from typing import Dict, List, Set, Tuple
 
 # Add project root to path
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(PROJECT_ROOT))
 
 from agentic_core.adg.extraction.static_scanner import (
-    _repo_relative,
-    canonical_name,
+    _INTERNAL_MODULE_PREFIXES,
     _is_scannable_static_path,
     _iter_python_files,
-    AGENTIC_CORE_DIR,
-    _INTERNAL_MODULE_PREFIXES,
+    _repo_relative,
+    canonical_name,
 )
 
 
@@ -54,7 +52,7 @@ class CleanImportVisitor(ast.NodeVisitor):
     def __init__(self, module_adg_name: str, source_file: str):
         self.module_adg_name = module_adg_name
         self.source_file = source_file
-        self.edges: List[Edge] = []
+        self.edges: list[Edge] = []
 
     def visit_Import(self, node: ast.Import):
         for alias in node.names:
@@ -109,7 +107,7 @@ class CleanInheritanceVisitor(ast.NodeVisitor):
     def __init__(self, module_adg_name: str, source_file: str):
         self.module_adg_name = module_adg_name
         self.source_file = source_file
-        self.edges: List[Edge] = []
+        self.edges: list[Edge] = []
 
     def visit_ClassDef(self, node: ast.ClassDef):
         class_adg = canonical_name("Symbol", f"{self.module_adg_name}::{node.name}")
@@ -144,8 +142,8 @@ class CleanCallVisitor(ast.NodeVisitor):
     def __init__(self, module_adg_name: str, source_file: str):
         self.module_adg_name = module_adg_name
         self.source_file = source_file
-        self.edges: List[Edge] = []
-        self._internal_imports: Set[str] = set()
+        self.edges: list[Edge] = []
+        self._internal_imports: set[str] = set()
 
     def visit_Import(self, node: ast.Import):
         """Track internal imports for call resolution."""
@@ -199,7 +197,7 @@ class CleanLayerVisitor(ast.NodeVisitor):
     def __init__(self, module_adg_name: str, source_file: str):
         self.module_adg_name = module_adg_name
         self.source_file = source_file
-        self.edges: List[Edge] = []
+        self.edges: list[Edge] = []
 
         # Determine layer from file path
         layer = self._infer_layer()
@@ -247,7 +245,7 @@ class CleanLayerVisitor(ast.NodeVisitor):
             return None
 
 
-def scan_file_clean(filepath: Path, repo_root: Path) -> List[Edge]:
+def scan_file_clean(filepath: Path, repo_root: Path) -> list[Edge]:
     """Scan a single file with ONLY static visitors."""
     rel = _repo_relative(filepath, repo_root)
 
@@ -343,7 +341,7 @@ def create_truly_clean_static_adg() -> None:
     output_dir = PROJECT_ROOT / "artifacts" / "adg_truly_clean"
     output_dir.mkdir(exist_ok=True)
 
-    from datetime import datetime, timezone, timedelta
+    from datetime import datetime, timedelta, timezone
     est = timezone(timedelta(hours=-4))
     now_est = datetime.now(est)
     ts = now_est.strftime("%m%d%Y_%H%M")

@@ -16,8 +16,6 @@ from dataclasses import dataclass, field
 from datetime import datetime, timezone
 from typing import Any, TypeVar
 
-from apps_rg.utils.mixins import HealerMixin, MCPHardenedMixin
-
 from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     LayerSegment,
     _emit_agent_executes_agent,
@@ -61,6 +59,7 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     emit_determinism_digest,  # noqa: E402
     emit_replay_key,  # noqa: E402
 )
+from apps_rg.utils.mixins import HealerMixin, MCPHardenedMixin
 
 _emit_applies_guardrail("p0", "state_transaction_types", "p0_governance")
 _emit_reads_policy_state("p0", "state_transaction_types", "policy_binding")

@@ -2,9 +2,10 @@
 import os
 import re
 
+
 def clean_test_file(filepath):
     """Remove stray code blocks from test files."""
-    with open(filepath, 'r', encoding='utf-8', errors='replace') as f:
+    with open(filepath, encoding='utf-8', errors='replace') as f:
         content = f.read()
 
     # Pattern 1: Remove stray triple-quoted strings at module level after test functions

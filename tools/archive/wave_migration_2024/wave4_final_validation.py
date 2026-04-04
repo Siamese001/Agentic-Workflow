@@ -4,10 +4,9 @@
 This wave applies minimal, targeted fixes to make files syntactically valid.
 """
 
+import ast
 import pathlib
 import re
-import ast
-from typing import Dict, List, Tuple
 
 
 class Wave4FinalValidation:
@@ -23,9 +22,9 @@ class Wave4FinalValidation:
             'syntax_errors_fixed': 0,
             'failed_files': 0
         }
-        self.failed_files: List[Tuple[str, str]] = []
+        self.failed_files: list[tuple[str, str]] = []
 
-    def process_files(self) -> Dict:
+    def process_files(self) -> dict:
         """Process files with Wave 4 final validation."""
         # Only process files in tests/ directory, exclude archives
         test_files = []
@@ -181,7 +180,7 @@ class Wave4FinalValidation:
         print(f"Failed files: {len(self.failed_files)}")
 
         if self.failed_files:
-            print(f"\nFailed files (first 5):")
+            print("\nFailed files (first 5):")
             for file_path, error in self.failed_files[:5]:
                 print(f"  {file_path}: {error}")
             if len(self.failed_files) > 5:

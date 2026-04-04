@@ -64,7 +64,7 @@ class AsyncFileProcessor:
                     async with aiofiles.open(file_path, 'rb') as f:
                         content = await f.read()
                 else:
-                    async with aiofiles.open(file_path, 'r', encoding=encoding) as f:
+                    async with aiofiles.open(file_path, encoding=encoding) as f:
                         content = await f.read()
 
                 elapsed_ms = (time.time() - start) * 1000

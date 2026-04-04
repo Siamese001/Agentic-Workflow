@@ -13,6 +13,7 @@ sys.path.append(str(repo_root))
 
 from agentic_core.planning.sequential_thinking_workflow import SequentialThinkingEnhancedWorkflow
 
+
 def main():
     """Final demonstration of fixed template quality."""
 
@@ -140,7 +141,7 @@ def main():
             })
 
     # Final summary
-    print(f"\n📊 FINAL QUALITY SUMMARY")
+    print("\n📊 FINAL QUALITY SUMMARY")
     print("=" * 60)
 
     successful = [r for r in results if r.get('success', False)]
@@ -156,18 +157,18 @@ def main():
 
         # Quality assessment
         if avg_quality >= 80:
-            print(f"\n🎉 TEMPLATE QUALITY: EXCELLENT - FIXED!")
+            print("\n🎉 TEMPLATE QUALITY: EXCELLENT - FIXED!")
             print("✅ All templates have high-quality ADG integration")
             print("✅ Real system data properly injected")
             print("✅ Sequential thinking structure enforced")
             print("✅ Template-specific context variables working")
         elif avg_quality >= 70:
-            print(f"\n✅ TEMPLATE QUALITY: GOOD - MOSTLY FIXED")
+            print("\n✅ TEMPLATE QUALITY: GOOD - MOSTLY FIXED")
             print("✅ Most templates have good ADG integration")
             print("✅ Real system data mostly working")
             print("⚠️  Some templates need minor improvements")
         else:
-            print(f"\n⚠️  TEMPLATE QUALITY: NEEDS MORE WORK")
+            print("\n⚠️  TEMPLATE QUALITY: NEEDS MORE WORK")
 
     # Show sample template content
     if successful:
@@ -194,7 +195,7 @@ def main():
         if len(lines) > 15:
             print(f"... ({len(lines)-15} more lines)")
 
-    print(f"\n🎯 QUALITY FIX STATUS: ✅ RESOLVED")
+    print("\n🎯 QUALITY FIX STATUS: ✅ RESOLVED")
     print("=" * 60)
     print("✅ Template variable mapping fixed")
     print("✅ Template-specific validation implemented")

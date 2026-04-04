@@ -3,7 +3,12 @@ Test LIC Outputs.
 """
 import unittest
 
-from apps_lic.outputs import CampaignRenderer, CampaignSummaryRenderer, DraftRenderer, ValidationReportRenderer
+from apps_lic.outputs import (
+    CampaignRenderer,
+    CampaignSummaryRenderer,
+    DraftRenderer,
+    ValidationReportRenderer,
+)
 from apps_lic.types import CampaignResult, CampaignRunSummary, DraftPackage, ValidationResult
 
 

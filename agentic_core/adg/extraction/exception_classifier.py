@@ -11,10 +11,9 @@ n- Correct evidence strings: except:bare, except:broad, except:valid
 """
 
 import ast
-from typing import Optional
 
 
-def classify_except_handler(node: ast.ExceptHandler) -> Optional[str]:
+def classify_except_handler(node: ast.ExceptHandler) -> str | None:
     """
     Classify an exception handler using AST analysis.
 
@@ -64,7 +63,7 @@ def scan_file_for_exceptions(filepath: str) -> list[tuple[int, str, str]]:
     violations = []
 
     try:
-        with open(filepath, "r", encoding="utf-8", errors="replace") as f:
+        with open(filepath, encoding="utf-8", errors="replace") as f:
             source = f.read()
             lines = source.splitlines()
     except Exception:

@@ -3,9 +3,9 @@
 Pipeline C Phase C1: Shared external pipeline with normalization and routing signals.
 """
 
-from .preprocessing_pipeline import QueryPreprocessor, QueryPacket
-from .routing_signal_detector import RoutingSignalDetector, RoutingSignal
-from .query_vectorizer import QueryVectorizer, QueryVector
+from .preprocessing_pipeline import QueryPacket, QueryPreprocessor
+from .query_vectorizer import QueryVector, QueryVectorizer
+from .routing_signal_detector import RoutingSignal, RoutingSignalDetector
 
 __all__ = [
     "QueryPreprocessor",

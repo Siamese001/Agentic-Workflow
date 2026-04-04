@@ -11,7 +11,6 @@ from typing import Literal
 
 from pydantic import BaseModel, Field, field_validator
 
-
 CampaignStatus = Literal["draft", "pending", "running", "complete", "failed"]
 
 ValidationVerdict = Literal["PASS", "FAIL", "WARN"]
@@ -74,7 +73,7 @@ class DraftPackage(BaseModel):
     draft_version: str = Field("1.0.0", description="Draft schema version")
     trace_id: str = Field("", description="Trace identifier for provenance")
 
-    def with_draft(self, new_draft: str) -> "DraftPackage":
+    def with_draft(self, new_draft: str) -> DraftPackage:
         """Create new package with updated draft."""
         return DraftPackage(
             draft=new_draft,

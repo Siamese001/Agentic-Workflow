@@ -13,7 +13,6 @@ import pytest
 
 from agentic_core.L0_routing.config.path_constants import L1_COGNITION_DIR
 
-
 pytestmark = pytest.mark.unit_min_deps
 
 FORBIDDEN_IMPORTS = {
@@ -69,9 +68,6 @@ def parse_file_for_forbidden_imports(file_path: Path) -> list[str]:
 @pytest.mark.parametrize("file_path", get_l1_files())
 def test_l1_no_mutation_imports(file_path: Path) -> None:
     """Test that L1 files contain no forbidden imports."""
-    from agentic_core.L0_routing.config.path_constants import (
-        L1_COGNITION_DIR,
-    )
 
     violations = parse_file_for_forbidden_imports(file_path)
 

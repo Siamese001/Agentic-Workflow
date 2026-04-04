@@ -21,7 +21,7 @@ def main():
     print("Running Windsurf CI for Plans...")
 
     # Import and run CI
-    from tools.windsurf_ci import run_windsurf_ci, check_windsurfrules_compliance
+    from tools.windsurf_ci import check_windsurfrules_compliance, run_windsurf_ci
 
     # Run CI validation
     ci_passed = run_windsurf_ci()

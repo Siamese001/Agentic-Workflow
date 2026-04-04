@@ -606,7 +606,7 @@ def check_banned_patterns(file_path: str, patterns: dict | None = None) -> list[
         patterns = BANNED_PATTERNS
     violations = []
     try:
-        with open(file_path, "r", encoding="utf-8") as f:
+        with open(file_path, encoding="utf-8") as f:
             for line_no, line in enumerate(f, 1):
                 for pattern_name, pattern in patterns.items():
                     if re.search(pattern, line):

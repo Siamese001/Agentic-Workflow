@@ -3,7 +3,7 @@
 
 class ProvenanceEngine:
     """Placeholder provenance engine."""
-    
+
     def trace(self, data):
         """Placeholder trace method."""
         return {}
@@ -11,7 +11,7 @@ class ProvenanceEngine:
 
 class ProvenanceIntegrator:
     """Placeholder provenance integrator."""
-    
+
     def integrate(self, data):
         """Placeholder integrate method."""
         return {}

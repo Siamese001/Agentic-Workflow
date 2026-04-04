@@ -106,6 +106,8 @@ def _get_agent_registry():
     return AgentRegistry
 
 from agentic_core.L0_routing.utils.manifest_guardian_util import ManifestGuardian
+
+
 # compliance_gate_validator not found - create placeholder
 def check_compliance(agents):
     """Placeholder compliance check function."""

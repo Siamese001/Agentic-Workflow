@@ -11,7 +11,7 @@ print('='*60)
 # Test 1: Import
 print('\n[1] Testing imports...')
 try:
-    from agentic_core.L2_execution.cache.gptcache_client import GPTCacheClient, BGEEmbedding
+    from agentic_core.L2_execution.cache.gptcache_client import BGEEmbedding, GPTCacheClient
     print('   ✓ Imports successful')
 except Exception as e:
     print(f'   ✗ Import failed: {e}')
@@ -29,7 +29,7 @@ try:
     if embedding:
         print(f'   ✓ BGE embedding works: {len(embedding)} dims in {elapsed*1000:.2f}ms')
     else:
-        print(f'   ✗ BGE embedding returned None')
+        print('   ✗ BGE embedding returned None')
 except Exception as e:
     print(f'   ✗ BGE embedding failed: {e}')
     import traceback
@@ -64,11 +64,11 @@ try:
     )
 
     if cache._cache != "mock":
-        print(f'   ✓ GPTCache initialized with BGE-only (not mock)')
+        print('   ✓ GPTCache initialized with BGE-only (not mock)')
         print(f'   ✓ Provider: {cache.embedding_provider}')
         print(f'   ✓ Model: {cache.embedding_model}')
     else:
-        print(f'   ⚠ GPTCache using mock mode (gptcache may not be installed)')
+        print('   ⚠ GPTCache using mock mode (gptcache may not be installed)')
 
 except Exception as e:
     print(f'   ✗ GPTCache initialization failed: {e}')

@@ -2,10 +2,11 @@
 ADG Redis Ingest Performance Analysis
 RCA: Command Volume Explosion and Throughput Optimization
 """
-import time
-import redis
-import sqlite3
 import json
+import sqlite3
+import time
+
+import redis
 
 # Test configurations
 BATCH_SIZE = 5000

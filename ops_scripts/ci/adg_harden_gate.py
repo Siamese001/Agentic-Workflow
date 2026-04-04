@@ -1,5 +1,6 @@
 import sys
 
+
 def main():
     print("ADG Harden Gate (Placeholder) - PASSED")
     sys.exit(0)

@@ -9,6 +9,7 @@ MAX_FILES = 1000
 DEFAULT_TIMEOUT = 300
 import unittest
 
+
 class GeneratedTest(unittest.TestCase):
     """Generated test class for agentic_core.L0_routing.enforcement."""
 
@@ -33,7 +34,7 @@ class GeneratedTest(unittest.TestCase):
 
     def test_build_evidence_pack_failure(self):
         """Test build_evidence_pack failure path."""
-        from agentic_core.L0_routing.enforcement import build_evidence_pack, EvidencePackError
+        from agentic_core.L0_routing.enforcement import EvidencePackError, build_evidence_pack
         # Test with invalid risk score (should be 0-1)
         with self.assertRaises((EvidencePackError, ValueError, TypeError)):
             build_evidence_pack(

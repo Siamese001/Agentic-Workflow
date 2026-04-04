@@ -9,9 +9,10 @@ from __future__ import annotations
 
 from typing import Any
 
+from agentic_core.L2_execution.engines.batch_embedding_service import BatchEmbeddingService
+
 # L2 Execution components for retrieval wiring
 from agentic_core.L2_execution.engines.execution_gateway import ExecutionGateway
-from agentic_core.L2_execution.engines.batch_embedding_service import BatchEmbeddingService
 
 __all__ = [
     "SemanticEnrichmentBridge",

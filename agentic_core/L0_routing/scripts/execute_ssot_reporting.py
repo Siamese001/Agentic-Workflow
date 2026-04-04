@@ -3,9 +3,9 @@
 This module contains reporting and output formatting functionality.
 """
 
-from typing import Any, Dict, List, Optional
 import json
 import time
+from typing import Any
 
 
 class ExecutionReporter:
@@ -14,7 +14,7 @@ class ExecutionReporter:
     def __init__(self, console: Any = None, verbose: bool = False):
         self.console = console
         self.verbose = verbose
-        self.logs: List[Dict] = []
+        self.logs: list[dict] = []
 
     def log(self, message: str, level: str = "info") -> None:
         """Log a message with timestamp.
@@ -34,7 +34,7 @@ class ExecutionReporter:
             # Console output
             pass
 
-    def generate_summary(self, phase_results: Dict[str, Any]) -> Dict[str, Any]:
+    def generate_summary(self, phase_results: dict[str, Any]) -> dict[str, Any]:
         """Generate execution summary from phase results.
 
         Args:
@@ -51,7 +51,7 @@ class ExecutionReporter:
         }
         return summary
 
-    def generate_json_report(self, data: Dict[str, Any]) -> str:
+    def generate_json_report(self, data: dict[str, Any]) -> str:
         """Generate JSON formatted report.
 
         Args:
@@ -62,7 +62,7 @@ class ExecutionReporter:
         """
         return json.dumps(data, indent=2, default=str)
 
-    def generate_markdown_report(self, data: Dict[str, Any]) -> str:
+    def generate_markdown_report(self, data: dict[str, Any]) -> str:
         """Generate Markdown formatted report.
 
         Args:
@@ -83,14 +83,14 @@ class ExecutionReporter:
 
         for phase, result in data.get('phase_results', {}).items():
             lines.append(f"### {phase}")
-            lines.append(f"```")
+            lines.append("```")
             lines.append(json.dumps(result, indent=2, default=str))
-            lines.append(f"```")
+            lines.append("```")
             lines.append("")
 
         return "\n".join(lines)
 
-    def save_report(self, filepath: str, data: Dict[str, Any], format: str = "json") -> tuple[bool, Optional[str]]:
+    def save_report(self, filepath: str, data: dict[str, Any], format: str = "json") -> tuple[bool, str | None]:
         """Save report to file.
 
         Args:
@@ -120,7 +120,7 @@ class ExecutionReporter:
             return True, None
         except UnicodeEncodeError as e:
             return False, f"Encoding error: {str(e)}"
-        except IOError as e:
+        except OSError as e:
             return False, f"IO error: {str(e)}"
         except Exception as e:
             return False, f"Unexpected error: {str(e)}"

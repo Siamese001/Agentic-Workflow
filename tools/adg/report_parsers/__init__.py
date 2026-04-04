@@ -4,14 +4,14 @@ Provides parsers for all ADG report types to extract deficiencies.
 """
 
 from .base_parser import BaseReportParser
-from .closure_parser import ClosureReportParser
-from .layer_parser import LayerReportParser
-from .edge_parser import EdgeReportParser
-from .provenance_parser import ProvenanceReportParser
-from .determinism_parser import DeterminismReportParser
 from .boundary_parser import BoundaryReportParser
-from .mutation_parser import MutationReportParser
+from .closure_parser import ClosureReportParser
 from .composite_parser import CompositeReportParser
+from .determinism_parser import DeterminismReportParser
+from .edge_parser import EdgeReportParser
+from .layer_parser import LayerReportParser
+from .mutation_parser import MutationReportParser
+from .provenance_parser import ProvenanceReportParser
 
 __all__ = [
     "BaseReportParser",

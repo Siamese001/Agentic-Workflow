@@ -2,7 +2,7 @@
 """Audit all MCPs in user-global config for missing cwd parameter"""
 import json
 
-with open(r'C:\Users\amita\.codeium\windsurf\mcp_config.json', 'r') as f:
+with open(r'C:\Users\amita\.codeium\windsurf\mcp_config.json') as f:
     config = json.load(f)
 
 print("=" * 70)

@@ -105,7 +105,7 @@ def cmd_status(args: list[str]) -> None:
             disk_mtime = sqlite_path.stat().st_mtime if sqlite_path.exists() else None
             is_fresh = (ingested_at >= disk_mtime) if disk_mtime is not None else False
             age = round(time.time() - ingested_at, 1)
-            print(f"SOURCE     : Redis (direct)")
+            print("SOURCE     : Redis (direct)")
             print(f"TIMESTAMP  : {status.get('timestamp', 'unknown')}")
             print(f"NODES      : {int(status.get('node_count', 0)):,}")
             print(f"EDGES      : {int(status.get('edge_count', 0)):,}")
@@ -130,7 +130,7 @@ def cmd_status(args: list[str]) -> None:
     edges = con.execute("SELECT COUNT(*) FROM edges").fetchone()[0]
     con.close()
     mtime = time.strftime("%Y%m%d_%H%M", time.localtime(p.stat().st_mtime))
-    print(f"SOURCE     : SQLite (fallback)")
+    print("SOURCE     : SQLite (fallback)")
     print(f"FILE       : {p.name}")
     print(f"MTIME      : {mtime}")
     print(f"NODES      : {nodes:,}")
@@ -283,7 +283,7 @@ def cmd_edge_fanout(args: list[str]) -> None:
                 else:
                     print(f"  edge_id={eid}")
             return
-        print(f"Redis: empty — fallback to SQLite")
+        print("Redis: empty — fallback to SQLite")
     else:
         print("Redis: UNAVAILABLE")
 
@@ -324,7 +324,7 @@ def cmd_edge_fanin(args: list[str]) -> None:
                 else:
                     print(f"  edge_id={eid}")
             return
-        print(f"Redis: empty — fallback to SQLite")
+        print("Redis: empty — fallback to SQLite")
     else:
         print("Redis: UNAVAILABLE")
 
@@ -388,7 +388,7 @@ def cmd_sql(args: list[str]) -> None:
         print("Usage: sql <SQL query>")
         return
     query = " ".join(args)
-    _header(f"SQL QUERY")
+    _header("SQL QUERY")
     print(f"  {query}\n")
 
     con = _sqlite_con()

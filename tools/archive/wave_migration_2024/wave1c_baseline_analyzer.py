@@ -6,12 +6,11 @@ This script detects test quality downgrades and establishes baseline counts
 for measuring improvements across subsequent waves.
 """
 
+import hashlib
 import json
 import subprocess
+from collections import Counter, defaultdict
 from pathlib import Path
-from typing import Dict, List, Set, Tuple
-from collections import defaultdict, Counter
-import hashlib
 
 
 class BaselineAnalyzer:
@@ -21,7 +20,7 @@ class BaselineAnalyzer:
         self.baseline_metrics = {}
         self.downgrade_indicators = []
 
-    def establish_baseline_counts(self) -> Dict:
+    def establish_baseline_counts(self) -> dict:
         """Establish baseline counts for the test suite."""
         print("=== Establishing Baseline Counts ===")
 
@@ -36,7 +35,7 @@ class BaselineAnalyzer:
 
         return baseline
 
-    def _get_test_suite_metrics(self) -> Dict:
+    def _get_test_suite_metrics(self) -> dict:
         """Get comprehensive test suite metrics."""
         print("  Analyzing test suite metrics...")
 
@@ -73,7 +72,7 @@ class BaselineAnalyzer:
                 metrics['test_distribution'][parent_dir] += 1
 
                 # Count test methods, skips, etc.
-                with open(test_file, 'r', encoding='utf-8') as f:
+                with open(test_file, encoding='utf-8') as f:
                     content = f.read()
 
                 # Count test methods
@@ -131,7 +130,7 @@ class BaselineAnalyzer:
 
         return dict(metrics)
 
-    def _get_quality_metrics(self) -> Dict:
+    def _get_quality_metrics(self) -> dict:
         """Get quality metrics for the test suite."""
         print("  Analyzing quality metrics...")
 
@@ -163,7 +162,7 @@ class BaselineAnalyzer:
 
         for test_file in test_dir.rglob('test_*.py'):
             try:
-                with open(test_file, 'r', encoding='utf-8') as f:
+                with open(test_file, encoding='utf-8') as f:
                     content = f.read()
 
                 lines = content.split('\n')
@@ -247,7 +246,7 @@ class BaselineAnalyzer:
 
         return quality
 
-    def _get_performance_metrics(self) -> Dict:
+    def _get_performance_metrics(self) -> dict:
         """Get performance metrics for the test suite."""
         print("  Analyzing performance metrics...")
 
@@ -301,7 +300,7 @@ class BaselineAnalyzer:
 
         return performance
 
-    def _get_structural_metrics(self) -> Dict:
+    def _get_structural_metrics(self) -> dict:
         """Get structural metrics for the test suite."""
         print("  Analyzing structural metrics...")
 
@@ -332,7 +331,7 @@ class BaselineAnalyzer:
         import_patterns = Counter()
         for test_file in test_dir.rglob('test_*.py'):
             try:
-                with open(test_file, 'r', encoding='utf-8') as f:
+                with open(test_file, encoding='utf-8') as f:
                     content = f.read()
 
                 # Count common import patterns
@@ -354,7 +353,7 @@ class BaselineAnalyzer:
 
         return structural
 
-    def _assess_downgrade_risk(self) -> Dict:
+    def _assess_downgrade_risk(self) -> dict:
         """Assess risk of test quality downgrades."""
         print("  Assessing downgrade risk...")
 
@@ -389,12 +388,12 @@ class BaselineAnalyzer:
         match = re.search(r'collected (\d+)', output.lower())
         return int(match.group(1)) if match else 0
 
-    def generate_baseline_hash(self, data: Dict) -> str:
+    def generate_baseline_hash(self, data: dict) -> str:
         """Generate hash for baseline data."""
         content = json.dumps(data, sort_keys=True)
         return hashlib.md5(content.encode()).hexdigest()
 
-    def generate_wave1c_report(self) -> Dict:
+    def generate_wave1c_report(self) -> dict:
         """Generate Wave 1c baseline report."""
         print("=== Wave 1c: Downgrade Detection and Baseline Counts ===")
 
@@ -424,7 +423,7 @@ class BaselineAnalyzer:
             json.dump(baseline, f, indent=2)
 
         # Print summary
-        print(f"\n=== Wave 1c Summary ===")
+        print("\n=== Wave 1c Summary ===")
         print(f"Baseline Hash: {baseline['baseline_hash'][:12]}...")
         print(f"Test Files: {summary['test_files']}")
         print(f"Test Methods: {summary['test_methods']}")
@@ -435,14 +434,13 @@ class BaselineAnalyzer:
         print(f"Print Statements: {summary['print_statements']}")
         print(f"Tests Without Assertions: {summary['tests_without_assertions']}")
 
-        print(f"\n📄 Baseline report saved to: artifacts/wave1c_baseline_report.json")
+        print("\n📄 Baseline report saved to: artifacts/wave1c_baseline_report.json")
 
         return baseline
 
 
 def main():
     """Main execution for Wave 1c."""
-    import time  # Add this import
 
     analyzer = BaselineAnalyzer()
     report = analyzer.generate_wave1c_report()

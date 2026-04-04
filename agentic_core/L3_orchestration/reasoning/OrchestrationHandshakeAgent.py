@@ -15,10 +15,16 @@ from typing import Any
 
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 from agentic_core.L3_orchestration.utils.orchestration_handshake_util import (
-    discover_capable_agents as _discover_capable_agents,
-    delegate_task as _delegate_task,
-    build_handshake_artifact as _build_handshake_artifact,
     HandshakeResult,
+)
+from agentic_core.L3_orchestration.utils.orchestration_handshake_util import (
+    build_handshake_artifact as _build_handshake_artifact,
+)
+from agentic_core.L3_orchestration.utils.orchestration_handshake_util import (
+    delegate_task as _delegate_task,
+)
+from agentic_core.L3_orchestration.utils.orchestration_handshake_util import (
+    discover_capable_agents as _discover_capable_agents,
 )
 
 

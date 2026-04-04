@@ -14,7 +14,7 @@ import ast
 import json
 import sys
 from pathlib import Path
-from typing import Dict, List, Set, Any
+from typing import Any
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent.parent
 sys.path.insert(0, str(PROJECT_ROOT))
@@ -35,12 +35,12 @@ class TestValidator:
             'EXPERIMENTAL': ['@pytest.mark.experimental']
         }
 
-    def validate_test_file(self, file_path: Path) -> List[Dict[str, Any]]:
+    def validate_test_file(self, file_path: Path) -> list[dict[str, Any]]:
         """Validate a single test file."""
         violations = []
 
         try:
-            with open(file_path, 'r', encoding='utf-8') as f:
+            with open(file_path, encoding='utf-8') as f:
                 content = f.read()
 
             tree = ast.parse(content, filename=str(file_path))
@@ -70,7 +70,7 @@ class TestValidator:
 
         return violations
 
-    def validate_all_tests(self, test_files: List[Path]) -> Dict[str, Any]:
+    def validate_all_tests(self, test_files: list[Path]) -> dict[str, Any]:
         """Validate all test files."""
         print(f"🔍 Validating {len(test_files)} test files...")
 
@@ -97,7 +97,7 @@ class TestValidator:
 
         return report
 
-    def _build_summary(self, violations: List[Dict[str, Any]]) -> Dict[str, Any]:
+    def _build_summary(self, violations: list[dict[str, Any]]) -> dict[str, Any]:
         """Build summary statistics."""
         by_type = {}
         by_severity = {'HIGH': 0, 'MEDIUM': 0, 'LOW': 0}
@@ -118,7 +118,7 @@ class TestValidator:
 class ValidationVisitor(ast.NodeVisitor):
     """AST visitor to validate test patterns."""
 
-    def __init__(self, file_path: str, category_markers: Dict[str, List[str]]):
+    def __init__(self, file_path: str, category_markers: dict[str, list[str]]):
         self.file_path = file_path
         self.category_markers = category_markers
         self.violations = []
@@ -282,7 +282,7 @@ class ValidationVisitor(ast.NodeVisitor):
 
         self.generic_visit(node)
 
-    def _get_all_category_markers(self) -> List[str]:
+    def _get_all_category_markers(self) -> list[str]:
         """Get all category marker strings."""
         all_markers = []
         for markers in self.category_markers.values():
@@ -290,7 +290,7 @@ class ValidationVisitor(ast.NodeVisitor):
         return all_markers
 
 
-def find_test_files(root_dir: Path) -> List[Path]:
+def find_test_files(root_dir: Path) -> list[Path]:
     """Find all test files."""
     test_files = []
 
@@ -337,15 +337,15 @@ def main():
 
     # Print summary
     summary = report["summary"]
-    print(f"\n📊 VALIDATION SUMMARY:")
+    print("\n📊 VALIDATION SUMMARY:")
     print(f"  Files validated: {report['metadata']['total_files_validated']}")
     print(f"  Total violations: {report['metadata']['total_violations']}")
 
-    print(f"\nBy severity:")
+    print("\nBy severity:")
     for severity, count in summary["by_severity"].items():
         print(f"  {severity}: {count}")
 
-    print(f"\nBy type:")
+    print("\nBy type:")
     for vtype, count in summary["by_type"].items():
         print(f"  {vtype}: {count}")
 
@@ -356,7 +356,7 @@ def main():
         print("Fix violations before proceeding")
         sys.exit(1)
     else:
-        print(f"\n✅ VALIDATION PASSED: No HIGH severity violations")
+        print("\n✅ VALIDATION PASSED: No HIGH severity violations")
         print("Test enforcement rules satisfied")
 
     print("=" * 80)

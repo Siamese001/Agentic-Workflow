@@ -213,14 +213,14 @@ class ParallelFileProcessor:
 
 def read_file_utf8(file_path: str) -> str:
     """Read file as UTF-8 text."""
-    with open(file_path, 'r', encoding='utf-8', errors='ignore') as f:
+    with open(file_path, encoding='utf-8', errors='ignore') as f:
         return f.read()
 
 
 def parse_json_file(file_path: str) -> Any:
     """Parse JSON file."""
     import json
-    with open(file_path, 'r', encoding='utf-8') as f:
+    with open(file_path, encoding='utf-8') as f:
         return json.load(f)
 
 

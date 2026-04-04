@@ -5,7 +5,7 @@ Token and compute budget allocation for cost-aware retrieval decisions.
 
 import logging
 from dataclasses import dataclass, field
-from typing import Any, Dict, Optional
+from typing import Any
 
 from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     LayerSegment,
@@ -105,7 +105,7 @@ class ComputeBudgetManager:
         log.debug(f"Allocated {allowed} tokens for {query_id}")
         return result
 
-    def get_budget_status(self) -> Dict[str, Any]:
+    def get_budget_status(self) -> dict[str, Any]:
         """Get current budget status.
 
         Returns:
@@ -125,7 +125,7 @@ class ComputeBudgetManager:
 
 
 # Global instance
-_global_budget_manager: Optional[ComputeBudgetManager] = None
+_global_budget_manager: ComputeBudgetManager | None = None
 
 
 def get_compute_budget_manager() -> ComputeBudgetManager:

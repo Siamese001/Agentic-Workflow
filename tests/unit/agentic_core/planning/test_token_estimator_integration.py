@@ -5,11 +5,9 @@ Tests for real-world planning scenarios, integration with planning workflows,
 and end-to-end functionality.
 """
 
-import pytest
-import json
-import time
 from pathlib import Path
-from typing import Dict, List, Any
+
+import pytest
 
 
 # Lazy imports to avoid collection-time conflicts

@@ -4,12 +4,12 @@ Cleans and normalizes raw queries, generates normalized_query output,
 and handles multiple query formats.
 """
 
+import logging
 import re
 import time
-import logging
 from dataclasses import dataclass, field
-from typing import Any, Dict, List, Optional, Union
 from enum import Enum
+from typing import Any
 
 from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     LayerSegment,
@@ -41,18 +41,18 @@ class QueryPacket:
 
     # Normalized for routing (intent/domain assessment)
     normalized_query: str = ""
-    routing_signal: Optional[Dict[str, Any]] = None
+    routing_signal: dict[str, Any] | None = None
 
     # Normalized for retrieval (vector search)
     retrieval_query: str = ""
-    query_vector: Optional[List[float]] = None
+    query_vector: list[float] | None = None
 
     # Context propagation
-    context: Dict[str, Any] = field(default_factory=dict)
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    context: dict[str, Any] = field(default_factory=dict)
+    metadata: dict[str, Any] = field(default_factory=dict)
 
     # Provenance
-    source_session: Optional[str] = None
+    source_session: str | None = None
     timestamp: float = field(default_factory=lambda: time.time())
 
     def __post_init__(self):
@@ -87,10 +87,10 @@ class QueryPreprocessor:
 
     def preprocess(
         self,
-        query: Union[str, Dict[str, Any]],
+        query: str | dict[str, Any],
         source_format: QueryFormat = QueryFormat.RAW_TEXT,
-        session_id: Optional[str] = None,
-        context: Optional[Dict[str, Any]] = None,
+        session_id: str | None = None,
+        context: dict[str, Any] | None = None,
     ) -> QueryPacket:
         """Preprocess a query into normalized packet.
 
@@ -146,9 +146,9 @@ class QueryPreprocessor:
 
     def preprocess_batch(
         self,
-        queries: List[Union[str, Dict[str, Any]]],
+        queries: list[str | dict[str, Any]],
         source_format: QueryFormat = QueryFormat.RAW_TEXT,
-    ) -> List[QueryPacket]:
+    ) -> list[QueryPacket]:
         """Preprocess multiple queries.
 
         Args:
@@ -165,7 +165,7 @@ class QueryPreprocessor:
 
     def _extract_raw_text(
         self,
-        query: Union[str, Dict[str, Any]],
+        query: str | dict[str, Any],
         format: QueryFormat,
     ) -> str:
         """Extract raw text from various query formats."""
@@ -232,9 +232,7 @@ class QueryPreprocessor:
             'our', 'ours', 'ourselves', 'you', 'your', 'yours',
             'yourself', 'yourselves', 'he', 'him', 'his', 'himself',
             'she', 'her', 'hers', 'herself', 'it', 'its', 'itself',
-            'they', 'them', 'their', 'theirs', 'themselves', 'what',
-            'which', 'who', 'whom', 'this', 'that', 'these', 'those',
-            'am', 'is', 'are', 'was', 'were', 'be', 'been', 'being',
+            'they', 'them', 'their', 'theirs', 'themselves', 'am',
         }
 
         words = query.lower().split()
@@ -250,7 +248,7 @@ class QueryPreprocessor:
 
 
 # Global instance
-_global_preprocessor: Optional[QueryPreprocessor] = None
+_global_preprocessor: QueryPreprocessor | None = None
 
 
 def get_query_preprocessor() -> QueryPreprocessor:

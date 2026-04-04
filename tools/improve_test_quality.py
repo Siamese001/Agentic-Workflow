@@ -17,16 +17,14 @@ import argparse
 import logging
 import sys
 from pathlib import Path
-from typing import List, Optional
 
 sys.path.append(str(Path(__file__).parent.parent))
 
 from agentic_core.core.test_quality_framework import (
-    TestQualityAnalyzer,
     TestCoverageAnalyzer,
-    TestAssertionEnhancer,
-    strengthen_existing_assertions,
+    TestQualityAnalyzer,
     create_behavioral_test_template,
+    strengthen_existing_assertions,
 )
 
 # Configure logging
@@ -37,7 +35,7 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 
-def analyze_test_quality(test_paths: List[Path]) -> bool:
+def analyze_test_quality(test_paths: list[Path]) -> bool:
     """Analyze test quality issues in specified test files."""
     analyzer = TestQualityAnalyzer()
     total_issues = 0
@@ -74,7 +72,7 @@ def enhance_test_assertions(test_path: Path) -> bool:
 
     try:
         # Read original content
-        with open(test_path, 'r', encoding='utf-8') as f:
+        with open(test_path, encoding='utf-8') as f:
             original_content = f.read()
 
         # Enhance assertions
@@ -118,7 +116,7 @@ def analyze_coverage_gaps(source_path: Path, test_path: Path) -> bool:
         return True
 
 
-def create_enhanced_test_template(source_path: Path, output_path: Optional[Path] = None) -> bool:
+def create_enhanced_test_template(source_path: Path, output_path: Path | None = None) -> bool:
     """Create an enhanced test template for a source file."""
     if not source_path.exists():
         logger.error(f"Source file not found: {source_path}")
@@ -128,7 +126,7 @@ def create_enhanced_test_template(source_path: Path, output_path: Optional[Path]
 
     try:
         # Extract class and method information from source
-        with open(source_path, 'r', encoding='utf-8') as f:
+        with open(source_path, encoding='utf-8') as f:
             source_content = f.read()
 
         # Simple parsing to extract class and method names

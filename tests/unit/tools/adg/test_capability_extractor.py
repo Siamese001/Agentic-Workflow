@@ -10,11 +10,11 @@ from pathlib import Path
 REPO_ROOT = Path(__file__).parent.parent.parent.parent.parent
 sys.path.insert(0, str(REPO_ROOT))
 
-import pytest
-import tempfile
 import json
-import os
-from unittest.mock import patch, MagicMock
+import tempfile
+from unittest.mock import patch
+
+import pytest
 
 # Import with graceful fallback
 try:
@@ -293,7 +293,7 @@ class TestValidator:
         # Verify log file exists and has correct content
         assert log_path.exists()
 
-        with open(log_path, 'r') as f:
+        with open(log_path) as f:
             log_data = json.load(f)
 
         assert log_data["total_extractions"] == 1

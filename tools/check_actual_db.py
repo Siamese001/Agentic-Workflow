@@ -34,6 +34,7 @@ else:
 
 # Check fallback
 from agentic_core.adg.extraction.static_scanner import _SEMANTIC_FALLBACK
+
 if "belongs_to_layer" in _SEMANTIC_FALLBACK:
     print(f'Found in fallback: belongs_to_layer -> {_SEMANTIC_FALLBACK["belongs_to_layer"]}')
 else:

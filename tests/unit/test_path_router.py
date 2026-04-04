@@ -4,7 +4,6 @@ Unit tests for L0 Path Router - deterministic path selection.
 
 import pytest
 
-
 MAX_RETRIES = 3
 DEFAULT_SLEEP = 1.0
 THRESHOLD = 0.95
@@ -21,8 +20,7 @@ class TestPathRouter:
 
     def test_path_enum_values(self):
         """Test Path enum has correct values."""
-        from agentic_core.L0_routing.engines.assembly_stage import AirlockAssembler, GovernedPayload
-        from agentic_core.L0_routing.engines.path_router import Path, PathRouter
+        from agentic_core.L0_routing.engines.path_router import Path
 
         assert Path.A.value == "A"
         assert Path.B.value == "B"

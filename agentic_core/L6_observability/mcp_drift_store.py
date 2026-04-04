@@ -28,15 +28,16 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     emit_replay_key,
 )
 
+
 # Lazy import to avoid L6->L_TOOLS gravity violation
 def _get_mcp_drift_recorder():
     from agentic_core.adg.runtime.mcp_drift_recorder import (
-        MCPServerState,
         MCPConfigSnapshot,
         MCPDriftEvent,
         MCPDriftRecorder,
         MCPDriftReport,
         MCPDriftSeverity,
+        MCPServerState,
     )
     return MCPServerState, MCPConfigSnapshot, MCPDriftEvent, MCPDriftRecorder, MCPDriftReport, MCPDriftSeverity
 
@@ -318,7 +319,7 @@ drift alerting integration.
                     reports_with_drift += 1
                 total_critical += data.get("critical_count", 0)
                 total_warnings += data.get("warning_count", 0)
-            except (json.JSONDecodeError, IOError):
+            except (OSError, json.JSONDecodeError):
                 continue
 
         return {

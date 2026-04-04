@@ -6,7 +6,7 @@ and parent-child relationship resolution.
 
 import logging
 from dataclasses import dataclass, field
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     LayerSegment,
@@ -22,10 +22,10 @@ class HydrationResult:
     """Result of hydration."""
     doc_id: str
     content: str
-    parent_content: Optional[str] = None
-    child_contents: List[str] = field(default_factory=list)
+    parent_content: str | None = None
+    child_contents: list[str] = field(default_factory=list)
     is_expanded: bool = False
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    metadata: dict[str, Any] = field(default_factory=dict)
 
 
 class ParentChildHydrator:
@@ -107,9 +107,9 @@ class ParentChildHydrator:
 
     def hydrate_batch(
         self,
-        documents: List[Dict[str, Any]],
+        documents: list[dict[str, Any]],
         fetch_parent: bool = True,
-    ) -> List[HydrationResult]:
+    ) -> list[HydrationResult]:
         """Hydrate multiple documents.
 
         Args:
@@ -129,7 +129,7 @@ class ParentChildHydrator:
             results.append(result)
         return results
 
-    def _fetch_parent(self, doc_id: str) -> Optional[str]:
+    def _fetch_parent(self, doc_id: str) -> str | None:
         """Fetch parent document content.
 
         Args:
@@ -142,7 +142,7 @@ class ParentChildHydrator:
         # Would query canonical store for parent relationship
         return None
 
-    def _fetch_children(self, doc_id: str) -> List[str]:
+    def _fetch_children(self, doc_id: str) -> list[str]:
         """Fetch child chunk contents.
 
         Args:
@@ -157,7 +157,7 @@ class ParentChildHydrator:
 
 
 # Global instance
-_global_hydrator: Optional[ParentChildHydrator] = None
+_global_hydrator: ParentChildHydrator | None = None
 
 
 def get_parent_child_hydrator() -> ParentChildHydrator:

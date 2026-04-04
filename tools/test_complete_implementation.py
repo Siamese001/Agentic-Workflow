@@ -5,8 +5,8 @@ Test the continuous learning pipeline and verify migration status
 """
 
 import sys
-from pathlib import Path
 from datetime import datetime
+from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
@@ -187,7 +187,7 @@ def test_migration_status():
             memory_manager = UnifiedMemoryManager()
             db_stats = memory_manager.get_database_stats()
 
-            print(f"💾 Database contents:")
+            print("💾 Database contents:")
             for key, value in db_stats.items():
                 if "count" in key and value > 0:
                     print(f"  {key}: {value}")

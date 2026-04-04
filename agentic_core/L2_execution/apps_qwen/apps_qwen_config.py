@@ -9,7 +9,6 @@ Separate from healing tier configuration to maintain clean boundaries.
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import Dict
 
 from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_applies_guardrail,
@@ -31,7 +30,7 @@ class AppsQwenModelConfig:
 class AppsQwenPromptConfig:
     """Configuration for prompt templates by app."""
     app_name: str
-    prompt_templates: Dict[str, str]
+    prompt_templates: dict[str, str]
     default_template: str
 
 
@@ -39,7 +38,7 @@ class AppsQwenConfig:
     """Central configuration manager for apps Qwen integration."""
 
     # Model configurations for different use cases
-    MODEL_CONFIGS: Dict[str, AppsQwenModelConfig] = {
+    MODEL_CONFIGS: dict[str, AppsQwenModelConfig] = {
         "fast_inference": AppsQwenModelConfig(
             model_id="Qwen/Qwen2.5-7B-Instruct",
             max_tokens=1024,
@@ -64,7 +63,7 @@ class AppsQwenConfig:
     }
 
     # App-specific prompt configurations
-    APP_PROMPT_CONFIGS: Dict[str, AppsQwenPromptConfig] = {
+    APP_PROMPT_CONFIGS: dict[str, AppsQwenPromptConfig] = {
         "apps_eval": AppsQwenPromptConfig(
             app_name="apps_eval",
             prompt_templates={

@@ -11,7 +11,6 @@ Strategy: wrap the fixture in try/except and store the error,
 then fail in each test that uses the fixture.
 """
 
-import re
 from pathlib import Path
 
 FIXTURE_OLD = '''@pytest.fixture(scope="module")

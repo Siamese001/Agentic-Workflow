@@ -8,7 +8,7 @@ CONFIDENCE_THRESHOLD = 0.8
 
 class ConfidenceScore:
     """Placeholder confidence score type for test compatibility."""
-    
+
     def __init__(self, value=0.0, level="LOW"):
         self.value = value
         self.level = level

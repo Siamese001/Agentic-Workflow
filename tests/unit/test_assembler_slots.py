@@ -16,7 +16,6 @@ class TestAssemblerSlots:
     def test_prompt_assembler_slot_map_has_all_10_slots(self):
         """Test PromptAssembler._slot_map includes all 10 slots."""
         from agentic_core.prompt_governance.core.prompt_assembler import PromptAssembler
-        from agentic_core.L4_state.memory.runtime_models import InjectionMatch
 
         pa = PromptAssembler()
         result = pa.assemble(
@@ -32,7 +31,6 @@ class TestAssemblerSlots:
     def test_prompt_assembler_missing_slot_raises(self):
         """Test that removing a slot from custom template raises error."""
         from agentic_core.prompt_governance.core.prompt_assembler import PromptAssembler
-        from agentic_core.L4_state.memory.runtime_models import InjectionMatch
 
         # Template missing most slots - will fail validate_template_integrity
         pa = PromptAssembler(template="<SLOT_S0>test</SLOT_S0>")
@@ -49,7 +47,6 @@ class TestAssemblerSlots:
     def test_prompt_assembler_e0_slot_content(self):
         """Test exemplars content appears in E0 slot."""
         from agentic_core.prompt_governance.core.prompt_assembler import PromptAssembler
-        from agentic_core.L4_state.memory.runtime_models import InjectionMatch
 
         pa = PromptAssembler()
         result = pa.assemble(
@@ -65,7 +62,6 @@ class TestAssemblerSlots:
     def test_prompt_assembler_m0_slot_content(self):
         """Test meta_cognitive content appears in M0 slot."""
         from agentic_core.prompt_governance.core.prompt_assembler import PromptAssembler
-        from agentic_core.L4_state.memory.runtime_models import InjectionMatch
 
         pa = PromptAssembler()
         result = pa.assemble(
@@ -81,7 +77,6 @@ class TestAssemblerSlots:
     def test_prompt_assembler_y0_slot_content(self):
         """Test synthesis content appears in Y0 slot."""
         from agentic_core.prompt_governance.core.prompt_assembler import PromptAssembler
-        from agentic_core.L4_state.memory.runtime_models import InjectionMatch
 
         pa = PromptAssembler()
         result = pa.assemble(
@@ -97,7 +92,6 @@ class TestAssemblerSlots:
     def test_prompt_assembler_h0_slot_content(self):
         """Test healing_proposal content appears in H0 slot."""
         from agentic_core.prompt_governance.core.prompt_assembler import PromptAssembler
-        from agentic_core.L4_state.memory.runtime_models import InjectionMatch
 
         pa = PromptAssembler()
         result = pa.assemble(

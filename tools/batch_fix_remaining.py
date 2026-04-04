@@ -3,8 +3,6 @@
 Batch fix remaining broken test files.
 """
 
-import pathlib
-import ast
 
 
 if __name__ == '__main__':

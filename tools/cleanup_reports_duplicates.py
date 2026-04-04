@@ -1,9 +1,8 @@
 #!/usr/bin/env python3
 """Clean up duplicate precision pass reports - keep only latest version."""
 
-import shutil
-from pathlib import Path
 from datetime import datetime
+from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 REPORTS_DIR = ROOT / "artifacts" / "adg" / "reports"
@@ -122,7 +121,7 @@ def main():
     total_freed, files_removed = cleanup_report_duplicates(duplicate_groups, dry_run=False)
 
     # 4. Verify cleanup
-    print(f"\n🔍 VERIFYING CLEANUP")
+    print("\n🔍 VERIFYING CLEANUP")
     remaining_files = list(REPORTS_DIR.glob("*.json"))
     print(f"Remaining report files: {len(remaining_files)}")
 

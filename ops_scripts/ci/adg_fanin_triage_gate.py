@@ -1,7 +1,8 @@
-import sys
-import subprocess
 import argparse
+import subprocess
+import sys
 from pathlib import Path
+
 
 def get_staged_files():
     """Gets the list of staged files from git."""

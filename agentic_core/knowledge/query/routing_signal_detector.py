@@ -4,11 +4,11 @@ Lightweight model for intent/domain assessment generating route_signal
 for policy routing.
 """
 
-import re
 import logging
+import re
 from dataclasses import dataclass, field
-from typing import Any, Dict, List, Optional
 from enum import Enum
+from typing import Any
 
 from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     LayerSegment,
@@ -51,13 +51,13 @@ class RoutingSignal:
     intent: IntentType
     domain: DomainType
     confidence: float
-    keywords: List[str] = field(default_factory=list)
-    entities: List[str] = field(default_factory=list)
+    keywords: list[str] = field(default_factory=list)
+    entities: list[str] = field(default_factory=list)
     urgency_score: float = 0.0
     complexity_score: float = 0.5
     requires_freshness: bool = False
     requires_authoritative: bool = False
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    metadata: dict[str, Any] = field(default_factory=dict)
 
 
 class RoutingSignalDetector:
@@ -211,7 +211,7 @@ class RoutingSignalDetector:
         log.debug(f"Detected signal: intent={best_intent.value}, domain={best_domain.value}")
         return signal
 
-    def detect_batch(self, queries: List[str]) -> List[RoutingSignal]:
+    def detect_batch(self, queries: list[str]) -> list[RoutingSignal]:
         """Detect signals for multiple queries.
 
         Args:
@@ -222,9 +222,9 @@ class RoutingSignalDetector:
         """
         return [self.detect(q) for q in queries]
 
-    def _score_intents(self, query: str) -> Dict[IntentType, float]:
+    def _score_intents(self, query: str) -> dict[IntentType, float]:
         """Score query against intent patterns."""
-        scores = {intent: 0.0 for intent in IntentType}
+        scores = dict.fromkeys(IntentType, 0.0)
 
         for intent, patterns in self.intent_patterns.items():
             for pattern in patterns:
@@ -237,9 +237,9 @@ class RoutingSignalDetector:
 
         return scores
 
-    def _score_domains(self, query: str) -> Dict[DomainType, float]:
+    def _score_domains(self, query: str) -> dict[DomainType, float]:
         """Score query against domain patterns."""
-        scores = {domain: 0.0 for domain in DomainType}
+        scores = dict.fromkeys(DomainType, 0.0)
 
         for domain, patterns in self.domain_patterns.items():
             for pattern in patterns:
@@ -252,7 +252,7 @@ class RoutingSignalDetector:
 
         return scores
 
-    def _extract_keywords(self, query: str) -> List[str]:
+    def _extract_keywords(self, query: str) -> list[str]:
         """Extract significant keywords."""
         # Simple keyword extraction (could be enhanced with NLP)
         stop_words = {
@@ -277,7 +277,7 @@ class RoutingSignalDetector:
                 unique.append(kw)
         return unique
 
-    def _extract_entities(self, query: str) -> List[str]:
+    def _extract_entities(self, query: str) -> list[str]:
         """Extract potential entities (capitalized phrases)."""
         # Match capitalized phrases (potential proper nouns)
         pattern = r'\b[A-Z][a-zA-Z]*(?:\s+[A-Z][a-zA-Z]*)*\b'
@@ -318,7 +318,7 @@ class RoutingSignalDetector:
 
 
 # Global instance
-_global_detector: Optional[RoutingSignalDetector] = None
+_global_detector: RoutingSignalDetector | None = None
 
 
 def get_routing_signal_detector() -> RoutingSignalDetector:

@@ -5,10 +5,9 @@ This wave focuses specifically on fixing "unexpected indent" errors
 by correcting indentation problems.
 """
 
+import ast
 import pathlib
 import re
-import ast
-from typing import Dict, List, Tuple
 
 
 class Wave11IndentFix:
@@ -24,9 +23,9 @@ class Wave11IndentFix:
             'syntax_errors_fixed': 0,
             'failed_files': 0
         }
-        self.failed_files: List[Tuple[str, str]] = []
+        self.failed_files: list[tuple[str, str]] = []
 
-    def process_files(self) -> Dict:
+    def process_files(self) -> dict:
         """Process files with Wave 11 indent fix."""
         # Only process files with syntax errors
         test_files = []
@@ -164,7 +163,7 @@ class Wave11IndentFix:
         print(f"Failed files: {len(self.failed_files)}")
 
         if self.failed_files:
-            print(f"\nFailed files (first 3):")
+            print("\nFailed files (first 3):")
             for file_path, error in self.failed_files[:3]:
                 print(f"  {file_path}: {error}")
             if len(self.failed_files) > 3:

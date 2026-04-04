@@ -4,18 +4,13 @@ Execute Full Migration to Persistent Memory
 Actually migrate all learning-related files to unified memory storage
 """
 
-import sqlite3
 import json
-import pickle
-import time
-import sys
-from pathlib import Path
-from datetime import datetime
-from typing import Dict, List, Any, Optional, Tuple
-import hashlib
-import threading
-from concurrent.futures import ThreadPoolExecutor, as_completed
 import logging
+import pickle
+import sys
+from concurrent.futures import ThreadPoolExecutor, as_completed
+from datetime import datetime
+from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
@@ -92,7 +87,7 @@ class FullMigrationExecutor:
 
         print("✅ Unified memory database ready")
 
-    def _migrate_system_learning_config(self) -> Dict[str, int]:
+    def _migrate_system_learning_config(self) -> dict[str, int]:
         """Migrate system learning configuration files."""
         stats = {"migrated": 0, "failed": 0, "skipped": 0}
 
@@ -143,7 +138,7 @@ class FullMigrationExecutor:
         try:
             # Read file content
             if file_path.suffix == '.json':
-                with open(file_path, 'r', encoding='utf-8') as f:
+                with open(file_path, encoding='utf-8') as f:
                     content = json.load(f)
             elif file_path.suffix in ['.pkl', '.ckpt']:
                 with open(file_path, 'rb') as f:
@@ -168,7 +163,7 @@ class FullMigrationExecutor:
             logger.error(f"Error migrating config file {file_path}: {e}")
             return False
 
-    def _migrate_model_checkpoints(self) -> Dict[str, int]:
+    def _migrate_model_checkpoints(self) -> dict[str, int]:
         """Migrate model checkpoint files."""
         stats = {"migrated": 0, "failed": 0, "skipped": 0}
 
@@ -263,7 +258,7 @@ class FullMigrationExecutor:
             logger.error(f"Error migrating checkpoint file {file_path}: {e}")
             return False
 
-    def _migrate_training_data(self) -> Dict[str, int]:
+    def _migrate_training_data(self) -> dict[str, int]:
         """Migrate training data files."""
         stats = {"migrated": 0, "failed": 0, "skipped": 0}
 
@@ -308,7 +303,7 @@ class FullMigrationExecutor:
     def _migrate_training_file(self, file_path: Path) -> bool:
         """Migrate a single training file."""
         try:
-            with open(file_path, 'r', encoding='utf-8') as f:
+            with open(file_path, encoding='utf-8') as f:
                 training_data = json.load(f)
 
             # Store as learning experience
@@ -333,7 +328,7 @@ class FullMigrationExecutor:
             logger.error(f"Error migrating training file {file_path}: {e}")
             return False
 
-    def _migrate_application_state(self) -> Dict[str, int]:
+    def _migrate_application_state(self) -> dict[str, int]:
         """Migrate application state files."""
         stats = {"migrated": 0, "failed": 0, "skipped": 0}
 
@@ -374,7 +369,7 @@ class FullMigrationExecutor:
     def _migrate_state_file(self, file_path: Path) -> bool:
         """Migrate a single state file."""
         try:
-            with open(file_path, 'r', encoding='utf-8') as f:
+            with open(file_path, encoding='utf-8') as f:
                 state_data = json.load(f)
 
             # Generate state key
@@ -394,7 +389,7 @@ class FullMigrationExecutor:
             logger.error(f"Error migrating state file {file_path}: {e}")
             return False
 
-    def _migrate_performance_logs(self) -> Dict[str, int]:
+    def _migrate_performance_logs(self) -> dict[str, int]:
         """Migrate performance log files."""
         stats = {"migrated": 0, "failed": 0, "skipped": 0}
 
@@ -439,7 +434,7 @@ class FullMigrationExecutor:
     def _migrate_log_file(self, file_path: Path) -> bool:
         """Migrate a single log file."""
         try:
-            with open(file_path, 'r', encoding='utf-8') as f:
+            with open(file_path, encoding='utf-8') as f:
                 log_data = json.load(f)
 
             # Extract performance metrics
@@ -472,7 +467,7 @@ class FullMigrationExecutor:
             logger.error(f"Error migrating log file {file_path}: {e}")
             return False
 
-    def _migrate_user_interactions(self) -> Dict[str, int]:
+    def _migrate_user_interactions(self) -> dict[str, int]:
         """Migrate user interaction data."""
         stats = {"migrated": 0, "failed": 0, "skipped": 0}
 
@@ -513,7 +508,7 @@ class FullMigrationExecutor:
     def _migrate_interaction_file(self, file_path: Path) -> bool:
         """Migrate a single user interaction file."""
         try:
-            with open(file_path, 'r', encoding='utf-8') as f:
+            with open(file_path, encoding='utf-8') as f:
                 interaction_data = json.load(f)
 
             # Store as learning experience
@@ -538,7 +533,7 @@ class FullMigrationExecutor:
             logger.error(f"Error migrating interaction file {file_path}: {e}")
             return False
 
-    def _migrate_knowledge_graphs(self) -> Dict[str, int]:
+    def _migrate_knowledge_graphs(self) -> dict[str, int]:
         """Migrate knowledge graph files."""
         stats = {"migrated": 0, "failed": 0, "skipped": 0}
 
@@ -580,7 +575,7 @@ class FullMigrationExecutor:
     def _migrate_graph_file(self, file_path: Path) -> bool:
         """Migrate a single knowledge graph file."""
         try:
-            with open(file_path, 'r', encoding='utf-8') as f:
+            with open(file_path, encoding='utf-8') as f:
                 graph_data = json.load(f)
 
             # Store in knowledge graphs table
@@ -615,7 +610,7 @@ class FullMigrationExecutor:
             logger.error(f"Error migrating graph file {file_path}: {e}")
             return False
 
-    def _migrate_embeddings(self) -> Dict[str, int]:
+    def _migrate_embeddings(self) -> dict[str, int]:
         """Migrate embedding files."""
         stats = {"migrated": 0, "failed": 0, "skipped": 0}
 
@@ -658,7 +653,7 @@ class FullMigrationExecutor:
         try:
             # Load embedding data
             if file_path.suffix == '.json':
-                with open(file_path, 'r', encoding='utf-8') as f:
+                with open(file_path, encoding='utf-8') as f:
                     embedding_data = json.load(f)
             else:
                 with open(file_path, 'rb') as f:
@@ -712,7 +707,7 @@ class FullMigrationExecutor:
         print(f"📊 End time: {end_time.strftime('%Y-%m-%d %H:%M:%S')}")
 
         # Category breakdown
-        print(f"\n📋 CATEGORY BREAKDOWN:")
+        print("\n📋 CATEGORY BREAKDOWN:")
         total_migrated = 0
         total_failed = 0
         total_skipped = 0
@@ -734,14 +729,14 @@ class FullMigrationExecutor:
         self.migration_stats["failed_files"] = total_failed
         self.migration_stats["skipped_files"] = total_skipped
 
-        print(f"\n📊 OVERALL STATISTICS:")
+        print("\n📊 OVERALL STATISTICS:")
         print(f"  ✅ Files migrated: {total_migrated}")
         print(f"  ❌ Files failed: {total_failed}")
         print(f"  ⚪ Files skipped: {total_skipped}")
         print(f"  📈 Success rate: {(total_migrated / max(1, total_migrated + total_failed)) * 100:.1f}%")
 
         # Database statistics
-        print(f"\n💾 DATABASE STATISTICS:")
+        print("\n💾 DATABASE STATISTICS:")
         db_stats = self.memory_manager.get_database_stats()
         for key, value in db_stats.items():
             if "count" in key and value > 0:
@@ -764,7 +759,7 @@ class FullMigrationExecutor:
         print(f"📝 {message}")
 
         # Recommendations
-        print(f"\n💡 RECOMMENDATIONS:")
+        print("\n💡 RECOMMENDATIONS:")
         if total_failed > 0:
             print("  🔴 Review failed files and retry migration")
         if total_skipped > 0:

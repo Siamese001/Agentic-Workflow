@@ -28,8 +28,8 @@ import logging
 import time
 from collections import deque
 from dataclasses import dataclass, field
-from typing import Any, Dict, List, Optional, Tuple, Union
 from enum import Enum
+from typing import Any
 
 from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     emit_determinism_digest,
@@ -106,8 +106,8 @@ class ResourceMetrics:
     memory_usage: float = 0.0
     restart_count: int = 0
     age: float = 0.0
-    labels: Dict[str, str] = field(default_factory=dict)
-    annotations: Dict[str, str] = field(default_factory=dict)
+    labels: dict[str, str] = field(default_factory=dict)
+    annotations: dict[str, str] = field(default_factory=dict)
     timestamp: float = field(default_factory=time.time)
 
 
@@ -154,23 +154,23 @@ class CloudNativeManager:
     def __init__(self) -> None:
         """Initialize cloud native manager."""
         # Kubernetes client
-        self._k8s_client: Optional[Any] = None
-        self._kubeconfig_path: Optional[str] = None
+        self._k8s_client: Any | None = None
+        self._kubeconfig_path: str | None = None
         self._current_namespace: str = "default"
 
         # Resource tracking
-        self._resources: Dict[str, ResourceMetrics] = {}
+        self._resources: dict[str, ResourceMetrics] = {}
         self._cluster_metrics: ClusterMetrics = ClusterMetrics()
         self._scaling_history: deque = deque(maxlen=1000)
-        self._health_checks: Dict[str, HealthStatus] = {}
+        self._health_checks: dict[str, HealthStatus] = {}
 
         # Auto-scaling
-        self._auto_scaling_configs: Dict[str, AutoScalingConfig] = {}
+        self._auto_scaling_configs: dict[str, AutoScalingConfig] = {}
         self._scaling_events: deque = deque(maxlen=1000)
-        self._last_scale_time: Dict[str, float] = {}
+        self._last_scale_time: dict[str, float] = {}
 
         # Configuration
-        self._config: Dict[str, Any] = {
+        self._config: dict[str, Any] = {
             "auto_scaling_enabled": True,
             "health_check_interval": 30,
             "metrics_collection_interval": 15,
@@ -195,7 +195,7 @@ class CloudNativeManager:
             try:
                 config.load_incluster_config()
                 Logger.info("[CLOUD_NATIVE] Loaded in-cluster Kubernetes config")
-            except (config.ConfigException, IOError):
+            except (OSError, config.ConfigException):
                 # Fall back to kubeconfig
                 config.load_kube_config()
                 Logger.info("[CLOUD_NATIVE] Loaded kubeconfig")
@@ -219,7 +219,7 @@ class CloudNativeManager:
             Logger.error(f"[CLOUD_NATIVE] Failed to initialize Kubernetes client: {e}")
             self._initialized = False
 
-    def initialize(self, kubeconfig_path: Optional[str] = None, namespace: str = "default") -> bool:
+    def initialize(self, kubeconfig_path: str | None = None, namespace: str = "default") -> bool:
         """
         Initialize the cloud native manager.
 
@@ -479,7 +479,7 @@ class CloudNativeManager:
         for resource_key, metrics in self._resources.items():
             self._health_checks[resource_key] = metrics.status
 
-    def enable_auto_scaling(self, resource_name: str, config: Optional[AutoScalingConfig] = None) -> bool:
+    def enable_auto_scaling(self, resource_name: str, config: AutoScalingConfig | None = None) -> bool:
         """
         Enable auto-scaling for a resource.
 
@@ -586,7 +586,7 @@ class CloudNativeManager:
             except Exception as e:
                 Logger.error(f"[CLOUD_NATIVE] Auto-scaling check failed for {resource_name}: {e}")
 
-    def _evaluate_scaling_conditions(self, metrics: ResourceMetrics, config: AutoScalingConfig) -> Tuple[bool, bool]:
+    def _evaluate_scaling_conditions(self, metrics: ResourceMetrics, config: AutoScalingConfig) -> tuple[bool, bool]:
         """Evaluate if scaling is needed."""
         should_scale_up = False
         should_scale_down = False
@@ -670,7 +670,7 @@ class CloudNativeManager:
         except Exception as e:
             Logger.error(f"[CLOUD_NATIVE] Resource optimization failed: {e}")
 
-    def get_cluster_health(self) -> Dict[str, Any]:
+    def get_cluster_health(self) -> dict[str, Any]:
         """Get overall cluster health."""
         try:
             health_scores = []
@@ -719,7 +719,7 @@ class CloudNativeManager:
             Logger.error(f"[CLOUD_NATIVE] Failed to get cluster health: {e}")
             return {"error": str(e)}
 
-    def get_resource_metrics(self, resource_name: Optional[str] = None) -> Union[ResourceMetrics, Dict[str, ResourceMetrics]]:
+    def get_resource_metrics(self, resource_name: str | None = None) -> ResourceMetrics | dict[str, ResourceMetrics]:
         """Get metrics for specific resource or all resources."""
         if resource_name:
             return self._resources.get(resource_name, ResourceMetrics(
@@ -731,11 +731,11 @@ class CloudNativeManager:
         else:
             return self._resources.copy()
 
-    def get_scaling_events(self, limit: int = 100) -> List[ScalingEvent]:
+    def get_scaling_events(self, limit: int = 100) -> list[ScalingEvent]:
         """Get recent scaling events."""
         return list(self._scaling_events)[-limit:]
 
-    def get_auto_scaling_status(self) -> Dict[str, Any]:
+    def get_auto_scaling_status(self) -> dict[str, Any]:
         """Get auto-scaling status."""
         return {
             "enabled": self._auto_scaling_active,
@@ -753,12 +753,12 @@ class CloudNativeManager:
             },
         }
 
-    def update_configuration(self, config_updates: Dict[str, Any]) -> None:
+    def update_configuration(self, config_updates: dict[str, Any]) -> None:
         """Update manager configuration."""
         self._config.update(config_updates)
         Logger.info(f"[CLOUD_NATIVE] Updated configuration: {list(config_updates.keys())}")
 
-    def get_manager_status(self) -> Dict[str, Any]:
+    def get_manager_status(self) -> dict[str, Any]:
         """Get manager status and statistics."""
         return {
             "initialized": self._initialized,
@@ -785,7 +785,7 @@ def get_global_cloud_native_manager() -> CloudNativeManager:
     return _global_manager
 
 
-def initialize_cloud_native_manager(kubeconfig_path: Optional[str] = None, namespace: str = "default") -> bool:
+def initialize_cloud_native_manager(kubeconfig_path: str | None = None, namespace: str = "default") -> bool:
     """
     Initialize global cloud native manager.
 
@@ -800,13 +800,13 @@ def initialize_cloud_native_manager(kubeconfig_path: Optional[str] = None, names
     return manager.initialize(kubeconfig_path, namespace)
 
 
-def get_cluster_health() -> Dict[str, Any]:
+def get_cluster_health() -> dict[str, Any]:
     """Get cluster health using global manager."""
     manager = get_global_cloud_native_manager()
     return manager.get_cluster_health()
 
 
-def enable_resource_auto_scaling(resource_name: str, config: Optional[AutoScalingConfig] = None) -> bool:
+def enable_resource_auto_scaling(resource_name: str, config: AutoScalingConfig | None = None) -> bool:
     """
     Enable auto-scaling for a resource using global manager.
 

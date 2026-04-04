@@ -4,10 +4,10 @@ Latency attribution and percentile tracking.
 """
 
 import logging
-from dataclasses import dataclass, field
-from typing import Any, Dict, List, Optional
-from collections import defaultdict
 import statistics
+from collections import defaultdict
+from dataclasses import dataclass, field
+from typing import Any
 
 from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     LayerSegment,
@@ -28,7 +28,7 @@ class LatencyReport:
     max_ms: float
     min_ms: float
     sample_count: int
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    metadata: dict[str, Any] = field(default_factory=dict)
 
 
 class LatencyAnalyzer:
@@ -40,7 +40,7 @@ class LatencyAnalyzer:
 
     def __init__(self):
         """Initialize the latency analyzer."""
-        self._stage_latencies: Dict[str, List[float]] = defaultdict(list)
+        self._stage_latencies: dict[str, list[float]] = defaultdict(list)
 
         log.info("LatencyAnalyzer initialized")
 
@@ -61,7 +61,7 @@ class LatencyAnalyzer:
         if len(self._stage_latencies[stage_name]) > 1000:
             self._stage_latencies[stage_name] = self._stage_latencies[stage_name][-1000:]
 
-    def generate_report(self, stage_name: str) -> Optional[LatencyReport]:
+    def generate_report(self, stage_name: str) -> LatencyReport | None:
         """Generate latency report for a stage.
 
         Args:
@@ -98,7 +98,7 @@ class LatencyAnalyzer:
             sample_count=n,
         )
 
-    def generate_all_reports(self) -> Dict[str, LatencyReport]:
+    def generate_all_reports(self) -> dict[str, LatencyReport]:
         """Generate reports for all stages.
 
         Returns:
@@ -111,7 +111,7 @@ class LatencyAnalyzer:
                 reports[stage_name] = report
         return reports
 
-    def get_bottlenecks(self, threshold_ms: float = 100.0) -> List[str]:
+    def get_bottlenecks(self, threshold_ms: float = 100.0) -> list[str]:
         """Identify bottleneck stages.
 
         Args:
@@ -129,7 +129,7 @@ class LatencyAnalyzer:
 
         return bottlenecks
 
-    def _percentile(self, sorted_data: List[float], p: float) -> float:
+    def _percentile(self, sorted_data: list[float], p: float) -> float:
         """Calculate percentile from sorted data."""
         if not sorted_data:
             return 0.0
@@ -145,7 +145,7 @@ class LatencyAnalyzer:
 
 
 # Global instance
-_global_analyzer: Optional[LatencyAnalyzer] = None
+_global_analyzer: LatencyAnalyzer | None = None
 
 
 def get_latency_analyzer() -> LatencyAnalyzer:

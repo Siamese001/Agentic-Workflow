@@ -25,8 +25,8 @@ import time
 from abc import ABC, abstractmethod
 from collections import deque
 from dataclasses import dataclass, field
-from typing import Any, Dict, List, Optional
 from enum import Enum
+from typing import Any
 
 from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     emit_determinism_digest,
@@ -69,13 +69,13 @@ class GatewayConfig:
     host: str = "localhost"
     port: int = 8000
     admin_port: int = 8001
-    api_key: Optional[str] = None
+    api_key: str | None = None
     timeout: float = 30.0
     retry_attempts: int = 3
     health_check_interval: int = 30
     tracing_enabled: bool = True
     metrics_enabled: bool = True
-    security_policies: List[SecurityPolicy] = field(default_factory=list)
+    security_policies: list[SecurityPolicy] = field(default_factory=list)
 
 
 @dataclass
@@ -84,11 +84,11 @@ class TracingHeaders:
 
     trace_id: str
     span_id: str
-    parent_span_id: Optional[str]
-    baggage: Dict[str, str] = field(default_factory=dict)
+    parent_span_id: str | None
+    baggage: dict[str, str] = field(default_factory=dict)
     sampled: bool = True
 
-    def to_dict(self) -> Dict[str, str]:
+    def to_dict(self) -> dict[str, str]:
         """Convert to dictionary for HTTP headers."""
         headers = {
             "x-trace-id": self.trace_id,
@@ -130,12 +130,12 @@ class GatewayClient(ABC):
         pass
 
     @abstractmethod
-    def inject_tracing_headers(self, headers: Dict[str, str], tracing_headers: TracingHeaders) -> Dict[str, str]:
+    def inject_tracing_headers(self, headers: dict[str, str], tracing_headers: TracingHeaders) -> dict[str, str]:
         """Inject tracing headers into request."""
         pass
 
     @abstractmethod
-    def extract_tracing_headers(self, headers: Dict[str, str]) -> Optional[TracingHeaders]:
+    def extract_tracing_headers(self, headers: dict[str, str]) -> TracingHeaders | None:
         """Extract tracing headers from response."""
         pass
 
@@ -150,7 +150,7 @@ class GatewayClient(ABC):
         pass
 
     @abstractmethod
-    def apply_security_policy(self, policy: SecurityPolicy, config: Dict[str, Any]) -> bool:
+    def apply_security_policy(self, policy: SecurityPolicy, config: dict[str, Any]) -> bool:
         """Apply security policy."""
         pass
 
@@ -160,7 +160,7 @@ class KongGatewayClient(GatewayClient):
 
     def __init__(self) -> None:
         """Initialize Kong client."""
-        self._config: Optional[GatewayConfig] = None
+        self._config: GatewayConfig | None = None
         self._admin_url: str = ""
         self._proxy_url: str = ""
         self._metrics_cache: GatewayMetrics = GatewayMetrics()
@@ -184,7 +184,7 @@ class KongGatewayClient(GatewayClient):
             Logger.error(f"[GATEWAY] Kong initialization failed: {e}")
             return False
 
-    def inject_tracing_headers(self, headers: Dict[str, str], tracing_headers: TracingHeaders) -> Dict[str, str]:
+    def inject_tracing_headers(self, headers: dict[str, str], tracing_headers: TracingHeaders) -> dict[str, str]:
         """Inject tracing headers for Kong."""
         injected_headers = headers.copy()
         injected_headers.update(tracing_headers.to_dict())
@@ -195,7 +195,7 @@ class KongGatewayClient(GatewayClient):
 
         return injected_headers
 
-    def extract_tracing_headers(self, headers: Dict[str, str]) -> Optional[TracingHeaders]:
+    def extract_tracing_headers(self, headers: dict[str, str]) -> TracingHeaders | None:
         """Extract tracing headers from Kong response."""
         try:
             trace_id = headers.get("x-trace-id") or headers.get("x-kong-trace-id")
@@ -268,7 +268,7 @@ class KongGatewayClient(GatewayClient):
             Logger.debug(f"[GATEWAY] Kong health check failed: {e}")
             return False
 
-    def apply_security_policy(self, policy: SecurityPolicy, config: Dict[str, Any]) -> bool:
+    def apply_security_policy(self, policy: SecurityPolicy, config: dict[str, Any]) -> bool:
         """Apply security policy to Kong."""
         try:
             if not self._config:
@@ -314,7 +314,7 @@ class EnvoyGatewayClient(GatewayClient):
 
     def __init__(self) -> None:
         """Initialize Envoy client."""
-        self._config: Optional[GatewayConfig] = None
+        self._config: GatewayConfig | None = None
         self._admin_url: str = ""
         self._metrics_cache: GatewayMetrics = GatewayMetrics()
 
@@ -325,17 +325,17 @@ class EnvoyGatewayClient(GatewayClient):
             self._admin_url = f"http://{config.host}:{config.admin_port}"
 
             if self.health_check():
-                Logger.info(f"[GATEWAY] Envoy gateway initialized")
+                Logger.info("[GATEWAY] Envoy gateway initialized")
                 return True
             else:
-                Logger.error(f"[GATEWAY] Failed to connect to Envoy gateway")
+                Logger.error("[GATEWAY] Failed to connect to Envoy gateway")
                 return False
 
         except Exception as e:
             Logger.error(f"[GATEWAY] Envoy initialization failed: {e}")
             return False
 
-    def inject_tracing_headers(self, headers: Dict[str, str], tracing_headers: TracingHeaders) -> Dict[str, str]:
+    def inject_tracing_headers(self, headers: dict[str, str], tracing_headers: TracingHeaders) -> dict[str, str]:
         """Inject tracing headers for Envoy."""
         injected_headers = headers.copy()
         injected_headers.update(tracing_headers.to_dict())
@@ -346,7 +346,7 @@ class EnvoyGatewayClient(GatewayClient):
 
         return injected_headers
 
-    def extract_tracing_headers(self, headers: Dict[str, str]) -> Optional[TracingHeaders]:
+    def extract_tracing_headers(self, headers: dict[str, str]) -> TracingHeaders | None:
         """Extract tracing headers from Envoy response."""
         try:
             trace_id = headers.get("x-trace-id") or headers.get("x-envoy-trace-id")
@@ -415,14 +415,14 @@ class EnvoyGatewayClient(GatewayClient):
             Logger.debug(f"[GATEWAY] Envoy health check failed: {e}")
             return False
 
-    def apply_security_policy(self, policy: SecurityPolicy, config: Dict[str, Any]) -> bool:
+    def apply_security_policy(self, policy: SecurityPolicy, config: dict[str, Any]) -> bool:
         """Apply security policy to Envoy."""
         try:
             if policy == SecurityPolicy.RATE_LIMITING:
-                Logger.info(f"[GATEWAY] Applied Envoy rate limiting policy")
+                Logger.info("[GATEWAY] Applied Envoy rate limiting policy")
                 return True
             elif policy == SecurityPolicy.CORS:
-                Logger.info(f"[GATEWAY] Applied Envoy CORS policy")
+                Logger.info("[GATEWAY] Applied Envoy CORS policy")
                 return True
 
             return False
@@ -437,7 +437,7 @@ class CustomGatewayClient(GatewayClient):
 
     def __init__(self) -> None:
         """Initialize custom gateway client."""
-        self._config: Optional[GatewayConfig] = None
+        self._config: GatewayConfig | None = None
         self._metrics_cache: GatewayMetrics = GatewayMetrics()
 
     def initialize(self, config: GatewayConfig) -> bool:
@@ -451,7 +451,7 @@ class CustomGatewayClient(GatewayClient):
             Logger.error(f"[GATEWAY] Custom gateway initialization failed: {e}")
             return False
 
-    def inject_tracing_headers(self, headers: Dict[str, str], tracing_headers: TracingHeaders) -> Dict[str, str]:
+    def inject_tracing_headers(self, headers: dict[str, str], tracing_headers: TracingHeaders) -> dict[str, str]:
         """Inject tracing headers for custom gateway."""
         injected_headers = headers.copy()
         injected_headers.update(tracing_headers.to_dict())
@@ -462,7 +462,7 @@ class CustomGatewayClient(GatewayClient):
 
         return injected_headers
 
-    def extract_tracing_headers(self, headers: Dict[str, str]) -> Optional[TracingHeaders]:
+    def extract_tracing_headers(self, headers: dict[str, str]) -> TracingHeaders | None:
         """Extract tracing headers from custom gateway response."""
         try:
             trace_id = headers.get("x-trace-id") or headers.get("x-custom-trace-id")
@@ -516,7 +516,7 @@ class CustomGatewayClient(GatewayClient):
         """Check custom gateway health."""
         return True  # Always healthy for custom gateway
 
-    def apply_security_policy(self, policy: SecurityPolicy, config: Dict[str, Any]) -> bool:
+    def apply_security_policy(self, policy: SecurityPolicy, config: dict[str, Any]) -> bool:
         """Apply security policy to custom gateway."""
         Logger.info(f"[GATEWAY] Applied custom security policy: {policy.value}")
         return True
@@ -533,12 +533,12 @@ class APIGatewayIntegration:
     def __init__(self, gateway_type: GatewayType = GatewayType.CUSTOM) -> None:
         """Initialize API gateway integration."""
         self._gateway_type = gateway_type
-        self._client: Optional[GatewayClient] = None
-        self._config: Optional[GatewayConfig] = None
+        self._client: GatewayClient | None = None
+        self._config: GatewayConfig | None = None
         self._initialized: bool = False
 
         # Service discovery
-        self._registered_services: Dict[str, Dict[str, Any]] = {}
+        self._registered_services: dict[str, dict[str, Any]] = {}
 
         # Metrics and monitoring
         self._metrics_history: deque = deque(maxlen=1000)
@@ -546,9 +546,9 @@ class APIGatewayIntegration:
         self._last_health_check: float = 0
 
         # Security policies
-        self._active_policies: Dict[SecurityPolicy, Dict[str, Any]] = {}
+        self._active_policies: dict[SecurityPolicy, dict[str, Any]] = {}
 
-    def initialize(self, config: Optional[GatewayConfig] = None) -> bool:
+    def initialize(self, config: GatewayConfig | None = None) -> bool:
         """Initialize the gateway integration."""
         try:
             if config is None:
@@ -581,8 +581,8 @@ class APIGatewayIntegration:
             self._health_status = "error"
             return False
 
-    def inject_tracing_headers(self, request_headers: Dict[str, str], trace_id: str, span_id: str,
-                             parent_span_id: Optional[str] = None, baggage: Optional[Dict[str, str]] = None) -> Dict[str, str]:
+    def inject_tracing_headers(self, request_headers: dict[str, str], trace_id: str, span_id: str,
+                             parent_span_id: str | None = None, baggage: dict[str, str] | None = None) -> dict[str, str]:
         """
         Inject tracing headers into request.
 
@@ -614,7 +614,7 @@ class APIGatewayIntegration:
             Logger.error(f"[GATEWAY] Failed to inject tracing headers: {e}")
             return request_headers
 
-    def extract_tracing_headers(self, response_headers: Dict[str, str]) -> Optional[TracingHeaders]:
+    def extract_tracing_headers(self, response_headers: dict[str, str]) -> TracingHeaders | None:
         """
         Extract tracing headers from response.
 
@@ -634,7 +634,7 @@ class APIGatewayIntegration:
             Logger.error(f"[GATEWAY] Failed to extract tracing headers: {e}")
             return None
 
-    def register_service(self, service_name: str, service_config: Dict[str, Any]) -> bool:
+    def register_service(self, service_name: str, service_config: dict[str, Any]) -> bool:
         """
         Register a service with the gateway.
 
@@ -691,7 +691,7 @@ class APIGatewayIntegration:
             self._health_status = "error"
             return False
 
-    def apply_security_policy(self, policy: SecurityPolicy, config: Dict[str, Any]) -> bool:
+    def apply_security_policy(self, policy: SecurityPolicy, config: dict[str, Any]) -> bool:
         """
         Apply a security policy to the gateway.
 
@@ -717,15 +717,15 @@ class APIGatewayIntegration:
             Logger.error(f"[GATEWAY] Failed to apply security policy {policy.value}: {e}")
             return False
 
-    def get_service_registry(self) -> Dict[str, Dict[str, Any]]:
+    def get_service_registry(self) -> dict[str, dict[str, Any]]:
         """Get registered services."""
         return self._registered_services.copy()
 
-    def get_active_policies(self) -> Dict[SecurityPolicy, Dict[str, Any]]:
+    def get_active_policies(self) -> dict[SecurityPolicy, dict[str, Any]]:
         """Get active security policies."""
         return self._active_policies.copy()
 
-    def get_integration_status(self) -> Dict[str, Any]:
+    def get_integration_status(self) -> dict[str, Any]:
         """Get integration status and statistics."""
         metrics = self.get_gateway_metrics()
 
@@ -765,7 +765,7 @@ def get_global_gateway() -> APIGatewayIntegration:
     return _global_gateway
 
 
-def initialize_gateway_integration(gateway_type: GatewayType = GatewayType.CUSTOM, config: Optional[GatewayConfig] = None) -> bool:
+def initialize_gateway_integration(gateway_type: GatewayType = GatewayType.CUSTOM, config: GatewayConfig | None = None) -> bool:
     """
     Initialize global API gateway integration.
 
@@ -780,8 +780,8 @@ def initialize_gateway_integration(gateway_type: GatewayType = GatewayType.CUSTO
     return gateway.initialize(config)
 
 
-def inject_gateway_tracing_headers(headers: Dict[str, str], trace_id: str, span_id: str,
-                                   parent_span_id: Optional[str] = None, baggage: Optional[Dict[str, str]] = None) -> Dict[str, str]:
+def inject_gateway_tracing_headers(headers: dict[str, str], trace_id: str, span_id: str,
+                                   parent_span_id: str | None = None, baggage: dict[str, str] | None = None) -> dict[str, str]:
     """
     Inject tracing headers using global gateway integration.
 
@@ -799,7 +799,7 @@ def inject_gateway_tracing_headers(headers: Dict[str, str], trace_id: str, span_
     return gateway.inject_tracing_headers(headers, trace_id, span_id, parent_span_id, baggage)
 
 
-def extract_gateway_tracing_headers(headers: Dict[str, str]) -> Optional[TracingHeaders]:
+def extract_gateway_tracing_headers(headers: dict[str, str]) -> TracingHeaders | None:
     """
     Extract tracing headers using global gateway integration.
 

@@ -1,7 +1,8 @@
-import os
-import sys
-import tomllib
 import subprocess
+import sys
+
+import tomllib
+
 
 def main():
     with open("pyproject.toml", "rb") as f:

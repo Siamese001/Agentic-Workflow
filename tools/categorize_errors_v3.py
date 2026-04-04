@@ -3,10 +3,8 @@
 
 import importlib
 import re
-import sys
-import traceback
-from pathlib import Path
 from collections import Counter
+from pathlib import Path
 
 # Directly try importing each test file as a module to see what fails
 tests_dir = Path("tests/unit/agentic_core")

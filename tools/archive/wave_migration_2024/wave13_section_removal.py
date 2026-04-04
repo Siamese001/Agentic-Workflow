@@ -5,10 +5,9 @@ This wave removes entire sections that are causing syntax errors,
 including the problematic comment blocks and their content.
 """
 
+import ast
 import pathlib
 import re
-import ast
-from typing import Dict, List, Tuple
 
 
 class Wave13SectionRemoval:
@@ -24,9 +23,9 @@ class Wave13SectionRemoval:
             'syntax_errors_fixed': 0,
             'failed_files': 0
         }
-        self.failed_files: List[Tuple[str, str]] = []
+        self.failed_files: list[tuple[str, str]] = []
 
-    def process_files(self) -> Dict:
+    def process_files(self) -> dict:
         """Process files with Wave 13 section removal."""
         # Only process files with syntax errors
         test_files = []
@@ -121,7 +120,7 @@ class Wave13SectionRemoval:
                  (any(keyword in stripped for keyword in ['_emit_', 'emit_', 'MAX_', 'BATCH_', 'BUFFER_', 'DEFAULT_', 'MAX_', 'RETRIES_', 'THRESHOLD']) or
                   re.match(r'^[a-zA-Z_][a-zA-Z0-9_]*,?\s*$', stripped))))
 
-    def _skip_problematic_section(self, lines: List[str], start_idx: int) -> int:
+    def _skip_problematic_section(self, lines: list[str], start_idx: int) -> int:
         """Skip a problematic section and return number of lines skipped."""
         i = start_idx + 1
         while i < len(lines):
@@ -179,7 +178,7 @@ class Wave13SectionRemoval:
         print(f"Failed files: {len(self.failed_files)}")
 
         if self.failed_files:
-            print(f"\nFailed files (first 3):")
+            print("\nFailed files (first 3):")
             for file_path, error in self.failed_files[:3]:
                 print(f"  {file_path}: {error}")
             if len(self.failed_files) > 3:

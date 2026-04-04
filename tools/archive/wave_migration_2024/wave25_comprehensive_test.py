@@ -5,11 +5,10 @@ This wave attempts to run tests and validates the current status
 to determine if we can pass tests.
 """
 
-import pathlib
 import ast
+import pathlib
 import subprocess
 import sys
-from typing import Dict, List, Tuple
 
 
 class Wave25ComprehensiveTest:
@@ -29,7 +28,7 @@ class Wave25ComprehensiveTest:
             'tests_failed': 0
         }
 
-    def run_comprehensive_test(self) -> Dict:
+    def run_comprehensive_test(self) -> dict:
         """Run comprehensive test validation."""
         # Check current syntax status
         self._check_syntax_status()
@@ -146,19 +145,19 @@ class Wave25ComprehensiveTest:
         print(f"Syntax errors: {self.stats['syntax_errors']}")
         print(f"Success rate: {self.stats['valid_files']/self.stats['total_files']*100:.1f}%")
 
-        print(f"\nTest collection:")
+        print("\nTest collection:")
         print(f"Pytest collection: {'✅ Success' if self.stats['test_collection_success'] else '⚠️ Failed'}")
         if self.stats['tests_collected'] > 0:
             print(f"Tests collected: {self.stats['tests_collected']}")
 
-        print(f"\nTest execution:")
+        print("\nTest execution:")
         print(f"Test execution: {'✅ Success' if self.stats['test_execution_success'] else '⚠️ Failed'}")
         if self.stats['tests_passed'] > 0:
             print(f"Tests passed: {self.stats['tests_passed']}")
         if self.stats['tests_failed'] > 0:
             print(f"Tests failed: {self.stats['tests_failed']}")
 
-        print(f"\n🎯 COMPREHENSIVE STATUS:")
+        print("\n🎯 COMPREHENSIVE STATUS:")
         if self.stats['valid_files'] >= 2708:
             print("✅ EXCELLENT: Test suite significantly restored!")
         elif self.stats['valid_files'] >= 2500:

@@ -50,43 +50,28 @@ from typing import Any
 from mcp.server.fastmcp import FastMCP
 
 from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-    _emit_agent_executes_agent,
     _emit_applies_guardrail,
     _emit_authorize_and_execute,
     _emit_blocks_direct_write,
     _emit_captures_evaluation_metric,
     _emit_captures_execution_output,
-    _emit_checks_agent_registry,
     _emit_coordinates_agents,
     _emit_dispatches_agent,
-    _emit_dispatches_execution_plan,
     _emit_dispatches_healing_run,
     _emit_escalates_failure,
-    _emit_escalates_to_human,
-    _emit_gated_by_confidence,
-    _emit_hard_fails_untranscripted,
     _emit_invokes_evaluation,
     _emit_links_execution_to_snapshot,
-    _emit_observes_runtime_state,
     _emit_orchestrates_workflow,
     _emit_reads_policy_state,
     _emit_records_healing_outcome,
     _emit_records_telemetry_event,
     _emit_records_tool_invocation,
     _emit_records_workflow_lineage,
-    _emit_routes_through,
-    _emit_routes_to_agent,
     _emit_routes_to_capability,
-    _emit_signs_execution_trace,
     _emit_snapshots_state,
     _emit_stores_embedding,
-    _emit_transcripts_response,
     _emit_updates_meta_learning_state,
-    _emit_validated_by_safety_plane,
-    _emit_validates_agent_capability,
     _emit_validates_capability,
-    _emit_verifies_boundary,
-    _emit_verifies_policy,
     _emit_writes_via_uwg,
     emit_determinism_digest,
     record_execution_trace,
@@ -172,7 +157,7 @@ def _refresh_guardian_cache():
 
         if report_file.exists():
             try:
-                with open(report_file, 'r') as f:
+                with open(report_file) as f:
                     report = json.load(f)
 
                 _guardian_cache[guardian_name] = {
@@ -364,7 +349,7 @@ def guardian_report(guardian_name: str = None) -> dict[str, Any]:
 
         if report_file.exists():
             try:
-                with open(report_file, 'r') as f:
+                with open(report_file) as f:
                     report = json.load(f)
 
                 return {
@@ -421,7 +406,7 @@ def guardian_manifest() -> dict[str, Any]:
         manifest_path = GUARDIAN_REPORTS_DIR / manifest_file
         if manifest_path.exists():
             try:
-                with open(manifest_path, 'r') as f:
+                with open(manifest_path) as f:
                     manifests[manifest_file.replace(".json", "")] = json.load(f)
             except Exception as e:
                 manifests[manifest_file.replace(".json", "")] = {

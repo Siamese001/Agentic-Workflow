@@ -5,9 +5,9 @@ Latency attribution and success rate tracking by query type.
 
 import logging
 import time
-from dataclasses import dataclass, field
-from typing import Any, Dict, List, Optional
 from collections import defaultdict
+from dataclasses import dataclass, field
+from typing import Any
 
 from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     LayerSegment,
@@ -51,9 +51,9 @@ class PerformanceReport:
     """Performance report."""
     timestamp: float = field(default_factory=time.time)
     overall_metrics: PerformanceMetrics = field(default_factory=PerformanceMetrics)
-    by_intent: Dict[str, PerformanceMetrics] = field(default_factory=dict)
-    by_domain: Dict[str, PerformanceMetrics] = field(default_factory=dict)
-    by_complexity: Dict[str, PerformanceMetrics] = field(default_factory=dict)
+    by_intent: dict[str, PerformanceMetrics] = field(default_factory=dict)
+    by_domain: dict[str, PerformanceMetrics] = field(default_factory=dict)
+    by_complexity: dict[str, PerformanceMetrics] = field(default_factory=dict)
 
 
 class PerformanceAttribution:
@@ -65,10 +65,10 @@ class PerformanceAttribution:
 
     def __init__(self):
         """Initialize the performance attribution."""
-        self._metrics: Dict[str, PerformanceMetrics] = defaultdict(PerformanceMetrics)
-        self._by_intent: Dict[str, PerformanceMetrics] = defaultdict(PerformanceMetrics)
-        self._by_domain: Dict[str, PerformanceMetrics] = defaultdict(PerformanceMetrics)
-        self._by_complexity: Dict[str, PerformanceMetrics] = defaultdict(PerformanceMetrics)
+        self._metrics: dict[str, PerformanceMetrics] = defaultdict(PerformanceMetrics)
+        self._by_intent: dict[str, PerformanceMetrics] = defaultdict(PerformanceMetrics)
+        self._by_domain: dict[str, PerformanceMetrics] = defaultdict(PerformanceMetrics)
+        self._by_complexity: dict[str, PerformanceMetrics] = defaultdict(PerformanceMetrics)
 
         log.info("PerformanceAttribution initialized")
 
@@ -144,7 +144,7 @@ class PerformanceAttribution:
             by_complexity=dict(self._by_complexity),
         )
 
-    def get_slowest_intents(self, n: int = 3) -> List[tuple]:
+    def get_slowest_intents(self, n: int = 3) -> list[tuple]:
         """Get slowest intents.
 
         Args:
@@ -160,7 +160,7 @@ class PerformanceAttribution:
         )
         return [(intent, m.avg_latency_ms) for intent, m in sorted_intents[:n]]
 
-    def get_lowest_success_domains(self, n: int = 3) -> List[tuple]:
+    def get_lowest_success_domains(self, n: int = 3) -> list[tuple]:
         """Get domains with lowest success rates.
 
         Args:
@@ -177,7 +177,7 @@ class PerformanceAttribution:
 
 
 # Global instance
-_global_attribution: Optional[PerformanceAttribution] = None
+_global_attribution: PerformanceAttribution | None = None
 
 
 def get_performance_attribution() -> PerformanceAttribution:

@@ -14,8 +14,8 @@ from pathlib import Path
 from typing import Any, Protocol
 
 from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-    _emit_records_execution_trace,
     _emit_captures_pattern,
+    _emit_records_execution_trace,
     _emit_stores_embedding,
 )
 

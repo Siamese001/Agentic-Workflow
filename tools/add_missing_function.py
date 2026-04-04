@@ -4,7 +4,7 @@
 import re
 
 # Read the file
-with open('agentic_core/adg/extraction/static_scanner.py', 'r', encoding='utf-8') as f:
+with open('agentic_core/adg/extraction/static_scanner.py', encoding='utf-8') as f:
     content = f.read()
 
 # Check if function already exists

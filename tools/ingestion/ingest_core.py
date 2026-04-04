@@ -6,18 +6,17 @@ Wave 1 Implementation: Core Knowledge (Baseline)
 Ingests code chunks, symbols, and architectural documentation into ChromaDB.
 """
 
+import hashlib
+import logging
+import sqlite3
 import sys
 from pathlib import Path
-import sqlite3
-import json
-import hashlib
-from typing import List, Dict, Any, Optional
-import logging
 
 # Add agentic_core to path
 sys.path.insert(0, str(Path(__file__).parent.parent.parent / "agentic_core"))
 
 from L4_state.client.chroma_client import SovereignChromaClient
+
 # from L2_execution.UniversalWriteGateway import UniversalWriteGateway
 
 # Configure logging
@@ -73,7 +72,7 @@ class CoreKnowledgeIngestion:
 
         for file_path in python_files:
             try:
-                with open(file_path, 'r', encoding='utf-8') as f:
+                with open(file_path, encoding='utf-8') as f:
                     content = f.read()
 
                 # Split into chunks (simplified - could use AST for better chunking)
@@ -220,7 +219,7 @@ class CoreKnowledgeIngestion:
                     continue
 
                 try:
-                    with open(file_path, 'r', encoding='utf-8') as f:
+                    with open(file_path, encoding='utf-8') as f:
                         content = f.read()
 
                     if not content.strip():
@@ -264,7 +263,7 @@ class CoreKnowledgeIngestion:
 
         return len(documents)
 
-    def _chunk_code(self, content: str, chunk_size: int = 500) -> List[str]:
+    def _chunk_code(self, content: str, chunk_size: int = 500) -> list[str]:
         """Split code content into chunks."""
         lines = content.split('\n')
         chunks = []
@@ -337,7 +336,7 @@ class CoreKnowledgeIngestion:
         else:
             return "documentation"
 
-    def run_ingestion(self) -> Dict[str, int]:
+    def run_ingestion(self) -> dict[str, int]:
         """Run complete Wave 1 ingestion."""
         logger.info("Starting Wave 1: Core Knowledge ingestion...")
 

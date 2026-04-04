@@ -3,8 +3,6 @@
 """
 from __future__ import annotations
 
-import pytest
-
 
 class TestMaxRetriesConstant:
     def test_is_not_none(self):

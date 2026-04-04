@@ -37,10 +37,10 @@ class TestExecuteSsotModuleImports:
         """Verify ALL P0-P4 lifecycle trace contract emitters are imported."""
         # Import from modular package (not monolith)
         from agentic_core.L0_routing.scripts import (
-            HealContext,
-            SovereignDecisionEngine,
-            MetaLearningResult,
             _L1_EXACT_CACHE,
+            HealContext,
+            MetaLearningResult,
+            SovereignDecisionEngine,
             _retrieve_execution_context,
         )
 
@@ -50,21 +50,21 @@ class TestExecuteSsotModuleImports:
         assert MetaLearningResult is not None
         assert _L1_EXACT_CACHE is not None
         assert _retrieve_execution_context is not None
-        
+
         # GAP FIX: Add functional validation (not just import check)
         # Test HealContext can be instantiated
         hc = HealContext(targets=[], registry=None, args=None)
         assert hc.is_valid() is False  # Empty targets should be invalid
-        
+
         # Test SovereignDecisionEngine can be instantiated
         engine = SovereignDecisionEngine(registry=None, args=None)
         assert engine.get_execution_status()['phases_completed'] == 0
-        
+
         # Test MetaLearningResult dataclass works correctly
         result = MetaLearningResult(records_persisted=3, proposals=('a', 'b'))
         assert result.records_persisted == 3
         assert len(result.proposals) == 2
-        
+
         # Test cache functions are callable
         assert callable(_retrieve_execution_context)
 
@@ -171,11 +171,12 @@ class TestExecuteSsotMetaLearningIntakeReal:
 
     def test_modular_imports_work(self):
         """Verify all modular imports work correctly."""
+        from pathlib import Path
+
         from agentic_core.L0_routing.scripts.execute_ssot_meta import (
             MetaLearningResult,
             _fire_meta_learning_intake_required,
         )
-        from pathlib import Path
 
         # GAP FIX: Add functional tests beyond import check
         # Test MetaLearningResult creation with edge cases
@@ -183,19 +184,19 @@ class TestExecuteSsotMetaLearningIntakeReal:
         assert result.records_persisted == 5
         assert result.proposals == ('test',)
         assert result.errors == []  # Default empty list
-        
+
         # Test with errors list provided
         result2 = MetaLearningResult(records_persisted=0, proposals=(), errors=['error1'])
         assert len(result2.errors) == 1
-        
+
         # Test _fire_meta_learning_intake_required is callable
         assert callable(_fire_meta_learning_intake_required)
-        
+
         # Test actual function execution
         class MockState:
             def __init__(self):
                 self.state = {'healing_actions': []}
-        
+
         intake_result = _fire_meta_learning_intake_required(
             MockState(), 1234567890, Path('/tmp')
         )

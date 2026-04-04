@@ -52,9 +52,6 @@ from agentic_core.L5_safety.types.surgical_context_types import (
     SurgicalContext,
     ViolationConstraint,
 )
-from agentic_core.mixins.circuit_breaker_mixin import CircuitBreakerMixin
-from agentic_core.mixins.cst_healer_mixin import SurgicalCSTHealerMixin
-from agentic_core.mixins.prompt_rendering_mixin import PromptRenderingMixin
 from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     LayerSegment,
     _emit_agent_executes_agent,
@@ -98,6 +95,9 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     emit_determinism_digest,  # noqa: E402
     emit_replay_key,  # noqa: E402
 )
+from agentic_core.mixins.circuit_breaker_mixin import CircuitBreakerMixin
+from agentic_core.mixins.cst_healer_mixin import SurgicalCSTHealerMixin
+from agentic_core.mixins.prompt_rendering_mixin import PromptRenderingMixin
 
 emit_replay_key("p0", "CodeHealerAgent")
 emit_determinism_digest("p0", "CodeHealerAgent")

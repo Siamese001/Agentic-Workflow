@@ -10,6 +10,7 @@ import logging
 import re
 from datetime import datetime, timezone
 from typing import Any
+
 from agentic_core.L_CONTRACTS.lifecycle_trace_contract import _emit_signs_execution_trace
 
 logger = logging.getLogger(__name__)
@@ -63,8 +64,8 @@ class EvalGuard:
         Returns a result dict with ``verdict`` ('allow' or 'deny') and
         optional ``violations`` list.
         """
-        import uuid as _uuid  # noqa: PLC0415
         import hashlib as _hashlib  # noqa: PLC0415
+        import uuid as _uuid  # noqa: PLC0415
         _tid = str(_uuid.uuid4())
         _emit_signs_execution_trace(_tid, _hashlib.sha256(_tid.encode()).hexdigest()[:12], "p0_trace", 0)
         violations = self._scan(code)

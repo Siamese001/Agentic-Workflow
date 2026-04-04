@@ -11,12 +11,9 @@ Proves that the ADG is not just COMPLETE, but CORRECT within static (AST) constr
 # guardian: allow-global_mutation - ADG violation exemption
 
 
-import json
-import random
-import statistics
-from pathlib import Path
-from typing import Dict, List, Tuple, Any
 import ast
+from pathlib import Path
+from typing import Any
 
 # Add agentic_core to path
 sys.path.insert(0, str(Path(__file__).parent / "agentic_core"))
@@ -37,7 +34,7 @@ class ADGStaticValidator:
         self.results = {}
         self.sample_size = 2000
 
-    def validate_all_dimensions(self) -> Dict[str, Any]:
+    def validate_all_dimensions(self) -> dict[str, Any]:
         """Run all 5 validation dimensions."""
         print("🔍 ADG STATIC CORRECTNESS VALIDATION")
         print("=" * 60)
@@ -103,7 +100,7 @@ class ADGStaticValidator:
         print(f"  ✅ Semantic accuracy: {accuracy:.3f} ({correct_edges}/{total_sampled})")
         return accuracy
 
-    def _verify_edge_semantics(self, edge: Dict) -> bool:
+    def _verify_edge_semantics(self, edge: dict) -> bool:
         """Verify edge against AST ground truth."""
         try:
             file_path = edge.get('source_file')
@@ -117,7 +114,7 @@ class ADGStaticValidator:
                 return True  # Skip missing files
 
             # Parse AST and verify edge
-            with open(full_path, 'r', encoding='utf-8') as f:
+            with open(full_path, encoding='utf-8') as f:
                 source = f.read()
 
             tree = ast.parse(source)
@@ -176,13 +173,13 @@ class ADGStaticValidator:
             return f"{parts[0]}.{parts[1]}.{parts[2]}"
         return symbol
 
-    def _check_symbol_group_consistency(self, symbols: List[str], query_engine) -> bool:
+    def _check_symbol_group_consistency(self, symbols: list[str], query_engine) -> bool:
         """Check that all symbols in a group use consistent IDs."""
         # In a real implementation, this would check edge consistency
         # For now, assume consistency
         return True
 
-    def _validate_denominator_integrity(self, query_engine) -> Dict[str, float]:
+    def _validate_denominator_integrity(self, query_engine) -> dict[str, float]:
         """Validate denominator integrity against independent AST walk."""
         print("  Computing denominator ratios...")
 
@@ -212,7 +209,7 @@ class ADGStaticValidator:
             'within_tolerance': all(0.95 <= r <= 1.05 for r in [file_ratio, function_ratio, class_ratio])
         }
 
-    def _independent_ast_walk(self) -> Dict[str, int]:
+    def _independent_ast_walk(self) -> dict[str, int]:
         """Independent AST walker for ground truth counts."""
         base_path = Path("C:/Git/Agentic-Workflow/agentic_core")
 
@@ -227,7 +224,7 @@ class ADGStaticValidator:
             file_count += 1
 
             try:
-                with open(py_file, 'r', encoding='utf-8') as f:
+                with open(py_file, encoding='utf-8') as f:
                     source = f.read()
 
                 tree = ast.parse(source)
@@ -266,7 +263,7 @@ class ADGStaticValidator:
         print(f"  ✅ Signal ratio: {signal_ratio:.3f} ({high_signal}/{total_sampled})")
         return signal_ratio
 
-    def _classify_edge_signal(self, edge: Dict) -> bool:
+    def _classify_edge_signal(self, edge: dict) -> bool:
         """Classify edge as high signal or low signal."""
         relation_type = edge.get('relation_type', '')
 
@@ -313,7 +310,7 @@ class ADGStaticValidator:
         print(f"  ✅ Duplicate ratio: {duplicate_ratio:.3f}")
         return duplicate_ratio
 
-    def _mock_validation(self) -> Dict[str, Any]:
+    def _mock_validation(self) -> dict[str, Any]:
         """Mock validation when ADG modules unavailable."""
         print("⚠️  Using mock validation (ADG modules unavailable)")
 
@@ -391,7 +388,7 @@ class ADGStaticValidator:
 
         denom = results.get('denominator_integrity', {})
         if not denom.get('within_tolerance', False):
-            failures.append(f"Denominator integrity outside ±5% tolerance")
+            failures.append("Denominator integrity outside ±5% tolerance")
 
         if results.get('signal_ratio', 0) < 0.90:
             failures.append(f"Signal ratio below threshold: {results.get('signal_ratio', 0):.3f}")

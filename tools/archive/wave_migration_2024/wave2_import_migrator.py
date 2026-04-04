@@ -8,7 +8,6 @@ import ast
 import pathlib
 import re
 import sys
-from typing import List, Dict, Set, Optional
 
 # Target import patterns to migrate
 TARGET_IMPORT_RE = re.compile(
@@ -38,7 +37,7 @@ class Wave2ImportMigrator:
             'imports_moved': 0,
         }
 
-    def migrate_directory(self, test_dir: str) -> Dict:
+    def migrate_directory(self, test_dir: str) -> dict:
         """Migrate all test files in a directory."""
         test_path = self.repo_root / test_dir
         if not test_path.exists():
@@ -111,7 +110,7 @@ class Wave2ImportMigrator:
                 return True
         return False
 
-    def _generate_migrated_content_v2(self, content: str, imports: List[ast.AST]) -> str:
+    def _generate_migrated_content_v2(self, content: str, imports: list[ast.AST]) -> str:
         """Generate new content with imports properly moved into functions."""
         lines = content.splitlines()
 

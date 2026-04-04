@@ -36,7 +36,6 @@ from agentic_core.L0_routing.types.v15_exceptions import (
     V15EnforcementError,
     is_v15_enforced,
 )
-
 from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     LayerSegment,
     _emit_agent_executes_agent,

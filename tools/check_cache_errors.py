@@ -3,7 +3,7 @@
 
 import json
 
-with open('C:/Git/Agentic-Workflow/syntax_fix_phases.json', 'r') as f:
+with open('C:/Git/Agentic-Workflow/syntax_fix_phases.json') as f:
     phases = json.load(f)
 
 print('Cache layer files:')

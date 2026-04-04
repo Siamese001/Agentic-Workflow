@@ -31,7 +31,7 @@ class SovereignDependencyError(Exception):
 @dataclass
 class SubatomicHopResult:
     """Result of a subatomic hop operation."""
-    
+
     success: bool
     hop_id: str
     role: str
@@ -41,11 +41,11 @@ class SubatomicHopResult:
 @dataclass
 class HopContext:
     """Context for a subatomic hop."""
-    
+
     role: str
     config: dict[str, Any]
     hop_id: str = field(default_factory=lambda: str(uuid.uuid4()))
-    
+
     def to_dict(self) -> dict[str, Any]:
         """Convert context to dictionary."""
         return {
@@ -77,17 +77,17 @@ def validate_dependencies(
         SubatomicHopResult with validation status
     """
     errors = []
-    
+
     # Validate required fields
     if not role:
         errors.append("Missing required: role")
-    
+
     if not config:
         errors.append("Missing required: config")
-    
+
     # Note: Optional dependencies are not required for basic operation
     # but may be needed for full functionality
-    
+
     if errors:
         return SubatomicHopResult(
             success=False,
@@ -95,7 +95,7 @@ def validate_dependencies(
             role=role or "unknown",
             errors=errors,
         )
-    
+
     return SubatomicHopResult(
         success=True,
         hop_id=str(uuid.uuid4()),

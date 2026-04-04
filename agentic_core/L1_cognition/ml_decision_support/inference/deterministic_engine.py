@@ -6,14 +6,15 @@ governance compliance, and audit logging.
 """
 
 import time
-from typing import Dict, List, Optional, Any
 from dataclasses import dataclass
+from typing import Any
 
 from agentic_core.L_CONTRACTS.lifecycle_trace_contract import _emit_records_execution_trace
+
 from ..config.model_registry import DecisionMode
-from ..models.base_model import BaseMLModel, ModelPrediction
-from ..inference.shadow_logger import ShadowLogger, ShadowMode
 from ..inference.replay_harness import ReplayHarness
+from ..inference.shadow_logger import ShadowLogger, ShadowMode
+from ..models.base_model import BaseMLModel, ModelPrediction
 
 
 @dataclass
@@ -21,11 +22,11 @@ class InferenceRequest:
     """Request for ML inference."""
     model_name: str
     model_version: str
-    context: Dict[str, Any]
+    context: dict[str, Any]
     trace_id: str
     replay_key: str
     policy_hash: str
-    semantic_clock: Optional[int] = None
+    semantic_clock: int | None = None
     decision_mode: DecisionMode = DecisionMode.ADVISORY
     shadow_mode: bool = False
     validation_required: bool = True
@@ -35,9 +36,9 @@ class InferenceRequest:
 class InferenceResult:
     """Result of ML inference."""
     prediction: ModelPrediction
-    inference_metadata: Dict[str, Any]
+    inference_metadata: dict[str, Any]
     success: bool
-    error_message: Optional[str] = None
+    error_message: str | None = None
     inference_time_ms: float = 0.0
 
 
@@ -56,7 +57,7 @@ class DeterministicInferenceEngine:
 
     def __init__(
         self,
-        models: Dict[str, BaseMLModel],
+        models: dict[str, BaseMLModel],
         shadow_logger: ShadowLogger,
         replay_harness: ReplayHarness
     ):
@@ -147,8 +148,8 @@ class DeterministicInferenceEngine:
 
     def infer_batch(
         self,
-        requests: List[InferenceRequest]
-    ) -> List[InferenceResult]:
+        requests: list[InferenceRequest]
+    ) -> list[InferenceResult]:
         """
         Execute multiple inferences efficiently.
 
@@ -170,8 +171,8 @@ class DeterministicInferenceEngine:
         self,
         model_name: str,
         model_version: str,
-        test_cases: List[Dict[str, Any]]
-    ) -> Dict[str, Any]:
+        test_cases: list[dict[str, Any]]
+    ) -> dict[str, Any]:
         """
         Validate model determinism using replay harness.
 
@@ -223,7 +224,7 @@ class DeterministicInferenceEngine:
 
         return validation_result
 
-    def get_model_statistics(self, model_name: Optional[str] = None) -> Dict[str, Any]:
+    def get_model_statistics(self, model_name: str | None = None) -> dict[str, Any]:
         """Get inference statistics for models."""
         if model_name:
             # Return statistics for specific model
@@ -346,7 +347,7 @@ class DeterministicInferenceEngine:
             # Log failure but don't fail the inference
             print(f"Failed to log shadow prediction: {e}")
 
-    def _create_inference_metadata(self, request: InferenceRequest, prediction: ModelPrediction) -> Dict[str, Any]:
+    def _create_inference_metadata(self, request: InferenceRequest, prediction: ModelPrediction) -> dict[str, Any]:
         """Create inference metadata."""
         return {
             'model_name': request.model_name,
@@ -439,6 +440,6 @@ class DeterministicInferenceEngine:
         if model_key in self.models:
             del self.models[model_key]
 
-    def get_available_models(self) -> List[str]:
+    def get_available_models(self) -> list[str]:
         """Get list of available models."""
         return list(self.models.keys())

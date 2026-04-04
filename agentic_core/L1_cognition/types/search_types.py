@@ -8,7 +8,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 from datetime import datetime
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_captures_pattern,
@@ -106,14 +106,14 @@ class SearchQuery:
     max_depth: int = 2  # Maximum traversal depth
 
     # Filters
-    entity_types: Optional[List[str]] = None
-    relation_types: Optional[List[str]] = None
-    community_levels: Optional[List[int]] = None
+    entity_types: list[str] | None = None
+    relation_types: list[str] | None = None
+    community_levels: list[int] | None = None
 
     # Metadata
     query_id: str = field(default_factory=lambda: f"query_{datetime.utcnow().strftime('%Y%m%d_%H%M%S')}")
     timestamp: datetime = field(default_factory=datetime.utcnow)
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    metadata: dict[str, Any] = field(default_factory=dict)
 
     def __post_init__(self) -> None:
         """Normalize query text."""
@@ -133,17 +133,17 @@ class SearchResult:
     relevance_score: float
 
     # Context information
-    context: Optional[str] = None
-    surrounding_entities: List[str] = field(default_factory=list)
-    path_to_root: List[str] = field(default_factory=list)
+    context: str | None = None
+    surrounding_entities: list[str] = field(default_factory=list)
+    path_to_root: list[str] = field(default_factory=list)
 
     # Source information
-    source_file: Optional[str] = None
-    line_number: Optional[int] = None
+    source_file: str | None = None
+    line_number: int | None = None
     confidence: float = 1.0
 
     # Metadata
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    metadata: dict[str, Any] = field(default_factory=dict)
 
     def __post_init__(self) -> None:
         """Validate relevance score."""
@@ -156,7 +156,7 @@ class SearchResponse:
     """Represents a complete search response."""
 
     query: SearchQuery
-    results: List[SearchResult]
+    results: list[SearchResult]
 
     # Search statistics
     total_found: int
@@ -170,20 +170,20 @@ class SearchResponse:
 
     # Search strategy used
     search_strategy: str
-    fusion_method: Optional[str] = None
+    fusion_method: str | None = None
 
     # Errors and warnings
-    errors: List[str] = field(default_factory=list)
-    warnings: List[str] = field(default_factory=list)
+    errors: list[str] = field(default_factory=list)
+    warnings: list[str] = field(default_factory=list)
 
     # Metadata
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    metadata: dict[str, Any] = field(default_factory=dict)
 
-    def get_top_results(self, n: int = 5) -> List[SearchResult]:
+    def get_top_results(self, n: int = 5) -> list[SearchResult]:
         """Get top N results by relevance score."""
         return sorted(self.results, key=lambda r: r.relevance_score, reverse=True)[:n]
 
-    def get_results_by_type(self, item_type: str) -> List[SearchResult]:
+    def get_results_by_type(self, item_type: str) -> list[SearchResult]:
         """Get results filtered by type."""
         return [r for r in self.results if r.item_type == item_type]
 
@@ -205,7 +205,7 @@ class LocalSearchConfig:
 
     # Filters
     min_degree_centrality: float = 0.0
-    required_entity_types: Optional[List[str]] = None
+    required_entity_types: list[str] | None = None
 
     # Performance
     enable_caching: bool = True
@@ -233,7 +233,7 @@ class GlobalSearchConfig:
     # Filters
     min_community_size: int = 3
     max_community_size: int = 1000
-    exclude_levels: Optional[List[int]] = None
+    exclude_levels: list[int] | None = None
 
 
 @dataclass
@@ -323,21 +323,21 @@ class SearchSession:
     """Represents a search session with multiple queries."""
 
     session_id: str
-    queries: List[SearchQuery] = field(default_factory=list)
-    responses: List[SearchResponse] = field(default_factory=list)
+    queries: list[SearchQuery] = field(default_factory=list)
+    responses: list[SearchResponse] = field(default_factory=list)
 
     # Session metrics
     start_time: datetime = field(default_factory=datetime.utcnow)
-    end_time: Optional[datetime] = None
+    end_time: datetime | None = None
     total_queries: int = 0
 
     # User feedback
-    clicked_results: List[str] = field(default_factory=list)
-    rated_results: Dict[str, int] = field(default_factory=dict)  # result_id -> rating
+    clicked_results: list[str] = field(default_factory=list)
+    rated_results: dict[str, int] = field(default_factory=dict)  # result_id -> rating
 
     # Context
-    user_context: Dict[str, Any] = field(default_factory=dict)
-    session_metadata: Dict[str, Any] = field(default_factory=dict)
+    user_context: dict[str, Any] = field(default_factory=dict)
+    session_metadata: dict[str, Any] = field(default_factory=dict)
 
     def add_query(self, query: SearchQuery, response: SearchResponse) -> None:
         """Add a query and its response to the session."""

@@ -25,7 +25,7 @@ import re
 import subprocess
 import sys
 from pathlib import Path
-from typing import List, Tuple, Dict, Pattern
+from typing import Dict, List, Pattern, Tuple
 
 ROOT = Path(__file__).resolve().parents[2]
 
@@ -122,7 +122,7 @@ _BANNED_OS_SYSTEM_PYTEST_RE = re.compile(
 # Pattern collections
 # ---------------------------------------------------------------------------
 
-GREP_PATTERNS: List[Pattern[str]] = [
+GREP_PATTERNS: list[Pattern[str]] = [
     _BANNED_SUBPROCESS_RE,
     _BANNED_POPEN_RE,
     _BANNED_SHELL_STR_RE,
@@ -131,14 +131,14 @@ GREP_PATTERNS: List[Pattern[str]] = [
     _BANNED_GETSTATUSOUTPUT_RE,
 ]
 
-MYPY_PATTERNS: List[Pattern[str]] = [
+MYPY_PATTERNS: list[Pattern[str]] = [
     _BANNED_DIRECT_MYPY_RE,
     _BANNED_PYTHON_M_MYPY_RE,
     _BANNED_OS_POPEN_MYPY_RE,
     _BANNED_OS_SYSTEM_MYPY_RE,
 ]
 
-PYTEST_PATTERNS: List[Pattern[str]] = [
+PYTEST_PATTERNS: list[Pattern[str]] = [
     _BANNED_DIRECT_PYTEST_RE,
     _BANNED_PYTHON_M_PYTEST_RE,
     _BANNED_OS_POPEN_PYTEST_RE,
@@ -159,9 +159,9 @@ _FILE_SKIP_RE = re.compile(r"#\s*adg-(grep|mypy|pytest)-ban:\s*skip-file")
 # Core scanner
 # ---------------------------------------------------------------------------
 
-def scan_file(path: Path, checks: List[str]) -> Dict[str, List[Tuple[int, str]]]:
+def scan_file(path: Path, checks: list[str]) -> dict[str, list[tuple[int, str]]]:
     """Return {check_name: [(line_no, line_text), ...]} for violations in path."""
-    violations: Dict[str, List[Tuple[int, str]]] = {
+    violations: dict[str, list[tuple[int, str]]] = {
         "grep": [],
         "mypy": [],
         "pytest": []
@@ -213,9 +213,9 @@ def scan_file(path: Path, checks: List[str]) -> Dict[str, List[Tuple[int, str]]]
     return violations
 
 
-def scan_files(paths: List[Path], checks: List[str]) -> Dict[Path, Dict[str, List[Tuple[int, str]]]]:
+def scan_files(paths: list[Path], checks: list[str]) -> dict[Path, dict[str, list[tuple[int, str]]]]:
     """Scan multiple files; return only those with violations."""
-    result: Dict[Path, Dict[str, List[Tuple[int, str]]]] = {}
+    result: dict[Path, dict[str, list[tuple[int, str]]]] = {}
     for p in paths:
         violations = scan_file(p, checks)
         if any(violations[check] for check in checks):
@@ -227,7 +227,7 @@ def scan_files(paths: List[Path], checks: List[str]) -> Dict[Path, Dict[str, Lis
 # CLI
 # ---------------------------------------------------------------------------
 
-def _get_staged_py_files(root: Path) -> List[Path]:
+def _get_staged_py_files(root: Path) -> list[Path]:
     r = subprocess.run(
         ["git", "diff", "--cached", "--name-only", "--diff-filter=ACMRT"],
         cwd=str(root),
@@ -238,7 +238,7 @@ def _get_staged_py_files(root: Path) -> List[Path]:
     return [root / f for f in r.stdout.splitlines() if f.endswith(".py")]
 
 
-def _get_all_tracked_py_files(root: Path) -> List[Path]:
+def _get_all_tracked_py_files(root: Path) -> list[Path]:
     r = subprocess.run(
         ["git", "ls-files"],
         cwd=str(root),

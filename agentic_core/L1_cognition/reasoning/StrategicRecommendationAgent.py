@@ -15,10 +15,16 @@ from typing import Any
 
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 from agentic_core.L1_cognition.utils.strategic_recommendation_util import (
-    generate_strategic_prompt as _generate_strategic_prompt,
-    parse_llm_response as _parse_llm_response,
-    generate_fallback_recommendations as _generate_fallback_recommendations,
     analyze_dashboard as _analyze_dashboard,
+)
+from agentic_core.L1_cognition.utils.strategic_recommendation_util import (
+    generate_fallback_recommendations as _generate_fallback_recommendations,
+)
+from agentic_core.L1_cognition.utils.strategic_recommendation_util import (
+    generate_strategic_prompt as _generate_strategic_prompt,
+)
+from agentic_core.L1_cognition.utils.strategic_recommendation_util import (
+    parse_llm_response as _parse_llm_response,
 )
 
 
@@ -55,7 +61,7 @@ class StrategicRecommendationAgent(SovereignBaseAgent):
                 return _parse_llm_response(response)
             except Exception:
                 pass
-        
+
         fallback = _generate_fallback_recommendations(dashboard_data)
         return {
             "review": fallback.review,

@@ -13,12 +13,12 @@ from __future__ import annotations
 
 import logging
 from dataclasses import dataclass, field
-from typing import Any, Optional
+from typing import Any
 
 from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     LayerSegment,
-    _emit_records_execution_trace,
     _emit_pulls_context,
+    _emit_records_execution_trace,
 )
 
 Logger = logging.getLogger(__name__)
@@ -50,7 +50,7 @@ class ParentChildExpander:
         base_confidence: float = 1.0,
         confidence_decay: float = 0.7,
         min_confidence: float = 0.3,
-        l4e_registry: Optional[Any] = None,
+        l4e_registry: Any | None = None,
     ):
         """Initialize parent-child expander.
 
@@ -73,8 +73,8 @@ class ParentChildExpander:
     def expand(
         self,
         seed_chunk_id: str,
-        seed_content: Optional[str] = None,
-        seed_metadata: Optional[dict[str, Any]] = None,
+        seed_content: str | None = None,
+        seed_metadata: dict[str, Any] | None = None,
     ) -> list[ExpansionContext]:
         """Expand from seed chunk using parent-child relationships.
 
@@ -265,7 +265,7 @@ class L4ERetrievalIntegrator:
 
     def __init__(
         self,
-        expander: Optional[ParentChildExpander] = None,
+        expander: ParentChildExpander | None = None,
         enable_expansion: bool = True,
     ):
         """Initialize L4E integrator.
@@ -369,8 +369,8 @@ class L4ERetrievalIntegrator:
 
 
 # Global instance
-_global_expander: Optional[ParentChildExpander] = None
-_global_integrator: Optional[L4ERetrievalIntegrator] = None
+_global_expander: ParentChildExpander | None = None
+_global_integrator: L4ERetrievalIntegrator | None = None
 
 
 def get_global_expander() -> ParentChildExpander:
@@ -391,7 +391,7 @@ def get_global_integrator() -> L4ERetrievalIntegrator:
 
 def expand_context(
     chunk_id: str,
-    content: Optional[str] = None,
+    content: str | None = None,
     depth: int = 3,
 ) -> list[ExpansionContext]:
     """Convenience function to expand a single chunk."""

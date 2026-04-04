@@ -67,10 +67,10 @@ def _assert_layer4_wiring(result: object) -> None:
     repo_signals = getattr(result, "repo_signals", {})
 
     ci = repo_signals.get("ci", {})
-    _assert(ci.get("workflow_count", 0) >= 30, f"Layer 4: insufficient CI workflows")
+    _assert(ci.get("workflow_count", 0) >= 30, "Layer 4: insufficient CI workflows")
 
     tests = repo_signals.get("tests", {})
-    _assert(tests.get("inventory_entries", 0) > 1000, f"Layer 4: insufficient test inventory")
+    _assert(tests.get("inventory_entries", 0) > 1000, "Layer 4: insufficient test inventory")
 
 
 def _assert_enhanced_system_learning(result: object) -> None:
@@ -82,7 +82,7 @@ def _assert_enhanced_system_learning(result: object) -> None:
     lic_domain = governance.get("lic_domain", {})
     if lic_domain:
         if "agent_specs_available" not in lic_domain:
-            print(f"   ⚠️  System learning: lic_domain.agent_specs_available missing (non-blocking)")
+            print("   ⚠️  System learning: lic_domain.agent_specs_available missing (non-blocking)")
 
     # ADG signals for pattern capture
     adg = repo_signals.get("adg", {})

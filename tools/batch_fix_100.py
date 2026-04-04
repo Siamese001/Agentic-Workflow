@@ -3,8 +3,6 @@
 Batch fix 100 files with placeholder content.
 """
 
-import pathlib
-import ast
 
 # Standard placeholder template
 PLACEHOLDER_TEMPLATE = '''"""Placeholder test for {class_name}."""

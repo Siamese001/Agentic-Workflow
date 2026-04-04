@@ -226,13 +226,13 @@ def demonstrate_performance_benchmark():
     min_time = min(times)
     max_time = max(times)
 
-    print(f"\n📊 Performance Statistics:")
+    print("\n📊 Performance Statistics:")
     print(f"  Average: {avg_time * 1000:.2f}ms")
     print(f"  Min: {min_time * 1000:.2f}ms")
     print(f"  Max: {max_time * 1000:.2f}ms")
     print(f"  Total: {sum(times) * 1000:.2f}ms")
 
-    print(f"\n📈 Layer Usage Distribution:")
+    print("\n📈 Layer Usage Distribution:")
     for layers, count in layer_usage.items():
         percentage = (count / len(benchmark_queries)) * 100
         print(f"  {layers}: {count} queries ({percentage:.1f}%)")

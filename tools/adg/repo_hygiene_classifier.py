@@ -4,13 +4,13 @@ Repo Hygiene Classifier - Phase 1 Implementation
 Generates JSON manifest for 644 files with classification and reasoning.
 """
 
-import os
-import sys
 import json
 import logging
-from pathlib import Path
-from typing import Dict, List, Any
+import os
+import sys
 from datetime import datetime
+from pathlib import Path
+from typing import Any
 
 # Ensure we can import from agentic_core
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..")))
@@ -42,7 +42,7 @@ class RepoHygieneClassifier:
             "documentation": "Documentation files"
         }
 
-    def classify_file(self, file_path: Path) -> Dict[str, Any]:
+    def classify_file(self, file_path: Path) -> dict[str, Any]:
         """Classify a single file and return metadata."""
         relative_path = file_path.relative_to(self.repo_root)
         path_str = str(relative_path)
@@ -100,7 +100,7 @@ class RepoHygieneClassifier:
             "category_description": self.categories.get(classification, "Unknown category")
         }
 
-    def scan_repository(self) -> List[Dict[str, Any]]:
+    def scan_repository(self) -> list[dict[str, Any]]:
         """Scan the entire repository and classify all Python files."""
         logging.info("Starting repository scan...")
 
@@ -125,7 +125,7 @@ class RepoHygieneClassifier:
         logging.info(f"Successfully classified {len(self.manifest)} files")
         return self.manifest
 
-    def generate_summary_stats(self) -> Dict[str, Any]:
+    def generate_summary_stats(self) -> dict[str, Any]:
         """Generate summary statistics for the manifest."""
         stats = {}
         for classification in self.categories.keys():

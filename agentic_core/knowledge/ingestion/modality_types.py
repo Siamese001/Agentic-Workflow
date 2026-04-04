@@ -3,9 +3,9 @@
 Defines types for content detection and routing in the ingestion pipeline.
 """
 
-from enum import Enum
 from dataclasses import dataclass
-from typing import Optional, Dict, Any
+from enum import Enum
+from typing import Any
 
 
 class ContentType(Enum):
@@ -50,14 +50,14 @@ class ContentMetadata:
     has_images: bool = False
     has_code_blocks: bool = False
     has_headings: bool = False
-    language: Optional[str] = None
+    language: str | None = None
     encoding: str = "utf-8"
-    checksum: Optional[str] = None
-    parent_id: Optional[str] = None
-    source_identifier: Optional[str] = None
-    extracted_at: Optional[str] = None
+    checksum: str | None = None
+    parent_id: str | None = None
+    source_identifier: str | None = None
+    extracted_at: str | None = None
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Convert to dictionary for serialization."""
         return {
             "file_path": self.file_path,
@@ -82,10 +82,10 @@ class ContentMetadata:
 class IngestionResult:
     """Result of document ingestion process."""
     success: bool
-    content: Optional[str] = None
-    metadata: Optional[ContentMetadata] = None
-    error_message: Optional[str] = None
-    processing_time_ms: Optional[float] = None
+    content: str | None = None
+    metadata: ContentMetadata | None = None
+    error_message: str | None = None
+    processing_time_ms: float | None = None
     warnings: list[str] = None
 
     def __post_init__(self):

@@ -8,7 +8,6 @@ from __future__ import annotations
 
 import time
 from dataclasses import dataclass, field
-from typing import Dict, List, Optional
 
 from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_captures_evaluation_metric,
@@ -24,7 +23,7 @@ class AppsQwenMetric:
     model_id: str
     metric_name: str
     value: float
-    context: Dict[str, str] = field(default_factory=dict)
+    context: dict[str, str] = field(default_factory=dict)
 
 
 @dataclass
@@ -33,14 +32,14 @@ class AppsQwenSessionMetrics:
     session_id: str
     app_name: str
     start_time: float
-    end_time: Optional[float] = None
+    end_time: float | None = None
     total_requests: int = 0
     successful_requests: int = 0
     failed_requests: int = 0
     total_latency_ms: float = 0.0
     average_confidence: float = 0.0
     tokens_used: int = 0
-    errors: List[str] = field(default_factory=list)
+    errors: list[str] = field(default_factory=list)
 
 
 class AppsQwenTelemetry:
@@ -50,8 +49,8 @@ class AppsQwenTelemetry:
     """
 
     def __init__(self):
-        self._metrics: List[AppsQwenMetric] = []
-        self._sessions: Dict[str, AppsQwenSessionMetrics] = {}
+        self._metrics: list[AppsQwenMetric] = []
+        self._sessions: dict[str, AppsQwenSessionMetrics] = {}
 
     def start_session(self, app_name: str) -> str:
         """Start a new telemetry session.
@@ -76,7 +75,7 @@ class AppsQwenTelemetry:
 
         return session_id
 
-    def end_session(self, session_id: str) -> Optional[AppsQwenSessionMetrics]:
+    def end_session(self, session_id: str) -> AppsQwenSessionMetrics | None:
         """End a telemetry session and calculate final metrics.
 
         Args:
@@ -231,7 +230,7 @@ class AppsQwenTelemetry:
 
         _emit_records_telemetry_event(session_id, "apps_qwen_telemetry", "request_error")
 
-    def get_session_summary(self, session_id: str) -> Optional[Dict[str, float]]:
+    def get_session_summary(self, session_id: str) -> dict[str, float] | None:
         """Get summary metrics for a session.
 
         Args:
@@ -262,7 +261,7 @@ class AppsQwenTelemetry:
             "total_tokens": session.tokens_used
         }
 
-    def get_app_summary(self, app_name: str) -> Dict[str, float]:
+    def get_app_summary(self, app_name: str) -> dict[str, float]:
         """Get aggregated metrics for an app.
 
         Args:

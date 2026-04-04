@@ -14,7 +14,6 @@ from agentic_core.L6_observability.evaluation.learning_metrics_dashboard import 
     AlertSeverity,
     DashboardMetrics,
     LearningMetricsDashboard,
-    MetricAlert,
     get_dashboard,
     reset_dashboard,
 )

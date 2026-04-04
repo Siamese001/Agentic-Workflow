@@ -4,7 +4,9 @@ Calibrate token usage for SWE 1.5 128K context window.
 """
 
 import pathlib
+
 import tiktoken
+
 
 def estimate_tokens(text: str) -> int:
     """Estimate tokens using GPT-4 tokenizer."""
@@ -80,14 +82,14 @@ class TestClassName:
         print(f"  Min tokens per file: {min_file_tokens:.0f}")
 
         # Calculate requirements for different batch sizes
-        print(f"\nToken requirements (including template):")
+        print("\nToken requirements (including template):")
         for batch_size in [10, 20, 30, 40, 50, 75, 100]:
             # We need original content + template + overhead for operations
             total_tokens = (avg_file_tokens * batch_size) + (template_tokens * batch_size) + 5000  # 5K overhead
             print(f"  {batch_size:3d} files: ~{total_tokens:7.0f} tokens ({total_tokens/128000:.1%} of context)")
 
         # Find optimal batch size
-        print(f"\nOptimal batch sizes for 128K context:")
+        print("\nOptimal batch sizes for 128K context:")
         # Reserve 20% for safety and operations
         usable_context = 128000 * 0.8
         for batch_size in [10, 20, 30, 40, 50, 75, 100]:

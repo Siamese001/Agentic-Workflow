@@ -6,8 +6,8 @@ and guide sequential thinking for various software engineering tasks.
 """
 
 from dataclasses import dataclass
-from typing import List, Dict
 from enum import Enum
+
 
 class SequentialThinkingTemplate(Enum):
     """Sequential thinking template types."""
@@ -41,8 +41,8 @@ class SequentialThinkingPrompt:
     content: str
     version: str
     description: str
-    tags: List[str]
-    variables: List[str]
+    tags: list[str]
+    variables: list[str]
     complexity_threshold: str = "medium"
     estimated_tokens: int = 5000
 
@@ -1168,7 +1168,7 @@ def get_template(template_type: SequentialThinkingTemplate) -> SequentialThinkin
     """Get a sequential thinking template by type."""
     return SEQUENTIAL_THINKING_TEMPLATES.get(template_type)
 
-def get_all_templates() -> Dict[SequentialThinkingTemplate, SequentialThinkingPrompt]:
+def get_all_templates() -> dict[SequentialThinkingTemplate, SequentialThinkingPrompt]:
     """Get all sequential thinking templates."""
     return SEQUENTIAL_THINKING_TEMPLATES
 
@@ -1188,7 +1188,7 @@ def render_template(template_type: SequentialThinkingTemplate, **kwargs) -> str:
 
     return content
 
-def get_template_for_complexity(complexity: str) -> List[SequentialThinkingTemplate]:
+def get_template_for_complexity(complexity: str) -> list[SequentialThinkingTemplate]:
     """Get suitable templates for a given complexity level."""
     complexity_map = {
         "low": [SequentialThinkingTemplate.SWE_ANALYSIS, SequentialThinkingTemplate.SWE_TESTING],

@@ -3,8 +3,6 @@
 Batch fix Wave 11 broken test files.
 """
 
-import pathlib
-import ast
 
 
 if __name__ == '__main__':

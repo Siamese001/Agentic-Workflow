@@ -10,7 +10,6 @@ import ast
 import json
 import re
 from pathlib import Path
-from typing import Dict, List, Set
 
 
 class GuardianSwallowConverter(ast.NodeTransformer):
@@ -133,7 +132,7 @@ class GuardianSwallowConverter(ast.NodeTransformer):
         return tree
 
 
-def convert_guardian_swallow_to_fixtures(file_path: Path) -> Dict:
+def convert_guardian_swallow_to_fixtures(file_path: Path) -> dict:
     """Convert guardian swallow patterns to fixtures in a test file."""
     try:
         content = file_path.read_text(encoding='utf-8')
@@ -196,13 +195,13 @@ def convert_guardian_swallow_to_fixtures(file_path: Path) -> Dict:
 def convert_l0_routing_files():
     """Convert all L0_routing files with guardian swallow patterns."""
     # Load the analysis from Wave 4a
-    with open('artifacts/guardian_swallow_analysis.json', 'r') as f:
+    with open('artifacts/guardian_swallow_analysis.json') as f:
         data = json.load(f)
 
     l0_files = data['layers']['L0_routing']
     l0_files_needing = [f for f in l0_files if f.get('needs_conversion', False)]
 
-    print(f"=== Wave 4b: Converting L0_routing Guardian Swallow Patterns ===")
+    print("=== Wave 4b: Converting L0_routing Guardian Swallow Patterns ===")
     print(f"Found {len(l0_files_needing)} L0_routing files needing conversion")
 
     results = []
@@ -229,7 +228,7 @@ def convert_l0_routing_files():
     successful = len([r for r in results if r['success']])
     total = len(results)
 
-    print(f"\n=== Wave 4b Summary ===")
+    print("\n=== Wave 4b Summary ===")
     print(f"Files processed: {total}")
     print(f"Successfully converted: {successful}")
     print(f"Failed: {total - successful}")
@@ -245,7 +244,7 @@ def main():
     with open('artifacts/wave4b_conversion_results.json', 'w') as f:
         json.dump(results, f, indent=2)
 
-    print(f"\nDetailed results saved to: artifacts/wave4b_conversion_results.json")
+    print("\nDetailed results saved to: artifacts/wave4b_conversion_results.json")
 
 
 if __name__ == '__main__':

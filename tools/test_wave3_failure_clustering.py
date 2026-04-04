@@ -11,7 +11,7 @@ from pathlib import Path
 # Add agentic_core to path
 sys.path.insert(0, str(Path(__file__).parent / "agentic_core"))
 
-from L1_cognition.engines.semantic_retriever import SemanticRetriever, RetrievalQuery
+from L1_cognition.engines.semantic_retriever import RetrievalQuery, SemanticRetriever
 
 
 async def test_failure_clustering():
@@ -103,7 +103,7 @@ async def test_failure_clustering():
 
                 print(f"  - [{result.collection}] {result.content[:80]}...")
 
-            print(f"Failure Pattern Analysis:")
+            print("Failure Pattern Analysis:")
             print(f"  Failure types: {sorted(failure_types)}")
             print(f"  Components affected: {sorted(components_affected)}")
             print(f"  Layers affected: {sorted(layers_affected)}")
@@ -113,7 +113,7 @@ async def test_failure_clustering():
             cluster_score = len(failure_types) + len(components_affected) + len(layers_affected)
             print(f"  Clustering score: {cluster_score}")
 
-    print(f"\n=== Failure Clustering Summary ===")
+    print("\n=== Failure Clustering Summary ===")
     print(f"Total failures analyzed: {total_failures}")
 
     if total_failures >= 100:

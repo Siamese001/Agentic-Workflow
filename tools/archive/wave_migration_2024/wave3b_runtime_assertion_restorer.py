@@ -6,11 +6,10 @@ This script restores hollowed tests by adding meaningful runtime assertions,
 focusing on behavioral testing and execution verification.
 """
 
-import json
 import ast
-from pathlib import Path
-from typing import Dict, List, Set, Tuple
+import json
 from collections import defaultdict
+from pathlib import Path
 
 
 class RuntimeAssertionRestorer:
@@ -27,7 +26,7 @@ class RuntimeAssertionRestorer:
         }
         self.modifications = []
 
-    def scan_for_runtime_hollowed_tests(self) -> List[Dict]:
+    def scan_for_runtime_hollowed_tests(self) -> list[dict]:
         """Scan for hollowed tests that need runtime assertions."""
         print("=== Scanning for Runtime Hollowed Tests ===")
 
@@ -36,7 +35,7 @@ class RuntimeAssertionRestorer:
 
         for test_file in test_dir.rglob('test_*.py'):
             try:
-                with open(test_file, 'r', encoding='utf-8') as f:
+                with open(test_file, encoding='utf-8') as f:
                     content = f.read()
 
                 # Parse AST
@@ -109,13 +108,13 @@ class RuntimeAssertionRestorer:
 
         has_meaningful_content = any(
             line.strip() and not line.strip().startswith('#')
-            and not line.strip() in ['pass', '"""', "'''", '']
+            and line.strip() not in ['pass', '"""', "'''", '']
             for line in method_lines[1:]  # Skip signature line
         )
 
         return is_runtime_test and (not has_runtime_assertions or not has_meaningful_content)
 
-    def _extract_runtime_context(self, test_name: str, file_path: str) -> Dict:
+    def _extract_runtime_context(self, test_name: str, file_path: str) -> dict:
         """Extract runtime context from test name and file path."""
         context = {
             'test_name': test_name,
@@ -154,7 +153,7 @@ class RuntimeAssertionRestorer:
 
         return context
 
-    def restore_runtime_assertions(self, runtime_hollowed: List[Dict]) -> Dict:
+    def restore_runtime_assertions(self, runtime_hollowed: list[dict]) -> dict:
         """Restore hollowed tests with runtime assertions."""
         print("=== Restoring Runtime Assertions ===")
 
@@ -174,7 +173,7 @@ class RuntimeAssertionRestorer:
             'modifications': self.modifications
         }
 
-    def _restore_file_runtime_tests(self, file_path: str, runtime_tests: List[Dict]):
+    def _restore_file_runtime_tests(self, file_path: str, runtime_tests: list[dict]):
         """Restore runtime tests in a single file."""
         self.restoration_stats['files_processed'] += 1
 
@@ -186,7 +185,7 @@ class RuntimeAssertionRestorer:
 
         try:
             # Read file content
-            with open(full_path, 'r', encoding='utf-8') as f:
+            with open(full_path, encoding='utf-8') as f:
                 content = f.read()
                 original_content = content
 
@@ -246,7 +245,7 @@ class RuntimeAssertionRestorer:
             print(f"❌ Error processing {file_path}: {e}")
             self.restoration_stats['errors_encountered'] += 1
 
-    def _restore_runtime_test(self, lines: List[str], node: ast.FunctionDef, context: Dict, file_path: str) -> Dict:
+    def _restore_runtime_test(self, lines: list[str], node: ast.FunctionDef, context: dict, file_path: str) -> dict:
         """Restore a single runtime test method."""
         restoration_result = {
             'restored': False,
@@ -306,7 +305,7 @@ class RuntimeAssertionRestorer:
 
         return restoration_result
 
-    def _generate_execution_assertions(self, indent_str: str, context: Dict) -> List[str]:
+    def _generate_execution_assertions(self, indent_str: str, context: dict) -> list[str]:
         """Generate assertions for execution tests."""
         function_name = context.get('function_under_test', 'function')
         assertions = []
@@ -326,7 +325,7 @@ class RuntimeAssertionRestorer:
 
         return assertions
 
-    def _generate_processing_assertions(self, indent_str: str, context: Dict) -> List[str]:
+    def _generate_processing_assertions(self, indent_str: str, context: dict) -> list[str]:
         """Generate assertions for processing tests."""
         function_name = context.get('function_under_test', 'function')
         assertions = []
@@ -346,7 +345,7 @@ class RuntimeAssertionRestorer:
 
         return assertions
 
-    def _generate_workflow_assertions(self, indent_str: str, context: Dict) -> List[str]:
+    def _generate_workflow_assertions(self, indent_str: str, context: dict) -> list[str]:
         """Generate assertions for workflow tests."""
         function_name = context.get('function_under_test', 'workflow')
         assertions = []
@@ -366,7 +365,7 @@ class RuntimeAssertionRestorer:
 
         return assertions
 
-    def _generate_state_assertions(self, indent_str: str, context: Dict) -> List[str]:
+    def _generate_state_assertions(self, indent_str: str, context: dict) -> list[str]:
         """Generate assertions for state tests."""
         function_name = context.get('function_under_test', 'state_function')
         assertions = []
@@ -386,7 +385,7 @@ class RuntimeAssertionRestorer:
 
         return assertions
 
-    def _generate_error_handling_assertions(self, indent_str: str, context: Dict) -> List[str]:
+    def _generate_error_handling_assertions(self, indent_str: str, context: dict) -> list[str]:
         """Generate assertions for error handling tests."""
         function_name = context.get('function_under_test', 'error_function')
         assertions = []
@@ -405,7 +404,7 @@ class RuntimeAssertionRestorer:
 
         return assertions
 
-    def _generate_runtime_core_assertions(self, indent_str: str, context: Dict) -> List[str]:
+    def _generate_runtime_core_assertions(self, indent_str: str, context: dict) -> list[str]:
         """Generate assertions for runtime core tests."""
         function_name = context.get('function_under_test', 'runtime_function')
         assertions = []
@@ -425,7 +424,7 @@ class RuntimeAssertionRestorer:
 
         return assertions
 
-    def _generate_general_runtime_assertions(self, indent_str: str, context: Dict) -> List[str]:
+    def _generate_general_runtime_assertions(self, indent_str: str, context: dict) -> list[str]:
         """Generate general runtime assertions."""
         function_name = context.get('function_under_test', 'function')
         assertions = []
@@ -445,7 +444,7 @@ class RuntimeAssertionRestorer:
 
         return assertions
 
-    def validate_runtime_restorations(self) -> Dict:
+    def validate_runtime_restorations(self) -> dict:
         """Validate that runtime test restorations were successful."""
         print("=== Validating Runtime Test Restorations ===")
 
@@ -462,7 +461,7 @@ class RuntimeAssertionRestorer:
             full_path = Path('tests') / file_path
 
             try:
-                with open(full_path, 'r', encoding='utf-8') as f:
+                with open(full_path, encoding='utf-8') as f:
                     content = f.read()
 
                 # Check that runtime assertions were added
@@ -499,7 +498,7 @@ class RuntimeAssertionRestorer:
 
         return validation
 
-    def generate_wave3b_report(self) -> Dict:
+    def generate_wave3b_report(self) -> dict:
         """Generate Wave 3b restoration report."""
         print("=== Wave 3b: Restore Hollowed Tests - Runtime Assertions ===")
 
@@ -541,7 +540,7 @@ class RuntimeAssertionRestorer:
 
         # Print summary
         summary = report['summary']
-        print(f"\n=== Wave 3b Summary ===")
+        print("\n=== Wave 3b Summary ===")
         print(f"Target runtime tests: {summary['target_runtime_tests']}")
         print(f"Files processed: {summary['files_processed']}")
         print(f"Files modified: {summary['files_modified']}")
@@ -555,7 +554,7 @@ class RuntimeAssertionRestorer:
             for issue in validation_results['remaining_issues'][:3]:
                 print(f"  - {issue['file']}: {issue['issue']}")
 
-        print(f"\n📄 Report saved to: artifacts/wave3b_restoration_report.json")
+        print("\n📄 Report saved to: artifacts/wave3b_restoration_report.json")
 
         return report
 

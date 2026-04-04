@@ -7,7 +7,7 @@ import hashlib
 import logging
 import time
 from dataclasses import dataclass, field
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     LayerSegment,
@@ -21,13 +21,13 @@ log = logging.getLogger(__name__)
 class ScopeMetadata:
     """Resolved scope metadata for query routing."""
     scope_id: str
-    tenant_id: Optional[str] = None
-    region: Optional[str] = None
+    tenant_id: str | None = None
+    region: str | None = None
     confidentiality_level: str = "public"
-    allowed_sources: List[str] = field(default_factory=list)
-    excluded_sources: List[str] = field(default_factory=list)
+    allowed_sources: list[str] = field(default_factory=list)
+    excluded_sources: list[str] = field(default_factory=list)
     freshness_band: str = "daily"
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    metadata: dict[str, Any] = field(default_factory=dict)
     resolved_at: float = field(default_factory=time.time)
 
 
@@ -45,13 +45,13 @@ class ScopeMetadataResolver:
             cache_ttl: Cache time-to-live in seconds
         """
         self.cache_ttl = cache_ttl
-        self._cache: Dict[str, tuple] = {}  # key -> (metadata, timestamp)
+        self._cache: dict[str, tuple] = {}  # key -> (metadata, timestamp)
 
         log.info(f"ScopeMetadataResolver initialized (ttl={cache_ttl}s)")
 
     def resolve(
         self,
-        filter_context: Dict[str, Any],
+        filter_context: dict[str, Any],
         use_cache: bool = True,
     ) -> ScopeMetadata:
         """Resolve scope metadata from filter context.
@@ -124,7 +124,7 @@ class ScopeMetadataResolver:
         log.debug(f"Resolved scope: {scope_id}")
         return metadata
 
-    def invalidate_cache(self, scope_id: Optional[str] = None) -> int:
+    def invalidate_cache(self, scope_id: str | None = None) -> int:
         """Invalidate cache entries.
 
         Args:
@@ -150,7 +150,7 @@ class ScopeMetadataResolver:
         log.info(f"Invalidated {len(keys_to_remove)} cache entries for {scope_id}")
         return len(keys_to_remove)
 
-    def get_cache_stats(self) -> Dict[str, int]:
+    def get_cache_stats(self) -> dict[str, int]:
         """Get cache statistics.
 
         Returns:
@@ -160,7 +160,7 @@ class ScopeMetadataResolver:
             "cache_size": len(self._cache),
         }
 
-    def _get_cache_key(self, context: Dict[str, Any]) -> str:
+    def _get_cache_key(self, context: dict[str, Any]) -> str:
         """Generate cache key from context."""
         # Hash the relevant parts of the context
         key_parts = []
@@ -179,7 +179,7 @@ class ScopeMetadataResolver:
 
 
 # Global instance
-_global_resolver: Optional[ScopeMetadataResolver] = None
+_global_resolver: ScopeMetadataResolver | None = None
 
 
 def get_scope_metadata_resolver() -> ScopeMetadataResolver:
@@ -190,6 +190,6 @@ def get_scope_metadata_resolver() -> ScopeMetadataResolver:
     return _global_resolver
 
 
-def resolve_scope_metadata(context: Dict[str, Any]) -> ScopeMetadata:
+def resolve_scope_metadata(context: dict[str, Any]) -> ScopeMetadata:
     """Convenience function to resolve scope metadata."""
     return get_scope_metadata_resolver().resolve(context)

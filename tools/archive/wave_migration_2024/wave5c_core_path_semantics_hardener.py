@@ -7,10 +7,7 @@ focusing on path resolution, test discovery, and execution semantics.
 """
 
 import json
-import re
 from pathlib import Path
-from typing import Dict, List, Set, Tuple
-from collections import defaultdict
 
 
 class CorePathSemanticsHardener:
@@ -27,7 +24,7 @@ class CorePathSemanticsHardener:
         }
         self.modifications = []
 
-    def scan_core_paths(self) -> List[Dict]:
+    def scan_core_paths(self) -> list[dict]:
         """Scan for core path configuration files."""
         print("=== Scanning Core Path Configuration ===")
 
@@ -69,13 +66,13 @@ class CorePathSemanticsHardener:
         print(f"🔍 Found {len(core_files)} core configuration files")
         return core_files
 
-    def analyze_core_path_semantics(self, core_file: Dict) -> Dict:
+    def analyze_core_path_semantics(self, core_file: dict) -> dict:
         """Analyze core path semantics."""
         file_path = core_file['path']
         file_type = core_file['type']
 
         try:
-            with open(file_path, 'r', encoding='utf-8') as f:
+            with open(file_path, encoding='utf-8') as f:
                 content = f.read()
 
             analysis = {
@@ -99,7 +96,7 @@ class CorePathSemanticsHardener:
             print(f"❌ Error analyzing {core_file['file']}: {e}")
             return {'file': core_file['file'], 'type': file_type, 'error': str(e)}
 
-    def _analyze_config_paths(self, content: str, file_type: str) -> Dict:
+    def _analyze_config_paths(self, content: str, file_type: str) -> dict:
         """Analyze path configuration in config files."""
         analysis = {
             'paths': [],
@@ -131,7 +128,7 @@ class CorePathSemanticsHardener:
 
         return analysis
 
-    def _extract_pytest_ini_paths(self, content: str) -> Dict:
+    def _extract_pytest_ini_paths(self, content: str) -> dict:
         """Extract paths from pytest.ini."""
         paths = {
             'testpaths': [],
@@ -158,7 +155,7 @@ class CorePathSemanticsHardener:
 
         return paths
 
-    def _extract_pyproject_paths(self, content: str) -> Dict:
+    def _extract_pyproject_paths(self, content: str) -> dict:
         """Extract paths from pyproject.toml."""
         paths = {
             'testpaths': [],
@@ -187,7 +184,7 @@ class CorePathSemanticsHardener:
 
         return paths
 
-    def _extract_setup_cfg_paths(self, content: str) -> Dict:
+    def _extract_setup_cfg_paths(self, content: str) -> dict:
         """Extract paths from setup.cfg."""
         paths = {
             'testpaths': [],
@@ -226,7 +223,7 @@ class CorePathSemanticsHardener:
 
         return paths
 
-    def _analyze_conftest_paths(self, content: str) -> Dict:
+    def _analyze_conftest_paths(self, content: str) -> dict:
         """Analyze paths in conftest.py."""
         analysis = {
             'paths': {},
@@ -253,7 +250,7 @@ class CorePathSemanticsHardener:
 
         return analysis
 
-    def _analyze_path_semantics(self, path_configs: Dict) -> Dict:
+    def _analyze_path_semantics(self, path_configs: dict) -> dict:
         """Analyze path semantics."""
         semantics = {
             'test_discovery': {},
@@ -285,7 +282,7 @@ class CorePathSemanticsHardener:
 
         return semantics
 
-    def _analyze_conftest_semantics(self, fixtures: List[str], content: str) -> Dict:
+    def _analyze_conftest_semantics(self, fixtures: list[str], content: str) -> dict:
         """Analyze conftest.py semantics."""
         semantics = {
             'fixture_count': len(fixtures),
@@ -295,7 +292,7 @@ class CorePathSemanticsHardener:
 
         return semantics
 
-    def _check_path_issues(self, path_configs: Dict) -> List[str]:
+    def _check_path_issues(self, path_configs: dict) -> list[str]:
         """Check for path configuration issues."""
         issues = []
 
@@ -322,7 +319,7 @@ class CorePathSemanticsHardener:
 
         return issues
 
-    def _check_conftest_issues(self, fixtures: List[str], content: str) -> List[str]:
+    def _check_conftest_issues(self, fixtures: list[str], content: str) -> list[str]:
         """Check for conftest.py issues."""
         issues = []
 
@@ -331,7 +328,7 @@ class CorePathSemanticsHardener:
 
         return issues
 
-    def _generate_path_recommendations(self, path_configs: Dict) -> List[str]:
+    def _generate_path_recommendations(self, path_configs: dict) -> list[str]:
         """Generate path configuration recommendations."""
         recommendations = []
 
@@ -357,7 +354,7 @@ class CorePathSemanticsHardener:
 
         return recommendations
 
-    def _generate_conftest_recommendations(self, fixtures: List[str], content: str) -> List[str]:
+    def _generate_conftest_recommendations(self, fixtures: list[str], content: str) -> list[str]:
         """Generate conftest.py recommendations."""
         recommendations = []
 
@@ -366,7 +363,7 @@ class CorePathSemanticsHardener:
 
         return recommendations
 
-    def harden_core_path_semantics(self, core_files: List[Dict]) -> Dict:
+    def harden_core_path_semantics(self, core_files: list[dict]) -> dict:
         """Harden core path semantics."""
         print("=== Hardening Core Path Semantics ===")
 
@@ -393,7 +390,7 @@ class CorePathSemanticsHardener:
             'modifications': self.modifications
         }
 
-    def _harden_single_core_file(self, analysis: Dict) -> Dict:
+    def _harden_single_core_file(self, analysis: dict) -> dict:
         """Harden a single core configuration file."""
         hardening_result = {
             'hardened': False,
@@ -405,7 +402,7 @@ class CorePathSemanticsHardener:
 
         try:
             # Read original content
-            with open(file_path, 'r', encoding='utf-8') as f:
+            with open(file_path, encoding='utf-8') as f:
                 original_content = f.read()
 
             # Generate hardened content
@@ -438,7 +435,7 @@ class CorePathSemanticsHardener:
 
         return hardening_result
 
-    def _generate_hardened_core_content(self, analysis: Dict, original_content: str) -> str:
+    def _generate_hardened_core_content(self, analysis: dict, original_content: str) -> str:
         """Generate hardened core configuration content."""
         file_type = analysis['type']
 
@@ -449,7 +446,7 @@ class CorePathSemanticsHardener:
 
         return original_content
 
-    def _harden_config_content(self, analysis: Dict, content: str, file_type: str) -> str:
+    def _harden_config_content(self, analysis: dict, content: str, file_type: str) -> str:
         """Harden configuration file content."""
         if file_type == 'pytest_ini':
             return self._generate_optimal_pytest_ini(analysis, content)
@@ -460,7 +457,7 @@ class CorePathSemanticsHardener:
 
         return content
 
-    def _generate_optimal_pytest_ini(self, analysis: Dict, content: str) -> str:
+    def _generate_optimal_pytest_ini(self, analysis: dict, content: str) -> str:
         """Generate optimal pytest.ini content."""
         lines = [
             "[pytest]",
@@ -492,7 +489,7 @@ class CorePathSemanticsHardener:
 
         return '\n'.join(lines)
 
-    def _generate_optimal_pyproject_toml(self, analysis: Dict, content: str) -> str:
+    def _generate_optimal_pyproject_toml(self, analysis: dict, content: str) -> str:
         """Generate optimal pyproject.toml pytest section."""
         lines = content.split('\n')
         hardened_lines = []
@@ -525,7 +522,7 @@ class CorePathSemanticsHardener:
 
         return '\n'.join(hardened_lines)
 
-    def _generate_optimal_setup_cfg(self, analysis: Dict, content: str) -> str:
+    def _generate_optimal_setup_cfg(self, analysis: dict, content: str) -> str:
         """Generate optimal setup.cfg pytest section."""
         lines = content.split('\n')
         hardened_lines = []
@@ -561,7 +558,7 @@ class CorePathSemanticsHardener:
 
         return '\n'.join(hardened_lines)
 
-    def _harden_conftest_content(self, analysis: Dict, content: str) -> str:
+    def _harden_conftest_content(self, analysis: dict, content: str) -> str:
         """Harden conftest.py content."""
         lines = [
             "# Core pytest configuration",
@@ -589,7 +586,7 @@ class CorePathSemanticsHardener:
 
         return '\n'.join(lines)
 
-    def validate_hardening(self) -> Dict:
+    def validate_hardening(self) -> dict:
         """Validate that core path semantics hardening was successful."""
         print("=== Validating Core Path Semantics Hardening ===")
 
@@ -605,7 +602,7 @@ class CorePathSemanticsHardener:
             file_path = modification['file']
 
             try:
-                with open(file_path, 'r', encoding='utf-8') as f:
+                with open(file_path, encoding='utf-8') as f:
                     content = f.read()
 
                 # Check that standard path configurations are present
@@ -635,7 +632,7 @@ class CorePathSemanticsHardener:
 
         return validation
 
-    def generate_wave5c_report(self) -> Dict:
+    def generate_wave5c_report(self) -> dict:
         """Generate Wave 5c hardening report."""
         print("=== Wave 5c: Marker and Config Hardening - Core Path Semantics ===")
 
@@ -672,7 +669,7 @@ class CorePathSemanticsHardener:
 
         # Print summary
         summary = report['summary']
-        print(f"\n=== Wave 5c Summary ===")
+        print("\n=== Wave 5c Summary ===")
         print(f"Core files found: {summary['core_files_found']}")
         print(f"Files processed: {summary['files_processed']}")
         print(f"Paths hardened: {summary['paths_hardened']}")
@@ -685,7 +682,7 @@ class CorePathSemanticsHardener:
             for issue in validation_results['remaining_issues'][:3]:
                 print(f"  - {issue['file']}: {issue['issue']}")
 
-        print(f"\n📄 Report saved to: artifacts/wave5c_hardening_report.json")
+        print("\n📄 Report saved to: artifacts/wave5c_hardening_report.json")
 
         return report
 

@@ -1,10 +1,11 @@
+import ast
 import os
 import sys
-import ast
 from collections import defaultdict
 
+
 def get_imports(file_path):
-    with open(file_path, 'r', encoding='utf-8', errors='ignore') as f:
+    with open(file_path, encoding='utf-8', errors='ignore') as f:
         try:
             tree = ast.parse(f.read())
         except (SyntaxError, ValueError):

@@ -16,8 +16,6 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
 
-from agentic_core.mixins import structural_healing_engine as engine
-from agentic_core.runtime.exceptions.SovereignError import StructuralError
 from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     LayerSegment,
     _emit_agent_executes_agent,
@@ -61,6 +59,8 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     emit_determinism_digest,  # noqa: E402
     emit_replay_key,  # noqa: E402
 )
+from agentic_core.mixins import structural_healing_engine as engine
+from agentic_core.runtime.exceptions.SovereignError import StructuralError
 
 _emit_applies_guardrail("p0", "structural_healing_mixin", "p0_governance")
 _emit_reads_policy_state("p0", "structural_healing_mixin", "policy_binding")

@@ -19,6 +19,7 @@ print('=' * 80)
 
 # Group by source layer to see the pattern
 from collections import defaultdict
+
 src_layers = defaultdict(list)
 for src, target, file, line, symbol in violations:
     src_layer = src.split('::')[1].split('/')[0]  # Extract L0, L1, etc.

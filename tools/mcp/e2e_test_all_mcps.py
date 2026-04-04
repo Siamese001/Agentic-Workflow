@@ -7,16 +7,12 @@ Tests real-world scenarios and integration patterns for all 4 new MCP servers
 import asyncio
 import json
 import logging
-import os
 import platform
 import subprocess
 import sys
 import time
-import tempfile
-import shutil
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Tuple
-import statistics
+from typing import Any
 
 # Configure logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
@@ -50,11 +46,11 @@ class MCPEndToEndTester:
             self.results[server_name] = await self._test_server_e2e(server_name)
 
         # Integration tests
-        logger.info(f"\n🔗 Running Integration Tests")
+        logger.info("\n🔗 Running Integration Tests")
         self.results["integration"] = await self._test_integration_scenarios()
 
         # Performance stress tests
-        logger.info(f"\n⚡ Running Performance Stress Tests")
+        logger.info("\n⚡ Running Performance Stress Tests")
         self.results["stress"] = await self._test_performance_stress()
 
         # Generate comprehensive report
@@ -125,7 +121,7 @@ def example():
             "is_windows": is_windows
         }
 
-    async def _test_server_e2e(self, server_name: str) -> Dict[str, Any]:
+    async def _test_server_e2e(self, server_name: str) -> dict[str, Any]:
         """Test a single MCP server with end-to-end scenarios"""
         results = {
             "server": server_name,
@@ -155,7 +151,7 @@ def example():
 
         return results
 
-    async def _test_terminal_e2e_scenarios(self) -> Dict[str, Any]:
+    async def _test_terminal_e2e_scenarios(self) -> dict[str, Any]:
         """Test terminal MCP with real-world scenarios"""
         scenarios = {}
 
@@ -173,7 +169,7 @@ def example():
 
         return scenarios
 
-    async def _test_terminal_file_ops(self) -> Dict[str, Any]:
+    async def _test_terminal_file_ops(self) -> dict[str, Any]:
         """Test file operations through terminal MCP"""
         result = {"name": "File Operations", "success": True, "tests": []}
         cmds = self._get_platform_commands()
@@ -243,7 +239,7 @@ def example():
 
         return result
 
-    async def _test_terminal_git_ops(self) -> Dict[str, Any]:
+    async def _test_terminal_git_ops(self) -> dict[str, Any]:
         """Test Git operations through terminal MCP"""
         result = {"name": "Git Operations", "success": True, "tests": []}
 
@@ -294,7 +290,7 @@ def example():
 
         return result
 
-    async def _test_terminal_python_ops(self) -> Dict[str, Any]:
+    async def _test_terminal_python_ops(self) -> dict[str, Any]:
         """Test Python execution through terminal MCP"""
         result = {"name": "Python Execution", "success": True, "tests": []}
 
@@ -343,7 +339,7 @@ def example():
 
         return result
 
-    async def _test_terminal_system_info(self) -> Dict[str, Any]:
+    async def _test_terminal_system_info(self) -> dict[str, Any]:
         """Test system information gathering through terminal MCP"""
         result = {"name": "System Information", "success": True, "tests": []}
         cmds = self._get_platform_commands()
@@ -393,7 +389,7 @@ def example():
 
         return result
 
-    async def _test_pytest_e2e_scenarios(self) -> Dict[str, Any]:
+    async def _test_pytest_e2e_scenarios(self) -> dict[str, Any]:
         """Test pytest MCP with real-world scenarios"""
         scenarios = {}
 
@@ -411,7 +407,7 @@ def example():
 
         return scenarios
 
-    async def _test_pytest_discovery(self) -> Dict[str, Any]:
+    async def _test_pytest_discovery(self) -> dict[str, Any]:
         """Test test discovery through pytest MCP"""
         result = {"name": "Test Discovery", "success": True, "tests": []}
 
@@ -468,7 +464,7 @@ def example():
 
         return result
 
-    async def _test_pytest_execution(self) -> Dict[str, Any]:
+    async def _test_pytest_execution(self) -> dict[str, Any]:
         """Test test execution through pytest MCP"""
         result = {"name": "Test Execution", "success": True, "tests": []}
 
@@ -489,7 +485,7 @@ def example():
             passed = sum(1 for line in output_lines if ' passed' in line or 'PASSED' in line)
             failed = sum(1 for line in output_lines if ' failed' in line or 'FAILED' in line)
             errors = sum(1 for line in output_lines if ' error' in line or 'ERROR' in line)
-            
+
             # Also check summary line like "1 passed in 0.01s"
             summary_passed = 0
             for line in output_lines:
@@ -498,7 +494,7 @@ def example():
                         summary_passed = int(line.split(' passed')[0].split()[-1])
                     except (ValueError, IndexError):
                         pass
-            
+
             if summary_passed > 0:
                 passed = summary_passed
 
@@ -522,7 +518,7 @@ def example():
 
         return result
 
-    async def _test_pytest_coverage(self) -> Dict[str, Any]:
+    async def _test_pytest_coverage(self) -> dict[str, Any]:
         """Test coverage analysis through pytest MCP"""
         result = {"name": "Coverage Analysis", "success": True, "tests": []}
 
@@ -544,7 +540,7 @@ def example():
 
             if coverage_file.exists():
                 try:
-                    with open(coverage_file, 'r') as f:
+                    with open(coverage_file) as f:
                         coverage_data = json.load(f)
                 except:
                     pass
@@ -567,7 +563,7 @@ def example():
 
         return result
 
-    async def _test_pytest_analysis(self) -> Dict[str, Any]:
+    async def _test_pytest_analysis(self) -> dict[str, Any]:
         """Test test analysis through pytest MCP"""
         result = {"name": "Test Analysis", "success": True, "tests": []}
 
@@ -618,7 +614,7 @@ def example():
 
         return result
 
-    async def _test_http_e2e_scenarios(self) -> Dict[str, Any]:
+    async def _test_http_e2e_scenarios(self) -> dict[str, Any]:
         """Test HTTP MCP with real-world scenarios"""
         scenarios = {}
 
@@ -636,7 +632,7 @@ def example():
 
         return scenarios
 
-    async def _test_http_api_testing(self) -> Dict[str, Any]:
+    async def _test_http_api_testing(self) -> dict[str, Any]:
         """Test HTTP API testing scenarios"""
         result = {"name": "API Testing", "success": True, "tests": []}
 
@@ -699,7 +695,7 @@ def example():
 
         return result
 
-    async def _test_http_authentication(self) -> Dict[str, Any]:
+    async def _test_http_authentication(self) -> dict[str, Any]:
         """Test HTTP authentication scenarios"""
         result = {"name": "Authentication", "success": True, "tests": []}
 
@@ -748,7 +744,7 @@ def example():
 
         return result
 
-    async def _test_http_error_handling(self) -> Dict[str, Any]:
+    async def _test_http_error_handling(self) -> dict[str, Any]:
         """Test HTTP error handling scenarios"""
         result = {"name": "Error Handling", "success": True, "tests": []}
 
@@ -794,13 +790,14 @@ def example():
 
         return result
 
-    async def _test_http_batch_ops(self) -> Dict[str, Any]:
+    async def _test_http_batch_ops(self) -> dict[str, Any]:
         """Test HTTP batch operations"""
         result = {"name": "Batch Operations", "success": True, "tests": []}
 
         try:
-            import requests
             import concurrent.futures
+
+            import requests
 
             urls = [
                 "https://httpbin.org/get",
@@ -843,7 +840,7 @@ def example():
 
         return result
 
-    async def _test_vector_db_e2e_scenarios(self) -> Dict[str, Any]:
+    async def _test_vector_db_e2e_scenarios(self) -> dict[str, Any]:
         """Test vector DB MCP with real-world scenarios"""
         scenarios = {}
 
@@ -861,7 +858,7 @@ def example():
 
         return scenarios
 
-    async def _test_vector_db_indexing(self) -> Dict[str, Any]:
+    async def _test_vector_db_indexing(self) -> dict[str, Any]:
         """Test document indexing scenarios"""
         result = {"name": "Document Indexing", "success": True, "tests": []}
 
@@ -937,7 +934,7 @@ def example():
 
         return result
 
-    async def _test_vector_db_search(self) -> Dict[str, Any]:
+    async def _test_vector_db_search(self) -> dict[str, Any]:
         """Test semantic search scenarios"""
         result = {"name": "Semantic Search", "success": True, "tests": []}
 
@@ -988,7 +985,7 @@ def example():
 
         return result
 
-    async def _test_vector_db_collections(self) -> Dict[str, Any]:
+    async def _test_vector_db_collections(self) -> dict[str, Any]:
         """Test collection management scenarios"""
         result = {"name": "Collection Management", "success": True, "tests": []}
 
@@ -1044,14 +1041,13 @@ def example():
 
         return result
 
-    async def _test_vector_db_performance(self) -> Dict[str, Any]:
+    async def _test_vector_db_performance(self) -> dict[str, Any]:
         """Test vector DB performance scenarios"""
         result = {"name": "Performance Testing", "success": True, "tests": []}
 
         try:
             import chromadb
             from sentence_transformers import SentenceTransformer
-            import numpy as np
 
             chroma_path = REPO_ROOT / "artifacts" / "chroma_perf_test"
             chroma_path.mkdir(parents=True, exist_ok=True)
@@ -1095,7 +1091,7 @@ def example():
 
         return result
 
-    async def _test_integration_scenarios(self) -> Dict[str, Any]:
+    async def _test_integration_scenarios(self) -> dict[str, Any]:
         """Test integration scenarios between MCP servers"""
         scenarios = {}
 
@@ -1110,7 +1106,7 @@ def example():
 
         return scenarios
 
-    async def _test_terminal_pytest_integration(self) -> Dict[str, Any]:
+    async def _test_terminal_pytest_integration(self) -> dict[str, Any]:
         """Test terminal and pytest integration"""
         result = {"name": "Terminal + Pytest Integration", "success": True, "tests": []}
 
@@ -1148,13 +1144,13 @@ def example():
 
         return result
 
-    async def _test_http_vector_db_integration(self) -> Dict[str, Any]:
+    async def _test_http_vector_db_integration(self) -> dict[str, Any]:
         """Test HTTP and vector DB integration"""
         result = {"name": "HTTP + Vector DB Integration", "success": True, "tests": []}
 
         try:
-            import requests
             import chromadb
+            import requests
             from sentence_transformers import SentenceTransformer
 
             # Fetch content via HTTP and index in vector DB
@@ -1210,7 +1206,7 @@ def example():
 
         return result
 
-    async def _test_multi_server_workflow(self) -> Dict[str, Any]:
+    async def _test_multi_server_workflow(self) -> dict[str, Any]:
         """Test comprehensive multi-server workflow"""
         result = {"name": "Multi-Server Workflow", "success": True, "tests": []}
 
@@ -1293,7 +1289,7 @@ def example():
 
         return result
 
-    async def _test_performance_stress(self) -> Dict[str, Any]:
+    async def _test_performance_stress(self) -> dict[str, Any]:
         """Test performance under stress conditions"""
         scenarios = {}
 
@@ -1308,12 +1304,13 @@ def example():
 
         return scenarios
 
-    async def _test_concurrent_operations(self) -> Dict[str, Any]:
+    async def _test_concurrent_operations(self) -> dict[str, Any]:
         """Test concurrent operations across MCP servers"""
         result = {"name": "Concurrent Operations", "success": True, "tests": []}
 
         try:
             import concurrent.futures
+
             import requests
 
             # Test concurrent HTTP requests
@@ -1348,7 +1345,7 @@ def example():
 
         return result
 
-    async def _test_large_datasets(self) -> Dict[str, Any]:
+    async def _test_large_datasets(self) -> dict[str, Any]:
         """Test handling of large datasets"""
         result = {"name": "Large Datasets", "success": True, "tests": []}
 
@@ -1384,13 +1381,14 @@ def example():
 
         return result
 
-    async def _test_memory_stress(self) -> Dict[str, Any]:
+    async def _test_memory_stress(self) -> dict[str, Any]:
         """Test memory usage under stress"""
         result = {"name": "Memory Stress", "success": True, "tests": []}
 
         try:
-            import psutil
             import gc
+
+            import psutil
 
             # Get baseline memory
             process = psutil.Process()

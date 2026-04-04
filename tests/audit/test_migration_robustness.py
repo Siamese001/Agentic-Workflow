@@ -2,9 +2,9 @@
 
 import ast
 import pathlib
-import pytest
 import re
-from typing import List, Set
+
+import pytest
 
 
 class TestMigrationSyntaxValidity:
@@ -24,7 +24,7 @@ class TestMigrationSyntaxValidity:
             except UnicodeDecodeError:
                 syntax_errors.append(f"{test_file}: Unicode decode error")
 
-        assert not syntax_errors, f"Syntax errors found:\n" + "\n".join(syntax_errors)
+        assert not syntax_errors, "Syntax errors found:\n" + "\n".join(syntax_errors)
 
 
 class TestTopLevelImportElimination:
@@ -63,7 +63,7 @@ class TestTopLevelImportElimination:
                 if not in_test_function and top_level_import_pattern.match(line.strip()):
                     violations.append(f"{test_file}:{i+1}: {line.strip()}")
 
-        assert not violations, f"Top-level agentic_core imports found:\n" + "\n".join(violations)
+        assert not violations, "Top-level agentic_core imports found:\n" + "\n".join(violations)
 
     def test_no_top_level_apps_imports(self):
         """No top-level imports from apps_* modules should remain."""
@@ -93,7 +93,7 @@ class TestTopLevelImportElimination:
                 if not in_test_function and top_level_import_pattern.match(line.strip()):
                     violations.append(f"{test_file}:{i+1}: {line.strip()}")
 
-        assert not violations, f"Top-level apps_* imports found:\n" + "\n".join(violations)
+        assert not violations, "Top-level apps_* imports found:\n" + "\n".join(violations)
 
     def test_no_top_level_system_learning_imports(self):
         """No top-level imports from system_learning should remain."""
@@ -123,7 +123,7 @@ class TestTopLevelImportElimination:
                 if not in_test_function and top_level_import_pattern.match(line.strip()):
                     violations.append(f"{test_file}:{i+1}: {line.strip()}")
 
-        assert not violations, f"Top-level system_learning imports found:\n" + "\n".join(violations)
+        assert not violations, "Top-level system_learning imports found:\n" + "\n".join(violations)
 
 
 class TestImportPlacementCorrectness:
@@ -226,7 +226,7 @@ class TestDuplicateImportElimination:
                 if duplicates:
                     duplicate_issues.append(f"{test_file}:{func_name} - Duplicates: {duplicates}")
 
-        assert not duplicate_issues, f"Duplicate imports found:\n" + "\n".join(duplicate_issues)
+        assert not duplicate_issues, "Duplicate imports found:\n" + "\n".join(duplicate_issues)
 
 
 if __name__ == "__main__":

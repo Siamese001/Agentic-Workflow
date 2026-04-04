@@ -4,9 +4,11 @@ Regenerate specific test files with the fixed template.
 """
 
 import sys
+
 sys.path.append('C:/Git/Agentic-Workflow')
-from tools.enhance_import_only_tests import generate_enhanced_test, analyze_module_api
 from pathlib import Path
+
+from tools.enhance_import_only_tests import analyze_module_api, generate_enhanced_test
 
 # Files to fix
 files_to_fix = [

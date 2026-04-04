@@ -3,8 +3,9 @@
 Get the next wave of broken files for processing.
 """
 
-import pathlib
 import ast
+import pathlib
+
 
 def get_next_wave(wave_num: int, count: int = 7):
     """Get the next wave of broken files."""

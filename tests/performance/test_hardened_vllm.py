@@ -7,16 +7,17 @@ without requiring a live vLLM server (uses mocking).
 from __future__ import annotations
 
 import asyncio
+from unittest.mock import AsyncMock, MagicMock
+
 import pytest
-from unittest.mock import AsyncMock, MagicMock, patch
 
 from agentic_core.L2_execution.apps_qwen import (
-    HardenedVLLMClient,
     CircuitBreaker,
     CircuitBreakerConfig,
-    RetryConfig,
-    CircuitState,
     CircuitBreakerOpenError,
+    CircuitState,
+    HardenedVLLMClient,
+    RetryConfig,
     VLLMRequest,
     VLLMResponse,
 )

@@ -7,10 +7,10 @@ planning workflow that executes multiple phases and waves.
 
 import logging
 from pathlib import Path
-from typing import Dict, List, Any, Optional
+from typing import Any
 
 from agentic_core.planning.preflight_hook import PlanningPreflightHook, TokenBudgetExceededError
-from agentic_core.planning.token_estimator import TokenBudget, ContextWindowEstimator
+from agentic_core.planning.token_estimator import ContextWindowEstimator, TokenBudget
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -25,8 +25,8 @@ class TokenAwarePlanningWorkflow:
     """
 
     def __init__(self,
-                 budget_file: Optional[Path] = None,
-                 custom_budget: Optional[TokenBudget] = None):
+                 budget_file: Path | None = None,
+                 custom_budget: TokenBudget | None = None):
         """
         Initialize the token-aware planning workflow.
 
@@ -44,7 +44,7 @@ class TokenAwarePlanningWorkflow:
         self.current_wave = None
         self.step_results = []
 
-    def execute_phase(self, phase_name: str, waves: List[Dict[str, Any]]) -> Dict[str, Any]:
+    def execute_phase(self, phase_name: str, waves: list[dict[str, Any]]) -> dict[str, Any]:
         """
         Execute a complete phase with multiple waves.
 
@@ -98,7 +98,7 @@ class TokenAwarePlanningWorkflow:
 
         return phase_results
 
-    def execute_wave(self, wave_name: str, wave_config: Dict[str, Any]) -> Dict[str, Any]:
+    def execute_wave(self, wave_name: str, wave_config: dict[str, Any]) -> dict[str, Any]:
         """
         Execute a single wave with multiple steps.
 
@@ -153,7 +153,7 @@ class TokenAwarePlanningWorkflow:
 
         return wave_results
 
-    def execute_step(self, step_name: str, step_type: str, step_config: Dict[str, Any]) -> Dict[str, Any]:
+    def execute_step(self, step_name: str, step_type: str, step_config: dict[str, Any]) -> dict[str, Any]:
         """
         Execute a single planning step with token budget enforcement.
 
@@ -204,7 +204,7 @@ class TokenAwarePlanningWorkflow:
         self.step_results.append(step_result)
         return step_result
 
-    def _prepare_step_context(self, step_name: str, step_type: str, step_config: Dict[str, Any]) -> Dict[str, Any]:
+    def _prepare_step_context(self, step_name: str, step_type: str, step_config: dict[str, Any]) -> dict[str, Any]:
         """
         Prepare context for token estimation based on step type and configuration.
 
@@ -234,13 +234,13 @@ class TokenAwarePlanningWorkflow:
         }
         return prompts.get(step_type, "You are a helpful assistant.")
 
-    def _get_file_contents(self, file_paths: List[str]) -> List[Dict[str, Any]]:
+    def _get_file_contents(self, file_paths: list[str]) -> list[dict[str, Any]]:
         """Get file contents for token estimation"""
         files = []
         for file_path in file_paths:
             path = Path(file_path)
             if path.exists():
-                with open(path, 'r', encoding='utf-8') as f:
+                with open(path, encoding='utf-8') as f:
                     content = f.read()
                 files.append({
                     'path': file_path,
@@ -254,7 +254,7 @@ class TokenAwarePlanningWorkflow:
                 })
         return files
 
-    def _get_diff_contents(self, diff_paths: List[str]) -> List[Dict[str, Any]]:
+    def _get_diff_contents(self, diff_paths: list[str]) -> list[dict[str, Any]]:
         """Get diff contents for token estimation"""
         diffs = []
         for diff_path in diff_paths:
@@ -273,7 +273,7 @@ class TokenAwarePlanningWorkflow:
             })
         return diffs
 
-    def _get_log_contents(self, log_sources: List[str]) -> List[Dict[str, Any]]:
+    def _get_log_contents(self, log_sources: list[str]) -> list[dict[str, Any]]:
         """Get log contents for token estimation"""
         logs = []
         for source in log_sources:
@@ -292,7 +292,7 @@ FileNotFoundError: Config file not found
             })
         return logs
 
-    def _get_retrieved_context(self, context_sources: List[str]) -> List[Dict[str, Any]]:
+    def _get_retrieved_context(self, context_sources: list[str]) -> list[dict[str, Any]]:
         """Get retrieved context for token estimation"""
         context = []
         for i, source in enumerate(context_sources):
@@ -309,12 +309,12 @@ It contains important information about coding standards and patterns.
             })
         return context
 
-    def _get_prior_step_contents(self) -> List[str]:
+    def _get_prior_step_contents(self) -> list[str]:
         """Get contents from prior steps to carry forward"""
         # Return last 3 step results as context
         return [str(result) for result in self.step_results[-3:]]
 
-    def _execute_step_logic(self, step_type: str, step_config: Dict[str, Any], estimate) -> Dict[str, Any]:
+    def _execute_step_logic(self, step_type: str, step_config: dict[str, Any], estimate) -> dict[str, Any]:
         """
         Execute the actual step logic.
 
@@ -330,7 +330,7 @@ It contains important information about coding standards and patterns.
             'artifacts': [f"artifact_{step_type}_{hash(str(step_config)) % 1000}.json"]
         }
 
-    def _log_phase_summary(self, phase_results: Dict[str, Any]) -> None:
+    def _log_phase_summary(self, phase_results: dict[str, Any]) -> None:
         """Log phase execution summary"""
         logger.info(f"Phase {phase_results['phase']} completed:")
         logger.info(f"  - Total tokens: {phase_results['total_tokens']:,}")
@@ -339,12 +339,12 @@ It contains important information about coding standards and patterns.
 
         # Get overall budget summary
         budget_summary = self.preflight_hook.get_budget_summary()
-        logger.info(f"Overall budget summary:")
+        logger.info("Overall budget summary:")
         logger.info(f"  - Total steps: {budget_summary['total_steps']}")
         logger.info(f"  - Average tokens per step: {budget_summary['average_tokens_per_step']:.0f}")
         logger.info(f"  - Status distribution: {budget_summary['status_distribution']}")
 
-    def get_workflow_summary(self) -> Dict[str, Any]:
+    def get_workflow_summary(self) -> dict[str, Any]:
         """Get complete workflow summary"""
         budget_summary = self.preflight_hook.get_budget_summary()
 

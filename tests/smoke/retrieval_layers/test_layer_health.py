@@ -3,10 +3,8 @@
 Quick health checks for all layers to verify basic functionality.
 """
 
-import pytest
-import time
 import hashlib
-from typing import Any, Optional
+import time
 from dataclasses import dataclass
 
 
@@ -17,7 +15,7 @@ class HealthStatus:
     name: str
     healthy: bool
     latency_ms: float
-    error: Optional[str] = None
+    error: str | None = None
 
 
 class TestLayerHealthSmoke:

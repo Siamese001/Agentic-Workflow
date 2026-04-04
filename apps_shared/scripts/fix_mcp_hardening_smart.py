@@ -1,13 +1,13 @@
 """Fix MCP hardening smart - Stub implementation for test compatibility."""
-from typing import Any, Dict
+from typing import Any
 
 
-def fix_mcp_hardening(config_path: str) -> Dict[str, Any]:
+def fix_mcp_hardening(config_path: str) -> dict[str, Any]:
     """Fix MCP hardening configuration."""
     return {"status": "success", "fixes": []}
 
 
-def smart_fix_mcp_config(config: Dict[str, Any]) -> Dict[str, Any]:
+def smart_fix_mcp_config(config: dict[str, Any]) -> dict[str, Any]:
     """Smart fix MCP config."""
     return config
 

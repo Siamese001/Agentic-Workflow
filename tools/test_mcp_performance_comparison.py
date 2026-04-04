@@ -4,10 +4,11 @@ MCP Installation Performance Comparison
 Tests NPX vs Global npm installation approaches for MCP servers.
 """
 
+import os
 import subprocess
 import time
-import os
 from pathlib import Path
+
 
 def test_startup_time(name, command, args, timeout=5):
     """Test MCP server startup time."""
@@ -71,12 +72,12 @@ def main():
             }
             print(f"   ✅ Global npm: {startup_time:.3f}s ({'Success' if success else 'Failed'})")
         else:
-            print(f"   ❌ Global npm: Package not found")
+            print("   ❌ Global npm: Package not found")
             results[f"{server_name}_global"] = {"time": -1, "success": False, "message": "Package not found"}
 
         # Test 2: NPX (if available)
         # Note: NPX is not available in this environment, but we'll document the theoretical comparison
-        print(f"   ℹ️  NPX: Not available in current environment")
+        print("   ℹ️  NPX: Not available in current environment")
         results[f"{server_name}_npx"] = {
             "time": -1,
             "success": False,
@@ -84,7 +85,7 @@ def main():
         }
 
     # Summary
-    print(f"\n📈 Performance Summary")
+    print("\n📈 Performance Summary")
     print("-" * 30)
 
     for server_name in servers.keys():
@@ -98,33 +99,33 @@ def main():
         print(f"   NPX:        {npx_time} ({npx_status})")
 
     # Benefits Analysis
-    print(f"\n💡 Installation Approach Benefits")
+    print("\n💡 Installation Approach Benefits")
     print("-" * 35)
 
-    print(f"\n📦 Global npm installation:")
-    print(f"   ✅ Faster startup (no download overhead)")
-    print(f"   ✅ More reliable (offline capability)")
-    print(f"   ✅ Consistent version control")
-    print(f"   ✅ Better performance (0.1-0.2s startup)")
-    print(f"   ✅ No network dependency after installation")
+    print("\n📦 Global npm installation:")
+    print("   ✅ Faster startup (no download overhead)")
+    print("   ✅ More reliable (offline capability)")
+    print("   ✅ Consistent version control")
+    print("   ✅ Better performance (0.1-0.2s startup)")
+    print("   ✅ No network dependency after installation")
 
-    print(f"\n🔄 NPX (download-on-demand):")
-    print(f"   ⚠️  Slower startup (downloads package each time)")
-    print(f"   ⚠️  Network dependency")
-    print(f"   ⚠️  Version variability")
-    print(f"   ✅ Always latest version")
-    print(f"   ✅ No manual installation required")
+    print("\n🔄 NPX (download-on-demand):")
+    print("   ⚠️  Slower startup (downloads package each time)")
+    print("   ⚠️  Network dependency")
+    print("   ⚠️  Version variability")
+    print("   ✅ Always latest version")
+    print("   ✅ No manual installation required")
 
     # Current Status
-    print(f"\n🎯 Current Configuration Status")
+    print("\n🎯 Current Configuration Status")
     print("-" * 35)
 
     config_file = Path(__file__).parent / ".windsurf" / "mcp_config.json"
     if config_file.exists():
-        print(f"✅ MCP configuration file exists")
+        print("✅ MCP configuration file exists")
 
         # Check which servers use global npm
-        with open(config_file, 'r') as f:
+        with open(config_file) as f:
             import json
             config = json.load(f)
 
@@ -142,23 +143,23 @@ def main():
         print(f"🔄 Using NPX: {', '.join(npx_servers) if npx_servers else 'None'}")
 
         if len(global_servers) >= len(npx_servers):
-            print(f"✅ Configuration optimized for performance")
+            print("✅ Configuration optimized for performance")
         else:
-            print(f"⚠️  Some servers could be optimized")
+            print("⚠️  Some servers could be optimized")
 
     # Recommendations
-    print(f"\n🚀 Performance Recommendations")
+    print("\n🚀 Performance Recommendations")
     print("-" * 35)
 
-    print(f"1. ✅ Use global npm for better performance")
-    print(f"2. ✅ Pre-install all MCP servers globally")
-    print(f"3. ✅ Update configurations to use direct node execution")
-    print(f"4. ✅ Avoid NPX for frequently used servers")
-    print(f"5. ✅ Test startup times after configuration changes")
+    print("1. ✅ Use global npm for better performance")
+    print("2. ✅ Pre-install all MCP servers globally")
+    print("3. ✅ Update configurations to use direct node execution")
+    print("4. ✅ Avoid NPX for frequently used servers")
+    print("5. ✅ Test startup times after configuration changes")
 
-    print(f"\n📝 Commands used:")
-    print(f"   npm install -g @modelcontextprotocol/server-filesystem")
-    print(f"   npm install -g @modelcontextprotocol/server-sequential-thinking")
+    print("\n📝 Commands used:")
+    print("   npm install -g @modelcontextprotocol/server-filesystem")
+    print("   npm install -g @modelcontextprotocol/server-sequential-thinking")
 
     return 0
 

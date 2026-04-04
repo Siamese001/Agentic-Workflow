@@ -1,6 +1,6 @@
 """Health Check - Stub implementation for reasoning compatibility."""
-from enum import Enum
 from dataclasses import dataclass
+from enum import Enum
 from typing import Any
 
 

@@ -5,9 +5,10 @@ Verifies that the server imports correctly and tools are registered.
 """
 
 import asyncio
-import sys
 import importlib.util
+import sys
 from pathlib import Path
+
 
 async def test_mcp_server():
     """Test that the OpenTelemetry MCP server loads correctly."""

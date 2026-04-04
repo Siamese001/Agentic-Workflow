@@ -1,9 +1,11 @@
 """E2E Template Wiring Proof Script"""
+import os
+
+from pydantic import BaseModel
+
 from agentic_core.prompt_governance.core.sovereign_prompt_renderer import SovereignPromptRenderer
 from agentic_core.prompt_governance.core.template_catalog import TEMPLATE_CATALOG, get_templates_for_agent
 from apps_rg.engines.base_rg_engine import BaseRGEngine
-from pydantic import BaseModel
-import os
 
 print('='*70)
 print('E2E TEMPLATE WIRING PROOF')

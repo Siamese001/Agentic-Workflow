@@ -8,9 +8,10 @@ Checks for:
 - Known problematic hook combinations
 """
 
-import yaml
 import sys
 from pathlib import Path
+
+import yaml
 
 
 def check_auto_stage_hook_present(config):
@@ -37,7 +38,7 @@ def check_auto_stage_hook_present(config):
 
     # Should be the last in the list
     if auto_stage_position != len(all_t0_hooks) - 1:
-        print(f"❌ auto-stage-hook-fixes is not last in T0")
+        print("❌ auto-stage-hook-fixes is not last in T0")
         print(f"   Expected position: {len(all_t0_hooks) - 1}, got: {auto_stage_position}")
         print(f"   T0 hooks found: {all_t0_hooks}")
         return False
@@ -98,7 +99,7 @@ def main():
         return 1
 
     try:
-        with open(config_path, 'r') as f:
+        with open(config_path) as f:
             config = yaml.safe_load(f)
     except yaml.YAMLError as e:
         print(f"❌ Invalid YAML: {e}")

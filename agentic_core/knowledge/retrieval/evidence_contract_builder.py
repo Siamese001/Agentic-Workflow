@@ -5,7 +5,7 @@ Citation slip compilation, provenance verification, and precise context packet g
 
 import logging
 from dataclasses import dataclass, field
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     LayerSegment,
@@ -23,19 +23,19 @@ class Citation:
     content_snippet: str
     source: str
     confidence: float
-    page_number: Optional[int] = None
-    section: Optional[str] = None
+    page_number: int | None = None
+    section: str | None = None
 
 
 @dataclass
 class EvidenceContract:
     """Evidence contract with citations and provenance."""
     query_id: str
-    citations: List[Citation] = field(default_factory=list)
+    citations: list[Citation] = field(default_factory=list)
     context_packet: str = ""
     provenance_verified: bool = False
     support_score: float = 0.0
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    metadata: dict[str, Any] = field(default_factory=dict)
 
 
 class EvidenceContractBuilder:
@@ -58,7 +58,7 @@ class EvidenceContractBuilder:
         self,
         query_id: str,
         query: str,
-        retrieved_docs: List[Any],
+        retrieved_docs: list[Any],
     ) -> EvidenceContract:
         """Build evidence contract from retrieved documents.
 
@@ -120,12 +120,12 @@ class EvidenceContractBuilder:
             confidence=getattr(doc, 'rerank_score', 0.5),
         )
 
-    def _verify_provenance(self, citations: List[Citation]) -> bool:
+    def _verify_provenance(self, citations: list[Citation]) -> bool:
         """Verify provenance of citations."""
         # Mock implementation - would check canonical store for provenance
         return all(c.source != 'unknown' for c in citations)
 
-    def _calculate_support(self, query: str, citations: List[Citation]) -> float:
+    def _calculate_support(self, query: str, citations: list[Citation]) -> float:
         """Calculate support score for query."""
         if not citations:
             return 0.0
@@ -136,7 +136,7 @@ class EvidenceContractBuilder:
 
         return avg_confidence * coverage
 
-    def _generate_context_packet(self, query: str, citations: List[Citation]) -> str:
+    def _generate_context_packet(self, query: str, citations: list[Citation]) -> str:
         """Generate context packet for LLM."""
         packet_parts = [f"Query: {query}\n", "Relevant Context:\n"]
 
@@ -150,7 +150,7 @@ class EvidenceContractBuilder:
 
 
 # Global instance
-_global_builder: Optional[EvidenceContractBuilder] = None
+_global_builder: EvidenceContractBuilder | None = None
 
 
 def get_evidence_contract_builder() -> EvidenceContractBuilder:

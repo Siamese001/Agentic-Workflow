@@ -4,12 +4,6 @@ Batch fix tool optimized for SWE 1.5 128K context window.
 Processes files in waves of 200 with parallel operations.
 """
 
-import pathlib
-import ast
-import subprocess
-import sys
-from concurrent.futures import ThreadPoolExecutor, as_completed
-from typing import List, Tuple
 
 # Standard placeholder template
 PLACEHOLDER_TEMPLATE = '''import pytest

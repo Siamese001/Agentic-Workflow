@@ -1,11 +1,7 @@
 """Integration tests for formal verification scanners."""
 
-from pathlib import Path
 
 import pytest
-
-
-
 
 
 @pytest.mark.unit_min_deps

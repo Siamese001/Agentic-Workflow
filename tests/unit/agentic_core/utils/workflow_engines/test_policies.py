@@ -3,8 +3,6 @@
 """
 from __future__ import annotations
 
-import pytest
-
 
 class TestChunkContract:
     def test_is_dataclass(self):

@@ -9,9 +9,8 @@ import logging
 import re
 from datetime import datetime
 from pathlib import Path
-from typing import Optional
 
-from .modality_types import ContentType, DocumentModality, ContentMetadata
+from .modality_types import ContentMetadata, ContentType, DocumentModality
 
 log = logging.getLogger(__name__)
 
@@ -41,7 +40,7 @@ class VisualDetector:
             r'^[A-Z][A-Z\s]*$',   # ALL CAPS headings (allow empty)
         ]
 
-    def detect_modality(self, file_path: Path, content: Optional[str] = None) -> DocumentModality:
+    def detect_modality(self, file_path: Path, content: str | None = None) -> DocumentModality:
         """Detect document modality based on file and content analysis.
 
         Args:
@@ -81,7 +80,7 @@ class VisualDetector:
         else:
             return DocumentModality.TEXT_ONLY
 
-    def extract_metadata(self, file_path: Path, content: Optional[str] = None) -> ContentMetadata:
+    def extract_metadata(self, file_path: Path, content: str | None = None) -> ContentMetadata:
         """Extract comprehensive metadata from document.
 
         Args:
@@ -339,7 +338,7 @@ class VisualDetector:
         """Calculate SHA-256 checksum of content."""
         return hashlib.sha256(content.encode('utf-8')).hexdigest()
 
-    def _detect_language(self, content: str) -> Optional[str]:
+    def _detect_language(self, content: str) -> str | None:
         """Simple language detection based on character patterns."""
         if not content:
             return None

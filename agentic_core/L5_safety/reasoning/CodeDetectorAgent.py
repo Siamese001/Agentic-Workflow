@@ -16,13 +16,15 @@ from typing import Any
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 from agentic_core.L5_safety.utils.code_detector_util import (
     CodeDetector as _CodeDetector,
+)
+from agentic_core.L5_safety.utils.code_detector_util import (
     Detection as _Detection,
 )
 
 
 class Detection:
     """DEPRECATED: Use code_detector_util.Detection instead."""
-    
+
     def __init__(self, **kwargs):
         warnings.warn("Detection is deprecated. Use code_detector_util.Detection instead.", DeprecationWarning)
         self._impl = _Detection(**kwargs)

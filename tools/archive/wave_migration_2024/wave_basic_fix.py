@@ -7,7 +7,7 @@ import argparse
 import ast
 import pathlib
 import re
-import sys
+
 
 def basic_fix_file(file_path: pathlib.Path) -> bool:
     """Basic fix: Remove MOVED blocks and add pass."""
@@ -66,10 +66,10 @@ def basic_fix_file(file_path: pathlib.Path) -> bool:
         # Write if changed
         if fixed_content != content:
             file_path.write_text(fixed_content, encoding='utf-8')
-            print(f"  ✅ Fixed")
+            print("  ✅ Fixed")
             return True
         else:
-            print(f"  ℹ️  No change needed")
+            print("  ℹ️  No change needed")
             return True
 
     except Exception as e:
@@ -112,10 +112,10 @@ def main():
     print(f"\nProcessed: {processed} files")
 
     if processed > 0:
-        print(f"\nTo commit:")
-        print(f"  git add tests/")
+        print("\nTo commit:")
+        print("  git add tests/")
         print(f"  git commit -m 'Basic Wave: Fix {processed} files'")
-        print(f"  git push")
+        print("  git push")
 
 
 if __name__ == '__main__':

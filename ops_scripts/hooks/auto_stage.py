@@ -103,7 +103,7 @@ def main() -> int:
         if files_to_stage or unstaged:
             print("[auto-stage] Staging all new and modified files.")
             subprocess.run(["git", "add", "."], check=True)
-            print(f"[auto-stage] Staging complete.")
+            print("[auto-stage] Staging complete.")
         else:
             print("[auto-stage] No files to stage")
 

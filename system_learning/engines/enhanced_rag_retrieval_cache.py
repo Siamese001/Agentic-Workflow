@@ -53,6 +53,7 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_writes_observability_log,
 )
 
+
 # Lazy import to avoid L_SL->L_RUNTIME gravity violation
 def _get_cache_entry_types():
     from agentic_core.runtime.types.cache_entry_types import SemanticCacheHit

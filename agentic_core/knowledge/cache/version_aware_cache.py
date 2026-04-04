@@ -6,17 +6,16 @@ Multi-factor cache with semantic lookup, freshness management, and ACL integrati
 import logging
 import time
 from dataclasses import dataclass, field
-from typing import Any, Dict, List, Optional
+from typing import Any
 
+from agentic_core.knowledge.cache.catalog_keymaker import CatalogKeymaker
+from agentic_core.knowledge.cache.fast_terminal import FastTerminal
+from agentic_core.knowledge.cache.policy_evaluator import PolicyEvaluator
 from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     LayerSegment,
     _emit_records_execution_trace,
     _emit_records_telemetry_event,
 )
-
-from agentic_core.knowledge.cache.catalog_keymaker import CatalogKeymaker
-from agentic_core.knowledge.cache.policy_evaluator import PolicyEvaluator
-from agentic_core.knowledge.cache.fast_terminal import FastTerminal
 
 log = logging.getLogger(__name__)
 
@@ -25,18 +24,18 @@ log = logging.getLogger(__name__)
 class CacheEntry:
     """Cache entry with metadata."""
     key: str
-    data: Dict[str, Any]
-    query_vector: Optional[List[float]] = None
+    data: dict[str, Any]
+    query_vector: list[float] | None = None
     timestamp: float = field(default_factory=time.time)
     access_count: int = 0
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    metadata: dict[str, Any] = field(default_factory=dict)
 
 
 @dataclass
 class CacheLookupResult:
     """Result of cache lookup."""
     found: bool
-    entry: Optional[CacheEntry] = None
+    entry: CacheEntry | None = None
     match_type: str = "none"  # exact, semantic, none
     score: float = 0.0
     freshness_ok: bool = True
@@ -52,9 +51,9 @@ class VersionAwareCache:
 
     def __init__(
         self,
-        keymaker: Optional[CatalogKeymaker] = None,
-        evaluator: Optional[PolicyEvaluator] = None,
-        terminal: Optional[FastTerminal] = None,
+        keymaker: CatalogKeymaker | None = None,
+        evaluator: PolicyEvaluator | None = None,
+        terminal: FastTerminal | None = None,
         semantic_threshold: float = 0.95,
     ):
         """Initialize the version-aware cache.
@@ -71,15 +70,15 @@ class VersionAwareCache:
         self.semantic_threshold = semantic_threshold
 
         # Semantic index (query_vector -> key mapping)
-        self._semantic_index: Dict[str, List[float]] = {}
+        self._semantic_index: dict[str, list[float]] = {}
 
         log.info("VersionAwareCache initialized")
 
     def lookup(
         self,
         query: str,
-        query_context: Dict[str, Any],
-        scope_metadata: Dict[str, Any],
+        query_context: dict[str, Any],
+        scope_metadata: dict[str, Any],
         check_semantic: bool = True,
     ) -> CacheLookupResult:
         """Lookup cache with exact and semantic matching.
@@ -162,10 +161,10 @@ class VersionAwareCache:
     def store(
         self,
         query: str,
-        data: Dict[str, Any],
-        query_context: Dict[str, Any],
-        scope_metadata: Dict[str, Any],
-        query_vector: Optional[List[float]] = None,
+        data: dict[str, Any],
+        query_context: dict[str, Any],
+        scope_metadata: dict[str, Any],
+        query_vector: list[float] | None = None,
     ) -> bool:
         """Store data in cache.
 
@@ -207,8 +206,8 @@ class VersionAwareCache:
     def invalidate_query(
         self,
         query: str,
-        query_context: Dict[str, Any],
-        scope_metadata: Dict[str, Any],
+        query_context: dict[str, Any],
+        scope_metadata: dict[str, Any],
     ) -> bool:
         """Invalidate cache for a query.
 
@@ -244,7 +243,7 @@ class VersionAwareCache:
         """
         return self.terminal.invalidate_pattern(scope_pattern)
 
-    def get_stats(self) -> Dict[str, Any]:
+    def get_stats(self) -> dict[str, Any]:
         """Get cache statistics.
 
         Returns:
@@ -259,9 +258,9 @@ class VersionAwareCache:
 
     def _semantic_lookup(
         self,
-        query_vector: List[float],
-        query_context: Dict[str, Any],
-        scope_metadata: Dict[str, Any],
+        query_vector: list[float],
+        query_context: dict[str, Any],
+        scope_metadata: dict[str, Any],
     ) -> CacheLookupResult:
         """Perform semantic similarity lookup."""
         best_match = None
@@ -303,7 +302,7 @@ class VersionAwareCache:
 
         return CacheLookupResult(found=False)
 
-    def _cosine_similarity(self, v1: List[float], v2: List[float]) -> float:
+    def _cosine_similarity(self, v1: list[float], v2: list[float]) -> float:
         """Calculate cosine similarity between two vectors."""
         import math
 
@@ -318,7 +317,7 @@ class VersionAwareCache:
 
 
 # Global instance
-_global_cache: Optional[VersionAwareCache] = None
+_global_cache: VersionAwareCache | None = None
 
 
 def get_version_aware_cache() -> VersionAwareCache:

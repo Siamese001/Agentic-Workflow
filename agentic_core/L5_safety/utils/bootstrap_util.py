@@ -26,12 +26,12 @@ Logger = logging.getLogger(__name__)
 @dataclass
 class BootstrapResult:
     """Result of bootstrap verification."""
-    
+
     redis_connected: bool
     critical_files_present: list[str]
     critical_files_missing: list[str]
     status: str  # "healthy", "degraded", "failed"
-    
+
     def to_dict(self) -> dict[str, Any]:
         """Convert to dictionary."""
         return {
@@ -66,7 +66,7 @@ def verify_redis_connection(redis_client: Any | None = None) -> bool:
         except ImportError:
             Logger.warning("Redis adapter not available")
             return False
-    
+
     try:
         redis_client.set("bootstrap_check", "ok", ex=5)
         result = redis_client.get("bootstrap_check")
@@ -87,14 +87,14 @@ def verify_critical_files(project_root: Path) -> tuple[list[str], list[str]]:
     """
     present: list[str] = []
     missing: list[str] = []
-    
+
     for file_path in CRITICAL_FILES:
         full_path = project_root / file_path
         if full_path.exists():
             present.append(file_path)
         else:
             missing.append(file_path)
-    
+
     return present, missing
 
 
@@ -113,7 +113,7 @@ def run_bootstrap(
     """
     redis_ok = verify_redis_connection(redis_client)
     present, missing = verify_critical_files(project_root)
-    
+
     # Determine overall status
     if redis_ok and not missing:
         status = "healthy"
@@ -121,7 +121,7 @@ def run_bootstrap(
         status = "degraded"  # Redis down but files present
     else:
         status = "failed"
-    
+
     return BootstrapResult(
         redis_connected=redis_ok,
         critical_files_present=present,
@@ -147,7 +147,7 @@ def heal_bootstrap_issues(
     violations_fixed: list[str] = []
     errors: list[str] = []
     skipped: list[str] = []
-    
+
     try:
         # Check Redis
         if not verify_redis_connection():
@@ -155,7 +155,7 @@ def heal_bootstrap_issues(
             violations_fixed.append("Redis configuration verified")
         else:
             violations_fixed.append("Redis connection verified")
-        
+
         # Check critical files
         check_path = Path(target_path) if target_path else project_root
         if not check_path.exists():
@@ -174,7 +174,7 @@ def heal_bootstrap_issues(
             violations_fixed.append(f"Critical file verified: {file_path}")
     except (RuntimeError, OSError) as e:
         errors.append(f"Healing failed: {str(e)}")
-    
+
     return {
         "violations_found": violations_found,
         "violations_fixed": violations_fixed,

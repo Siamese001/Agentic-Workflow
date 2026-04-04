@@ -10,7 +10,6 @@ VIOLATION: NO MAGIC STRINGS. ALL PROMPTS/CONFIGS MUST BE ACCESSED VIA THIS REGIS
 from __future__ import annotations
 
 from pydantic import BaseModel, Field
-from typing import Dict, List
 
 from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_applies_guardrail,
@@ -33,8 +32,8 @@ class RfpPromptEntry(BaseModel):
     description: str
     system_prompt: str
     user_template: str
-    required_context: List[str] = Field(default_factory=list)
-    optional_context: List[str] = Field(default_factory=list)
+    required_context: list[str] = Field(default_factory=list)
+    optional_context: list[str] = Field(default_factory=list)
     proposal_section: str = "general"  # executive_summary, technical_approach, pricing, etc.
     max_tokens: int = 2500
     temperature: float = 0.35
@@ -46,7 +45,7 @@ class RfpNodeEntry(BaseModel):
     node_id: str
     description: str
     stage: str  # analysis, drafting, review, compliance
-    capabilities: List[str] = Field(default_factory=list)
+    capabilities: list[str] = Field(default_factory=list)
     timeout_seconds: int = 600
     retry_policy: str = "exponential_backoff"
     version: str = "1.0"
@@ -65,7 +64,7 @@ class RfpGlobalRule(BaseModel):
 # FROZEN SNAPSHOT (Immutable Knowledge)
 # -----------------------------------------------------------------------------
 
-_RFP_PROMPTS: Dict[str, RfpPromptEntry] = {
+_RFP_PROMPTS: dict[str, RfpPromptEntry] = {
     "rfp_requirement_analysis": RfpPromptEntry(
         prompt_id="rfp_requirement_analysis",
         description="Analyze RFP requirements and extract key information",
@@ -197,7 +196,7 @@ Provide:
     ),
 }
 
-_RFP_NODES: Dict[str, RfpNodeEntry] = {
+_RFP_NODES: dict[str, RfpNodeEntry] = {
     "analysis": RfpNodeEntry(
         node_id="analysis",
         description="RFP requirements analysis and extraction",
@@ -236,7 +235,7 @@ _RFP_NODES: Dict[str, RfpNodeEntry] = {
     ),
 }
 
-_RFP_RULES: Dict[str, RfpGlobalRule] = {
+_RFP_RULES: dict[str, RfpGlobalRule] = {
     "mandatory_requirements": RfpGlobalRule(
         rule_id="mandatory_requirements",
         description="All mandatory requirements must be addressed",
@@ -264,9 +263,9 @@ _RFP_RULES: Dict[str, RfpGlobalRule] = {
 class RfpSovereignKnowledge(BaseModel):
     """Immutable frozen snapshot of RFP/proposal domain knowledge."""
     version: str = "1.0"
-    prompts: Dict[str, RfpPromptEntry]
-    nodes: Dict[str, RfpNodeEntry]
-    rules: Dict[str, RfpGlobalRule]
+    prompts: dict[str, RfpPromptEntry]
+    nodes: dict[str, RfpNodeEntry]
+    rules: dict[str, RfpGlobalRule]
 
 
 # -----------------------------------------------------------------------------
@@ -328,12 +327,12 @@ def get_global_rule(rule_id: str) -> RfpGlobalRule:
     return FROZEN_SNAPSHOT.rules[rule_id]
 
 
-def list_all_prompts() -> List[str]:
+def list_all_prompts() -> list[str]:
     """Return list of all available prompt IDs."""
     return list(FROZEN_SNAPSHOT.prompts.keys())
 
 
-def list_all_nodes() -> List[str]:
+def list_all_nodes() -> list[str]:
     """Return list of all available node IDs."""
     return list(FROZEN_SNAPSHOT.nodes.keys())
 

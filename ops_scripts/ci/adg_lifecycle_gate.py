@@ -1,5 +1,6 @@
 import sys
 
+
 def main():
     print("ADG Lifecycle Gate (Placeholder) - PASSED")
     sys.exit(0)

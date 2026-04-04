@@ -95,7 +95,7 @@ def load_global_config() -> dict[str, Any] | None:
         return None
 
     try:
-        with open(GLOBAL_CONFIG_PATH, "r", encoding="utf-8") as f:
+        with open(GLOBAL_CONFIG_PATH, encoding="utf-8") as f:
             return json.load(f)
     except (json.JSONDecodeError, OSError) as e:
         logger.warning(f"Failed to load global config: {e}")

@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """Catalog all layer gravity violations for wave planning."""
 
-import sqlite3
 import glob
+import sqlite3
 
 files = glob.glob('artifacts/adg/adg_indexed_*.sqlite')
 latest = sorted(files)[-1]

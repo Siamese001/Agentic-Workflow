@@ -3,13 +3,8 @@
 ADG Static Correctness Validation using Redis MCP Tools
 """
 
-import json
-import random
-import statistics
 from pathlib import Path
-from typing import Dict, List, Tuple, Any
-import ast
-import sys
+from typing import Any
 
 # Import Redis MCP tools (these are available in the current environment)
 # Note: These would be called via MCP in the actual execution
@@ -21,7 +16,7 @@ class ADGRedisValidator:
         self.results = {}
         self.sample_size = 2000
 
-    def validate_all_dimensions(self) -> Dict[str, Any]:
+    def validate_all_dimensions(self) -> dict[str, Any]:
         """Run all 5 validation dimensions using Redis MCP."""
         print("🔍 ADG STATIC CORRECTNESS VALIDATION (Redis MCP)")
         print("=" * 60)
@@ -102,7 +97,7 @@ class ADGRedisValidator:
 
         return alignment_rate
 
-    def _validate_denominator_integrity_redis(self) -> Dict[str, float]:
+    def _validate_denominator_integrity_redis(self) -> dict[str, float]:
         """Validate denominator integrity using Redis MCP."""
         print("  Computing denominator ratios...")
 
@@ -244,7 +239,7 @@ class ADGRedisValidator:
 
         denom = results.get('denominator_integrity', {})
         if not denom.get('within_tolerance', False):
-            failures.append(f"Denominator integrity outside ±5% tolerance")
+            failures.append("Denominator integrity outside ±5% tolerance")
             failures.append(f"  File ratio: {denom.get('file_ratio', 0):.3f}")
             failures.append(f"  Function ratio: {denom.get('function_ratio', 0):.3f}")
             failures.append(f"  Class ratio: {denom.get('class_ratio', 0):.3f}")

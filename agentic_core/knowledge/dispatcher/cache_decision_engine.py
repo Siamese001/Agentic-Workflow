@@ -7,7 +7,7 @@ Computes budgets and thresholds for retrieval decisions.
 import logging
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     LayerSegment,
@@ -44,7 +44,7 @@ class CacheDecision:
     freshness_band: str
     compute_budget: int  # tokens
     priority: int  # 1-10
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    metadata: dict[str, Any] = field(default_factory=dict)
 
 
 class CacheDecisionEngine:
@@ -57,7 +57,7 @@ class CacheDecisionEngine:
 
     def __init__(self):
         """Initialize the cache decision engine."""
-        self._policies: List[Dict[str, Any]] = []
+        self._policies: list[dict[str, Any]] = []
         self._setup_default_policies()
         log.info("CacheDecisionEngine initialized")
 
@@ -109,8 +109,8 @@ class CacheDecisionEngine:
     def decide(
         self,
         query_id: str,
-        query_context: Dict[str, Any],
-        scope_metadata: Dict[str, Any],
+        query_context: dict[str, Any],
+        scope_metadata: dict[str, Any],
     ) -> CacheDecision:
         """Make cache and retrieval decision.
 
@@ -165,7 +165,7 @@ class CacheDecisionEngine:
         self,
         name: str,
         condition: callable,
-        decision: Dict[str, Any],
+        decision: dict[str, Any],
     ) -> None:
         """Add a custom policy.
 
@@ -181,7 +181,7 @@ class CacheDecisionEngine:
         })
         log.info(f"Added policy: {name}")
 
-    def _find_matching_policy(self, context: Dict[str, Any]) -> Dict[str, Any]:
+    def _find_matching_policy(self, context: dict[str, Any]) -> dict[str, Any]:
         """Find first matching policy for context."""
         for policy in self._policies:
             try:
@@ -201,7 +201,7 @@ class CacheDecisionEngine:
             "priority": 5,
         }
 
-    def _calculate_budget(self, priority: int, context: Dict[str, Any]) -> int:
+    def _calculate_budget(self, priority: int, context: dict[str, Any]) -> int:
         """Calculate compute budget based on priority."""
         base_budget = 1000  # tokens
 
@@ -217,7 +217,7 @@ class CacheDecisionEngine:
 
 
 # Global instance
-_global_engine: Optional[CacheDecisionEngine] = None
+_global_engine: CacheDecisionEngine | None = None
 
 
 def get_cache_decision_engine() -> CacheDecisionEngine:
@@ -230,8 +230,8 @@ def get_cache_decision_engine() -> CacheDecisionEngine:
 
 def make_cache_decision(
     query_id: str,
-    query_context: Dict[str, Any],
-    scope_metadata: Dict[str, Any],
+    query_context: dict[str, Any],
+    scope_metadata: dict[str, Any],
 ) -> CacheDecision:
     """Convenience function to make cache decision."""
     return get_cache_decision_engine().decide(query_id, query_context, scope_metadata)

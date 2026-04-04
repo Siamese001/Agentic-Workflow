@@ -3,12 +3,8 @@
 Tests the transitions and data flow between adjacent layers.
 """
 
-import pytest
-import time
 import hashlib
-from typing import Any, Dict, List
 from dataclasses import dataclass, field
-from unittest.mock import Mock, patch
 
 
 @dataclass
@@ -16,11 +12,11 @@ class LayerContext:
     """Context passed between layers."""
     query: str
     query_hash: str
-    intent_vector: List[float] = field(default_factory=list)
-    embeddings: List[Dict] = field(default_factory=list)
-    retrieved_chunks: List[Dict] = field(default_factory=list)
-    execution_plan: Dict = field(default_factory=dict)
-    telemetry: Dict = field(default_factory=dict)
+    intent_vector: list[float] = field(default_factory=list)
+    embeddings: list[dict] = field(default_factory=list)
+    retrieved_chunks: list[dict] = field(default_factory=list)
+    execution_plan: dict = field(default_factory=dict)
+    telemetry: dict = field(default_factory=dict)
 
 
 class TestLayer1To2Handoff:
@@ -119,7 +115,7 @@ class TestLayer2To3Handoff:
         assert len(faiss_results) > 0
         assert faiss_results[0]["score"] > 0
 
-    def _mock_faiss_search(self, vector: List[float]) -> List[Dict]:
+    def _mock_faiss_search(self, vector: list[float]) -> list[dict]:
         """Mock FAISS vector search."""
         return [
             {"chunk_id": f"chunk_{i}", "score": 0.9 - (i * 0.1)}

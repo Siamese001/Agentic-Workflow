@@ -63,7 +63,7 @@ class ConfigLoaderService:
             return self._cache[config_path]
 
         try:
-            with open(path, "r", encoding="utf-8") as f:
+            with open(path, encoding="utf-8") as f:
                 config = json.load(f)
 
             self._cache[config_path] = config

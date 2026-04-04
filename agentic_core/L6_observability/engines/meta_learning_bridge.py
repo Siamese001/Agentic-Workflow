@@ -96,7 +96,7 @@ class MetaLearningRecord:
         }
 
     @classmethod
-    def from_dict(cls, data: dict[str, Any]) -> "MetaLearningRecord":
+    def from_dict(cls, data: dict[str, Any]) -> MetaLearningRecord:
         """Create from dictionary."""
         return cls(
             snapshot_id=data.get("snapshot_id", ""),
@@ -263,7 +263,7 @@ class L6MetaLearningBridge:
             try:
                 filepath = self.storage_path / f"{snapshot_id}.json"
                 if filepath.exists():
-                    with open(filepath, "r", encoding="utf-8") as f:
+                    with open(filepath, encoding="utf-8") as f:
                         data = json.load(f)
                         record = MetaLearningRecord.from_dict(data)
                         self._records[snapshot_id] = record

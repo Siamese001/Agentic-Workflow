@@ -116,7 +116,7 @@ class PowerShellBanChecker:
 
                     if files_checked % 100 == 0:
                         print(f"Scanned {files_checked} files...", end='\r')
-                except IOError as e:
+                except OSError as e:
                     print(f"Could not read {file_path}: {e}", file=sys.stderr)
 
         print(f"Scanned {files_checked} files total")
@@ -303,7 +303,7 @@ class PowerShellBanChecker:
         print()
 
         # Group violations by file
-        by_file: Dict[str, List[Dict[str, Any]]] = {}
+        by_file: dict[str, list[dict[str, Any]]] = {}
         for v in self.violations:
             file_key = v["file"]
             if file_key not in by_file:
@@ -335,8 +335,8 @@ class PowerShellBanChecker:
         if not self.violations:
             return {"total": 0}
 
-        by_pattern: Dict[str, int] = {}
-        by_file: Dict[str, int] = {}
+        by_pattern: dict[str, int] = {}
+        by_file: dict[str, int] = {}
 
         for v in self.violations:
             pattern = v["pattern"]

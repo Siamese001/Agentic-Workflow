@@ -10,10 +10,8 @@ Tests all four Phase 1 data contracts:
 import hashlib
 import hmac
 import unittest
-from typing import Any
 
 import pytest
-
 
 # ---------------------------------------------------------------------------
 # Lazy import fixtures - avoid collection-time import errors
@@ -21,12 +19,12 @@ import pytest
 
 @pytest.fixture(scope="session")
 def plc_imports():
+    from agentic_core.L0_routing.types.l0_instruction_packet import InstructionPacket
     from agentic_core.prompt_governance.contracts import (
         CompiledPromptArtifact,
         PromptBOM,
         TemplateManifest,
     )
-    from agentic_core.L0_routing.types.l0_instruction_packet import InstructionPacket
     return {
         "CompiledPromptArtifact": CompiledPromptArtifact,
         "PromptBOM": PromptBOM,

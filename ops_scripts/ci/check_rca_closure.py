@@ -1,6 +1,7 @@
-import sys
 import re
+import sys
 from pathlib import Path
+
 
 def check_rca_status(file_path: Path) -> bool:
     """Checks if an RCA markdown file has the status 'RESOLVED'."""

@@ -7,10 +7,7 @@ focusing on pytest.ini optimization and marker standardization.
 """
 
 import json
-import re
 from pathlib import Path
-from typing import Dict, List, Set, Tuple
-from collections import defaultdict
 
 
 class PytestConfigHardener:
@@ -27,7 +24,7 @@ class PytestConfigHardener:
         }
         self.modifications = []
 
-    def scan_pytest_configs(self) -> List[Dict]:
+    def scan_pytest_configs(self) -> list[dict]:
         """Scan for pytest configuration files."""
         print("=== Scanning Pytest Configuration Files ===")
 
@@ -45,7 +42,7 @@ class PytestConfigHardener:
         # Look for pyproject.toml with pytest configuration
         for pyproject_toml in root_dir.rglob('pyproject.toml'):
             try:
-                with open(pyproject_toml, 'r', encoding='utf-8') as f:
+                with open(pyproject_toml, encoding='utf-8') as f:
                     content = f.read()
                 if '[tool.pytest.ini_options]' in content:
                     config_files.append({
@@ -59,7 +56,7 @@ class PytestConfigHardener:
         # Look for setup.cfg with pytest configuration
         for setup_cfg in root_dir.rglob('setup.cfg'):
             try:
-                with open(setup_cfg, 'r', encoding='utf-8') as f:
+                with open(setup_cfg, encoding='utf-8') as f:
                     content = f.read()
                 if '[pytest]' in content:
                     config_files.append({
@@ -73,13 +70,13 @@ class PytestConfigHardener:
         print(f"🔍 Found {len(config_files)} pytest configuration files")
         return config_files
 
-    def analyze_pytest_config(self, config_file: Dict) -> Dict:
+    def analyze_pytest_config(self, config_file: dict) -> dict:
         """Analyze a pytest configuration file."""
         file_path = config_file['path']
         config_type = config_file['type']
 
         try:
-            with open(file_path, 'r', encoding='utf-8') as f:
+            with open(file_path, encoding='utf-8') as f:
                 content = f.read()
 
             analysis = {
@@ -105,7 +102,7 @@ class PytestConfigHardener:
             print(f"❌ Error analyzing {config_file['file']}: {e}")
             return {'file': config_file['file'], 'type': config_type, 'error': str(e)}
 
-    def _analyze_pytest_ini(self, content: str) -> Dict:
+    def _analyze_pytest_ini(self, content: str) -> dict:
         """Analyze pytest.ini content."""
         analysis = {
             'markers': [],
@@ -160,7 +157,7 @@ class PytestConfigHardener:
 
         return analysis
 
-    def _analyze_pyproject_toml(self, content: str) -> Dict:
+    def _analyze_pyproject_toml(self, content: str) -> dict:
         """Analyze pyproject.toml pytest configuration."""
         analysis = {
             'markers': [],
@@ -198,7 +195,7 @@ class PytestConfigHardener:
 
         return analysis
 
-    def _analyze_setup_cfg(self, content: str) -> Dict:
+    def _analyze_setup_cfg(self, content: str) -> dict:
         """Analyze setup.cfg pytest configuration."""
         # Similar to pytest.ini analysis but limited to [pytest] section
         analysis = {
@@ -250,7 +247,7 @@ class PytestConfigHardener:
 
         return analysis
 
-    def _check_marker_issues(self, markers: List[str]) -> List[str]:
+    def _check_marker_issues(self, markers: list[str]) -> list[str]:
         """Check for marker configuration issues."""
         issues = []
 
@@ -281,7 +278,7 @@ class PytestConfigHardener:
 
         return issues
 
-    def _check_option_issues(self, options: Dict[str, str]) -> List[str]:
+    def _check_option_issues(self, options: dict[str, str]) -> list[str]:
         """Check for pytest option issues."""
         issues = []
 
@@ -305,7 +302,7 @@ class PytestConfigHardener:
 
         return issues
 
-    def _generate_recommendations(self, markers: List[str], options: Dict[str, str]) -> List[str]:
+    def _generate_recommendations(self, markers: list[str], options: dict[str, str]) -> list[str]:
         """Generate configuration recommendations."""
         recommendations = []
 
@@ -339,7 +336,7 @@ class PytestConfigHardener:
 
         return recommendations
 
-    def harden_pytest_configs(self, config_files: List[Dict]) -> Dict:
+    def harden_pytest_configs(self, config_files: list[dict]) -> dict:
         """Harden pytest configuration files."""
         print("=== Hardening Pytest Configurations ===")
 
@@ -368,7 +365,7 @@ class PytestConfigHardener:
             'modifications': self.modifications
         }
 
-    def _harden_single_config(self, analysis: Dict) -> Dict:
+    def _harden_single_config(self, analysis: dict) -> dict:
         """Harden a single pytest configuration."""
         hardening_result = {
             'hardened': False,
@@ -381,7 +378,7 @@ class PytestConfigHardener:
 
         try:
             # Read original content
-            with open(file_path, 'r', encoding='utf-8') as f:
+            with open(file_path, encoding='utf-8') as f:
                 original_content = f.read()
 
             # Generate hardened content
@@ -414,7 +411,7 @@ class PytestConfigHardener:
 
         return hardening_result
 
-    def _generate_hardened_config(self, analysis: Dict, original_content: str) -> str:
+    def _generate_hardened_config(self, analysis: dict, original_content: str) -> str:
         """Generate hardened pytest configuration."""
         config_type = analysis['type']
 
@@ -427,7 +424,7 @@ class PytestConfigHardener:
 
         return original_content
 
-    def _harden_pytest_ini(self, analysis: Dict, content: str) -> str:
+    def _harden_pytest_ini(self, analysis: dict, content: str) -> str:
         """Harden pytest.ini configuration."""
         lines = content.split('\n')
         hardened_lines = []
@@ -456,7 +453,7 @@ class PytestConfigHardener:
 
         return '\n'.join(hardened_lines)
 
-    def _harden_pyproject_toml(self, analysis: Dict, content: str) -> str:
+    def _harden_pyproject_toml(self, analysis: dict, content: str) -> str:
         """Harden pyproject.toml pytest configuration."""
         lines = content.split('\n')
         hardened_lines = []
@@ -488,7 +485,7 @@ class PytestConfigHardener:
 
         return '\n'.join(hardened_lines)
 
-    def _harden_setup_cfg(self, analysis: Dict, content: str) -> str:
+    def _harden_setup_cfg(self, analysis: dict, content: str) -> str:
         """Harden setup.cfg pytest configuration."""
         lines = content.split('\n')
         hardened_lines = []
@@ -523,7 +520,7 @@ class PytestConfigHardener:
 
         return '\n'.join(hardened_lines)
 
-    def validate_hardening(self) -> Dict:
+    def validate_hardening(self) -> dict:
         """Validate that pytest configurations were hardened."""
         print("=== Validating Pytest Configuration Hardening ===")
 
@@ -539,7 +536,7 @@ class PytestConfigHardener:
             file_path = modification['file']
 
             try:
-                with open(file_path, 'r', encoding='utf-8') as f:
+                with open(file_path, encoding='utf-8') as f:
                     content = f.read()
 
                 # Check that standard markers are present
@@ -569,7 +566,7 @@ class PytestConfigHardener:
 
         return validation
 
-    def generate_wave5a_report(self) -> Dict:
+    def generate_wave5a_report(self) -> dict:
         """Generate Wave 5a hardening report."""
         print("=== Wave 5a: Marker and Config Hardening - pytest.ini ===")
 
@@ -606,7 +603,7 @@ class PytestConfigHardener:
 
         # Print summary
         summary = report['summary']
-        print(f"\n=== Wave 5a Summary ===")
+        print("\n=== Wave 5a Summary ===")
         print(f"Config files found: {summary['config_files_found']}")
         print(f"Configs analyzed: {summary['configs_analyzed']}")
         print(f"Configs hardened: {summary['configs_hardened']}")
@@ -619,7 +616,7 @@ class PytestConfigHardener:
             for issue in validation_results['remaining_issues'][:3]:
                 print(f"  - {issue['file']}: {issue['issue']}")
 
-        print(f"\n📄 Report saved to: artifacts/wave5a_hardening_report.json")
+        print("\n📄 Report saved to: artifacts/wave5a_hardening_report.json")
 
         return report
 

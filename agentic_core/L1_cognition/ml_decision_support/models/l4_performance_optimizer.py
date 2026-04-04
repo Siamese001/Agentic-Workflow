@@ -6,23 +6,24 @@ bottleneck identification, resource allocation, and performance tuning recommend
 """
 
 import pickle
-import numpy as np
-from pathlib import Path
-from typing import Dict, List, Optional, Any, Tuple
 from datetime import datetime
+from pathlib import Path
+from typing import Any
+
+import numpy as np
 
 try:
     from sklearn.ensemble import RandomForestClassifier
-    from sklearn.preprocessing import StandardScaler
     from sklearn.pipeline import Pipeline
+    from sklearn.preprocessing import StandardScaler
 except ImportError:
     RandomForestClassifier = None
     StandardScaler = None
     Pipeline = None
 
-from .base_model import BaseMLModel, ModelPrediction, ModelInput, PredictionType, DecisionMode
 from ..config.model_registry import DecisionMode
 from ..features.l4_features import L4FeatureExtractor
+from .base_model import BaseMLModel, DecisionMode, ModelInput, ModelPrediction, PredictionType
 
 
 class L4PerformanceOptimizer(BaseMLModel):
@@ -53,7 +54,7 @@ class L4PerformanceOptimizer(BaseMLModel):
     # Reverse mapping
     REVERSE_OPTIMIZATION_MAPPING = {v: k for k, v in OPTIMIZATION_MAPPING.items()}
 
-    def __init__(self, model_file_path: Optional[Path] = None):
+    def __init__(self, model_file_path: Path | None = None):
         if RandomForestClassifier is None:
             raise ImportError("scikit-learn is required for L4PerformanceOptimizer")
 
@@ -245,11 +246,11 @@ class L4PerformanceOptimizer(BaseMLModel):
 
     def optimize_performance(
         self,
-        performance_context: Dict[str, Any],
+        performance_context: dict[str, Any],
         trace_id: str,
         replay_key: str,
         policy_hash: str
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """
         Get comprehensive performance optimization recommendations.
 
@@ -317,11 +318,11 @@ class L4PerformanceOptimizer(BaseMLModel):
 
     def get_performance_insights(
         self,
-        performance_context: Dict[str, Any],
+        performance_context: dict[str, Any],
         trace_id: str,
         replay_key: str,
         policy_hash: str
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """
         Get detailed performance insights and analysis.
 
@@ -441,9 +442,9 @@ class L4PerformanceOptimizer(BaseMLModel):
     def _generate_optimization_recommendations(
         self,
         action: str,
-        context: Dict[str, Any],
-        features: Dict[str, float]
-    ) -> List[str]:
+        context: dict[str, Any],
+        features: dict[str, float]
+    ) -> list[str]:
         """Generate action-specific optimization recommendations."""
         recommendations = []
 
@@ -507,8 +508,8 @@ class L4PerformanceOptimizer(BaseMLModel):
     def _calculate_expected_impact(
         self,
         action: str,
-        context: Dict[str, Any]
-    ) -> Dict[str, Any]:
+        context: dict[str, Any]
+    ) -> dict[str, Any]:
         """Calculate expected impact of optimization action."""
         # Base impact estimates by action type
         impact_estimates = {
@@ -598,7 +599,7 @@ class L4PerformanceOptimizer(BaseMLModel):
 
         return effort_estimates.get(action, "Medium")
 
-    def _assess_implementation_risk(self, action: str, context: Dict[str, Any]) -> str:
+    def _assess_implementation_risk(self, action: str, context: dict[str, Any]) -> str:
         """Assess implementation risk for optimization action."""
         # Base risk levels
         risk_levels = {
@@ -623,7 +624,7 @@ class L4PerformanceOptimizer(BaseMLModel):
 
         return base_risk
 
-    def _generate_performance_analysis(self, features: Dict[str, float], insights: List[Dict[str, Any]]) -> str:
+    def _generate_performance_analysis(self, features: dict[str, float], insights: list[dict[str, Any]]) -> str:
         """Generate performance analysis summary."""
         analysis_parts = []
 
@@ -665,7 +666,7 @@ class L4PerformanceOptimizer(BaseMLModel):
 
         return " ".join(analysis_parts)
 
-    def get_feature_importance(self, model_input: ModelInput) -> List[Dict[str, Any]]:
+    def get_feature_importance(self, model_input: ModelInput) -> list[dict[str, Any]]:
         """Get feature importance for explainability."""
         if not self.is_loaded or not self.pipeline:
             return []
@@ -703,7 +704,7 @@ class L4PerformanceOptimizer(BaseMLModel):
             # Failed to compute importance
             return []
 
-    def _extract_feature_vector(self, features: Dict[str, Any]) -> Optional[np.ndarray]:
+    def _extract_feature_vector(self, features: dict[str, Any]) -> np.ndarray | None:
         """Extract features in the correct order for the model."""
         if not self.feature_names:
             return None
@@ -719,7 +720,7 @@ class L4PerformanceOptimizer(BaseMLModel):
         except Exception as e:
             return None
 
-    def preprocess_features(self, features: Dict[str, Any]) -> Tuple[Dict[str, Any], List[str]]:
+    def preprocess_features(self, features: dict[str, Any]) -> tuple[dict[str, Any], list[str]]:
         """Preprocess features for Random Forest."""
         processed_features, preprocessing_steps = super().preprocess_features(features)
 
@@ -741,8 +742,8 @@ class L4PerformanceOptimizer(BaseMLModel):
 
     def train_model(
         self,
-        training_data: List[Dict[str, Any]],
-        feature_names: List[str],
+        training_data: list[dict[str, Any]],
+        feature_names: list[str],
         training_data_digest: str = ""
     ) -> None:
         """

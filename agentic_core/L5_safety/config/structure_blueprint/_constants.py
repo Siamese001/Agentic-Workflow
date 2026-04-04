@@ -30,7 +30,6 @@ Design rationale:
 from __future__ import annotations
 
 # Import canonical constants from L0 (L0 can be imported by any layer)
-
 import warnings
 from collections.abc import Mapping, Sequence
 from types import MappingProxyType
@@ -1212,6 +1211,7 @@ def build_sovereign_territories() -> dict[str, TerritoryDefinition]:
                             "embeddings": [],
                             "interfaces": [],
                             "knowledge": [],
+                            "mixins": [],
                             "prompt_governance": [],
                             "runtime": [],
                             "seams": [],

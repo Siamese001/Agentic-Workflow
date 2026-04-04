@@ -14,7 +14,6 @@ Slot Taxonomy Integration:
 from __future__ import annotations
 
 from pydantic import BaseModel, Field
-from typing import Dict, List
 
 from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_applies_guardrail,
@@ -37,8 +36,8 @@ class LicPromptEntry(BaseModel):
     description: str
     system_prompt: str
     user_template: str
-    required_context: List[str] = Field(default_factory=list)
-    optional_context: List[str] = Field(default_factory=list)
+    required_context: list[str] = Field(default_factory=list)
+    optional_context: list[str] = Field(default_factory=list)
     message_type: str = "connection"  # connection, followup, content_share, recruiter
     max_tokens: int = 800
     temperature: float = 0.6
@@ -50,7 +49,7 @@ class LicNodeEntry(BaseModel):
     node_id: str
     description: str
     stage: str  # archetype, targeting, messaging, delivery, analytics
-    capabilities: List[str] = Field(default_factory=list)
+    capabilities: list[str] = Field(default_factory=list)
     timeout_seconds: int = 300
     retry_policy: str = "exponential_backoff"
     version: str = "1.0"
@@ -69,7 +68,7 @@ class LicGlobalRule(BaseModel):
 # FROZEN SNAPSHOT (Immutable Knowledge)
 # -----------------------------------------------------------------------------
 
-_LIC_PROMPTS: Dict[str, LicPromptEntry] = {
+_LIC_PROMPTS: dict[str, LicPromptEntry] = {
     "lic_archetype_analysis": LicPromptEntry(
         prompt_id="lic_archetype_analysis",
         description="Analyze recipient archetype for message personalization",
@@ -213,7 +212,7 @@ Draft message that:
     ),
 }
 
-_LIC_NODES: Dict[str, LicNodeEntry] = {
+_LIC_NODES: dict[str, LicNodeEntry] = {
     "archetype": LicNodeEntry(
         node_id="archetype",
         description="Recipient archetype analysis and classification",
@@ -252,7 +251,7 @@ _LIC_NODES: Dict[str, LicNodeEntry] = {
     ),
 }
 
-_LIC_RULES: Dict[str, LicGlobalRule] = {
+_LIC_RULES: dict[str, LicGlobalRule] = {
     "connection_rate": LicGlobalRule(
         rule_id="connection_rate",
         description="Daily connection requests must stay within LinkedIn limits",
@@ -280,9 +279,9 @@ _LIC_RULES: Dict[str, LicGlobalRule] = {
 class LicSovereignKnowledge(BaseModel):
     """Immutable frozen snapshot of LinkedIn campaign domain knowledge."""
     version: str = "1.0"
-    prompts: Dict[str, LicPromptEntry]
-    nodes: Dict[str, LicNodeEntry]
-    rules: Dict[str, LicGlobalRule]
+    prompts: dict[str, LicPromptEntry]
+    nodes: dict[str, LicNodeEntry]
+    rules: dict[str, LicGlobalRule]
 
 
 # -----------------------------------------------------------------------------
@@ -344,12 +343,12 @@ def get_global_rule(rule_id: str) -> LicGlobalRule:
     return FROZEN_SNAPSHOT.rules[rule_id]
 
 
-def list_all_prompts() -> List[str]:
+def list_all_prompts() -> list[str]:
     """Return list of all available prompt IDs."""
     return list(FROZEN_SNAPSHOT.prompts.keys())
 
 
-def list_all_nodes() -> List[str]:
+def list_all_nodes() -> list[str]:
     """Return list of all available node IDs."""
     return list(FROZEN_SNAPSHOT.nodes.keys())
 

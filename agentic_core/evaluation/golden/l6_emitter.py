@@ -12,8 +12,8 @@ from typing import Any
 from agentic_core.evaluation.golden.golden_evaluator import GoldenEvalResult
 from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_captures_evaluation_metric,
-    _emit_records_telemetry_event,
     _emit_emits_metric_event,
+    _emit_records_telemetry_event,
 )
 
 Logger = logging.getLogger(__name__)

@@ -3,10 +3,10 @@
 Comprehensive verification of test file fixes.
 """
 
-import pathlib
 import ast
+import pathlib
 import subprocess
-import json
+
 
 def comprehensive_verification():
     """Verify all test file fixes comprehensively."""
@@ -40,7 +40,7 @@ def comprehensive_verification():
         except:
             continue
 
-    print(f"1. FILE COUNT VERIFICATION:")
+    print("1. FILE COUNT VERIFICATION:")
     print(f"   Total test files: {total_files}")
     print(f"   Syntactically correct: {syntactically_correct}")
     print(f"   Still broken: {broken_files}")
@@ -49,7 +49,7 @@ def comprehensive_verification():
     print()
 
     # 2. Git commit verification
-    print(f"2. GIT COMMIT VERIFICATION:")
+    print("2. GIT COMMIT VERIFICATION:")
     try:
         result = subprocess.run(['git', 'log', '--oneline', '--grep=Wave', '--count'],
                               capture_output=True, text=True, cwd='.')
@@ -67,7 +67,7 @@ def comprehensive_verification():
     print()
 
     # 3. Wave-by-wave verification
-    print(f"3. WAVE-BY-WAVE VERIFICATION:")
+    print("3. WAVE-BY-WAVE VERIFICATION:")
     waves = []
     for i in range(1, 18):  # Waves 1-17
         try:
@@ -83,7 +83,7 @@ def comprehensive_verification():
     print()
 
     # 4. Sample verification
-    print(f"4. SAMPLE VERIFICATION:")
+    print("4. SAMPLE VERIFICATION:")
     sample_placeholder_files = []
     for f in sorted(tests_dir.rglob('test_*.py')):
         if 'archive' in str(f).lower():
@@ -105,11 +105,11 @@ def comprehensive_verification():
                 print(f"     {line}")
             print("     ...")
         except:
-            print(f"     Error reading file")
+            print("     Error reading file")
         print()
 
     # 5. Summary
-    print(f"5. SUMMARY:")
+    print("5. SUMMARY:")
     print(f"   ✓ {syntactically_correct} files now parse correctly ({syntactically_correct/total_files*100:.1f}%)")
     print(f"   ✓ {placeholder_files} files have our placeholder structure")
     print(f"   ✓ {len(waves)} waves completed with git commits")
@@ -117,10 +117,10 @@ def comprehensive_verification():
     print()
 
     if syntactically_correct > 1500:
-        print(f"   🎉 MILESTONE ACHIEVED: Over 1500 files fixed!")
+        print("   🎉 MILESTONE ACHIEVED: Over 1500 files fixed!")
 
     if broken_files == 0:
-        print(f"   🎉 COMPLETE: All test files are now syntactically correct!")
+        print("   🎉 COMPLETE: All test files are now syntactically correct!")
     else:
         print(f"   📋 REMAINING: {broken_files} files still need fixing")
 

@@ -2,10 +2,11 @@
 """
 Debug script to verify VS Code test discovery configuration
 """
+import json
 import subprocess
 import sys
-import json
 from pathlib import Path
+
 
 def run_command(cmd, cwd=None):
     """Run command and return result"""
@@ -17,19 +18,19 @@ def run_command(cmd, cwd=None):
 
 def main():
     print("=== VS Code Test Discovery Debug ===\n")
-    
+
     # 1. Check Python environment
     print("1. Python Environment:")
     print(f"   Python: {sys.executable}")
     print(f"   Version: {sys.version}")
-    
+
     # 2. Check pytest
     returncode, stdout, stderr = run_command("python -m pytest --version")
     if returncode == 0:
         print(f"   Pytest: {stdout.strip()}")
     else:
         print(f"   Pytest error: {stderr}")
-    
+
     # 3. Check test discovery
     print("\n2. Test Discovery:")
     returncode, stdout, stderr = run_command("python -m pytest tests/test_vscode_discovery.py --collect-only -q")
@@ -41,7 +42,7 @@ def main():
                 break
     else:
         print(f"   Discovery error: {stderr}")
-    
+
     # 4. Check full test suite
     returncode, stdout, stderr = run_command("python -m pytest tests/ --collect-only -q")
     if returncode == 0:
@@ -52,10 +53,10 @@ def main():
                 break
     else:
         print(f"   Full suite error: {stderr}")
-    
+
     # 5. Check configuration files
     print("\n3. Configuration Files:")
-    
+
     # pytest.ini
     pytest_ini = Path("pytest.ini")
     if pytest_ini.exists():
@@ -68,7 +69,7 @@ def main():
                 print("   ✓ file patterns configured")
     else:
         print("   ✗ pytest.ini missing")
-    
+
     # VS Code settings
     vscode_settings = Path(".vscode/settings.json")
     if vscode_settings.exists():
@@ -81,7 +82,7 @@ def main():
                 print("   ✓ unittest disabled in VS Code")
     else:
         print("   ✗ .vscode/settings.json missing")
-    
+
     # 6. Test files
     print("\n4. Test Files:")
     test_file = Path("tests/test_vscode_discovery.py")
@@ -89,7 +90,7 @@ def main():
         print("   ✓ test_vscode_discovery.py exists")
     else:
         print("   ✗ test_vscode_discovery.py missing")
-    
+
     print("\n=== Debug Complete ===")
     print("\nNext steps:")
     print("1. Open VS Code")

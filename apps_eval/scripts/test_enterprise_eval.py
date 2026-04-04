@@ -141,7 +141,7 @@ def _assert_enhanced_system_learning(result: object) -> None:
     if baseline:
         # Only validate if baseline is present
         if not baseline.get("available", False):
-            print(f"   ⚠️  System learning: governance baseline available=False (non-blocking)")
+            print("   ⚠️  System learning: governance baseline available=False (non-blocking)")
 
     # Verify ADG signals for pattern capture wiring
     adg = repo_signals.get("adg", {})

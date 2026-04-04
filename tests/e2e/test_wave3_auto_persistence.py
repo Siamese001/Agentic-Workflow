@@ -11,16 +11,11 @@ from pathlib import Path
 # Add project root to path for imports
 sys.path.insert(0, str(Path(__file__).parent.parent.parent))
 
-from typing import Any
 
 
 def test_adapter_imports() -> bool:
     """Test that AutoPersistenceTracingAdapter can be imported."""
     try:
-        from agentic_core.L6_observability import (
-            AutoPersistenceTracingAdapter,
-            get_auto_persistence_tracer,
-        )
 
         print("✓ AutoPersistenceTracingAdapter imports successfully")
         return True
@@ -60,9 +55,10 @@ def test_adapter_initialization() -> bool:
 def test_drain_with_auto_persist() -> bool:
     """Test drain with automatic snapshot persistence."""
     try:
-        from agentic_core.L6_observability import AutoPersistenceTracingAdapter
-        import tempfile
         import shutil
+        import tempfile
+
+        from agentic_core.L6_observability import AutoPersistenceTracingAdapter
 
         # Create temp directory for test
         temp_dir = tempfile.mkdtemp()
@@ -241,11 +237,12 @@ def test_graceful_degradation() -> bool:
 def test_local_persistence_fallback() -> bool:
     """Test local file persistence fallback when UWG unavailable."""
     try:
-        from agentic_core.L6_observability import AutoPersistenceTracingAdapter
-        import tempfile
-        import shutil
         import json
+        import shutil
+        import tempfile
         from pathlib import Path
+
+        from agentic_core.L6_observability import AutoPersistenceTracingAdapter
 
         temp_dir = tempfile.mkdtemp()
 
@@ -284,7 +281,7 @@ def test_local_persistence_fallback() -> bool:
             assert expected_file.exists(), f"Expected file not found: {expected_file}"
 
             # Verify file content is valid JSON
-            with open(expected_file, "r", encoding="utf-8") as f:
+            with open(expected_file, encoding="utf-8") as f:
                 data = json.load(f)
                 assert "snapshot_id" in data
                 assert data["snapshot_id"] == snapshot_id

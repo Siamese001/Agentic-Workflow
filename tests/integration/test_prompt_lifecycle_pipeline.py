@@ -88,9 +88,8 @@ class TestPromptBOMBuilder(unittest.TestCase):
 
     def test_build_from_packet_with_real_store(self) -> None:
         """Test building PromptBOM from InstructionPacket using real version store."""
-        from agentic_core.L0_routing.engines.prompt_bom_builder import PromptBOMBuilder, _get_version_store
+        from agentic_core.L0_routing.engines.prompt_bom_builder import PromptBOMBuilder
         from agentic_core.L0_routing.types.l0_instruction_packet import InstructionPacket
-        from agentic_core.prompt_governance.contracts import PromptBOM
 
         # Create builder with injected in-memory store
         builder = PromptBOMBuilder()
@@ -128,7 +127,6 @@ class TestPromptBOMBuilder(unittest.TestCase):
         """Test that mixins are sorted in output using real store."""
         from agentic_core.L0_routing.engines.prompt_bom_builder import PromptBOMBuilder
         from agentic_core.L0_routing.types.l0_instruction_packet import InstructionPacket
-        from agentic_core.prompt_governance.contracts import PromptBOM
 
         builder = PromptBOMBuilder()
         store = InMemoryVersionStore()

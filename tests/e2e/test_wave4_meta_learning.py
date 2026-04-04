@@ -11,17 +11,11 @@ from pathlib import Path
 # Add project root to path for imports
 sys.path.insert(0, str(Path(__file__).parent.parent.parent))
 
-from typing import Any
 
 
 def test_meta_learning_bridge_imports() -> bool:
     """Test that L6MetaLearningBridge can be imported."""
     try:
-        from agentic_core.L6_observability import (
-            L6MetaLearningBridge,
-            MetaLearningRecord,
-            get_meta_learning_bridge,
-        )
 
         print("✓ L6MetaLearningBridge imports successfully")
         return True
@@ -76,9 +70,10 @@ def test_meta_learning_record() -> bool:
 def test_bridge_initialization() -> bool:
     """Test L6MetaLearningBridge initialization."""
     try:
-        from agentic_core.L6_observability import L6MetaLearningBridge
-        import tempfile
         import shutil
+        import tempfile
+
+        from agentic_core.L6_observability import L6MetaLearningBridge
 
         temp_dir = tempfile.mkdtemp()
 
@@ -108,9 +103,10 @@ def test_bridge_initialization() -> bool:
 def test_store_snapshot_with_linkage() -> bool:
     """Test storing snapshot with evaluation and telemetry linkage."""
     try:
-        from agentic_core.L6_observability import L6MetaLearningBridge
-        import tempfile
         import shutil
+        import tempfile
+
+        from agentic_core.L6_observability import L6MetaLearningBridge
 
         temp_dir = tempfile.mkdtemp()
 
@@ -167,9 +163,10 @@ def test_store_snapshot_with_linkage() -> bool:
 def test_feed_meta_learning() -> bool:
     """Test feeding snapshot to meta-learning pipeline."""
     try:
-        from agentic_core.L6_observability import L6MetaLearningBridge
-        import tempfile
         import shutil
+        import tempfile
+
+        from agentic_core.L6_observability import L6MetaLearningBridge
 
         temp_dir = tempfile.mkdtemp()
 
@@ -219,9 +216,10 @@ def test_feed_meta_learning() -> bool:
 def test_add_telemetry_event() -> bool:
     """Test adding telemetry event to existing record."""
     try:
-        from agentic_core.L6_observability import L6MetaLearningBridge
-        import tempfile
         import shutil
+        import tempfile
+
+        from agentic_core.L6_observability import L6MetaLearningBridge
 
         temp_dir = tempfile.mkdtemp()
 
@@ -272,9 +270,10 @@ def test_add_telemetry_event() -> bool:
 def test_add_eval_result() -> bool:
     """Test adding evaluation result to existing record."""
     try:
-        from agentic_core.L6_observability import L6MetaLearningBridge
-        import tempfile
         import shutil
+        import tempfile
+
+        from agentic_core.L6_observability import L6MetaLearningBridge
 
         temp_dir = tempfile.mkdtemp()
 
@@ -327,9 +326,10 @@ def test_add_eval_result() -> bool:
 def test_get_record_stats() -> bool:
     """Test getting record statistics."""
     try:
-        from agentic_core.L6_observability import L6MetaLearningBridge
-        import tempfile
         import shutil
+        import tempfile
+
+        from agentic_core.L6_observability import L6MetaLearningBridge
 
         temp_dir = tempfile.mkdtemp()
 
@@ -374,9 +374,10 @@ def test_get_record_stats() -> bool:
 def test_persistence() -> bool:
     """Test that records are persisted to disk and can be loaded."""
     try:
-        from agentic_core.L6_observability import L6MetaLearningBridge
-        import tempfile
         import shutil
+        import tempfile
+
+        from agentic_core.L6_observability import L6MetaLearningBridge
 
         temp_dir = tempfile.mkdtemp()
 

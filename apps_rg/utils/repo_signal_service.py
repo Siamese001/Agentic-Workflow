@@ -9,7 +9,8 @@ from datetime import datetime
 from pathlib import Path
 from typing import Any
 
-from apps_shared.data_adapters import RepoSignalAdapter, RepoSignalSnapshot as SharedRepoSignalSnapshot
+from apps_shared.data_adapters import RepoSignalAdapter
+from apps_shared.data_adapters import RepoSignalSnapshot as SharedRepoSignalSnapshot
 
 
 @dataclass

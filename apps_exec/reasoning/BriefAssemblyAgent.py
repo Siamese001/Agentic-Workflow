@@ -22,7 +22,6 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     emit_determinism_digest,
     emit_replay_key,
 )
-
 from apps_exec.services.brief_assembler_service import BriefAssemblerService
 
 _log = logging.getLogger(__name__)

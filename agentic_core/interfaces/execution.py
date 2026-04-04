@@ -1,6 +1,6 @@
 """Execution interfaces - Stub implementation for test compatibility."""
-from typing import Any, Optional
 from enum import Enum
+from typing import Any
 
 
 class ExecutionStatus(Enum):
@@ -14,7 +14,7 @@ class ExecutionStatus(Enum):
 class ExecutionContext:
     """Execution context."""
 
-    def __init__(self, trace_id: str, request_id: Optional[str] = None):
+    def __init__(self, trace_id: str, request_id: str | None = None):
         self.trace_id = trace_id
         self.request_id = request_id
         self.status = ExecutionStatus.PENDING
@@ -27,7 +27,7 @@ class ExecutionContext:
 class ExecutionResult:
     """Execution result."""
 
-    def __init__(self, success: bool, data: Optional[Any] = None, error: Optional[str] = None):
+    def __init__(self, success: bool, data: Any | None = None, error: str | None = None):
         self.success = success
         self.data = data
         self.error = error

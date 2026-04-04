@@ -1,6 +1,6 @@
 # Deep analysis of the ADG validation failure
-import sqlite3
 import json
+import sqlite3
 
 conn = sqlite3.connect('artifacts/adg/adg_indexed_03272026_1955.sqlite')
 
@@ -8,7 +8,7 @@ print('=== ADG EDGE SEMANTIC PRECISION VALIDATION RCA ===')
 print()
 
 # Read the validation report
-with open('artifacts/adg/closure_validation_report_03272026_1955.json', 'r') as f:
+with open('artifacts/adg/closure_validation_report_03272026_1955.json') as f:
     report = json.load(f)
 
 # Find the EDGE SEMANTIC PRECISION row
@@ -62,7 +62,7 @@ print(f"Execution edges with generic semantic types: {execution_generic}")
 # The validation expects this to be < 1% of execution edges
 generic_ratio = execution_generic / execution_total if execution_total > 0 else 0
 print(f"Generic semantic ratio: {generic_ratio:.6f}")
-print(f"Threshold: < 0.01 (1%)")
+print("Threshold: < 0.01 (1%)")
 
 if generic_ratio >= 0.01:
     print("❌ VALIDATION WOULD FAIL: Generic semantic ratio too high")

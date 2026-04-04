@@ -14,9 +14,11 @@ from pathlib import Path
 from typing import Any
 
 from agentic_core.L5_safety.utils.architecture_governor_validator_util import (
-    ArchitectureGovernorValidator as _ArchitectureGovernorValidator,
-    GovernanceValidationResult,
     CHECK_ID,
+    GovernanceValidationResult,
+)
+from agentic_core.L5_safety.utils.architecture_governor_validator_util import (
+    ArchitectureGovernorValidator as _ArchitectureGovernorValidator,
 )
 
 

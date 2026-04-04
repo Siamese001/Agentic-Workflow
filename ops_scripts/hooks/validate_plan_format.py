@@ -4,8 +4,8 @@ Pre-commit hook to validate Windsurf plan format.
 Enforces compliance with plan structure requirements.
 """
 
-import sys
 import os
+import sys
 from pathlib import Path
 
 # Add repo root to path
@@ -13,6 +13,7 @@ repo_root = Path(__file__).parent.parent.parent
 sys.path.insert(0, str(repo_root))
 
 from tools.validate_plan_format import validate_plan_format
+
 
 def main():
     """Validate all plan files being committed."""

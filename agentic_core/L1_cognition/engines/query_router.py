@@ -4,9 +4,9 @@ Intelligent query routing to relevant ChromaDB collections.
 """
 
 import logging
-from typing import List, Dict, Any
 from dataclasses import dataclass
 from enum import Enum
+from typing import Any
 
 logger = logging.getLogger(__name__)
 
@@ -26,8 +26,8 @@ class QueryType(Enum):
 class RoutingDecision:
     """Routing decision for a query."""
     query_type: QueryType
-    primary_collections: List[str]
-    secondary_collections: List[str]
+    primary_collections: list[str]
+    secondary_collections: list[str]
     confidence: float
     reasoning: str
 
@@ -140,7 +140,7 @@ class QueryRouter:
             "Agent": ["agent", "ai", "llm", "model"]
         }
 
-    def route_query(self, query: str, available_collections: List[str]) -> RoutingDecision:
+    def route_query(self, query: str, available_collections: list[str]) -> RoutingDecision:
         """
         Route a query to appropriate collections.
 
@@ -205,7 +205,7 @@ class QueryRouter:
 
         return max(scores, key=scores.get)
 
-    def _detect_layer_collections(self, query: str, available_collections: List[str]) -> List[str]:
+    def _detect_layer_collections(self, query: str, available_collections: list[str]) -> list[str]:
         """Detect layer-specific collections to include."""
         layer_collections = []
 
@@ -240,7 +240,7 @@ class QueryRouter:
         return min(1.0, confidence)
 
     def _generate_reasoning(self, query: str, query_type: QueryType,
-                          primary: List[str], secondary: List[str]) -> str:
+                          primary: list[str], secondary: list[str]) -> str:
         """Generate reasoning for routing decision."""
         reasoning_parts = []
 
@@ -265,7 +265,7 @@ class QueryRouter:
 
         return "; ".join(reasoning_parts)
 
-    def get_routing_stats(self) -> Dict[str, Any]:
+    def get_routing_stats(self) -> dict[str, Any]:
         """Get routing statistics and configuration."""
         return {
             "query_types": [qt.value for qt in QueryType],

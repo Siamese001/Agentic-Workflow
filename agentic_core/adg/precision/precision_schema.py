@@ -5,10 +5,10 @@ Defines the precision hardening data structures for execution-grade semantic gra
 Transforms high-volume structural ADG into quantitatively governed precision graph.
 """
 
+import hashlib
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import Dict, List, Set, Optional, Any
-import hashlib
+from typing import Any
 
 # =============================================================================
 # SECTION 1: NODE GRANULARITY EXPANSION
@@ -45,11 +45,11 @@ class PrecisionNodeAttributes:
     node_type: PrecisionNodeType
     span: NodeSpan
     file_path: str
-    enclosing_symbol: Optional[str]
+    enclosing_symbol: str | None
     logical_sequence_id: int
-    control_path_id: Optional[str] = None
-    temporal_order: Optional[int] = None
-    type_surface: Optional[str] = None
+    control_path_id: str | None = None
+    temporal_order: int | None = None
+    type_surface: str | None = None
 
 # =============================================================================
 # SECTION 2: SEMANTIC EDGE TAXONOMY
@@ -81,10 +81,10 @@ class SemanticEdgeType(Enum):
 class SemanticEdgeAttributes:
     """Enhanced edge attributes for semantic precision"""
     edge_type: SemanticEdgeType
-    source_span: Optional[NodeSpan] = None
-    target_span: Optional[NodeSpan] = None
+    source_span: NodeSpan | None = None
+    target_span: NodeSpan | None = None
     confidence: float = 1.0
-    dynamic_resolution: Optional[Dict[str, Any]] = None
+    dynamic_resolution: dict[str, Any] | None = None
 
 # =============================================================================
 # SECTION 3: TYPE SURFACE ENRICHMENT
@@ -93,18 +93,18 @@ class SemanticEdgeAttributes:
 @dataclass(frozen=True)
 class TypeSurface:
     """Type information for semantic enrichment"""
-    inferred_type: Optional[str]
-    possible_types: List[str] = field(default_factory=list)
+    inferred_type: str | None
+    possible_types: list[str] = field(default_factory=list)
     nullability: bool = False
-    shape_signature: Optional[Dict[str, Any]] = None
+    shape_signature: dict[str, Any] | None = None
 
 @dataclass(frozen=True)
 class VariableAttributes:
     """Variable tracking for data flow lineage"""
     source_origin: str
     mutation_count: int
-    lineage_chain: List[str]
-    type_surface: Optional[TypeSurface] = None
+    lineage_chain: list[str]
+    type_surface: TypeSurface | None = None
 
 # =============================================================================
 # SECTION 4: PRECISION GRAPH STRUCTURE
@@ -113,20 +113,20 @@ class VariableAttributes:
 @dataclass
 class PrecisionGraph:
     """Precision graph with enhanced structure"""
-    nodes: Dict[str, PrecisionNodeAttributes] = field(default_factory=dict)
-    edges: Dict[str, SemanticEdgeAttributes] = field(default_factory=dict)
-    edge_types: Dict[str, SemanticEdgeType] = field(default_factory=dict)
+    nodes: dict[str, PrecisionNodeAttributes] = field(default_factory=dict)
+    edges: dict[str, SemanticEdgeAttributes] = field(default_factory=dict)
+    edge_types: dict[str, SemanticEdgeType] = field(default_factory=dict)
 
     # Type surfaces
-    type_surfaces: Dict[str, TypeSurface] = field(default_factory=dict)
-    variable_attributes: Dict[str, VariableAttributes] = field(default_factory=dict)
+    type_surfaces: dict[str, TypeSurface] = field(default_factory=dict)
+    variable_attributes: dict[str, VariableAttributes] = field(default_factory=dict)
 
     # Coverage tracking
-    functions_analyzed: Set[str] = field(default_factory=set)
-    functions_with_blocks: Set[str] = field(default_factory=set)
-    variables_with_lineage: Set[str] = field(default_factory=set)
-    side_effects_modeled: Set[str] = field(default_factory=set)
-    calls_resolved: Set[str] = field(default_factory=set)
+    functions_analyzed: set[str] = field(default_factory=set)
+    functions_with_blocks: set[str] = field(default_factory=set)
+    variables_with_lineage: set[str] = field(default_factory=set)
+    side_effects_modeled: set[str] = field(default_factory=set)
+    calls_resolved: set[str] = field(default_factory=set)
 
     def add_node(self, node_id: str, attributes: PrecisionNodeAttributes) -> None:
         """Add a precision node"""
@@ -172,24 +172,24 @@ class PrecisionMetrics:
     semantic_edge_density: float
     ordering_completeness: float
     graph_hash: str
-    replay_signature: Optional[str] = None
+    replay_signature: str | None = None
 
 @dataclass
 class ValidationReport:
     """Precision hardening validation report"""
     passed: bool
-    metrics: Optional[PrecisionMetrics] = None
-    hard_gates_passed: Optional[Dict[str, bool]] = None
-    hard_gate_failures: Optional[List[str]] = None
-    error_message: Optional[str] = None
-    block_coverage_breakdown: Optional[Dict[str, float]] = None
-    lineage_completeness_breakdown: Optional[Dict[str, float]] = None
-    control_path_coverage_breakdown: Optional[Dict[str, float]] = None
-    side_effect_coverage_breakdown: Optional[Dict[str, float]] = None
-    call_resolution_breakdown: Optional[Dict[str, float]] = None
-    edge_type_distribution: Optional[Dict[str, int]] = None
-    node_type_distribution: Optional[Dict[str, int]] = None
-    density_analysis: Optional[Dict[str, Any]] = None
+    metrics: PrecisionMetrics | None = None
+    hard_gates_passed: dict[str, bool] | None = None
+    hard_gate_failures: list[str] | None = None
+    error_message: str | None = None
+    block_coverage_breakdown: dict[str, float] | None = None
+    lineage_completeness_breakdown: dict[str, float] | None = None
+    control_path_coverage_breakdown: dict[str, float] | None = None
+    side_effect_coverage_breakdown: dict[str, float] | None = None
+    call_resolution_breakdown: dict[str, float] | None = None
+    edge_type_distribution: dict[str, int] | None = None
+    node_type_distribution: dict[str, int] | None = None
+    density_analysis: dict[str, Any] | None = None
     backward_compatibility_check: bool = True
     existing_queries_functional: bool = True
     violation_count_preserved: bool = True

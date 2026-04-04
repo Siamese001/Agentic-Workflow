@@ -28,14 +28,14 @@ Logger = logging.getLogger(__name__)
 @dataclass
 class CredentialMatch:
     """Represents a detected credential in source code."""
-    
+
     file_path: str
     line_number: int
     line_content: str
     pattern_type: str
     severity: str
     confidence: float
-    
+
     def to_dict(self) -> dict[str, Any]:
         """Convert to dictionary."""
         return {
@@ -51,14 +51,14 @@ class CredentialMatch:
 @dataclass
 class CredentialScanResult:
     """Result of credential scanning."""
-    
+
     status: str
     total_files_scanned: int
     total_matches: int
     matches: list[CredentialMatch]
     summary: dict[str, Any]
     recommendations: list[str]
-    
+
     def to_dict(self) -> dict[str, Any]:
         """Convert to dictionary."""
         return {
@@ -186,7 +186,7 @@ def _generate_recommendations(matches: list[CredentialMatch]) -> list[str]:
 
 class CredentialScanner:
     """Deterministic credential scanner."""
-    
+
     def __init__(
         self,
         patterns: dict[str, tuple[str, str, float]] | None = None,
@@ -209,15 +209,15 @@ class CredentialScanner:
             name: (re.compile(regex), severity, confidence)
             for name, (regex, severity, confidence) in self.patterns.items()
         }
-    
+
     def _get_scannable_files(self, root_path: Path) -> list[Path]:
         """Get list of files to scan."""
         scannable: list[Path] = []
-        
+
         if not root_path.exists():
             Logger.warning(f"Root path does not exist: {root_path}")
             return scannable
-        
+
         for file_path in root_path.rglob("*"):
             if not file_path.is_file():
                 continue
@@ -226,9 +226,9 @@ class CredentialScanner:
             if any(excluded in str(file_path) for excluded in self.excluded_paths):
                 continue
             scannable.append(file_path)
-        
+
         return scannable
-    
+
     def _scan_file(self, file_path: Path) -> None:
         """Scan a single file for credentials."""
         try:
@@ -252,7 +252,7 @@ class CredentialScanner:
                         )
         except (OSError, UnicodeDecodeError) as e:
             Logger.debug("[CREDENTIAL SCAN] Error scanning %s: %s", file_path, e)
-    
+
     def scan_for_credentials(
         self,
         target_path: Path | None = None,
@@ -269,21 +269,21 @@ class CredentialScanner:
         """
         if target_path is None:
             target_path = Path.cwd()
-        
+
         Logger.info(f"[CREDENTIAL SCAN] Starting scan of {target_path}")
-        
+
         scannable_files = self._get_scannable_files(target_path)
         Logger.info(f"[CREDENTIAL SCAN] Scanning {len(scannable_files)} files")
-        
+
         self.matches = []
         for file_path in scannable_files:
             self._scan_file(file_path)
-        
+
         summary = _generate_summary(self.matches)
         recommendations = _generate_recommendations(self.matches)
-        
+
         Logger.info(f"[CREDENTIAL SCAN] Complete: {len(self.matches)} potential credentials found")
-        
+
         return CredentialScanResult(
             status="success",
             total_files_scanned=len(scannable_files),

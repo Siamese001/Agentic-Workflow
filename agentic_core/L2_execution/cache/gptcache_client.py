@@ -9,7 +9,7 @@ from __future__ import annotations
 import hashlib
 import logging
 import os
-from typing import Any, Optional
+from typing import Any
 
 from agentic_core.L2_execution.healers.bmg_embedding_similarity import bmg_embed_text
 
@@ -92,7 +92,7 @@ class GPTCacheClient:
         try:
             from gptcache import Cache
             from gptcache.adapter.api import init_similar_cache
-            from gptcache.manager import get_data_manager, CacheBase, VectorBase
+            from gptcache.manager import CacheBase, VectorBase, get_data_manager
             from gptcache.similarity_evaluation.distance import SearchDistanceEvaluation
 
             # Create cache directory
@@ -125,7 +125,7 @@ class GPTCacheClient:
             Logger.error(f"Failed to initialize GPTCache: {e}, using mock")
             self._cache = "mock"
 
-    def get(self, query: str) -> Optional[str]:
+    def get(self, query: str) -> str | None:
         """Get cached response for query.
 
         Args:
@@ -173,7 +173,7 @@ class GPTCacheClient:
         except (RuntimeError, ValueError) as e:
             Logger.error(f"GPTCache set error: {e}")
 
-    def _mock_get(self, query: str) -> Optional[str]:
+    def _mock_get(self, query: str) -> str | None:
         """Mock cache get for testing/development."""
         # Simple hash-based mock for development
         cache_key = f"mock:{hashlib.sha256(query.encode()).hexdigest()[:16]}"
@@ -215,7 +215,7 @@ class GPTCacheClient:
 
 
 # Global instance
-_global_gptcache: Optional[GPTCacheClient] = None
+_global_gptcache: GPTCacheClient | None = None
 
 
 def get_global_gptcache() -> GPTCacheClient:
@@ -226,7 +226,7 @@ def get_global_gptcache() -> GPTCacheClient:
     return _global_gptcache
 
 
-def get_cached_response(query: str) -> Optional[str]:
+def get_cached_response(query: str) -> str | None:
     """Convenience function to get cached response."""
     return get_global_gptcache().get(query)
 

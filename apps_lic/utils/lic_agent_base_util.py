@@ -26,6 +26,15 @@ from typing import Any, Final
 
 from agentic_core.L0_routing.config import APPS_LIC_DIR
 from agentic_core.L0_routing.config.path_constants import APPS_LIC_DIR
+from agentic_core.L1_cognition.engines.meta_client import (
+    MetaLearningClient,
+    get_meta_learning_client,
+)
+from agentic_core.L1_cognition.types.client_types import HealingPattern
+from agentic_core.L1_cognition.utils.guardrails_util import (
+    MetaLearningGuardrails,
+    get_guardrails,
+)
 from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
@@ -69,15 +78,6 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     emit_replay_key,  # noqa: E402
 )
 from apps_shared.utils.app_base_util import AppBase
-from agentic_core.L1_cognition.engines.meta_client import (
-    MetaLearningClient,
-    get_meta_learning_client,
-)
-from agentic_core.L1_cognition.types.client_types import HealingPattern
-from agentic_core.L1_cognition.utils.guardrails_util import (
-    MetaLearningGuardrails,
-    get_guardrails,
-)
 
 _emit_applies_guardrail("p0", "lic_agent_base_util", "p0_governance")
 _emit_reads_policy_state("p0", "lic_agent_base_util", "policy_binding")

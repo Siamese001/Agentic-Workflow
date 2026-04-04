@@ -6,13 +6,10 @@ This script targets the specific import errors found in the validation report,
 focusing on missing modules, circular imports, and path issues.
 """
 
-import ast
 import json
 import re
-from pathlib import Path
-from typing import Dict, List, Set, Tuple
-from collections import defaultdict, Counter
 import subprocess
+from pathlib import Path
 
 
 class ImportErrorFixer:
@@ -22,7 +19,7 @@ class ImportErrorFixer:
         self.fixes_applied = 0
         self.errors_fixed = []
 
-    def identify_import_issues(self, file_path: Path) -> List[Dict]:
+    def identify_import_issues(self, file_path: Path) -> list[dict]:
         """Identify import issues in a test file."""
         issues = []
 
@@ -83,7 +80,7 @@ class ImportErrorFixer:
 
         return issues
 
-    def fix_import_errors(self, content: str, file_path: Path, issues: List[Dict]) -> str:
+    def fix_import_errors(self, content: str, file_path: Path, issues: list[dict]) -> str:
         """Fix import errors in a test file."""
         new_content = content
 
@@ -159,7 +156,7 @@ class ImportErrorFixer:
         return new_content
 
 
-def fix_import_errors_in_file(file_path: Path) -> Dict:
+def fix_import_errors_in_file(file_path: Path) -> dict:
     """Fix import errors in a specific file."""
     try:
         content = file_path.read_text(encoding='utf-8')
@@ -275,14 +272,14 @@ def fix_all_import_errors():
                 print(f"    ✅ Fixed - {result['fixes_applied']} fixes applied")
                 fixed_count += 1
             else:
-                print(f"    ⚪ No changes needed")
+                print("    ⚪ No changes needed")
         else:
             print(f"    ❌ Failed - {result.get('error', 'Unknown error')}")
             failed_count += 1
 
     # Summary
     total_files = len(list(Path('tests').rglob('test_*.py')))
-    print(f"\n=== Wave 7b Summary ===")
+    print("\n=== Wave 7b Summary ===")
     print(f"Total test files: {total_files}")
     print(f"Files with import issues: {len(import_errors)}")
     print(f"Processed: {len(results)}")
@@ -307,7 +304,7 @@ def fix_all_import_errors():
     with open('artifacts/wave7b_import_fix_results.json', 'w') as f:
         json.dump(output, f, indent=2)
 
-    print(f"\nDetailed results saved to: artifacts/wave7b_import_fix_results.json")
+    print("\nDetailed results saved to: artifacts/wave7b_import_fix_results.json")
 
     return output
 
@@ -319,13 +316,13 @@ def main():
     total_errors = results['summary']['errors_found']
     fixed_count = results['summary']['fixed']
 
-    print(f"\n=== Wave 7b Complete ===")
+    print("\n=== Wave 7b Complete ===")
     if total_errors == 0:
-        print(f"✅ Wave 7b SUCCESSFUL - No import errors found")
+        print("✅ Wave 7b SUCCESSFUL - No import errors found")
     elif fixed_count > 0:
         print(f"✅ Wave 7b PARTIAL - Fixed {fixed_count} out of {total_errors} import errors")
     else:
-        print(f"⚠️  Wave 7b NEEDS ATTENTION - No errors could be automatically fixed")
+        print("⚠️  Wave 7b NEEDS ATTENTION - No errors could be automatically fixed")
 
     return results
 

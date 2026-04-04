@@ -7,14 +7,15 @@ and capacity optimization strategies.
 """
 
 import pickle
-import numpy as np
-from pathlib import Path
-from typing import Dict, List, Optional, Any, Tuple
 from datetime import datetime
+from pathlib import Path
+from typing import Any
 
-from .base_model import BaseMLModel, ModelPrediction, ModelInput, PredictionType, DecisionMode
+import numpy as np
+
 from ..config.model_registry import DecisionMode
 from ..features.l1_features import L1FeatureExtractor
+from .base_model import BaseMLModel, DecisionMode, ModelInput, ModelPrediction, PredictionType
 
 
 class L1CapacityPlanner(BaseMLModel):
@@ -45,7 +46,7 @@ class L1CapacityPlanner(BaseMLModel):
     # Reverse mapping
     REVERSE_CAPACITY_MAPPING = {v: k for k, v in CAPACITY_MAPPING.items()}
 
-    def __init__(self, model_file_path: Optional[Path] = None):
+    def __init__(self, model_file_path: Path | None = None):
         super().__init__(
             model_name="l1_capacity_planner",
             model_version="1.0",
@@ -241,11 +242,11 @@ class L1CapacityPlanner(BaseMLModel):
 
     def plan_capacity(
         self,
-        capacity_context: Dict[str, Any],
+        capacity_context: dict[str, Any],
         trace_id: str,
         replay_key: str,
         policy_hash: str
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """
         Get comprehensive capacity planning recommendations.
 
@@ -325,12 +326,12 @@ class L1CapacityPlanner(BaseMLModel):
 
     def forecast_demand(
         self,
-        historical_data: List[Dict[str, Any]],
+        historical_data: list[dict[str, Any]],
         trace_id: str,
         replay_key: str,
         policy_hash: str,
         forecast_days: int = 7
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """
         Generate demand forecast using time series analysis.
 
@@ -442,9 +443,9 @@ class L1CapacityPlanner(BaseMLModel):
     def _generate_capacity_recommendations(
         self,
         action: str,
-        context: Dict[str, Any],
-        features: Dict[str, float]
-    ) -> List[str]:
+        context: dict[str, Any],
+        features: dict[str, float]
+    ) -> list[str]:
         """Generate action-specific capacity recommendations."""
         recommendations = []
 
@@ -507,7 +508,7 @@ class L1CapacityPlanner(BaseMLModel):
 
         return recommendations
 
-    def _generate_demand_forecast(self, context: Dict[str, Any], features: Dict[str, float]) -> Dict[str, Any]:
+    def _generate_demand_forecast(self, context: dict[str, Any], features: dict[str, float]) -> dict[str, Any]:
         """Generate demand forecast based on context and features."""
         current_demand = context.get("demand", {}).get("current_demand", 1000)
         growth_rate = features.get('traffic_growth_rate', 0)
@@ -535,9 +536,9 @@ class L1CapacityPlanner(BaseMLModel):
     def _calculate_resource_requirements(
         self,
         action: str,
-        context: Dict[str, Any],
-        forecast: Dict[str, Any]
-    ) -> Dict[str, Any]:
+        context: dict[str, Any],
+        forecast: dict[str, Any]
+    ) -> dict[str, Any]:
         """Calculate resource requirements for the action."""
         current_resources = context.get("resources", {})
         current_cpu = current_resources.get("cpu", 4)
@@ -593,9 +594,9 @@ class L1CapacityPlanner(BaseMLModel):
     def _analyze_cost_impact(
         self,
         action: str,
-        context: Dict[str, Any],
-        requirements: Dict[str, Any]
-    ) -> Dict[str, Any]:
+        context: dict[str, Any],
+        requirements: dict[str, Any]
+    ) -> dict[str, Any]:
         """Analyze cost impact of capacity action."""
         current_cost = context.get("cost", {}).get("monthly_cost", 1000)
 
@@ -637,7 +638,7 @@ class L1CapacityPlanner(BaseMLModel):
 
         return timelines.get(action, "4-8 hours")
 
-    def _assess_capacity_risks(self, action: str, context: Dict[str, Any]) -> Dict[str, Any]:
+    def _assess_capacity_risks(self, action: str, context: dict[str, Any]) -> dict[str, Any]:
         """Assess risks associated with capacity action."""
         risks = {
             "performance_risk": "Low",
@@ -663,7 +664,7 @@ class L1CapacityPlanner(BaseMLModel):
 
         return risks
 
-    def get_feature_importance(self, model_input: ModelInput) -> List[Dict[str, Any]]:
+    def get_feature_importance(self, model_input: ModelInput) -> list[dict[str, Any]]:
         """Get feature importance for explainability."""
         # For time series model, use feature correlation with action
         feature_names = self.feature_names or list(model_input.features.keys())
@@ -701,7 +702,7 @@ class L1CapacityPlanner(BaseMLModel):
 
         return feature_importance[:10]
 
-    def _extract_feature_vector(self, features: Dict[str, Any]) -> Optional[np.ndarray]:
+    def _extract_feature_vector(self, features: dict[str, Any]) -> np.ndarray | None:
         """Extract features in the correct order for the model."""
         if not self.feature_names:
             return None
@@ -717,7 +718,7 @@ class L1CapacityPlanner(BaseMLModel):
         except Exception as e:
             return None
 
-    def preprocess_features(self, features: Dict[str, Any]) -> Tuple[Dict[str, Any], List[str]]:
+    def preprocess_features(self, features: dict[str, Any]) -> tuple[dict[str, Any], list[str]]:
         """Preprocess features for time series model."""
         processed_features, preprocessing_steps = super().preprocess_features(features)
 
@@ -739,8 +740,8 @@ class L1CapacityPlanner(BaseMLModel):
 
     def train_model(
         self,
-        training_data: List[Dict[str, Any]],
-        feature_names: List[str],
+        training_data: list[dict[str, Any]],
+        feature_names: list[str],
         training_data_digest: str = ""
     ) -> None:
         """

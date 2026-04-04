@@ -6,19 +6,19 @@ apps_lic.reasoning.* and apps_rg.reasoning.* respectively.
 Remove this shim after next major version.
 """
 
-from apps_rg.reasoning.ContentStrategyAgent import ContentStrategyAgent  # noqa: F401
-
 from apps_lic.reasoning.CampaignBalanceAgent import (
     CampaignBalanceAgent as LicCampaignBalanceAgent,  # noqa: F401
 )
 from apps_lic.reasoning.DeliverabilityAgent import DeliverabilityAgent  # noqa: F401
-from apps_lic.reasoning.GovernanceShieldAgent import GovernanceShieldAgent  # noqa: F401
 from apps_lic.reasoning.Hop1ProfileAnalysisAgent import Hop1ProfileAnalysisAgent  # noqa: F401
 from apps_lic.reasoning.Hop2ResearchAgent import Hop2ResearchAgent  # noqa: F401
-from apps_lic.reasoning.LicHealingOrchestrator import LicHealingOrchestrator  # noqa: F401
-from apps_lic.reasoning.LicReflectionAgent import LicReflectionAgent  # noqa: F401
 from apps_rg.reasoning.BrandComplianceAgent import BrandComplianceAgent  # noqa: F401
 from apps_rg.reasoning.CampaignPlannerAgent import CampaignPlannerAgent  # noqa: F401
+from apps_rg.reasoning.ContentStrategyAgent import ContentStrategyAgent  # noqa: F401
+
+from apps_lic.reasoning.GovernanceShieldAgent import GovernanceShieldAgent  # noqa: F401
+from apps_lic.reasoning.LicHealingOrchestrator import LicHealingOrchestrator  # noqa: F401
+from apps_lic.reasoning.LicReflectionAgent import LicReflectionAgent  # noqa: F401
 from apps_rg.reasoning.ContentQualityAgent import ContentQualityAgent  # noqa: F401
 from apps_rg.reasoning.RgHealingOrchestrator import RgHealingOrchestrator  # noqa: F401
 from apps_rg.reasoning.RgReflectionAgent import RgReflectionAgent  # noqa: F401

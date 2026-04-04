@@ -1,6 +1,7 @@
+import re
 import sys
 from pathlib import Path
-import re
+
 
 def add_status_if_missing(file_path: Path):
     """Adds 'Status: RESOLVED' to an RCA file if it's missing."""

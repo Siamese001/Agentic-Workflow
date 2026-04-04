@@ -1,12 +1,12 @@
 """State Isolation Tests - Verify tests don't share state between runs."""
 
-import pytest
-import tempfile
-import shutil
-from pathlib import Path
-from unittest.mock import patch
 import gc
+import shutil
+import tempfile
 import weakref
+from pathlib import Path
+
+import pytest
 
 
 class TestImportIsolation:
@@ -16,9 +16,10 @@ class TestImportIsolation:
         """Imports in one test shouldn't affect another test."""
         # First test - import and create an instance
         def test_import_1():
-            from agentic_core.L2_execution.tools.write_gateway import WriteAmplificationError
             # Create an instance to test state retention
             from pathlib import Path
+
+            from agentic_core.L2_execution.tools.write_gateway import WriteAmplificationError
             error1 = WriteAmplificationError(Path("test1"), 100, 1000, 10.0)
             return id(error1), type(error1)
 
@@ -172,8 +173,9 @@ class TestSingletonIsolation:
         """Objects should be properly garbage collected."""
         def create_object_and_check():
             # Create an object
-            from agentic_core.L2_execution.tools.write_gateway import WriteAmplificationError
             from pathlib import Path
+
+            from agentic_core.L2_execution.tools.write_gateway import WriteAmplificationError
             obj = WriteAmplificationError(Path("test"), 100, 1000, 10.0)
 
             # Create weak reference

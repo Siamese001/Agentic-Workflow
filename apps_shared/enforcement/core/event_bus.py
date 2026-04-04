@@ -1,8 +1,8 @@
 """Event Bus Core - Stub implementation for test compatibility."""
-from enum import Enum
-from dataclasses import dataclass, field
-from typing import Any, Callable, Awaitable
 import time
+from dataclasses import dataclass, field
+from enum import Enum
+from typing import Any, Awaitable, Callable
 
 
 class EventType(Enum):

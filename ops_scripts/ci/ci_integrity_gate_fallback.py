@@ -15,6 +15,7 @@ import subprocess
 import sys
 from pathlib import Path
 
+
 def main() -> int:
     """Run CI integrity gate checks."""
     violations = []
@@ -29,7 +30,7 @@ def main() -> int:
         for f in sorted(PLANS_DIR.rglob("*.md")):
             try:
                 content = f.read_text(encoding="utf-8", errors="replace")
-            except (IOError, OSError, UnicodeDecodeError) as e:
+            except (OSError, UnicodeDecodeError) as e:
                 warnings.append(f"C2-WARN: Could not read {f}: {e}")
                 continue
             # Only check files that look like phase evidence (have a ## Scope section)
@@ -69,7 +70,7 @@ def main() -> int:
         for f in sorted(PLANS_DIR.rglob("*.md")):
             try:
                 content = f.read_text(encoding="utf-8", errors="replace")
-            except (IOError, OSError, UnicodeDecodeError) as e:
+            except (OSError, UnicodeDecodeError) as e:
                 warnings.append(f"C3-WARN: Could not read {f}: {e}")
                 continue
             # Only flag in non-final phase evidence (heuristic: no "Phase 7" or "final" in title)
@@ -195,7 +196,7 @@ def main() -> int:
         for f in sorted(PLANS_DIR.rglob("*.md")):
             try:
                 content = f.read_text(encoding="utf-8", errors="replace")
-            except (IOError, OSError, UnicodeDecodeError) as e:
+            except (OSError, UnicodeDecodeError) as e:
                 warnings.append(f"C5-WARN: Could not read {f}: {e}")
                 continue
             first_line = content.split("\n")[0].lower()

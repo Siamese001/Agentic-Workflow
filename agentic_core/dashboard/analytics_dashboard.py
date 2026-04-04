@@ -22,9 +22,9 @@ USAGE:
 import logging
 import threading
 import time
-from datetime import datetime
-from typing import Any, Dict, List, Optional
 from dataclasses import dataclass, field
+from datetime import datetime
+from typing import Any
 
 from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     emit_determinism_digest,
@@ -56,10 +56,10 @@ class ChartData:
 
     chart_type: str  # line, bar, pie, gauge
     title: str
-    data: List[Dict[str, Any]]
-    labels: List[str]
-    colors: List[str]
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    data: list[dict[str, Any]]
+    labels: list[str]
+    colors: list[str]
+    metadata: dict[str, Any] = field(default_factory=dict)
 
 
 @dataclass
@@ -69,9 +69,9 @@ class DashboardWidget:
     widget_id: str
     widget_type: str  # chart, metric, alert, table
     title: str
-    position: Dict[str, int]  # x, y, width, height
+    position: dict[str, int]  # x, y, width, height
     data: Any
-    config: Dict[str, Any] = field(default_factory=dict)
+    config: dict[str, Any] = field(default_factory=dict)
     refresh_rate: int = 5  # seconds
 
 
@@ -83,19 +83,19 @@ class AnalyticsDashboard:
     for the tracing and Runtime ADG system.
     """
 
-    def __init__(self, config: Optional[DashboardConfig] = None) -> None:
+    def __init__(self, config: DashboardConfig | None = None) -> None:
         """Initialize analytics dashboard."""
         self._config = config or DashboardConfig()
 
         # Dashboard state
         self._dashboard_active: bool = False
-        self._dashboard_thread: Optional[threading.Thread] = None
+        self._dashboard_thread: threading.Thread | None = None
         self._shutdown_requested: bool = False
 
         # Data storage
-        self._widgets: Dict[str, DashboardWidget] = {}
-        self._chart_data: Dict[str, ChartData] = {}
-        self._real_time_data: Dict[str, Any] = {}
+        self._widgets: dict[str, DashboardWidget] = {}
+        self._chart_data: dict[str, ChartData] = {}
+        self._real_time_data: dict[str, Any] = {}
 
         # Component integrations
         self._analytics_engine = None
@@ -416,7 +416,7 @@ class AnalyticsDashboard:
         except Exception as e:
             Logger.error(f"[DASHBOARD] Failed to update real-time data: {e}")
 
-    def get_dashboard_data(self) -> Dict[str, Any]:
+    def get_dashboard_data(self) -> dict[str, Any]:
         """Get complete dashboard data for rendering."""
         return {
             "config": {
@@ -469,11 +469,11 @@ class AnalyticsDashboard:
             Logger.error(f"[DASHBOARD] Failed to remove widget: {e}")
             return False
 
-    def get_widget(self, widget_id: str) -> Optional[DashboardWidget]:
+    def get_widget(self, widget_id: str) -> DashboardWidget | None:
         """Get a specific widget."""
         return self._widgets.get(widget_id)
 
-    def update_widget_config(self, widget_id: str, config: Dict[str, Any]) -> bool:
+    def update_widget_config(self, widget_id: str, config: dict[str, Any]) -> bool:
         """Update widget configuration."""
         try:
             widget = self._widgets.get(widget_id)
@@ -489,7 +489,7 @@ class AnalyticsDashboard:
             Logger.error(f"[DASHBOARD] Failed to update widget config: {e}")
             return False
 
-    def export_dashboard_config(self) -> Dict[str, Any]:
+    def export_dashboard_config(self) -> dict[str, Any]:
         """Export dashboard configuration."""
         return {
             "config": {
@@ -513,7 +513,7 @@ class AnalyticsDashboard:
             },
         }
 
-    def import_dashboard_config(self, config: Dict[str, Any]) -> bool:
+    def import_dashboard_config(self, config: dict[str, Any]) -> bool:
         """Import dashboard configuration."""
         try:
             # Update config
@@ -549,7 +549,7 @@ class AnalyticsDashboard:
             Logger.error(f"[DASHBOARD] Failed to import dashboard config: {e}")
             return False
 
-    def get_dashboard_summary(self) -> Dict[str, Any]:
+    def get_dashboard_summary(self) -> dict[str, Any]:
         """Get dashboard summary information."""
         return {
             "dashboard_active": self._dashboard_active,
@@ -592,13 +592,13 @@ def stop_analytics_dashboard() -> None:
     dashboard.stop_dashboard()
 
 
-def get_dashboard_data() -> Dict[str, Any]:
+def get_dashboard_data() -> dict[str, Any]:
     """Get dashboard data for rendering."""
     dashboard = get_global_dashboard()
     return dashboard.get_dashboard_data()
 
 
-def get_dashboard_summary() -> Dict[str, Any]:
+def get_dashboard_summary() -> dict[str, Any]:
     """Get dashboard summary."""
     dashboard = get_global_dashboard()
     return dashboard.get_dashboard_summary()

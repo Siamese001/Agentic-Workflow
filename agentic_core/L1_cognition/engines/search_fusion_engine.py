@@ -7,7 +7,7 @@ with various fusion methods and result diversification.
 from __future__ import annotations
 
 from datetime import datetime
-from typing import TYPE_CHECKING, Dict, List, Optional, Tuple
+from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
     from agentic_core.L4_state.types.graph_store_types import IGraphStore
@@ -105,10 +105,10 @@ class SearchFusionEngine:
     def __init__(
         self,
         graph_store: IGraphStore,
-        fusion_config: Optional[FusionConfig] = None,
-        local_config: Optional[LocalSearchConfig] = None,
-        global_config: Optional[GlobalSearchConfig] = None,
-        drift_config: Optional[DRIFTSearchConfig] = None
+        fusion_config: FusionConfig | None = None,
+        local_config: LocalSearchConfig | None = None,
+        global_config: GlobalSearchConfig | None = None,
+        drift_config: DRIFTSearchConfig | None = None
     ) -> None:
         """Initialize the search fusion engine.
 
@@ -129,7 +129,7 @@ class SearchFusionEngine:
         self.drift_engine = create_drift_search_engine(graph_store, drift_config)
 
         # Performance tracking
-        self._search_stats: Dict[str, List[float]] = {
+        self._search_stats: dict[str, list[float]] = {
             "local": [],
             "global": [],
             "drift": [],
@@ -195,7 +195,7 @@ class SearchFusionEngine:
 
     async def _execute_individual_searches(
         self, query: SearchQuery
-    ) -> Tuple[SearchResponse, SearchResponse, SearchResponse]:
+    ) -> tuple[SearchResponse, SearchResponse, SearchResponse]:
         """Execute individual search strategies in parallel."""
         import asyncio
 
@@ -430,7 +430,7 @@ class SearchFusionEngine:
     ) -> SearchResponse:
         """Fuse results using rank fusion."""
         # Collect rankings
-        rankings: Dict[str, Dict[str, int]] = {}
+        rankings: dict[str, dict[str, int]] = {}
 
         # Local rankings
         for i, result in enumerate(local_response.results):
@@ -531,7 +531,7 @@ class SearchFusionEngine:
     ) -> SearchResponse:
         """Fuse results using reciprocal rank fusion."""
         # Similar to rank fusion but with RRF formula
-        rankings: Dict[str, Dict[str, int]] = {}
+        rankings: dict[str, dict[str, int]] = {}
 
         # Collect rankings (same as rank fusion)
         for i, result in enumerate(local_response.results):
@@ -634,7 +634,7 @@ class SearchFusionEngine:
         else:  # "none"
             return min(1.0, max(0.0, score))
 
-    def _apply_diversification(self, results: List[SearchResult]) -> List[SearchResult]:
+    def _apply_diversification(self, results: list[SearchResult]) -> list[SearchResult]:
         """Apply Maximal Marginal Relevance (MMR) diversification."""
         if len(results) <= 1:
             return results
@@ -686,7 +686,7 @@ class SearchFusionEngine:
 
         return len(intersection) / len(union) if union else 0.0
 
-    def get_performance_stats(self) -> Dict[str, Dict[str, float]]:
+    def get_performance_stats(self) -> dict[str, dict[str, float]]:
         """Get performance statistics for all search strategies."""
         stats = {}
 
@@ -712,10 +712,10 @@ class SearchFusionEngine:
 # Factory function
 def create_search_fusion_engine(
     graph_store: IGraphStore,
-    fusion_config: Optional[FusionConfig] = None,
-    local_config: Optional[LocalSearchConfig] = None,
-    global_config: Optional[GlobalSearchConfig] = None,
-    drift_config: Optional[DRIFTSearchConfig] = None
+    fusion_config: FusionConfig | None = None,
+    local_config: LocalSearchConfig | None = None,
+    global_config: GlobalSearchConfig | None = None,
+    drift_config: DRIFTSearchConfig | None = None
 ) -> SearchFusionEngine:
     """Create a search fusion engine."""
     return SearchFusionEngine(

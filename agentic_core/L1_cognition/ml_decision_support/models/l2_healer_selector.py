@@ -6,18 +6,18 @@ based on error characteristics, healer capabilities, and system context.
 """
 
 import pickle
-import numpy as np
-from pathlib import Path
-from typing import Dict, List, Optional, Any, Tuple
 from datetime import datetime
+from pathlib import Path
+from typing import Any
 
+import numpy as np
 from sklearn.linear_model import LogisticRegression
-from sklearn.preprocessing import StandardScaler
 from sklearn.pipeline import Pipeline
+from sklearn.preprocessing import StandardScaler
 
-from .base_model import BaseMLModel, ModelPrediction, ModelInput, PredictionType, DecisionMode
 from ..config.model_registry import DecisionMode
 from ..features.l2_features import L2FeatureExtractor
+from .base_model import BaseMLModel, DecisionMode, ModelInput, ModelPrediction, PredictionType
 
 
 class L2HealerSelector(BaseMLModel):
@@ -48,7 +48,7 @@ class L2HealerSelector(BaseMLModel):
     # Reverse mapping
     REVERSE_HEALER_MAPPING = {v: k for k, v in HEALER_MAPPING.items()}
 
-    def __init__(self, model_file_path: Optional[Path] = None):
+    def __init__(self, model_file_path: Path | None = None):
         super().__init__(
             model_name="l2_healer_selector",
             model_version="1.0",
@@ -242,13 +242,13 @@ class L2HealerSelector(BaseMLModel):
 
     def select_healer(
         self,
-        error: Dict[str, Any],
-        available_healers: List[Dict[str, Any]],
-        context: Dict[str, Any],
+        error: dict[str, Any],
+        available_healers: list[dict[str, Any]],
+        context: dict[str, Any],
         trace_id: str,
         replay_key: str,
         policy_hash: str
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """
         Select optimal healer from available options.
 
@@ -359,12 +359,12 @@ class L2HealerSelector(BaseMLModel):
 
     def get_healing_strategy(
         self,
-        error: Dict[str, Any],
-        context: Dict[str, Any],
+        error: dict[str, Any],
+        context: dict[str, Any],
         trace_id: str,
         replay_key: str,
         policy_hash: str
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """
         Get comprehensive healing strategy recommendation.
 
@@ -415,10 +415,10 @@ class L2HealerSelector(BaseMLModel):
 
     def _generate_healer_recommendations(
         self,
-        best_healer: Dict[str, Any],
-        error: Dict[str, Any],
-        available_healers: List[Dict[str, Any]]
-    ) -> List[str]:
+        best_healer: dict[str, Any],
+        error: dict[str, Any],
+        available_healers: list[dict[str, Any]]
+    ) -> list[str]:
         """Generate healer-specific recommendations."""
         recommendations = []
 
@@ -464,7 +464,7 @@ class L2HealerSelector(BaseMLModel):
 
         return recommendations
 
-    def _generate_healing_strategy(self, error: Dict[str, Any], context: Dict[str, Any]) -> Dict[str, Any]:
+    def _generate_healing_strategy(self, error: dict[str, Any], context: dict[str, Any]) -> dict[str, Any]:
         """Generate healing strategy based on error characteristics."""
         error_severity = error.get('severity', 'medium')
         error_type = error.get('type', 'unknown')
@@ -508,7 +508,7 @@ class L2HealerSelector(BaseMLModel):
 
         return strategy
 
-    def _get_fallback_options(self, error: Dict[str, Any], context: Dict[str, Any]) -> List[str]:
+    def _get_fallback_options(self, error: dict[str, Any], context: dict[str, Any]) -> list[str]:
         """Get fallback healing options."""
         fallbacks = ["Retry with exponential backoff"]
 
@@ -531,7 +531,7 @@ class L2HealerSelector(BaseMLModel):
 
         return fallbacks
 
-    def _get_monitoring_requirements(self, error: Dict[str, Any]) -> List[str]:
+    def _get_monitoring_requirements(self, error: dict[str, Any]) -> list[str]:
         """Get monitoring requirements for healing."""
         requirements = ["Monitor healing success/failure"]
 
@@ -550,7 +550,7 @@ class L2HealerSelector(BaseMLModel):
 
         return requirements
 
-    def _estimate_recovery_time(self, error: Dict[str, Any], healer_selection: Dict[str, Any]) -> str:
+    def _estimate_recovery_time(self, error: dict[str, Any], healer_selection: dict[str, Any]) -> str:
         """Estimate recovery time based on error and healer."""
         healer_type = healer_selection.get('healer_type', 'unknown')
         error_severity = error.get('severity', 'medium')
@@ -582,7 +582,7 @@ class L2HealerSelector(BaseMLModel):
             minutes = estimated_time % 60
             return f"~ {hours}h {minutes}m"
 
-    def _calculate_resource_requirements(self, error: Dict[str, Any], healer_selection: Dict[str, Any]) -> Dict[str, Any]:
+    def _calculate_resource_requirements(self, error: dict[str, Any], healer_selection: dict[str, Any]) -> dict[str, Any]:
         """Calculate resource requirements for healing."""
         healer_type = healer_selection.get('healer_type', 'unknown')
 
@@ -615,7 +615,7 @@ class L2HealerSelector(BaseMLModel):
 
         return requirements
 
-    def get_feature_importance(self, model_input: ModelInput) -> List[Dict[str, Any]]:
+    def get_feature_importance(self, model_input: ModelInput) -> list[dict[str, Any]]:
         """Get feature importance for explainability."""
         if not self.is_loaded or not self.pipeline:
             return []
@@ -662,7 +662,7 @@ class L2HealerSelector(BaseMLModel):
             # Failed to compute importance
             return []
 
-    def _extract_feature_vector(self, features: Dict[str, Any]) -> Optional[np.ndarray]:
+    def _extract_feature_vector(self, features: dict[str, Any]) -> np.ndarray | None:
         """Extract features in the correct order for the model."""
         if not self.feature_names:
             return None
@@ -686,7 +686,7 @@ class L2HealerSelector(BaseMLModel):
         except Exception as e:
             return None
 
-    def preprocess_features(self, features: Dict[str, Any]) -> Tuple[Dict[str, Any], List[str]]:
+    def preprocess_features(self, features: dict[str, Any]) -> tuple[dict[str, Any], list[str]]:
         """Preprocess features for logistic regression."""
         processed_features, preprocessing_steps = super().preprocess_features(features)
 
@@ -708,8 +708,8 @@ class L2HealerSelector(BaseMLModel):
 
     def train_model(
         self,
-        training_data: List[Dict[str, Any]],
-        feature_names: List[str],
+        training_data: list[dict[str, Any]],
+        feature_names: list[str],
         training_data_digest: str = ""
     ) -> None:
         """

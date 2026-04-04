@@ -13,6 +13,7 @@ sys.path.append(str(repo_root))
 
 from agentic_core.planning.sequential_thinking_workflow import SequentialThinkingEnhancedWorkflow
 
+
 def debug_system_restructuring():
     """Debug the System Restructuring template."""
 
@@ -39,7 +40,7 @@ def debug_system_restructuring():
         print(f"{i+1:2d}: {line}")
 
     # Check for specific values
-    print(f"\n🔍 Checking for specific values:")
+    print("\n🔍 Checking for specific values:")
     check_values = [
         'layer violations',
         'Layer violations',
@@ -56,7 +57,7 @@ def debug_system_restructuring():
         print(f"   {'✅' if present else '❌'} '{value}': {'Found' if present else 'Not Found'}")
 
     # Look for any section with issues
-    print(f"\n📊 Looking for issues/restructuring sections:")
+    print("\n📊 Looking for issues/restructuring sections:")
     if "## Current Issues" in template_content:
         print("   ✅ Current Issues section found")
         issues_start = template_content.find("## Current Issues")

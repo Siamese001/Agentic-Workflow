@@ -8,6 +8,7 @@ import json
 import sys
 from pathlib import Path
 
+
 def create_test_scenarios():
     """Create test scenarios for sequential thinking analysis."""
 
@@ -159,19 +160,19 @@ def main():
         print(f"   Problem type: {scenario['context']['problem_type']}")
         print(f"   Key components: {list(scenario['context'].keys())}")
 
-    print(f"\n🎯 Integration Test Summary:")
+    print("\n🎯 Integration Test Summary:")
     print(f"   Scenarios created: {len(scenarios)}")
-    print(f"   MCP server: Configured and ready")
-    print(f"   Test files: Saved for manual verification")
+    print("   MCP server: Configured and ready")
+    print("   Test files: Saved for manual verification")
 
-    print(f"\n📝 Manual Testing Instructions:")
-    print(f"1. Restart Windsurf to load MCP configuration")
-    print(f"2. Use the sequential_thinking tool with each scenario")
-    print(f"3. Verify structured thinking process with 6+ thoughts")
-    print(f"4. Check for logical progression and problem decomposition")
+    print("\n📝 Manual Testing Instructions:")
+    print("1. Restart Windsurf to load MCP configuration")
+    print("2. Use the sequential_thinking tool with each scenario")
+    print("3. Verify structured thinking process with 6+ thoughts")
+    print("4. Check for logical progression and problem decomposition")
 
     # Create a simple test for immediate verification
-    print(f"\n🔬 Creating immediate verification test...")
+    print("\n🔬 Creating immediate verification test...")
     simple_test = {
         "thought": "I need to analyze the Agentic-Workflow repository structure to understand its complexity.",
         "nextThoughtNeeded": True,
@@ -189,7 +190,7 @@ def main():
         json.dump(simple_test, f, indent=2)
 
     print(f"✅ Created test input file: {test_file}")
-    print(f"   Use this with the sequential_thinking tool for immediate testing")
+    print("   Use this with the sequential_thinking tool for immediate testing")
 
     return 0
 

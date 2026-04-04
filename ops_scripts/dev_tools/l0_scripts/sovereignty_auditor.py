@@ -97,8 +97,6 @@ _emit_links_execution_to_snapshot("p4", "sovereignty_auditor", "exec_snapshot_li
 REPO_ROOT = Path(__file__).parent.parent.resolve()
 # guardian: allow-global-mutation
 sys.path.insert(0, str(REPO_ROOT))
-from agentic_core.utils.ssot_discovery_validator import get_python_files
-
 from agentic_core.L5_safety.config.structure_blueprint import (
     AGENTIC_CORE_DIR,
     APPS_LIC_DIR,
@@ -143,6 +141,7 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from agentic_core.utils.ssot_discovery_validator import get_python_files
 
 _emit_emits_metric_event("sovereignty_auditor", "p4obs", "metric_1")
 _emit_emits_metric_event("sovereignty_auditor", "p4obs", "metric_2")

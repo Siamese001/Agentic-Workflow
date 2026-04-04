@@ -6,7 +6,7 @@ Insufficient support detection, grounding verification, and abstain vs clarify d
 import logging
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import Any, Dict, Optional
+from typing import Any
 
 from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     LayerSegment,
@@ -33,7 +33,7 @@ class AbstainDecision:
     confidence: float
     support_score: float
     grounding_verified: bool
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    metadata: dict[str, Any] = field(default_factory=dict)
 
 
 class AbstainDetector:
@@ -66,7 +66,7 @@ class AbstainDetector:
         self,
         query: str,
         evidence_contract: Any,
-        query_context: Dict[str, Any],
+        query_context: dict[str, Any],
     ) -> AbstainDecision:
         """Evaluate whether to abstain.
 
@@ -142,7 +142,7 @@ class AbstainDetector:
 
         return min(base_confidence, 1.0)
 
-    def _should_clarify(self, query: str, context: Dict[str, Any]) -> bool:
+    def _should_clarify(self, query: str, context: dict[str, Any]) -> bool:
         """Determine if clarification should be requested."""
         # Clarify if query is ambiguous or vague
         vague_indicators = ['something', 'anything', 'whatever', 'etc']
@@ -154,7 +154,7 @@ class AbstainDetector:
 
 
 # Global instance
-_global_detector: Optional[AbstainDetector] = None
+_global_detector: AbstainDetector | None = None
 
 
 def get_abstain_detector() -> AbstainDetector:

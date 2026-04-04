@@ -4,13 +4,15 @@ CPU Usage Test for ADG Generation
 Compares CPU usage before and after optimization.
 """
 
-import psutil
-import time
 import json
-from pathlib import Path
-from datetime import datetime
 import subprocess
 import sys
+import time
+from datetime import datetime
+from pathlib import Path
+
+import psutil
+
 
 def measure_cpu_during_adg_generation():
     """Measure CPU usage during ADG generation"""

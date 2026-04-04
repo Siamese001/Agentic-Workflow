@@ -5,6 +5,7 @@ import sys
 import traceback
 from pathlib import Path
 
+
 def test_opentelemetry_availability():
     """Test current OpenTelemetry installation and availability."""
     print("=" * 60)
@@ -69,7 +70,7 @@ def test_opentelemetry_availability():
         adapter = OpenTelemetryTracingAdapter(service_name="test-service")
         results['adapter_init'] = True
         results['adapter_enabled'] = adapter.is_enabled()
-        print(f"✅ Adapter initialized successfully")
+        print("✅ Adapter initialized successfully")
         print(f"   Enabled: {adapter.is_enabled()}")
     except Exception as e:
         results['adapter_init'] = False
@@ -131,7 +132,7 @@ def test_opentelemetry_availability():
     else:
         print("🚨 OpenTelemetry is NOT available - this is the critical issue!")
 
-    print(f"\nDetailed results:")
+    print("\nDetailed results:")
     for key, value in results.items():
         if key == 'installed_otel_packages':
             continue

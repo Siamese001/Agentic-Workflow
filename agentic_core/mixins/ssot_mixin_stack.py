@@ -28,10 +28,9 @@ Usage:
 
 from __future__ import annotations
 
+from agentic_core.mixins.replay_guard_mixin import ReplayGuardMixin
 from agentic_core.mixins.ssot_adaptive_execution_mixin import SSOTAdaptiveExecutionMixin
 from agentic_core.mixins.ssot_audit_trail_mixin import SSOTAuditTrailMixin
-
-from agentic_core.mixins.replay_guard_mixin import ReplayGuardMixin
 from agentic_core.mixins.ssot_caching_mixin import SSOTCachingMixin
 from agentic_core.mixins.ssot_circuit_breaker_mixin import SSOTCircuitBreakerMixin
 from agentic_core.mixins.ssot_cognitive_recovery_mixin import SSOTCognitiveRecoveryMixin

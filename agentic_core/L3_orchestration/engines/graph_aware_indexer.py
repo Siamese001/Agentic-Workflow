@@ -18,21 +18,22 @@ import hashlib
 import json
 import logging
 from dataclasses import dataclass, field
-from typing import Any, Optional
+from typing import Any
 
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-    LayerSegment,
-    _emit_records_execution_trace,
-    _emit_stores_embedding,
-    _emit_records_learning_event,
-    _emit_reads_through,
-    _emit_writes_through,
-    _emit_pulls_context,
-)
 from agentic_core.L3_orchestration.engines.adg_integration import (
     ADGQueryClient,
     get_global_adg_client,
 )
+from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_pulls_context,
+    _emit_reads_through,
+    _emit_records_execution_trace,
+    _emit_records_learning_event,
+    _emit_stores_embedding,
+    _emit_writes_through,
+)
+
 # ChunkManifestRegistry, EnrichedChunkManifest imported lazily to avoid L3->L4 violation
 
 Logger = logging.getLogger(__name__)
@@ -67,7 +68,7 @@ class GraphEnrichmentContext:
     doc_id: str
     source_path: str
     adg_edges: ADGEdgeBinding
-    parent_section_id: Optional[str] = None
+    parent_section_id: str | None = None
     sibling_ids: list[str] = field(default_factory=list)
     heading_path: list[str] = field(default_factory=list)
 
@@ -84,10 +85,10 @@ class GraphAwareIndexer:
 
     def __init__(
         self,
-        l4d_registry: Optional[L4DChunkManifestRegistry] = None,
-        l4e_registry: Optional[ParentChildIndexRegistry] = None,
-        chunk_manifest_registry: Optional[ChunkManifestRegistry] = None,
-        vector_db_client: Optional[Any] = None,
+        l4d_registry: L4DChunkManifestRegistry | None = None,
+        l4e_registry: ParentChildIndexRegistry | None = None,
+        chunk_manifest_registry: ChunkManifestRegistry | None = None,
+        vector_db_client: Any | None = None,
     ):
         """Initialize graph-aware indexer.
 
@@ -110,8 +111,8 @@ class GraphAwareIndexer:
         doc_id: str,
         source_path: str,
         chunks: list[dict[str, Any]],
-        adg_edges: Optional[ADGEdgeBinding] = None,
-        embeddings: Optional[list[list[float]]] = None,
+        adg_edges: ADGEdgeBinding | None = None,
+        embeddings: list[list[float]] | None = None,
     ) -> dict[str, Any]:
         """Index a document with graph-aware metadata.
 
@@ -175,7 +176,7 @@ class GraphAwareIndexer:
         )
         self._edge_bindings[doc_id] = edges
 
-        parent_chunk_id: Optional[str] = None
+        parent_chunk_id: str | None = None
 
         for idx, chunk_data in enumerate(chunks):
             chunk_id = chunk_data.get("chunk_id") or f"{doc_id}_chunk_{idx}"
@@ -247,8 +248,8 @@ class GraphAwareIndexer:
         chunk_index: int,
         metadata: dict[str, Any],
         adg_edges: ADGEdgeBinding,
-        parent_chunk_id: Optional[str] = None,
-        embedding: Optional[list[float]] = None,
+        parent_chunk_id: str | None = None,
+        embedding: list[float] | None = None,
     ) -> EnrichedChunkManifest:
         """Create an enriched chunk manifest from raw content."""
         # Generate embedding hash if embedding provided
@@ -343,7 +344,7 @@ class GraphAwareIndexer:
                     # Re-write updated link
                     self.l4e_registry.write(updated_link)
 
-    def get_adg_edges(self, doc_id: str) -> Optional[ADGEdgeBinding]:
+    def get_adg_edges(self, doc_id: str) -> ADGEdgeBinding | None:
         """Get ADG edge binding for a document."""
         return self._edge_bindings.get(doc_id)
 
@@ -364,7 +365,7 @@ class ADGEdgeExtractor:
     that are relevant to a given source file.
     """
 
-    def __init__(self, adg_client: Optional[ADGQueryClient] = None):
+    def __init__(self, adg_client: ADGQueryClient | None = None):
         """Initialize ADG edge extractor.
 
         Args:
@@ -465,8 +466,8 @@ class ADGEdgeExtractor:
 
 
 # Global instances
-_global_indexer: Optional[GraphAwareIndexer] = None
-_global_extractor: Optional[ADGEdgeExtractor] = None
+_global_indexer: GraphAwareIndexer | None = None
+_global_extractor: ADGEdgeExtractor | None = None
 
 
 def get_global_indexer() -> GraphAwareIndexer:
@@ -489,8 +490,8 @@ def index_document(
     doc_id: str,
     source_path: str,
     chunks: list[dict[str, Any]],
-    adg_edges: Optional[ADGEdgeBinding] = None,
-    embeddings: Optional[list[list[float]]] = None,
+    adg_edges: ADGEdgeBinding | None = None,
+    embeddings: list[list[float]] | None = None,
 ) -> dict[str, Any]:
     """Convenience function to index a document."""
     return get_global_indexer().index_document(

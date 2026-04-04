@@ -26,7 +26,7 @@ import json
 import sqlite3
 import sys
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Set, Tuple
+from typing import Any
 
 # Add project root to path for imports
 sys.path.insert(0, str(Path(__file__).parent.parent.parent))
@@ -41,8 +41,8 @@ class ADGTraceReplayCoverageVerifier:
     def __init__(self, adg_dir: Path):
         self.adg_dir = Path(adg_dir)
         self.sqlite_path = self._find_sqlite_database()
-        self.errors: List[str] = []
-        self.warnings: List[str] = []
+        self.errors: list[str] = []
+        self.warnings: list[str] = []
 
     def _find_sqlite_database(self) -> Path:
         """Find the latest SQLite database."""
@@ -52,7 +52,7 @@ class ADGTraceReplayCoverageVerifier:
 
         return max(sqlite_files, key=lambda p: p.stat().st_mtime)
 
-    def _get_first_party_modules(self) -> List[Tuple[int, str, str]]:
+    def _get_first_party_modules(self) -> list[tuple[int, str, str]]:
         """Get first-party modules (id, adg_name, layer)."""
         try:
             with sqlite3.connect(self.sqlite_path) as conn:
@@ -67,7 +67,7 @@ class ADGTraceReplayCoverageVerifier:
         except Exception as e:
             raise TraceReplayCoverageError(f"Failed to get first-party modules: {e}")
 
-    def _get_module_edges(self, module_id: int, relation_types: List[str]) -> List[Dict[str, Any]]:
+    def _get_module_edges(self, module_id: int, relation_types: list[str]) -> list[dict[str, Any]]:
         """Get edges for a specific module by relation types."""
         try:
             with sqlite3.connect(self.sqlite_path) as conn:
@@ -94,7 +94,7 @@ class ADGTraceReplayCoverageVerifier:
         except Exception as e:
             raise TraceReplayCoverageError(f"Failed to get module edges: {e}")
 
-    def _analyze_execution_surface_coverage(self, module_id: int, module_name: str) -> Dict[str, Any]:
+    def _analyze_execution_surface_coverage(self, module_id: int, module_name: str) -> dict[str, Any]:
         """Analyze trace/replay coverage for a single module."""
 
         # Define execution surface edge types
@@ -152,7 +152,7 @@ class ADGTraceReplayCoverageVerifier:
             "hard_fail_edges": hard_fail_edges
         }
 
-    def _verify_critical_execution_surfaces(self) -> Dict[str, Any]:
+    def _verify_critical_execution_surfaces(self) -> dict[str, Any]:
         """Verify critical execution surfaces have proper coverage."""
         print("🎯 Verifying critical execution surfaces...")
 
@@ -197,7 +197,7 @@ class ADGTraceReplayCoverageVerifier:
         complete_coverage = sum(1 for c in coverage_results if c["coverage_level"] == "complete")
         hard_fail_modules = sum(1 for c in coverage_results if c["has_hard_fail"])
 
-        print(f"   📊 Coverage Summary:")
+        print("   📊 Coverage Summary:")
         print(f"      Total modules: {total_modules}")
         print(f"      With trace: {traced_modules} ({100*traced_modules/total_modules:.1f}%)")
         print(f"      With signed trace: {signed_modules} ({100*signed_modules/total_modules:.1f}%)")
@@ -224,7 +224,7 @@ class ADGTraceReplayCoverageVerifier:
             "coverage_results": coverage_results
         }
 
-    def _verify_trace_binding_completeness(self) -> Dict[str, Any]:
+    def _verify_trace_binding_completeness(self) -> dict[str, Any]:
         """Verify trace bindings to policy, config, and mutation envelopes."""
         print("🔗 Verifying trace binding completeness...")
 
@@ -244,7 +244,7 @@ class ADGTraceReplayCoverageVerifier:
 
                 binding_counts = {}
                 for relation_type, description in binding_types:
-                    cursor.execute(f"SELECT COUNT(*) FROM edges WHERE relation_type = ?", (relation_type,))
+                    cursor.execute("SELECT COUNT(*) FROM edges WHERE relation_type = ?", (relation_type,))
                     count = cursor.fetchone()[0]
                     binding_counts[relation_type] = {
                         "count": count,
@@ -288,7 +288,7 @@ class ADGTraceReplayCoverageVerifier:
         except Exception as e:
             raise TraceReplayCoverageError(f"Trace binding verification failed: {e}")
 
-    def _verify_hard_fail_transcript_requirements(self) -> Dict[str, Any]:
+    def _verify_hard_fail_transcript_requirements(self) -> dict[str, Any]:
         """Verify hard failures have proper transcript requirements."""
         print("🚫 Verifying hard fail transcript requirements...")
 
@@ -334,7 +334,7 @@ class ADGTraceReplayCoverageVerifier:
                     self.errors.append(f"{len(untranscripted_critical)} hard failures lack any transcript")
                     print(f"   ❌ Critical: {len(untranscripted_critical)} hard failures without transcript")
                 else:
-                    print(f"   ✅ All hard failures have some transcript coverage")
+                    print("   ✅ All hard failures have some transcript coverage")
 
                 return {
                     "total_hard_failures": len(hard_failures),
@@ -345,7 +345,7 @@ class ADGTraceReplayCoverageVerifier:
         except Exception as e:
             raise TraceReplayCoverageError(f"Hard fail verification failed: {e}")
 
-    def verify(self) -> Dict[str, Any]:
+    def verify(self) -> dict[str, Any]:
         """Run complete trace/replay coverage verification."""
         print("🔍 Starting ADG Trace and Replay Coverage Verification...")
         print(f"📁 ADG Directory: {self.adg_dir}")

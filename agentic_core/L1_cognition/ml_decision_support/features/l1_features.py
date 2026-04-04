@@ -8,10 +8,10 @@ capacity utilization trends, and provisioning recommendations.
 
 import math
 from datetime import datetime, timedelta
-from typing import Dict, Any
+from typing import Any
 
+from ..config.feature_schemas import FeatureSchema, FeatureSchemas
 from .base_extractor import DeterministicFeatureExtractor
-from ..config.feature_schemas import FeatureSchemas, FeatureSchema
 
 
 class L1FeatureExtractor(DeterministicFeatureExtractor):
@@ -37,7 +37,7 @@ class L1FeatureExtractor(DeterministicFeatureExtractor):
 
     def _create_l1_schema(self) -> FeatureSchema:
         """Create feature schema for L1 capacity planner."""
-        from ..config.feature_schemas import FeatureSchema, FeatureDefinition, FeatureType
+        from ..config.feature_schemas import FeatureDefinition, FeatureSchema, FeatureType
 
         features = [
             FeatureDefinition(
@@ -132,7 +132,7 @@ class L1FeatureExtractor(DeterministicFeatureExtractor):
         self.register_extraction_function("cost_per_request", self._extract_cost_per_request)
         self.register_extraction_function("capacity_buffer", self._extract_capacity_buffer)
 
-    def _extract_traffic_growth_rate(self, context: Dict[str, Any]) -> float:
+    def _extract_traffic_growth_rate(self, context: dict[str, Any]) -> float:
         """Extract traffic growth rate (-1.0 to 5.0)."""
         traffic = context.get("traffic", {})
 
@@ -171,7 +171,7 @@ class L1FeatureExtractor(DeterministicFeatureExtractor):
 
         return round(growth_rate, 3)
 
-    def _extract_demand_volatility(self, context: Dict[str, Any]) -> float:
+    def _extract_demand_volatility(self, context: dict[str, Any]) -> float:
         """Extract demand volatility (0.0 to 1.0)."""
         demand = context.get("demand", {})
 
@@ -200,7 +200,7 @@ class L1FeatureExtractor(DeterministicFeatureExtractor):
 
         return round(volatility, 3)
 
-    def _extract_current_capacity_utilization(self, context: Dict[str, Any]) -> float:
+    def _extract_current_capacity_utilization(self, context: dict[str, Any]) -> float:
         """Extract current capacity utilization (0.0 to 1.0)."""
         capacity = context.get("capacity", {})
 
@@ -219,7 +219,7 @@ class L1FeatureExtractor(DeterministicFeatureExtractor):
 
         return round(max(0.0, min(1.0, utilization)), 3)
 
-    def _extract_peak_demand_ratio(self, context: Dict[str, Any]) -> float:
+    def _extract_peak_demand_ratio(self, context: dict[str, Any]) -> float:
         """Extract peak to average demand ratio (1.0 to 10.0)."""
         demand = context.get("demand", {})
 
@@ -243,7 +243,7 @@ class L1FeatureExtractor(DeterministicFeatureExtractor):
 
         return round(max(1.0, min(10.0, peak_ratio)), 3)
 
-    def _extract_scaling_frequency(self, context: Dict[str, Any]) -> float:
+    def _extract_scaling_frequency(self, context: dict[str, Any]) -> float:
         """Extract scaling frequency per day (0.0 to 100.0)."""
         scaling = context.get("scaling", {})
 
@@ -271,7 +271,7 @@ class L1FeatureExtractor(DeterministicFeatureExtractor):
         frequency = len(recent_events)
         return round(min(100.0, frequency), 3)
 
-    def _extract_seasonal_pattern_strength(self, context: Dict[str, Any]) -> float:
+    def _extract_seasonal_pattern_strength(self, context: dict[str, Any]) -> float:
         """Extract seasonal pattern strength (0.0 to 1.0)."""
         seasonal = context.get("seasonal", {})
 
@@ -305,7 +305,7 @@ class L1FeatureExtractor(DeterministicFeatureExtractor):
 
         return round(pattern_strength, 3)
 
-    def _extract_forecast_accuracy(self, context: Dict[str, Any]) -> float:
+    def _extract_forecast_accuracy(self, context: dict[str, Any]) -> float:
         """Extract forecast accuracy (0.0 to 1.0)."""
         forecast = context.get("forecast", {})
 
@@ -338,7 +338,7 @@ class L1FeatureExtractor(DeterministicFeatureExtractor):
 
         return round(max(0.0, min(1.0, accuracy)), 3)
 
-    def _extract_resource_efficiency(self, context: Dict[str, Any]) -> float:
+    def _extract_resource_efficiency(self, context: dict[str, Any]) -> float:
         """Extract resource efficiency (0.0 to 1.0)."""
         resources = context.get("resources", {})
 
@@ -356,7 +356,7 @@ class L1FeatureExtractor(DeterministicFeatureExtractor):
 
         return round(max(0.0, min(1.0, efficiency)), 3)
 
-    def _extract_cost_per_request(self, context: Dict[str, Any]) -> float:
+    def _extract_cost_per_request(self, context: dict[str, Any]) -> float:
         """Extract cost per request (0.0 to 1000.0)."""
         cost = context.get("cost", {})
 
@@ -375,7 +375,7 @@ class L1FeatureExtractor(DeterministicFeatureExtractor):
 
         return round(max(0.0, min(1000.0, cost_per_request)), 3)
 
-    def _extract_capacity_buffer(self, context: Dict[str, Any]) -> float:
+    def _extract_capacity_buffer(self, context: dict[str, Any]) -> float:
         """Extract capacity buffer percentage (0.0 to 1.0)."""
         capacity = context.get("capacity", {})
 

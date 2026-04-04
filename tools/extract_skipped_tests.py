@@ -3,10 +3,8 @@
 Extract all skipped tests from pytest collection output and categorize by phase.
 """
 
-import re
 import json
-from pathlib import Path
-from collections import defaultdict
+
 
 def extract_skipped_tests():
     """Extract skipped tests from pytest collection."""
@@ -152,7 +150,7 @@ def main():
     with open('artifacts/skip_burndown_plan.json', 'w') as f:
         json.dump(results, f, indent=2)
 
-    print(f"Burndown plan saved to artifacts/skip_burndown_plan.json")
+    print("Burndown plan saved to artifacts/skip_burndown_plan.json")
     print(f"Total waves: {len(plan)}")
 
     # Print summary

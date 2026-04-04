@@ -44,8 +44,8 @@ class _JITContextVisitor(BaseRuntimeVisitor):
 
     def visit_Call(self, node: ast.Call) -> None:
         """Extract JIT context edges from call expressions."""
-        from agentic_core.adg.schema_util import canonical_name, JIT_CONTEXT_CLASSES, FREEZE_METHOD_NAMES
         from agentic_core.adg.extraction.static_scanner import Edge as _Edge
+        from agentic_core.adg.schema_util import FREEZE_METHOD_NAMES, JIT_CONTEXT_CLASSES, canonical_name
 
         sym = self._get_call_symbol(node.func)
         tail = sym.split(".")[-1] if sym else ""
@@ -116,8 +116,12 @@ class _BoundaryVerifierVisitor(BaseRuntimeVisitor):
 
     def visit_Call(self, node: ast.Call) -> None:
         """Extract boundary verification edges from call expressions."""
-        from agentic_core.adg.schema_util import canonical_name, BOUNDARY_VERIFIER_CLASSES, CAPABILITY_CHOKEPOINT_CLASSES
         from agentic_core.adg.extraction.static_scanner import Edge as _Edge
+        from agentic_core.adg.schema_util import (
+            BOUNDARY_VERIFIER_CLASSES,
+            CAPABILITY_CHOKEPOINT_CLASSES,
+            canonical_name,
+        )
 
         sym = self._get_call_symbol(node.func)
         tail = sym.split(".")[-1] if sym else ""
@@ -180,13 +184,13 @@ class _DeterminismControlVisitor(BaseRuntimeVisitor):
 
     def visit_Call(self, node: ast.Call) -> None:
         """Extract determinism control edges from call expressions."""
-        from agentic_core.adg.schema_util import (
-            canonical_name,
-            SEMANTIC_CLOCK_CLASSES,
-            REPLAY_GUARD_CLASSES,
-            DETERMINISM_PATCH_METHODS,
-        )
         from agentic_core.adg.extraction.static_scanner import Edge as _Edge
+        from agentic_core.adg.schema_util import (
+            DETERMINISM_PATCH_METHODS,
+            REPLAY_GUARD_CLASSES,
+            SEMANTIC_CLOCK_CLASSES,
+            canonical_name,
+        )
 
         sym = self._get_call_symbol(node.func)
         tail = sym.split(".")[-1] if sym else ""
@@ -266,8 +270,12 @@ class _IOInterceptionVisitor(BaseRuntimeVisitor):
 
     def visit_Call(self, node: ast.Call) -> None:
         """Extract I/O interception edges from call expressions."""
-        from agentic_core.adg.schema_util import canonical_name, IO_INTERCEPT_CLASSES, NETWORK_TRANSCRIPT_SYMBOLS
         from agentic_core.adg.extraction.static_scanner import Edge as _Edge
+        from agentic_core.adg.schema_util import (
+            IO_INTERCEPT_CLASSES,
+            NETWORK_TRANSCRIPT_SYMBOLS,
+            canonical_name,
+        )
 
         sym = self._get_call_symbol(node.func)
         tail = sym.split(".")[-1] if sym else ""

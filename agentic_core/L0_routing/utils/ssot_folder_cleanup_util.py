@@ -47,23 +47,23 @@ class CleanupStats:
 def find_non_approved_files(project_root: Path) -> list[Path]:
     """Find all files in non-SSOT-approved folders."""
     non_approved_files: list[Path] = []
-    
+
     for root, dirs, files in os.walk(project_root):
         root_path = Path(root)
-        
+
         # Skip approved folders
         if any(approved in str(root_path) for approved in [AGENTIC_CORE_DIR, ARCHIVES_DIR, REPORTS_DIR]):
             continue
-        
+
         # Skip excluded folders
         if any(excluded in str(root_path) for excluded in SOVEREIGN_EXCLUDED_FOLDERS):
             continue
-        
+
         for file_name in files:
             if not file_name.startswith("."):  # Skip hidden files
                 file_path = root_path / file_name
                 non_approved_files.append(file_path)
-    
+
     return non_approved_files
 
 
@@ -71,7 +71,7 @@ def triage_file(file_path: Path, project_root: Path) -> dict[str, Any]:
     """Triage a file to determine appropriate action."""
     # Basic triage logic - can be extended based on file type/content
     ext = file_path.suffix.lower()
-    
+
     # Python files -> likely belong in agentic_core
     if ext == ".py":
         return {
@@ -80,7 +80,7 @@ def triage_file(file_path: Path, project_root: Path) -> dict[str, Any]:
             "reason": "Python file belongs in agentic_core",
             "confidence": 0.8,
         }
-    
+
     # Markdown files -> likely belong in docs
     if ext == ".md":
         return {
@@ -89,7 +89,7 @@ def triage_file(file_path: Path, project_root: Path) -> dict[str, Any]:
             "reason": "Documentation file belongs in docs",
             "confidence": 0.9,
         }
-    
+
     # JSON/Config files -> evaluate based on content
     if ext in [".json", ".yaml", ".yml", ".toml"]:
         return {
@@ -98,7 +98,7 @@ def triage_file(file_path: Path, project_root: Path) -> dict[str, Any]:
             "reason": "Configuration file belongs in config",
             "confidence": 0.7,
         }
-    
+
     # Test files -> tests directory
     if "test" in file_path.name.lower():
         return {
@@ -107,7 +107,7 @@ def triage_file(file_path: Path, project_root: Path) -> dict[str, Any]:
             "reason": "Test file belongs in tests",
             "confidence": 0.9,
         }
-    
+
     # Low confidence -> archive for manual review
     return {
         "action": "ARCHIVE",
@@ -125,15 +125,15 @@ def move_file_to_ssot(
 ) -> bool:
     """Move a file to SSOT-approved location."""
     target_path = project_root / target_dir / source.name
-    
+
     if dry_run:
         Logger.info(f"[DRY RUN] Would move: {source} -> {target_path}")
         return True
-    
+
     try:
         assert_no_persistent_write("L0", "shutil.mutate")
         target_path.parent.mkdir(parents=True, exist_ok=True)
-        
+
         # Use os.rename for atomic move
         os.rename(str(source), str(target_path))
         Logger.info(f"Moved: {source} -> {target_path}")
@@ -155,25 +155,25 @@ def update_imports_for_moved_file(
         Number of imports updated
     """
     updates = 0
-    
+
     # Find all Python files that might import the moved file
     old_module = str(old_path.relative_to(project_root)).replace("\\", ".").replace("/", ".")
     old_module = old_module.replace(".py", "")
-    
+
     new_module = str(new_path.relative_to(project_root)).replace("\\", ".").replace("/", ".")
     new_module = new_module.replace(".py", "")
-    
+
     for py_file in project_root.rglob("*.py"):
         if py_file == old_path or py_file == new_path:
             continue
-        
+
         try:
             content = py_file.read_text(encoding="utf-8")
-            
+
             # Simple import pattern replacement
             # This is a simplified version - real implementation would use AST
             updated_content = content
-            
+
             # Replace 'from old_module import ...'
             pattern = rf"from\s+{re.escape(old_module)}\s+import"
             if re.search(pattern, content):
@@ -182,10 +182,10 @@ def update_imports_for_moved_file(
                     py_file.write_text(updated_content, encoding="utf-8")
                 updates += 1
                 Logger.info(f"Updated imports in: {py_file}")
-        
+
         except Exception as e:
             Logger.warning(f"Failed to update imports in {py_file}: {e}")
-    
+
     return updates
 
 
@@ -199,14 +199,14 @@ def delete_empty_folders(
         Number of folders deleted
     """
     deleted_count = 0
-    
+
     for root, dirs, files in os.walk(str(project_root), topdown=False):
         root_path = Path(root)
-        
+
         # Skip approved folders
         if any(approved in str(root_path) for approved in [AGENTIC_CORE_DIR, ARCHIVES_DIR, REPORTS_DIR]):
             continue
-        
+
         # Check if folder is now empty
         if not any(root_path.iterdir()):
             if dry_run:
@@ -218,7 +218,7 @@ def delete_empty_folders(
                     deleted_count += 1
                 except OSError as e:
                     Logger.warning(f"Failed to delete folder {root_path}: {e}")
-    
+
     return deleted_count
 
 
@@ -237,18 +237,18 @@ def cleanup_repository(
     """
     project_root = project_root or Path(".")
     Logger.info(f"Starting SSOT folder cleanup (dry_run={dry_run})")
-    
+
     stats = CleanupStats()
-    
+
     non_approved_files = find_non_approved_files(project_root)
     stats.files_scanned = len(non_approved_files)
     Logger.info(f"Found {len(non_approved_files)} files in non-approved locations")
-    
+
     move_plan: list[dict[str, Any]] = []
-    
+
     for file_path in non_approved_files:
         triage = triage_file(file_path, project_root)
-        
+
         if triage["action"] == "MOVE" and triage["target_path"]:
             move_plan.append({
                 "source": file_path,
@@ -266,29 +266,29 @@ def cleanup_repository(
             })
         else:
             Logger.info(f"Skipping {file_path}: {triage['action']} - {triage['reason']}")
-    
+
     # Execute moves
     for plan in move_plan:
         source = plan["source"]
         target = plan["target"]
-        
+
         success = move_file_to_ssot(source, target, project_root, dry_run)
-        
+
         if success:
             if plan.get("archive"):
                 stats.files_archived += 1
             else:
                 stats.files_moved += 1
-            
+
             if not dry_run:
                 new_path = project_root / target / source.name
                 updates = update_imports_for_moved_file(source, new_path, project_root, dry_run)
                 stats.imports_updated += updates
-    
+
     # Delete empty folders
     deleted_folders = delete_empty_folders(project_root, dry_run)
     stats.folders_deleted = deleted_folders
-    
+
     summary = {
         "dry_run": dry_run,
         "files_scanned": stats.files_scanned,
@@ -300,7 +300,7 @@ def cleanup_repository(
         "errors": stats.errors,
         "move_plan": move_plan if dry_run else None,
     }
-    
+
     Logger.info(f"SSOT cleanup complete: {summary}")
     return summary
 
@@ -341,7 +341,7 @@ def heal_repository(
     """
     actual_dry_run = dry_run if not execute else False
     result = cleanup_repository(project_root, dry_run=actual_dry_run)
-    
+
     return {
         "violations_found": result.get("non_approved_files", 0),
         "violations_fixed": result.get("files_moved", 0),
@@ -364,9 +364,9 @@ def heal(violation: dict[str, Any]) -> dict[str, Any]:
     """
     path = violation.get("path", "")
     target_path = violation.get("target_path", "")
-    
+
     Logger.info(f"[SSOT_CLEANUP] Healing file location: {path}")
-    
+
     if path and target_path:
         try:
             source = Path(path)
@@ -392,7 +392,7 @@ def heal(violation: dict[str, Any]) -> dict[str, Any]:
                 "errors": 1,
                 "skipped": 0,
             }
-    
+
     return {
         "violations_fixed": 0,
         "violations_found": 1,
@@ -404,7 +404,7 @@ def heal(violation: dict[str, Any]) -> dict[str, Any]:
 def main() -> dict[str, Any]:
     """Main entry point for SSOT Folder Cleanup Utility."""
     import argparse
-    
+
     parser = argparse.ArgumentParser(description="SSOT Folder Cleanup Utility")
     parser.add_argument(
         "--execute",
@@ -423,19 +423,19 @@ def main() -> dict[str, Any]:
         action="store_true",
         help="Verbose output",
     )
-    
+
     args = parser.parse_args()
-    
+
     if args.verbose:
         logging.basicConfig(level=logging.DEBUG)
     else:
         logging.basicConfig(level=logging.INFO)
-    
+
     project_root = Path(args.project_root)
     dry_run = not args.execute
-    
+
     results = cleanup_repository(project_root, dry_run=dry_run)
-    
+
     print("\n" + "=" * 70)
     print("📊 SSOT FOLDER CLEANUP SUMMARY")
     print("=" * 70)
@@ -446,7 +446,7 @@ def main() -> dict[str, Any]:
     print(f"Folders deleted: {results['folders_deleted']}")
     print(f"Errors: {results['errors']}")
     print(f"\nMode: {'DRY RUN' if results['dry_run'] else 'EXECUTE'}")
-    
+
     return results
 
 

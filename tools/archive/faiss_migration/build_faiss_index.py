@@ -15,16 +15,6 @@ import time
 
 import numpy as np
 
-from agentic_core.L0_routing.config.path_constants import (
-    BATCH_SIZE,
-    BUFFER_SIZE,
-    DEFAULT_SLEEP,
-    DEFAULT_TIMEOUT,
-    MAX_DEPTH,
-    MAX_FILES,
-    MAX_RETRIES,
-    THRESHOLD,
-)
 from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
@@ -98,6 +88,8 @@ _emit_links_execution_to_snapshot("p4", "build_faiss_index", "exec_snapshot_link
 ROOT = pathlib.Path(__file__).resolve().parents[2]
 # guardian: allow-global-mutation
 sys.path.insert(0, str(ROOT))
+from system_learning.engines.local_faiss_store import LocalFAISSStore
+
 from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
@@ -136,7 +128,6 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
-from system_learning.engines.local_faiss_store import LocalFAISSStore
 
 _emit_emits_metric_event("build_faiss_index", "p4obs", "metric_1")
 _emit_emits_metric_event("build_faiss_index", "p4obs", "metric_2")

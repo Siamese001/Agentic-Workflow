@@ -4,16 +4,16 @@ Tests for Pipeline B Phase B1 and B2: Intake & Modality Detection
 and Canonical Raw Unit establishment.
 """
 
-import pytest
 import tempfile
 from pathlib import Path
-from unittest.mock import patch
 
+import pytest
+
+from agentic_core.knowledge.canonical.canonical_store import CanonicalStore
+from agentic_core.knowledge.canonical.canonical_types import CanonicalUnitStatus, CanonicalUnitType
+from agentic_core.knowledge.canonical.raw_unit_factory import RawUnitFactory
 from agentic_core.knowledge.ingestion.intake_clerk import IntakeClerk
 from agentic_core.knowledge.ingestion.modality_types import ContentType, DocumentModality
-from agentic_core.knowledge.canonical.raw_unit_factory import RawUnitFactory
-from agentic_core.knowledge.canonical.canonical_types import CanonicalUnitType, CanonicalUnitStatus
-from agentic_core.knowledge.canonical.canonical_store import CanonicalStore
 
 
 class TestIntakeClerk:

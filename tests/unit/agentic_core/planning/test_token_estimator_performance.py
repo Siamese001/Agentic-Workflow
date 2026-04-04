@@ -5,18 +5,18 @@ Tests for performance characteristics, scalability, and efficiency
 under various load conditions.
 """
 
-import pytest
-import time
-import psutil
 import os
+import time
 from pathlib import Path
-from typing import Dict, List, Any
+
+import psutil
+import pytest
 
 
 # Lazy imports to avoid collection-time conflicts
 @pytest.fixture
 def token_estimator_classes():
-    from agentic_core.planning.token_estimator import ContextWindowEstimator, ContextSource, TokenEstimate
+    from agentic_core.planning.token_estimator import ContextSource, ContextWindowEstimator, TokenEstimate
     return ContextWindowEstimator, ContextSource, TokenEstimate
 
 
@@ -204,7 +204,7 @@ class TestTokenEstimatorPerformance:
 
     def test_compression_performance(self):
         """Test compression performance with large payloads"""
-        from agentic_core.planning.token_estimator import ContextWindowEstimator, ContextSource, TokenEstimate
+        from agentic_core.planning.token_estimator import ContextSource, ContextWindowEstimator, TokenEstimate
         estimator = ContextWindowEstimator()
 
         # Create sources that will trigger compression

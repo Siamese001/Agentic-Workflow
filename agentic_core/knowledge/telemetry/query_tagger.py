@@ -6,7 +6,7 @@ Tagging for query attribution and analysis.
 import logging
 import re
 from dataclasses import dataclass, field
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     LayerSegment,
@@ -23,9 +23,9 @@ class QueryTags:
     domain: str = "general"
     complexity: str = "medium"
     urgency: str = "normal"
-    topic_tags: List[str] = field(default_factory=list)
-    user_segments: List[str] = field(default_factory=list)
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    topic_tags: list[str] = field(default_factory=list)
+    user_segments: list[str] = field(default_factory=list)
+    metadata: dict[str, Any] = field(default_factory=dict)
 
 
 class QueryTagger:
@@ -55,7 +55,7 @@ class QueryTagger:
             "operational": [r"\b(?:runbook|playbook|process|workflow)"],
         }
 
-    def tag(self, query: str, context: Optional[Dict[str, Any]] = None) -> QueryTags:
+    def tag(self, query: str, context: dict[str, Any] | None = None) -> QueryTags:
         """Tag a query.
 
         Args:
@@ -134,7 +134,7 @@ class QueryTagger:
             return "high"
         return "normal"
 
-    def _extract_topics(self, query: str) -> List[str]:
+    def _extract_topics(self, query: str) -> list[str]:
         """Extract topic keywords."""
         # Simple keyword extraction
         stop_words = {'the', 'a', 'an', 'is', 'are', 'was', 'were'}
@@ -152,7 +152,7 @@ class QueryTagger:
 
 
 # Global instance
-_global_tagger: Optional[QueryTagger] = None
+_global_tagger: QueryTagger | None = None
 
 
 def get_query_tagger() -> QueryTagger:
@@ -163,6 +163,6 @@ def get_query_tagger() -> QueryTagger:
     return _global_tagger
 
 
-def tag_query(query: str, context: Optional[Dict[str, Any]] = None) -> QueryTags:
+def tag_query(query: str, context: dict[str, Any] | None = None) -> QueryTags:
     """Convenience function to tag a query."""
     return get_query_tagger().tag(query, context)

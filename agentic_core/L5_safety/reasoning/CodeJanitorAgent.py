@@ -12,13 +12,19 @@ from __future__ import annotations
 import warnings
 from pathlib import Path
 
-from agentic_core.L5_safety.validators.CanonBaseAgent import CanonBaseAgent
 from agentic_core.L5_safety.utils.code_janitor_util import (
     CodeJanitor as _CodeJanitor,
-    validate_syntax as _validate_syntax,
-    validate_indentation as _validate_indentation,
+)
+from agentic_core.L5_safety.utils.code_janitor_util import (
     JanitorViolation,
 )
+from agentic_core.L5_safety.utils.code_janitor_util import (
+    validate_indentation as _validate_indentation,
+)
+from agentic_core.L5_safety.utils.code_janitor_util import (
+    validate_syntax as _validate_syntax,
+)
+from agentic_core.L5_safety.validators.CanonBaseAgent import CanonBaseAgent
 
 
 class CodeJanitorAgent(CanonBaseAgent):

@@ -32,7 +32,6 @@ from agentic_core.L4_state.versioning.commit_versioned_state_transition import (
     StateVersionMissingError,
     commit_versioned_state_transition,
 )
-from agentic_core.runtime.execution_trace import get_active_execution_trace
 from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
@@ -76,6 +75,7 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     emit_determinism_digest,  # noqa: E402
     emit_replay_key,  # noqa: E402
 )
+from agentic_core.runtime.execution_trace import get_active_execution_trace
 
 emit_replay_key("p0", "run_scoped_state_authority")
 emit_determinism_digest("p0", "run_scoped_state_authority")

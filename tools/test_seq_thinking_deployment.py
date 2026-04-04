@@ -8,11 +8,10 @@ that all components are working correctly.
 
 import json
 import os
-import sys
 import subprocess
-import time
+import sys
 from pathlib import Path
-from typing import Dict, List, Any
+
 
 def test_mcp_configuration():
     """Test MCP configuration is properly set up."""

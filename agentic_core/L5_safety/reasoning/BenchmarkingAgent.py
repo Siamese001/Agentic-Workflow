@@ -14,15 +14,19 @@ from typing import Any
 
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 from agentic_core.L5_safety.utils.benchmarking_util import (
-    BenchmarkSuite as _BenchmarkSuite,
     BenchmarkResult as _BenchmarkResult,
+)
+from agentic_core.L5_safety.utils.benchmarking_util import (
+    BenchmarkSuite as _BenchmarkSuite,
+)
+from agentic_core.L5_safety.utils.benchmarking_util import (
     benchmark_function as _benchmark_function,
 )
 
 
 class BenchmarkResult:
     """DEPRECATED: Use benchmarking_util.BenchmarkResult instead."""
-    
+
     def __init__(self, **kwargs):
         warnings.warn("BenchmarkResult is deprecated. Use benchmarking_util.BenchmarkResult instead.", DeprecationWarning)
         self._impl = _BenchmarkResult(**kwargs)
@@ -30,7 +34,7 @@ class BenchmarkResult:
 
 class BenchmarkSuite:
     """DEPRECATED: Use benchmarking_util.BenchmarkSuite instead."""
-    
+
     def __init__(self, **kwargs):
         warnings.warn("BenchmarkSuite is deprecated. Use benchmarking_util.BenchmarkSuite instead.", DeprecationWarning)
         self._impl = _BenchmarkSuite(**kwargs)

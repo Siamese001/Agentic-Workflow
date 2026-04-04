@@ -8,22 +8,21 @@ and routing to appropriate extractors with proper metadata generation.
 import logging
 import time
 from pathlib import Path
-from typing import Dict, List, Optional, Union
 
 from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     LayerSegment,
     _emit_records_execution_trace,
 )
 
-from .modality_types import ContentType, DocumentModality, ContentMetadata, IngestionResult
+from .modality_types import ContentMetadata, ContentType, DocumentModality, IngestionResult
 from .visual_detector import VisualDetector
 
 # Import existing document loaders
 try:
-    from agentic_core.knowledge.document_loaders.text_document_loader_config import TextDocumentLoader
-    from agentic_core.knowledge.document_loaders.pdf_document_loader_config import PDFDocumentLoader
-    from agentic_core.knowledge.document_loaders.html_loader import HTMLDocumentLoader
     from agentic_core.knowledge.document_loaders.csv_loader import CSVDocumentLoader
+    from agentic_core.knowledge.document_loaders.html_loader import HTMLDocumentLoader
+    from agentic_core.knowledge.document_loaders.pdf_document_loader_config import PDFDocumentLoader
+    from agentic_core.knowledge.document_loaders.text_document_loader_config import TextDocumentLoader
 except ImportError as e:
     logging.getLogger(__name__).warning(f"Document loader import failed: {e}")
     TextDocumentLoader = None
@@ -46,7 +45,7 @@ class IntakeClerk:
     def __init__(self):
         """Initialize the intake clerk with visual detector and loaders."""
         self.visual_detector = VisualDetector()
-        self._loaders: Dict[ContentType, callable] = {}
+        self._loaders: dict[ContentType, callable] = {}
         self._setup_loaders()
 
     def _setup_loaders(self):
@@ -65,7 +64,7 @@ class IntakeClerk:
                 return str(records)  # Convert to string for processing
             self._loaders[ContentType.CSV] = csv_loader_wrapper
 
-    def ingest_document(self, file_path: Union[str, Path]) -> IngestionResult:
+    def ingest_document(self, file_path: str | Path) -> IngestionResult:
         """Ingest a single document with full processing pipeline.
 
         Args:
@@ -124,7 +123,7 @@ class IntakeClerk:
                 processing_time_ms=(time.time() - start_time) * 1000,
             )
 
-    def ingest_batch(self, file_paths: List[Union[str, Path]]) -> List[IngestionResult]:
+    def ingest_batch(self, file_paths: list[str | Path]) -> list[IngestionResult]:
         """Ingest multiple documents in batch.
 
         Args:
@@ -144,7 +143,7 @@ class IntakeClerk:
 
         return results
 
-    def detect_modality(self, file_path: Union[str, Path], content: Optional[str] = None) -> DocumentModality:
+    def detect_modality(self, file_path: str | Path, content: str | None = None) -> DocumentModality:
         """Detect document modality for routing decisions.
 
         Args:
@@ -157,7 +156,7 @@ class IntakeClerk:
         file_path = Path(file_path)
         return self.visual_detector.detect_modality(file_path, content)
 
-    def extract_metadata(self, file_path: Union[str, Path], content: Optional[str] = None) -> ContentMetadata:
+    def extract_metadata(self, file_path: str | Path, content: str | None = None) -> ContentMetadata:
         """Extract comprehensive metadata from document.
 
         Args:
@@ -228,7 +227,7 @@ class IntakeClerk:
                 processing_time_ms=(time.time() - start_time) * 1000,
             )
 
-    def get_supported_types(self) -> List[ContentType]:
+    def get_supported_types(self) -> list[ContentType]:
         """Get list of supported content types.
 
         Returns:
@@ -246,7 +245,7 @@ class IntakeClerk:
         self._loaders[content_type] = loader_func
         log.info(f"Registered custom loader for {content_type.value}")
 
-    def get_ingestion_stats(self, results: List[IngestionResult]) -> Dict[str, int]:
+    def get_ingestion_stats(self, results: list[IngestionResult]) -> dict[str, int]:
         """Get statistics for a batch of ingestion results.
 
         Args:
@@ -290,7 +289,7 @@ class IntakeClerk:
 
 
 # Global instance for convenience
-_global_intake_clerk: Optional[IntakeClerk] = None
+_global_intake_clerk: IntakeClerk | None = None
 
 
 def get_intake_clerk() -> IntakeClerk:
@@ -301,11 +300,11 @@ def get_intake_clerk() -> IntakeClerk:
     return _global_intake_clerk
 
 
-def ingest_document(file_path: Union[str, Path]) -> IngestionResult:
+def ingest_document(file_path: str | Path) -> IngestionResult:
     """Convenience function to ingest a single document."""
     return get_intake_clerk().ingest_document(file_path)
 
 
-def ingest_batch(file_paths: List[Union[str, Path]]) -> List[IngestionResult]:
+def ingest_batch(file_paths: list[str | Path]) -> list[IngestionResult]:
     """Convenience function to ingest multiple documents."""
     return get_intake_clerk().ingest_batch(file_paths)

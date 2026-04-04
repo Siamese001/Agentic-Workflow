@@ -7,7 +7,6 @@ This version preserves complete import statements including multi-line ones.
 import pathlib
 import re
 import sys
-from typing import List, Dict, Set, Optional
 
 # Target import patterns to migrate (start of import)
 TARGET_IMPORT_START_RE = re.compile(
@@ -30,7 +29,7 @@ class Wave2FinalMigrator:
             'imports_moved': 0,
         }
 
-    def migrate_directory(self, test_dir: str) -> Dict:
+    def migrate_directory(self, test_dir: str) -> dict:
         """Migrate all test files in a directory."""
         test_path = self.repo_root / test_dir
         if not test_path.exists():
@@ -144,7 +143,7 @@ class Wave2FinalMigrator:
             self.failed_files.append((str(file_path), str(e)))
             return False
 
-    def _find_import_blocks(self, content: str) -> List[tuple]:
+    def _find_import_blocks(self, content: str) -> list[tuple]:
         """Find complete import blocks including multi-line ones."""
         lines = content.splitlines()
         import_blocks = []

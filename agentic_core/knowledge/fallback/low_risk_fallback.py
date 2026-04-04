@@ -5,7 +5,7 @@ Constrained fallback generation and policy-compliant responses.
 
 import logging
 from dataclasses import dataclass, field
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     LayerSegment,
@@ -23,8 +23,8 @@ class FallbackResult:
     is_fallback: bool
     risk_level: str  # "low", "medium", "high"
     policy_compliant: bool
-    constraints_applied: List[str] = field(default_factory=list)
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    constraints_applied: list[str] = field(default_factory=list)
+    metadata: dict[str, Any] = field(default_factory=dict)
 
 
 class LowRiskFallback:
@@ -43,7 +43,7 @@ class LowRiskFallback:
         self,
         query: str,
         reason: str,
-        query_context: Dict[str, Any],
+        query_context: dict[str, Any],
     ) -> FallbackResult:
         """Generate fallback response.
 
@@ -92,7 +92,7 @@ class LowRiskFallback:
         log.debug(f"Generated fallback response (risk={risk_level})")
         return result
 
-    def _load_templates(self) -> Dict[str, str]:
+    def _load_templates(self) -> dict[str, str]:
         """Load fallback response templates."""
         return {
             "insufficient_support": (
@@ -139,7 +139,7 @@ class LowRiskFallback:
         # Default template
         return self._fallback_templates.get("insufficient_support", "")
 
-    def _apply_constraints(self, template: str, risk_level: str) -> List[str]:
+    def _apply_constraints(self, template: str, risk_level: str) -> list[str]:
         """Apply constraints based on risk level."""
         constraints = []
 
@@ -160,7 +160,7 @@ class LowRiskFallback:
 
 
 # Global instance
-_global_fallback: Optional[LowRiskFallback] = None
+_global_fallback: LowRiskFallback | None = None
 
 
 def get_low_risk_fallback() -> LowRiskFallback:

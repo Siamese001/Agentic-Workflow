@@ -12,13 +12,13 @@ if str(tools_dir) not in sys.path:
 
 # Import and re-export everything from the actual location
 from tools.adg_test_accelerator import (
-    ADGIndex,
     DEFAULT_MAX_DEPTH,
     DEFAULT_TOP_N,
     DEFAULT_WORKERS,
     MODULE_PREFIX,
     PROBLEM_FILE_DISPLAY_LIMIT,
     SYMBOL_PREFIX,
+    ADGIndex,
     _is_production,
     _logger,
     _module_adg_to_path,

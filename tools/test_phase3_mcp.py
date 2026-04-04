@@ -5,9 +5,10 @@ Tests System Learning Meta-Learning MCP server.
 """
 
 import asyncio
-import sys
 import importlib.util
+import sys
 from pathlib import Path
+
 
 async def test_meta_learning_mcp():
     """Test System Learning Meta-Learning MCP server."""
@@ -121,7 +122,7 @@ async def test_phase3_mcp_server():
 
     success = await test_meta_learning_mcp()
 
-    print(f"\n=== Test Results ===")
+    print("\n=== Test Results ===")
     print(f"System Learning Meta-Learning MCP: {'✅ PASS' if success else '❌ FAIL'}")
     print(f"Overall Phase 3 MCP Status: {'✅ TEST PASSED' if success else '❌ TEST FAILED'}")
 

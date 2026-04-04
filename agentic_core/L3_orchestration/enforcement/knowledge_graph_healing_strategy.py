@@ -94,7 +94,6 @@ from datetime import datetime
 from typing import Any
 
 from agentic_core.L0_routing.P1_core.filesystem_mcp_client_1 import get_filesystem_client
-
 from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     LayerSegment,
     _emit_agent_executes_agent,

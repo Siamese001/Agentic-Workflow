@@ -8,10 +8,9 @@ This script fixes common issues:
 3. Fixes indentation issues
 """
 
+import ast
 import pathlib
 import re
-import ast
-from typing import Dict, List, Tuple
 
 
 class EmergencySyntaxFixer:
@@ -27,9 +26,9 @@ class EmergencySyntaxFixer:
             'indentation_fixed': 0,
             'files_with_errors': 0
         }
-        self.failed_files: List[Tuple[str, str]] = []
+        self.failed_files: list[tuple[str, str]] = []
 
-    def fix_all_test_files(self) -> Dict:
+    def fix_all_test_files(self) -> dict:
         """Fix syntax errors in all test files."""
         test_files = list(self.repo_root.rglob("test_*.py"))
 
@@ -175,7 +174,7 @@ class EmergencySyntaxFixer:
         print(f"Failed files: {len(self.failed_files)}")
 
         if self.failed_files:
-            print(f"\nFailed files (first 10):")
+            print("\nFailed files (first 10):")
             for file_path, error in self.failed_files[:10]:
                 print(f"  {file_path}: {error}")
             if len(self.failed_files) > 10:

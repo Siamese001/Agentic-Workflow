@@ -11,7 +11,6 @@ from typing import Literal
 
 from pydantic import BaseModel, Field, field_validator
 
-
 AudiencePersona = Literal["recruiter", "cto", "svp_eng", "board", "head_of_ai"]
 
 BriefTone = Literal["board-ready", "cto-ready", "recruiter-friendly", "technical"]

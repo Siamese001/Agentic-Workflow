@@ -75,10 +75,10 @@ def _assert_layer4_wiring(result: object) -> None:
     _assert(len(step_sequence) >= 2, "Layer 4: insufficient orchestration steps")
 
     ci = repo_signals.get("ci", {})
-    _assert(ci.get("workflow_count", 0) >= 30, f"Layer 4: insufficient CI workflows")
+    _assert(ci.get("workflow_count", 0) >= 30, "Layer 4: insufficient CI workflows")
 
     tests = repo_signals.get("tests", {})
-    _assert(tests.get("inventory_entries", 0) > 1000, f"Layer 4: insufficient test inventory")
+    _assert(tests.get("inventory_entries", 0) > 1000, "Layer 4: insufficient test inventory")
 
 
 def _assert_enhanced_system_learning(result: object) -> None:
@@ -90,7 +90,7 @@ def _assert_enhanced_system_learning(result: object) -> None:
     research_context = governance.get("research_context", {})
     if research_context:
         if "knowledge_depth" not in research_context:
-            print(f"   ⚠️  System learning: research_context.knowledge_depth missing (non-blocking)")
+            print("   ⚠️  System learning: research_context.knowledge_depth missing (non-blocking)")
 
     # ADG signals for pattern capture
     adg = repo_signals.get("adg", {})

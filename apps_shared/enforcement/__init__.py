@@ -1,6 +1,13 @@
 """apps_shared.enforcement package - Strategy enforcement components."""
 
 # Import from modules that actually have these exports
+from apps_shared.enforcement.HardenedeventbusStrategy import (
+    HardenedEventBus,
+    get_hardened_event_bus,
+    hardened_event_publisher,
+    publish_hardened_event,
+    subscribe_to_events,
+)
 from apps_shared.enforcement.ProvenancetrackerStrategy import (
     BATCH_SIZE,
     BUFFER_SIZE,
@@ -14,13 +21,6 @@ from apps_shared.enforcement.ProvenancetrackerStrategy import (
     get_provenance_tracker,
     provenance_tracked,
     track_provenance,
-)
-from apps_shared.enforcement.HardenedeventbusStrategy import (
-    HardenedEventBus,
-    get_hardened_event_bus,
-    hardened_event_publisher,
-    publish_hardened_event,
-    subscribe_to_events,
 )
 
 __all__ = [

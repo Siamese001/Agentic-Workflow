@@ -7,9 +7,8 @@ Validates full integration with agentic_core and structure blueprint.
 from __future__ import annotations
 
 import pytest
-from typing import Any
 
-from apps_eval.config.agent_spec_config import EvalAgentSpecs, load_eval_specs
+from apps_eval.config.agent_spec_config import load_eval_specs
 from apps_eval.reasoning import (
     EvalOrchestrator,
     QualityGateAgent,

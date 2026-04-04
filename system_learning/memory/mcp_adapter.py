@@ -3,7 +3,7 @@
 
 class MemoryMCPAdapter:
     """Placeholder memory MCP adapter class."""
-    
+
     def connect(self):
         """Placeholder connect method."""
         pass

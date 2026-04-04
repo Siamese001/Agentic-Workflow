@@ -96,10 +96,9 @@ from datetime import datetime
 from pathlib import Path
 from typing import Any
 
-from agentic_core.L4_state.utils.complexity_analyzer import calculate_mccabe_complexity
-
 from agentic_core.L2_execution.determinism.execution_proof_emitter import ExecutionProofEmitter
 from agentic_core.L2_execution.enforcement.guardrail_gate import get_guardrail_gate
+from agentic_core.L4_state.utils.complexity_analyzer import calculate_mccabe_complexity
 from agentic_core.L5_safety.enforcement.archival_gatekeeper_gate import ArchivalGatekeeper
 from agentic_core.L5_safety.enforcement.policy_action_contract import (
     ActionClass,

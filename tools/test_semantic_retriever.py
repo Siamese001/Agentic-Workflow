@@ -11,7 +11,7 @@ from pathlib import Path
 # Add agentic_core to path
 sys.path.insert(0, str(Path(__file__).parent / "agentic_core"))
 
-from L1_cognition.engines.semantic_retriever import SemanticRetriever, RetrievalQuery
+from L1_cognition.engines.semantic_retriever import RetrievalQuery, SemanticRetriever
 
 
 async def test_retriever():

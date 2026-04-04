@@ -95,7 +95,7 @@ WAVE_PLAN = {
 
 if __name__ == "__main__":
     total = sum(len(v) for v in VIOLATIONS.values())
-    print(f"Layer Gravity Violations Wave Plan")
+    print("Layer Gravity Violations Wave Plan")
     print(f"Total: {total} HIGH severity violations")
     print()
     for wave, files in WAVE_PLAN.items():

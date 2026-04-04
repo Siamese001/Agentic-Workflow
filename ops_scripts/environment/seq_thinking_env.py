@@ -8,6 +8,7 @@ import os
 import sys
 from pathlib import Path
 
+
 def setup_seq_thinking_environment():
     """Setup environment variables for hardened sequential thinking dominance."""
 

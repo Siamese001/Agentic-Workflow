@@ -9,7 +9,7 @@ from __future__ import annotations
 import logging
 import time
 from dataclasses import dataclass
-from typing import Any, Dict, Optional
+from typing import Any
 
 from agentic_core.L2_execution.apps_qwen.optimized_vllm_client import (
     OptimizedVLLMClient,
@@ -43,11 +43,11 @@ class AppsQwenRequest:
 class AppsQwenResponse:
     """Response structure for apps Qwen inference."""
     success: bool
-    response: Optional[str]
+    response: str | None
     confidence: float
     model_used: str
     latency_ms: float
-    error_message: Optional[str] = None
+    error_message: str | None = None
     cached: bool = False  # Whether response was from cache
     tokens_used: int = 0
 
@@ -74,7 +74,7 @@ class AppsQwenGateway:
         self.base_url = base_url
         self.max_concurrent = max_concurrent
         self.batch_size = batch_size
-        self._vllm_client: Optional[OptimizedVLLMClient] = None
+        self._vllm_client: OptimizedVLLMClient | None = None
         self._initialized = False
         self._emit_lifecycle_events()
 
@@ -271,7 +271,7 @@ class AppsQwenGateway:
 
         return results
 
-    def health_check(self) -> Dict[str, Any]:
+    def health_check(self) -> dict[str, Any]:
         """Perform health check on gateway.
 
         Returns:
@@ -298,7 +298,7 @@ class AppsQwenGateway:
             "timestamp": time.time(),
         }
 
-    async def async_health_check(self) -> Dict[str, Any]:
+    async def async_health_check(self) -> dict[str, Any]:
         """Async health check that queries vLLM server."""
         await self._ensure_initialized()
 
@@ -330,7 +330,7 @@ class AppsQwenGateway:
 
 
 # Singleton instance for apps layer
-_apps_qwen_gateway: Optional[AppsQwenGateway] = None
+_apps_qwen_gateway: AppsQwenGateway | None = None
 
 
 async def get_apps_qwen_gateway(

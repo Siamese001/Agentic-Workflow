@@ -9,7 +9,6 @@ from __future__ import annotations
 from pathlib import Path
 from typing import Any
 
-from agentic_core.prompt_governance import PromptLoader
 from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     LayerSegment,
     _emit_agent_executes_agent,
@@ -52,6 +51,7 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     emit_determinism_digest,  # noqa: E402
     emit_replay_key,  # noqa: E402
 )
+from agentic_core.prompt_governance import PromptLoader
 
 _emit_applies_guardrail("p0", "ExecutiveStrategyAgent", "p0_governance")
 _emit_snapshots_state("p0", "ExecutiveStrategyAgent", "state_snapshot")

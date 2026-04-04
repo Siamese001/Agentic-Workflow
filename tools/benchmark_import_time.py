@@ -1,10 +1,11 @@
 #!/usr/bin/env python3
 """Benchmark import time for test files with emitters."""
 
-import time
 import subprocess
 import sys
+import time
 from pathlib import Path
+
 
 def benchmark_import(file_path):
     """Benchmark import time for a single test file."""
@@ -67,8 +68,8 @@ def main():
             print(f"File not found: {file_path}")
             print()
 
-    print(f"Expected: Each file should take ~1-2 seconds due to emitter calls")
-    print(f"After stripping: Should be <0.1 seconds per file")
+    print("Expected: Each file should take ~1-2 seconds due to emitter calls")
+    print("After stripping: Should be <0.1 seconds per file")
 
 if __name__ == "__main__":
     main()

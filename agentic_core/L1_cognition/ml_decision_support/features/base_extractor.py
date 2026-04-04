@@ -9,12 +9,13 @@ import hashlib
 import json
 import time
 from abc import ABC, abstractmethod
-from datetime import datetime
-from typing import Dict, List, Optional, Any, Callable
 from dataclasses import dataclass
+from datetime import datetime
+from typing import Any, Callable
 
 from agentic_core.L_CONTRACTS.lifecycle_trace_contract import _emit_records_execution_trace
-from ..config.feature_schemas import FeatureSchema, FeatureDefinition, NullHandling
+
+from ..config.feature_schemas import FeatureDefinition, FeatureSchema, NullHandling
 
 
 @dataclass
@@ -26,18 +27,18 @@ class FeatureProvenance:
     extraction_timestamp: datetime
     input_hash: str  # Hash of inputs for reproducibility
     confidence: float  # Confidence in feature value
-    processing_steps: List[str]  # Processing steps applied
+    processing_steps: list[str]  # Processing steps applied
     version: str = "1.0"
 
 
 @dataclass
 class FeatureExtractionResult:
     """Result of feature extraction with full provenance."""
-    features: Dict[str, Any]
-    provenance: Dict[str, FeatureProvenance]
-    extraction_metadata: Dict[str, Any]
+    features: dict[str, Any]
+    provenance: dict[str, FeatureProvenance]
+    extraction_metadata: dict[str, Any]
     success: bool
-    error_messages: List[str]
+    error_messages: list[str]
     extraction_id: str
     deterministic_hash: str
 
@@ -55,7 +56,7 @@ class DeterministicFeatureExtractor(ABC):
 
     def __init__(self, schema: FeatureSchema):
         self.schema = schema
-        self.extraction_functions: Dict[str, Callable] = {}
+        self.extraction_functions: dict[str, Callable] = {}
         self._register_extraction_functions()
 
     @abstractmethod
@@ -65,11 +66,11 @@ class DeterministicFeatureExtractor(ABC):
 
     def extract_features(
         self,
-        context: Dict[str, Any],
+        context: dict[str, Any],
         trace_id: str,
         replay_key: str,
         policy_hash: str,
-        semantic_clock: Optional[int] = None
+        semantic_clock: int | None = None
     ) -> FeatureExtractionResult:
         """
         Extract features deterministically with full provenance.
@@ -188,10 +189,10 @@ class DeterministicFeatureExtractor(ABC):
     def _extract_single_feature(
         self,
         feature_def: FeatureDefinition,
-        context: Dict[str, Any],
+        context: dict[str, Any],
         context_hash: str,
         extraction_id: str
-    ) -> tuple[Optional[Any], FeatureProvenance]:
+    ) -> tuple[Any | None, FeatureProvenance]:
         """
         Extract a single feature with provenance tracking.
 
@@ -296,11 +297,11 @@ class DeterministicFeatureExtractor(ABC):
 
     def _compute_context_hash(
         self,
-        context: Dict[str, Any],
+        context: dict[str, Any],
         trace_id: str,
         replay_key: str,
         policy_hash: str,
-        semantic_clock: Optional[int]
+        semantic_clock: int | None
     ) -> str:
         """Compute deterministic hash of extraction context."""
         # Create deterministic context representation
@@ -315,7 +316,7 @@ class DeterministicFeatureExtractor(ABC):
         context_str = json.dumps(context_dict, sort_keys=True, default=str)
         return hashlib.sha256(context_str.encode()).hexdigest()
 
-    def _normalize_context(self, context: Dict[str, Any]) -> Dict[str, Any]:
+    def _normalize_context(self, context: dict[str, Any]) -> dict[str, Any]:
         """Normalize context for deterministic hashing."""
         normalized = {}
 
@@ -332,7 +333,7 @@ class DeterministicFeatureExtractor(ABC):
 
         return normalized
 
-    def _compute_extraction_hash(self, features: Dict[str, Any], context_hash: str) -> str:
+    def _compute_extraction_hash(self, features: dict[str, Any], context_hash: str) -> str:
         """Compute deterministic hash of extraction result."""
         extraction_data = {
             'context_hash': context_hash,
@@ -346,11 +347,11 @@ class DeterministicFeatureExtractor(ABC):
     def replay_extraction(
         self,
         extraction_id: str,
-        original_context: Dict[str, Any],
+        original_context: dict[str, Any],
         original_trace_id: str,
         original_replay_key: str,
         original_policy_hash: str,
-        original_semantic_clock: Optional[int] = None
+        original_semantic_clock: int | None = None
     ) -> FeatureExtractionResult:
         """
         Replay feature extraction for determinism validation.

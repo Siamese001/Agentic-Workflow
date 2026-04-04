@@ -4,10 +4,9 @@
 This wave applies comprehensive fixes to resolve all remaining syntax errors.
 """
 
+import ast
 import pathlib
 import re
-import ast
-from typing import Dict, List, Tuple
 
 
 class Wave5CompleteFix:
@@ -23,9 +22,9 @@ class Wave5CompleteFix:
             'syntax_errors_fixed': 0,
             'failed_files': 0
         }
-        self.failed_files: List[Tuple[str, str]] = []
+        self.failed_files: list[tuple[str, str]] = []
 
-    def process_files(self) -> Dict:
+    def process_files(self) -> dict:
         """Process files with Wave 5 complete fix."""
         # Only process files in tests/ directory, exclude archives
         test_files = []
@@ -135,7 +134,7 @@ class Wave5CompleteFix:
         return (re.match(r'^(if|elif|else|for|while|try|except|finally|with|def|class)\b', stripped) and
                 not stripped.endswith(':'))
 
-    def _fix_incomplete_control_structure(self, line: str, stripped: str, all_lines: List[str], current_idx: int) -> List[str]:
+    def _fix_incomplete_control_structure(self, line: str, stripped: str, all_lines: list[str], current_idx: int) -> list[str]:
         """Fix incomplete control structure."""
         # Add colon at the end
         fixed_line = stripped + ':'
@@ -168,7 +167,7 @@ class Wave5CompleteFix:
                   re.match(r'^emit_[a-zA-Z_][a-zA-Z0-9_]*,?\s*$', stripped) or
                   re.match(r'^[A-Z_][A-Z0-9_]*,?\s*$', stripped))))
 
-    def _final_cleanup(self, lines: List[str]) -> List[str]:
+    def _final_cleanup(self, lines: list[str]) -> list[str]:
         """Final cleanup of lines."""
         cleaned_lines = []
         prev_empty = False
@@ -196,7 +195,7 @@ class Wave5CompleteFix:
         print(f"Failed files: {len(self.failed_files)}")
 
         if self.failed_files:
-            print(f"\nFailed files (first 5):")
+            print("\nFailed files (first 5):")
             for file_path, error in self.failed_files[:5]:
                 print(f"  {file_path}: {error}")
             if len(self.failed_files) > 5:

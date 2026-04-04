@@ -1,6 +1,5 @@
 """Unit tests for system_learning.validators.oscillation_detector."""
 
-import pytest
 
 
 

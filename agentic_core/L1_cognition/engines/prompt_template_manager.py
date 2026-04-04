@@ -9,7 +9,7 @@ from __future__ import annotations
 import json
 from datetime import datetime
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Set, Tuple
+from typing import Any
 
 from agentic_core.L1_cognition.config.graphrag_config import get_config
 from agentic_core.L1_cognition.types.rag_types import (
@@ -98,8 +98,8 @@ class PromptTemplateManager:
 
     def __init__(
         self,
-        config: Optional[RAGConfig] = None,
-        templates_path: Optional[Path] = None
+        config: RAGConfig | None = None,
+        templates_path: Path | None = None
     ) -> None:
         """Initialize the prompt template manager.
 
@@ -111,7 +111,7 @@ class PromptTemplateManager:
         self.graphrag_config = get_config()
 
         # Template storage
-        self.templates: Dict[str, PromptTemplate] = {}
+        self.templates: dict[str, PromptTemplate] = {}
         self.templates_path = templates_path or Path(__file__).parent.parent.parent.parent / "templates" / "rag"
 
         # Initialize default templates
@@ -206,7 +206,7 @@ class PromptTemplateManager:
 
         for template_file in self.templates_path.glob("*.json"):
             try:
-                with open(template_file, 'r', encoding='utf-8') as f:
+                with open(template_file, encoding='utf-8') as f:
                     template_data = json.load(f)
 
                 template = PromptTemplate(
@@ -230,8 +230,8 @@ class PromptTemplateManager:
 
     def get_template(
         self,
-        template_id: Optional[str] = None,
-        query_type: Optional[str] = None
+        template_id: str | None = None,
+        query_type: str | None = None
     ) -> PromptTemplate:
         """Get a prompt template.
 
@@ -262,12 +262,12 @@ class PromptTemplateManager:
 
     def render_template(
         self,
-        template_id: Optional[str] = None,
-        query_type: Optional[str] = None,
-        context: Optional[RAGContext] = None,
-        query: Optional[RAGQuery] = None,
-        additional_data: Optional[Dict[str, Any]] = None
-    ) -> Tuple[str, str]:
+        template_id: str | None = None,
+        query_type: str | None = None,
+        context: RAGContext | None = None,
+        query: RAGQuery | None = None,
+        additional_data: dict[str, Any] | None = None
+    ) -> tuple[str, str]:
         """Render a template with context and query.
 
         Args:
@@ -302,11 +302,11 @@ class PromptTemplateManager:
 
         return system_prompt, user_prompt
 
-    def list_templates(self) -> List[PromptTemplate]:
+    def list_templates(self) -> list[PromptTemplate]:
         """List all available templates."""
         return list(self.templates.values())
 
-    def get_templates_by_type(self, template_type: str) -> List[PromptTemplate]:
+    def get_templates_by_type(self, template_type: str) -> list[PromptTemplate]:
         """Get templates by type."""
         return [t for t in self.templates.values() if t.template_type == template_type]
 
@@ -333,7 +333,7 @@ class PromptTemplateManager:
             return True
         return False
 
-    def validate_template(self, template: PromptTemplate) -> List[str]:
+    def validate_template(self, template: PromptTemplate) -> list[str]:
         """Validate a template and return any issues."""
         issues = []
 
@@ -368,7 +368,7 @@ class PromptTemplateManager:
 
         return issues
 
-    def _extract_placeholders(self, template_text: str) -> Set[str]:
+    def _extract_placeholders(self, template_text: str) -> set[str]:
         """Extract placeholders from template text."""
         import re
 
@@ -406,7 +406,7 @@ class PromptTemplateManager:
             print(f"Error saving template to disk: {e}")
             return False
 
-    def get_template_stats(self) -> Dict[str, Any]:
+    def get_template_stats(self) -> dict[str, Any]:
         """Get template usage statistics."""
         stats = {
             "total_templates": len(self.templates),
@@ -442,8 +442,8 @@ class PromptTemplateManager:
 
 # Factory function
 def create_prompt_template_manager(
-    config: Optional[RAGConfig] = None,
-    templates_path: Optional[Path] = None
+    config: RAGConfig | None = None,
+    templates_path: Path | None = None
 ) -> PromptTemplateManager:
     """Create a prompt template manager."""
     return PromptTemplateManager(config, templates_path)

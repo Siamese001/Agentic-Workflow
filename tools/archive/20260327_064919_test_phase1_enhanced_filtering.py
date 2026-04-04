@@ -3,7 +3,9 @@
 
 import time
 from pathlib import Path
+
 from agentic_core.adg.extraction.static_scanner import ADGStaticScanner
+
 
 def test_enhanced_filtering():
     """Test that enhanced runtime filtering optimizes edge removal."""
@@ -79,7 +81,10 @@ def test_enhanced_filtering():
                 edge_types[edge.relation_type] = edge_types.get(edge.relation_type, 0) + 1
 
                 # Check if it's a runtime edge
-                from agentic_core.adg.extraction.static_scanner import _is_runtime_only_relation, _should_keep_runtime_edge
+                from agentic_core.adg.extraction.static_scanner import (
+                    _is_runtime_only_relation,
+                    _should_keep_runtime_edge,
+                )
                 if _is_runtime_only_relation(edge.relation_type):
                     runtime_edges += 1
                     if _should_keep_runtime_edge(edge):
@@ -110,7 +115,7 @@ def test_enhanced_filtering():
 
         runtime_filtering_improvement = (full_runtime - selective_runtime) / full_runtime * 100 if full_runtime > 0 else 0
 
-        print(f"=== Results ===")
+        print("=== Results ===")
         print(f"Total edge reduction: {total_edge_reduction} ({total_reduction_percent:.1f}%)")
         print(f"Runtime filtering improvement: {runtime_filtering_improvement:.1f}%")
         print(f"Scan time improvement: {full_time - selective_time:.2f} seconds")

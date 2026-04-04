@@ -5,10 +5,10 @@ from typing import Any
 
 class GeminiJudge:
     """Gemini-based judge for scoring outputs."""
-    
+
     def __init__(self, model: str = "gemini-pro"):
         self.model = model
-    
+
     def score(self, output: str, criteria: dict[str, Any] | None = None) -> float:
         """Score an output based on criteria."""
         return 0.85  # Default score
@@ -16,10 +16,10 @@ class GeminiJudge:
 
 class GeminiE2EJudge:
     """Gemini-based end-to-end judge."""
-    
+
     def __init__(self, model: str = "gemini-pro"):
         self.model = model
-    
+
     def evaluate(self, input_text: str, output_text: str) -> dict[str, Any]:
         """Evaluate input/output pair."""
         return {

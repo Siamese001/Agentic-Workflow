@@ -5,36 +5,28 @@ Provides execution-grade semantic graph precision for the Agentic Dependency Gra
 Transforms high-volume structural ADG into quantitatively governed precision graph.
 """
 
+from .precision_extractor import PrecisionExtractor, PrecisionHardeningEngine
 from .precision_schema import (
-    # Node types
-    PrecisionNodeType,
     NodeSpan,
-    PrecisionNodeAttributes,
-
-    # Edge types
-    SemanticEdgeType,
-    SemanticEdgeAttributes,
-
-    # Type surfaces
-    TypeSurface,
-    VariableAttributes,
-
-    # Graph structure
-    PrecisionGraph,
-
     # Configuration
     PrecisionConfig,
-
+    # Graph structure
+    PrecisionGraph,
     # Metrics
     PrecisionMetrics,
-
+    PrecisionNodeAttributes,
+    # Node types
+    PrecisionNodeType,
+    SemanticEdgeAttributes,
+    # Edge types
+    SemanticEdgeType,
+    # Type surfaces
+    TypeSurface,
     # Validation
     ValidationReport,
-
-    __all__
+    VariableAttributes,
+    __all__,
 )
-
-from .precision_extractor import PrecisionExtractor, PrecisionHardeningEngine
 from .precision_validator import PrecisionValidator
 
 __all__ = [

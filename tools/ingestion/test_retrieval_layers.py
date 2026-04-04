@@ -15,7 +15,7 @@ from agentic_core.L4_state.engines.retrieval_layers import (
     L2SemanticCache,
     L3SemanticRAG,
     L4AgenticActions,
-    RetrievalOrchestrator
+    RetrievalOrchestrator,
 )
 
 
@@ -198,7 +198,7 @@ def test_retrieval_orchestrator():
 
     # Get all stats
     all_stats = orchestrator.get_all_stats()
-    print(f"All layer stats:")
+    print("All layer stats:")
     for layer, stats in all_stats.items():
         print(f"  {layer}: {stats}")
 
@@ -228,7 +228,7 @@ def main():
         except Exception as e:
             print(f"❌ Test failed: {e}")
 
-    print(f"\n=== Test Results ===")
+    print("\n=== Test Results ===")
     print(f"Passed: {passed}/{total}")
 
     if passed == total:

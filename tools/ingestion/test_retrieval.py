@@ -10,7 +10,6 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).parent.parent.parent))
 
 import chromadb
-from agentic_core.L4_state.config.memory_store_config import MemoryStoreConfig
 
 
 def test_retrieval():

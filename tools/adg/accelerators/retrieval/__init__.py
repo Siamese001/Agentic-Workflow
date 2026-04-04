@@ -14,8 +14,8 @@ __author__ = "Agentic Workflow Team"
 
 from .adg_retrieval_accelerator import (
     RetrievalAccelerator,
-    run_validation,
     main,
+    run_validation,
 )
 
 __all__ = [

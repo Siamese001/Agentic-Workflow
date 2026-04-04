@@ -10,10 +10,10 @@ healing success rates, and semantic drift scores.
 import math
 import statistics
 from datetime import datetime, timedelta
-from typing import Dict, Any, Optional, List
+from typing import Any
 
-from .base_extractor import DeterministicFeatureExtractor
 from ..config.feature_schemas import FeatureSchemas
+from .base_extractor import DeterministicFeatureExtractor
 
 
 class L6FeatureExtractor(DeterministicFeatureExtractor):
@@ -47,7 +47,7 @@ class L6FeatureExtractor(DeterministicFeatureExtractor):
         self.register_extraction_function("healing_success_rate", self._extract_healing_success_rate)
         self.register_extraction_function("semantic_drift_score", self._extract_semantic_drift_score)
 
-    def _extract_latency_z_score(self, context: Dict[str, Any]) -> float:
+    def _extract_latency_z_score(self, context: dict[str, Any]) -> float:
         """Extract latency z-score from baseline."""
         metrics = context.get("metrics", {})
         latency_data = metrics.get("latency", {})
@@ -75,7 +75,7 @@ class L6FeatureExtractor(DeterministicFeatureExtractor):
 
         return round(z_score, 3)
 
-    def _extract_error_rate_spike(self, context: Dict[str, Any]) -> float:
+    def _extract_error_rate_spike(self, context: dict[str, Any]) -> float:
         """Extract error rate spike factor."""
         metrics = context.get("metrics", {})
         error_data = metrics.get("error_rate", {})
@@ -100,7 +100,7 @@ class L6FeatureExtractor(DeterministicFeatureExtractor):
 
         return round(spike_factor, 3)
 
-    def _extract_token_deviation(self, context: Dict[str, Any]) -> float:
+    def _extract_token_deviation(self, context: dict[str, Any]) -> float:
         """Extract token count deviation from baseline."""
         metrics = context.get("metrics", {})
         token_data = metrics.get("tokens", {})
@@ -124,7 +124,7 @@ class L6FeatureExtractor(DeterministicFeatureExtractor):
 
         return round(deviation, 3)
 
-    def _extract_path_divergence(self, context: Dict[str, Any]) -> float:
+    def _extract_path_divergence(self, context: dict[str, Any]) -> float:
         """Extract path selection divergence from expected."""
         routing = context.get("routing", {})
         path_data = routing.get("path_analysis", {})
@@ -157,7 +157,7 @@ class L6FeatureExtractor(DeterministicFeatureExtractor):
 
         return round(min(1.0, divergence), 3)
 
-    def _extract_policy_hash_changes(self, context: Dict[str, Any]) -> float:
+    def _extract_policy_hash_changes(self, context: dict[str, Any]) -> float:
         """Extract number of policy hash changes."""
         policy = context.get("policy", {})
 
@@ -196,7 +196,7 @@ class L6FeatureExtractor(DeterministicFeatureExtractor):
 
         return float(recent_changes)
 
-    def _extract_replay_mismatch_count(self, context: Dict[str, Any]) -> float:
+    def _extract_replay_mismatch_count(self, context: dict[str, Any]) -> float:
         """Extract replay mismatch count."""
         replay = context.get("replay", {})
 
@@ -214,7 +214,7 @@ class L6FeatureExtractor(DeterministicFeatureExtractor):
 
         return float(mismatch_count)
 
-    def _extract_escalation_frequency(self, context: Dict[str, Any]) -> float:
+    def _extract_escalation_frequency(self, context: dict[str, Any]) -> float:
         """Extract escalation frequency."""
         escalation = context.get("escalation", {})
 
@@ -243,7 +243,7 @@ class L6FeatureExtractor(DeterministicFeatureExtractor):
 
         return float(recent_escalations)
 
-    def _extract_healing_success_rate(self, context: Dict[str, Any]) -> float:
+    def _extract_healing_success_rate(self, context: dict[str, Any]) -> float:
         """Extract healing success rate."""
         healing = context.get("healing", {})
 
@@ -262,7 +262,7 @@ class L6FeatureExtractor(DeterministicFeatureExtractor):
 
         return round(success_rate, 3)
 
-    def _extract_semantic_drift_score(self, context: Dict[str, Any]) -> float:
+    def _extract_semantic_drift_score(self, context: dict[str, Any]) -> float:
         """Extract semantic drift score."""
         semantic = context.get("semantic", {})
 
@@ -307,12 +307,12 @@ class L6FeatureExtractor(DeterministicFeatureExtractor):
 
     def extract_batch_features(
         self,
-        contexts: List[Dict[str, Any]],
+        contexts: list[dict[str, Any]],
         trace_id: str,
         replay_key: str,
         policy_hash: str,
-        semantic_clock: Optional[int] = None
-    ) -> List[Dict[str, Any]]:
+        semantic_clock: int | None = None
+    ) -> list[dict[str, Any]]:
         """
         Extract features for multiple contexts efficiently.
 
@@ -359,7 +359,7 @@ class L6FeatureExtractor(DeterministicFeatureExtractor):
 
         return batch_features
 
-    def get_anomaly_indicators_summary(self, features: Dict[str, Any]) -> Dict[str, str]:
+    def get_anomaly_indicators_summary(self, features: dict[str, Any]) -> dict[str, str]:
         """
         Get human-readable anomaly indicators summary.
 

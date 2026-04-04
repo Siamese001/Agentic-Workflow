@@ -11,15 +11,12 @@ from pathlib import Path
 # Add project root to path for imports
 sys.path.insert(0, str(Path(__file__).parent.parent.parent))
 
-from typing import Any
 
 def test_semantic_edge_extraction() -> bool:
     """Test that semantic edges are extracted from span attributes."""
     try:
         from system_learning.runtime_adg.materializer import (
-            RuntimeADGMaterializer,
             _extract_semantic_edges,
-            SEMANTIC_EDGE_RELATIONS,
         )
 
         # Create test spans with semantic attributes
@@ -249,7 +246,6 @@ def test_all_13_edge_types() -> bool:
     """Test that all 13 required edge types can be extracted."""
     try:
         from system_learning.runtime_adg.materializer import _extract_semantic_edges
-        from system_learning.runtime_adg.snapshot import RuntimeADGEdge
 
         # Create spans with attributes for all edge types
         spans = [

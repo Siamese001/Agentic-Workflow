@@ -3,9 +3,9 @@
 Pipeline D Phase D2: SLI/SLO tracking, error classification, and latency analysis.
 """
 
-from .slo_tracker import SLOTracker, SLOResult
-from .error_classifier import ErrorClassifier, ErrorClassification
+from .error_classifier import ErrorClassification, ErrorClassifier
 from .latency_analyzer import LatencyAnalyzer, LatencyReport
+from .slo_tracker import SLOResult, SLOTracker
 
 __all__ = [
     "SLOTracker",

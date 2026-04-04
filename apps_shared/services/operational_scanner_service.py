@@ -22,7 +22,6 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     emit_determinism_digest,
     emit_replay_key,
 )
-
 from apps_shared.config.operational_config import (
     is_allowed_duplicate,
     is_excluded_path,

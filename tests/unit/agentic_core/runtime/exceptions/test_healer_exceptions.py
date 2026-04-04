@@ -3,8 +3,6 @@
 """
 from __future__ import annotations
 
-import pytest
-
 
 class TestHealerErrorContract:
     def test_is_exception_subclass(self):

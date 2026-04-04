@@ -24,8 +24,8 @@ import math
 import time
 from collections import defaultdict
 from dataclasses import dataclass, field
-from typing import Any, Dict, List, Optional, Tuple, Set
 from enum import Enum
+from typing import Any
 
 from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     emit_determinism_digest,
@@ -64,15 +64,15 @@ class Node3D:
     id: str
     label: str
     node_type: NodeType
-    position: Tuple[float, float, float] = (0.0, 0.0, 0.0)
-    velocity: Tuple[float, float, float] = (0.0, 0.0, 0.0)
-    force: Tuple[float, float, float] = (0.0, 0.0, 0.0)
+    position: tuple[float, float, float] = (0.0, 0.0, 0.0)
+    velocity: tuple[float, float, float] = (0.0, 0.0, 0.0)
+    force: tuple[float, float, float] = (0.0, 0.0, 0.0)
     mass: float = 1.0
     radius: float = 1.0
     color: str = "#0088ff"
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    metadata: dict[str, Any] = field(default_factory=dict)
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Convert to dictionary for JSON serialization."""
         return {
             "id": self.id,
@@ -98,9 +98,9 @@ class Edge3D:
     weight: float = 1.0
     color: str = "#888888"
     width: float = 1.0
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    metadata: dict[str, Any] = field(default_factory=dict)
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Convert to dictionary for JSON serialization."""
         return {
             "id": self.id,
@@ -118,11 +118,11 @@ class Edge3D:
 class TraceGraph3D:
     """3D trace graph structure."""
 
-    nodes: Dict[str, Node3D] = field(default_factory=dict)
-    edges: Dict[str, Edge3D] = field(default_factory=dict)
+    nodes: dict[str, Node3D] = field(default_factory=dict)
+    edges: dict[str, Edge3D] = field(default_factory=dict)
     trace_id: str = ""
     timestamp: float = field(default_factory=time.time)
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    metadata: dict[str, Any] = field(default_factory=dict)
 
     def add_node(self, node: Node3D) -> None:
         """Add a node to the graph."""
@@ -132,7 +132,7 @@ class TraceGraph3D:
         """Add an edge to the graph."""
         self.edges[edge.id] = edge
 
-    def get_node_neighbors(self, node_id: str) -> List[str]:
+    def get_node_neighbors(self, node_id: str) -> list[str]:
         """Get neighboring nodes for a given node."""
         neighbors = []
         for edge in self.edges.values():
@@ -142,7 +142,7 @@ class TraceGraph3D:
                 neighbors.append(edge.source_id)
         return neighbors
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Convert entire graph to dictionary."""
         return {
             "trace_id": self.trace_id,
@@ -324,12 +324,12 @@ class Trace3DVisualizer:
         """Initialize 3D trace visualizer."""
         self._port = port
         self._server_active: bool = False
-        self._server_thread: Optional[threading.Thread] = None
+        self._server_thread: threading.Thread | None = None
         self._shutdown_requested: bool = False
 
         # Graph storage
-        self._graphs: Dict[str, TraceGraph3D] = {}
-        self._active_graph_id: Optional[str] = None
+        self._graphs: dict[str, TraceGraph3D] = {}
+        self._active_graph_id: str | None = None
 
         # Physics engine
         self._physics_engine = PhysicsEngine()
@@ -337,8 +337,8 @@ class Trace3DVisualizer:
         # Visualization state
         self._camera_position = (0.0, 0.0, 100.0)
         self._camera_rotation = (0.0, 0.0, 0.0)
-        self._selected_nodes: Set[str] = set()
-        self._highlighted_paths: List[List[str]] = []
+        self._selected_nodes: set[str] = set()
+        self._highlighted_paths: list[list[str]] = []
 
         # Configuration
         self._config = {
@@ -411,7 +411,7 @@ class Trace3DVisualizer:
                 Logger.error(f"[3D_VIZ] Server loop error: {e}")
                 time.sleep(1.0)
 
-    def add_trace_graph(self, trace_id: str, nodes: List[Dict[str, Any]], edges: List[Dict[str, Any]]) -> str:
+    def add_trace_graph(self, trace_id: str, nodes: list[dict[str, Any]], edges: list[dict[str, Any]]) -> str:
         """
         Add a trace graph for 3D visualization.
 
@@ -516,7 +516,7 @@ class Trace3DVisualizer:
         }
         return colors.get(edge_type, "#888888")
 
-    def get_visualization_data(self, graph_id: Optional[str] = None) -> Dict[str, Any]:
+    def get_visualization_data(self, graph_id: str | None = None) -> dict[str, Any]:
         """Get visualization data for a specific graph."""
         if graph_id is None:
             graph_id = self._active_graph_id
@@ -538,7 +538,7 @@ class Trace3DVisualizer:
             "statistics": self._stats,
         }
 
-    def update_node_positions(self, graph_id: str, positions: Dict[str, Tuple[float, float, float]]) -> bool:
+    def update_node_positions(self, graph_id: str, positions: dict[str, tuple[float, float, float]]) -> bool:
         """Update node positions manually."""
         try:
             if graph_id not in self._graphs:
@@ -556,7 +556,7 @@ class Trace3DVisualizer:
             Logger.error(f"[3D_VIZ] Failed to update node positions: {e}")
             return False
 
-    def highlight_path(self, graph_id: str, path_nodes: List[str]) -> bool:
+    def highlight_path(self, graph_id: str, path_nodes: list[str]) -> bool:
         """Highlight a path through the graph."""
         try:
             if graph_id not in self._graphs:
@@ -608,7 +608,7 @@ class Trace3DVisualizer:
                 node.color = self._get_node_color(node.node_type)
                 node.radius = 2.0 + node.metadata.get("duration_ms", 0) / 1000
 
-    def export_graph(self, graph_id: str, format_type: str = "json") -> Optional[Dict[str, Any]]:
+    def export_graph(self, graph_id: str, format_type: str = "json") -> dict[str, Any] | None:
         """Export graph data in specified format."""
         try:
             if graph_id not in self._graphs:
@@ -633,7 +633,7 @@ class Trace3DVisualizer:
             Logger.error(f"[3D_VIZ] Failed to export graph: {e}")
             return None
 
-    def get_graph_statistics(self, graph_id: Optional[str] = None) -> Dict[str, Any]:
+    def get_graph_statistics(self, graph_id: str | None = None) -> dict[str, Any]:
         """Get detailed statistics for a graph."""
         if graph_id is None:
             graph_id = self._active_graph_id
@@ -677,19 +677,19 @@ class Trace3DVisualizer:
             "timestamp": graph.timestamp,
         }
 
-    def set_camera_position(self, position: Tuple[float, float, float]) -> None:
+    def set_camera_position(self, position: tuple[float, float, float]) -> None:
         """Set camera position."""
         self._camera_position = position
 
-    def set_camera_rotation(self, rotation: Tuple[float, float, float]) -> None:
+    def set_camera_rotation(self, rotation: tuple[float, float, float]) -> None:
         """Set camera rotation."""
         self._camera_rotation = rotation
 
-    def update_config(self, config_updates: Dict[str, Any]) -> None:
+    def update_config(self, config_updates: dict[str, Any]) -> None:
         """Update visualization configuration."""
         self._config.update(config_updates)
 
-    def get_visualization_summary(self) -> Dict[str, Any]:
+    def get_visualization_summary(self) -> dict[str, Any]:
         """Get summary of all visualizations."""
         return {
             "server_active": self._server_active,
@@ -727,7 +727,7 @@ def stop_3d_visualization() -> None:
     visualizer.stop_visualization_server()
 
 
-def add_trace_to_3d_visualization(trace_id: str, nodes: List[Dict[str, Any]], edges: List[Dict[str, Any]]) -> str:
+def add_trace_to_3d_visualization(trace_id: str, nodes: list[dict[str, Any]], edges: list[dict[str, Any]]) -> str:
     """
     Add a trace to 3D visualization.
 
@@ -743,7 +743,7 @@ def add_trace_to_3d_visualization(trace_id: str, nodes: List[Dict[str, Any]], ed
     return visualizer.add_trace_graph(trace_id, nodes, edges)
 
 
-def get_3d_visualization_data(graph_id: Optional[str] = None) -> Dict[str, Any]:
+def get_3d_visualization_data(graph_id: str | None = None) -> dict[str, Any]:
     """Get 3D visualization data."""
     visualizer = get_global_3d_visualizer()
     return visualizer.get_visualization_data(graph_id)

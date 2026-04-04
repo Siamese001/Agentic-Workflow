@@ -15,16 +15,18 @@ from pathlib import Path
 from typing import Any
 
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
+from agentic_core.L0_routing.config import get_validated_project_root
 from agentic_core.L0_routing.utils.root_customs_util import (
-    run_inspection as _run_inspection,
-    RoutingDecision,
     ASTAnalyzer,
-    scan_root_directory,
+    RoutingDecision,
     analyze_content_signatures,
     determine_routing,
     execute_routing,
+    scan_root_directory,
 )
-from agentic_core.L0_routing.config import get_validated_project_root
+from agentic_core.L0_routing.utils.root_customs_util import (
+    run_inspection as _run_inspection,
+)
 
 
 class RootCustomsAgent(SovereignBaseAgent):

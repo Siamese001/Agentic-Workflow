@@ -16,7 +16,7 @@ from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
 from datetime import datetime
 from pathlib import Path
-from typing import Any, Optional, Union
+from typing import Any
 
 from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     LayerSegment,
@@ -57,7 +57,7 @@ class StorageBackend(ABC):
         pass
 
     @abstractmethod
-    def retrieve(self, artifact_id: str) -> Optional[bytes]:
+    def retrieve(self, artifact_id: str) -> bytes | None:
         """Retrieve content by artifact ID."""
         pass
 
@@ -129,7 +129,7 @@ class LocalFileBackend(StorageBackend):
         Logger.info(f"Stored artifact: {artifact_id[:16]}... ({len(content)} bytes)")
         return artifact
 
-    def retrieve(self, artifact_id: str) -> Optional[bytes]:
+    def retrieve(self, artifact_id: str) -> bytes | None:
         if artifact_id not in self._metadata:
             return None
 
@@ -159,7 +159,7 @@ class LocalFileBackend(StorageBackend):
 class PostgresBackend(StorageBackend):
     """PostgreSQL storage backend (for metadata and small blobs)."""
 
-    def __init__(self, connection_string: Optional[str] = None):
+    def __init__(self, connection_string: str | None = None):
         self.connection_string = connection_string or "postgresql://localhost/canonical_store"
         self._init_db()
 
@@ -237,7 +237,7 @@ class PostgresBackend(StorageBackend):
         Logger.info(f"Stored artifact to Postgres: {artifact_id[:16]}...")
         return artifact
 
-    def retrieve(self, artifact_id: str) -> Optional[bytes]:
+    def retrieve(self, artifact_id: str) -> bytes | None:
         try:
             import psycopg2
             conn = psycopg2.connect(self.connection_string)
@@ -306,7 +306,7 @@ class S3Backend(StorageBackend):
     def __init__(
         self,
         bucket: str = "canonical-store",
-        endpoint: Optional[str] = None,
+        endpoint: str | None = None,
         region: str = "us-east-1",
     ):
         self.bucket = bucket
@@ -355,7 +355,7 @@ class S3Backend(StorageBackend):
         Logger.info(f"Stored artifact to S3: {artifact_id[:16]}...")
         return artifact
 
-    def retrieve(self, artifact_id: str) -> Optional[bytes]:
+    def retrieve(self, artifact_id: str) -> bytes | None:
         key = f"artifacts/{artifact_id[:2]}/{artifact_id}"
 
         try:
@@ -410,7 +410,7 @@ class CanonicalStore:
     def __init__(
         self,
         backend: str = "local",
-        backend_config: Optional[dict[str, Any]] = None,
+        backend_config: dict[str, Any] | None = None,
     ):
         """Initialize canonical store.
 
@@ -440,9 +440,9 @@ class CanonicalStore:
 
     def store_file(
         self,
-        file_path: Union[str, Path],
-        content_type: Optional[str] = None,
-        metadata: Optional[dict[str, Any]] = None,
+        file_path: str | Path,
+        content_type: str | None = None,
+        metadata: dict[str, Any] | None = None,
     ) -> StoredArtifact:
         """Store a file in the canonical store.
 
@@ -486,7 +486,7 @@ class CanonicalStore:
         self,
         content: bytes,
         content_type: str = "application/octet-stream",
-        metadata: Optional[dict[str, Any]] = None,
+        metadata: dict[str, Any] | None = None,
     ) -> StoredArtifact:
         """Store raw content.
 
@@ -514,7 +514,7 @@ class CanonicalStore:
 
         return artifact
 
-    def retrieve(self, artifact_id: str) -> Optional[bytes]:
+    def retrieve(self, artifact_id: str) -> bytes | None:
         """Retrieve content by artifact ID.
 
         Args:
@@ -555,7 +555,7 @@ class CanonicalStore:
 
 
 # Global instance
-_global_canonical_store: Optional[CanonicalStore] = None
+_global_canonical_store: CanonicalStore | None = None
 
 
 def get_global_canonical_store() -> CanonicalStore:
@@ -566,7 +566,7 @@ def get_global_canonical_store() -> CanonicalStore:
     return _global_canonical_store
 
 
-def store_file(file_path: Union[str, Path]) -> StoredArtifact:
+def store_file(file_path: str | Path) -> StoredArtifact:
     """Convenience function to store a file."""
     return get_global_canonical_store().store_file(file_path)
 
@@ -576,6 +576,6 @@ def store_content(content: bytes, content_type: str = "application/octet-stream"
     return get_global_canonical_store().store_content(content, content_type)
 
 
-def retrieve_artifact(artifact_id: str) -> Optional[bytes]:
+def retrieve_artifact(artifact_id: str) -> bytes | None:
     """Convenience function to retrieve artifact."""
     return get_global_canonical_store().retrieve(artifact_id)

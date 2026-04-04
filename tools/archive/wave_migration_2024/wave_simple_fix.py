@@ -10,12 +10,9 @@ import ast
 import pathlib
 import re
 import sys
-import time
-from typing import List
 
 # Import existing ProgressTracker
 sys.path.insert(0, str(pathlib.Path(__file__).parent))
-from fast_file_analysis import ProgressTracker
 
 
 def simple_fix_pattern_A(content: str) -> str:
@@ -111,13 +108,13 @@ def fix_single_file(file_path: pathlib.Path, pattern: str, dry_run: bool = False
         # Write if not dry run and content changed
         if not dry_run and fixed_content != content:
             file_path.write_text(fixed_content, encoding='utf-8')
-            print(f"  ✅ Fixed successfully")
+            print("  ✅ Fixed successfully")
             return True
         elif dry_run:
-            print(f"  ✅ Would be fixed (dry run)")
+            print("  ✅ Would be fixed (dry run)")
             return True
         else:
-            print(f"  ℹ️  No changes needed")
+            print("  ℹ️  No changes needed")
             return True
 
     except Exception as e:
@@ -125,7 +122,7 @@ def fix_single_file(file_path: pathlib.Path, pattern: str, dry_run: bool = False
         return False
 
 
-def get_next_broken_file(pattern: str, skip_files: List[pathlib.Path] = None) -> pathlib.Path:
+def get_next_broken_file(pattern: str, skip_files: list[pathlib.Path] = None) -> pathlib.Path:
     """Get the next broken file for a pattern."""
     if skip_files is None:
         skip_files = []
@@ -200,11 +197,11 @@ def main():
     print(f"  Failed: {len(failed_files)}")
 
     if not args.dry_run and fixed_files:
-        print(f"\nTo commit changes:")
-        print(f"  git add tests/")
+        print("\nTo commit changes:")
+        print("  git add tests/")
         commit_msg = f'Simple Wave {args.pattern}: Fix {len(fixed_files)} files'
         print(f"  git commit -m '{commit_msg}'")
-        print(f"  git push")
+        print("  git push")
 
 
 if __name__ == '__main__':

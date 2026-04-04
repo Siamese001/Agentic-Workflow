@@ -15,8 +15,10 @@ from typing import Any
 
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 from agentic_core.L5_safety.utils.credential_scanner_util import (
-    CredentialScanner as _CredentialScanner,
     CredentialMatch,
+)
+from agentic_core.L5_safety.utils.credential_scanner_util import (
+    CredentialScanner as _CredentialScanner,
 )
 
 
@@ -107,7 +109,7 @@ class CredentialScannerAgent(SovereignBaseAgent):
         """Scan repository for hardcoded credentials."""
         result = self.scan_for_credentials()
         violations_found = result.get("total_matches", 0)
-        
+
         return {
             "violations_found": violations_found,
             "violations_fixed": 0,

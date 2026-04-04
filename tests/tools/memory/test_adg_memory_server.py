@@ -16,13 +16,8 @@ Tests for tools/memory/adg_memory_server.py — 13 memory tools:
 - SQLite persistence validation
 """
 
-import importlib.util
-import json
 import sqlite3
-import sys
-import tempfile
 from pathlib import Path
-from unittest.mock import MagicMock, patch
 
 import pytest
 

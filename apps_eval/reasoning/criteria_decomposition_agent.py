@@ -15,9 +15,9 @@ from enum import Enum
 from typing import Any
 
 from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-    _emit_records_execution_trace,
     _emit_captures_pattern,
     _emit_pulls_context,
+    _emit_records_execution_trace,
 )
 
 _log = logging.getLogger(__name__)
@@ -372,7 +372,7 @@ class CriteriaDecomposer:
         criteria: list[str] = []
 
         # Base criterion
-        criteria.append(f"Test passes with expected outcome")
+        criteria.append("Test passes with expected outcome")
 
         # Type-specific criteria
         if criteria_type == CriteriaType.PERFORMANCE:

@@ -47,43 +47,28 @@ from typing import Any
 from mcp.server.fastmcp import FastMCP
 
 from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-    _emit_agent_executes_agent,
     _emit_applies_guardrail,
     _emit_authorize_and_execute,
     _emit_blocks_direct_write,
     _emit_captures_evaluation_metric,
     _emit_captures_execution_output,
-    _emit_checks_agent_registry,
     _emit_coordinates_agents,
     _emit_dispatches_agent,
-    _emit_dispatches_execution_plan,
     _emit_dispatches_healing_run,
     _emit_escalates_failure,
-    _emit_escalates_to_human,
-    _emit_gated_by_confidence,
-    _emit_hard_fails_untranscripted,
     _emit_invokes_evaluation,
     _emit_links_execution_to_snapshot,
-    _emit_observes_runtime_state,
     _emit_orchestrates_workflow,
     _emit_reads_policy_state,
     _emit_records_healing_outcome,
     _emit_records_telemetry_event,
     _emit_records_tool_invocation,
     _emit_records_workflow_lineage,
-    _emit_routes_through,
-    _emit_routes_to_agent,
     _emit_routes_to_capability,
-    _emit_signs_execution_trace,
     _emit_snapshots_state,
     _emit_stores_embedding,
-    _emit_transcripts_response,
     _emit_updates_meta_learning_state,
-    _emit_validated_by_safety_plane,
-    _emit_validates_agent_capability,
     _emit_validates_capability,
-    _emit_verifies_boundary,
-    _emit_verifies_policy,
     _emit_writes_via_uwg,
     emit_determinism_digest,
     record_execution_trace,
@@ -140,8 +125,8 @@ _metrics_cache: dict[str, Any] = {
 def _get_runtime_adg_store():
     """Get runtime ADG store instance."""
     try:
-        from system_learning.runtime_adg.store import InMemoryRuntimeADGStore
         from system_learning.runtime_adg.snapshot import RuntimeADGSnapshot
+        from system_learning.runtime_adg.store import InMemoryRuntimeADGStore
         store = InMemoryRuntimeADGStore()
         return store
     except ImportError:
@@ -203,7 +188,7 @@ def otel_trace(trace_id: str) -> dict[str, Any]:
 
     # Check cache first
     if trace_id in _trace_cache:
-        logger.info(f"otel_trace_cache_hit", extra={"trace_id": trace_id})
+        logger.info("otel_trace_cache_hit", extra={"trace_id": trace_id})
         return _trace_cache[trace_id]
 
     # Try to load from runtime ADG snapshots
@@ -211,7 +196,7 @@ def otel_trace(trace_id: str) -> dict[str, Any]:
 
     if snapshot_files:
         try:
-            with open(snapshot_files[0], 'r') as f:
+            with open(snapshot_files[0]) as f:
                 snapshot = json.load(f)
 
             # Convert to ADG edge format

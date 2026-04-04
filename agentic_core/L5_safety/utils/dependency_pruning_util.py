@@ -31,13 +31,13 @@ Logger = logging.getLogger(__name__)
 @dataclass
 class PruningResult:
     """Result of dependency pruning."""
-    
+
     unused_found: int
     removed: int
     dry_run: bool
     packages: list[str]
     adg_dead_import_signals: int = 0
-    
+
     def to_dict(self) -> dict[str, Any]:
         """Convert to dictionary."""
         return {
@@ -88,10 +88,10 @@ def find_unused_deptry(project_root: Path) -> list[str]:
         List of unused package names, empty if deptry fails or not installed
     """
     result = safe_execute(["deptry", ".", "--json"], cwd=project_root)
-    
+
     if result is None or result.returncode != 0:
         return []
-    
+
     try:
         data: dict[str, Any] = json.loads(result.stdout)
         return data.get("unused", [])
@@ -118,18 +118,18 @@ def remove_from_requirements_txt(
     """
     if not requirements_path.exists():
         return {"removed": 0}
-    
+
     content: str = requirements_path.read_text(encoding="utf-8")
     lines: list[str] = content.splitlines()
     new_lines: list[str] = []
     removed: int = 0
-    
+
     for line in lines:
         line_stripped = line.strip()
         if not line_stripped or line_stripped.startswith("#"):
             new_lines.append(line)
             continue
-        
+
         match = re.match("^([a-zA-Z0-9_-]+)", line_stripped)
         if match and match.group(1).lower() in [u.lower() for u in unused]:
             removed += 1
@@ -139,16 +139,16 @@ def remove_from_requirements_txt(
                 continue
         else:
             new_lines.append(line)
-    
+
     if removed > 0 and not dry_run:
         requirements_path.write_text("\n".join(new_lines) + "\n", encoding="utf-8")
-    
+
     return {"removed": removed, "file": "requirements.txt"}
 
 
 class DependencyPruner:
     """Deterministic dependency pruner."""
-    
+
     def __init__(
         self,
         project_root: Path,
@@ -163,7 +163,7 @@ class DependencyPruner:
         self.project_root: Path = Path(project_root)
         self.dry_run: bool = dry_run
         self.requirements_path: Path = self.project_root / "requirements.txt"
-    
+
     def scan(self) -> PruningResult:
         """Scan for unused dependencies.
         
@@ -171,7 +171,7 @@ class DependencyPruner:
             PruningResult with scan results
         """
         Logger.info("[PRUNE] Scanning for unused dependencies...")
-        
+
         # Get ADG dead import signals if available
         adg_dead_imports: int = 0
         try:
@@ -181,10 +181,10 @@ class DependencyPruner:
             adg_dead_imports = len(_bp.antipattern_signals)
         except (RuntimeError, OSError, ImportError):
             pass
-        
+
         # Find unused dependencies
         unused: list[str] = find_unused_deptry(self.project_root)
-        
+
         if not unused:
             Logger.info("[✓] No unused dependencies detected")
             return PruningResult(
@@ -194,11 +194,11 @@ class DependencyPruner:
                 packages=[],
                 adg_dead_import_signals=adg_dead_imports,
             )
-        
+
         Logger.info(f"[!] Found {len(unused)} potentially unused packages: {', '.join(unused[:5])}")
         if len(unused) > 5:
             Logger.info(f"       ... and {len(unused) - 5} more")
-        
+
         return PruningResult(
             unused_found=len(unused),
             removed=0,  # Not removed yet, just scanned
@@ -206,7 +206,7 @@ class DependencyPruner:
             packages=unused,
             adg_dead_import_signals=adg_dead_imports,
         )
-    
+
     def prune(self) -> PruningResult:
         """Scan and optionally remove unused dependencies.
         
@@ -214,17 +214,17 @@ class DependencyPruner:
             PruningResult with pruning results
         """
         scan_result = self.scan()
-        
+
         if scan_result.unused_found == 0:
             return scan_result
-        
+
         # Remove from requirements.txt
         removal_result = remove_from_requirements_txt(
             scan_result.packages,
             self.requirements_path,
             self.dry_run,
         )
-        
+
         return PruningResult(
             unused_found=scan_result.unused_found,
             removed=removal_result["removed"],
@@ -232,7 +232,7 @@ class DependencyPruner:
             packages=scan_result.packages,
             adg_dead_import_signals=scan_result.adg_dead_import_signals,
         )
-    
+
     def heal_repository(self, dry_run: bool = True) -> dict[str, Any]:
         """Heal repository by pruning unused dependencies.
         
@@ -244,7 +244,7 @@ class DependencyPruner:
         """
         self.dry_run = dry_run
         result = self.prune()
-        
+
         return {
             "violations_found": result.unused_found,
             "violations_fixed": result.removed if not dry_run else 0,
@@ -252,7 +252,7 @@ class DependencyPruner:
             "skipped": result.unused_found - result.removed,
             "packages": result.packages,
         }
-    
+
     def heal(self, violation: dict[str, Any]) -> dict[str, Any]:
         """Heal a single dependency violation.
         
@@ -275,7 +275,7 @@ class DependencyPruner:
                 }
             except (RuntimeError, OSError):
                 return {"violations_fixed": 0, "violations_found": 1, "errors": 1, "skipped": 0}
-        
+
         return {"violations_fixed": 0, "violations_found": 1, "errors": 0, "skipped": 1}
 
 

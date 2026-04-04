@@ -12,12 +12,13 @@ Exit codes:
     2: Warning drift (logs only, allows CI)
 """
 
-import sys
 import re
-import tomllib
-from pathlib import Path
+import sys
 from dataclasses import dataclass
+from pathlib import Path
 from typing import Optional
+
+import tomllib
 
 
 @dataclass
@@ -26,9 +27,9 @@ class PytestConfig:
     addopts: str
     testpaths: list
     markers: list
-    timeout: Optional[int] = None
-    n_workers: Optional[str] = None
-    dist_mode: Optional[str] = None
+    timeout: int | None = None
+    n_workers: str | None = None
+    dist_mode: str | None = None
 
 
 def parse_pytest_ini(path: Path) -> PytestConfig:

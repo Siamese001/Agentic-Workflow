@@ -59,6 +59,8 @@ from agentic_core.L1_cognition.planning.plan_creator import (
     enforce_plan_checkpoint,
     execute_plan_step,
 )
+
+
 # Lazy import to avoid L1->L6 gravity violation
 def _get_performance_emitter():
     from agentic_core.L6_observability.performance.performance_emitter import (
@@ -68,23 +70,11 @@ def _get_performance_emitter():
     return StageStatus, record_reasoning_performance
 
 from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+    _emit_agent_executes_agent,
+    _emit_applies_guardrail,
     # noqa: E402,
     # noqa: E402
     _emit_authorize_and_execute,
-    # noqa: E402
-    _emit_emits_metric_event,
-    # noqa: E402
-    _emit_execution_terminates_at_uwg,
-    # noqa: E402
-    _emit_reads_runtime_state,
-    # noqa: E402
-    _emit_routes_to_agent,
-    # noqa: E402
-    _emit_stores_embedding,
-    # noqa: E402
-    emit_replay_key,
-    _emit_agent_executes_agent,
-    _emit_applies_guardrail,
     _emit_blocks_direct_write,
     _emit_captures_evaluation_metric,
     _emit_captures_execution_output,
@@ -95,8 +85,12 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_dispatches_agent,
     _emit_dispatches_execution_plan,
     _emit_dispatches_healing_run,
+    # noqa: E402
+    _emit_emits_metric_event,
     _emit_escalates_failure,
     _emit_escalates_to_human,
+    # noqa: E402
+    _emit_execution_terminates_at_uwg,
     _emit_feeds_meta_learning,
     _emit_gated_by_confidence,
     _emit_hard_fails_untranscripted,
@@ -111,6 +105,8 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_pulls_context,
     _emit_reads_environ,
     _emit_reads_policy_state,
+    # noqa: E402
+    _emit_reads_runtime_state,
     _emit_records_execution_trace,
     _emit_records_healing_outcome,
     _emit_records_incident_event,
@@ -119,9 +115,13 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_records_tool_invocation,
     _emit_records_workflow_lineage,
     _emit_routes_through,
+    # noqa: E402
+    _emit_routes_to_agent,
     _emit_routes_to_capability,
     _emit_signs_execution_trace,
     _emit_snapshots_state,
+    # noqa: E402
+    _emit_stores_embedding,
     _emit_stores_learning_state,
     _emit_transcripts_response,
     _emit_triggers_alert,
@@ -137,7 +137,9 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
     _emit_writes_via_uwg,
-    emit_determinism_digest
+    emit_determinism_digest,
+    # noqa: E402
+    emit_replay_key,
 )
 
 _emit_emits_metric_event("reasoning_chokepoint", "p4obs", "metric_1")

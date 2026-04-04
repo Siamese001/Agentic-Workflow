@@ -20,12 +20,6 @@ if str(ROOT) not in sys.path:
 
 # Import the functions we're testing
 sys.path.insert(0, str(ROOT / "tools"))
-from archive_old_adg import (
-    _extract_timestamp,
-    _get_archive_month_dir,
-    _parse_timestamp,
-    identify_runs_to_archive,
-)
 
 
 class TestTimestampExtraction:

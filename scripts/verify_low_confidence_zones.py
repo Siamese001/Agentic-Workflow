@@ -27,9 +27,8 @@ from __future__ import annotations
 import json
 import sqlite3
 import sys
-from collections import defaultdict
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Set, Tuple
+from typing import Any
 
 # Add project root to path for imports
 sys.path.insert(0, str(Path(__file__).parent.parent.parent))
@@ -44,8 +43,8 @@ class ADGDeadCodeZoneControlVerifier:
     def __init__(self, adg_dir: Path):
         self.adg_dir = Path(adg_dir)
         self.sqlite_path = self._find_sqlite_database()
-        self.errors: List[str] = []
-        self.warnings: List[str] = []
+        self.errors: list[str] = []
+        self.warnings: list[str] = []
 
     def _find_sqlite_database(self) -> Path:
         """Find the latest SQLite database."""
@@ -55,7 +54,7 @@ class ADGDeadCodeZoneControlVerifier:
 
         return max(sqlite_files, key=lambda p: p.stat().st_mtime)
 
-    def _verify_dead_import_detection(self) -> Dict[str, Any]:
+    def _verify_dead_import_detection(self) -> dict[str, Any]:
         """Verify dead imports are properly detected and categorized."""
         print("🔍 Verifying dead import detection...")
 
@@ -121,20 +120,20 @@ class ADGDeadCodeZoneControlVerifier:
                 dead_import_hotspots = cursor.fetchall()
 
                 print(f"   📊 Total dead imports: {total_dead_imports}")
-                print(f"   📊 Dead imports by layer:")
+                print("   📊 Dead imports by layer:")
                 for layer, count in list(dead_imports_by_layer.items())[:10]:
                     print(f"      {layer}: {count}")
 
                 if dead_imports_by_domain:
-                    print(f"   📊 Dead imports by domain:")
+                    print("   📊 Dead imports by domain:")
                     for domain, count in dead_imports_by_domain.items():
                         print(f"      {domain}: {count}")
 
-                print(f"   📊 Dead imports by confidence:")
+                print("   📊 Dead imports by confidence:")
                 for confidence, count in dead_imports_by_confidence.items():
                     print(f"      {confidence}: {count}")
 
-                print(f"   📊 Top dead import hotspots:")
+                print("   📊 Top dead import hotspots:")
                 for i, (module, count) in enumerate(dead_import_hotspots[:5]):
                     print(f"      {i+1}. {module}: {count}")
 
@@ -155,7 +154,7 @@ class ADGDeadCodeZoneControlVerifier:
         except Exception as e:
             raise DeadCodeZoneControlError(f"Dead import detection verification failed: {e}")
 
-    def _verify_dead_code_candidate_detection(self) -> Dict[str, Any]:
+    def _verify_dead_code_candidate_detection(self) -> dict[str, Any]:
         """Verify dead code candidates are properly detected."""
         print("💀 Verifying dead code candidate detection...")
 
@@ -203,15 +202,15 @@ class ADGDeadCodeZoneControlVerifier:
                 dead_code_by_confidence = dict(cursor.fetchall())
 
                 print(f"   📊 Total dead code candidates: {total_dead_code_candidates}")
-                print(f"   📊 Dead code by layer:")
+                print("   📊 Dead code by layer:")
                 for layer, count in dead_code_by_layer.items():
                     print(f"      {layer}: {count}")
 
-                print(f"   📊 Dead code by entity type:")
+                print("   📊 Dead code by entity type:")
                 for entity_type, count in dead_code_by_entity_type.items():
                     print(f"      {entity_type}: {count}")
 
-                print(f"   📊 Dead code by confidence:")
+                print("   📊 Dead code by confidence:")
                 for confidence, count in dead_code_by_confidence.items():
                     print(f"      {confidence}: {count}")
 
@@ -225,7 +224,7 @@ class ADGDeadCodeZoneControlVerifier:
         except Exception as e:
             raise DeadCodeZoneControlError(f"Dead code candidate detection verification failed: {e}")
 
-    def _verify_unresolved_import_analysis(self) -> Dict[str, Any]:
+    def _verify_unresolved_import_analysis(self) -> dict[str, Any]:
         """Verify unresolved imports are properly tracked."""
         print("❓ Verifying unresolved import analysis...")
 
@@ -274,15 +273,15 @@ class ADGDeadCodeZoneControlVerifier:
                 unresolved_hotspots = cursor.fetchall()
 
                 print(f"   📊 Total unresolved imports: {total_unresolved_imports}")
-                print(f"   📊 Unresolved imports by layer:")
+                print("   📊 Unresolved imports by layer:")
                 for layer, count in unresolved_by_layer.items():
                     print(f"      {layer}: {count}")
 
-                print(f"   📊 Unresolved imports by confidence:")
+                print("   📊 Unresolved imports by confidence:")
                 for confidence, count in unresolved_by_confidence.items():
                     print(f"      {confidence}: {count}")
 
-                print(f"   📊 Top unresolved import hotspots:")
+                print("   📊 Top unresolved import hotspots:")
                 for i, (module, count) in enumerate(unresolved_hotspots[:5]):
                     print(f"      {i+1}. {module}: {count}")
 
@@ -302,7 +301,7 @@ class ADGDeadCodeZoneControlVerifier:
         except Exception as e:
             raise DeadCodeZoneControlError(f"Unresolved import analysis verification failed: {e}")
 
-    def _verify_low_confidence_zone_analysis(self) -> Dict[str, Any]:
+    def _verify_low_confidence_zone_analysis(self) -> dict[str, Any]:
         """Verify low-confidence zones are identified and tracked."""
         print("🔍 Verifying low-confidence zone analysis...")
 
@@ -374,15 +373,15 @@ class ADGDeadCodeZoneControlVerifier:
                 low_conf_hotspots = cursor.fetchall()
 
                 print(f"   📊 Total low-confidence nodes: {total_low_confidence}")
-                print(f"   📊 Low-confidence by layer:")
+                print("   📊 Low-confidence by layer:")
                 for layer, count in low_conf_by_layer.items():
                     print(f"      {layer}: {count}")
 
-                print(f"   📊 Low-confidence by entity type:")
+                print("   📊 Low-confidence by entity type:")
                 for entity_type, count in low_conf_by_entity_type.items():
                     print(f"      {entity_type}: {count}")
 
-                print(f"   📊 Low-confidence by identity kind:")
+                print("   📊 Low-confidence by identity kind:")
                 for identity_kind, count in low_conf_by_identity_kind.items():
                     print(f"      {identity_kind}: {count}")
 
@@ -411,7 +410,7 @@ class ADGDeadCodeZoneControlVerifier:
         except Exception as e:
             raise DeadCodeZoneControlError(f"Low-confidence zone analysis verification failed: {e}")
 
-    def _verify_inferred_symbol_analysis(self) -> Dict[str, Any]:
+    def _verify_inferred_symbol_analysis(self) -> dict[str, Any]:
         """Verify inferred symbol ratio is tracked."""
         print("🔮 Verifying inferred symbol analysis...")
 
@@ -453,11 +452,11 @@ class ADGDeadCodeZoneControlVerifier:
                 print(f"   📊 Total inferred symbols: {total_inferred}")
                 print(f"   📊 Total symbols: {total_symbols}")
                 print(f"   📊 Inferred symbol ratio: {inferred_ratio:.2f}%")
-                print(f"   📊 Inferred symbols by layer:")
+                print("   📊 Inferred symbols by layer:")
                 for layer, count in inferred_by_layer.items():
                     print(f"      {layer}: {count}")
 
-                print(f"   📊 Inferred symbols by confidence:")
+                print("   📊 Inferred symbols by confidence:")
                 for confidence, count in inferred_by_confidence.items():
                     print(f"      {confidence}: {count}")
 
@@ -476,7 +475,7 @@ class ADGDeadCodeZoneControlVerifier:
         except Exception as e:
             raise DeadCodeZoneControlError(f"Inferred symbol analysis verification failed: {e}")
 
-    def _verify_executive_readiness(self) -> Dict[str, Any]:
+    def _verify_executive_readiness(self) -> dict[str, Any]:
         """Verify executive-quality reporting capabilities."""
         print("📊 Verifying executive readiness...")
 
@@ -528,9 +527,9 @@ class ADGDeadCodeZoneControlVerifier:
                     except sqlite3.OperationalError:
                         first_party_metrics[metric_name] = None
 
-                print(f"   📊 Executive metrics:")
-                print(f"      Metric | All | First-Party | FP Ratio")
-                print(f"      -------|-----|-------------|---------")
+                print("   📊 Executive metrics:")
+                print("      Metric | All | First-Party | FP Ratio")
+                print("      -------|-----|-------------|---------")
 
                 for metric_name in executive_metrics.keys():
                     all_val = calculated_metrics[metric_name]
@@ -564,7 +563,7 @@ class ADGDeadCodeZoneControlVerifier:
         except Exception as e:
             raise DeadCodeZoneControlError(f"Executive readiness verification failed: {e}")
 
-    def verify(self) -> Dict[str, Any]:
+    def verify(self) -> dict[str, Any]:
         """Run complete dead code and low-confidence zone verification."""
         print("🔍 Starting ADG Dead Code Zone Control Verification...")
         print(f"📁 ADG Directory: {self.adg_dir}")

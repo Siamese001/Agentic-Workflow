@@ -1,5 +1,5 @@
-import pathlib
 import ast
+import pathlib
 
 base = pathlib.Path(r'C:\Git\Agentic-Workflow\agentic_core')
 func_count = 0
@@ -10,7 +10,7 @@ for f in base.rglob('*.py'):
     if '__pycache__' not in str(f):
         file_count += 1
         try:
-            with open(f, 'r', encoding='utf-8') as file:
+            with open(f, encoding='utf-8') as file:
                 tree = ast.parse(file.read())
                 func_count += sum(1 for node in ast.walk(tree) if isinstance(node, ast.FunctionDef))
                 class_count += sum(1 for node in ast.walk(tree) if isinstance(node, ast.ClassDef))

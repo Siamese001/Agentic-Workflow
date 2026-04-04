@@ -5,13 +5,13 @@ Tracks and analyzes MCP tool usage patterns to optimize sequential thinking adop
 """
 
 import json
-import time
 import sqlite3
+import time
+from dataclasses import dataclass
+from datetime import datetime
 from pathlib import Path
-from collections import defaultdict, Counter
-from typing import Dict, List, Any, Optional
-from dataclasses import dataclass, asdict
-from datetime import datetime, timedelta
+from typing import Any
+
 
 @dataclass
 class ToolUsageEntry:
@@ -38,7 +38,7 @@ class UsageSummary:
 class MCPUsageTracker:
     """Track and analyze MCP tool usage patterns."""
 
-    def __init__(self, db_path: Optional[Path] = None):
+    def __init__(self, db_path: Path | None = None):
         """Initialize tracker with database."""
         if db_path is None:
             db_path = Path("artifacts/monitoring/mcp_usage.db")
@@ -110,7 +110,7 @@ class MCPUsageTracker:
         )
         self.log_tool_usage(entry)
 
-    def analyze_usage(self, hours: int = 24) -> Dict[str, UsageSummary]:
+    def analyze_usage(self, hours: int = 24) -> dict[str, UsageSummary]:
         """Analyze usage patterns and provide recommendations."""
         cutoff_time = time.time() - (hours * 3600)
 
@@ -163,7 +163,7 @@ class MCPUsageTracker:
         else:
             return "MAINTAIN: Usage patterns look good"
 
-    def get_sequential_thinking_metrics(self) -> Dict[str, Any]:
+    def get_sequential_thinking_metrics(self) -> dict[str, Any]:
         """Get specific metrics for sequential thinking usage."""
         with sqlite3.connect(self.db_path) as conn:
             # Sequential thinking specific metrics

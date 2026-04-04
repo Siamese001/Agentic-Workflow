@@ -7,9 +7,7 @@ classification of all skip patterns and test issues identified in Wave 1a.
 """
 
 import json
-from pathlib import Path
-from typing import Dict, List, Set, Tuple
-from collections import defaultdict, Counter
+from collections import defaultdict
 
 
 class SkipPatternClassifier:
@@ -19,7 +17,7 @@ class SkipPatternClassifier:
         self.classification_schema = self._define_classification_schema()
         self.classified_patterns = defaultdict(list)
 
-    def _define_classification_schema(self) -> Dict:
+    def _define_classification_schema(self) -> dict:
         """Define MECE classification schema."""
         return {
             'valid_skips': {
@@ -98,7 +96,7 @@ class SkipPatternClassifier:
             }
         }
 
-    def classify_skip_patterns(self, wave1a_data: Dict) -> Dict:
+    def classify_skip_patterns(self, wave1a_data: dict) -> dict:
         """Classify skip patterns from Wave 1a data."""
         print("=== Classifying Skip Patterns ===")
 
@@ -143,7 +141,7 @@ class SkipPatternClassifier:
 
         return dict(classified)
 
-    def _classify_single_skip(self, skip: Dict) -> Dict:
+    def _classify_single_skip(self, skip: dict) -> dict:
         """Classify a single skip pattern."""
         file_path = skip['file']
         reason = skip.get('reason', '').lower()
@@ -193,7 +191,7 @@ class SkipPatternClassifier:
 
         return any(keyword in reason or keyword in line_content for keyword in environmental_keywords)
 
-    def _classify_environmental_skip(self, reason: str, line_content: str, file_path: str) -> Dict:
+    def _classify_environmental_skip(self, reason: str, line_content: str, file_path: str) -> dict:
         """Classify environmental skip."""
         category = 'valid_skips'
         subcategory = 'environmental'
@@ -227,7 +225,7 @@ class SkipPatternClassifier:
 
         return any(keyword in reason or keyword in line_content for keyword in intentional_keywords)
 
-    def _classify_intentional_temporary_skip(self, reason: str, line_content: str) -> Dict:
+    def _classify_intentional_temporary_skip(self, reason: str, line_content: str) -> dict:
         """Classify intentional temporary skip."""
         category = 'valid_skips'
         subcategory = 'intentional_temporary'
@@ -260,7 +258,7 @@ class SkipPatternClassifier:
 
         return any(keyword in reason or keyword in line_content for keyword in conditional_keywords)
 
-    def _classify_conditional_execution_skip(self, reason: str, line_content: str) -> Dict:
+    def _classify_conditional_execution_skip(self, reason: str, line_content: str) -> dict:
         """Classify conditional execution skip."""
         category = 'valid_skips'
         subcategory = 'conditional_execution'
@@ -291,7 +289,7 @@ class SkipPatternClassifier:
 
         return any(keyword in reason or keyword in line_content for keyword in masking_keywords)
 
-    def _classify_masking_failure_skip(self, reason: str, line_content: str, file_path: str) -> Dict:
+    def _classify_masking_failure_skip(self, reason: str, line_content: str, file_path: str) -> dict:
         """Classify masking failure skip."""
         category = 'invalid_skips'
         subcategory = 'masking_failures'
@@ -322,7 +320,7 @@ class SkipPatternClassifier:
 
         return any(keyword in reason or keyword in line_content for keyword in convenience_keywords)
 
-    def _classify_development_convenience_skip(self, reason: str, line_content: str) -> Dict:
+    def _classify_development_convenience_skip(self, reason: str, line_content: str) -> dict:
         """Classify development convenience skip."""
         category = 'invalid_skips'
         subcategory = 'development_convenience'
@@ -358,7 +356,7 @@ class SkipPatternClassifier:
 
         return any(anti_pattern_indicators)
 
-    def _classify_anti_pattern_skip(self, reason: str, line_content: str, pattern_type: str) -> Dict:
+    def _classify_anti_pattern_skip(self, reason: str, line_content: str, pattern_type: str) -> dict:
         """Classify anti-pattern skip."""
         category = 'invalid_skips'
         subcategory = 'anti_patterns'
@@ -386,7 +384,7 @@ class SkipPatternClassifier:
         """Check if skip has documentation issues."""
         return len(reason) == 0 or len(reason) < 10 or 'skip' in reason.lower()
 
-    def _classify_documentation_issues(self, reason: str, line_content: str) -> Dict:
+    def _classify_documentation_issues(self, reason: str, line_content: str) -> dict:
         """Classify documentation issues."""
         category = 'questionable_skips'
         subcategory = 'documentation_issues'
@@ -414,7 +412,7 @@ class SkipPatternClassifier:
         # This would require more complex analysis of patterns across files
         return False  # Simplified for now
 
-    def _classify_structural_issues(self, reason: str, line_content: str, file_path: str) -> Dict:
+    def _classify_structural_issues(self, reason: str, line_content: str, file_path: str) -> dict:
         """Classify structural issues."""
         return {
             'category': 'questionable_skips',
@@ -424,7 +422,7 @@ class SkipPatternClassifier:
             'rationale': ['Structural issue detected']
         }
 
-    def _generate_recommendations(self, classified: Dict) -> List[Dict]:
+    def _generate_recommendations(self, classified: dict) -> list[dict]:
         """Generate recommendations based on classification."""
         recommendations = []
 
@@ -480,7 +478,7 @@ def generate_wave1b_report():
 
     # Load Wave 1a data
     try:
-        with open('artifacts/wave1a_inventory_report.json', 'r') as f:
+        with open('artifacts/wave1a_inventory_report.json') as f:
             wave1a_data = json.load(f)
     except FileNotFoundError:
         print("❌ Wave 1a report not found. Please run Wave 1a first.")
@@ -520,7 +518,7 @@ def generate_wave1b_report():
 
     # Print summary
     summary = report['summary']
-    print(f"\n=== Wave 1b Summary ===")
+    print("\n=== Wave 1b Summary ===")
     print(f"Total skips classified: {summary['total_skips_classified']}")
     print(f"Valid skips: {summary['valid_skips']}")
     print(f"Invalid skips: {summary['invalid_skips']}")
@@ -528,12 +526,12 @@ def generate_wave1b_report():
     print(f"Recommendations: {summary['recommendations_count']}")
 
     # Print top recommendations
-    print(f"\n=== Top Recommendations ===")
+    print("\n=== Top Recommendations ===")
     for i, rec in enumerate(classification['recommendations'][:3], 1):
         print(f"{i}. [{rec['priority'].upper()}] {rec['action']} ({rec['count']} skips)")
         print(f"   {rec['description']}")
 
-    print(f"\n📄 Report saved to: artifacts/wave1b_classification_report.json")
+    print("\n📄 Report saved to: artifacts/wave1b_classification_report.json")
 
     return report
 

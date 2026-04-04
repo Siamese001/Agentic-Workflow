@@ -15,9 +15,15 @@ from pathlib import Path
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 from agentic_core.L5_safety.utils.code_formatter_util import (
     CodeFormatter as _CodeFormatter,
-    format_file as _format_file,
-    format_files as _format_files,
+)
+from agentic_core.L5_safety.utils.code_formatter_util import (
     FormatResult,
+)
+from agentic_core.L5_safety.utils.code_formatter_util import (
+    format_file as _format_file,
+)
+from agentic_core.L5_safety.utils.code_formatter_util import (
+    format_files as _format_files,
 )
 
 

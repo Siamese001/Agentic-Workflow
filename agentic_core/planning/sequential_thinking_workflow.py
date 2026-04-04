@@ -10,19 +10,25 @@ import json
 import logging
 import os
 from pathlib import Path
-from typing import Dict, List, Any, Optional
+from typing import Any
 
 from agentic_core.planning.preflight_hook import PlanningPreflightHook, TokenBudgetExceededError
-from agentic_core.planning.token_estimator import TokenBudget, ContextWindowEstimator
+from agentic_core.planning.token_estimator import ContextWindowEstimator, TokenBudget
 
 # Import ADG-based templates and enforcement configuration
 try:
-    from apps_shared.prompts.sequential_thinking_templates import (
-        render_template, get_template, SequentialThinkingTemplate
-    )
     from agentic_core.config.adg_template_enforcement_config import (
-        ENFORCEMENT_CONFIG, ENFORCEMENT_RULES, ADG_FALLBACK_CONTEXT,
-        get_enforcement_template, is_enforcement_required, validate_enforcement_compliance
+        ADG_FALLBACK_CONTEXT,
+        ENFORCEMENT_CONFIG,
+        ENFORCEMENT_RULES,
+        get_enforcement_template,
+        is_enforcement_required,
+        validate_enforcement_compliance,
+    )
+    from apps_shared.prompts.sequential_thinking_templates import (
+        SequentialThinkingTemplate,
+        get_template,
+        render_template,
     )
     ADG_TEMPLATES_AVAILABLE = True
     ENFORCEMENT_ENABLED = ENFORCEMENT_CONFIG.get('enabled', True)
@@ -44,8 +50,8 @@ class SequentialThinkingEnhancedWorkflow:
     """
 
     def __init__(self,
-                 budget_file: Optional[Path] = None,
-                 custom_budget: Optional[TokenBudget] = None,
+                 budget_file: Path | None = None,
+                 custom_budget: TokenBudget | None = None,
                  seq_thinking_enabled: bool = True):
         """
         Initialize the sequential thinking enhanced workflow.
@@ -80,7 +86,7 @@ class SequentialThinkingEnhancedWorkflow:
         """Check if sequential thinking MCP is available."""
         return os.environ.get('SEQUENTIAL_THINKING_ENABLED', 'false').lower() == 'true'
 
-    def force_sequential_thinking(self, step_type: str, step_config: Dict[str, Any]) -> bool:
+    def force_sequential_thinking(self, step_type: str, step_config: dict[str, Any]) -> bool:
         """Determine if sequential thinking should be forced for this step."""
 
         if not self.seq_thinking_enabled:
@@ -114,7 +120,7 @@ class SequentialThinkingEnhancedWorkflow:
 
         return False
 
-    def _get_seq_thinking_template(self, step_type: str, step_config: Dict[str, Any] = None) -> str:
+    def _get_seq_thinking_template(self, step_type: str, step_config: dict[str, Any] = None) -> str:
         """
         Get appropriate sequential thinking template for step type.
         ENFORCED: ADG-based templates are mandatory for relevant task types.
@@ -153,7 +159,7 @@ class SequentialThinkingEnhancedWorkflow:
         # Fallback to manual mapping if enforcement fails
         return self._get_manual_enforced_template(step_type, step_config)
 
-    def _get_manual_enforced_template(self, step_type: str, step_config: Dict[str, Any] = None) -> str:
+    def _get_manual_enforced_template(self, step_type: str, step_config: dict[str, Any] = None) -> str:
         """Manual enforcement fallback when centralized enforcement fails."""
 
         # ENFORCEMENT: Map step types to mandatory ADG templates
@@ -207,7 +213,7 @@ class SequentialThinkingEnhancedWorkflow:
             logger.info(f"STRICT MODE: Using basic ADG template for: {step_type}")
             return self._render_adg_template(SequentialThinkingTemplate.SWE_ANALYSIS, step_type, step_config)
 
-    def _render_adg_template(self, template_type: SequentialThinkingTemplate, step_type: str, step_config: Dict[str, Any] = None) -> str:
+    def _render_adg_template(self, template_type: SequentialThinkingTemplate, step_type: str, step_config: dict[str, Any] = None) -> str:
         """Render ADG template with current system context."""
 
         try:
@@ -228,7 +234,7 @@ class SequentialThinkingEnhancedWorkflow:
             return self._get_fallback_template(step_type, step_config)
 
     def _get_template_variables(self, template_type: SequentialThinkingTemplate, step_type: str,
-                               adg_context: Dict[str, str], step_config: Dict[str, Any] = None) -> Dict[str, str]:
+                               adg_context: dict[str, str], step_config: dict[str, Any] = None) -> dict[str, str]:
         """Get template-specific variables for rendering."""
 
         # Base variables for all templates
@@ -321,7 +327,7 @@ class SequentialThinkingEnhancedWorkflow:
 
         return template_vars
 
-    def _get_current_adg_context(self) -> Dict[str, str]:
+    def _get_current_adg_context(self) -> dict[str, str]:
         """Get current ADG system context for template variables."""
 
         # Try to get real ADG data
@@ -402,7 +408,7 @@ class SequentialThinkingEnhancedWorkflow:
             # Always return fallback context
             return ADG_FALLBACK_CONTEXT.copy()
 
-    def _select_complexity_based_adg_template(self, step_type: str, step_config: Dict[str, Any]) -> SequentialThinkingTemplate:
+    def _select_complexity_based_adg_template(self, step_type: str, step_config: dict[str, Any]) -> SequentialThinkingTemplate:
         """Select ADG template based on complexity and step type."""
 
         complexity = step_config.get('complexity', 'medium').lower()
@@ -425,7 +431,7 @@ class SequentialThinkingEnhancedWorkflow:
 
         return complexity_mapping.get(step_type, SequentialThinkingTemplate.SWE_ARCHITECTURAL_REVIEW)
 
-    def _get_fallback_template(self, step_type: str, step_config: Dict[str, Any] = None) -> str:
+    def _get_fallback_template(self, step_type: str, step_config: dict[str, Any] = None) -> str:
 
         templates = {
             'analysis': """
@@ -562,7 +568,7 @@ Please debug this systematically using sequential thinking.
         return templates.get(step_type, templates['analysis'])
 
     def _execute_sequential_thinking(self, step_name: str, step_type: str,
-                                   context: Dict[str, Any], step_config: Dict[str, Any] = None) -> Dict[str, Any]:
+                                   context: dict[str, Any], step_config: dict[str, Any] = None) -> dict[str, Any]:
         """Execute sequential thinking for a step with ENFORCED ADG templates."""
 
         if not self.seq_thinking_enabled:
@@ -613,10 +619,10 @@ Please debug this systematically using sequential thinking.
             'thoughts': [
                 f"Thought 1: Analyzing {step_name} requirements and context",
                 f"Thought 2: Breaking down {step_type} into manageable components",
-                f"Thought 3: Identifying dependencies and risks",
-                f"Thought 4: Developing systematic approach",
-                f"Thought 5: Planning validation strategy",
-                f"Thought 6: Defining next steps and success criteria"
+                "Thought 3: Identifying dependencies and risks",
+                "Thought 4: Developing systematic approach",
+                "Thought 5: Planning validation strategy",
+                "Thought 6: Defining next steps and success criteria"
             ],
             'recommendations': [
                 "Proceed with structured approach",
@@ -633,7 +639,7 @@ Please debug this systematically using sequential thinking.
         return seq_result
 
     def execute_step_with_seq_thinking(self, step_name: str, step_type: str,
-                                     step_config: Dict[str, Any]) -> Dict[str, Any]:
+                                     step_config: dict[str, Any]) -> dict[str, Any]:
         """Execute step with forced sequential thinking when appropriate."""
 
         # Prepare context for token estimation
@@ -694,7 +700,7 @@ Please debug this systematically using sequential thinking.
         self.step_results.append(step_result)
         return step_result
 
-    def _prepare_step_context(self, step_name: str, step_type: str, step_config: Dict[str, Any]) -> Dict[str, Any]:
+    def _prepare_step_context(self, step_name: str, step_type: str, step_config: dict[str, Any]) -> dict[str, Any]:
         """Prepare context for token estimation based on step type and configuration."""
         base_context = {
             'plan_step': f"{self.current_phase}/{self.current_wave}/{step_name}",
@@ -729,13 +735,13 @@ Please debug this systematically using sequential thinking.
 
         return base_prompt
 
-    def _get_file_contents(self, file_paths: List[str]) -> List[Dict[str, Any]]:
+    def _get_file_contents(self, file_paths: list[str]) -> list[dict[str, Any]]:
         """Get file contents for token estimation."""
         files = []
         for file_path in file_paths:
             path = Path(file_path)
             if path.exists():
-                with open(path, 'r', encoding='utf-8') as f:
+                with open(path, encoding='utf-8') as f:
                     content = f.read()
                 files.append({
                     'path': file_path,
@@ -749,7 +755,7 @@ Please debug this systematically using sequential thinking.
                 })
         return files
 
-    def _get_diff_contents(self, diff_paths: List[str]) -> List[Dict[str, Any]]:
+    def _get_diff_contents(self, diff_paths: list[str]) -> list[dict[str, Any]]:
         """Get diff contents for token estimation."""
         diffs = []
         for diff_path in diff_paths:
@@ -768,7 +774,7 @@ Please debug this systematically using sequential thinking.
             })
         return diffs
 
-    def _get_log_contents(self, log_sources: List[str]) -> List[Dict[str, Any]]:
+    def _get_log_contents(self, log_sources: list[str]) -> list[dict[str, Any]]:
         """Get log contents for token estimation."""
         logs = []
         for source in log_sources:
@@ -787,7 +793,7 @@ FileNotFoundError: Config file not found
             })
         return logs
 
-    def _get_retrieved_context(self, context_sources: List[str]) -> List[Dict[str, Any]]:
+    def _get_retrieved_context(self, context_sources: list[str]) -> list[dict[str, Any]]:
         """Get retrieved context for token estimation."""
         context = []
         for i, source in enumerate(context_sources):
@@ -804,12 +810,12 @@ It contains important information about coding standards and patterns.
             })
         return context
 
-    def _get_prior_step_contents(self) -> List[str]:
+    def _get_prior_step_contents(self) -> list[str]:
         """Get contents from prior steps to carry forward."""
         # Return last 3 step results as context
         return [str(result) for result in self.step_results[-3:]]
 
-    def _execute_step_logic(self, step_type: str, step_config: Dict[str, Any], estimate) -> Dict[str, Any]:
+    def _execute_step_logic(self, step_type: str, step_config: dict[str, Any], estimate) -> dict[str, Any]:
         """Execute the actual step logic."""
         # Simulate step execution
         execution_time = 0.5  # Simulated execution time
@@ -821,7 +827,7 @@ It contains important information about coding standards and patterns.
             'artifacts': [f"artifact_{step_type}_{hash(str(step_config)) % 1000}.json"]
         }
 
-    def get_workflow_summary(self) -> Dict[str, Any]:
+    def get_workflow_summary(self) -> dict[str, Any]:
         """Get complete workflow summary including sequential thinking metrics."""
         budget_summary = self.preflight_hook.get_budget_summary()
 

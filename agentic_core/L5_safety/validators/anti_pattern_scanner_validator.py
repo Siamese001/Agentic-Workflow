@@ -21,11 +21,11 @@ from typing import Any
 
 from agentic_core.L0_routing.config import (
     AGENTIC_CORE_DIR,
-    get_all_apps_paths,
     INFRASTRUCTURE_DIR,
     OPS_SCRIPTS_DIR,
     SYSTEM_LEARNING_DIR,
     TOOLS_DIR,
+    get_all_apps_paths,
 )
 from agentic_core.L5_safety.validators.base_detector_validator import (
     AntiPatternCategory,
@@ -42,6 +42,9 @@ from agentic_core.L5_safety.validators.direct_prompt_compilation_validator impor
 from agentic_core.L5_safety.validators.global_mutation_validator import (
     GlobalMutationDetector,
 )
+from agentic_core.L5_safety.validators.hollow_file_detector_validator import (
+    HollowFileDetector,
+)
 from agentic_core.L5_safety.validators.magic_validator import (
     MagicConfigDetector,
 )
@@ -56,9 +59,6 @@ from agentic_core.L5_safety.validators.silent_swallower_validator import (
 )
 from agentic_core.L5_safety.validators.type_erasure_validator import (
     TypeErasureDetector,
-)
-from agentic_core.L5_safety.validators.hollow_file_detector_validator import (
-    HollowFileDetector,
 )
 from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     LayerSegment,

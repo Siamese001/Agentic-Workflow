@@ -1,9 +1,9 @@
 #!/usr/bin/env python
 """Layer 2 Semantic Cache - Performance and Functionality Proof"""
 
+import json
 import sys
 import time
-import json
 from pathlib import Path
 
 print('='*70)
@@ -73,7 +73,7 @@ try:
         print(f'    Exact match HIT: {elapsed*1000:.2f}ms')
         print(f'    Response: {result[:50]}...')
     else:
-        print(f'    Exact match MISS (expected on first run if cache cleared)')
+        print('    Exact match MISS (expected on first run if cache cleared)')
         print(f'    Retrieval time: {elapsed*1000:.2f}ms')
 except Exception as e:
     print(f'    Retrieval FAILED: {e}')

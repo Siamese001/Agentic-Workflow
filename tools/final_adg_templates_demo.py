@@ -12,9 +12,12 @@ repo_root = Path(__file__).parent
 sys.path.append(str(repo_root))
 
 from apps_shared.prompts.sequential_thinking_templates import (
-    get_all_templates, render_template, get_template,
-    SequentialThinkingTemplate
+    SequentialThinkingTemplate,
+    get_all_templates,
+    get_template,
+    render_template,
 )
+
 
 def main():
     print("🎉 FINAL ADG-BASED SEQUENTIAL THINKING TEMPLATES DEMONSTRATION")
@@ -56,7 +59,7 @@ def main():
         'bottlenecks': 'Layer boundary queries, Violation filtering, Graph traversal'
     }
 
-    print(f'📊 ADG System Overview:')
+    print('📊 ADG System Overview:')
     print(f'   Nodes: {adg_context["node_count"]}')
     print(f'   Edges: {adg_context["edge_count"]}')
     print(f'   Layers: {adg_context["layer_count"]}')

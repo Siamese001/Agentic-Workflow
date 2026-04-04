@@ -6,15 +6,14 @@ This script performs comprehensive testing of filesystem and memory MCP
 to uncover any issues, following Windsurf rules directives.
 """
 
+import json
+import shutil
 import subprocess
 import sys
-import json
-import time
 import tempfile
-import shutil
+import time
 from pathlib import Path
-from typing import Dict, List, Optional, Any
-import traceback
+
 
 class MCPRobustTester:
     """Robust testing for Filesystem and Memory MCP"""
@@ -465,8 +464,8 @@ print(json.dumps(create_entities(entities)))
 
         # Test 2: Concurrent operations
         try:
-            import threading
             import queue
+            import threading
 
             results_queue = queue.Queue()
 
@@ -541,14 +540,14 @@ print(json.dumps(create_entities(entities)))
         passed_tests = len([r for r in self.test_results if r['success']])
         failed_tests = len(self.errors_found)
 
-        print(f"\n=== Test Summary ===")
+        print("\n=== Test Summary ===")
         print(f"Total Tests: {total_tests}")
         print(f"Passed: {passed_tests}")
         print(f"Failed: {failed_tests}")
         print(f"Success Rate: {(passed_tests/total_tests)*100:.1f}%")
 
         if self.errors_found:
-            print(f"\n=== Errors Found ===")
+            print("\n=== Errors Found ===")
             for error in self.errors_found:
                 print(f"❌ {error['test_name']}: {error['error']}")
 

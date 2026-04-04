@@ -9,8 +9,8 @@ from __future__ import annotations
 
 from typing import Any
 
-from agentic_core.L1_cognition.query_intent_expansion import QueryIntentExpander
 from agentic_core.L1_cognition.config.graphrag_config import GraphRAGConfig
+from agentic_core.L1_cognition.query_intent_expansion import QueryIntentExpander
 
 __all__ = [
     "QueryRetrievalBridge",

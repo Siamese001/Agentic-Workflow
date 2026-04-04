@@ -17,7 +17,6 @@ from __future__ import annotations
 from typing import Any
 
 from agentic_core.interfaces.execution import CIDRegistry
-
 from agentic_core.interfaces.spine import (
     AirlockAssembler,
     ExecutionOrchestrator,

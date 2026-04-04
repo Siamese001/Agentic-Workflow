@@ -7,7 +7,7 @@ rules and content filtering for overall safety assessment.
 from __future__ import annotations
 
 from datetime import datetime
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 from agentic_core.L1_cognition.config.graphrag_config import get_config
 from agentic_core.L1_cognition.engines.constitutional_rules_engine import ConstitutionalRulesEngine
@@ -99,9 +99,9 @@ class SafetyEvaluator:
 
     def __init__(
         self,
-        config: Optional[GuardrailConfig] = None,
-        constitutional_engine: Optional[ConstitutionalRulesEngine] = None,
-        content_filter: Optional[ContentFilterEngine] = None
+        config: GuardrailConfig | None = None,
+        constitutional_engine: ConstitutionalRulesEngine | None = None,
+        content_filter: ContentFilterEngine | None = None
     ) -> None:
         """Initialize the safety evaluator.
 
@@ -118,7 +118,7 @@ class SafetyEvaluator:
         self.content_filter = content_filter or ContentFilterEngine(self.config)
 
         # Evaluation statistics
-        self._evaluation_stats: Dict[str, List[float]] = {
+        self._evaluation_stats: dict[str, list[float]] = {
             "evaluation_time": [],
             "safety_scores": [],
             "risk_levels": {}
@@ -129,8 +129,8 @@ class SafetyEvaluator:
         content: str,
         content_id: str,
         content_type: str = "generation",
-        context: Optional[str] = None,
-        additional_metadata: Optional[Dict[str, Any]] = None
+        context: str | None = None,
+        additional_metadata: dict[str, Any] | None = None
     ) -> SafetyEvaluation:
         """Evaluate the safety of content.
 
@@ -232,7 +232,7 @@ class SafetyEvaluator:
         self,
         constitutional_report: GuardrailReport,
         content_filter_report: GuardrailReport
-    ) -> Dict[str, float]:
+    ) -> dict[str, float]:
         """Calculate safety scores from reports."""
         scores = {
             "overall": 0.0,
@@ -293,7 +293,7 @@ class SafetyEvaluator:
         self,
         constitutional_report: GuardrailReport,
         content_filter_report: GuardrailReport,
-        safety_scores: Dict[str, float]
+        safety_scores: dict[str, float]
     ) -> GuardrailSeverity:
         """Determine overall risk level."""
         # Check for critical violations
@@ -331,7 +331,7 @@ class SafetyEvaluator:
         constitutional_report: GuardrailReport,
         content_filter_report: GuardrailReport,
         risk_level: GuardrailSeverity
-    ) -> List[str]:
+    ) -> list[str]:
         """Generate safety recommendations."""
         recommendations = []
 
@@ -378,7 +378,7 @@ class SafetyEvaluator:
         self,
         constitutional_report: GuardrailReport,
         content_filter_report: GuardrailReport
-    ) -> List[str]:
+    ) -> list[str]:
         """Extract risk factors from reports."""
         risk_factors = []
 
@@ -418,7 +418,7 @@ class SafetyEvaluator:
             # In non-strict mode, only critical violations block
             return risk_level != GuardrailSeverity.CRITICAL
 
-    def get_evaluation_stats(self) -> Dict[str, Any]:
+    def get_evaluation_stats(self) -> dict[str, Any]:
         """Get evaluation statistics."""
         stats = {}
 
@@ -467,9 +467,9 @@ class SafetyEvaluator:
 
 # Factory function
 def create_safety_evaluator(
-    config: Optional[GuardrailConfig] = None,
-    constitutional_engine: Optional[ConstitutionalRulesEngine] = None,
-    content_filter: Optional[ContentFilterEngine] = None
+    config: GuardrailConfig | None = None,
+    constitutional_engine: ConstitutionalRulesEngine | None = None,
+    content_filter: ContentFilterEngine | None = None
 ) -> SafetyEvaluator:
     """Create a safety evaluator."""
     return SafetyEvaluator(config, constitutional_engine, content_filter)

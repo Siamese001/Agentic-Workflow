@@ -31,7 +31,7 @@ def check_layer_violations():
     cursor.execute('SELECT COUNT(*) FROM edges WHERE relation_type="violates"')
     violation_count = cursor.fetchone()[0]
 
-    print(f"\n📈 RESULTS:")
+    print("\n📈 RESULTS:")
     print(f"  Total violations: {violation_count}")
 
     if violation_count == 0:
@@ -51,7 +51,7 @@ def check_layer_violations():
         ''')
 
         violations = cursor.fetchall()
-        print(f"\nSample violations:")
+        print("\nSample violations:")
         for src_id, dst_id, src_name, dst_name in violations:
             print(f"  {src_name} -> {dst_name}")
 
@@ -65,16 +65,16 @@ def check_layer_violations():
     ''')
 
     layers = cursor.fetchall()
-    print(f"\n🏗️  Layer distribution:")
+    print("\n🏗️  Layer distribution:")
     for layer, count in layers:
         print(f"  {layer}: {count} modules")
 
     # Check for L_CONTRACTS layer
     contracts_exists = any(layer[0] == "ADG::Layer::L_CONTRACTS" for layer in layers)
     if contracts_exists:
-        print(f"  ✅ L_CONTRACTS layer exists")
+        print("  ✅ L_CONTRACTS layer exists")
     else:
-        print(f"  ⚠️  L_CONTRACTS layer not found")
+        print("  ⚠️  L_CONTRACTS layer not found")
 
     conn.close()
 

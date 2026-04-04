@@ -15,8 +15,8 @@ from pathlib import Path
 from typing import Dict, List, Set, Tuple
 
 from agentic_core.L5_safety.validators.hollow_file_detector_validator import (
-    HollowFileDetector,
     HollowFileClassification,
+    HollowFileDetector,
 )
 
 
@@ -54,7 +54,7 @@ def parse_ast(content: str) -> ast.AST | None:
         return None
 
 
-def check_file_neutered(file_path: Path, before_hash: str, after_hash: str = "HEAD") -> Tuple[bool, int, int]:
+def check_file_neutered(file_path: Path, before_hash: str, after_hash: str = "HEAD") -> tuple[bool, int, int]:
     """Check if file lost all behavioral content in refactor.
 
     Returns:
@@ -79,7 +79,7 @@ def check_file_neutered(file_path: Path, before_hash: str, after_hash: str = "HE
     return is_neutered, before_behavioral, after_behavioral
 
 
-def get_modified_files_since(base_hash: str) -> List[Path]:
+def get_modified_files_since(base_hash: str) -> list[Path]:
     """Get list of modified Python files since base commit."""
     try:
         result = subprocess.run(
@@ -93,7 +93,7 @@ def get_modified_files_since(base_hash: str) -> List[Path]:
         return []
 
 
-def check_files_neutered(files: List[Path], base_hash: str) -> Dict[Path, Dict]:
+def check_files_neutered(files: list[Path], base_hash: str) -> dict[Path, dict]:
     """Check multiple files for neutered content."""
     results = {}
 
@@ -120,7 +120,7 @@ def check_files_neutered(files: List[Path], base_hash: str) -> Dict[Path, Dict]:
     return results
 
 
-def generate_cleanup_commands(neutered_files: List[Path]) -> List[str]:
+def generate_cleanup_commands(neutered_files: list[Path]) -> list[str]:
     """Generate git commands for cleaning up neutered files."""
     commands = []
 

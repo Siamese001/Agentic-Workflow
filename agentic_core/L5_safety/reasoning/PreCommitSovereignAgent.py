@@ -92,10 +92,9 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
-from agentic_core.L5_safety.enforcement.unified_validator import UnifiedSSOTValidator
-
 from agentic_core.base_agents.L0RoutingBase import L0RoutingBase
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
+from agentic_core.L5_safety.enforcement.unified_validator import UnifiedSSOTValidator
 from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     LayerSegment,
     _emit_agent_executes_agent,

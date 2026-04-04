@@ -13,6 +13,7 @@ sys.path.append(str(repo_root))
 
 from agentic_core.planning.sequential_thinking_workflow import SequentialThinkingEnhancedWorkflow
 
+
 def debug_template_content():
     """Debug what's actually in the rendered templates."""
 
@@ -44,7 +45,7 @@ def debug_template_content():
         print(f"... ({len(lines)-30} more lines)")
 
     # Check for expected values
-    print(f"\n🔍 Checking for expected values:")
+    print("\n🔍 Checking for expected values:")
     expected_values = [
         '10,432',  # node_count
         '681,161',  # edge_count
@@ -61,7 +62,7 @@ def debug_template_content():
         print(f"   {'✅' if present else '❌'} {value}: {'Found' if present else 'Not Found'}")
 
     # Check for ADG context section
-    print(f"\n📊 ADG Statistics Section:")
+    print("\n📊 ADG Statistics Section:")
     if "## ADG Graph Statistics" in template_content:
         print("   ✅ ADG Graph Statistics section found")
 

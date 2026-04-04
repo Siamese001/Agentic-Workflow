@@ -11,9 +11,6 @@ import uuid
 from collections.abc import Callable
 from typing import Any, TypeVar
 
-from agentic_core.utils.dependency_resolver import DynamicLoader
-from agentic_core.utils.feature_flags import FeatureFlagManager
-
 from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     LayerSegment,
     _emit_agent_executes_agent,
@@ -56,6 +53,8 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     emit_determinism_digest,  # noqa: E402
     emit_replay_key,  # noqa: E402
 )
+from agentic_core.utils.dependency_resolver import DynamicLoader
+from agentic_core.utils.feature_flags import FeatureFlagManager
 
 _emit_authorize_and_execute("p2", "feature_flagged_agent_mixin", "execution_auth")
 _emit_validates_capability("p2", "feature_flagged_agent_mixin", "capability_check")

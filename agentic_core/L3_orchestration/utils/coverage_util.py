@@ -28,7 +28,7 @@ Logger = logging.getLogger(__name__)
 @dataclass
 class CoverageMetrics:
     """Coverage analysis results."""
-    
+
     total_layers: int
     active_layers: int
     entropy: float
@@ -51,7 +51,7 @@ def compute_proportions(counts: dict[str, int]) -> dict[str, float]:
     """
     total = sum(counts.values())
     if total == 0:
-        return {layer: 0.0 for layer in counts}
+        return dict.fromkeys(counts, 0.0)
     return {layer: count / total for layer, count in counts.items()}
 
 
@@ -85,9 +85,9 @@ def find_underrepresented_layer(
     """
     if not proportions:
         return None
-    
+
     priority_boost_layers = priority_boost_layers or []
-    
+
     def sort_key(layer: str) -> tuple[float, int]:
         prop = proportions.get(layer, 0.0)
         if layer in priority_boost_layers:
@@ -95,7 +95,7 @@ def find_underrepresented_layer(
         else:
             priority = 99
         return (prop, priority)
-    
+
     return min(proportions.keys(), key=sort_key)
 
 
@@ -117,30 +117,30 @@ def calculate_coverage_metrics(
         CoverageMetrics with analysis results
     """
     default_layers = default_layers or [
-        "L0_routing", "L1_cognition", "L2_execution", 
+        "L0_routing", "L1_cognition", "L2_execution",
         "L3_orchestration", "L4_state", "L5_safety"
     ]
-    
+
     # Ensure all layers have counts
     all_layers = set(layer_counts.keys()) | set(default_layers)
     full_counts = {layer: layer_counts.get(layer, 0) for layer in all_layers}
-    
+
     # Calculate proportions
     proportions = compute_proportions(full_counts)
-    
+
     # Calculate entropy
     entropy = shannon_entropy(proportions)
     max_entropy = math.log2(len(all_layers)) if all_layers else 1.0
     entropy_ratio = entropy / max_entropy if max_entropy > 0 else 0.0
-    
+
     # Determine balance
     is_balanced = entropy >= threshold_entropy
-    
+
     # Find underrepresented layer
     underrepresented = None if is_balanced else find_underrepresented_layer(
         proportions, priority_boost_layers
     )
-    
+
     return CoverageMetrics(
         total_layers=len(all_layers),
         active_layers=sum(1 for c in full_counts.values() if c > 0),
@@ -167,7 +167,7 @@ def generate_coverage_report(metrics: CoverageMetrics) -> str:
         f"Coverage: Entropy={metrics.entropy:.2f}/{metrics.max_entropy:.2f} "
         f"({metrics.entropy_ratio * 100:.1f}% max). "
     )
-    
+
     if metrics.is_balanced:
         report += "Coverage balanced."
     else:
@@ -177,7 +177,7 @@ def generate_coverage_report(metrics: CoverageMetrics) -> str:
             f"IMBALANCE DETECTED — Underrepresented: {under} "
             f"({prop:.1%}). Triggering active correction."
         )
-    
+
     return report
 
 
@@ -200,7 +200,7 @@ def get_layer_bias_weight(
         priority_index = priority_boost_layers.index(layer)
     else:
         priority_index = 99
-    
+
     return base_weight + (5 - priority_index)
 
 
@@ -222,23 +222,23 @@ def heal_repository(
         Healing results dict per standard_heal format
     """
     violations_found = 0
-    
+
     if not layers or len(layers) == 0:
         violations_found += 1
         Logger.warning("[Coverage] No layers configured")
-    
+
     if threshold_entropy <= 0 or threshold_entropy > 5:
         violations_found += 1
         Logger.warning(f"[Coverage] Invalid threshold: {threshold_entropy}")
-    
+
     if bias_weight <= 0:
         violations_found += 1
         Logger.warning(f"[Coverage] Invalid bias_weight: {bias_weight}")
-    
+
     if not priority_boost_layers:
         violations_found += 1
         Logger.warning("[Coverage] No priority_boost_layers configured")
-    
+
     return {
         "violations_found": violations_found,
         "violations_fixed": 1 if violations_found == 0 else 0,
@@ -250,7 +250,7 @@ def heal_repository(
 def main():
     """Main entry point for Coverage Utility."""
     import argparse
-    
+
     parser = argparse.ArgumentParser(description="Coverage Utility")
     parser.add_argument(
         "--layer-counts",
@@ -269,25 +269,25 @@ def main():
         action="store_true",
         help="Verbose output",
     )
-    
+
     args = parser.parse_args()
-    
+
     if args.verbose:
         logging.basicConfig(level=logging.DEBUG)
     else:
         logging.basicConfig(level=logging.INFO)
-    
+
     # Parse layer counts
     import json
     layer_counts = json.loads(args.layer_counts) if args.layer_counts else {}
-    
+
     # Calculate metrics
     metrics = calculate_coverage_metrics(layer_counts, args.threshold)
-    
+
     # Generate report
     report = generate_coverage_report(metrics)
     print(report)
-    
+
     return {
         "entropy": metrics.entropy,
         "max_entropy": metrics.max_entropy,

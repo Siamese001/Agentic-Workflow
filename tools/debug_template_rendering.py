@@ -12,8 +12,11 @@ repo_root = Path(__file__).parent
 sys.path.append(str(repo_root))
 
 from apps_shared.prompts.sequential_thinking_templates import (
-    render_template, get_template, SequentialThinkingTemplate
+    SequentialThinkingTemplate,
+    get_template,
+    render_template,
 )
+
 
 def debug_template_rendering():
     """Debug why ADG context isn't being injected properly."""
@@ -205,7 +208,7 @@ def main():
     results = test_all_adg_templates()
 
     # Summary
-    print(f"\n📊 Debug Summary")
+    print("\n📊 Debug Summary")
     print("=" * 60)
 
     successful = [r for r in results if r.get('success', False)]

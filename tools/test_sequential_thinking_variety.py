@@ -5,12 +5,11 @@ Demonstrates effectiveness across different SWE 1.5 task types.
 """
 
 import os
-import sys
-import json
-import time
 import subprocess
+import sys
+import time
 from pathlib import Path
-from typing import List, Dict, Any
+from typing import Any
 
 # Set environment variables for testing
 os.environ['SEQUENTIAL_THINKING_ENABLED'] = 'true'
@@ -149,7 +148,7 @@ def test_sequential_thinking_prompts():
             ], capture_output=True, text=True, cwd=repo_root)
 
             if result.returncode == 0:
-                print(f"   ✅ Usage logged successfully")
+                print("   ✅ Usage logged successfully")
 
                 # Simulate sequential thinking response
                 thoughts = generate_mock_thoughts(scenario)
@@ -186,7 +185,7 @@ def test_sequential_thinking_prompts():
 
     return results
 
-def generate_mock_thoughts(scenario: Dict[str, Any]) -> List[str]:
+def generate_mock_thoughts(scenario: dict[str, Any]) -> list[str]:
     """Generate mock sequential thoughts for testing."""
 
     thought_templates = {
@@ -257,14 +256,14 @@ def generate_mock_thoughts(scenario: Dict[str, Any]) -> List[str]:
         "Thought 6: Defining next steps and recommendations"
     ])
 
-def estimate_tokens(scenario: Dict[str, Any]) -> int:
+def estimate_tokens(scenario: dict[str, Any]) -> int:
     """Estimate token usage for a scenario."""
     base_tokens = 1000  # Base prompt tokens
     context_tokens = len(str(scenario.get('context', {}))) * 0.5
     thought_tokens = 6 * 500  # 6 thoughts at 500 tokens each
     return int(base_tokens + context_tokens + thought_tokens)
 
-def generate_test_report(results: List[Dict[str, Any]]) -> str:
+def generate_test_report(results: list[dict[str, Any]]) -> str:
     """Generate comprehensive test report."""
 
     total_tests = len(results)
@@ -364,7 +363,7 @@ def main():
     with open(report_file, 'w', encoding='utf-8') as f:
         f.write(report)
 
-    print(f"\n📊 Test Summary")
+    print("\n📊 Test Summary")
     print("=" * 60)
     passed = sum(1 for r in results if r.get('success', False))
     total = len(results)

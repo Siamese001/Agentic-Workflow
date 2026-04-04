@@ -7,12 +7,13 @@ Per Agentic Retrieval Models v15 spec - Layer 1 uses Redis for:
 - RAM-first cache (ephemeral, can be stale)
 """
 
-import redis
-import sqlite3
 import hashlib
-import time
 import json
+import sqlite3
+import time
 from pathlib import Path
+
+import redis
 
 r = redis.from_url('redis://localhost:6379/0', decode_responses=True)
 
@@ -26,12 +27,12 @@ db_path = candidates[0]
 conn = sqlite3.connect(db_path)
 conn.row_factory = sqlite3.Row
 
-print(f'\n[TEST SETUP]')
+print('\n[TEST SETUP]')
 print(f'  SQLite: {db_path.name}')
 print(f'  Redis:  localhost:6379/0 ({r.dbsize():,} keys)')
 
 # Layer 1 Pattern: SHA-256 hash as key, cached response as value
-print(f'\n[TEST 1] LAYER 1: EXACT HASH LOOKUP (NO embeddings)')
+print('\n[TEST 1] LAYER 1: EXACT HASH LOOKUP (NO embeddings)')
 print('  Pattern: key = SHA256(query_text), value = cached_response')
 
 # Simulate 1000 different queries
@@ -71,7 +72,7 @@ speedup = sqlite_time / redis_time if redis_time > 0 else 0
 print(f'\n  --> LAYER 1 SPEEDUP: {speedup:.1f}x faster')
 
 # Test 2: Concurrent access pattern
-print(f'\n[TEST 2] CONCURRENT BATCH RETRIEVAL (Pipeline)')
+print('\n[TEST 2] CONCURRENT BATCH RETRIEVAL (Pipeline)')
 print('  Pattern: Multiple keys in single round-trip')
 
 # Redis pipeline - batch retrieve 100 keys
@@ -98,7 +99,7 @@ speedup_batch = sqlite_batch / redis_batch if redis_batch > 0 else 0
 print(f'\n  --> BATCH SPEEDUP: {speedup_batch:.1f}x faster')
 
 # Test 3: ADG Hot Cache operations (actual use case)
-print(f'\n[TEST 3] ADG HOT CACHE - REAL OPERATIONS')
+print('\n[TEST 3] ADG HOT CACHE - REAL OPERATIONS')
 print('  These are the actual Redis operations for ADG acceleration:')
 
 ops = [
@@ -121,7 +122,7 @@ for name, op in ops:
 print(f'\n    Total Redis (6 ops): {total_redis:.2f}ms')
 
 # SQLite equivalents
-print(f'\n  SQLite equivalents:')
+print('\n  SQLite equivalents:')
 sqlite_ops = [
     ('Metadata query', "SELECT * FROM meta"),
     ('Status query', "SELECT * FROM nodes LIMIT 1"),  # Simulated

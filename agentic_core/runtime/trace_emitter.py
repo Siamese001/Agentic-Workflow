@@ -17,10 +17,6 @@ import time
 from dataclasses import dataclass, field
 from typing import Any, Callable
 
-from agentic_core.runtime.execution_trace import (
-    ExecutionTrace,
-    get_active_execution_trace,
-)
 from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     LayerSegment,
     _emit_agent_executes_agent,
@@ -64,6 +60,10 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_writes_via_uwg,
     emit_determinism_digest,  # noqa: E402
     emit_replay_key,  # noqa: E402
+)
+from agentic_core.runtime.execution_trace import (
+    ExecutionTrace,
+    get_active_execution_trace,
 )
 
 _emit_applies_guardrail("p0", "trace_emitter", "p0_governance")

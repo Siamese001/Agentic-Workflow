@@ -4,11 +4,12 @@ Filesystem MCP Server Debug and RCA Tool
 Debugs the filesystem server warning, performs root cause analysis, and fixes issues.
 """
 
-import subprocess
 import json
-import time
 import os
+import subprocess
+import time
 from pathlib import Path
+
 
 class FilesystemMCPDebugger:
     def __init__(self):
@@ -17,7 +18,7 @@ class FilesystemMCPDebugger:
 
     def load_config(self):
         """Load MCP configuration."""
-        with open(self.config_file, 'r') as f:
+        with open(self.config_file) as f:
             return json.load(f)
 
     def debug_filesystem_server(self):
@@ -32,7 +33,7 @@ class FilesystemMCPDebugger:
         if not fs_config:
             return {'status': 'error', 'message': 'Filesystem server not found in config'}
 
-        print(f'📋 Current Configuration:')
+        print('📋 Current Configuration:')
         print(f'   Command: {fs_config.get("command")}')
         print(f'   Args: {fs_config.get("args")}')
         print(f'   Disabled: {fs_config.get("disabled")}')
@@ -42,14 +43,14 @@ class FilesystemMCPDebugger:
         if not package_path:
             return {'status': 'error', 'message': 'No package path found'}
 
-        print(f'\\n🔍 Package Analysis:')
+        print('\\n🔍 Package Analysis:')
         print(f'   Path: {package_path}')
 
         # Check package existence
         if not os.path.exists(package_path):
             return {'status': 'error', 'message': f'Package not found: {package_path}'}
 
-        print(f'   ✅ Package exists')
+        print('   ✅ Package exists')
 
         # Check package details
         try:
@@ -61,11 +62,11 @@ class FilesystemMCPDebugger:
             print(f'   ❌ Error getting package info: {e}')
 
         # Test package execution with detailed output
-        print(f'\\n🧪 Execution Testing:')
+        print('\\n🧪 Execution Testing:')
 
         try:
             # Test 1: Help command
-            print(f'   Testing --help command...')
+            print('   Testing --help command...')
             result = subprocess.run(
                 ['node', package_path, '--help'],
                 capture_output=True,
@@ -84,7 +85,7 @@ class FilesystemMCPDebugger:
                 print(f'   Stderr preview: {result.stderr[:200]}...')
 
             # Test 2: Version command
-            print(f'\\n   Testing --version command...')
+            print('\\n   Testing --version command...')
             version_result = subprocess.run(
                 ['node', package_path, '--version'],
                 capture_output=True,
@@ -98,7 +99,7 @@ class FilesystemMCPDebugger:
                 print(f'   Version stderr: {version_result.stderr.strip()}')
 
             # Test 3: Try with repository argument
-            print(f'\\n   Testing with repository argument...')
+            print('\\n   Testing with repository argument...')
             repo_result = subprocess.run(
                 ['node', package_path, 'C:\\Git\\Agentic-Workflow', '--help'],
                 capture_output=True,
@@ -134,7 +135,7 @@ class FilesystemMCPDebugger:
 
     def perform_root_cause_analysis(self, analysis):
         """Perform root cause analysis based on test results."""
-        print(f'\\n🔍 Root Cause Analysis:')
+        print('\\n🔍 Root Cause Analysis:')
         print('=' * 30)
 
         issues = []
@@ -194,7 +195,7 @@ class FilesystemMCPDebugger:
 
     def fix_filesystem_server(self, analysis_result):
         """Fix identified issues with the filesystem server."""
-        print(f'\\n🔧 Filesystem Server Fix Implementation')
+        print('\\n🔧 Filesystem Server Fix Implementation')
         print('=' * 40)
 
         if analysis_result['status'] == 'healthy':
@@ -267,7 +268,7 @@ class FilesystemMCPDebugger:
 
     def test_fixed_server(self):
         """Test the fixed filesystem server."""
-        print(f'\\n🧪 Testing Fixed Filesystem Server')
+        print('\\n🧪 Testing Fixed Filesystem Server')
         print('=' * 35)
 
         # Wait a moment for changes to take effect
@@ -294,7 +295,7 @@ class FilesystemMCPDebugger:
 
             startup_time = end_time - start_time
 
-            print(f'📊 Test Results:')
+            print('📊 Test Results:')
             print(f'   Startup time: {startup_time:.3f}s')
             print(f'   Exit code: {result.returncode}')
             print(f'   Has output: {bool(result.stdout.strip())}')
@@ -377,7 +378,7 @@ def main():
     print(f'\\n💾 Debug results saved to: {results_file}')
 
     # Display final status
-    print(f'\\n🎯 Final Status:')
+    print('\\n🎯 Final Status:')
     if result['overall_status'] == 'success':
         print('🟢 SUCCESS: Filesystem MCP server debugged and optimized')
     elif result['overall_status'] == 'failed':

@@ -18,10 +18,10 @@ import ast
 import logging
 from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
+from datetime import datetime
 from enum import Enum
 from pathlib import Path
-from typing import Any, Dict, List, Optional
-from datetime import datetime
+from typing import Any
 
 logger = logging.getLogger(__name__)
 
@@ -51,8 +51,8 @@ class DocumentationSection:
     """Represents a section of documentation."""
     title: str
     content: str
-    subsections: List[DocumentationSection] = field(default_factory=list)
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    subsections: list[DocumentationSection] = field(default_factory=list)
+    metadata: dict[str, Any] = field(default_factory=dict)
     quality_level: DocumentationQuality = DocumentationQuality.STANDARD
     last_updated: datetime = field(default_factory=datetime.now)
 
@@ -62,12 +62,12 @@ class DocumentationArtifact:
     """Represents a complete documentation artifact."""
     title: str
     doc_type: DocumentationType
-    sections: List[DocumentationSection]
-    metadata: Dict[str, Any] = field(default_factory=dict)
-    target_audience: List[str] = field(default_factory=list)
-    prerequisites: List[str] = field(default_factory=list)
+    sections: list[DocumentationSection]
+    metadata: dict[str, Any] = field(default_factory=dict)
+    target_audience: list[str] = field(default_factory=list)
+    prerequisites: list[str] = field(default_factory=list)
     quality_level: DocumentationQuality = DocumentationQuality.STANDARD
-    file_path: Optional[Path] = None
+    file_path: Path | None = None
 
 
 class DocumentationGenerator(ABC):
@@ -102,7 +102,7 @@ class APIDocumentationGenerator(DocumentationGenerator):
             raise FileNotFoundError(f"Source file not found: {source}")
 
         try:
-            with open(source, 'r', encoding='utf-8') as f:
+            with open(source, encoding='utf-8') as f:
                 source_content = f.read()
 
             tree = ast.parse(source_content)
@@ -171,15 +171,15 @@ class APIDocumentationGenerator(DocumentationGenerator):
 
         return True
 
-    def _extract_classes(self, tree: ast.AST) -> List[ast.ClassDef]:
+    def _extract_classes(self, tree: ast.AST) -> list[ast.ClassDef]:
         """Extract class definitions from AST."""
         return [node for node in ast.walk(tree) if isinstance(node, ast.ClassDef)]
 
-    def _extract_functions(self, tree: ast.AST) -> List[ast.FunctionDef]:
+    def _extract_functions(self, tree: ast.AST) -> list[ast.FunctionDef]:
         """Extract function definitions from AST."""
         return [node for node in ast.walk(tree) if isinstance(node, ast.FunctionDef)]
 
-    def _generate_overview(self, source: Path, classes: List[ast.ClassDef], functions: List[ast.FunctionDef]) -> str:
+    def _generate_overview(self, source: Path, classes: list[ast.ClassDef], functions: list[ast.FunctionDef]) -> str:
         """Generate overview section for API documentation."""
         overview = f"# {source.stem} API Documentation\n\n"
         overview += f"**File**: `{source.name}`\n"
@@ -284,7 +284,7 @@ class APIDocumentationGenerator(DocumentationGenerator):
             quality_level=DocumentationQuality.STANDARD
         )
 
-    def _generate_usage_examples(self, classes: List[ast.ClassDef], functions: List[ast.FunctionDef]) -> str:
+    def _generate_usage_examples(self, classes: list[ast.ClassDef], functions: list[ast.FunctionDef]) -> str:
         """Generate usage examples for classes and functions."""
         examples = "## Usage Examples\n\n"
 
@@ -432,7 +432,7 @@ The Agentic Workflow system is a multi-layered architecture designed for autonom
 """
         return overview
 
-    def _generate_layer_documentation(self, source: Path) -> List[DocumentationSection]:
+    def _generate_layer_documentation(self, source: Path) -> list[DocumentationSection]:
         """Generate documentation for each architectural layer."""
         sections = []
 

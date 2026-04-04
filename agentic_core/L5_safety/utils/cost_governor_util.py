@@ -34,7 +34,7 @@ class BudgetExceededError(Exception):
 @dataclass
 class ModelPricing:
     """Pricing information for a specific model."""
-    
+
     model_name: str
     input_cost_per_token: float
     output_cost_per_token: float
@@ -54,16 +54,16 @@ MODEL_PRICING: dict[str, ModelPricing] = {
 @dataclass
 class CostGovernor:
     """Deterministic cost tracking without agent overhead."""
-    
+
     budget_limit: float = 10.0
     current_spend: float = 0.0
     _history: list[dict[str, Any]] = field(default_factory=list)
-    
+
     def __post_init__(self):
         """Initialize after dataclass creation."""
         if self.budget_limit <= 0:
             raise ValueError("budget_limit must be positive")
-    
+
     def track(
         self,
         model: str,
@@ -87,15 +87,15 @@ class CostGovernor:
         """
         # Get pricing for model
         pricing = MODEL_PRICING.get(model, MODEL_PRICING["default"])
-        
+
         # Calculate cost
         input_cost = input_tokens * pricing.input_cost_per_token
         output_cost = output_tokens * pricing.output_cost_per_token
         total_cost = input_cost + output_cost
-        
+
         # Update spend
         self.current_spend += total_cost
-        
+
         # Record in history
         self._history.append({
             "model": model,
@@ -104,24 +104,24 @@ class CostGovernor:
             "cost": total_cost,
             "metadata": metadata or {},
         })
-        
+
         # Trim history if needed
         if len(self._history) > 1000:
             self._history = self._history[-1000:]
-        
+
         Logger.info(
             f"CostGovernor: ${self.current_spend:.4f} / ${self.budget_limit:.2f} "
             f"({model}: ${total_cost:.4f})"
         )
-        
+
         # Check budget
         if self.current_spend > self.budget_limit:
             raise BudgetExceededError(
                 f"BUDGET EXCEEDED: ${self.current_spend:.2f} exceeds limit of ${self.budget_limit:.2f}"
             )
-        
+
         return total_cost
-    
+
     def get_spend_summary(self) -> dict[str, Any]:
         """Get current spending summary.
         
@@ -137,7 +137,7 @@ class CostGovernor:
                 "call_count": 0,
                 "by_model": {},
             }
-        
+
         # Group by model
         by_model: dict[str, dict[str, Any]] = {}
         for entry in self._history:
@@ -147,7 +147,7 @@ class CostGovernor:
             by_model[model]["calls"] += 1
             by_model[model]["cost"] += entry["cost"]
             by_model[model]["tokens"] += entry["input_tokens"] + entry["output_tokens"]
-        
+
         return {
             "current_spend": self.current_spend,
             "budget_limit": self.budget_limit,
@@ -156,7 +156,7 @@ class CostGovernor:
             "call_count": len(self._history),
             "by_model": by_model,
         }
-    
+
     def reset(self) -> None:
         """Reset spend tracking (use with caution)."""
         self.current_spend = 0.0
@@ -188,7 +188,7 @@ def track_cost(
     """
     governor = CostGovernor(budget_limit=budget_limit)
     governor.current_spend = current_spend
-    
+
     cost = governor.track(model, input_tokens, output_tokens)
     return governor.current_spend, cost
 
@@ -254,7 +254,7 @@ def heal(violation: dict[str, Any]) -> dict[str, Any]:
         Healing result dict
     """
     violation_type = violation.get("type", "unknown")
-    
+
     if violation_type == "budget_exceeded":
         Logger.warning("[CostGovernor] Cannot heal budget exceeded - runtime issue")
         return {
@@ -263,7 +263,7 @@ def heal(violation: dict[str, Any]) -> dict[str, Any]:
             "artifacts": [],
             "errors": [],
         }
-    
+
     elif violation_type == "invalid_pricing":
         model = violation.get("model", "unknown")
         # Reset to default pricing
@@ -275,7 +275,7 @@ def heal(violation: dict[str, Any]) -> dict[str, Any]:
             "artifacts": [f"pricing:{model}"],
             "errors": [],
         }
-    
+
     return {
         "status": "skipped",
         "details": f"Unknown violation: {violation_type}",
@@ -287,23 +287,23 @@ def heal(violation: dict[str, Any]) -> dict[str, Any]:
 def main():
     """Main entry point for Cost Governor Utility."""
     import argparse
-    
+
     parser = argparse.ArgumentParser(description="Cost Governor Utility")
     parser.add_argument("--model", type=str, required=True)
     parser.add_argument("--input-tokens", type=int, default=1000)
     parser.add_argument("--output-tokens", type=int, default=500)
     parser.add_argument("--budget", type=float, default=10.0)
     parser.add_argument("--verbose", "-v", action="store_true")
-    
+
     args = parser.parse_args()
-    
+
     if args.verbose:
         logging.basicConfig(level=logging.DEBUG)
     else:
         logging.basicConfig(level=logging.INFO)
-    
+
     governor = CostGovernor(budget_limit=args.budget)
-    
+
     try:
         cost = governor.track(args.model, args.input_tokens, args.output_tokens)
         print(f"Model: {args.model}")

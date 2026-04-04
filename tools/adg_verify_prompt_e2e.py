@@ -1,6 +1,6 @@
 """ADG Prompt Template E2E Verification Script"""
 import sqlite3
-import sys
+
 
 def main():
     conn = sqlite3.connect('artifacts/adg/adg_indexed_03272026_2037.sqlite')

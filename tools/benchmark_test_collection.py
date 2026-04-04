@@ -3,7 +3,7 @@
 
 import subprocess
 import time
-from pathlib import Path
+
 
 def run_command(cmd, cwd=None):
     """Run command and return stdout, stderr, returncode."""
@@ -61,7 +61,7 @@ def benchmark_collection():
 
     print()
     print("Results saved to: test_collection_before.json")
-    print(f"Expected improvement: ~30s (based on 60,457 emitter calls)")
+    print("Expected improvement: ~30s (based on 60,457 emitter calls)")
 
     return collection_time, test_count
 

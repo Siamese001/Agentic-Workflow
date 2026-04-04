@@ -3,11 +3,12 @@
 Ingest expanded trace sources into ChromaDB traces collection
 """
 
-import json
 import hashlib
+import json
 import logging
-from pathlib import Path
 from datetime import datetime
+from pathlib import Path
+
 import chromadb
 
 # Setup logging
@@ -72,7 +73,7 @@ def ingest_jsonl_traces():
 
         try:
             chunks = []
-            with open(file_path, 'r', encoding='utf-8') as f:
+            with open(file_path, encoding='utf-8') as f:
                 for line_num, line in enumerate(f, 1):
                     if not line.strip():
                         continue
@@ -172,7 +173,7 @@ def ingest_log_traces():
             continue
 
         try:
-            with open(file_path, 'r', encoding='utf-8') as f:
+            with open(file_path, encoding='utf-8') as f:
                 content = f.read()
 
             # Split into chunks (e.g., by lines or paragraphs)
@@ -249,7 +250,7 @@ def main():
     collection = client.get_collection("traces")
     final_count = collection.count()
 
-    logger.info(f"Wave 5 Complete:")
+    logger.info("Wave 5 Complete:")
     logger.info(f"  - JSONL traces: {jsonl_chunks} chunks")
     logger.info(f"  - Log traces: {log_chunks} chunks")
     logger.info(f"  - Total new chunks: {total_new_chunks}")

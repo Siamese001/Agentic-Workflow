@@ -75,14 +75,14 @@ def main():
     total_sampled = 500
     revised_signal_ratio = revised_high_signal_count / total_sampled
 
-    print(f"📊 REVISED SIGNAL ANALYSIS")
+    print("📊 REVISED SIGNAL ANALYSIS")
     print("=" * 60)
     print(f"High-signal edges: {revised_high_signal_count}")
     print(f"Low-signal edges: {revised_low_signal_count}")
     print(f"Total sampled: {total_sampled}")
     print(f"Revised signal ratio: {revised_signal_ratio:.3f}")
 
-    print(f"\n🎯 REASONING")
+    print("\n🎯 REASONING")
     print("=" * 60)
     print("• Most edge types represent meaningful semantic relationships")
     print("• Even 'administrative' edges like exports carry useful information")
@@ -92,7 +92,7 @@ def main():
     # Check against threshold
     passes_threshold = revised_signal_ratio >= 0.90
 
-    print(f"\n✅ THRESHOLD CHECK")
+    print("\n✅ THRESHOLD CHECK")
     print("=" * 60)
     print(f"Signal ratio {revised_signal_ratio:.3f} >= 0.90: {'PASS' if passes_threshold else 'FAIL'}")
 

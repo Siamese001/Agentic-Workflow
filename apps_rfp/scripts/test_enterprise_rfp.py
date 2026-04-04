@@ -82,10 +82,10 @@ def _assert_layer4_wiring(result: object) -> None:
     _assert(len(step_sequence) >= 2, "Layer 4: insufficient orchestration steps")
 
     ci = repo_signals.get("ci", {})
-    _assert(ci.get("workflow_count", 0) >= 30, f"Layer 4: insufficient CI workflows")
+    _assert(ci.get("workflow_count", 0) >= 30, "Layer 4: insufficient CI workflows")
 
     tests = repo_signals.get("tests", {})
-    _assert(tests.get("inventory_entries", 0) > 1000, f"Layer 4: insufficient test inventory")
+    _assert(tests.get("inventory_entries", 0) > 1000, "Layer 4: insufficient test inventory")
 
 
 def _assert_enhanced_system_learning(result: object) -> None:
@@ -97,7 +97,7 @@ def _assert_enhanced_system_learning(result: object) -> None:
     delivery_proof = governance.get("delivery_proof", {})
     if delivery_proof:
         if "track_record" not in delivery_proof:
-            print(f"   ⚠️  System learning: delivery_proof.track_record missing (non-blocking)")
+            print("   ⚠️  System learning: delivery_proof.track_record missing (non-blocking)")
 
     # ADG signals for pattern capture
     adg = repo_signals.get("adg", {})

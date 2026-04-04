@@ -9,7 +9,7 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from datetime import datetime
 from enum import Enum
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any
 
 from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_captures_pattern,
@@ -137,12 +137,12 @@ class ConstitutionalRule:
     action: GuardrailAction
 
     # Applicability
-    content_types: List[ContentType]
-    contexts: List[str]  # "query", "context", "response", "generation"
+    content_types: list[ContentType]
+    contexts: list[str]  # "query", "context", "response", "generation"
 
     # Rule metadata
     category: str
-    tags: List[str] = field(default_factory=list)
+    tags: list[str] = field(default_factory=list)
     version: str = "1.0"
     enabled: bool = True
 
@@ -152,7 +152,7 @@ class ConstitutionalRule:
 
     # Usage statistics
     trigger_count: int = 0
-    last_triggered: Optional[datetime] = None
+    last_triggered: datetime | None = None
 
     def __post_init__(self) -> None:
         """Validate rule configuration."""
@@ -175,17 +175,17 @@ class ContentFilter:
     category: str
 
     # Optional fields with defaults
-    pattern: Optional[str] = None  # Regex pattern
-    keywords: List[str] = field(default_factory=list)
+    pattern: str | None = None  # Regex pattern
+    keywords: list[str] = field(default_factory=list)
     confidence_threshold: float = 0.7
-    tags: List[str] = field(default_factory=list)
+    tags: list[str] = field(default_factory=list)
     enabled: bool = True
 
     # Statistics
     match_count: int = 0
-    last_matched: Optional[datetime] = None
+    last_matched: datetime | None = None
 
-    def matches(self, content: str) -> Tuple[bool, float]:
+    def matches(self, content: str) -> tuple[bool, float]:
         """Check if content matches the filter.
 
         Args:
@@ -221,8 +221,8 @@ class GuardrailCheck:
     """Represents a single guardrail check result."""
 
     check_id: str
-    rule_id: Optional[str]  # None for content filters
-    filter_id: Optional[str]  # None for constitutional rules
+    rule_id: str | None  # None for content filters
+    filter_id: str | None  # None for constitutional rules
     passed: bool
     confidence: float
     severity: GuardrailSeverity
@@ -232,10 +232,10 @@ class GuardrailCheck:
     check_type: str  # "constitutional", "content_filter"
 
     # Optional fields with defaults
-    matched_content: Optional[str] = None
-    modified_content: Optional[str] = None
+    matched_content: str | None = None
+    modified_content: str | None = None
     timestamp: datetime = field(default_factory=datetime.utcnow)
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    metadata: dict[str, Any] = field(default_factory=dict)
 
 
 @dataclass
@@ -249,10 +249,10 @@ class GuardrailReport:
     # Overall results
     passed: bool
     overall_score: float
-    highest_severity: Optional[GuardrailSeverity]
+    highest_severity: GuardrailSeverity | None
 
     # Individual checks
-    checks: List[GuardrailCheck]
+    checks: list[GuardrailCheck]
 
     # Summary statistics
     total_checks: int
@@ -261,7 +261,7 @@ class GuardrailReport:
     warnings: int
 
     # Actions taken
-    actions_taken: List[GuardrailAction]
+    actions_taken: list[GuardrailAction]
     content_modified: bool
     escalation_required: bool
 
@@ -270,13 +270,13 @@ class GuardrailReport:
     timestamp: datetime = field(default_factory=datetime.utcnow)
 
     # Metadata
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    metadata: dict[str, Any] = field(default_factory=dict)
 
-    def get_failed_rules(self) -> List[str]:
+    def get_failed_rules(self) -> list[str]:
         """Get list of failed rule IDs."""
         return [check.rule_id for check in self.checks if not check.passed and check.rule_id]
 
-    def get_triggered_filters(self) -> List[str]:
+    def get_triggered_filters(self) -> list[str]:
         """Get list of triggered filter IDs."""
         return [check.filter_id for check in self.checks if not check.passed and check.filter_id]
 
@@ -305,7 +305,7 @@ class GuardrailConfig:
 
     # Escalation
     auto_escalate_critical: bool = True
-    escalation_webhook: Optional[str] = None
+    escalation_webhook: str | None = None
 
     # Learning
     enable_feedback_learning: bool = True
@@ -335,14 +335,14 @@ class GuardrailMetrics:
     escalation_count: int
 
     # Rule statistics
-    rule_trigger_rates: Dict[str, float]
-    filter_match_rates: Dict[str, float]
+    rule_trigger_rates: dict[str, float]
+    filter_match_rates: dict[str, float]
 
     # Severity distribution
-    severity_distribution: Dict[str, int]
+    severity_distribution: dict[str, int]
 
     # Content type distribution
-    content_type_distribution: Dict[str, int]
+    content_type_distribution: dict[str, int]
 
     # Timestamp
     timestamp: datetime = field(default_factory=datetime.utcnow)
@@ -355,11 +355,11 @@ class SafetyEvaluation:
     evaluation_id: str
     content_id: str
     overall_safety_score: float  # 0.0 (unsafe) to 1.0 (safe)
-    category_scores: Dict[str, float]  # Safety scores by category
+    category_scores: dict[str, float]  # Safety scores by category
     risk_level: GuardrailSeverity
-    risk_factors: List[str]
+    risk_factors: list[str]
     safe_to_proceed: bool
-    recommended_actions: List[str]
+    recommended_actions: list[str]
     evaluation_time_ms: float
     evaluator_version: str
     timestamp: datetime = field(default_factory=datetime.utcnow)
@@ -378,12 +378,12 @@ class GuardrailFeedback:
 
     # Feedback content
     was_correct: bool
-    actual_severity: Optional[GuardrailSeverity]
-    user_action: Optional[GuardrailAction]
+    actual_severity: GuardrailSeverity | None
+    user_action: GuardrailAction | None
 
     # Context
-    content_snippet: Optional[str]
-    user_comment: Optional[str]
+    content_snippet: str | None
+    user_comment: str | None
 
     # Metadata
     timestamp: datetime = field(default_factory=datetime.utcnow)

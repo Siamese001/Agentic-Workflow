@@ -1,6 +1,8 @@
 """ADG-driven tests for system_learning/ports/scoring_report_store.py — fan_in=1."""
 from __future__ import annotations
+
 import pytest
+
 pytestmark = pytest.mark.unit
 
 class TestScoringReportStore:

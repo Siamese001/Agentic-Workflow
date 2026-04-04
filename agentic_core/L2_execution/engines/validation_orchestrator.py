@@ -16,8 +16,6 @@ import uuid
 from pathlib import Path
 from typing import Any
 
-from agentic_core.utils.core_extensions.timeout_decorator import timeout
-
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 from agentic_core.L1_cognition.types.validation_types import IValidationProtocol
 from agentic_core.L2_execution.enforcement.guardrail_gate import get_guardrail_gate
@@ -64,6 +62,7 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     emit_determinism_digest,  # noqa: E402
     emit_replay_key,  # noqa: E402
 )
+from agentic_core.utils.core_extensions.timeout_decorator import timeout
 
 emit_replay_key("p0", "validation_orchestrator")
 emit_determinism_digest("p0", "validation_orchestrator")

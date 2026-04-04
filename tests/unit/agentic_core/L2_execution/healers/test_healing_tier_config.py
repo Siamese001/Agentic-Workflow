@@ -1,6 +1,5 @@
 """Tests for healing_tier_config threshold consolidation."""
 import unittest
-from unittest.mock import patch, MagicMock
 
 
 class TestHealingTierConfigConstants(unittest.TestCase):
@@ -38,10 +37,10 @@ class TestHealingTierConfigClass(unittest.TestCase):
     def test_config_creation(self):
         """HealingTierConfig must be creatable with required fields."""
         from agentic_core.L2_execution.healers.healing_tier_config import (
-            HealingTierConfig,
             HEALING_CONFIDENCE_X,
             HEALING_CONFIDENCE_Y,
             QWEN_14B_MODEL_ID,
+            HealingTierConfig,
         )
         config = HealingTierConfig(
             heal_confidence_x=HEALING_CONFIDENCE_X,
@@ -59,8 +58,8 @@ class TestHealingTierConfigClass(unittest.TestCase):
     def test_load_default_config(self):
         """load_default_healing_tier_config must return valid config."""
         from agentic_core.L2_execution.healers.healing_tier_config import (
-            load_default_healing_tier_config,
             HealingTierConfig,
+            load_default_healing_tier_config,
         )
         config = load_default_healing_tier_config()
         self.assertIsInstance(config, HealingTierConfig)

@@ -203,9 +203,8 @@ class AdversarialValidator:
         if self._initialized:
             return
         try:
-            from agentic_core.L5_safety.reasoning.AdversarialProbeAgent_validator import AdversarialProbeAgent
-
             from agentic_core.L4_state.memory import ValidationContext
+            from agentic_core.L5_safety.reasoning.AdversarialProbeAgent_validator import AdversarialProbeAgent
 
             ctx = ValidationContext()
             self._agent = AdversarialProbeAgent(ctx=ctx)
@@ -277,9 +276,8 @@ class BoundaryValidator:
         if self._initialized:
             return
         try:
-            from agentic_core.L5_safety.reasoning.BoundaryTestingAgent_validator import BoundaryTestingAgent
-
             from agentic_core.L4_state.memory import ValidationContext
+            from agentic_core.L5_safety.reasoning.BoundaryTestingAgent_validator import BoundaryTestingAgent
 
             ctx = ValidationContext()
             self._agent = BoundaryTestingAgent(ctx=ctx)

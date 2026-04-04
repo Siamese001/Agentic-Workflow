@@ -10,7 +10,6 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).parent.parent.parent))
 
 import chromadb
-from agentic_core.L4_state.config.memory_store_config import MemoryStoreConfig
 
 
 def test_trace_retrieval():
@@ -80,7 +79,7 @@ def test_trace_type_filtering():
             trace_type = metadata.get('trace_type', 'unknown')
             trace_types[trace_type] = trace_types.get(trace_type, 0) + 1
 
-        print(f"\n📊 Trace Type Distribution (sample of 100):")
+        print("\n📊 Trace Type Distribution (sample of 100):")
         for trace_type, count in sorted(trace_types.items()):
             print(f"  {trace_type}: {count}")
 

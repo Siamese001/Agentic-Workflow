@@ -107,8 +107,6 @@ for t in sorted(territories, key=lambda x: x.get("Heal Cap %", 100)):
     total = t.get("Total", 0)
     if heal_cap < 100:
         print(f"  {t['Territory']}: {heal_cap}% ({total} agents)")
-from agentic_core.utils.ssot_discovery_validator import get_agent_files
-
 from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
@@ -145,6 +143,7 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from agentic_core.utils.ssot_discovery_validator import get_agent_files
 
 _emit_emits_metric_event("find_agents_in_low_heal_territories_util", "p4obs", "metric_1")
 _emit_emits_metric_event("find_agents_in_low_heal_territories_util", "p4obs", "metric_2")

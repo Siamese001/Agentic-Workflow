@@ -82,7 +82,7 @@ class BaseADGVisitor(ABC, ast.NodeVisitor):
         line_no: int,
         edge_kind: str = "",
         symbol: str = "",
-    ) -> "Edge":
+    ) -> Edge:
         """Factory method to create standardized Edge objects.
 
         Args:
@@ -214,46 +214,44 @@ def list_registered_visitors() -> list[str]:
 
 
 # Export structural visitors
-from .structural import _InheritanceVisitor, _AttributeVisitor, _CompositionVisitor
-from .dynamic import _DynamicExecutionVisitor, _ImportVisitor, _InternalCallGraphVisitor
-from .core import _CallVisitor, _AntipatternVisitor
-from .runtime_semantic import _ExecutionSemanticVisitor, _EvalSpineVisitor
-from .l4_waves import (
-    _UWGIngressGateVisitor,
-    _MutationRecordAssemblyVisitor,
-    _AuthoritativeCommitVisitor,
-    _OutboundReadBridgeVisitor,
-)
-from .governance import (
-    _GovernancePlaneVisitor,
-    _SafetyEnforcementVisitor,
-    _SandboxAirlockVisitor,
-    _CapabilityBudgetVisitor,
-)
 from .context_control import (
-    _JITContextVisitor,
     _BoundaryVerifierVisitor,
     _DeterminismControlVisitor,
     _IOInterceptionVisitor,
+    _JITContextVisitor,
 )
-from .transport_proof import (
-    _MutationTransportVisitor,
-    _ExecutionProofVisitor,
-    _PathControlVisitor,
+from .core import _AntipatternVisitor, _CallVisitor
+from .dynamic import _DynamicExecutionVisitor, _ImportVisitor, _InternalCallGraphVisitor
+from .governance import (
+    _CapabilityBudgetVisitor,
+    _GovernancePlaneVisitor,
+    _SafetyEnforcementVisitor,
+    _SandboxAirlockVisitor,
 )
-from .misc import (
-    _TestTraceabilityVisitor,
-    _TypeAnnotationVisitor,
-    _DecoratorVisitor,
-    _SymbolInventoryVisitor,
-    _UnusedImportVisitor,
+from .l4_waves import (
+    _AuthoritativeCommitVisitor,
+    _MutationRecordAssemblyVisitor,
+    _OutboundReadBridgeVisitor,
+    _UWGIngressGateVisitor,
+)
+from .learning import (
+    _L5ValidationProofVisitor,
+    _LearningProvenanceVisitor,
+    _P3LearningMaturityVisitor,
 )
 from .lifecycle_advanced import (
-    _PromptSlotVisitor,
+    _EmbeddingPipelineVisitor,
     _ExecutionTraceVisitor,
     _HealerValidatorVisitor,
-    _EmbeddingPipelineVisitor,
     _HITLVisitor,
+    _PromptSlotVisitor,
+)
+from .misc import (
+    _DecoratorVisitor,
+    _SymbolInventoryVisitor,
+    _TestTraceabilityVisitor,
+    _TypeAnnotationVisitor,
+    _UnusedImportVisitor,
 )
 from .orchestration import (
     _HealingOrchestratorVisitor,
@@ -261,15 +259,17 @@ from .orchestration import (
     _P2ExecutionCapabilityVisitor,
     _P3OrchestrationHealingVisitor,
 )
-from .learning import (
-    _L5ValidationProofVisitor,
-    _LearningProvenanceVisitor,
-    _P3LearningMaturityVisitor,
-)
 from .p4_waves import (
-    _P4StateTelemetryVisitor,
     _P4ObservabilityGovernanceVisitor,
+    _P4StateTelemetryVisitor,
     _RetrievalWiringVisitor,
+)
+from .runtime_semantic import _EvalSpineVisitor, _ExecutionSemanticVisitor
+from .structural import _AttributeVisitor, _CompositionVisitor, _InheritanceVisitor
+from .transport_proof import (
+    _ExecutionProofVisitor,
+    _MutationTransportVisitor,
+    _PathControlVisitor,
 )
 
 __all__ = [

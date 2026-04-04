@@ -6,23 +6,24 @@ context awareness, user behavior analysis, and intelligent routing decisions.
 """
 
 import pickle
-import numpy as np
-from pathlib import Path
-from typing import Dict, List, Optional, Any, Tuple
 from datetime import datetime
+from pathlib import Path
+from typing import Any
+
+import numpy as np
 
 try:
     from sklearn.neural_network import MLPClassifier
-    from sklearn.preprocessing import StandardScaler
     from sklearn.pipeline import Pipeline
+    from sklearn.preprocessing import StandardScaler
 except ImportError:
     MLPClassifier = None
     StandardScaler = None
     Pipeline = None
 
-from .base_model import BaseMLModel, ModelPrediction, ModelInput, PredictionType, DecisionMode
 from ..config.model_registry import DecisionMode
 from ..features.advanced_l0_features import AdvancedL0FeatureExtractor
+from .base_model import BaseMLModel, DecisionMode, ModelInput, ModelPrediction, PredictionType
 
 
 class AdvancedL0Router(BaseMLModel):
@@ -53,7 +54,7 @@ class AdvancedL0Router(BaseMLModel):
     # Reverse mapping
     REVERSE_ROUTING_MAPPING = {v: k for k, v in ROUTING_MAPPING.items()}
 
-    def __init__(self, model_file_path: Optional[Path] = None):
+    def __init__(self, model_file_path: Path | None = None):
         if MLPClassifier is None:
             raise ImportError("scikit-learn is required for AdvancedL0Router")
 
@@ -258,11 +259,11 @@ class AdvancedL0Router(BaseMLModel):
 
     def route_intelligently(
         self,
-        routing_context: Dict[str, Any],
+        routing_context: dict[str, Any],
         trace_id: str,
         replay_key: str,
         policy_hash: str
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """
         Get intelligent routing recommendation.
 
@@ -337,11 +338,11 @@ class AdvancedL0Router(BaseMLModel):
 
     def analyze_query_semantics(
         self,
-        query_context: Dict[str, Any],
+        query_context: dict[str, Any],
         trace_id: str,
         replay_key: str,
         policy_hash: str
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """
         Analyze query semantics for intelligent routing.
 
@@ -396,11 +397,11 @@ class AdvancedL0Router(BaseMLModel):
 
     def learn_user_preferences(
         self,
-        user_interactions: List[Dict[str, Any]],
+        user_interactions: list[dict[str, Any]],
         trace_id: str,
         replay_key: str,
         policy_hash: str
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """
         Learn and adapt to user preferences for routing.
 
@@ -447,9 +448,9 @@ class AdvancedL0Router(BaseMLModel):
     def _generate_routing_recommendations(
         self,
         strategy: str,
-        context: Dict[str, Any],
-        features: Dict[str, float]
-    ) -> List[str]:
+        context: dict[str, Any],
+        features: dict[str, float]
+    ) -> list[str]:
         """Generate strategy-specific routing recommendations."""
         recommendations = []
 
@@ -523,9 +524,9 @@ class AdvancedL0Router(BaseMLModel):
 
     def _analyze_routing_factors(
         self,
-        context: Dict[str, Any],
-        features: Dict[str, float]
-    ) -> Dict[str, Any]:
+        context: dict[str, Any],
+        features: dict[str, float]
+    ) -> dict[str, Any]:
         """Analyze routing factors and their impact."""
         factor_analysis = {
             'primary_factors': [],
@@ -585,9 +586,9 @@ class AdvancedL0Router(BaseMLModel):
     def _predict_routing_performance(
         self,
         strategy: str,
-        context: Dict[str, Any],
-        features: Dict[str, float]
-    ) -> Dict[str, Any]:
+        context: dict[str, Any],
+        features: dict[str, float]
+    ) -> dict[str, Any]:
         """Predict routing performance for the chosen strategy."""
         # Base performance estimates by strategy
         performance_estimates = {
@@ -660,7 +661,7 @@ class AdvancedL0Router(BaseMLModel):
 
         return adjusted_performance
 
-    def _get_alternative_strategies(self, probability_distribution: Dict[str, float]) -> List[Dict[str, Any]]:
+    def _get_alternative_strategies(self, probability_distribution: dict[str, float]) -> list[dict[str, Any]]:
         """Get alternative routing strategies with probabilities."""
         alternatives = []
 
@@ -697,7 +698,7 @@ class AdvancedL0Router(BaseMLModel):
         else:
             return "Low"
 
-    def _classify_query_intent(self, query_context: Dict[str, Any]) -> str:
+    def _classify_query_intent(self, query_context: dict[str, Any]) -> str:
         """Classify query intent based on context."""
         # Simplified intent classification
         complexity = query_context.get('query_complexity', 0.5)
@@ -712,16 +713,16 @@ class AdvancedL0Router(BaseMLModel):
         else:
             return 'moderate_complexity'
 
-    def _assess_semantic_complexity(self, query_context: Dict[str, Any]) -> float:
+    def _assess_semantic_complexity(self, query_context: dict[str, Any]) -> float:
         """Assess semantic complexity of the query."""
         # Use query complexity as proxy for semantic complexity
         return query_context.get('query_complexity', 0.5)
 
-    def _evaluate_context_relevance(self, query_context: Dict[str, Any]) -> float:
+    def _evaluate_context_relevance(self, query_context: dict[str, Any]) -> float:
         """Evaluate context relevance for routing."""
         return query_context.get('context_relevance', 0.5)
 
-    def _determine_semantic_routing_implications(self, query_context: Dict[str, Any]) -> str:
+    def _determine_semantic_routing_implications(self, query_context: dict[str, Any]) -> str:
         """Determine routing implications based on semantic analysis."""
         semantic_similarity = query_context.get('semantic_similarity', 0.5)
 
@@ -732,7 +733,7 @@ class AdvancedL0Router(BaseMLModel):
         else:
             return 'standard_routing_sufficient'
 
-    def _recommend_semantic_strategy(self, semantic_analysis: Dict[str, Any]) -> str:
+    def _recommend_semantic_strategy(self, semantic_analysis: dict[str, Any]) -> str:
         """Recommend routing strategy based on semantic analysis."""
         intent = semantic_analysis['query_intent']
         complexity = semantic_analysis['semantic_complexity']
@@ -746,7 +747,7 @@ class AdvancedL0Router(BaseMLModel):
         else:
             return 'Standard_Route'
 
-    def _analyze_user_preferences(self, user_interactions: List[Dict[str, Any]]) -> Dict[str, Any]:
+    def _analyze_user_preferences(self, user_interactions: list[dict[str, Any]]) -> dict[str, Any]:
         """Analyze user preferences from interaction data."""
         # Simplified preference analysis
         preference_counts = {}
@@ -775,7 +776,7 @@ class AdvancedL0Router(BaseMLModel):
             'total_interactions': total_interactions
         }
 
-    def _identify_routing_preferences(self, user_interactions: List[Dict[str, Any]]) -> Dict[str, float]:
+    def _identify_routing_preferences(self, user_interactions: list[dict[str, Any]]) -> dict[str, float]:
         """Identify specific routing preferences."""
         preferences = {}
 
@@ -794,7 +795,7 @@ class AdvancedL0Router(BaseMLModel):
 
         return avg_preferences
 
-    def _calculate_adaptation_factors(self, user_interactions: List[Dict[str, Any]]) -> Dict[str, float]:
+    def _calculate_adaptation_factors(self, user_interactions: list[dict[str, Any]]) -> dict[str, float]:
         """Calculate adaptation factors based on user interactions."""
         # Simplified adaptation calculation
         recent_interactions = user_interactions[-10:]  # Last 10 interactions
@@ -816,9 +817,9 @@ class AdvancedL0Router(BaseMLModel):
 
     def _generate_personalized_strategy(
         self,
-        preference_analysis: Dict[str, Any],
-        routing_preferences: Dict[str, float],
-        adaptation_factors: Dict[str, float]
+        preference_analysis: dict[str, Any],
+        routing_preferences: dict[str, float],
+        adaptation_factors: dict[str, float]
     ) -> str:
         """Generate personalized routing strategy."""
         most_preferred = preference_analysis.get('most_preferred', 'Standard_Route')
@@ -831,7 +832,7 @@ class AdvancedL0Router(BaseMLModel):
         else:
             return 'Standard_Route'
 
-    def _calculate_learning_confidence(self, user_interactions: List[Dict[str, Any]]) -> float:
+    def _calculate_learning_confidence(self, user_interactions: list[dict[str, Any]]) -> float:
         """Calculate confidence in learned preferences."""
         if len(user_interactions) < 5:
             return 0.2  # Low confidence with few interactions
@@ -848,7 +849,7 @@ class AdvancedL0Router(BaseMLModel):
 
         return consistency * interaction_factor
 
-    def _generate_adaptation_recommendations(self, preference_analysis: Dict[str, Any]) -> List[str]:
+    def _generate_adaptation_recommendations(self, preference_analysis: dict[str, Any]) -> list[str]:
         """Generate adaptation recommendations based on preference analysis."""
         recommendations = []
 
@@ -866,7 +867,7 @@ class AdvancedL0Router(BaseMLModel):
 
         return recommendations
 
-    def get_feature_importance(self, model_input: ModelInput) -> List[Dict[str, Any]]:
+    def get_feature_importance(self, model_input: ModelInput) -> list[dict[str, Any]]:
         """Get feature importance for explainability."""
         if not self.is_loaded or not self.pipeline:
             return []
@@ -912,7 +913,7 @@ class AdvancedL0Router(BaseMLModel):
             # Failed to compute importance
             return []
 
-    def _extract_feature_vector(self, features: Dict[str, Any]) -> Optional[np.ndarray]:
+    def _extract_feature_vector(self, features: dict[str, Any]) -> np.ndarray | None:
         """Extract features in the correct order for the model."""
         if not self.feature_names:
             return None
@@ -928,7 +929,7 @@ class AdvancedL0Router(BaseMLModel):
         except Exception as e:
             return None
 
-    def preprocess_features(self, features: Dict[str, Any]) -> Tuple[Dict[str, Any], List[str]]:
+    def preprocess_features(self, features: dict[str, Any]) -> tuple[dict[str, Any], list[str]]:
         """Preprocess features for Neural Network."""
         processed_features, preprocessing_steps = super().preprocess_features(features)
 
@@ -950,8 +951,8 @@ class AdvancedL0Router(BaseMLModel):
 
     def train_model(
         self,
-        training_data: List[Dict[str, Any]],
-        feature_names: List[str],
+        training_data: list[dict[str, Any]],
+        feature_names: list[str],
         training_data_digest: str = ""
     ) -> None:
         """

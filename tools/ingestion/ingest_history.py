@@ -6,16 +6,13 @@ Wave 3 Implementation: Execution & History Intelligence
 Ingests git history and incident RCA data into ChromaDB.
 """
 
-import sys
-from pathlib import Path
-import json
 import hashlib
-from typing import List, Dict, Any, Optional, Tuple
 import logging
-import sqlite3
-from datetime import datetime
 import subprocess
-import re
+import sys
+from datetime import datetime
+from pathlib import Path
+from typing import Any
 
 # Add agentic_core to path
 sys.path.insert(0, str(Path(__file__).parent.parent.parent / "agentic_core"))
@@ -199,7 +196,7 @@ class HistoryIngestion:
                 continue
 
             try:
-                with open(file_path, 'r', encoding='utf-8') as f:
+                with open(file_path, encoding='utf-8') as f:
                     content = f.read()
 
                 if not content.strip():
@@ -360,7 +357,7 @@ class HistoryIngestion:
             doc_content += f"Type: {base_incident['type']}\n"
             doc_content += f"Severity: {severity_variation}\n"
             doc_content += f"Date: {timestamp}\n"
-            doc_content += f"Status: resolved\n"
+            doc_content += "Status: resolved\n"
             doc_content += f"Components: {', '.join(base_incident['components'])}\n"
             doc_content += f"Layers: {', '.join(base_incident['layers'])}\n"
             doc_content += f"Root causes: {', '.join(base_incident['root_causes'])}\n"
@@ -368,7 +365,7 @@ class HistoryIngestion:
             doc_content += f"Fixes: {', '.join(base_incident['fixes'])}\n"
 
             # Add variation details
-            doc_content += f"\nIncident Details:\n"
+            doc_content += "\nIncident Details:\n"
             doc_content += f"  Variant ID: {i}\n"
             doc_content += f"  Base scenario: {i % len(synthetic_incidents)}\n"
             doc_content += f"  Impact score: {i * 2 + 10}\n"
@@ -421,7 +418,7 @@ class HistoryIngestion:
 
         return len(documents)
 
-    def _parse_git_log(self, log_output: str) -> List[Dict[str, Any]]:
+    def _parse_git_log(self, log_output: str) -> list[dict[str, Any]]:
         """Parse git log output into structured commits."""
         commits = []
         current_commit = None
@@ -485,7 +482,7 @@ class HistoryIngestion:
 
         return commits
 
-    def _parse_incident_rca(self, content: str, file_path: Path) -> Dict[str, Any]:
+    def _parse_incident_rca(self, content: str, file_path: Path) -> dict[str, Any]:
         """Parse incident RCA from file content."""
         incident_info = {
             "type": "unknown",
@@ -573,7 +570,7 @@ class HistoryIngestion:
         else:
             return base_severity
 
-    def run_ingestion(self) -> Dict[str, int]:
+    def run_ingestion(self) -> dict[str, int]:
         """Run complete Wave 3 history ingestion."""
         logger.info("Starting Wave 3: History ingestion...")
 

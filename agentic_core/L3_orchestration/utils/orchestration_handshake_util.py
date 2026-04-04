@@ -27,7 +27,7 @@ Logger = logging.getLogger(__name__)
 @dataclass
 class HandshakeResult:
     """Result of a handshake delegation."""
-    
+
     status: str
     agent_class: str | None
     method: str | None
@@ -62,10 +62,10 @@ def discover_capable_agents(
         cached = redis_client.get(cache_key)
         if cached:
             return json.loads(cached)
-    
+
     # Search registry for capable methods
     results = registry.find_method(task, top_k=top_k) if hasattr(registry, 'find_method') else []
-    
+
     capable = []
     for r in results:
         score = r.get("score", 0.0)
@@ -77,17 +77,17 @@ def discover_capable_agents(
                 "confidence": score,
                 "docstring": meta.get("docstring", "")[:200],
             })
-    
+
     # Sort by confidence descending
     capable.sort(key=lambda x: x["confidence"], reverse=True)
-    
+
     # Cache results if enabled
     if use_cache and redis_client and capable and cache_key:
         try:
             redis_client.set(cache_key, json.dumps(capable), ex=3600)
         except Exception:
             pass  # Cache failure is non-fatal
-    
+
     return capable
 
 
@@ -112,9 +112,9 @@ def delegate_task(
     """
     args = args or {}
     kwargs = kwargs or {}
-    
+
     capable = discover_capable_agents(registry, task, min_confidence)
-    
+
     if not capable:
         return HandshakeResult(
             status="no_capable_agent",
@@ -123,9 +123,9 @@ def delegate_task(
             confidence=0.0,
             message=f"No agent found for task: {task[:50]}..."
         )
-    
+
     best = capable[0]
-    
+
     return HandshakeResult(
         status="delegated",
         agent_class=best["agent_class"],

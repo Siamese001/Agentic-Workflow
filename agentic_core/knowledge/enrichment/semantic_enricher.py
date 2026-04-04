@@ -19,7 +19,7 @@ import json
 import logging
 import os
 from dataclasses import dataclass, field
-from typing import Any, Optional
+from typing import Any
 
 from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     LayerSegment,
@@ -61,7 +61,7 @@ class SemanticKnowledgeObject:
         }
 
     @classmethod
-    def from_dict(cls, data: dict[str, Any]) -> "SemanticKnowledgeObject":
+    def from_dict(cls, data: dict[str, Any]) -> SemanticKnowledgeObject:
         """Create from dictionary."""
         return cls(
             chunk_id=data.get("chunk_id", ""),
@@ -109,7 +109,7 @@ class SemanticEnricher:
 
     def __init__(
         self,
-        llm_client: Optional[Any] = None,
+        llm_client: Any | None = None,
         provider: str = "openai",
         model: str = "gpt-4o-mini",
     ):
@@ -189,7 +189,7 @@ Respond with ONLY valid JSON."""
         chunk_id: str,
         raw_text: str,
         chunk_type: str = "general",
-        source_metadata: Optional[dict[str, Any]] = None,
+        source_metadata: dict[str, Any] | None = None,
     ) -> SemanticKnowledgeObject:
         """Enrich a single chunk into a Knowledge Object.
 
@@ -234,7 +234,7 @@ Respond with ONLY valid JSON."""
         self,
         chunk_id: str,
         raw_text: str,
-        source_metadata: Optional[dict[str, Any]] = None,
+        source_metadata: dict[str, Any] | None = None,
     ) -> SemanticKnowledgeObject:
         """Generate mock enrichment for testing.
 
@@ -263,7 +263,7 @@ Respond with ONLY valid JSON."""
         chunk_id: str,
         raw_text: str,
         chunk_type: str,
-        source_metadata: Optional[dict[str, Any]] = None,
+        source_metadata: dict[str, Any] | None = None,
     ) -> SemanticKnowledgeObject:
         """Perform LLM-based enrichment.
 
@@ -352,7 +352,7 @@ Respond with ONLY valid JSON."""
 
 
 # Global enricher instance for convenience
-_global_enricher: Optional[SemanticEnricher] = None
+_global_enricher: SemanticEnricher | None = None
 
 
 def get_global_enricher() -> SemanticEnricher:
@@ -367,7 +367,7 @@ def enrich_chunk(
     chunk_id: str,
     raw_text: str,
     chunk_type: str = "general",
-    source_metadata: Optional[dict[str, Any]] = None,
+    source_metadata: dict[str, Any] | None = None,
 ) -> SemanticKnowledgeObject:
     """Convenience function to enrich a single chunk."""
     return get_global_enricher().enrich_chunk(

@@ -6,15 +6,13 @@ This script fixes the MCP Redis hanging issues during hot cache ingestion
 by implementing optimized batch processing, progress reporting, and timeout handling.
 """
 
-import subprocess
-import sys
 import json
+import subprocess
 import time
-import signal
-import threading
 from pathlib import Path
-from typing import Dict, Optional, List
+
 import redis
+
 
 class MCPRedisFix:
     """Optimized Redis operations that fix MCP hanging issues"""
@@ -88,7 +86,7 @@ class MCPRedisFix:
         except Exception as e:
             return {"success": False, "error": str(e)}
 
-    def run_adg_ingestion_optimized(self, force: bool = False) -> Dict:
+    def run_adg_ingestion_optimized(self, force: bool = False) -> dict:
         """Run ADG ingestion with optimizations and progress tracking"""
 
         if not self.redis_client:
@@ -264,7 +262,7 @@ if __name__ == "__main__":
         with open(script_path, 'w') as f:
             f.write(script_content)
 
-    def _run_command_with_progress(self, cmd: str, timeout: int = 300) -> Dict:
+    def _run_command_with_progress(self, cmd: str, timeout: int = 300) -> dict:
         """Run command with progress tracking"""
 
         print(f"Running: {cmd}")
@@ -319,7 +317,7 @@ if __name__ == "__main__":
                 "timed_out": False
             }
 
-    def test_mcp_redis_functions(self) -> Dict:
+    def test_mcp_redis_functions(self) -> dict:
         """Test MCP Redis functions to verify they work"""
 
         print("Testing MCP Redis functions...")

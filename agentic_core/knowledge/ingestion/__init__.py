@@ -5,8 +5,8 @@ Provides unified intake, modality detection, and document processing.
 """
 
 from .intake_clerk import IntakeClerk
+from .modality_types import ContentType, DocumentModality
 from .visual_detector import VisualDetector
-from .modality_types import DocumentModality, ContentType
 
 __all__ = [
     "IntakeClerk",

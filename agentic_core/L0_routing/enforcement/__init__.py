@@ -65,10 +65,10 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 
 # Import classes from individual modules
 from .boundary_contracts import (
-    SSOTBindingError,
     ContextRetrievalError,
-    resolve_ssot_binding,
+    SSOTBindingError,
     build_context_retrieval_request,
+    resolve_ssot_binding,
 )
 from .crypto_trust_contracts import (
     SigningError,
@@ -79,6 +79,8 @@ from .crypto_trust_contracts import (
 from .execution_gateway import (
     ExecutionGatewayError,
     UnregisteredAgentError,
+)
+from .execution_gateway import (
     V15ExecutionGateway as ExecutionGateway,
 )
 from .governance_contracts import (
@@ -98,6 +100,7 @@ from .policy_hash_enforcer import (
     PolicyHashValidationResult,
     PolicyHashViolation,
 )
+
 
 # Create wrapper functions for tests that expect standalone functions
 def active_merkle_root():

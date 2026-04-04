@@ -6,7 +6,7 @@ import json
 import time
 import uuid
 from pathlib import Path
-from typing import Any, Dict, List
+from typing import Any
 
 
 class MockRuntimeADGStore:
@@ -15,9 +15,9 @@ class MockRuntimeADGStore:
     def __init__(self, store_dir: Path = None):
         self.store_dir = store_dir or Path("artifacts/runtime_adg")
         self.store_dir.mkdir(parents=True, exist_ok=True)
-        self.snapshots: Dict[str, Dict[str, Any]] = {}
+        self.snapshots: dict[str, dict[str, Any]] = {}
 
-    def store_snapshot(self, snapshot: Dict[str, Any]) -> str:
+    def store_snapshot(self, snapshot: dict[str, Any]) -> str:
         """Store a runtime ADG snapshot."""
         snapshot_id = snapshot.get("snapshot_id", str(uuid.uuid4()))
         snapshot["stored_at_utc"] = int(time.time() * 1000)
@@ -32,11 +32,11 @@ class MockRuntimeADGStore:
 
         return snapshot_id
 
-    def get_snapshot(self, snapshot_id: str) -> Dict[str, Any]:
+    def get_snapshot(self, snapshot_id: str) -> dict[str, Any]:
         """Retrieve a snapshot by ID."""
         return self.snapshots.get(snapshot_id)
 
-    def list_snapshots(self) -> List[str]:
+    def list_snapshots(self) -> list[str]:
         """List all snapshot IDs."""
         return list(self.snapshots.keys())
 
@@ -46,10 +46,10 @@ class MockExecutionTrace:
 
     def __init__(self, trace_id: str = None):
         self.trace_id = trace_id or str(uuid.uuid4())
-        self.spans: List[Dict[str, Any]] = []
+        self.spans: list[dict[str, Any]] = []
         self.started_at_utc = int(time.time() * 1000)
 
-    def add_span(self, name: str, kind: str, attributes: Dict[str, Any] = None):
+    def add_span(self, name: str, kind: str, attributes: dict[str, Any] = None):
         """Add a span to the trace."""
         span = {
             "span_id": str(uuid.uuid4()),
@@ -67,7 +67,7 @@ class MockExecutionTrace:
         """Finalize the trace."""
         self.ended_at_utc = int(time.time() * 1000)
 
-    def to_snapshot(self) -> Dict[str, Any]:
+    def to_snapshot(self) -> dict[str, Any]:
         """Convert trace to runtime ADG snapshot format."""
         nodes = []
         for span in self.spans:
@@ -102,7 +102,7 @@ class MockAgent:
         self.kind = kind
         self.trace = MockExecutionTrace()
 
-    def execute(self, task: str, **kwargs) -> Dict[str, Any]:
+    def execute(self, task: str, **kwargs) -> dict[str, Any]:
         """Execute a task and record traces."""
         # Start execution span
         self.trace.add_span(
@@ -204,7 +204,7 @@ async def test_runtime_adg_e2e():
             # Count our test snapshots
             test_snapshot_count = 0
             for file_path in snapshot_files:
-                with open(file_path, 'r') as f:
+                with open(file_path) as f:
                     data = json.load(f)
                 # Check if it's one of our test snapshots (has trace_id field)
                 if "trace_id" in data or "snapshot_id" in data:
@@ -251,11 +251,11 @@ async def test_runtime_adg_e2e():
             for field in node_fields:
                 assert field in node, f"Node missing field: {field}"
 
-        print(f"  ✓ All required fields present")
-        print(f"  ✓ Node structure validated")
+        print("  ✓ All required fields present")
+        print("  ✓ Node structure validated")
 
         print("\n[E2E TEST] ✅ Runtime ADG end-to-end validation completed successfully!")
-        print(f"[E2E TEST] Summary:")
+        print("[E2E TEST] Summary:")
         print(f"  - Total snapshots: {len(store.list_snapshots())}")
         print(f"  - Total spans: {sum(len(s['nodes']) for s in snapshots + [snapshot1])}")
         print(f"  - Performance: {elapsed:.2f}s for 10 agents")

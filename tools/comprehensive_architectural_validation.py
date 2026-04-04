@@ -6,8 +6,8 @@ Run all validation checks to verify architectural compliance.
 
 import json
 import subprocess
-from pathlib import Path
 from datetime import datetime
+from pathlib import Path
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
 
@@ -79,7 +79,7 @@ class ComprehensiveArchitecturalValidator:
             # Check if silent swallower report exists
             report_file = PROJECT_ROOT / "tools" / "silent_swallower_report.json"
             if report_file.exists():
-                with open(report_file, 'r') as f:
+                with open(report_file) as f:
                     report = json.load(f)
 
                 total_violations = len(report.get('violations', []))
@@ -126,7 +126,7 @@ class ComprehensiveArchitecturalValidator:
             # Check if test enforcement report exists
             report_file = PROJECT_ROOT / "tools" / "test_enforcement" / "test_violations.json"
             if report_file.exists():
-                with open(report_file, 'r') as f:
+                with open(report_file) as f:
                     report = json.load(f)
 
                 total_violations = len(report.get('violations', []))
@@ -347,12 +347,12 @@ def main():
     print(f"📁 Categories compliant: {report['summary']['compliant_categories']}/{report['summary']['total_categories']}")
 
     if report['summary']['critical_issues']:
-        print(f"\n⚠️  CRITICAL ISSUES:")
+        print("\n⚠️  CRITICAL ISSUES:")
         for issue in report['summary']['critical_issues']:
             print(f"   - {issue}")
 
     if report['recommendations']:
-        print(f"\n📝 RECOMMENDATIONS:")
+        print("\n📝 RECOMMENDATIONS:")
         for rec in report['recommendations']:
             print(f"   - {rec}")
     else:

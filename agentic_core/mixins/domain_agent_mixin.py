@@ -9,8 +9,6 @@ import logging
 from collections.abc import Callable
 from typing import Any
 
-from agentic_core.utils.feature_flags import FeatureFlagManager
-
 from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     LayerSegment,
     _emit_agent_executes_agent,
@@ -54,6 +52,7 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     emit_determinism_digest,  # noqa: E402
     emit_replay_key,  # noqa: E402
 )
+from agentic_core.utils.feature_flags import FeatureFlagManager
 
 _emit_applies_guardrail("p0", "domain_agent_mixin", "p0_governance")
 _emit_reads_policy_state("p0", "domain_agent_mixin", "policy_binding")

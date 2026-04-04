@@ -51,7 +51,7 @@ for f in skip_calls:
     skip_files[f["file"]] += 1
 
 print(f"\nUnique files with skip calls: {len(skip_files)}")
-print(f"\nFiles with most skips:")
+print("\nFiles with most skips:")
 for filepath, count in skip_files.most_common(20):
     print(f"  {count:3d}  {filepath}")
 

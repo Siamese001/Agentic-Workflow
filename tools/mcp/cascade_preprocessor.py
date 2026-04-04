@@ -7,8 +7,7 @@ instructions that REQUIRE the sequential thinking MCP tool to be invoked.
 """
 
 import os
-import re
-from typing import Dict, Any, Optional
+from typing import Any
 
 
 class SequentialThinkingPreProcessor:
@@ -23,7 +22,7 @@ class SequentialThinkingPreProcessor:
         self.enabled = True
         self.aggressive = os.environ.get('SEQUENTIAL_THINKING_AGGRESSIVE_MODE', 'enabled') == 'enabled'
 
-    def preprocess(self, prompt: str, context: Optional[Dict] = None) -> Dict[str, Any]:
+    def preprocess(self, prompt: str, context: dict | None = None) -> dict[str, Any]:
         """
         Preprocess the prompt to inject sequential thinking invocation.
 
@@ -110,7 +109,7 @@ Arguments: {{
 
         return False
 
-    def _create_tool_call(self, prompt: str) -> Dict[str, Any]:
+    def _create_tool_call(self, prompt: str) -> dict[str, Any]:
         """Create the tool call specification."""
         return {
             'tool': 'mcp7_sequentialthinking',
@@ -143,7 +142,7 @@ def preprocess_for_sequential_thinking(prompt: str) -> str:
     return result['modified_prompt']
 
 
-def force_sequential_thinking_invocation(prompt: str) -> Dict[str, Any]:
+def force_sequential_thinking_invocation(prompt: str) -> dict[str, Any]:
     """
     Force sequential thinking and return full processing info.
     """

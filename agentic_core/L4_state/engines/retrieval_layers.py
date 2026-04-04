@@ -15,7 +15,7 @@ import os
 import sys
 import time
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any
 
 import chromadb
 from openai import OpenAI
@@ -39,7 +39,7 @@ class L1ExactCache:
         self.hit_count = 0
         self.miss_count = 0
 
-    def get(self, query: str) -> Optional[str]:
+    def get(self, query: str) -> str | None:
         """Get exact match from cache."""
         # Normalize query for exact matching
         normalized_query = self._normalize_query(query)
@@ -75,7 +75,7 @@ class L1ExactCache:
             return 0.0
         return self.hit_count / total
 
-    def get_stats(self) -> Dict[str, Any]:
+    def get_stats(self) -> dict[str, Any]:
         """Get cache statistics."""
         return {
             "layer": "L1_Exact_Cache",
@@ -109,7 +109,7 @@ class L2SemanticCache:
             # For deterministic mock embeddings
             self.embedding_seed = 42
 
-    def _get_embedding(self, text: str) -> Optional[List[float]]:
+    def _get_embedding(self, text: str) -> list[float] | None:
         """Get embedding for text."""
         if self.mock_embeddings:
             # Generate deterministic mock embedding based on text hash
@@ -128,7 +128,7 @@ class L2SemanticCache:
             Logger.error(f"Failed to generate embedding: {e}")
             return None
 
-    def get(self, query: str) -> Optional[str]:
+    def get(self, query: str) -> str | None:
         """Get semantically similar cached response."""
         query_embedding = self._get_embedding(query)
         if query_embedding is None:
@@ -172,7 +172,7 @@ class L2SemanticCache:
         self.cache.set(cache_key, json.dumps(cache_data).encode('utf-8'), ttl_seconds=self.ttl_seconds)
         Logger.debug(f"L2 semantic cache SET for query: {query[:50]}...")
 
-    def _calculate_similarity(self, embedding1: List[float], embedding2: List[float]) -> float:
+    def _calculate_similarity(self, embedding1: list[float], embedding2: list[float]) -> float:
         """Calculate cosine similarity between embeddings."""
         import math
 
@@ -192,7 +192,7 @@ class L2SemanticCache:
             return 0.0
         return self.hit_count / total
 
-    def get_stats(self) -> Dict[str, Any]:
+    def get_stats(self) -> dict[str, Any]:
         """Get cache statistics."""
         return {
             "layer": "L2_Semantic_Cache",
@@ -237,15 +237,15 @@ class L3SemanticRAG:
 
         self.query_count = 0
 
-    def query_docs(self, query: str, n_results: int = 5) -> List[Dict[str, Any]]:
+    def query_docs(self, query: str, n_results: int = 5) -> list[dict[str, Any]]:
         """Query document collection."""
         return self._query_collection(self.docs_collection, query, n_results, "docs")
 
-    def query_traces(self, query: str, n_results: int = 5) -> List[Dict[str, Any]]:
+    def query_traces(self, query: str, n_results: int = 5) -> list[dict[str, Any]]:
         """Query traces collection."""
         return self._query_collection(self.traces_collection, query, n_results, "traces")
 
-    def _query_collection(self, collection, query: str, n_results: int, collection_type: str) -> List[Dict[str, Any]]:
+    def _query_collection(self, collection, query: str, n_results: int, collection_type: str) -> list[dict[str, Any]]:
         """Query a specific ChromaDB collection."""
         query_embedding = self._get_embedding(query)
         if query_embedding is None:
@@ -277,7 +277,7 @@ class L3SemanticRAG:
             Logger.error(f"L3 RAG query failed: {e}")
             return []
 
-    def _get_embedding(self, text: str) -> Optional[List[float]]:
+    def _get_embedding(self, text: str) -> list[float] | None:
         """Get embedding for text."""
         if self.mock_embeddings:
             # Generate deterministic mock embedding based on text hash
@@ -296,7 +296,7 @@ class L3SemanticRAG:
             Logger.error(f"Failed to generate embedding: {e}")
             return None
 
-    def get_stats(self) -> Dict[str, Any]:
+    def get_stats(self) -> dict[str, Any]:
         """Get RAG statistics."""
         return {
             "layer": "L3_Semantic_RAG",
@@ -363,7 +363,7 @@ class L4AgenticActions:
             }
         }
 
-    def validate_action(self, action_name: str, parameters: Dict[str, Any]) -> bool:
+    def validate_action(self, action_name: str, parameters: dict[str, Any]) -> bool:
         """Validate action parameters against schema."""
         self.action_count += 1
 
@@ -385,15 +385,15 @@ class L4AgenticActions:
         Logger.debug(f"L4 validation: Action '{action_name}' passed validation")
         return True
 
-    def get_tool_schema(self, action_name: str) -> Optional[Dict[str, Any]]:
+    def get_tool_schema(self, action_name: str) -> dict[str, Any] | None:
         """Get tool schema for action."""
         return self.tool_schemas.get(action_name)
 
-    def list_available_actions(self) -> List[str]:
+    def list_available_actions(self) -> list[str]:
         """List all available actions."""
         return list(self.tool_schemas.keys())
 
-    def get_stats(self) -> Dict[str, Any]:
+    def get_stats(self) -> dict[str, Any]:
         """Get action statistics."""
         return {
             "layer": "L4_Agentic_Actions",
@@ -416,7 +416,7 @@ class RetrievalOrchestrator:
 
         Logger.info("Retrieval orchestrator initialized with L1-L4 layers")
 
-    def retrieve(self, query: str, n_results: int = 5) -> Dict[str, Any]:
+    def retrieve(self, query: str, n_results: int = 5) -> dict[str, Any]:
         """Retrieve information using all layers."""
         results = {
             "query": query,
@@ -482,7 +482,7 @@ class RetrievalOrchestrator:
         action_keywords = ["search", "find", "get", "execute", "run"]
         return any(keyword in query.lower() for keyword in action_keywords)
 
-    def _parse_action_query(self, query: str) -> Tuple[str, Dict[str, Any]]:
+    def _parse_action_query(self, query: str) -> tuple[str, dict[str, Any]]:
         """Parse action query into action name and parameters."""
         query_lower = query.lower()
 
@@ -511,7 +511,7 @@ class RetrievalOrchestrator:
         else:
             return "unknown", {}
 
-    def get_all_stats(self) -> Dict[str, Any]:
+    def get_all_stats(self) -> dict[str, Any]:
         """Get statistics from all layers."""
         return {
             "l1": self.l1_cache.get_stats(),

@@ -1,7 +1,7 @@
 """Envelope types - Stub implementation for test compatibility."""
 from dataclasses import dataclass
-from typing import Any, Dict, Optional
 from enum import Enum
+from typing import Any
 
 
 class EnvelopeStatus(Enum):
@@ -16,11 +16,11 @@ class EnvelopeStatus(Enum):
 class Envelope:
     """Message envelope."""
     message_id: str
-    payload: Dict[str, Any]
+    payload: dict[str, Any]
     status: EnvelopeStatus = EnvelopeStatus.PENDING
     retry_count: int = 0
     max_retries: int = 3
-    error_info: Optional[str] = None
+    error_info: str | None = None
 
     def mark_delivered(self) -> None:
         """Mark envelope as delivered."""
@@ -37,8 +37,8 @@ class SignalEnvelope:
     """Signal envelope for messaging."""
     signal_id: str
     signal_type: str
-    payload: Dict[str, Any]
-    metadata: Optional[Dict[str, Any]] = None
+    payload: dict[str, Any]
+    metadata: dict[str, Any] | None = None
 
 
 __all__ = ["Envelope", "EnvelopeStatus", "SignalEnvelope"]

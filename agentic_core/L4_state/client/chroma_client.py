@@ -3,11 +3,12 @@ Sovereign ChromaDB Client
 Persistent semantic memory client aligned with Library OS SSOT principles.
 """
 
-import chromadb
-from typing import List, Dict, Any, Optional
+import hashlib
 import logging
 from pathlib import Path
-import hashlib
+from typing import Any
+
+import chromadb
 
 logger = logging.getLogger(__name__)
 
@@ -55,7 +56,7 @@ class SovereignChromaClient:
             )
         return self._collections[name]
 
-    def embed_texts(self, texts: List[str]) -> List[List[float]]:
+    def embed_texts(self, texts: list[str]) -> list[list[float]]:
         """
         Generate simple fallback embeddings for texts.
 
@@ -90,9 +91,9 @@ class SovereignChromaClient:
     def add_documents(
         self,
         collection_name: str,
-        documents: List[str],
-        metadatas: List[Dict[str, Any]],
-        ids: Optional[List[str]] = None
+        documents: list[str],
+        metadatas: list[dict[str, Any]],
+        ids: list[str] | None = None
     ):
         """
         Add documents to a ChromaDB collection.
@@ -128,11 +129,11 @@ class SovereignChromaClient:
     def query(
         self,
         collection_name: str,
-        query_texts: List[str],
+        query_texts: list[str],
         n_results: int = 10,
-        where: Optional[Dict[str, Any]] = None,
-        where_document: Optional[Dict[str, Any]] = None
-    ) -> Dict[str, Any]:
+        where: dict[str, Any] | None = None,
+        where_document: dict[str, Any] | None = None
+    ) -> dict[str, Any]:
         """
         Query a ChromaDB collection.
 
@@ -163,7 +164,7 @@ class SovereignChromaClient:
         logger.info(f"Queried collection '{collection_name}' with {len(query_texts)} queries, returned {len(results['ids'][0])} results")
         return results
 
-    def get_collection_stats(self, collection_name: str) -> Dict[str, Any]:
+    def get_collection_stats(self, collection_name: str) -> dict[str, Any]:
         """
         Get statistics for a collection.
 
@@ -182,7 +183,7 @@ class SovereignChromaClient:
             "persist_dir": str(self.persist_dir)
         }
 
-    def list_collections(self) -> List[str]:
+    def list_collections(self) -> list[str]:
         """
         List all collection names.
 

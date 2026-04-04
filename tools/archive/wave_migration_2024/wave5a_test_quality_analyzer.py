@@ -9,9 +9,8 @@ anti-patterns, and areas for improvement after Waves 1-4.
 import ast
 import json
 import re
+from collections import Counter
 from pathlib import Path
-from typing import Dict, List, Set, Tuple, Optional
-from collections import defaultdict, Counter
 
 
 class TestQualityAnalyzer(ast.NodeVisitor):
@@ -209,7 +208,7 @@ class TestQualityAnalyzer(ast.NodeVisitor):
                     self.fixtures.add(self.current_function)
 
 
-def analyze_test_file(file_path: Path) -> Dict:
+def analyze_test_file(file_path: Path) -> dict:
     """Analyze a single test file for quality issues."""
     try:
         content = file_path.read_text(encoding='utf-8')
@@ -319,18 +318,18 @@ def analyze_test_suite():
         all_severity_counts.update(result['severity_counts'])
         all_issue_types.update(result['issue_types'])
 
-    print(f"\n=== Test Quality Analysis ===")
+    print("\n=== Test Quality Analysis ===")
     print(f"Total test files: {total_files}")
     print(f"Files with issues: {files_with_issues}")
     print(f"Total issues found: {total_issues}")
 
-    print(f"\n=== Issues by Severity ===")
+    print("\n=== Issues by Severity ===")
     for severity in ['high', 'medium', 'low']:
         count = all_severity_counts.get(severity, 0)
         if count > 0:
             print(f"{severity.capitalize()}: {count}")
 
-    print(f"\n=== Top Issue Types ===")
+    print("\n=== Top Issue Types ===")
     for issue_type, count in all_issue_types.most_common(10):
         print(f"{issue_type}: {count}")
 
@@ -342,7 +341,7 @@ def analyze_test_suite():
     )[:10]
 
     if files_with_most_issues:
-        print(f"\n=== Files with Most Issues ===")
+        print("\n=== Files with Most Issues ===")
         for result in files_with_most_issues:
             high = result['severity_counts'].get('high', 0)
             print(f"  {Path(result['file']).name}: {result['total_issues']} issues (H:{high})")
@@ -362,7 +361,7 @@ def analyze_test_suite():
     with open('artifacts/test_quality_analysis.json', 'w') as f:
         json.dump(output, f, indent=2)
 
-    print(f"\nDetailed results saved to: artifacts/test_quality_analysis.json")
+    print("\nDetailed results saved to: artifacts/test_quality_analysis.json")
 
     return output
 
@@ -372,7 +371,7 @@ def main():
     results = analyze_test_suite()
 
     # Make recommendations for next waves
-    print(f"\n=== Recommendations for Wave 5b-5h ===")
+    print("\n=== Recommendations for Wave 5b-5h ===")
 
     high_issues = results['summary']['severity_counts'].get('high', 0)
     medium_issues = results['summary']['severity_counts'].get('medium', 0)

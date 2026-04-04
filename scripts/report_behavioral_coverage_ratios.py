@@ -21,9 +21,8 @@ from __future__ import annotations
 import json
 import sqlite3
 import sys
-from collections import defaultdict
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Set, Tuple
+from typing import Any
 
 # Add project root to path for imports
 sys.path.insert(0, str(Path(__file__).parent.parent.parent))
@@ -53,8 +52,8 @@ class ADGRuntimeStructuralBalanceVerifier:
     def __init__(self, adg_dir: Path):
         self.adg_dir = Path(adg_dir)
         self.sqlite_path = self._find_sqlite_database()
-        self.errors: List[str] = []
-        self.warnings: List[str] = []
+        self.errors: list[str] = []
+        self.warnings: list[str] = []
 
     def _find_sqlite_database(self) -> Path:
         """Find the latest SQLite database."""
@@ -64,7 +63,7 @@ class ADGRuntimeStructuralBalanceVerifier:
 
         return max(sqlite_files, key=lambda p: p.stat().st_mtime)
 
-    def _verify_runtime_semantic_edge_detection(self) -> Dict[str, Any]:
+    def _verify_runtime_semantic_edge_detection(self) -> dict[str, Any]:
         """Verify runtime-semantic edges are properly detected."""
         print("🏃 Verifying runtime-semantic edge detection...")
 
@@ -83,7 +82,7 @@ class ADGRuntimeStructuralBalanceVerifier:
                     total_runtime += count
 
                 print(f"   📊 Runtime-semantic edges found: {total_runtime}")
-                print(f"   📊 Runtime edge distribution:")
+                print("   📊 Runtime edge distribution:")
                 for edge_type, count in sorted(runtime_counts.items(), key=lambda x: x[1], reverse=True)[:10]:
                     print(f"      {edge_type}: {count}")
 
@@ -98,7 +97,7 @@ class ADGRuntimeStructuralBalanceVerifier:
 
                 runtime_by_layer = dict(cursor.fetchall())
 
-                print(f"   📊 Runtime edges by layer:")
+                print("   📊 Runtime edges by layer:")
                 for layer, count in runtime_by_layer.items():
                     print(f"      {layer}: {count}")
 
@@ -111,7 +110,7 @@ class ADGRuntimeStructuralBalanceVerifier:
         except Exception as e:
             raise RuntimeStructuralBalanceError(f"Runtime-semantic edge detection failed: {e}")
 
-    def _verify_structural_edge_detection(self) -> Dict[str, Any]:
+    def _verify_structural_edge_detection(self) -> dict[str, Any]:
         """Verify structural edges are properly detected."""
         print("🏗️  Verifying structural edge detection...")
 
@@ -130,7 +129,7 @@ class ADGRuntimeStructuralBalanceVerifier:
                     total_structural += count
 
                 print(f"   📊 Structural edges found: {total_structural}")
-                print(f"   📊 Structural edge distribution:")
+                print("   📊 Structural edge distribution:")
                 for edge_type, count in sorted(structural_counts.items(), key=lambda x: x[1], reverse=True)[:10]:
                     print(f"      {edge_type}: {count}")
 
@@ -145,7 +144,7 @@ class ADGRuntimeStructuralBalanceVerifier:
 
                 structural_by_layer = dict(cursor.fetchall())
 
-                print(f"   📊 Structural edges by layer:")
+                print("   📊 Structural edges by layer:")
                 for layer, count in structural_by_layer.items():
                     print(f"      {layer}: {count}")
 
@@ -158,7 +157,7 @@ class ADGRuntimeStructuralBalanceVerifier:
         except Exception as e:
             raise RuntimeStructuralBalanceError(f"Structural edge detection failed: {e}")
 
-    def _calculate_balance_metrics(self) -> Dict[str, Any]:
+    def _calculate_balance_metrics(self) -> dict[str, Any]:
         """Calculate balance metrics between runtime and structural."""
         print("⚖️  Calculating balance metrics...")
 
@@ -216,7 +215,7 @@ class ADGRuntimeStructuralBalanceVerifier:
         except Exception as e:
             raise RuntimeStructuralBalanceError(f"Balance metrics calculation failed: {e}")
 
-    def _verify_layer_balance_analysis(self) -> Dict[str, Any]:
+    def _verify_layer_balance_analysis(self) -> dict[str, Any]:
         """Verify balance analysis by architectural layer."""
         print("🏗️  Verifying layer balance analysis...")
 
@@ -264,9 +263,9 @@ class ADGRuntimeStructuralBalanceVerifier:
                         "structural_percentage": structural_percentage
                     }
 
-                print(f"   📊 Layer balance analysis:")
-                print(f"      Layer | Runtime | Structural | Total | Runtime % | Structural %")
-                print(f"      -------|---------|------------|-------|-----------|-------------")
+                print("   📊 Layer balance analysis:")
+                print("      Layer | Runtime | Structural | Total | Runtime % | Structural %")
+                print("      -------|---------|------------|-------|-----------|-------------")
 
                 for layer in sorted(layer_balance.keys()):
                     balance = layer_balance[layer]
@@ -298,7 +297,7 @@ class ADGRuntimeStructuralBalanceVerifier:
         except Exception as e:
             raise RuntimeStructuralBalanceError(f"Layer balance analysis failed: {e}")
 
-    def _verify_domain_balance_analysis(self) -> Dict[str, Any]:
+    def _verify_domain_balance_analysis(self) -> dict[str, Any]:
         """Verify balance analysis by domain."""
         print("🌐 Verifying domain balance analysis...")
 
@@ -354,9 +353,9 @@ class ADGRuntimeStructuralBalanceVerifier:
                         "structural_percentage": structural_percentage
                     }
 
-                print(f"   📊 Domain balance analysis:")
-                print(f"      Domain | Runtime | Structural | Total | Runtime % | Structural %")
-                print(f"      -------|---------|------------|-------|-----------|-------------")
+                print("   📊 Domain balance analysis:")
+                print("      Domain | Runtime | Structural | Total | Runtime % | Structural %")
+                print("      -------|---------|------------|-------|-----------|-------------")
 
                 for domain in sorted(domain_balance.keys()):
                     balance = domain_balance[domain]
@@ -394,7 +393,7 @@ class ADGRuntimeStructuralBalanceVerifier:
         except Exception as e:
             raise RuntimeStructuralBalanceError(f"Domain balance analysis failed: {e}")
 
-    def _verify_first_party_balance_analysis(self) -> Dict[str, Any]:
+    def _verify_first_party_balance_analysis(self) -> dict[str, Any]:
         """Verify balance analysis for first-party modules only."""
         print("🎯 Verifying first-party balance analysis...")
 
@@ -429,7 +428,7 @@ class ADGRuntimeStructuralBalanceVerifier:
                 fp_runtime_percentage = (fp_runtime_count / max(1, total_fp_edges)) * 100
                 fp_structural_percentage = (fp_structural_count / max(1, total_fp_edges)) * 100
 
-                print(f"   📊 First-party balance analysis:")
+                print("   📊 First-party balance analysis:")
                 print(f"      Runtime edges: {fp_runtime_count} ({fp_runtime_percentage:.1f}%)")
                 print(f"      Structural edges: {fp_structural_count} ({fp_structural_percentage:.1f}%)")
                 print(f"      Total first-party edges: {total_fp_edges}")
@@ -446,7 +445,7 @@ class ADGRuntimeStructuralBalanceVerifier:
                 overall_runtime_pct = (fp_runtime_count / max(1, total_runtime)) * 100
                 overall_structural_pct = (fp_structural_count / max(1, total_structural)) * 100
 
-                print(f"   📊 First-party contribution to overall:")
+                print("   📊 First-party contribution to overall:")
                 print(f"      Runtime: {overall_runtime_pct:.1f}%")
                 print(f"      Structural: {overall_structural_pct:.1f}%")
 
@@ -462,7 +461,7 @@ class ADGRuntimeStructuralBalanceVerifier:
         except Exception as e:
             raise RuntimeStructuralBalanceError(f"First-party balance analysis failed: {e}")
 
-    def verify(self) -> Dict[str, Any]:
+    def verify(self) -> dict[str, Any]:
         """Run complete runtime vs structural balance verification."""
         print("🔍 Starting ADG Runtime vs Structural Balance Verification...")
         print(f"📁 ADG Directory: {self.adg_dir}")

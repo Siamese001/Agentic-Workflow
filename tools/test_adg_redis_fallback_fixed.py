@@ -11,9 +11,8 @@ import os
 import sqlite3
 import subprocess
 import sys
-import time
 from pathlib import Path
-from typing import Any, Dict
+from typing import Any
 
 # Add project root to path
 sys.path.insert(0, str(Path(__file__).parent))
@@ -31,7 +30,7 @@ def test_redis_connection() -> bool:
         return False
 
 
-def test_adg_mcp_server_import() -> Dict[str, Any]:
+def test_adg_mcp_server_import() -> dict[str, Any]:
     """Test ADG MCP server import without trying to list tools (async issue)."""
     try:
         # Import the server module
@@ -59,7 +58,7 @@ def test_adg_mcp_server_import() -> Dict[str, Any]:
         }
 
 
-def test_adg_redis_functions() -> Dict[str, Any]:
+def test_adg_redis_functions() -> dict[str, Any]:
     """Test individual ADG Redis functions directly."""
     try:
         sys.path.insert(0, str(Path(__file__).parent / "tools" / "adg"))
@@ -93,7 +92,7 @@ def test_adg_redis_functions() -> Dict[str, Any]:
         }
 
 
-def test_redis_unavailable_fallback() -> Dict[str, Any]:
+def test_redis_unavailable_fallback() -> dict[str, Any]:
     """Test behavior when Redis is completely unavailable."""
     original_url = os.environ.get('ADG_REDIS_URL', 'redis://localhost:6379/0')
 
@@ -142,7 +141,7 @@ def test_redis_unavailable_fallback() -> Dict[str, Any]:
         os.environ['ADG_REDIS_URL'] = original_url
 
 
-def test_mcp_server_stdio() -> Dict[str, Any]:
+def test_mcp_server_stdio() -> dict[str, Any]:
     """Test MCP server in stdio mode (actual MCP protocol)."""
     try:
         server_path = Path(__file__).parent / "tools" / "adg" / "adg_mcp_server.py"
@@ -202,7 +201,7 @@ def test_mcp_server_stdio() -> Dict[str, Any]:
         }
 
 
-def test_sqlite_fallback_available() -> Dict[str, Any]:
+def test_sqlite_fallback_available() -> dict[str, Any]:
     """Test if SQLite ADG data is available for fallback."""
     try:
         adg_dir = Path(__file__).parent / "artifacts" / "adg"
@@ -252,7 +251,7 @@ def test_sqlite_fallback_available() -> Dict[str, Any]:
         }
 
 
-def test_ingest_script_functionality() -> Dict[str, Any]:
+def test_ingest_script_functionality() -> dict[str, Any]:
     """Test ingest script can rebuild Redis cache."""
     try:
         ingest_path = Path(__file__).parent / "tools" / "adg" / "adg_redis_ingest.py"
@@ -276,7 +275,6 @@ def test_ingest_script_functionality() -> Dict[str, Any]:
 
             # Also test if script can be imported
             sys.path.insert(0, str(Path(__file__).parent / "tools" / "adg"))
-            import adg_redis_ingest
 
             script_importable = True
 
@@ -299,7 +297,7 @@ def test_ingest_script_functionality() -> Dict[str, Any]:
         }
 
 
-def test_mcp_configuration() -> Dict[str, Any]:
+def test_mcp_configuration() -> dict[str, Any]:
     """Test MCP configuration for proper Python fallback setup."""
     try:
         mcp_config_path = Path(__file__).parent / ".windsurf" / "mcp_config.json"
@@ -310,7 +308,7 @@ def test_mcp_configuration() -> Dict[str, Any]:
                 "error": "MCP config not found"
             }
 
-        with open(mcp_config_path, 'r') as f:
+        with open(mcp_config_path) as f:
             config = json.load(f)
 
         adg_redis_config = config.get("mcpServers", {}).get("adg_redis", {})
@@ -351,7 +349,7 @@ def test_mcp_configuration() -> Dict[str, Any]:
         }
 
 
-def test_error_handling_robustness() -> Dict[str, Any]:
+def test_error_handling_robustness() -> dict[str, Any]:
     """Test error handling robustness of ADG MCP functions."""
     try:
         sys.path.insert(0, str(Path(__file__).parent / "tools" / "adg"))
@@ -514,7 +512,7 @@ def run_comprehensive_test():
     print(f"\nOverall: {passed}/{total} tests passed")
 
     # Fallback assessment
-    print(f"\nFALLBACK ASSESSMENT:")
+    print("\nFALLBACK ASSESSMENT:")
     fallback_mechanisms = [
         ("Redis unavailable handling", fallback_test.get('test_passed', False)),
         ("SQLite data available", sqlite_test.get('test_passed', False)),
@@ -531,7 +529,7 @@ def run_comprehensive_test():
     elif passed >= 5:
         print(f"\n⚠️  ADG Redis MCP has partial fallback capability ({fallback_passed}/{len(fallback_mechanisms)}).")
     else:
-        print(f"\n❌ ADG Redis MCP fallback mechanisms need significant work.")
+        print("\n❌ ADG Redis MCP fallback mechanisms need significant work.")
 
     return {
         "total_tests": total,

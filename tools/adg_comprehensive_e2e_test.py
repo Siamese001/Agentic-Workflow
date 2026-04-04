@@ -15,7 +15,7 @@ import sys
 import time
 from datetime import datetime
 from pathlib import Path
-from typing import Dict, List, Any
+from typing import Any
 
 ROOT = Path(__file__).resolve().parents[1]
 if str(ROOT) not in sys.path:
@@ -37,7 +37,7 @@ class ADGComprehensiveE2ETest:
             "overall_success": True
         }
 
-    def run_all_tests(self) -> Dict[str, Any]:
+    def run_all_tests(self) -> dict[str, Any]:
         """Run comprehensive E2E tests."""
         print("=" * 80)
         print("ADG COMPREHENSIVE END-TO-END TEST WITH CACHE")
@@ -80,7 +80,7 @@ class ADGComprehensiveE2ETest:
 
         return self.results
 
-    def verify_scan_cache(self) -> Dict[str, Any]:
+    def verify_scan_cache(self) -> dict[str, Any]:
         """Verify scan cache exists and is valid."""
         result = {"success": True, "details": {}}
 
@@ -90,7 +90,7 @@ class ADGComprehensiveE2ETest:
             return result
 
         try:
-            with open(self.cache_file, 'r') as f:
+            with open(self.cache_file) as f:
                 cache_data = json.load(f)
 
             # Verify cache structure
@@ -111,7 +111,7 @@ class ADGComprehensiveE2ETest:
                 "cache_timestamp": cache_data.get("metadata", {}).get("generated_at", "unknown")
             }
 
-            print(f"  Cache exists: ✅")
+            print("  Cache exists: ✅")
             print(f"  Cache size: {result['details']['cache_size_mb']:.1f} MB")
             print(f"  Cached modules: {module_count:,}")
             print(f"  Cache timestamp: {result['details']['cache_timestamp']}")
@@ -123,7 +123,7 @@ class ADGComprehensiveE2ETest:
 
         return result
 
-    def run_adg_generation(self) -> Dict[str, Any]:
+    def run_adg_generation(self) -> dict[str, Any]:
         """Run ADG generation with cache."""
         result = {"success": True, "details": {}}
 
@@ -162,7 +162,7 @@ class ADGComprehensiveE2ETest:
             }
 
             print(f"  ADG generation completed in {gen_duration:.1f}s")
-            print(f"  Cache used: ✅")
+            print("  Cache used: ✅")
             print(f"  Generation timestamp: {self.timestamp}")
 
         except (ValueError, TypeError, RuntimeError) as e:
@@ -176,7 +176,7 @@ class ADGComprehensiveE2ETest:
 
         return result
 
-    def verify_artifacts(self) -> Dict[str, Any]:
+    def verify_artifacts(self) -> dict[str, Any]:
         """Verify all expected artifacts were generated."""
         result = {"success": True, "details": {}}
 
@@ -228,7 +228,7 @@ class ADGComprehensiveE2ETest:
 
         return result
 
-    def test_database_integrity(self) -> Dict[str, Any]:
+    def test_database_integrity(self) -> dict[str, Any]:
         """Test database integrity and structure."""
         result = {"success": True, "details": {}}
 
@@ -283,7 +283,7 @@ class ADGComprehensiveE2ETest:
                 "integrity_score": 100 - (null_layers + null_identities) * 100 // node_count if node_count > 0 else 0
             }
 
-            print(f"  Database structure: ✅")
+            print("  Database structure: ✅")
             print(f"  Nodes: {node_count:,}")
             print(f"  Edges: {edge_count:,}")
             print(f"  Null layers: {null_layers}")
@@ -299,7 +299,7 @@ class ADGComprehensiveE2ETest:
 
         return result
 
-    def test_report_accuracy(self) -> Dict[str, Any]:
+    def test_report_accuracy(self) -> dict[str, Any]:
         """Test report accuracy and completeness."""
         result = {"success": True, "details": {}}
 
@@ -320,7 +320,7 @@ class ADGComprehensiveE2ETest:
                 continue
 
             try:
-                with open(report_path, 'r') as f:
+                with open(report_path) as f:
                     report_data = json.load(f)
 
                 # Basic structure validation
@@ -354,7 +354,7 @@ class ADGComprehensiveE2ETest:
 
         return result
 
-    def test_cache_performance(self) -> Dict[str, Any]:
+    def test_cache_performance(self) -> dict[str, Any]:
         """Test cache performance and effectiveness."""
         result = {"success": True, "details": {}}
 
@@ -365,7 +365,7 @@ class ADGComprehensiveE2ETest:
 
         try:
             # Load cache and analyze
-            with open(self.cache_file, 'r') as f:
+            with open(self.cache_file) as f:
                 cache_data = json.load(f)
 
             modules = cache_data.get("modules", {})
@@ -386,7 +386,7 @@ class ADGComprehensiveE2ETest:
                 "cache_effectiveness": "high" if cache_hit_rate > 90 else "medium" if cache_hit_rate > 70 else "low"
             }
 
-            print(f"  Cache performance: ✅")
+            print("  Cache performance: ✅")
             print(f"  Total modules: {total_modules:,}")
             print(f"  Analyzed modules: {analyzed_modules:,}")
             print(f"  Error modules: {error_modules}")
@@ -400,7 +400,7 @@ class ADGComprehensiveE2ETest:
 
         return result
 
-    def test_precision_pass(self) -> Dict[str, Any]:
+    def test_precision_pass(self) -> dict[str, Any]:
         """Test precision pass execution."""
         result = {"success": True, "details": {}}
 
@@ -438,7 +438,7 @@ class ADGComprehensiveE2ETest:
                 "database_used": str(db_path.name)
             }
 
-            print(f"  Precision pass: ✅" if result["details"]["precision_success"] else "❌")
+            print("  Precision pass: ✅" if result["details"]["precision_success"] else "❌")
             print(f"  Duration: {precision_duration:.1f}s")
             print(f"  Database: {db_path.name}")
 

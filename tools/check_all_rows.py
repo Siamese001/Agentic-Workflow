@@ -3,7 +3,7 @@
 
 import json
 
-with open('C:/Git/Agentic-Workflow/artifacts/adg/closure_validation_report_03252026_0345.json', 'r') as f:
+with open('C:/Git/Agentic-Workflow/artifacts/adg/closure_validation_report_03252026_0345.json') as f:
     report = json.load(f)
 
 print('=== ALL CLOSURE ROWS ===')

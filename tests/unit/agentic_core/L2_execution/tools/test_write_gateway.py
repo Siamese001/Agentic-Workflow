@@ -1,6 +1,7 @@
 """Placeholder test file - syntax fixed."""
 import unittest
 
+
 class GeneratedTest(unittest.TestCase):
     """Generated test class for agentic_core.L2_execution.tools."""
 

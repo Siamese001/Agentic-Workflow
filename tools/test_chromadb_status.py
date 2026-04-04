@@ -2,7 +2,7 @@
 """Test ChromaDB collections and verify all gaps are addressed"""
 
 import chromadb
-import numpy as np
+
 
 def test_collections():
     """Test all ChromaDB collections"""
@@ -55,7 +55,7 @@ def gap_analysis():
     print(f'✅ Wave 3: apps collection ({counts.get("apps", 0):,} items)')
     print(f'✅ Wave 4: adg_artifacts collection ({counts.get("adg_artifacts", 0):,} items)')
     print(f'✅ Wave 5: traces expanded with metadata ({counts.get("traces", 0):,} items)')
-    print(f'✅ Wave 6: BGE embeddings integrated (1024 dimensions)')
+    print('✅ Wave 6: BGE embeddings integrated (1024 dimensions)')
     print(f'✅ Total: {total:,} items ({((total/target)-1)*100:.1f}% above {target:,} target)')
 
     # Check for any gaps

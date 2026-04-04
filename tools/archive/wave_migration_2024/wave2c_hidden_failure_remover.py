@@ -8,9 +8,8 @@ focusing on revealing underlying issues that need to be addressed.
 
 import json
 import re
-from pathlib import Path
-from typing import Dict, List, Set, Tuple
 from collections import defaultdict
+from pathlib import Path
 
 
 class HiddenFailureRemover:
@@ -27,16 +26,16 @@ class HiddenFailureRemover:
         self.modifications = []
         self.revealed_failures = []
 
-    def load_wave1d_data(self) -> Dict:
+    def load_wave1d_data(self) -> dict:
         """Load Wave 1d categorization data."""
         try:
-            with open('artifacts/wave1d_categorization_report.json', 'r') as f:
+            with open('artifacts/wave1d_categorization_report.json') as f:
                 return json.load(f)
         except FileNotFoundError:
             print("❌ Wave 1d report not found. Please run Wave 1 first.")
             return {}
 
-    def get_target_skips(self, wave1d_data: Dict) -> List[Dict]:
+    def get_target_skips(self, wave1d_data: dict) -> list[dict]:
         """Get hidden failure skips targeted for removal."""
         wave2_assignments = wave1d_data.get('wave2_prioritization', {}).get('wave2_assignments', {})
         hidden_failure_assignment = wave2_assignments.get('wave2c_hidden_failures', {})
@@ -46,7 +45,7 @@ class HiddenFailureRemover:
 
         return target_skips
 
-    def remove_hidden_failure_skips(self, target_skips: List[Dict]) -> Dict:
+    def remove_hidden_failure_skips(self, target_skips: list[dict]) -> dict:
         """Remove hidden failure skip patterns."""
         print("=== Removing Hidden Failure Skip Patterns ===")
 
@@ -67,7 +66,7 @@ class HiddenFailureRemover:
             'revealed_failures': self.revealed_failures
         }
 
-    def _process_hidden_failure_skips(self, file_path: str, skips: List[Dict]):
+    def _process_hidden_failure_skips(self, file_path: str, skips: list[dict]):
         """Process hidden failure skips in a single file."""
         self.removal_stats['files_processed'] += 1
 
@@ -79,7 +78,7 @@ class HiddenFailureRemover:
 
         try:
             # Read file content
-            with open(full_path, 'r', encoding='utf-8') as f:
+            with open(full_path, encoding='utf-8') as f:
                 content = f.read()
                 original_content = content
 
@@ -141,7 +140,7 @@ class HiddenFailureRemover:
             print(f"❌ Error processing {file_path}: {e}")
             self.removal_stats['errors_encountered'] += 1
 
-    def _remove_hidden_failure_pattern(self, line: str, skip: Dict) -> Tuple[str, bool]:
+    def _remove_hidden_failure_pattern(self, line: str, skip: dict) -> tuple[str, bool]:
         """Remove hidden failure skip pattern from a line."""
         pattern_type = skip['pattern_type']
         reason = skip.get('reason', '').lower()
@@ -180,7 +179,7 @@ class HiddenFailureRemover:
 
         return new_line, failure_revealed
 
-    def _suggest_fix(self, skip: Dict) -> str:
+    def _suggest_fix(self, skip: dict) -> str:
         """Suggest a fix for the revealed failure."""
         reason = skip.get('reason', '').lower()
 
@@ -199,7 +198,7 @@ class HiddenFailureRemover:
         else:
             return "Investigate and fix the underlying issue"
 
-    def scan_for_additional_hidden_failures(self) -> List[Dict]:
+    def scan_for_additional_hidden_failures(self) -> list[dict]:
         """Scan for additional hidden failure patterns."""
         print("=== Scanning for Additional Hidden Failure Patterns ===")
 
@@ -221,7 +220,7 @@ class HiddenFailureRemover:
 
         for test_file in test_dir.rglob('test_*.py'):
             try:
-                with open(test_file, 'r', encoding='utf-8') as f:
+                with open(test_file, encoding='utf-8') as f:
                     content = f.read()
 
                 lines = content.split('\n')
@@ -249,7 +248,7 @@ class HiddenFailureRemover:
         print(f"🔍 Found {len(additional_skips)} additional hidden failure patterns")
         return additional_skips
 
-    def fix_additional_hidden_failures(self, additional_skips: List[Dict]) -> Dict:
+    def fix_additional_hidden_failures(self, additional_skips: list[dict]) -> dict:
         """Fix additional hidden failure patterns."""
         print("=== Fixing Additional Hidden Failure Patterns ===")
 
@@ -269,7 +268,7 @@ class HiddenFailureRemover:
         for file_path, skips in skips_by_file.items():
             try:
                 full_path = Path('tests') / file_path
-                with open(full_path, 'r', encoding='utf-8') as f:
+                with open(full_path, encoding='utf-8') as f:
                     content = f.read()
 
                 lines = content.split('\n')
@@ -305,7 +304,7 @@ class HiddenFailureRemover:
 
         return {'fixed': fixed_count, 'failures_revealed': failures_revealed, 'errors': error_count}
 
-    def generate_failure_report(self) -> Dict:
+    def generate_failure_report(self) -> dict:
         """Generate a report of revealed failures."""
         if not self.revealed_failures:
             return {'failures': [], 'summary': {'total': 0}}
@@ -349,7 +348,7 @@ class HiddenFailureRemover:
         else:
             return 'other'
 
-    def validate_removals(self) -> Dict:
+    def validate_removals(self) -> dict:
         """Validate that hidden failure removals were successful."""
         print("=== Validating Hidden Failure Removals ===")
 
@@ -366,7 +365,7 @@ class HiddenFailureRemover:
             full_path = Path('tests') / file_path
 
             try:
-                with open(full_path, 'r', encoding='utf-8') as f:
+                with open(full_path, encoding='utf-8') as f:
                     content = f.read()
 
                 # Check that the removed pattern is no longer present
@@ -393,7 +392,7 @@ class HiddenFailureRemover:
 
         return validation
 
-    def generate_wave2c_report(self) -> Dict:
+    def generate_wave2c_report(self) -> dict:
         """Generate Wave 2c removal report."""
         print("=== Wave 2c: Remove INVALID Skips - Hidden Failures ===")
 
@@ -450,7 +449,7 @@ class HiddenFailureRemover:
 
         # Print summary
         summary = report['summary']
-        print(f"\n=== Wave 2c Summary ===")
+        print("\n=== Wave 2c Summary ===")
         print(f"Target skips: {summary['target_skips']}")
         print(f"Additional skips found: {summary['additional_skips']}")
         print(f"Files processed: {summary['files_processed']}")
@@ -464,7 +463,7 @@ class HiddenFailureRemover:
 
         # Print failure types
         if failure_report['summary']['by_type']:
-            print(f"\n=== Revealed Failure Types ===")
+            print("\n=== Revealed Failure Types ===")
             for failure_type, count in failure_report['summary']['by_type'].items():
                 print(f"{failure_type}: {count}")
 
@@ -473,7 +472,7 @@ class HiddenFailureRemover:
             for issue in validation_results['remaining_issues'][:3]:
                 print(f"  - {issue['file']}: {issue['issue']}")
 
-        print(f"\n📄 Report saved to: artifacts/wave2c_removal_report.json")
+        print("\n📄 Report saved to: artifacts/wave2c_removal_report.json")
 
         return report
 

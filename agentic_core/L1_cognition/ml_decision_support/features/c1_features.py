@@ -7,10 +7,10 @@ optimization opportunities, and performance metrics.
 """
 
 import math
-from typing import Dict, Any
+from typing import Any
 
+from ..config.feature_schemas import FeatureSchema, FeatureSchemas
 from .base_extractor import DeterministicFeatureExtractor
-from ..config.feature_schemas import FeatureSchemas, FeatureSchema
 
 
 class C1FeatureExtractor(DeterministicFeatureExtractor):
@@ -36,7 +36,7 @@ class C1FeatureExtractor(DeterministicFeatureExtractor):
 
     def _create_c1_schema(self) -> FeatureSchema:
         """Create feature schema for C1 query optimizer."""
-        from ..config.feature_schemas import FeatureSchema, FeatureDefinition, FeatureType
+        from ..config.feature_schemas import FeatureDefinition, FeatureSchema, FeatureType
 
         features = [
             FeatureDefinition(
@@ -131,7 +131,7 @@ class C1FeatureExtractor(DeterministicFeatureExtractor):
         self.register_extraction_function("concurrency_factor", self._extract_concurrency_factor)
         self.register_extraction_function("plan_stability", self._extract_plan_stability)
 
-    def _extract_query_complexity_score(self, context: Dict[str, Any]) -> float:
+    def _extract_query_complexity_score(self, context: dict[str, Any]) -> float:
         """Extract query complexity score (0.0 to 1.0)."""
         query = context.get("query", {})
 
@@ -188,7 +188,7 @@ class C1FeatureExtractor(DeterministicFeatureExtractor):
 
         return round(min(1.0, score), 3)
 
-    def _extract_execution_time_trend(self, context: Dict[str, Any]) -> float:
+    def _extract_execution_time_trend(self, context: dict[str, Any]) -> float:
         """Extract execution time trend (-1.0 to 1.0, negative = improving)."""
         query = context.get("query", {})
 
@@ -219,7 +219,7 @@ class C1FeatureExtractor(DeterministicFeatureExtractor):
 
         return round(trend, 3)
 
-    def _extract_resource_intensity(self, context: Dict[str, Any]) -> float:
+    def _extract_resource_intensity(self, context: dict[str, Any]) -> float:
         """Extract resource intensity (0.0 to 1.0)."""
         query = context.get("query", {})
 
@@ -250,7 +250,7 @@ class C1FeatureExtractor(DeterministicFeatureExtractor):
 
         return round(min(1.0, intensity), 3)
 
-    def _extract_index_utilization(self, context: Dict[str, Any]) -> float:
+    def _extract_index_utilization(self, context: dict[str, Any]) -> float:
         """Extract index utilization effectiveness (0.0 to 1.0)."""
         query = context.get("query", {})
 
@@ -282,7 +282,7 @@ class C1FeatureExtractor(DeterministicFeatureExtractor):
 
         return round(max(0.0, min(1.0, utilization)), 3)
 
-    def _extract_cache_hit_rate(self, context: Dict[str, Any]) -> float:
+    def _extract_cache_hit_rate(self, context: dict[str, Any]) -> float:
         """Extract cache hit rate (0.0 to 1.0)."""
         query = context.get("query", {})
 
@@ -307,7 +307,7 @@ class C1FeatureExtractor(DeterministicFeatureExtractor):
 
         return round(max(0.0, min(1.0, hit_rate)), 3)
 
-    def _extract_optimization_potential(self, context: Dict[str, Any]) -> float:
+    def _extract_optimization_potential(self, context: dict[str, Any]) -> float:
         """Extract optimization potential (0.0 to 1.0)."""
         query = context.get("query", {})
 
@@ -358,7 +358,7 @@ class C1FeatureExtractor(DeterministicFeatureExtractor):
 
         return round(min(1.0, potential_score), 3)
 
-    def _extract_join_complexity(self, context: Dict[str, Any]) -> float:
+    def _extract_join_complexity(self, context: dict[str, Any]) -> float:
         """Extract join complexity (0.0 to 1.0)."""
         query = context.get("query", {})
 
@@ -397,7 +397,7 @@ class C1FeatureExtractor(DeterministicFeatureExtractor):
 
         return round(min(1.0, complexity_score), 3)
 
-    def _extract_data_volume_impact(self, context: Dict[str, Any]) -> float:
+    def _extract_data_volume_impact(self, context: dict[str, Any]) -> float:
         """Extract data volume impact (0.0 to 1.0)."""
         query = context.get("query", {})
 
@@ -430,7 +430,7 @@ class C1FeatureExtractor(DeterministicFeatureExtractor):
 
         return round(min(1.0, volume_impact), 3)
 
-    def _extract_concurrency_factor(self, context: Dict[str, Any]) -> float:
+    def _extract_concurrency_factor(self, context: dict[str, Any]) -> float:
         """Extract concurrency impact factor (0.0 to 1.0)."""
         query = context.get("query", {})
 
@@ -468,7 +468,7 @@ class C1FeatureExtractor(DeterministicFeatureExtractor):
 
         return round(min(1.0, factor), 3)
 
-    def _extract_plan_stability(self, context: Dict[str, Any]) -> float:
+    def _extract_plan_stability(self, context: dict[str, Any]) -> float:
         """Extract query plan stability (0.0 to 1.0)."""
         query = context.get("query", {})
 

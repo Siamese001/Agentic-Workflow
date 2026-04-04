@@ -5,11 +5,11 @@ from typing import Any
 
 class CreativeStrategy:
     """Creative problem-solving strategy for meta-learning."""
-    
+
     def __init__(self, strategy_type: str = "default"):
         self.strategy_type = strategy_type
         self.applied = False
-    
+
     def apply(self, context: dict[str, Any]) -> dict[str, Any]:
         """Apply creative strategy to context.
         
@@ -26,7 +26,7 @@ class CreativeStrategy:
             "strategy": self.strategy_type,
             "solution": "Creative approach applied"
         }
-    
+
     def get_suggestions(self) -> list[str]:
         """Get creative suggestions."""
         return [

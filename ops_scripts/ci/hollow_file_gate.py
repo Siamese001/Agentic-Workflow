@@ -37,9 +37,9 @@ def load_baseline(baseline_path: Path) -> dict[str, Any]:
         return {}
 
     try:
-        with open(baseline_path, 'r') as f:
+        with open(baseline_path) as f:
             return json.load(f)
-    except (json.JSONDecodeError, IOError) as e:
+    except (OSError, json.JSONDecodeError) as e:
         print(f"[hollow-file-gate] Warning: Failed to load baseline: {e}", file=sys.stderr)
         return {}
 
@@ -50,7 +50,7 @@ def save_baseline(baseline_path: Path, baseline: dict[str, Any]) -> None:
         baseline_path.parent.mkdir(parents=True, exist_ok=True)
         with open(baseline_path, 'w') as f:
             json.dump(baseline, f, indent=2, sort_keys=True)
-    except IOError as e:
+    except OSError as e:
         print(f"[hollow-file-gate] Error: Failed to save baseline: {e}", file=sys.stderr)
 
 
@@ -177,8 +177,8 @@ def main() -> int:
 
         hollow_violations = [v for v in report.all_violations if v.category == AntiPatternCategory.HOLLOW_FILE]
 
-        print(f"\nHollow File Report")
-        print(f"==================")
+        print("\nHollow File Report")
+        print("==================")
         print(f"Total hollow files: {len(hollow_violations)}")
 
         for violation in hollow_violations:
@@ -310,18 +310,18 @@ def main() -> int:
                 rel_path = str(file_path.relative_to(project_root))
                 print(f"  - {rel_path}")
 
-            print(f"\n[hollow-file-gate] SUGGESTIONS:")
-            print(f"  - For NEW files: Add behavioral logic or delete the file")
-            print(f"  - For BECAME_HOLLOW files: Restore behavioral content or delete")
-            print(f"  - Run with --report to see full repository state")
+            print("\n[hollow-file-gate] SUGGESTIONS:")
+            print("  - For NEW files: Add behavioral logic or delete the file")
+            print("  - For BECAME_HOLLOW files: Restore behavioral content or delete")
+            print("  - Run with --report to see full repository state")
 
             return 1
         else:
-            print(f"\n[hollow-file-gate] WARNING: Existing hollow files detected (not blocking)")
-            print(f"  Run with --init to set baseline, or --report for full inventory")
+            print("\n[hollow-file-gate] WARNING: Existing hollow files detected (not blocking)")
+            print("  Run with --init to set baseline, or --report for full inventory")
             return 0
     else:
-        print(f"[hollow-file-gate] OK: No hollow file violations found")
+        print("[hollow-file-gate] OK: No hollow file violations found")
         return 0
 
 

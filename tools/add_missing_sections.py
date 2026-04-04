@@ -6,7 +6,6 @@ Add ## Rules and ## Success Criteria sections to execution plans.
 
 import sys
 from pathlib import Path
-import re
 
 
 def detect_plan_type(content: str, filename: str) -> str:

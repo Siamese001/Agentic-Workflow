@@ -5,10 +5,9 @@ This wave removes entire blocks of migration artifacts that are
 causing persistent syntax errors.
 """
 
+import ast
 import pathlib
 import re
-import ast
-from typing import Dict, List, Tuple
 
 
 class Wave3BlockRemoval:
@@ -25,9 +24,9 @@ class Wave3BlockRemoval:
             'syntax_errors_fixed': 0,
             'failed_files': 0
         }
-        self.failed_files: List[Tuple[str, str]] = []
+        self.failed_files: list[tuple[str, str]] = []
 
-    def process_files(self) -> Dict:
+    def process_files(self) -> dict:
         """Process files with Wave 3 block removal."""
         # Only process files in tests/ directory, exclude archives
         test_files = []
@@ -121,7 +120,7 @@ class Wave3BlockRemoval:
                  (any(keyword in stripped for keyword in ['_emit_', 'emit_', 'MAX_', 'BATCH_', 'BUFFER_', 'DEFAULT_', 'MAX_', 'RETRIES_', 'THRESHOLD']) or
                   re.match(r'^[a-zA-Z_][a-zA-Z0-9_]*,?\s*$', stripped))))
 
-    def _skip_problematic_block(self, lines: List[str], start_idx: int) -> int:
+    def _skip_problematic_block(self, lines: list[str], start_idx: int) -> int:
         """Skip a problematic block and return number of lines skipped."""
         i = start_idx + 1
         while i < len(lines):
@@ -152,7 +151,7 @@ class Wave3BlockRemoval:
         print(f"Failed files: {len(self.failed_files)}")
 
         if self.failed_files:
-            print(f"\nFailed files (first 5):")
+            print("\nFailed files (first 5):")
             for file_path, error in self.failed_files[:5]:
                 print(f"  {file_path}: {error}")
             if len(self.failed_files) > 5:

@@ -7,7 +7,7 @@ within a specified hop distance from relevant seed entities.
 from __future__ import annotations
 
 from datetime import datetime
-from typing import TYPE_CHECKING, Dict, List, Optional, Set
+from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
     from agentic_core.L4_state.types.graph_store_types import GraphEntity, IGraphStore
@@ -100,7 +100,7 @@ class LocalSearchEngine:
     def __init__(
         self,
         graph_store: IGraphStore,
-        config: Optional[LocalSearchConfig] = None
+        config: LocalSearchConfig | None = None
     ) -> None:
         """Initialize the local search engine.
 
@@ -113,8 +113,8 @@ class LocalSearchEngine:
         self.graphrag_config = get_config()
 
         # Cache for frequently accessed entities
-        self._entity_cache: Dict[str, GraphEntity] = {}
-        self._cache_timestamps: Dict[str, datetime] = {}
+        self._entity_cache: dict[str, GraphEntity] = {}
+        self._cache_timestamps: dict[str, datetime] = {}
 
     async def search(self, query: SearchQuery) -> SearchResponse:
         """Perform local search for the given query.
@@ -195,7 +195,7 @@ class LocalSearchEngine:
                 errors=[f"Local search failed: {str(e)}"]
             )
 
-    async def _find_seed_entities(self, query: SearchQuery) -> List[GraphEntity]:
+    async def _find_seed_entities(self, query: SearchQuery) -> list[GraphEntity]:
         """Find seed entities using text search."""
         # Use the graph store's search functionality
         search_result = await self.graph_store.search_entities(
@@ -214,9 +214,9 @@ class LocalSearchEngine:
 
     async def _expand_search(
         self,
-        seed_entities: List[GraphEntity],
+        seed_entities: list[GraphEntity],
         query: SearchQuery
-    ) -> List[GraphEntity]:
+    ) -> list[GraphEntity]:
         """Expand search using graph traversal from seed entities."""
         expanded_entities = set(seed_entities)  # Use set to avoid duplicates
         visited_entities = set(entity.id for entity in seed_entities)
@@ -263,10 +263,10 @@ class LocalSearchEngine:
 
     async def _score_results(
         self,
-        entities: List[GraphEntity],
+        entities: list[GraphEntity],
         query: SearchQuery,
-        seed_entities: List[GraphEntity]
-    ) -> List[SearchResult]:
+        seed_entities: list[GraphEntity]
+    ) -> list[SearchResult]:
         """Score and rank entities based on multiple factors."""
         results = []
         seed_entity_ids = {e.id for e in seed_entities}
@@ -343,7 +343,7 @@ class LocalSearchEngine:
     def _calculate_proximity_score(
         self,
         entity: GraphEntity,
-        seed_entity_ids: Set[str]
+        seed_entity_ids: set[str]
     ) -> float:
         """Calculate graph proximity score to seed entities."""
         if entity.id in seed_entity_ids:
@@ -356,7 +356,7 @@ class LocalSearchEngine:
     async def _calculate_community_score(
         self,
         entity: GraphEntity,
-        seed_entities: List[GraphEntity]
+        seed_entities: list[GraphEntity]
     ) -> float:
         """Calculate community coherence score."""
         # Simplified: check if entity shares community with seeds
@@ -369,7 +369,7 @@ class LocalSearchEngine:
         # In practice, you'd use entity creation/update timestamps
         return 0.5
 
-    async def _get_entity_context(self, entity: GraphEntity) -> Optional[str]:
+    async def _get_entity_context(self, entity: GraphEntity) -> str | None:
         """Get context information for an entity."""
         # Get relationships to provide context
         relationships = await self.graph_store.get_relationships(entity.id, direction="both")
@@ -385,7 +385,7 @@ class LocalSearchEngine:
 
         return f"Connected via: {', '.join(context_parts)}"
 
-    async def _get_surrounding_entities(self, entity: GraphEntity) -> List[str]:
+    async def _get_surrounding_entities(self, entity: GraphEntity) -> list[str]:
         """Get surrounding entity IDs."""
         relationships = await self.graph_store.get_relationships(entity.id, direction="both")
 
@@ -412,7 +412,7 @@ class LocalSearchEngine:
 
         return True
 
-    def _apply_filters(self, results: List[SearchResult], query: SearchQuery) -> List[SearchResult]:
+    def _apply_filters(self, results: list[SearchResult], query: SearchQuery) -> list[SearchResult]:
         """Apply final filters to results."""
         filtered = []
 
@@ -429,7 +429,7 @@ class LocalSearchEngine:
 
         return filtered
 
-    async def _get_cached_entity(self, entity_id: str) -> Optional[GraphEntity]:
+    async def _get_cached_entity(self, entity_id: str) -> GraphEntity | None:
         """Get entity from cache or graph store."""
         # Check cache
         if self.config.enable_caching and entity_id in self._entity_cache:
@@ -459,7 +459,7 @@ class LocalSearchEngine:
 # Factory function
 def create_local_search_engine(
     graph_store: IGraphStore,
-    config: Optional[LocalSearchConfig] = None
+    config: LocalSearchConfig | None = None
 ) -> LocalSearchEngine:
     """Create a local search engine."""
     return LocalSearchEngine(graph_store, config)

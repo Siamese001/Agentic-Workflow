@@ -1,10 +1,9 @@
 #!/usr/bin/env python3
 """Analyze missing imports from test execution failures."""
 
-import subprocess
-import json
 import re
-from pathlib import Path
+import subprocess
+
 
 def get_import_errors():
     """Run pytest and extract ImportError messages."""

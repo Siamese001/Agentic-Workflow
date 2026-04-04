@@ -11,7 +11,6 @@ from __future__ import annotations
 from typing import Any
 
 from agentic_core.interfaces.execution import CIDRegistry, ExecutionCycle
-
 from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     LayerSegment,
     _emit_agent_executes_agent,

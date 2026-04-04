@@ -5,14 +5,14 @@ Integrates Wave 4 components: Query Routing, Multi-Query Fusion, and Reranking.
 
 import asyncio
 import logging
-from typing import List, Dict, Any, Optional
-from dataclasses import dataclass
 import time
+from dataclasses import dataclass
+from typing import Any
 
+from .multi_query_fusion import FusionResult, MultiQueryFusion
 from .query_router import QueryRouter, QueryType
-from .multi_query_fusion import MultiQueryFusion, FusionResult
 from .reranking_engine import RerankingEngine, RerankingResult
-from .semantic_retriever import SemanticRetriever, RetrievalResult
+from .semantic_retriever import RetrievalResult, SemanticRetriever
 
 logger = logging.getLogger(__name__)
 
@@ -34,12 +34,12 @@ class AdvancedRetrievalResponse:
     """Advanced retrieval response with comprehensive results."""
     original_query: str
     query_type: QueryType
-    routing_decision: Dict[str, Any]
+    routing_decision: dict[str, Any]
     fusion_result: FusionResult
-    reranking_result: Optional[RerankingResult]
-    final_results: List[RetrievalResult]
+    reranking_result: RerankingResult | None
+    final_results: list[RetrievalResult]
     execution_time_ms: float
-    component_breakdown: Dict[str, Any]
+    component_breakdown: dict[str, Any]
 
 
 class AdvancedSemanticRetriever:
@@ -50,7 +50,7 @@ class AdvancedSemanticRetriever:
     to provide the most relevant search results across all ChromaDB collections.
     """
 
-    def __init__(self, reranking_model_path: Optional[str] = None):
+    def __init__(self, reranking_model_path: str | None = None):
         """
         Initialize advanced semantic retriever.
 
@@ -166,7 +166,7 @@ class AdvancedSemanticRetriever:
 
         return response
 
-    async def simple_retrieve(self, query: str, max_results: int = 20) -> List[RetrievalResult]:
+    async def simple_retrieve(self, query: str, max_results: int = 20) -> list[RetrievalResult]:
         """
         Simple retrieval interface with default settings.
 
@@ -189,9 +189,9 @@ class AdvancedSemanticRetriever:
     def _generate_component_breakdown(
         self,
         fusion_result: FusionResult,
-        reranking_result: Optional[RerankingResult],
+        reranking_result: RerankingResult | None,
         total_time_ms: float
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Generate breakdown of component performance."""
         breakdown = {
             "total_time_ms": total_time_ms,
@@ -231,7 +231,7 @@ class AdvancedSemanticRetriever:
 
         return breakdown
 
-    def get_retrieval_stats(self) -> Dict[str, Any]:
+    def get_retrieval_stats(self) -> dict[str, Any]:
         """Get comprehensive retrieval statistics."""
         return {
             "base_retriever": {
@@ -245,9 +245,9 @@ class AdvancedSemanticRetriever:
 
     async def benchmark_retrieval(
         self,
-        queries: List[str],
-        strategies: List[str] = None
-    ) -> Dict[str, Any]:
+        queries: list[str],
+        strategies: list[str] = None
+    ) -> dict[str, Any]:
         """
         Benchmark different retrieval strategies.
 

@@ -11,18 +11,17 @@ import logging
 import statistics
 import time
 from dataclasses import dataclass, field
-from typing import Any, Optional
+from typing import Any
 
+from agentic_core.L2_execution.apps_qwen.hardened_vllm_client import (
+    CircuitBreakerConfig,
+    HardenedVLLMClient,
+    RetryConfig,
+)
 from agentic_core.L2_execution.apps_qwen.optimized_vllm_client import (
     OptimizedVLLMClient,
     VLLMRequest,
 )
-from agentic_core.L2_execution.apps_qwen.hardened_vllm_client import (
-    HardenedVLLMClient,
-    RetryConfig,
-    CircuitBreakerConfig,
-)
-from agentic_core.L2_execution.apps_qwen.gpu_memory_monitor import get_gpu_monitor
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -427,7 +426,7 @@ class QwenPerformanceTestSuite:
             hit_rate = result.cache_hits / (result.cache_hits + result.cache_misses)
             logger.info(f"  Cache Hit Rate:   {hit_rate:.1%}")
 
-    def generate_report(self, output_path: Optional[str] = None) -> str:
+    def generate_report(self, output_path: str | None = None) -> str:
         """Generate JSON report of all test results."""
         report = {
             "timestamp": time.time(),

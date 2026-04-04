@@ -6,8 +6,6 @@ for knowledge graphs, with hierarchical clustering support.
 
 from __future__ import annotations
 
-from typing import Optional
-
 from agentic_core.L1_cognition.types.community_types import CommunityDetectionConfig
 
 # Placeholder for community detector - full implementation was created and scanned by ADG
@@ -16,7 +14,7 @@ from agentic_core.L1_cognition.types.community_types import CommunityDetectionCo
 class CommunityDetector:
     """Detects communities in knowledge graphs using various algorithms."""
 
-    def __init__(self, config: Optional[CommunityDetectionConfig] = None) -> None:
+    def __init__(self, config: CommunityDetectionConfig | None = None) -> None:
         """Initialize the community detector."""
         self.config = config or CommunityDetectionConfig()
 

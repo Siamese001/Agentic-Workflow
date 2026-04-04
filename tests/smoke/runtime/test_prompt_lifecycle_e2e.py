@@ -5,13 +5,8 @@ These tests verify the complete flow from intent to LLM execution.
 
 import hashlib
 import hmac
-import json
 import unittest
-from typing import Any
-from unittest.mock import AsyncMock, MagicMock, patch
 
-from agentic_core.L0_routing.engines.assembly_stage import AirlockAssembler
-from agentic_core.L0_routing.engines.prompt_bom_builder import PromptBOMBuilder
 from agentic_core.L0_routing.types.l0_instruction_packet import InstructionPacket
 from agentic_core.prompt_governance.contracts import (
     CompiledPromptArtifact,
@@ -76,7 +71,6 @@ class TestE2ESmoke(unittest.TestCase):
 
     def test_path_router_integration(self) -> None:
         """Test PathRouter can be imported and used."""
-        from agentic_core.L0_routing.engines.assembly_stage import GovernedPayload
         from agentic_core.L0_routing.engines.path_router import Path, PathRouter
 
         router = PathRouter()

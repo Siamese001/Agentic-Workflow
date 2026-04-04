@@ -4,12 +4,12 @@ END-TO-END ADG SYSTEM TEST
 Comprehensive validation of the entire ADG system after regeneration
 """
 
-import sqlite3
-import json
 import hashlib
-from pathlib import Path
+import json
+import sqlite3
 from datetime import datetime
-from typing import Dict, Any, List
+from pathlib import Path
+from typing import Any
 
 ROOT = Path(__file__).resolve().parents[1]
 ADG_ARTIFACTS_DIR = ROOT / "artifacts" / "adg"
@@ -50,7 +50,7 @@ class ADGEndToEndTest:
         if self.conn:
             self.conn.close()
 
-    def execute_query(self, query: str, params=None) -> List[sqlite3.Row]:
+    def execute_query(self, query: str, params=None) -> list[sqlite3.Row]:
         """Execute SQL query and return results."""
         cursor = self.conn.cursor()
         if params:
@@ -59,7 +59,7 @@ class ADGEndToEndTest:
             cursor.execute(query)
         return cursor.fetchall()
 
-    def test_database_integrity(self) -> Dict[str, Any]:
+    def test_database_integrity(self) -> dict[str, Any]:
         """Test 1: Database integrity and completeness."""
         print("\n" + "=" * 60)
         print("TEST 1 - DATABASE INTEGRITY")
@@ -120,7 +120,7 @@ class ADGEndToEndTest:
 
         return result
 
-    def test_layer_distribution(self) -> Dict[str, Any]:
+    def test_layer_distribution(self) -> dict[str, Any]:
         """Test 2: Layer distribution and architecture."""
         print("\n" + "=" * 60)
         print("TEST 2 - LAYER DISTRIBUTION")
@@ -173,7 +173,7 @@ class ADGEndToEndTest:
 
         return result
 
-    def test_edge_connectivity(self) -> Dict[str, Any]:
+    def test_edge_connectivity(self) -> dict[str, Any]:
         """Test 3: Edge connectivity and key relations."""
         print("\n" + "=" * 60)
         print("TEST 3 - EDGE CONNECTIVITY")
@@ -241,7 +241,7 @@ class ADGEndToEndTest:
 
         return result
 
-    def test_determinism(self) -> Dict[str, Any]:
+    def test_determinism(self) -> dict[str, Any]:
         """Test 4: System determinism and hash stability."""
         print("\n" + "=" * 60)
         print("TEST 4 - SYSTEM DETERMINISM")
@@ -302,7 +302,7 @@ class ADGEndToEndTest:
 
         return result
 
-    def test_artifact_completeness(self) -> Dict[str, Any]:
+    def test_artifact_completeness(self) -> dict[str, Any]:
         """Test 5: Artifact completeness and file structure."""
         print("\n" + "=" * 60)
         print("TEST 5 - ARTIFACT COMPLETENESS")
@@ -367,7 +367,7 @@ class ADGEndToEndTest:
 
         return result
 
-    def test_performance_metrics(self) -> Dict[str, Any]:
+    def test_performance_metrics(self) -> dict[str, Any]:
         """Test 6: Performance and cache metrics."""
         print("\n" + "=" * 60)
         print("TEST 6 - PERFORMANCE METRICS")
@@ -434,7 +434,7 @@ class ADGEndToEndTest:
 
         return result
 
-    def run_all_tests(self) -> Dict[str, Any]:
+    def run_all_tests(self) -> dict[str, Any]:
         """Run complete end-to-end test suite."""
         print("Running comprehensive end-to-end ADG system test...")
 

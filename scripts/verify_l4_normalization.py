@@ -15,7 +15,7 @@ import json
 import sqlite3
 import sys
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Set, Tuple
+from typing import Any
 
 # Add project root to path for imports
 sys.path.insert(0, str(Path(__file__).parent.parent.parent))
@@ -37,8 +37,8 @@ class ADGL4NormalizationVerifier:
     def __init__(self, adg_dir: Path):
         self.adg_dir = Path(adg_dir)
         self.sqlite_path = self._find_sqlite_database()
-        self.errors: List[str] = []
-        self.warnings: List[str] = []
+        self.errors: list[str] = []
+        self.warnings: list[str] = []
 
     def _find_sqlite_database(self) -> Path:
         """Find the latest SQLite database."""
@@ -48,7 +48,7 @@ class ADGL4NormalizationVerifier:
 
         return max(sqlite_files, key=lambda p: p.stat().st_mtime)
 
-    def _verify_l4_layer_classification(self) -> Dict[str, Any]:
+    def _verify_l4_layer_classification(self) -> dict[str, Any]:
         """Verify all L4 modules have proper layer classification."""
         print("🏷️  Verifying L4 layer classification...")
 
@@ -91,7 +91,7 @@ class ADGL4NormalizationVerifier:
                 for node in l4_nodes:
                     entity_distribution[node["entity_type"]] = entity_distribution.get(node["entity_type"], 0) + 1
 
-                print(f"   📊 L4 entity distribution:")
+                print("   📊 L4 entity distribution:")
                 for entity_type, count in sorted(entity_distribution.items()):
                     print(f"      {entity_type}: {count}")
 
@@ -105,7 +105,7 @@ class ADGL4NormalizationVerifier:
         except Exception as e:
             raise L4NormalizationError(f"L4 layer classification verification failed: {e}")
 
-    def _verify_l4_identity_resolution(self) -> Dict[str, Any]:
+    def _verify_l4_identity_resolution(self) -> dict[str, Any]:
         """Verify L4 modules have resolved identity."""
         print("🎯 Verifying L4 identity resolution...")
 
@@ -170,7 +170,7 @@ class ADGL4NormalizationVerifier:
         except Exception as e:
             raise L4NormalizationError(f"L4 identity resolution verification failed: {e}")
 
-    def _verify_l4_path_integrity(self) -> Dict[str, Any]:
+    def _verify_l4_path_integrity(self) -> dict[str, Any]:
         """Verify L4 path integrity - all L4 modules have valid paths and proper layer assignment.
         
         This method is required by test_unknown_layer_in_l4_path to detect UNKNOWN layer
@@ -179,7 +179,7 @@ class ADGL4NormalizationVerifier:
         try:
             with sqlite3.connect(self.sqlite_path) as conn:
                 cursor = conn.cursor()
-                
+
                 # Get all L4 nodes with their details
                 cursor.execute("""
                     SELECT id, adg_name, entity_type, layer, identity_kind, confidence, resolved_path
@@ -187,7 +187,7 @@ class ADGL4NormalizationVerifier:
                     WHERE layer = 'L4'
                     ORDER BY adg_name
                 """)
-                
+
                 l4_nodes = []
                 for row in cursor.fetchall():
                     l4_nodes.append({
@@ -199,21 +199,21 @@ class ADGL4NormalizationVerifier:
                         "confidence": row[5],
                         "resolved_path": row[6]
                     })
-                
+
                 # Check for UNKNOWN layer nodes in L4 (this is the key check)
                 unknown_layer_nodes = [n for n in l4_nodes if n["layer"] == "UNKNOWN"]
-                
+
                 return {
                     "l4_nodes": l4_nodes,
                     "total_l4_nodes": len(l4_nodes),
                     "unknown_layer_count": len(unknown_layer_nodes),
                     "status": "PASS" if len(unknown_layer_nodes) == 0 else "FAIL"
                 }
-                
+
         except Exception as e:
             raise L4NormalizationError(f"L4 path integrity verification failed: {e}")
 
-    def _verify_l4_persistence_path_normalization(self) -> Dict[str, Any]:
+    def _verify_l4_persistence_path_normalization(self) -> dict[str, Any]:
         """Verify L4 persistence paths are normalized and queryable."""
         print("💾 Verifying L4 persistence path normalization...")
 
@@ -286,7 +286,7 @@ class ADGL4NormalizationVerifier:
         except Exception as e:
             raise L4NormalizationError(f"L4 persistence path verification failed: {e}")
 
-    def _verify_l4_authoritative_location(self) -> Dict[str, Any]:
+    def _verify_l4_authoritative_location(self) -> dict[str, Any]:
         """Verify L4 is authoritative location for key artifacts."""
         print("👑 Verifying L4 as authoritative location...")
 
@@ -338,7 +338,7 @@ class ADGL4NormalizationVerifier:
                                 "distribution": info["distribution"]
                             })
 
-                print(f"   📊 Artifact distribution analysis:")
+                print("   📊 Artifact distribution analysis:")
                 for entity_type, info in layer_distribution.items():
                     l4_pct = info["l4_count"] / max(1, info["total_count"]) * 100
                     print(f"      {info['description']}: {info['l4_count']}/{info['total_count']} in L4 ({l4_pct:.1f}%)")
@@ -355,7 +355,7 @@ class ADGL4NormalizationVerifier:
         except Exception as e:
             raise L4NormalizationError(f"L4 authoritative location verification failed: {e}")
 
-    def verify(self) -> Dict[str, Any]:
+    def verify(self) -> dict[str, Any]:
         """Run complete L4 normalization verification."""
         print("🔍 Starting ADG L4 Normalization Verification...")
         print(f"📁 ADG Directory: {self.adg_dir}")

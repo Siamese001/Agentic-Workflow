@@ -7,7 +7,6 @@ conflict resolution, and graph lineage preservation for Pipeline B Phase B2.
 import json
 import logging
 from pathlib import Path
-from typing import Dict, List, Optional, Set
 
 from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     LayerSegment,
@@ -15,8 +14,8 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 )
 
 from .canonical_types import (
-    CanonicalRawUnit,
     CanonicalDiff,
+    CanonicalRawUnit,
 )
 
 log = logging.getLogger(__name__)
@@ -30,7 +29,7 @@ class CanonicalStore:
     and graph lineage preservation for canonical raw units.
     """
 
-    def __init__(self, storage_path: Optional[Path] = None):
+    def __init__(self, storage_path: Path | None = None):
         """Initialize the canonical store.
 
         Args:
@@ -54,9 +53,9 @@ class CanonicalStore:
         self.lineage_path.mkdir(exist_ok=True)
 
         # In-memory caches
-        self._unit_cache: Dict[str, CanonicalRawUnit] = {}
-        self._index_cache: Dict[str, List[str]] = {}  # unit_id -> list of versions
-        self._lineage_cache: Dict[str, Set[str]] = {}  # parent_id -> set of child_ids
+        self._unit_cache: dict[str, CanonicalRawUnit] = {}
+        self._index_cache: dict[str, list[str]] = {}  # unit_id -> list of versions
+        self._lineage_cache: dict[str, set[str]] = {}  # parent_id -> set of child_ids
 
         # Load existing data
         self._load_indices()
@@ -104,7 +103,7 @@ class CanonicalStore:
             log.error(f"Failed to store unit {unit.identifier.unit_id}: {e}")
             return False
 
-    def get_unit(self, unit_id: str, version: Optional[int] = None) -> Optional[CanonicalRawUnit]:
+    def get_unit(self, unit_id: str, version: int | None = None) -> CanonicalRawUnit | None:
         """Retrieve a canonical unit from storage.
 
         Args:
@@ -131,7 +130,7 @@ class CanonicalStore:
             return None
 
         try:
-            with open(unit_file, 'r', encoding='utf-8') as f:
+            with open(unit_file, encoding='utf-8') as f:
                 data = json.load(f)
 
             unit = CanonicalRawUnit.from_dict(data)
@@ -142,7 +141,7 @@ class CanonicalStore:
             log.error(f"Failed to load unit {unit_id}:v{version}: {e}")
             return None
 
-    def get_latest_unit(self, unit_id: str) -> Optional[CanonicalRawUnit]:
+    def get_latest_unit(self, unit_id: str) -> CanonicalRawUnit | None:
         """Get the latest version of a unit.
 
         Args:
@@ -156,7 +155,7 @@ class CanonicalStore:
             return None
         return self.get_unit(unit_id, latest_version)
 
-    def get_unit_versions(self, unit_id: str) -> List[int]:
+    def get_unit_versions(self, unit_id: str) -> list[int]:
         """Get all available versions for a unit.
 
         Args:
@@ -170,7 +169,7 @@ class CanonicalStore:
             return [int(v[1:]) for v in version_strings if v.startswith('v')]
         return []
 
-    def get_children(self, parent_id: str) -> List[CanonicalRawUnit]:
+    def get_children(self, parent_id: str) -> list[CanonicalRawUnit]:
         """Get all child units of a parent.
 
         Args:
@@ -192,7 +191,7 @@ class CanonicalStore:
 
         return children
 
-    def find_by_checksum(self, checksum: str) -> List[CanonicalRawUnit]:
+    def find_by_checksum(self, checksum: str) -> list[CanonicalRawUnit]:
         """Find units by content checksum.
 
         Args:
@@ -210,7 +209,7 @@ class CanonicalStore:
 
         return matches
 
-    def find_by_content_type(self, content_type: str) -> List[CanonicalRawUnit]:
+    def find_by_content_type(self, content_type: str) -> list[CanonicalRawUnit]:
         """Find units by content type.
 
         Args:
@@ -228,7 +227,7 @@ class CanonicalStore:
 
         return matches
 
-    def find_active_units(self) -> List[CanonicalRawUnit]:
+    def find_active_units(self) -> list[CanonicalRawUnit]:
         """Get all active (non-tombstoned, non-superseded) units.
 
         Returns:
@@ -292,7 +291,7 @@ class CanonicalStore:
             changes=changes,
         )
 
-    def resolve_conflicts(self, unit_id: str) -> List[CanonicalDiff]:
+    def resolve_conflicts(self, unit_id: str) -> list[CanonicalDiff]:
         """Resolve conflicts for a unit by finding all versions and creating diffs.
 
         Args:
@@ -312,7 +311,7 @@ class CanonicalStore:
 
         return diffs
 
-    def get_lineage_graph(self, unit_id: str, max_depth: int = 3) -> Dict[str, List[str]]:
+    def get_lineage_graph(self, unit_id: str, max_depth: int = 3) -> dict[str, list[str]]:
         """Get the lineage graph for a unit.
 
         Args:
@@ -376,7 +375,7 @@ class CanonicalStore:
         log.info(f"Cleaned up {removed_count} old versions for unit {unit_id}")
         return removed_count
 
-    def get_storage_stats(self) -> Dict[str, int]:
+    def get_storage_stats(self) -> dict[str, int]:
         """Get storage statistics.
 
         Returns:
@@ -399,7 +398,7 @@ class CanonicalStore:
             "avg_versions_per_unit": total_versions / total_units if total_units > 0 else 0,
         }
 
-    def _get_latest_version(self, unit_id: str) -> Optional[int]:
+    def _get_latest_version(self, unit_id: str) -> int | None:
         """Get the latest version number for a unit."""
         versions = self.get_unit_versions(unit_id)
         return max(versions) if versions else None
@@ -410,7 +409,7 @@ class CanonicalStore:
         for index_file in self.index_path.glob("*.json"):
             unit_id = index_file.stem
             try:
-                with open(index_file, 'r', encoding='utf-8') as f:
+                with open(index_file, encoding='utf-8') as f:
                     self._index_cache[unit_id] = json.load(f)
             except Exception as e:
                 log.warning(f"Failed to load index for {unit_id}: {e}")
@@ -419,7 +418,7 @@ class CanonicalStore:
         for lineage_file in self.lineage_path.glob("*.json"):
             parent_id = lineage_file.stem
             try:
-                with open(lineage_file, 'r', encoding='utf-8') as f:
+                with open(lineage_file, encoding='utf-8') as f:
                     child_set = set(json.load(f))
                     self._lineage_cache[parent_id] = child_set
             except Exception as e:
@@ -439,10 +438,10 @@ class CanonicalStore:
 
 
 # Global store instance
-_global_store: Optional[CanonicalStore] = None
+_global_store: CanonicalStore | None = None
 
 
-def get_canonical_store(storage_path: Optional[Path] = None) -> CanonicalStore:
+def get_canonical_store(storage_path: Path | None = None) -> CanonicalStore:
     """Get or create the global canonical store."""
     global _global_store
     if _global_store is None:
@@ -455,6 +454,6 @@ def store_unit(unit: CanonicalRawUnit) -> bool:
     return get_canonical_store().store_unit(unit)
 
 
-def get_unit(unit_id: str, version: Optional[int] = None) -> Optional[CanonicalRawUnit]:
+def get_unit(unit_id: str, version: int | None = None) -> CanonicalRawUnit | None:
     """Convenience function to retrieve a canonical unit."""
     return get_canonical_store().get_unit(unit_id, version)

@@ -4,7 +4,6 @@ Bulk add guardian exemptions to NEW file+category pairs.
 Based on ADG burndown gate output.
 """
 
-import re
 from pathlib import Path
 
 # Files and their required guardian exemptions from burndown gate

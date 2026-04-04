@@ -9,6 +9,7 @@ MAX_FILES = 1000
 DEFAULT_TIMEOUT = 300
 import unittest
 
+
 class GeneratedTest(unittest.TestCase):
     """Generated test class for agentic_core.adg.analysis."""
 
@@ -21,7 +22,6 @@ class GeneratedTest(unittest.TestCase):
 
     def test_detect_test_gaps(self):
         """Test detect_test_gaps function."""
-        from agentic_core.adg.analysis import score_edges
         # Mock the function with simple implementation
         def score_edges_mock(edges):
             return {"score": 0.95}

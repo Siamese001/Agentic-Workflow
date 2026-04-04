@@ -8,9 +8,8 @@ focusing on clear anti-patterns and development convenience skips.
 
 import json
 import re
-from pathlib import Path
-from typing import Dict, List, Set, Tuple
 from collections import defaultdict
+from pathlib import Path
 
 
 class FirstPartySkipRemover:
@@ -25,16 +24,16 @@ class FirstPartySkipRemover:
         }
         self.modifications = []
 
-    def load_wave1d_data(self) -> Dict:
+    def load_wave1d_data(self) -> dict:
         """Load Wave 1d categorization data."""
         try:
-            with open('artifacts/wave1d_categorization_report.json', 'r') as f:
+            with open('artifacts/wave1d_categorization_report.json') as f:
                 return json.load(f)
         except FileNotFoundError:
             print("❌ Wave 1d report not found. Please run Wave 1 first.")
             return {}
 
-    def get_target_skips(self, wave1d_data: Dict) -> List[Dict]:
+    def get_target_skips(self, wave1d_data: dict) -> list[dict]:
         """Get first-party skip patterns targeted for removal."""
         wave2_assignments = wave1d_data.get('wave2_prioritization', {}).get('wave2_assignments', {})
         first_party_assignment = wave2_assignments.get('wave2a_first_party', {})
@@ -44,7 +43,7 @@ class FirstPartySkipRemover:
 
         return target_skips
 
-    def remove_first_party_skips(self, target_skips: List[Dict]) -> Dict:
+    def remove_first_party_skips(self, target_skips: list[dict]) -> dict:
         """Remove first-party skip patterns from test files."""
         print("=== Removing First-Party Skip Patterns ===")
 
@@ -64,7 +63,7 @@ class FirstPartySkipRemover:
             'modifications': self.modifications
         }
 
-    def _process_file_skips(self, file_path: str, skips: List[Dict]):
+    def _process_file_skips(self, file_path: str, skips: list[dict]):
         """Process skips in a single file."""
         self.removal_stats['files_processed'] += 1
 
@@ -76,7 +75,7 @@ class FirstPartySkipRemover:
 
         try:
             # Read file content
-            with open(full_path, 'r', encoding='utf-8') as f:
+            with open(full_path, encoding='utf-8') as f:
                 content = f.read()
                 original_content = content
 
@@ -123,7 +122,7 @@ class FirstPartySkipRemover:
             print(f"❌ Error processing {file_path}: {e}")
             self.removal_stats['errors_encountered'] += 1
 
-    def _remove_skip_decorator(self, line: str, skip: Dict) -> str:
+    def _remove_skip_decorator(self, line: str, skip: dict) -> str:
         """Remove skip decorator from a line."""
         pattern_type = skip['pattern_type']
 
@@ -151,7 +150,7 @@ class FirstPartySkipRemover:
         # Default: comment out the line
         return f"# REMOVED SKIP: {line.strip()}"
 
-    def validate_removals(self) -> Dict:
+    def validate_removals(self) -> dict:
         """Validate that removals were successful."""
         print("=== Validating Skip Removals ===")
 
@@ -167,7 +166,7 @@ class FirstPartySkipRemover:
             full_path = Path('tests') / file_path
 
             try:
-                with open(full_path, 'r', encoding='utf-8') as f:
+                with open(full_path, encoding='utf-8') as f:
                     content = f.read()
 
                 # Check that the removed skip pattern is no longer present
@@ -191,7 +190,7 @@ class FirstPartySkipRemover:
 
         return validation
 
-    def generate_wave2a_report(self) -> Dict:
+    def generate_wave2a_report(self) -> dict:
         """Generate Wave 2a removal report."""
         print("=== Wave 2a: Remove INVALID Skips - First-Party Patterns ===")
 
@@ -237,7 +236,7 @@ class FirstPartySkipRemover:
 
         # Print summary
         summary = report['summary']
-        print(f"\n=== Wave 2a Summary ===")
+        print("\n=== Wave 2a Summary ===")
         print(f"Target skips: {summary['target_skips']}")
         print(f"Files processed: {summary['files_processed']}")
         print(f"Files modified: {summary['files_modified']}")
@@ -250,7 +249,7 @@ class FirstPartySkipRemover:
             for issue in validation_results['remaining_issues'][:3]:
                 print(f"  - {issue['file']}: {issue['issue']}")
 
-        print(f"\n📄 Report saved to: artifacts/wave2a_removal_report.json")
+        print("\n📄 Report saved to: artifacts/wave2a_removal_report.json")
 
         return report
 

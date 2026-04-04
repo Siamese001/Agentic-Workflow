@@ -82,7 +82,7 @@ class ADGService:
             if isinstance(result, list) and not result:
                 # Empty list is valid but may not be worth caching
                 pass  # Still cache empty results to avoid repeated misses
-            
+
             if is_valid:
                 try:
                     cache_set(result)

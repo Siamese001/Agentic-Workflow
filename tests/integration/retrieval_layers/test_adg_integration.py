@@ -3,8 +3,6 @@
 Verifies ADG edge coverage and semantic types across all layers.
 """
 
-import pytest
-from typing import Dict, List, Any, Set
 from dataclasses import dataclass
 
 

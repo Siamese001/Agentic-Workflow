@@ -7,6 +7,7 @@ import time
 import traceback
 from pathlib import Path
 
+
 def test_l4_storage_integration():
     """Test L4 storage integration with FileBackedRuntimeADGStore."""
     print("=" * 80)
@@ -50,7 +51,7 @@ def test_l4_storage_integration():
     # Test 2: L4 storage functionality
     print("\n2. Testing L4 storage functionality...")
     try:
-        from system_learning.runtime_adg import RuntimeADGMaterializer, InMemoryRuntimeADGStore
+        from system_learning.runtime_adg import RuntimeADGMaterializer
 
         # Create test snapshot
         materializer = RuntimeADGMaterializer()
@@ -232,7 +233,7 @@ def test_l6_integration():
             results['l6_component_distribution'] = 'component_distribution' in patterns
             results['l6_span_type_distribution'] = 'span_type_distribution' in patterns
 
-            print(f"✅ Pattern extraction working:")
+            print("✅ Pattern extraction working:")
             print(f"   - Layer distribution: {patterns.get('layer_distribution', {})}")
             print(f"   - Component distribution: {patterns.get('component_distribution', {})}")
             print(f"   - Total snapshots: {patterns.get('total_snapshots', 0)}")
@@ -374,7 +375,7 @@ def test_auto_persistence():
             results['auto_l4_available'] = status.get('l4_store_available') == True
             results['auto_l6_available'] = status.get('l6_bridge_available') == True
 
-            print(f"✅ Auto-persistence status:")
+            print("✅ Auto-persistence status:")
             print(f"   - Enabled: {status.get('enabled')}")
             print(f"   - L4 Store: {status.get('l4_store_available')}")
             print(f"   - L6 Bridge: {status.get('l6_bridge_available')}")
@@ -408,7 +409,7 @@ def test_auto_persistence():
         results['auto_force_success'] = isinstance(force_result, dict) and force_result.get('success') == True
 
         if force_result.get('success'):
-            print(f"✅ Force persistence successful:")
+            print("✅ Force persistence successful:")
             print(f"   - Mission: {force_result.get('mission')}")
             print(f"   - Span count: {force_result.get('span_count')}")
             print(f"   - Node count: {force_result.get('node_count')}")

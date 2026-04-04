@@ -2,8 +2,9 @@
 """Test runtime ADG integration in orchestrator."""
 
 import asyncio
-from pathlib import Path
 import json
+from pathlib import Path
+
 import pytest
 
 
@@ -74,7 +75,7 @@ async def test_runtime_adg_integration():
                 print(f"  - {rel_path}")
                 # Verify snapshot content
                 try:
-                    with open(snapshot_file, 'r') as f:
+                    with open(snapshot_file) as f:
                         data = json.load(f)
                     print(f"    Snapshot ID: {data.get('trace_id', 'unknown')}")
                     print(f"    Mission: {data.get('mission', 'unknown')}")

@@ -10,8 +10,6 @@ import json
 import subprocess
 import time
 from pathlib import Path
-from typing import Dict, List, Set, Tuple
-from collections import defaultdict, Counter
 
 
 class ProductionReadinessCertifier:
@@ -21,7 +19,7 @@ class ProductionReadinessCertifier:
         self.start_time = time.time()
         self.results = {}
 
-    def run_comprehensive_validation(self) -> Dict:
+    def run_comprehensive_validation(self) -> dict:
         """Run comprehensive validation of the test suite."""
         print("=== Comprehensive Production Readiness Validation ===")
 
@@ -61,7 +59,7 @@ class ProductionReadinessCertifier:
             'validation_time': time.time() - self.start_time
         }
 
-    def _validate_syntax(self) -> Dict:
+    def _validate_syntax(self) -> dict:
         """Validate syntax of all test files."""
         try:
             result = subprocess.run([
@@ -97,7 +95,7 @@ exit(1 if errors > 0 else 0)
                 'error': str(e)
             }
 
-    def _validate_imports(self) -> Dict:
+    def _validate_imports(self) -> dict:
         """Validate imports in test files."""
         try:
             result = subprocess.run([
@@ -131,7 +129,7 @@ exit(1 if errors > 0 else 0)
                 'error': str(e)
             }
 
-    def _validate_collection(self) -> Dict:
+    def _validate_collection(self) -> dict:
         """Validate test collection."""
         try:
             result = subprocess.run([
@@ -160,7 +158,7 @@ exit(1 if errors > 0 else 0)
                 'error': str(e)
             }
 
-    def _run_smoke_tests(self) -> Dict:
+    def _run_smoke_tests(self) -> dict:
         """Run smoke tests."""
         try:
             smoke_dir = Path('tests/smoke')
@@ -186,7 +184,7 @@ exit(1 if errors > 0 else 0)
                 'error': str(e)
             }
 
-    def _run_sample_unit_tests(self) -> Dict:
+    def _run_sample_unit_tests(self) -> dict:
         """Run sample unit tests."""
         try:
             # Run a few sample unit tests to verify they work
@@ -206,7 +204,7 @@ exit(1 if errors > 0 else 0)
                 'error': str(e)
             }
 
-    def _validate_performance(self) -> Dict:
+    def _validate_performance(self) -> dict:
         """Validate test performance."""
         try:
             # Check collection performance
@@ -233,7 +231,7 @@ exit(1 if errors > 0 else 0)
                 'error': str(e)
             }
 
-    def create_production_checklist(self) -> Dict:
+    def create_production_checklist(self) -> dict:
         """Create production deployment checklist."""
         print("=== Creating Production Deployment Checklist ===")
 
@@ -298,7 +296,7 @@ exit(1 if errors > 0 else 0)
 
         return checklist
 
-    def generate_final_report(self) -> Dict:
+    def generate_final_report(self) -> dict:
         """Generate final production readiness report."""
         print("=== Generating Final Production Readiness Report ===")
 
@@ -328,7 +326,7 @@ exit(1 if errors > 0 else 0)
 
         return report
 
-    def save_report(self, report: Dict, filename: str = 'wave7dh_production_readiness_report.json'):
+    def save_report(self, report: dict, filename: str = 'wave7dh_production_readiness_report.json'):
         """Save the production readiness report."""
         report_path = Path('artifacts') / filename
         report_path.parent.mkdir(exist_ok=True)
@@ -353,7 +351,7 @@ def run_wave7dh_finalization():
     report_path = certifier.save_report(report)
 
     # Print summary
-    print(f"\n=== Wave 7d-7h Summary ===")
+    print("\n=== Wave 7d-7h Summary ===")
     print(f"Overall Success: {'✅ PRODUCTION READY' if report['overall_success'] else '⚠️ NEEDS ATTENTION'}")
     print(f"Validation Time: {report['validation_time']:.2f} seconds")
     print(f"Validations Passed: {report['summary']['passed_validations']}/{report['summary']['total_validations']}")
@@ -361,7 +359,7 @@ def run_wave7dh_finalization():
     print(f"Readiness Percentage: {report['summary']['readiness_percentage']:.1f}%")
 
     # Print checklist status
-    print(f"\n=== Production Checklist Status ===")
+    print("\n=== Production Checklist Status ===")
     for item_name, item_info in report['production_checklist'].items():
         if item_name != 'overall_status':
             print(f"{item_name}: {item_info['status']} - {item_info['description']}")
@@ -375,7 +373,7 @@ def main():
     """Main execution."""
     results = run_wave7dh_finalization()
 
-    print(f"\n=== Wave 7 Complete! ===")
+    print("\n=== Wave 7 Complete! ===")
     if results['summary']['production_ready']:
         print("🎉 Wave 7 SUCCESSFUL - Test suite is PRODUCTION READY!")
         print("✅ All critical validations passed")

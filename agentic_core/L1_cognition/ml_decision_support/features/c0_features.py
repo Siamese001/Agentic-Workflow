@@ -9,10 +9,10 @@ semantic density, source reliability, completeness, and cache metrics.
 import hashlib
 import math
 from datetime import datetime
-from typing import Dict, Any
+from typing import Any
 
-from .base_extractor import DeterministicFeatureExtractor
 from ..config.feature_schemas import FeatureSchemas
+from .base_extractor import DeterministicFeatureExtractor
 
 
 class C0FeatureExtractor(DeterministicFeatureExtractor):
@@ -46,7 +46,7 @@ class C0FeatureExtractor(DeterministicFeatureExtractor):
         self.register_extraction_function("query_complexity", self._extract_query_complexity)
         self.register_extraction_function("cache_hit_probability", self._extract_cache_hit_probability)
 
-    def _extract_query_doc_similarity(self, context: Dict[str, Any]) -> float:
+    def _extract_query_doc_similarity(self, context: dict[str, Any]) -> float:
         """Extract query-document similarity score (0.0-1.0)."""
         query = context.get("query", {})
         document = context.get("document", {})
@@ -86,7 +86,7 @@ class C0FeatureExtractor(DeterministicFeatureExtractor):
         similarity = intersection / union if union > 0 else 0.0
         return round(similarity, 3)
 
-    def _extract_doc_authority_score(self, context: Dict[str, Any]) -> float:
+    def _extract_doc_authority_score(self, context: dict[str, Any]) -> float:
         """Extract document authority score (0.0-1.0)."""
         document = context.get("document", {})
 
@@ -135,7 +135,7 @@ class C0FeatureExtractor(DeterministicFeatureExtractor):
 
         return round(min(1.0, score), 3)
 
-    def _extract_recency_score(self, context: Dict[str, Any]) -> float:
+    def _extract_recency_score(self, context: dict[str, Any]) -> float:
         """Extract document recency score (0.0-1.0)."""
         document = context.get("document", {})
 
@@ -188,7 +188,7 @@ class C0FeatureExtractor(DeterministicFeatureExtractor):
 
         return round(max(0.0, min(1.0, recency_score)), 3)
 
-    def _extract_usage_frequency(self, context: Dict[str, Any]) -> float:
+    def _extract_usage_frequency(self, context: dict[str, Any]) -> float:
         """Extract historical usage frequency (0.0-1000.0)."""
         document = context.get("document", {})
         usage_stats = document.get("usage_stats", {})
@@ -213,7 +213,7 @@ class C0FeatureExtractor(DeterministicFeatureExtractor):
 
         return round(min(1000.0, scaled_frequency), 3)
 
-    def _extract_semantic_density(self, context: Dict[str, Any]) -> float:
+    def _extract_semantic_density(self, context: dict[str, Any]) -> float:
         """Extract semantic density score (0.0-1.0)."""
         document = context.get("document", {})
 
@@ -255,7 +255,7 @@ class C0FeatureExtractor(DeterministicFeatureExtractor):
 
         return round(max(0.0, density_score), 3)
 
-    def _extract_source_reliability(self, context: Dict[str, Any]) -> float:
+    def _extract_source_reliability(self, context: dict[str, Any]) -> float:
         """Extract source reliability score (0.0-1.0)."""
         document = context.get("document", {})
         source = document.get("source", {})
@@ -302,7 +302,7 @@ class C0FeatureExtractor(DeterministicFeatureExtractor):
 
         return round(max(0.0, min(1.0, reliability_score)), 3)
 
-    def _extract_completeness_score(self, context: Dict[str, Any]) -> float:
+    def _extract_completeness_score(self, context: dict[str, Any]) -> float:
         """Extract document completeness score (0.0-1.0)."""
         document = context.get("document", {})
 
@@ -363,7 +363,7 @@ class C0FeatureExtractor(DeterministicFeatureExtractor):
 
         return round(min(1.0, score), 3)
 
-    def _extract_query_complexity(self, context: Dict[str, Any]) -> float:
+    def _extract_query_complexity(self, context: dict[str, Any]) -> float:
         """Extract query complexity score (0.0-1.0)."""
         query = context.get("query", {})
 
@@ -421,7 +421,7 @@ class C0FeatureExtractor(DeterministicFeatureExtractor):
 
         return round(min(1.0, score), 3)
 
-    def _extract_cache_hit_probability(self, context: Dict[str, Any]) -> float:
+    def _extract_cache_hit_probability(self, context: dict[str, Any]) -> float:
         """Extract cache hit probability (0.0-1.0)."""
         query = context.get("query", {})
         cache_stats = context.get("cache_stats", {})

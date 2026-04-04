@@ -5,9 +5,9 @@ Multi-agent ecosystem for test discovery, scenario generation, and quality gatin
 """
 
 from apps_eval.reasoning.EvalOrchestrator import EvalOrchestrator
-from apps_eval.reasoning.TestDiscoveryAgent import TestDiscoveryAgent
-from apps_eval.reasoning.ScenarioGenerationAgent import ScenarioGenerationAgent
 from apps_eval.reasoning.QualityGateAgent import QualityGateAgent
+from apps_eval.reasoning.ScenarioGenerationAgent import ScenarioGenerationAgent
+from apps_eval.reasoning.TestDiscoveryAgent import TestDiscoveryAgent
 
 __all__ = [
     "EvalOrchestrator",

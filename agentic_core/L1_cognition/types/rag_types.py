@@ -8,7 +8,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 from datetime import datetime
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any
 
 from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_captures_pattern,
@@ -100,7 +100,7 @@ class RAGQuery:
 
     # Search strategy
     search_mode: str = "fusion"  # "local", "global", "drift", "fusion"
-    search_filters: Dict[str, Any] = field(default_factory=dict)
+    search_filters: dict[str, Any] = field(default_factory=dict)
 
     # Generation parameters
     temperature: float = 0.7
@@ -117,7 +117,7 @@ class RAGQuery:
     # Metadata
     query_id: str = field(default_factory=lambda: f"rag_query_{datetime.utcnow().strftime('%Y%m%d_%H%M%S')}")
     timestamp: datetime = field(default_factory=datetime.utcnow)
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    metadata: dict[str, Any] = field(default_factory=dict)
 
     def __post_init__(self) -> None:
         """Normalize query text."""
@@ -137,17 +137,17 @@ class ContextItem:
     relevance_score: float
 
     # Source information
-    source_file: Optional[str] = None
-    line_number: Optional[int] = None
+    source_file: str | None = None
+    line_number: int | None = None
     confidence: float = 1.0
 
     # Context metadata
     context_type: str = "primary"  # "primary", "supporting", "background"
-    hierarchy_level: Optional[int] = None
-    surrounding_context: Optional[str] = None
+    hierarchy_level: int | None = None
+    surrounding_context: str | None = None
 
     # Formatting
-    formatted_content: Optional[str] = None
+    formatted_content: str | None = None
 
     def format_for_context(self, format_type: str = "structured") -> str:
         """Format the context item for inclusion in prompt."""
@@ -180,7 +180,7 @@ class RAGContext:
     """Represents the assembled context for RAG generation."""
 
     query: RAGQuery
-    items: List[ContextItem]
+    items: list[ContextItem]
 
     # Context statistics
     total_items: int
@@ -193,16 +193,16 @@ class RAGContext:
     min_relevance_score: float
 
     # Diversity metrics
-    item_type_distribution: Dict[str, int]
-    source_distribution: Dict[str, int]
+    item_type_distribution: dict[str, int]
+    source_distribution: dict[str, int]
 
     # Assembly metadata
     assembly_time_ms: float
     assembly_method: str
     truncation_applied: bool = False
-    warnings: List[str] = field(default_factory=list)
+    warnings: list[str] = field(default_factory=list)
 
-    def get_formatted_context(self, format_type: Optional[str] = None) -> str:
+    def get_formatted_context(self, format_type: str | None = None) -> str:
         """Get the formatted context as a string."""
         fmt = format_type or self.query.context_format
 
@@ -229,7 +229,7 @@ class RAGContext:
             # Default: concatenate with newlines
             return "\n\n".join(item.content for item in self.items)
 
-    def get_sources(self) -> List[str]:
+    def get_sources(self) -> list[str]:
         """Get unique sources from context items."""
         sources = set()
         for item in self.items:
@@ -251,8 +251,8 @@ class PromptTemplate:
     user_prompt_template: str
 
     # Placeholders
-    required_placeholders: List[str] = field(default_factory=list)
-    optional_placeholders: List[str] = field(default_factory=list)
+    required_placeholders: list[str] = field(default_factory=list)
+    optional_placeholders: list[str] = field(default_factory=list)
 
     # Template metadata
     template_type: str = "qa"  # "qa", "summarization", "explanation", "analysis"
@@ -261,15 +261,15 @@ class PromptTemplate:
 
     # Usage statistics
     usage_count: int = 0
-    last_used: Optional[datetime] = None
+    last_used: datetime | None = None
     avg_success_score: float = 0.0
 
     def render(
         self,
         context: RAGContext,
         query: RAGQuery,
-        additional_data: Optional[Dict[str, Any]] = None
-    ) -> Tuple[str, str]:
+        additional_data: dict[str, Any] | None = None
+    ) -> tuple[str, str]:
         """Render the template with context and query."""
         # Prepare placeholder values
         placeholders = {
@@ -322,7 +322,7 @@ class GenerationRequest:
 
     # Request metadata
     timestamp: datetime = field(default_factory=datetime.utcnow)
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    metadata: dict[str, Any] = field(default_factory=dict)
 
 
 @dataclass
@@ -345,12 +345,12 @@ class GenerationResult:
     completeness_score: float
 
     # Source attribution
-    source_citations: List[str] = field(default_factory=list)
+    source_citations: list[str] = field(default_factory=list)
     attribution_confidence: float = 0.0
 
     # Errors and warnings
-    errors: List[str] = field(default_factory=list)
-    warnings: List[str] = field(default_factory=list)
+    errors: list[str] = field(default_factory=list)
+    warnings: list[str] = field(default_factory=list)
 
     # Timestamp
     timestamp: datetime = field(default_factory=datetime.utcnow)
@@ -377,14 +377,14 @@ class RAGResponse:
     generation_quality_score: float
 
     # Feedback
-    user_rating: Optional[int] = None  # 1-5
-    user_feedback: Optional[str] = None
+    user_rating: int | None = None  # 1-5
+    user_feedback: str | None = None
 
     # Errors and warnings
-    errors: List[str] = field(default_factory=list)
-    warnings: List[str] = field(default_factory=list)
+    errors: list[str] = field(default_factory=list)
+    warnings: list[str] = field(default_factory=list)
 
-    def get_summary(self) -> Dict[str, Any]:
+    def get_summary(self) -> dict[str, Any]:
         """Get a summary of the RAG response."""
         return {
             "query": self.query.query_text,
@@ -462,7 +462,7 @@ class RAGMetrics:
     truncation_rate: float
 
     # Template usage
-    template_usage: Dict[str, int]
+    template_usage: dict[str, int]
 
     # Timestamp
     timestamp: datetime = field(default_factory=datetime.utcnow)

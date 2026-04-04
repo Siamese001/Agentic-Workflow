@@ -13,9 +13,6 @@ from pathlib import Path
 from typing import Any
 
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
-from agentic_core.mixins.hallucination_detection_mixin import (
-    HallucinationDetectionMixin,
-)
 from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     LayerSegment,
     _emit_agent_executes_agent,
@@ -58,6 +55,9 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_writes_via_uwg,
     emit_determinism_digest,  # noqa: E402
     emit_replay_key,  # noqa: E402
+)
+from agentic_core.mixins.hallucination_detection_mixin import (
+    HallucinationDetectionMixin,
 )
 
 emit_replay_key("p0", "verification_gate")

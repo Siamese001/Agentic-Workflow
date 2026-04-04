@@ -5,10 +5,10 @@ Error categorization and root cause analysis.
 
 import logging
 import re
+from collections import defaultdict
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import Any, Dict, List, Optional
-from collections import defaultdict
+from typing import Any
 
 from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     LayerSegment,
@@ -47,7 +47,7 @@ class ErrorClassification:
     message: str
     root_cause: str
     is_transient: bool
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    metadata: dict[str, Any] = field(default_factory=dict)
 
 
 class ErrorClassifier:
@@ -60,11 +60,11 @@ class ErrorClassifier:
     def __init__(self):
         """Initialize the error classifier."""
         self._error_patterns = self._setup_patterns()
-        self._error_counts: Dict[ErrorCategory, int] = defaultdict(int)
+        self._error_counts: dict[ErrorCategory, int] = defaultdict(int)
 
         log.info("ErrorClassifier initialized")
 
-    def _setup_patterns(self) -> Dict[ErrorCategory, List[str]]:
+    def _setup_patterns(self) -> dict[ErrorCategory, list[str]]:
         """Setup error detection patterns."""
         return {
             ErrorCategory.RETRIEVAL_FAILURE: [
@@ -110,7 +110,7 @@ class ErrorClassifier:
     def classify(
         self,
         error: Exception,
-        context: Optional[Dict[str, Any]] = None,
+        context: dict[str, Any] | None = None,
     ) -> ErrorClassification:
         """Classify an error.
 
@@ -209,7 +209,7 @@ class ErrorClassifier:
 
         return "unknown"
 
-    def get_error_summary(self) -> Dict[str, int]:
+    def get_error_summary(self) -> dict[str, int]:
         """Get summary of error counts by category.
 
         Returns:
@@ -219,7 +219,7 @@ class ErrorClassifier:
 
 
 # Global instance
-_global_classifier: Optional[ErrorClassifier] = None
+_global_classifier: ErrorClassifier | None = None
 
 
 def get_error_classifier() -> ErrorClassifier:

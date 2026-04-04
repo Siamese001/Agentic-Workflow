@@ -1,13 +1,10 @@
 #!/usr/bin/env python3
 """Comprehensive OpenTelemetry integration test for runtime ADG pipeline."""
 
-import asyncio
-import json
 import sys
 import time
 import traceback
-from pathlib import Path
-from typing import Any
+
 
 def test_opentelemetry_runtime_adg_integration():
     """Test complete OpenTelemetry to Runtime ADG integration pipeline."""
@@ -22,8 +19,7 @@ def test_opentelemetry_runtime_adg_integration():
     try:
         from apps_shared.utils.open_telemetry_tracing_adapter_util import (
             OTEL_AVAILABLE,
-            OpenTelemetryTracingAdapter,
-            get_tracer
+            get_tracer,
         )
 
         results['otel_available'] = OTEL_AVAILABLE
@@ -140,7 +136,7 @@ def test_opentelemetry_runtime_adg_integration():
     # Test 5: Test TracingMixin integration
     print("\n5. Testing TracingMixin integration...")
     try:
-        from agentic_core.mixins.tracing_mixin import TracingMixin, SpanContext
+        from agentic_core.mixins.tracing_mixin import SpanContext, TracingMixin
 
         class TestAgent(TracingMixin):
             def __init__(self):
@@ -282,7 +278,7 @@ def test_opentelemetry_runtime_adg_integration():
         print("🚨 Some integration tests failed")
         print("❌ OpenTelemetry → Runtime ADG pipeline has issues")
 
-    print(f"\nDetailed results:")
+    print("\nDetailed results:")
     for key in test_keys:
         value = results.get(key)
         status = "✅" if value is True else "❌" if value is False else "⚠️"

@@ -6,12 +6,10 @@ This script implements fixes for the MCP GitKraken issues identified
 and provides a robust wrapper for git operations.
 """
 
-import subprocess
-import sys
 import json
-import time
+import subprocess
 from pathlib import Path
-from typing import Dict, List, Optional, Union
+
 
 class MCPGitKrakenFix:
     """Robust wrapper for git operations that fixes MCP GitKraken issues"""
@@ -20,7 +18,7 @@ class MCPGitKrakenFix:
         self.repo_root = Path(repo_root)
         self.timeout = timeout
 
-    def run_git_command(self, cmd: str, timeout: Optional[int] = None) -> Dict:
+    def run_git_command(self, cmd: str, timeout: int | None = None) -> dict:
         """Run git command with robust error handling"""
         timeout = timeout or self.timeout
 
@@ -52,7 +50,7 @@ class MCPGitKrakenFix:
                 "returncode": -2
             }
 
-    def check_large_files(self, files: List[str]) -> List[str]:
+    def check_large_files(self, files: list[str]) -> list[str]:
         """Check for files that are too large for GitHub (>100MB)"""
         large_files = []
         max_size = 100 * 1024 * 1024  # 100MB
@@ -66,7 +64,7 @@ class MCPGitKrakenFix:
 
         return large_files
 
-    def smart_commit(self, message: str, use_no_verify: bool = True) -> Dict:
+    def smart_commit(self, message: str, use_no_verify: bool = True) -> dict:
         """Smart commit that handles hooks and other issues"""
 
         # First attempt with --no-verify to avoid hook issues
@@ -95,7 +93,7 @@ class MCPGitKrakenFix:
 
         return result
 
-    def smart_add(self, files: Union[str, List[str]]) -> Dict:
+    def smart_add(self, files: str | list[str]) -> dict:
         """Smart add that checks for large files"""
 
         if isinstance(files, str):
@@ -120,7 +118,7 @@ class MCPGitKrakenFix:
         files_str = ' '.join(f'"{f}"' for f in files)
         return self.run_git_command(f'git add {files_str}')
 
-    def safe_commit_with_fallback(self, message: str, files: Optional[List[str]] = None) -> Dict:
+    def safe_commit_with_fallback(self, message: str, files: list[str] | None = None) -> dict:
         """Safe commit with multiple fallback strategies"""
 
         if files:

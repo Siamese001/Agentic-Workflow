@@ -8,9 +8,8 @@ focusing on fixture-based skip mechanisms and anti-patterns.
 
 import json
 import re
-from pathlib import Path
-from typing import Dict, List, Set, Tuple
 from collections import defaultdict
+from pathlib import Path
 
 
 class FixtureMaskingRemover:
@@ -26,16 +25,16 @@ class FixtureMaskingRemover:
         }
         self.modifications = []
 
-    def load_wave1d_data(self) -> Dict:
+    def load_wave1d_data(self) -> dict:
         """Load Wave 1d categorization data."""
         try:
-            with open('artifacts/wave1d_categorization_report.json', 'r') as f:
+            with open('artifacts/wave1d_categorization_report.json') as f:
                 return json.load(f)
         except FileNotFoundError:
             print("❌ Wave 1d report not found. Please run Wave 1 first.")
             return {}
 
-    def get_target_skips(self, wave1d_data: Dict) -> List[Dict]:
+    def get_target_skips(self, wave1d_data: dict) -> list[dict]:
         """Get fixture masking skips targeted for removal."""
         wave2_assignments = wave1d_data.get('wave2_prioritization', {}).get('wave2_assignments', {})
         fixture_assignment = wave2_assignments.get('wave2b_masking_fixtures', {})
@@ -45,7 +44,7 @@ class FixtureMaskingRemover:
 
         return target_skips
 
-    def remove_fixture_masking_skips(self, target_skips: List[Dict]) -> Dict:
+    def remove_fixture_masking_skips(self, target_skips: list[dict]) -> dict:
         """Remove fixture masking skip patterns."""
         print("=== Removing Fixture Masking Skip Patterns ===")
 
@@ -65,7 +64,7 @@ class FixtureMaskingRemover:
             'modifications': self.modifications
         }
 
-    def _process_fixture_skips(self, file_path: str, skips: List[Dict]):
+    def _process_fixture_skips(self, file_path: str, skips: list[dict]):
         """Process fixture skips in a single file."""
         self.removal_stats['files_processed'] += 1
 
@@ -77,7 +76,7 @@ class FixtureMaskingRemover:
 
         try:
             # Read file content
-            with open(full_path, 'r', encoding='utf-8') as f:
+            with open(full_path, encoding='utf-8') as f:
                 content = f.read()
                 original_content = content
 
@@ -130,7 +129,7 @@ class FixtureMaskingRemover:
             print(f"❌ Error processing {file_path}: {e}")
             self.removal_stats['errors_encountered'] += 1
 
-    def _remove_fixture_skip_pattern(self, line: str, skip: Dict) -> Tuple[str, bool]:
+    def _remove_fixture_skip_pattern(self, line: str, skip: dict) -> tuple[str, bool]:
         """Remove fixture skip pattern from a line."""
         pattern_type = skip['pattern_type']
         pattern_fixed = False
@@ -176,7 +175,7 @@ class FixtureMaskingRemover:
 
         return new_line, pattern_fixed
 
-    def scan_for_additional_fixture_skips(self) -> List[Dict]:
+    def scan_for_additional_fixture_skips(self) -> list[dict]:
         """Scan for additional fixture skip patterns not in Wave 1d."""
         print("=== Scanning for Additional Fixture Skip Patterns ===")
 
@@ -195,7 +194,7 @@ class FixtureMaskingRemover:
 
         for test_file in test_dir.rglob('test_*.py'):
             try:
-                with open(test_file, 'r', encoding='utf-8') as f:
+                with open(test_file, encoding='utf-8') as f:
                     content = f.read()
 
                 lines = content.split('\n')
@@ -223,7 +222,7 @@ class FixtureMaskingRemover:
         print(f"🔍 Found {len(additional_skips)} additional fixture skip patterns")
         return additional_skips
 
-    def fix_fixture_patterns(self, additional_skips: List[Dict]) -> Dict:
+    def fix_fixture_patterns(self, additional_skips: list[dict]) -> dict:
         """Fix additional fixture skip patterns."""
         print("=== Fixing Additional Fixture Patterns ===")
 
@@ -242,7 +241,7 @@ class FixtureMaskingRemover:
         for file_path, skips in skips_by_file.items():
             try:
                 full_path = Path('tests') / file_path
-                with open(full_path, 'r', encoding='utf-8') as f:
+                with open(full_path, encoding='utf-8') as f:
                     content = f.read()
 
                 lines = content.split('\n')
@@ -269,7 +268,7 @@ class FixtureMaskingRemover:
 
         return {'fixed': fixed_count, 'errors': error_count}
 
-    def validate_removals(self) -> Dict:
+    def validate_removals(self) -> dict:
         """Validate that fixture skip removals were successful."""
         print("=== Validating Fixture Skip Removals ===")
 
@@ -286,7 +285,7 @@ class FixtureMaskingRemover:
             full_path = Path('tests') / file_path
 
             try:
-                with open(full_path, 'r', encoding='utf-8') as f:
+                with open(full_path, encoding='utf-8') as f:
                     content = f.read()
 
                 # Check that the removed pattern is no longer present
@@ -313,7 +312,7 @@ class FixtureMaskingRemover:
 
         return validation
 
-    def generate_wave2b_report(self) -> Dict:
+    def generate_wave2b_report(self) -> dict:
         """Generate Wave 2b removal report."""
         print("=== Wave 2b: Remove INVALID Skips - Masking Fixtures ===")
 
@@ -366,7 +365,7 @@ class FixtureMaskingRemover:
 
         # Print summary
         summary = report['summary']
-        print(f"\n=== Wave 2b Summary ===")
+        print("\n=== Wave 2b Summary ===")
         print(f"Target skips: {summary['target_skips']}")
         print(f"Additional skips found: {summary['additional_skips']}")
         print(f"Files processed: {summary['files_processed']}")
@@ -383,7 +382,7 @@ class FixtureMaskingRemover:
             for issue in validation_results['remaining_issues'][:3]:
                 print(f"  - {issue['file']}: {issue['issue']}")
 
-        print(f"\n📄 Report saved to: artifacts/wave2b_removal_report.json")
+        print("\n📄 Report saved to: artifacts/wave2b_removal_report.json")
 
         return report
 

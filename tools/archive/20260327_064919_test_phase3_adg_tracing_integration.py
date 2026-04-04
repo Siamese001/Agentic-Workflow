@@ -4,7 +4,7 @@
 import sys
 import time
 import traceback
-from typing import Any
+
 
 def test_integrated_tracing_mixin():
     """Test IntegratedTracingMixin functionality."""
@@ -25,7 +25,7 @@ def test_integrated_tracing_mixin():
 
         agent = TestAgent()
         results['integrated_mixin_init'] = True
-        print(f"✅ IntegratedTracingMixin initialized successfully")
+        print("✅ IntegratedTracingMixin initialized successfully")
 
         # Check initialization status
         status = agent.get_integrated_tracing_status()
@@ -51,7 +51,7 @@ def test_integrated_tracing_mixin():
             span.set_attribute("test_attr", "test_value")
             span.add_event("test_event", {"event_data": "test"})
 
-        print(f"✅ Integrated span created and executed")
+        print("✅ Integrated span created and executed")
 
     except Exception as e:
         results['integrated_span_created'] = False
@@ -73,7 +73,7 @@ def test_integrated_tracing_mixin():
                     time.sleep(0.001)  # Small delay
 
         results['dual_span_collection'] = True
-        print(f"✅ Dual span collection completed")
+        print("✅ Dual span collection completed")
 
     except Exception as e:
         results['dual_span_collection'] = False
@@ -89,7 +89,7 @@ def test_integrated_tracing_mixin():
         results['persistence_success'] = persistence_result.get('success', False)
 
         if persistence_result.get('success'):
-            print(f"✅ Runtime ADG persistence successful")
+            print("✅ Runtime ADG persistence successful")
             print(f"   - Mission: {persistence_result.get('mission')}")
             print(f"   - Span count: {persistence_result.get('span_count')}")
         else:
@@ -165,7 +165,7 @@ def test_adg_tracing_hooks():
 
         agent = HookedTestAgent()
         results['hooks_decorator'] = True
-        print(f"✅ ADG tracing hooks decorator applied successfully")
+        print("✅ ADG tracing hooks decorator applied successfully")
 
     except Exception as e:
         results['hooks_decorator'] = False
@@ -182,7 +182,7 @@ def test_adg_tracing_hooks():
         results['hooked_execution'] = True
         results['execution_results'] = result1 == "executed: test-mission" and result2 == "processed: test-data"
 
-        print(f"✅ Hooked agent execution completed")
+        print("✅ Hooked agent execution completed")
         print(f"   - Execute result: {result1}")
         print(f"   - Process result: {result2}")
 
@@ -204,7 +204,7 @@ def test_adg_tracing_hooks():
         results['hook_status_available'] = isinstance(hook_status, dict)
         results['global_hooks_enabled'] = hook_status.get('global_hooks_enabled', False)
 
-        print(f"✅ Hook manager working:")
+        print("✅ Hook manager working:")
         print(f"   - Global hooks: {hook_status.get('global_hooks_enabled')}")
         print(f"   - Auto-discovery: {hook_status.get('auto_discovery_enabled')}")
         print(f"   - Hooked classes: {hook_status.get('hooked_classes_count')}")
@@ -244,7 +244,7 @@ def test_adg_tracing_hooks():
         results['cognitive_decorator'] = thought_result == "thought about: test-data"
         results['tool_decorator'] = tool_result == "tool processed: test-input"
 
-        print(f"✅ Cognitive and tool decorators working:")
+        print("✅ Cognitive and tool decorators working:")
         print(f"   - Cognitive result: {thought_result}")
         print(f"   - Tool result: {tool_result}")
 
@@ -292,7 +292,7 @@ def test_auto_span_collector():
 
         collector = AutoSpanCollector(buffer_size=1000, flush_interval=5.0)
         results['collector_init'] = True
-        print(f"✅ Auto span collector initialized")
+        print("✅ Auto span collector initialized")
 
     except Exception as e:
         results['collector_init'] = False
@@ -316,7 +316,7 @@ def test_auto_span_collector():
         collector.register_agent("test-agent-1", test_agent)
 
         results['agent_registration'] = True
-        print(f"✅ Agent registered successfully")
+        print("✅ Agent registered successfully")
 
     except Exception as e:
         results['agent_registration'] = False
@@ -334,7 +334,7 @@ def test_auto_span_collector():
         collection_stopped = not collector._collection_active
 
         results['collection_start_stop'] = collection_active and collection_stopped
-        print(f"✅ Collection start/stop working")
+        print("✅ Collection start/stop working")
 
     except Exception as e:
         results['collection_start_stop'] = False
@@ -358,7 +358,7 @@ def test_auto_span_collector():
 
         collector.stop_collection()
 
-        print(f"✅ Span collection working:")
+        print("✅ Span collection working:")
         print(f"   - Spans collected: {stats.get('total_spans_collected', 0)}")
         print(f"   - Agents registered: {stats.get('agents_registered', 0)}")
 
@@ -371,8 +371,10 @@ def test_auto_span_collector():
     print("\n5. Testing global collector functionality...")
     try:
         from agentic_core.mixins.auto_span_collector import (
-            get_global_collector, start_global_collection, stop_global_collection,
-            get_global_collection_stats
+            get_global_collection_stats,
+            get_global_collector,
+            start_global_collection,
+            stop_global_collection,
         )
 
         global_collector = get_global_collector()
@@ -386,7 +388,7 @@ def test_auto_span_collector():
         results['global_stats_available'] = isinstance(global_stats, dict)
         results['global_collection_active'] = global_stats.get('collection_active', False)
 
-        print(f"✅ Global collector working:")
+        print("✅ Global collector working:")
         print(f"   - Collection active: {global_stats.get('collection_active')}")
         print(f"   - Runtime ADG enabled: {global_stats.get('runtime_adg_enabled')}")
 
@@ -440,7 +442,7 @@ def test_tracing_mixin_integration():
 
         agent = BridgeTestAgent()
         results['bridge_agent_init'] = True
-        print(f"✅ Bridge agent initialized with OpenTelemetry bridging")
+        print("✅ Bridge agent initialized with OpenTelemetry bridging")
 
     except Exception as e:
         results['bridge_agent_init'] = False
@@ -459,7 +461,7 @@ def test_tracing_mixin_integration():
                 time.sleep(0.001)
 
         results['span_bridging'] = True
-        print(f"✅ Span bridging completed")
+        print("✅ Span bridging completed")
 
     except Exception as e:
         results['span_bridging'] = False
@@ -488,7 +490,7 @@ def test_tracing_mixin_integration():
         results['bridge_status'] = isinstance(status, dict)
         results['bridge_enabled'] = status.get('enabled', False)
 
-        print(f"✅ Bridge tracing status:")
+        print("✅ Bridge tracing status:")
         print(f"   - Enabled: {status.get('enabled')}")
         print(f"   - Service name: {status.get('service_name')}")
         print(f"   - Buffered traces: {status.get('buffered_traces')}")
@@ -531,8 +533,12 @@ def test_end_to_end_agent_execution():
     # Test 1: Complete agent with all tracing features
     print("\n1. Testing complete agent with all tracing features...")
     try:
+        from agentic_core.mixins.adg_tracing_hooks import (
+            trace_cognitive_operation,
+            trace_tool_operation,
+            with_adg_tracing,
+        )
         from agentic_core.mixins.integrated_tracing_mixin import IntegratedTracingMixin
-        from agentic_core.mixins.adg_tracing_hooks import with_adg_tracing, trace_cognitive_operation, trace_tool_operation
 
         @with_adg_tracing
         class CompleteTestAgent(IntegratedTracingMixin):
@@ -566,7 +572,7 @@ def test_end_to_end_agent_execution():
 
         agent = CompleteTestAgent()
         results['complete_agent_init'] = True
-        print(f"✅ Complete agent initialized with all tracing features")
+        print("✅ Complete agent initialized with all tracing features")
 
     except Exception as e:
         results['complete_agent_init'] = False
@@ -579,7 +585,7 @@ def test_end_to_end_agent_execution():
         execution_result = agent.execute("test-mission-123")
         results['full_execution'] = execution_result == "completed: processed: analyzed: test-mission-123"
 
-        print(f"✅ Full execution completed:")
+        print("✅ Full execution completed:")
         print(f"   - Result: {execution_result}")
         print(f"   - Execution count: {agent.execution_count}")
 
@@ -597,7 +603,7 @@ def test_end_to_end_agent_execution():
         results['otel_integration'] = status.get('opentelemetry', {}).get('enabled', False)
         results['runtime_adg_integration'] = status.get('runtime_adg', {}).get('enabled', False)
 
-        print(f"✅ Runtime ADG integration status:")
+        print("✅ Runtime ADG integration status:")
         print(f"   - OpenTelemetry: {status.get('opentelemetry', {}).get('enabled')}")
         print(f"   - Runtime ADG: {status.get('runtime_adg', {}).get('enabled')}")
         print(f"   - Auto-persistence: {status.get('runtime_adg', {}).get('auto_persistence')}")
@@ -617,7 +623,7 @@ def test_end_to_end_agent_execution():
         results['persistence_result_success'] = persistence_result.get('success', False)
 
         if persistence_result.get('success'):
-            print(f"✅ Force Runtime ADG persistence successful:")
+            print("✅ Force Runtime ADG persistence successful:")
             print(f"   - Mission: {persistence_result.get('mission')}")
             print(f"   - Span count: {persistence_result.get('span_count')}")
             print(f"   - Node count: {persistence_result.get('node_count')}")
@@ -643,7 +649,7 @@ def test_end_to_end_agent_execution():
         results['multi_execution'] = multi_persistence_result.get('success', False)
         results['multi_span_count'] = multi_persistence_result.get('span_count', 0)
 
-        print(f"✅ Multiple executions completed:")
+        print("✅ Multiple executions completed:")
         print(f"   - Success: {multi_persistence_result.get('success')}")
         print(f"   - Total spans: {multi_persistence_result.get('span_count')}")
 

@@ -8,9 +8,8 @@ focusing on making contract tests more resilient and reducing unnecessary skips.
 
 import json
 import re
-from pathlib import Path
-from typing import Dict, List, Set, Tuple
 from collections import defaultdict
+from pathlib import Path
 
 
 class ContractTestSkipReducer:
@@ -27,7 +26,7 @@ class ContractTestSkipReducer:
         }
         self.modifications = []
 
-    def scan_for_contract_test_skips(self) -> List[Dict]:
+    def scan_for_contract_test_skips(self) -> list[dict]:
         """Scan for avoidable skips in contract tests."""
         print("=== Scanning for Contract Test Skips ===")
 
@@ -52,7 +51,7 @@ class ContractTestSkipReducer:
 
         for test_file in test_dir.rglob('test_*.py'):
             try:
-                with open(test_file, 'r', encoding='utf-8') as f:
+                with open(test_file, encoding='utf-8') as f:
                     content = f.read()
 
                 lines = content.split('\n')
@@ -131,7 +130,7 @@ class ContractTestSkipReducer:
         # Default to avoidable for contract tests
         return True
 
-    def reduce_contract_test_skips(self, contract_skips: List[Dict]) -> Dict:
+    def reduce_contract_test_skips(self, contract_skips: list[dict]) -> dict:
         """Reduce avoidable skips in contract tests."""
         print("=== Reducing Contract Test Skips ===")
 
@@ -155,7 +154,7 @@ class ContractTestSkipReducer:
             'modifications': self.modifications
         }
 
-    def _reduce_file_contract_skips(self, file_path: str, skips: List[Dict]):
+    def _reduce_file_contract_skips(self, file_path: str, skips: list[dict]):
         """Reduce contract test skips in a single file."""
         self.reduction_stats['files_processed'] += 1
 
@@ -167,7 +166,7 @@ class ContractTestSkipReducer:
 
         try:
             # Read file content
-            with open(full_path, 'r', encoding='utf-8') as f:
+            with open(full_path, encoding='utf-8') as f:
                 content = f.read()
                 original_content = content
 
@@ -220,7 +219,7 @@ class ContractTestSkipReducer:
             print(f"❌ Error processing {file_path}: {e}")
             self.reduction_stats['errors_encountered'] += 1
 
-    def _reduce_skip_pattern(self, line: str, skip: Dict) -> Dict:
+    def _reduce_skip_pattern(self, line: str, skip: dict) -> dict:
         """Reduce a skip pattern with alternatives."""
         reduction_result = {
             'reduced': False,
@@ -248,7 +247,7 @@ class ContractTestSkipReducer:
 
         return reduction_result
 
-    def _reduce_todo_skip(self, line: str, skip: Dict) -> Dict:
+    def _reduce_todo_skip(self, line: str, skip: dict) -> dict:
         """Reduce TODO skip with placeholder implementation."""
         reduction_result = {
             'reduced': False,
@@ -266,7 +265,7 @@ class ContractTestSkipReducer:
 
         return reduction_result
 
-    def _reduce_not_implemented_skip(self, line: str, skip: Dict) -> Dict:
+    def _reduce_not_implemented_skip(self, line: str, skip: dict) -> dict:
         """Reduce not implemented skip with basic contract test."""
         reduction_result = {
             'reduced': False,
@@ -284,7 +283,7 @@ class ContractTestSkipReducer:
 
         return reduction_result
 
-    def _reduce_temporary_skip(self, line: str, skip: Dict) -> Dict:
+    def _reduce_temporary_skip(self, line: str, skip: dict) -> dict:
         """Reduce temporary skip with conditional logic."""
         reduction_result = {
             'reduced': False,
@@ -302,7 +301,7 @@ class ContractTestSkipReducer:
 
         return reduction_result
 
-    def _reduce_setup_skip(self, line: str, skip: Dict) -> Dict:
+    def _reduce_setup_skip(self, line: str, skip: dict) -> dict:
         """Reduce setup skip with setup instructions."""
         reduction_result = {
             'reduced': False,
@@ -320,7 +319,7 @@ class ContractTestSkipReducer:
 
         return reduction_result
 
-    def _reduce_mock_skip(self, line: str, skip: Dict) -> Dict:
+    def _reduce_mock_skip(self, line: str, skip: dict) -> dict:
         """Reduce mock skip with mock implementation."""
         reduction_result = {
             'reduced': False,
@@ -338,7 +337,7 @@ class ContractTestSkipReducer:
 
         return reduction_result
 
-    def _reduce_generic_skip(self, line: str, skip: Dict) -> Dict:
+    def _reduce_generic_skip(self, line: str, skip: dict) -> dict:
         """Reduce generic skip with alternative approach."""
         reduction_result = {
             'reduced': False,
@@ -356,7 +355,7 @@ class ContractTestSkipReducer:
 
         return reduction_result
 
-    def generate_contract_test_improvements(self, modified_files: List[str]) -> Dict:
+    def generate_contract_test_improvements(self, modified_files: list[str]) -> dict:
         """Generate improvements for contract tests."""
         print("=== Generating Contract Test Improvements ===")
 
@@ -370,7 +369,7 @@ class ContractTestSkipReducer:
             full_path = Path('tests') / file_path
 
             try:
-                with open(full_path, 'r', encoding='utf-8') as f:
+                with open(full_path, encoding='utf-8') as f:
                     content = f.read()
 
                 # Add contract test improvements
@@ -413,7 +412,7 @@ class ContractTestSkipReducer:
 
         return '\n'.join(improved_lines)
 
-    def validate_reductions(self) -> Dict:
+    def validate_reductions(self) -> dict:
         """Validate that skip reductions were successful."""
         print("=== Validating Skip Reductions ===")
 
@@ -430,7 +429,7 @@ class ContractTestSkipReducer:
             full_path = Path('tests') / file_path
 
             try:
-                with open(full_path, 'r', encoding='utf-8') as f:
+                with open(full_path, encoding='utf-8') as f:
                     content = f.read()
 
                 # Check that the skip pattern was reduced
@@ -459,7 +458,7 @@ class ContractTestSkipReducer:
 
         return validation
 
-    def generate_wave4a_report(self) -> Dict:
+    def generate_wave4a_report(self) -> dict:
         """Generate Wave 4a reduction report."""
         print("=== Wave 4a: Reduce Avoidable Skips - Contract Test Patterns ===")
 
@@ -504,7 +503,7 @@ class ContractTestSkipReducer:
 
         # Print summary
         summary = report['summary']
-        print(f"\n=== Wave 4a Summary ===")
+        print("\n=== Wave 4a Summary ===")
         print(f"Total contract skips: {summary['total_contract_skips']}")
         print(f"Avoidable skips: {summary['avoidable_skips']}")
         print(f"Files processed: {summary['files_processed']}")
@@ -519,7 +518,7 @@ class ContractTestSkipReducer:
             for issue in validation_results['remaining_issues'][:3]:
                 print(f"  - {issue['file']}: {issue['issue']}")
 
-        print(f"\n📄 Report saved to: artifacts/wave4a_reduction_report.json")
+        print("\n📄 Report saved to: artifacts/wave4a_reduction_report.json")
 
         return report
 

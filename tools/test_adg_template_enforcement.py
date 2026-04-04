@@ -4,8 +4,8 @@ Test ADG Template Enforcement in SWE Model
 Verifies that ADG-based templates are mandatory for relevant task types
 """
 
-import sys
 import logging
+import sys
 from pathlib import Path
 
 # Add repo root to path
@@ -13,6 +13,7 @@ repo_root = Path(__file__).parent
 sys.path.append(str(repo_root))
 
 from agentic_core.planning.sequential_thinking_workflow import SequentialThinkingEnhancedWorkflow
+
 
 def test_adg_template_enforcement():
     """Test that ADG templates are enforced for relevant task types."""
@@ -139,9 +140,9 @@ def test_adg_template_enforcement():
             print(f"   Template Length: {len(template):,} characters")
 
             if scenario['expected_template'] and scenario['expected_template'] in template:
-                print(f"   Expected Template Found: ✅")
+                print("   Expected Template Found: ✅")
             elif scenario['expected_template']:
-                print(f"   Expected Template Found: ❌")
+                print("   Expected Template Found: ❌")
 
             results.append(result)
 
@@ -163,7 +164,7 @@ def test_enforcement_statistics(results):
     enforced_scenarios = [r for r in successful if r.get('expected_enforced', False)]
     enforced_compliant = [r for r in enforced_scenarios if r.get('actual_adg_template', False)]
 
-    print(f"\n📊 Enforcement Statistics")
+    print("\n📊 Enforcement Statistics")
     print("=" * 60)
     print(f"Total Tests: {len(results)}")
     print(f"Successful: {len(successful)} ({len(successful)/len(results)*100:.1f}%)")
@@ -172,7 +173,7 @@ def test_enforcement_statistics(results):
     print(f"Enforcement Compliant: {len(enforced_compliant)} ({len(enforced_compliant)/len(enforced_scenarios)*100:.1f}%)")
 
     # Show enforcement breakdown
-    print(f"\n🎯 Enforcement Breakdown:")
+    print("\n🎯 Enforcement Breakdown:")
     print("-" * 30)
 
     for result in successful:
@@ -190,7 +191,7 @@ def test_enforcement_statistics(results):
 def test_template_content_quality():
     """Test the quality of enforced ADG template content."""
 
-    print(f"\n🔍 Template Content Quality Test")
+    print("\n🔍 Template Content Quality Test")
     print("=" * 60)
 
     workflow = SequentialThinkingEnhancedWorkflow(seq_thinking_enabled=True)
@@ -220,7 +221,7 @@ def test_template_content_quality():
         passed_checks = sum(quality_checks.values())
         total_checks = len(quality_checks)
 
-        print(f"Template Quality Checks:")
+        print("Template Quality Checks:")
         for check, passed in quality_checks.items():
             status = "✅" if passed else "❌"
             print(f"   {status} {check.replace('_', ' ').title()}")
@@ -230,7 +231,7 @@ def test_template_content_quality():
 
         # Show sample content
         lines = template.split('\n')[:10]
-        print(f"\nTemplate Sample:")
+        print("\nTemplate Sample:")
         for line in lines:
             if line.strip():
                 print(f"   {line[:80]}...")
@@ -264,7 +265,7 @@ def main():
     quality_result = test_template_content_quality()
 
     # Generate final report
-    print(f"\n🎯 Final Enforcement Report")
+    print("\n🎯 Final Enforcement Report")
     print("=" * 60)
 
     if stats['enforcement_rate'] >= 90:

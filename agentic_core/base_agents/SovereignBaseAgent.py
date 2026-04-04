@@ -50,21 +50,6 @@ from agentic_core.L0_routing.utils.core_integrity_util import (
     CoreIntegrityVerifier,
     emergency_shutdown,
 )
-from agentic_core.mixins.adg_behavioral_mixin import ADGBehavioralMixin
-from agentic_core.mixins.atomic_execution_mixin import AtomicExecutionMixin
-from agentic_core.mixins.audit_trail_mixin import AuditTrailMixin
-
-# [PHASE 9] Global Architecture Injection
-from agentic_core.mixins.configuration_mixin import ConfigMixin
-from agentic_core.mixins.embedding_mixin import EmbeddingMixin
-
-# [COGNITIVE HARDENING] Anti-Context Drift and Token Overload
-from agentic_core.mixins.golden_context_mixin import GoldenContextMixin
-from agentic_core.mixins.infrastructure_mixin import infrastructure_mixin
-from agentic_core.mixins.llm_provider_mixin import LLMProviderMixin
-from agentic_core.mixins.meta_learning_client_mixin import MetaLearningClientMixin
-from agentic_core.mixins.runtime_safety_mixin import RuntimeSafetyMixin
-from agentic_core.mixins.validator_mixin import ValidatorMixin
 from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     LayerSegment,
     _emit_agent_executes_agent,
@@ -107,6 +92,21 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     emit_determinism_digest,  # noqa: E402
     emit_replay_key,  # noqa: E402
 )
+from agentic_core.mixins.adg_behavioral_mixin import ADGBehavioralMixin
+from agentic_core.mixins.atomic_execution_mixin import AtomicExecutionMixin
+from agentic_core.mixins.audit_trail_mixin import AuditTrailMixin
+
+# [PHASE 9] Global Architecture Injection
+from agentic_core.mixins.configuration_mixin import ConfigMixin
+from agentic_core.mixins.embedding_mixin import EmbeddingMixin
+
+# [COGNITIVE HARDENING] Anti-Context Drift and Token Overload
+from agentic_core.mixins.golden_context_mixin import GoldenContextMixin
+from agentic_core.mixins.infrastructure_mixin import infrastructure_mixin
+from agentic_core.mixins.llm_provider_mixin import LLMProviderMixin
+from agentic_core.mixins.meta_learning_client_mixin import MetaLearningClientMixin
+from agentic_core.mixins.runtime_safety_mixin import RuntimeSafetyMixin
+from agentic_core.mixins.validator_mixin import ValidatorMixin
 
 _emit_applies_guardrail("p0", "SovereignBaseAgent", "p0_governance")
 _emit_snapshots_state("p0", "SovereignBaseAgent", "state_snapshot")

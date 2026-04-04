@@ -6,14 +6,15 @@ that causes pytest collection failures in shared-interpreter environments.
 
 from __future__ import annotations
 
-import ast
 import argparse
+import ast
 import json
 import sys
-import yaml
-from dataclasses import dataclass, asdict
+from dataclasses import asdict, dataclass
 from pathlib import Path
-from typing import Iterator, Optional
+from typing import Iterator
+
+import yaml
 
 # Safe top-level node types that don't cause collection issues
 SAFE_TOP_LEVEL_NODES = (
@@ -36,7 +37,7 @@ class Violation:
     line: int
     col: int
     rule_id: str
-    import_name: Optional[str]
+    import_name: str | None
     reason: str
     remediation: str
 
@@ -201,7 +202,7 @@ class EagerImportLinter:
         return "<unknown>"
 
 
-def load_risk_config(config_path: Optional[Path] = None) -> dict:
+def load_risk_config(config_path: Path | None = None) -> dict:
     """Load risky import configuration."""
     default_risky = [
         "agentic_core",

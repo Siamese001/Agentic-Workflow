@@ -3,9 +3,9 @@
 Simple Wave 3 Test - Tests ingestion scripts without ChromaDB access issues.
 """
 
+import subprocess
 import sys
 from pathlib import Path
-import subprocess
 
 # Add agentic_core to path
 sys.path.insert(0, str(Path(__file__).parent / "agentic_core"))
@@ -59,8 +59,8 @@ def test_synthetic_data_generation():
     print("\n=== Synthetic Data Generation Test ===\n")
 
     # Test that we can generate synthetic traces and incidents
-    from tools.ingestion.ingest_runtime import RuntimeEvidenceIngestion
     from tools.ingestion.ingest_history import HistoryIngestion
+    from tools.ingestion.ingest_runtime import RuntimeEvidenceIngestion
 
     try:
         # Test runtime synthetic traces

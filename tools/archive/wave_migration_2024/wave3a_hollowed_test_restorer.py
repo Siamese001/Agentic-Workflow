@@ -6,11 +6,10 @@ This script restores hollowed tests that only contain import statements,
 converting them to proper behavioral tests with meaningful assertions.
 """
 
-import json
 import ast
-from pathlib import Path
-from typing import Dict, List, Set, Tuple
+import json
 from collections import defaultdict
+from pathlib import Path
 
 
 class HollowedTestRestorer:
@@ -27,16 +26,16 @@ class HollowedTestRestorer:
         }
         self.modifications = []
 
-    def load_wave1a_data(self) -> Dict:
+    def load_wave1a_data(self) -> dict:
         """Load Wave 1a inventory data."""
         try:
-            with open('artifacts/wave1a_inventory_report.json', 'r') as f:
+            with open('artifacts/wave1a_inventory_report.json') as f:
                 return json.load(f)
         except FileNotFoundError:
             print("❌ Wave 1a report not found. Please run Wave 1 first.")
             return {}
 
-    def get_hollowed_tests(self, wave1a_data: Dict) -> List[Dict]:
+    def get_hollowed_tests(self, wave1a_data: dict) -> list[dict]:
         """Get hollowed tests from Wave 1a data."""
         test_methods = wave1a_data.get('test_methods', {})
         hollowed_tests = test_methods.get('hollowed_tests', [])
@@ -45,7 +44,7 @@ class HollowedTestRestorer:
 
         return hollowed_tests
 
-    def restore_hollowed_tests(self, hollowed_tests: List[Dict]) -> Dict:
+    def restore_hollowed_tests(self, hollowed_tests: list[dict]) -> dict:
         """Restore hollowed tests with proper assertions."""
         print("=== Restoring Hollowed Tests ===")
 
@@ -65,7 +64,7 @@ class HollowedTestRestorer:
             'modifications': self.modifications
         }
 
-    def _restore_file_hollowed_tests(self, file_path: str, hollowed_tests: List[Dict]):
+    def _restore_file_hollowed_tests(self, file_path: str, hollowed_tests: list[dict]):
         """Restore hollowed tests in a single file."""
         self.restoration_stats['files_processed'] += 1
 
@@ -77,7 +76,7 @@ class HollowedTestRestorer:
 
         try:
             # Read file content
-            with open(full_path, 'r', encoding='utf-8') as f:
+            with open(full_path, encoding='utf-8') as f:
                 content = f.read()
                 original_content = content
 
@@ -137,7 +136,7 @@ class HollowedTestRestorer:
             print(f"❌ Error processing {file_path}: {e}")
             self.restoration_stats['errors_encountered'] += 1
 
-    def _restore_single_test(self, lines: List[str], node: ast.FunctionDef, line_offset: int, file_path: str) -> Dict:
+    def _restore_single_test(self, lines: list[str], node: ast.FunctionDef, line_offset: int, file_path: str) -> dict:
         """Restore a single hollowed test method."""
         restoration_result = {
             'restored': False,
@@ -181,7 +180,7 @@ class HollowedTestRestorer:
 
         return restoration_result
 
-    def _analyze_test_method(self, node: ast.FunctionDef, lines: List[str], start_line: int, file_path: str) -> Dict:
+    def _analyze_test_method(self, node: ast.FunctionDef, lines: list[str], start_line: int, file_path: str) -> dict:
         """Analyze a test method to determine its current state."""
         analysis = {
             'type': 'unknown',
@@ -232,7 +231,7 @@ class HollowedTestRestorer:
 
         return analysis
 
-    def _extract_test_context(self, test_name: str, file_path: str, imports: List[str]) -> Dict:
+    def _extract_test_context(self, test_name: str, file_path: str, imports: list[str]) -> dict:
         """Extract context from test name, file path, and imports."""
         context = {
             'test_name': test_name,
@@ -272,7 +271,7 @@ class HollowedTestRestorer:
 
         return context
 
-    def _restore_import_only_test(self, node: ast.FunctionDef, lines: List[str], start_line: int, analysis: Dict) -> List[str]:
+    def _restore_import_only_test(self, node: ast.FunctionDef, lines: list[str], start_line: int, analysis: dict) -> list[str]:
         """Restore an import-only test."""
         context = analysis['context']
         imports = analysis['imports']
@@ -303,7 +302,7 @@ class HollowedTestRestorer:
 
         return restored_lines
 
-    def _restore_pass_only_test(self, node: ast.FunctionDef, lines: List[str], start_line: int, analysis: Dict) -> List[str]:
+    def _restore_pass_only_test(self, node: ast.FunctionDef, lines: list[str], start_line: int, analysis: dict) -> list[str]:
         """Restore a pass-only test."""
         context = analysis['context']
 
@@ -329,7 +328,7 @@ class HollowedTestRestorer:
 
         return restored_lines
 
-    def _enhance_minimal_test(self, node: ast.FunctionDef, lines: List[str], start_line: int, analysis: Dict) -> List[str]:
+    def _enhance_minimal_test(self, node: ast.FunctionDef, lines: list[str], start_line: int, analysis: dict) -> list[str]:
         """Enhance a test with minimal assertions."""
         context = analysis['context']
 
@@ -350,7 +349,7 @@ class HollowedTestRestorer:
 
         return enhanced_lines
 
-    def _restore_generic_test(self, node: ast.FunctionDef, lines: List[str], start_line: int, analysis: Dict) -> List[str]:
+    def _restore_generic_test(self, node: ast.FunctionDef, lines: list[str], start_line: int, analysis: dict) -> list[str]:
         """Restore a generic hollowed test."""
         context = analysis['context']
 
@@ -372,7 +371,7 @@ class HollowedTestRestorer:
 
         return restored_lines
 
-    def _generate_import_assertions(self, indent_str: str, context: Dict, imports: List[str]) -> List[str]:
+    def _generate_import_assertions(self, indent_str: str, context: dict, imports: list[str]) -> list[str]:
         """Generate assertions for import tests."""
         assertions = []
 
@@ -389,7 +388,7 @@ class HollowedTestRestorer:
 
         return assertions
 
-    def _generate_creation_assertions(self, indent_str: str, context: Dict, imports: List[str]) -> List[str]:
+    def _generate_creation_assertions(self, indent_str: str, context: dict, imports: list[str]) -> list[str]:
         """Generate assertions for creation tests."""
         assertions = []
 
@@ -400,7 +399,7 @@ class HollowedTestRestorer:
 
         return assertions
 
-    def _generate_validation_assertions(self, indent_str: str, context: Dict, imports: List[str]) -> List[str]:
+    def _generate_validation_assertions(self, indent_str: str, context: dict, imports: list[str]) -> list[str]:
         """Generate assertions for validation tests."""
         assertions = []
 
@@ -410,7 +409,7 @@ class HollowedTestRestorer:
 
         return assertions
 
-    def _generate_generic_assertions(self, indent_str: str, context: Dict, imports: List[str]) -> List[str]:
+    def _generate_generic_assertions(self, indent_str: str, context: dict, imports: list[str]) -> list[str]:
         """Generate generic assertions."""
         assertions = []
 
@@ -419,7 +418,7 @@ class HollowedTestRestorer:
 
         return assertions
 
-    def scan_for_additional_hollowed_tests(self) -> List[Dict]:
+    def scan_for_additional_hollowed_tests(self) -> list[dict]:
         """Scan for additional hollowed tests not in Wave 1a."""
         print("=== Scanning for Additional Hollowed Tests ===")
 
@@ -428,7 +427,7 @@ class HollowedTestRestorer:
 
         for test_file in test_dir.rglob('test_*.py'):
             try:
-                with open(test_file, 'r', encoding='utf-8') as f:
+                with open(test_file, encoding='utf-8') as f:
                     content = f.read()
 
                 # Parse AST
@@ -474,13 +473,13 @@ class HollowedTestRestorer:
         has_assertions = 'assert' in method_content
         has_meaningful_content = any(
             line.strip() and not line.strip().startswith('#')
-            and not line.strip() in ['pass', '"""', "'''", '']
+            and line.strip() not in ['pass', '"""', "'''", '']
             for line in method_lines[1:]  # Skip signature line
         )
 
         return not has_assertions and not has_meaningful_content
 
-    def validate_restorations(self) -> Dict:
+    def validate_restorations(self) -> dict:
         """Validate that test restorations were successful."""
         print("=== Validating Test Restorations ===")
 
@@ -497,7 +496,7 @@ class HollowedTestRestorer:
             full_path = Path('tests') / file_path
 
             try:
-                with open(full_path, 'r', encoding='utf-8') as f:
+                with open(full_path, encoding='utf-8') as f:
                     content = f.read()
 
                 # Check that assertions were added
@@ -528,7 +527,7 @@ class HollowedTestRestorer:
 
         return validation
 
-    def generate_wave3a_report(self) -> Dict:
+    def generate_wave3a_report(self) -> dict:
         """Generate Wave 3a restoration report."""
         print("=== Wave 3a: Restore Hollowed Tests - Import-Only Anti-Patterns ===")
 
@@ -575,7 +574,7 @@ class HollowedTestRestorer:
 
         # Print summary
         summary = report['summary']
-        print(f"\n=== Wave 3a Summary ===")
+        print("\n=== Wave 3a Summary ===")
         print(f"Target hollowed tests: {summary['target_hollowed_tests']}")
         print(f"Additional hollowed tests: {summary['additional_hollowed_tests']}")
         print(f"Files processed: {summary['files_processed']}")
@@ -590,7 +589,7 @@ class HollowedTestRestorer:
             for issue in validation_results['remaining_issues'][:3]:
                 print(f"  - {issue['file']}: {issue['issue']}")
 
-        print(f"\n📄 Report saved to: artifacts/wave3a_restoration_report.json")
+        print("\n📄 Report saved to: artifacts/wave3a_restoration_report.json")
 
         return report
 

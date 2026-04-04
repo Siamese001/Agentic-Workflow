@@ -29,7 +29,6 @@ from typing import Any
 
 from agentic_core.L0_routing.config.path_constants import ARCHIVES_DIR
 from agentic_core.L2_execution.tools import write_gateway as _wg
-from agentic_core.mixins.atomic_execution_mixin import AtomicExecutionMixin
 from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     LayerSegment,
     _emit_agent_executes_agent,
@@ -73,6 +72,7 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     emit_determinism_digest,  # noqa: E402
     emit_replay_key,  # noqa: E402
 )
+from agentic_core.mixins.atomic_execution_mixin import AtomicExecutionMixin
 
 _emit_authorize_and_execute("p2", "ReportLocationAgent", "execution_auth")
 _emit_validates_capability("p2", "ReportLocationAgent", "capability_check")

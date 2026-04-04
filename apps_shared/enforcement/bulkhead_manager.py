@@ -2,6 +2,7 @@
 from enum import Enum
 from typing import Any, Callable
 
+
 class TaskPriority(Enum):
     LOW = 1
     MEDIUM = 2

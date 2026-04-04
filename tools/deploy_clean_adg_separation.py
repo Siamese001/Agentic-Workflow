@@ -10,8 +10,8 @@ Priority 2: Fix Static/Runtime ADG contamination
 
 import json
 import shutil
-from pathlib import Path
 from datetime import datetime
+from pathlib import Path
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
 
@@ -265,7 +265,7 @@ def main():
         for error in report['errors']:
             print(f"   - {error}")
 
-    print(f"\n📊 Deployment summary:")
+    print("\n📊 Deployment summary:")
     print(f"  Components deployed: {len(report['components_deployed'])}")
     print(f"  Actions completed: {len(report['deployment_log'])}")
     print(f"  Errors: {len(report['errors'])}")

@@ -5,10 +5,9 @@ This script takes a direct approach: if a file has syntax errors,
 remove all migration artifacts and restore basic functionality.
 """
 
+import ast
 import pathlib
 import re
-import ast
-from typing import Dict, List, Tuple
 
 
 class DirectSyntaxFixer:
@@ -24,9 +23,9 @@ class DirectSyntaxFixer:
             'migration_artifacts_removed': 0,
             'files_with_errors': 0
         }
-        self.failed_files: List[Tuple[str, str]] = []
+        self.failed_files: list[tuple[str, str]] = []
 
-    def fix_active_test_files(self) -> Dict:
+    def fix_active_test_files(self) -> dict:
         """Fix syntax errors using direct approach."""
         # Only process files in tests/ directory, exclude archives
         test_files = []
@@ -169,7 +168,7 @@ class DirectSyntaxFixer:
         """Check if line is unmatched parenthesis."""
         return re.match(r'^\s*\)\s*$', line)
 
-    def _final_cleanup(self, lines: List[str]) -> List[str]:
+    def _final_cleanup(self, lines: list[str]) -> list[str]:
         """Perform final cleanup of the lines."""
         cleaned_lines = []
         prev_empty = False
@@ -198,7 +197,7 @@ class DirectSyntaxFixer:
         print(f"Failed files: {len(self.failed_files)}")
 
         if self.failed_files:
-            print(f"\nFailed files (first 10):")
+            print("\nFailed files (first 10):")
             for file_path, error in self.failed_files[:10]:
                 print(f"  {file_path}: {error}")
             if len(self.failed_files) > 10:

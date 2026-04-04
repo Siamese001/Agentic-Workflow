@@ -8,10 +8,10 @@ and retrieval optimization signals.
 
 import math
 from datetime import datetime
-from typing import Dict, Any
+from typing import Any
 
+from ..config.feature_schemas import FeatureSchema, FeatureSchemas
 from .base_extractor import DeterministicFeatureExtractor
-from ..config.feature_schemas import FeatureSchemas, FeatureSchema
 
 
 class AdvancedC0FeatureExtractor(DeterministicFeatureExtractor):
@@ -36,7 +36,7 @@ class AdvancedC0FeatureExtractor(DeterministicFeatureExtractor):
 
     def _create_advanced_c0_schema(self) -> FeatureSchema:
         """Create feature schema for advanced C0 reranker."""
-        from ..config.feature_schemas import FeatureSchema, FeatureDefinition, FeatureType
+        from ..config.feature_schemas import FeatureDefinition, FeatureSchema, FeatureType
 
         features = [
             FeatureDefinition(
@@ -131,7 +131,7 @@ class AdvancedC0FeatureExtractor(DeterministicFeatureExtractor):
         self.register_extraction_function("context_alignment", self._extract_context_alignment)
         self.register_extraction_function("reranking_confidence", self._extract_reranking_confidence)
 
-    def _extract_embedding_similarity(self, context: Dict[str, Any]) -> float:
+    def _extract_embedding_similarity(self, context: dict[str, Any]) -> float:
         """Extract embedding similarity (0.0 to 1.0)."""
         reranking = context.get("reranking", {})
 
@@ -161,7 +161,7 @@ class AdvancedC0FeatureExtractor(DeterministicFeatureExtractor):
 
         return round(max(0.0, min(1.0, similarity)), 3)
 
-    def _extract_attention_score(self, context: Dict[str, Any]) -> float:
+    def _extract_attention_score(self, context: dict[str, Any]) -> float:
         """Extract attention-based relevance score (0.0 to 1.0)."""
         reranking = context.get("reranking", {})
 
@@ -183,7 +183,7 @@ class AdvancedC0FeatureExtractor(DeterministicFeatureExtractor):
 
         return round(max(0.0, normalized_attention), 3)
 
-    def _extract_document_authority(self, context: Dict[str, Any]) -> float:
+    def _extract_document_authority(self, context: dict[str, Any]) -> float:
         """Extract document authority score (0.0 to 1.0)."""
         reranking = context.get("reranking", {})
 
@@ -231,7 +231,7 @@ class AdvancedC0FeatureExtractor(DeterministicFeatureExtractor):
 
         return round(max(0.0, min(1.0, authority_score)), 3)
 
-    def _extract_relevance_confidence(self, context: Dict[str, Any]) -> float:
+    def _extract_relevance_confidence(self, context: dict[str, Any]) -> float:
         """Extract relevance confidence (0.0 to 1.0)."""
         reranking = context.get("reranking", {})
 
@@ -277,7 +277,7 @@ class AdvancedC0FeatureExtractor(DeterministicFeatureExtractor):
 
         return round(max(0.0, min(1.0, confidence_score)), 3)
 
-    def _extract_user_engagement(self, context: Dict[str, Any]) -> float:
+    def _extract_user_engagement(self, context: dict[str, Any]) -> float:
         """Extract user engagement score (0.0 to 1.0)."""
         reranking = context.get("reranking", {})
 
@@ -325,7 +325,7 @@ class AdvancedC0FeatureExtractor(DeterministicFeatureExtractor):
 
         return round(max(0.0, min(1.0, engagement_score)), 3)
 
-    def _extract_temporal_relevance(self, context: Dict[str, Any]) -> float:
+    def _extract_temporal_relevance(self, context: dict[str, Any]) -> float:
         """Extract temporal relevance score (0.0 to 1.0)."""
         reranking = context.get("reranking", {})
 
@@ -376,7 +376,7 @@ class AdvancedC0FeatureExtractor(DeterministicFeatureExtractor):
 
         return round(max(0.0, min(1.0, temporal_score)), 3)
 
-    def _extract_semantic_density(self, context: Dict[str, Any]) -> float:
+    def _extract_semantic_density(self, context: dict[str, Any]) -> float:
         """Extract semantic density score (0.0 to 1.0)."""
         reranking = context.get("reranking", {})
 
@@ -422,7 +422,7 @@ class AdvancedC0FeatureExtractor(DeterministicFeatureExtractor):
 
         return round(max(0.0, min(1.0, density_score)), 3)
 
-    def _extract_retrieval_precision(self, context: Dict[str, Any]) -> float:
+    def _extract_retrieval_precision(self, context: dict[str, Any]) -> float:
         """Extract retrieval precision score (0.0 to 1.0)."""
         reranking = context.get("reranking", {})
 
@@ -455,7 +455,7 @@ class AdvancedC0FeatureExtractor(DeterministicFeatureExtractor):
 
         return round(max(0.0, min(1.0, precision_score)), 3)
 
-    def _extract_context_alignment(self, context: Dict[str, Any]) -> float:
+    def _extract_context_alignment(self, context: dict[str, Any]) -> float:
         """Extract context alignment score (0.0 to 1.0)."""
         reranking = context.get("reranking", {})
 
@@ -501,7 +501,7 @@ class AdvancedC0FeatureExtractor(DeterministicFeatureExtractor):
 
         return round(max(0.0, min(1.0, alignment_score)), 3)
 
-    def _extract_reranking_confidence(self, context: Dict[str, Any]) -> float:
+    def _extract_reranking_confidence(self, context: dict[str, Any]) -> float:
         """Extract overall reranking confidence (0.0 to 1.0)."""
         reranking = context.get("reranking", {})
 

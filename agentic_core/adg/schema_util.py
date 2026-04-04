@@ -22,6 +22,7 @@ from __future__ import annotations
 from functools import lru_cache
 from typing import Literal
 
+
 # Local stub to avoid L_TOOLS->L_RUNTIME dependency while maintaining ADG instrumentation
 def _emit_reads_through(source: str, target: str, context: str) -> None:
     """Stub for reads_through ADG edge emission.\n    \n    Avoids importing from L_RUNTIME (layer violation).\n    The actual emission is handled by static analysis.\n    """

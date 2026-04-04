@@ -5,7 +5,6 @@ Final test suite validation for production readiness.
 
 import subprocess
 import sys
-from pathlib import Path
 
 
 def run_final_validation():

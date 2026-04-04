@@ -8,10 +8,9 @@ and that the hardened configuration is properly enforced.
 
 import os
 import sys
-import json
-import pytest
 from pathlib import Path
-from typing import Dict, List, Any
+
+import pytest
 
 # Ensure test can find modules
 sys.path.insert(0, str(Path(__file__).parent.parent))
@@ -19,12 +18,12 @@ sys.path.insert(0, str(Path(__file__).parent.parent))
 # Lazy import - only import when needed
 def get_sequential_thinking_booster():
     from tools.mcp.sequential_thinking_booster import (
-        boost_sequential_thinking,
-        apply_kimi_k2_5_boosting,
-        CRITICAL_TOOLS,
         CORE_TOOLS,
+        CRITICAL_TOOLS,
+        REASONING_TOOLS,
         SUPPRESSED_TOOLS,
-        REASONING_TOOLS
+        apply_kimi_k2_5_boosting,
+        boost_sequential_thinking,
     )
     return boost_sequential_thinking, apply_kimi_k2_5_boosting, CRITICAL_TOOLS, CORE_TOOLS, SUPPRESSED_TOOLS, REASONING_TOOLS
 
@@ -358,7 +357,7 @@ def test_full_boosting_pipeline(sample_tools):
             if i < pos and not any(pat in tool['name'] for pat in SUPPRESSED_TOOLS):
                 assert True  # Non-chat tool is before chat tool
 
-    print(f"\nFull pipeline result order:")
+    print("\nFull pipeline result order:")
     for i, tool in enumerate(boosted):
         print(f"  {i+1}. {tool['name']}")
 

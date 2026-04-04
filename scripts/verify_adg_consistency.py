@@ -35,7 +35,7 @@ import json
 import sqlite3
 import sys
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any
 
 # Add project root to path for imports
 sys.path.insert(0, str(Path(__file__).parent.parent.parent))
@@ -76,8 +76,8 @@ class ADGConsistencyVerifier:
         self.adg_dir = Path(adg_dir)
         self.sqlite_path = self._find_sqlite_database()
         self.snapshot_path = self._find_snapshot()
-        self.errors: List[str] = []
-        self.warnings: List[str] = []
+        self.errors: list[str] = []
+        self.warnings: list[str] = []
         if self.snapshot_path is None:
             self.warnings.append("No snapshot file found — snapshot consistency checks skipped")
 
@@ -90,7 +90,7 @@ class ADGConsistencyVerifier:
         # Return the most recent by modification time
         return max(sqlite_files, key=lambda p: p.stat().st_mtime)
 
-    def _find_snapshot(self) -> Optional[Path]:
+    def _find_snapshot(self) -> Path | None:
         """Find the latest snapshot file.  Returns None when absent."""
         snapshot_files = list(self.adg_dir.glob("adg_snapshot_*.json"))
         if not snapshot_files:
@@ -98,10 +98,10 @@ class ADGConsistencyVerifier:
 
         return max(snapshot_files, key=lambda p: p.stat().st_mtime)
 
-    def _load_snapshot(self) -> Dict[str, Any]:
+    def _load_snapshot(self) -> dict[str, Any]:
         """Load snapshot data."""
         try:
-            with open(self.snapshot_path, 'r', encoding='utf-8') as f:
+            with open(self.snapshot_path, encoding='utf-8') as f:
                 return json.load(f)
         except Exception as e:
             raise ConsistencyVerificationError(f"Failed to load snapshot: {e}")
@@ -119,7 +119,7 @@ class ADGConsistencyVerifier:
         except Exception as e:
             raise ConsistencyVerificationError(f"Failed to execute SQL query '{query}': {e}")
 
-    def _get_snapshot_metric(self, snapshot: Dict[str, Any], metric_name: str) -> Optional[int]:
+    def _get_snapshot_metric(self, snapshot: dict[str, Any], metric_name: str) -> int | None:
         """Extract metric value from snapshot."""
         # Check in counts section
         if "counts" in snapshot:
@@ -139,7 +139,7 @@ class ADGConsistencyVerifier:
 
         return None
 
-    def _verify_metric_consistency(self, metric_name: str, sql_value: int, snapshot_value: Optional[int]) -> None:
+    def _verify_metric_consistency(self, metric_name: str, sql_value: int, snapshot_value: int | None) -> None:
         """Verify consistency between SQL and snapshot values."""
         if snapshot_value is None:
             self.warnings.append(f"Metric {metric_name} not found in snapshot")
@@ -242,7 +242,7 @@ class ADGConsistencyVerifier:
         except Exception as e:
             raise ConsistencyVerificationError(f"Relation type verification failed: {e}")
 
-    def _calculate_derived_metrics(self) -> Dict[str, int]:
+    def _calculate_derived_metrics(self) -> dict[str, int]:
         """Calculate additional derived metrics for verification."""
         derived = {}
 
@@ -277,7 +277,7 @@ class ADGConsistencyVerifier:
 
         return derived
 
-    def verify(self) -> Dict[str, Any]:
+    def verify(self) -> dict[str, Any]:
         """Run complete consistency verification."""
         print("🔍 Starting ADG Consistency Verification...")
         print(f"📁 ADG Directory: {self.adg_dir}")
@@ -413,10 +413,10 @@ def main():
             print(f"   Snapshot Value: {snapshot_value}")
 
             if snapshot_value is not None and sql_value != snapshot_value:
-                print(f"❌ INCONSISTENT")
+                print("❌ INCONSISTENT")
                 return 1
             else:
-                print(f"✅ CONSISTENT")
+                print("✅ CONSISTENT")
                 return 0
         else:
             # Full verification

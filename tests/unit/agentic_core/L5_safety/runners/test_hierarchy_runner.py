@@ -3,8 +3,6 @@
 """
 from __future__ import annotations
 
-import pytest
-
 
 class TestGetProjectRootFunction:
     def test_is_callable(self):

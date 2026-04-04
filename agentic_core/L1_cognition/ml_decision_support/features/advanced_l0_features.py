@@ -7,10 +7,10 @@ and routing optimization signals.
 """
 
 import math
-from typing import Dict, Any
+from typing import Any
 
+from ..config.feature_schemas import FeatureSchema, FeatureSchemas
 from .base_extractor import DeterministicFeatureExtractor
-from ..config.feature_schemas import FeatureSchemas, FeatureSchema
 
 
 class AdvancedL0FeatureExtractor(DeterministicFeatureExtractor):
@@ -35,7 +35,7 @@ class AdvancedL0FeatureExtractor(DeterministicFeatureExtractor):
 
     def _create_advanced_l0_schema(self) -> FeatureSchema:
         """Create feature schema for advanced L0 router."""
-        from ..config.feature_schemas import FeatureSchema, FeatureDefinition, FeatureType
+        from ..config.feature_schemas import FeatureDefinition, FeatureSchema, FeatureType
 
         features = [
             FeatureDefinition(
@@ -130,7 +130,7 @@ class AdvancedL0FeatureExtractor(DeterministicFeatureExtractor):
         self.register_extraction_function("query_complexity", self._extract_query_complexity)
         self.register_extraction_function("routing_confidence", self._extract_routing_confidence)
 
-    def _extract_semantic_similarity_score(self, context: Dict[str, Any]) -> float:
+    def _extract_semantic_similarity_score(self, context: dict[str, Any]) -> float:
         """Extract semantic similarity score (0.0 to 1.0)."""
         routing = context.get("routing", {})
 
@@ -161,7 +161,7 @@ class AdvancedL0FeatureExtractor(DeterministicFeatureExtractor):
 
         return round(max(0.0, min(1.0, max_similarity)), 3)
 
-    def _extract_intent_confidence(self, context: Dict[str, Any]) -> float:
+    def _extract_intent_confidence(self, context: dict[str, Any]) -> float:
         """Extract intent confidence (0.0 to 1.0)."""
         routing = context.get("routing", {})
 
@@ -194,7 +194,7 @@ class AdvancedL0FeatureExtractor(DeterministicFeatureExtractor):
         confidence = max_probability * confidence_adjustment
         return round(max(0.0, min(1.0, confidence)), 3)
 
-    def _extract_context_relevance(self, context: Dict[str, Any]) -> float:
+    def _extract_context_relevance(self, context: dict[str, Any]) -> float:
         """Extract context relevance (0.0 to 1.0)."""
         routing = context.get("routing", {})
 
@@ -240,7 +240,7 @@ class AdvancedL0FeatureExtractor(DeterministicFeatureExtractor):
 
         return round(max(0.0, min(1.0, relevance_score)), 3)
 
-    def _extract_user_preference_score(self, context: Dict[str, Any]) -> float:
+    def _extract_user_preference_score(self, context: dict[str, Any]) -> float:
         """Extract user preference score (0.0 to 1.0)."""
         routing = context.get("routing", {})
 
@@ -273,7 +273,7 @@ class AdvancedL0FeatureExtractor(DeterministicFeatureExtractor):
 
         return round(max(0.0, min(1.0, preference_score)), 3)
 
-    def _extract_historical_success_rate(self, context: Dict[str, Any]) -> float:
+    def _extract_historical_success_rate(self, context: dict[str, Any]) -> float:
         """Extract historical success rate (0.0 to 1.0)."""
         routing = context.get("routing", {})
 
@@ -297,7 +297,7 @@ class AdvancedL0FeatureExtractor(DeterministicFeatureExtractor):
 
         return round(max(0.0, min(1.0, success_rate)), 3)
 
-    def _extract_resource_availability(self, context: Dict[str, Any]) -> float:
+    def _extract_resource_availability(self, context: dict[str, Any]) -> float:
         """Extract resource availability (0.0 to 1.0)."""
         routing = context.get("routing", {})
 
@@ -328,7 +328,7 @@ class AdvancedL0FeatureExtractor(DeterministicFeatureExtractor):
 
         return round(resource_availability, 3)
 
-    def _extract_routing_efficiency(self, context: Dict[str, Any]) -> float:
+    def _extract_routing_efficiency(self, context: dict[str, Any]) -> float:
         """Extract routing efficiency (0.0 to 1.0)."""
         routing = context.get("routing", {})
 
@@ -383,7 +383,7 @@ class AdvancedL0FeatureExtractor(DeterministicFeatureExtractor):
 
         return round(max(0.0, min(1.0, efficiency_score)), 3)
 
-    def _extract_system_load_factor(self, context: Dict[str, Any]) -> float:
+    def _extract_system_load_factor(self, context: dict[str, Any]) -> float:
         """Extract system load factor (0.0 to 1.0)."""
         routing = context.get("routing", {})
 
@@ -431,7 +431,7 @@ class AdvancedL0FeatureExtractor(DeterministicFeatureExtractor):
 
         return round(max(0.0, min(1.0, load_score)), 3)
 
-    def _extract_query_complexity(self, context: Dict[str, Any]) -> float:
+    def _extract_query_complexity(self, context: dict[str, Any]) -> float:
         """Extract query complexity (0.0 to 1.0)."""
         routing = context.get("routing", {})
 
@@ -486,7 +486,7 @@ class AdvancedL0FeatureExtractor(DeterministicFeatureExtractor):
 
         return round(max(0.0, min(1.0, complexity_score)), 3)
 
-    def _extract_routing_confidence(self, context: Dict[str, Any]) -> float:
+    def _extract_routing_confidence(self, context: dict[str, Any]) -> float:
         """Extract overall routing confidence (0.0 to 1.0)."""
         routing = context.get("routing", {})
 

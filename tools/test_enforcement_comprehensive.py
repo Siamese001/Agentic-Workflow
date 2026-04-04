@@ -4,18 +4,22 @@ Comprehensive Enforcement Test Suite
 Verifies ADG templates are truly mandatory and enforced
 """
 
-import sys
 import logging
+import sys
 from pathlib import Path
 
 # Add repo root to path
 repo_root = Path(__file__).parent
 sys.path.append(str(repo_root))
 
-from agentic_core.planning.sequential_thinking_workflow import SequentialThinkingEnhancedWorkflow
 from agentic_core.config.adg_template_enforcement_config import (
-    ENFORCEMENT_CONFIG, ENFORCEMENT_RULES, get_enforcement_template, is_enforcement_required
+    ENFORCEMENT_CONFIG,
+    ENFORCEMENT_RULES,
+    get_enforcement_template,
+    is_enforcement_required,
 )
+from agentic_core.planning.sequential_thinking_workflow import SequentialThinkingEnhancedWorkflow
+
 
 def test_enforcement_mandatory():
     """Test that enforcement is truly mandatory and cannot be bypassed."""
@@ -108,12 +112,12 @@ def test_enforcement_mandatory():
 
             # Display results
             if result['compliant']:
-                print(f"   ✅ ENFORCED: ADG template mandatory")
+                print("   ✅ ENFORCED: ADG template mandatory")
                 print(f"   📋 Template Type: {'ADG Template' if is_adg_template else 'Other'}")
                 print(f"   📝 Length: {len(template):,} characters")
                 print(f"   🔍 Enforcement Log: {'Found' if has_enforcement_log else 'Not Found'}")
             else:
-                print(f"   ❌ VIOLATION: Enforcement failed!")
+                print("   ❌ VIOLATION: Enforcement failed!")
                 print(f"   📋 Required: {enforcement_required}")
                 print(f"   📋 ADG Template: {is_adg_template}")
 
@@ -213,9 +217,9 @@ def test_enforcement_bypass_attempts():
             }
 
             if result['bypass_blocked']:
-                print(f"   ✅ BYPASS BLOCKED: Enforcement worked correctly")
+                print("   ✅ BYPASS BLOCKED: Enforcement worked correctly")
             else:
-                print(f"   ❌ BYPASS SUCCESSFUL: Enforcement failed!")
+                print("   ❌ BYPASS SUCCESSFUL: Enforcement failed!")
                 print(f"   📋 Enforcement Required: {enforcement_required}")
                 print(f"   📋 ADG Template Used: {is_adg_template}")
 
@@ -401,14 +405,14 @@ def main():
     coverage_results = test_enforcement_rules_coverage()
 
     # Generate comprehensive report
-    print(f"\n📊 COMPREHENSIVE ENFORCEMENT REPORT")
+    print("\n📊 COMPREHENSIVE ENFORCEMENT REPORT")
     print("=" * 80)
 
     # Mandatory enforcement results
     mandatory_successful = [r for r in mandatory_results if r.get('success', False)]
     mandatory_compliant = [r for r in mandatory_successful if r.get('compliant', False)]
 
-    print(f"🔒 MANDATORY ENFORCEMENT:")
+    print("🔒 MANDATORY ENFORCEMENT:")
     print(f"   Tests: {len(mandatory_results)}")
     print(f"   Successful: {len(mandatory_successful)} ({len(mandatory_successful)/len(mandatory_results)*100:.1f}%)")
     print(f"   Compliant: {len(mandatory_compliant)} ({len(mandatory_compliant)/len(mandatory_successful)*100:.1f}%)")
@@ -417,7 +421,7 @@ def main():
     bypass_successful = [r for r in bypass_results if r.get('success', False)]
     bypass_blocked = [r for r in bypass_successful if r.get('bypass_blocked', False)]
 
-    print(f"\n🚫 BYPASS PROTECTION:")
+    print("\n🚫 BYPASS PROTECTION:")
     print(f"   Attempts: {len(bypass_results)}")
     print(f"   Successful: {len(bypass_successful)} ({len(bypass_successful)/len(bypass_results)*100:.1f}%)")
     print(f"   Blocked: {len(bypass_blocked)} ({len(bypass_blocked)/len(bypass_successful)*100:.1f}%)")
@@ -426,7 +430,7 @@ def main():
     config_successful = [r for r in config_results if r.get('success', False)]
     config_passed = [r for r in config_successful if r.get('passed', False)]
 
-    print(f"\n⚙️  CONFIGURATION:")
+    print("\n⚙️  CONFIGURATION:")
     print(f"   Tests: {len(config_results)}")
     print(f"   Successful: {len(config_successful)} ({len(config_successful)/len(config_results)*100:.1f}%)")
     print(f"   Passed: {len(config_passed)} ({len(config_passed)/len(config_successful)*100:.1f}%)")
@@ -435,7 +439,7 @@ def main():
     coverage_successful = [r for r in coverage_results if r.get('success', False)]
     coverage_covered = [r for r in coverage_successful if r.get('covered', False)]
 
-    print(f"\n📋 RULES COVERAGE:")
+    print("\n📋 RULES COVERAGE:")
     print(f"   Rules: {len(coverage_results)}")
     print(f"   Successful: {len(coverage_successful)} ({len(coverage_successful)/len(coverage_results)*100:.1f}%)")
     print(f"   Covered: {len(coverage_covered)} ({len(coverage_covered)/len(coverage_successful)*100:.1f}%)")
@@ -452,25 +456,25 @@ def main():
 
     overall_score = (mandatory_rate + bypass_rate + config_rate + coverage_rate) / 4
 
-    print(f"\n🎯 OVERALL ENFORCEMENT ASSESSMENT:")
+    print("\n🎯 OVERALL ENFORCEMENT ASSESSMENT:")
     print(f"   Total Tests: {total_tests}")
     print(f"   Overall Success Rate: {total_successful/total_tests*100:.1f}%")
     print(f"   Overall Enforcement Score: {overall_score:.1f}%")
 
     # Final verdict
     if overall_score >= 90:
-        print(f"\n🎉 ENFORCEMENT STATUS: EXCELLENT")
+        print("\n🎉 ENFORCEMENT STATUS: EXCELLENT")
         print("✅ ADG templates are truly mandatory and enforced")
         print("✅ Bypass attempts are blocked")
         print("✅ Configuration is correct")
         print("✅ All rules are covered")
         print("🚀 Ready for production deployment")
     elif overall_score >= 75:
-        print(f"\n✅ ENFORCEMENT STATUS: GOOD")
+        print("\n✅ ENFORCEMENT STATUS: GOOD")
         print("✅ Most enforcement working correctly")
         print("⚠️  Minor issues may need attention")
     else:
-        print(f"\n⚠️  ENFORCEMENT STATUS: NEEDS IMPROVEMENT")
+        print("\n⚠️  ENFORCEMENT STATUS: NEEDS IMPROVEMENT")
         print("❌ Enforcement has significant issues")
         print("🔧 Requires fixes before production")
 

@@ -9,9 +9,7 @@ Validates that P0-P4 anti-pattern fixes are in place:
 """
 
 import ast
-import re
 from pathlib import Path
-import sys
 
 REPO_ROOT = Path(__file__).parent.parent.parent
 
@@ -84,7 +82,7 @@ def test_no_bare_excepts_in_core():
 
     # Current baseline: 14 bare except violations in codebase (to be fixed in future waves)
     assert len(all_violations) <= 14, f"Found {len(all_violations)} bare except violations: {all_violations[:5]}"
-    print(f"✓ No bare except clauses found in agentic_core")
+    print("✓ No bare except clauses found in agentic_core")
 
 def test_no_broad_exceptions_without_logging():
     """Test that broad Exception catches have logging."""

@@ -13,27 +13,18 @@ Reference: docs/reference/agentic_process_mapping_v12.md Section [5], [9]
 
 from __future__ import annotations
 
-import hashlib
-import json
-import threading
 import time
 import uuid
 from concurrent.futures import ThreadPoolExecutor, as_completed
-from typing import Any, Dict, List, Optional, Tuple
-from unittest.mock import MagicMock, patch
-
-import pytest
 
 from tests.e2e.conftest import (
     BusCommunicationMonitor,
     BusType,
     Layer,
-    LayerBoundaryValidator,
     RobustnessResult,
     TestExecutionContext,
     record_test_result,
 )
-
 
 # =============================================================================
 # BUS C: Control Bus Tests

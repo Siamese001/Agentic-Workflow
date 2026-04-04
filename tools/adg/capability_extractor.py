@@ -4,15 +4,15 @@ Capability Extraction Engine - Phase 3 Implementation
 Identifies and promotes reusable logic into proper shared modules.
 """
 
+import ast
+import json
+import logging
 import os
 import sys
-import json
-import ast
-import logging
-from pathlib import Path
-from typing import List, Dict, Any
-from datetime import datetime
 from collections import defaultdict
+from datetime import datetime
+from pathlib import Path
+from typing import Any
 
 # Ensure we can import from agentic_core
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..")))
@@ -52,13 +52,13 @@ class CapabilityExtractor:
             "error_handling": ["handle_error", "catch_exception", "log_error", "raise_error"]
         }
 
-    def load_manifest(self, manifest_path: str) -> List[Dict[str, Any]]:
+    def load_manifest(self, manifest_path: str) -> list[dict[str, Any]]:
         """Load the repo hygiene manifest."""
-        with open(manifest_path, 'r') as f:
+        with open(manifest_path) as f:
             data = json.load(f)
         return data['files']
 
-    def get_legitimate_python_files(self, manifest: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+    def get_legitimate_python_files(self, manifest: list[dict[str, Any]]) -> list[dict[str, Any]]:
         """Extract legitimate Python files for analysis."""
         python_files = [
             item for item in manifest
@@ -69,7 +69,7 @@ class CapabilityExtractor:
         logging.info(f"Found {len(python_files)} legitimate Python files to analyze")
         return python_files
 
-    def analyze_file_capabilities(self, file_path: Path) -> Dict[str, Any]:
+    def analyze_file_capabilities(self, file_path: Path) -> dict[str, Any]:
         """Analyze a Python file for reusable capabilities."""
         try:
             # Convert to absolute path and check if it's within repo
@@ -80,7 +80,7 @@ class CapabilityExtractor:
                 logging.warning(f"File {file_path} is outside repository root")
                 return None
 
-            with open(abs_path, 'r', encoding='utf-8') as f:
+            with open(abs_path, encoding='utf-8') as f:
                 content = f.read()
 
             tree = ast.parse(content)
@@ -137,7 +137,7 @@ class CapabilityExtractor:
             logging.warning(f"Failed to analyze {file_path}: {e}")
             return None
 
-    def _extract_function_calls(self, node: ast.FunctionDef) -> List[str]:
+    def _extract_function_calls(self, node: ast.FunctionDef) -> list[str]:
         """Extract function calls from a function definition."""
         calls = []
         for child in ast.walk(node):
@@ -148,7 +148,7 @@ class CapabilityExtractor:
                     calls.append(child.func.attr)
         return calls
 
-    def _calculate_reusability_score(self, capabilities: Dict[str, Any]) -> int:
+    def _calculate_reusability_score(self, capabilities: dict[str, Any]) -> int:
         """Calculate a reusability score for the file."""
         score = 0
 
@@ -175,7 +175,7 @@ class CapabilityExtractor:
 
         return max(0, score)
 
-    def identify_extraction_candidates(self, file_analyses: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+    def identify_extraction_candidates(self, file_analyses: list[dict[str, Any]]) -> list[dict[str, Any]]:
         """Identify the best candidates for capability extraction."""
         # Sort by reusability score
         candidates = sorted(file_analyses, key=lambda x: x["reusable_score"], reverse=True)
@@ -186,7 +186,7 @@ class CapabilityExtractor:
         logging.info(f"Identified {len(high_score_candidates)} high-score extraction candidates")
         return high_score_candidates[:20]  # Top 20 as per plan
 
-    def extract_capability(self, candidate: Dict[str, Any]) -> bool:
+    def extract_capability(self, candidate: dict[str, Any]) -> bool:
         """Extract a capability and promote it to shared modules."""
         try:
             source_path = self.repo_root / candidate["file_path"]
@@ -207,7 +207,7 @@ class CapabilityExtractor:
                 f.write(f'"""\nExtracted capability module: {primary_capability}\n')
                 f.write(f'Source: {candidate["file_path"]}\n')
                 f.write(f'Extracted: {datetime.now().isoformat()}\n')
-                f.write(f'"""\n\n')
+                f.write('"""\n\n')
                 f.write(extracted_code)
 
             # Log the extraction
@@ -230,7 +230,7 @@ class CapabilityExtractor:
             logging.error(f"Failed to extract capability from {candidate['file_path']}: {e}")
             return False
 
-    def _determine_primary_capability(self, candidate: Dict[str, Any]) -> str:
+    def _determine_primary_capability(self, candidate: dict[str, Any]) -> str:
         """Determine the primary capability type for a candidate."""
         capability_patterns = candidate.get("capability_patterns", {})
         pattern_counts = {pattern: len(funcs) for pattern, funcs in capability_patterns.items()}
@@ -241,10 +241,10 @@ class CapabilityExtractor:
         # Fallback to generic naming
         return f"extracted_{Path(candidate['file_path']).stem}"
 
-    def _extract_reusable_code(self, source_path: Path, candidate: Dict[str, Any]) -> str:
+    def _extract_reusable_code(self, source_path: Path, candidate: dict[str, Any]) -> str:
         """Extract reusable code from a source file."""
         try:
-            with open(source_path, 'r', encoding='utf-8') as f:
+            with open(source_path, encoding='utf-8') as f:
                 content = f.read()
 
             tree = ast.parse(content)
@@ -323,7 +323,7 @@ def main():
         logging.info("No suitable extraction candidates found")
         return
 
-    print(f"\n=== HITL GATE: Capability Extraction Review ===")
+    print("\n=== HITL GATE: Capability Extraction Review ===")
     print(f"Found {len(candidates)} extraction candidates:")
     for i, candidate in enumerate(candidates[:10], 1):  # Show top 10
         print(f"  {i}. {candidate['file_path']} (score: {candidate['reusable_score']})")
@@ -342,7 +342,7 @@ def main():
         print(f"Classes: {len([c for c in candidate['classes'] if not c['is_private']])}")
 
         # In real implementation, this would wait for user confirmation
-        print(f"Extracting capability...")
+        print("Extracting capability...")
 
         if extractor.extract_capability(candidate):
             successful_extractions += 1
@@ -351,7 +351,7 @@ def main():
     log_path = extractor.save_extraction_log()
 
     # Print summary
-    print(f"\n=== Capability Extraction Complete ===")
+    print("\n=== Capability Extraction Complete ===")
     print(f"Files analyzed: {len(file_analyses)}")
     print(f"Candidates identified: {len(candidates)}")
     print(f"Successful extractions: {successful_extractions}")

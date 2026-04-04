@@ -16,13 +16,13 @@ class _P4StateTelemetryVisitor(BaseStructuralVisitor):
 
     def visit_Call(self, node: ast.Call) -> None:
         """Extract P4 state, telemetry & learning edges."""
+        from agentic_core.adg.extraction.static_scanner import Edge as _Edge
         from agentic_core.adg.schema_util import (
-            canonical_name,
+            P4_LEARNING_SYMBOLS,
             P4_STATE_SYMBOLS,
             P4_TELEMETRY_SYMBOLS,
-            P4_LEARNING_SYMBOLS,
+            canonical_name,
         )
-        from agentic_core.adg.extraction.static_scanner import Edge as _Edge
 
         sym = self._get_call_symbol(node.func)
         tail = sym.split(".")[-1] if sym else ""
@@ -80,17 +80,17 @@ class _P4ObservabilityGovernanceVisitor(BaseStructuralVisitor):
 
     def visit_Call(self, node: ast.Call) -> None:
         """Extract P4 observability & governance edges."""
-        from agentic_core.adg.schema_util import (
-            canonical_name,
-            EMITS_METRIC_EVENT_SYMBOLS,
-            RECORDS_INCIDENT_EVENT_SYMBOLS,
-            CAPTURES_RUNTIME_ANOMALY_SYMBOLS,
-            WRITES_OBSERVABILITY_LOG_SYMBOLS,
-            UPDATES_MONITORING_STATE_SYMBOLS,
-            TRIGGERS_ALERT_SYMBOLS,
-            LINKS_INCIDENT_TRACE_SYMBOLS,
-        )
         from agentic_core.adg.extraction.static_scanner import Edge as _Edge
+        from agentic_core.adg.schema_util import (
+            CAPTURES_RUNTIME_ANOMALY_SYMBOLS,
+            EMITS_METRIC_EVENT_SYMBOLS,
+            LINKS_INCIDENT_TRACE_SYMBOLS,
+            RECORDS_INCIDENT_EVENT_SYMBOLS,
+            TRIGGERS_ALERT_SYMBOLS,
+            UPDATES_MONITORING_STATE_SYMBOLS,
+            WRITES_OBSERVABILITY_LOG_SYMBOLS,
+            canonical_name,
+        )
 
         sym = self._get_call_symbol(node.func)
         tail = sym.split(".")[-1] if sym else ""
@@ -196,16 +196,16 @@ class _RetrievalWiringVisitor(BaseStructuralVisitor):
 
     def visit_Call(self, node: ast.Call) -> None:
         """Extract retrieval wiring edges."""
+        from agentic_core.adg.extraction.static_scanner import Edge as _Edge
         from agentic_core.adg.schema_util import (
-            canonical_name,
-            RETRIEVAL_WIRING_SYMBOLS,
             L1_RETRIEVAL_SYMBOLS,
             L2_RETRIEVAL_SYMBOLS,
             L3_RETRIEVAL_SYMBOLS,
             L4_RETRIEVAL_SYMBOLS,
             L5_RETRIEVAL_SYMBOLS,
+            RETRIEVAL_WIRING_SYMBOLS,
+            canonical_name,
         )
-        from agentic_core.adg.extraction.static_scanner import Edge as _Edge
 
         sym = self._get_call_symbol(node.func)
         tail = sym.split(".")[-1] if sym else ""

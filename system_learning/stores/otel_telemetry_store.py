@@ -14,7 +14,6 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_records_telemetry_event,
     record_execution_trace,
 )
-from system_learning.types.telemetry_types import TelemetryEvent
 from system_learning.types.telemetry_store_protocol import TelemetryStoreProtocol
 
 logger = logging.getLogger(__name__)

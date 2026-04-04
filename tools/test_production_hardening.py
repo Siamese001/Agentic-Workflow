@@ -7,7 +7,8 @@ import logging
 import time
 import traceback
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any
+
 import pytest
 
 
@@ -45,7 +46,7 @@ async def test_production_hardening():
             """Log info."""
             self.logger.info(message)
 
-        async def test_error_handling(self) -> Dict[str, Any]:
+        async def test_error_handling(self) -> dict[str, Any]:
             """Test error handling and edge cases."""
             self.log_info("\n[PROD HARDENING] Testing error handling...")
 
@@ -184,12 +185,12 @@ async def test_production_hardening():
 
             except ImportError as e:
                 self.log_error("RAG orchestrator not available for error testing", e)
-                error_tests = {k: None for k in error_tests}
+                error_tests = dict.fromkeys(error_tests)
 
             self.test_results["error_handling"] = error_tests
             return error_tests
 
-        async def test_performance_benchmarks(self) -> Dict[str, Any]:
+        async def test_performance_benchmarks(self) -> dict[str, Any]:
             """Test performance benchmarks."""
             self.log_info("\n[PROD HARDENING] Testing performance benchmarks...")
 
@@ -295,7 +296,7 @@ async def test_production_hardening():
             self.test_results["performance"] = performance_tests
             return performance_tests
 
-        def test_security_hardening(self) -> Dict[str, Any]:
+        def test_security_hardening(self) -> dict[str, Any]:
             """Test security hardening measures."""
             self.log_info("\n[PROD HARDENING] Testing security hardening...")
 
@@ -431,7 +432,7 @@ async def test_production_hardening():
             self.test_results["security"] = security_tests
             return security_tests
 
-        def generate_report(self) -> Dict[str, Any]:
+        def generate_report(self) -> dict[str, Any]:
             """Generate a comprehensive hardening report."""
             report = {
                 "timestamp": time.time(),
@@ -481,7 +482,7 @@ async def test_production_hardening():
 
         # Display results
         print("\n[PROD HARDENING] ✅ Production hardening validation completed!")
-        print(f"[PROD HARDENING] Summary:")
+        print("[PROD HARDENING] Summary:")
         print(f"  - Total tests: {report['summary']['total_tests']}")
         print(f"  - Passed: {report['summary']['passed_tests']}")
         print(f"  - Failed: {report['summary']['failed_tests']}")
@@ -490,7 +491,7 @@ async def test_production_hardening():
         print(f"  - Errors: {report['summary']['errors']}")
 
         # Category breakdown
-        print(f"\n[PROD HARDENING] Category Results:")
+        print("\n[PROD HARDENING] Category Results:")
         for category, tests in report["results"].items():
             if isinstance(tests, dict):
                 passed = sum(1 for v in tests.values() if v is True)
@@ -500,12 +501,12 @@ async def test_production_hardening():
 
         # Warnings and errors
         if report["warnings"]:
-            print(f"\n[PROD HARDENING] Warnings:")
+            print("\n[PROD HARDENING] Warnings:")
             for warning in report["warnings"][:5]:  # Show first 5
                 print(f"  ⚠ {warning}")
 
         if report["errors"]:
-            print(f"\n[PROD HARDENING] Errors:")
+            print("\n[PROD HARDENING] Errors:")
             for error in report["errors"][:5]:  # Show first 5
                 print(f"  ✗ {error}")
 
@@ -522,9 +523,9 @@ async def test_production_hardening():
         )
 
         if success:
-            print(f"\n[PROD HARDENING] ✅ Production hardening criteria met!")
+            print("\n[PROD HARDENING] ✅ Production hardening criteria met!")
         else:
-            print(f"\n[PROD HARDENING] ⚠ Some production hardening criteria not met")
+            print("\n[PROD HARDENING] ⚠ Some production hardening criteria not met")
 
         return success
 

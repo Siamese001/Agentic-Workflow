@@ -132,8 +132,6 @@ def process_file(pyfile: Path) -> bool:
         return True
     except (ValueError, TypeError, RuntimeError, OSError):
         return False
-from agentic_core.utils.ssot_discovery_validator import get_python_files
-
 from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
@@ -172,6 +170,7 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from agentic_core.utils.ssot_discovery_validator import get_python_files
 
 _emit_emits_metric_event("tooling_add_docstrings_util", "p4obs", "metric_1")
 _emit_emits_metric_event("tooling_add_docstrings_util", "p4obs", "metric_2")

@@ -21,7 +21,7 @@ for src, file, line, symbol in violations:
 
     # Show the actual import line
     try:
-        with open(file, 'r', encoding='utf-8') as f:
+        with open(file, encoding='utf-8') as f:
             lines = f.readlines()
             if line <= len(lines):
                 print(f'  Code: {lines[line-1].strip()}')
@@ -43,7 +43,7 @@ sample_file = violations[0][1]
 print(f'Examining: {sample_file}')
 
 try:
-    with open(sample_file, 'r', encoding='utf-8') as f:
+    with open(sample_file, encoding='utf-8') as f:
         content = f.read()
 
     # Look for runtime-related imports

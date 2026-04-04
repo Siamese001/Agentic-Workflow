@@ -11,15 +11,14 @@ import os
 import sqlite3
 import subprocess
 import sys
-import time
 from pathlib import Path
-from typing import Any, Dict
+from typing import Any
 
 # Add project root to path
 sys.path.insert(0, str(Path(__file__).parent))
 
 
-def test_adg_source_context_fallback() -> Dict[str, Any]:
+def test_adg_source_context_fallback() -> dict[str, Any]:
     """Test adg_source_context which uses SQLite directly (should work even without Redis)."""
     try:
         sys.path.insert(0, str(Path(__file__).parent / "tools" / "adg"))
@@ -41,7 +40,7 @@ def test_adg_source_context_fallback() -> Dict[str, Any]:
         }
 
 
-def test_redis_completely_down() -> Dict[str, Any]:
+def test_redis_completely_down() -> dict[str, Any]:
     """Test behavior when Redis is completely down (not just wrong port)."""
     original_url = os.environ.get('ADG_REDIS_URL', 'redis://localhost:6379/0')
 
@@ -89,7 +88,7 @@ def test_redis_completely_down() -> Dict[str, Any]:
         os.environ['ADG_REDIS_URL'] = original_url
 
 
-def test_mcp_server_without_redis() -> Dict[str, Any]:
+def test_mcp_server_without_redis() -> dict[str, Any]:
     """Test MCP server startup and basic operation without Redis."""
     try:
         # Temporarily disable Redis by setting invalid URL
@@ -155,7 +154,7 @@ def test_mcp_server_without_redis() -> Dict[str, Any]:
         }
 
 
-def test_direct_sqlite_access() -> Dict[str, Any]:
+def test_direct_sqlite_access() -> dict[str, Any]:
     """Test direct SQLite access as ultimate fallback."""
     try:
         adg_dir = Path(__file__).parent / "artifacts" / "adg"
@@ -213,7 +212,7 @@ def test_direct_sqlite_access() -> Dict[str, Any]:
         }
 
 
-def test_ingest_with_redis_down() -> Dict[str, Any]:
+def test_ingest_with_redis_down() -> dict[str, Any]:
     """Test ingest script behavior when Redis is down."""
     try:
         ingest_path = Path(__file__).parent / "tools" / "adg" / "adg_redis_ingest.py"
@@ -257,7 +256,7 @@ def test_ingest_with_redis_down() -> Dict[str, Any]:
         }
 
 
-def test_mcp_error_messages() -> Dict[str, Any]:
+def test_mcp_error_messages() -> dict[str, Any]:
     """Test that MCP error messages are helpful and guide users."""
     try:
         sys.path.insert(0, str(Path(__file__).parent / "tools" / "adg"))
@@ -406,7 +405,7 @@ def run_extreme_fallback_test():
     elif passed >= 3:
         print(f"\n⚠️  ADG Redis MCP has partial extreme fallback ({critical_passed}/{len(critical_fallbacks)} critical).")
     else:
-        print(f"\n❌ ADG Redis MCP extreme fallback needs significant improvement.")
+        print("\n❌ ADG Redis MCP extreme fallback needs significant improvement.")
 
     return {
         "total_tests": total,

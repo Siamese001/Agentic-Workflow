@@ -6,13 +6,14 @@ Ensures consistent interface, governance compliance, and auditability.
 """
 
 from abc import ABC, abstractmethod
+from dataclasses import dataclass
 from datetime import datetime
 from enum import Enum
-from typing import Dict, List, Optional, Any, Tuple
-from dataclasses import dataclass
 from pathlib import Path
+from typing import Any
 
 from agentic_core.L_CONTRACTS.lifecycle_trace_contract import _emit_records_execution_trace
+
 from ..config.model_registry import DecisionMode
 
 
@@ -29,19 +30,19 @@ class PredictionType(Enum):
 class ModelPrediction:
     """Single model prediction with full metadata."""
     prediction: Any  # The actual prediction
-    confidence: Optional[float] = None  # Confidence score (0-1)
-    probability_distribution: Optional[Dict[str, float]] = None  # For classification
-    top_features: Optional[List[Dict[str, Any]]] = None  # Feature importance
+    confidence: float | None = None  # Confidence score (0-1)
+    probability_distribution: dict[str, float] | None = None  # For classification
+    top_features: list[dict[str, Any]] | None = None  # Feature importance
     model_version: str = ""
     feature_digest: str = ""
     training_data_digest: str = ""
-    threshold_used: Optional[float] = None
+    threshold_used: float | None = None
     decision_mode: DecisionMode = DecisionMode.ADVISORY
     prediction_timestamp: datetime = None
     trace_id: str = ""
     replay_key: str = ""
     policy_hash: str = ""
-    model_metadata: Dict[str, Any] = None
+    model_metadata: dict[str, Any] = None
 
     def __post_init__(self):
         if self.prediction_timestamp is None:
@@ -53,12 +54,12 @@ class ModelPrediction:
 @dataclass
 class ModelInput:
     """Model input with validation metadata."""
-    features: Dict[str, Any]
-    feature_provenance: Dict[str, Any]
+    features: dict[str, Any]
+    feature_provenance: dict[str, Any]
     input_hash: str
     validation_status: str  # "valid", "invalid", "partial"
-    validation_errors: List[str]
-    preprocessing_applied: List[str]
+    validation_errors: list[str]
+    preprocessing_applied: list[str]
 
 
 class BaseMLModel(ABC):
@@ -79,7 +80,7 @@ class BaseMLModel(ABC):
         model_version: str,
         model_type: str,
         prediction_type: PredictionType,
-        model_file_path: Optional[Path] = None
+        model_file_path: Path | None = None
     ):
         self.model_name = model_name
         self.model_version = model_version
@@ -125,11 +126,11 @@ class BaseMLModel(ABC):
         pass
 
     @abstractmethod
-    def get_feature_importance(self, model_input: ModelInput) -> List[Dict[str, Any]]:
+    def get_feature_importance(self, model_input: ModelInput) -> list[dict[str, Any]]:
         """Get feature importance for explainability."""
         pass
 
-    def validate_input(self, features: Dict[str, Any]) -> ModelInput:
+    def validate_input(self, features: dict[str, Any]) -> ModelInput:
         """
         Validate model input against feature schema.
 
@@ -165,7 +166,7 @@ class BaseMLModel(ABC):
             preprocessing_applied=[]
         )
 
-    def preprocess_features(self, features: Dict[str, Any]) -> Tuple[Dict[str, Any], List[str]]:
+    def preprocess_features(self, features: dict[str, Any]) -> tuple[dict[str, Any], list[str]]:
         """
         Preprocess features for model input.
 
@@ -274,10 +275,10 @@ class BaseMLModel(ABC):
     def create_prediction(
         self,
         prediction: Any,
-        confidence: Optional[float] = None,
-        probability_distribution: Optional[Dict[str, float]] = None,
-        top_features: Optional[List[Dict[str, Any]]] = None,
-        threshold_used: Optional[float] = None,
+        confidence: float | None = None,
+        probability_distribution: dict[str, float] | None = None,
+        top_features: list[dict[str, Any]] | None = None,
+        threshold_used: float | None = None,
         decision_mode: DecisionMode = DecisionMode.ADVISORY,
         trace_id: str = "",
         replay_key: str = "",
@@ -330,10 +331,10 @@ class BaseMLModel(ABC):
             # Log failure but don't fail the prediction
             print(f"Failed to log prediction: {e}")
 
-    def _compute_input_hash(self, features: Dict[str, Any]) -> str:
+    def _compute_input_hash(self, features: dict[str, Any]) -> str:
         """Compute hash of input features for reproducibility."""
-        import json
         import hashlib
+        import json
 
         # Normalize features for consistent hashing
         normalized_features = {}
@@ -359,7 +360,7 @@ class BaseMLModel(ABC):
         """Set training data digest."""
         self._training_data_digest = digest
 
-    def get_model_info(self) -> Dict[str, Any]:
+    def get_model_info(self) -> dict[str, Any]:
         """Get model information for registry."""
         return {
             'model_name': self.model_name,

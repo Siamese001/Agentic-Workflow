@@ -5,8 +5,8 @@ Validates Phases 2.1-2.4 fixes and annotates remaining violations with guardian 
 Phase 1 SSOT: Now reads from ADG SQLite database instead of stale JSON report.
 """
 
-import json
 import argparse
+import json
 import sqlite3
 from pathlib import Path
 
@@ -208,7 +208,7 @@ class GuardianSweepFixer:
                 """, (disposition, str(file_path), line_no))
             else:
                 # Pre-Phase 1 schema - cannot update
-                print(f"    ⚠️  Cannot update disposition: Phase 1 schema not available")
+                print("    ⚠️  Cannot update disposition: Phase 1 schema not available")
                 return
 
             conn.commit()

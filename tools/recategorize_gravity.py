@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """Recategorize layer gravity violations to HIGH severity."""
 
-import sqlite3
 import glob
+import sqlite3
 
 # Find latest ADG
 files = glob.glob('artifacts/adg/adg_indexed_*.sqlite')

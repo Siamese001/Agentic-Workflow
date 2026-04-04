@@ -7,10 +7,10 @@ null handling policies, and versioning for all ML models.
 
 import hashlib
 import json
+from dataclasses import dataclass, field
 from datetime import datetime
 from enum import Enum
-from typing import Dict, List, Optional, Any, Union
-from dataclasses import dataclass, field
+from typing import Any
 
 
 class FeatureType(Enum):
@@ -41,10 +41,10 @@ class FeatureDefinition:
     description: str
     required: bool = True
     null_handling: NullHandling = NullHandling.FAIL_CLOSED
-    default_value: Optional[Union[str, int, float, bool]] = None
-    validation_rules: Dict[str, Any] = field(default_factory=dict)
+    default_value: str | int | float | bool | None = None
+    validation_rules: dict[str, Any] = field(default_factory=dict)
     provenance: str = ""  # Source of the feature
-    extraction_function: Optional[str] = None  # Function name for extraction
+    extraction_function: str | None = None  # Function name for extraction
     version: str = "1.0"
 
     def __post_init__(self):
@@ -62,7 +62,7 @@ class FeatureSchema:
     schema_name: str
     schema_version: str
     description: str
-    features: List[FeatureDefinition]
+    features: list[FeatureDefinition]
     created_at: datetime = field(default_factory=datetime.now)
     created_by: str = ""
     schema_digest: str = ""
@@ -95,14 +95,14 @@ class FeatureSchema:
         schema_str = json.dumps(schema_dict, sort_keys=True)
         return hashlib.sha256(schema_str.encode()).hexdigest()
 
-    def get_feature(self, name: str) -> Optional[FeatureDefinition]:
+    def get_feature(self, name: str) -> FeatureDefinition | None:
         """Get feature definition by name."""
         for feature in self.features:
             if feature.name == name:
                 return feature
         return None
 
-    def validate_features(self, features: Dict[str, Any]) -> tuple[bool, List[str]]:
+    def validate_features(self, features: dict[str, Any]) -> tuple[bool, list[str]]:
         """
         Validate a feature dictionary against this schema.
 
@@ -202,7 +202,7 @@ class FeatureSchemas:
     """
 
     def __init__(self):
-        self._schemas: Dict[str, FeatureSchema] = {}
+        self._schemas: dict[str, FeatureSchema] = {}
         self._initialize_builtin_schemas()
 
     def _initialize_builtin_schemas(self) -> None:
@@ -443,12 +443,12 @@ class FeatureSchemas:
         schema_key = f"{schema.schema_name}:{schema.schema_version}"
         self._schemas[schema_key] = schema
 
-    def get_schema(self, schema_name: str, version: str = "1.0") -> Optional[FeatureSchema]:
+    def get_schema(self, schema_name: str, version: str = "1.0") -> FeatureSchema | None:
         """Get feature schema by name and version."""
         schema_key = f"{schema_name}:{version}"
         return self._schemas.get(schema_key)
 
-    def get_latest_schema(self, schema_name: str) -> Optional[FeatureSchema]:
+    def get_latest_schema(self, schema_name: str) -> FeatureSchema | None:
         """Get latest version of a schema."""
         matching_schemas = [
             schema for key, schema in self._schemas.items()
@@ -461,16 +461,16 @@ class FeatureSchemas:
         # Return schema with highest version
         return max(matching_schemas, key=lambda s: s.schema_version)
 
-    def list_schemas(self) -> List[str]:
+    def list_schemas(self) -> list[str]:
         """List all available schema names."""
         return list(set(schema.schema_name for schema in self._schemas.values()))
 
     def validate_features(
         self,
         schema_name: str,
-        features: Dict[str, Any],
+        features: dict[str, Any],
         version: str = "1.0"
-    ) -> tuple[bool, List[str], Optional[Dict[str, Any]]]:
+    ) -> tuple[bool, list[str], dict[str, Any] | None]:
         """
         Validate features against a schema.
 
@@ -495,9 +495,9 @@ class FeatureSchemas:
 
     def _process_null_handling(
         self,
-        features: Dict[str, Any],
+        features: dict[str, Any],
         schema: FeatureSchema
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Process null values according to schema rules."""
         processed = {}
 
@@ -520,7 +520,7 @@ class FeatureSchemas:
 
         return processed
 
-    def get_schema_digest(self, schema_name: str, version: str = "1.0") -> Optional[str]:
+    def get_schema_digest(self, schema_name: str, version: str = "1.0") -> str | None:
         """Get schema digest for version tracking."""
         schema = self.get_schema(schema_name, version)
         return schema.schema_digest if schema else None

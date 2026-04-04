@@ -21,13 +21,13 @@ import sqlite3
 from dataclasses import dataclass, field
 from datetime import datetime
 from pathlib import Path
-from typing import Any, Optional
+from typing import Any
 
 from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     LayerSegment,
     _emit_records_execution_trace,
-    _emit_stores_embedding,
     _emit_records_learning_event,
+    _emit_stores_embedding,
 )
 
 Logger = logging.getLogger(__name__)
@@ -59,7 +59,7 @@ class EnrichedChunkManifest:
     adg_edges: list[dict[str, Any]] = field(default_factory=list)
 
     # Embedding
-    fact_vec: Optional[list[float]] = None
+    fact_vec: list[float] | None = None
     fact_vec_hash: str = ""
     embedding_model: str = ""
 
@@ -72,7 +72,7 @@ class EnrichedChunkManifest:
 
     # Versioning
     version: int = 1
-    parent_chunk_id: Optional[str] = None
+    parent_chunk_id: str | None = None
 
 
 class ChunkManifestRegistry:
@@ -216,7 +216,7 @@ class ChunkManifestRegistry:
         finally:
             conn.close()
 
-    def get_manifest(self, chunk_id: str) -> Optional[EnrichedChunkManifest]:
+    def get_manifest(self, chunk_id: str) -> EnrichedChunkManifest | None:
         """Retrieve a chunk manifest by ID.
 
         Args:
@@ -422,7 +422,7 @@ class ChunkManifestRegistry:
 
 
 # Global instance
-_global_manifest_registry: Optional[ChunkManifestRegistry] = None
+_global_manifest_registry: ChunkManifestRegistry | None = None
 
 
 def get_global_manifest_registry() -> ChunkManifestRegistry:
@@ -438,7 +438,7 @@ def store_manifest(manifest: EnrichedChunkManifest) -> bool:
     return get_global_manifest_registry().store_manifest(manifest)
 
 
-def get_manifest(chunk_id: str) -> Optional[EnrichedChunkManifest]:
+def get_manifest(chunk_id: str) -> EnrichedChunkManifest | None:
     """Convenience function to get manifest."""
     return get_global_manifest_registry().get_manifest(chunk_id)
 

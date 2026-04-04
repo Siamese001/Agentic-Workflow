@@ -7,7 +7,7 @@ from __future__ import annotations
 
 import os
 from dataclasses import dataclass
-from typing import Dict, Any
+from typing import Any
 
 
 @dataclass(frozen=True)
@@ -57,7 +57,7 @@ class FeatureFlagConfig:
     enable_graceful_degradation: bool = True
 
     @classmethod
-    def from_env(cls) -> "FeatureFlagConfig":
+    def from_env(cls) -> FeatureFlagConfig:
         """Create configuration from environment variables.
 
         Returns:
@@ -107,7 +107,7 @@ class FeatureFlagConfig:
 
         return config(**config_dict) if config_dict else config
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Convert configuration to dictionary.
 
         Returns:

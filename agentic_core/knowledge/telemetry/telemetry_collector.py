@@ -6,9 +6,9 @@ Structured logging and event collection for the RAG pipeline.
 import json
 import logging
 import time
-from dataclasses import dataclass, field, asdict
+from dataclasses import asdict, dataclass, field
 from enum import Enum
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     LayerSegment,
@@ -39,8 +39,8 @@ class TelemetryEvent:
     event_type: EventType
     query_id: str
     timestamp: float = field(default_factory=time.time)
-    duration_ms: Optional[float] = None
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    duration_ms: float | None = None
+    metadata: dict[str, Any] = field(default_factory=dict)
 
 
 class TelemetryCollector:
@@ -57,7 +57,7 @@ class TelemetryCollector:
             max_events: Maximum events to retain in memory
         """
         self.max_events = max_events
-        self._events: List[TelemetryEvent] = []
+        self._events: list[TelemetryEvent] = []
 
         log.info(f"TelemetryCollector initialized (max_events={max_events})")
 
@@ -65,8 +65,8 @@ class TelemetryCollector:
         self,
         event_type: EventType,
         query_id: str,
-        duration_ms: Optional[float] = None,
-        metadata: Optional[Dict[str, Any]] = None,
+        duration_ms: float | None = None,
+        metadata: dict[str, Any] | None = None,
     ) -> TelemetryEvent:
         """Record a telemetry event.
 
@@ -117,7 +117,7 @@ class TelemetryCollector:
         event_type: EventType,
         query_id: str,
         start_time: float,
-        metadata: Optional[Dict[str, Any]] = None,
+        metadata: dict[str, Any] | None = None,
     ) -> TelemetryEvent:
         """Record end of an operation.
 
@@ -140,10 +140,10 @@ class TelemetryCollector:
 
     def get_events(
         self,
-        event_type: Optional[EventType] = None,
-        query_id: Optional[str] = None,
+        event_type: EventType | None = None,
+        query_id: str | None = None,
         limit: int = 100,
-    ) -> List[TelemetryEvent]:
+    ) -> list[TelemetryEvent]:
         """Get filtered events.
 
         Args:
@@ -191,7 +191,7 @@ class TelemetryCollector:
 
 
 # Global instance
-_global_collector: Optional[TelemetryCollector] = None
+_global_collector: TelemetryCollector | None = None
 
 
 def get_telemetry_collector() -> TelemetryCollector:
@@ -205,8 +205,8 @@ def get_telemetry_collector() -> TelemetryCollector:
 def record_event(
     event_type: EventType,
     query_id: str,
-    duration_ms: Optional[float] = None,
-    metadata: Optional[Dict[str, Any]] = None,
+    duration_ms: float | None = None,
+    metadata: dict[str, Any] | None = None,
 ) -> TelemetryEvent:
     """Convenience function to record event."""
     return get_telemetry_collector().record_event(

@@ -7,10 +7,10 @@ optimization opportunities, and performance trends.
 """
 
 import math
-from typing import Dict, Any
+from typing import Any
 
+from ..config.feature_schemas import FeatureSchema, FeatureSchemas
 from .base_extractor import DeterministicFeatureExtractor
-from ..config.feature_schemas import FeatureSchemas, FeatureSchema
 
 
 class L4FeatureExtractor(DeterministicFeatureExtractor):
@@ -36,7 +36,7 @@ class L4FeatureExtractor(DeterministicFeatureExtractor):
 
     def _create_l4_schema(self) -> FeatureSchema:
         """Create feature schema for L4 performance optimizer."""
-        from ..config.feature_schemas import FeatureSchema, FeatureDefinition, FeatureType
+        from ..config.feature_schemas import FeatureDefinition, FeatureSchema, FeatureType
 
         features = [
             FeatureDefinition(
@@ -131,7 +131,7 @@ class L4FeatureExtractor(DeterministicFeatureExtractor):
         self.register_extraction_function("cost_efficiency_score", self._extract_cost_efficiency_score)
         self.register_extraction_function("resource_waste_ratio", self._extract_resource_waste_ratio)
 
-    def _extract_response_time_trend(self, context: Dict[str, Any]) -> float:
+    def _extract_response_time_trend(self, context: dict[str, Any]) -> float:
         """Extract response time trend (-1.0 to 1.0, negative = improving)."""
         performance = context.get("performance", {})
 
@@ -165,7 +165,7 @@ class L4FeatureExtractor(DeterministicFeatureExtractor):
 
         return round(trend, 3)
 
-    def _extract_throughput_variance(self, context: Dict[str, Any]) -> float:
+    def _extract_throughput_variance(self, context: dict[str, Any]) -> float:
         """Extract throughput variance (0.0 to 1.0)."""
         performance = context.get("performance", {})
 
@@ -194,7 +194,7 @@ class L4FeatureExtractor(DeterministicFeatureExtractor):
 
         return round(normalized_variance, 3)
 
-    def _extract_cpu_utilization_avg(self, context: Dict[str, Any]) -> float:
+    def _extract_cpu_utilization_avg(self, context: dict[str, Any]) -> float:
         """Extract average CPU utilization (0.0 to 100.0)."""
         resources = context.get("resources", {})
 
@@ -211,7 +211,7 @@ class L4FeatureExtractor(DeterministicFeatureExtractor):
         avg_utilization = sum(cpu_data) / len(cpu_data)
         return round(max(0.0, min(100.0, avg_utilization)), 3)
 
-    def _extract_memory_utilization_avg(self, context: Dict[str, Any]) -> float:
+    def _extract_memory_utilization_avg(self, context: dict[str, Any]) -> float:
         """Extract average memory utilization (0.0 to 100.0)."""
         resources = context.get("resources", {})
 
@@ -228,7 +228,7 @@ class L4FeatureExtractor(DeterministicFeatureExtractor):
         avg_utilization = sum(memory_data) / len(memory_data)
         return round(max(0.0, min(100.0, avg_utilization)), 3)
 
-    def _extract_bottleneck_severity(self, context: Dict[str, Any]) -> float:
+    def _extract_bottleneck_severity(self, context: dict[str, Any]) -> float:
         """Extract bottleneck severity (0.0 to 1.0)."""
         performance = context.get("performance", {})
 
@@ -265,7 +265,7 @@ class L4FeatureExtractor(DeterministicFeatureExtractor):
 
         return round(min(1.0, normalized_severity), 3)
 
-    def _extract_optimization_potential(self, context: Dict[str, Any]) -> float:
+    def _extract_optimization_potential(self, context: dict[str, Any]) -> float:
         """Extract optimization potential (0.0 to 1.0)."""
         performance = context.get("performance", {})
 
@@ -330,7 +330,7 @@ class L4FeatureExtractor(DeterministicFeatureExtractor):
 
         return round(min(1.0, potential_score), 3)
 
-    def _extract_sla_compliance_rate(self, context: Dict[str, Any]) -> float:
+    def _extract_sla_compliance_rate(self, context: dict[str, Any]) -> float:
         """Extract SLA compliance rate (0.0 to 1.0)."""
         performance = context.get("performance", {})
 
@@ -345,7 +345,7 @@ class L4FeatureExtractor(DeterministicFeatureExtractor):
         compliance_rate = 1.0 - (sla_violations / max(1, total_requests))
         return round(max(0.0, min(1.0, compliance_rate)), 3)
 
-    def _extract_error_rate_trend(self, context: Dict[str, Any]) -> float:
+    def _extract_error_rate_trend(self, context: dict[str, Any]) -> float:
         """Extract error rate trend (-1.0 to 1.0, negative = improving)."""
         performance = context.get("performance", {})
 
@@ -376,7 +376,7 @@ class L4FeatureExtractor(DeterministicFeatureExtractor):
 
         return round(trend, 3)
 
-    def _extract_cost_efficiency_score(self, context: Dict[str, Any]) -> float:
+    def _extract_cost_efficiency_score(self, context: dict[str, Any]) -> float:
         """Extract cost efficiency score (0.0 to 1.0)."""
         performance = context.get("performance", {})
 
@@ -402,7 +402,7 @@ class L4FeatureExtractor(DeterministicFeatureExtractor):
 
         return round(max(0.0, min(1.0, efficiency_score)), 3)
 
-    def _extract_resource_waste_ratio(self, context: Dict[str, Any]) -> float:
+    def _extract_resource_waste_ratio(self, context: dict[str, Any]) -> float:
         """Extract resource waste ratio (0.0 to 1.0)."""
         resources = context.get("resources", {})
 

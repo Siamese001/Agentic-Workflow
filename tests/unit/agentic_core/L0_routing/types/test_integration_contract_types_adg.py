@@ -2,8 +2,7 @@
 
 """
 from __future__ import annotations
-import json
-import pytest
+
 
 class GeneratedTest:
     """Generated test class for agentic_core.L0_routing.types."""

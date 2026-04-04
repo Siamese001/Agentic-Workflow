@@ -9,7 +9,6 @@ import ast
 import pathlib
 import re
 import sys
-from typing import List, Tuple
 
 # Try to import ProgressTracker from fast_file_analysis
 try:
@@ -130,7 +129,7 @@ def fix_content(content: str) -> str:
 
     return result
 
-def get_broken_files(limit: int) -> List[pathlib.Path]:
+def get_broken_files(limit: int) -> list[pathlib.Path]:
     """Find the next batch of broken files."""
     tests_dir = pathlib.Path('tests')
     broken = []

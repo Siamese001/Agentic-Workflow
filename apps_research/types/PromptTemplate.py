@@ -10,7 +10,6 @@ VIOLATION: NO MAGIC STRINGS. ALL PROMPTS/CONFIGS MUST BE ACCESSED VIA THIS REGIS
 from __future__ import annotations
 
 from pydantic import BaseModel, Field
-from typing import Dict, List
 
 from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_applies_guardrail,
@@ -33,8 +32,8 @@ class ResearchPromptEntry(BaseModel):
     description: str
     system_prompt: str
     user_template: str
-    required_context: List[str] = Field(default_factory=list)
-    optional_context: List[str] = Field(default_factory=list)
+    required_context: list[str] = Field(default_factory=list)
+    optional_context: list[str] = Field(default_factory=list)
     research_depth: str = "standard"  # quick, standard, deep
     max_tokens: int = 3000
     temperature: float = 0.4
@@ -46,7 +45,7 @@ class ResearchNodeEntry(BaseModel):
     node_id: str
     description: str
     stage: str  # discovery, analysis, synthesis, validation
-    capabilities: List[str] = Field(default_factory=list)
+    capabilities: list[str] = Field(default_factory=list)
     timeout_seconds: int = 600
     retry_policy: str = "exponential_backoff"
     version: str = "1.0"
@@ -65,7 +64,7 @@ class ResearchGlobalRule(BaseModel):
 # FROZEN SNAPSHOT (Immutable Knowledge)
 # -----------------------------------------------------------------------------
 
-_RESEARCH_PROMPTS: Dict[str, ResearchPromptEntry] = {
+_RESEARCH_PROMPTS: dict[str, ResearchPromptEntry] = {
     "research_query_expansion": ResearchPromptEntry(
         prompt_id="research_query_expansion",
         description="Expand research queries with related topics and keywords",
@@ -181,7 +180,7 @@ Format as structured list with source references.""",
     ),
 }
 
-_RESEARCH_NODES: Dict[str, ResearchNodeEntry] = {
+_RESEARCH_NODES: dict[str, ResearchNodeEntry] = {
     "discovery": ResearchNodeEntry(
         node_id="discovery",
         description="Source discovery and initial collection",
@@ -220,7 +219,7 @@ _RESEARCH_NODES: Dict[str, ResearchNodeEntry] = {
     ),
 }
 
-_RESEARCH_RULES: Dict[str, ResearchGlobalRule] = {
+_RESEARCH_RULES: dict[str, ResearchGlobalRule] = {
     "source_minimum": ResearchGlobalRule(
         rule_id="source_minimum",
         description="Research must include minimum number of credible sources",
@@ -248,9 +247,9 @@ _RESEARCH_RULES: Dict[str, ResearchGlobalRule] = {
 class ResearchSovereignKnowledge(BaseModel):
     """Immutable frozen snapshot of research domain knowledge."""
     version: str = "1.0"
-    prompts: Dict[str, ResearchPromptEntry]
-    nodes: Dict[str, ResearchNodeEntry]
-    rules: Dict[str, ResearchGlobalRule]
+    prompts: dict[str, ResearchPromptEntry]
+    nodes: dict[str, ResearchNodeEntry]
+    rules: dict[str, ResearchGlobalRule]
 
 
 # -----------------------------------------------------------------------------
@@ -312,12 +311,12 @@ def get_global_rule(rule_id: str) -> ResearchGlobalRule:
     return FROZEN_SNAPSHOT.rules[rule_id]
 
 
-def list_all_prompts() -> List[str]:
+def list_all_prompts() -> list[str]:
     """Return list of all available prompt IDs."""
     return list(FROZEN_SNAPSHOT.prompts.keys())
 
 
-def list_all_nodes() -> List[str]:
+def list_all_nodes() -> list[str]:
     """Return list of all available node IDs."""
     return list(FROZEN_SNAPSHOT.nodes.keys())
 

@@ -7,10 +7,10 @@ path success history, system load, semantic similarity, and policy metadata.
 """
 
 import hashlib
-from typing import Dict, Any
+from typing import Any
 
-from .base_extractor import DeterministicFeatureExtractor
 from ..config.feature_schemas import FeatureSchemas
+from .base_extractor import DeterministicFeatureExtractor
 
 
 class L0FeatureExtractor(DeterministicFeatureExtractor):
@@ -43,7 +43,7 @@ class L0FeatureExtractor(DeterministicFeatureExtractor):
         self.register_extraction_function("policy_hash_version", self._extract_policy_hash_version)
         self.register_extraction_function("trace_id_hash", self._extract_trace_id_hash)
 
-    def _extract_token_count(self, context: Dict[str, Any]) -> int:
+    def _extract_token_count(self, context: dict[str, Any]) -> int:
         """Extract token count from request."""
         request = context.get("request", {})
 
@@ -62,7 +62,7 @@ class L0FeatureExtractor(DeterministicFeatureExtractor):
             context_str = str(context)
             return max(1, len(context_str) // 4)
 
-    def _extract_tool_complexity_score(self, context: Dict[str, Any]) -> float:
+    def _extract_tool_complexity_score(self, context: dict[str, Any]) -> float:
         """Extract tool complexity score (0.0-1.0)."""
         request = context.get("request", {})
         tools = request.get("tools", [])
@@ -98,7 +98,7 @@ class L0FeatureExtractor(DeterministicFeatureExtractor):
 
         return round(normalized_complexity, 3)
 
-    def _extract_latency_budget_ms(self, context: Dict[str, Any]) -> int:
+    def _extract_latency_budget_ms(self, context: dict[str, Any]) -> int:
         """Extract latency budget in milliseconds."""
         request = context.get("request", {})
         constraints = request.get("constraints", {})
@@ -133,7 +133,7 @@ class L0FeatureExtractor(DeterministicFeatureExtractor):
 
         return default_budgets.get(request_type, 5000)
 
-    def _extract_user_confidence_score(self, context: Dict[str, Any]) -> float:
+    def _extract_user_confidence_score(self, context: dict[str, Any]) -> float:
         """Extract user confidence score (0.0-1.0)."""
         request = context.get("request", {})
         user = context.get("user", {})
@@ -174,7 +174,7 @@ class L0FeatureExtractor(DeterministicFeatureExtractor):
 
         return round(min(1.0, max(0.0, score)), 3)
 
-    def _extract_path_success_history(self, context: Dict[str, Any]) -> float:
+    def _extract_path_success_history(self, context: dict[str, Any]) -> float:
         """Extract historical path success rate (0.0-1.0)."""
         history = context.get("history", {})
         path_stats = history.get("path_statistics", {})
@@ -202,7 +202,7 @@ class L0FeatureExtractor(DeterministicFeatureExtractor):
 
         return round(weighted_sum / total_weight if total_weight > 0 else 0.5, 3)
 
-    def _extract_current_load_ratio(self, context: Dict[str, Any]) -> float:
+    def _extract_current_load_ratio(self, context: dict[str, Any]) -> float:
         """Extract current system load ratio (0.0-1.0)."""
         system = context.get("system", {})
         load_metrics = system.get("load_metrics", {})
@@ -224,7 +224,7 @@ class L0FeatureExtractor(DeterministicFeatureExtractor):
 
         return round(min(1.0, max(0.0, combined_load)), 3)
 
-    def _extract_semantic_similarity_score(self, context: Dict[str, Any]) -> float:
+    def _extract_semantic_similarity_score(self, context: dict[str, Any]) -> float:
         """Extract semantic similarity to historical requests (0.0-1.0)."""
         request = context.get("request", {})
         semantic_analysis = context.get("semantic_analysis", {})
@@ -257,7 +257,7 @@ class L0FeatureExtractor(DeterministicFeatureExtractor):
 
         return round(max_similarity, 3)
 
-    def _extract_policy_hash_version(self, context: Dict[str, Any]) -> str:
+    def _extract_policy_hash_version(self, context: dict[str, Any]) -> str:
         """Extract policy hash version."""
         policy = context.get("policy", {})
 
@@ -281,7 +281,7 @@ class L0FeatureExtractor(DeterministicFeatureExtractor):
         # Default version
         return "v1.0"
 
-    def _extract_trace_id_hash(self, context: Dict[str, Any]) -> str:
+    def _extract_trace_id_hash(self, context: dict[str, Any]) -> str:
         """Extract hash of trace ID for determinism."""
         trace_id = context.get("trace_id", "")
         if not trace_id:

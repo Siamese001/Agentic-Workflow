@@ -3,23 +3,23 @@
 from __future__ import annotations
 
 from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-    _emit_reads_policy_state,
-    _emit_escalates_to_human,
-    _emit_routes_through,
-    _emit_checks_agent_registry,
-    _emit_validates_agent_capability,
-    _emit_dispatches_execution_plan,
     _emit_agent_executes_agent,
-    _emit_routes_to_agent,
-    _emit_verifies_policy,
-    _emit_observes_runtime_state,
-    _emit_verifies_boundary,
-    _emit_transcripts_response,
-    _emit_hard_fails_untranscripted,
-    _emit_gated_by_confidence,
+    _emit_checks_agent_registry,
+    _emit_dispatches_execution_plan,
     _emit_dispatches_healing_run,
-    emit_replay_key,
+    _emit_escalates_to_human,
+    _emit_gated_by_confidence,
+    _emit_hard_fails_untranscripted,
+    _emit_observes_runtime_state,
+    _emit_reads_policy_state,
+    _emit_routes_through,
+    _emit_routes_to_agent,
+    _emit_transcripts_response,
+    _emit_validates_agent_capability,
+    _emit_verifies_boundary,
+    _emit_verifies_policy,
     emit_determinism_digest,
+    emit_replay_key,
 )
 
 # P0: Evidence emission

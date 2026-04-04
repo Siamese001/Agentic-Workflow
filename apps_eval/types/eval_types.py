@@ -11,7 +11,6 @@ from typing import Literal
 
 from pydantic import BaseModel, Field, validator
 
-
 EvalStatus = Literal["pending", "running", "scoring", "complete", "failed", "regression", "dry_run"]
 
 ScenarioOutcome = Literal["PASS", "FAIL", "TIMEOUT", "ERROR", "SKIP"]

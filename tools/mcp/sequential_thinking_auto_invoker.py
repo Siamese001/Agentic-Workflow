@@ -7,12 +7,9 @@ complex conversations to ensure structured reasoning is always used.
 """
 
 import os
-import sys
-import json
 import re
-from pathlib import Path
-from typing import Optional, Dict, Any, List
 from dataclasses import dataclass
+from typing import Any
 
 
 @dataclass
@@ -23,9 +20,9 @@ class SequentialThinkingContext:
     next_thought_needed: bool = True
     thought: str = ""
     is_revision: bool = False
-    revises_thought: Optional[int] = None
-    branch_from_thought: Optional[int] = None
-    branch_id: Optional[str] = None
+    revises_thought: int | None = None
+    branch_from_thought: int | None = None
+    branch_id: str | None = None
     needs_more_thoughts: bool = True
 
 
@@ -166,7 +163,7 @@ Proceeding with thought {self.invocation_count} of structured analysis."""
         else:
             return "LOW"
 
-    def create_sequential_thinking_payload(self, prompt: str) -> Dict[str, Any]:
+    def create_sequential_thinking_payload(self, prompt: str) -> dict[str, Any]:
         """Create the payload for sequential thinking tool invocation."""
         thought = self.generate_initial_thought(prompt)
 
@@ -222,7 +219,7 @@ class CascadeChatInterceptor:
         self.invoker = SequentialThinkingAutoInvoker()
         self.intercepted_count = 0
 
-    def intercept_prompt(self, prompt: str, user_context: Optional[Dict] = None) -> Dict[str, Any]:
+    def intercept_prompt(self, prompt: str, user_context: dict | None = None) -> dict[str, Any]:
         """
         Intercept a prompt and prepare sequential thinking invocation.
 
@@ -291,7 +288,7 @@ def force_sequential_thinking(prompt: str) -> str:
         return prompt
 
 
-def get_sequential_thinking_payload(prompt: str) -> Optional[Dict[str, Any]]:
+def get_sequential_thinking_payload(prompt: str) -> dict[str, Any] | None:
     """Get the payload for sequential thinking invocation if it should be triggered."""
     interceptor = CascadeChatInterceptor()
     result = interceptor.intercept_prompt(prompt)
@@ -317,7 +314,7 @@ def setup_auto_invocation():
     print("=" * 60)
     print("SEQUENTIAL THINKING AUTO-INVOCATION ENABLED")
     print("=" * 60)
-    print(f"All complex prompts will trigger sequential thinking MCP")
+    print("All complex prompts will trigger sequential thinking MCP")
     print(f"Max thoughts: {env_vars['SEQUENTIAL_THINKING_MAX_THOUGHTS']}")
     print(f"Token budget: {env_vars['SEQUENTIAL_THINKING_TOKEN_BUDGET']}")
     print(f"Aggressive mode: {env_vars['SEQUENTIAL_THINKING_AGGRESSIVE_MODE']}")

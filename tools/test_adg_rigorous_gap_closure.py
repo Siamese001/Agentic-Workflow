@@ -11,12 +11,12 @@ TESTING STANDARDS:
 - End-to-end system validation
 """
 
-import sqlite3
-import json
 import hashlib
-from pathlib import Path
+import json
+import sqlite3
 from datetime import datetime
-from typing import Dict, Any, List, Tuple, Set
+from pathlib import Path
+from typing import Any
 
 ROOT = Path(__file__).resolve().parents[1]
 SQLITE_PATH = ROOT / "artifacts" / "adg" / "adg_indexed_03232026_0617.sqlite"
@@ -50,7 +50,7 @@ class ADGRigorousTestSuite:
         if self.conn:
             self.conn.close()
 
-    def execute_query(self, query: str, params=None) -> List[sqlite3.Row]:
+    def execute_query(self, query: str, params=None) -> list[sqlite3.Row]:
         """Execute SQL query and return results."""
         cursor = self.conn.cursor()
         if params:
@@ -63,7 +63,7 @@ class ADGRigorousTestSuite:
     # DATA INTEGRITY TESTS
     # ======================================================================
 
-    def test_data_integrity_completeness(self) -> Dict[str, Any]:
+    def test_data_integrity_completeness(self) -> dict[str, Any]:
         """TEST: Verify no NULL or empty critical fields."""
         print("=" * 80)
         print("DATA INTEGRITY TEST 1 - Completeness Validation")
@@ -141,7 +141,7 @@ class ADGRigorousTestSuite:
 
         return result
 
-    def test_layer_architecture_validity(self) -> Dict[str, Any]:
+    def test_layer_architecture_validity(self) -> dict[str, Any]:
         """TEST: Verify layer architecture follows rules."""
         print("\n" + "=" * 80)
         print("DATA INTEGRITY TEST 2 - Layer Architecture Validity")
@@ -204,7 +204,7 @@ class ADGRigorousTestSuite:
     # REPLAY DETERMINISM TESTS
     # ======================================================================
 
-    def test_deterministic_hashes(self) -> Dict[str, Any]:
+    def test_deterministic_hashes(self) -> dict[str, Any]:
         """TEST: Verify deterministic hash generation."""
         print("\n" + "=" * 80)
         print("REPLAY DETERMINISM TEST 1 - Hash Determinism")
@@ -274,7 +274,7 @@ class ADGRigorousTestSuite:
 
         return result
 
-    def test_mutation_lineage_completeness(self) -> Dict[str, Any]:
+    def test_mutation_lineage_completeness(self) -> dict[str, Any]:
         """TEST: Verify mutation lineage completeness."""
         print("\n" + "=" * 80)
         print("REPLAY DETERMINISM TEST 2 - Mutation Lineage Completeness")
@@ -303,7 +303,7 @@ class ADGRigorousTestSuite:
         for edge_type in required_mutation_edges:
             if mutation_edge_counts[edge_type] > 0:
                 # Check for NULL values in critical fields
-                null_checks = self.execute_query(f"""
+                null_checks = self.execute_query("""
                     SELECT
                         COUNT(*) as total,
                         SUM(CASE WHEN src_id IS NULL THEN 1 ELSE 0 END) as null_src,
@@ -373,7 +373,7 @@ class ADGRigorousTestSuite:
     # EDGE COVERAGE TESTS
     # ======================================================================
 
-    def test_critical_edge_presence(self) -> Dict[str, Any]:
+    def test_critical_edge_presence(self) -> dict[str, Any]:
         """TEST: Verify critical edge presence for core modules."""
         print("\n" + "=" * 80)
         print("EDGE COVERAGE TEST 1 - Critical Edge Presence")
@@ -463,7 +463,7 @@ class ADGRigorousTestSuite:
     # BOUNDARY REGRESSION TESTS
     # ======================================================================
 
-    def test_boundary_integrity(self) -> Dict[str, Any]:
+    def test_boundary_integrity(self) -> dict[str, Any]:
         """TEST: Verify boundary integrity and no regressions."""
         print("\n" + "=" * 80)
         print("BOUNDARY REGRESSION TEST 1 - Boundary Integrity")
@@ -548,7 +548,7 @@ class ADGRigorousTestSuite:
     # TEST BINDING TESTS
     # ======================================================================
 
-    def test_execution_trace_binding(self) -> Dict[str, Any]:
+    def test_execution_trace_binding(self) -> dict[str, Any]:
         """TEST: Verify execution trace binding completeness."""
         print("\n" + "=" * 80)
         print("TEST BINDING TEST 1 - Execution Trace Binding")
@@ -622,7 +622,7 @@ class ADGRigorousTestSuite:
     # END-TO-END TESTS
     # ======================================================================
 
-    def test_system_consistency(self) -> Dict[str, Any]:
+    def test_system_consistency(self) -> dict[str, Any]:
         """TEST: Verify overall system consistency."""
         print("\n" + "=" * 80)
         print("END-TO-END TEST 1 - System Consistency")
@@ -689,7 +689,7 @@ class ADGRigorousTestSuite:
 
         return result
 
-    def run_all_tests(self) -> Dict[str, Any]:
+    def run_all_tests(self) -> dict[str, Any]:
         """Run complete rigorous test suite."""
         print("=" * 80)
         print("RIGOROUS WINSURFRULES TESTING - ADG Gap Closure Implementation")
@@ -760,7 +760,7 @@ def main():
     # Find most recent SQLite database
     sqlite_files = list((ROOT / "artifacts" / "adg").glob("*.sqlite"))
     if not sqlite_files:
-        print(f"❌ No SQLite database found in artifacts/adg/")
+        print("❌ No SQLite database found in artifacts/adg/")
         return
 
     sqlite_files.sort(key=lambda x: x.stat().st_mtime, reverse=True)

@@ -21,8 +21,8 @@ from typing import Any
 
 from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_applies_guardrail,
-    _emit_snapshots_state,
     _emit_signs_execution_trace,
+    _emit_snapshots_state,
     emit_determinism_digest,
     emit_replay_key,
 )

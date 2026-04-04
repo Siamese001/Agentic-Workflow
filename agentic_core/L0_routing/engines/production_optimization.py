@@ -7,23 +7,24 @@ for production deployment of ML routing models.
 
 from __future__ import annotations
 
-import numpy as np
-import logging
-from typing import Dict, List, Tuple, Optional, Any, Union, Callable
-from dataclasses import dataclass
-from abc import ABC, abstractmethod
-import json
-import time
-import pickle
-from collections import OrderedDict, defaultdict
-import threading
-from concurrent.futures import ThreadPoolExecutor
 import hashlib
+import json
+import logging
+import pickle
+import threading
+import time
+from abc import ABC, abstractmethod
+from collections import OrderedDict, defaultdict
+from concurrent.futures import ThreadPoolExecutor
+from dataclasses import dataclass
+from typing import Any, Callable
+
+import numpy as np
 
 from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+    _emit_emits_metric_event,
     _emit_records_learning_event,
     _emit_stores_learning_state,
-    _emit_emits_metric_event,
 )
 
 logger = logging.getLogger(__name__)
@@ -74,7 +75,7 @@ class ModelCompressor(ABC):
     """Abstract base class for model compression"""
 
     @abstractmethod
-    def compress(self, model: Any) -> Tuple[Any, OptimizationMetrics]:
+    def compress(self, model: Any) -> tuple[Any, OptimizationMetrics]:
         """Compress model and return metrics"""
         pass
 
@@ -89,9 +90,9 @@ class QuantizationCompressor(ModelCompressor):
     def __init__(self, bits: int = 8, calibration_samples: int = 100):
         self.bits = bits
         self.calibration_samples = calibration_samples
-        self.quantization_params: Dict[str, Any] = {}
+        self.quantization_params: dict[str, Any] = {}
 
-    def compress(self, model: Any) -> Tuple[Any, OptimizationMetrics]:
+    def compress(self, model: Any) -> tuple[Any, OptimizationMetrics]:
         """Compress model using quantization"""
         start_time = time.time()
 
@@ -205,7 +206,7 @@ class PruningCompressor(ModelCompressor):
     def __init__(self, pruning_ratio: float = 0.3):
         self.pruning_ratio = pruning_ratio
 
-    def compress(self, model: Any) -> Tuple[Any, OptimizationMetrics]:
+    def compress(self, model: Any) -> tuple[Any, OptimizationMetrics]:
         """Compress model using pruning"""
         start_time = time.time()
 
@@ -322,7 +323,7 @@ class LRUCache:
         self.cache_misses = 0
         self.evictions = 0
 
-    def get(self, key: str) -> Optional[Any]:
+    def get(self, key: str) -> Any | None:
         """Get value from cache"""
         with self.lock:
             self.total_requests += 1
@@ -347,7 +348,7 @@ class LRUCache:
 
             return entry.value
 
-    def put(self, key: str, value: Any, ttl: Optional[float] = None) -> bool:
+    def put(self, key: str, value: Any, ttl: float | None = None) -> bool:
         """Put value in cache"""
         with self.lock:
             if ttl is None:
@@ -412,15 +413,15 @@ class LRUCache:
 class DistributedCache:
     """Distributed cache with multiple nodes"""
 
-    def __init__(self, nodes: List[str], replication_factor: int = 2):
+    def __init__(self, nodes: list[str], replication_factor: int = 2):
         self.nodes = nodes
         self.replication_factor = replication_factor
-        self.local_caches: Dict[str, LRUCache] = {
+        self.local_caches: dict[str, LRUCache] = {
             node: LRUCache(max_size=500) for node in nodes
         }
         self.node_selector = self._create_node_selector()
 
-    def get(self, key: str) -> Optional[Any]:
+    def get(self, key: str) -> Any | None:
         """Get value from distributed cache"""
         # Select nodes to query
         target_nodes = self._get_nodes_for_key(key)
@@ -432,7 +433,7 @@ class DistributedCache:
 
         return None
 
-    def put(self, key: str, value: Any, ttl: Optional[float] = None) -> bool:
+    def put(self, key: str, value: Any, ttl: float | None = None) -> bool:
         """Put value in distributed cache"""
         # Select nodes for replication
         target_nodes = self._get_nodes_for_key(key)
@@ -444,7 +445,7 @@ class DistributedCache:
 
         return success
 
-    def _get_nodes_for_key(self, key: str) -> List[str]:
+    def _get_nodes_for_key(self, key: str) -> list[str]:
         """Get nodes responsible for key"""
         # Simple hash-based selection
         hash_value = int(hashlib.md5(key.encode()).hexdigest(), 16)
@@ -457,11 +458,11 @@ class DistributedCache:
 
         return nodes
 
-    def _create_node_selector(self) -> Callable[[str], List[str]]:
+    def _create_node_selector(self) -> Callable[[str], list[str]]:
         """Create node selector function"""
         return self._get_nodes_for_key
 
-    def get_cluster_stats(self) -> Dict[str, CacheStats]:
+    def get_cluster_stats(self) -> dict[str, CacheStats]:
         """Get statistics for all nodes"""
         return {node: cache.get_stats() for node, cache in self.local_caches.items()}
 
@@ -474,8 +475,8 @@ class PerformanceOptimizer:
 
     def __init__(
         self,
-        compressors: Optional[List[ModelCompressor]] = None,
-        cache: Optional[Union[LRUCache, DistributedCache]] = None,
+        compressors: list[ModelCompressor] | None = None,
+        cache: LRUCache | DistributedCache | None = None,
         optimization_target: str = "latency"  # latency, memory, balanced
     ):
         """
@@ -491,8 +492,8 @@ class PerformanceOptimizer:
         self.optimization_target = optimization_target
 
         # Performance tracking
-        self.optimization_history: List[Dict[str, Any]] = []
-        self.compressed_models: Dict[str, Tuple[Any, OptimizationMetrics]] = {}
+        self.optimization_history: list[dict[str, Any]] = []
+        self.compressed_models: dict[str, tuple[Any, OptimizationMetrics]] = {}
 
         # Thread pool for concurrent operations
         self.executor = ThreadPoolExecutor(max_workers=4)
@@ -503,7 +504,7 @@ class PerformanceOptimizer:
             "optimization_target": optimization_target
         })
 
-    def optimize_model(self, model_id: str, model: Any) -> Dict[str, OptimizationMetrics]:
+    def optimize_model(self, model_id: str, model: Any) -> dict[str, OptimizationMetrics]:
         """Optimize model using all available compressors"""
         optimization_results = {}
 
@@ -535,7 +536,7 @@ class PerformanceOptimizer:
 
         return optimization_results
 
-    def get_optimized_model(self, model_id: str, compressor_name: Optional[str] = None) -> Optional[Any]:
+    def get_optimized_model(self, model_id: str, compressor_name: str | None = None) -> Any | None:
         """Get optimized model"""
         if compressor_name:
             key = f"{model_id}_{compressor_name}"
@@ -585,7 +586,7 @@ class PerformanceOptimizer:
             "ttl": ttl
         })
 
-    def get_cached_prediction(self, cache_key: str) -> Optional[Any]:
+    def get_cached_prediction(self, cache_key: str) -> Any | None:
         """Get cached prediction"""
         prediction = self.cache.get(cache_key)
 
@@ -600,7 +601,7 @@ class PerformanceOptimizer:
 
         return prediction
 
-    def get_optimization_report(self) -> Dict[str, Any]:
+    def get_optimization_report(self) -> dict[str, Any]:
         """Get comprehensive optimization report"""
         report = {
             "optimization_target": self.optimization_target,
@@ -676,7 +677,7 @@ def create_default_optimizer() -> PerformanceOptimizer:
         optimization_target="balanced"
     )
 
-def create_distributed_optimizer(nodes: List[str]) -> PerformanceOptimizer:
+def create_distributed_optimizer(nodes: list[str]) -> PerformanceOptimizer:
     """Create optimizer with distributed cache"""
 
     compressors = [

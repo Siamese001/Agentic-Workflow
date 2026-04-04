@@ -5,7 +5,7 @@ Dense and sparse retrieval with merge/dedup candidate list.
 
 import logging
 from dataclasses import dataclass, field
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any
 
 from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     LayerSegment,
@@ -23,7 +23,7 @@ class RecallResult:
     score: float
     source: str  # "dense", "sparse"
     content: str = ""
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    metadata: dict[str, Any] = field(default_factory=dict)
 
 
 class HybridRecallStage:
@@ -58,10 +58,10 @@ class HybridRecallStage:
 
     def recall(
         self,
-        query_vector: List[float],
-        query_terms: List[str],
-        scope_filter: Optional[Dict[str, Any]] = None,
-    ) -> List[RecallResult]:
+        query_vector: list[float],
+        query_terms: list[str],
+        scope_filter: dict[str, Any] | None = None,
+    ) -> list[RecallResult]:
         """Perform hybrid recall.
 
         Args:
@@ -96,9 +96,9 @@ class HybridRecallStage:
 
     def _dense_recall(
         self,
-        query_vector: List[float],
-        scope_filter: Optional[Dict[str, Any]],
-    ) -> List[RecallResult]:
+        query_vector: list[float],
+        scope_filter: dict[str, Any] | None,
+    ) -> list[RecallResult]:
         """Perform dense vector retrieval."""
         # Mock implementation - replace with actual vector store query
         results = []
@@ -116,9 +116,9 @@ class HybridRecallStage:
 
     def _sparse_recall(
         self,
-        query_terms: List[str],
-        scope_filter: Optional[Dict[str, Any]],
-    ) -> List[RecallResult]:
+        query_terms: list[str],
+        scope_filter: dict[str, Any] | None,
+    ) -> list[RecallResult]:
         """Perform sparse term retrieval."""
         # Mock implementation - replace with actual BM25/TF-IDF search
         results = []
@@ -136,13 +136,13 @@ class HybridRecallStage:
 
     def _merge_results(
         self,
-        dense: List[RecallResult],
-        sparse: List[RecallResult],
-    ) -> List[RecallResult]:
+        dense: list[RecallResult],
+        sparse: list[RecallResult],
+    ) -> list[RecallResult]:
         """Merge and deduplicate results from both sources."""
         # Create score lookup
-        doc_scores: Dict[str, Tuple[float, float]] = {}  # doc_id -> (dense_score, sparse_score)
-        doc_content: Dict[str, str] = {}
+        doc_scores: dict[str, tuple[float, float]] = {}  # doc_id -> (dense_score, sparse_score)
+        doc_content: dict[str, str] = {}
 
         # Add dense scores
         for r in dense:
@@ -192,7 +192,7 @@ class HybridRecallStage:
 
 
 # Global instance
-_global_recall: Optional[HybridRecallStage] = None
+_global_recall: HybridRecallStage | None = None
 
 
 def get_hybrid_recall_stage() -> HybridRecallStage:

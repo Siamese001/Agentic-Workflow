@@ -10,13 +10,10 @@ from agentic_core.L0_routing.config.path_constants import (
     THRESHOLD,
 )
 
+# Import judge modules for export
+from . import gemini_judge, llm_judge, novel_judge
 from .engine import HealingConfidenceScorer
 from .types import ConfidenceDecision, HealingAttempt, HealingConfidenceReport
-
-# Import judge modules for export
-from . import gemini_judge
-from . import novel_judge
-from . import llm_judge
 
 __all__ = [
     'HealingConfidenceScorer',

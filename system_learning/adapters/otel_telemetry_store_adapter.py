@@ -12,7 +12,6 @@ import time
 from typing import Any
 
 from system_learning.adapters.system_learning_memory_bridge import get_sl_memory_bridge
-from system_learning.types.telemetry_store_protocol import TelemetryStoreProtocol
 
 logger = logging.getLogger(__name__)
 

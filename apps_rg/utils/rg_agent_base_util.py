@@ -25,19 +25,19 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any, Final
 
+from agentic_core.L0_routing.config import APPS_RG_DIR
+from agentic_core.L0_routing.config.path_constants import APPS_RG_DIR
+from agentic_core.L1_cognition.engines.meta_client import (
+    MetaLearningClient as MetaLearningClient,
+)
+from agentic_core.L1_cognition.engines.meta_client import (
+    get_meta_learning_client as get_meta_learning_client,
+)
+from agentic_core.L1_cognition.types.client_types import HealingPattern
 from agentic_core.L1_cognition.utils.guardrails_util import (
     MetaLearningGuardrails,
     get_guardrails,
 )
-from agentic_core.L1_cognition.types.client_types import HealingPattern
-from agentic_core.L1_cognition.engines.meta_client import (
-    MetaLearningClient as MetaLearningClient,
-    get_meta_learning_client as get_meta_learning_client,
-)
-from apps_shared.utils.app_base_util import AppBase
-
-from agentic_core.L0_routing.config import APPS_RG_DIR
-from agentic_core.L0_routing.config.path_constants import APPS_RG_DIR
 from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
@@ -80,6 +80,7 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     emit_determinism_digest,  # noqa: E402
     emit_replay_key,  # noqa: E402
 )
+from apps_shared.utils.app_base_util import AppBase
 
 Logger = logging.getLogger(__name__)
 

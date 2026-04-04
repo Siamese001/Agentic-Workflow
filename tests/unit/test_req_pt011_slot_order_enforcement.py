@@ -20,7 +20,8 @@ class TestReqPt011SlotOrderEnforcement:
     def test_validate_slot_order_detects_missing_slot(self):
         """REQ-PT-011: Missing slot must raise SlotOrderViolation."""
         from agentic_core.prompt_governance.contracts.slot_contracts import (
-            validate_slot_order, SlotOrderViolation
+            SlotOrderViolation,
+            validate_slot_order,
         )
         # Prompt missing M0 through R0
         prompt = "<SLOT_S0>system</SLOT_S0><SLOT_D0>directives</SLOT_D0><SLOT_I0>inst</SLOT_I0>"
@@ -31,7 +32,8 @@ class TestReqPt011SlotOrderEnforcement:
     def test_validate_slot_order_detects_misordered_slots(self):
         """REQ-PT-011: Misordered slots must raise SlotOrderViolation."""
         from agentic_core.prompt_governance.contracts.slot_contracts import (
-            validate_slot_order, SlotOrderViolation
+            SlotOrderViolation,
+            validate_slot_order,
         )
         # U0 (user) appearing before S0 (system) with all slots present - security violation
         prompt = "<SLOT_U0>user</SLOT_U0><SLOT_S0>system</SLOT_S0><SLOT_D0>d</SLOT_D0><SLOT_M0>m</SLOT_M0><SLOT_I0>i</SLOT_I0><SLOT_E0>e</SLOT_E0><SLOT_C0>c</SLOT_C0><SLOT_Y0>y</SLOT_Y0><SLOT_H0>h</SLOT_H0><SLOT_R0>r</SLOT_R0>"
@@ -60,7 +62,6 @@ class TestReqPt011SlotOrderEnforcement:
     def test_prompt_assembler_enforces_slot_order(self):
         """REQ-PT-011: PromptAssembler.validate_slot_order called during assembly."""
         from agentic_core.prompt_governance.core.prompt_assembler import PromptAssembler
-        from agentic_core.L4_state.memory.runtime_models import InjectionMatch
 
         pa = PromptAssembler()
         # This calls validate_slot_order internally via _slot_map validation
@@ -83,7 +84,8 @@ class TestReqPt011SlotOrderEnforcement:
     def test_slot_order_violation_message_includes_positions(self):
         """REQ-PT-011: Error message includes position details for debugging."""
         from agentic_core.prompt_governance.contracts.slot_contracts import (
-            validate_slot_order, SlotOrderViolation
+            SlotOrderViolation,
+            validate_slot_order,
         )
         # Include all slots but E0 before S0 (misordered)
         prompt = "<SLOT_E0>early</SLOT_E0><SLOT_S0>late</SLOT_S0><SLOT_D0>d</SLOT_D0><SLOT_M0>m</SLOT_M0><SLOT_I0>i</SLOT_I0><SLOT_C0>c</SLOT_C0><SLOT_Y0>y</SLOT_Y0><SLOT_U0>u</SLOT_U0><SLOT_H0>h</SLOT_H0><SLOT_R0>r</SLOT_R0>"

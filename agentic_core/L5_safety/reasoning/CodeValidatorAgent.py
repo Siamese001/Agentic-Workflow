@@ -16,8 +16,10 @@ from typing import Any
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 from agentic_core.L5_safety.utils.code_validator_util import (
     CodeValidator as _CodeValidator,
-    Violation,
+)
+from agentic_core.L5_safety.utils.code_validator_util import (
     RuleSet,
+    Violation,
 )
 
 

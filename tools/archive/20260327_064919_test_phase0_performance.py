@@ -6,6 +6,7 @@ import sys
 import time
 from pathlib import Path
 
+
 def run_pytest_with_fixture(test_file, timeout=60):
     """Run pytest with the cached_adg_scan fixture."""
     cmd = [

@@ -7,10 +7,10 @@ conflict indicators, escalation priority, and workflow lineage.
 """
 
 from datetime import datetime
-from typing import Dict, Any, List
+from typing import Any
 
+from ..config.feature_schemas import FeatureSchema, FeatureSchemas
 from .base_extractor import DeterministicFeatureExtractor
-from ..config.feature_schemas import FeatureSchemas, FeatureSchema
 
 
 class L3FeatureExtractor(DeterministicFeatureExtractor):
@@ -36,7 +36,7 @@ class L3FeatureExtractor(DeterministicFeatureExtractor):
 
     def _create_l3_schema(self) -> FeatureSchema:
         """Create feature schema for L3 branch ranker."""
-        from ..config.feature_schemas import FeatureSchema, FeatureDefinition, FeatureType
+        from ..config.feature_schemas import FeatureDefinition, FeatureSchema, FeatureType
 
         features = [
             FeatureDefinition(
@@ -131,7 +131,7 @@ class L3FeatureExtractor(DeterministicFeatureExtractor):
         self.register_extraction_function("timing_criticality", self._extract_timing_criticality)
         self.register_extraction_function("parallel_execution_potential", self._extract_parallel_execution_potential)
 
-    def _extract_branch_complexity_score(self, context: Dict[str, Any]) -> float:
+    def _extract_branch_complexity_score(self, context: dict[str, Any]) -> float:
         """Extract branch complexity score (0.0-1.0)."""
         branch = context.get("branch", {})
         dag = context.get("dag", {})
@@ -182,7 +182,7 @@ class L3FeatureExtractor(DeterministicFeatureExtractor):
 
         return round(min(1.0, score), 3)
 
-    def _extract_execution_probability(self, context: Dict[str, Any]) -> float:
+    def _extract_execution_probability(self, context: dict[str, Any]) -> float:
         """Extract execution probability (0.0-1.0)."""
         branch = context.get("branch", {})
 
@@ -225,7 +225,7 @@ class L3FeatureExtractor(DeterministicFeatureExtractor):
 
         return round(max(0.0, min(1.0, base_probability)), 3)
 
-    def _extract_resource_requirement_score(self, context: Dict[str, Any]) -> float:
+    def _extract_resource_requirement_score(self, context: dict[str, Any]) -> float:
         """Extract resource requirement score (0.0-1.0)."""
         branch = context.get("branch", {})
         resources = context.get("system_resources", {})
@@ -279,7 +279,7 @@ class L3FeatureExtractor(DeterministicFeatureExtractor):
 
         return round(requirement_score, 3)
 
-    def _extract_conflict_indicator(self, context: Dict[str, Any]) -> float:
+    def _extract_conflict_indicator(self, context: dict[str, Any]) -> float:
         """Extract conflict indicator (0.0-1.0)."""
         branch = context.get("branch", {})
         other_branches = context.get("other_branches", [])
@@ -352,7 +352,7 @@ class L3FeatureExtractor(DeterministicFeatureExtractor):
 
         return round(normalized_score, 3)
 
-    def _extract_escalation_priority(self, context: Dict[str, Any]) -> float:
+    def _extract_escalation_priority(self, context: dict[str, Any]) -> float:
         """Extract escalation priority (0.0-1.0)."""
         branch = context.get("branch", {})
 
@@ -415,7 +415,7 @@ class L3FeatureExtractor(DeterministicFeatureExtractor):
 
         return round(min(1.0, score), 3)
 
-    def _extract_workflow_depth(self, context: Dict[str, Any]) -> int:
+    def _extract_workflow_depth(self, context: dict[str, Any]) -> int:
         """Extract workflow depth (1-10)."""
         branch = context.get("branch", {})
 
@@ -427,7 +427,7 @@ class L3FeatureExtractor(DeterministicFeatureExtractor):
         depth = self._calculate_max_depth(branch.get("nodes", []))
         return max(1, min(10, depth))
 
-    def _extract_dependency_count(self, context: Dict[str, Any]) -> int:
+    def _extract_dependency_count(self, context: dict[str, Any]) -> int:
         """Extract dependency count (0-50)."""
         branch = context.get("branch", {})
 
@@ -442,7 +442,7 @@ class L3FeatureExtractor(DeterministicFeatureExtractor):
         total_dependencies = len(dependencies) + len(data_dependencies)
         return max(0, min(50, total_dependencies))
 
-    def _extract_historical_success_rate(self, context: Dict[str, Any]) -> float:
+    def _extract_historical_success_rate(self, context: dict[str, Any]) -> float:
         """Extract historical success rate (0.0-1.0)."""
         branch = context.get("branch", {})
         history = context.get("history", {})
@@ -460,7 +460,7 @@ class L3FeatureExtractor(DeterministicFeatureExtractor):
 
         return 0.5  # Default if no history
 
-    def _extract_timing_criticality(self, context: Dict[str, Any]) -> float:
+    def _extract_timing_criticality(self, context: dict[str, Any]) -> float:
         """Extract timing criticality (0.0-1.0)."""
         branch = context.get("branch", {})
 
@@ -499,7 +499,7 @@ class L3FeatureExtractor(DeterministicFeatureExtractor):
 
         return round(min(1.0, criticality_score), 3)
 
-    def _extract_parallel_execution_potential(self, context: Dict[str, Any]) -> float:
+    def _extract_parallel_execution_potential(self, context: dict[str, Any]) -> float:
         """Extract parallel execution potential (0.0-1.0)."""
         branch = context.get("branch", {})
 
@@ -533,7 +533,7 @@ class L3FeatureExtractor(DeterministicFeatureExtractor):
 
         return round(min(1.0, parallel_ratio), 3)
 
-    def _calculate_max_depth(self, nodes: List[Dict[str, Any]]) -> int:
+    def _calculate_max_depth(self, nodes: list[dict[str, Any]]) -> int:
         """Calculate maximum depth of nested nodes."""
         if not nodes:
             return 0

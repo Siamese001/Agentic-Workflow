@@ -6,7 +6,6 @@ neutered files and generates appropriate cleanup commands.
 """
 
 import ast
-import json
 import tempfile
 from pathlib import Path
 from unittest.mock import patch
@@ -14,10 +13,9 @@ from unittest.mock import patch
 import pytest
 
 from ops_scripts.ci.zero_loss_refactor_verifier import (
-    count_behavioral_nodes,
     check_file_neutered,
-    get_modified_files_since,
     check_files_neutered,
+    count_behavioral_nodes,
     generate_cleanup_commands,
 )
 

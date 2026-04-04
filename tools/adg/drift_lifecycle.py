@@ -1102,10 +1102,10 @@ if __name__ == "__main__":
 
 class ScopedTestRunner:
     """Test runner scoped to ADG coverage."""
-    
+
     def __init__(self, scope: str = "adg"):
         self.scope = scope
-    
+
     def run(self, test_paths: list[str]) -> dict:
         """Run tests in the specified scope."""
         return {"scope": self.scope, "tests_run": len(test_paths), "status": "success"}

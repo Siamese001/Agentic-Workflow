@@ -7,23 +7,24 @@ multivariate anomaly scoring, and sophisticated alerting.
 """
 
 import pickle
-import numpy as np
-from pathlib import Path
-from typing import Dict, List, Optional, Any, Tuple
 from datetime import datetime
+from pathlib import Path
+from typing import Any
+
+import numpy as np
 
 try:
     from sklearn.ensemble import IsolationForest
-    from sklearn.preprocessing import StandardScaler
     from sklearn.pipeline import Pipeline
+    from sklearn.preprocessing import StandardScaler
 except ImportError:
     IsolationForest = None
     StandardScaler = None
     Pipeline = None
 
-from .base_model import BaseMLModel, ModelPrediction, ModelInput, PredictionType, DecisionMode
 from ..config.model_registry import DecisionMode
 from ..features.advanced_l6_features import AdvancedL6FeatureExtractor
+from .base_model import BaseMLModel, DecisionMode, ModelInput, ModelPrediction, PredictionType
 
 
 class AdvancedL6Detector(BaseMLModel):
@@ -55,7 +56,7 @@ class AdvancedL6Detector(BaseMLModel):
     # Reverse mapping
     REVERSE_ANOMALY_MAPPING = {v: k for k, v in ANOMALY_MAPPING.items()}
 
-    def __init__(self, model_file_path: Optional[Path] = None):
+    def __init__(self, model_file_path: Path | None = None):
         if IsolationForest is None:
             raise ImportError("scikit-learn is required for AdvancedL6Detector")
 
@@ -261,11 +262,11 @@ class AdvancedL6Detector(BaseMLModel):
 
     def detect_anomalies_intelligently(
         self,
-        anomaly_context: Dict[str, Any],
+        anomaly_context: dict[str, Any],
         trace_id: str,
         replay_key: str,
         policy_hash: str
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """
         Get intelligent anomaly detection recommendation.
 
@@ -340,11 +341,11 @@ class AdvancedL6Detector(BaseMLModel):
 
     def analyze_behavioral_patterns(
         self,
-        behavioral_context: Dict[str, Any],
+        behavioral_context: dict[str, Any],
         trace_id: str,
         replay_key: str,
         policy_hash: str
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """
         Analyze behavioral patterns for anomaly detection.
 
@@ -398,11 +399,11 @@ class AdvancedL6Detector(BaseMLModel):
 
     def assess_system_health(
         self,
-        system_context: Dict[str, Any],
+        system_context: dict[str, Any],
         trace_id: str,
         replay_key: str,
         policy_hash: str
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """
         Assess system health for anomaly detection.
 
@@ -453,11 +454,11 @@ class AdvancedL6Detector(BaseMLModel):
 
     def evaluate_security_threats(
         self,
-        security_context: Dict[str, Any],
+        security_context: dict[str, Any],
         trace_id: str,
         replay_key: str,
         policy_hash: str
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """
         Evaluate security threats for anomaly detection.
 
@@ -510,9 +511,9 @@ class AdvancedL6Detector(BaseMLModel):
     def _generate_anomaly_recommendations(
         self,
         action: str,
-        context: Dict[str, Any],
-        features: Dict[str, float]
-    ) -> List[str]:
+        context: dict[str, Any],
+        features: dict[str, float]
+    ) -> list[str]:
         """Generate action-specific anomaly recommendations."""
         recommendations = []
 
@@ -590,9 +591,9 @@ class AdvancedL6Detector(BaseMLModel):
 
     def _analyze_anomaly_factors(
         self,
-        context: Dict[str, Any],
-        features: Dict[str, float]
-    ) -> Dict[str, Any]:
+        context: dict[str, Any],
+        features: dict[str, float]
+    ) -> dict[str, Any]:
         """Analyze anomaly factors and their impact."""
         factor_analysis = {
             'primary_factors': [],
@@ -652,9 +653,9 @@ class AdvancedL6Detector(BaseMLModel):
     def _assess_anomaly_severity(
         self,
         action: str,
-        context: Dict[str, Any],
-        features: Dict[str, float]
-    ) -> Dict[str, Any]:
+        context: dict[str, Any],
+        features: dict[str, float]
+    ) -> dict[str, Any]:
         """Assess anomaly severity for the chosen action."""
         # Base severity estimates by action
         severity_estimates = {
@@ -737,7 +738,7 @@ class AdvancedL6Detector(BaseMLModel):
 
         return adjusted_severity
 
-    def _get_alternative_responses(self, probability_distribution: Dict[str, float]) -> List[Dict[str, Any]]:
+    def _get_alternative_responses(self, probability_distribution: dict[str, float]) -> list[dict[str, Any]]:
         """Get alternative anomaly responses with probabilities."""
         alternatives = []
 
@@ -779,7 +780,7 @@ class AdvancedL6Detector(BaseMLModel):
         else:
             return "Low"
 
-    def _analyze_deviation_patterns(self, behavioral_context: Dict[str, Any]) -> Dict[str, Any]:
+    def _analyze_deviation_patterns(self, behavioral_context: dict[str, Any]) -> dict[str, Any]:
         """Analyze deviation patterns in behavior."""
         current_behavior = behavioral_context.get('current_behavior', {})
         baseline_behavior = behavioral_context.get('baseline_behavior', {})
@@ -807,7 +808,7 @@ class AdvancedL6Detector(BaseMLModel):
             'factors': deviation_factors
         }
 
-    def _analyze_frequency_patterns(self, behavioral_context: Dict[str, Any]) -> Dict[str, Any]:
+    def _analyze_frequency_patterns(self, behavioral_context: dict[str, Any]) -> dict[str, Any]:
         """Analyze frequency patterns in behavior."""
         current_frequency = behavioral_context.get('request_frequency', 100)
         baseline_frequency = behavioral_context.get('baseline_frequency', 100)
@@ -824,7 +825,7 @@ class AdvancedL6Detector(BaseMLModel):
             'baseline_frequency': baseline_frequency
         }
 
-    def _analyze_response_patterns(self, behavioral_context: Dict[str, Any]) -> Dict[str, Any]:
+    def _analyze_response_patterns(self, behavioral_context: dict[str, Any]) -> dict[str, Any]:
         """Analyze response patterns in behavior."""
         current_response = behavioral_context.get('response_patterns', 0.5)
         baseline_response = behavioral_context.get('baseline_response', 0.5)
@@ -838,7 +839,7 @@ class AdvancedL6Detector(BaseMLModel):
             'baseline_response': baseline_response
         }
 
-    def _analyze_error_patterns(self, behavioral_context: Dict[str, Any]) -> Dict[str, Any]:
+    def _analyze_error_patterns(self, behavioral_context: dict[str, Any]) -> dict[str, Any]:
         """Analyze error patterns in behavior."""
         current_errors = behavioral_context.get('error_patterns', 0.01)
         baseline_errors = behavioral_context.get('baseline_error_patterns', 0.01)
@@ -855,7 +856,7 @@ class AdvancedL6Detector(BaseMLModel):
             'baseline_errors': baseline_errors
         }
 
-    def _recommend_behavioral_action(self, behavioral_analysis: Dict[str, Any]) -> str:
+    def _recommend_behavioral_action(self, behavioral_analysis: dict[str, Any]) -> str:
         """Recommend anomaly action based on behavioral analysis."""
         deviation_severity = behavioral_analysis['deviation_analysis']['severity']
         frequency_severity = behavioral_analysis['frequency_analysis']['severity']
@@ -867,7 +868,7 @@ class AdvancedL6Detector(BaseMLModel):
         else:
             return 'Medium_Priority'
 
-    def _analyze_metric_health(self, system_context: Dict[str, Any]) -> Dict[str, Any]:
+    def _analyze_metric_health(self, system_context: dict[str, Any]) -> dict[str, Any]:
         """Analyze system metric health."""
         system_metrics = system_context.get('system_metrics', {})
 
@@ -893,7 +894,7 @@ class AdvancedL6Detector(BaseMLModel):
             'status': 'healthy' if avg_health > 0.7 else 'degraded' if avg_health > 0.4 else 'unhealthy'
         }
 
-    def _analyze_performance_health(self, system_context: Dict[str, Any]) -> Dict[str, Any]:
+    def _analyze_performance_health(self, system_context: dict[str, Any]) -> dict[str, Any]:
         """Analyze system performance health."""
         performance_data = system_context.get('performance_data', {})
 
@@ -921,7 +922,7 @@ class AdvancedL6Detector(BaseMLModel):
             'status': 'healthy' if health_score > 0.7 else 'degraded' if health_score > 0.4 else 'unhealthy'
         }
 
-    def _analyze_resource_health(self, system_context: Dict[str, Any]) -> Dict[str, Any]:
+    def _analyze_resource_health(self, system_context: dict[str, Any]) -> dict[str, Any]:
         """Analyze system resource health."""
         resource_data = system_context.get('resource_data', {})
 
@@ -947,7 +948,7 @@ class AdvancedL6Detector(BaseMLModel):
             'status': 'healthy' if health_score > 0.7 else 'degraded' if health_score > 0.4 else 'unhealthy'
         }
 
-    def _calculate_overall_health(self, system_context: Dict[str, Any]) -> Dict[str, Any]:
+    def _calculate_overall_health(self, system_context: dict[str, Any]) -> dict[str, Any]:
         """Calculate overall system health."""
         metric_health = self._analyze_metric_health(system_context)
         performance_health = self._analyze_performance_health(system_context)
@@ -969,7 +970,7 @@ class AdvancedL6Detector(BaseMLModel):
             }
         }
 
-    def _recommend_system_action(self, system_analysis: Dict[str, Any]) -> str:
+    def _recommend_system_action(self, system_analysis: dict[str, Any]) -> str:
         """Recommend anomaly action based on system analysis."""
         overall_status = system_analysis['overall_health']['status']
 
@@ -980,7 +981,7 @@ class AdvancedL6Detector(BaseMLModel):
         else:
             return 'Normal_Operation'
 
-    def _analyze_authentication_security(self, security_context: Dict[str, Any]) -> Dict[str, Any]:
+    def _analyze_authentication_security(self, security_context: dict[str, Any]) -> dict[str, Any]:
         """Analyze authentication security."""
         auth_failures = security_context.get('authentication_failures', 0)
         auth_threshold = security_context.get('auth_failure_threshold', 5)
@@ -995,7 +996,7 @@ class AdvancedL6Detector(BaseMLModel):
             'status': 'critical' if security_score > 0.7 else 'high' if security_score > 0.3 else 'normal'
         }
 
-    def _analyze_authorization_security(self, security_context: Dict[str, Any]) -> Dict[str, Any]:
+    def _analyze_authorization_security(self, security_context: dict[str, Any]) -> dict[str, Any]:
         """Analyze authorization security."""
         unauthorized_attempts = security_context.get('unauthorized_attempts', 0)
         authz_threshold = security_context.get('unauthorized_threshold', 3)
@@ -1010,7 +1011,7 @@ class AdvancedL6Detector(BaseMLModel):
             'status': 'critical' if security_score > 0.7 else 'high' if security_score > 0.3 else 'normal'
         }
 
-    def _analyze_access_pattern_security(self, security_context: Dict[str, Any]) -> Dict[str, Any]:
+    def _analyze_access_pattern_security(self, security_context: dict[str, Any]) -> dict[str, Any]:
         """Analyze access pattern security."""
         access_deviation = security_context.get('access_pattern_deviation', 0.0)
 
@@ -1021,7 +1022,7 @@ class AdvancedL6Detector(BaseMLModel):
             'status': 'critical' if security_score > 0.7 else 'high' if security_score > 0.3 else 'normal'
         }
 
-    def _assess_threat_level(self, security_context: Dict[str, Any]) -> Dict[str, Any]:
+    def _assess_threat_level(self, security_context: dict[str, Any]) -> dict[str, Any]:
         """Assess overall threat level."""
         auth_security = self._analyze_authentication_security(security_context)
         authz_security = self._analyze_authorization_security(security_context)
@@ -1038,7 +1039,7 @@ class AdvancedL6Detector(BaseMLModel):
             'level': 'critical' if threat_score > 0.7 else 'high' if threat_score > 0.4 else 'medium' if threat_score > 0.2 else 'low'
         }
 
-    def _recommend_security_action(self, security_analysis: Dict[str, Any]) -> str:
+    def _recommend_security_action(self, security_analysis: dict[str, Any]) -> str:
         """Recommend anomaly action based on security analysis."""
         threat_level = security_analysis['threat_assessment']['level']
 
@@ -1051,7 +1052,7 @@ class AdvancedL6Detector(BaseMLModel):
         else:
             return 'Informational'
 
-    def get_feature_importance(self, model_input: ModelInput) -> List[Dict[str, Any]]:
+    def get_feature_importance(self, model_input: ModelInput) -> list[dict[str, Any]]:
         """Get feature importance for explainability."""
         if not self.is_loaded or not self.pipeline:
             return []
@@ -1087,7 +1088,7 @@ class AdvancedL6Detector(BaseMLModel):
             # Failed to compute importance
             return []
 
-    def _extract_feature_vector(self, features: Dict[str, Any]) -> Optional[np.ndarray]:
+    def _extract_feature_vector(self, features: dict[str, Any]) -> np.ndarray | None:
         """Extract features in the correct order for the model."""
         if not self.feature_names:
             return None
@@ -1103,7 +1104,7 @@ class AdvancedL6Detector(BaseMLModel):
         except Exception as e:
             return None
 
-    def preprocess_features(self, features: Dict[str, Any]) -> Tuple[Dict[str, Any], List[str]]:
+    def preprocess_features(self, features: dict[str, Any]) -> tuple[dict[str, Any], list[str]]:
         """Preprocess features for Autoencoder-inspired model."""
         processed_features, preprocessing_steps = super().preprocess_features(features)
 
@@ -1125,8 +1126,8 @@ class AdvancedL6Detector(BaseMLModel):
 
     def train_model(
         self,
-        training_data: List[Dict[str, Any]],
-        feature_names: List[str],
+        training_data: list[dict[str, Any]],
+        feature_names: list[str],
         training_data_digest: str = ""
     ) -> None:
         """

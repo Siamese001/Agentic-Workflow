@@ -1,10 +1,11 @@
 """Error Path Coverage Tests - Verify error handling in migrated imports."""
 
-import pytest
 import sys
 import tempfile
 from pathlib import Path
-from unittest.mock import patch, MagicMock
+from unittest.mock import patch
+
+import pytest
 
 
 class TestImportErrorHandling:
@@ -14,7 +15,7 @@ class TestImportErrorHandling:
         """ImportError inside test function should be properly raised."""
         def test_with_bad_import():
             # This should raise ImportError
-            from non_existent_module_12345 import something
+            pass
 
         with pytest.raises(ImportError, match="non_existent_module_12345"):
             test_with_bad_import()
@@ -39,7 +40,6 @@ class TestImportErrorHandling:
             import tempfile
 
             # This should fail
-            from non_existent_module_12345 import something
 
             # This should not be reached
             assert tempfile.gettempdir()
@@ -50,7 +50,7 @@ class TestImportErrorHandling:
     def test_import_error_message_preservation(self):
         """ImportError messages should be preserved for debugging."""
         def test_with_import_error():
-            from module_that_does_not_exist_98765 import specific_function
+            pass
 
         with pytest.raises(ImportError) as exc_info:
             test_with_import_error()
@@ -116,7 +116,7 @@ def broken_function(
 
                 # Import the broken function should fail
                 with pytest.raises(SyntaxError):
-                    from broken_module import broken_function
+                    pass
 
             finally:
                 sys.path[:] = original_path
@@ -197,7 +197,7 @@ class TestMissingDependencyHandling:
         """Required imports should fail fast when dependencies are missing."""
         def test_with_required_import():
             # This should fail immediately
-            import non_existent_required_lib
+            pass
 
         with pytest.raises(ImportError):
             test_with_required_import()
@@ -290,9 +290,9 @@ class TestImportPerformance:
         def measure_import_time():
             start_time = time.time()
             try:
-                import tempfile
                 import pathlib
                 import sys
+                import tempfile
             except ImportError:
                 pass
             end_time = time.time()
@@ -311,8 +311,9 @@ class TestImportPerformance:
     def test_memory_usage_during_import(self):
         """Memory usage should be reasonable during imports."""
         import gc
-        import psutil
         import os
+
+        import psutil
 
         # Get current process
         process = psutil.Process(os.getpid())
@@ -323,9 +324,9 @@ class TestImportPerformance:
 
         # Perform imports
         try:
-            import tempfile
             import pathlib
             import sys
+            import tempfile
             # Import some agentic_core modules if available
             try:
                 from agentic_core.L2_execution.tools.write_gateway import WriteAmplificationError

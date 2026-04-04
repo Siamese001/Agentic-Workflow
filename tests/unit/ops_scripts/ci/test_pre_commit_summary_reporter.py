@@ -2,12 +2,6 @@
 
 from __future__ import annotations
 
-import os
-import tempfile
-from pathlib import Path
-
-import pytest
-
 from ops_scripts.ci.pre_commit_issue_schema import PreCommitIssue, SeverityLevel
 from ops_scripts.ci.pre_commit_summary_reporter import (
     collect_issue,

@@ -6,17 +6,17 @@ This module preserves the historical import surface:
 
 from apps_rfp.types.PromptTemplate import (
     FROZEN_SNAPSHOT,
-    RfpPromptEntry,
-    RfpNodeEntry,
     RfpGlobalRule,
+    RfpNodeEntry,
+    RfpPromptEntry,
     RfpSovereignKnowledge,
-    get_prompt,
-    get_system_prompt,
-    get_prompt_entry,
-    get_node_config,
     get_global_rule,
-    list_all_prompts,
+    get_node_config,
+    get_prompt,
+    get_prompt_entry,
+    get_system_prompt,
     list_all_nodes,
+    list_all_prompts,
 )
 
 __all__ = [

@@ -4,9 +4,9 @@ Upgrade ChromaDB collections to use OpenAI embeddings (optional)
 Falls back to mock embeddings if OPENAI_API_KEY is not available
 """
 
-import os
 import logging
-from pathlib import Path
+import os
+
 import chromadb
 from chromadb.utils import embedding_functions
 

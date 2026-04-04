@@ -7,22 +7,23 @@ for different routing domains, intelligent gating network, and load balancing.
 
 from __future__ import annotations
 
-import numpy as np
-import logging
-from typing import Dict, List, Optional, Any
-from dataclasses import dataclass, field
-from abc import ABC, abstractmethod
 import json
+import logging
 import time
+from abc import ABC, abstractmethod
 from concurrent.futures import ThreadPoolExecutor, as_completed
+from dataclasses import dataclass, field
+from typing import Any
+
+import numpy as np
 
 from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-    _emit_records_learning_event,
-    _emit_feeds_meta_learning,
-    _emit_stores_learning_state,
-    _emit_records_execution_trace,
-    _emit_dispatches_agent,
     _emit_coordinates_agents,
+    _emit_dispatches_agent,
+    _emit_feeds_meta_learning,
+    _emit_records_execution_trace,
+    _emit_records_learning_event,
+    _emit_stores_learning_state,
 )
 
 logger = logging.getLogger(__name__)
@@ -32,7 +33,7 @@ class ExpertSpecialization:
     """Defines the specialization domain of an expert"""
 
     domain_name: str
-    keywords: List[str]
+    keywords: list[str]
     capability_score: float
     confidence_threshold: float
     load_factor: float = 1.0
@@ -55,8 +56,8 @@ class ExpertPrediction:
     uncertainty: float
     specialization_match: float
     processing_time: float
-    reasoning: Optional[str] = None
-    features_used: Optional[Dict[str, float]] = None
+    reasoning: str | None = None
+    features_used: dict[str, float] | None = None
 
 @dataclass
 class MoEDecision:
@@ -66,8 +67,8 @@ class MoEDecision:
     selected_agent: str
     confidence: float
     uncertainty: float
-    gating_scores: Dict[str, float]
-    expert_predictions: Dict[str, ExpertPrediction]
+    gating_scores: dict[str, float]
+    expert_predictions: dict[str, ExpertPrediction]
     load_balancing_applied: bool
     reasoning: str
     decision_time: float
@@ -84,7 +85,7 @@ class BaseExpert(ABC):
         self.last_update = time.time()
 
     @abstractmethod
-    def predict(self, query: str, context: Dict[str, Any]) -> ExpertPrediction:
+    def predict(self, query: str, context: dict[str, Any]) -> ExpertPrediction:
         """Make routing prediction"""
         pass
 
@@ -122,7 +123,7 @@ class CodeReviewExpert(BaseExpert):
         )
         super().__init__(expert_id, specialization)
 
-    def predict(self, query: str, context: Dict[str, Any]) -> ExpertPrediction:
+    def predict(self, query: str, context: dict[str, Any]) -> ExpertPrediction:
         """Predict for code review tasks"""
         start_time = time.time()
 
@@ -173,7 +174,7 @@ class ResumeExpert(BaseExpert):
         )
         super().__init__(expert_id, specialization)
 
-    def predict(self, query: str, context: Dict[str, Any]) -> ExpertPrediction:
+    def predict(self, query: str, context: dict[str, Any]) -> ExpertPrediction:
         """Predict for resume/career tasks"""
         start_time = time.time()
 
@@ -221,7 +222,7 @@ class DataAnalysisExpert(BaseExpert):
         )
         super().__init__(expert_id, specialization)
 
-    def predict(self, query: str, context: Dict[str, Any]) -> ExpertPrediction:
+    def predict(self, query: str, context: dict[str, Any]) -> ExpertPrediction:
         """Predict for data analysis tasks"""
         start_time = time.time()
 
@@ -280,7 +281,7 @@ class GatingNetwork:
             "num_experts": num_experts
         })
 
-    def forward(self, query_embedding: np.ndarray, expert_features: List[Dict[str, float]]) -> np.ndarray:
+    def forward(self, query_embedding: np.ndarray, expert_features: list[dict[str, float]]) -> np.ndarray:
         """Forward pass through gating network"""
         # Combine query embedding with expert features
         expert_feature_vector = np.array([
@@ -306,7 +307,7 @@ class GatingNetwork:
 
         return probabilities
 
-    def update(self, query_embedding: np.ndarray, expert_features: List[Dict[str, float]],
+    def update(self, query_embedding: np.ndarray, expert_features: list[dict[str, float]],
                selected_expert_idx: int, reward: float):
         """Update gating network with reinforcement learning"""
         # Get current probabilities
@@ -349,8 +350,8 @@ class LoadBalancer:
 
     def __init__(self, load_balance_strategy: str = "least_loaded"):
         self.load_balance_strategy = load_balance_strategy
-        self.expert_loads: Dict[str, float] = {}
-        self.expert_capacities: Dict[str, float] = {}
+        self.expert_loads: dict[str, float] = {}
+        self.expert_capacities: dict[str, float] = {}
 
     def register_expert(self, expert_id: str, capacity: float = 1.0):
         """Register an expert with capacity"""
@@ -363,7 +364,7 @@ class LoadBalancer:
             self.expert_loads[expert_id] += load_delta
             self.expert_loads[expert_id] = max(0.0, self.expert_loads[expert_id])
 
-    def get_load_balance_weights(self, expert_ids: List[str]) -> Dict[str, float]:
+    def get_load_balance_weights(self, expert_ids: list[str]) -> dict[str, float]:
         """Get load balancing weights for experts"""
         weights = {}
 
@@ -400,9 +401,9 @@ class MixtureOfExperts:
 
     def __init__(
         self,
-        experts: Optional[List[BaseExpert]] = None,
-        gating_network: Optional[GatingNetwork] = None,
-        load_balancer: Optional[LoadBalancer] = None,
+        experts: list[BaseExpert] | None = None,
+        gating_network: GatingNetwork | None = None,
+        load_balancer: LoadBalancer | None = None,
         max_concurrent_experts: int = 3
     ):
         """
@@ -422,7 +423,7 @@ class MixtureOfExperts:
         # Performance tracking
         self.prediction_count = 0
         self.success_count = 0
-        self.decision_history: List[MoEDecision] = []
+        self.decision_history: list[MoEDecision] = []
 
         # Initialize load balancer with experts
         for expert_id in self.experts:
@@ -452,7 +453,7 @@ class MixtureOfExperts:
             "total_experts": len(self.experts)
         })
 
-    def route(self, query: str, context: Dict[str, Any]) -> MoEDecision:
+    def route(self, query: str, context: dict[str, Any]) -> MoEDecision:
         """
         Make routing decision using Mixture of Experts.
 
@@ -559,7 +560,7 @@ class MixtureOfExperts:
 
         return decision
 
-    def _get_expert_predictions(self, query: str, context: Dict[str, Any]) -> Dict[str, ExpertPrediction]:
+    def _get_expert_predictions(self, query: str, context: dict[str, Any]) -> dict[str, ExpertPrediction]:
         """Get predictions from all experts concurrently"""
         expert_predictions = {}
 
@@ -646,7 +647,7 @@ class MixtureOfExperts:
             return 0.0
         return self.success_count / self.prediction_count
 
-    def get_expert_performance(self) -> Dict[str, Dict[str, float]]:
+    def get_expert_performance(self) -> dict[str, dict[str, float]]:
         """Get performance metrics for all experts"""
         performance = {}
         for expert_id, expert in self.experts.items():

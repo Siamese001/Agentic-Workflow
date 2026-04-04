@@ -11,7 +11,7 @@ from pathlib import Path
 # Add agentic_core to path
 sys.path.insert(0, str(Path(__file__).parent / "agentic_core"))
 
-from L1_cognition.engines.semantic_retriever import SemanticRetriever, RetrievalQuery
+from L1_cognition.engines.semantic_retriever import RetrievalQuery, SemanticRetriever
 
 
 async def test_blast_radius():
@@ -93,7 +93,7 @@ async def test_blast_radius():
 
                 print(f"  - {result.collection}: {result.content[:100]}...")
 
-            print(f"Blast Radius Summary:")
+            print("Blast Radius Summary:")
             print(f"  Layers affected: {sorted(layers_affected)}")
             print(f"  Subsystems affected: {sorted(subsystems_affected)}")
             print(f"  File types affected: {sorted(file_types)}")

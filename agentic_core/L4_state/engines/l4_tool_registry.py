@@ -15,7 +15,7 @@ import importlib
 import inspect
 import logging
 from dataclasses import dataclass, field
-from typing import Any, Callable, Optional
+from typing import Any, Callable
 
 from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     LayerSegment,
@@ -68,10 +68,10 @@ class ToolRegistry:
         handler: Callable[..., Any],
         description: str,
         parameters: dict[str, Any],
-        required: Optional[list[str]] = None,
-        returns: Optional[dict[str, Any]] = None,
+        required: list[str] | None = None,
+        returns: dict[str, Any] | None = None,
         source_module: str = "unknown",
-        metadata: Optional[dict[str, Any]] = None,
+        metadata: dict[str, Any] | None = None,
     ) -> bool:
         """Register a new tool in the registry.
 
@@ -131,7 +131,7 @@ class ToolRegistry:
             return True
         return False
 
-    def get_tool(self, name: str) -> Optional[ToolInstance]:
+    def get_tool(self, name: str) -> ToolInstance | None:
         """Get tool instance by name.
 
         Args:
@@ -142,7 +142,7 @@ class ToolRegistry:
         """
         return self._tools.get(name)
 
-    def get_tool_schema(self, name: str) -> Optional[ToolSchema]:
+    def get_tool_schema(self, name: str) -> ToolSchema | None:
         """Get schema for a tool.
 
         Args:
@@ -384,11 +384,11 @@ class ToolRegistry:
 
 
 def tool_decorator(
-    name: Optional[str] = None,
-    description: Optional[str] = None,
-    parameters: Optional[dict[str, Any]] = None,
-    required: Optional[list[str]] = None,
-    returns: Optional[dict[str, Any]] = None,
+    name: str | None = None,
+    description: str | None = None,
+    parameters: dict[str, Any] | None = None,
+    required: list[str] | None = None,
+    returns: dict[str, Any] | None = None,
 ) -> Callable[[Callable[..., Any]], Callable[..., Any]]:
     """Decorator to mark a function as an L4 Agentic Action tool.
 
@@ -462,7 +462,7 @@ def tool_decorator(
 
 
 # Global registry
-_global_tool_registry: Optional[ToolRegistry] = None
+_global_tool_registry: ToolRegistry | None = None
 
 
 def get_global_tool_registry() -> ToolRegistry:
@@ -573,7 +573,7 @@ def register_tool(
     handler: Callable[..., Any],
     description: str,
     parameters: dict[str, Any],
-    required: Optional[list[str]] = None,
+    required: list[str] | None = None,
 ) -> bool:
     """Register a tool in the global registry."""
     return get_global_tool_registry().register_tool(

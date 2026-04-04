@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """Categorize the 337 collection errors by root cause."""
 
-import subprocess
 import re
+import subprocess
 from collections import Counter
 
 result = subprocess.run(
@@ -73,11 +73,12 @@ for cat in ["IndentationError_in_source_module", "SyntaxError_in_source_module",
             print(f"    {s['message']}")
 
 # Check: how many of these error files are our enhanced files vs pre-existing?
-enhanced_errors = [e for e in error_files if "MODULE_PATH" in open(e["file"], "r", encoding="utf-8").read() if "Behavioral contract tests" in open(e["file"], "r", encoding="utf-8").read()]
-print(f"\nEnhanced files causing errors: check below")
+enhanced_errors = [e for e in error_files if "MODULE_PATH" in open(e["file"], encoding="utf-8").read() if "Behavioral contract tests" in open(e["file"], encoding="utf-8").read()]
+print("\nEnhanced files causing errors: check below")
 
 # Better: check if the file has our fixture pattern
 from pathlib import Path
+
 our_files = 0
 other_files = 0
 for e in error_files:

@@ -6,10 +6,11 @@ performance issues, behavioral changes, and semantic drift.
 """
 
 import pickle
-import numpy as np
-from pathlib import Path
-from typing import Dict, List, Optional, Any, Tuple
 from datetime import datetime
+from pathlib import Path
+from typing import Any
+
+import numpy as np
 
 try:
     from sklearn.ensemble import IsolationForest
@@ -18,9 +19,9 @@ except ImportError:
     IsolationForest = None
     StandardScaler = None
 
-from .base_model import BaseMLModel, ModelPrediction, ModelInput, PredictionType, DecisionMode
 from ..config.model_registry import DecisionMode
 from ..features.l6_features import L6FeatureExtractor
+from .base_model import BaseMLModel, DecisionMode, ModelInput, ModelPrediction, PredictionType
 
 
 class L6AnomalyDetector(BaseMLModel):
@@ -38,7 +39,7 @@ class L6AnomalyDetector(BaseMLModel):
     Always operates in shadow/escalated mode - L6 remains observation-only.
     """
 
-    def __init__(self, model_file_path: Optional[Path] = None):
+    def __init__(self, model_file_path: Path | None = None):
         if IsolationForest is None or StandardScaler is None:
             raise ImportError("scikit-learn is required for L6AnomalyDetector")
 
@@ -241,11 +242,11 @@ class L6AnomalyDetector(BaseMLModel):
 
     def detect_anomalies_batch(
         self,
-        contexts: List[Dict[str, Any]],
+        contexts: list[dict[str, Any]],
         trace_id: str,
         replay_key: str,
         policy_hash: str
-    ) -> List[Dict[str, Any]]:
+    ) -> list[dict[str, Any]]:
         """
         Detect anomalies in a batch of contexts.
 
@@ -301,7 +302,7 @@ class L6AnomalyDetector(BaseMLModel):
 
         return anomaly_results
 
-    def get_feature_importance(self, model_input: ModelInput) -> List[Dict[str, Any]]:
+    def get_feature_importance(self, model_input: ModelInput) -> list[dict[str, Any]]:
         """Get feature importance for explainability."""
         if not self.is_loaded or not self.feature_names:
             return []
@@ -355,7 +356,7 @@ class L6AnomalyDetector(BaseMLModel):
             # Failed to compute importance
             return []
 
-    def _extract_feature_vector(self, features: Dict[str, Any]) -> Optional[np.ndarray]:
+    def _extract_feature_vector(self, features: dict[str, Any]) -> np.ndarray | None:
         """Extract features in the correct order for the model."""
         if not self.feature_names:
             return None
@@ -430,7 +431,7 @@ class L6AnomalyDetector(BaseMLModel):
         else:
             return "normal"
 
-    def _get_anomaly_indicators(self, features: Dict[str, Any]) -> List[str]:
+    def _get_anomaly_indicators(self, features: dict[str, Any]) -> list[str]:
         """Get specific anomaly indicators from features."""
         indicators = []
 
@@ -461,7 +462,7 @@ class L6AnomalyDetector(BaseMLModel):
 
         return indicators
 
-    def _get_model_params(self) -> Dict[str, Any]:
+    def _get_model_params(self) -> dict[str, Any]:
         """Get Isolation Forest parameters."""
         if self.pipeline and hasattr(self.pipeline, 'named_steps'):
             isolation_forest = self.pipeline.named_steps.get('isolation_forest')
@@ -475,7 +476,7 @@ class L6AnomalyDetector(BaseMLModel):
                 }
         return {}
 
-    def preprocess_features(self, features: Dict[str, Any]) -> Tuple[Dict[str, Any], List[str]]:
+    def preprocess_features(self, features: dict[str, Any]) -> tuple[dict[str, Any], list[str]]:
         """Preprocess features for Isolation Forest."""
         processed_features, preprocessing_steps = super().preprocess_features(features)
 
@@ -497,8 +498,8 @@ class L6AnomalyDetector(BaseMLModel):
 
     def train_model(
         self,
-        training_data: List[Dict[str, Any]],
-        feature_names: List[str],
+        training_data: list[dict[str, Any]],
+        feature_names: list[str],
         training_data_digest: str = "",
         contamination: float = 0.1,
         n_estimators: int = 100
@@ -554,7 +555,7 @@ class L6AnomalyDetector(BaseMLModel):
 
     def predict_from_context(
         self,
-        context: Dict[str, Any],
+        context: dict[str, Any],
         trace_id: str,
         replay_key: str,
         policy_hash: str,

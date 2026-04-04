@@ -103,7 +103,6 @@ _emit_links_execution_to_snapshot("p4", "refactoring_planner", "exec_snapshot_li
 
 if TYPE_CHECKING:
     from agentic_core.adg.analysis.coupling_metrics import CouplingMetricsReport
-
     from agentic_core.adg.analysis.hotspot_index import HotspotIndex
     from agentic_core.adg.analysis.test_gap import TestGapReport
     from agentic_core.adg.extraction.static_scanner import ScanResult
@@ -303,7 +302,6 @@ def build_refactoring_plan(
     - Test-gap modules receive an ADD_TESTS step before structural changes.
     """
     from agentic_core.adg.analysis.coupling_metrics import compute_coupling_metrics
-
     from agentic_core.adg.analysis.hotspot_index import HotspotIndex
     from agentic_core.adg.analysis.test_gap import detect_test_gaps
 

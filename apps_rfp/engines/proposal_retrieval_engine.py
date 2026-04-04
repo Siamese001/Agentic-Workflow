@@ -15,10 +15,10 @@ from pathlib import Path
 from typing import Any, Protocol
 
 from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+    _emit_pulls_context,
+    _emit_reads_through,
     _emit_records_execution_trace,
     _emit_stores_embedding,
-    _emit_reads_through,
-    _emit_pulls_context,
 )
 
 _log = logging.getLogger(__name__)

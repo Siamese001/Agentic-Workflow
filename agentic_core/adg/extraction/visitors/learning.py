@@ -16,11 +16,11 @@ class _L5ValidationProofVisitor(BaseStructuralVisitor):
 
     def visit_Call(self, node: ast.Call) -> None:
         """Extract L5 validation proof edges."""
-        from agentic_core.adg.schema_util import (
-            canonical_name,
-            L5_VALIDATION_SYMBOLS,
-        )
         from agentic_core.adg.extraction.static_scanner import Edge as _Edge
+        from agentic_core.adg.schema_util import (
+            L5_VALIDATION_SYMBOLS,
+            canonical_name,
+        )
 
         sym = self._get_call_symbol(node.func)
         tail = sym.split(".")[-1] if sym else ""
@@ -54,12 +54,12 @@ class _LearningProvenanceVisitor(BaseStructuralVisitor):
 
     def visit_Call(self, node: ast.Call) -> None:
         """Extract learning provenance edges."""
+        from agentic_core.adg.extraction.static_scanner import Edge as _Edge
         from agentic_core.adg.schema_util import (
-            canonical_name,
             LEARNING_PIPELINE_SYMBOLS,
             PROMPT_PROVENANCE_SYMBOLS,
+            canonical_name,
         )
-        from agentic_core.adg.extraction.static_scanner import Edge as _Edge
 
         sym = self._get_call_symbol(node.func)
         tail = sym.split(".")[-1] if sym else ""
@@ -105,17 +105,17 @@ class _P3LearningMaturityVisitor(BaseStructuralVisitor):
 
     def visit_Call(self, node: ast.Call) -> None:
         """Extract P3 learning maturity edges."""
-        from agentic_core.adg.schema_util import (
-            canonical_name,
-            CAPTURES_PATTERN_SYMBOLS,
-            RECORDS_LEARNING_EVENT_SYMBOLS,
-            WRITES_LEARNING_SNAPSHOT_SYMBOLS,
-            FEEDS_META_LEARNING_SYMBOLS,
-            UPDATES_ROUTING_STRATEGY_SYMBOLS,
-            IMPROVES_AGENT_POLICY_SYMBOLS,
-            STORES_LEARNING_STATE_SYMBOLS,
-        )
         from agentic_core.adg.extraction.static_scanner import Edge as _Edge
+        from agentic_core.adg.schema_util import (
+            CAPTURES_PATTERN_SYMBOLS,
+            FEEDS_META_LEARNING_SYMBOLS,
+            IMPROVES_AGENT_POLICY_SYMBOLS,
+            RECORDS_LEARNING_EVENT_SYMBOLS,
+            STORES_LEARNING_STATE_SYMBOLS,
+            UPDATES_ROUTING_STRATEGY_SYMBOLS,
+            WRITES_LEARNING_SNAPSHOT_SYMBOLS,
+            canonical_name,
+        )
 
         sym = self._get_call_symbol(node.func)
         tail = sym.split(".")[-1] if sym else ""

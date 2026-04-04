@@ -7,18 +7,18 @@ unified inference orchestration with governance compliance.
 """
 
 import pickle
-from pathlib import Path
-from typing import Dict, List, Optional, Any, Tuple
-from datetime import datetime
 from dataclasses import dataclass
+from datetime import datetime
+from pathlib import Path
+from typing import Any
 
-from .base_model import BaseMLModel, ModelPrediction, ModelInput, PredictionType, DecisionMode
 from ..config.model_registry import DecisionMode
+from .advanced_c0_reranker import AdvancedC0Reranker
 
 # Import Phase 4 models
 from .advanced_l0_router import AdvancedL0Router
-from .advanced_c0_reranker import AdvancedC0Reranker
 from .advanced_l6_detector import AdvancedL6Detector
+from .base_model import BaseMLModel, DecisionMode, ModelInput, ModelPrediction, PredictionType
 
 
 @dataclass
@@ -30,12 +30,12 @@ class UnifiedInferenceRequest:
     decision_mode: DecisionMode = DecisionMode.ADVISORY
 
     # Context data for different models
-    routing_context: Optional[Dict[str, Any]] = None
-    reranking_context: Optional[Dict[str, Any]] = None
-    anomaly_context: Optional[Dict[str, Any]] = None
+    routing_context: dict[str, Any] | None = None
+    reranking_context: dict[str, Any] | None = None
+    anomaly_context: dict[str, Any] | None = None
 
     # Unified context
-    unified_context: Optional[Dict[str, Any]] = None
+    unified_context: dict[str, Any] | None = None
 
     # Inference options
     enable_routing: bool = True
@@ -53,22 +53,22 @@ class UnifiedInferenceResult:
     timestamp: datetime
 
     # Individual model results
-    routing_result: Optional[ModelPrediction] = None
-    reranking_result: Optional[ModelPrediction] = None
-    anomaly_result: Optional[ModelPrediction] = None
+    routing_result: ModelPrediction | None = None
+    reranking_result: ModelPrediction | None = None
+    anomaly_result: ModelPrediction | None = None
 
     # Coordination results
-    coordinated_decision: Optional[str] = None
+    coordinated_decision: str | None = None
     coordination_confidence: float = 0.0
-    coordination_rationale: List[str] = None
+    coordination_rationale: list[str] = None
 
     # Unified recommendations
-    unified_recommendations: List[str] = None
+    unified_recommendations: list[str] = None
     implementation_priority: str = "Medium"
 
     # Metadata
     inference_time_ms: float = 0.0
-    models_executed: List[str] = None
+    models_executed: list[str] = None
     governance_compliance: bool = True
 
 
@@ -85,7 +85,7 @@ class UnifiedInferenceEngine(BaseMLModel):
     - Governance compliance and audit logging
     """
 
-    def __init__(self, model_file_path: Optional[Path] = None):
+    def __init__(self, model_file_path: Path | None = None):
         super().__init__(
             model_name="unified_inference_engine",
             model_version="1.0",
@@ -367,7 +367,7 @@ class UnifiedInferenceEngine(BaseMLModel):
             decision_mode=request.decision_mode
         )
 
-    def _coordinate_inference_results(self, result: UnifiedInferenceResult) -> Dict[str, Any]:
+    def _coordinate_inference_results(self, result: UnifiedInferenceResult) -> dict[str, Any]:
         """Coordinate inference results from multiple models."""
         coordination = {
             'decision': 'Standard_Operation',
@@ -428,7 +428,7 @@ class UnifiedInferenceEngine(BaseMLModel):
 
         return coordination
 
-    def _generate_unified_recommendations(self, result: UnifiedInferenceResult) -> List[str]:
+    def _generate_unified_recommendations(self, result: UnifiedInferenceResult) -> list[str]:
         """Generate unified recommendations from all model results."""
         recommendations = []
 
@@ -524,7 +524,7 @@ class UnifiedInferenceEngine(BaseMLModel):
     def get_comprehensive_analysis(
         self,
         request: UnifiedInferenceRequest
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """
         Get comprehensive analysis across all Phase 4 models.
 
@@ -599,7 +599,7 @@ class UnifiedInferenceEngine(BaseMLModel):
 
         return analysis
 
-    def validate_unified_configuration(self) -> Dict[str, Any]:
+    def validate_unified_configuration(self) -> dict[str, Any]:
         """Validate unified inference engine configuration."""
         validation_result = {
             'is_valid': True,
@@ -651,13 +651,13 @@ class UnifiedInferenceEngine(BaseMLModel):
 
         return validation_result
 
-    def get_feature_importance(self, model_input: ModelInput) -> List[Dict[str, Any]]:
+    def get_feature_importance(self, model_input: ModelInput) -> list[dict[str, Any]]:
         """Get feature importance for explainability."""
         # Unified inference engine doesn't have direct feature importance
         # This would aggregate importance from individual models
         return []
 
-    def preprocess_features(self, features: Dict[str, Any]) -> Tuple[Dict[str, Any], List[str]]:
+    def preprocess_features(self, features: dict[str, Any]) -> tuple[dict[str, Any], list[str]]:
         """Preprocess features for unified inference."""
         # Unified inference engine doesn't directly process features
         # This would coordinate preprocessing across individual models
@@ -665,8 +665,8 @@ class UnifiedInferenceEngine(BaseMLModel):
 
     def train_model(
         self,
-        training_data: List[Dict[str, Any]],
-        feature_names: List[str],
+        training_data: list[dict[str, Any]],
+        feature_names: list[str],
         training_data_digest: str = ""
     ) -> None:
         """

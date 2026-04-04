@@ -722,19 +722,19 @@ def calculate_drift(artifact_a: dict, artifact_b: dict) -> float:
     """
     nodes_a = artifact_a.get("total_nodes", 0)
     nodes_b = artifact_b.get("total_nodes", 0)
-    
+
     if nodes_a == 0 and nodes_b == 0:
         return 0.0
-    
+
     max_nodes = max(nodes_a, nodes_b)
     node_drift = abs(nodes_a - nodes_b) / max_nodes if max_nodes > 0 else 0.0
-    
+
     edges_a = artifact_a.get("total_edges", 0)
     edges_b = artifact_b.get("total_edges", 0)
-    
+
     max_edges = max(edges_a, edges_b)
     edge_drift = abs(edges_a - edges_b) / max_edges if max_edges > 0 else 0.0
-    
+
     return 0.5 * node_drift + 0.5 * edge_drift
 
 

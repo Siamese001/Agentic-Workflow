@@ -2,9 +2,9 @@
 """Trace the 2,381 no-reason skip calls to understand their actual pattern."""
 
 import ast
-import re
-from pathlib import Path
 from collections import Counter
+from pathlib import Path
+
 
 class SkipCallVisitor(ast.NodeVisitor):
     def __init__(self, filepath, source_lines):
@@ -141,6 +141,6 @@ funcs_counter = Counter()
 for f in unknown_skips:
     funcs_counter[f["func"] or "<module-level>"] += 1
 
-print(f"\nUnknown-condition skips by function name (top 20):")
+print("\nUnknown-condition skips by function name (top 20):")
 for func, count in funcs_counter.most_common(20):
     print(f"  {count:3d}  {func}")

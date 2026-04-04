@@ -4,13 +4,12 @@ Tests the complete flow from Layer 1 (Exact Cache) through Layer 5 (LLM Fallback
 as defined in Agentic Retrieval Models v16.md.
 """
 
-import pytest
-import time
 import hashlib
-import json
-from typing import Any
+import time
 from dataclasses import dataclass
-from unittest.mock import Mock, patch, MagicMock
+from typing import Any
+
+import pytest
 
 
 @dataclass

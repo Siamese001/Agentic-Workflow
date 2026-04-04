@@ -60,6 +60,7 @@ from agentic_core.L3_orchestration.reasoning.UnifiedAgent import (
 )
 from agentic_core.L3_orchestration.registry.agent_dispatch_registry import get_agent_dispatch_registry
 from agentic_core.L3_orchestration.types import AgentResult, ExecutionContext, ExecutionPhase, MissionResult
+
 # get_breaker, ActionClass, PolicyEnforcementError, enforce_policy_before_action imported lazily to avoid L3->L5 violation
 from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     LayerSegment,

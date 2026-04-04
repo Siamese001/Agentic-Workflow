@@ -1,15 +1,25 @@
 #!/usr/bin/env python3
 """Test all 17 ADG Redis MCP tools - FIXED VERSION"""
 import sys
+
 sys.path.insert(0, r'C:\Git\Agentic-Workflow')
 
 from tools.adg.adg_mcp_server import (
-    adg_status, adg_meta, adg_snapshot, adg_node,
-    adg_nodes_by_layer, adg_nodes_by_file, adg_edge_fanout,
-    adg_edge_fanin, adg_violations, adg_edge_detail,
-    adg_module_context, adg_source_context, adg_assert_fresh,
-    redis_get, redis_hgetall, redis_smembers, redis_lrange,
-    redis_type, redis_ttl, redis_scan
+    adg_assert_fresh,
+    adg_meta,
+    adg_node,
+    adg_nodes_by_file,
+    adg_nodes_by_layer,
+    adg_snapshot,
+    adg_status,
+    adg_violations,
+    redis_get,
+    redis_hgetall,
+    redis_lrange,
+    redis_scan,
+    redis_smembers,
+    redis_ttl,
+    redis_type,
 )
 
 print("=" * 70)

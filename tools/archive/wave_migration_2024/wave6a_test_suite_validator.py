@@ -7,12 +7,10 @@ to ensure all improvements are working correctly and no regressions exist.
 """
 
 import json
+import re
 import subprocess
 import time
 from pathlib import Path
-from typing import Dict, List, Tuple, Optional
-from collections import defaultdict, Counter
-import re
 
 
 class TestSuiteValidator:
@@ -22,7 +20,7 @@ class TestSuiteValidator:
         self.results = {}
         self.start_time = time.time()
 
-    def run_pytest_collection(self) -> Dict:
+    def run_pytest_collection(self) -> dict:
         """Run pytest collection to verify all tests can be collected."""
         print("=== Running PyTest Collection Validation ===")
 
@@ -62,7 +60,7 @@ class TestSuiteValidator:
                 'collected_tests': 0
             }
 
-    def run_syntax_validation(self) -> Dict:
+    def run_syntax_validation(self) -> dict:
         """Validate syntax of all test files."""
         print("=== Running Syntax Validation ===")
 
@@ -74,7 +72,7 @@ class TestSuiteValidator:
             if test_file.is_file():
                 try:
                     # Try to compile the file
-                    with open(test_file, 'r', encoding='utf-8') as f:
+                    with open(test_file, encoding='utf-8') as f:
                         content = f.read()
 
                     compile(content, str(test_file), 'exec')
@@ -100,7 +98,7 @@ class TestSuiteValidator:
             'syntax_errors': syntax_errors
         }
 
-    def run_import_validation(self) -> Dict:
+    def run_import_validation(self) -> dict:
         """Validate imports in test files."""
         print("=== Running Import Validation ===")
 
@@ -145,7 +143,7 @@ class TestSuiteValidator:
             'import_errors': import_errors[:20]  # Limit to first 20 errors
         }
 
-    def validate_test_quality_metrics(self) -> Dict:
+    def validate_test_quality_metrics(self) -> dict:
         """Validate test quality metrics against Waves 1-5 improvements."""
         print("=== Running Test Quality Validation ===")
 
@@ -153,19 +151,19 @@ class TestSuiteValidator:
         wave_results = {}
 
         try:
-            with open('artifacts/hollowed_tests_analysis.json', 'r') as f:
+            with open('artifacts/hollowed_tests_analysis.json') as f:
                 wave_results['wave3'] = json.load(f)
         except:
             wave_results['wave3'] = {'summary': {'hollowed_tests': 0}}
 
         try:
-            with open('artifacts/guardian_swallow_analysis.json', 'r') as f:
+            with open('artifacts/guardian_swallow_analysis.json') as f:
                 wave_results['wave4'] = json.load(f)
         except:
             wave_results['wave4'] = {'summary': {'files_needing_conversion': 0}}
 
         try:
-            with open('artifacts/test_quality_analysis.json', 'r') as f:
+            with open('artifacts/test_quality_analysis.json') as f:
                 wave_results['wave5'] = json.load(f)
         except:
             wave_results['wave5'] = {'summary': {'total_issues': 0}}
@@ -226,7 +224,7 @@ class TestSuiteValidator:
             }
         }
 
-    def run_sample_test_execution(self) -> Dict:
+    def run_sample_test_execution(self) -> dict:
         """Run a sample of tests to verify execution works."""
         print("=== Running Sample Test Execution ===")
 
@@ -289,7 +287,7 @@ class TestSuiteValidator:
             'results': execution_results
         }
 
-    def generate_validation_report(self) -> Dict:
+    def generate_validation_report(self) -> dict:
         """Generate comprehensive validation report."""
         print("=== Generating Validation Report ===")
 
@@ -332,7 +330,7 @@ class TestSuiteValidator:
 
         return report
 
-    def save_report(self, report: Dict, filename: str = 'wave6a_validation_report.json'):
+    def save_report(self, report: dict, filename: str = 'wave6a_validation_report.json'):
         """Save validation report to file."""
         report_path = Path('artifacts') / filename
         report_path.parent.mkdir(exist_ok=True)
@@ -353,7 +351,7 @@ def main():
     report = validator.generate_validation_report()
 
     # Print summary
-    print(f"\n=== Validation Summary ===")
+    print("\n=== Validation Summary ===")
     print(f"Overall Success: {'✅ PASS' if report['overall_success'] else '❌ FAIL'}")
     print(f"Validation Time: {report['validation_time_seconds']:.2f} seconds")
 
@@ -367,14 +365,14 @@ def main():
     # Quality improvements
     quality = report['quality']
     improvements = quality['improvements']
-    print(f"\n=== Wave Improvements Status ===")
+    print("\n=== Wave Improvements Status ===")
     print(f"Hollowed Tests Eliminated: {'✅' if improvements['hollowed_tests_eliminated'] else '❌'}")
     print(f"Guardian Swallows Eliminated: {'✅' if improvements['guardian_swallows_eliminated'] else '❌'}")
     print(f"Print Statements Eliminated: {'✅' if improvements['print_statements_eliminated'] else '❌'}")
 
     # Current metrics
     current = quality['current_metrics']
-    print(f"\n=== Current Test Suite Metrics ===")
+    print("\n=== Current Test Suite Metrics ===")
     print(f"Total Test Files: {current['total_test_files']}")
     print(f"Remaining Hollowed Tests: {current['hollowed_tests']}")
     print(f"Remaining Guardian Swallows: {current['guardian_swallows']}")
@@ -384,9 +382,9 @@ def main():
     validator.save_report(report)
 
     if report['overall_success']:
-        print(f"\n🎉 Wave 6a Validation PASSED! Test suite is ready for production.")
+        print("\n🎉 Wave 6a Validation PASSED! Test suite is ready for production.")
     else:
-        print(f"\n⚠️  Wave 6a Validation FAILED! Issues need to be addressed.")
+        print("\n⚠️  Wave 6a Validation FAILED! Issues need to be addressed.")
 
     return report
 

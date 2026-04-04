@@ -44,14 +44,14 @@ class _UWGIngressGateVisitor(BaseStructuralVisitor):
 
     def visit_Call(self, node: ast.Call) -> None:
         """Extract UWG ingress gate edges from call expressions."""
-        from agentic_core.adg.schema_util import (
-            canonical_name,
-            UWG_VALIDATES_INTENT_SYMBOLS,
-            UWG_CHECKS_POLICY_HASH_SYMBOLS,
-            UWG_CHECKS_CAPABILITY_SET_SYMBOLS,
-            UWG_BLAST_RADIUS_SYMBOLS,
-        )
         from agentic_core.adg.extraction.static_scanner import Edge as _Edge
+        from agentic_core.adg.schema_util import (
+            UWG_BLAST_RADIUS_SYMBOLS,
+            UWG_CHECKS_CAPABILITY_SET_SYMBOLS,
+            UWG_CHECKS_POLICY_HASH_SYMBOLS,
+            UWG_VALIDATES_INTENT_SYMBOLS,
+            canonical_name,
+        )
 
         sym = self._sym(node.func)
         if not sym:
@@ -143,14 +143,14 @@ class _MutationRecordAssemblyVisitor(BaseStructuralVisitor):
 
     def visit_Call(self, node: ast.Call) -> None:
         """Extract mutation record assembly edges from call expressions."""
+        from agentic_core.adg.extraction.static_scanner import Edge as _Edge
         from agentic_core.adg.schema_util import (
-            canonical_name,
+            EXECUTION_TRACE_PACKAGE_SYMBOLS,
+            HMAC_SEAL_SYMBOLS,
             MUTATION_DIFF_SYMBOLS,
             MUTATION_REPLAY_KEY_SYMBOLS,
-            HMAC_SEAL_SYMBOLS,
-            EXECUTION_TRACE_PACKAGE_SYMBOLS,
+            canonical_name,
         )
-        from agentic_core.adg.extraction.static_scanner import Edge as _Edge
 
         sym = self._sym(node.func)
         if not sym:
@@ -246,18 +246,18 @@ class _AuthoritativeCommitVisitor(BaseStructuralVisitor):
 
     def visit_Call(self, node: ast.Call) -> None:
         """Extract authoritative commit edges from call expressions."""
+        from agentic_core.adg.extraction.static_scanner import Edge as _Edge
         from agentic_core.adg.schema_util import (
-            canonical_name,
             CLAIMS_WRITE_LOCK_SYMBOLS,
             DURABLE_COMMIT_SYMBOLS,
             HASH_CHAIN_APPEND_SYMBOLS,
-            ROLLBACK_HEAL_SYMBOLS,
+            L4_TELEMETRY_SYNC_SYMBOLS,
             MATERIALIZES_READ_VIEW_SYMBOLS,
             RETRIEVAL_SURFACE_REFRESH_SYMBOLS,
+            ROLLBACK_HEAL_SYMBOLS,
             SWAPS_VERSION_ALIAS_SYMBOLS,
-            L4_TELEMETRY_SYNC_SYMBOLS,
+            canonical_name,
         )
-        from agentic_core.adg.extraction.static_scanner import Edge as _Edge
 
         sym = self._sym(node.func)
         if not sym:
@@ -399,15 +399,15 @@ class _OutboundReadBridgeVisitor(BaseStructuralVisitor):
 
     def visit_Call(self, node: ast.Call) -> None:
         """Extract outbound read bridge edges from call expressions."""
-        from agentic_core.adg.schema_util import (
-            canonical_name,
-            READS_L4_SURFACE_SYMBOLS,
-            L0_RECEIVES_POLICY_HASH_SYMBOLS,
-            L5_READS_L4_SURFACE_SYMBOLS,
-            L3_READS_L4_SURFACE_SYMBOLS,
-            L6_INGESTS_L4_TRACE_SYMBOLS,
-        )
         from agentic_core.adg.extraction.static_scanner import Edge as _Edge
+        from agentic_core.adg.schema_util import (
+            L0_RECEIVES_POLICY_HASH_SYMBOLS,
+            L3_READS_L4_SURFACE_SYMBOLS,
+            L5_READS_L4_SURFACE_SYMBOLS,
+            L6_INGESTS_L4_TRACE_SYMBOLS,
+            READS_L4_SURFACE_SYMBOLS,
+            canonical_name,
+        )
 
         sym = self._sym(node.func)
         if not sym:

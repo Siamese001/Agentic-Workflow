@@ -7,7 +7,6 @@ including filtering, ranking, and truncation strategies.
 from __future__ import annotations
 
 from datetime import datetime
-from typing import Dict, List, Optional, Tuple
 
 from agentic_core.L1_cognition.config.graphrag_config import get_config
 from agentic_core.L1_cognition.engines.search_fusion_engine import SearchFusionEngine
@@ -99,7 +98,7 @@ class ContextAssembler:
     def __init__(
         self,
         search_engine: SearchFusionEngine,
-        config: Optional[RAGConfig] = None
+        config: RAGConfig | None = None
     ) -> None:
         """Initialize the context assembler.
 
@@ -112,7 +111,7 @@ class ContextAssembler:
         self.graphrag_config = get_config()
 
         # Context assembly statistics
-        self._assembly_stats: Dict[str, List[float]] = {
+        self._assembly_stats: dict[str, list[float]] = {
             "assembly_time": [],
             "context_length": [],
             "item_count": []
@@ -211,7 +210,7 @@ class ContextAssembler:
         self,
         search_response: SearchResponse,
         query: RAGQuery
-    ) -> List[ContextItem]:
+    ) -> list[ContextItem]:
         """Convert search results to context items."""
         context_items = []
 
@@ -246,9 +245,9 @@ class ContextAssembler:
 
     def _filter_and_rank_items(
         self,
-        items: List[ContextItem],
+        items: list[ContextItem],
         query: RAGQuery
-    ) -> List[ContextItem]:
+    ) -> list[ContextItem]:
         """Filter and rank context items."""
         # Apply filters
         filtered_items = []
@@ -279,9 +278,9 @@ class ContextAssembler:
 
     def _apply_diversity_filtering(
         self,
-        items: List[ContextItem],
+        items: list[ContextItem],
         query: RAGQuery
-    ) -> List[ContextItem]:
+    ) -> list[ContextItem]:
         """Apply diversity filtering to avoid redundant items."""
         if len(items) <= query.min_context_items:
             return items
@@ -315,7 +314,7 @@ class ContextAssembler:
 
         return diverse_items
 
-    def _is_too_similar(self, item: ContextItem, existing_items: List[ContextItem]) -> bool:
+    def _is_too_similar(self, item: ContextItem, existing_items: list[ContextItem]) -> bool:
         """Check if an item is too similar to existing items."""
         # Simple text similarity check
         item_words = set(item.content.lower().split())
@@ -339,9 +338,9 @@ class ContextAssembler:
 
     def _apply_length_constraints(
         self,
-        items: List[ContextItem],
+        items: list[ContextItem],
         query: RAGQuery
-    ) -> Tuple[List[ContextItem], bool]:
+    ) -> tuple[list[ContextItem], bool]:
         """Apply length constraints to context items."""
         total_length = sum(len(item.content) for item in items)
 
@@ -387,7 +386,7 @@ class ContextAssembler:
     def _create_context(
         self,
         query: RAGQuery,
-        items: List[ContextItem],
+        items: list[ContextItem],
         truncation_applied: bool,
         start_time: datetime
     ) -> RAGContext:
@@ -443,7 +442,7 @@ class ContextAssembler:
         # Rough estimate: ~4 characters per token
         return max(1, text_length // 4)
 
-    def get_assembly_stats(self) -> Dict[str, Dict[str, float]]:
+    def get_assembly_stats(self) -> dict[str, dict[str, float]]:
         """Get context assembly statistics."""
         stats = {}
 
@@ -469,7 +468,7 @@ class ContextAssembler:
 # Factory function
 def create_context_assembler(
     search_engine: SearchFusionEngine,
-    config: Optional[RAGConfig] = None
+    config: RAGConfig | None = None
 ) -> ContextAssembler:
     """Create a context assembler."""
     return ContextAssembler(search_engine, config)

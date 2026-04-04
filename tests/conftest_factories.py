@@ -2,12 +2,13 @@
 Common test data factories and fixtures for the test suite.
 """
 
-import pytest
-import tempfile
 import json
+import tempfile
 from pathlib import Path
-from unittest.mock import Mock, MagicMock
-from typing import Dict, Any, List
+from typing import Any
+from unittest.mock import Mock
+
+import pytest
 
 
 @pytest.fixture
@@ -68,14 +69,14 @@ class TestDataFactory:
         return path
 
     @staticmethod
-    def create_json_file(path: Path, data: Dict[Any, Any]):
+    def create_json_file(path: Path, data: dict[Any, Any]):
         """Create a JSON test file."""
         path.parent.mkdir(parents=True, exist_ok=True)
         path.write_text(json.dumps(data, indent=2))
         return path
 
     @staticmethod
-    def create_mock_response(status: str = "success", data: Dict = None):
+    def create_mock_response(status: str = "success", data: dict = None):
         """Create a mock response object."""
         response = Mock()
         response.status_code = 200 if status == "success" else 400
@@ -84,7 +85,7 @@ class TestDataFactory:
         return response
 
     @staticmethod
-    def create_test_agent(name: str = "TestAgent", capabilities: List[str] = None):
+    def create_test_agent(name: str = "TestAgent", capabilities: list[str] = None):
         """Create a test agent with specified capabilities."""
         agent = Mock()
         agent.name = name

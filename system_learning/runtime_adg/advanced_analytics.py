@@ -17,13 +17,11 @@ USAGE:
     recommendations = analyzer.get_optimization_recommendations(insights)
 """
 
-import json
 import logging
 import statistics
 import time
-from collections import defaultdict, Counter
 from dataclasses import dataclass, field
-from typing import Any, Dict, List, Optional, Set, Tuple
+from typing import Any
 
 from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     emit_determinism_digest,
@@ -31,8 +29,6 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 )
 from system_learning.runtime_adg import (
     RuntimeADGSnapshot,
-    RuntimeADGNode,
-    RuntimeADGEdge,
 )
 
 emit_determinism_digest("advanced_adg_analytics", "advanced_adg_analytics_digest")
@@ -49,9 +45,9 @@ class PerformanceMetrics:
     avg_node_duration_ms: float = 0.0
     max_node_duration_ms: float = 0.0
     min_node_duration_ms: float = float('inf')
-    bottleneck_nodes: List[Dict[str, Any]] = field(default_factory=list)
-    slow_operations: List[Dict[str, Any]] = field(default_factory=list)
-    fast_operations: List[Dict[str, Any]] = field(default_factory=list)
+    bottleneck_nodes: list[dict[str, Any]] = field(default_factory=list)
+    slow_operations: list[dict[str, Any]] = field(default_factory=list)
+    fast_operations: list[dict[str, Any]] = field(default_factory=list)
     critical_path_duration_ms: float = 0.0
     parallelism_factor: float = 0.0
 
@@ -60,13 +56,13 @@ class PerformanceMetrics:
 class PatternMetrics:
     """Pattern analysis metrics."""
 
-    layer_distribution: Dict[str, int] = field(default_factory=dict)
-    component_distribution: Dict[str, int] = field(default_factory=dict)
-    span_type_distribution: Dict[str, int] = field(default_factory=dict)
-    error_patterns: List[Dict[str, Any]] = field(default_factory=list)
-    timing_patterns: Dict[str, List[Dict[str, Any]]] = field(default_factory=dict)
-    relation_patterns: Dict[str, int] = field(default_factory=dict)
-    anomaly_patterns: List[Dict[str, Any]] = field(default_factory=list)
+    layer_distribution: dict[str, int] = field(default_factory=dict)
+    component_distribution: dict[str, int] = field(default_factory=dict)
+    span_type_distribution: dict[str, int] = field(default_factory=dict)
+    error_patterns: list[dict[str, Any]] = field(default_factory=list)
+    timing_patterns: dict[str, list[dict[str, Any]]] = field(default_factory=dict)
+    relation_patterns: dict[str, int] = field(default_factory=dict)
+    anomaly_patterns: list[dict[str, Any]] = field(default_factory=list)
 
 
 @dataclass
@@ -75,8 +71,8 @@ class OptimizationInsights:
 
     performance_metrics: PerformanceMetrics = field(default_factory=PerformanceMetrics)
     pattern_metrics: PatternMetrics = field(default_factory=PatternMetrics)
-    recommendations: List[Dict[str, Any]] = field(default_factory=list)
-    risk_factors: List[Dict[str, Any]] = field(default_factory=list)
+    recommendations: list[dict[str, Any]] = field(default_factory=list)
+    risk_factors: list[dict[str, Any]] = field(default_factory=list)
     efficiency_score: float = 0.0
     complexity_score: float = 0.0
     reliability_score: float = 0.0
@@ -92,10 +88,10 @@ class AdvancedADGAnalytics:
 
     def __init__(self) -> None:
         """Initialize advanced analytics engine."""
-        self._analysis_cache: Dict[str, OptimizationInsights] = {}
-        self._historical_patterns: List[Dict[str, Any]] = []
-        self._performance_baselines: Dict[str, float] = {}
-        self._anomaly_thresholds: Dict[str, float] = {
+        self._analysis_cache: dict[str, OptimizationInsights] = {}
+        self._historical_patterns: list[dict[str, Any]] = []
+        self._performance_baselines: dict[str, float] = {}
+        self._anomaly_thresholds: dict[str, float] = {
             "slow_operation_threshold_ms": 1000.0,
             "fast_operation_threshold_ms": 10.0,
             "error_rate_threshold": 0.05,
@@ -259,7 +255,7 @@ class AdvancedADGAnalytics:
 
         return patterns
 
-    def _generate_recommendations(self, insights: OptimizationInsights) -> List[Dict[str, Any]]:
+    def _generate_recommendations(self, insights: OptimizationInsights) -> list[dict[str, Any]]:
         """Generate optimization recommendations."""
         recommendations = []
 
@@ -343,7 +339,7 @@ class AdvancedADGAnalytics:
 
         return recommendations
 
-    def _identify_risk_factors(self, insights: OptimizationInsights) -> List[Dict[str, Any]]:
+    def _identify_risk_factors(self, insights: OptimizationInsights) -> list[dict[str, Any]]:
         """Identify potential risk factors."""
         risks = []
 
@@ -488,7 +484,7 @@ class AdvancedADGAnalytics:
 
         return max_concurrent / len(snapshot.nodes) if snapshot.nodes else 0.0
 
-    def _detect_anomalies(self, snapshot: RuntimeADGSnapshot, patterns: PatternMetrics) -> List[Dict[str, Any]]:
+    def _detect_anomalies(self, snapshot: RuntimeADGSnapshot, patterns: PatternMetrics) -> list[dict[str, Any]]:
         """Detect anomalies in the snapshot."""
         anomalies = []
 
@@ -541,7 +537,7 @@ class AdvancedADGAnalytics:
         if len(self._historical_patterns) > 1000:
             self._historical_patterns = self._historical_patterns[-1000:]
 
-    def get_trend_analysis(self) -> Dict[str, Any]:
+    def get_trend_analysis(self) -> dict[str, Any]:
         """Get trend analysis from historical patterns."""
         if len(self._historical_patterns) < 2:
             return {"message": "Insufficient historical data"}
@@ -561,7 +557,7 @@ class AdvancedADGAnalytics:
             "analysis_period": "last 10 snapshots",
         }
 
-    def _calculate_trend(self, values: List[float]) -> str:
+    def _calculate_trend(self, values: list[float]) -> str:
         """Calculate trend direction from values."""
         if len(values) < 2:
             return "stable"
@@ -588,7 +584,7 @@ class AdvancedADGAnalytics:
         else:
             return "stable"
 
-    def get_optimization_recommendations(self, insights: OptimizationInsights) -> List[Dict[str, Any]]:
+    def get_optimization_recommendations(self, insights: OptimizationInsights) -> list[dict[str, Any]]:
         """Get prioritized optimization recommendations."""
         # Sort recommendations by priority
         priority_order = {"high": 3, "medium": 2, "low": 1}
@@ -601,7 +597,7 @@ class AdvancedADGAnalytics:
 
         return sorted_recommendations
 
-    def get_performance_baselines(self) -> Dict[str, float]:
+    def get_performance_baselines(self) -> dict[str, float]:
         """Get current performance baselines."""
         if not self._historical_patterns:
             return {}
@@ -642,13 +638,13 @@ def analyze_snapshot_for_insights(snapshot: RuntimeADGSnapshot) -> OptimizationI
     return analytics.analyze_snapshot(snapshot)
 
 
-def get_system_trends() -> Dict[str, Any]:
+def get_system_trends() -> dict[str, Any]:
     """Get system performance trends."""
     analytics = get_global_analytics()
     return analytics.get_trend_analysis()
 
 
-def get_performance_recommendations(snapshot: RuntimeADGSnapshot) -> List[Dict[str, Any]]:
+def get_performance_recommendations(snapshot: RuntimeADGSnapshot) -> list[dict[str, Any]]:
     """
     Get performance optimization recommendations.
 

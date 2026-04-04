@@ -3,8 +3,9 @@
 Final verification of broken test files only.
 """
 
-import pathlib
 import ast
+import pathlib
+
 
 def final_verification():
     """Verify all test files are now syntactically correct."""

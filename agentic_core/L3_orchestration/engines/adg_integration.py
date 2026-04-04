@@ -26,11 +26,11 @@ import logging
 import sqlite3
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Any, Optional
+from typing import Any
 
 from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-    _emit_records_execution_trace,
     _emit_pulls_context,
+    _emit_records_execution_trace,
 )
 
 Logger = logging.getLogger(__name__)
@@ -49,12 +49,12 @@ class ADGNode:
     file_path: str
     symbol_name: str
     confidence: float = 1.0
-    precision_type: Optional[str] = None
-    type_surface: Optional[str] = None
-    enclosing_symbol: Optional[str] = None
+    precision_type: str | None = None
+    type_surface: str | None = None
+    enclosing_symbol: str | None = None
 
     @classmethod
-    def from_row(cls, row: sqlite3.Row) -> "ADGNode":
+    def from_row(cls, row: sqlite3.Row) -> ADGNode:
         """Create ADGNode from SQLite row."""
         # Confidence is a string enum: 'HIGH', 'MEDIUM', 'LOW'
         confidence_map = {"HIGH": 1.0, "MEDIUM": 0.5, "LOW": 0.25}
@@ -86,11 +86,11 @@ class ADGEdge:
     source_file: str
     line_no: int
     symbol: str
-    semantic_type: Optional[str] = None
+    semantic_type: str | None = None
     confidence_score: float = 1.0
 
     @classmethod
-    def from_row(cls, row: sqlite3.Row) -> "ADGEdge":
+    def from_row(cls, row: sqlite3.Row) -> ADGEdge:
         """Create ADGEdge from SQLite row."""
         return cls(
             edge_id=str(row["id"]),
@@ -154,7 +154,7 @@ class ADGQueryClient:
     - Detect layer violations
     """
 
-    def __init__(self, adg_db_path: Optional[str | Path] = None):
+    def __init__(self, adg_db_path: str | Path | None = None):
         """Initialize ADG query client.
 
         Args:
@@ -162,7 +162,7 @@ class ADGQueryClient:
         """
         self.adg_db_path = Path(adg_db_path) if adg_db_path else DEFAULT_ADG_PATH
         self._cache: dict[str, Any] = {}
-        self._connection: Optional[sqlite3.Connection] = None
+        self._connection: sqlite3.Connection | None = None
 
         if not self.adg_db_path.exists():
             Logger.warning(f"ADG database not found at {self.adg_db_path}")
@@ -192,7 +192,7 @@ class ADGQueryClient:
                 raise ConnectionError(f"Failed to connect to ADG database {self.adg_db_path}: {e}") from e
         return self._connection
 
-    def __enter__(self) -> "ADGQueryClient":
+    def __enter__(self) -> ADGQueryClient:
         """Context manager entry."""
         return self
 
@@ -226,7 +226,7 @@ class ADGQueryClient:
         Logger.debug(f"Found {len(nodes)} nodes for file: {file_path}")
         return nodes
 
-    def get_node_by_symbol(self, symbol_name: str) -> Optional[ADGNode]:
+    def get_node_by_symbol(self, symbol_name: str) -> ADGNode | None:
         """Get ADG node by its symbol name.
 
         Args:
@@ -249,7 +249,7 @@ class ADGQueryClient:
     def get_edges_for_node(
         self,
         node_id: str,
-        relation_type: Optional[str] = None,
+        relation_type: str | None = None,
         direction: str = "out",
     ) -> list[ADGEdge]:
         """Get edges for a specific node.
@@ -319,7 +319,7 @@ class ADGQueryClient:
     def get_fanout_edges(
         self,
         node_id: str,
-        relation_type: Optional[str] = None,
+        relation_type: str | None = None,
         limit: int = 100,
     ) -> FanAnalysisResult:
         """Get outgoing edges (fan-out) for a node.
@@ -351,7 +351,7 @@ class ADGQueryClient:
     def get_fanin_edges(
         self,
         node_id: str,
-        relation_type: Optional[str] = None,
+        relation_type: str | None = None,
         limit: int = 100,
     ) -> FanAnalysisResult:
         """Get incoming edges (fan-in) for a node.
@@ -378,7 +378,7 @@ class ADGQueryClient:
             unique_targets=unique_sources[:limit],
         )
 
-    def _get_node_info(self, node_id: str) -> Optional[ADGNode]:
+    def _get_node_info(self, node_id: str) -> ADGNode | None:
         """Get node info by ID."""
         conn = self._get_connection()
         cursor = conn.cursor()
@@ -392,7 +392,7 @@ class ADGQueryClient:
         self,
         root_node_id: str,
         max_depth: int = 3,
-        relation_types: Optional[list[str]] = None,
+        relation_types: list[str] | None = None,
     ) -> ImpactAnalysisResult:
         """Analyze impact of a node - what depends on it (transitive fan-in).
 
@@ -468,7 +468,7 @@ class ADGQueryClient:
 
     def detect_layer_violations(
         self,
-        file_path: Optional[str] = None,
+        file_path: str | None = None,
     ) -> list[LayerViolation]:
         """Detect layer boundary violations.
 
@@ -568,7 +568,7 @@ class ADGQueryClient:
 
     def get_graph_topology(
         self,
-        edge_types: Optional[list[str]] = None,
+        edge_types: list[str] | None = None,
     ) -> dict[str, Any]:
         """Get overall graph topology statistics.
 
@@ -651,7 +651,7 @@ class GraphRAGADGIntegration:
 
     def __init__(
         self,
-        adg_client: Optional[ADGQueryClient] = None,
+        adg_client: ADGQueryClient | None = None,
     ):
         """Initialize GraphRAG-ADG integration.
 
@@ -838,7 +838,7 @@ class GraphRAGADGIntegration:
 
     def get_layer_violations(
         self,
-        file_path: Optional[str] = None,
+        file_path: str | None = None,
     ) -> dict[str, Any]:
         """Get layer violations - accelerator query #3.
 
@@ -869,8 +869,8 @@ class GraphRAGADGIntegration:
 
 
 # Global instance
-_global_adg_integration: Optional[GraphRAGADGIntegration] = None
-_global_adg_client: Optional[ADGQueryClient] = None
+_global_adg_integration: GraphRAGADGIntegration | None = None
+_global_adg_client: ADGQueryClient | None = None
 
 
 def get_global_adg_client() -> ADGQueryClient:

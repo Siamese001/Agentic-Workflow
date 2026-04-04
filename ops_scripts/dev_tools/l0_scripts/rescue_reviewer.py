@@ -234,12 +234,11 @@ class RescueReviewer:
             print('[OK] Archive is empty. Sovereignty is pure.')
             return
         print(f'\n--- SOVEREIGN ARCHIVE REVIEW (Auto-Home: {auto_home}) ---')
-        from agentic_core.utils.ssot_discovery_validator import get_python_files
-
         from agentic_core.L5_safety.config.structure_blueprint import (
             CANON_SIGNALS,
             DEFAULT_CORE_HEALING_TERRITORY,
         )
+        from agentic_core.utils.ssot_discovery_validator import get_python_files
         for arch_file in get_python_files(self.archive_path):
             rel: Any = arch_file.relative_to(self.archive_path)
             content: Any = arch_file.read_text(encoding='utf-8', errors='ignore')

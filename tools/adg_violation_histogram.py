@@ -1,9 +1,7 @@
 #!/usr/bin/env python3
 """Query ADG violations with histogram and P0-P4 split."""
 import sqlite3
-import json
 from pathlib import Path
-from collections import Counter
 
 adg_dir = Path('artifacts/adg')
 db_files = sorted(adg_dir.glob('adg_indexed_*.sqlite'))

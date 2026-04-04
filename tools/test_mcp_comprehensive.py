@@ -4,11 +4,12 @@ Comprehensive MCP Test Suite
 Tests all MCP servers for functionality, performance, and integration.
 """
 
-import subprocess
 import json
-import time
 import os
+import subprocess
+import time
 from pathlib import Path
+
 
 class MCPTester:
     def __init__(self):
@@ -18,7 +19,7 @@ class MCPTester:
 
     def load_config(self):
         """Load MCP configuration."""
-        with open(self.config_file, 'r') as f:
+        with open(self.config_file) as f:
             return json.load(f)
 
     def test_node_server(self, name, config):
@@ -209,7 +210,7 @@ class MCPTester:
         # Performance metrics
         metrics = self.get_performance_metrics()
 
-        print(f'\\n📊 Performance Metrics')
+        print('\\n📊 Performance Metrics')
         print('=' * 25)
         print(f'Total servers: {metrics["total_servers"]}')
         print(f'Working servers: {metrics["working_servers"]}')
@@ -226,7 +227,7 @@ class MCPTester:
                 print(f'Slowest: {name} ({result["time"]:.3f}s)')
 
         # Optimization status
-        print(f'\\n🚀 Optimization Status')
+        print('\\n🚀 Optimization Status')
         print('=' * 25)
 
         node_optimized = len([s for s in servers.values() if s.get('command') == 'node'])

@@ -1,8 +1,6 @@
 """Foundational behavioral tests for agentic_core/utils/canonical_serializer_util.py."""
 from __future__ import annotations
 
-import pytest
-
 
 def test_module_importable():
         """Module canonical_serializer_util must be importable."""

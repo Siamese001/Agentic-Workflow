@@ -3,8 +3,8 @@
 Pipeline C Phase C3: Cache decision policies and execution authority.
 """
 
-from .cache_decision_engine import CacheDecisionEngine, CacheDecision
-from .compute_budget_manager import ComputeBudgetManager, BudgetResult
+from .cache_decision_engine import CacheDecision, CacheDecisionEngine
+from .compute_budget_manager import BudgetResult, ComputeBudgetManager
 from .hybrid_threshold_manager import HybridThresholdManager
 
 __all__ = [

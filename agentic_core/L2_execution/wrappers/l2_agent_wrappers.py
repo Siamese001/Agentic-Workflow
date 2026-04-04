@@ -9,7 +9,6 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Any
 
 from agentic_core.L2_execution.contracts.l2_execution_contract import (
     L2ExecutionAgent,
@@ -34,7 +33,6 @@ from agentic_core.L2_execution.reasoning.StructuredEngineAgent import (
 from agentic_core.L2_execution.reasoning.SubAtomicRegistryAgent import (
     SubAtomicRegistryAgent as _SubAtomicRegistryAgent,
 )
-
 
 # =============================================================================
 # L2EmbeddingSovereignAgent

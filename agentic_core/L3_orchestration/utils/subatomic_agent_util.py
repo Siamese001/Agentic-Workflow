@@ -25,7 +25,7 @@ Logger = logging.getLogger(__name__)
 @dataclass
 class SubAtomicResult:
     """Result of a SubAtomic operation."""
-    
+
     status: str
     details: str
     artifacts: list[Any]
@@ -71,19 +71,19 @@ def heal_repository(
     """
     if _call_path is None:
         _call_path = set()
-    
+
     agent_name = "SubAtomicAgent"
-    
+
     # Cycle detection
     if agent_name in _call_path:
         return {"errors": 1, "cycle_detected": True}
-    
+
     # Depth limiting
     if depth > max_depth:
         return {"errors": 1, "depth_limited": True}
-    
+
     _call_path.add(agent_name)
-    
+
     try:
         # L1 cognition - operational only
         Logger.info("[%s] L1 cognition - operational only", agent_name)
@@ -94,15 +94,15 @@ def heal_repository(
 
 class SubAtomicImpl:
     """Implementation stub for SubAtomic functionality."""
-    
+
     def __init__(self, ctx: Any, name: str):
         self.ctx = ctx
         self.name = name
-    
+
     def can_run(self) -> bool:
         """Check if the implementation can run."""
         return True
-    
+
     def execute(self) -> None:
         """Execute the implementation."""
         pass

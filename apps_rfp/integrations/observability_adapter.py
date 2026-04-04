@@ -12,7 +12,7 @@ from __future__ import annotations
 import logging
 from typing import Any
 
-from apps_rfp.types import RfpRequest, RfpResult, ProposalSection
+from apps_rfp.types import ProposalSection, RfpRequest, RfpResult
 
 _log = logging.getLogger(__name__)
 

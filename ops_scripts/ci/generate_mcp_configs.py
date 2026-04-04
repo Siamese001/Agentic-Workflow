@@ -158,7 +158,7 @@ def check_configs() -> bool:
             actual = json.load(f)
         if actual != expected_workspace:
             workspace_match = False
-            print(f"[MISMATCH] Workspace config differs from manifest")
+            print("[MISMATCH] Workspace config differs from manifest")
     else:
         workspace_match = False
         print(f"[MISSING] Workspace config not found: {WORKSPACE_CONFIG_PATH}")
@@ -169,7 +169,7 @@ def check_configs() -> bool:
             actual = json.load(f)
         if actual != expected_user_global:
             user_global_match = False
-            print(f"[MISMATCH] User-global config differs from manifest")
+            print("[MISMATCH] User-global config differs from manifest")
     else:
         user_global_match = False
         print(f"[MISSING] User-global config not found: {USER_GLOBAL_CONFIG_PATH}")

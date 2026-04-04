@@ -8,14 +8,10 @@ to ensure test suite hardening compliance and quality standards.
 
 import json
 import re
-import ast
-import subprocess
-import sys
-from pathlib import Path
-from typing import Dict, List, Set, Tuple, Optional
 from collections import defaultdict
 from dataclasses import dataclass
 from enum import Enum
+from pathlib import Path
 
 
 class ValidationSeverity(Enum):
@@ -61,7 +57,7 @@ class ValidationEnforcer:
             'by_category': defaultdict(int)
         }
 
-    def _define_validation_rules(self) -> List[ValidationRule]:
+    def _define_validation_rules(self) -> list[ValidationRule]:
         """Define comprehensive validation rules."""
         rules = [
             # Skip pattern rules
@@ -156,7 +152,7 @@ class ValidationEnforcer:
 
         return rules
 
-    def validate_test_suite(self, test_dir: str = "tests") -> Dict:
+    def validate_test_suite(self, test_dir: str = "tests") -> dict:
         """Validate the entire test suite."""
         print("=== Validating Test Suite ===")
 
@@ -186,7 +182,7 @@ class ValidationEnforcer:
     def _validate_file(self, file_path: Path):
         """Validate a single test file."""
         try:
-            with open(file_path, 'r', encoding='utf-8') as f:
+            with open(file_path, encoding='utf-8') as f:
                 content = f.read()
 
             rel_path = str(file_path.relative_to(Path.cwd()))
@@ -219,7 +215,7 @@ class ValidationEnforcer:
                 self.stats['by_severity'][rule.severity.value] += 1
                 self.stats['by_category'][rule.category] += 1
 
-    def _generate_summary(self) -> Dict:
+    def _generate_summary(self) -> dict:
         """Generate validation summary."""
         total_issues = self.stats['issues_found']
 
@@ -258,7 +254,7 @@ class ValidationEnforcer:
 
         return round(score, 1)
 
-    def _generate_recommendations(self) -> List[str]:
+    def _generate_recommendations(self) -> list[str]:
         """Generate improvement recommendations."""
         recommendations = []
 
@@ -326,18 +322,18 @@ class ValidationEnforcer:
 
         # Print summary
         summary = report['summary']
-        print(f"\n=== Validation Enforcement Summary ===")
+        print("\n=== Validation Enforcement Summary ===")
         print(f"Files validated: {summary['total_files_validated']}")
         print(f"Issues found: {summary['total_issues_found']}")
         print(f"Compliance score: {summary['compliance_score']:.1f}%")
 
         if summary['issues_by_severity']:
-            print(f"\nIssues by severity:")
+            print("\nIssues by severity:")
             for severity, count in summary['issues_by_severity'].items():
                 print(f"  {severity}: {count}")
 
         if summary['recommendations']:
-            print(f"\nRecommendations:")
+            print("\nRecommendations:")
             for rec in summary['recommendations']:
                 print(f"  • {rec}")
 
@@ -345,7 +341,7 @@ class ValidationEnforcer:
 
         return report
 
-    def _describe_enforcement_tools(self) -> List[Dict]:
+    def _describe_enforcement_tools(self) -> list[dict]:
         """Describe the enforcement tools created."""
         tools = [
             {
@@ -382,7 +378,7 @@ class ValidationEnforcer:
 
         return tools
 
-    def create_enforcement_scripts(self) -> Dict:
+    def create_enforcement_scripts(self) -> dict:
         """Create standalone enforcement scripts."""
         print("=== Creating Enforcement Scripts ===")
 
@@ -405,7 +401,7 @@ class ValidationEnforcer:
             'total_scripts': len(scripts_created)
         }
 
-    def _create_validation_runner(self) -> Dict:
+    def _create_validation_runner(self) -> dict:
         """Create standalone validation runner script."""
         script_content = '''#!/usr/bin/env python3
 """
@@ -455,7 +451,7 @@ except ImportError as e:
             'purpose': 'Standalone validation runner'
         }
 
-    def _create_ci_integration(self) -> Dict:
+    def _create_ci_integration(self) -> dict:
         """Create CI integration script."""
         script_content = '''#!/usr/bin/env python3
 """
@@ -510,7 +506,7 @@ if __name__ == '__main__':
             'purpose': 'CI/CD integration script'
         }
 
-    def _create_pre_commit_hook(self) -> Dict:
+    def _create_pre_commit_hook(self) -> dict:
         """Create pre-commit hook script."""
         script_content = '''#!/usr/bin/env python3
 """
@@ -590,7 +586,7 @@ def main():
     # Create enforcement scripts
     scripts = enforcer.create_enforcement_scripts()
 
-    print(f"\n=== Wave 6a Summary ===")
+    print("\n=== Wave 6a Summary ===")
     print(f"Validation rules defined: {len(enforcer.rules)}")
     print(f"Enforcement scripts created: {scripts['total_scripts']}")
 
