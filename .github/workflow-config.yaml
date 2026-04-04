@@ -1,0 +1,32 @@
+# GitHub Actions Shared Configuration
+# Use this file for workflow-level anchors and common definitions
+
+# Common environment variables
+common_env:
+  PYTHONUNBUFFERED: 1
+  FORCE_COLOR: 1
+  PIP_DISABLE_PIP_VERSION_CHECK: 1
+
+# Python version matrix
+python_matrix:
+  python-version: ['3.10', '3.11', '3.12']
+  os: [ubuntu-latest, windows-latest]
+
+# Test execution flags
+test_flags:
+  - -v
+  - --tb=short
+  - --strict-markers
+  - --color=yes
+  - --timeout=180
+
+# Artifact retention
+artifact_retention: 30
+
+# Workflow triggers
+standard_triggers:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:

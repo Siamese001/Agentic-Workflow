@@ -6,14 +6,7 @@ jobs:
   validation-checks:
     runs-on: ubuntu-latest
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
-    - name: Set up Python
-      uses: actions/setup-python@v4
-      with:
-        python-version: '3.12'
-    - name: Install dependencies
-      run: pip install -r requirements.txt
+    - uses: ./.github/actions/common-setup
     - name: Run skip pattern validation
       run: python tools/wave2a_first_party_remover.py --dry-run
     - name: Run hollowed test detection

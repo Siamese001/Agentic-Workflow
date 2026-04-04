@@ -31,17 +31,10 @@ jobs:
     name: Plan Validation
 
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@v4
+    - uses: ./.github/actions/common-setup
 
-    - name: Set up Python
-      uses: actions/setup-python@v4
-      with:
-        python-version: '3.12'
-
-    - name: Install dependencies
+    - name: Install pytest dependencies
       run: |
-        python -m pip install --upgrade pip
         pip install pytest pytest-cov
 
     - name: Validate Plan Format

@@ -40,16 +40,10 @@ jobs:
   guardian-contract-gate:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: ./.github/actions/common-setup
 
-      - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.12'
-
-      - name: Install dependencies
-        run: |
-          pip install pytest
+      - name: Install pytest
+        run: pip install pytest
 
       - name: Sovereignty interface tests (apps_* direct L* import boundary)
         run: |

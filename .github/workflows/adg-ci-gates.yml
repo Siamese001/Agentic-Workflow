@@ -36,16 +36,9 @@ jobs:
           --health-retries 5
 
     steps:
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
+      - uses: ./.github/actions/common-setup
 
-      - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: "3.12"
-
-      - name: Install dependencies
+      - name: Install extra dependencies for ADG
         run: |
           pip install redis
           pip install -e . --no-deps 2>/dev/null || pip install -r requirements.txt --quiet 2>/dev/null || true

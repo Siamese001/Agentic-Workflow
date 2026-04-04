@@ -8,14 +8,7 @@ jobs:
   validate:
     runs-on: ubuntu-latest
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
-    - name: Set up Python
-      uses: actions/setup-python@v4
-      with:
-        python-version: '3.12'
-    - name: Install dependencies
-      run: pip install -r requirements.txt
+    - uses: ./.github/actions/common-setup
     - name: Run validation enforcement
       run: python tools/validation_runner.py
     - name: Upload validation report
@@ -85,4 +78,3 @@ exit(1 if errors > 0 else 0)
         flags: unittests
         name: codecov-${{ matrix.python-version }}
         fail_ci_if_error: false
-
