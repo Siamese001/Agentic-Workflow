@@ -292,8 +292,48 @@ VOLATILE_TERRITORIES: Final[frozenset[str]] = frozenset(
     {
         "logs",
         "archives",
+        "tests",
+        ".github",
+        ".backup",
+        "artifacts",
+        ".gravity_state",
     },
 )
+
+
+def validate_volatile_exclusion_contract() -> dict[str, Any]:
+    """Validate that volatile territories are properly excluded from Production Lens.
+
+    Contract: Any territory marked volatile=True must appear in GLOBAL_EXCLUDED_DIRS.
+    This ensures Production Lens (build/coverage tools) skips output directories.
+
+    Returns:
+        Dict with validation results:
+        - valid: bool (all contracts satisfied)
+        - violations: list of territory names violating the contract
+        - missing_from_exclusion: list of volatile territories not in GLOBAL_EXCLUDED_DIRS
+        - missing_from_volatile_set: list of excluded territories not in VOLATILE_TERRITORIES
+    """
+    territories = get_all_territories()
+    volatile_from_territories = frozenset(
+        k for k, v in territories.items() if v.get("volatile")
+    )
+
+    # Contract check: volatile territories must be in GLOBAL_EXCLUDED_DIRS
+    missing_from_exclusion = volatile_from_territories - GLOBAL_EXCLUDED_DIRS
+
+    # Contract check: VOLATILE_TERRITORIES frozenset must match volatile territories
+    missing_from_volatile_set = volatile_from_territories - VOLATILE_TERRITORIES
+
+    violations = list(missing_from_exclusion | missing_from_volatile_set)
+
+    return {
+        "valid": len(violations) == 0,
+        "violations": violations,
+        "missing_from_exclusion": list(missing_from_exclusion),
+        "missing_from_volatile_set": list(missing_from_volatile_set),
+        "volatile_territories": list(volatile_from_territories),
+    }
 
 # Territories that permit a .py file directly at depth-1 (allow_root_py flag)
 ALLOW_ROOT_PY_TERRITORIES: Final[frozenset[str]] = frozenset(
@@ -1117,8 +1157,15 @@ GLOBAL_EXCLUDED_DIRS: frozenset[str] = frozenset(
         "archives",
         ".sovereign_healing_backup",
         ".healing_backups",
-        # Test directories (Production Lens)
+        # Volatile/output directories (Production Lens exclusions)
+        "logs",
+        "artifacts",
+        ".github",
+        ".backup",
+        ".gravity_state",
+        # Test directories and artifacts
         "tests",
+        "test_artifacts",
     },
 )
 
