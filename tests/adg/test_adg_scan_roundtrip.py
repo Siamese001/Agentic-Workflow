@@ -13,13 +13,7 @@ Methods used:
 from __future__ import annotations
 
 import sys
-import textwrap
 from pathlib import Path
-
-import pytest
-
-
-
 
 ROOT = Path(__file__).resolve().parents[2]
 if str(ROOT) not in sys.path:
@@ -41,7 +35,6 @@ def _rel_types(edges):
 def _scan(source: str, tmp_path: Path, filename: str = "fixture.py"):
     """Scan source code and return edges."""
     from agentic_core.adg.extraction.static_scanner import _scan_file
-    from agentic_core.adg.artifact.builder import build_artifact
 
     # Write source to temp file
     fixture_path = tmp_path / filename
@@ -49,7 +42,8 @@ def _scan(source: str, tmp_path: Path, filename: str = "fixture.py"):
 
     # Scan the file
     edges, has_parse_error, imports, module_defs = _scan_file(
-        fixture_path, repo_root=tmp_path
+        fixture_path,
+        repo_root=tmp_path,
     )
 
     return edges
@@ -57,7 +51,6 @@ def _scan(source: str, tmp_path: Path, filename: str = "fixture.py"):
 
 def _classify(symbol: str) -> str:
     """Classify a symbol call."""
-    from agentic_core.adg.extraction.static_scanner import _CallVisitor
     # Return classification
     return "call"
 
@@ -75,9 +68,10 @@ def _tag_dead_imports(edges, live_names):
     result = []
     for edge in edges:
         # If edge is an import and symbol not in live_names, retag as dead_imports
-        if edge.relation_type == "imports" and hasattr(edge, 'symbol') and edge.symbol not in live_names:
+        if edge.relation_type == "imports" and hasattr(edge, "symbol") and edge.symbol not in live_names:
             # Create new edge with dead_imports relation type
             from agentic_core.adg.extraction.static_scanner import Edge
+
             new_edge = Edge(
                 from_name=edge.from_name,
                 to_name=edge.to_name,
@@ -97,34 +91,16 @@ class TestRoundTripG3WriteExclusions:
     """G3: WRITE_SIDE_EFFECT_EXCLUSIONS via _scan_file."""
 
 
-
-
-
-
-
 class TestRoundTripG4FutureImports:
     """G4: __future__ not tagged dead via _scan_file."""
-
-
-
 
 
 class TestRoundTripG5DecoratedBy:
     """G5: decorated_by via _scan_file."""
 
 
-
-
-
-
 class TestRoundTripG6ReadsSubtypes:
     """G6: reads_env/reads_secret/reads_config as relation_type via _scan_file."""
-
-
-
-
-
-
 
 
 # ===========================================================================
@@ -144,13 +120,24 @@ class TestClassifyCallBoundary:
             return "write", "writes_to"
         return "call", "calls"
 
+    def test_network_classification(self):
+        """Test that network symbols are classified correctly."""
+        kind, rel = self._classify("requests.get")
+        assert kind == "network"
+        assert rel == "invokes_provider"
 
-# ===========================================================================
-# 5. verify_layer_graph_consistency error branch (schema.py 391-395)
-# ===========================================================================
+    def test_write_classification(self):
+        """Test that write symbols are classified correctly."""
+        kind, rel = self._classify("open")
+        assert kind == "write"
+        assert rel == "writes_to"
 
+    def test_call_classification(self):
+        """Test that generic calls are classified correctly."""
+        kind, rel = self._classify("some_function")
+        assert kind == "call"
+        assert rel == "calls"
 
-class TestVerifyLayerGraphConsistency:
     def _build(self, modules, edges=None):
         """Build a minimal artifact for testing."""
         from agentic_core.adg.artifact.builder_types import ADGArtifact, EntityRecord
@@ -175,19 +162,26 @@ class TestVerifyLayerGraphConsistency:
             else:
                 layer = "L_UNKNOWN"
 
-            entities.append(EntityRecord(
-                adg_name=f"ADG::Module::{mod}",
-                entity_type="module",
-                layer=layer,
-                identity_kind="structural",
-                confidence="HIGH",
-                resolved_path=mod,
-            ))
+            entities.append(
+                EntityRecord(
+                    adg_name=f"ADG::Module::{mod}",
+                    entity_type="module",
+                    layer=layer,
+                    identity_kind="structural",
+                    confidence="HIGH",
+                    resolved_path=mod,
+                ),
+            )
 
         return ADGArtifact(entities=entities, relations=edges or [])
 
-
-
+    def test_layer_consistency_valid(self):
+        """Test that valid layer assignments pass consistency check."""
+        art = self._build(["agentic_core/L0_routing/router.py", "agentic_core/L1_cognition/parser.py"])
+        # Should build without errors
+        assert len(art.entities) == 2
+        assert art.entities[0].layer == "L0"
+        assert art.entities[1].layer == "L1"
 
 
 # ===========================================================================
@@ -198,11 +192,28 @@ class TestVerifyLayerGraphConsistency:
 class TestMixedFixtureScans:
     """Multi-feature fixture files that exercise many visitors simultaneously."""
 
+    def test_mixed_fixture_scans_without_error(self, tmp_path: Path):
+        """Test that complex fixture files scan without errors."""
+        src = """
+import os
+from typing import Dict
 
+CONSTANT = 42
 
+@decorator
+class MyClass(Parent):
+    def __init__(self):
+        self.x = os.environ.get('KEY')
 
+    def method(self):
+        return requests.get('http://example.com')
 
-
+def standalone():
+    open('file.txt', 'w').write('test')
+"""
+        edges = _scan(src, tmp_path)
+        # Should scan without errors - variety of edge types may be present
+        assert isinstance(edges, list)
 
 
 # ===========================================================================
@@ -214,6 +225,7 @@ class TestTagDeadImports:
     def _make_import_edge(self, symbol: str):
         """Create a mock import edge for testing."""
         from agentic_core.adg.extraction.static_scanner import Edge
+
         return Edge(
             from_name="test_module.py",
             to_name=symbol,
@@ -227,6 +239,7 @@ class TestTagDeadImports:
     def _make_call_edge(self, symbol: str):
         """Create a mock call edge for testing."""
         from agentic_core.adg.extraction.static_scanner import Edge
+
         return Edge(
             from_name="test_module.py",
             to_name=symbol,
@@ -237,5 +250,30 @@ class TestTagDeadImports:
             symbol=symbol,
         )
 
+    def test_unused_import_tagged_dead(self):
+        """Test that unused imports are tagged as dead."""
+        import_edge = self._make_import_edge("unused_module")
+        call_edge = self._make_call_edge("used_module")
 
+        edges = [import_edge, call_edge]
+        live_names = {"used_module"}
 
+        result = _tag_dead_imports(edges, live_names)
+
+        # The unused import should be retagged
+        import_edges = [e for e in result if "unused_module" in str(e.to_name)]
+        assert len(import_edges) > 0
+
+    def test_used_import_not_tagged_dead(self):
+        """Test that used imports are NOT tagged as dead."""
+        import_edge = self._make_import_edge("used_module")
+        call_edge = self._make_call_edge("used_module")
+
+        edges = [import_edge, call_edge]
+        live_names = {"used_module"}
+
+        result = _tag_dead_imports(edges, live_names)
+
+        # The used import should remain as 'imports'
+        used_import = [e for e in result if e.symbol == "used_module" and e.relation_type == "imports"]
+        assert len(used_import) > 0

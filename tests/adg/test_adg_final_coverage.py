@@ -58,7 +58,6 @@ from agentic_core.adg.extraction.static_scanner import (
     canonical_name,
 )
 from agentic_core.adg.extraction.visitors import VisitorContext
-from agentic_core.adg.extraction.visitors.governance import _GovernancePlaneVisitor
 
 # Helpers
 # ─────────────────────────────────────────────────────────────────────────────
@@ -88,8 +87,11 @@ def _module_edge(from_path: str, to_path: str, rel: str = "imports") -> Edge:
 class TestInheritanceExtractName:
     def _visit(self, src: str):
         """Visit source and return edges from inheritance visitor."""
+        from agentic_core.adg.extraction.visitors import _InheritanceVisitor
+
         tree = _parse(src)
-        v = _GovernancePlaneVisitor(VisitorContext(canonical_name("Module", "pkg/m.py"), "pkg/m.py"))
+        ctx = VisitorContext(canonical_name("Module", "pkg/m.py"), "pkg/m.py")
+        v = _InheritanceVisitor(ctx)
         v.visit(tree)
         return v.edges
 
@@ -98,9 +100,9 @@ class TestInheritanceExtractName:
         src = "class Foo(parent.Bar): pass"
         edges = self._visit(src)
         # Should find implements edge to parent.Bar
-        assert any(e.relation_type == "implements" for e in edges)
-
-
+        assert any(e.relation_type == "implements" for e in edges), (
+            f"Expected 'implements' edge, got: {[e.relation_type for e in edges]}"
+        )
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -111,7 +113,7 @@ class TestInheritanceExtractName:
 class TestBuilderUnresolvedImports:
     def test_unresolved_import_appended(self):
         """Test that UNRESOLVED_IMPORT kind triggers unresolved_imports append.
-        
+
         Verifies builder.py line 457: when an import cannot be resolved,
         it should be added to the unresolved_imports list.
         """
@@ -131,7 +133,7 @@ class TestBuilderUnresolvedImports:
         )
         art = build_artifact(result)
         # Should track unresolved imports in blind spots
-        assert hasattr(art.blind_spots, 'unresolved_imports') or hasattr(art, 'unresolved_imports')
+        assert hasattr(art.blind_spots, "unresolved_imports") or hasattr(art, "unresolved_imports")
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -165,7 +167,7 @@ class TestBuilderStructuralMetrics:
     def test_layer_violation_count_incremented(self):
         """Two module-to-module import edges across forbidden layers -> violation counted."""
         from_path = "agentic_core/L0_routing/router.py"  # L0
-        to_path = "agentic_core/L5_safety/guardian.py"   # L5 - L0 importing from L5 is FORBIDDEN
+        to_path = "agentic_core/L5_safety/guardian.py"  # L5 - L0 importing from L5 is FORBIDDEN
         edge = Edge(
             from_name=canonical_name("Module", from_path),
             relation_type="imports",
