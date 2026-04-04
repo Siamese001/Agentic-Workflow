@@ -1,7 +1,7 @@
 """
 Feature Interpreter - Converts numeric features into underwriter-readable prose.
 """
-from typing import List, Optional
+from typing import List
 
 from ..types import RiskFeatures, UnderwritingRequest
 

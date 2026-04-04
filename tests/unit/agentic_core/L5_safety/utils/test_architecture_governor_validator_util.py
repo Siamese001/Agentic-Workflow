@@ -99,7 +99,7 @@ class TestArchitectureGovernorValidatorScan:
 
     def test_scan_runs_without_crash(self, tmp_path):
         """Test scan runs without crashing.
-        
+
         The scan may succeed or fail depending on project structure,
         but it should not raise an exception.
         """

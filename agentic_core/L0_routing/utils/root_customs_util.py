@@ -6,10 +6,10 @@ as part of Phase 2 optimization (Wave 5).
 
 Usage:
     from agentic_core.L0_routing.utils.root_customs_util import (
-        scan_root_directory, analyze_content_signatures, 
+        scan_root_directory, analyze_content_signatures,
         determine_routing, run_inspection
     )
-    
+
     # Run inspection
     results = run_inspection(project_root=Path("."), dry_run=True)
 """
@@ -573,11 +573,11 @@ def run_inspection(
     dry_run: bool = True,
 ) -> dict[str, Any]:
     """Run complete enhanced root inspection and routing.
-    
+
     Args:
         project_root: Project root path (defaults to validated project root)
         dry_run: If True, only analyze without moving files
-        
+
     Returns:
         Dictionary with inspection results
     """

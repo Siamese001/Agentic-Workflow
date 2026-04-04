@@ -8,7 +8,7 @@ Usage:
     from agentic_core.L5_safety.utils.complexity_analyzer_util import (
         ComplexityAnalyzer, ComplexityViolation, ComplexityConfig, analyze_repository
     )
-    
+
     # Analyze complexity
     result = analyze_repository(Path("."))
 """
@@ -81,10 +81,10 @@ class ComplexityReport:
 
 def calculate_cyclomatic_complexity(node: ast.AST) -> int:
     """Compute McCabe Cyclomatic Complexity for a node.
-    
+
     Args:
         node: AST node to analyze
-        
+
     Returns:
         Cyclomatic complexity score
     """
@@ -114,7 +114,7 @@ class ComplexityAnalyzer:
 
     def __init__(self, config: ComplexityConfig | None = None) -> None:
         """Initialize analyzer.
-        
+
         Args:
             config: Complexity analysis configuration
         """
@@ -125,10 +125,10 @@ class ComplexityAnalyzer:
 
     def analyze_file(self, file_path: Path) -> list[ComplexityViolation]:
         """Analyze a single file for complexity metrics.
-        
+
         Args:
             file_path: Path to the file to analyze
-            
+
         Returns:
             List of complexity violations found
         """
@@ -199,10 +199,10 @@ class ComplexityAnalyzer:
 
     def analyze_repository(self, target_path: Path | None = None) -> ComplexityReport:
         """Analyze entire repository for complexity metrics.
-        
+
         Args:
             target_path: Optional path to analyze (defaults to project_root)
-            
+
         Returns:
             ComplexityReport with all violations
         """
@@ -231,11 +231,11 @@ class ComplexityAnalyzer:
         **kwargs: Any,
     ) -> dict[str, Any]:
         """Sovereign Interface - report complexity issues (cannot auto-fix).
-        
+
         Args:
             dry_run: If True, only report without changes
             execute: If True, execute fixes (not applicable for complexity)
-            
+
         Returns:
             Healing result dictionary
         """
@@ -249,10 +249,10 @@ class ComplexityAnalyzer:
 
     def heal(self, violation: dict[str, Any]) -> dict[str, Any]:
         """Heal complexity violations (requires manual refactoring).
-        
+
         Args:
             violation: Dictionary with violation details
-            
+
         Returns:
             Healing result dictionary
         """
@@ -271,11 +271,11 @@ def analyze_repository(
     config: ComplexityConfig | None = None,
 ) -> ComplexityReport:
     """Convenience function to analyze repository complexity.
-    
+
     Args:
         target_path: Path to analyze (defaults to current directory)
         config: Optional complexity configuration
-        
+
     Returns:
         ComplexityReport with analysis results
     """
@@ -288,11 +288,11 @@ def analyze_file(
     config: ComplexityConfig | None = None,
 ) -> list[ComplexityViolation]:
     """Convenience function to analyze a single file.
-    
+
     Args:
         file_path: Path to the file to analyze
         config: Optional complexity configuration
-        
+
     Returns:
         List of complexity violations
     """

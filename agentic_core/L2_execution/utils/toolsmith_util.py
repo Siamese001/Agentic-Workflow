@@ -8,7 +8,7 @@ Usage:
     from agentic_core.L2_execution.utils.toolsmith_util import (
         ToolSpec, GeneratedTool, generate_tool_from_template, validate_tool_code
     )
-    
+
     # Generate a tool
     tool = generate_tool_from_template("file_reader", category="file")
 """
@@ -141,10 +141,10 @@ BUILTIN_TEMPLATES: dict[str, str] = {
 
 def get_tool_template(template_name: str) -> str | None:
     """Get a built-in tool template.
-    
+
     Args:
         template_name: Name of the template
-        
+
     Returns:
         Template string or None if not found
     """
@@ -153,7 +153,7 @@ def get_tool_template(template_name: str) -> str | None:
 
 def list_builtin_templates() -> dict[str, str]:
     """List all available built-in templates.
-    
+
     Returns:
         Dictionary mapping template names to descriptions
     """
@@ -170,12 +170,12 @@ def generate_tool_from_template(
     custom_params: dict[str, Any] | None = None,
 ) -> GeneratedTool | None:
     """Generate a tool from a template.
-    
+
     Args:
         template_name: Name of the template to use
         category: Tool category
         custom_params: Custom parameters to override defaults
-        
+
     Returns:
         GeneratedTool or None if template not found
     """
@@ -203,10 +203,10 @@ def generate_tool_from_template(
 
 def validate_tool_code(code: str) -> dict[str, Any]:
     """Validate generated tool code.
-    
+
     Args:
         code: Python code to validate
-        
+
     Returns:
         Validation result dictionary
     """
@@ -227,7 +227,7 @@ def validate_tool_code(code: str) -> dict[str, Any]:
 
 def get_tool_categories() -> dict[str, str]:
     """Get available tool categories.
-    
+
     Returns:
         Dictionary mapping category IDs to descriptions
     """
@@ -247,13 +247,13 @@ def create_tool_spec(
     category: str = "general",
 ) -> ToolSpec:
     """Create a tool specification.
-    
+
     Args:
         name: Tool name
         description: Tool description
         parameters: Parameter specifications
         category: Tool category
-        
+
     Returns:
         ToolSpec instance
     """

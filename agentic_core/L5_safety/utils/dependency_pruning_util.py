@@ -8,7 +8,7 @@ Usage:
     from agentic_core.L5_safety.utils.dependency_pruning_util import (
         DependencyPruner, find_unused_deptry, remove_from_requirements_txt
     )
-    
+
     # Find unused dependencies
     unused = find_unused_deptry(Path("."))
 """
@@ -55,12 +55,12 @@ def safe_execute(
     timeout: int = DEFAULT_TIMEOUT,
 ) -> subprocess.CompletedProcess | None:
     """Safely execute a subprocess command.
-    
+
     Args:
         command: Command and arguments to execute
         cwd: Working directory for execution
         timeout: Timeout in seconds
-        
+
     Returns:
         CompletedProcess result or None if failed
     """
@@ -80,10 +80,10 @@ def safe_execute(
 
 def find_unused_deptry(project_root: Path) -> list[str]:
     """Use deptry to find unused dependencies via AST analysis.
-    
+
     Args:
         project_root: Root directory of the project
-        
+
     Returns:
         List of unused package names, empty if deptry fails or not installed
     """
@@ -107,12 +107,12 @@ def remove_from_requirements_txt(
     dry_run: bool = True,
 ) -> dict[str, Any]:
     """Remove unused packages from requirements.txt.
-    
+
     Args:
         unused: List of package names to remove
         requirements_path: Path to requirements.txt
         dry_run: If True, only comment out instead of removing
-        
+
     Returns:
         Dictionary with removal results
     """
@@ -155,7 +155,7 @@ class DependencyPruner:
         dry_run: bool = True,
     ) -> None:
         """Initialize dependency pruner.
-        
+
         Args:
             project_root: Root directory of the project
             dry_run: If True, only report what would be removed
@@ -166,7 +166,7 @@ class DependencyPruner:
 
     def scan(self) -> PruningResult:
         """Scan for unused dependencies.
-        
+
         Returns:
             PruningResult with scan results
         """
@@ -209,7 +209,7 @@ class DependencyPruner:
 
     def prune(self) -> PruningResult:
         """Scan and optionally remove unused dependencies.
-        
+
         Returns:
             PruningResult with pruning results
         """
@@ -235,10 +235,10 @@ class DependencyPruner:
 
     def heal_repository(self, dry_run: bool = True) -> dict[str, Any]:
         """Heal repository by pruning unused dependencies.
-        
+
         Args:
             dry_run: If True, only report what would be done
-            
+
         Returns:
             Healing result dictionary
         """
@@ -255,10 +255,10 @@ class DependencyPruner:
 
     def heal(self, violation: dict[str, Any]) -> dict[str, Any]:
         """Heal a single dependency violation.
-        
+
         Args:
             violation: Dictionary with violation details
-            
+
         Returns:
             Healing result dictionary
         """
@@ -284,11 +284,11 @@ def prune_dependencies(
     dry_run: bool = True,
 ) -> PruningResult:
     """Convenience function to prune dependencies.
-    
+
     Args:
         project_root: Project root directory
         dry_run: If True, only report what would be removed
-        
+
     Returns:
         PruningResult with pruning results
     """

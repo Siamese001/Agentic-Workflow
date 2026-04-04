@@ -8,7 +8,7 @@ Usage:
     from agentic_core.L3_orchestration.utils.state_management_util import (
         StateManager, StateEntry, IntegrityReport
     )
-    
+
     # Manage state
     manager = StateManager(memory_root=Path(".canon_memory"))
     manager.set_state("key", {"data": "value"})
@@ -93,7 +93,7 @@ class StateManager:
         max_entries: int = 1000,
     ) -> None:
         """Initialize state manager.
-        
+
         Args:
             memory_root: Root directory for state storage
             retention_days: Days to retain state entries
@@ -202,12 +202,12 @@ class StateManager:
         metadata: dict[str, Any] | None = None,
     ) -> str:
         """Atomically set state data with manifest tracking.
-        
+
         Args:
             key: Unique key for the state entry
             data: Data to persist
             metadata: Optional metadata
-            
+
         Returns:
             File path where data was stored
         """
@@ -249,10 +249,10 @@ class StateManager:
 
     def get_state(self, key: str) -> Any | None:
         """Get state data by key.
-        
+
         Args:
             key: State entry key
-            
+
         Returns:
             Deserialized data or None if not found
         """
@@ -276,10 +276,10 @@ class StateManager:
 
     def delete_state(self, key: str) -> bool:
         """Atomically delete state data and manifest entry.
-        
+
         Args:
             key: State entry key
-            
+
         Returns:
             True if deleted, False if not found
         """
@@ -302,10 +302,10 @@ class StateManager:
 
     def list_states(self, prefix: str | None = None) -> list[str]:
         """List all state keys, optionally filtered by prefix.
-        
+
         Args:
             prefix: Optional key prefix filter
-            
+
         Returns:
             List of state keys
         """
@@ -317,7 +317,7 @@ class StateManager:
 
     def validate_and_sync(self) -> IntegrityReport:
         """Synchronize manifest with physical disk state.
-        
+
         Returns:
             IntegrityReport with findings
         """
@@ -377,10 +377,10 @@ class StateManager:
 
     def repair_integrity(self, report: IntegrityReport | None = None) -> dict[str, int]:
         """Repair integrity issues.
-        
+
         Args:
             report: Optional pre-computed integrity report
-            
+
         Returns:
             Dictionary with repair counts
         """
@@ -436,10 +436,10 @@ class StateManager:
 
     def perform_cleanup(self, retention_days: int | None = None) -> dict[str, int]:
         """Prune old state data.
-        
+
         Args:
             retention_days: Days to retain (default: self.retention_days)
-            
+
         Returns:
             Dictionary with cleanup counts
         """

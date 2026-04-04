@@ -8,7 +8,7 @@ Usage:
     from agentic_core.L5_safety.utils.credential_scanner_util import (
         CredentialScanner, CredentialMatch, scan_for_credentials
     )
-    
+
     # Scan for credentials
     scanner = CredentialScanner()
     results = scanner.scan_for_credentials(Path("."))
@@ -194,7 +194,7 @@ class CredentialScanner:
         excluded_paths: set[str] | None = None,
     ) -> None:
         """Initialize credential scanner.
-        
+
         Args:
             patterns: Regex patterns for credential detection
             scannable_extensions: File extensions to scan
@@ -259,11 +259,11 @@ class CredentialScanner:
         file_patterns: list[str] | None = None,
     ) -> CredentialScanResult:
         """Scan for hardcoded credentials in the codebase.
-        
+
         Args:
             target_path: Root path to scan (defaults to current directory)
             file_patterns: Optional list of file patterns to scan
-            
+
         Returns:
             CredentialScanResult with scan results
         """
@@ -299,11 +299,11 @@ def scan_for_credentials(
     patterns: dict[str, tuple[str, str, float]] | None = None,
 ) -> CredentialScanResult:
     """Convenience function to scan for credentials.
-    
+
     Args:
         target_path: Path to scan (defaults to current directory)
         patterns: Optional custom patterns
-        
+
     Returns:
         CredentialScanResult with scan results
     """

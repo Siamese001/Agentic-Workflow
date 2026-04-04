@@ -8,7 +8,7 @@ Usage:
     from agentic_core.L5_safety.utils.code_enforcer_util import (
         CodeEnforcer, EnforcementType, ViolationSeverity, CodeViolation
     )
-    
+
     # Enforce code standards
     enforcer = CodeEnforcer()
     violations = enforcer.validate_file(Path("my_file.py"))
@@ -107,7 +107,7 @@ class CodeEnforcer:
         config: EnforcementConfig | None = None,
     ) -> None:
         """Initialize the code enforcer.
-        
+
         Args:
             project_root: Root directory of the project
             config: Optional enforcement configuration
@@ -129,10 +129,10 @@ class CodeEnforcer:
 
     def validate_file(self, file_path: Path) -> list[CodeViolation]:
         """Validate a file for all enabled enforcement types.
-        
+
         Args:
             file_path: Path to the file to validate
-            
+
         Returns:
             List of code violations found
         """
@@ -291,12 +291,12 @@ class CodeEnforcer:
         self, source_layer: str, target_file: Path, agent_id: str | None = None
     ) -> tuple[bool, str]:
         """Check if a layer can modify a target file.
-        
+
         Args:
             source_layer: Layer attempting modification
             target_file: File being modified
             agent_id: Optional agent ID for exception checking
-            
+
         Returns:
             Tuple of (allowed, reason)
         """
@@ -332,14 +332,14 @@ class CodeEnforcer:
         expires_at: datetime | None = None,
     ) -> SignedException:
         """Grant a signed exception for cross-layer access.
-        
+
         Args:
             source_layer: Source layer
             target_file: Target file
             granted_by: Who granted the exception
             reason: Reason for exception
             expires_at: Optional expiration datetime
-            
+
         Returns:
             The created SignedException
         """
@@ -371,11 +371,11 @@ class CodeEnforcer:
 
 def validate_file(file_path: str | Path, config: EnforcementConfig | None = None) -> list[CodeViolation]:
     """Standalone function to validate a file.
-    
+
     Args:
         file_path: Path to the file
         config: Optional enforcement configuration
-        
+
     Returns:
         List of violations
     """
@@ -389,12 +389,12 @@ def check_sovereignty(
     protected_layers: set[str] | None = None,
 ) -> tuple[bool, str]:
     """Standalone function to check sovereignty.
-    
+
     Args:
         source_layer: Source layer
         target_file: Target file path
         protected_layers: Optional set of protected layers
-        
+
     Returns:
         Tuple of (allowed, reason)
     """
@@ -407,7 +407,7 @@ def check_sovereignty(
 
 def heal_repository(**kwargs: Any) -> dict[str, Any]:
     """Autonomous healing interface (Canon Key 51 compliance).
-    
+
     Enforcement violations require manual review.
     """
     return {
@@ -420,10 +420,10 @@ def heal_repository(**kwargs: Any) -> dict[str, Any]:
 
 def heal(violation: dict[str, Any]) -> dict[str, Any]:
     """Heal code enforcement violations.
-    
+
     Args:
         violation: Violation dict
-        
+
     Returns:
         Healing result dict
     """

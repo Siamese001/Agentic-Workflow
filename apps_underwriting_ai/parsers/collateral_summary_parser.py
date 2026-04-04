@@ -1,8 +1,8 @@
 """
 Collateral Summary Parser - Parses appraisal and collateral documents.
 """
-from typing import Dict, Any, Optional, List
-from dataclasses import dataclass, field
+from typing import Optional
+from dataclasses import dataclass
 from pathlib import Path
 import re
 

@@ -3,7 +3,6 @@ Evidence Register Types - Domain contracts for evidence tracking.
 """
 from typing import Optional, List
 from pydantic import BaseModel, Field
-from datetime import datetime
 
 
 class EvidenceEntry(BaseModel):

@@ -172,7 +172,7 @@ class ADGL4NormalizationVerifier:
 
     def _verify_l4_path_integrity(self) -> dict[str, Any]:
         """Verify L4 path integrity - all L4 modules have valid paths and proper layer assignment.
-        
+
         This method is required by test_unknown_layer_in_l4_path to detect UNKNOWN layer
         modules that should not appear in L4 paths.
         """

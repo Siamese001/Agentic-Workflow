@@ -12,10 +12,10 @@ class CreativeStrategy:
 
     def apply(self, context: dict[str, Any]) -> dict[str, Any]:
         """Apply creative strategy to context.
-        
+
         Args:
             context: Context dict with problem state
-            
+
         Returns:
             Updated context with creative solution
         """
@@ -38,11 +38,11 @@ class CreativeStrategy:
 
 def apply_creative_strategy(context: dict[str, Any], strategy_type: str = "default") -> dict[str, Any]:
     """Apply creative strategy to context.
-    
+
     Args:
         context: Context dict with problem state
         strategy_type: Type of creative strategy
-        
+
     Returns:
         Updated context with creative solution
     """

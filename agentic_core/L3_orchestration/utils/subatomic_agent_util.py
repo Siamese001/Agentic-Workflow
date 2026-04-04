@@ -8,7 +8,7 @@ Usage:
     from agentic_core.L3_orchestration.utils.subatomic_agent_util import (
         heal_violation, heal_repository, SubAtomicResult
     )
-    
+
     # Heal a violation
     result = heal_violation({"type": "import_error", "file": "test.py"})
 """
@@ -34,10 +34,10 @@ class SubAtomicResult:
 
 def heal_violation(violation: dict[str, Any]) -> SubAtomicResult:
     """Heal violations in subatomic agent logic.
-    
+
     Args:
         violation: Dictionary containing violation details
-        
+
     Returns:
         SubAtomicResult with healing status
     """
@@ -58,14 +58,14 @@ def heal_repository(
     _call_path: set | None = None,
 ) -> dict[str, int | bool]:
     """L1 cognition - operational only.
-    
+
     Args:
         dry_run: Whether to simulate changes
         execute: Whether to execute changes
         depth: Current recursion depth
         max_depth: Maximum recursion depth
         _call_path: Set of agents already called (cycle detection)
-        
+
     Returns:
         Dictionary with operation results
     """
@@ -110,11 +110,11 @@ class SubAtomicImpl:
 
 def create_subatomic_impl(ctx: Any, name: str) -> SubAtomicImpl:
     """Factory function to create SubAtomic implementation.
-    
+
     Args:
         ctx: Context object
         name: Implementation name
-        
+
     Returns:
         SubAtomicImpl instance
     """

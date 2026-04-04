@@ -712,11 +712,11 @@ RATCHET_THRESHOLD = 0.15  # 15% drift threshold
 
 def calculate_drift(artifact_a: dict, artifact_b: dict) -> float:
     """Calculate drift score between two ADG artifacts.
-    
+
     Args:
         artifact_a: First ADG artifact dict
         artifact_b: Second ADG artifact dict
-        
+
     Returns:
         Drift score between 0.0 and 1.0 (higher = more drift)
     """
@@ -740,11 +740,11 @@ def calculate_drift(artifact_a: dict, artifact_b: dict) -> float:
 
 def compare_artifacts(artifact_a: dict, artifact_b: dict) -> dict:
     """Compare two ADG artifacts and return detailed diff.
-    
+
     Args:
         artifact_a: First ADG artifact dict
         artifact_b: Second ADG artifact dict
-        
+
     Returns:
         Dict with comparison metrics
     """
@@ -759,11 +759,11 @@ def compare_artifacts(artifact_a: dict, artifact_b: dict) -> dict:
 
 def check_ratchet(current_score: float, baseline_score: float) -> bool:
     """Check if drift exceeds ratchet threshold.
-    
+
     Args:
         current_score: Current drift score
         baseline_score: Baseline drift score
-        
+
     Returns:
         True if drift is within acceptable bounds
     """

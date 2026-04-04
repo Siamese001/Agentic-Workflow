@@ -1,7 +1,7 @@
 """
 Decision Packet Assembler - Merges hypothesis, features, validators into decision outputs.
 """
-from typing import Dict, Any, List, Optional
+from typing import List, Optional
 from dataclasses import dataclass, field
 
 from ..types import (
@@ -12,12 +12,10 @@ from ..types import (
     AuditTrace,
     EvidenceItem,
     DecisionState,
-    EvidenceEntry,
 )
 from ..engines.evidence_register_engine import EvidenceRegister
 
 # L4 retrieval wiring (Turn 3, Wave 37): Import creates ADG edge to L4_state
-from agentic_core.L4_state.retrieval import L4StateRetrievalBridge
 
 
 @dataclass

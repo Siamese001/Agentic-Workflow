@@ -1,15 +1,14 @@
 """
 CSV Mapper - Maps CSV data to UnderwritingRequest domain model.
 """
-from typing import Dict, Any, Optional, Union, List
+from typing import Dict, Any, Optional, Union
 from dataclasses import dataclass, field
 from pathlib import Path
 import csv
 import io
 
-from ..types import UnderwritingRequest, BorrowerProfile, OwnerInfo
+from ..types import UnderwritingRequest
 from .structured_ingestion import StructuredIngestion
-from .json_mapper import JSONMappingResult
 
 
 @dataclass

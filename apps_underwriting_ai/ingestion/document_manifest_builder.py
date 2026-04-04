@@ -1,7 +1,7 @@
 """
 Document Manifest Builder - Builds and manages document manifests.
 """
-from typing import Dict, Any, List, Optional
+from typing import Dict, Any, List
 from dataclasses import dataclass, field
 from pathlib import Path
 from datetime import datetime

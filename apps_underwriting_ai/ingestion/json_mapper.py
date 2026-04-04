@@ -23,7 +23,7 @@ from ..types import (
     ExternalSignals,
     CollateralRules,
 )
-from .structured_ingestion import StructuredIngestion, MappingResult
+from .structured_ingestion import StructuredIngestion
 
 
 @dataclass

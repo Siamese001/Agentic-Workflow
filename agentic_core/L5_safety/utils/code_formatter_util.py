@@ -8,7 +8,7 @@ Usage:
     from agentic_core.L5_safety.utils.code_formatter_util import (
         CodeFormatter, format_file, format_files
     )
-    
+
     # Format a file
     result = format_file("path/to/file.py")
 """
@@ -52,7 +52,7 @@ class CodeFormatter:
         ruff_args: list[str] | None = None,
     ) -> None:
         """Initialize the code formatter.
-        
+
         Args:
             black_args: Additional arguments for Black
             ruff_args: Additional arguments for Ruff
@@ -62,10 +62,10 @@ class CodeFormatter:
 
     def format_file(self, file_path: str | Path) -> FormatResult:
         """Format a single file using Black and Ruff.
-        
+
         Args:
             file_path: Path to the Python file to format
-            
+
         Returns:
             FormatResult with formatting outcome
         """
@@ -130,10 +130,10 @@ class CodeFormatter:
 
     def format_files(self, file_paths: list[str | Path]) -> list[FormatResult]:
         """Format multiple files.
-        
+
         Args:
             file_paths: List of file paths to format
-            
+
         Returns:
             List of FormatResult objects
         """
@@ -141,7 +141,7 @@ class CodeFormatter:
 
     def check_tools_available(self) -> dict[str, bool]:
         """Check if formatting tools are available.
-        
+
         Returns:
             Dictionary with tool availability status
         """
@@ -163,11 +163,11 @@ class CodeFormatter:
 
 def format_file(file_path: str | Path, **kwargs: Any) -> dict[str, Any]:
     """Standalone function to format a single file.
-    
+
     Args:
         file_path: Path to the file
         **kwargs: Additional formatter options
-        
+
     Returns:
         Dictionary with formatting result
     """
@@ -178,11 +178,11 @@ def format_file(file_path: str | Path, **kwargs: Any) -> dict[str, Any]:
 
 def format_files(file_paths: list[str | Path], **kwargs: Any) -> list[dict[str, Any]]:
     """Standalone function to format multiple files.
-    
+
     Args:
         file_paths: List of file paths
         **kwargs: Additional formatter options
-        
+
     Returns:
         List of formatting results
     """
@@ -193,7 +193,7 @@ def format_files(file_paths: list[str | Path], **kwargs: Any) -> list[dict[str, 
 
 def heal_repository(**kwargs: Any) -> dict[str, Any]:
     """Autonomous healing interface (Canon Key 51 compliance).
-    
+
     Formatting is a manual operation, not auto-healable.
     """
     return {
@@ -206,10 +206,10 @@ def heal_repository(**kwargs: Any) -> dict[str, Any]:
 
 def heal(violation: dict[str, Any]) -> dict[str, Any]:
     """Heal code formatting violations.
-    
+
     Args:
         violation: Violation dict
-        
+
     Returns:
         Healing result dict
     """

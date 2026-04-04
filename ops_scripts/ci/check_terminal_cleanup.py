@@ -88,7 +88,7 @@ def get_windsurf_terminals() -> list[dict]:
 def get_orphaned_terminals(max_age_seconds: int = 300) -> list[ProcessViolation]:
     """
     Detect terminal processes that appear orphaned (no active query association).
-    
+
     In practice, this checks for:
     1. Terminal processes older than max_age_seconds
     2. Terminal processes with no visible parent cascade process
@@ -121,7 +121,7 @@ def get_orphaned_terminals(max_age_seconds: int = 300) -> list[ProcessViolation]
 def check_run_command_usage(file_path: Path) -> list[str]:
     """
     Check that run_command calls have appropriate cleanup handling.
-    
+
     Looks for:
     1. Blocking=False without timeout handling
     2. Missing WaitMsBeforeAsync on non-blocking commands

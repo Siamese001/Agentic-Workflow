@@ -8,7 +8,7 @@ Usage:
     from agentic_core.L5_safety.utils.cost_governor_util import (
         CostGovernor, BudgetExceededError, track_cost
     )
-    
+
     # Track costs
     governor = CostGovernor(budget_limit=10.0)
     cost = governor.track("gpt-4", input_tokens=1000, output_tokens=500)
@@ -72,16 +72,16 @@ class CostGovernor:
         metadata: dict[str, Any] | None = None,
     ) -> float:
         """Calculate and record the cost of an LLM call.
-        
+
         Args:
             model: Name of the LLM model used
             input_tokens: Number of input tokens
             output_tokens: Number of output tokens
             metadata: Optional metadata about the call
-            
+
         Returns:
             Cost of this call in dollars
-            
+
         Raises:
             BudgetExceededError: If total spend exceeds budget
         """
@@ -124,7 +124,7 @@ class CostGovernor:
 
     def get_spend_summary(self) -> dict[str, Any]:
         """Get current spending summary.
-        
+
         Returns:
             Dictionary with spending information
         """
@@ -172,17 +172,17 @@ def track_cost(
     current_spend: float = 0.0,
 ) -> tuple[float, float]:
     """Standalone function to track a single cost.
-    
+
     Args:
         model: Model name
         input_tokens: Input token count
         output_tokens: Output token count
         budget_limit: Budget limit
         current_spend: Current accumulated spend
-        
+
     Returns:
         Tuple of (new_total_spend, this_call_cost)
-        
+
     Raises:
         BudgetExceededError: If budget exceeded
     """
@@ -195,12 +195,12 @@ def track_cost(
 
 def calculate_cost(model: str, input_tokens: int, output_tokens: int) -> float:
     """Calculate cost without tracking.
-    
+
     Args:
         model: Model name
         input_tokens: Input token count
         output_tokens: Output token count
-        
+
     Returns:
         Estimated cost in dollars
     """
@@ -217,7 +217,7 @@ def register_model_pricing(
     output_cost_per_token: float,
 ) -> None:
     """Register pricing for a new model.
-    
+
     Args:
         model_name: Model identifier
         input_cost_per_token: Cost per input token
@@ -244,12 +244,12 @@ def heal_repository(**kwargs: Any) -> dict[str, Any]:
 
 def heal(violation: dict[str, Any]) -> dict[str, Any]:
     """Heal cost governance violations.
-    
+
     Args:
         violation: Violation dict with keys:
             - type: budget_exceeded, invalid_pricing, etc.
             - details: Additional details
-            
+
     Returns:
         Healing result dict
     """

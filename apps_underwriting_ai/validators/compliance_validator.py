@@ -1,7 +1,7 @@
 """
 Compliance Validator - Validates product vs policy fit.
 """
-from typing import List, Dict, Any, Optional
+from typing import List, Dict, Any
 from dataclasses import dataclass, field
 
 from ..types import UnderwritingRequest, RiskFeatures

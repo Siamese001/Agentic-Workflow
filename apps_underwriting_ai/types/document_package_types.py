@@ -1,7 +1,7 @@
 """
 Document Package Types - Domain contracts for document references.
 """
-from typing import Optional, List, Dict, Any
+from typing import List, Dict, Any
 from pydantic import BaseModel, Field
 
 

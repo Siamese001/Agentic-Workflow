@@ -8,7 +8,7 @@ Usage:
     from agentic_core.L0_routing.utils.ssot_folder_cleanup_util import (
         cleanup_repository, find_non_approved_files, move_file_to_ssot
     )
-    
+
     # Run cleanup
     results = cleanup_repository(project_root=Path("."), dry_run=True)
 """
@@ -150,7 +150,7 @@ def update_imports_for_moved_file(
     dry_run: bool = True,
 ) -> int:
     """Update imports referencing a moved file.
-    
+
     Returns:
         Number of imports updated
     """
@@ -194,7 +194,7 @@ def delete_empty_folders(
     dry_run: bool = True,
 ) -> int:
     """Delete empty non-approved folders.
-    
+
     Returns:
         Number of folders deleted
     """
@@ -227,11 +227,11 @@ def cleanup_repository(
     dry_run: bool = True,
 ) -> dict[str, Any]:
     """Execute full SSOT folder cleanup.
-    
+
     Args:
         project_root: Project root path (defaults to current directory)
         dry_run: If True, only report actions without executing
-        
+
     Returns:
         Summary of cleanup operations
     """
@@ -307,7 +307,7 @@ def cleanup_repository(
 
 def preview_cleanup(project_root: Path | None = None) -> dict[str, Any]:
     """Preview cleanup without making changes.
-    
+
     Returns:
         Preview of what would be changed
     """
@@ -316,7 +316,7 @@ def preview_cleanup(project_root: Path | None = None) -> dict[str, Any]:
 
 def execute_cleanup(project_root: Path | None = None) -> dict[str, Any]:
     """Execute cleanup with actual file changes.
-    
+
     Returns:
         Summary of changes made
     """
@@ -330,12 +330,12 @@ def heal_repository(
     **kwargs: Any,
 ) -> dict[str, Any]:
     """Autonomous healing method (Canon Key 51 compliance).
-    
+
     Args:
         project_root: Project root path
         dry_run: If True, only report violations without fixing
         execute: If True, apply fixes
-        
+
     Returns:
         Dict with healing summary
     """
@@ -352,13 +352,13 @@ def heal_repository(
 
 def heal(violation: dict[str, Any]) -> dict[str, Any]:
     """Heal SSOT folder violations.
-    
+
     Args:
         violation: Dictionary containing violation details with keys:
             - type: Type of violation (orphan, misplaced)
             - path: Path to the violating file
             - target_path: Suggested target path
-            
+
     Returns:
         Dictionary with healing results following standard_heal format.
     """

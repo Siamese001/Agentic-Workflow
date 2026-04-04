@@ -1,5 +1,4 @@
 # Plan CI Enforcement Rules
-# Enforces CI validation for all plans in the repository
 
 ## Rule: Plan CI Required
 All plans must pass Windsurf CI validation before commit.
@@ -22,16 +21,16 @@ All plans must pass Windsurf CI validation before commit.
 - No implementation details → Warning
 
 ## Rule: Plan Location Standards
-Plans must be stored in approved locations only.
+Plans must be stored in the approved location only.
 
 ### Approved Location (SSOT):
-- `docs/reports/plans/` - **ONLY** approved location for all plans per `plan-location.md`
+- `.windsurf/plans/` — **ONLY** approved location for all plans
 
 ### Forbidden:
-- Plans in `.windsurf/plans/` (not sovereign territory)
+- Plans in `docs/reports/plans/` (reports/evidence only, not plans)
 - Plans in root directory
 - Plans in random subdirectories
-- Plans without .md extension
+- Plans without `.md` extension
 - Plans outside repository (e.g., `C:\Users\amita\.windsurf\plans\`)
 
 ## Rule: Plan Naming Convention
@@ -47,14 +46,13 @@ Plan files must follow naming convention.
 - Pre-commit checks format
 - Manual validation available
 
-## Rule: Token Estimator Mandate (Kimi K2.5)
+## Rule: Token Estimator Mandate
 All plans must use the official Windsurf ContextWindowEstimator for token validation.
 
 ### Required Tool:
 ```python
 from agentic_core.planning.token_estimator import ContextWindowEstimator, TokenBudget
 
-# Initialize estimator
 estimator = ContextWindowEstimator()
 ```
 
@@ -78,7 +76,6 @@ estimate = estimator.estimate_step_tokens(
     prior_steps=[...]
 )
 
-# Must be GREEN or YELLOW status
 assert estimate.status in ['green', 'yellow'], f"Token budget exceeded: {estimate.total_projected_tokens}"
 ```
 
@@ -87,22 +84,6 @@ assert estimate.status in ['green', 'yellow'], f"Token budget exceeded: {estimat
 - **Class:** `ContextWindowEstimator`
 - **Method:** `estimate_step_tokens()`
 - **Configuration:** `TokenBudget` class with 262K context limits (Kimi K2.5)
-
-## Rule: Kimi 2.5 Context Optimization
-Plans must optimize for Kimi 2.5's 200K token context window.
-
-### Requirements:
-1. Single-turn execution preferred
-2. Sub-waves for organization
-3. Token estimates must be accurate using ContextWindowEstimator
-4. Total context < 200K tokens (HARD_MAX_CONTEXT)
-5. Must pass CI validation with GREEN/YELLOW status
-
-### Enforcement:
-- CI calculates total tokens using `agentic_core/planning/token_estimator.py`
-- CI flags excessive token usage (>150K WARNING_THRESHOLD)
-- CI suggests optimizations via compression policies
-- CI validates token estimates against ContextWindowEstimator output
 
 ## Rule: Evidence Requirements
 Plans must include evidence for all claims.
@@ -113,11 +94,6 @@ Plans must include evidence for all claims.
 - Test results
 - Performance metrics
 
-### Enforcement:
-- CI checks for evidence sections
-- CI validates evidence quality
-- CI flags missing evidence
-
 ## Rule: Rollback Strategy
 All plans must include rollback strategy.
 
@@ -126,11 +102,6 @@ All plans must include rollback strategy.
 2. Rollback commands
 3. Validation steps
 4. Success criteria
-
-### Enforcement:
-- CI validates rollback section
-- CI checks for checkpoint strategy
-- CI ensures validation steps
 
 ## Rule: ADG Impact Assessment
 Plans affecting code structure must include ADG impact assessment.
@@ -146,8 +117,3 @@ Plans affecting code structure must include ADG impact assessment.
 - Impact analysis
 - Metrics validation
 - Burndown gates
-
-### Enforcement:
-- CI checks for ADG section when relevant
-- CI validates regeneration commands
-- CI ensures impact analysis

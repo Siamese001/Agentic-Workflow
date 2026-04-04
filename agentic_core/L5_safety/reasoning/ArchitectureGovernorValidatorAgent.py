@@ -24,7 +24,7 @@ from agentic_core.L5_safety.utils.architecture_governor_validator_util import (
 
 class ArchitectureGovernorValidatorAgent:
     """
-    DEPRECATED: Architecture Governor Validator Agent - now delegates to 
+    DEPRECATED: Architecture Governor Validator Agent - now delegates to
     architecture_governor_validator_util.
 
     This class is maintained for backward compatibility only.

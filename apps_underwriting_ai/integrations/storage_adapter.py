@@ -1,7 +1,7 @@
 """
 Storage Adapter - Persists domain artifacts through approved repo seam.
 """
-from typing import Dict, Any, Optional, List
+from typing import Optional, List
 from pathlib import Path
 import json
 from datetime import datetime
@@ -94,7 +94,7 @@ class StorageAdapter:
     def _render_memo_markdown(self, memo: DecisionMemo) -> str:
         """Render DecisionMemo as markdown document."""
         lines = [
-            f"# Underwriting Decision Memo",
+            "# Underwriting Decision Memo",
             "",
             f"**Request ID:** {memo.request_id}",
             f"**Recommendation:** {memo.recommended_decision}",

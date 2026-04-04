@@ -25,11 +25,11 @@ def query_dead_functions_by_layer(layer: str, limit: int = 100) -> list[dict]:
         FROM nodes n
         WHERE n.layer = ?
         AND n.id IN (
-            SELECT DISTINCT src_id FROM edges 
+            SELECT DISTINCT src_id FROM edges
             WHERE relation_type = 'exports'
         )
         AND n.id NOT IN (
-            SELECT DISTINCT dst_id FROM edges 
+            SELECT DISTINCT dst_id FROM edges
             WHERE relation_type IN ('calls', 'imports', 'uses', 'reads_from', 'writes_to')
         )
         ORDER BY n.resolved_path

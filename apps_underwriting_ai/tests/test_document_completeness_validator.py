@@ -4,7 +4,7 @@ Test Document Completeness Validator.
 import unittest
 
 from apps_underwriting_ai.validators.document_completeness_validator import DocumentCompletenessValidator
-from apps_underwriting_ai.types import UnderwritingRequest, DocumentPackage, DocumentRef
+from apps_underwriting_ai.types import DocumentPackage, DocumentRef
 
 
 class TestDocumentCompleteness(unittest.TestCase):

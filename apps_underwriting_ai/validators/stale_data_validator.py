@@ -3,7 +3,7 @@ Stale Data Validator - Inspects document dates for staleness.
 """
 from typing import List, Dict, Any
 from dataclasses import dataclass, field
-from datetime import datetime, timedelta
+from datetime import datetime
 
 from ..types import UnderwritingRequest
 

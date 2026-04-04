@@ -8,7 +8,7 @@ Usage:
     from agentic_core.L3_orchestration.utils.gravity_state_util import (
         GravityStateManager, HealingRecord, load_state, save_state
     )
-    
+
     # Manage state
     manager = GravityStateManager(project_root=Path("."))
     manager.record_healing(healing_record)
@@ -50,7 +50,7 @@ class GravityStateManager:
 
     def __init__(self, project_root: Path) -> None:
         """Initialize the state manager.
-        
+
         Args:
             project_root: Project root path for state storage
         """
@@ -108,10 +108,10 @@ class GravityStateManager:
 
     def _normalize_and_hash(self, import_line: str) -> str:
         """Normalize import statement and create stable hash.
-        
+
         Args:
             import_line: Import statement to hash
-            
+
         Returns:
             SHA256 hash of normalized import
         """
@@ -122,7 +122,7 @@ class GravityStateManager:
 
     def record_healing(self, record: HealingRecord) -> None:
         """Record a successful healing operation.
-        
+
         Args:
             record: HealingRecord with healing details
         """
@@ -152,11 +152,11 @@ class GravityStateManager:
 
     def is_healed(self, file_path: Path, import_line: str) -> bool:
         """Check if a specific import has already been healed.
-        
+
         Args:
             file_path: Path to the file
             import_line: Import statement to check
-            
+
         Returns:
             True if import has been healed, False otherwise
         """
@@ -178,10 +178,10 @@ class GravityStateManager:
 
     def get_file_healings(self, file_path: Path) -> list[HealingRecord]:
         """Get all healing records for a specific file.
-        
+
         Args:
             file_path: Path to the file
-            
+
         Returns:
             List of HealingRecord objects
         """
@@ -197,7 +197,7 @@ class GravityStateManager:
 
     def get_healing_summary(self) -> dict[str, Any]:
         """Get summary of all healing operations.
-        
+
         Returns:
             Dict with healing statistics
         """
@@ -227,10 +227,10 @@ class GravityStateManager:
 
     def clear_file_state(self, file_path: Path) -> bool:
         """Clear healing state for a specific file.
-        
+
         Args:
             file_path: Path to the file
-            
+
         Returns:
             True if state was cleared, False if no state existed
         """
@@ -247,10 +247,10 @@ class GravityStateManager:
 
     def cleanup_history(self, keep_last: int = 1000) -> int:
         """Clean up old healing history entries.
-        
+
         Args:
             keep_last: Number of recent entries to keep
-            
+
         Returns:
             Number of entries removed
         """
@@ -268,10 +268,10 @@ class GravityStateManager:
 
 def load_state(project_root: Path) -> dict[str, Any]:
     """Load gravity state from disk.
-    
+
     Args:
         project_root: Project root path
-        
+
     Returns:
         State dictionary
     """
@@ -281,7 +281,7 @@ def load_state(project_root: Path) -> dict[str, Any]:
 
 def save_state(project_root: Path, state: dict[str, Any]) -> None:
     """Save gravity state to disk.
-    
+
     Args:
         project_root: Project root path
         state: State dictionary to save
@@ -298,12 +298,12 @@ def heal_repository(
     **kwargs: Any,
 ) -> dict[str, Any]:
     """Autonomous healing interface (Canon Key 51 compliance).
-    
+
     Args:
         project_root: Project root path
         dry_run: If True, only report without fixing
         execute: If True, apply fixes
-        
+
     Returns:
         Healing summary dict
     """
@@ -331,11 +331,11 @@ def heal_repository(
 
 def heal(violation: dict[str, Any], project_root: Path | None = None) -> dict[str, Any]:
     """Heal gravity state violations.
-    
+
     Args:
         violation: Violation details dict
         project_root: Project root path
-        
+
     Returns:
         Healing result dict
     """

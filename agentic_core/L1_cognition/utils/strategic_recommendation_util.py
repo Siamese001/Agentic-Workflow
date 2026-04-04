@@ -8,7 +8,7 @@ Usage:
     from agentic_core.L1_cognition.utils.strategic_recommendation_util import (
         generate_strategic_prompt, parse_recommendations, generate_fallback_recommendations
     )
-    
+
     # Generate strategic prompt
     prompt = generate_strategic_prompt(dashboard_data)
 """
@@ -46,10 +46,10 @@ def _safe_get(row: dict[str, Any], key: str, default: float = 0.0) -> float:
 
 def generate_strategic_prompt(dashboard_data: list[dict[str, Any]]) -> str:
     """Generate strategic prompt from dashboard data patterns.
-    
+
     Args:
         dashboard_data: List of territory metrics from dashboard
-        
+
     Returns:
         Structured prompt for LLM to generate recommendations
     """
@@ -109,10 +109,10 @@ Output strict JSON:
 
 def parse_llm_response(response: str) -> dict[str, Any]:
     """Parse LLM response to extract JSON.
-    
+
     Args:
         response: Raw LLM response
-        
+
     Returns:
         Parsed dict with review and recommendations
     """
@@ -130,10 +130,10 @@ def parse_llm_response(response: str) -> dict[str, Any]:
 
 def generate_fallback_recommendations(dashboard_data: list[dict[str, Any]]) -> RecommendationResult:
     """Generate fallback recommendations when LLM is unavailable.
-    
+
     Args:
         dashboard_data: Dashboard metrics
-        
+
     Returns:
         RecommendationResult with fallback recommendations
     """
@@ -183,10 +183,10 @@ def generate_fallback_recommendations(dashboard_data: list[dict[str, Any]]) -> R
 
 def analyze_dashboard(dashboard_data: list[dict[str, Any]]) -> dict[str, Any]:
     """Analyze dashboard and return structured insights.
-    
+
     Args:
         dashboard_data: List of territory metrics
-        
+
     Returns:
         Dictionary with analysis results
     """

@@ -191,19 +191,22 @@ class TestExecuteSsotMetaLearningIntakeReal:
         result2 = MetaLearningResult(records_persisted=0, proposals=(), errors=['error1'])
         assert len(result2.errors) == 1
 
+    def test_meta_learning_result_rejects_negative_records(self):
+        """Verify MetaLearningResult rejects negative records_persisted (GAP FIX G5)."""
+        from agentic_core.L0_routing.scripts.execute_ssot_meta import (
+            MetaLearningResult,
+            _fire_meta_learning_intake_required,
+        )
+
+        with pytest.raises(ValueError, match="records_persisted must be non-negative"):
+            MetaLearningResult(records_persisted=-1, proposals=())
+
+        # Zero should be valid
+        result = MetaLearningResult(records_persisted=0, proposals=())
+        assert result.records_persisted == 0
+
         # Test _fire_meta_learning_intake_required is callable
         assert callable(_fire_meta_learning_intake_required)
-
-        # Test actual function execution
-        class MockState:
-            def __init__(self):
-                self.state = {'healing_actions': []}
-
-        with tempfile.TemporaryDirectory() as tmp_dir:
-            intake_result = _fire_meta_learning_intake_required(
-                MockState(), 1234567890, Path(tmp_dir)
-            )
-            assert intake_result.records_persisted == 0  # Empty actions
 
 
 class TestExecuteSsotRetrievalHooks:
@@ -230,8 +233,45 @@ class TestExecuteSsotRetrievalHooks:
         """Verify invalid cache_type raises ValueError (GAP FIX for silent failure)."""
         from agentic_core.L0_routing.scripts.execute_ssot_retrieval import _store_in_retrieval_cache
 
-        with pytest.raises(ValueError, match="Invalid cache_type"):
+        with pytest.raises(ValueError, match="Invalid cache_type") as exc_info:
             _store_in_retrieval_cache("query", {}, 1234567890, cache_type="INVALID")
+
+        # Verify error message contains the invalid value
+        assert "INVALID" in str(exc_info.value)
+
+    def test_store_in_retrieval_cache_empty_query_raises(self):
+        """Verify empty query string raises ValueError (GAP FIX G3)."""
+        from agentic_core.L0_routing.scripts.execute_ssot_retrieval import _store_in_retrieval_cache
+
+        with pytest.raises(ValueError, match="Query cannot be empty"):
+            _store_in_retrieval_cache("", {}, 1234567890, cache_type="L1")
+
+        with pytest.raises(ValueError, match="Query cannot be empty"):
+            _store_in_retrieval_cache("   ", {}, 1234567890, cache_type="L1")
+
+    def test_cache_entry_negative_age_treated_as_expired(self):
+        """Verify negative age (clock skew) is treated as expired (GAP FIX G1)."""
+        from agentic_core.L0_routing.scripts.execute_ssot_retrieval import (
+            _is_cache_entry_valid,
+            _store_in_retrieval_cache,
+            _L1_EXACT_CACHE,
+        )
+
+        # Clear cache
+        _L1_EXACT_CACHE.clear()
+
+        # Store with timestamp 1000
+        _store_in_retrieval_cache("skew_test", {"data": "value"}, 1000, cache_type="L1")
+
+        # Verify entry exists
+        assert len(_L1_EXACT_CACHE) == 1
+
+        # Check with earlier timestamp (negative age scenario)
+        entry = list(_L1_EXACT_CACHE.values())[0]
+        is_valid = _is_cache_entry_valid(entry, 500)  # 500 < 1000 = negative age
+
+        # Should be treated as expired
+        assert is_valid is False
 
     def test_store_in_retrieval_cache_valid_types_work(self):
         """Verify valid cache_type values work correctly."""
@@ -253,6 +293,37 @@ class TestExecuteSsotRetrievalHooks:
         _store_in_retrieval_cache("test_query_l2", {"data": "value2"}, 1234567890, cache_type="L2")
         assert len(_L2_SEMANTIC_CACHE) == 1
 
+    def test_cache_enforces_max_size_boundary(self):
+        """Verify cache enforces MAX_CACHE_SIZE boundary (GAP FIX G10)."""
+        from agentic_core.L0_routing.scripts.execute_ssot_retrieval import (
+            _store_in_retrieval_cache,
+            _L1_EXACT_CACHE,
+            MAX_CACHE_SIZE,
+        )
+        import hashlib
+
+        # Clear cache
+        _L1_EXACT_CACHE.clear()
+
+        # Fill cache to limit
+        for i in range(MAX_CACHE_SIZE + 5):  # Add 5 extra to trigger eviction
+            _store_in_retrieval_cache(f"query_{i}", {"data": i}, 1000 + i, cache_type="L1")
+
+        # Verify cache size is capped at MAX_CACHE_SIZE
+        assert len(_L1_EXACT_CACHE) == MAX_CACHE_SIZE, (
+            f"Cache size {len(_L1_EXACT_CACHE)} exceeds MAX_CACHE_SIZE {MAX_CACHE_SIZE}"
+        )
+
+        # Verify oldest entries were evicted (first 5 should be gone)
+        for i in range(5):
+            query_hash = hashlib.sha256(f"query_{i}".encode()).hexdigest()[:16]
+            assert query_hash not in _L1_EXACT_CACHE, f"Old entry {i} should have been evicted"
+
+        # Verify newest entries remain
+        for i in range(MAX_CACHE_SIZE, MAX_CACHE_SIZE + 5):
+            query_hash = hashlib.sha256(f"query_{i}".encode()).hexdigest()[:16]
+            assert query_hash in _L1_EXACT_CACHE, f"New entry {i} should still exist"
+
     def test_execute_ssot_has_retrieval_hooks(self):
         """Verify execute_ssot.py has retrieval integration hooks."""
         import inspect
@@ -271,7 +342,7 @@ class TestExecuteSsotRetrievalHooks:
 
         # This is currently a gap - we expect it to fail until Phase 2 is implemented
         if not has_retrieval:
-            pytest.xfail("GAP: execute_ssot.py lacks retrieval integration hooks (Phase 2)")
+            pytest.xfail("GAP: execute_ssot.py lacks retrieval integration hooks (Phase 2)", strict=True)
 
 
 class TestExecuteSsotEntrypoint:

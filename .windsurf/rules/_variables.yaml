@@ -1,0 +1,160 @@
+# Rule Variables SSOT
+# This file is the single source of truth for all variables used in .windsurf/rules/*.md
+# Variables use ${VAR_NAME} syntax and are expanded by tools/windsurf/preprocess_rules.py
+#
+# To add a new variable:
+# 1. Define it here with a clear description
+# 2. Run: python tools/windsurf/preprocess_rules.py --validate
+# 3. Update rule files to use ${VAR_NAME}
+# 4. Run: python tools/windsurf/preprocess_rules.py --process
+
+metadata:
+  version: "1.0.0"
+  last_updated: "2026-04-04"
+  description: "SSOT variables for Windsurf rule files"
+
+# ============================================================================
+# PATH VARIABLES - Directory locations (use forward slashes for cross-platform)
+# ============================================================================
+paths:
+  # Plan directory - execution plans ONLY (SSOT per plan-location.md)
+  PLAN_DIR: ".windsurf/plans"
+
+  # Evidence directory - phase evidence, reports, RCA artifacts (NOT plans)
+  EVIDENCE_DIR: "docs/reports/plans"
+
+  # Rules directory - rule source files
+  RULES_SRC_DIR: ".windsurf/rules"
+
+  # Templates directory
+  TEMPLATES_DIR: ".windsurf/templates"
+
+  # ADG artifacts directory
+  ADG_DIR: "artifacts/adg"
+
+  # CI scripts directory
+  CI_DIR: "ops_scripts/ci"
+
+  # Tools directory
+  TOOLS_DIR: "tools"
+
+# ============================================================================
+# FILE PATTERNS - Common file patterns used in rules
+# ============================================================================
+patterns:
+  # Plan file pattern (descriptive name + hex suffix)
+  PLAN_FILE_PATTERN: "*.md"
+
+  # Rule file pattern
+  RULE_FILE_PATTERN: "*.md"
+
+  # ADG SQLite pattern
+  ADG_SQLITE_PATTERN: "adg_indexed_*.sqlite"
+
+  # Evidence file pattern
+  EVIDENCE_FILE_PATTERN: "*.md"
+
+# ============================================================================
+# ENFORCEMENT CONSTANTS - Values used in CI gates and enforcement
+# ============================================================================
+enforcement:
+  # Maximum context window for Kimi K2.5
+  HARD_MAX_CONTEXT: 262000
+
+  # Safe operating cap for context
+  SAFE_OPERATING_CAP: 223000
+
+  # Warning threshold for token usage
+  WARNING_THRESHOLD: 197000
+
+  # Default reserved output tokens
+  DEFAULT_RESERVED_OUTPUT: 12000
+
+  # Default safety buffer
+  DEFAULT_SAFETY_BUFFER: 8000
+
+  # Hex suffix length for plan filenames
+  HEX_SUFFIX_LENGTH: 6
+
+# ============================================================================
+# REFERENCE VARIABLES - Cross-references between rules
+# ============================================================================
+references:
+  # Main constitutional rules file
+  CONSTITUTIONAL_RULES: ".windsurf/rules/.windsurfrules"
+
+  # Consolidated rules file
+  CONSOLIDATED_RULES: ".windsurf/rules/.windsurfrules.consolidated"
+
+  # Plan location rule (covers location + format + overwrite — single file)
+  PLAN_LOCATION_RULE: ".windsurf/rules/plan-location.md"
+
+  # Plan CI enforcement rule
+  PLAN_CI_ENFORCEMENT: ".windsurf/rules/plan_ci_enforcement.md"
+
+  # Execution plan template
+  EXECUTION_PLAN_TEMPLATE: ".windsurf/templates/execution-plan-template.md"
+
+  # Token estimator module
+  TOKEN_ESTIMATOR: "agentic_core/planning/token_estimator.py"
+
+  # ADG test accelerator
+  ADG_TEST_ACCELERATOR: "tools/adg/adg_test_accelerator.py"
+
+  # Contract gates runner
+  CONTRACT_GATES: "ops_scripts/ci/run_contract_gates.py"
+
+# ============================================================================
+# TIER CLASSIFICATION - Tier-aware analysis constants
+# ============================================================================
+tiers:
+  # T0 - Question tier (no code changes)
+  T0_MAX_FILES: 0
+  T0_MAX_LINES: 0
+
+  # T1 - Trivial tier
+  T1_MAX_FILES: 1
+  T1_MAX_LINES: 20
+
+  # T2 - Scoped tier
+  T2_MAX_FILES: 5
+  T2_MIN_FILES: 2
+
+  # T3 - Architectural tier
+  T3_MIN_FILES: 6
+
+# ============================================================================
+# VALIDATION RULES - For the variable validator
+# ============================================================================
+validation:
+  # Variables that must be defined
+  required_variables:
+    - PLAN_DIR
+    - EVIDENCE_DIR
+    - RULES_SRC_DIR
+
+  # Variables that must be paths (checked for format)
+  path_variables:
+    - PLAN_DIR
+    - EVIDENCE_DIR
+    - RULES_SRC_DIR
+    - TEMPLATES_DIR
+    - ADG_DIR
+    - CI_DIR
+    - TOOLS_DIR
+
+  # Variables that must be integers
+  integer_variables:
+    - HARD_MAX_CONTEXT
+    - SAFE_OPERATING_CAP
+    - WARNING_THRESHOLD
+    - DEFAULT_RESERVED_OUTPUT
+    - DEFAULT_SAFETY_BUFFER
+    - HEX_SUFFIX_LENGTH
+    - T0_MAX_FILES
+    - T0_MAX_LINES
+    - T1_MAX_FILES
+    - T1_MAX_LINES
+    - T2_MAX_FILES
+    - T2_MIN_FILES
+    - T3_MIN_FILES

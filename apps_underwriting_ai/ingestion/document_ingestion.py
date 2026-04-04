@@ -6,7 +6,6 @@ from dataclasses import dataclass, field
 from pathlib import Path
 import hashlib
 from datetime import datetime
-import json
 
 from ..types import DocumentRef, DocumentPackage
 

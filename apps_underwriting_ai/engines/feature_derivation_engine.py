@@ -2,7 +2,6 @@
 Feature Derivation Engine - Computes all RiskFeatures deterministically.
 """
 from typing import Optional, List
-from dataclasses import dataclass
 
 from ..types import (
     UnderwritingRequest,

@@ -51,7 +51,7 @@ class L2EmbeddingSovereignAgent(L2ExecutionAgent):
 
     def l2_init(self, context: L2ExecutionContext) -> L2PhaseResult:
         """Initialize embedding operation context.
-        
+
         Validates content input and prepares for embedding generation.
         """
         try:
@@ -76,7 +76,7 @@ class L2EmbeddingSovereignAgent(L2ExecutionAgent):
 
     def l2_execute(self, context: L2ExecutionContext) -> L2PhaseResult:
         """Execute embedding generation.
-        
+
         Runs async embedding generation and handles exceptions.
         """
         import asyncio
@@ -199,7 +199,7 @@ class L2RedisSovereignAgent(L2ExecutionAgent):
 
     def l2_init(self, context: L2ExecutionContext) -> L2PhaseResult:
         """Initialize Redis operation context.
-        
+
         Validates operation type and prepares for cache operations.
         """
         try:
@@ -300,7 +300,7 @@ class L2SovereignMCPGatewayAgent(L2ExecutionAgent):
 
     def l2_init(self, context: L2ExecutionContext) -> L2PhaseResult:
         """Initialize MCP gateway operation context.
-        
+
         Validates tool_name input and prepares for MCP tool invocation.
         """
         try:
@@ -325,7 +325,7 @@ class L2SovereignMCPGatewayAgent(L2ExecutionAgent):
 
     def l2_execute(self, context: L2ExecutionContext) -> L2PhaseResult:
         """Execute MCP tool invocation.
-        
+
         Invokes the specified tool with given parameters.
         """
         tool_name = context.inputs.get("tool_name")
@@ -396,7 +396,7 @@ class L2StructuredEngineAgent(L2ExecutionAgent):
 
     def l2_init(self, context: L2ExecutionContext) -> L2PhaseResult:
         """Initialize structured engine operation context.
-        
+
         Validates intent input for processing.
         """
         try:
@@ -487,7 +487,7 @@ class L2SubAtomicRegistryAgent(L2ExecutionAgent):
 
     def l2_init(self, context: L2ExecutionContext) -> L2PhaseResult:
         """Initialize registry operation context.
-        
+
         Validates registry operation type and prepares for execution.
         """
         try:

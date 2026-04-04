@@ -1,7 +1,7 @@
 """
 Financial Statement Parser - Parses PDF financial statements.
 """
-from typing import Dict, Any, Optional, List
+from typing import Dict, Optional, List
 from dataclasses import dataclass, field
 from pathlib import Path
 import re

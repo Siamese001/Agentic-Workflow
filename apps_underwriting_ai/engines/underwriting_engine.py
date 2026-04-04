@@ -24,10 +24,10 @@ from ..reasoning.covenant_recommender import CovenantRecommender
 from ..reasoning.exception_summarizer import ExceptionSummarizer
 from ..reasoning.counter_offer_recommender import CounterOfferRecommender
 from ..reasoning.human_escalation_selector import HumanEscalationSelector
-from ..validators.compliance_validator import ComplianceValidator, ComplianceResult
-from ..validators.forbidden_feature_checker import ForbiddenFeatureChecker, ForbiddenCheckResult
-from ..validators.document_completeness_validator import DocumentCompletenessValidator, CompletenessResult
-from ..validators.authority_limit_validator import AuthorityLimitValidator, AuthorityResult
+from ..validators.compliance_validator import ComplianceValidator
+from ..validators.forbidden_feature_checker import ForbiddenFeatureChecker
+from ..validators.document_completeness_validator import DocumentCompletenessValidator
+from ..validators.authority_limit_validator import AuthorityLimitValidator
 from ..validators.contradiction_validator import ContradictionValidator
 from ..validators.stale_data_validator import StaleDataValidator
 

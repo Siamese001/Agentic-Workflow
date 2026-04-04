@@ -8,7 +8,7 @@ Usage:
     from agentic_core.L3_orchestration.utils.coverage_util import (
         calculate_coverage_metrics, compute_proportions, shannon_entropy
     )
-    
+
     # Calculate coverage
     metrics = calculate_coverage_metrics(layer_counts, threshold_entropy=2.2)
 """
@@ -42,10 +42,10 @@ class CoverageMetrics:
 
 def compute_proportions(counts: dict[str, int]) -> dict[str, float]:
     """Compute layer activation proportions.
-    
+
     Args:
         counts: Dictionary mapping layer names to activation counts
-        
+
     Returns:
         Dictionary mapping layer names to proportion (0.0-1.0)
     """
@@ -57,10 +57,10 @@ def compute_proportions(counts: dict[str, int]) -> dict[str, float]:
 
 def shannon_entropy(proportions: dict[str, float]) -> float:
     """Calculate Shannon entropy of layer distribution.
-    
+
     Args:
         proportions: Dictionary of layer proportions
-        
+
     Returns:
         Shannon entropy value (0 to log2(n))
     """
@@ -75,11 +75,11 @@ def find_underrepresented_layer(
     priority_boost_layers: list[str] | None = None,
 ) -> str | None:
     """Find the most underrepresented layer.
-    
+
     Args:
         proportions: Layer activation proportions
         priority_boost_layers: Ordered list of layers to prioritize
-        
+
     Returns:
         Name of underrepresented layer or None if balanced
     """
@@ -106,13 +106,13 @@ def calculate_coverage_metrics(
     default_layers: list[str] | None = None,
 ) -> CoverageMetrics:
     """Calculate comprehensive coverage metrics.
-    
+
     Args:
         layer_counts: Dictionary of layer activation counts
         threshold_entropy: Entropy threshold for balance detection
         priority_boost_layers: Layers to prioritize in underrepresented detection
         default_layers: Default layer list if counts empty
-        
+
     Returns:
         CoverageMetrics with analysis results
     """
@@ -156,10 +156,10 @@ def calculate_coverage_metrics(
 
 def generate_coverage_report(metrics: CoverageMetrics) -> str:
     """Generate human-readable coverage report.
-    
+
     Args:
         metrics: CoverageMetrics from calculate_coverage_metrics
-        
+
     Returns:
         Formatted report string
     """
@@ -187,12 +187,12 @@ def get_layer_bias_weight(
     base_weight: float = 4.0,
 ) -> float:
     """Calculate effective bias weight for a layer.
-    
+
     Args:
         layer: Target layer name
         priority_boost_layers: Ordered list of prioritized layers
         base_weight: Base selection weight multiplier
-        
+
     Returns:
         Effective weight for routing bias
     """
@@ -211,13 +211,13 @@ def heal_repository(
     priority_boost_layers: list[str] | None = None,
 ) -> dict[str, Any]:
     """Validate coverage configuration (autonomous healing interface).
-    
+
     Args:
         layers: Layer list to validate
         threshold_entropy: Entropy threshold
         bias_weight: Selection weight multiplier
         priority_boost_layers: Priority layer list
-        
+
     Returns:
         Healing results dict per standard_heal format
     """

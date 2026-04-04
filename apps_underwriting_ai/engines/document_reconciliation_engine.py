@@ -1,11 +1,11 @@
 """
 Document Reconciliation Engine - Compares structured values vs parsed document values.
 """
-from typing import Dict, Any, List, Optional
+from typing import Any, List, Optional
 from dataclasses import dataclass, field
 from enum import Enum
 
-from ..types import UnderwritingRequest, FinancialPeriod
+from ..types import UnderwritingRequest
 from ..parsers import (
     FinancialStatementParser,
     DebtScheduleParser,
@@ -14,7 +14,6 @@ from ..parsers import (
 )
 
 # L4 retrieval wiring (Turn 3, Wave 36): Import creates ADG edge to L4_state
-from agentic_core.L4_state.retrieval import L4StateRetrievalBridge
 
 
 class ContradictionSeverity(Enum):

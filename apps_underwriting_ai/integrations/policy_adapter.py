@@ -1,10 +1,10 @@
 """
 Policy Adapter - Reads underwriting policy context and prepares compliance payload.
 """
-from typing import Dict, Any, Optional
+from typing import Dict, Any
 from dataclasses import dataclass, field
 
-from ..types import UnderwritingRequest, PolicyContext
+from ..types import UnderwritingRequest
 
 
 @dataclass

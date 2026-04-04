@@ -8,7 +8,7 @@ Usage:
     from agentic_core.L5_safety.utils.bootstrap_util import (
         verify_redis_connection, verify_critical_files, run_bootstrap
     )
-    
+
     # Verify bootstrap integrity
     result = run_bootstrap(project_root=Path("."))
 """
@@ -52,10 +52,10 @@ CRITICAL_FILES: list[str] = [
 
 def verify_redis_connection(redis_client: Any | None = None) -> bool:
     """Verify Redis connection is working.
-    
+
     Args:
         redis_client: Optional Redis client to test
-        
+
     Returns:
         True if connection is working, False otherwise
     """
@@ -78,10 +78,10 @@ def verify_redis_connection(redis_client: Any | None = None) -> bool:
 
 def verify_critical_files(project_root: Path) -> tuple[list[str], list[str]]:
     """Verify critical system files exist.
-    
+
     Args:
         project_root: Root directory of the project
-        
+
     Returns:
         Tuple of (present_files, missing_files)
     """
@@ -103,11 +103,11 @@ def run_bootstrap(
     redis_client: Any | None = None,
 ) -> BootstrapResult:
     """Run full bootstrap verification.
-    
+
     Args:
         project_root: Root directory of the project
         redis_client: Optional Redis client to test
-        
+
     Returns:
         BootstrapResult with verification status
     """
@@ -135,11 +135,11 @@ def heal_bootstrap_issues(
     target_path: str | None = None,
 ) -> dict[str, Any]:
     """Attempt to heal bootstrap issues.
-    
+
     Args:
         project_root: Root directory of the project
         target_path: Optional specific path to heal
-        
+
     Returns:
         Healing result dictionary
     """

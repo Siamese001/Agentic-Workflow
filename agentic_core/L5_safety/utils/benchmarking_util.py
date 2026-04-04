@@ -8,7 +8,7 @@ Usage:
     from agentic_core.L5_safety.utils.benchmarking_util import (
         BenchmarkSuite, BenchmarkResult, benchmark_function
     )
-    
+
     # Benchmark a function
     result = benchmark_function(my_func, args, kwargs)
 """
@@ -132,14 +132,14 @@ def benchmark_function(
     **kwargs: Any,
 ) -> tuple[Any, BenchmarkResult]:
     """Benchmark a function execution.
-    
+
     Args:
         func: Function to benchmark
         *args: Function arguments
         name: Benchmark name (defaults to function name)
         metadata: Additional metadata
         **kwargs: Function keyword arguments
-        
+
     Returns:
         Tuple of (function result, BenchmarkResult)
     """
@@ -167,14 +167,14 @@ def benchmark_function_async(
     **kwargs: Any,
 ) -> tuple[Any, BenchmarkResult]:
     """Benchmark an async function execution (synchronous wrapper).
-    
+
     Args:
         func: Async function to benchmark
         *args: Function arguments
         name: Benchmark name (defaults to function name)
         metadata: Additional metadata
         **kwargs: Function keyword arguments
-        
+
     Returns:
         Tuple of (function result, BenchmarkResult)
     """
@@ -198,11 +198,11 @@ def benchmark_function_async(
 
 def compare_benchmarks(suite1: BenchmarkSuite, suite2: BenchmarkSuite) -> dict[str, Any]:
     """Compare two benchmark suites.
-    
+
     Args:
         suite1: First benchmark suite
         suite2: Second benchmark suite
-        
+
     Returns:
         Comparison results
     """
@@ -232,11 +232,11 @@ def detect_performance_degradation(
     threshold: float | None = None,
 ) -> dict[str, Any] | None:
     """Detect performance degradation in a benchmark suite.
-    
+
     Args:
         suite: Benchmark suite to check
         threshold: Degradation threshold (default: 0.5)
-        
+
     Returns:
         Degradation report or None if healthy
     """

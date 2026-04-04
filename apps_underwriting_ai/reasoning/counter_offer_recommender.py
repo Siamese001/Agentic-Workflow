@@ -1,10 +1,10 @@
 """
 Counter Offer Recommender - Recommends revised terms when original request is too aggressive.
 """
-from typing import List, Dict, Any, Optional, Tuple
+from typing import List, Optional
 from dataclasses import dataclass
 
-from ..types import RiskFeatures, UnderwritingRequest, DecisionState
+from ..types import RiskFeatures, UnderwritingRequest
 
 
 @dataclass

@@ -1,29 +1,11 @@
 """
 Structured Ingestion - Normalizes and maps structured data to canonical schema.
 """
-from typing import Dict, Any, Optional, Union
+from typing import Dict, Any, Optional
 from dataclasses import dataclass, field
 from enum import Enum
 from datetime import datetime
-import re
 
-from ..types import (
-    UnderwritingRequest,
-    BorrowerProfile,
-    OwnerInfo,
-    FinancialPackage,
-    FinancialPeriod,
-    CollateralPackage,
-    CreditPackage,
-    BankingPackage,
-    DocumentPackage,
-    PolicyContext,
-    RelationshipContext,
-    DecisionConstraints,
-    RequestedStructure,
-    ExternalSignals,
-    CollateralRules,
-)
 
 
 class IngestionMode(Enum):

@@ -28,26 +28,26 @@ jobs:
   invariant-gates:
     name: ADG Invariant Checks
     runs-on: ubuntu-latest
-    
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-        
+
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
           python-version: '3.11'
           cache: 'pip'
-          
+
       - name: Install dependencies
         run: |
           pip install redis
-          
+
       - name: Start Redis
         uses: supercharge/redis-github-action@1.8.0
         with:
           redis-version: 7
-          
+
       - name: Wait for Redis
         run: |
           for i in {1..30}; do
@@ -59,11 +59,11 @@ jobs:
           done
           echo "Redis failed to start"
           exit 1
-          
+
       - name: Load ADG into Redis
         run: |
           python tools/adg/adg_redis_ingest.py --force --snapshot ${{ github.event.inputs.snapshot_id || '04022026_2140' }}
-          
+
       - name: Run Graph Integrity Checks
         id: integrity
         run: |
@@ -71,23 +71,23 @@ jobs:
           python tools/adg/adg_debug_cli.py run-invariants \
             --snapshot ${{ github.event.inputs.snapshot_id || '04022026_2140' }} \
             --policy ci-integrity > integrity_results.json || true
-          
+
           echo "results=$(cat integrity_results.json)" >> $GITHUB_OUTPUT
-          
+
       - name: Run Import Resolution Check
         id: imports
         run: |
           echo "Running import resolution invariant..."
           python tools/adg/adg_debug_cli.py find-unresolved > import_results.json || true
-          
+
           UNRESOLVED=$(cat import_results.json | jq '.unresolved_count // 0')
           echo "unresolved_count=$UNRESOLVED" >> $GITHUB_OUTPUT
-          
+
           if [ "$UNRESOLVED" -gt 0 ]; then
             echo "::warning::Found $UNRESOLVED unresolved imports"
             cat import_results.json | jq '.unresolved[] | "\(.src_file):\(.line_no) - \(.symbol)"'
           fi
-          
+
       - name: Run Boundary Violation Check
         id: boundary
         run: |
@@ -118,26 +118,26 @@ sys.exit(0 if len(critical) == 0 else 1)
 " > boundary_output.txt 2>&1 || BOUNDARY_FAILED=1
 
           cat boundary_output.txt
-          
+
           if [ -n "$BOUNDARY_FAILED" ]; then
             echo "::error::Boundary violations detected. See boundary_results.json"
             exit 1
           fi
-          
+
       - name: Run Redis Parity Check
         id: parity
         run: |
           echo "Checking Redis/SQLite parity..."
           python tools/adg/adg_debug_cli.py compare-snapshot > parity_results.json || PARITY_FAILED=1
-          
+
           if [ -n "$PARITY_FAILED" ]; then
             echo "::error::Redis cache parity check failed"
             cat parity_results.json
             exit 1
           fi
-          
+
           echo "Redis cache is coherent with SQLite"
-          
+
       - name: Upload Results
         if: always()
         uses: actions/upload-artifact@v4
@@ -148,13 +148,13 @@ sys.exit(0 if len(critical) == 0 else 1)
             import_results.json
             boundary_results.json
             parity_results.json
-            
+
       - name: Summary
         if: always()
         run: |
           echo "## ADG Invariant Gates Summary" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
-          
+
           if [ -f integrity_results.json ]; then
             PASSED=$(cat integrity_results.json | jq '.passed // false')
             if [ "$PASSED" = "true" ]; then
@@ -163,7 +163,7 @@ sys.exit(0 if len(critical) == 0 else 1)
               echo "- ❌ Graph Integrity: FAILED" >> $GITHUB_STEP_SUMMARY
             fi
           fi
-          
+
           if [ -f import_results.json ]; then
             COUNT=$(cat import_results.json | jq '.unresolved_count // 0')
             if [ "$COUNT" -eq 0 ]; then
@@ -172,7 +172,7 @@ sys.exit(0 if len(critical) == 0 else 1)
               echo "- ⚠️ Import Resolution: $COUNT unresolved imports" >> $GITHUB_STEP_SUMMARY
             fi
           fi
-          
+
           if [ -f parity_results.json ]; then
             COHERENT=$(cat parity_results.json | jq '.parity.coherent // false')
             if [ "$COHERENT" = "true" ]; then

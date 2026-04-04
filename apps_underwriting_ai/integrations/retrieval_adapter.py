@@ -7,11 +7,6 @@ from dataclasses import dataclass, field
 from ..types import UnderwritingRequest
 
 # L1-L5 retrieval wiring (Turn 3): Import creates ADG edges to all retrieval layers
-from agentic_core.L1_cognition.retrieval import QueryRetrievalBridge
-from agentic_core.L2_execution.retrieval import SemanticEnrichmentBridge
-from agentic_core.L3_orchestration.retrieval import ContextRetrievalOrchestrator
-from agentic_core.L4_state.retrieval import L4StateRetrievalBridge
-from agentic_core.L5_safety.retrieval import RetrievalSafetyGate
 
 
 @dataclass

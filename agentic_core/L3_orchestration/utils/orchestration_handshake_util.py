@@ -8,7 +8,7 @@ Usage:
     from agentic_core.L3_orchestration.utils.orchestration_handshake_util import (
         discover_capable_agents, delegate_task, HandshakeResult
     )
-    
+
     # Discover agents
     capable = discover_capable_agents(registry, "task_description", min_confidence=0.85)
 """
@@ -44,7 +44,7 @@ def discover_capable_agents(
     redis_client: Any | None = None,
 ) -> list[dict[str, Any]]:
     """Discover agents/methods capable of handling a task.
-    
+
     Args:
         registry: Agent registry to search
         task: Task description to match
@@ -52,7 +52,7 @@ def discover_capable_agents(
         top_k: Maximum number of results
         use_cache: Whether to use Redis caching
         redis_client: Optional Redis client for caching
-        
+
     Returns:
         List of capable agents with metadata, sorted by confidence
     """
@@ -99,14 +99,14 @@ def delegate_task(
     min_confidence: float = 0.85,
 ) -> HandshakeResult:
     """Delegate a task to the most capable agent.
-    
+
     Args:
         registry: Agent registry
         task: Task description
         args: Positional arguments for the task
         kwargs: Keyword arguments for the task
         min_confidence: Minimum confidence threshold
-        
+
     Returns:
         HandshakeResult with delegation status
     """
@@ -141,12 +141,12 @@ def build_handshake_artifact(
     candidates: list[dict[str, Any]],
 ) -> dict[str, Any]:
     """Build a handshake routing decision artifact.
-    
+
     Args:
         trace_id: Unique trace identifier
         chosen: Selected agent/method
         candidates: All capable agents found
-        
+
     Returns:
         Artifact dictionary for telemetry
     """

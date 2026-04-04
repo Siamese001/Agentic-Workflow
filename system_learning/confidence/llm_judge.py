@@ -11,11 +11,11 @@ class LLMJudge:
 
     def evaluate(self, prompt: str, response: str) -> dict[str, Any]:
         """Evaluate prompt/response pair.
-        
+
         Args:
             prompt: Input prompt
             response: LLM response
-            
+
         Returns:
             Evaluation results dict
         """
@@ -28,11 +28,11 @@ class LLMJudge:
 
     def score(self, output: str, criteria: dict[str, Any] | None = None) -> float:
         """Score output.
-        
+
         Args:
             output: Text to score
             criteria: Optional scoring criteria
-            
+
         Returns:
             Score between 0.0 and 1.0
         """
@@ -41,11 +41,11 @@ class LLMJudge:
 
 def evaluate(prompt: str, response: str) -> dict[str, Any]:
     """Evaluate prompt/response pair.
-    
+
     Args:
         prompt: Input prompt
         response: LLM response
-        
+
     Returns:
         Evaluation results dict
     """
@@ -55,11 +55,11 @@ def evaluate(prompt: str, response: str) -> dict[str, Any]:
 
 def score_output(output: str, criteria: dict[str, Any] | None = None) -> float:
     """Score output.
-    
+
     Args:
         output: Text to score
         criteria: Optional scoring criteria
-        
+
     Returns:
         Score between 0.0 and 1.0
     """

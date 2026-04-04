@@ -25,6 +25,9 @@ class MetaLearningResult:
     def __post_init__(self):
         if self.errors is None:
             self.errors = []
+        # GAP FIX: Validate records_persisted is non-negative
+        if self.records_persisted < 0:
+            raise ValueError(f"records_persisted must be non-negative, got {self.records_persisted}")
 
 
 class MetaLearningError(Exception):
@@ -43,7 +46,7 @@ def _fire_meta_learning_intake_required(
     Args:
         state: Runtime state object with healing context
         timestamp: Unix timestamp of the intake
-        output_dir: Directory for output files
+        _output_dir: Reserved for future file output (currently unused)
         healing_actions: Optional list of healing actions to process
 
     Returns:

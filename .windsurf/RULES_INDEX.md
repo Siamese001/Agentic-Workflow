@@ -3,7 +3,33 @@
 **Last Updated**: 2026-04-04
 **Purpose**: Comprehensive mapping of all constitutional rules, skills, and CI enforcement gates
 
-> **2026-03-11 CONSOLIDATION:** `.windsurfrules` reduced from 3906 → ~400 lines. All Python implementation code removed — it already lives in `ops_scripts/ci/`. Rules file now contains hard rules, forbidden/required patterns, and CI script cross-references only. 4 previously unwired CI gates added to `run_contract_gates.py`.
+> **2026-04-04 SSOT RESTRUCTURE**: `.windsurfrules` is now auto-generated from modular rule sources in `.windsurf/rules/*.md`. The preprocessor (`tools/windsurf/preprocess_rules.py`) consolidates all modular rules into a single file. Do not edit `.windsurfrules` directly — edit the source `.md` files and regenerate.
+
+---
+
+## SSOT Structure
+
+| File | Type | Role | Editable |
+|------|------|------|----------|
+| `.windsurf/rules/*.md` | **Source** (9 files) | Modular rule definitions | ✅ YES |
+| `.windsurf/rules/_variables.yaml` | **Config** | Variable definitions for expansion | ✅ YES |
+| `.windsurf/rules/.windsurfrules` | **Generated** | Consolidated output read by Windsurf | ❌ NO (auto-generated) |
+
+### Maintenance Workflow
+
+```bash
+# Edit modular rules
+vim .windsurf/rules/hitl-enforcement.md
+
+# Validate variables
+python tools/windsurf/preprocess_rules.py --validate
+
+# Regenerate consolidated file
+python tools/windsurf/preprocess_rules.py --process
+
+# Verify freshness (CI check)
+python tools/windsurf/preprocess_rules.py --check
+```
 
 ---
 

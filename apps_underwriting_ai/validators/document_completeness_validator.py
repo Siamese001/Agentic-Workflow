@@ -1,7 +1,7 @@
 """
 Document Completeness Validator - Verifies required documents are present.
 """
-from typing import List, Dict, Any, Optional
+from typing import List, Dict, Any
 from dataclasses import dataclass, field
 
 from ..types import UnderwritingRequest, DocumentPackage

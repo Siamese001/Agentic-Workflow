@@ -1,10 +1,10 @@
 """
 Risk Hypothesis Builder - Produces structured risk hypothesis from features and evidence.
 """
-from typing import List, Optional
+from typing import List
 from dataclasses import dataclass, field
 
-from ..types import RiskFeatures, UnderwritingRequest, DecisionState
+from ..types import RiskFeatures, UnderwritingRequest
 
 
 @dataclass
@@ -138,7 +138,7 @@ class RiskHypothesisBuilder:
 
         # Credit risks
         if features.credit.personal_fico_min and features.credit.personal_fico_min < 650:
-            risks.append(f"Weak personal credit with FICO below 650")
+            risks.append("Weak personal credit with FICO below 650")
         elif features.credit.personal_fico_min and features.credit.personal_fico_min < 680:
             risks.append(f"Marginal personal credit with FICO of {features.credit.personal_fico_min}")
 

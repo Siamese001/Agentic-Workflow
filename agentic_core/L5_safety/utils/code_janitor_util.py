@@ -8,7 +8,7 @@ Usage:
     from agentic_core.L5_safety.utils.code_janitor_util import (
         CodeJanitor, JanitorViolation, validate_syntax, validate_indentation
     )
-    
+
     # Validate a file
     violations = validate_syntax("path/to/file.py")
 """
@@ -57,7 +57,7 @@ class CodeJanitor:
 
     def __init__(self, python_files: list[str] | None = None) -> None:
         """Initialize the code janitor.
-        
+
         Args:
             python_files: List of Python file paths to validate
         """
@@ -69,10 +69,10 @@ class CodeJanitor:
 
     def validate_syntax(self, file_path: str | None = None) -> tuple[bool, list[str]]:
         """Check for syntax errors in Python files.
-        
+
         Args:
             file_path: Optional single file to check (default: all files)
-            
+
         Returns:
             Tuple of (passed, list of violations)
         """
@@ -96,10 +96,10 @@ class CodeJanitor:
 
     def validate_indentation(self, file_path: str | None = None) -> tuple[bool, list[str]]:
         """Check for proper indentation (4 spaces, no tabs).
-        
+
         Args:
             file_path: Optional single file to check (default: all files)
-            
+
         Returns:
             Tuple of (passed, list of violations)
         """
@@ -137,10 +137,10 @@ class CodeJanitor:
 
     def validate_trailing_whitespace(self, file_path: str | None = None) -> tuple[bool, list[str]]:
         """Check for trailing whitespace at end of lines.
-        
+
         Args:
             file_path: Optional single file to check (default: all files)
-            
+
         Returns:
             Tuple of (passed, list of violations)
         """
@@ -164,10 +164,10 @@ class CodeJanitor:
 
     def validate_naming_conventions(self, file_path: str | None = None) -> tuple[bool, list[str]]:
         """Check for proper naming conventions.
-        
+
         Args:
             file_path: Optional single file to check (default: all files)
-            
+
         Returns:
             Tuple of (passed, list of violations)
         """
@@ -205,10 +205,10 @@ class CodeJanitor:
 
     def validate_all(self, file_path: str | None = None) -> dict[str, Any]:
         """Run all validation checks.
-        
+
         Args:
             file_path: Optional single file to check (default: all files)
-            
+
         Returns:
             Dict with validation results
         """
@@ -247,10 +247,10 @@ class CodeJanitor:
 
 def validate_syntax(file_path: str) -> list[str]:
     """Standalone function to validate syntax of a Python file.
-    
+
     Args:
         file_path: Path to Python file
-        
+
     Returns:
         List of violation strings
     """
@@ -261,10 +261,10 @@ def validate_syntax(file_path: str) -> list[str]:
 
 def validate_indentation(file_path: str) -> list[str]:
     """Standalone function to validate indentation of a Python file.
-    
+
     Args:
         file_path: Path to Python file
-        
+
     Returns:
         List of violation strings
     """
@@ -275,10 +275,10 @@ def validate_indentation(file_path: str) -> list[str]:
 
 def validate_trailing_whitespace(file_path: str) -> list[str]:
     """Standalone function to validate trailing whitespace of a Python file.
-    
+
     Args:
         file_path: Path to Python file
-        
+
     Returns:
         List of violation strings
     """
@@ -289,10 +289,10 @@ def validate_trailing_whitespace(file_path: str) -> list[str]:
 
 def validate_naming_conventions(file_path: str) -> list[str]:
     """Standalone function to validate naming conventions of a Python file.
-    
+
     Args:
         file_path: Path to Python file
-        
+
     Returns:
         List of violation strings
     """
@@ -303,10 +303,10 @@ def validate_naming_conventions(file_path: str) -> list[str]:
 
 def validate_all(file_path: str) -> dict[str, Any]:
     """Run all validation checks on a single file.
-    
+
     Args:
         file_path: Path to Python file
-        
+
     Returns:
         Dict with validation results
     """
@@ -326,10 +326,10 @@ def heal_repository(**kwargs: Any) -> dict[str, Any]:
 
 def heal(violation: dict[str, Any]) -> dict[str, Any]:
     """Heal code janitor violations.
-    
+
     Args:
         violation: Violation dict
-        
+
     Returns:
         Healing result dict
     """

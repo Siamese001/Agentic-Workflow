@@ -27,9 +27,10 @@ def _enforce_cache_limit(cache: dict[str, Any], max_size: int = MAX_CACHE_SIZE) 
         cache: The cache dictionary to enforce limits on
         max_size: Maximum number of entries allowed
     """
-    if len(cache) > max_size:
-        # Remove oldest entries (first inserted)
-        keys_to_remove = list(cache.keys())[:len(cache) - max_size]
+    overflow = len(cache) - max_size
+    if overflow > 0:
+        # GAP FIX: Optimize using slice deletion (O(overflow) vs O(N) iteration)
+        keys_to_remove = list(cache.keys())[:overflow]
         for key in keys_to_remove:
             del cache[key]
 
@@ -52,19 +53,30 @@ def _is_cache_entry_valid(entry: dict[str, Any], current_timestamp: int, ttl: in
 
     cached_at = entry.get("cached_at", 0)
     age = current_timestamp - cached_at
+    # GAP FIX: Handle negative age (clock skew) - treat as expired
+    if age < 0:
+        return False
     return age <= ttl
 
 
-def _get_query_hash(query: str) -> str:
+def _get_query_hash(query: str, full_hash: bool = False) -> str:
     """Generate a hash for a query string.
 
     Args:
         query: The query string to hash
+        full_hash: If True, return full 64-char SHA256 hash for collision resistance
 
     Returns:
-        16-character hex hash of the query
+        16-character hex hash by default, or 64-char full hash if requested
+
+    Note:
+        16-char truncation has collision risk (birthday paradox: ~2^64 queries
+        for 50% collision probability). For high-volume caches, use full_hash=True.
     """
-    return hashlib.sha256(query.encode()).hexdigest()[:16]
+    full = hashlib.sha256(query.encode()).hexdigest()
+    if full_hash:
+        return full
+    return full[:16]
 
 
 def _store_in_retrieval_cache(
@@ -82,10 +94,18 @@ def _store_in_retrieval_cache(
         cache_type: Type of cache (L1 for exact, L2 for semantic)
 
     Raises:
-        ValueError: If cache_type is not "L1" or "L2"
+        ValueError: If cache_type is not "L1" or "L2" or if query is empty
     """
     if cache_type not in ("L1", "L2"):
         raise ValueError(f"Invalid cache_type: {cache_type!r}. Must be 'L1' or 'L2'")
+
+    # GAP FIX: Reject empty query string
+    if not query or not query.strip():
+        raise ValueError("Query cannot be empty")
+
+    # GAP FIX: Validate timestamp is positive
+    if timestamp <= 0:
+        raise ValueError(f"Timestamp must be positive, got {timestamp}")
 
     query_hash = _get_query_hash(query)
     entry = {

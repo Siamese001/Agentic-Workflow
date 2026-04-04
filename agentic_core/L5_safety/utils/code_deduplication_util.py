@@ -8,7 +8,7 @@ Usage:
     from agentic_core.L5_safety.utils.code_deduplication_util import (
         CodeDuplicateDetector, DuplicateGroup, scan_for_duplicates
     )
-    
+
     # Scan for duplicates
     detector = CodeDuplicateDetector(similarity_threshold=1.0)
     detector.scan_for_duplicates(["file1.py", "file2.py"])
@@ -145,7 +145,7 @@ class CodeDuplicateDetector:
 
     def __init__(self, similarity_threshold: float = 1.0, min_lines: int = 8) -> None:
         """Initialize detector.
-        
+
         Args:
             similarity_threshold: 1.0 = 100% identity required (SSOT compliance)
             min_lines: Minimum lines for duplicate detection
@@ -163,10 +163,10 @@ class CodeDuplicateDetector:
 
     def scan_for_duplicates(self, python_files: list[str | Path]) -> DedupResult:
         """Scan for duplicate code blocks across files.
-        
+
         Args:
             python_files: List of Python file paths to scan
-            
+
         Returns:
             DedupResult with detected duplicate groups
         """

@@ -11,11 +11,11 @@ class NovelJudge:
 
     def evaluate(self, content: str, reference: str | None = None) -> dict[str, Any]:
         """Evaluate novelty of content.
-        
+
         Args:
             content: Content to evaluate
             reference: Optional reference content
-            
+
         Returns:
             Evaluation results dict
         """
@@ -33,11 +33,11 @@ class NovelJudge:
 
 def evaluate_novel(content: str, reference: str | None = None) -> dict[str, Any]:
     """Evaluate novelty of content.
-    
+
     Args:
         content: Content to evaluate
         reference: Optional reference content
-        
+
     Returns:
         Evaluation results dict
     """

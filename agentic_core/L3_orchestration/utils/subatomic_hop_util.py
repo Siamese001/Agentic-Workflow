@@ -8,7 +8,7 @@ Usage:
     from agentic_core.L3_orchestration.utils.subatomic_hop_util import (
         validate_dependencies, create_hop_context, SubatomicHopResult
     )
-    
+
     # Validate hop dependencies
     result = validate_dependencies(config, storage, genealogy)
 """
@@ -64,7 +64,7 @@ def validate_dependencies(
     overseer: Any | None = None,
 ) -> SubatomicHopResult:
     """Validate that required dependencies are present.
-    
+
     Args:
         role: Agent role identifier
         config: Configuration dictionary
@@ -72,7 +72,7 @@ def validate_dependencies(
         genealogy: Genealogy registry (optional)
         governor: Cost governor (optional)
         overseer: Constitutional overseer (optional)
-        
+
     Returns:
         SubatomicHopResult with validation status
     """
@@ -106,11 +106,11 @@ def validate_dependencies(
 
 def create_hop_context(role: str, config: dict[str, Any]) -> HopContext:
     """Create a hop context for routing.
-    
+
     Args:
         role: Agent role identifier
         config: Configuration dictionary
-        
+
     Returns:
         HopContext instance
     """
@@ -119,14 +119,14 @@ def create_hop_context(role: str, config: dict[str, Any]) -> HopContext:
 
 def run_self_tests(role: str, config: dict[str, Any]) -> bool:
     """Phase 1: Self-testing for L3 compliance.
-    
+
     Args:
         role: Agent role identifier
         config: Configuration dictionary
-        
+
     Returns:
         True if self-tests pass
-        
+
     Raises:
         AssertionError: If required attributes are missing
     """
@@ -137,14 +137,14 @@ def run_self_tests(role: str, config: dict[str, Any]) -> bool:
 
 def ensure_dependency(dep: Any, name: str) -> Any:
     """Validate that a required dependency was injected.
-    
+
     Args:
         dep: The dependency instance
         name: Human-readable name for error messages
-        
+
     Returns:
         The validated dependency
-        
+
     Raises:
         SovereignDependencyError: If dependency is None
     """

@@ -3,7 +3,7 @@ Human Escalation Selector - Determines when to escalate to human underwriter.
 """
 from typing import List
 
-from ..types import RiskFeatures, UnderwritingRequest, DecisionState
+from ..types import RiskFeatures, UnderwritingRequest
 
 
 class HumanEscalationSelector:

@@ -1113,11 +1113,11 @@ class ScopedTestRunner:
 
 def run_scoped_tests(test_paths: list[str], scope: str = "adg") -> dict:
     """Run scoped tests and return results.
-    
+
     Args:
         test_paths: List of test file paths to run
         scope: Scope identifier for the test run
-        
+
     Returns:
         Dict with test run results
     """

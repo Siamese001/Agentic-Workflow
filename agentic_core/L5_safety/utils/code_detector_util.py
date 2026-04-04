@@ -8,7 +8,7 @@ Usage:
     from agentic_core.L5_safety.utils.code_detector_util import (
         CodeDetector, Detection, DetectionType, Severity
     )
-    
+
     # Detect issues
     detector = CodeDetector(project_root=Path("."))
     detections = detector.run_full_scan()
@@ -107,7 +107,7 @@ class CodeDetector:
 
     def __init__(self, config: DetectorConfig | None = None) -> None:
         """Initialize the code detector.
-        
+
         Args:
             config: Optional detector configuration
         """
@@ -126,7 +126,7 @@ class CodeDetector:
 
     def run_full_scan(self) -> list[Detection]:
         """Scan all Python files in the project.
-        
+
         Returns:
             List of all detections found
         """
@@ -142,10 +142,10 @@ class CodeDetector:
 
     def detect_all(self, file_path: Path) -> list[Detection]:
         """Run all enabled detections on a file.
-        
+
         Args:
             file_path: Path to the Python file
-            
+
         Returns:
             List of detections for this file
         """
@@ -178,11 +178,11 @@ class CodeDetector:
 
     def detect_dead_code(self, file_path: Path, content: str) -> list[Detection]:
         """Detect potentially unused definitions.
-        
+
         Args:
             file_path: Path to the file
             content: File content
-            
+
         Returns:
             List of dead code detections
         """
@@ -227,11 +227,11 @@ class CodeDetector:
 
     def detect_deadlocks(self, file_path: Path, content: str) -> list[Detection]:
         """Detect potential deadlock patterns.
-        
+
         Args:
             file_path: Path to the file
             content: File content
-            
+
         Returns:
             List of deadlock detections
         """
@@ -264,11 +264,11 @@ class CodeDetector:
 
     def detect_memory_leaks(self, file_path: Path, content: str) -> list[Detection]:
         """Detect potential memory leak patterns.
-        
+
         Args:
             file_path: Path to the file
             content: File content
-            
+
         Returns:
             List of memory leak detections
         """
@@ -293,11 +293,11 @@ class CodeDetector:
 
     def detect_method_changes(self, file_path: Path, content: str) -> list[Detection]:
         """Detect method signature changes against baseline.
-        
+
         Args:
             file_path: Path to the file
             content: File content
-            
+
         Returns:
             List of method change detections (requires baseline)
         """
@@ -307,7 +307,7 @@ class CodeDetector:
 
     def get_summary(self) -> dict[str, Any]:
         """Get summary of all detections.
-        
+
         Returns:
             Dictionary with detection statistics
         """
@@ -327,7 +327,7 @@ class CodeDetector:
 
     def export_detections(self, output_path: Path) -> None:
         """Export detections to JSON file.
-        
+
         Args:
             output_path: Path to write JSON output
         """
@@ -343,11 +343,11 @@ class CodeDetector:
 
 def detect_file(file_path: str | Path, config: DetectorConfig | None = None) -> list[Detection]:
     """Standalone function to detect issues in a single file.
-    
+
     Args:
         file_path: Path to the file
         config: Optional detector configuration
-        
+
     Returns:
         List of detections
     """
@@ -357,11 +357,11 @@ def detect_file(file_path: str | Path, config: DetectorConfig | None = None) -> 
 
 def scan_project(project_root: str | Path, config: DetectorConfig | None = None) -> list[Detection]:
     """Standalone function to scan an entire project.
-    
+
     Args:
         project_root: Root directory of the project
         config: Optional detector configuration
-        
+
     Returns:
         List of all detections
     """
@@ -375,7 +375,7 @@ def scan_project(project_root: str | Path, config: DetectorConfig | None = None)
 
 def heal_repository(**kwargs: Any) -> dict[str, Any]:
     """Autonomous healing interface (Canon Key 51 compliance).
-    
+
     Detectors primarily REPORT - they don't auto-fix.
     """
     Logger.info("[CodeDetector] Detection-only - manual review required")
@@ -389,10 +389,10 @@ def heal_repository(**kwargs: Any) -> dict[str, Any]:
 
 def heal(violation: dict[str, Any]) -> dict[str, Any]:
     """Heal code detection violations.
-    
+
     Args:
         violation: Violation dict
-        
+
     Returns:
         Healing result dict
     """

@@ -8,7 +8,7 @@ Usage:
     from agentic_core.L5_safety.utils.architecture_governor_validator_util import (
         ArchitectureGovernorValidator, validate_architecture_governance
     )
-    
+
     # Validate governance
     result = validate_architecture_governance(Path("."))
 """
@@ -49,14 +49,14 @@ CHECK_ID = "architecture_governance"
 
 class ArchitectureGovernorValidator:
     """Deterministic architecture governance validator.
-    
+
     This validator runs ArchitectureGovernorAgent in dry-run mode to detect
     architectural governance violations without mutating the codebase.
     """
 
     def __init__(self, project_root: Path) -> None:
         """Initialize validator.
-        
+
         Args:
             project_root: Root directory of the project
         """
@@ -64,10 +64,10 @@ class ArchitectureGovernorValidator:
 
     def scan(self, target_territory: str | None = None) -> dict[str, Any]:
         """Run architecture governance scan in dry-run mode.
-        
+
         Args:
             target_territory: Optional territory to scope the scan
-            
+
         Returns:
             Raw governance report dict from heal_repository(dry_run=True)
         """
@@ -91,10 +91,10 @@ class ArchitectureGovernorValidator:
 
     def to_check_dict(self, target_territory: str | None = None) -> dict[str, Any]:
         """Return structured check dict for _invoke_healer dispatch.
-        
+
         Args:
             target_territory: Optional territory to scope the scan
-            
+
         Returns:
             Dictionary with check results for healer dispatch
         """
@@ -111,10 +111,10 @@ class ArchitectureGovernorValidator:
 
     def run(self, target_territory: str | None = None) -> dict[str, Any]:
         """Alias for to_check_dict for orchestrator compatibility.
-        
+
         Args:
             target_territory: Optional territory to scope the scan
-            
+
         Returns:
             Dictionary with check results
         """
@@ -122,10 +122,10 @@ class ArchitectureGovernorValidator:
 
     def validate(self, target_territory: str | None = None) -> GovernanceValidationResult:
         """Validate architecture governance.
-        
+
         Args:
             target_territory: Optional territory to scope the scan
-            
+
         Returns:
             GovernanceValidationResult with validation results
         """
@@ -145,11 +145,11 @@ def validate_architecture_governance(
     target_territory: str | None = None,
 ) -> GovernanceValidationResult:
     """Convenience function to validate architecture governance.
-    
+
     Args:
         project_root: Project root directory
         target_territory: Optional territory to scope the scan
-        
+
     Returns:
         GovernanceValidationResult with validation results
     """
@@ -162,11 +162,11 @@ def scan_governance(
     target_territory: str | None = None,
 ) -> dict[str, Any]:
     """Convenience function to scan architecture governance.
-    
+
     Args:
         project_root: Project root directory
         target_territory: Optional territory to scope the scan
-        
+
     Returns:
         Raw governance report dict
     """

@@ -31,11 +31,11 @@ class GeminiE2EJudge:
 
 def score_with_gemini(output: str, criteria: dict[str, Any] | None = None) -> float:
     """Score output using Gemini.
-    
+
     Args:
         output: Text to score
         criteria: Scoring criteria
-        
+
     Returns:
         Score between 0.0 and 1.0
     """
@@ -45,11 +45,11 @@ def score_with_gemini(output: str, criteria: dict[str, Any] | None = None) -> fl
 
 def evaluate_e2e(input_text: str, output_text: str) -> dict[str, Any]:
     """Evaluate end-to-end.
-    
+
     Args:
         input_text: Input text
         output_text: Output text
-        
+
     Returns:
         Evaluation results dict
     """

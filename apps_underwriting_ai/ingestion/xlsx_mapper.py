@@ -6,7 +6,7 @@ from dataclasses import dataclass, field
 from pathlib import Path
 
 from ..types import UnderwritingRequest
-from .json_mapper import JSONMapper, JSONMappingResult
+from .json_mapper import JSONMapper
 
 
 @dataclass

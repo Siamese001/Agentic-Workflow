@@ -1,44 +1,32 @@
 ---
 trigger: always_on
 ---
-# Plan Location and Format Rule
+# Plan Rules — Location, Format, and Overwrite
 
-Plans MUST always be saved to the SSOT-approved location:
+## SSOT Location
+
+Plans MUST be saved to exactly ONE location:
 
 ```
-docs/reports/plans/
+.windsurf/plans/<descriptive-name>-<6hex>.md
 ```
 
-## Hard Constraints — Location
+- ❌ NEVER: `docs/reports/plans/`, `C:\Users\amita\.windsurf\plans\`, anywhere else
+- ✅ ALWAYS: `.windsurf/plans/<filename>.md`
 
-- **NEVER** save plans to `.windsurf/plans/` or `C:\Users\amita\.windsurf\plans\` or any path outside the repository
-- **ALWAYS** use `docs/reports/plans/<filename>.md` as the canonical plan path per `.windsurfrules` §3.6
-- Plan filenames should be descriptive with a short hex suffix (e.g., `execute-ssot-streamlining-hardened.md`)
+`docs/reports/plans/` is for **evidence and reports only** — never plans.
 
-## Hard Constraints — Format (Execution Plans)
+## Format Requirements
 
-Before writing ANY execution plan, you MUST:
+Before writing any execution plan:
 
-1. **READ the template**: `.windsurf/templates/execution-plan-template.md`
-2. **Include a wave summary table** at the very top of the plan body, with columns:
-   `| Wave | Phase IDs | Focus | Est. Tokens | Assumptions | Status | Success Criteria |`
-3. **Run token estimation** per wave using `agentic_core/planning/token_estimator.py` (`ContextWindowEstimator`)
-4. **Include per-wave token budgets** with GREEN/YELLOW/RED status
-5. **Validate** against `.windsurf/rules/plan_ci_enforcement.md` requirements
+1. Read template: `.windsurf/templates/execution-plan-template.md`
+2. Include wave summary table with columns: `| Wave | Phase IDs | Focus | Est. Tokens | Assumptions | Status | Success Criteria |`
+3. Include per-wave token budgets with GREEN 🟢 / YELLOW 🟡 / RED 🔴 status
+4. Run token estimation via `agentic_core/planning/token_estimator.py` (`ContextWindowEstimator`)
 
-A plan without a wave summary table and token estimates is **invalid and must not be saved**.
+A plan missing the wave summary table is **invalid and must not be saved**.
 
-## Why
+## Overwrite Default
 
-- `docs/reports/plans/` is the SSOT-approved territory for execution plans per `.windsurfrules` §3.6
-- Paths outside the repository (`C:\Users\amita\.windsurf\plans\`) violate sovereignty rules
-- Plans are project documentation and belong in `docs/reports/plans/`
-- Wave table and token estimates are mandated by `plan_ci_enforcement.md` §10.1/§10.2
-
-## Reference
-
-- Plan template: `.windsurf/templates/execution-plan-template.md`
-- Token estimator: `agentic_core/planning/token_estimator.py`
-- Enforcement rules: `.windsurf/rules/plan_ci_enforcement.md`
-- Validation skill: `.windsurf/skills/plan-validation/main.py`
-- Constitutional rule: `.windsurf/rules/.windsurfrules` §3.6
+When updating an existing plan: **silently overwrite** `.windsurf/plans/<filename>.md` — no HITL prompt, no confirmation request.

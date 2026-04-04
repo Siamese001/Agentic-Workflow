@@ -8,7 +8,7 @@ Usage:
     from agentic_core.L5_safety.utils.code_validator_util import (
         CodeValidator, Violation, ViolationType, RuleSet, validate_file
     )
-    
+
     # Validate a file
     violations = validate_file("path/to/file.py")
 """
@@ -99,7 +99,7 @@ class CodeValidator:
 
     def __init__(self, ruleset: RuleSet | None = None) -> None:
         """Initialize validator.
-        
+
         Args:
             ruleset: Validation rules configuration
         """
@@ -296,11 +296,11 @@ class CodeValidator:
 
 def validate_file(file_path: str | Path, ruleset: RuleSet | None = None) -> list[Violation]:
     """Convenience function to validate a single file.
-    
+
     Args:
         file_path: Path to the file to validate
         ruleset: Optional ruleset configuration
-        
+
     Returns:
         List of violations found
     """
@@ -310,11 +310,11 @@ def validate_file(file_path: str | Path, ruleset: RuleSet | None = None) -> list
 
 def validate_directory(directory: str | Path, ruleset: RuleSet | None = None) -> ValidationReport:
     """Convenience function to validate a directory.
-    
+
     Args:
         directory: Path to the directory to validate
         ruleset: Optional ruleset configuration
-        
+
     Returns:
         ValidationReport with all violations
     """

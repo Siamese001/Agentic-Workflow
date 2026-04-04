@@ -1,7 +1,7 @@
 """
 Evidence Register Engine - Collects and manages evidence for underwriting claims.
 """
-from typing import Dict, Any, List, Optional
+from typing import List, Optional
 from dataclasses import dataclass, field
 from datetime import datetime
 

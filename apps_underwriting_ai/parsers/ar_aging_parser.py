@@ -1,7 +1,7 @@
 """
 AR Aging Parser - Parses accounts receivable aging schedules.
 """
-from typing import Dict, Any, Optional, List
+from typing import Optional, List
 from dataclasses import dataclass, field
 from pathlib import Path
 import re

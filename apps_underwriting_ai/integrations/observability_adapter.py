@@ -2,7 +2,7 @@
 Observability Adapter - Emits app-specific telemetry fields.
 """
 from typing import Dict, Any, Optional
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from datetime import datetime
 
 from ..types import UnderwritingRequest, DecisionMemo

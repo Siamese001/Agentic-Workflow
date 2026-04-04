@@ -5,7 +5,6 @@ import unittest
 
 from apps_underwriting_ai.validators.compliance_validator import ComplianceValidator
 from apps_underwriting_ai.types import (
-    UnderwritingRequest,
     PolicyContext,
     CollateralRules,
     RiskFeatures,

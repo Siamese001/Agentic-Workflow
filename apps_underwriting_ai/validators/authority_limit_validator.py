@@ -1,7 +1,7 @@
 """
 Authority Limit Validator - Compares request to delegated approval authority.
 """
-from typing import Dict, Any, Optional
+from typing import Optional
 from dataclasses import dataclass, field
 
 from ..types import UnderwritingRequest, RiskFeatures
