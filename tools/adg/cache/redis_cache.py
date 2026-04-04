@@ -1,7 +1,6 @@
 """Redis Cache — Optional read-through accelerator, non-authoritative."""
-import json
 import logging
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any
 
 import redis
 
@@ -16,7 +15,7 @@ REDIS_TIMEOUT_MS = 75
 class RedisCache:
     """Read-through cache with tight timeout budget."""
 
-    _client: Optional[redis.Redis] = None
+    _client: redis.Redis | None = None
     _available: bool = False
     _cache_version: str = "v1"  # Bump on schema changes
 
@@ -41,7 +40,7 @@ class RedisCache:
             self._available = False
             self._client = None
 
-    def health(self) -> Tuple[str, Dict[str, Any]]:
+    def health(self) -> tuple[str, dict[str, Any]]:
         """Return Redis health status."""
         if not self._available or not self._client:
             return "unavailable", {"reason": "not connected"}
@@ -59,7 +58,7 @@ class RedisCache:
         """Generate versioned cache key."""
         return f"adg:{self._cache_version}:{adg_snapshot_id}:{base}"
 
-    def get_node(self, node_id: str, adg_snapshot_id: str) -> Optional[ADGNode]:
+    def get_node(self, node_id: str, adg_snapshot_id: str) -> ADGNode | None:
         """Try Redis first, return None on miss or timeout."""
         if not self._available:
             return None
@@ -86,16 +85,22 @@ class RedisCache:
             logger.debug(f"Redis set_node failed: {e}")
 
     def get_edge_fanout(self, src_id: str, relation_type: str,
-                        adg_snapshot_id: str) -> Optional[List[ADGEdge]]:
-        """Try Redis for edges."""
+                        adg_snapshot_id: str) -> list[ADGEdge] | None:
+        """Try Redis for edges. Returns None on cache miss, empty list if no edges exist."""
         if not self._available:
             return None
 
         try:
             key = self._key(f"edge:{src_id}:{relation_type}", adg_snapshot_id)
             edge_ids = self._client.smembers(key)
+            
+            # Check if key exists (distinguish empty set from key not existing)
+            if not self._client.exists(key):
+                return None  # Cache miss - key doesn't exist
+            
+            # Key exists but may be empty (no edges for this relation)
             if not edge_ids:
-                return None
+                return []  # Cache hit, but no edges
 
             edges = []
             for eid in edge_ids:
@@ -110,7 +115,7 @@ class RedisCache:
         return None
 
     def set_edge_fanout(self, src_id: str, relation_type: str,
-                       edges: List[ADGEdge], adg_snapshot_id: str) -> None:
+                       edges: list[ADGEdge], adg_snapshot_id: str) -> None:
         """Cache edges in Redis."""
         if not self._available:
             return

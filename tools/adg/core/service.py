@@ -1,9 +1,9 @@
 """ADG Service — Query orchestration with mandatory SQLite + optional Redis."""
 import logging
-from typing import Any, Callable, Dict, List, Optional, Tuple
+from typing import Any, Callable
 
 from tools.adg.cache.redis_cache import RedisCache
-from tools.adg.core.models import ADGEdge, ADGNode, ADGResponse, HealthStatus
+from tools.adg.core.models import ADGResponse, HealthStatus
 from tools.adg.core.sqlite_backend import SQLiteBackend
 
 logger = logging.getLogger(__name__)
@@ -28,7 +28,7 @@ class ADGService:
     _redis: RedisCache
     _adg_snapshot_id: str
 
-    def __init__(self, redis_url: Optional[str] = "redis://localhost:6379/0"):
+    def __init__(self, redis_url: str | None = "redis://localhost:6379/0"):
         # SQLite is mandatory — fail fast if unavailable
         self._sqlite = SQLiteBackend()
 
@@ -58,10 +58,10 @@ class ADGService:
 
     def _query_with_fallback(
         self,
-        redis_query: Callable[[], Optional[Any]],
+        redis_query: Callable[[], Any | None],
         sqlite_query: Callable[[], Any],
         cache_set: Callable[[Any], None]
-    ) -> Tuple[Any, str]:
+    ) -> tuple[Any, str]:
         """Generic read-through pattern."""
         # Try Redis first
         if self._redis._available:
@@ -75,12 +75,19 @@ class ADGService:
         # Fall back to SQLite
         result = sqlite_query()
 
-        # Optionally backfill cache
+        # Optionally backfill cache (only if result is valid and non-empty)
         if self._redis._available and result is not None:
-            try:
-                cache_set(result)
-            except Exception as e:
-                logger.debug(f"Cache backfill failed: {e}")
+            # Validate result before caching (don't cache None or invalid data)
+            is_valid = True
+            if isinstance(result, list) and not result:
+                # Empty list is valid but may not be worth caching
+                pass  # Still cache empty results to avoid repeated misses
+            
+            if is_valid:
+                try:
+                    cache_set(result)
+                except Exception as e:
+                    logger.debug(f"Cache backfill failed: {e}")
 
         return result, "sqlite"
 
@@ -146,16 +153,15 @@ class ADGService:
             ),
         )
 
-        if edges is None:
-            edges = []
-
+        # edges is never None from _query_with_fallback (SQLite always returns list)
+        # but may be empty list if no edges exist
         return ADGResponse(
             status="ok",
             data={
                 "src_id": src_id,
                 "relation_type": relation_type,
-                "edges": [e.model_dump() for e in edges],
-                "count": len(edges),
+                "edges": [e.model_dump() for e in edges] if edges else [],
+                "count": len(edges) if edges else 0,
             },
             backend_used=backend,
         )

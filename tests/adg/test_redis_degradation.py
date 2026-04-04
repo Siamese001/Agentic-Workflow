@@ -24,13 +24,22 @@ class TestRedisDegradation:
         assert resp.backend_used == "sqlite"
     
     def test_redis_timeout_handling(self):
-        """Slow Redis doesn't block queries."""
+        """Slow Redis doesn't block queries - must complete within timeout budget."""
+        import time
+        
         # Use a URL that hangs (blackhole IP)
         svc = ADGService(redis_url="redis://10.255.255.1:6379/0")
         
-        # Query should still work via SQLite fallback
+        # Query should complete within 75ms Redis timeout + SQLite query time
+        start = time.time()
         resp = svc.get_node("1")
-        assert resp.status in ["ok", "error"]  # May not find node, but shouldn't hang
+        elapsed = time.time() - start
+        
+        # Must complete within 2 seconds (Redis 75ms timeout + SQLite overhead)
+        assert elapsed < 2.0, f"Query took {elapsed:.2f}s, exceeds 2s timeout budget"
+        
+        # Result may be error (node not found) or ok, but must not hang
+        assert resp.status in ["ok", "error"]
     
     def test_health_reports_degraded(self):
         """Health check reports degraded status when Redis down."""
