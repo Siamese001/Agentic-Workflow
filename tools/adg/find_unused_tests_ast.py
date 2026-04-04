@@ -5,7 +5,6 @@ import ast
 import json
 import sqlite3
 from pathlib import Path
-from collections import defaultdict
 
 
 def find_test_functions(file_path: Path) -> list[dict]:

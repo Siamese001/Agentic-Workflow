@@ -4,7 +4,6 @@
 import argparse
 import json
 import sys
-from pathlib import Path
 
 
 def filter_by_file(input_path: str, output_path: str, file_pattern: str):

@@ -17,7 +17,7 @@ def remove_test_function(file_path: str, func_name: str) -> bool:
     try:
         source = path.read_text(encoding='utf-8')
         lines = source.split('\n')
-    except Exception as e:
+    except (OSError, IOError) as e:
         print(f"  Error reading {file_path}: {e}")
         return False
     
