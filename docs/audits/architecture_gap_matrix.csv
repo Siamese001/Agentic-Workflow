@@ -1,0 +1,42 @@
+gap_id,file_path,function_class_symbol,violation_type,canonical_requirement,severity,remediation,effort_estimate,dependencies
+C1-001,apps_lic/types/lic_vector_memory_types.py,VectorMemory operations,DIRECT_WRITE,UWG is only durable write path,CRITICAL,Replace with UWG write_through,High,None
+C1-002,apps_lic/types/TraceRegistry.py,Registry persistence,DIRECT_WRITE,UWG is only durable write path,CRITICAL,Replace with UWG write_through,High,None
+C1-003,apps_lic/reasoning/OutreachLearningAgent.py,Learning persistence,DIRECT_WRITE,UWG is only durable write path,CRITICAL,Replace with UWG write_through,Medium,WriteGovernorMixin
+C1-004,apps_lic/utils/manifest_manager_util.py,Manifest management,DIRECT_WRITE,UWG is only durable write path,CRITICAL,Replace with UWG write_through,Medium,None
+C1-005,apps_lic/reasoning/LicHealingOrchestrator.py,Healing state,DIRECT_WRITE,UWG is only durable write path,CRITICAL,Replace with UWG write_through,Medium,None
+C1-006,apps_lic/reasoning/LicCodeInterpreter.py,Code execution,DIRECT_WRITE,UWG is only durable write path,CRITICAL,Replace with UWG write_through,Medium,Sandbox enforcement
+C1-007,apps_lic/types/state_checkpoint_types.py,Checkpoint operations,DIRECT_WRITE,UWG is only durable write path,CRITICAL,Replace with UWG write_through,High,L4 integration
+C2-001,agentic_core/utils/workflow_engines/apps_engines_aliases.py,14 imports,CROSS_LAYER_IMPORT,Layer gravity enforcement,CRITICAL,Remove or move to apps_shared,High,Break circular deps
+C2-002,agentic_core/L5_safety/config/structure_blueprint/ssot.py,7 imports,CROSS_LAYER_IMPORT,Layer gravity enforcement,HIGH,Remove or inject via L2,Medium,Refactor config
+C2-003,agentic_core/L0_routing/scripts/execution_context.py,5 imports,CROSS_LAYER_IMPORT,Layer gravity enforcement,HIGH,Create L2 facade,Medium,Facade layer
+C2-004,apps_lic/utils/lic_agent_base_util.py,10 imports,CROSS_LAYER_IMPORT,Layer gravity enforcement,HIGH,Route through L2 facades,Medium,Facade layer
+C2-005,apps_lic/engines/lic_spine_adapter.py,6 imports,CROSS_LAYER_IMPORT,Layer gravity enforcement,HIGH,Use L2ExecutionAgent,Medium,L2 contracts
+C2-006,apps_lic/reasoning/OutreachSignalRouterAgent.py,6 imports,CROSS_LAYER_IMPORT,Layer gravity enforcement,HIGH,Use L2ExecutionAgent,Medium,L2 contracts
+C3-001,apps_lic/reasoning/LicHealingOrchestrator.py,HITL methods,MISSING_RE_CLEARANCE,HITL requires L5 re-clear,CRITICAL,Implement L5ReClearanceGate,Medium,L5 enforcement
+C3-002,apps_lic/reasoning/HOPPipelineExecutor.py,Pipeline HITL,MISSING_RE_CLEARANCE,HITL requires L5 re-clear,CRITICAL,Add re-clearance gate,Medium,L5 enforcement
+C3-003,apps_rg/reasoning/RgHealingOrchestrator.py,Healing HITL,MISSING_RE_CLEARANCE,HITL requires L5 re-clear,CRITICAL,Add re-clearance gate,Medium,L5 enforcement
+C4-001,agentic_core/L4_state/storage/filesystem_store.py,Storage operations,DIRECT_WRITE,L4 strict-write via UWG only,CRITICAL,Inject UWG dependency,High,L4 refactor
+C4-002,agentic_core/L4_state/memory/blob_storage_provider.py,Blob operations,DIRECT_WRITE,L4 strict-write via UWG only,CRITICAL,Inject UWG dependency,High,L4 refactor
+C4-003,agentic_core/L4_state/authority/memory_authority.py,Authority writes,DIRECT_WRITE,L4 strict-write via UWG only,HIGH,Route through UWG,Medium,L4 refactor
+C4-004,agentic_core/L4_state/authority/run_scoped_state_authority.py,State writes,DIRECT_WRITE,L4 strict-write via UWG only,HIGH,Route through UWG,Medium,L4 refactor
+G-L0-001,agentic_core/L0_routing/logs/telemetry_events.ndjson,Telemetry,SILENT_FALLBACK,Explicit disposition only,MEDIUM,Add explicit error handling,Low,Telemetry refactor
+G-L0-002,agentic_core/L0_routing/engines/ensemble_router.py,Routing,SILENT_FALLBACK,Explicit disposition only,MEDIUM,Add explicit disposition gates,Low,Router refactor
+G-L0-003,agentic_core/L0_routing/engines/agentic_router.py,Routing,SILENT_FALLBACK,Explicit disposition only,MEDIUM,Add explicit disposition gates,Low,Router refactor
+G-L1-001,agentic_core/L1_cognition/engines/strategist_bio_writer.py,Bio writer,DIRECT_WRITE,L1 should not write,MEDIUM,Move to L2 or remove writes,Low,None
+G-L2-001,agentic_core/L2_execution/healers/healing_tier_router.py,Healing router,MISSING_HASH_CONTINUITY,blueprint_hash freeze,MEDIUM,Add hash freeze validation,Medium,Hash propagation
+G-L2-002,agentic_core/L2_execution/engines/tool_intent_executor.py,Tool execution,MISSING_REPLAY_VALIDATION,Replay key validation,MEDIUM,Add replay key check,Medium,Tool contract
+G-L3-001,agentic_core/L3_orchestration/engines/sovereign_rag_orchestrator.py,RAG orchestration,UNVALIDATED_REPLAY,RAG with validated replay,MEDIUM,Add replay validation,Medium,Replay engine
+G-L3-002,agentic_core/L3_orchestration/engines/reflexion_engine.py,Reflexion,MISSING_POLICY_FREEZE,policy_hash freeze,MEDIUM,Add policy freeze,Medium,Policy hash
+G-L5-001,apps_lic/reasoning/LicHealingOrchestrator.py,Healing HITL,MISSING_L5_GATE,L5 cross-cutting,HIGH,Add L5 enforcement gate,Medium,L5 integration
+G-L5-002,agentic_core/L5_safety/validators/direct_prompt_compilation_validator.py,Validator,WRITE_SIDE_EFFECT,L5 should not have side-effects,MEDIUM,Remove writes or move to L2,Low,Refactor
+G-L6-001,agentic_core/L6_observability/engines/auto_persistence_adapter.py,Auto-persistence,EVIDENCE_ONLY_VIOLATION,L6 evidence only,MEDIUM,Ensure read-only current run,Low,Audit
+G-APPS-001,apps_lic/,Package-wide,DIRECT_WRITES_MULTIPLE,UWG bypass,CRITICAL,Add WriteGovernorMixin,High,UWG integration
+G-APPS-002,apps_rg/,Package-wide,CROSS_LAYER_IMPORTS,Layer gravity,CRITICAL,Create L2 facades,High,Facade layer
+G-APPS-003,apps_exec/,Package-wide,L2_CONTRACT_VIOLATION,L2 execute/heal only,HIGH,Implement L2ExecutionAgent,Medium,L2 contracts
+G-APPS-004,apps_eval/,Package-wide,SHADOW_EVAL_VIOLATION,L6 async only,MEDIUM,Ensure no live mutation,Low,Audit
+G-APPS-005,apps_research/,Package-wide,RETRIEVAL_MIXING,C0 retrieves only,MEDIUM,Separate retrieval from assembly,Medium,Refactor
+G-APPS-006,apps_rfp/,Package-wide,PROMPT_RETRIEVAL_MIXING,PA packages only,MEDIUM,Separate PA from retrieval,Medium,Refactor
+C5-001,apps_lic/reasoning/LicHealingOrchestrator.py,Healing,MISSING_REPLAY_CONTINUITY,replay_key chain,CRITICAL,Add replay_key propagation,High,Trace system
+C5-002,apps_lic/reasoning/HOPPipelineExecutor.py,Pipeline,MISSING_POLICY_HASH,policy_hash validation,HIGH,Add policy_hash freeze,Medium,Hash system
+C5-003,agentic_core/L3_orchestration/engines/prompt_chain_engine.py,Prompt chain,MISSING_BLUEPRINT_HASH,blueprint_hash freeze,HIGH,Add blueprint freeze,Medium,Hash system
+C5-004,agentic_core/L2_execution/wrappers/l2_agent_wrappers.py,L2 wrappers,MISSING_TRACE_LINEAGE,execution lineage,MEDIUM,Complete lineage wiring,Medium,Trace system

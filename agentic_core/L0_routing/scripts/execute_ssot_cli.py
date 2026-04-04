@@ -28,8 +28,8 @@ def _configure_logging(verbosity: int = 0) -> None:
 
     logging.basicConfig(
         level=level,
-        format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
-        handlers=[logging.StreamHandler(sys.stdout)]
+        format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
+        handlers=[logging.StreamHandler(sys.stdout)],
     )
 
 
@@ -37,18 +37,11 @@ def _maybe_force_utf8_console() -> None:
     """Force UTF-8 encoding for console output if needed."""
     try:
         # Check if we're on Windows and need to force UTF-8
-        if sys.platform == 'win32':
+        if sys.platform == "win32":
             import io
-            sys.stdout = io.TextIOWrapper(
-                sys.stdout.buffer,
-                encoding='utf-8',
-                errors='replace'
-            )
-            sys.stderr = io.TextIOWrapper(
-                sys.stderr.buffer,
-                encoding='utf-8',
-                errors='replace'
-            )
+
+            sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding="utf-8", errors="replace")
+            sys.stderr = io.TextIOWrapper(sys.stderr.buffer, encoding="utf-8", errors="replace")
     except Exception:
         # If forcing UTF-8 fails, continue with default encoding
         pass
@@ -60,10 +53,11 @@ def _apply_v15_enforcement_flag(args: argparse.Namespace) -> None:
     Args:
         args: Parsed command line arguments
     """
-    if hasattr(args, 'v15_enforcement') and args.v15_enforcement is not None:
+    if hasattr(args, "v15_enforcement") and args.v15_enforcement is not None:
         # Set environment or global state for V15 enforcement
         import os
-        os.environ['V15_ENFORCEMENT'] = str(args.v15_enforcement)
+
+        os.environ["V15_ENFORCEMENT"] = str(args.v15_enforcement)
 
 
 def run_fence_self_check() -> int:
@@ -106,10 +100,7 @@ def run_fence_self_check() -> int:
         return 1
 
 
-def print_execution_plan(
-    arbitrate_plan: bool = False,
-    ptc_plan: bool = False
-) -> None:
+def print_execution_plan(arbitrate_plan: bool = False, ptc_plan: bool = False) -> None:
     """Print execution plan and exit.
 
     Args:
@@ -147,9 +138,7 @@ def print_execution_plan(
 
 
 def _legacy_main(
-    args: argparse.Namespace,
-    repo_root: Path,
-    allow_protected_root_mutation: bool = True
+    args: argparse.Namespace, repo_root: Path, allow_protected_root_mutation: bool = True
 ) -> int:
     """Legacy main function for backward compatibility.
 
@@ -172,14 +161,16 @@ def _legacy_main(
         from .execute_ssot_reporting import ExecutionReporter
         from .execute_ssot_state import RuntimeStateManager
         from .execute_ssot_validators import NonInteractiveGuard, PreFlightValidator
+        from .full_agent_discovery import discover_all_agents
 
         # Initialize state manager
         state_mgr = RuntimeStateManager()
 
         # Validate pre-flight conditions
         validator = PreFlightValidator(args=args)
-        if not validator.validate():
-            logging.error("Pre-flight validation failed")
+        is_valid, errors, warnings = validator.validate()
+        if not is_valid:
+            logging.error(f"Pre-flight validation failed: {errors}")
             return 1
 
         # Check non-interactive guard
@@ -189,14 +180,14 @@ def _legacy_main(
             return 1
 
         # Initialize decision engine
-        engine = SovereignDecisionEngine(
-            registry=None,  # Would be populated from actual registry
-            args=args,
-            console=None
-        )
+        print("[INIT] Discovering agents...")
+        agents = discover_all_agents(strict_mode=True)
+        print(f"[INIT] Discovered {len(agents)} agents")
+
+        engine = SovereignDecisionEngine(registry=agents, args=args, console=None)
 
         # Determine targets
-        targets = getattr(args, 'targets', [])
+        targets = getattr(args, "targets", [])
         if not targets:
             # Default: scan current directory
             targets = [str(repo_root)]
@@ -209,7 +200,7 @@ def _legacy_main(
 
             # Generate report
             reporter = ExecutionReporter()
-            report_path = getattr(args, 'report_path', None)
+            report_path = getattr(args, "report_path", None)
             if report_path:
                 reporter.save_report(results, report_path)
 
