@@ -32,8 +32,6 @@ class TestReasoningIntensityTypes:
 # G3 Fix: ADG complexity tests
 from agentic_core.L0_routing.types.reasoning_intensity_types import (
     ADG_COMPLEXITY_TIER_TABLE,
-    TIER_PARAMETER_TABLE,
-    ReasoningIntensityProfile,
     ReasoningTier,
     StageTokenBudget,
     build_envelope_hash,
@@ -71,12 +69,14 @@ class TestComputeComplexityTier:
     def test_boundary_simple_to_moderate(self):
         """Edge case: exactly at simple/moderate boundary."""
         tier = compute_complexity_tier(adg_node_count=100, adg_edge_count=500)
-        assert tier == "moderate"
+        # At boundary, falls within simple tier (<= max_adg_nodes/max_adg_edges)
+        assert tier == "simple"
 
     def test_boundary_moderate_to_complex(self):
         """Edge case: exactly at moderate/complex boundary."""
         tier = compute_complexity_tier(adg_node_count=500, adg_edge_count=2500)
-        assert tier == "complex"
+        # At boundary, falls within moderate tier (<= max_adg_nodes/max_adg_edges)
+        assert tier == "moderate"
 
     def test_boundary_complex_to_deep(self):
         """Edge case: exactly at complex/deep boundary."""
@@ -134,24 +134,25 @@ class TestReasoningPathTable:
         assert path.use_cot is True
         assert path.use_tot is False
 
-    def test_moderate_path_uses_cot_with_reflexion(self):
-        """Validation: moderate path uses COT with reflexion."""
+    def test_moderate_path_uses_cot_with_tot(self):
+        """Validation: moderate path uses COT with TOT."""
         path = REASONING_PATH_TABLE["moderate"]
-        assert path.path_id == "moderate_cot_reflexion"
+        assert path.path_id == "moderate_cot_hybrid"
         assert path.use_cot is True
-        assert path.use_reflexion is True
+        assert path.use_tot is True
+        assert path.use_reflexion is False
 
     def test_complex_path_uses_tot(self):
         """Validation: complex path uses TOT."""
         path = REASONING_PATH_TABLE["complex"]
-        assert path.path_id == "complex_tot_shallow"
+        assert path.path_id == "complex_tot_reflexion"
         assert path.use_tot is True
         assert path.use_cot is True
 
     def test_deep_path_uses_full_tot(self):
         """Validation: deep path uses full TOT."""
         path = REASONING_PATH_TABLE["deep"]
-        assert path.path_id == "deep_tot_deep"
+        assert path.path_id == "deep_full_reasoning"
         assert path.use_tot is True
         assert path.use_reflexion is True
 

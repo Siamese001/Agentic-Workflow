@@ -12,6 +12,8 @@ from agentic_core.L2_execution.enforcement.SovereignLLMGateway import (
     GatewayError,
     ProviderConfig,
     ProviderType,
+    REASONING_PATH_TABLE,
+    ReasoningPath,
     SignatureVerificationError,
     SovereignLLMGateway,
     TelemetryLedger,
@@ -319,3 +321,103 @@ class TestGatewayFactory:
 
         # Should be set as default
         assert gateway._default_provider == ProviderType.ANTHROPIC
+
+
+# G4 Fix: Path selection tests
+class TestSelectReasoningPath:
+    """Test SovereignLLMGateway.select_reasoning_path method — G4."""
+
+    @pytest.fixture
+    def gateway(self):
+        """Create a gateway instance for testing."""
+        return SovereignLLMGateway(secret_key=b"test-secret", verify_signatures=False)
+
+    def test_simple_tier_selects_cot(self, gateway):
+        """Happy path: simple tier selects COT only."""
+        result = gateway.select_reasoning_path(complexity_tier="simple")
+        assert result.path.path_id == "simple_cot"
+        assert result.path.use_cot is True
+        assert result.path.use_tot is False
+
+    def test_moderate_tier_selects_hybrid(self, gateway):
+        """Happy path: moderate tier selects hybrid."""
+        result = gateway.select_reasoning_path(complexity_tier="moderate")
+        assert result.path.path_id == "moderate_cot_hybrid"
+        assert result.path.use_cot is True
+        assert result.path.use_tot is True
+
+    def test_complex_tier_selects_tot(self, gateway):
+        """Happy path: complex tier selects TOT."""
+        result = gateway.select_reasoning_path(complexity_tier="complex")
+        assert result.path.path_id == "complex_tot_reflexion"
+        assert result.path.use_tot is True
+
+    def test_deep_tier_selects_full_reasoning(self, gateway):
+        """Happy path: deep tier selects full reasoning."""
+        result = gateway.select_reasoning_path(complexity_tier="deep")
+        assert result.path.path_id == "deep_full_reasoning"
+        assert result.path.use_tot is True
+        assert result.path.use_reflexion is True
+
+    def test_unknown_tier_defaults_moderate(self, gateway):
+        """Edge case: unknown tier defaults to moderate."""
+        result = gateway.select_reasoning_path(complexity_tier="unknown")
+        assert result.path.path_id == "moderate_cot_hybrid"
+
+    def test_result_contains_selection_reason(self, gateway):
+        """Validation: result contains selection metadata."""
+        result = gateway.select_reasoning_path(complexity_tier="simple")
+        assert "simple" in result.selection_reason
+        assert result.complexity_tier == "simple"
+
+
+class TestReasoningPathStructure:
+    """Test ReasoningPath dataclass structure — G4."""
+
+    def test_path_has_required_fields(self):
+        """Validation: all paths have required fields."""
+        for tier, path in REASONING_PATH_TABLE.items():
+            assert isinstance(path, ReasoningPath)
+            assert path.path_id is not None
+            assert path.use_cot in (True, False)
+            assert path.use_tot in (True, False)
+            assert path.use_reflexion in (True, False)
+            assert 0.0 <= path.temperature <= 1.0
+            assert path.adg_complexity_tier == tier
+
+    def test_path_estimated_latency_positive(self):
+        """Validation: all paths have positive latency estimates."""
+        for tier, path in REASONING_PATH_TABLE.items():
+            assert path.estimated_latency_ms > 0
+
+    def test_simple_paths_no_tot(self):
+        """Validation: simple tier doesn't use TOT."""
+        simple_path = REASONING_PATH_TABLE["simple"]
+        assert simple_path.use_tot is False
+        assert simple_path.tot_branches == 0
+
+
+class TestGatewayPathSelectionIntegration:
+    """Test SovereignLLMGateway path selection integration — G4."""
+
+    @pytest.fixture
+    def gateway(self):
+        """Create a gateway instance for testing."""
+        return SovereignLLMGateway(secret_key=b"test-secret", verify_signatures=False)
+
+    def test_gateway_selects_path(self, gateway):
+        """Happy path: gateway selects path for tier."""
+        result = gateway.select_reasoning_path(complexity_tier="complex")
+        assert result.path.use_tot is True
+        assert result.complexity_tier == "complex"
+
+    def test_latency_budget_fallback(self, gateway):
+        """Happy path: latency budget triggers fallback to simpler path."""
+        # Request deep path but with 1000ms budget (deep is 6000ms)
+        result = gateway.select_reasoning_path(
+            complexity_tier="deep",
+            latency_budget_ms=1000
+        )
+        # Should fall back to a path within budget
+        assert result.path.estimated_latency_ms <= 1000
+        assert result.path.path_id in ["simple_cot", "moderate_cot_hybrid"]
