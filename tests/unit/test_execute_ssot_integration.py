@@ -14,6 +14,7 @@ Fixes applied (Tier 3):
 from __future__ import annotations
 
 import logging
+import tempfile
 
 import pytest
 
@@ -150,7 +151,8 @@ class TestExecuteSsotEmitterSpyPattern:
         _emit_snapshots_state("test_phase", "test_state", "L0")
 
         # Verify log records were captured (real behavior, not mock verification)
-        assert len(captured_emitter_logs.records) >= 0  # May vary based on implementation
+        # GAP FIX: Changed from weak >= 0 to specific minimum threshold
+        assert len(captured_emitter_logs.records) >= 2, f"Expected at least 2 log records, got {len(captured_emitter_logs.records)}"
 
     def test_emitter_produces_deterministic_output(self, tmp_path):
         """Verify emitter calls produce consistent, deterministic output."""
@@ -197,10 +199,11 @@ class TestExecuteSsotMetaLearningIntakeReal:
             def __init__(self):
                 self.state = {'healing_actions': []}
 
-        intake_result = _fire_meta_learning_intake_required(
-            MockState(), 1234567890, Path('/tmp')
-        )
-        assert intake_result.records_persisted == 0  # Empty actions
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            intake_result = _fire_meta_learning_intake_required(
+                MockState(), 1234567890, Path(tmp_dir)
+            )
+            assert intake_result.records_persisted == 0  # Empty actions
 
 
 class TestExecuteSsotRetrievalHooks:
@@ -222,6 +225,33 @@ class TestExecuteSsotRetrievalHooks:
         """Verify semantic cache query capability exists."""
         from system_learning.engines.enhanced_rag_retrieval_cache import EnhancedRagRetrievalCache
         assert EnhancedRagRetrievalCache is not None
+
+    def test_store_in_retrieval_cache_invalid_type_raises(self):
+        """Verify invalid cache_type raises ValueError (GAP FIX for silent failure)."""
+        from agentic_core.L0_routing.scripts.execute_ssot_retrieval import _store_in_retrieval_cache
+
+        with pytest.raises(ValueError, match="Invalid cache_type"):
+            _store_in_retrieval_cache("query", {}, 1234567890, cache_type="INVALID")
+
+    def test_store_in_retrieval_cache_valid_types_work(self):
+        """Verify valid cache_type values work correctly."""
+        from agentic_core.L0_routing.scripts.execute_ssot_retrieval import (
+            _store_in_retrieval_cache,
+            _L1_EXACT_CACHE,
+            _L2_SEMANTIC_CACHE,
+        )
+
+        # Clear caches first
+        _L1_EXACT_CACHE.clear()
+        _L2_SEMANTIC_CACHE.clear()
+
+        # Test L1 cache
+        _store_in_retrieval_cache("test_query_l1", {"data": "value1"}, 1234567890, cache_type="L1")
+        assert len(_L1_EXACT_CACHE) == 1
+
+        # Test L2 cache
+        _store_in_retrieval_cache("test_query_l2", {"data": "value2"}, 1234567890, cache_type="L2")
+        assert len(_L2_SEMANTIC_CACHE) == 1
 
     def test_execute_ssot_has_retrieval_hooks(self):
         """Verify execute_ssot.py has retrieval integration hooks."""

@@ -12,7 +12,7 @@ from typing import Any
 @dataclass
 class MetaLearningResult:
     """Result from meta-learning intake processing.
-    
+
     Attributes:
         records_persisted: Number of records successfully persisted
         proposals: Tuple of generated proposals
@@ -39,13 +39,13 @@ def _fire_meta_learning_intake_required(
     healing_actions: list[dict] | None = None
 ) -> MetaLearningResult:
     """Process healing actions for meta-learning intake.
-    
+
     Args:
         state: Runtime state object with healing context
         timestamp: Unix timestamp of the intake
         output_dir: Directory for output files
         healing_actions: Optional list of healing actions to process
-        
+
     Returns:
         MetaLearningResult with processing results
     """
@@ -77,7 +77,7 @@ def _fire_meta_learning_intake_required(
                 }
                 proposals.append(proposal)
                 records_persisted += 1
-        except (AttributeError, TypeError, KeyError) as e:
+        except (AttributeError, TypeError, KeyError, ValueError, IndexError) as e:
             errors.append(f"Failed to process action: {e}")
 
     return MetaLearningResult(
