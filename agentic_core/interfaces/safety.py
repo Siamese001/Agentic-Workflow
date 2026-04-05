@@ -1,4 +1,28 @@
-"""Shim: re-exports from canonical location for backward compatibility."""
-import sys as _sys, types as _types, importlib as _il
-_p = _types.ModuleType(__name__); _sys.modules[__name__] = _p
-_c = _il.import_module('agentic_core.interfaces.core.safety'); _sys.modules[__name__] = _c; _p.__dict__.update(_c.__dict__)
+"""
+agentic_core/interfaces/safety.py
+
+Sovereign Safety and Validation interfaces for L1_cognition consumption.
+
+Re-exports safety and validation components so L1_cognition can
+access validation services without directly importing from L5_safety.
+
+AUTHORITY CONSTRAINTS:
+- Safety components provide validation and enforcement services
+- No direct safety bypass through these interfaces
+- All validation decisions are recorded for audit
+
+USAGE (L1_cognition):
+    from agentic_core.interfaces.safety import (
+        UnifiedCSTHealer,
+        # Add other safety components as needed
+    )
+"""
+
+from __future__ import annotations
+
+try:
+    from agentic_core.L5_safety.validators.unified_cst_healer import UnifiedCSTHealer
+# guardian: allow-silent-swallow - optional dependency
+except ImportError:
+    UnifiedCSTHealer = None
+__all__ = ["UnifiedCSTHealer"]

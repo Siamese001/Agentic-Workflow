@@ -1,4 +1,28 @@
-"""Shim: re-exports from canonical location for backward compatibility."""
-import sys as _sys, types as _types, importlib as _il
-_p = _types.ModuleType(__name__); _sys.modules[__name__] = _p
-_c = _il.import_module('agentic_core.interfaces.core.orchestration'); _sys.modules[__name__] = _c; _p.__dict__.update(_c.__dict__)
+"""
+agentic_core/interfaces/orchestration.py
+
+Sovereign Orchestration interfaces for L1_cognition consumption.
+
+Re-exports orchestration components so L1_cognition can
+access routing and orchestration services without directly importing from L3_orchestration.
+
+AUTHORITY CONSTRAINTS:
+- Orchestration components provide routing and coordination services
+- No direct execution authority through these interfaces
+- All routing decisions are recorded for audit
+
+USAGE (L1_cognition):
+    from agentic_core.interfaces.orchestration import (
+        ActionRouter,
+        # Add other orchestration components as needed
+    )
+"""
+
+from __future__ import annotations
+
+try:
+    from agentic_core.L3_orchestration.engines.action_router import ActionRouter
+# guardian: allow-silent-swallow - optional dependency
+except ImportError:
+    ActionRouter = None
+__all__ = ["ActionRouter"]

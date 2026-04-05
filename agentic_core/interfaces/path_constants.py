@@ -1,4 +1,20 @@
-"""Shim: re-exports from canonical location for backward compatibility."""
-import sys as _sys, types as _types, importlib as _il
-_p = _types.ModuleType(__name__); _sys.modules[__name__] = _p
-_c = _il.import_module('agentic_core.interfaces.core.path_constants'); _sys.modules[__name__] = _c; _p.__dict__.update(_c.__dict__)
+"""
+agentic_core/interfaces/path_constants.py
+
+Interface shim — re-exports path/numeric constants from the L0 SSOT so that
+``apps_*`` code can import them without creating a direct L*-layer dependency.
+
+Consumers in ``apps_*`` should import from this module:
+    from agentic_core.interfaces.path_constants import DEFAULT_SLEEP, THRESHOLD
+
+DO NOT add new constants here; add them to
+``agentic_core.L0_routing.config.path_constants`` and they will appear here
+automatically via the wildcard re-export.
+"""
+
+from __future__ import annotations
+
+from agentic_core.L0_routing.config.path_constants import *  # noqa: F401,F403
+from agentic_core.L0_routing.config.path_constants import __all__ as _pc_all  # noqa: F401
+
+__all__ = list(_pc_all) if hasattr(_pc_all, "__iter__") else []
