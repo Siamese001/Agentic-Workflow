@@ -153,7 +153,7 @@ class GovernedPromptAdapter:
         required_mixins: tuple[str, ...],
     ) -> Any:
         """Build InstructionPacket for routing."""
-        from agentic_core.L0_routing.types.instruction_packet_types import (
+        from agentic_core.L0_routing.types.l0_instruction_packet import (
             InstructionPacket,
         )
 

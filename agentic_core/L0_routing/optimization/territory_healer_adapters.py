@@ -395,7 +395,7 @@ class FilesystemReconcilerAdapter(TerritoryHealerProtocol):
 
 def create_adapter_coordinator(project_root: Path | None = None) -> "TerritoryHealingCoordinator":
     """Create coordinator with all adapters registered."""
-    from agentic_core.L0_routing.orchestration.territory_healing_coordinator import (
+    from agentic_core.L0_routing.optimization.territory_healing_coordinator import (
         TerritoryHealingCoordinator,
     )
 

@@ -1,9 +1,3 @@
-# Import artifact validators
-from agentic_core.L0_routing.types.artifact_validators_types import (
-    to_result_artifact_dict,
-    validate_result_artifact,
-)
-
 # Import P1 routing protocols
 from agentic_core.L0_routing.types.p1_routing_protocol import P1Core, P1RoutingProtocol
 

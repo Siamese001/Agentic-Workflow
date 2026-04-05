@@ -195,7 +195,7 @@ def _load_activation_gate() -> Any:
     import uuid as _uuid  # noqa: PLC0415
 
     _emit_applies_guardrail(str(_uuid.uuid4()), "_load_activation_gate", "p0_governance")
-    from agentic_core.L0_routing.utils.seams.safety_enforcement_seam import load_activation_gate
+    from agentic_core.L0_routing.enforcement.safety_enforcement_seam import load_activation_gate
 
     return load_activation_gate()
 

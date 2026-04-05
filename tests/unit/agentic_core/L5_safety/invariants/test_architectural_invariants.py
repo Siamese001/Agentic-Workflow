@@ -15,7 +15,8 @@ from __future__ import annotations
 
 import pytest
 
-from agentic_core.L0_routing.context.c0_guard import guard_c0_payload, verify_c0_immutability
+# DEAD CODE: c0_guard.py was deleted - context folder removed
+# from agentic_core.L0_routing.context.c0_guard import guard_c0_payload, verify_c0_immutability
 from agentic_core.L2_execution.sandbox.boundary_validator import (
     compute_boundary_diff,
     verify_mutation_replay_integrity,
@@ -182,21 +183,22 @@ class TestTwoPhaseCoordinator:
             )
 
 
-class TestC0Guard:
-    def test_safe_payload_passes(self):
-        guard_c0_payload({"query": "hello", "context": "software"})
-
-    def test_authority_field_raises(self):
-        with pytest.raises(C0AuthorityLeakError, match="auth_token"):
-            guard_c0_payload({"query": "hello", "auth_token": "bearer 123"})
-
-    def test_immutability_passes_when_equal(self):
-        payload = {"key": "value"}
-        verify_c0_immutability(payload, {"key": "value"})
-
-    def test_immutability_raises_on_mutation(self):
-        with pytest.raises(C0MutationViolation, match="mutated"):
-            verify_c0_immutability({"key": "original"}, {"key": "modified"})
+# DEAD CODE: TestC0Guard class removed - c0_guard.py was deleted
+# class TestC0Guard:
+#     def test_safe_payload_passes(self):
+#         guard_c0_payload({"query": "hello", "context": "software"})
+#
+#     def test_authority_field_raises(self):
+#         with pytest.raises(C0AuthorityLeakError, match="auth_token"):
+#             guard_c0_payload({"query": "hello", "auth_token": "bearer 123"})
+#
+#     def test_immutability_passes_when_equal(self):
+#         payload = {"key": "value"}
+#         verify_c0_immutability(payload, {"key": "value"})
+#
+#     def test_immutability_raises_on_mutation(self):
+#         with pytest.raises(C0MutationViolation, match="mutated"):
+#             verify_c0_immutability({"key": "original"}, {"key": "modified"})
 
 
 class TestStageBarrierEnforcer:

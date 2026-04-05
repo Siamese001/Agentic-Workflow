@@ -804,7 +804,7 @@ class SovereignDecisionEngine:
             )
             return ([], fallback_conf)
         try:
-            from agentic_core.L0_routing.utils.seams.safety_validators_seam import load_cognitive_disposition_agent
+            from agentic_core.L0_routing.enforcement.safety_validators_seam import load_cognitive_disposition_agent
 
             CognitiveDispositionAgent = load_cognitive_disposition_agent()
             cda = CognitiveDispositionAgent()

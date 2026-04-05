@@ -554,10 +554,11 @@ def execute_phase1_discovery_impl(
         fix_summary=f"SSOT drift scan: {violations_count} violation(s), applied: {_heal_applied}",
         outcome=_outcome,
     )
-    from agentic_core.L0_routing.context.location_validator_seam import get_location_validator_agent
+    # DEAD CODE: location_validator_seam does not exist - removed
+    # from agentic_core.L0_routing.context.location_validator_seam import get_location_validator_agent
 
     state_mgr.update_agent("LocationHealerAgent", "L5 - Safety")
-    location_validator = get_location_validator_agent()(project_root=REPO_ROOT)
+    # location_validator = get_location_validator_agent()(project_root=REPO_ROOT)
     repo_root_resolved = REPO_ROOT.resolve()
     territory_path = (repo_root_resolved / territory).resolve()
     # Canonicalize L-layer territories: L0_routing → agentic_core/L0_routing
@@ -570,13 +571,16 @@ def execute_phase1_discovery_impl(
         state_mgr.add_event("security", "Path traversal blocked")
         state_mgr.complete_agent("LocationHealerAgent", False, "Traversal blocked")
         return (drift_report, [])
-    violations = []
+    # DEAD CODE: location_validator does not exist - commented out
+    # violations = []
+    # location_scan_result = {}
+    # if territory_path.exists():
+    #     location_scan_result = location_validator.run(target_territory=territory) or {}
+    #     violations = location_scan_result.get("violations", [])
+    # else:
+    #     logger.warning(f"Territory path does not exist: {territory_path}")
+    violations = []  # Always empty since validator is dead
     location_scan_result = {}
-    if territory_path.exists():
-        location_scan_result = location_validator.run(target_territory=territory) or {}
-        violations = location_scan_result.get("violations", [])
-    else:
-        logger.warning(f"Territory path does not exist: {territory_path}")
     if violations:
         logger.info("🧠 Using CognitiveDispositionAgent for enhanced violation analysis...")
         import asyncio

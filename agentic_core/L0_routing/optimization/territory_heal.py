@@ -15,8 +15,8 @@ REPO_ROOT = Path(__file__).parent.parent.parent.parent.parent.resolve()
 if str(REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(REPO_ROOT))
 
-from agentic_core.L0_routing.orchestration.territory_healing_coordinator import (
-    create_default_coordinator,
+from agentic_core.L0_routing.optimization.territory_healer_adapters import (
+    create_adapter_coordinator,
 )
 
 
@@ -94,7 +94,7 @@ Examples:
     logger.info(f"Initializing coordinator for project: {project_root}")
 
     try:
-        coordinator = create_default_coordinator(project_root)
+        coordinator = create_adapter_coordinator(project_root)
     except Exception as e:
         logger.exception(f"Failed to create coordinator: {e}")
         sys.exit(1)

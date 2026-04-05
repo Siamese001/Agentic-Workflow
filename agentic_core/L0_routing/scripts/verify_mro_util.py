@@ -229,7 +229,7 @@ def verify_sovereign_base_agent():
 def verify_meta_learning_agent():
     """Verify MetaLearningAgent MRO (complex case)."""
     try:
-        from agentic_core.L0_routing.utils.seams.observability_seam import load_meta_learning_agent
+        from agentic_core.L0_routing.utils.observability_seam import load_meta_learning_agent
 
         MetaLearningAgent = load_meta_learning_agent()
         return print_mro(MetaLearningAgent, "MetaLearningAgent")
@@ -241,7 +241,7 @@ def verify_meta_learning_agent():
 def verify_location_validator_agent():
     """Verify LocationValidatorAgent MRO."""
     try:
-        from agentic_core.L0_routing.utils.seams.safety_reasoning_seam import load_location_validator_agent
+        from agentic_core.L0_routing.enforcement.safety_reasoning_seam import load_location_validator_agent
 
         LocationValidatorAgent = load_location_validator_agent()
         return print_mro(LocationValidatorAgent, "LocationValidatorAgent")

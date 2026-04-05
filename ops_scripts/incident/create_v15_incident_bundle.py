@@ -71,7 +71,7 @@ def _review_summary_placeholder() -> str:
     return f'{SENTINEL}\nGenerate and copy here:\n  python ops_scripts/review/generate_v15_review_summary.py \\\n      --out artifacts/review_summary.md\n'
 
 def _policy_pack_placeholder() -> str:
-    return f'{SENTINEL}\nCopy the policy pack from:\n  agentic_core/L0_routing/policy/v15_policy_pack.json\n'
+    return f'{SENTINEL}\nCopy the policy pack from:\n  agentic_core/L0_routing/config/v15_policy_pack.json\n'
 
 def _triage() -> str:
     return f'{SENTINEL}\n# Triage\n\n## Violation Type\n\n- [ ] PIPE (pipe-order violation)\n- [ ] POLICY (policy-config mutation)\n- [ ] HASH (rollback hash mismatch)\n- [ ] CLOCK (semantic clock anomaly)\n\n## Severity\n\n- [ ] SEV-1 (HARD_FAIL)\n- [ ] SEV-2 (SOFT_FAIL)\n- [ ] SEV-3 (LOG_ONLY)\n\n## Affected Components\n\n- Manifest correlation_id: <id>\n- Gateway trace_id: <id>\n- Agent(s): <list>\n\n## Initial Assessment\n\n<notes>\n'

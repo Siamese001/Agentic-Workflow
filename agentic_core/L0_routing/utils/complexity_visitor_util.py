@@ -110,7 +110,7 @@ except ImportError:
 
 
 try:
-    from agentic_core.L0_routing.utils.seams.safety_validators_seam import load_dashboard_ssot_definitions
+    from agentic_core.L0_routing.enforcement.safety_validators_seam import load_dashboard_ssot_definitions
 
     _ssot_defs = load_dashboard_ssot_definitions()
     FIELD_BASE_CLASSES = _ssot_defs.FIELD_BASE_CLASSES
@@ -156,7 +156,7 @@ from agentic_core.L0_routing.config import (
     AGENTIC_CORE_DIR,
 )
 from agentic_core.L0_routing.config.path_constants import REPORTS_DIR
-from agentic_core.L0_routing.utils.seams.canonical_truth_seam import categorize_agent, get_canonical_layer
+from agentic_core.L0_routing.providers.canonical_truth_seam import categorize_agent, get_canonical_layer
 from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,
@@ -990,7 +990,7 @@ def is_sovereign_agent(class_node: ast.ClassDef, bases: set[str], rel_path: Path
     Returns:
         True if the file is classified as AGENT by the kernel.
     """
-    from agentic_core.L0_routing.utils.seams.safety_kernel_seam import load_classification_kernel
+    from agentic_core.L0_routing.enforcement.safety_kernel_seam import load_classification_kernel
 
     is_agent_file = load_classification_kernel().is_agent_file
     if rel_path is None:

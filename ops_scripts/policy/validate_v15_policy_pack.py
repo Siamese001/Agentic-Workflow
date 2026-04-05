@@ -19,7 +19,7 @@ import json
 import sys
 from pathlib import Path
 
-from agentic_core.L0_routing.types.integration_contract_types import (
+from ops_scripts.review.integration_contract_stubs import (
     Finding,
     ResultEnvelope,
 )
