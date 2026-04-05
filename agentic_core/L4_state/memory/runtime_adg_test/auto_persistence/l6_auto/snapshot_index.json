@@ -1,11 +1,11 @@
 {
-  "runtime_adg_1775348332_4e61b34b": {
+  "runtime_adg_1775351207_7dc5cdd6": {
     "duration_ms": 0,
     "edge_count": 5,
-    "file_path": "agentic_core\\L4_state\\memory\\runtime_adg_test\\auto_persistence\\l6_auto\\runtime_adg_1775348332_4e61b34b.json",
+    "file_path": "agentic_core\\L4_state\\memory\\runtime_adg_test\\auto_persistence\\l6_auto\\runtime_adg_1775351207_7dc5cdd6.json",
     "mission": "test-mission",
     "node_count": 2,
-    "timestamp": 1775348332,
+    "timestamp": 1775351207,
     "trace_id": "dabc47ce3068ffdd965afd0f9db402f1"
   }
 }

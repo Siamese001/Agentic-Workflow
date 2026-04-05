@@ -1,10 +1,16 @@
 """Pytest fixtures for tests/adg."""
 
 import sqlite3
+import sys
 import tempfile
 from pathlib import Path
 
 import pytest
+
+# Ensure repo root is on sys.path so tools.adg is importable in all workers
+_REPO_ROOT = str(Path(__file__).resolve().parents[2])
+if _REPO_ROOT not in sys.path:
+    sys.path.insert(0, _REPO_ROOT)
 
 
 @pytest.fixture

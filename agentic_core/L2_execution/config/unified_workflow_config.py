@@ -112,7 +112,6 @@ from agentic_core.L2_execution.types.capability_token_types import (
     CapabilityTokenArtifact,
 )
 from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-from agentic_core.config.core.constants_config import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
     LayerSegment,
     _emit_agent_executes_agent,
     _emit_captures_pattern,
@@ -244,7 +243,7 @@ class Coordinator(ABC):
         """Record mission execution."""
 
         _emit_records_execution_trace(
-            str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, "WorkflowMetrics.record_execution"
+            str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, "WorkflowMetrics.record_execution",
         )
         self.missions_executed += 1
         if success:
@@ -605,7 +604,7 @@ class UnifiedWorkflowEngine:
         if semantic_clock is None:
             raise ValueError(
                 "UnifiedWorkflowEngine.orchestrate: semantic_clock is required "
-                "for P5.1 capability chokepoint enforcement"
+                "for P5.1 capability chokepoint enforcement",
             )
 
         self.total_missions += 1

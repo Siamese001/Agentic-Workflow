@@ -108,7 +108,6 @@ from agentic_core.L0_routing.config import (
 )
 from agentic_core.L0_routing.enforcement.mutation_prohibition import assert_no_persistent_write
 from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-from agentic_core.config.core.constants_config import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
     LayerSegment,
     _emit_agent_executes_agent,
     _emit_captures_pattern,

@@ -105,20 +105,21 @@ servers:
         description: "Get file content from repository"
 
   # ==========================================================================
-  # ADG SQLite (mcp1_*) - Graph database operations (SQLite-first, Redis optional)
+  # ADG SQLite (mcp1_*) - Graph database operations
   # ==========================================================================
   adg_sqlite:
     name: "ADG SQLite"
     prefix: "mcp1"
     enabled: true
     target_layer: "L0"
-    description: "AST Dependency Graph operations via SQLite (canonical) with optional Redis cache"
+    description: "AST Dependency Graph operations via SQLite"
     command: "python"
     args:
       - "-m"
-      - "tools.adg.mcp.server"
+      - "tools.adg.adg_mcp_server"
     cwd: "C:\\Git\\Agentic-Workflow"
     env:
+      ADG_REDIS_URL: "redis://localhost:6379/0"
       ADG_DIR: "C:\\Git\\Agentic-Workflow\\artifacts\\adg"
       ADG_MCP_PAGE_SIZE: "500"
       ADG_MCP_CACHE_META_TTL: "5"
@@ -459,42 +460,6 @@ servers:
         target: "mcp8_vector_stats"
         description: "Get vector database statistics"
 
-  # ==========================================================================
-  # Redis (mcp9_*) - General-purpose Redis cache and state inspection
-  # ==========================================================================
-  redis:
-    name: "Redis"
-    prefix: "mcp9"
-    enabled: true
-    target_layer: "L4"
-    description: "General-purpose Redis operations for cache inspection, sovereign health, and L4 state debugging"
-    command: "npx"
-    args:
-      - "-y"
-      - "@modelcontextprotocol/server-redis"
-    cwd: "C:\\Git\\Agentic-Workflow"
-    env:
-      REDIS_URL: "redis://localhost:6379"
-    capabilities:
-      - cache_inspection
-      - state_management
-      - session_storage
-      - health_monitoring
-    _comment: "Key namespaces: adg:v1:* (ADG cache), sovereign_health:* (L6 health), l4_context:* / l4_audit:* / l4_historian:* (L4 state), method_meta:* / method_search:* (SubAtomicRegistry), autonomous_fixes_total (counters)"
-    tools:
-      redis_get:
-        target: "mcp9_get"
-        description: "Get value of a Redis key"
-      redis_set:
-        target: "mcp9_set"
-        description: "Set value of a Redis key with optional TTL"
-      redis_delete:
-        target: "mcp9_delete"
-        description: "Delete one or more Redis keys"
-      redis_list:
-        target: "mcp9_list"
-        description: "List Redis keys matching a pattern"
-
 # ============================================================================
 # TOOL ALIASES (convenience mappings)
 # ============================================================================
@@ -531,4 +496,3 @@ validation:
     - mcp6
     - mcp7
     - mcp8
-    - mcp9

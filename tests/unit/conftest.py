@@ -785,18 +785,23 @@ def pytest_configure(config):
     # Remove all agentic_core.* entries that point into tests/ so the next
     # import resolves from the project root production package.
     _tests_agentic_core = str(Path(_PROJECT_ROOT) / tests_dir / agentic_core_dir)
+    _tests_root = str(Path(_PROJECT_ROOT) / tests_dir)
+
+    # Packages that must resolve to project root, not tests/unit/ shadows
+    _shadow_prefixes = (agentic_core_dir, "apps_lic", "apps_rg")
+
     to_delete = []
     for key, mod in sys.modules.items():
-        if not key.startswith(agentic_core_dir):
+        if not any(key == p or key.startswith(p + ".") for p in _shadow_prefixes):
             continue
         pkg_path = getattr(mod, "__path__", None)
         pkg_file = getattr(mod, "__file__", "") or ""
         if pkg_path and any(
-            _tests_agentic_core in str(p)
+            _tests_root in str(p)
             for p in (pkg_path if isinstance(pkg_path, (list, tuple, set)) else [pkg_path])
         ):
             to_delete.append(key)
-        elif _tests_agentic_core in pkg_file:
+        elif _tests_root in pkg_file:
             to_delete.append(key)
     for key in to_delete:
         del sys.modules[key]

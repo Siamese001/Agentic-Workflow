@@ -109,7 +109,6 @@ from typing import Any
 from pydantic import BaseModel, Field
 
 from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-from agentic_core.config.core.constants_config import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
     LayerSegment,
     _emit_agent_executes_agent,
     _emit_applies_guardrail,
@@ -134,7 +133,6 @@ from agentic_core.config.core.constants_config import BATCH_SIZE, BUFFER_SIZE, D
     _emit_records_incident_event,
     _emit_records_learning_event,
     _emit_routes_to_agent,
-    _emit_signs_execution_trace,
     _emit_snapshots_state,
     _emit_stores_learning_state,
     _emit_transcripts_response,
@@ -288,7 +286,7 @@ class SymbolRenamer(ast.NodeTransformer):
         """Handle function definitions with scope tracking."""
 
         _emit_records_execution_trace(
-            str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, f"SymbolRenamer.visit_FunctionDef:{node.name}"
+            str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, f"SymbolRenamer.visit_FunctionDef:{node.name}",
         )
         if node.name == self.old_name:
             self.changes.append(
