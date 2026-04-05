@@ -992,9 +992,11 @@ SOVEREIGN_EXCLUDED_FOLDERS: frozenset[str] = frozenset(
         "node_modules",
         ".mypy_cache",
         ".tox",
+        ".test_artifacts",  # Test artifacts with leading dot (W1.1 gap closure)
         "archives",
         "archive",
         "artifacts",
+        "coverage_html",  # pytest-cov output directory (W1.1 gap closure)
         "_compat",  # Compatibility shims - re-exports only
         "data",
         "docs",
