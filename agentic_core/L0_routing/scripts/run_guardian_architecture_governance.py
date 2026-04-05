@@ -349,7 +349,7 @@ def scan_layer_gravity(
     path, agent_name, actual_layer, assigned_layer.
     """
     try:
-        from agentic_core.L0_routing.seams.safety_enforcement_seam import (
+        from agentic_core.L0_routing.utils.seams.safety_enforcement_seam import (
             load_ssot_scanner,
         )
 

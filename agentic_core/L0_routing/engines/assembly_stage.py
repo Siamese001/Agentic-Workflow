@@ -14,7 +14,7 @@ import json
 from dataclasses import dataclass
 from typing import Any, Literal
 
-from agentic_core.L0_routing.seams.elevator_shaft_seam import load_context_jit
+from agentic_core.L0_routing.utils.seams.elevator_shaft_seam import load_context_jit
 from agentic_core.runtime.lifecycle_trace_contract import (
     LayerSegment,
     _emit_agent_executes_agent,

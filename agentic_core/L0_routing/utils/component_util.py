@@ -219,7 +219,7 @@ class ComponentFactory:
             return cls._instances[cache_key]
         if use_adapter:
             try:
-                from agentic_core.L0_routing.seams.safety_reasoning_seam import load_verification_gate_adapter
+                from agentic_core.L0_routing.utils.seams.safety_reasoning_seam import load_verification_gate_adapter
 
                 adapter_mod = load_verification_gate_adapter()
                 instance = adapter_mod.VerificationGateAdapter()
@@ -250,7 +250,7 @@ class ComponentFactory:
             return cls._instances[cache_key]
         if use_adapter:
             try:
-                from agentic_core.L0_routing.seams.safety_reasoning_seam import load_human_review_adapter
+                from agentic_core.L0_routing.utils.seams.safety_reasoning_seam import load_human_review_adapter
 
                 adapter_mod = load_human_review_adapter()
                 instance = adapter_mod.HumanReviewAdapter()

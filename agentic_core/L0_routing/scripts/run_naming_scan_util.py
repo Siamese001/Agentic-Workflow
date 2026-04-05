@@ -95,7 +95,7 @@ _emit_links_execution_to_snapshot("p4", "run_naming_scan_util", "exec_snapshot_l
 project_root = Path(__file__).resolve().parents[1]
 # guardian: allow-global-mutation
 sys.path.insert(0, str(project_root))
-from agentic_core.L0_routing.seams.safety_reasoning_seam import load_naming_agent
+from agentic_core.L0_routing.utils.seams.safety_reasoning_seam import load_naming_agent
 
 print("=" * 80)
 print("NAMING AGENT SCAN - Duplicate Detection")

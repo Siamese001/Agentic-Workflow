@@ -198,7 +198,7 @@ def run_code_deduplication_check() -> tuple[bool, str]:
     _trace_id = str(_uuid.uuid4())
     _emit_records_execution_trace(_trace_id, LayerSegment.L0_ROUTING, "run_code_deduplication_check")
     try:
-        from agentic_core.L0_routing.seams.safety_enforcement_seam import load_code_deduplication_agent
+        from agentic_core.L0_routing.utils.seams.safety_enforcement_seam import load_code_deduplication_agent
 
         CodeDeduplicationAgent = load_code_deduplication_agent()
         print("\n" + "=" * 70)

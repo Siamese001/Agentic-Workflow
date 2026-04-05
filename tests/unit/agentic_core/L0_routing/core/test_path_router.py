@@ -180,7 +180,7 @@ class TestElevatorShaftSeam:
 
     def test_load_context_jit_returns_empty_dict(self):
         """Test seam returns deterministic empty dict."""
-        from agentic_core.L0_routing.seams.elevator_shaft_seam import load_context_jit
+        from agentic_core.L0_routing.utils.seams.elevator_shaft_seam import load_context_jit
 
         result = load_context_jit("test_intent")
 

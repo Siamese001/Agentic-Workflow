@@ -95,7 +95,7 @@ _emit_links_execution_to_snapshot("p4", "run_hygiene_naming_audit_util", "exec_s
 root = Path(__file__).parent.parent
 # guardian: allow-global-mutation
 sys.path.insert(0, str(root))
-from agentic_core.L0_routing.seams.safety_validators_seam import load_hygiene_guardian
+from agentic_core.L0_routing.utils.seams.safety_validators_seam import load_hygiene_guardian
 from agentic_core.runtime.lifecycle_trace_contract import (
     LayerSegment,
     _emit_agent_executes_agent,

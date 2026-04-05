@@ -16,7 +16,7 @@ from dataclasses import dataclass, field
 from enum import Enum
 from typing import Any
 
-from agentic_core.L0_routing.seams.layer_emission_seam import (
+from agentic_core.L0_routing.utils.seams.layer_emission_seam import (
     assert_layer_may_emit,
 )
 from agentic_core.L0_routing.types.determinism_types import SemanticClockSnapshot

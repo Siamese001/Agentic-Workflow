@@ -325,7 +325,7 @@ def scan_territory_compliance(
     filename, path, classified_as, current_folder, expected_folder.
     """
     from agentic_core.L0_routing.config import FILETYPE_TO_FOLDER
-    from agentic_core.L0_routing.seams.safety_kernel_seam import (
+    from agentic_core.L0_routing.utils.seams.safety_kernel_seam import (
         load_classification_kernel,
     )
 

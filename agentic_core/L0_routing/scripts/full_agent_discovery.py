@@ -50,7 +50,7 @@ from agentic_core.L0_routing.config import (
     L6_OBSERVABILITY_DIR,
     get_validated_project_root,
 )
-from agentic_core.L0_routing.seams.safety_kernel_seam import (
+from agentic_core.L0_routing.utils.seams.safety_kernel_seam import (
     get_classification_cache_context,
 )
 from agentic_core.L0_routing.utils.path_util import validate_path_within_project
@@ -412,7 +412,7 @@ def analyze_agent_integrity(file_path: Path) -> AgentIntegrityReport:
     2. AST metadata extraction (inheritance, decorators, methods)
     3. Integrity report generation
     """
-    from agentic_core.L0_routing.seams.safety_kernel_seam import (
+    from agentic_core.L0_routing.utils.seams.safety_kernel_seam import (
         load_classification_kernel,
     )
 

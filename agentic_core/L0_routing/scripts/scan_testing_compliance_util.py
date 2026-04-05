@@ -25,7 +25,7 @@ from agentic_core.L0_routing.enforcement.mutation_prohibition import assert_no_p
 
 # SSOT: Import canonical layer inference (Phase 3 Migration)
 # [FIX] Corrected import path (was canonical_truth_1, should be canonical_truth)
-from agentic_core.L0_routing.seams.safety_validators_seam import (
+from agentic_core.L0_routing.utils.seams.safety_validators_seam import (
     load_canonical_truth_validator,
 )
 from agentic_core.runtime.lifecycle_trace_contract import (

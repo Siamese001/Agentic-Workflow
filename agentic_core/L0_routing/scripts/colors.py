@@ -568,7 +568,7 @@ def main():
         print("\n[*] Running Autonomy Compliance Report...")
         try:
             from agentic_core.config.autonomy_targets import get_target
-            from agentic_core.L0_routing.seams.safety_validators_seam import load_autonomy_guardian
+            from agentic_core.L0_routing.utils.seams.safety_validators_seam import load_autonomy_guardian
 
             get_autonomy_guardian = load_autonomy_guardian().get_autonomy_guardian
             guardian = get_autonomy_guardian(project_root)
@@ -665,7 +665,7 @@ def main():
         return
     if args.preflight_only or args.hygiene or args.full_hygiene:
         from agentic_core.config.hygiene_registry_config import CORE_HYGIENE_AGENTS, MANDATORY_PREFLIGHT
-        from agentic_core.L0_routing.seams.safety_validators_seam import load_healing_strategy
+        from agentic_core.L0_routing.utils.seams.safety_validators_seam import load_healing_strategy
 
         Orchestrator = _get_orchestrator_class()
         HealingStrategy = load_healing_strategy().HealingStrategy
@@ -717,7 +717,7 @@ def main():
         mode_str = "EXECUTE" if execute_heal else "DRY-RUN"
         print(f"   [MODE] {mode_str}")
         try:
-            from agentic_core.L0_routing.seams.safety_validators_seam import (
+            from agentic_core.L0_routing.utils.seams.safety_validators_seam import (
                 load_healing_strategy as _load_hs2,
             )
 
@@ -764,7 +764,7 @@ def main():
                 all_agent_names.extend(tier_agents)
             gemini_active = False
             try:
-                from agentic_core.L0_routing.seams.safety_validators_seam import (
+                from agentic_core.L0_routing.utils.seams.safety_validators_seam import (
                     load_autonomy_guardian as _load_ag2,
                 )
 
