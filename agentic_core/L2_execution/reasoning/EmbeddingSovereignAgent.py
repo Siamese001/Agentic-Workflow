@@ -142,7 +142,6 @@ def _make_execution_context(payload, target: str):
 from agentic_core.config.sovereign_config import get_sovereign_config
 from agentic_core.utils.schemas.decorators_compat_util import standard_heal
 from agentic_core.utils.schemas.timeout_decorator_util import timeout
-from infrastructure.sdks_mcps.client_wrappers import create_vertex_client
 
 Logger = logging.getLogger(__name__)
 try:
@@ -411,6 +410,9 @@ class EmbeddingSovereignAgent(RedisCacheMixin, SovereignBaseAgent):
 
     async def _get_gemini_embedding(self, content: str) -> list[float]:
         """Get embedding from Gemini."""
+        # Lazy import to avoid circular dependency with infrastructure
+        from infrastructure.sdks_mcps.client_wrappers import create_vertex_client
+
         client = create_vertex_client()
         result = client.embed_content(
             model="models/text-embedding-004", content=content, task_type="retrieval_document"
