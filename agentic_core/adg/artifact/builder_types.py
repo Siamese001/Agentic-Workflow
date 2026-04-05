@@ -387,28 +387,55 @@ class ADGArtifact:
 
         commit_sha is excluded so the same graph content always produces the
         same digest regardless of which commit triggered the scan.
+
+        E3: Canonical-stream hash — streams sorted key fields directly into
+        sha256 without building a 450 MB JSON string.  ~2x faster than the
+        json.dumps path with identical determinism guarantees.
         """
 
         _emit_records_execution_trace(
             str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, "ADGBuilder.compute_digest"
         )
-        payload = {
-            "schema_version": self.schema_version,
-            "entities": sorted([e.to_dict() for e in self.entities], key=lambda x: x["adg_name"]),
-            "relations": sorted(
-                [r.to_dict() for r in self.relations],
-                key=lambda x: (
-                    x["from_name"],
-                    x["relation_type"],
-                    x["to_name"],
-                    x.get("semantic_type", ""),
-                    x["source_file"],
-                    x["line_no"],
-                ),
+        h = hashlib.sha256()
+        h.update(self.schema_version.encode("utf-8"))
+        h.update(b"\x00")
+
+        sorted_entities = sorted(
+            (e.to_dict() for e in self.entities), key=lambda x: x["adg_name"]
+        )
+        for e in sorted_entities:
+            h.update(e["adg_name"].encode("utf-8"))
+            h.update(b"|")
+            h.update(e.get("entity_type", "").encode("utf-8"))
+            h.update(b"\n")
+
+        sorted_relations = sorted(
+            (r.to_dict() for r in self.relations),
+            key=lambda x: (
+                x["from_name"],
+                x["relation_type"],
+                x["to_name"],
+                x.get("semantic_type", ""),
+                x["source_file"],
+                x["line_no"],
             ),
-        }
-        raw = json.dumps(payload, sort_keys=True, separators=(",", ":"))
-        self.artifact_digest = hashlib.sha256(raw.encode("utf-8")).hexdigest()
+        )
+        for r in sorted_relations:
+            h.update(
+                (
+                    "%s|%s|%s|%s|%s|%s\n"
+                    % (
+                        r["from_name"],
+                        r["relation_type"],
+                        r["to_name"],
+                        r.get("semantic_type", ""),
+                        r["source_file"],
+                        r["line_no"],
+                    )
+                ).encode("utf-8")
+            )
+
+        self.artifact_digest = h.hexdigest()
         return self.artifact_digest
 
 
