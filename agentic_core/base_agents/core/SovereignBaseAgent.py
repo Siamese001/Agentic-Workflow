@@ -102,7 +102,7 @@ from agentic_core.mixins.embedding_mixin import EmbeddingMixin
 
 # [COGNITIVE HARDENING] Anti-Context Drift and Token Overload
 from agentic_core.mixins.golden_context_mixin import GoldenContextMixin
-from agentic_core.mixins.infrastructure_mixin import infrastructure_mixin
+from agentic_core.mixins.infrastructure_mixin import InfrastructureMixin
 from agentic_core.mixins.llm_provider_mixin import LLMProviderMixin
 from agentic_core.mixins.meta_learning_client_mixin import MetaLearningClientMixin
 from agentic_core.mixins.runtime_safety_mixin import RuntimeSafetyMixin
@@ -246,7 +246,7 @@ logger = logging.getLogger(__name__)
 
 
 class SovereignBaseAgent(
-    infrastructure_mixin,  # Provides the core set of mixins
+    InfrastructureMixin,  # Provides the core set of mixins
     AtomicExecutionMixin,  # Not in infrastructure_mixin
     ConfigMixin,  # Not in infrastructure_mixin
     LLMProviderMixin,  # Not in infrastructure_mixin

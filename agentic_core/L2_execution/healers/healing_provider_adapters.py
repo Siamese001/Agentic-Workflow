@@ -106,7 +106,8 @@ try:
     from tenacity import retry, retry_if_exception_type, stop_after_attempt, wait_exponential
 
     _TENACITY_AVAILABLE = True
-except ImportError:  # guardian: allow-silent-swallow
+except ImportError as e:
+            raise ImportError(f"Required dependency missing: {e}")  # guardian: allow-silent-swallow
     _TENACITY_AVAILABLE = False
 from agentic_core.L2_execution.healers.healing_tier_router import HISTORICAL_DATA_HASH, _compute_replay_key
 from agentic_core.L2_execution.healers.healing_tier_types import (

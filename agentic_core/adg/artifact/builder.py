@@ -100,7 +100,7 @@ from agentic_core.adg.identity.normalizer import (
     IdentityKind,
     IdentityNormalizer,
 )
-from agentic_core.adg.schema import (
+from agentic_core.adg.contracts.schema import (
     GATEWAY_ALLOWLIST,
     PROVIDER_SDK_SYMBOLS,
     SEAM_MODULE_PATTERNS,
@@ -730,7 +730,7 @@ class ADGArtifactBuilder:
                 m.by_layer[e.layer] = m.by_layer.get(e.layer, 0) + 1
 
         # Layer violations (upward imports across non-allowed edges)
-        from agentic_core.adg.schema import ALLOWED_LAYER_EDGES
+        from agentic_core.adg.contracts.schema import ALLOWED_LAYER_EDGES
 
         violations = 0
         for rel in artifact.relations:

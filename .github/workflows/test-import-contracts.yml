@@ -47,7 +47,7 @@ jobs:
       - name: Run core tests
         run: |
           python -m pytest tests/unit tests/architecture tests/enforcement \
-            tests/governance tests/sovereign_hardening tests/adg tests/guardian \
+            tests/governance tests/sovereign_hardening tests/unit/agentic_core/adg tests/guardian \
             tests/ci tests/agentic_core tests/system_learning \
             -m "not optional and not external and not platform and not experimental" \
             --tb=short -q

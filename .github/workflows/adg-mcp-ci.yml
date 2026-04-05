@@ -5,13 +5,13 @@ on:
     branches: [main, develop]
     paths:
       - 'tools/adg/**'
-      - 'tests/adg/**'
+      - 'tests/unit/agentic_core/adg/**'
       - '.github/workflows/adg-mcp-ci.yml'
   pull_request:
     branches: [main, develop]
     paths:
       - 'tools/adg/**'
-      - 'tests/adg/**'
+      - 'tests/unit/agentic_core/adg/**'
 
 jobs:
   test:
@@ -67,26 +67,26 @@ jobs:
 
     - name: Run backend parity tests
       run: |
-        pytest tests/adg/test_backend_parity.py -v --timeout=60
+        pytest tests/unit/agentic_core/adg/test_backend_parity.py -v --timeout=60
       env:
         ADG_REDIS_URL: ${{ env.ADG_REDIS_URL }}
       continue-on-error: ${{ matrix.redis == 'unavailable' }}
 
     - name: Run Redis degradation tests
       run: |
-        pytest tests/adg/test_redis_degradation.py -v --timeout=60
+        pytest tests/unit/agentic_core/adg/test_redis_degradation.py -v --timeout=60
       env:
         ADG_REDIS_URL: ${{ env.ADG_REDIS_URL }}
 
     - name: Run health tool tests
       run: |
-        pytest tests/adg/test_health_tool.py -v --timeout=60
+        pytest tests/unit/agentic_core/adg/test_health_tool.py -v --timeout=60
       env:
         ADG_REDIS_URL: ${{ env.ADG_REDIS_URL }}
 
     - name: Run MCP integration tests
       run: |
-        pytest tests/adg/test_mcp_integration.py -v --timeout=120
+        pytest tests/unit/agentic_core/adg/test_mcp_integration.py -v --timeout=120
       env:
         ADG_REDIS_URL: ${{ env.ADG_REDIS_URL }}
       continue-on-error: true  # These may be flaky in CI
@@ -187,7 +187,7 @@ print('✅ Server starts with Redis')
 
     - name: Test test module imports
       run: |
-        python -c "from tests.adg.test_backend_parity import TestBackendParity; print('✅ test_backend_parity')"
-        python -c "from tests.adg.test_redis_degradation import TestRedisDegradation; print('✅ test_redis_degradation')"
-        python -c "from tests.adg.test_health_tool import TestHealthTool; print('✅ test_health_tool')"
-        python -c "from tests.adg.test_mcp_integration import TestMCPIntegration; print('✅ test_mcp_integration')"
+        python -c "from tests.unit.agentic_core.adg.test_backend_parity import TestBackendParity; print('✅ test_backend_parity')"
+        python -c "from tests.unit.agentic_core.adg.test_redis_degradation import TestRedisDegradation; print('✅ test_redis_degradation')"
+        python -c "from tests.unit.agentic_core.adg.test_health_tool import TestHealthTool; print('✅ test_health_tool')"
+        python -c "from tests.unit.agentic_core.adg.test_mcp_integration import TestMCPIntegration; print('✅ test_mcp_integration')"

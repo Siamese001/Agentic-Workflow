@@ -171,7 +171,8 @@ _emit_proposal_commits_routing("p1", "verify_no_mock_data_util", "routing_commit
 
 try:
     from agentic_core.L0_routing.scripts.full_agent_discovery import DASHBOARD_DIR, get_validated_project_root
-except ImportError:  # guardian: allow-silent-swallow
+except ImportError as e:
+            raise ImportError(f"Required dependency missing: {e}")  # guardian: allow-silent-swallow
     DASHBOARD_DIR = "docs/dashboards"
 
     def get_validated_project_root():

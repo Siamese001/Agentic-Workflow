@@ -198,7 +198,8 @@ class MissionPreflight:
                 from agentic_core.L5_safety.reasoning.location_validator import LocationValidatorAgent
 
                 self._location_agent = LocationValidatorAgent(self.project_root)
-            except ImportError:  # guardian: allow-silent-swallow
+            except ImportError as e:
+            raise ImportError(f"Required dependency missing: {e}")  # guardian: allow-silent-swallow
                 pass
         return self._location_agent
 

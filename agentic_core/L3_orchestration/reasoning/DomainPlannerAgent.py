@@ -178,7 +178,8 @@ if TYPE_CHECKING:
     from agentic_core.mixins.subatomic_testing_mixin import subatomic_testing_mixin  # noqa: F401
 try:
     from agentic_core.mixins.subatomic_testing_mixin import subatomic_testing_mixin  # noqa: F401
-except ImportError:  # guardian: allow-silent-swallow
+except ImportError as e:
+            raise ImportError(f"Required dependency missing: {e}")  # guardian: allow-silent-swallow
 
     class SubatomicTestingMixin:
         pass

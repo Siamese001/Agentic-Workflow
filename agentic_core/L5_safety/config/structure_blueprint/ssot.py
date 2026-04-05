@@ -459,13 +459,13 @@ TESTS_AUTOGEN_DIR: str = "tests/unit_min_deps"
 
 def _discover_apps_wildcard_folders(repo_root: Path | None = None) -> frozenset[str]:
     """Discover all apps_* folders at repo root dynamically.
-    
+
     This enables automatic adoption of new app territories without
     requiring manual updates to SSOT constants.
-    
+
     Args:
         repo_root: Repository root path. If None, uses get_validated_project_root().
-        
+
     Returns:
         Frozenset of apps_* folder names found at repo root.
     """
@@ -474,7 +474,7 @@ def _discover_apps_wildcard_folders(repo_root: Path | None = None) -> frozenset[
             repo_root = get_validated_project_root()
         except ValueError:
             return frozenset()
-    
+
     apps_folders = set()
     try:
         for item in repo_root.iterdir():
@@ -482,7 +482,7 @@ def _discover_apps_wildcard_folders(repo_root: Path | None = None) -> frozenset[
                 apps_folders.add(item.name)
     except (OSError, PermissionError):
         pass
-    
+
     return frozenset(apps_folders)
 
 
@@ -512,7 +512,7 @@ _BASE_MIRROR_ROOTS: frozenset[str] = frozenset(
 # Single canonical map: source root → mirror test directory.
 # LocationHealerAgent, TestGeneratorAgent, and all validators MUST import
 # from here instead of hardcoding test paths.
-# 
+#
 # NOTE: apps_* folders are auto-discovered via _discover_apps_wildcard_folders()
 # to avoid requiring manual SSOT edits when adding new app territories.
 # ---------------------------------------------------------------------------
@@ -541,7 +541,7 @@ def _build_test_canonical_location_map(repo_root: Path | None = None) -> dict[st
         "agentic_core": "tests/unit/agentic_core",
         "system_learning": "tests/unit/system_learning",
     }
-    
+
     try:
         discovered = _discover_apps_wildcard_folders(repo_root)
         for app_name in discovered:
@@ -549,7 +549,7 @@ def _build_test_canonical_location_map(repo_root: Path | None = None) -> dict[st
     except NameError:
         # get_validated_project_root not yet defined during module load
         pass
-    
+
     return base_map
 
 
@@ -592,7 +592,7 @@ def get_canonical_test_path(source_path: Path, repo_root: Path) -> Path:
         return root / TESTS_AUTOGEN_DIR / f"test_{src.stem}.py"
 
     source_root = parts[0]
-    
+
     # Use dynamic discovery for wildcard apps_* support
     location_map = _build_test_canonical_location_map(repo_root)
     mirror_base = location_map.get(source_root)
@@ -734,13 +734,13 @@ def get_subfolder_metadata() -> Mapping[str, Mapping[str, Any]]:
 @lru_cache(maxsize=1)
 def get_apps_wildcard_subfolder_map(app_name: str) -> Mapping[str, Sequence[str]]:
     """Return subfolder map for any apps_* folder via dynamic derivation.
-    
+
     This enables automatic support for new app territories without requiring
     manual SSOT updates. Uses the same derivation logic as explicit apps.
-    
+
     Args:
         app_name: The apps_* folder name (e.g., 'apps_rg', 'apps_new')
-        
+
     Returns:
         Mapping of subfolder names to their nested structure.
     """
@@ -993,8 +993,9 @@ SOVEREIGN_EXCLUDED_FOLDERS: frozenset[str] = frozenset(
         ".mypy_cache",
         ".tox",
         "archives",
-        "archive",  # Also exclude singular form (tools/archive/)
-        "artifacts",  # ADG output artifacts
+        "archive",
+        "artifacts",
+        "_compat",  # Compatibility shims - re-exports only
         "data",
         "docs",
         "env",
@@ -1147,7 +1148,7 @@ def validate_no_duplicate_prefix(filename: str) -> tuple[bool, str]:
 
 
 DISCOVERY_EXCLUDED_TERRITORIES: frozenset[str] = frozenset(
-    {"runtime_shared", "legacy_code", "legacy_engines", "archives", "stubs", "examples"},
+    {"runtime_shared", "legacy_code", "legacy_engines", "archives", "stubs", "examples", "_compat"},
 )
 
 PYTHON_STDLIB_MODULES: frozenset[str] = frozenset(
@@ -1234,6 +1235,7 @@ GLOBAL_EXCLUDED_DIRS: frozenset[str] = frozenset(
         # Test directories and artifacts
         "tests",
         "test_artifacts",
+        "_compat",  # Compatibility shims - re-exports only
     },
 )
 

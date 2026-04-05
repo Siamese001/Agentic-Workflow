@@ -80,7 +80,7 @@ from agentic_core.L6_observability.engines.metrics_server import (
 )
 
 # P3/L6 Observability Dashboard exports
-from agentic_core.L6_observability.mcp_drift_store import (
+from agentic_core.L6_observability.enforcement.mcp_drift_store import (
     MCPDriftMonitor,
     MCPL6ObservabilityStore,
     MCPL6PersistenceConfig,

@@ -85,7 +85,8 @@ try:
     from agentic_core.L5_safety.config.structure_blueprint import GLOBAL_EXCLUDED_DIRS
 
     _SSOT_EXCLUSIONS_AVAILABLE = True
-except ImportError:  # guardian: allow-silent-swallow
+except ImportError as e:
+            raise ImportError(f"Required dependency missing: {e}")  # guardian: allow-silent-swallow
     _SSOT_EXCLUSIONS_AVAILABLE = False
     GLOBAL_EXCLUDED_DIRS = None
 from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (

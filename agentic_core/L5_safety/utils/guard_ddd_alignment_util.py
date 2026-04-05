@@ -170,7 +170,8 @@ _emit_proposal_commits_routing("p1", "guard_ddd_alignment_util", "routing_commit
 
 try:
     from agentic_core.L0_routing.scripts.full_agent_discovery import SCRIPTS_DIR, TESTS_DIR
-except ImportError:  # guardian: allow-silent-swallow
+except ImportError as e:
+            raise ImportError(f"Required dependency missing: {e}")  # guardian: allow-silent-swallow
     SCRIPTS_DIR = "ops_scripts"
     TESTS_DIR = "tests"
 

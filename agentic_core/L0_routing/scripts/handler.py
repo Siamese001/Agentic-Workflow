@@ -181,7 +181,8 @@ def debug_dashboard():
     """Use Playwright to deeply inspect dashboard loading."""
     try:
         from playwright.sync_api import sync_playwright
-    except ImportError:  # guardian: allow-silent-swallow
+    except ImportError as e:
+            raise ImportError(f"Required dependency missing: {e}")  # guardian: allow-silent-swallow
         print("❌ Playwright not installed")
         return False
 

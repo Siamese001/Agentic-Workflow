@@ -114,7 +114,8 @@ _proof_emitter = ExecutionProofEmitter("L5.GovernanceAgent")
 
 try:
     from agentic_core.mixins.mcp_hardened_mixin import mcp_hardened_mixin  # noqa: F401
-except ImportError:  # guardian: allow-silent-degradation - Optional MCP hardened mixin
+except ImportError as e:
+            raise ImportError(f"Required dependency missing: {e}")  # guardian: allow-silent-degradation - Optional MCP hardened mixin
 
     class MCPHardenedMixin:
         pass
@@ -509,7 +510,8 @@ class GovernanceAgent(SovereignBaseAgent):
                 SOVEREIGN_REGISTRY,
             )
         # guardian: allow-silent-degradation - Optional structure blueprint
-        except ImportError:
+        except ImportError as e:
+            raise ImportError(f"Required dependency missing: {e}")
             from agentic_core.config.core.registry_config import SOVEREIGN_REGISTRY
 
             ROOT_PROTECTED_FILES = frozenset()

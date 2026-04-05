@@ -215,8 +215,8 @@ def _is_pydantic_model(schema: Any) -> bool:
         from pydantic import BaseModel
 
         return isinstance(schema, type) and issubclass(schema, BaseModel)
-    except ImportError:  # guardian: allow-silent-swallow
-        return False
+    except ImportError as e:
+        raise ImportError(f"Required dependency missing: {e}")  # guardian: allow-silent-swallow
 
 
 def _validate_pydantic(obj: Any, model_cls: Any) -> tuple[bool, str | None, dict]:

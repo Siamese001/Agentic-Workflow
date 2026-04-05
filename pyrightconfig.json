@@ -1,0 +1,17 @@
+{
+  "pythonVersion": "3.12",
+  "venvPath": ".",
+  "extraPaths": [
+    ".",
+    "tools/fix"
+  ],
+  "exclude": [
+    "archives/**",
+    "**/__pycache__/**"
+  ],
+  "ignore": [
+    "tools/archive/**"
+  ],
+  "reportMissingImports": "none",
+  "reportMissingModuleSource": "none"
+}

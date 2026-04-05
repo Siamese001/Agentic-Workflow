@@ -87,13 +87,12 @@ except ImportError:
     class MCPHardenedMixin:
         pass
 
-
 try:
     from agentic_core.interfaces.mixins import HealerMixin
 except ImportError:
-
     class HealerMixin:
         pass
+
 from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     LayerSegment,
     _emit_agent_executes_agent,

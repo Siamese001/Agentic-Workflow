@@ -175,7 +175,8 @@ try:
         APPS_SHARED_DIR,
         get_python_files,
     )
-except ImportError:  # guardian: allow-silent-swallow
+# guardian: allow-silent-swallow - optional dependency
+        except ImportError:  # guardian: allow-silent-swallow
     AGENTIC_CORE_DIR = Path(AGENTIC_CORE_DIR)
     APPS_SHARED_DIR = Path(APPS_SHARED_DIR)
 

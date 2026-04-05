@@ -184,7 +184,8 @@ def _get_create_autonomous_checkpoint_manager():
         from agentic_core.L4_state.checkpoint_manager import create_autonomous_checkpoint_manager
 
         return create_autonomous_checkpoint_manager
-    except ImportError:  # guardian: allow-silent-swallow
+    except ImportError as e:
+            raise ImportError(f"Required dependency missing: {e}")  # guardian: allow-silent-swallow
         return None
 
 

@@ -109,7 +109,8 @@ try:
         AGENTIC_CORE_DIR,
         ARCHIVES_DIR,
     )
-except ImportError:  # guardian: allow-silent-swallow
+# guardian: allow-silent-swallow - optional dependency
+        except ImportError:  # guardian: allow-silent-swallow
     AGENTIC_CORE_DIR = AGENTIC_CORE_DIR
     ARCHIVES_DIR = ".sovereign_healing_backup"
 from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (

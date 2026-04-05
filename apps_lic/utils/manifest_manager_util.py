@@ -85,14 +85,16 @@ try:
 
     class MCPHardenedMixin(mcp_hardened_mixin):
         pass
-except ImportError:
+except ImportError as e:
+            raise ImportError(f"Required dependency missing: {e}")
     class MCPHardenedMixin:
         pass
 
 
 try:
     from agentic_core.interfaces.mixins import HealerMixin
-except ImportError:
+except ImportError as e:
+            raise ImportError(f"Required dependency missing: {e}")
 
     class HealerMixin:
         pass
