@@ -10,6 +10,9 @@ from agentic_core.cache.redis_cache_client import DeterministicRedisCache
 late_chunking = True
 redis_cache_client = True
 
+# Class aliases for tests
+RedisCacheClient = DeterministicRedisCache
+
 
 # Stub classes for apps_lic ADG tests
 class CallPersonalizationApiAdg:
