@@ -23,7 +23,7 @@ from tools.validate_plan_format import validate_plan_format
 
 # Try to import token estimator - may not exist in all environments
 try:
-    from agentic_core.planning.token_estimator import ContextWindowEstimator
+    from tools.utils.planning.token_estimator import ContextWindowEstimator
     TOKEN_VALIDATOR_AVAILABLE = True
 except ImportError:
     TOKEN_VALIDATOR_AVAILABLE = False

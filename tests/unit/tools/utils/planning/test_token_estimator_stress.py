@@ -25,21 +25,21 @@ pytestmark = pytest.mark.skipif(
 # Lazy imports to avoid collection-time conflicts
 @pytest.fixture
 def context_window_estimator():
-    from agentic_core.planning.token_estimator import ContextWindowEstimator
+    from tools.utils.planning.token_estimator import ContextWindowEstimator
 
     return ContextWindowEstimator()
 
 
 @pytest.fixture
 def token_budget():
-    from agentic_core.planning.token_estimator import TokenBudget
+    from tools.utils.planning.token_estimator import TokenBudget
 
     return TokenBudget()
 
 
 @pytest.fixture
 def planning_preflight_hook():
-    from agentic_core.planning.preflight_hook import PlanningPreflightHook
+    from tools.utils.planning.preflight_hook import PlanningPreflightHook
 
     return PlanningPreflightHook()
 
@@ -49,8 +49,8 @@ class TestTokenEstimatorStressTests:
 
     def setup_method(self):
         """Setup test fixtures"""
-        from agentic_core.planning.preflight_hook import PlanningPreflightHook
-        from agentic_core.planning.token_estimator import ContextWindowEstimator, TokenBudget
+        from tools.utils.planning.preflight_hook import PlanningPreflightHook
+        from tools.utils.planning.token_estimator import ContextWindowEstimator, TokenBudget
         import tempfile
         import uuid
 
@@ -76,7 +76,7 @@ class TestTokenEstimatorStressTests:
 
     def test_extreme_large_file_compression(self):
         """Test compression with extremely large files"""
-        from agentic_core.planning.token_estimator import ContextSource
+        from tools.utils.planning.token_estimator import ContextSource
 
         # Create a massive file with many lines (1MB+)
         massive_content = "\n".join(f"line_{i}: x" * 100 for i in range(15000))  # 15000 lines
@@ -95,7 +95,7 @@ class TestTokenEstimatorStressTests:
 
     def test_massive_log_trimming(self):
         """Test log trimming with massive log files"""
-        from agentic_core.planning.token_estimator import ContextSource
+        from tools.utils.planning.token_estimator import ContextSource
 
         # Create a massive log with many errors
         log_lines = []
@@ -124,7 +124,7 @@ class TestTokenEstimatorStressTests:
 
     def test_extreme_retrieval_chunk_reduction(self):
         """Test retrieval chunk reduction with hundreds of chunks"""
-        from agentic_core.planning.token_estimator import ContextSource
+        from tools.utils.planning.token_estimator import ContextSource
 
         many_chunks = [
             ContextSource("retrieval", f"chunk_{i}" * 100, 50, metadata={"chunk_id": f"chunk_{i}"})
@@ -141,7 +141,7 @@ class TestTokenEstimatorStressTests:
 
     def test_massive_duplicate_removal(self):
         """Test duplicate removal with many duplicates"""
-        from agentic_core.planning.token_estimator import ContextSource
+        from tools.utils.planning.token_estimator import ContextSource
 
         duplicate_content = "duplicate content " * 100
         many_duplicates = [
@@ -156,7 +156,7 @@ class TestTokenEstimatorStressTests:
 
     def test_extreme_content_mix_compression(self):
         """Test compression with extreme mix of all content types"""
-        from agentic_core.planning.token_estimator import ContextSource, TokenEstimate
+        from tools.utils.planning.token_estimator import ContextSource, TokenEstimate
 
         extreme_sources = [
             # Massive file
@@ -205,7 +205,7 @@ class TestTokenEstimatorStressTests:
 
     def test_hard_limit_violation_extreme(self):
         """Test that extreme content raises TokenBudgetExceededError"""
-        from agentic_core.planning.preflight_hook import TokenBudgetExceededError
+        from tools.utils.planning.preflight_hook import TokenBudgetExceededError
 
         # Create content that will definitely exceed 200K hard limit
         extreme_content = "x" * 5000000  # 5M characters

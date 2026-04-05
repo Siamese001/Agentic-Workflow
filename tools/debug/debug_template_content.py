@@ -11,7 +11,7 @@ from pathlib import Path
 repo_root = Path(__file__).parent
 sys.path.append(str(repo_root))
 
-from agentic_core.planning.sequential_thinking_workflow import SequentialThinkingEnhancedWorkflow
+from tools.utils.planning.sequential_thinking_workflow import SequentialThinkingEnhancedWorkflow
 
 
 def debug_template_content():

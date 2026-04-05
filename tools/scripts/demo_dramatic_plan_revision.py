@@ -16,7 +16,7 @@ import tempfile
 from pathlib import Path
 from typing import Any
 
-from agentic_core.planning.preflight_hook import PlanningPreflightHook, TokenBudgetExceededError
+from tools.utils.planning.preflight_hook import PlanningPreflightHook, TokenBudgetExceededError
 
 
 class DramaticPlanRevisor:

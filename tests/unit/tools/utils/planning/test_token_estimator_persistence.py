@@ -15,7 +15,7 @@ import pytest
 # Lazy imports to avoid collection-time conflicts
 @pytest.fixture
 def planning_preflight_hook(tmp_path):
-    from agentic_core.planning.preflight_hook import PlanningPreflightHook
+    from tools.utils.planning.preflight_hook import PlanningPreflightHook
     budget_file = tmp_path / "history_test_budget.json"
     return PlanningPreflightHook(budget_file=budget_file)
 
@@ -25,7 +25,7 @@ class TestBudgetHistoryPersistence:
 
     def setup_method(self):
         """Setup test fixtures"""
-        from agentic_core.planning.preflight_hook import PlanningPreflightHook
+        from tools.utils.planning.preflight_hook import PlanningPreflightHook
         self.temp_dir = Path(tempfile.mkdtemp())
         self.budget_file = self.temp_dir / "history_test_budget.json"
         self.hook = PlanningPreflightHook(budget_file=self.budget_file)
@@ -58,7 +58,7 @@ class TestBudgetHistoryPersistence:
         assert summary_1['total_steps'] == 10
 
         # Session 2: Create new hook (simulating restart)
-        from agentic_core.planning.preflight_hook import PlanningPreflightHook
+        from tools.utils.planning.preflight_hook import PlanningPreflightHook
         new_hook = PlanningPreflightHook(budget_file=self.budget_file)
         summary_2 = new_hook.get_budget_summary()
 
@@ -191,7 +191,7 @@ class TestBudgetHistoryPersistence:
 
         # Should recover gracefully
         try:
-            from agentic_core.planning.preflight_hook import PlanningPreflightHook
+            from tools.utils.planning.preflight_hook import PlanningPreflightHook
             corrupted_hook = PlanningPreflightHook(budget_file=self.budget_file)
 
             # Should be able to add new data
@@ -405,7 +405,7 @@ class TestBudgetHistoryPersistence:
 
         # Should recover gracefully
         try:
-            from agentic_core.planning.preflight_hook import PlanningPreflightHook
+            from tools.utils.planning.preflight_hook import PlanningPreflightHook
             recovered_hook = PlanningPreflightHook(budget_file=self.budget_file)
 
             # Should be able to add new data

@@ -17,7 +17,7 @@ from typing import Any
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..")))
 
 try:
-    from agentic_core.planning.token_estimator import ContextWindowEstimator
+    from tools.utils.planning.token_estimator import ContextWindowEstimator
 except ImportError as e:
     logging.error(f"Could not import token estimation utilities: {e}")
     ContextWindowEstimator = None

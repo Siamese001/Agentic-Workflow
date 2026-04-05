@@ -239,8 +239,8 @@ def test_sequential_thinking_workflow():
             sys.executable, "-c", f"""
 import sys
 sys.path.append('{repo_root}')
-from agentic_core.planning.sequential_thinking_workflow import SequentialThinkingEnhancedWorkflow
-from agentic_core.planning.token_estimator import TokenBudget
+from tools.utils.planning.sequential_thinking_workflow import SequentialThinkingEnhancedWorkflow
+from tools.utils.planning.token_estimator import TokenBudget
 
 # Test workflow initialization
 workflow = SequentialThinkingEnhancedWorkflow(seq_thinking_enabled=True)

@@ -6,7 +6,7 @@ Direct test of token estimator enforcement using preflight hook
 import tempfile
 from pathlib import Path
 
-from agentic_core.planning.preflight_hook import PlanningPreflightHook, TokenBudgetExceededError
+from tools.utils.planning.preflight_hook import PlanningPreflightHook, TokenBudgetExceededError
 
 
 def test_normal_enforcement():
@@ -139,7 +139,7 @@ def test_decorator_enforcement():
     """Test decorator-based enforcement"""
     print("\n=== TESTING DECORATOR ENFORCEMENT ===\n")
 
-    from agentic_core.planning.preflight_hook import require_token_budget
+    from tools.utils.planning.preflight_hook import require_token_budget
 
     temp_dir = Path(tempfile.mkdtemp())
     budget_file = temp_dir / "decorator_test.json"

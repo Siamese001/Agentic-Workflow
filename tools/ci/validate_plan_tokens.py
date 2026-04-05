@@ -19,7 +19,7 @@ repo_root = Path(__file__).parent.parent.parent
 sys.path.insert(0, str(repo_root))
 
 try:
-    from agentic_core.planning.token_estimator import ContextWindowEstimator, TokenBudget
+    from tools.utils.planning.token_estimator import ContextWindowEstimator, TokenBudget
     TOKEN_ESTIMATOR_AVAILABLE = True
 except ImportError:
     TOKEN_ESTIMATOR_AVAILABLE = False
@@ -174,7 +174,7 @@ class PlanTokenValidator:
 
         try:
             # Create a simple estimate for the plan content
-            from agentic_core.planning.token_estimator import ContextSource
+            from tools.utils.planning.token_estimator import ContextSource
 
             sources = [
                 ContextSource(

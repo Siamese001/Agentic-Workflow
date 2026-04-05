@@ -18,7 +18,7 @@ from agentic_core.config.adg_template_enforcement_config import (
     get_enforcement_template,
     is_enforcement_required,
 )
-from agentic_core.planning.sequential_thinking_workflow import SequentialThinkingEnhancedWorkflow
+from tools.utils.planning.sequential_thinking_workflow import SequentialThinkingEnhancedWorkflow
 
 
 def test_enforcement_mandatory():

@@ -13,8 +13,8 @@ import pytest
 # Lazy imports to avoid collection-time conflicts
 @pytest.fixture
 def token_estimator_classes():
-    from agentic_core.planning.preflight_hook import PlanningPreflightHook, TokenBudgetExceededError
-    from agentic_core.planning.token_estimator import (
+    from tools.utils.planning.preflight_hook import PlanningPreflightHook, TokenBudgetExceededError
+    from tools.utils.planning.token_estimator import (
         ContextSource,
         ContextWindowEstimator,
         TokenBudget,
@@ -28,7 +28,7 @@ class TestContextWindowEstimator:
 
     def setup_method(self):
         """Setup test fixtures"""
-        from agentic_core.planning.token_estimator import (
+        from tools.utils.planning.token_estimator import (
             ContextWindowEstimator,
             TokenBudget,
         )
@@ -93,7 +93,7 @@ class TestContextWindowEstimator:
 
     def test_complete_step_estimation(self):
         """Test complete step token estimation"""
-        from agentic_core.planning.token_estimator import TokenEstimate
+        from tools.utils.planning.token_estimator import TokenEstimate
         # Prepare test data
         plan_step = "Test implementation"
         system_prompt = "You are a helpful assistant."
@@ -139,7 +139,7 @@ class TestContextWindowEstimator:
 
     def test_compression_policies(self):
         """Test compression policies"""
-        from agentic_core.planning.token_estimator import ContextSource
+        from tools.utils.planning.token_estimator import ContextSource
         # Test individual compression functions directly
 
         # Test duplicate removal
@@ -216,7 +216,7 @@ INFO: Process completed
 
     def test_duplicate_removal(self):
         """Test duplicate content removal"""
-        from agentic_core.planning.token_estimator import ContextSource
+        from tools.utils.planning.token_estimator import ContextSource
         sources = [
             ContextSource('file', 'same content', 100),
             ContextSource('file', 'same content', 100),
@@ -230,7 +230,7 @@ INFO: Process completed
 
     def test_large_file_summarization(self):
         """Test large file summarization"""
-        from agentic_core.planning.token_estimator import ContextSource
+        from tools.utils.planning.token_estimator import ContextSource
         large_content = '\n'.join(f'line_{i}' for i in range(1500))  # 1500 lines
         sources = [
             ContextSource('file', large_content, 5000, metadata={'path': 'large.py', 'lines': 1500})
@@ -242,7 +242,7 @@ INFO: Process completed
 
 def test_log_trimming():
     """Test log trimming to errors only"""
-    from agentic_core.planning.token_estimator import ContextSource, ContextWindowEstimator
+    from tools.utils.planning.token_estimator import ContextSource, ContextWindowEstimator
     estimator = ContextWindowEstimator()
     log_content = '''
 INFO: Starting process
@@ -266,7 +266,7 @@ INFO: Process finished
 
 def test_retrieval_chunk_reduction():
     """Test retrieval chunk reduction"""
-    from agentic_core.planning.token_estimator import ContextSource, ContextWindowEstimator
+    from tools.utils.planning.token_estimator import ContextSource, ContextWindowEstimator
     estimator = ContextWindowEstimator()
     many_chunks = [
         ContextSource('retrieval', f'chunk_{i}', 50, metadata={'chunk_id': f'chunk_{i}'})
@@ -280,7 +280,7 @@ def test_retrieval_chunk_reduction():
 
 def test_to_dict_serialization():
     """Test JSON serialization of estimates"""
-    from agentic_core.planning.token_estimator import ContextWindowEstimator, TokenEstimate
+    from tools.utils.planning.token_estimator import ContextWindowEstimator, TokenEstimate
     estimator = ContextWindowEstimator()
     estimate = TokenEstimate(
         plan_step="test",
@@ -313,7 +313,7 @@ class TestPlanningPreflightHook:
 
     def setup_method(self):
         """Setup test fixtures"""
-        from agentic_core.planning.preflight_hook import PlanningPreflightHook
+        from tools.utils.planning.preflight_hook import PlanningPreflightHook
         import tempfile
         import uuid
         # Use unique temp directory per test to avoid parallel execution conflicts
@@ -336,7 +336,7 @@ class TestPlanningPreflightHook:
 
     def test_preflight_check_success(self):
         """Test successful preflight check"""
-        from agentic_core.planning.token_estimator import TokenEstimate
+        from tools.utils.planning.token_estimator import TokenEstimate
         estimate = self.hook.preflight_check(
             plan_step="test_step",
             system_prompt="System prompt",
@@ -358,7 +358,7 @@ class TestPlanningPreflightHook:
 
     def test_preflight_check_budget_exceeded(self):
         """Test preflight check with exceeded budget"""
-        from agentic_core.planning.preflight_hook import TokenBudgetExceededError
+        from tools.utils.planning.preflight_hook import TokenBudgetExceededError
         # Create content that will exceed the hard limit (200K)
         # Need to create content that will result in >200K tokens after conservative estimation
         very_large_content = 'x' * 1000000  # 1M characters should be ~400K tokens with conservative rate
@@ -420,7 +420,7 @@ class TestPlanningPreflightHook:
         )
 
         # Create new hook instance with same file
-        from agentic_core.planning.preflight_hook import PlanningPreflightHook
+        from tools.utils.planning.preflight_hook import PlanningPreflightHook
         new_hook = PlanningPreflightHook(budget_file=self.budget_file)
 
         # History should be loaded
@@ -447,7 +447,7 @@ class TestTokenBudgetDecorator:
 
     def setup_method(self):
         """Setup test fixtures"""
-        from agentic_core.planning.preflight_hook import PlanningPreflightHook
+        from tools.utils.planning.preflight_hook import PlanningPreflightHook
         import tempfile
         import uuid
         # Use unique temp directory per test to avoid parallel execution conflicts
@@ -470,7 +470,7 @@ class TestTokenBudgetDecorator:
 
     def test_decorator_success(self):
         """Test decorator with successful execution"""
-        from agentic_core.planning.preflight_hook import require_token_budget
+        from tools.utils.planning.preflight_hook import require_token_budget
 
         @require_token_budget(self.hook)
         def test_function(plan_step, system_prompt, **kwargs):
@@ -492,7 +492,7 @@ class TestTokenBudgetDecorator:
 
     def test_decorator_block(self):
         """Test decorator with blocked execution"""
-        from agentic_core.planning.preflight_hook import TokenBudgetExceededError, require_token_budget
+        from tools.utils.planning.preflight_hook import TokenBudgetExceededError, require_token_budget
 
         @require_token_budget(self.hook)
         def test_function(plan_step, system_prompt, **kwargs):

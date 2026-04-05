@@ -10,7 +10,7 @@ import logging
 from pathlib import Path
 from typing import Any
 
-from .token_estimator import ContextWindowEstimator, TokenEstimate
+from ..token_estimator import ContextWindowEstimator, TokenEstimate
 
 logger = logging.getLogger(__name__)
 

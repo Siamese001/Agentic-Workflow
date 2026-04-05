@@ -3,8 +3,8 @@
 Test Sequential Thinking Workflow Integration
 """
 
-from agentic_core.planning.sequential_thinking_workflow import SequentialThinkingEnhancedWorkflow
-from agentic_core.planning.token_estimator import TokenBudget
+from tools.utils.planning.sequential_thinking_workflow import SequentialThinkingEnhancedWorkflow
+from tools.utils.planning.token_estimator import TokenBudget
 
 
 def test_workflow_integration():

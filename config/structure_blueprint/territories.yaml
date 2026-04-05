@@ -187,11 +187,6 @@ territories:
           safety: {purpose: "Safety and validation mixins"}
           healing: {purpose: "Healing and recovery mixins"}
           caching: {purpose: "Caching and performance mixins"}
-      planning:
-        depth: 2
-        purpose: "Planning utilities (primarily used by tools/CI, consider moving to tools/utils)"
-        subfolders:
-          workflows: {depth: 2, purpose: "Workflow definitions"}
       seams:
         depth: 2
         purpose: "Integration contracts and protocol seams"
@@ -452,6 +447,7 @@ territories:
       scripts: {depth: 2, purpose: "Scripts"}
       test_enforcement: {depth: 2, purpose: "Test enforcement"}
       testing: {depth: 2, purpose: "Testing tools"}
+      utils: {depth: 2, purpose: "Shared utilities (token estimation, workflows)"}
       verification: {depth: 2, purpose: "Verification tools"}
       waves: {depth: 2, purpose: "Wave tools"}
       windsurf: {depth: 2, purpose: "Windsurf tools"}

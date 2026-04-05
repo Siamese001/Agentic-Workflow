@@ -13,13 +13,13 @@ import pytest
 # Lazy imports to avoid collection-time conflicts
 @pytest.fixture
 def token_estimator_classes():
-    from agentic_core.planning.preflight_hook import TokenBudgetExceededError, require_token_budget
+    from tools.utils.planning.preflight_hook import TokenBudgetExceededError, require_token_budget
     return require_token_budget, TokenBudgetExceededError
 
 
 @pytest.fixture
 def planning_preflight_hook(tmp_path):
-    from agentic_core.planning.preflight_hook import PlanningPreflightHook
+    from tools.utils.planning.preflight_hook import PlanningPreflightHook
     budget_file = tmp_path / "integration_budget.json"
     return PlanningPreflightHook(budget_file=budget_file)
 
@@ -29,7 +29,7 @@ class TestTokenEstimatorIntegration:
 
     def setup_method(self):
         """Setup test fixtures"""
-        from agentic_core.planning.preflight_hook import PlanningPreflightHook
+        from tools.utils.planning.preflight_hook import PlanningPreflightHook
         import tempfile
         import uuid
         # Use unique temp directory per test to avoid parallel execution conflicts
@@ -467,7 +467,7 @@ api/
         assert summary1['total_steps'] == 5
 
         # Simulate session restart - create new hook with same file
-        from agentic_core.planning.preflight_hook import PlanningPreflightHook
+        from tools.utils.planning.preflight_hook import PlanningPreflightHook
         new_hook = PlanningPreflightHook(budget_file=self.budget_file)
         summary2 = new_hook.get_budget_summary()
 

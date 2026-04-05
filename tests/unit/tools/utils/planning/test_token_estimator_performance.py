@@ -16,13 +16,13 @@ import pytest
 # Lazy imports to avoid collection-time conflicts
 @pytest.fixture
 def token_estimator_classes():
-    from agentic_core.planning.token_estimator import ContextSource, ContextWindowEstimator, TokenEstimate
+    from tools.utils.planning.token_estimator import ContextSource, ContextWindowEstimator, TokenEstimate
     return ContextWindowEstimator, ContextSource, TokenEstimate
 
 
 @pytest.fixture
 def planning_preflight_hook(tmp_path):
-    from agentic_core.planning.preflight_hook import PlanningPreflightHook
+    from tools.utils.planning.preflight_hook import PlanningPreflightHook
     budget_file = tmp_path / "performance_budget.json"
     return PlanningPreflightHook(budget_file=budget_file)
 
@@ -32,7 +32,7 @@ class TestTokenEstimatorPerformance:
 
     def setup_method(self):
         """Setup test fixtures"""
-        from agentic_core.planning.preflight_hook import PlanningPreflightHook
+        from tools.utils.planning.preflight_hook import PlanningPreflightHook
         import tempfile
         import uuid
         # Use unique temp directory per test to avoid parallel execution conflicts
@@ -212,7 +212,7 @@ class TestTokenEstimatorPerformance:
 
     def test_compression_performance(self):
         """Test compression performance with large payloads"""
-        from agentic_core.planning.token_estimator import ContextSource, ContextWindowEstimator, TokenEstimate
+        from tools.utils.planning.token_estimator import ContextSource, ContextWindowEstimator, TokenEstimate
         estimator = ContextWindowEstimator()
 
         # Create sources that will trigger compression
@@ -344,7 +344,7 @@ class TestTokenEstimatorPerformance:
 
     def test_token_estimation_performance(self):
         """Test raw token estimation performance"""
-        from agentic_core.planning.token_estimator import ContextWindowEstimator
+        from tools.utils.planning.token_estimator import ContextWindowEstimator
         estimator = ContextWindowEstimator()
 
         # Test different content types and sizes

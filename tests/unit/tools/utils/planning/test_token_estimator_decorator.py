@@ -27,12 +27,12 @@ pytestmark = pytest.mark.skipif(
 # Lazy imports to avoid collection-time conflicts
 @pytest.fixture
 def token_estimator_classes():
-    from agentic_core.planning.preflight_hook import (
+    from tools.utils.planning.preflight_hook import (
         PlanningPreflightHook,
         TokenBudgetExceededError,
         require_token_budget,
     )
-    from agentic_core.planning.token_estimator import (
+    from tools.utils.planning.token_estimator import (
         ContextSource,
         ContextWindowEstimator,
         TokenBudget,
@@ -55,7 +55,7 @@ class TestDecoratorEnforcementIntegration:
 
     def setup_method(self):
         """Setup test fixtures"""
-        from agentic_core.planning.preflight_hook import (
+        from tools.utils.planning.preflight_hook import (
             PlanningPreflightHook,
         )
 
@@ -72,7 +72,7 @@ class TestDecoratorEnforcementIntegration:
 
     def test_decorator_basic_functionality(self):
         """Test basic decorator functionality"""
-        from agentic_core.planning.preflight_hook import require_token_budget
+        from tools.utils.planning.preflight_hook import require_token_budget
 
         @require_token_budget(self.hook)
         def simple_function(system_prompt, user_prompt, files, **kwargs):
@@ -95,7 +95,7 @@ class TestDecoratorEnforcementIntegration:
 
     def test_decorator_budget_enforcement(self):
         """Test decorator enforces budget limits"""
-        from agentic_core.planning.preflight_hook import TokenBudgetExceededError, require_token_budget
+        from tools.utils.planning.preflight_hook import TokenBudgetExceededError, require_token_budget
 
         @require_token_budget(self.hook)
         def budget_sensitive_function(system_prompt, user_prompt, files, **kwargs):
@@ -117,7 +117,7 @@ class TestDecoratorEnforcementIntegration:
 
     def test_decorator_with_various_signatures(self):
         """Test decorator works with different function signatures"""
-        from agentic_core.planning.preflight_hook import require_token_budget
+        from tools.utils.planning.preflight_hook import require_token_budget
 
         @require_token_budget(self.hook)
         def function_with_kwargs(system_prompt, **kwargs):
@@ -150,7 +150,7 @@ class TestDecoratorEnforcementIntegration:
 
     def test_decorator_error_propagation(self):
         """Test decorator properly propagates function errors"""
-        from agentic_core.planning.preflight_hook import require_token_budget
+        from tools.utils.planning.preflight_hook import require_token_budget
 
         @require_token_budget(self.hook)
         def error_function(system_prompt, user_prompt, files, **kwargs):
@@ -166,7 +166,7 @@ class TestDecoratorEnforcementIntegration:
 
     def test_nested_decorators(self):
         """Test decorator works with nested decorators"""
-        from agentic_core.planning.preflight_hook import require_token_budget
+        from tools.utils.planning.preflight_hook import require_token_budget
 
         def timing_decorator(func):
             def wrapper(*args, **kwargs):
@@ -199,7 +199,7 @@ class TestDecoratorEnforcementIntegration:
 
     def test_decorator_class_methods(self):
         """Test decorator works with class methods"""
-        from agentic_core.planning.preflight_hook import require_token_budget
+        from tools.utils.planning.preflight_hook import require_token_budget
 
         class TestProcessor:
             def __init__(self, name):
@@ -240,7 +240,7 @@ class TestDecoratorEnforcementIntegration:
 
     def test_multiple_hooks_same_function(self):
         """Test using multiple hooks with different functions"""
-        from agentic_core.planning.preflight_hook import PlanningPreflightHook, require_token_budget
+        from tools.utils.planning.preflight_hook import PlanningPreflightHook, require_token_budget
 
         hook1 = PlanningPreflightHook(budget_file=self.temp_dir / "hook1.json")
         hook2 = PlanningPreflightHook(budget_file=self.temp_dir / "hook2.json")
@@ -278,7 +278,7 @@ class TestDecoratorEnforcementIntegration:
 
     def test_decorator_compression_handling(self):
         """Test decorator handles compression correctly"""
-        from agentic_core.planning.preflight_hook import require_token_budget
+        from tools.utils.planning.preflight_hook import require_token_budget
 
         @require_token_budget(self.hook)
         def compressible_function(system_prompt, user_prompt, files, **kwargs):
@@ -304,7 +304,7 @@ class TestDecoratorEnforcementIntegration:
 
     def test_decorator_with_complex_data_structures(self):
         """Test decorator with complex data structures"""
-        from agentic_core.planning.preflight_hook import require_token_budget
+        from tools.utils.planning.preflight_hook import require_token_budget
 
         @require_token_budget(self.hook)
         def complex_function(system_prompt, user_prompt, files, **kwargs):
@@ -350,7 +350,7 @@ class TestDecoratorEnforcementIntegration:
 
     def test_decorator_async_compatibility(self):
         """Test decorator is compatible with async functions (if needed)"""
-        from agentic_core.planning.preflight_hook import require_token_budget
+        from tools.utils.planning.preflight_hook import require_token_budget
         # Note: This test shows the decorator doesn't interfere with async functions
         # but actual async support would require async-specific implementation
 
@@ -374,7 +374,7 @@ class TestDecoratorEnforcementIntegration:
 
     def test_decorator_performance_impact(self):
         """Test decorator performance impact"""
-        from agentic_core.planning.preflight_hook import require_token_budget
+        from tools.utils.planning.preflight_hook import require_token_budget
 
         @require_token_budget(self.hook)
         def performance_function(system_prompt, user_prompt, files, **kwargs):
@@ -411,7 +411,7 @@ class TestDecoratorEnforcementIntegration:
 
     def test_integration_with_real_workflow_pattern(self):
         """Test decorator integration with realistic workflow pattern"""
-        from agentic_core.planning.preflight_hook import require_token_budget
+        from tools.utils.planning.preflight_hook import require_token_budget
 
         class PlanningWorkflow:
             def __init__(self, hook):
@@ -470,7 +470,7 @@ class TestDecoratorEnforcementIntegration:
 
     def test_decorator_error_recovery(self):
         """Test decorator error recovery scenarios"""
-        from agentic_core.planning.preflight_hook import require_token_budget
+        from tools.utils.planning.preflight_hook import require_token_budget
 
         @require_token_budget(self.hook)
         def sometimes_failing_function(system_prompt, user_prompt, files, **kwargs):
@@ -500,7 +500,7 @@ class TestDecoratorEnforcementIntegration:
 
     def test_decorator_state_isolation(self):
         """Test decorator maintains proper state isolation"""
-        from agentic_core.planning.preflight_hook import require_token_budget
+        from tools.utils.planning.preflight_hook import require_token_budget
 
         @require_token_budget(self.hook)
         def stateful_function(system_prompt, user_prompt, files, **kwargs):

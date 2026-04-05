@@ -141,7 +141,7 @@ def test_all_components():
     print("\n7️⃣ Workflow Integration Test")
     print("-" * 30)
     try:
-        from agentic_core.planning.sequential_thinking_workflow import SequentialThinkingEnhancedWorkflow
+        from tools.utils.planning.sequential_thinking_workflow import SequentialThinkingEnhancedWorkflow
 
         workflow = SequentialThinkingEnhancedWorkflow(seq_thinking_enabled=True)
 
