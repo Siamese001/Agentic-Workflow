@@ -166,9 +166,18 @@ territories:
     purpose: "Evaluation application"
     subfolders:
       config: {depth: 2, purpose: "Configuration"}
-      engines: {depth: 2, purpose: "Execution engines"}
+      engines: {depth: 2, purpose: "Evaluation engines"}
       reasoning: {depth: 2, purpose: "Decision agents"}
-      data: {depth: 2, purpose: "Data files"}
+      services: {depth: 2, purpose: "Evaluation services"}
+      validators: {depth: 2, purpose: "Validation logic"}
+      types: {depth: 2, purpose: "Data models"}
+      integrations: {depth: 2, purpose: "External integrations"}
+      outputs: {depth: 2, purpose: "Output generators"}
+      scripts: {depth: 2, purpose: "Utility scripts"}
+      spine: {depth: 2, purpose: "Spine adapters"}
+      tests: {depth: 2, purpose: "Test suite"}
+      tools: {depth: 2, purpose: "Utility tools"}
+      utils: {depth: 2, purpose: "Helper utilities"}
 
   apps_exec:
     depth: 2
@@ -177,6 +186,16 @@ territories:
       config: {depth: 2, purpose: "Configuration"}
       engines: {depth: 2, purpose: "Execution engines"}
       reasoning: {depth: 2, purpose: "Decision agents"}
+      services: {depth: 2, purpose: "Execution services"}
+      validators: {depth: 2, purpose: "Validation logic"}
+      types: {depth: 2, purpose: "Data models"}
+      integrations: {depth: 2, purpose: "External integrations"}
+      outputs: {depth: 2, purpose: "Output generators"}
+      scripts: {depth: 2, purpose: "Utility scripts"}
+      spine: {depth: 2, purpose: "Spine adapters"}
+      tests: {depth: 2, purpose: "Test suite"}
+      tools: {depth: 2, purpose: "Utility tools"}
+      utils: {depth: 2, purpose: "Helper utilities"}
 
   apps_qwen:
     depth: 2
@@ -186,6 +205,7 @@ territories:
       engines: {depth: 2, purpose: "vLLM client implementations"}
       reasoning: {depth: 2, purpose: "Gateway and orchestration"}
       tools: {depth: 2, purpose: "GPU monitoring utilities"}
+      tests: {depth: 2, purpose: "Test suite"}
 
   apps_underwriting_ai:
     depth: 2
@@ -194,8 +214,13 @@ territories:
       config: {depth: 2, purpose: "Configuration"}
       engines: {depth: 2, purpose: "Execution engines"}
       reasoning: {depth: 2, purpose: "Decision agents"}
-      types: {depth: 2, purpose: "Data models and parsers"}
+      types: {depth: 2, purpose: "Data models"}
       validators: {depth: 2, purpose: "Validation logic"}
+      ingestion: {depth: 2, purpose: "Document ingestion"}
+      parsers: {depth: 2, purpose: "Financial parsers"}
+      integrations: {depth: 2, purpose: "External integrations"}
+      outputs: {depth: 2, purpose: "Output generators"}
+      tests: {depth: 2, purpose: "Test suite"}
 
   apps_lic:
     depth: 2
@@ -204,40 +229,87 @@ territories:
       config: {depth: 2, purpose: "Configuration"}
       engines: {depth: 2, purpose: "Execution engines"}
       reasoning: {depth: 2, purpose: "Decision agents"}
+      services: {depth: 2, purpose: "License services"}
+      validators: {depth: 2, purpose: "Validation logic"}
+      types: {depth: 2, purpose: "Data models"}
+      integrations: {depth: 2, purpose: "External integrations"}
+      outputs: {depth: 2, purpose: "Output generators"}
+      scripts: {depth: 2, purpose: "Utility scripts"}
+      tests: {depth: 2, purpose: "Test suite"}
+      tools: {depth: 2, purpose: "Utility tools"}
+      utils: {depth: 2, purpose: "Helper utilities"}
 
   apps_research:
     depth: 2
     purpose: "Research application"
     subfolders:
       config: {depth: 2, purpose: "Configuration"}
-      engines: {depth: 2, purpose: "Execution engines"}
+      engines: {depth: 2, purpose: "Research engines"}
       reasoning: {depth: 2, purpose: "Decision agents"}
+      services: {depth: 2, purpose: "Research services"}
+      validators: {depth: 2, purpose: "Validation logic"}
+      types: {depth: 2, purpose: "Data models"}
+      integrations: {depth: 2, purpose: "External integrations"}
+      outputs: {depth: 2, purpose: "Output generators"}
+      scripts: {depth: 2, purpose: "Utility scripts"}
+      spine: {depth: 2, purpose: "Spine adapters"}
+      tests: {depth: 2, purpose: "Test suite"}
+      tools: {depth: 2, purpose: "Utility tools"}
+      utils: {depth: 2, purpose: "Helper utilities"}
 
   apps_rfp:
     depth: 2
     purpose: "RFP application"
     subfolders:
       config: {depth: 2, purpose: "Configuration"}
-      engines: {depth: 2, purpose: "Execution engines"}
+      engines: {depth: 2, purpose: "Proposal engines"}
       reasoning: {depth: 2, purpose: "Decision agents"}
-      data: {depth: 2, purpose: "Sample RFPs"}
+      services: {depth: 2, purpose: "Proposal services"}
+      validators: {depth: 2, purpose: "Validation logic"}
+      types: {depth: 2, purpose: "Data models"}
+      integrations: {depth: 2, purpose: "External integrations"}
+      outputs: {depth: 2, purpose: "Output generators"}
+      scripts: {depth: 2, purpose: "Utility scripts"}
+      spine: {depth: 2, purpose: "Spine adapters"}
+      tests: {depth: 2, purpose: "Test suite"}
+      tools: {depth: 2, purpose: "Utility tools"}
+      utils: {depth: 2, purpose: "Helper utilities"}
 
   apps_rg:
     depth: 2
     purpose: "Resume generation application"
     subfolders:
       config: {depth: 2, purpose: "Configuration"}
-      engines: {depth: 2, purpose: "Execution engines"}
+      enforcement: {depth: 2, purpose: "Guardrails"}
+      engines: {depth: 2, purpose: "Generation engines"}
       reasoning: {depth: 2, purpose: "Decision agents"}
+      services: {depth: 2, purpose: "Generation services"}
+      validators: {depth: 2, purpose: "Validation logic"}
+      types: {depth: 2, purpose: "Data models"}
+      integrations: {depth: 2, purpose: "External integrations"}
+      outputs: {depth: 2, purpose: "Output generators"}
+      scripts: {depth: 2, purpose: "Utility scripts"}
+      tests: {depth: 2, purpose: "Test suite"}
+      tools: {depth: 2, purpose: "Utility tools"}
+      utils: {depth: 2, purpose: "Helper utilities"}
 
   apps_shared:
     depth: 2
-    purpose: "Shared application utilities"
+    purpose: "Shared application components"
     subfolders:
       config: {depth: 2, purpose: "Configuration"}
-      data: {depth: 2, purpose: "Shared data"}
-      enforcement: {depth: 2, purpose: "Shared enforcement"}
       data_adapters: {depth: 2, purpose: "Data adapters"}
+      enforcement: {depth: 2, purpose: "Guardrails"}
+      mixins: {depth: 2, purpose: "Shared mixins"}
+      prompts: {depth: 2, purpose: "Prompt templates"}
+      reasoning: {depth: 2, purpose: "Shared reasoning"}
+      services: {depth: 2, purpose: "Shared services"}
+      spine: {depth: 2, purpose: "Spine adapters"}
+      tests: {depth: 2, purpose: "Test suite"}
+      types: {depth: 2, purpose: "Shared types"}
+      utils: {depth: 2, purpose: "Shared utilities"}
+      validators: {depth: 2, purpose: "Shared validators"}
+      scripts: {depth: 2, purpose: "Utility scripts"}
 
   tests:
     depth: 2
