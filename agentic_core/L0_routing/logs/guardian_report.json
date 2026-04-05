@@ -1,13 +1,13 @@
 {
   "status": "BLOCKING",
-  "timestamp": "2026-04-05T19:33:07.808264+00:00",
+  "timestamp": "2026-04-05T19:38:52.291585+00:00",
   "test_suite": "guardian",
   "violations": [],
   "summary": {},
   "metadata": {
-    "total_tests": 45,
+    "total_tests": 46,
     "passed_tests": 0,
-    "failed_tests": 38,
+    "failed_tests": 39,
     "skipped_tests": 7,
     "exit_status": 1,
     "failed_by_category": {
@@ -40,6 +40,7 @@
         "tests/unit/agentic_core/adg/integration/test_case_memory_architecture.py",
         "tests/unit/agentic_core/adg/runtime/test_redis_degradation.py",
         "tests/unit/agentic_core/adg/tools/test_health_tool.py",
+        "tests/unit/agentic_core/config/test_token_budget_loader.py",
         "tests/unit/agentic_core/evaluation/golden/test_eval_spine_integration.py",
         "tests/unit/agentic_core/evaluation/golden/test_golden_evaluator.py",
         "tests/unit/agentic_core/evaluation/golden/test_l6_emitter.py",

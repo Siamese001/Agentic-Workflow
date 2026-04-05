@@ -18,7 +18,19 @@ def __getattr__(name: str):
     if name == "schema":
         from agentic_core.adg.contracts import schema_util
         return schema_util
-    if name in ("ADG_NS", "EdgeKind", "EntityType", "RelationType", "canonical_name"):
-        from agentic_core.adg.contracts.schema_util import ADG_NS, EdgeKind, EntityType, RelationType, canonical_name
-        return locals()[name]
+    if name == "ADG_NS":
+        from agentic_core.adg.contracts.schema_util import ADG_NS
+        return ADG_NS
+    if name == "EdgeKind":
+        from agentic_core.adg.contracts.schema_util import EdgeKind
+        return EdgeKind
+    if name == "EntityType":
+        from agentic_core.adg.contracts.schema_util import EntityType
+        return EntityType
+    if name == "RelationType":
+        from agentic_core.adg.contracts.schema_util import RelationType
+        return RelationType
+    if name == "canonical_name":
+        from agentic_core.adg.contracts.schema_util import canonical_name
+        return canonical_name
     raise AttributeError(f"module {__name__!r} has no attribute {name!r}")
