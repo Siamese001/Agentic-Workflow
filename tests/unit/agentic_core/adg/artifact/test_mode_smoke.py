@@ -122,6 +122,9 @@ def _run_probe(enable_zip: bool, enable_reports: bool, enable_analysis: bool, tm
     env["ADG_SKIP_REDIS"] = "1"
     env["ADG_SKIP_GIT"] = "1"
     env["ADG_SKIP_SELF_TEST"] = "1"
+    # Ensure repo root is on PYTHONPATH so 'tools' and 'agentic_core' are importable
+    existing = env.get("PYTHONPATH", "")
+    env["PYTHONPATH"] = str(REPO_ROOT) + (os.pathsep + existing if existing else "")
     proc = subprocess.run(
         [sys.executable, str(script_path)],
         capture_output=True, text=True,
@@ -152,6 +155,8 @@ def _run_banner_probe(enable_zip: bool, enable_reports: bool, enable_analysis: b
     env["ADG_SKIP_REDIS"] = "1"
     env["ADG_SKIP_GIT"] = "1"
     env["ADG_SKIP_SELF_TEST"] = "1"
+    existing = env.get("PYTHONPATH", "")
+    env["PYTHONPATH"] = str(REPO_ROOT) + (os.pathsep + existing if existing else "")
     proc = subprocess.run(
         [sys.executable, str(script_path)],
         capture_output=True, text=True,
