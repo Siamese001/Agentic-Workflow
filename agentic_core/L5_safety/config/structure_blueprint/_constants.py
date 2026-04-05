@@ -1177,8 +1177,9 @@ def build_sovereign_territories() -> dict[str, TerritoryDefinition]:
             "system_learning": {
                 "purpose": "All system_learning tests — higher-level functional tests plus unit mirror under unit/.",
                 "subfolders": {
+                    "integration": {"purpose": "Integration tests for system_learning signal flow and bridge components"},
                     "unit": {
-                        "purpose": "Unit mirror tests for system_learning/ source root",
+                        "purpose": "Unit tests for system_learning/ source root",
                         "subfolders": {
                             "adapters": [],
                             "arbitration": [],
@@ -1210,6 +1211,7 @@ def build_sovereign_territories() -> dict[str, TerritoryDefinition]:
                             "validators": [],
                         },
                     },
+                    "waves": {"purpose": "W1–WN wave execution and determinism proofs for system_learning"},
                 },
             },
             "unit_min_deps": {
