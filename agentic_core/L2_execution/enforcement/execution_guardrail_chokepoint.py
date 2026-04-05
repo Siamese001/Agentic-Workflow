@@ -78,7 +78,7 @@ from agentic_core.L5_safety.audit.safety_audit_emitter import (
     SafetyAuditMissingError,
     emit_guardrail_audit,
 )
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+from agentic_core.runtime.lifecycle_trace_contract import (
     LayerSegment,
     _emit_agent_executes_agent,
     _emit_authorize_and_execute,
@@ -144,10 +144,10 @@ _emit_captures_evaluation_metric("p4", "execution_guardrail_chokepoint", "eval_m
 _emit_stores_embedding("p4", "execution_guardrail_chokepoint", "embedding_store")
 _emit_updates_meta_learning_state("p4", "execution_guardrail_chokepoint", "meta_learning")
 _emit_links_execution_to_snapshot("p4", "execution_guardrail_chokepoint", "exec_snapshot_link")
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_records_execution_trace as _lc_records,
 )
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_signs_execution_trace as _lc_signs,
 )
 
@@ -167,7 +167,7 @@ _emit_escalates_to_human("p1", "execution_guardrail_chokepoint", "L2")
 _emit_reads_policy_state("p1", "execution_guardrail_chokepoint", "L2")
 
 _emit_snapshots_state("p0", "execution_guardrail_chokepoint", "state_snapshot")
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,

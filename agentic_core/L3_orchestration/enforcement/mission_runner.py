@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from agentic_core.L2_execution.tools import write_gateway as _wg
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_authorize_and_execute,
     _emit_blocks_direct_write,
@@ -68,7 +68,7 @@ from agentic_core.L3_orchestration.contracts.coordination_ledger import (
     update_coordination_ledger,
 )
 from agentic_core.L3_orchestration.contracts.orchestration_handoff_contract import emit_agent_executes_agent
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+from agentic_core.runtime.lifecycle_trace_contract import (
     LayerSegment,
     _emit_records_execution_trace,
     _emit_transcripts_response,
@@ -107,7 +107,7 @@ try:
 except ImportError:
     GITPYTHON_AVAILABLE = False
     Repo = None
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,
     _emit_captures_pattern,

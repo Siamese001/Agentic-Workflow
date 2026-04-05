@@ -47,7 +47,7 @@ from agentic_core.L3_orchestration.visualization.visualization_updater import (
     record_owner_transition,
     record_workflow_completion,
 )
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+from agentic_core.runtime.lifecycle_trace_contract import (
     LayerSegment,
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
@@ -98,7 +98,7 @@ _emit_dispatches_execution_plan("p1", "agent_handoff", "L3")
 _emit_validates_agent_capability("p1", "agent_handoff", "L3")
 _emit_checks_agent_registry("p1", "agent_handoff", "L3")
 
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
     _emit_emits_metric_event,

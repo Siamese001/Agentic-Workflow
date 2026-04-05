@@ -6,7 +6,7 @@ import importlib
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 from agentic_core.L0_routing.utils.ssot_discovery_util import get_python_files
 from agentic_core.L2_execution.tools import write_gateway as _wg
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_authorize_and_execute,
     _emit_blocks_direct_write,
@@ -123,7 +123,7 @@ except ImportError as e:
 
 from agentic_core.L0_routing.config import AGENTIC_CORE_DIR
 from agentic_core.L0_routing.config.path_constants import AGENTIC_CORE_DIR, TESTS_DIR
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,
     _emit_captures_pattern,

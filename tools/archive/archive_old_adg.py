@@ -75,7 +75,7 @@ _emit_reads_through("l4", "archive_old_adg", "urg_read_24")
 
 logger = logging.getLogger(__name__)
 
-ROOT = Path(__file__).resolve().parents[1]
+ROOT = Path(__file__).resolve().parents[2]
 ADG_DIR = ROOT / "artifacts" / "adg"
 ARCHIVE_DIR = ADG_DIR / "_archive"
 
@@ -99,6 +99,8 @@ def _extract_timestamp(filename: str) -> str | None:
 
     Supports formats:
         New: adg_indexed_03122026.sqlite    -> 03122026  (MMDDYYYY)
+        New+time: adg_indexed_04052026_1133.sqlite -> 04052026 (MMDDYYYY + time)
+        New+probe: adg_indexed_04052026_1133_probe.sqlite -> 04052026_probe (with suffix)
         Old: adg_indexed_20260312T093508Z.sqlite -> 20260312T093508Z  (legacy)
         Repair: adg_repair_03312026_0951.json -> 03312026  (MMDDYYYY + time suffix)
     """
@@ -114,16 +116,24 @@ def _extract_timestamp(filename: str) -> str | None:
             return ts
         return None
 
-    # Last part before extension should be timestamp
+    # Find the 8-digit MMDDYYYY timestamp in parts
+    # New format: adg_indexed_04052026_1133.sqlite or adg_indexed_04052026_1133_probe.sqlite
+    for i, part in enumerate(parts):
+        # Check if this part is 8 digits (MMDDYYYY)
+        if len(part) == 8 and part.isdigit():
+            # Found timestamp part
+            # Build full timestamp including any suffix after it
+            remaining_parts = parts[i:]
+            # Remove extension from last part
+            remaining_parts[-1] = remaining_parts[-1].split(".")[0]
+            return "_".join(remaining_parts)
+
+    # Legacy format: YYYYMMDDTHHMMSSz (16 chars) at end
     ts_with_ext = parts[-1]
     ts = ts_with_ext.split(".")[0]
-
-    # New format: MMDDYYYY (8 digits)
-    if len(ts) == 8 and ts.isdigit():
-        return ts
-    # Legacy format: YYYYMMDDTHHMMSSz (16 chars)
     if len(ts) == 16 and ts[8] == "T" and ts.endswith("Z"):
         return ts
+
     return None
 
 
@@ -131,11 +141,20 @@ def _parse_timestamp(ts: str) -> datetime:
     """Parse timestamp string to datetime.
 
     Args:
-        ts: Timestamp string — "03122026" (MMDDYYYY), "20260310" (YYYYMMDD legacy), or "20260311T160257Z" (ISO legacy)
+        ts: Timestamp string — "03122026" (MMDDYYYY), "04042026_1942" (MMDDYYYY + time), 
+            "20260310" (YYYYMMDD legacy), or "20260311T160257Z" (ISO legacy)
 
     Returns:
         datetime object
     """
+    # Handle new format with time suffix: "04042026_1942"
+    if "_" in ts:
+        ts_parts = ts.split("_")
+        date_part = ts_parts[0]
+        if len(date_part) == 8 and date_part.isdigit():
+            # MMDDYYYY format
+            return datetime.strptime(date_part, "%m%d%Y")
+
     if len(ts) == 8 and ts.isdigit():
         # Distinguish MMDDYYYY (new) from YYYYMMDD (legacy)
         # If first 4 chars are a plausible year (2020-2099), it's YYYYMMDD

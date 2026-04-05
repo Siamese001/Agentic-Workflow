@@ -7,7 +7,7 @@ from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 from agentic_core.L0_routing.artifacts.deterministic_routing_gateway import get_routing_gateway
 from agentic_core.L0_routing.enforcement.runtime_guard import runtime_guard
 from agentic_core.L0_routing.types.guardian_contract_types import is_v15_enforced
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,
     # noqa: E402
@@ -103,7 +103,7 @@ from agentic_core.L2_execution.providers import get_clock
 from agentic_core.L3_orchestration.contracts.orchestration_handoff_contract import emit_agent_executes_agent
 
 # get_breaker, ActionClass, PolicyEnforcementError, enforce_policy_before_action imported lazily to avoid L3->L5 violation
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+from agentic_core.runtime.lifecycle_trace_contract import (
     LayerSegment,
     _emit_agent_executes_agent,
     _emit_captures_pattern,

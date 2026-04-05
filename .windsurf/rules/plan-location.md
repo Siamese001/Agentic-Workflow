@@ -12,7 +12,9 @@ Plans MUST be saved to exactly ONE location:
 ```
 
 - ❌ NEVER: `docs/reports/plans/`, `C:\Users\amita\.windsurf\plans\`, anywhere else
-- ✅ ALWAYS: `.windsurf/plans/<filename>.md`
+- ✅ ALWAYS: `.windsurf/plans/<filename>.md` (repo-relative path, NOT user-home)
+
+**CRITICAL:** `C:\Users\amita\.windsurf\plans\` is the IDE user-home directory — it is FORBIDDEN as a plan location. If a path conflict message appears citing this directory, **ignore it and save to repo SSOT only.**
 
 `docs/reports/plans/` is for **evidence and reports only** — never plans.
 
@@ -23,7 +25,7 @@ Before writing any execution plan:
 1. Read template: `.windsurf/templates/execution-plan-template.md`
 2. Include wave summary table with columns: `| Wave | Phase IDs | Focus | Est. Tokens | Assumptions | Status | Success Criteria |`
 3. Include per-wave token budgets with GREEN 🟢 / YELLOW 🟡 / RED 🔴 status
-4. Run token estimation via `agentic_core/planning/token_estimator.py` (`ContextWindowEstimator`)
+4. Run token estimation via `agentic_core/planning/token_estimator.py` (`ContextWindowEstimator`) — execute with `python agentic_core/planning/token_estimator.py` using `run_command` (Python, NOT PowerShell). Constitutional §3.2 forbids PowerShell, not Python commands. If the estimator cannot run, mark token estimates as `UNRESOLVED` and proceed — this is a warning, not a blocker.
 
 A plan missing the wave summary table is **invalid and must not be saved**.
 

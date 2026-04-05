@@ -86,7 +86,7 @@ from agentic_core.L0_routing.config.path_constants import (
     get_apps_directories,
 )
 from agentic_core.L5_safety.config.structure_blueprint.ssot import SOVEREIGN_EXCLUDED_FOLDERS
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+from agentic_core.runtime.lifecycle_trace_contract import (
     LayerSegment,
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
@@ -137,7 +137,7 @@ if _bootstrap_mode:
     _emit_records_tool_invocation("p2", "static_scanner", "tool_invocation")
     _emit_captures_execution_output("p2", "static_scanner", "exec_output")
 
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_appends_hash_chain,
     _emit_applies_hmac_seal,
     _emit_captures_evaluation_metric,

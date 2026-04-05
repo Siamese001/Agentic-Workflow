@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import Any, MutableSequence
 
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+from agentic_core.runtime.lifecycle_trace_contract import (
     LayerSegment,
     _emit_agent_executes_agent,
     _emit_applies_guardrail,
@@ -196,7 +196,7 @@ def freeze_transcript(transcript: list[Any]) -> FrozenTranscript:
     This is a critical sovereign gate that must be called before computing the
     determinism digest. It prevents late-arriving or asynchronous operations
     from silently altering the transcript after it has been used as input for
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_pulls_context,
     _emit_execution_terminates_at_uwg,
     _emit_writes_through,
