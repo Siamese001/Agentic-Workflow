@@ -24,7 +24,7 @@ from agentic_core.L0_routing.enforcement.routing_contract import (
     RoutingContext,
     create_and_commit_routing_contract,
 )
-from agentic_core.L0_routing.telemetry.routing_telemetry import (
+from agentic_core.L0_routing.observability.routing_telemetry import (
     RoutingOutcomeStatus,
     RoutingTelemetryContext,
     record_routing_telemetry,
