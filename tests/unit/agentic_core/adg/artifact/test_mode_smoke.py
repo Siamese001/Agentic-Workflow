@@ -26,24 +26,30 @@ REPO_ROOT = Path(__file__).resolve().parents[6]
 TIMEOUT_S = 300
 
 _PROBE = textwrap.dedent("""
-import sys, os
-sys.path.insert(0, r'{repo_root}')
+import sys, os, importlib.util
+_root = {repo_root}
+sys.path.insert(0, _root)
 os.environ['ADG_SKIP_REDIS'] = '1'
 os.environ['ADG_SKIP_GIT'] = '1'
 os.environ['ADG_SKIP_SELF_TEST'] = '1'
 os.environ['PYTHONHASHSEED'] = '0'
 
-import tempfile, json
+import tempfile, json, shutil
 from pathlib import Path
-from tools.generate_full_adg import generate_full_adg
 
-ROOT = Path(r'{repo_root}')
+_spec = importlib.util.spec_from_file_location(
+    'generate_full_adg',
+    os.path.join(_root, 'tools', 'generate_full_adg.py'),
+)
+_mod = importlib.util.module_from_spec(_spec)
+_spec.loader.exec_module(_mod)
+generate_full_adg = _mod.generate_full_adg
+
+ROOT = Path(_root)
 
 with tempfile.TemporaryDirectory() as td:
     out_dir = Path(td)
     (out_dir / 'cache').mkdir()
-
-    import shutil
     real_cache = ROOT / 'artifacts' / 'adg' / 'cache' / 'scan_result_cache.json'
     if real_cache.exists():
         shutil.copy(real_cache, out_dir / 'cache' / 'scan_result_cache.json')
@@ -59,7 +65,6 @@ with tempfile.TemporaryDirectory() as td:
     artifacts = list(out_dir.glob('**/*'))
     zip_files = [f.name for f in artifacts if f.suffix == '.zip']
     report_files = [f.name for f in artifacts if '_report' in f.name and f.suffix == '.json']
-    core_files = [f.name for f in artifacts if f.suffix in ('.json', '.sqlite') and '_report' not in f.name and f.suffix != '.zip']
     snapshot_files = [f.name for f in artifacts if f.name.startswith('adg_snapshot_')]
     sqlite_files = [f.name for f in artifacts if f.suffix == '.sqlite']
 
@@ -79,8 +84,9 @@ with tempfile.TemporaryDirectory() as td:
 """).strip()
 
 _BANNER_PROBE = textwrap.dedent("""
-import sys, os
-sys.path.insert(0, r'{repo_root}')
+import sys, os, importlib.util
+_root = {repo_root}
+sys.path.insert(0, _root)
 os.environ['ADG_SKIP_REDIS'] = '1'
 os.environ['ADG_SKIP_GIT'] = '1'
 os.environ['ADG_SKIP_SELF_TEST'] = '1'
@@ -88,9 +94,16 @@ os.environ['PYTHONHASHSEED'] = '0'
 
 import tempfile, shutil
 from pathlib import Path
-from tools.generate_full_adg import generate_full_adg
 
-ROOT = Path(r'{repo_root}')
+_spec = importlib.util.spec_from_file_location(
+    'generate_full_adg',
+    os.path.join(_root, 'tools', 'generate_full_adg.py'),
+)
+_mod = importlib.util.module_from_spec(_spec)
+_spec.loader.exec_module(_mod)
+generate_full_adg = _mod.generate_full_adg
+
+ROOT = Path(_root)
 
 with tempfile.TemporaryDirectory() as td:
     out_dir = Path(td)
@@ -110,7 +123,7 @@ with tempfile.TemporaryDirectory() as td:
 
 def _run_probe(enable_zip: bool, enable_reports: bool, enable_analysis: bool, tmp_path: Path) -> dict[str, str]:
     script = _PROBE.format(
-        repo_root=str(REPO_ROOT).replace("\\", "\\\\"),
+        repo_root=repr(str(REPO_ROOT)),
         enable_zip=str(enable_zip),
         enable_reports=str(enable_reports),
         enable_analysis=str(enable_analysis),
@@ -143,7 +156,7 @@ def _run_probe(enable_zip: bool, enable_reports: bool, enable_analysis: bool, tm
 
 def _run_banner_probe(enable_zip: bool, enable_reports: bool, enable_analysis: bool, tmp_path: Path) -> str:
     script = _BANNER_PROBE.format(
-        repo_root=str(REPO_ROOT).replace("\\", "\\\\"),
+        repo_root=repr(str(REPO_ROOT)),
         enable_zip=str(enable_zip),
         enable_reports=str(enable_reports),
         enable_analysis=str(enable_analysis),
