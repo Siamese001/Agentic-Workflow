@@ -11,13 +11,13 @@ from typing import Any
 
 # guardian: allow-silent-degradation -- Qwen vLLM is optional for shared utilities; graceful fallback to no-op
 try:
-    from agentic_core.L2_execution.apps_qwen import (
+    from apps_qwen import (
         AppsQwenGateway,
         AppsQwenInferenceWorker,
         AppsQwenRequest,
         apps_qwen_telemetry,
     )
-    from agentic_core.L2_execution.apps_qwen.apps_qwen_config import (
+    from apps_qwen.apps_qwen_config import (
         AppsQwenModelConfig,
         AppsQwenPromptConfig,
     )

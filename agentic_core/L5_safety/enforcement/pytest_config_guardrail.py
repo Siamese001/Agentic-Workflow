@@ -1,5 +1,5 @@
 from agentic_core.L0_routing.config.path_constants import TESTS_DIR
-from agentic_core.L2_execution.tools import write_gateway as _wg
+from agentic_core.L2_execution.utils import write_gateway as _wg
 from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_authorize_and_execute,

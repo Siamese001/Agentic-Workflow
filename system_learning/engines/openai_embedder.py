@@ -262,7 +262,7 @@ class BGEEmbedder:
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "BGEEmbedder.embed_batch")
 
-        from agentic_core.L2_execution.healers.bmg_embedding_similarity import bmg_embed_text
+        from agentic_core.L3_orchestration.healers.bmg_embedding_similarity import bmg_embed_text
 
         results = []
         for text in texts:

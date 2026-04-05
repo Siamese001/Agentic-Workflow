@@ -11,7 +11,7 @@ from pathlib import Path
 from typing import TYPE_CHECKING, Any
 
 # L3 import deferred to avoid layer boundary violation (L0→L3)
-# from agentic_core.L3_orchestration.registry.agent_dispatch_registry import get_agent_dispatch_registry
+# from agentic_core.L3_orchestration.utils.registry.agent_dispatch_registry import get_agent_dispatch_registry
 
 _agent_dispatch_registry_cache: Any = None
 
@@ -20,7 +20,7 @@ def _get_agent_dispatch_registry() -> Any:
     global _agent_dispatch_registry_cache
     if _agent_dispatch_registry_cache is None:
         try:
-            from agentic_core.L3_orchestration.registry.agent_dispatch_registry import (
+            from agentic_core.L3_orchestration.utils.registry.agent_dispatch_registry import (
                 get_agent_dispatch_registry as _get_reg,
             )
             _agent_dispatch_registry_cache = _get_reg()
@@ -336,7 +336,7 @@ def run_pipeline(
         AgentRunResult,
         SubphaseResult,
     )
-    from agentic_core.L3_orchestration.registry.agent_dispatch_registry import (
+    from agentic_core.L3_orchestration.utils.registry.agent_dispatch_registry import (
         get_agent_dispatch_registry,
     )
 
@@ -431,9 +431,9 @@ def print_execution_plan(arbitrate_plan: bool = False, ptc_plan: bool = False) -
         print("=== MULTI-AGENT ARBITRATION ===")
         task = {"task_id": "execute_ssot_plan", "task_kind": "planning"}
         try:
-            from agentic_core.L3_orchestration.arbitration.arbitration_contract import ArbitrationInput
-            from agentic_core.L3_orchestration.arbitration.arbitrator import Arbitrator
-            from agentic_core.L3_orchestration.arbitration.run_advisors import run_all_advisors
+            from agentic_core.L3_orchestration.reasoning.arbitration.arbitration_contract import ArbitrationInput
+            from agentic_core.L3_orchestration.reasoning.arbitration.arbitrator import Arbitrator
+            from agentic_core.L3_orchestration.reasoning.arbitration.run_advisors import run_all_advisors
 
             proposals = run_all_advisors(task)
             input_data = ArbitrationInput(
@@ -454,11 +454,11 @@ def print_execution_plan(arbitrate_plan: bool = False, ptc_plan: bool = False) -
         if "violations" not in dir():
             violations = []
         try:
-            from agentic_core.L3_orchestration.ptc.builtin_tools import register_builtin_tools
-            from agentic_core.L3_orchestration.ptc.ptc_registry import get_global_registry
-            from agentic_core.L3_orchestration.ptc.tool_call_store import record_tool_call
-            from agentic_core.L3_orchestration.ptc.tool_contract import ToolCall, generate_call_id
-            from agentic_core.L3_orchestration.ptc.tool_invoker import ToolInvoker
+            from agentic_core.L3_orchestration.reasoning.ptc.builtin_tools import register_builtin_tools
+            from agentic_core.L3_orchestration.reasoning.ptc.ptc_registry import get_global_registry
+            from agentic_core.L3_orchestration.reasoning.ptc.tool_call_store import record_tool_call
+            from agentic_core.L3_orchestration.reasoning.ptc.tool_contract import ToolCall, generate_call_id
+            from agentic_core.L3_orchestration.reasoning.ptc.tool_invoker import ToolInvoker
 
             register_builtin_tools()
             registry = get_global_registry()
@@ -662,8 +662,8 @@ def _compute_pipeline_digest(targets: "list[str]") -> str:
     import json as _j
 
     try:
-        from agentic_core.L2_execution.determinism.negative_control_harness import get_config_surface as _gcs
-        from agentic_core.L2_execution.determinism.negative_control_harness import hash_config_surface as _hcs
+        from agentic_core.L2_execution.utils.negative_control_harness import get_config_surface as _gcs
+        from agentic_core.L2_execution.utils.negative_control_harness import hash_config_surface as _hcs
         from agentic_core.L6_observability.engines.determinism_digest_emitter import (
             DeterminismDigestEmitter as _DE,
         )

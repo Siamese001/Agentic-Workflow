@@ -218,8 +218,8 @@ def _fire_meta_learning_intake(state_mgr: "object", now_utc: int, repo_root: Pat
         healing_actions = state_mgr.state.get("healing_actions", [])
         aggregator = HealingOutcomeAggregator(window_size=max(len(healing_actions), 1))
         try:
-            from agentic_core.L2_execution.healers.bmg_embedding_similarity import bmg_embed_text
-            from agentic_core.L2_execution.healers.failure_signal_normalizer import normalize_failure_signal
+            from agentic_core.L3_orchestration.healers.bmg_embedding_similarity import bmg_embed_text
+            from agentic_core.L3_orchestration.healers.failure_signal_normalizer import normalize_failure_signal
 
             _bmg_embed = bmg_embed_text
             _normalizer = normalize_failure_signal
@@ -275,7 +275,7 @@ def _fire_meta_learning_intake(state_mgr: "object", now_utc: int, repo_root: Pat
                         _normalizer if _normalizer is not None else lambda a: str(a.get("type", "UNKNOWN"))
                     )
                     _fb_text = _normalizer_fn(action)
-                    from agentic_core.L2_execution.healers.failure_signal_normalizer import (
+                    from agentic_core.L3_orchestration.healers.failure_signal_normalizer import (
                         generate_fallback_vector as _gen_fallback,
                     )
 

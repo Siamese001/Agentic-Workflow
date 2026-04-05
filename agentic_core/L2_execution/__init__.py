@@ -1,14 +1,14 @@
 """
-L2 Execution Layer — Governed runtime execution with observability.
+L2 Execution Layer — Governed runtime execution.
 
-This layer provides execution, tool invocation, and operational observability.
+This layer provides execution, tool invocation, and operational contracts.
 No cognition, routing, or persistence logic belongs in this layer.
-Only execution contracts, tool contracts, and observability are exported.
+Only execution contracts and tool contracts are exported.
 """
 from enum import Enum
 
 # Execution contracts and tool contracts
-from agentic_core.L2_execution.adaptation.adaptation_orchestrator import (
+from agentic_core.L2_execution.reasoning.adaptation_orchestrator import (
     ExecutionContext,
     ExecutionStrategy,
     HistoricalMetrics,
@@ -23,7 +23,7 @@ from agentic_core.L2_execution.adaptation.adaptation_orchestrator import (
 )
 
 # P4/L2 Execution Adaptation exports
-from agentic_core.L2_execution.adaptation.execution_adaptation import (
+from agentic_core.L2_execution.reasoning.execution_adaptation import (
     ExecutionAdaptationError,
     ExecutionAdaptationRecord,
     adaptation_reason_hash,
@@ -39,41 +39,6 @@ from agentic_core.L2_execution.adaptation.execution_adaptation import (
     trace_id,
 )
 
-# P3/L2 Execution Observability exports
-from agentic_core.L2_execution.observability.execution_observability import (
-    BLOCKED_BY_POLICY,
-    CANCELLED,
-    ESCALATED,
-    FAILED,
-    MUTATION_FAILURE,
-    NETWORK_FAILURE,
-    POLICY_BLOCK,
-    RETRIED,
-    # Enum values for ADG scanner detection
-    STARTED,
-    SUCCEEDED,
-    TOOL_ERROR,
-    UNKNOWN_FAILURE,
-    VALIDATION_FAILURE,
-    ExecutionObservabilityError,
-    ExecutionObservabilityRecord,
-    ExecutionStatus,
-    FailureClassification,
-    get_observability_registry,
-    reset_observability_registry,
-)
-from agentic_core.L2_execution.observability.observability_recorder import (
-    ExecutionObservabilityContext,
-    execution_failure_classified,
-    execution_observability_emitted,
-    execution_retry_recorded,
-    policy_block_recorded,
-    query_execution_observability,
-    record_execution_failure,
-    record_execution_observability,
-    record_execution_retry,
-    record_policy_block,
-)
 from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
@@ -139,7 +104,7 @@ from agentic_core.runtime.lifecycle_trace_contract import (
     emit_replay_key,  # noqa: E402
 )
 
-from .contracts.typed_tool_contract import (  # noqa: F401
+from .types.typed_tool_contract import (  # noqa: F401
     ToolContract,
     ToolContractStore,
     ToolSchema,
@@ -156,29 +121,6 @@ __all__ = [
     "ToolSchema",
     "ToolContractStore",
     "invoke_typed_tool",
-    # Observability Records
-    "ExecutionObservabilityRecord",
-    # Enums
-    "ExecutionStatus",
-    "FailureClassification",
-    # Exception Classes
-    "ExecutionObservabilityError",
-    # Registry Access
-    "get_observability_registry",
-    "reset_observability_registry",
-    # Context Classes
-    "ExecutionObservabilityContext",
-    # Emission Functions
-    "record_execution_observability",
-    "record_execution_retry",
-    "record_execution_failure",
-    "record_policy_block",
-    "query_execution_observability",
-    # ADG Edge Emitters
-    "execution_observability_emitted",
-    "execution_retry_recorded",
-    "execution_failure_classified",
-    "policy_block_recorded",
     # Execution Adaptation Records
     "ExecutionAdaptationRecord",
     # Execution Adaptation Exception Classes
@@ -210,20 +152,6 @@ __all__ = [
     "latency_profile_hash",
     "chosen_strategy_hash",
     "adaptation_reason_hash",
-    # Enum values for ADG scanner detection
-    "STARTED",
-    "SUCCEEDED",
-    "FAILED",
-    "RETRIED",
-    "CANCELLED",
-    "BLOCKED_BY_POLICY",
-    "ESCALATED",
-    "POLICY_BLOCK",
-    "TOOL_ERROR",
-    "NETWORK_FAILURE",
-    "MUTATION_FAILURE",
-    "VALIDATION_FAILURE",
-    "UNKNOWN_FAILURE",
 ]
 
 # Sovereignty assertion: This layer contains NO cognition or routing logic

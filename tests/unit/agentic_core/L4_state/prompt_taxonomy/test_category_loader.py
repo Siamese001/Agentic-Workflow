@@ -2,7 +2,7 @@
 Tests for prompt category taxonomy.
 """
 
-from agentic_core.L2_execution.prompt_assembly import AuthorityLevel
+from agentic_core.L2_execution.reasoning import AuthorityLevel
 from agentic_core.L4_state.prompt_taxonomy import (
     CategoryRegistryEntry,
     CategoryTemplate,

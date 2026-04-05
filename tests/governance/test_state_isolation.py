@@ -19,13 +19,13 @@ class TestImportIsolation:
             # Create an instance to test state retention
             from pathlib import Path
 
-            from agentic_core.L2_execution.tools.write_gateway import WriteAmplificationError
+            from agentic_core.L2_execution.utils.write_gateway import WriteAmplificationError
             error1 = WriteAmplificationError(Path("test1"), 100, 1000, 10.0)
             return id(error1), type(error1)
 
         # Second test - same import should create fresh state
         def test_import_2():
-            from agentic_core.L2_execution.tools.write_gateway import WriteAmplificationError
+            from agentic_core.L2_execution.utils.write_gateway import WriteAmplificationError
             error2 = WriteAmplificationError(Path("test2"), 200, 2000, 10.0)
             return id(error2), type(error2)
 
@@ -55,7 +55,7 @@ class TestImportIsolation:
 
         try:
             # First import
-            from agentic_core.L2_execution.tools.write_gateway import MAX_GROWTH_RATIO
+            from agentic_core.L2_execution.utils.write_gateway import MAX_GROWTH_RATIO
             first_value = MAX_GROWTH_RATIO
 
             # Clear module and re-import
@@ -64,7 +64,7 @@ class TestImportIsolation:
                     del sys.modules[module_name]
 
             # Second import
-            from agentic_core.L2_execution.tools.write_gateway import MAX_GROWTH_RATIO
+            from agentic_core.L2_execution.utils.write_gateway import MAX_GROWTH_RATIO
             second_value = MAX_GROWTH_RATIO
 
             # Values should be the same (constants don't change)
@@ -175,7 +175,7 @@ class TestSingletonIsolation:
             # Create an object
             from pathlib import Path
 
-            from agentic_core.L2_execution.tools.write_gateway import WriteAmplificationError
+            from agentic_core.L2_execution.utils.write_gateway import WriteAmplificationError
             obj = WriteAmplificationError(Path("test"), 100, 1000, 10.0)
 
             # Create weak reference
@@ -218,7 +218,7 @@ class TestSingletonIsolation:
 
         # Perform some operations that might populate caches
         try:
-            from agentic_core.L2_execution.tools.write_gateway import WriteAmplificationError
+            from agentic_core.L2_execution.utils.write_gateway import WriteAmplificationError
             from agentic_core.L_CONTRACTS.lifecycle_trace_contract import _emit_agent_executes_agent
             # Create some instances
             error = WriteAmplificationError(Path("test"), 100, 1000, 10.0)
@@ -245,7 +245,7 @@ class TestTestOrderIndependence:
         def run_test_multiple_times():
             """Run a simple test multiple times and collect results."""
             try:
-                from agentic_core.L2_execution.tools.write_gateway import MAX_GROWTH_RATIO
+                from agentic_core.L2_execution.utils.write_gateway import MAX_GROWTH_RATIO
                 return MAX_GROWTH_RATIO
             except ImportError:
                 return "import_failed"

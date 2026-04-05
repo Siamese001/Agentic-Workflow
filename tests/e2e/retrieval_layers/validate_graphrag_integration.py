@@ -25,7 +25,7 @@ def validate_imports() -> dict[str, bool]:
 
     # Pipeline B imports
     try:
-        from agentic_core.L3_orchestration.engines.graph_aware_indexer import (
+        from agentic_core.L3_orchestration.reasoning.engines.graph_aware_indexer import (
             ADGEdgeBinding,
             ADGEdgeExtractor,
             GraphAwareIndexer,
@@ -37,7 +37,7 @@ def validate_imports() -> dict[str, bool]:
 
     # Pipeline C imports
     try:
-        from agentic_core.L3_orchestration.engines.l4e_retrieval_integration import (
+        from agentic_core.L3_orchestration.reasoning.engines.l4e_retrieval_integration import (
             ADGEdgeHydrator,
             GraphRetrievalContext,
             GraphRetrievalEngine,
@@ -62,7 +62,7 @@ def validate_imports() -> dict[str, bool]:
 
     # ADG Integration imports
     try:
-        from agentic_core.L3_orchestration.engines.adg_integration import (
+        from agentic_core.L3_orchestration.reasoning.engines.adg_integration import (
             ADGQueryClient,
             GraphRAGADGIntegration,
         )
@@ -129,7 +129,7 @@ def validate_pipeline_b_functionality() -> dict[str, bool]:
     results = {}
 
     try:
-        from agentic_core.L3_orchestration.engines.graph_aware_indexer import (
+        from agentic_core.L3_orchestration.reasoning.engines.graph_aware_indexer import (
             ADGEdgeBinding,
             GraphAwareIndexer,
         )
@@ -257,7 +257,7 @@ def validate_adg_integration() -> dict[str, bool]:
     results = {}
 
     try:
-        from agentic_core.L3_orchestration.engines.adg_integration import (
+        from agentic_core.L3_orchestration.reasoning.engines.adg_integration import (
             ADGQueryClient,
             GraphRAGADGIntegration,
         )

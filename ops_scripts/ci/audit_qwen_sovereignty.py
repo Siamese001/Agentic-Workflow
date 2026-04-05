@@ -84,7 +84,7 @@ def validate_embedding_governance_lock() -> None:
 def validate_threshold_immutability() -> None:
     """Ensure healing thresholds cannot be modified."""
     try:
-        import agentic_core.L2_execution.healers.healing_tier_router as router
+        import agentic_core.L3_orchestration.healers.healing_tier_router as router
 
         # These values must never change
         assert hasattr(router, "HEALING_CONFIDENCE_X"), "HEALING_CONFIDENCE_X not found"

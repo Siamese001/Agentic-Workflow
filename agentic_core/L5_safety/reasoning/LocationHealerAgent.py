@@ -40,7 +40,7 @@ from agentic_core.L0_routing.config import (
     ARCHIVES_DIR,
     get_validated_project_root,
 )
-from agentic_core.L3_orchestration.registry.agent_dispatch_registry import get_agent_dispatch_registry
+from agentic_core.L3_orchestration.utils.registry.agent_dispatch_registry import get_agent_dispatch_registry
 from agentic_core.L5_safety.config.structure_blueprint import (
     APP_SPECIFIC_TARGET_SUBFOLDER,
     AST_DOMAIN_HIT_THRESHOLD,
@@ -248,7 +248,7 @@ def _get_write_gateway():
 
     _emit_applies_guardrail(str(_uuid.uuid4()), "_get_write_gateway", "p0_governance")
     _emit_validated_by_safety_plane(str(uuid.uuid4()), "Module._get_write_gateway", "L5_POLICY")
-    from agentic_core.L2_execution.tools import write_gateway
+    from agentic_core.L2_execution.utils import write_gateway
 
     return write_gateway
 

@@ -132,7 +132,7 @@ def _get_routing_gateway(policy_hash: str = ""):
 
 
 def _get_proof_emitter():
-    from agentic_core.L2_execution.determinism.execution_proof_emitter import (
+    from agentic_core.L2_execution.utils.execution_proof_emitter import (
         ExecutionProofEmitter,  # noqa: PLC0415
     )
 

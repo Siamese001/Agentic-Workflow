@@ -17,7 +17,7 @@ from dataclasses import dataclass, field
 from enum import Enum
 from typing import Any
 
-from agentic_core.L2_execution.prompt_assembly import AuthorityLevel, AuthoritySlot
+from agentic_core.L2_execution.reasoning import AuthorityLevel, AuthoritySlot
 
 
 class PromptCategory(Enum):

@@ -8,10 +8,10 @@ from agentic_core.L0_routing.config.path_constants import (  # noqa: F401
     MAX_RETRIES,
     THRESHOLD,
 )
-from agentic_core.L2_execution.healers.healing_tier_config import (
+from agentic_core.L3_orchestration.healers.healing_tier_config import (
     HEALING_CONFIDENCE_X as _HEALING_CONFIDENCE_X,
 )
-from agentic_core.L2_execution.tools import write_gateway as _wg
+from agentic_core.L2_execution.utils import write_gateway as _wg
 from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,

@@ -1,7 +1,7 @@
 # guardian: allow-silent-degradation - Code detection requires exception handling
 from pathlib import Path
 
-from agentic_core.L2_execution.tools import write_gateway as _wg
+from agentic_core.L2_execution.utils import write_gateway as _wg
 from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_authorize_and_execute,

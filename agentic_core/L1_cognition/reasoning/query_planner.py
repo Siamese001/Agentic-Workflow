@@ -95,7 +95,7 @@ from typing import Any
 
 Logger: Any = logging.getLogger(__name__)
 try:
-    from agentic_core.L3_orchestration.engines.sub_atomic_engine_impl import (
+    from agentic_core.L3_orchestration.reasoning.engines.sub_atomic_engine_impl import (
         SubAtomicEngineImpl as SubAtomicEngine,
     )
 except ImportError:  # guardian: allow-silent-swallow

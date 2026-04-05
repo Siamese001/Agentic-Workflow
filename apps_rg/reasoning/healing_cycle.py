@@ -191,7 +191,7 @@ class HealingCycle:
         """
         _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, f"HealingCycle.execute:cycle_{self.cycle_num}")
         try:
-            from agentic_core.L2_execution.healers.healing_event_emitter import get_healing_emitter
+            from agentic_core.L3_orchestration.healers.healing_event_emitter import get_healing_emitter
 
             emitter = get_healing_emitter()
         except (ValueError, TypeError, RuntimeError) as e:

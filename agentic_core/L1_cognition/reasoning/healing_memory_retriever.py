@@ -321,7 +321,7 @@ class HealingMemoryRetriever:
         if effective_top_k is None:
             effective_top_k = 5
         try:
-            from agentic_core.L2_execution.healers.bmg_embedding_similarity import bmg_embed_text
+            from agentic_core.L3_orchestration.healers.bmg_embedding_similarity import bmg_embed_text
 
             query_vec = bmg_embed_text(signal_text)
         # guardian: allow-silent-swallow

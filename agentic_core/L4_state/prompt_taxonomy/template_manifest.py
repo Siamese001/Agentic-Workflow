@@ -10,7 +10,7 @@ from dataclasses import dataclass, field
 from datetime import datetime
 from typing import Any
 
-from agentic_core.L2_execution.prompt_assembly import TemplateManifest as BaseTemplateManifest
+from agentic_core.L2_execution.reasoning import TemplateManifest as BaseTemplateManifest
 
 
 @dataclass

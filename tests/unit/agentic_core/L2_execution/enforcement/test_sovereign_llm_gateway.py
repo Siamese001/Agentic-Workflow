@@ -21,7 +21,7 @@ from agentic_core.L2_execution.enforcement.SovereignLLMGateway import (
     create_gateway,
     create_openai_gateway,
 )
-from agentic_core.L2_execution.prompt_assembly import (
+from agentic_core.L2_execution.reasoning import (
     AuthorityLevel,
     AuthoritySlot,
     SlotAssemblyEngine,

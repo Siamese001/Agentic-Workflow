@@ -459,7 +459,7 @@ def benchmark_h_cpu_optimizer() -> BenchmarkResult:
     )
 
     try:
-        from agentic_core.L2_execution.optimization.cpu_optimizer import AMDCPUOptimizer, CPUConfig
+        from agentic_core.L2_execution.utils.cpu_optimizer import AMDCPUOptimizer, CPUConfig
     except ImportError as e:
         result.status = "SKIP"
         result.debug_note = f"Import error: {e}"

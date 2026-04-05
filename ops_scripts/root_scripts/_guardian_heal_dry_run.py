@@ -93,7 +93,7 @@ PROJECT_ROOT = Path(__file__).resolve().parents[2]
 # guardian: allow-global-mutation
 sys.path.insert(0, str(PROJECT_ROOT))
 
-from agentic_core.L3_orchestration.scripts.guardian_heal_orchestrator import (
+from ops_scripts.dev_tools.L3_orchestration_scripts.guardian_heal_orchestrator import (
     run_pipeline,
 )
 from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (

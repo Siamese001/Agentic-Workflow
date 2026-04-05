@@ -201,7 +201,7 @@ def _split_sentences(text: str) -> list[str]:
 def _get_embedder():
     """Return a callable embed(text: str) -> list[float] using BGE-m3 or stub."""
     try:
-        from agentic_core.L2_execution.healers.bmg_embedding_similarity import bmg_embed_text
+        from agentic_core.L3_orchestration.healers.bmg_embedding_similarity import bmg_embed_text
 
         return bmg_embed_text
     # guardian: allow-silent-swallow

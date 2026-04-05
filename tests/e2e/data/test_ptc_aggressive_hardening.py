@@ -17,7 +17,7 @@ import pytest
 # Check if PTC modules are available
 try:
     from agentic_core.L2_execution.enforcement.key_source import TestKeySource, inject_key_source
-    from agentic_core.L2_execution.tools.ptc_contract import (
+    from agentic_core.L2_execution.utils.ptc_contract import (
         PTC_STDOUT_BYTE_CAP,
         PTCBytesCapExceeded,
         PTCContractEnforcer,
@@ -25,18 +25,18 @@ try:
         redact_output,
     )
     from agentic_core.L2_execution.types.sandbox_envelope_types import SandboxEnvelope, ToolBudget
-    from agentic_core.L3_orchestration.ptc.ptc_hitl_integration import PTCHITLIntegration, PTCScriptRiskLevel
-    from agentic_core.L3_orchestration.ptc.ptc_registry import ToolRegistry
-    from agentic_core.L3_orchestration.ptc.ptc_safety_gates import PTCSafetyGateManager
-    from agentic_core.L3_orchestration.ptc.tool_contract import (
+    from agentic_core.L3_orchestration.reasoning.ptc.ptc_hitl_integration import PTCHITLIntegration, PTCScriptRiskLevel
+    from agentic_core.L3_orchestration.reasoning.ptc.ptc_registry import ToolRegistry
+    from agentic_core.L3_orchestration.reasoning.ptc.ptc_safety_gates import PTCSafetyGateManager
+    from agentic_core.L3_orchestration.reasoning.ptc.tool_contract import (
         ToolArg,
         ToolSpec,
         canonical_json,
     )
-    from agentic_core.L3_orchestration.ptc.tool_contract import (
+    from agentic_core.L3_orchestration.reasoning.ptc.tool_contract import (
         ToolCall as PTCToolCall,
     )
-    from agentic_core.L3_orchestration.ptc.tool_invoker import ToolInvoker
+    from agentic_core.L3_orchestration.reasoning.ptc.tool_invoker import ToolInvoker
     from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
         LayerSegment,
         _emit_records_execution_trace,
@@ -635,7 +635,7 @@ class TestPTCDeterminismStress:
 
     def test_call_id_determinism_with_stress(self) -> None:
         """Test call ID generation remains deterministic under stress."""
-        from agentic_core.L3_orchestration.ptc.tool_contract import generate_call_id
+        from agentic_core.L3_orchestration.reasoning.ptc.tool_contract import generate_call_id
 
         tool_id = "stress_test_tool"
         args = {"key": "value", "nested": {"a": 1, "b": 2}}

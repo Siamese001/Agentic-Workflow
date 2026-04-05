@@ -12,7 +12,7 @@ from agentic_core.L0_routing.config.path_constants import (
     ARCHIVES_DIR,
     TESTS_DIR,
 )
-from agentic_core.L2_execution.tools import write_gateway as _wg
+from agentic_core.L2_execution.utils import write_gateway as _wg
 from agentic_core.L5_safety.config.structure_blueprint.ssot import (
     SOVEREIGN_EXCLUDED_FOLDERS,
 )

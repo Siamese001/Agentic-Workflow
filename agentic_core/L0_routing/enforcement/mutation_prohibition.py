@@ -315,7 +315,7 @@ def assert_no_persistent_write(
     # Record prohibition hit for loop detection (RCA Phase 5)
     if path is not None:
         try:
-            from agentic_core.L2_execution.tools.write_gateway import (
+            from agentic_core.L2_execution.utils.write_gateway import (
                 record_prohibition_hit,
             )
 

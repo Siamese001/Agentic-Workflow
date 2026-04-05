@@ -5,7 +5,7 @@ from dataclasses import dataclass
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 from agentic_core.L0_routing.enforcement.runtime_guard import runtime_guard
 from agentic_core.L0_routing.types.guardian_contract_types import is_v15_enforced
-from agentic_core.L2_execution.tools import write_gateway as _wg
+from agentic_core.L2_execution.utils import write_gateway as _wg
 from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_authorize_and_execute,
@@ -103,7 +103,7 @@ from pathlib import Path
 from typing import Any
 
 from agentic_core.L0_routing.config.path_constants import DEFAULT_TIMEOUT
-from agentic_core.L2_execution.determinism.execution_proof_emitter import ExecutionProofEmitter
+from agentic_core.L2_execution.utils.execution_proof_emitter import ExecutionProofEmitter
 from agentic_core.L2_execution.enforcement.guardrail_gate import get_guardrail_gate
 from agentic_core.L5_safety.config.structure_blueprint import SCRIPTS_DIR
 from agentic_core.L5_safety.gates.tool_safety_gate import ToolSafetyGate

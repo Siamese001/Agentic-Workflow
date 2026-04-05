@@ -16,7 +16,7 @@ import pytest
 
 # Check if PTC modules are available
 try:
-    from agentic_core.L2_execution.tools.ptc_contract import (
+    from agentic_core.L2_execution.utils.ptc_contract import (
         PTC_STDOUT_BYTE_CAP,
         PTCBytesCapExceeded,
         PTCContractEnforcer,
@@ -30,8 +30,8 @@ try:
         ToolResult,
     )
     from agentic_core.L2_execution.types.sandbox_envelope_types import SandboxEnvelope
-    from agentic_core.L3_orchestration.ptc.builtin_tools import expr_eval_handler, repo_rg_handler
-    from agentic_core.L3_orchestration.ptc.ptc_hitl_integration import (
+    from agentic_core.L3_orchestration.reasoning.ptc.builtin_tools import expr_eval_handler, repo_rg_handler
+    from agentic_core.L3_orchestration.reasoning.ptc.ptc_hitl_integration import (
         PTCHITLIntegration,
         PTCHumanDecision,
         PTCHumanReviewRecord,
@@ -45,7 +45,7 @@ try:
         request_ptc_human_review,
         reset_ptc_hitl_integration,
     )
-    from agentic_core.L3_orchestration.ptc.ptc_orchestrator import (
+    from agentic_core.L3_orchestration.reasoning.ptc.ptc_orchestrator import (
         PTCExecutionResult,
         PTCOrchestrator,
         PTCSandboxContext,
@@ -59,12 +59,12 @@ try:
         reset_ptc_orchestrator,
         reset_ptc_sandbox,
     )
-    from agentic_core.L3_orchestration.ptc.ptc_registry import (
+    from agentic_core.L3_orchestration.reasoning.ptc.ptc_registry import (
         ToolRegistry,
         get_global_registry,
         register_tool,
     )
-    from agentic_core.L3_orchestration.ptc.ptc_safety_gates import (
+    from agentic_core.L3_orchestration.reasoning.ptc.ptc_safety_gates import (
         PTCConfidenceGate,
         PTCExecutionGate,
         PTCRoutingGate,
@@ -79,12 +79,12 @@ try:
         get_ptc_safety_gate_manager,
         reset_ptc_safety_gate_manager,
     )
-    from agentic_core.L3_orchestration.ptc.tool_call_store import (
+    from agentic_core.L3_orchestration.reasoning.ptc.tool_call_store import (
         ToolCallStore,
         get_tool_call_store,
         record_tool_call,
     )
-    from agentic_core.L3_orchestration.ptc.tool_contract import (
+    from agentic_core.L3_orchestration.reasoning.ptc.tool_contract import (
         ToolArg,
         ToolCallResult,
         ToolSpec,
@@ -92,10 +92,10 @@ try:
         generate_call_id,
         hash_result_data,
     )
-    from agentic_core.L3_orchestration.ptc.tool_contract import (
+    from agentic_core.L3_orchestration.reasoning.ptc.tool_contract import (
         ToolCall as PTCToolCall,
     )
-    from agentic_core.L3_orchestration.ptc.tool_invoker import ToolInvoker
+    from agentic_core.L3_orchestration.reasoning.ptc.tool_invoker import ToolInvoker
     from agentic_core.L3_orchestration.types.human_decision_artifact_types import (
         HumanAction,
         create_approval_artifact,

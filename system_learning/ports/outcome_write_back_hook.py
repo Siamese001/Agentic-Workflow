@@ -88,8 +88,8 @@ _emit_updates_meta_learning_state("p4", "outcome_write_back_hook", "meta_learnin
 _emit_links_execution_to_snapshot("p4", "outcome_write_back_hook", "exec_snapshot_link")
 
 if TYPE_CHECKING:
-    from agentic_core.L2_execution.healers.healing_tier_dispatcher import InvocationRecord
-    from agentic_core.L2_execution.healers.healing_tier_types import HealingDecision, HealingInput
+    from agentic_core.L3_orchestration.healers.healing_tier_dispatcher import InvocationRecord
+    from agentic_core.L3_orchestration.healers.healing_tier_types import HealingDecision, HealingInput
 from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     LayerSegment,
     _emit_agent_executes_agent,
@@ -249,11 +249,11 @@ class DefaultOutcomeWriteBackHook:
                     "trace_id": healing_input.trace_id,
                 },
             )
-        from agentic_core.L2_execution.healers.healing_tier_types import HealingTier
+        from agentic_core.L3_orchestration.healers.healing_tier_types import HealingTier
 
         if decision.tier == HealingTier.QWEN_VLLM:
             try:
-                from agentic_core.L2_execution.healers.qwen_meta_learning import update_qwen_confidence_prior
+                from agentic_core.L3_orchestration.healers.qwen_meta_learning import update_qwen_confidence_prior
 
                 update_qwen_confidence_prior(healing_input.error_signature, success)
             # guardian: allow-silent-swallow

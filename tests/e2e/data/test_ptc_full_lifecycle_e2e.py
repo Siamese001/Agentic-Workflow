@@ -42,12 +42,12 @@ import pytest
 
 # Check if PTC modules are available
 try:
-    from agentic_core.L3_orchestration.ptc.builtin_tools import (
+    from agentic_core.L3_orchestration.reasoning.ptc.builtin_tools import (
         expr_eval_handler,
         register_builtin_tools,
         repo_rg_handler,
     )
-    from agentic_core.L3_orchestration.ptc.tool_call_store import (
+    from agentic_core.L3_orchestration.reasoning.ptc.tool_call_store import (
         ToolCallStore,
         get_tool_call_store,
         record_tool_call,
@@ -91,7 +91,7 @@ except ImportError:
 # Lazy import fixtures to avoid collection-time errors
 @pytest.fixture
 def ptc_contract():
-    from agentic_core.L2_execution.tools.ptc_contract import (
+    from agentic_core.L2_execution.utils.ptc_contract import (
         PTC_STDOUT_BYTE_CAP,
         PTCBytesCapExceeded,
         PTCContractEnforcer,
@@ -125,12 +125,12 @@ def ptc_types():
 
 @pytest.fixture
 def ptc_orchestration():
-    from agentic_core.L3_orchestration.ptc.ptc_registry import (
+    from agentic_core.L3_orchestration.reasoning.ptc.ptc_registry import (
         ToolRegistry,
         get_global_registry,
         register_tool,
     )
-    from agentic_core.L3_orchestration.ptc.tool_contract import (
+    from agentic_core.L3_orchestration.reasoning.ptc.tool_contract import (
         ToolArg,
         ToolCallResult,
         ToolSpec,
@@ -138,10 +138,10 @@ def ptc_orchestration():
         generate_call_id,
         hash_result_data,
     )
-    from agentic_core.L3_orchestration.ptc.tool_contract import (
+    from agentic_core.L3_orchestration.reasoning.ptc.tool_contract import (
         ToolCall as PTCToolCall,
     )
-    from agentic_core.L3_orchestration.ptc.tool_invoker import ToolInvoker
+    from agentic_core.L3_orchestration.reasoning.ptc.tool_invoker import ToolInvoker
     return type('PTCOrchestration', (), {
         'ToolArg': ToolArg,
         'PTCToolCall': PTCToolCall,
@@ -227,14 +227,14 @@ def ptc_enforcer():
     from agentic_core.L2_execution.enforcement.key_source import TestKeySource, inject_key_source
     inject_key_source(TestKeySource())
     # Use the same secret as TestKeySource for the enforcer
-    from agentic_core.L2_execution.tools.ptc_contract import PTCContractEnforcer
+    from agentic_core.L2_execution.utils.ptc_contract import PTCContractEnforcer
     return PTCContractEnforcer(secret=TestKeySource.TEST_SECRET)
 
 
 @pytest.fixture
 def ptc_registry():
     """Provide fresh PTC tool registry."""
-    from agentic_core.L3_orchestration.ptc.ptc_registry import ToolRegistry
+    from agentic_core.L3_orchestration.reasoning.ptc.ptc_registry import ToolRegistry
     registry = ToolRegistry()
     # Clear any existing tools
     registry._specs.clear()
@@ -245,7 +245,7 @@ def ptc_registry():
 @pytest.fixture
 def ptc_invoker():
     """Provide PTC tool invoker."""
-    from agentic_core.L3_orchestration.ptc.tool_invoker import ToolInvoker
+    from agentic_core.L3_orchestration.reasoning.ptc.tool_invoker import ToolInvoker
     return ToolInvoker(
         max_stdout_bytes=1024 * 1024,  # 1MB
         max_stderr_bytes=1024 * 1024,
@@ -255,7 +255,7 @@ def ptc_invoker():
 @pytest.fixture
 def ptc_store(temp_ptc_dir: Path):
     """Provide PTC tool call store."""
-    from agentic_core.L3_orchestration.ptc.tool_call_store import ToolCallStore
+    from agentic_core.L3_orchestration.reasoning.ptc.tool_call_store import ToolCallStore
     return ToolCallStore(root_dir=temp_ptc_dir / "store")
 
 

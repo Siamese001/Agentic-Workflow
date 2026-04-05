@@ -14,7 +14,7 @@ from typing import Any
 
 import redis
 
-from agentic_core.L2_execution.optimization import (
+from agentic_core.L2_execution.utils import (
     BatchProcessor,
 )
 

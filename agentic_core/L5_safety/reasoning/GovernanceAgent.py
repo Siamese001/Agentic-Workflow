@@ -5,7 +5,7 @@ import importlib
 
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 from ops_scripts.dev_tools.L0_routing.ssot_discovery_util import get_python_files
-from agentic_core.L2_execution.tools import write_gateway as _wg
+from agentic_core.L2_execution.utils import write_gateway as _wg
 from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_authorize_and_execute,
@@ -96,7 +96,7 @@ from datetime import datetime
 from pathlib import Path
 from typing import Any
 
-from agentic_core.L2_execution.determinism.execution_proof_emitter import ExecutionProofEmitter
+from agentic_core.L2_execution.utils.execution_proof_emitter import ExecutionProofEmitter
 from agentic_core.L2_execution.enforcement.guardrail_gate import get_guardrail_gate
 from agentic_core.L4_state.utils.complexity_analyzer import calculate_mccabe_complexity
 from agentic_core.L5_safety.enforcement.archival_gatekeeper_gate import ArchivalGatekeeper

@@ -17,7 +17,7 @@ from contextlib import contextmanager
 from pathlib import Path
 from typing import Any, Generator
 
-from agentic_core.L2_execution.tools import write_gateway as _wg
+from agentic_core.L2_execution.utils import write_gateway as _wg
 from agentic_core.runtime.lifecycle_trace_contract import (
     LayerSegment,
     _emit_agent_executes_agent,

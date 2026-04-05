@@ -13,12 +13,12 @@ import time
 from dataclasses import dataclass, field
 from typing import Any
 
-from agentic_core.L2_execution.apps_qwen.hardened_vllm_client import (
+from apps_qwen.hardened_vllm_client import (
     CircuitBreakerConfig,
     HardenedVLLMClient,
     RetryConfig,
 )
-from agentic_core.L2_execution.apps_qwen.optimized_vllm_client import (
+from apps_qwen.optimized_vllm_client import (
     OptimizedVLLMClient,
     VLLMRequest,
 )

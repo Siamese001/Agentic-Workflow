@@ -661,8 +661,8 @@ class SovereignBaseAgent(
                 "skipped": 1,
             }
 
-        from agentic_core.L2_execution.healers.healing_tier_router import route_by_confidence
-        from agentic_core.L2_execution.healers.healing_tier_types import HealingTier
+        from agentic_core.L3_orchestration.healers.healing_tier_router import route_by_confidence
+        from agentic_core.L3_orchestration.healers.healing_tier_types import HealingTier
 
         start_time = time.time()
 

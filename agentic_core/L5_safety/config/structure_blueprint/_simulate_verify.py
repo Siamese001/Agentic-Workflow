@@ -18,7 +18,7 @@ import tempfile
 from pathlib import Path
 
 from agentic_core.L0_routing.config.path_constants import DEFAULT_TIMEOUT, TESTS_DIR
-from agentic_core.L2_execution.tools import write_gateway as _wg
+from agentic_core.L2_execution.utils import write_gateway as _wg
 from agentic_core.runtime.lifecycle_trace_contract import (
     LayerSegment,
     _emit_agent_executes_agent,

@@ -164,7 +164,7 @@ def _get_uwg():
 
 
 def _get_heal_result_adapter():
-    from agentic_core.L2_execution.audit.heal_result_adapter import adapt_heal_result
+    from agentic_core.L5_safety.audit.heal_result_adapter import adapt_heal_result
 
     return adapt_heal_result
 

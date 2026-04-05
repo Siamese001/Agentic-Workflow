@@ -876,7 +876,7 @@ class UnifiedAgent(SovereignBaseAgent):
             f"UnifiedAgent.execute:{self._category.value}",
         )
         if self._category == AgentCategory.ORCHESTRATOR:
-            from agentic_core.L3_orchestration.contracts.orchestration_handoff_contract import (  # noqa: PLC0415
+            from agentic_core.L3_orchestration.types.orchestration_handoff_contract import (  # noqa: PLC0415
                 emit_agent_executes_agent,
             )
 

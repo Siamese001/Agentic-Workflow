@@ -72,8 +72,6 @@ def _get_performance_emitter():
 from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,
-    # noqa: E402,
-    # noqa: E402
     _emit_authorize_and_execute,
     _emit_blocks_direct_write,
     _emit_captures_evaluation_metric,
@@ -85,11 +83,9 @@ from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_dispatches_agent,
     _emit_dispatches_execution_plan,
     _emit_dispatches_healing_run,
-    # noqa: E402
     _emit_emits_metric_event,
     _emit_escalates_failure,
     _emit_escalates_to_human,
-    # noqa: E402
     _emit_execution_terminates_at_uwg,
     _emit_feeds_meta_learning,
     _emit_gated_by_confidence,
@@ -105,7 +101,6 @@ from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_pulls_context,
     _emit_reads_environ,
     _emit_reads_policy_state,
-    # noqa: E402
     _emit_reads_runtime_state,
     _emit_records_execution_trace,
     _emit_records_healing_outcome,
@@ -115,14 +110,11 @@ from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_records_tool_invocation,
     _emit_records_workflow_lineage,
     _emit_routes_through,
-    # noqa: E402
     _emit_routes_to_agent,
     _emit_routes_to_capability,
     _emit_signs_execution_trace,
     _emit_snapshots_state,
-    # noqa: E402
     _emit_stores_embedding,
-    _emit_stores_learning_state,
     _emit_transcripts_response,
     _emit_triggers_alert,
     _emit_updates_meta_learning_state,
@@ -138,11 +130,8 @@ from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_writes_through,
     _emit_writes_via_uwg,
     emit_determinism_digest,
-    # noqa: E402
     emit_replay_key,
 )
-
-from agentic_core.runtime.lifecycle_trace_contract import emit_determinism_digest
 
 emit_determinism_digest("trace_reasoning_chokepoint", "reasoning_chokepoint_dispatch_entry")
 emit_determinism_digest("trace_reasoning_chokepoint", "reasoning_chokepoint_dispatch_exit")

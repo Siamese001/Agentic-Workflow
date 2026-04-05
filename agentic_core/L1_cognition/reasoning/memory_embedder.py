@@ -298,7 +298,7 @@ class HealingMemoryEmbedder:
         """
         text = signature.to_text()
         try:
-            from agentic_core.L2_execution.healers.bmg_embedding_similarity import bmg_embed_text
+            from agentic_core.L3_orchestration.healers.bmg_embedding_similarity import bmg_embed_text
 
             embedding = bmg_embed_text(text[: self.max_text_length])
             if embedding:
@@ -331,7 +331,7 @@ class HealingMemoryEmbedder:
             result_summary += f" | strategy: {healing_result.get('strategy')}"
         full_text = (text + result_summary)[: self.max_text_length]
         try:
-            from agentic_core.L2_execution.healers.bmg_embedding_similarity import bmg_embed_text
+            from agentic_core.L3_orchestration.healers.bmg_embedding_similarity import bmg_embed_text
 
             embedding = bmg_embed_text(full_text)
             if embedding:

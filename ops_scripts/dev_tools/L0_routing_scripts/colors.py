@@ -10,7 +10,7 @@ from agentic_core.L0_routing.config.path_constants import MAX_DEPTH
 
 # Lazy import to avoid L0->L3 gravity violation
 def _get_registry():
-    from agentic_core.L3_orchestration.registry.agent_dispatch_registry import get_agent_dispatch_registry
+    from agentic_core.L3_orchestration.utils.registry.agent_dispatch_registry import get_agent_dispatch_registry
     return get_agent_dispatch_registry()
 
 from agentic_core.runtime.lifecycle_trace_contract import (

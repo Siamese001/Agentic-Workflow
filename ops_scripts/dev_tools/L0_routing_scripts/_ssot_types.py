@@ -128,13 +128,13 @@ class ConfidenceScore:
         emit_replay_key(_trace_id, f"rk:{_trace_id[:16]}")
         emit_determinism_digest(_trace_id, f"dd:{_trace_id[:16]}")
 
-        from agentic_core.L2_execution.healers.healing_tier_config import HEALING_CONFIDENCE_X
+        from agentic_core.L3_orchestration.healers.healing_tier_config import HEALING_CONFIDENCE_X
 
         return self.value > HEALING_CONFIDENCE_X
 
     @property
     def is_medium_confidence(self) -> bool:
-        from agentic_core.L2_execution.healers.healing_tier_config import (
+        from agentic_core.L3_orchestration.healers.healing_tier_config import (
             HEALING_CONFIDENCE_X,
             HEALING_CONFIDENCE_Y,
         )
@@ -143,7 +143,7 @@ class ConfidenceScore:
 
     @property
     def is_low_confidence(self) -> bool:
-        from agentic_core.L2_execution.healers.healing_tier_config import HEALING_CONFIDENCE_Y
+        from agentic_core.L3_orchestration.healers.healing_tier_config import HEALING_CONFIDENCE_Y
 
         return self.value < HEALING_CONFIDENCE_Y
 

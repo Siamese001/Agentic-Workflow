@@ -16,7 +16,7 @@ from typing import Any
 
 import libcst as cst
 
-from agentic_core.L2_execution.tools import write_gateway as _wg
+from agentic_core.L2_execution.utils import write_gateway as _wg
 from agentic_core.L5_safety.enforcement.verification_gate import VerificationGate
 from agentic_core.L5_safety.types.cst_transformers_types import (
     create_bare_except_fixer,

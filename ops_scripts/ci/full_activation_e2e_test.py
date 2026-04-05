@@ -56,7 +56,7 @@ try:
     from gptcache import Cache
     from gptcache.adapter.api import init_similar_cache
 
-    from agentic_core.L2_execution.cache.gptcache_client import GPTCacheClient
+    from agentic_core.L4_state.cache.gptcache_client import GPTCacheClient
 
     cache = GPTCacheClient(
         cache_dir="artifacts/gptcache_test",

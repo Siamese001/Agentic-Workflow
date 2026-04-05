@@ -1,7 +1,7 @@
 """
-L4 State — Retrieval Bridge Module
+L2 Execution — Retrieval Bridge Module
 
-Provides L4StateRetrievalBridge for wiring L4 canonical state store
+Provides SemanticEnrichmentBridge for wiring L2 execution components
 to the retrieval pipeline across all apps_* packages.
 """
 
@@ -9,34 +9,35 @@ from __future__ import annotations
 
 from typing import Any
 
-# L4 State components for retrieval
-from agentic_core.L4_state.memory.chunk_manifest_registry import ChunkManifestRegistry
-from agentic_core.L4_state.memory.unified_memory_facade import UnifiedMemoryFacade
+from agentic_core.L2_execution.reasoning.batch_embedding_service import BatchEmbeddingService
+
+# L2 Execution components for retrieval wiring
+from agentic_core.L2_execution.reasoning.execution_gateway import ExecutionGateway
 
 __all__ = [
-    "L4StateRetrievalBridge",
+    "SemanticEnrichmentBridge",
 ]
 
 
-class L4StateRetrievalBridge:
-    """Bridge L4 state store to retrieval pipeline.
+class SemanticEnrichmentBridge:
+    """Bridge L2 execution to retrieval pipeline.
 
     This class is imported by apps_* to establish ADG edges
-    from apps to L4_state retrieval components.
+    from apps to L2_execution retrieval components.
 
-    Minimal implementation: re-exports L4 retrieval functionality.
+    Minimal implementation: re-exports L2 retrieval functionality.
     """
 
-    # Re-export core L4 classes for retrieval wiring
-    ChunkManifestRegistry = ChunkManifestRegistry
-    UnifiedMemoryFacade = UnifiedMemoryFacade
+    # Re-export core L2 classes for retrieval wiring
+    ExecutionGateway = ExecutionGateway
+    BatchEmbeddingService = BatchEmbeddingService
 
     @staticmethod
-    def get_chunk_manifest_registry() -> type[ChunkManifestRegistry]:
-        """Return the ChunkManifestRegistry class."""
-        return ChunkManifestRegistry
+    def get_execution_gateway() -> type[ExecutionGateway]:
+        """Return the ExecutionGateway class."""
+        return ExecutionGateway
 
     @staticmethod
-    def get_memory_facade() -> type[UnifiedMemoryFacade]:
-        """Return the UnifiedMemoryFacade class."""
-        return UnifiedMemoryFacade
+    def get_embedding_service() -> type[BatchEmbeddingService]:
+        """Return the BatchEmbeddingService class."""
+        return BatchEmbeddingService

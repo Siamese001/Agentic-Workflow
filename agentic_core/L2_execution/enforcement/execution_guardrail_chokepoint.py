@@ -45,12 +45,12 @@ import logging
 import uuid
 from typing import Any, Callable
 
-from agentic_core.L2_execution.context.execution_context import (
+from agentic_core.L4_state.context.execution_context import (
     ActionClass,
     ExecutionContext,
     GuardrailOutcome,
 )
-from agentic_core.L2_execution.contracts.typed_tool_contract import (
+from agentic_core.L2_execution.types.typed_tool_contract import (
     ToolContract,
     ToolInputSchemaViolation,
     ToolOutputSchemaViolation,
@@ -63,10 +63,10 @@ from agentic_core.L2_execution.enforcement.execution_proof_contract import (
     DeterminismViolation,
     emit_execution_proof,
 )
-from agentic_core.L2_execution.observability.observability_recorder import (
+from agentic_core.L6_observability.execution.observability_recorder import (
     ExecutionContext as ObservabilityExecutionContext,
 )
-from agentic_core.L2_execution.observability.observability_recorder import (
+from agentic_core.L6_observability.execution.observability_recorder import (
     ExecutionObservabilityContext,
     ExecutionStatus,
     FailureClassification,
@@ -680,7 +680,7 @@ def authorize_and_execute(
     # Register tool on-the-fly if not already present (governed dynamic paths)
     _registry = get_typed_tool_registry()
     if not _registry.is_registered(target_name or bound_ctx.execution_target_hash[:16]):
-        from agentic_core.L2_execution.contracts.typed_tool_contract import ToolRegistryEntry  # noqa: PLC0415
+        from agentic_core.L2_execution.types.typed_tool_contract import ToolRegistryEntry  # noqa: PLC0415
 
         _registry.register(
             ToolRegistryEntry(

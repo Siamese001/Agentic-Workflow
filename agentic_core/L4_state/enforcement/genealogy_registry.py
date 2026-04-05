@@ -50,7 +50,7 @@ import time
 import uuid
 from typing import Any
 
-from agentic_core.L2_execution.determinism.execution_proof_emitter import ExecutionProofEmitter
+from agentic_core.L2_execution.utils.execution_proof_emitter import ExecutionProofEmitter
 from agentic_core.L2_execution.enforcement.write_governor_mixin import WriteGovernorMixin
 from agentic_core.runtime.lifecycle_trace_contract import (
     LayerSegment,

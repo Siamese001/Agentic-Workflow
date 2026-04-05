@@ -38,14 +38,14 @@ try:
         ParentChildIndexRegistry,
         ParentChildLink,
     )
-    from agentic_core.L3_orchestration.engines.adg_integration import ADGQueryClient, GraphRAGADGIntegration
-    from agentic_core.L3_orchestration.engines.graph_aware_indexer import (
+    from agentic_core.L3_orchestration.reasoning.engines.adg_integration import ADGQueryClient, GraphRAGADGIntegration
+    from agentic_core.L3_orchestration.reasoning.engines.graph_aware_indexer import (
         ADGEdgeBinding,
         ADGEdgeExtractor,
         GraphAwareIndexer,
         GraphEnrichmentContext,
     )
-    from agentic_core.L3_orchestration.engines.l4e_retrieval_integration import (
+    from agentic_core.L3_orchestration.reasoning.engines.l4e_retrieval_integration import (
         ADGEdgeHydrator,
         GraphRetrievalContext,
         GraphRetrievalEngine,

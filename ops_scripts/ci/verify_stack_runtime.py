@@ -185,8 +185,8 @@ sys.path.insert(0, str(PROJECT_ROOT))
 def verify_f1_f5_qwen_gpu_mem_util() -> tuple[bool, str]:
     """F1+F5: Verify QWEN_GPU_MEM_UTIL constant exists and is used."""
     try:
-        from agentic_core.L2_execution.healers.healing_tier_config import QWEN_GPU_MEM_UTIL
-        from agentic_core.L2_execution.healers.vllm_process_manager import get_model_config
+        from agentic_core.L3_orchestration.healers.healing_tier_config import QWEN_GPU_MEM_UTIL
+        from agentic_core.L3_orchestration.healers.vllm_process_manager import get_model_config
 
         # 1. Constant exists and has correct value
         if not isinstance(QWEN_GPU_MEM_UTIL, float):

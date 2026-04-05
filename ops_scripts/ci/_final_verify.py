@@ -234,8 +234,8 @@ except Exception as e:
 
 # F5: GPU mem util SSOT
 try:
-    from agentic_core.L2_execution.healers.healing_tier_config import QWEN_GPU_MEM_UTIL
-    from agentic_core.L2_execution.healers.vllm_process_manager import get_model_config
+    from agentic_core.L3_orchestration.healers.healing_tier_config import QWEN_GPU_MEM_UTIL
+    from agentic_core.L3_orchestration.healers.vllm_process_manager import get_model_config
 
     cfg7 = get_model_config("7B")["gpu_memory_utilization"]
     cfg14 = get_model_config("14B")["gpu_memory_utilization"]

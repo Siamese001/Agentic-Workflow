@@ -11,7 +11,7 @@ from unittest.mock import AsyncMock, MagicMock
 
 import pytest
 
-from agentic_core.L2_execution.apps_qwen import (
+from apps_qwen import (
     CircuitBreaker,
     CircuitBreakerConfig,
     CircuitBreakerOpenError,

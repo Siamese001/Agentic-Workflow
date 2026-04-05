@@ -116,7 +116,7 @@ def _store_evidence_to_file(evidence: EvidenceRecord) -> None:
         """JSON serializer for non-standard types."""
         from dataclasses import asdict
 
-        from agentic_core.L3_orchestration.engines.adg_integration import ADGEdge, ADGNode
+        from agentic_core.L3_orchestration.reasoning.engines.adg_integration import ADGEdge, ADGNode
 
         if isinstance(obj, (ADGNode, ADGEdge)):
             return asdict(obj)
@@ -139,7 +139,7 @@ def _store_evidence_to_file(evidence: EvidenceRecord) -> None:
 @pytest.fixture(scope="session")
 def adg_client():
     """Provide ADG query client with real SQLite connection."""
-    from agentic_core.L3_orchestration.engines.adg_integration import ADGQueryClient
+    from agentic_core.L3_orchestration.reasoning.engines.adg_integration import ADGQueryClient
 
     client = ADGQueryClient()
 
@@ -155,7 +155,7 @@ def adg_client():
 @pytest.fixture(scope="session")
 def adg_integration(adg_client):
     """Provide GraphRAG ADG integration with real client."""
-    from agentic_core.L3_orchestration.engines.adg_integration import GraphRAGADGIntegration
+    from agentic_core.L3_orchestration.reasoning.engines.adg_integration import GraphRAGADGIntegration
 
     return GraphRAGADGIntegration(adg_client=adg_client)
 
@@ -418,7 +418,7 @@ class TestRealADE2E:
 
     def test_context_manager(self):
         """Verify context manager properly closes connection."""
-        from agentic_core.L3_orchestration.engines.adg_integration import ADGQueryClient
+        from agentic_core.L3_orchestration.reasoning.engines.adg_integration import ADGQueryClient
 
         with ADGQueryClient() as client:
             # Should work within context

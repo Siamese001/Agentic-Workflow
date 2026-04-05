@@ -14,7 +14,7 @@ print('='*70)
 print('\n[1] GPTCache CLIENT IMPORT TEST')
 try:
     start = time.time()
-    from agentic_core.L2_execution.cache.gptcache_client import GPTCacheClient, get_global_gptcache
+    from agentic_core.L4_state.cache.gptcache_client import GPTCacheClient, get_global_gptcache
     elapsed = time.time() - start
     print(f'    Import: {elapsed*1000:.2f}ms - SUCCESS')
 except Exception as e:

@@ -277,7 +277,7 @@ def emit_execution_proof(
     Raises:
         RuntimeError: if proof cannot be constructed (fail-closed).
     """
-    from agentic_core.L2_execution.determinism.execution_proof_emitter import (  # noqa: PLC0415
+    from agentic_core.L2_execution.utils.execution_proof_emitter import (  # noqa: PLC0415
         ExecutionProof,
     )
 

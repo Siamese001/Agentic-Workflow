@@ -1,6 +1,6 @@
 import warnings
 
-from agentic_core.L3_orchestration.engines.omni_context_engine import *
+from agentic_core.L3_orchestration.reasoning.engines.omni_context_engine import *
 from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402

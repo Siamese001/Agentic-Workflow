@@ -17,7 +17,7 @@ import pytest
 
 # DEAD CODE: c0_guard.py was deleted - context folder removed
 # from agentic_core.L0_routing.context.c0_guard import guard_c0_payload, verify_c0_immutability
-from agentic_core.L2_execution.sandbox.boundary_validator import (
+from agentic_core.L2_execution.enforcement.boundary_validator import (
     compute_boundary_diff,
     verify_mutation_replay_integrity,
 )

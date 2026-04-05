@@ -511,7 +511,7 @@ def test_contextual_router():
     print("TEST 5: Contextual Router")
     print("=" * 60)
 
-    from agentic_core.L3_orchestration.contextual_router import (
+    from agentic_core.L4_state.contextual_router import (
         ContextualRouter,
         RouteDecision,
         RoutingRequest,

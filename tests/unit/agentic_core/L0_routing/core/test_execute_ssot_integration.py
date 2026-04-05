@@ -273,7 +273,7 @@ class TestExecuteSsotRetrievalHooks:
 
     def test_l4e_retrieval_integration_import(self):
         """Verify L4E retrieval integration can be imported."""
-        from agentic_core.L3_orchestration.engines.l4e_retrieval_integration import (
+        from agentic_core.L3_orchestration.reasoning.engines.l4e_retrieval_integration import (
             RetrievalContextComposer,
         )
         assert RetrievalContextComposer is not None

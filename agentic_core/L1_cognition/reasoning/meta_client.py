@@ -532,7 +532,7 @@ class MetaLearningClient:
     def _generate_embedding(self, violation: dict[str, Any]) -> list[float] | None:
         """Generate embedding for a violation using BGE-m3."""
         try:
-            from agentic_core.L2_execution.healers.bmg_embedding_similarity import bmg_embed_text
+            from agentic_core.L3_orchestration.healers.bmg_embedding_similarity import bmg_embed_text
 
             v_type = violation.get("type", "")
             v_msg = violation.get("message", "")

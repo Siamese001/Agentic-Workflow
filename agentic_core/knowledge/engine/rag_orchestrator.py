@@ -94,7 +94,7 @@ except ImportError:
     CSVDocumentLoader = None
     ResearchCache = None
 try:
-    from agentic_core.L2_execution.healers.bmg_embedding_similarity import (
+    from agentic_core.L3_orchestration.healers.bmg_embedding_similarity import (
         bmg_embed_text as _bge_embed,  # noqa: F401
     )
 
@@ -231,7 +231,7 @@ class SovereignRagOrchestrator:
         except:
             self.embedding_cache_stats = lambda: {"size": 0, "maxsize": 0}
         try:
-            from agentic_core.L2_execution.healers.bmg_embedding_similarity import bmg_embed_text
+            from agentic_core.L3_orchestration.healers.bmg_embedding_similarity import bmg_embed_text
 
             class _BGEEmbedder:
                 def embed_texts(self, texts):

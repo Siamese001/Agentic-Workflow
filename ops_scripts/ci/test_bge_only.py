@@ -11,7 +11,7 @@ print('='*60)
 # Test 1: Import
 print('\n[1] Testing imports...')
 try:
-    from agentic_core.L2_execution.cache.gptcache_client import BGEEmbedding, GPTCacheClient
+    from agentic_core.L4_state.cache.gptcache_client import BGEEmbedding, GPTCacheClient
     print('   ✓ Imports successful')
 except Exception as e:
     print(f'   ✗ Import failed: {e}')
@@ -20,7 +20,7 @@ except Exception as e:
 # Test 2: BGE Embedding directly
 print('\n[2] Testing BGE embedding...')
 try:
-    from agentic_core.L2_execution.healers.bmg_embedding_similarity import bmg_embed_text
+    from agentic_core.L3_orchestration.healers.bmg_embedding_similarity import bmg_embed_text
 
     start = time.time()
     embedding = bmg_embed_text("How do I configure Redis?")

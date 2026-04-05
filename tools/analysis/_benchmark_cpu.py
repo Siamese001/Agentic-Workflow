@@ -28,7 +28,7 @@ if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
 # Import workload-aware optimizer
-from agentic_core.L2_execution.optimization.cpu_optimizer import (
+from agentic_core.L2_execution.utils.cpu_optimizer import (
     CPUConfig,
     OperatingProfile,
     WorkloadClass,

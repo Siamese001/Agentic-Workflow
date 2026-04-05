@@ -329,7 +329,7 @@ class TestImportPerformance:
             import tempfile
             # Import some agentic_core modules if available
             try:
-                from agentic_core.L2_execution.tools.write_gateway import WriteAmplificationError
+                from agentic_core.L2_execution.utils.write_gateway import WriteAmplificationError
             except ImportError:
                 pass
         except ImportError:

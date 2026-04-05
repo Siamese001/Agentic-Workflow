@@ -53,7 +53,7 @@ from agentic_core.L0_routing.config.path_constants import DEFAULT_SLEEP
 
 # Lazy import to avoid L1->L2 gravity violation
 def _get_proof_emitter():
-    from agentic_core.L2_execution.determinism.execution_proof_emitter import ExecutionProofEmitter
+    from agentic_core.L2_execution.utils.execution_proof_emitter import ExecutionProofEmitter
     return ExecutionProofEmitter("L1.cognitive_engine")
 
 _proof_emitter = _get_proof_emitter()

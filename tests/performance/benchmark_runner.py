@@ -15,7 +15,7 @@ import time
 from dataclasses import dataclass, field
 from typing import Any
 
-from agentic_core.L2_execution.apps_qwen import (
+from apps_qwen import (
     CircuitBreakerConfig,
     HardenedVLLMClient,
     OptimizedVLLMClient,

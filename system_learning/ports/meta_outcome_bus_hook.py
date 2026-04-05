@@ -87,8 +87,8 @@ _emit_links_execution_to_snapshot("p4", "meta_outcome_bus_hook", "exec_snapshot_
 
 if TYPE_CHECKING:
     from system_learning.meta_learning_bus import MetaLearningBus
-    from agentic_core.L2_execution.healers.healing_tier_dispatcher import InvocationRecord
-    from agentic_core.L2_execution.healers.healing_tier_types import HealingDecision, HealingInput
+    from agentic_core.L3_orchestration.healers.healing_tier_dispatcher import InvocationRecord
+    from agentic_core.L3_orchestration.healers.healing_tier_types import HealingDecision, HealingInput
 from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     LayerSegment,
     _emit_agent_executes_agent,

@@ -50,7 +50,7 @@ from contextlib import contextmanager
 from dataclasses import dataclass, field
 from typing import Any, Generator
 
-from agentic_core.L2_execution.determinism.execution_proof_emitter import ExecutionProofEmitter
+from agentic_core.L2_execution.utils.execution_proof_emitter import ExecutionProofEmitter
 from agentic_core.L2_execution.enforcement.write_governor_mixin import WriteGovernorMixin
 from agentic_core.L2_execution.utils.providers import get_clock
 from agentic_core.L4_state.versioning.commit_versioned_state_transition import (

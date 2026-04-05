@@ -393,7 +393,7 @@ class SemanticCacheManager:
     def _get_embedding(self, text: str) -> list[float] | None:
         """Generate BGE-m3 embedding for semantic matching."""
         try:
-            from agentic_core.L2_execution.healers.bmg_embedding_similarity import bmg_embed_text
+            from agentic_core.L3_orchestration.healers.bmg_embedding_similarity import bmg_embed_text
 
             return bmg_embed_text(text[:2000])
         # guardian: allow-silent-swallow

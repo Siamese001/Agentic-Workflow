@@ -23,7 +23,7 @@ from pathlib import Path
 from types import MappingProxyType
 
 from agentic_core.L0_routing.config.path_constants import AGENTIC_CORE_DIR
-from agentic_core.L2_execution.tools import write_gateway as _wg
+from agentic_core.L2_execution.utils import write_gateway as _wg
 from agentic_core.L5_safety.config.structure_blueprint.ssot import CODE_TERRITORIES as _CODE_TERRITORIES
 from agentic_core.L5_safety.config.structure_blueprint.ssot import SOVEREIGN_EXCLUDED_FOLDERS
 from agentic_core.runtime.lifecycle_trace_contract import (

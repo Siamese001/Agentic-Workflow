@@ -237,7 +237,7 @@ def compute_routing_decision(inputs: RoutingInputs) -> RoutingDecision:
 
 
 def _get_safe_subprocess_run():
-    from agentic_core.L2_execution.tools.safe_subprocess import safe_subprocess_run
+    from agentic_core.L2_execution.utils.safe_subprocess import safe_subprocess_run
 
     return safe_subprocess_run
 
@@ -302,21 +302,21 @@ class SovereignDecisionEngine:
     @staticmethod
     def _get_bmg_cosine_similarity() -> object:
         """Lazy seam: load bmg_cosine_similarity from L2 healers without module-level import."""
-        from agentic_core.L2_execution.healers.bmg_embedding_similarity import bmg_cosine_similarity
+        from agentic_core.L3_orchestration.healers.bmg_embedding_similarity import bmg_cosine_similarity
 
         return bmg_cosine_similarity
 
     @staticmethod
     def _get_bmg_embedding_agent_keys() -> frozenset:
         """Lazy seam: load BMG_EMBEDDING_AGENT_KEYS from L2 healing_tier_config."""
-        from agentic_core.L2_execution.healers.healing_tier_config import BMG_EMBEDDING_AGENT_KEYS
+        from agentic_core.L3_orchestration.healers.healing_tier_config import BMG_EMBEDDING_AGENT_KEYS
 
         return BMG_EMBEDDING_AGENT_KEYS
 
     @staticmethod
     def _get_qwen_14b_routing_config() -> tuple:
         """Lazy seam: load Qwen 14B routing constants from L2 healing_tier_config."""
-        from agentic_core.L2_execution.healers.healing_tier_config import (
+        from agentic_core.L3_orchestration.healers.healing_tier_config import (
             QWEN_14B_AGENT_KEYS,
             QWEN_14B_MODEL_ID,
         )
@@ -406,7 +406,7 @@ class SovereignDecisionEngine:
         vector have incompatible dimensions.
         """
         try:
-            from agentic_core.L2_execution.healers.bmg_embedding_similarity import bmg_embed_text
+            from agentic_core.L3_orchestration.healers.bmg_embedding_similarity import bmg_embed_text
 
             ft_str = failure_type.value if failure_type is not None else "UNKNOWN"
             signal_text = f"{ft_str} {territory}"

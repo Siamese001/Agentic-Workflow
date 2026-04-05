@@ -191,7 +191,7 @@ class EmbeddingProvider:
         _emit_records_execution_trace(_trace_id, LayerSegment.L1_REASONING, "EmbeddingProvider.embed")
 
         try:
-            from agentic_core.L2_execution.healers.bmg_embedding_similarity import bmg_embed_text
+            from agentic_core.L3_orchestration.healers.bmg_embedding_similarity import bmg_embed_text
 
             result = bmg_embed_text(text)
             if result:

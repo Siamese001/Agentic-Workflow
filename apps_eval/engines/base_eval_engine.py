@@ -30,7 +30,7 @@ except ImportError:
 
 
 try:
-    from agentic_core.L2_execution.apps_qwen import (
+    from apps_qwen import (
         AppsQwenGateway,
         AppsQwenRequest,
         apps_qwen_telemetry,

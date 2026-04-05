@@ -100,7 +100,7 @@ from apps_eval.types.eval_types import (
 from apps_eval.validators.eval_gate_validator import EvalGateValidator
 
 try:
-    from agentic_core.L2_execution.apps_qwen import (
+    from apps_qwen import (
         AppsQwenGateway,
         AppsQwenRequest,
         apps_qwen_telemetry,

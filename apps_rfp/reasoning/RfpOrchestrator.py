@@ -22,13 +22,13 @@ from typing import Any
 
 # guardian: allow-silent-degradation -- Qwen vLLM is optional for proposal generation; graceful fallback to manual templates
 try:
-    from agentic_core.L2_execution.apps_qwen import (
+    from apps_qwen import (
         AppsQwenGateway,
         AppsQwenInferenceWorker,
         AppsQwenRequest,
         apps_qwen_telemetry,
     )
-    from agentic_core.L2_execution.apps_qwen.apps_qwen_config import (
+    from apps_qwen.apps_qwen_config import (
         AppsQwenModelConfig,
         AppsQwenPromptConfig,
     )

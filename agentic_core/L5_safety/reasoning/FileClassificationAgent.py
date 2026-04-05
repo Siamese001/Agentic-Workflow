@@ -1,5 +1,5 @@
 # guardian: allow-silent_swallower
-from agentic_core.L2_execution.tools import write_gateway as _wg
+from agentic_core.L2_execution.utils import write_gateway as _wg
 from agentic_core.L5_safety.config.structure_blueprint.ssot import (
     GLOBAL_EXCLUDED_DIRS,
     SOVEREIGN_EXCLUDED_FOLDERS,

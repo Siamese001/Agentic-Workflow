@@ -17,13 +17,13 @@ from apps_lic.utils.LICAgentBase import LICAgentBase
 
 # guardian: allow-silent-degradation -- Qwen vLLM is optional for governance analysis; graceful fallback to rule-based checks
 try:
-    from agentic_core.L2_execution.apps_qwen import (
+    from apps_qwen import (
         AppsQwenGateway,
         AppsQwenInferenceWorker,
         AppsQwenRequest,
         apps_qwen_telemetry,
     )
-    from agentic_core.L2_execution.apps_qwen.apps_qwen_config import (
+    from apps_qwen.apps_qwen_config import (
         AppsQwenModelConfig,
         AppsQwenPromptConfig,
     )

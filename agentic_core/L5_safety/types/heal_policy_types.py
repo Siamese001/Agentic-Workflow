@@ -42,10 +42,10 @@ from agentic_core.L0_routing.config.path_constants import (  # noqa: F401
     MAX_RETRIES,
     THRESHOLD,
 )
-from agentic_core.L2_execution.healers.healing_tier_config import (
+from agentic_core.L3_orchestration.healers.healing_tier_config import (
     SSOT_SCORE_THRESHOLD_DET as SCORE_THRESHOLD_DET,
 )
-from agentic_core.L2_execution.healers.healing_tier_config import (
+from agentic_core.L3_orchestration.healers.healing_tier_config import (
     SSOT_SCORE_THRESHOLD_QWEN as SCORE_THRESHOLD_QWEN,
 )
 from agentic_core.runtime.lifecycle_trace_contract import (

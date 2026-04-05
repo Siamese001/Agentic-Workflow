@@ -212,7 +212,7 @@ def _get_heal_llm_seam_types():
 
 
 def _get_heal_policy_types():
-    from agentic_core.L2_execution.healers.healing_tier_router import route_by_confidence
+    from agentic_core.L3_orchestration.healers.healing_tier_router import route_by_confidence
     from agentic_core.L5_safety.types.heal_policy_types import ReasoningTier
 
     return route_by_confidence, ReasoningTier

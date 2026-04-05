@@ -54,7 +54,7 @@ import redis
 warnings.filterwarnings("ignore", category=DeprecationWarning, message=".*hmset.*")
 
 # CPU Optimization Imports
-from agentic_core.L2_execution.optimization.cpu_optimizer import (
+from agentic_core.L2_execution.utils.cpu_optimizer import (
     CPUConfig,
     get_cpu_optimizer,
     shutdown_cpu_optimizer,

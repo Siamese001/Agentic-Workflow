@@ -19,7 +19,7 @@ def test_bge_embedding_generation():
     """Test BGE-m3 generates consistent embeddings (blue vectors)."""
     print("\n=== Test 1: BGE Embedding Generation ===")
 
-    from agentic_core.L2_execution.healers.bmg_embedding_similarity import bmg_embed_text
+    from agentic_core.L3_orchestration.healers.bmg_embedding_similarity import bmg_embed_text
 
     # Test embedding generation
     text1 = "How do I configure the semantic cache?"
@@ -61,7 +61,7 @@ def test_bge_cosine_similarity():
     """Test BGE cosine similarity computation."""
     print("\n=== Test 2: BGE Cosine Similarity ===")
 
-    from agentic_core.L2_execution.healers.bmg_embedding_similarity import bmg_cosine_similarity
+    from agentic_core.L3_orchestration.healers.bmg_embedding_similarity import bmg_cosine_similarity
 
     # Test similar texts
     similar_texts = [
@@ -161,7 +161,7 @@ def test_in_memory_vector_store_blue_vs_blue():
 
     import asyncio
 
-    from agentic_core.L2_execution.healers.bmg_embedding_similarity import bmg_embed_text
+    from agentic_core.L3_orchestration.healers.bmg_embedding_similarity import bmg_embed_text
     from agentic_core.L4_state.memory.in_memory_vector_store import InMemoryVectorStore
     from agentic_core.L4_state.types.memory_item_types import MemoryItem, MemoryQuery
 

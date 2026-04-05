@@ -81,7 +81,7 @@ from typing import Any
 
 # Lazy import to avoid L_SHARED->L3 gravity violation
 def _get_registry():
-    from agentic_core.L3_orchestration.registry.agent_dispatch_registry import get_agent_dispatch_registry
+    from agentic_core.L3_orchestration.utils.registry.agent_dispatch_registry import get_agent_dispatch_registry
     return get_agent_dispatch_registry()
 
 from agentic_core.runtime.lifecycle_trace_contract import (

@@ -141,18 +141,18 @@ from agentic_core.adg.extraction.static_scanner import (
     _TypeSurfaceCollector,
 )
 from agentic_core.adg.contracts.schema_util import canonical_name
-from agentic_core.L2_execution.optimization.async_file_ops import (
+from agentic_core.L2_execution.utils.async_file_ops import (
     BufferedFileWriter,
 )
-from agentic_core.L2_execution.optimization.batch_processor import BatchProcessor
+from agentic_core.L2_execution.utils.batch_processor import BatchProcessor
 
 # CPU Optimization Imports
-from agentic_core.L2_execution.optimization.cpu_optimizer import (
+from agentic_core.L2_execution.utils.cpu_optimizer import (
     CPUConfig,
     get_cpu_optimizer,
     shutdown_cpu_optimizer,
 )
-from agentic_core.L2_execution.optimization.parallel_file_processor import (
+from agentic_core.L2_execution.utils.parallel_file_processor import (
     shutdown_file_processor,
 )
 from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (

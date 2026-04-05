@@ -215,7 +215,7 @@ def _get_safe_subprocess_check_output():
 
     _trace_id = str(_uuid.uuid4())
     _emit_records_execution_trace(_trace_id, LayerSegment.L0_ROUTING, "_get_safe_subprocess_check_output")
-    from agentic_core.L2_execution.tools.safe_subprocess import safe_subprocess_check_output
+    from agentic_core.L2_execution.utils.safe_subprocess import safe_subprocess_check_output
 
     return safe_subprocess_check_output
 

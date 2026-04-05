@@ -554,7 +554,7 @@ def _install_l2_enforcement_compat_shims() -> None:
 def _install_l2_tools_compat_shims() -> None:
     """Provide lightweight shims for L2_execution.tools imports."""
     try:
-        import agentic_core.L2_execution.tools as tools_pkg
+        import agentic_core.L2_execution.utils as tools_pkg
     except ImportError:
         return
 
@@ -608,7 +608,7 @@ def _install_l2_tools_compat_shims() -> None:
 def _install_l2_engines_compat_shims() -> None:
     """Provide lightweight shims for L2_execution.engines imports."""
     try:
-        import agentic_core.L2_execution.engines as engines_pkg
+        import agentic_core.L2_execution.reasoning as engines_pkg
     except ImportError:
         return
 

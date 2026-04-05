@@ -25,7 +25,7 @@ from agentic_core.interfaces.spine import (
     ReEntryLoop,
 )
 from system_learning.meta_learning_bus import MetaLearningBus
-from agentic_core.L2_execution.providers import get_clock
+from agentic_core.L2_execution.utils import get_clock
 from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402

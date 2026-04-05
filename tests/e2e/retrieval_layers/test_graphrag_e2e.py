@@ -26,7 +26,7 @@ import pytest
 
 @pytest.fixture(scope="session")
 def graphrag_indexer_imports():
-    from agentic_core.L3_orchestration.engines.graph_aware_indexer import (
+    from agentic_core.L3_orchestration.reasoning.engines.graph_aware_indexer import (
         ADGEdgeBinding,
         ADGEdgeExtractor,
         GraphAwareIndexer,
@@ -72,7 +72,7 @@ def l4_registries_imports():
 
 @pytest.fixture(scope="session")
 def retrieval_integration_imports():
-    from agentic_core.L3_orchestration.engines.l4e_retrieval_integration import (
+    from agentic_core.L3_orchestration.reasoning.engines.l4e_retrieval_integration import (
         ADGEdgeHydrator,
         GraphRetrievalContext,
         GraphRetrievalEngine,

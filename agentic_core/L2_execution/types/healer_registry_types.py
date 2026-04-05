@@ -10,33 +10,33 @@ from __future__ import annotations
 
 from typing import Callable
 
-from agentic_core.L2_execution.healers.architecture_governance_healer import (
+from agentic_core.L3_orchestration.healers.architecture_governance_healer import (
     heal_import_compliance,
     heal_layer_gravity,
 )
-from agentic_core.L2_execution.healers.architecture_governor_healer import (
+from agentic_core.L3_orchestration.healers.architecture_governor_healer import (
     heal_architecture_governance,
 )
-from agentic_core.L2_execution.healers.classification_compliance_healer import (
+from agentic_core.L3_orchestration.healers.classification_compliance_healer import (
     heal_naming_compliance,
     heal_territory_compliance,
 )
-from agentic_core.L2_execution.healers.drift_detection_healer import (
+from agentic_core.L3_orchestration.healers.drift_detection_healer import (
     heal_guardian_drift_detection,
 )
-from agentic_core.L2_execution.healers.file_classification_healer import (
+from agentic_core.L3_orchestration.healers.file_classification_healer import (
     heal_file_classification,
 )
-from agentic_core.L2_execution.healers.filesystem_ssot_healer import (
+from agentic_core.L3_orchestration.healers.filesystem_ssot_healer import (
     heal_filesystem_ssot_drift,
 )
-from agentic_core.L2_execution.healers.gravity_leak_healer import (
+from agentic_core.L3_orchestration.healers.gravity_leak_healer import (
     heal_gravity_violations,
 )
-from agentic_core.L2_execution.healers.hierarchy_agent_healer import (
+from agentic_core.L3_orchestration.healers.hierarchy_agent_healer import (
     heal_hierarchy_violations,
 )
-from agentic_core.L2_execution.healers.hierarchy_compliance_healer import (
+from agentic_core.L3_orchestration.healers.hierarchy_compliance_healer import (
     heal_missing_structure,
     heal_subfolder_compliance,
 )

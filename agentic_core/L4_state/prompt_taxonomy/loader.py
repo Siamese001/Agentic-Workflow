@@ -17,7 +17,7 @@ try:
 except ImportError:
     JINJA2_AVAILABLE = False
 
-from agentic_core.L2_execution.prompt_assembly import AuthoritySlot
+from agentic_core.L2_execution.reasoning import AuthoritySlot
 
 from .categories import (
     CategoryRegistryEntry,

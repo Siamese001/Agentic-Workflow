@@ -681,7 +681,7 @@ def _create_deterministic_embedding(failure_signature: Any) -> List[float]:
     Returns:
         Embedding vector (1024-dim BGE-m3)
     """
-    from agentic_core.L2_execution.healers.bmg_embedding_similarity import bmg_embed_text
+    from agentic_core.L3_orchestration.healers.bmg_embedding_similarity import bmg_embed_text
 
     text_parts = []
     if hasattr(failure_signature, "component"):
@@ -756,7 +756,7 @@ def _retrieve_semantic_context(rca_report: Any, pattern_report: Any, now_utc: in
 
     import numpy as np
 
-    from agentic_core.L2_execution.healers.bmg_embedding_similarity import bmg_embed_text
+    from agentic_core.L3_orchestration.healers.bmg_embedding_similarity import bmg_embed_text
 
     _live_vec = bmg_embed_text(failure_signature)
     query_vector = np.array(_live_vec, dtype=np.float32)

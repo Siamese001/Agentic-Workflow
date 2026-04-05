@@ -13,7 +13,7 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Callable
 
-from agentic_core.L2_execution.optimization import (
+from agentic_core.L2_execution.utils import (
     AMDCPUOptimizer,
     CPUConfig,
 )

@@ -15,7 +15,7 @@ from dataclasses import dataclass, field
 from enum import Enum, auto
 from typing import Any, Protocol
 
-from agentic_core.L2_execution.prompt_assembly import CompiledPromptArtifact
+from agentic_core.L2_execution.reasoning import CompiledPromptArtifact
 
 _LOGGER = logging.getLogger(__name__)
 

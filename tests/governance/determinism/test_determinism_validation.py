@@ -207,7 +207,7 @@ class TestConsistentOutputs:
 
         for _ in range(5):
             try:
-                from agentic_core.L2_execution.tools.write_gateway import MAX_GROWTH_RATIO
+                from agentic_core.L2_execution.utils.write_gateway import MAX_GROWTH_RATIO
                 results.append(MAX_GROWTH_RATIO)
             except ImportError:
                 results.append("import_failed")
@@ -233,7 +233,7 @@ class TestConsistentOutputs:
         try:
             from pathlib import Path
 
-            from agentic_core.L2_execution.tools.write_gateway import WriteAmplificationError
+            from agentic_core.L2_execution.utils.write_gateway import WriteAmplificationError
 
             objects = []
             for _ in range(3):

@@ -40,7 +40,7 @@ from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 from agentic_core.L0_routing.config import (
     ARCHIVES_DIR,
 )
-from agentic_core.L2_execution.tools import write_gateway as _wg
+from agentic_core.L2_execution.utils import write_gateway as _wg
 from agentic_core.L3_orchestration.reasoning.UnifiedAgent import (
     HealingResult,
     HealingStrategy,

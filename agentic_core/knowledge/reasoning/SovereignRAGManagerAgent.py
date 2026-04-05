@@ -187,7 +187,7 @@ class SovereignRAGManager(SovereignBaseAgent):
         except Exception:
             self.bm25_store = None
         try:
-            from agentic_core.L2_execution.healers.bmg_embedding_similarity import bmg_embed_text
+            from agentic_core.L3_orchestration.healers.bmg_embedding_similarity import bmg_embed_text
 
             class _BGEEmbedder:
                 def embed_texts(self, texts):

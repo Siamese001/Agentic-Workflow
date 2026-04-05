@@ -2,7 +2,7 @@ __version__ = "13.0"
 import asyncio
 
 from agentic_core.interfaces.gateway import GenerationRequest, SovereignLLMGateway
-from agentic_core.L2_execution.providers import get_clock
+from agentic_core.L2_execution.utils import get_clock
 from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     LayerSegment,
     _emit_agent_executes_agent,
@@ -163,7 +163,7 @@ class GeminiLLMClient:
 
     _AGENT_ID = "GeminiLLMClient"
     try:
-        from agentic_core.L2_execution.healers.healing_tier_config import HealingTierConfig as _HTC
+        from agentic_core.L3_orchestration.healers.healing_tier_config import HealingTierConfig as _HTC
 
         _MODEL: str = _HTC().model_gemini_2_5_pro_id
     except (ImportError, AttributeError):
