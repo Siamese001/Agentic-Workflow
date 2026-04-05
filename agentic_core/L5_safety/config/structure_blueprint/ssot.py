@@ -1022,6 +1022,15 @@ SOVEREIGN_EXCLUDED_FOLDERS: frozenset[str] = frozenset(
         ".idea",
         ".vscode",
         ".DS_Store",
+        ".coverage",  # Coverage data file (W2.3 sync)
+        ".eggs",  # Build artifacts (W2.3 sync)
+        ".env",  # Environment files (W2.3 sync)
+        ".gravity_state",  # Gravity state backups (W2.3 sync)
+        ".hg",  # Mercurial (W2.3 sync)
+        ".svn",  # SVN (W2.3 sync)
+        "htmlcov",  # Coverage HTML output (W2.3 sync)
+        "reports",  # Report output (W2.3 sync)
+        "test_artifacts",  # Test artifacts without leading dot (W2.3 sync)
         "Thumbs.db",
     },
 )
@@ -1405,6 +1414,7 @@ def is_l4_approved(path: str) -> bool:
 # Derived from territories where "flat" is explicitly True.
 FLAT_DIRECTORIES: Final[frozenset[str]] = frozenset(
     {
+        "cache",  # deduplicated 2026-04-05 — core/ removed, now flat
         "mixins",  # contracts/ dissolved 2026-02-08 — all files flat
         "base_agents",  # Strict identity only — flat by constitution
         "interfaces",  # Protocol contracts — flat
