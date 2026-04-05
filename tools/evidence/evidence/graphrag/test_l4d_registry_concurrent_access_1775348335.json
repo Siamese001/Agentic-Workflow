@@ -1,0 +1,11 @@
+{
+  "test_name": "test_l4d_registry_concurrent_access",
+  "timestamp": 1775348335.342667,
+  "inputs_hash": "b2a7f00652ec8326",
+  "outputs_hash": "4414363550bce869",
+  "execution_trace": [
+    "start:test_l4d_registry_concurrent_access",
+    "end:test_l4d_registry_concurrent_access"
+  ],
+  "artifacts": {}
+}

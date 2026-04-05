@@ -1,0 +1,12 @@
+{
+  "test_name": "test_completeness_analysis_with_no_contexts",
+  "timestamp": 1774774248.509478,
+  "inputs_hash": "bce60597ce52dd50",
+  "outputs_hash": "cd2779133de13d10",
+  "execution_trace": [
+    "start:test_completeness_analysis_with_no_contexts",
+    "1774774248.509478:handled_empty_contexts",
+    "end:test_completeness_analysis_with_no_contexts"
+  ],
+  "artifacts": {}
+}

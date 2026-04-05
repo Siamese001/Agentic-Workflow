@@ -78,7 +78,7 @@ def test_metrics_endpoint() -> bool:
         import urllib.request
 
         from agentic_core.L6_observability import start_metrics_server, stop_metrics_server
-        from agentic_core.L6_observability.metrics.prometheus_metrics import (
+        from agentic_core.L6_observability.utils.metrics.prometheus_metrics import (
             record_retrieval,
             record_routing_decision,
         )

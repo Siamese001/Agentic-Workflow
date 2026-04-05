@@ -31,7 +31,7 @@ from agentic_core.L0_routing.utils.routing_telemetry import (
 )
 
 # L6 import deferred to avoid layer boundary violation
-# from agentic_core.L6_observability.performance.performance_emitter import (
+# from agentic_core.L6_observability.utils.performance.performance_emitter import (
 #     StageStatus,
 #     record_routing_performance,
 # )
@@ -140,7 +140,7 @@ def _get_perf_emitter() -> tuple[Any, Any, Any]:
     """Lazy load L6 performance emitter to avoid layer boundary violation."""
     if "record_fn" not in _perf_emitter_cache:
         try:
-            from agentic_core.L6_observability.performance.performance_emitter import (
+            from agentic_core.L6_observability.utils.performance.performance_emitter import (
                 StageStatus,
                 record_routing_performance,
             )

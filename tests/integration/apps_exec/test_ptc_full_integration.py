@@ -102,7 +102,7 @@ try:
         create_human_review_draft,
         create_rejection_artifact,
     )
-    from agentic_core.L5_safety.hitl.hitl_escalation_activator import (
+    from agentic_core.L5_safety.enforcement.hitl.hitl_escalation_activator import (
         EscalationPriority,
         EscalationRequest,
         HITLEscalationActivator,

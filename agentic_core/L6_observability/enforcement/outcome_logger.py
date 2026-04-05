@@ -11,7 +11,7 @@ import json
 from dataclasses import dataclass
 
 from agentic_core.L2_execution.utils.execution_proof_emitter import ExecutionProofEmitter
-from agentic_core.L6_observability.evaluation.evaluation_record import (
+from agentic_core.L6_observability.utils.evaluation.evaluation_record import (
     EvaluationStage,
     evaluate_and_attach,
 )

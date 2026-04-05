@@ -611,7 +611,7 @@ def emit_alerts_to_registry(
     if not alerts:
         return
     try:
-        from agentic_core.L6_observability.engines.drift_registry import (
+        from agentic_core.L6_observability.utils.engines.drift_registry import (
             DriftRegistryEntry,
             get_drift_registry,
         )

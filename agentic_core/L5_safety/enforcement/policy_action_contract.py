@@ -31,14 +31,14 @@ from enum import Enum
 from typing import Any
 
 from agentic_core.L2_execution.utils.providers import get_clock
-from agentic_core.L5_safety.escalation.escalation_orchestrator import (
+from agentic_core.L5_safety.enforcement.escalation.escalation_orchestrator import (
     GovernedAction,
     escalate_for_human_review,
 )
-from agentic_core.L5_safety.escalation.escalation_orchestrator import (
+from agentic_core.L5_safety.enforcement.escalation.escalation_orchestrator import (
     SafetyContext as EscalationSafetyContext,
 )
-from agentic_core.L5_safety.escalation.escalation_orchestrator import (
+from agentic_core.L5_safety.enforcement.escalation.escalation_orchestrator import (
     TraceContext as EscalationTraceContext,
 )
 from agentic_core.runtime.lifecycle_trace_contract import (

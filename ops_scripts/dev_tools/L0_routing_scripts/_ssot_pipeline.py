@@ -664,7 +664,7 @@ def _compute_pipeline_digest(targets: "list[str]") -> str:
     try:
         from agentic_core.L2_execution.utils.negative_control_harness import get_config_surface as _gcs
         from agentic_core.L2_execution.utils.negative_control_harness import hash_config_surface as _hcs
-        from agentic_core.L6_observability.engines.determinism_digest_emitter import (
+        from agentic_core.L6_observability.utils.engines.determinism_digest_emitter import (
             DeterminismDigestEmitter as _DE,
         )
     except ImportError as _exc:

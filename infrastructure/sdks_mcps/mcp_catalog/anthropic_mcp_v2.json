@@ -1,0 +1,310 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Anthropic MCP v2.0",
+  "description": "Model Context Protocol for Anthropic Claude models with prompt caching and tool use",
+  "version": "2.0.0",
+  "provider": "anthropic",
+  "created": "2025-12-09",
+  "last_updated": "2025-12-09",
+  "models": {
+    "claude-3-5-sonnet-20241022": {
+      "context_window": 200000,
+      "max_output_tokens": 8192,
+      "supports_prompt_caching": true,
+      "supports_tool_use": true,
+      "supports_streaming": true,
+      "supports_vision": true,
+      "supports_computer_use": true,
+      "pricing": {
+        "input_per_1k": 0.003,
+        "output_per_1k": 0.015,
+        "cached_read_per_1k": 0.0003,
+        "cached_write_per_1k": 0.00375
+      }
+    },
+    "claude-3-5-haiku-20241022": {
+      "context_window": 200000,
+      "max_output_tokens": 8192,
+      "supports_prompt_caching": true,
+      "supports_tool_use": true,
+      "supports_streaming": true,
+      "supports_vision": true,
+      "pricing": {
+        "input_per_1k": 0.0008,
+        "output_per_1k": 0.004,
+        "cached_read_per_1k": 0.00008,
+        "cached_write_per_1k": 0.001
+      }
+    }
+  },
+  "default_model": "claude-3-5-sonnet-20241022",
+  "capabilities": {
+    "prompt_caching": {
+      "cache_type": "ephemeral",
+      "cache_ttl": "5 minutes",
+      "max_cache_size": "100KB per message",
+      "cache_control_header": "cache_control",
+      "cost_reduction": "87%"
+    },
+    "tool_use": {
+      "parallel_tools": true,
+      "max_tools": 20,
+      "tool_choice": ["auto", "any", "tool"],
+      "supports_computer_use": true,
+      "supports_bash_tools": true,
+      "supports_web_browsing": true
+    },
+    "streaming": {
+      "chunk_encoding": "utf-8",
+      "supports_delta": true,
+      "latency_ms": 40,
+      "server_sent_events": true
+    },
+    "computer_use": {
+      "supported": true,
+      "actions": ["screenshot", "click", "type", "move_cursor", "key_press"],
+      "screen_resolution": "1024x768",
+      "coordinate_system": "absolute"
+    }
+  },
+  "request_format": {
+    "messages": {
+      "required_fields": ["model", "max_tokens", "messages"],
+      "optional_fields": {
+        "system": {"type": "array"},
+        "temperature": {"type": "number", "minimum": 0, "maximum": 1, "default": 1},
+        "top_p": {"type": "number", "minimum": 0, "maximum": 1, "default": 1},
+        "top_k": {"type": "integer", "minimum": 0},
+        "stop_sequences": {"type": "array", "items": {"type": "string"}},
+        "stream": {"type": "boolean", "default": false},
+        "tools": {"type": "array"},
+        "tool_choice": {"type": "object"},
+        "metadata": {"type": "object"}
+      },
+      "message_format": {
+        "role": ["user", "assistant"],
+        "content_types": ["text", "image", "tool_use", "tool_result"],
+        "system_format": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "type": {"type": "string", "enum": ["text", "image"]},
+              "text": {"type": "string"},
+              "source": {"type": "object"},
+              "cache_control": {"type": "object"}
+            }
+          }
+        }
+      }
+    }
+  },
+  "tool_specifications": {
+    "tool_use_v2": {
+      "file": "anthropic_sdk/v0.34.2/tool_use_v2/exact_tool_format_we_send.json",
+      "description": "Complete tool specification with computer use, bash, and web browsing",
+      "tools_count": 8,
+      "categories": ["computer_control", "bash_execution", "web_browsing", "file_operations", "database", "api", "email", "calendar"]
+    }
+  },
+  "prompt_caching_patterns": {
+    "system_prompt_caching": {
+      "pattern": "cache_control_on_system",
+      "example": {
+        "system": [
+          {
+            "type": "text",
+            "text": "You are an expert technical recruiter...",
+            "cache_control": {"type": "ephemeral"}
+          }
+        ]
+      }
+    },
+    "template_caching": {
+      "pattern": "cache_control_on_templates",
+      "example": {
+        "messages": [
+          {
+            "role": "user",
+            "content": [
+              {
+                "type": "text",
+                "text": "Analyze this resume template...",
+                "cache_control": {"type": "ephemeral"}
+              },
+              {
+                "type": "text",
+                "text": "John Doe - Software Engineer Resume"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    "batch_optimization": {
+      "pattern": "group_similar_requests",
+      "strategy": "Reuse system prompts and templates across batch",
+      "cache_hit_rate_target": ">80%"
+    }
+  },
+  "client_configuration": {
+    "authentication": {
+      "type": "api_key",
+      "header": "x-api-key",
+      "env_var": "ANTHROPIC_API_KEY"
+    },
+    "base_url": "https://api.anthropic.com",
+    "version": "2023-06-01",
+    "timeout": {
+      "connect": 10,
+      "read": 60,
+      "write": 60
+    },
+    "retry": {
+      "max_attempts": 5,
+      "backoff_factor": 2,
+      "initial_delay": 1.0,
+      "max_delay": 30.0
+    },
+    "rate_limits": {
+      "claude-3-5-sonnet": {
+        "requests_per_minute": 1000,
+        "tokens_per_minute": 40000
+      },
+      "claude-3-5-haiku": {
+        "requests_per_minute": 2000,
+        "tokens_per_minute": 80000
+      }
+    }
+  },
+  "error_handling": {
+    "error_types": {
+      "invalid_request": 400,
+      "authentication_error": 401,
+      "permission_error": 403,
+      "not_found": 404,
+      "rate_limit": 429,
+      "overloaded": 529,
+      "api_error": 500
+    },
+    "error_responses": {
+      "format": {
+        "type": "error",
+        "error": {
+          "type": "string",
+          "message": "string"
+        }
+      }
+    },
+    "retry_strategies": {
+      "rate_limit": "exponential_backoff_with_jitter",
+      "overloaded": "exponential_backoff_with_jitter",
+      "api_error": "exponential_backoff",
+      "invalid_request": "no_retry"
+    }
+  },
+  "usage_tracking": {
+    "tokens": {
+      "input": "input_tokens",
+      "output": "output_tokens",
+      "cache_creation": "cache_creation_input_tokens",
+      "cache_read": "cache_read_input_tokens"
+    },
+    "costing": {
+      "input_cost": "input_tokens * input_price_per_1k / 1000",
+      "output_cost": "output_tokens * output_price_per_1k / 1000",
+      "cache_write_cost": "cache_creation_tokens * cache_write_price_per_1k / 1000",
+      "cache_read_cost": "cache_read_tokens * cache_read_price_per_1k / 1000"
+    },
+    "cache_metrics": {
+      "cache_hit_rate": "cache_read_tokens / (cache_read_tokens + input_tokens)",
+      "cost_savings": "cache_read_tokens * (input_price - cache_read_price) / 1000"
+    }
+  },
+  "integration_patterns": {
+    "tool_use": {
+      "pattern": "tool_use_message_format",
+      "example": {
+        "tools": [{"$ref": "#/tool_specifications/tool_use_v2"}],
+        "messages": [
+          {
+            "role": "user",
+            "content": "Take a screenshot of the desktop"
+          }
+        ]
+      }
+    },
+    "computer_use": {
+      "pattern": "computer_use_workflow",
+      "tools": ["computer_use", "bash_command"],
+      "coordination": "coordinate_tool_calls_for_complex_tasks"
+    },
+    "prompt_caching": {
+      "pattern": "cache_optimized_batching",
+      "strategy": "group_by_system_prompt_and_template",
+      "expected_savings": "87% on cached content"
+    }
+  },
+  "optimizations": {
+    "prompt_caching": {
+      "best_practices": [
+        "Cache system prompts and templates",
+        "Avoid caching user-specific data",
+        "Group similar requests in batches",
+        "Use 5-30 minute cache windows"
+      ],
+      "monitoring": {
+        "track_cache_hit_rate": true,
+        "track_cost_savings": true,
+        "target_hit_rate": ">80%"
+      }
+    },
+    "tool_use_optimization": {
+      "parallel_execution": true,
+      "tool_result_caching": false,
+      "max_concurrent_tools": 20
+    }
+  },
+  "monitoring": {
+    "metrics": [
+      "request_latency",
+      "token_usage",
+      "cache_hit_rate",
+      "tool_use_success_rate",
+      "computer_use_success_rate",
+      "error_rate"
+    ],
+    "alerts": {
+      "high_error_rate": {"threshold": 0.02, "window": "5m"},
+      "high_latency": {"threshold": 3000, "window": "5m"},
+      "low_cache_hit_rate": {"threshold": 0.7, "window": "10m"},
+      "rate_limit": {"threshold": 0.8, "window": "1m"}
+    }
+  },
+  "compliance": {
+    "data_privacy": {
+      "zero_data_retention": true,
+      "training_data_opt_out": true,
+      "gdpr_compliant": true,
+      "data_processing_agreement": true
+    },
+    "security": {
+      "encryption_in_transit": true,
+      "encryption_at_rest": true,
+      "soc2_compliant": true,
+      "iso27001_compliant": true
+    },
+    "content_safety": {
+      "constitutional_ai": true,
+      "harm_reduction": true,
+      "content_filtering": true
+    }
+  },
+  "batch_processing": {
+    "supported": true,
+    "max_concurrent_requests": 10,
+    "batch_optimization": "prompt_caching",
+    "expected_savings": "87% on cached tokens",
+    "implementation": "message_batching/batch_100_messages.py"
+  }
+}

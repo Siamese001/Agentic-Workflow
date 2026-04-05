@@ -352,7 +352,7 @@ class HandoffDispatcher:
         # P3/L3: Record workflow visualization for owner transition
         trace_context = None
         try:
-            from agentic_core.L6_observability.visualization.visualization_updater import (
+            from agentic_core.L6_observability.utils.visualization.visualization_updater import (
                 TraceContext,
                 WorkflowStatus,
                 record_owner_transition,
@@ -391,7 +391,7 @@ class HandoffDispatcher:
             # P3/L3: Record workflow completion
             if trace_context:
                 try:
-                    from agentic_core.L6_observability.visualization.visualization_updater import (
+                    from agentic_core.L6_observability.utils.visualization.visualization_updater import (
                         WorkflowStatus,
                         record_workflow_completion,
                     )
@@ -418,7 +418,7 @@ class HandoffDispatcher:
             # P3/L3: Record workflow failure
             if trace_context:
                 try:
-                    from agentic_core.L6_observability.visualization.visualization_updater import (
+                    from agentic_core.L6_observability.utils.visualization.visualization_updater import (
                         WorkflowStatus,
                         record_workflow_completion,
                     )

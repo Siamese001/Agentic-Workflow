@@ -1,0 +1,11 @@
+{
+  "test_name": "test_retrieval_with_db_failure_retry",
+  "timestamp": 1775348335.354785,
+  "inputs_hash": "b4b37ef48d18faec",
+  "outputs_hash": "505b7b9fd5b2fd3b",
+  "execution_trace": [
+    "start:test_retrieval_with_db_failure_retry",
+    "end:test_retrieval_with_db_failure_retry"
+  ],
+  "artifacts": {}
+}

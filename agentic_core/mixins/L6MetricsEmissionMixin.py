@@ -16,7 +16,7 @@ from typing import Any
 
 # Deferred imports for graceful degradation
 try:
-    from agentic_core.L6_observability.metrics.prometheus_metrics import (
+    from agentic_core.L6_observability.utils.metrics.prometheus_metrics import (
         AGENT_EXECUTION_DURATION_SECONDS,
         AGENTIC_REGISTRY,
         CIRCUIT_BREAKER_STATE,

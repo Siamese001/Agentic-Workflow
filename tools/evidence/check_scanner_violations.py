@@ -5,7 +5,7 @@ import tempfile
 from pathlib import Path
 
 from agentic_core.L0_routing.config.path_constants import AGENTIC_CORE_DIR
-from agentic_core.L5_safety.static_checks.system_invariant_scanner import (
+from agentic_core.L5_safety.validators.static_checks.system_invariant_scanner import (
     SystemInvariantScanner,
     scan_repository_for_bypasses,
 )

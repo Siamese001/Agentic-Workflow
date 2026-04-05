@@ -79,12 +79,12 @@ class TestSovereignBaseAgentMRO:
 
     def test_sovereign_has_subatomic_testing_mixin(self) -> None:
         """Test that SovereignBaseAgent has SubatomicTestingMixin in MRO."""
-        from agentic_core.L5_safety.governance.sovereign_base_agent import SovereignBaseAgent
+        from agentic_core.L5_safety.enforcement.governance.sovereign_base_agent import SovereignBaseAgent
         from agentic_core.L5_safety.testing.subatomic_testing_mixin import SubatomicTestingMixin
         assert SubatomicTestingMixin in SovereignBaseAgent.__mro__, "SovereignBaseAgent missing SubatomicTestingMixin"
 
     def test_sovereign_has_config_mixin(self) -> None:
         """Test that SovereignBaseAgent has ConfigMixin in MRO."""
         from agentic_core.L5_safety.config.config_mixin import ConfigMixin
-        from agentic_core.L5_safety.governance.sovereign_base_agent import SovereignBaseAgent
+        from agentic_core.L5_safety.enforcement.governance.sovereign_base_agent import SovereignBaseAgent
         assert ConfigMixin in SovereignBaseAgent.__mro__, "SovereignBaseAgent missing ConfigMixin"

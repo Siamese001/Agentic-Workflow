@@ -1,0 +1,12 @@
+{
+  "test_name": "test_feedback_dampening_low_signal_volume",
+  "timestamp": 1775177493.4935105,
+  "inputs_hash": "57f1330a6248e53b",
+  "outputs_hash": "cd2779133de13d10",
+  "execution_trace": [
+    "start:test_feedback_dampening_low_signal_volume",
+    "1775177493.493510:dampening_low_signal_triggered",
+    "end:test_feedback_dampening_low_signal_volume"
+  ],
+  "artifacts": {}
+}

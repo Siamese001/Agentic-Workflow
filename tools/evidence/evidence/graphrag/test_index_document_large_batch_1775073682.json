@@ -1,0 +1,11 @@
+{
+  "test_name": "test_index_document_large_batch",
+  "timestamp": 1775073682.6844678,
+  "inputs_hash": "9f2f07ee34e2066c",
+  "outputs_hash": "83fef42c6278fd4f",
+  "execution_trace": [
+    "start:test_index_document_large_batch",
+    "end:test_index_document_large_batch"
+  ],
+  "artifacts": {}
+}

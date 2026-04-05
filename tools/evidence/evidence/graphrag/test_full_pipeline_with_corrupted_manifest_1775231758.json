@@ -1,0 +1,11 @@
+{
+  "test_name": "test_full_pipeline_with_corrupted_manifest",
+  "timestamp": 1775231758.7677567,
+  "inputs_hash": "d8013e196c8d2b20",
+  "outputs_hash": "ac52b3cd2dde38d5",
+  "execution_trace": [
+    "start:test_full_pipeline_with_corrupted_manifest",
+    "end:test_full_pipeline_with_corrupted_manifest"
+  ],
+  "artifacts": {}
+}

@@ -1,0 +1,12 @@
+{
+  "test_name": "test_feedback_proposal_confidence_threshold",
+  "timestamp": 1774785924.1324534,
+  "inputs_hash": "accee9860b695221",
+  "outputs_hash": "cd2779133de13d10",
+  "execution_trace": [
+    "start:test_feedback_proposal_confidence_threshold",
+    "1774785924.132453:confidence_thresholds_verified",
+    "end:test_feedback_proposal_confidence_threshold"
+  ],
+  "artifacts": {}
+}

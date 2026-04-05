@@ -451,7 +451,7 @@ class InjectionDetector:
             True if compliant (no regression), False otherwise
         """
         try:
-            from agentic_core.L5_safety.security.injection_regression_gate import (
+            from agentic_core.L5_safety.enforcement.security.injection_regression_gate import (
                 RegressionThresholds,
                 evaluate_against_baseline,
             )

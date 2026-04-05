@@ -1,4 +1,11 @@
 """Provenance module - placeholder for test compatibility."""
-from system_learning.provenance import integration, prompt_engines, types
+from system_learning.provenance.provenance import (
+    ProvenanceEngine,
+    ProvenanceEvent,
+    ProvenanceIntegrator,
+    ProvenanceRecord,
+    integrate,
+    trace,
+)
 
-__all__ = ["prompt_engines", "integration", "types"]
+__all__ = ["ProvenanceEngine", "ProvenanceEvent", "ProvenanceIntegrator", "ProvenanceRecord", "integrate", "trace"]

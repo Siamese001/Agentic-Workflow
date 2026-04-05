@@ -1,8 +1,162 @@
 # Structure Blueprint — Territory Definitions
 schema_version: "1.0.0"
-last_updated: "2026-04-04"
+last_updated: "2026-04-05"
+
+# NOTE: Intentional Dependencies
+# - agentic_core intentionally imports from ops_scripts/dev_tools/ for SSOT management utilities
+# - This is a known architectural pattern: framework code depends on operational SSOT utilities
+# - ops_scripts/dev_tools/ contains 1,052 utility scripts for SSOT management, not framework logic
 
 territories:
+  config:
+    depth: 2
+    type: "configuration"
+    purpose: "Project configuration and SSOT definitions"
+    subfolders:
+      structure_blueprint:
+        depth: 2
+        purpose: "SSOT territory and layer definitions"
+        allowed_suffixes: [".yaml"]
+        forbidden_suffixes: [".py"]
+      schemas:
+        depth: 2
+        purpose: "Schema definitions"
+        allowed_suffixes: [".yaml", ".json", ".py"]
+    allowed_suffixes: [".yaml", ".json"]
+    forbidden_suffixes: [".py"]
+
+  docs:
+    depth: 2
+    type: "documentation"
+    purpose: "Project documentation"
+    subfolders:
+      architecture:
+        depth: 2
+        purpose: "Architecture documentation"
+        allowed_suffixes: [".md", ".txt"]
+      guides:
+        depth: 2
+        purpose: "User guides"
+        allowed_suffixes: [".md", ".txt"]
+      policies:
+        depth: 2
+        purpose: "Policy documentation"
+        allowed_suffixes: [".md", ".txt"]
+      specs:
+        depth: 2
+        purpose: "Specifications"
+        allowed_suffixes: [".md", ".txt"]
+      reference:
+        depth: 2
+        purpose: "Reference documentation"
+        allowed_suffixes: [".md", ".txt"]
+      svp:
+        depth: 2
+        purpose: "SVP documentation"
+        allowed_suffixes: [".md", ".txt"]
+      technical:
+        depth: 2
+        purpose: "Technical documentation"
+        allowed_suffixes: [".md", ".txt"]
+      testing:
+        depth: 2
+        purpose: "Testing documentation"
+        allowed_suffixes: [".md", ".txt"]
+      runbooks:
+        depth: 2
+        purpose: "Runbooks"
+        allowed_suffixes: [".md", ".txt"]
+      contracts:
+        depth: 2
+        purpose: "Contract documentation"
+        allowed_suffixes: [".md", ".txt"]
+      project:
+        depth: 2
+        purpose: "Project documentation"
+        allowed_suffixes: [".md", ".txt"]
+      rules:
+        depth: 2
+        purpose: "Rules documentation"
+        allowed_suffixes: [".md", ".txt"]
+      tools:
+        depth: 2
+        purpose: "Tools documentation"
+        allowed_suffixes: [".md", ".txt"]
+      monitoring:
+        depth: 2
+        purpose: "Monitoring documentation"
+        allowed_suffixes: [".md", ".txt"]
+    allowed_suffixes: [".md", ".txt"]
+    forbidden_suffixes: [".py", ".json", ".yaml", ".log"]
+
+  data:
+    depth: 2
+    type: "data"
+    purpose: "Data files and datasets"
+    subfolders:
+      corpus:
+        depth: 2
+        purpose: "ML corpus data"
+        allowed_suffixes: [".jsonl", ".json", ".txt"]
+      external:
+        depth: 2
+        purpose: "External reference materials"
+        allowed_suffixes: [".md", ".txt", ".json"]
+      golden_state:
+        depth: 2
+        purpose: "Golden state datasets"
+        allowed_suffixes: [".json", ".jsonl", ".txt"]
+      processed:
+        depth: 2
+        purpose: "Processed data"
+        allowed_suffixes: [".json", ".jsonl", ".txt"]
+      prompt_governance:
+        depth: 2
+        purpose: "Prompt governance data"
+        allowed_suffixes: [".md", ".txt", ".json"]
+      rag_seeds:
+        depth: 2
+        purpose: "RAG seed data"
+        allowed_suffixes: [".txt", ".json", ".jsonl"]
+      raw:
+        depth: 2
+        purpose: "Raw data"
+        allowed_suffixes: [".json", ".jsonl", ".txt"]
+      snapshots:
+        depth: 2
+        purpose: "Snapshot data"
+        allowed_suffixes: [".json", ".jsonl"]
+    allowed_suffixes: [".json", ".jsonl", ".txt", ".csv"]
+    forbidden_suffixes: [".py", ".md", ".yaml", ".log"]
+
+  .windsurf:
+    depth: 2
+    type: "ide_configuration"
+    purpose: "Windsurf IDE configuration and AI assistant rules"
+    subfolders:
+      plans:
+        depth: 2
+        purpose: "Execution plans"
+        allowed_suffixes: [".md", ".py"]
+      rules:
+        depth: 2
+        purpose: "AI assistant rules"
+        allowed_suffixes: [".md", ".yaml"]
+      skills:
+        depth: 2
+        purpose: "AI assistant skills"
+        allowed_suffixes: [".md"]
+      templates:
+        depth: 2
+        purpose: "Plan templates"
+        allowed_suffixes: [".md"]
+      workflows:
+        depth: 2
+        purpose: "Workflow definitions"
+        allowed_suffixes: [".md"]
+    allowed_suffixes: [".md", ".json", ".yaml"]
+    forbidden_suffixes: [".txt", ".log"]
+
   agentic_core:
     depth: 2
     purpose: "Core framework logic (L0-L6)"
@@ -158,6 +312,15 @@ territories:
         depth: 3
         purpose: "App-specific tests (wildcard)"
 
+  infrastructure:
+    depth: 2
+    purpose: "Infrastructure coordination and optimization"
+    subfolders:
+      config: {depth: 2, purpose: "Configuration"}
+      types: {depth: 2, purpose: "Data models"}
+      reasoning: {depth: 2, purpose: "Decision agents"}
+      utils: {depth: 2, purpose: "Helpers"}
+
   system_learning:
     depth: 2
     purpose: "Meta-learning and system improvement"
@@ -166,6 +329,34 @@ territories:
       arbitration: {depth: 2, purpose: "Arbitration engines"}
       confidence: {depth: 2, purpose: "Confidence scoring"}
       config: {depth: 2, purpose: "Configuration"}
+      constraints: {depth: 2, purpose: "Learning constraints"}
+      correlation: {depth: 2, purpose: "Correlation analysis"}
+      embedding: {depth: 2, purpose: "Embedding management"}
+      enforcement: {depth: 2, purpose: "Learning enforcement"}
+      engines: {depth: 2, purpose: "Learning engines"}
+      fingerprinting: {depth: 2, purpose: "Fingerprinting"}
+      golden: {depth: 2, purpose: "Golden state"}
+      invariants: {depth: 2, purpose: "Learning invariants"}
+      logs: {depth: 2, purpose: "Learning logs"}
+      memory: {depth: 2, purpose: "Learning memory"}
+      meta_learning: {depth: 2, purpose: "Meta-learning core"}
+      ml_integration: {depth: 2, purpose: "ML integration"}
+      monitoring: {depth: 2, purpose: "Learning monitoring"}
+      output: {depth: 2, purpose: "Learning output"}
+      pipelines: {depth: 2, purpose: "Learning pipelines"}
+      policy: {depth: 2, purpose: "Learning policies"}
+      ports: {depth: 2, purpose: "Learning ports"}
+      provenance: {depth: 2, purpose: "Learning provenance"}
+      raw: {depth: 2, purpose: "Learning raw"}
+      runtime: {depth: 2, purpose: "Runtime learning"}
+      runtime_adg: {depth: 2, purpose: "Runtime ADG"}
+      scripts: {depth: 2, purpose: "Learning scripts"}
+      snapshots: {depth: 2, purpose: "Learning snapshots"}
+      state: {depth: 2, purpose: "Learning state"}
+      stores: {depth: 2, purpose: "Learning stores"}
+      telemetry: {depth: 2, purpose: "Learning telemetry"}
+      types: {depth: 2, purpose: "Learning types"}
+      validators: {depth: 2, purpose: "Learning validators"}
 
   tools:
     depth: 1
@@ -174,6 +365,33 @@ territories:
     subfolders:
       adg: {depth: 2, purpose: "ADG tools"}
       mcp: {depth: 2, purpose: "MCP servers"}
+      analysis: {depth: 2, purpose: "Analysis tools"}
+      archive: {depth: 2, purpose: "Archive tools"}
+      adg_backups: {depth: 2, purpose: "ADG backups"}
+      ci: {depth: 2, purpose: "CI tools"}
+      cleanup: {depth: 2, purpose: "Cleanup tools"}
+      debug: {depth: 2, purpose: "Debug tools"}
+      diagnose: {depth: 2, purpose: "Diagnostic tools"}
+      evidence: {depth: 2, purpose: "Evidence collection"}
+      fix: {depth: 2, purpose: "Fix tools"}
+      generate: {depth: 2, purpose: "Generation tools"}
+      governance: {depth: 2, purpose: "Governance tools"}
+      guardian: {depth: 2, purpose: "Guardian tools"}
+      ingestion: {depth: 2, purpose: "Ingestion tools"}
+      learning: {depth: 2, purpose: "Learning tools"}
+      manifests: {depth: 2, purpose: "Manifests"}
+      memory: {depth: 2, purpose: "Memory tools"}
+      migrate: {depth: 2, purpose: "Migration tools"}
+      monitoring: {depth: 2, purpose: "Monitoring tools"}
+      otl: {depth: 2, purpose: "OTL tools"}
+      profiling: {depth: 2, purpose: "Profiling tools"}
+      repair: {depth: 2, purpose: "Repair tools"}
+      scripts: {depth: 2, purpose: "Scripts"}
+      test_enforcement: {depth: 2, purpose: "Test enforcement"}
+      testing: {depth: 2, purpose: "Testing tools"}
+      verification: {depth: 2, purpose: "Verification tools"}
+      waves: {depth: 2, purpose: "Wave tools"}
+      windsurf: {depth: 2, purpose: "Windsurf tools"}
 
   ops_scripts:
     depth: 2
@@ -182,6 +400,19 @@ territories:
       ci: {depth: 3, purpose: "CI scripts"}
       dev_tools: {depth: 3, purpose: "Development tools"}
       environment: {depth: 3, purpose: "Environment scripts"}
+      enforcement: {depth: 3, purpose: "Enforcement scripts"}
+      general: {depth: 3, purpose: "General scripts"}
+      governance: {depth: 3, purpose: "Governance scripts"}
+      hooks: {depth: 3, purpose: "Git hooks"}
+      incident: {depth: 3, purpose: "Incident response"}
+      maintenance: {depth: 3, purpose: "Maintenance scripts"}
+      policy: {depth: 3, purpose: "Policy scripts"}
+      review: {depth: 3, purpose: "Review scripts"}
+      root_scripts: {depth: 3, purpose: "Root-level scripts"}
+      security: {depth: 3, purpose: "Security scripts"}
+      setup: {depth: 3, purpose: "Setup scripts"}
+      tools: {depth: 3, purpose: "Tool scripts"}
+      verification: {depth: 3, purpose: "Verification scripts"}
 
 # Wildcard territories (pattern-based matching)
 wildcards:

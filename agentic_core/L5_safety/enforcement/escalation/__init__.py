@@ -6,7 +6,7 @@ for designated high-risk or ambiguous operations.
 from enum import Enum
 
 # P3/L5 Human Safety Escalation exports
-from agentic_core.L5_safety.escalation.escalation_orchestrator import (
+from .escalation_orchestrator import (
     GovernedAction,
     SafetyContext,
     TraceContext,
@@ -20,7 +20,7 @@ from agentic_core.L5_safety.escalation.escalation_orchestrator import (
     record_reviewer_outcome,
     reviewer_outcome_recorded,
 )
-from agentic_core.L5_safety.escalation.human_escalation import (
+from .human_escalation import (
     APPROVED,
     DEFERRED,
     DENIED,

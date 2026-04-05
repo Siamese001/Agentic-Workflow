@@ -313,7 +313,7 @@ class ShadowDriftAnalyzer:
             import hashlib
             import json as _json
 
-            from agentic_core.L6_observability.engines.drift_registry import (
+            from agentic_core.L6_observability.utils.engines.drift_registry import (
                 DriftRegistryEntry,
                 get_drift_registry,
             )

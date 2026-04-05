@@ -1,0 +1,12 @@
+{
+  "test_name": "test_evidence_capture_integrity",
+  "timestamp": 1774785924.1411598,
+  "inputs_hash": "29ea94c617362c08",
+  "outputs_hash": "cd2779133de13d10",
+  "execution_trace": [
+    "start:test_evidence_capture_integrity",
+    "1774785924.145164:evidence_capture_integrity_verified",
+    "end:test_evidence_capture_integrity"
+  ],
+  "artifacts": {}
+}

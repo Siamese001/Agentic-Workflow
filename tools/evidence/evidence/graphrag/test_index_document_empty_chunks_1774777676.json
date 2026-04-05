@@ -1,0 +1,11 @@
+{
+  "test_name": "test_index_document_empty_chunks",
+  "timestamp": 1774777676.9197402,
+  "inputs_hash": "855ce641d25ac37c",
+  "outputs_hash": "b77c74a000b568f2",
+  "execution_trace": [
+    "start:test_index_document_empty_chunks",
+    "end:test_index_document_empty_chunks"
+  ],
+  "artifacts": {}
+}

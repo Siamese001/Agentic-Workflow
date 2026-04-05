@@ -1,4 +1,0 @@
-INFO: Scanning (include_tests=True)...
-INFO: W1b dedup removed 2525 duplicate edges
-INFO: Scan done in 211.6s ù 6383 modules, 719826 edges
-INFO: Collection safety report written to: docs\reports\adg_collection_analysis.json

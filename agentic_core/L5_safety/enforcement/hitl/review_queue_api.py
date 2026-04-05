@@ -17,11 +17,11 @@ from typing import Any
 
 from flask import Flask, jsonify, request
 
-from agentic_core.L5_safety.hitl.hitl_escalation_activator import (
+from agentic_core.L5_safety.enforcement.hitl.hitl_escalation_activator import (
     EscalationRequest,
     get_hitl_escalation_activator,
 )
-from agentic_core.L5_safety.hitl.hitl_graph import (
+from agentic_core.L5_safety.enforcement.hitl.hitl_graph import (
     HITLDecisionType,
     HITLGraph,
     HITLRuntimeRecorder,

@@ -174,7 +174,7 @@ def assert_no_wall_clock_in_module(module_path: Path, context: str = "") -> None
     Raises:
         WallClockContaminationError: if any wall-clock violation is found.
     """
-    from agentic_core.L6_observability.engines.semantic_clock_validator import (  # noqa: PLC0415
+    from agentic_core.L6_observability.utils.engines.semantic_clock_validator import (  # noqa: PLC0415
         scan_module_for_wallclock,
     )
 

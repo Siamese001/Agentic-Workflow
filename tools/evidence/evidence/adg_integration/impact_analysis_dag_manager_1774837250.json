@@ -1,0 +1,32 @@
+{
+  "test_name": "impact_analysis_dag_manager",
+  "timestamp": 1774837250.6765597,
+  "inputs_hash": "c4855b73ca619d83",
+  "outputs_hash": "b9e5a7e3cf0d79aa",
+  "execution_trace": [
+    "start:impact_analysis_dag_manager",
+    "1774837250.676560:started_impact_analysis",
+    "1774837250.708245:impact_analysis_complete",
+    "end:impact_analysis_dag_manager"
+  ],
+  "artifacts": {
+    "result": {
+      "source_file": "agentic_core/L3_orchestration/engines/dag_manager.py",
+      "entry_points": [
+        "ADG::Module::agentic_core/L3_orchestration/engines/dag_manager.py"
+      ],
+      "affected_files": [
+        "",
+        "agentic_core/L3_orchestration/engines/dag_manager.py",
+        "agentic_core/L_CONTRACTS/lifecycle_trace_contract.py",
+        "agentic_core/interfaces/mixins.py",
+        "agentic_core/mixins/healer_mixin.py",
+        "agentic_core/mixins/subatomic_testing_mixin.py",
+        "agentic_core/utils/decorators_compat_util.py"
+      ],
+      "affected_file_count": 7,
+      "traversal_depth": 2,
+      "total_edges": 130
+    }
+  }
+}

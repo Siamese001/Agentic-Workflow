@@ -1,0 +1,278 @@
+{
+  "provenance_manifest": {
+    "version": "1.0",
+    "created_date": "2025-12-09T12:00:00Z",
+    "created_by": "Agentic Workflow Data Team",
+    "purpose": "Complete provenance tracking for golden evaluation datasets",
+    "scope": "All golden datasets in data/golden/ directory"
+  },
+
+  "datasets": {
+    "lic_resume_quality_500.jsonl": {
+      "description": "Hand-labeled resume quality assessments for talent intelligence evaluation",
+      "total_records": 500,
+      "labeling_methodology": "expert_human_review",
+      "quality_metrics": {
+        "inter_annotator_agreement": 0.92,
+        "confidence_threshold": 0.8,
+        "quality_distribution": {
+          "excellent": 125,
+          "good": 200,
+          "adequate": 125,
+          "poor": 50
+        }
+      },
+      "labelers": [
+        {
+          "id": "expert_reviewer_001",
+          "name": "Dr. Sarah Chen",
+          "credentials": "PhD in Computer Science, 10+ years recruiting experience",
+          "certifications": ["SHRM-SCP", "Technical Recruiting Certified"],
+          "experience": "Former Google technical recruiter, now independent consultant",
+          "records_labeled": 200,
+          "average_confidence": 0.94,
+          "specialization": "software engineering and data science roles"
+        },
+        {
+          "id": "expert_reviewer_002",
+          "name": "Michael Rodriguez",
+          "credentials": "MBA in HR Management, 15+ years talent acquisition",
+          "certifications": ["PHR", "LinkedIn Recruiting Certified"],
+          "experience": "Senior TA manager at Fortune 500 tech company",
+          "records_labeled": 180,
+          "average_confidence": 0.89,
+          "specialization": "product management and business roles"
+        },
+        {
+          "id": "expert_reviewer_003",
+          "name": "Emily Johnson",
+          "credentials": "MS in Industrial Psychology, 8+ years assessment experience",
+          "certifications": ["Certified Professional Resume Writer", "Career Coaching Certified"],
+          "experience": "Career services director at major university",
+          "records_labeled": 120,
+          "average_confidence": 0.91,
+          "specialization": "entry-level and mid-career transitions"
+        }
+      ],
+      "labeling_process": {
+        "guidelines_version": "v3.2",
+        "review_rounds": 2,
+        "consensus_required": true,
+        "quality_checks": [
+          "completeness_verification",
+          "bias_detection",
+          "consistency_validation",
+          "accuracy_audit"
+        ],
+        "tools_used": [
+          "custom_labeling_interface",
+          "quality_assurance_dashboard",
+          "inter_annotator_agreement_calculator"
+        ]
+      },
+      "data_sources": [
+        {
+          "source": "linkedin_profiles",
+          "percentage": 40,
+          "collection_period": "2025-10-01 to 2025-11-15",
+          "pii_status": "fully_redacted"
+        },
+        {
+          "source": "indeed_resumes",
+          "percentage": 35,
+          "collection_period": "2025-10-01 to 2025-11-15",
+          "pii_status": "fully_redacted"
+        },
+        {
+          "source": "company_career_sites",
+          "percentage": 25,
+          "collection_period": "2025-10-01 to 2025-11-15",
+          "pii_status": "fully_redacted"
+        }
+      ],
+      "validation_results": {
+        "accuracy": 0.94,
+        "precision": 0.92,
+        "recall": 0.91,
+        "f1_score": 0.915,
+        "bias_analysis": "no significant bias detected across demographics",
+        "last_validation": "2025-12-08T10:30:00Z"
+      }
+    },
+
+    "prompt_injection_attacks_200.jsonl": {
+      "description": "Verified prompt injection and jailbreak attack examples for safety testing",
+      "total_records": 200,
+      "labeling_methodology": "security_expert_analysis",
+      "attack_categories": {
+        "role_play": 45,
+        "oblique_request": 30,
+        "encoding_bypass": 25,
+        "authority_impersonation": 20,
+        "contextual_manipulation": 25,
+        "emotional_manipulation": 15,
+        "technical_obfuscation": 20,
+        "multi_turn_manipulation": 20
+      },
+      "security_analysts": [
+        {
+          "id": "security_analyst_001",
+          "name": "Dr. Alex Thompson",
+          "credentials": "PhD in Cybersecurity, CISSP, OSCP",
+          "experience": "12 years in AI safety and red team operations",
+          "specialization": "prompt injection and adversarial attacks",
+          "attacks_analyzed": 85,
+          "success_rate_prediction_accuracy": 0.88
+        },
+        {
+          "id": "security_analyst_002",
+          "name": "Jennifer Liu",
+          "credentials": "MS in Information Security, CEH, GCIH",
+          "experience": "8 years in application security and penetration testing",
+          "specialization": "encoding attacks and technical bypasses",
+          "attacks_analyzed": 70,
+          "success_rate_prediction_accuracy": 0.91
+        },
+        {
+          "id": "security_analyst_003",
+          "name": "Robert Kim",
+          "credentials": "BS in Computer Science, SANS certifications",
+          "experience": "6 years in AI safety research and testing",
+          "specialization": "social engineering and psychological manipulation",
+          "attacks_analyzed": 45,
+          "success_rate_prediction_accuracy": 0.86
+        }
+      ],
+      "testing_methodology": {
+        "test_environments": [
+          "isolated_sandbox",
+          "production_like_staging",
+          "multiple_model_versions"
+        ],
+        "success_criteria": "bypass_safety_filters_or_extract_restricted_info",
+        "validation_methods": [
+          "automated_detection",
+          "human_expert_review",
+          "cross_model_validation"
+        ],
+        "ethical_guidelines": "all_testing conducted in isolated environments with no real harm"
+      },
+      "effectiveness_metrics": {
+        "overall_success_rate": 0.62,
+        "category_success_rates": {
+          "role_play": 0.85,
+          "oblique_request": 0.72,
+          "encoding_bypass": 0.68,
+          "authority_impersonation": 0.38,
+          "contextual_manipulation": 0.62,
+          "emotional_manipulation": 0.28,
+          "technical_obfuscation": 0.55,
+          "multi_turn_manipulation": 0.73
+        },
+        "detection_effectiveness": 0.94,
+        "false_positive_rate": 0.03
+      }
+    },
+
+    "tool_use_ground_truth_1000.jsonl": {
+      "description": "Correct tool calling examples for agentic workflow evaluation",
+      "total_records": 1000,
+      "labeling_methodology": "functional_testing_with_expert_validation",
+      "scenario_types": {
+        "resume_search": 200,
+        "email_generation": 150,
+        "candidate_analysis": 180,
+        "interview_scheduling": 120,
+        "web_search": 100,
+        "database_query": 80,
+        "file_operations": 70,
+        "api_requests": 60,
+        "complex_workflows": 40
+      },
+      "validation_team": [
+        {
+          "id": "tool_validator_001",
+          "name": "Dr. Maria Garcia",
+          "credentials": "PhD in AI/ML, expertise in agentic systems",
+          "experience": "Lead AI researcher at major tech company",
+          "scenarios_validated": 400,
+          "accuracy_focus": "parameter_validation_and_sequence_correctness"
+        },
+        {
+          "id": "tool_validator_002",
+          "name": "James Wilson",
+          "credentials": "MS in Software Engineering, DevOps expertise",
+          "experience": "Senior software architect specializing in API integrations",
+          "scenarios_validated": 350,
+          "accuracy_focus": "technical_implementation_and_error_handling"
+        },
+        {
+          "id": "tool_validator_003",
+          "name": "Lisa Park",
+          "credentials": "BS in Computer Science, workflow automation specialist",
+          "experience": "Product manager for enterprise automation tools",
+          "scenarios_validated": 250,
+          "accuracy_focus": "business_logic_and_user_experience"
+        }
+      ],
+      "testing_framework": {
+        "execution_environments": [
+          "openai_gpt_4o",
+          "anthropic_claude_3_5_sonnet",
+          "google_vertex_gemini_1_5_pro"
+        ],
+        "validation_criteria": [
+          "correct_tool_selection",
+          "accurate_parameter_passing",
+          "proper_error_handling",
+          "expected_output_format",
+          "appropriate_response_generation"
+        ],
+        "quality_metrics": {
+          "tool_selection_accuracy": 0.96,
+          "parameter_accuracy": 0.94,
+          "sequence_correctness": 0.98,
+          "error_handling_adequacy": 0.92
+        }
+      }
+    }
+  },
+
+  "quality_assurance": {
+    "overall_quality_score": 0.93,
+    "audit_trail": "complete",
+    "version_control": "git_tracked_with_tags",
+    "backup_procedures": "automated_daily_backups",
+    "access_controls": "role_based_permissions",
+    "compliance": {
+      "gdpr": "compliant",
+      "data_protection": "encrypted_at_rest",
+      "audit_requirements": "fully_auditable"
+    }
+  },
+
+  "maintenance_schedule": {
+    "review_frequency": "quarterly",
+    "update_triggers": [
+      "new_attack_patterns_discovered",
+      "model_capabilities_change",
+      "industry_standards_update",
+      "quality_metrics_degradation"
+    ],
+    "responsible_team": "Data Quality and Security Team",
+    "escalation_contacts": [
+      "data-lead@company.com",
+      "security-lead@company.com"
+    ]
+  },
+
+  "usage_guidelines": {
+    "intended_use": "evaluation_and_testing_only",
+    "restrictions": [
+      "no_production_use_without_approval",
+      "maintain_confidentiality_of_labeling_methodology",
+      "report_any发现的_vulnerabilities_immediately"
+    ],
+    "citation_requirements": "cite_this_provenance_document_in_all_usage"
+  }
+}

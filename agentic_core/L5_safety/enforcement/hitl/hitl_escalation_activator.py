@@ -19,7 +19,7 @@ from dataclasses import dataclass, field
 from enum import Enum
 from typing import Any, Callable
 
-from agentic_core.L5_safety.hitl.decision_logger import (
+from agentic_core.L5_safety.enforcement.hitl.decision_logger import (
     HITLDecision,
     get_decision_logger,
 )

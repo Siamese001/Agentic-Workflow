@@ -1,0 +1,11 @@
+{
+  "test_name": "test_index_document_missing_metadata",
+  "timestamp": 1775036290.5392046,
+  "inputs_hash": "5ffc92623d01e07a",
+  "outputs_hash": "e732879173764431",
+  "execution_trace": [
+    "start:test_index_document_missing_metadata",
+    "end:test_index_document_missing_metadata"
+  ],
+  "artifacts": {}
+}

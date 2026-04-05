@@ -21,7 +21,7 @@ from typing import Any
 
 import pytest
 
-from agentic_core.L6_observability.evaluation.evaluation_learning_bridge import (
+from agentic_core.L6_observability.utils.evaluation.evaluation_learning_bridge import (
     EvaluationLearningBridge,
     LearningEvent,
     get_evaluation_learning_bridge,

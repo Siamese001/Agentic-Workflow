@@ -22,7 +22,7 @@ import uuid
 from dataclasses import dataclass
 from typing import Any
 
-from agentic_core.L5_safety.escalation.human_escalation import (
+from .human_escalation import (
     EscalationTriggerType,
     HumanEscalationError,
     HumanEscalationRecord,

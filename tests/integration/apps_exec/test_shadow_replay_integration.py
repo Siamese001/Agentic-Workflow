@@ -14,7 +14,7 @@ from __future__ import annotations
 
 import pytest
 
-from agentic_core.L6_observability.evaluation.shadow_replay_integration import (
+from agentic_core.L6_observability.utils.evaluation.shadow_replay_integration import (
     ReplayEvaluationResult,
     ReplayEvaluator,
     ShadowEvaluationIntegrator,

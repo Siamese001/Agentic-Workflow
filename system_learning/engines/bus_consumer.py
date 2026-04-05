@@ -16,7 +16,7 @@ import logging
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from system_learning.meta_learning_bus import MetaLearningBus
+    from system_learning.meta_learning.meta_learning_bus import MetaLearningBus
     from system_learning.engines.healing_success_rate_store import HealingSuccessRateStore
 logger = logging.getLogger(__name__)
 _KIND_HEALING_OUTCOME = "healing_outcome"

@@ -187,7 +187,7 @@ def _drain_event_queue() -> list:
 
 
 def _build_real_dispatcher():
-    from agentic_core.L6_observability.engines.vigilance_dispatcher import (
+    from agentic_core.L6_observability.utils.engines.vigilance_dispatcher import (
         VigilanceDispatcher,
         VigilanceEventArtifact,
     )

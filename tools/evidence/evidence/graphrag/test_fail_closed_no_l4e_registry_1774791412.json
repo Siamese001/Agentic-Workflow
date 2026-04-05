@@ -1,0 +1,12 @@
+{
+  "test_name": "test_fail_closed_no_l4e_registry",
+  "timestamp": 1774791412.2996933,
+  "inputs_hash": "2f786e6be1278729",
+  "outputs_hash": "cd2779133de13d10",
+  "execution_trace": [
+    "start:test_fail_closed_no_l4e_registry",
+    "1774791412.300199:fail_closed_no_l4e_handled",
+    "end:test_fail_closed_no_l4e_registry"
+  ],
+  "artifacts": {}
+}

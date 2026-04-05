@@ -1,0 +1,44 @@
+{
+  "test_name": "fan_analysis_known_symbol",
+  "timestamp": 1775161695.3229904,
+  "inputs_hash": "42f6e139263f1ddc",
+  "outputs_hash": "e2a6cadcf46e9106",
+  "execution_trace": [
+    "start:fan_analysis_known_symbol",
+    "1775161695.322990:starting_fan_analysis",
+    "1775161695.323520:fan_analysis_complete",
+    "end:fan_analysis_known_symbol"
+  ],
+  "artifacts": {
+    "result": {
+      "symbol": "ADG::Symbol::agentic_core.L3_orchestration.engines.dag_manager::DAGManager",
+      "node_id": "30305",
+      "found": true,
+      "layer": "L3",
+      "file": "agentic_core/L3_orchestration/engines/__init__.py",
+      "fan_out": {
+        "total_edges": 0,
+        "unique_targets": 0,
+        "top_relations": []
+      },
+      "fan_in": {
+        "total_edges": 1,
+        "unique_callers": 1,
+        "top_relations": [
+          {
+            "edge_id": "90061",
+            "src_id": "1141",
+            "dst_id": "30305",
+            "relation_type": "decomposes_into",
+            "edge_kind": "module_definition",
+            "source_file": "agentic_core/L3_orchestration/engines/dag_manager.py",
+            "line_no": 210,
+            "symbol": "DAGManager",
+            "semantic_type": "module_defines_class",
+            "confidence_score": 1.0
+          }
+        ]
+      }
+    }
+  }
+}

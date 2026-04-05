@@ -457,7 +457,7 @@ def _scenario_missing_hash() -> tuple[ScenarioOutcome, float, str]:
 
 def _scenario_nondeterministic_time_call() -> tuple[ScenarioOutcome, float, str]:
     try:
-        from agentic_core.L5_safety.static_checks.determinism_serialization_check import (
+        from agentic_core.L5_safety.validators.static_checks.determinism_serialization_check import (
             scan_execution_scope_for_nondeterminism,
         )
 
@@ -483,7 +483,7 @@ def _scenario_nondeterministic_time_call() -> tuple[ScenarioOutcome, float, str]
 
 def _scenario_allowlisted_call() -> tuple[ScenarioOutcome, float, str]:
     try:
-        from agentic_core.L5_safety.static_checks.determinism_serialization_check import (
+        from agentic_core.L5_safety.validators.static_checks.determinism_serialization_check import (
             scan_execution_scope_for_nondeterminism,
         )
 
@@ -513,7 +513,7 @@ def _scenario_allowlisted_call() -> tuple[ScenarioOutcome, float, str]:
 
 def _scenario_clean_module() -> tuple[ScenarioOutcome, float, str]:
     try:
-        from agentic_core.L5_safety.static_checks.determinism_serialization_check import (
+        from agentic_core.L5_safety.validators.static_checks.determinism_serialization_check import (
             scan_execution_scope_for_nondeterminism,
         )
 

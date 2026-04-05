@@ -16,7 +16,7 @@ from agentic_core.L0_routing.config.path_constants import (
     MAX_RETRIES,
     THRESHOLD,
 )
-from agentic_core.L6_observability.dashboard.dashboard_aggregate import (
+from agentic_core.L6_observability.utils.dashboard.dashboard_aggregate import (
     CRITICAL,
     DEGRADED,
     # Enum values for ADG scanner detection
@@ -43,7 +43,7 @@ from agentic_core.L6_observability.dashboard.dashboard_aggregate import (
     routing_throughput,
     snapshot_tick,
 )
-from agentic_core.L6_observability.dashboard.dashboard_orchestrator import (
+from agentic_core.L6_observability.utils.dashboard.dashboard_orchestrator import (
     DashboardPolicy,
     TelemetryWindow,
     aggregate_runtime_observability,
@@ -60,18 +60,18 @@ from agentic_core.L6_observability.dashboard.dashboard_orchestrator import (
 )
 
 # Wave 3: Auto-Persistence Tracing Adapter
-from agentic_core.L6_observability.engines.auto_persistence_adapter import (
+from agentic_core.L6_observability.utils.engines.auto_persistence_adapter import (
     AutoPersistenceTracingAdapter,
     get_auto_persistence_tracer,
 )
 
 # Wave 4: Meta-Learning Bridge
-from agentic_core.L6_observability.engines.meta_learning_bridge import (
+from agentic_core.L6_observability.utils.engines.meta_learning_bridge import (
     L6MetaLearningBridge,
     MetaLearningRecord,
     get_meta_learning_bridge,
 )
-from agentic_core.L6_observability.engines.metrics_server import (
+from agentic_core.L6_observability.utils.engines.metrics_server import (
     MetricsServerContext,
     get_metrics_endpoint_url,
     get_server_status,
@@ -87,12 +87,12 @@ from agentic_core.L6_observability.enforcement.mcp_drift_store import (
 )
 
 # Wave 0: Prometheus Metrics
-from agentic_core.L6_observability.metrics.prometheus_metrics import (
+from agentic_core.L6_observability.utils.metrics.prometheus_metrics import (
     AGENTIC_REGISTRY,
 )
 
 # Wave 0: Performance
-from agentic_core.L6_observability.performance.performance_emitter import (
+from agentic_core.L6_observability.utils.performance.performance_emitter import (
     LatencyBudget,
     PerformanceContext,
     StageOwner,
@@ -106,7 +106,7 @@ from agentic_core.L6_observability.performance.performance_emitter import (
 )
 
 # P2/L6 Performance Observability exports
-from agentic_core.L6_observability.performance.performance_registry import (
+from agentic_core.L6_observability.utils.performance.performance_registry import (
     BudgetViolationError,
     PerformanceMissingError,
     PerformanceRecord,
@@ -116,7 +116,7 @@ from agentic_core.L6_observability.performance.performance_registry import (
 )
 
 # Enhanced Observability System
-from agentic_core.L6_observability.enhanced_observability import (
+from agentic_core.L6_observability.utils.enhanced_observability import (
     Alert,
     AlertSeverity,
     EnhancedObservability,

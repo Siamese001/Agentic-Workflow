@@ -1,0 +1,11 @@
+{
+  "test_name": "test_prompt_context_token_limit_enforcement",
+  "timestamp": 1774998805.387616,
+  "inputs_hash": "ed6aec748d46c3b5",
+  "outputs_hash": "f182b14f7d06f318",
+  "execution_trace": [
+    "start:test_prompt_context_token_limit_enforcement",
+    "end:test_prompt_context_token_limit_enforcement"
+  ],
+  "artifacts": {}
+}

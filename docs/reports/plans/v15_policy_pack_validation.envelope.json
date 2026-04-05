@@ -1,1 +1,0 @@
-{"exit_code":0,"findings":[{"code":"SCHEMA_WARN","context":{},"message":"Rules are not sorted by rule_id (recommended for stable diffs)","severity":"WARN"}],"inputs":{"policy_pack":{"path":"v15_policy_pack.json","present":true}},"outputs":{},"schema_version":"1.0.0","status":"WARN","tool":"policy_pack_validator"}

@@ -1,0 +1,12 @@
+{
+  "test_name": "test_groundedness_scoring_bounds",
+  "timestamp": 1774774248.5027504,
+  "inputs_hash": "5249c1416ee203ff",
+  "outputs_hash": "cd2779133de13d10",
+  "execution_trace": [
+    "start:test_groundedness_scoring_bounds",
+    "1774774248.502750:groundedness_bounds_verified",
+    "end:test_groundedness_scoring_bounds"
+  ],
+  "artifacts": {}
+}

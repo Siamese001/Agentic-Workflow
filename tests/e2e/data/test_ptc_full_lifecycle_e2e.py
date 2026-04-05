@@ -63,7 +63,7 @@ try:
         HitlRequest,
         get_hitl_gate,
     )
-    from agentic_core.L5_safety.hitl.hitl_escalation_activator import (
+    from agentic_core.L5_safety.enforcement.hitl.hitl_escalation_activator import (
         EscalationPriority,
         EscalationRequest,
         HITLEscalationActivator,
@@ -977,7 +977,7 @@ class TestPTCLearningLinkage:
 
     def test_ptc_builds_dpo_batch(self) -> None:
         """Test PTC builds DPO batch from human decisions."""
-        from agentic_core.L6_observability.engines.hitl_dpo_pair_generator import (
+        from agentic_core.L6_observability.utils.engines.hitl_dpo_pair_generator import (
             DefaultDeterministicDPOPairGenerator,
         )
 
@@ -999,7 +999,7 @@ class TestPTCLearningLinkage:
 
     def test_ptc_produces_preference_pair(self) -> None:
         """Test PTC produces preference pair for rejected scripts."""
-        from agentic_core.L6_observability.engines.hitl_dpo_pair_generator import (
+        from agentic_core.L6_observability.utils.engines.hitl_dpo_pair_generator import (
             DefaultDeterministicDPOPairGenerator,
         )
 
@@ -1117,7 +1117,7 @@ class TestPTCFullLifecycle:
         assert artifact.certification_invalidated is True
 
         # Generate DPO pair
-        from agentic_core.L6_observability.engines.hitl_dpo_pair_generator import (
+        from agentic_core.L6_observability.utils.engines.hitl_dpo_pair_generator import (
             DefaultDeterministicDPOPairGenerator,
         )
         generator = DefaultDeterministicDPOPairGenerator()

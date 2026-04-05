@@ -1,0 +1,235 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "OpenAI MCP v3.0",
+  "description": "Model Context Protocol for OpenAI GPT models with structured output and tool calling",
+  "version": "3.0.0",
+  "provider": "openai",
+  "created": "2025-12-09",
+  "last_updated": "2025-12-09",
+  "models": {
+    "gpt-4o-2024-08-06": {
+      "context_window": 128000,
+      "max_output_tokens": 16384,
+      "supports_structured_output": true,
+      "supports_tool_calling": true,
+      "supports_streaming": true,
+      "supports_vision": true,
+      "pricing": {
+        "input_per_1k": 0.0025,
+        "output_per_1k": 0.01,
+        "cached_input_per_1k": 0.00125
+      }
+    },
+    "gpt-4o-mini-2024-07-18": {
+      "context_window": 128000,
+      "max_output_tokens": 16384,
+      "supports_structured_output": true,
+      "supports_tool_calling": true,
+      "supports_streaming": true,
+      "supports_vision": true,
+      "pricing": {
+        "input_per_1k": 0.00015,
+        "output_per_1k": 0.0006,
+        "cached_input_per_1k": 0.000075
+      }
+    }
+  },
+  "default_model": "gpt-4o-2024-08-06",
+  "capabilities": {
+    "structured_output": {
+      "format": "json_schema",
+      "strict_mode": true,
+      "max_schema_depth": 5,
+      "supported_types": ["object", "array", "string", "number", "boolean", "null"]
+    },
+    "tool_calling": {
+      "parallel_tools": true,
+      "max_tools": 128,
+      "tool_choice": ["auto", "required", "none"],
+      "supports_function_calling": true
+    },
+    "streaming": {
+      "chunk_encoding": "utf-8",
+      "supports_delta": true,
+      "latency_ms": 50
+    },
+    "batch_processing": {
+      "max_batch_size": 50000,
+      "completion_window": "24h",
+      "supported": true
+    }
+  },
+  "request_format": {
+    "chat_completion": {
+      "required_fields": ["model", "messages"],
+      "optional_fields": {
+        "max_tokens": {"type": "integer", "default": 4096},
+        "temperature": {"type": "number", "minimum": 0, "maximum": 2, "default": 1},
+        "top_p": {"type": "number", "minimum": 0, "maximum": 1, "default": 1},
+        "frequency_penalty": {"type": "number", "minimum": -2, "maximum": 2, "default": 0},
+        "presence_penalty": {"type": "number", "minimum": -2, "maximum": 2, "default": 0},
+        "response_format": {"type": "object"},
+        "tools": {"type": "array"},
+        "tool_choice": {"type": "string"},
+        "stream": {"type": "boolean", "default": false},
+        "stop": {"type": ["string", "array"]},
+        "seed": {"type": "integer"},
+        "user": {"type": "string"}
+      },
+      "message_format": {
+        "role": ["system", "user", "assistant", "tool"],
+        "content_types": ["text", "image_url", "input_audio"],
+        "image_url_format": {
+          "url": "string",
+          "detail": ["auto", "low", "high"]
+        }
+      }
+    }
+  },
+  "structured_output_schemas": {
+    "resume_extract_v4": {
+      "file": "openai_sdk/v1.53.0/structured_output_schemas/resume_extract_v4.json",
+      "description": "Complete resume extraction with confidence scoring and section classification",
+      "validation": "strict",
+      "model": "gpt-4o-2024-08-06"
+    },
+    "lic_message_v3": {
+      "file": "openai_sdk/v1.53.0/structured_output_schemas/lic_message_v3.json",
+      "description": "Lead Intelligence Collection message schema for outreach campaigns",
+      "validation": "strict",
+      "model": "gpt-4o-2024-08-06"
+    }
+  },
+  "tool_specifications": {
+    "full_tool_set_v2025": {
+      "file": "openai_sdk/v1.53.0/tool_calling_spec/full_tool_set_v2025.json",
+      "description": "Complete tool specification for agentic workflow operations",
+      "tools_count": 8,
+      "categories": ["search", "extraction", "generation", "analysis", "scheduling", "web_search"]
+    }
+  },
+  "client_configuration": {
+    "authentication": {
+      "type": "bearer_token",
+      "header": "Authorization",
+      "prefix": "Bearer",
+      "env_var": "OPENAI_API_KEY"
+    },
+    "base_url": "https://api.openai.com/v1",
+    "timeout": {
+      "connect": 10,
+      "read": 60,
+      "write": 60
+    },
+    "retry": {
+      "max_attempts": 3,
+      "backoff_factor": 2,
+      "status_codes": [429, 500, 502, 503, 504]
+    },
+    "rate_limits": {
+      "gpt-4o": {
+        "requests_per_minute": 5000,
+        "tokens_per_minute": 150000
+      },
+      "gpt-4o-mini": {
+        "requests_per_minute": 30000,
+        "tokens_per_minute": 150000
+      }
+    }
+  },
+  "error_handling": {
+    "error_codes": {
+      "invalid_request": 400,
+      "invalid_api_key": 401,
+      "insufficient_quota": 402,
+      "model_not_found": 404,
+      "rate_limit": 429,
+      "server_error": [500, 502, 503]
+    },
+    "retry_strategies": {
+      "rate_limit": "exponential_backoff",
+      "server_error": "exponential_backoff",
+      "invalid_request": "no_retry",
+      "authentication": "no_retry"
+    }
+  },
+  "usage_tracking": {
+    "tokens": {
+      "prompt": "prompt_tokens",
+      "completion": "completion_tokens",
+      "total": "total_tokens",
+      "cached_prompt": "cached_tokens"
+    },
+    "costing": {
+      "input_cost": "prompt_tokens * input_price_per_1k / 1000",
+      "output_cost": "completion_tokens * output_price_per_1k / 1000",
+      "cached_cost": "cached_tokens * cached_price_per_1k / 1000"
+    }
+  },
+  "integration_patterns": {
+    "structured_output": {
+      "pattern": "json_schema_response_format",
+      "example": {
+        "response_format": {
+          "type": "json_schema",
+          "json_schema": {
+            "name": "resume_extract",
+            "schema": {"$ref": "#/structured_output_schemas/resume_extract_v4"}
+          }
+        }
+      }
+    },
+    "tool_calling": {
+      "pattern": "function_calling",
+      "example": {
+        "tools": [{"$ref": "#/tool_specifications/full_tool_set_v2025"}],
+        "tool_choice": "auto"
+      }
+    },
+    "streaming": {
+      "pattern": "sse_stream",
+      "headers": {"Accept": "text/event-stream"},
+      "chunk_format": "data: {json_object}"
+    }
+  },
+  "optimizations": {
+    "prompt_caching": {
+      "supported": true,
+      "cache_control_header": "cache-control",
+      "cache_ttl": "5-30 minutes",
+      "cost_reduction": "50%"
+    },
+    "batch_processing": {
+      "supported": true,
+      "max_requests_per_batch": 50000,
+      "completion_window": "24h",
+      "cost_reduction": "50%"
+    }
+  },
+  "monitoring": {
+    "metrics": [
+      "request_latency",
+      "token_usage",
+      "error_rate",
+      "cache_hit_rate",
+      "structured_output_success_rate"
+    ],
+    "alerts": {
+      "high_error_rate": {"threshold": 0.05, "window": "5m"},
+      "high_latency": {"threshold": 5000, "window": "5m"},
+      "rate_limit": {"threshold": 0.8, "window": "1m"}
+    }
+  },
+  "compliance": {
+    "data_privacy": {
+      "zero_data_retention": true,
+      "training_data_opt_out": true,
+      "gdpr_compliant": true
+    },
+    "security": {
+      "encryption_in_transit": true,
+      "encryption_at_rest": true,
+      "soc2_compliant": true
+    }
+  }
+}

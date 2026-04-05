@@ -1,0 +1,12 @@
+{
+  "test_name": "test_parent_child_expansion_max_depth_enforcement",
+  "timestamp": 1775157353.2709587,
+  "inputs_hash": "47041db86a01bc76",
+  "outputs_hash": "cd2779133de13d10",
+  "execution_trace": [
+    "start:test_parent_child_expansion_max_depth_enforcement",
+    "1775157353.271496:max_depth_enforced_at_1",
+    "end:test_parent_child_expansion_max_depth_enforcement"
+  ],
+  "artifacts": {}
+}

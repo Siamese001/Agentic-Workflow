@@ -9,7 +9,7 @@ from typing import Any
 
 import pytest
 
-from agentic_core.L6_observability.evaluation.metric_aggregation_engine import (
+from agentic_core.L6_observability.utils.evaluation.metric_aggregation_engine import (
     AggregatedMetrics,
     MetricAggregationEngine,
     MetricDataPoint,

@@ -1,0 +1,313 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Google Vertex AI MCP v1.0",
+  "description": "Model Context Protocol for Google Gemini models with grounding and safety settings",
+  "version": "1.0.0",
+  "provider": "google_vertex",
+  "created": "2025-12-09",
+  "last_updated": "2025-12-09",
+  "models": {
+    "gemini-1.5-pro-002": {
+      "context_window": 2097152,
+      "max_output_tokens": 8192,
+      "supports_grounding": true,
+      "supports_tool_calling": true,
+      "supports_streaming": true,
+      "supports_vision": true,
+      "supports_code_execution": true,
+      "pricing": {
+        "input_per_1k": 0.00125,
+        "output_per_1k": 0.005,
+        "grounding_per_1k": 0.00025,
+        "cached_input_per_1k": 0.000315
+      }
+    },
+    "gemini-1.5-flash-002": {
+      "context_window": 1048576,
+      "max_output_tokens": 8192,
+      "supports_grounding": true,
+      "supports_tool_calling": true,
+      "supports_streaming": true,
+      "supports_vision": true,
+      "supports_code_execution": false,
+      "pricing": {
+        "input_per_1k": 0.000075,
+        "output_per_1k": 0.00015,
+        "grounding_per_1k": 0.000025,
+        "cached_input_per_1k": 0.00001875
+      }
+    }
+  },
+  "default_model": "gemini-1.5-pro-002",
+  "capabilities": {
+    "grounding": {
+      "source": "google_search",
+      "dynamic_retrieval": true,
+      "grounding_score": true,
+      "citation_support": true,
+      "max_sources": 10,
+      "grounding_threshold": 0.7
+    },
+    "tool_calling": {
+      "parallel_tools": true,
+      "max_tools": 64,
+      "tool_choice": ["auto", "none"],
+      "supports_function_calling": true,
+      "supports_code_execution": true
+    },
+    "streaming": {
+      "chunk_encoding": "utf-8",
+      "supports_delta": true,
+      "latency_ms": 45,
+      "server_sent_events": true
+    },
+    "safety_settings": {
+      "configurable": true,
+      "categories": [
+        "HARM_CATEGORY_HARASSMENT",
+        "HARM_CATEGORY_HATE_SPEECH",
+        "HARM_CATEGORY_SEXUALLY_EXPLICIT",
+        "HARM_CATEGORY_DANGEROUS_CONTENT"
+      ],
+      "thresholds": [
+        "BLOCK_NONE",
+        "BLOCK_ONLY_HIGH",
+        "BLOCK_MEDIUM_AND_ABOVE",
+        "BLOCK_LOW_AND_ABOVE"
+      ]
+    }
+  },
+  "request_format": {
+    "generate_content": {
+      "required_fields": ["model", "contents"],
+      "optional_fields": {
+        "generation_config": {"type": "object"},
+        "safety_settings": {"type": "array"},
+        "tools": {"type": "array"},
+        "tool_config": {"type": "object"},
+        "system_instruction": {"type": "object"}
+      },
+      "content_format": {
+        "role": ["user", "model", "function"],
+        "parts_types": ["text", "inline_data", "function_call", "function_response"],
+        "inline_data_format": {
+          "mime_type": "string",
+          "data": "base64_encoded_string"
+        }
+      },
+      "generation_config": {
+        "temperature": {"type": "number", "minimum": 0, "maximum": 2, "default": 1},
+        "top_p": {"type": "number", "minimum": 0, "maximum": 1, "default": 0.95},
+        "top_k": {"type": "integer", "minimum": 1, "default": 40},
+        "candidate_count": {"type": "integer", "minimum": 1, "maximum": 8, "default": 1},
+        "max_output_tokens": {"type": "integer", "maximum": 8192},
+        "stop_sequences": {"type": "array", "items": {"type": "string"}}
+      }
+    }
+  },
+  "tool_specifications": {
+    "code_interpreter_v2": {
+      "file": "google_vertex_sdk/v1.68.0/code_execution_tool_spec/gemini_code_interpreter_v2.json",
+      "description": "Secure code execution with sandbox and file I/O capabilities",
+      "supported_languages": ["python"],
+      "max_execution_time": 300,
+      "memory_limit": "8GB"
+    }
+  },
+  "grounding_configuration": {
+    "google_search_retrieval": {
+      "dynamic_retrieval_config": {
+        "mode": "MODE_DYNAMIC",
+        "dynamic_threshold": 0.7
+      },
+      "max_sources": 10,
+      "citation_format": "markdown"
+    },
+    "grounding_metadata": {
+      "grounding_score": true,
+      "grounding_supports": true,
+      "search_entry_point": true,
+      "retrieval_metadata": true
+    }
+  },
+  "safety_configuration": {
+    "harm_categories": {
+      "HARM_CATEGORY_HARASSMENT": {
+        "description": "Harassing or abusive content",
+        "default_threshold": "BLOCK_MEDIUM_AND_ABOVE"
+      },
+      "HARM_CATEGORY_HATE_SPEECH": {
+        "description": "Hate speech or discriminatory content",
+        "default_threshold": "BLOCK_MEDIUM_AND_ABOVE"
+      },
+      "HARM_CATEGORY_SEXUALLY_EXPLICIT": {
+        "description": "Sexually explicit content",
+        "default_threshold": "BLOCK_MEDIUM_AND_ABOVE"
+      },
+      "HARM_CATEGORY_DANGEROUS_CONTENT": {
+        "description": "Dangerous or harmful content",
+        "default_threshold": "BLOCK_MEDIUM_AND_ABOVE"
+      }
+    },
+    "threshold_levels": {
+      "BLOCK_NONE": "No content blocked",
+      "BLOCK_ONLY_HIGH": "Block only high probability harmful content",
+      "BLOCK_MEDIUM_AND_ABOVE": "Block medium and high probability harmful content",
+      "BLOCK_LOW_AND_ABOVE": "Block all potentially harmful content"
+    }
+  },
+  "client_configuration": {
+    "authentication": {
+      "type": "service_account",
+      "env_vars": ["GOOGLE_APPLICATION_CREDENTIALS", "GOOGLE_CLOUD_PROJECT"],
+      "alternative": "oauth2_access_token"
+    },
+    "base_url": "https://generativelanguage.googleapis.com/v1beta",
+    "region": "us-central1",
+    "timeout": {
+      "connect": 10,
+      "read": 120,
+      "write": 60
+    },
+    "retry": {
+      "max_attempts": 3,
+      "backoff_factor": 2,
+      "initial_delay": 1.0
+    },
+    "rate_limits": {
+      "gemini-1.5-pro": {
+        "requests_per_minute": 60,
+        "tokens_per_minute": 32000
+      },
+      "gemini-1.5-flash": {
+        "requests_per_minute": 100,
+        "tokens_per_minute": 1000000
+      }
+    }
+  },
+  "error_handling": {
+    "error_codes": {
+      "invalid_argument": 400,
+      "permission_denied": 403,
+      "not_found": 404,
+      "resource_exhausted": 429,
+      "internal": 500,
+      "unavailable": 503
+    },
+    "error_details": {
+      "quota_failure": "Rate limit exceeded",
+      "safety_violation": "Content blocked by safety settings",
+      "recitation": "Recitation of copyrighted material"
+    },
+    "retry_strategies": {
+      "resource_exhausted": "exponential_backoff",
+      "internal": "exponential_backoff",
+      "unavailable": "exponential_backoff",
+      "permission_denied": "no_retry"
+    }
+  },
+  "usage_tracking": {
+    "tokens": {
+      "prompt": "prompt_token_count",
+      "candidates": "candidates_token_count",
+      "total": "total_token_count",
+      "cached": "cached_content_token_count"
+    },
+    "costing": {
+      "input_cost": "prompt_tokens * input_price_per_1k / 1000",
+      "output_cost": "candidates_tokens * output_price_per_1k / 1000",
+      "grounding_cost": "grounding_tokens * grounding_price_per_1k / 1000",
+      "cached_cost": "cached_tokens * cached_price_per_1k / 1000"
+    }
+  },
+  "integration_patterns": {
+    "grounding": {
+      "pattern": "google_search_retrieval",
+      "example": {
+        "tools": [{"google_search_retrieval": {}}],
+        "generation_config": {"temperature": 0.3}
+      }
+    },
+    "code_execution": {
+      "pattern": "code_interpreter_tool",
+      "example": {
+        "tools": [{"code_interpreter": {"$ref": "#/tool_specifications/code_interpreter_v2"}}]
+      }
+    },
+    "safety_configured": {
+      "pattern": "custom_safety_thresholds",
+      "example": {
+        "safety_settings": [
+          {"category": "HARM_CATEGORY_DANGEROUS_CONTENT", "threshold": "BLOCK_NONE"},
+          {"category": "HARM_CATEGORY_HARASSMENT", "threshold": "BLOCK_MEDIUM_AND_ABOVE"}
+        ]
+      }
+    }
+  },
+  "optimizations": {
+    "grounding": {
+      "best_practices": [
+        "Use dynamic retrieval for automatic grounding",
+        "Set appropriate thresholds (0.6-0.8)",
+        "Limit sources to 5-10 for relevance",
+        "Enable citation tracking for verification"
+      ],
+      "cost_considerations": "Grounding adds ~20% to input token cost"
+    },
+    "safety": {
+      "production_settings": {
+        "internal_tools": "BLOCK_NONE",
+        "customer_facing": "BLOCK_MEDIUM_AND_ABOVE",
+        "educational": "BLOCK_LOW_AND_ABOVE"
+      }
+    }
+  },
+  "monitoring": {
+    "metrics": [
+      "request_latency",
+      "token_usage",
+      "grounding_score",
+      "safety_block_rate",
+      "error_rate",
+      "code_execution_success_rate"
+    ],
+    "alerts": {
+      "high_error_rate": {"threshold": 0.05, "window": "5m"},
+      "high_latency": {"threshold": 10000, "window": "5m"},
+      "low_grounding_score": {"threshold": 0.5, "window": "10m"},
+      "high_safety_block_rate": {"threshold": 0.1, "window": "5m"}
+    }
+  },
+  "compliance": {
+    "data_privacy": {
+      "zero_data_retention": true,
+      "training_data_opt_out": true,
+      "gdpr_compliant": true,
+      "data_location": "us-central1"
+    },
+    "security": {
+      "encryption_in_transit": true,
+      "encryption_at_rest": true,
+      "soc2_compliant": true,
+      "iso27001_compliant": true
+    },
+    "content_safety": {
+      "configurable_filters": true,
+      "enterprise_policies": true,
+      "content_moderation": true
+    }
+  },
+  "vertex_ai_integration": {
+    "project_required": true,
+    "service_account_required": true,
+    "apis_to_enable": [
+      "generativelanguage.googleapis.com",
+      "aiplatform.googleapis.com"
+    ],
+    "regional_endpoints": {
+      "us-central1": "us-central1-aiplatform.googleapis.com",
+      "us-east1": "us-east1-aiplatform.googleapis.com",
+      "europe-west1": "europe-west1-aiplatform.googleapis.com"
+    }
+  }
+}

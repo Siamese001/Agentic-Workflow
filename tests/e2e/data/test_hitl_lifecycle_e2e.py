@@ -59,23 +59,23 @@ try:
         get_hitl_gate,
         prompt_for_hitl,
     )
-    from agentic_core.L5_safety.hitl.decision_logger import (
+    from agentic_core.L5_safety.enforcement.hitl.decision_logger import (
         HITLDecision,
         HITLDecisionLogger,
         get_decision_logger,
     )
-    from agentic_core.L5_safety.hitl.hitl_escalation_activator import (
+    from agentic_core.L5_safety.enforcement.hitl.hitl_escalation_activator import (
         EscalationPriority,
         EscalationRequest,
         HITLEscalationActivator,
         get_hitl_escalation_activator,
         reset_hitl_escalation_activator,
     )
-    from agentic_core.L5_safety.hitl.patch_validator import HumanPatchValidationError, validate_patch
+    from agentic_core.L5_safety.enforcement.hitl.patch_validator import HumanPatchValidationError, validate_patch
     from agentic_core.L5_safety.types.human_decision_artifact_types import (
         HumanDecisionArtifact as L5HumanDecisionArtifact,
     )
-    from agentic_core.L6_observability.engines.hitl_dpo_pair_generator import (
+    from agentic_core.L6_observability.utils.engines.hitl_dpo_pair_generator import (
         DefaultDeterministicDPOPairGenerator,
     )
     from agentic_core.mixins.hitl_mixin import (

@@ -1,5 +1,0 @@
-REPO_ROOT: C:\Git\Agentic-Workflow
-INVOCATION: _legacy_main(args=['--domains'])
-DRY_RUN=False, VALIDATE=False
-AGENTIC_ALLOW_MUTATION_FOR_TESTS=1
----

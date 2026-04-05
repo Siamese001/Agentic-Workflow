@@ -1,0 +1,11 @@
+{
+  "test_name": "test_adg_edge_validation",
+  "timestamp": 1775036425.5623014,
+  "inputs_hash": "c8537813e2df10fc",
+  "outputs_hash": "02dce761ae7d33e6",
+  "execution_trace": [
+    "start:test_adg_edge_validation",
+    "end:test_adg_edge_validation"
+  ],
+  "artifacts": {}
+}

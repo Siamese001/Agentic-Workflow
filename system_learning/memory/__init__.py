@@ -1,4 +1,4 @@
 """Memory module - placeholder for test compatibility."""
-from system_learning.memory import mcp_adapter, sqlite_store
+from system_learning.memory.memory import SqliteMemoryStore
 
-__all__ = ["sqlite_store", "mcp_adapter"]
+__all__ = ["SqliteMemoryStore"]

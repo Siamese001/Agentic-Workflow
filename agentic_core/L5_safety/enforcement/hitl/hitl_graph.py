@@ -26,7 +26,7 @@ Data model:
 
 Usage::
 
-    from agentic_core.L5_safety.hitl.hitl_graph import HITLGraph, HITLRuntimeRecorder
+    from agentic_core.L5_safety.enforcement.hitl.hitl_graph import HITLGraph, HITLRuntimeRecorder
     from agentic_core.adg.runtime.event_graph import RuntimeGraph
 
     rt_graph = RuntimeGraph()
