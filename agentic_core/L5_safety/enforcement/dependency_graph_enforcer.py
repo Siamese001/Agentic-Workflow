@@ -230,7 +230,7 @@ class DependencyGraph:
             List of file paths that would be impacted by changes
         """
         impacted = set()
-        module_name = file_path.replace("/", ".").replace("\\", ".").replace(".py", "")
+        module_name = str(Path(file_path).as_posix()).replace("/", ".").replace(".py", "")
         if module_name in self.reverse_graph:
             impacted.update(self.reverse_graph[module_name])
         return list(impacted)

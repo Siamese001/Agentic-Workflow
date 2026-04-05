@@ -276,7 +276,7 @@ class AstRelocator(ast.NodeVisitor):
         """Generate the import string required to access the moved entity."""
         try:
             rel_path = new_path.relative_to(project_root)
-            module_path = str(rel_path.with_suffix("")).replace("/", ".").replace("\\", ".")
+            module_path = str(rel_path.with_suffix("").as_posix()).replace("/", ".")
             return f"from {module_path} import {entity_name}"
         except ValueError:
             return f"# Could not resolve import for {entity_name}"

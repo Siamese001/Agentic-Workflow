@@ -157,10 +157,13 @@ def update_imports_for_moved_file(
     updates = 0
 
     # Find all Python files that might import the moved file
-    old_module = str(old_path.relative_to(project_root)).replace("\\", ".").replace("/", ".")
+    # Use as_posix() for proper cross-platform path normalization
+    rel_old = old_path.relative_to(project_root)
+    old_module = str(rel_old.as_posix()).replace("/", ".")
     old_module = old_module.replace(".py", "")
 
-    new_module = str(new_path.relative_to(project_root)).replace("\\", ".").replace("/", ".")
+    rel_new = new_path.relative_to(project_root)
+    new_module = str(rel_new.as_posix()).replace("/", ".")
     new_module = new_module.replace(".py", "")
 
     for py_file in project_root.rglob("*.py"):

@@ -862,7 +862,7 @@ class Orchestrator(SovereignBaseAgent):
                 return True
             agent_file = Path(agent_path)
             rel_path = agent_file.relative_to(self.project_root)
-            module_path = str(rel_path.with_suffix("")).replace("/", ".").replace("\\", ".")
+            module_path = str(rel_path.with_suffix("").as_posix()).replace("/", ".")
             if module_path in self._import_cache:
                 return self._import_cache[module_path]
             if not any(module_path == p or module_path.startswith(p + ".") for p in ALLOWED_MODULE_PREFIXES):
