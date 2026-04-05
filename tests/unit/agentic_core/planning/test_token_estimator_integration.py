@@ -587,6 +587,9 @@ def constant_value_{i}():
 
     def test_memory_efficiency_with_large_history(self):
         """Test memory efficiency with large budget history"""
+        # Clear any leftover state from previous tests
+        self.hook.clear_history()
+        
         # Add many steps to budget history
         for i in range(100):
             self.hook.preflight_check(
