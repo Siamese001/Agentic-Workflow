@@ -76,7 +76,7 @@ from agentic_core.runtime.lifecycle_trace_contract import (
     emit_replay_key,  # noqa: E402
 )
 
-from agentic_core.patterns.base import BaseReasoningPattern
+from agentic_core.L1_cognition.types.reasoning_pattern import BaseReasoningPattern
 from agentic_core.runtime.state import AgentState
 from agentic_core.runtime.tools import ToolRegistry
 

@@ -50,7 +50,7 @@ from agentic_core.runtime.lifecycle_trace_contract import (
     emit_determinism_digest,  # noqa: E402
     emit_replay_key,  # noqa: E402
 )
-from agentic_core.patterns.base import BaseReasoningPattern
+from agentic_core.L1_cognition.types.reasoning_pattern import BaseReasoningPattern
 from agentic_core.runtime.exceptions import ToolExecutionError, ToolNotFoundError
 
 _emit_authorize_and_execute("p2", "agent_engine", "execution_auth")

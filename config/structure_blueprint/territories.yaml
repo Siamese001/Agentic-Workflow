@@ -187,10 +187,6 @@ territories:
           safety: {purpose: "Safety and validation mixins"}
           healing: {purpose: "Healing and recovery mixins"}
           caching: {purpose: "Caching and performance mixins"}
-      patterns:
-        depth: 2
-        purpose: "Reasoning patterns (DEPRECATED: consolidate into L0/L1 types)"
-        volatile: true
       planning:
         depth: 2
         purpose: "Planning utilities (primarily used by tools/CI, consider moving to tools/utils)"
