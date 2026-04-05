@@ -6,7 +6,7 @@ Manages deterministic proposal creation and approval tracking.
 """
 
 
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+from agentic_core.runtime.lifecycle_trace_contract import (
     LayerSegment,
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
@@ -78,7 +78,7 @@ from system_learning.engines.retrieval_profile_proposal import (
 
 _emit_applies_guardrail("p0", "retrieval_profile_proposal_manager", "p0_governance")
 _emit_snapshots_state("p0", "retrieval_profile_proposal_manager", "state_snapshot")
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,

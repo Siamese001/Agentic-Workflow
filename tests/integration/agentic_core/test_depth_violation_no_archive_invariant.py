@@ -24,7 +24,7 @@ try:
     from agentic_core.L5_safety.config.structure_blueprint import get_all_territories
     from agentic_core.L5_safety.reasoning.LocationHealerAgent import LocationHealerAgent
     from agentic_core.L5_safety.utils.location_constants_util import HEALING_STRATEGY_MAP
-    from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+    from agentic_core.runtime.lifecycle_trace_contract import (
         _emit_applies_guardrail,
         _emit_reads_policy_state,
         _emit_records_execution_trace,

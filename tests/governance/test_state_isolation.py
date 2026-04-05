@@ -219,7 +219,7 @@ class TestSingletonIsolation:
         # Perform some operations that might populate caches
         try:
             from agentic_core.L2_execution.utils.write_gateway import WriteAmplificationError
-            from agentic_core.L_CONTRACTS.lifecycle_trace_contract import _emit_agent_executes_agent
+            from agentic_core.runtime.lifecycle_trace_contract import _emit_agent_executes_agent
             # Create some instances
             error = WriteAmplificationError(Path("test"), 100, 1000, 10.0)
         except ImportError:

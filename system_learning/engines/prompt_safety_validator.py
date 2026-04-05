@@ -31,7 +31,7 @@ import hashlib
 import logging
 from dataclasses import dataclass
 
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+from agentic_core.runtime.lifecycle_trace_contract import (
     LayerSegment,
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
@@ -109,7 +109,7 @@ from system_learning.types.prompt_artifact_types import (
 
 _emit_applies_guardrail("p0", "prompt_safety_validator", "p0_governance")
 _emit_snapshots_state("p0", "prompt_safety_validator", "state_snapshot")
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,

@@ -164,7 +164,7 @@ if "_emit_reads_through" in c and "lifecycle_trace_contract" not in c:
     lines = c.split("\n")
     for i, line in enumerate(lines):
         if line.strip().startswith("def _require_safe_segment"):
-            lines.insert(i, "from agentic_core.L_CONTRACTS.lifecycle_trace_contract import _emit_reads_through\n")
+            lines.insert(i, "from agentic_core.runtime.lifecycle_trace_contract import _emit_reads_through\n")
             break
     write(rel, "\n".join(lines))
     fixes_applied += 1

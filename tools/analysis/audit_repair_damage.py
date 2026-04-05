@@ -7,13 +7,13 @@ PROJECT_ROOT = Path(__file__).resolve().parent.parent
 GAPS_CSV = PROJECT_ROOT / "runtime_gaps" / "trace_deficit_modules.csv"
 
 EMIT_FUNC_MAP = {
-    "emit_replay_key": "from agentic_core.L_CONTRACTS.lifecycle_trace_contract import emit_replay_key",
-    "emit_determinism_digest": "from agentic_core.L_CONTRACTS.lifecycle_trace_contract import emit_determinism_digest",
-    "_emit_applies_guardrail": "from agentic_core.L_CONTRACTS.lifecycle_trace_contract import _emit_applies_guardrail",
-    "_emit_snapshots_state": "from agentic_core.L_CONTRACTS.lifecycle_trace_contract import _emit_snapshots_state",
-    "_emit_signs_execution_trace": "from agentic_core.L_CONTRACTS.lifecycle_trace_contract import _emit_signs_execution_trace",
-    "_emit_records_execution_trace": "from agentic_core.L_CONTRACTS.lifecycle_trace_contract import _emit_records_execution_trace",
-    "_emit_reads_policy_state": "from agentic_core.L_CONTRACTS.lifecycle_trace_contract import _emit_reads_policy_state",
+    "emit_replay_key": "from agentic_core.runtime.lifecycle_trace_contract import emit_replay_key",
+    "emit_determinism_digest": "from agentic_core.runtime.lifecycle_trace_contract import emit_determinism_digest",
+    "_emit_applies_guardrail": "from agentic_core.runtime.lifecycle_trace_contract import _emit_applies_guardrail",
+    "_emit_snapshots_state": "from agentic_core.runtime.lifecycle_trace_contract import _emit_snapshots_state",
+    "_emit_signs_execution_trace": "from agentic_core.runtime.lifecycle_trace_contract import _emit_signs_execution_trace",
+    "_emit_records_execution_trace": "from agentic_core.runtime.lifecycle_trace_contract import _emit_records_execution_trace",
+    "_emit_reads_policy_state": "from agentic_core.runtime.lifecycle_trace_contract import _emit_reads_policy_state",
 }
 
 broken = []
@@ -42,7 +42,7 @@ for row in rows:
             contract_import_block = ""
             in_block = False
             for line in src.splitlines():
-                if "from agentic_core.L_CONTRACTS.lifecycle_trace_contract import" in line:
+                if "from agentic_core.runtime.lifecycle_trace_contract import" in line:
                     in_block = True
                 if in_block:
                     contract_import_block += line + "\n"

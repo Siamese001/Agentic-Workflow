@@ -69,7 +69,7 @@ def fix_file(filepath, missing_funcs):
     # Sort and format
     import_items.sort()
     new_import_inner = ',\n'.join(f'    {item}' for item in import_items)
-    new_import = f'from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (\n{new_import_inner}\n)'
+    new_import = f'from agentic_core.runtime.lifecycle_trace_contract import (\n{new_import_inner}\n)'
 
     # Replace in content
     new_content = content.replace(old_import, new_import)

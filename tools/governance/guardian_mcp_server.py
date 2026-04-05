@@ -49,7 +49,7 @@ from typing import Any
 
 from mcp.server.fastmcp import FastMCP
 
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_applies_guardrail,
     _emit_authorize_and_execute,
     _emit_blocks_direct_write,

@@ -11,7 +11,7 @@ import sqlite3
 import time
 from pathlib import Path
 
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_pulls_context,
     _emit_validated_by_safety_plane,
     _emit_writes_through,
@@ -140,37 +140,37 @@ for metric in THRESHOLDS:
 # For each wireable dimension, find modules in call graph that lack the edge
 WIREABLE_DIMS = {
     "records_execution_trace": {
-        "import": "from agentic_core.L_CONTRACTS.lifecycle_trace_contract import _emit_records_execution_trace  # noqa: E402",
+        "import": "from agentic_core.runtime.lifecycle_trace_contract import _emit_records_execution_trace  # noqa: E402",
         "call": '_emit_records_execution_trace("p0", "evidence", "{basename}")',
         "emit_func": "_emit_records_execution_trace",
     },
     "applies_guardrail": {
-        "import": "from agentic_core.L_CONTRACTS.lifecycle_trace_contract import _emit_applies_guardrail  # noqa: E402",
+        "import": "from agentic_core.runtime.lifecycle_trace_contract import _emit_applies_guardrail  # noqa: E402",
         "call": '_emit_applies_guardrail("p0", "{basename}", "p0_governance")',
         "emit_func": "_emit_applies_guardrail",
     },
     "reads_policy_state": {
-        "import": "from agentic_core.L_CONTRACTS.lifecycle_trace_contract import _emit_reads_policy_state  # noqa: E402",
+        "import": "from agentic_core.runtime.lifecycle_trace_contract import _emit_reads_policy_state  # noqa: E402",
         "call": '_emit_reads_policy_state("p0", "{basename}", "policy_binding")',
         "emit_func": "_emit_reads_policy_state",
     },
     "snapshots_state": {
-        "import": "from agentic_core.L_CONTRACTS.lifecycle_trace_contract import _emit_snapshots_state  # noqa: E402",
+        "import": "from agentic_core.runtime.lifecycle_trace_contract import _emit_snapshots_state  # noqa: E402",
         "call": '_emit_snapshots_state("p0", "{basename}", "state_snapshot")',
         "emit_func": "_emit_snapshots_state",
     },
     "emits_replay_key": {
-        "import": "from agentic_core.L_CONTRACTS.lifecycle_trace_contract import emit_replay_key  # noqa: E402",
+        "import": "from agentic_core.runtime.lifecycle_trace_contract import emit_replay_key  # noqa: E402",
         "call": 'emit_replay_key("p0", "{basename}")',
         "emit_func": "emit_replay_key",
     },
     "emits_determinism_digest": {
-        "import": "from agentic_core.L_CONTRACTS.lifecycle_trace_contract import emit_determinism_digest  # noqa: E402",
+        "import": "from agentic_core.runtime.lifecycle_trace_contract import emit_determinism_digest  # noqa: E402",
         "call": 'emit_determinism_digest("p0", "{basename}")',
         "emit_func": "emit_determinism_digest",
     },
     "signs_execution_trace": {
-        "import": "from agentic_core.L_CONTRACTS.lifecycle_trace_contract import _emit_signs_execution_trace  # noqa: E402",
+        "import": "from agentic_core.runtime.lifecycle_trace_contract import _emit_signs_execution_trace  # noqa: E402",
         "call": '_emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)',
         "emit_func": "_emit_signs_execution_trace",
     },

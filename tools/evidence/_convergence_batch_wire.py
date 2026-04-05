@@ -29,7 +29,7 @@ all_modules = digest_needs | trace_needs
 
 IMPORT_LINE_DIGEST = "    emit_determinism_digest,"
 IMPORT_LINE_TRACE = "    record_execution_trace,"
-IMPORT_FROM = "from agentic_core.L_CONTRACTS.lifecycle_trace_contract import ("
+IMPORT_FROM = "from agentic_core.runtime.lifecycle_trace_contract import ("
 
 stats = {
     "digest_added": 0,
@@ -90,7 +90,7 @@ def wire_module(module_rel: str) -> None:
                 if line.strip() == ")":
                     insert_idx = max(insert_idx, i + 1)
             import_block = (
-                "\nfrom agentic_core.L_CONTRACTS.lifecycle_trace_contract import (\n"
+                "\nfrom agentic_core.runtime.lifecycle_trace_contract import (\n"
                 "    emit_determinism_digest,\n"
                 ")\n"
             )
@@ -124,7 +124,7 @@ def wire_module(module_rel: str) -> None:
                 if line.strip() == ")":
                     insert_idx = max(insert_idx, i + 1)
             import_block = (
-                "\nfrom agentic_core.L_CONTRACTS.lifecycle_trace_contract import (\n"
+                "\nfrom agentic_core.runtime.lifecycle_trace_contract import (\n"
                 "    record_execution_trace,\n"
                 ")\n"
             )

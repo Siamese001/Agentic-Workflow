@@ -70,7 +70,7 @@ try:
         get_hitl_escalation_activator,
         reset_hitl_escalation_activator,
     )
-    from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+    from agentic_core.runtime.lifecycle_trace_contract import (
         LayerSegment,
         _emit_captures_execution_output,
         _emit_escalates_to_human,
@@ -1238,7 +1238,7 @@ class TestPTCConcurrentExecution:
 # =============================================================================
 
 try:
-    from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+    from agentic_core.runtime.lifecycle_trace_contract import (
         LayerSegment,
         _emit_captures_execution_output,
         _emit_records_execution_trace,

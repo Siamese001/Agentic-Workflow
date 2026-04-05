@@ -21,7 +21,7 @@ import os
 import sys
 from pathlib import Path
 
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_pulls_context,
     _emit_reads_through,
     _emit_validated_by_safety_plane,
@@ -172,7 +172,7 @@ def get_import_line(extras: list[str]) -> str:
         symbols.append("emit_determinism_digest")
     if "signs_trace" in extras:
         symbols.append("_emit_signs_execution_trace")
-    return f"from agentic_core.L_CONTRACTS.lifecycle_trace_contract import {', '.join(symbols)}"
+    return f"from agentic_core.runtime.lifecycle_trace_contract import {', '.join(symbols)}"
 
 
 def build_emit_block(class_name: str, method_name: str, layer_seg: str, extras: list[str], indent: str) -> str:
@@ -331,7 +331,7 @@ def apply_wiring(filepath: str, methods: list[dict], extras: list[str], layer_se
     lines = original_source.split("\n")
 
     import_line = get_import_line(extras)
-    has_import = "from agentic_core.L_CONTRACTS.lifecycle_trace_contract import" in original_source
+    has_import = "from agentic_core.runtime.lifecycle_trace_contract import" in original_source
 
     if dry_run:
         return len(methods)

@@ -42,51 +42,51 @@ PROJECT_ROOT = Path(__file__).resolve().parent.parent
 
 EMIT_TEMPLATES = {
     "applies_guardrail": {
-        "import_line": "from agentic_core.L_CONTRACTS.lifecycle_trace_contract import _emit_applies_guardrail",
+        "import_line": "from agentic_core.runtime.lifecycle_trace_contract import _emit_applies_guardrail",
         "call_template": '_emit_applies_guardrail(str(uuid.uuid4()), "{method_name}", "{layer}")',
     },
     "validated_by_safety_plane": {
-        "import_line": "from agentic_core.L_CONTRACTS.lifecycle_trace_contract import _emit_validated_by_safety_plane",
+        "import_line": "from agentic_core.runtime.lifecycle_trace_contract import _emit_validated_by_safety_plane",
         "call_template": '_emit_validated_by_safety_plane(str(uuid.uuid4()), "{method_name}", "{layer}")',
     },
     "verifies_boundary": {
-        "import_line": "from agentic_core.L_CONTRACTS.lifecycle_trace_contract import _emit_verifies_boundary",
+        "import_line": "from agentic_core.runtime.lifecycle_trace_contract import _emit_verifies_boundary",
         "call_template": '_emit_verifies_boundary(str(uuid.uuid4()), "{method_name}", "{layer}")',
     },
     "agent_executes_agent": {
-        "import_line": "from agentic_core.L_CONTRACTS.lifecycle_trace_contract import _emit_agent_executes_agent",
+        "import_line": "from agentic_core.runtime.lifecycle_trace_contract import _emit_agent_executes_agent",
         "call_template": '_emit_agent_executes_agent(str(uuid.uuid4()), "{class_name}", "{method_name}")',
     },
     "writes_through": {
-        "import_line": "from agentic_core.L_CONTRACTS.lifecycle_trace_contract import _emit_writes_through",
+        "import_line": "from agentic_core.runtime.lifecycle_trace_contract import _emit_writes_through",
         "call_template": '_emit_writes_through(str(uuid.uuid4()), "{method_name}", "{layer}")',
     },
     "snapshots_state": {
-        "import_line": "from agentic_core.L_CONTRACTS.lifecycle_trace_contract import _emit_snapshots_state",
+        "import_line": "from agentic_core.runtime.lifecycle_trace_contract import _emit_snapshots_state",
         "call_template": '_emit_snapshots_state(str(uuid.uuid4()), "{method_name}", "{layer}")',
     },
     "observes_runtime_state": {
-        "import_line": "from agentic_core.L_CONTRACTS.lifecycle_trace_contract import _emit_observes_runtime_state",
+        "import_line": "from agentic_core.runtime.lifecycle_trace_contract import _emit_observes_runtime_state",
         "call_template": '_emit_observes_runtime_state(str(uuid.uuid4()), "{method_name}", "{layer}")',
     },
     "verifies_policy": {
-        "import_line": "from agentic_core.L_CONTRACTS.lifecycle_trace_contract import _emit_verifies_policy",
+        "import_line": "from agentic_core.runtime.lifecycle_trace_contract import _emit_verifies_policy",
         "call_template": '_emit_verifies_policy(str(uuid.uuid4()), "{method_name}", "{layer}")',
     },
     "gated_by_confidence": {
-        "import_line": "from agentic_core.L_CONTRACTS.lifecycle_trace_contract import _emit_gated_by_confidence",
+        "import_line": "from agentic_core.runtime.lifecycle_trace_contract import _emit_gated_by_confidence",
         "call_template": '_emit_gated_by_confidence(str(uuid.uuid4()), "{method_name}", "0.5")',
     },
     "hard_fails_untranscripted": {
-        "import_line": "from agentic_core.L_CONTRACTS.lifecycle_trace_contract import _emit_hard_fails_untranscripted",
+        "import_line": "from agentic_core.runtime.lifecycle_trace_contract import _emit_hard_fails_untranscripted",
         "call_template": '_emit_hard_fails_untranscripted(str(uuid.uuid4()), "{method_name}")',
     },
     "transcripts_response": {
-        "import_line": "from agentic_core.L_CONTRACTS.lifecycle_trace_contract import _emit_transcripts_response",
+        "import_line": "from agentic_core.runtime.lifecycle_trace_contract import _emit_transcripts_response",
         "call_template": '_emit_transcripts_response(str(uuid.uuid4()), "{method_name}", "model")',
     },
     "signs_execution_trace": {
-        "import_line": "from agentic_core.L_CONTRACTS.lifecycle_trace_contract import _emit_signs_execution_trace",
+        "import_line": "from agentic_core.runtime.lifecycle_trace_contract import _emit_signs_execution_trace",
         "call_template": '_emit_signs_execution_trace(str(uuid.uuid4()), "seg_hash", "seg_sig", 0)',
     },
 }

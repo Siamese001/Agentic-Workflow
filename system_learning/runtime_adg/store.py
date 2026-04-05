@@ -16,7 +16,7 @@ from agentic_core.L5_safety.config.structure_blueprint.ssot import (
     L4_APPROVED_FOLDERS,
     get_validated_project_root,
 )
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+from agentic_core.runtime.lifecycle_trace_contract import (
     emit_determinism_digest,
     record_execution_trace,
 )

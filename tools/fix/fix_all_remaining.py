@@ -107,7 +107,7 @@ def main():
                 else:
                     print(f"  FAIL  NameError({name}) stub in {rel}:{lineno}")
             elif name == "_emit_writes_through":
-                imp = "from agentic_core.L_CONTRACTS.lifecycle_trace_contract import _emit_writes_through  # noqa: E402"
+                imp = "from agentic_core.runtime.lifecycle_trace_contract import _emit_writes_through  # noqa: E402"
                 if add_import_before_line(src_file, lineno, imp):
                     print(f"  FIXED NameError({name}) in {rel}:{lineno}")
                 else:

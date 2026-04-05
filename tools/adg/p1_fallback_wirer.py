@@ -11,7 +11,7 @@ import argparse
 import ast
 from pathlib import Path
 
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_pulls_context,
     _emit_validated_by_safety_plane,
     _emit_writes_through,
@@ -41,22 +41,22 @@ LAYER_PATHS = {
 DIM_CONFIG = {
     "evidence": {
         "emit_func": "_emit_reads_policy_state",
-        "import_line": "from agentic_core.L_CONTRACTS.lifecycle_trace_contract import _emit_reads_policy_state  # noqa: E402",
+        "import_line": "from agentic_core.runtime.lifecycle_trace_contract import _emit_reads_policy_state  # noqa: E402",
         "call_code": '_emit_reads_policy_state("p1", "{basename}", "{layer}")',
     },
     "governance": {
         "emit_func": "_emit_escalates_to_human",
-        "import_line": "from agentic_core.L_CONTRACTS.lifecycle_trace_contract import _emit_escalates_to_human  # noqa: E402",
+        "import_line": "from agentic_core.runtime.lifecycle_trace_contract import _emit_escalates_to_human  # noqa: E402",
         "call_code": '_emit_escalates_to_human("p1", "{basename}", "{layer}")',
     },
     "trace": {
         "emit_func": "_emit_routes_through",
-        "import_line": "from agentic_core.L_CONTRACTS.lifecycle_trace_contract import _emit_routes_through  # noqa: E402",
+        "import_line": "from agentic_core.runtime.lifecycle_trace_contract import _emit_routes_through  # noqa: E402",
         "call_code": '_emit_routes_through("p1", "{basename}", "{layer}")',
     },
     "runtime": {
         "emit_func": "_emit_dispatches_healing_run",
-        "import_line": "from agentic_core.L_CONTRACTS.lifecycle_trace_contract import _emit_dispatches_healing_run  # noqa: E402",
+        "import_line": "from agentic_core.runtime.lifecycle_trace_contract import _emit_dispatches_healing_run  # noqa: E402",
         "call_code": '_emit_dispatches_healing_run("p1", "{basename}", "{layer}")',
     },
 }

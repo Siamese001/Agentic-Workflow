@@ -11,7 +11,7 @@ import uuid
 from dataclasses import dataclass, field
 from typing import Any
 
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+from agentic_core.runtime.lifecycle_trace_contract import (
     LayerSegment,
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
@@ -87,7 +87,7 @@ from system_learning.types.pattern_analysis_types import (
 _emit_applies_guardrail("p0", "healing_config_optimizer", "p0_governance")
 _emit_reads_policy_state("p0", "healing_config_optimizer", "policy_binding")
 _emit_snapshots_state("p0", "healing_config_optimizer", "state_snapshot")
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,

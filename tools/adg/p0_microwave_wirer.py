@@ -17,7 +17,7 @@ import sys
 import time
 from pathlib import Path
 
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_pulls_context,
     _emit_validated_by_safety_plane,
     _emit_writes_through,
@@ -41,37 +41,37 @@ REPORTS_DIR = PROJECT_ROOT / "docs" / "reports"
 DIM_CONFIG = {
     "records_execution_trace": {
         "emit_func": "_emit_records_execution_trace",
-        "import_from": "from agentic_core.L_CONTRACTS.lifecycle_trace_contract import _emit_records_execution_trace",
+        "import_from": "from agentic_core.runtime.lifecycle_trace_contract import _emit_records_execution_trace",
         "call_code": '_emit_records_execution_trace("p0", "evidence", "{basename}")',
     },
     "applies_guardrail": {
         "emit_func": "_emit_applies_guardrail",
-        "import_from": "from agentic_core.L_CONTRACTS.lifecycle_trace_contract import _emit_applies_guardrail",
+        "import_from": "from agentic_core.runtime.lifecycle_trace_contract import _emit_applies_guardrail",
         "call_code": '_emit_applies_guardrail("p0", "{basename}", "p0_governance")',
     },
     "reads_policy_state": {
         "emit_func": "_emit_reads_policy_state",
-        "import_from": "from agentic_core.L_CONTRACTS.lifecycle_trace_contract import _emit_reads_policy_state",
+        "import_from": "from agentic_core.runtime.lifecycle_trace_contract import _emit_reads_policy_state",
         "call_code": '_emit_reads_policy_state("p0", "{basename}", "policy_binding")',
     },
     "snapshots_state": {
         "emit_func": "_emit_snapshots_state",
-        "import_from": "from agentic_core.L_CONTRACTS.lifecycle_trace_contract import _emit_snapshots_state",
+        "import_from": "from agentic_core.runtime.lifecycle_trace_contract import _emit_snapshots_state",
         "call_code": '_emit_snapshots_state("p0", "{basename}", "state_snapshot")',
     },
     "emits_replay_key": {
         "emit_func": "emit_replay_key",
-        "import_from": "from agentic_core.L_CONTRACTS.lifecycle_trace_contract import emit_replay_key",
+        "import_from": "from agentic_core.runtime.lifecycle_trace_contract import emit_replay_key",
         "call_code": 'emit_replay_key("p0", "{basename}")',
     },
     "emits_determinism_digest": {
         "emit_func": "emit_determinism_digest",
-        "import_from": "from agentic_core.L_CONTRACTS.lifecycle_trace_contract import emit_determinism_digest",
+        "import_from": "from agentic_core.runtime.lifecycle_trace_contract import emit_determinism_digest",
         "call_code": 'emit_determinism_digest("p0", "{basename}")',
     },
     "signs_execution_trace": {
         "emit_func": "_emit_signs_execution_trace",
-        "import_from": "from agentic_core.L_CONTRACTS.lifecycle_trace_contract import _emit_signs_execution_trace",
+        "import_from": "from agentic_core.runtime.lifecycle_trace_contract import _emit_signs_execution_trace",
         "call_code": '_emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)',
     },
 }
@@ -222,7 +222,7 @@ def wire_module(filepath, missing_dims):
     existing_imports = set()
     for line in lines:
         stripped = line.strip()
-        if stripped.startswith("from agentic_core.L_CONTRACTS.lifecycle_trace_contract import"):
+        if stripped.startswith("from agentic_core.runtime.lifecycle_trace_contract import"):
             # Extract imported names
             if "(" in stripped:
                 # Multi-line import — collect all

@@ -138,13 +138,13 @@ def patch_module(filepath: Path, module_name: str, target_wt: int,
     # Ensure import exists
     if not has_writes_through_import(text):
         # Add import
-        import_line = "from agentic_core.L_CONTRACTS.lifecycle_trace_contract import _emit_writes_through\n"
+        import_line = "from agentic_core.runtime.lifecycle_trace_contract import _emit_writes_through\n"
         # Insert after existing imports or at top
-        if "from agentic_core.L_CONTRACTS.lifecycle_trace_contract import" in text:
+        if "from agentic_core.runtime.lifecycle_trace_contract import" in text:
             # Add to existing import block
             text = text.replace(
-                "from agentic_core.L_CONTRACTS.lifecycle_trace_contract import",
-                "from agentic_core.L_CONTRACTS.lifecycle_trace_contract import\n    _emit_writes_through,",
+                "from agentic_core.runtime.lifecycle_trace_contract import",
+                "from agentic_core.runtime.lifecycle_trace_contract import\n    _emit_writes_through,",
                 1
             )
         else:

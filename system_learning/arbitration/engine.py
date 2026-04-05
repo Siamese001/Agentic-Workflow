@@ -7,7 +7,7 @@ import json
 import math
 from typing import Any, Sequence
 
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+from agentic_core.runtime.lifecycle_trace_contract import (
     LayerSegment,
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
@@ -74,7 +74,7 @@ from .types import ArbitrationCandidate, ArbitrationDecision, ArbitrationPolicy
 
 _emit_applies_guardrail("p0", "engine", "p0_governance")
 _emit_snapshots_state("p0", "engine", "state_snapshot")
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,

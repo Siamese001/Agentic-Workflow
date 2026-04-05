@@ -74,7 +74,7 @@ def main():
 
         # Count removed emitters (commented out)
         removed_count = content.count("# REMOVED: _emit_")
-        import_count = content.count("from agentic_core.L_CONTRACTS.lifecycle_trace_contract import")
+        import_count = content.count("from agentic_core.runtime.lifecycle_trace_contract import")
 
         print(f"File: {stripped_file}")
         print(f"  Removed emitter calls: {removed_count}")

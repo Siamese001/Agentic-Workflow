@@ -22,7 +22,7 @@ IMPORT_FIXES = {
     "SYSTEM_LEARNING_DIR": "from agentic_core.L0_routing.config.path_constants import SYSTEM_LEARNING_DIR",
     "TESTS_UNIT_DIR": "from agentic_core.L0_routing.config.path_constants import TESTS_UNIT_DIR",
     "Path": "from pathlib import Path",
-    "_emit_writes_through": "from agentic_core.L_CONTRACTS.lifecycle_trace_contract import _emit_writes_through",
+    "_emit_writes_through": "from agentic_core.runtime.lifecycle_trace_contract import _emit_writes_through",
 }
 
 # Stub definitions for classes not importable

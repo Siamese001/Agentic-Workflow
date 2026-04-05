@@ -76,7 +76,7 @@ for dirpath, _, filenames in os.walk(os.path.join(ROOT, "agentic_core")):
             for i, line in enumerate(lines):
                 if line.startswith("from ") or line.startswith("import "):
                     last_import = i
-            new_block = ["from agentic_core.L_CONTRACTS.lifecycle_trace_contract import ("]
+            new_block = ["from agentic_core.runtime.lifecycle_trace_contract import ("]
             for s in needs:
                 new_block.append(f"    {s},")
             new_block.append(")")
