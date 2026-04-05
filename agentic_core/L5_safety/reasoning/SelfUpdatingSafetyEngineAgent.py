@@ -101,7 +101,7 @@ from typing import Any
 
 from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 from agentic_core.mixins.safety_mixin import SafetyAnalysisMixin
-from agentic_core.utils.schemas.timeout_decorator_util import timeout
+from agentic_core.utils.timeout_decorator_util import timeout
 
 Logger: Any = logging.getLogger(__name__)
 
@@ -265,7 +265,7 @@ from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
-from agentic_core.utils.schemas.decorators_compat_util import standard_heal
+from agentic_core.utils.decorators_compat_util import standard_heal
 
 _emit_emits_metric_event("SelfUpdatingSafetyEngineAgent", "p4obs", "metric_1")
 _emit_emits_metric_event("SelfUpdatingSafetyEngineAgent", "p4obs", "metric_2")

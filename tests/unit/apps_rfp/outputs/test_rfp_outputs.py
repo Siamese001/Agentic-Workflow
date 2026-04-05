@@ -1,4 +1,4 @@
-"""Test apps_rfp outputs functionality."""
+"""Test consolidated outputs for apps_rfp."""
 
 import sys
 from pathlib import Path
@@ -19,11 +19,15 @@ class TestRfpOutputs:
         from apps_rfp.outputs.proposal_renderer import ProposalRenderer
 
         mock_proposal = MagicMock()
-        mock_proposal.model_dump.return_value = {"title": "Test Proposal"}
+        mock_proposal.model_dump.return_value = {"industry": "Technology", "status": "completed"}
+        mock_proposal.industry = "Technology"
+        mock_proposal.status = "completed"
+        mock_proposal.quality_score = 0.85
+        mock_proposal.sections = []
 
         renderer = ProposalRenderer()
         json_output = renderer.render_json(mock_proposal)
-        assert "Test Proposal" in json_output
+        assert "Technology" in json_output
 
     def test_proposal_renderer_markdown(self):
         """Test ProposalRenderer Markdown output."""
@@ -55,8 +59,9 @@ class TestRfpOutputs:
         from apps_rfp.outputs.section_renderer import SectionRenderer
 
         mock_section = MagicMock()
-        mock_section.heading = "Test Section"
-        mock_section.body = "Test content"
+        mock_section.bedy = "Test Section"
+        mock_section.word_count = 100
+        mock_section.content = "Test content"
 
         renderer = SectionRenderer()
         markdown = renderer.render_markdown(mock_section)

@@ -91,7 +91,7 @@ _emit_captures_evaluation_metric("p4", "digest_calculator", "eval_metric")
 _emit_stores_embedding("p4", "digest_calculator", "embedding_store")
 _emit_updates_meta_learning_state("p4", "digest_calculator", "meta_learning")
 _emit_links_execution_to_snapshot("p4", "digest_calculator", "exec_snapshot_link")
-from agentic_core.utils.schemas.canonical_json_util import CanonicalJSON
+from agentic_core.utils.canonical_json_util import CanonicalJSON
 
 emit_replay_key("p0", "digest_calculator")
 emit_determinism_digest("p0", "digest_calculator")

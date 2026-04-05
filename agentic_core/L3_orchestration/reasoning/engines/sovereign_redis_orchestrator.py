@@ -98,8 +98,8 @@ import redis
 
 from agentic_core.config.sovereign_config import get_sovereign_config
 from agentic_core.L2_execution.types.infra_error_types import InfrastructureDependencyError
-from agentic_core.utils.schemas.decorators_compat_util import standard_heal
-from agentic_core.utils.schemas.timeout_decorator_util import timeout
+from agentic_core.utils.decorators_compat_util import standard_heal
+from agentic_core.utils.timeout_decorator_util import timeout
 
 try:
     from agentic_core.L3_orchestration.reasoning.mcp_manager import MCPConnectionManager as _MCPManager

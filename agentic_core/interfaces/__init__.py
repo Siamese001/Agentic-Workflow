@@ -11,24 +11,24 @@ RE-EXPORT: All protocol files are in agentic_core.utils - this module re-exports
 from agentic_core.interfaces.IHealerProtocol import IHealerProtocol
 from agentic_core.interfaces.IMemoryStoreProtocol import IMemoryStoreProtocol
 from agentic_core.interfaces.IOrchestratorProtocol import IOrchestratorProtocol
-from agentic_core.utils.schemas.detection_protocol_util import (
+from agentic_core.utils.detection_protocol_util import (
     DetectionRequest,
     DetectionResult,
     DetectionSignalProtocol,
     Severity,
 )
-from agentic_core.utils.schemas.meta_learning_types_util import (
+from agentic_core.utils.meta_learning_types_util import (
     LearningContext,
     LearningResult,
     MetaLearningProtocol,
 )
-from agentic_core.utils.schemas.review_protocol_util import (
+from agentic_core.utils.review_protocol_util import (
     HumanReviewProtocol,
     ReviewRequest,
     ReviewResult,
     ReviewStatus,
 )
-from agentic_core.utils.schemas.verification_types_util import (
+from agentic_core.utils.verification_types_util import (
     VerificationGateProtocol,
     VerificationRequest,
     VerificationResult,

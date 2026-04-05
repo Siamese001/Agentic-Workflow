@@ -140,11 +140,11 @@ from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
-from agentic_core.utils.schemas.decorators_compat_util import standard_heal
+from agentic_core.utils.decorators_compat_util import standard_heal
 
 # guardian: allow-silent-degradation
 try:
-    from agentic_core.utils.schemas.decorators_compat_util import timeout
+    from agentic_core.utils.decorators_compat_util import timeout
 except ImportError:
 
     def timeout(seconds):  # type: ignore[misc]

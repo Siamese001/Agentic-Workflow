@@ -94,7 +94,7 @@ _emit_captures_evaluation_metric("p4", "ReportLocationAgent", "eval_metric")
 _emit_stores_embedding("p4", "ReportLocationAgent", "embedding_store")
 _emit_updates_meta_learning_state("p4", "ReportLocationAgent", "meta_learning")
 _emit_links_execution_to_snapshot("p4", "ReportLocationAgent", "exec_snapshot_link")
-from agentic_core.utils.schemas.report_location_validator_types_util import (
+from agentic_core.utils.report_location_validator_types_util import (
     APPROVED_REPORT_LOCATIONS,
     SSOT_REPORTS_DIR,
     ReportInventory,

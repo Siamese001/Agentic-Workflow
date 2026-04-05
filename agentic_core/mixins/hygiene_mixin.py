@@ -74,7 +74,7 @@ _emit_captures_evaluation_metric("p4", "hygiene_mixin", "eval_metric")
 _emit_stores_embedding("p4", "hygiene_mixin", "embedding_store")
 _emit_updates_meta_learning_state("p4", "hygiene_mixin", "meta_learning")
 _emit_links_execution_to_snapshot("p4", "hygiene_mixin", "exec_snapshot_link")
-from agentic_core.utils.schemas.decorators_compat_util import standard_heal
+from agentic_core.utils.decorators_compat_util import standard_heal
 
 _emit_applies_guardrail("p0", "hygiene_mixin", "p0_governance")
 _emit_reads_policy_state("p0", "hygiene_mixin", "policy_binding")

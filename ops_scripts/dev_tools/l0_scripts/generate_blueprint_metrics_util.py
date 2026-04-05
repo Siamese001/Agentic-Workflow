@@ -52,7 +52,7 @@ from agentic_core.runtime.lifecycle_trace_contract import (
     emit_determinism_digest,  # noqa: E402
     emit_replay_key,  # noqa: E402
 )
-from agentic_core.utils.schemas.security_util import safe_git_execute
+from agentic_core.utils.security_util import safe_git_execute
 
 _emit_records_execution_trace("p0", "evidence", "generate_blueprint_metrics_util")
 _emit_applies_guardrail("p0", "generate_blueprint_metrics_util", "p0_governance")

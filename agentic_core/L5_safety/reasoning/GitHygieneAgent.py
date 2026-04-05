@@ -92,7 +92,7 @@ from pathlib import Path
 from typing import Any
 
 try:
-    from agentic_core.utils.schemas.security_util import safe_git_execute
+    from agentic_core.utils.security_util import safe_git_execute
 except ModuleNotFoundError:
     import subprocess
     def safe_git_execute(cmd, **kwargs):
@@ -140,8 +140,8 @@ from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
-from agentic_core.utils.schemas.decorators_compat_util import standard_heal
-from agentic_core.utils.schemas.timeout_decorator_util import timeout
+from agentic_core.utils.decorators_compat_util import standard_heal
+from agentic_core.utils.timeout_decorator_util import timeout
 
 _emit_emits_metric_event("GitHygieneAgent", "p4obs", "metric_1")
 _emit_emits_metric_event("GitHygieneAgent", "p4obs", "metric_2")

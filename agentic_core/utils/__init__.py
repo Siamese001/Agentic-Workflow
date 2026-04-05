@@ -2,7 +2,7 @@
 Utilities for Agentic Core
 """
 
-from .schemas.decorators_util import (
+from .decorators_util import (
     HEAL_RESULT_SCHEMA,
     TimeoutError,
     standard_heal,

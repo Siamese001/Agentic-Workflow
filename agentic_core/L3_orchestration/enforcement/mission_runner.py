@@ -75,7 +75,7 @@ from agentic_core.runtime.lifecycle_trace_contract import (
     emit_determinism_digest,
     emit_replay_key,
 )
-from agentic_core.utils.schemas.security_util import safe_git_execute
+from agentic_core.utils.security_util import safe_git_execute
 
 _proof_emitter = ExecutionProofEmitter("L3.mission_runner")
 _mission_breaker = get_breaker("mission_runner")

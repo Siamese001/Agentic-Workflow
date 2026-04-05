@@ -177,7 +177,7 @@ from agentic_core.L5_safety.reasoning.core_kernel.classification_kernel import (
 try:
     from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
     from agentic_core.mixins.atomic_execution_mixin import AtomicExecutionMixin  # noqa: F401
-    from agentic_core.utils.schemas.decorators_compat_util import standard_heal
+    from agentic_core.utils.decorators_compat_util import standard_heal
 
     HAS_SOVEREIGN_BASE = True
     HAS_ATOMIC_MIXIN = True
@@ -337,7 +337,7 @@ def get_python_files_fast(root: Path) -> list[Path]:
         ENFORCED_TERRITORIES,
         VOLATILE_TERRITORIES,
     )
-    from agentic_core.utils.schemas.fs_util import get_python_files_fast as canonical_get_python_files
+    from agentic_core.utils.fs_util import get_python_files_fast as canonical_get_python_files
 
     exclude_dirs = list(GLOBAL_EXCLUDED_DIRS | SOVEREIGN_EXCLUDED_FOLDERS)
     exclude_dirs.extend(VOLATILE_TERRITORIES)

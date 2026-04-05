@@ -209,7 +209,7 @@ emit_determinism_digest("trace_root_hygiene_healer", "root_hygiene_healer_policy
 # Optional: Import SovereignBaseAgent if available for full integration
 try:
     from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
-    from agentic_core.utils.schemas.decorators_compat_util import standard_heal
+    from agentic_core.utils.decorators_compat_util import standard_heal
 
     HAS_SOVEREIGN_BASE = True
 except ImportError:  # guardian: allow-silent-swallow

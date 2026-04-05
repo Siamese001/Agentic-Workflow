@@ -84,9 +84,9 @@ _emit_captures_evaluation_metric("p4", "proposer_bridge", "eval_metric")
 _emit_stores_embedding("p4", "proposer_bridge", "embedding_store")
 _emit_updates_meta_learning_state("p4", "proposer_bridge", "meta_learning")
 _emit_links_execution_to_snapshot("p4", "proposer_bridge", "exec_snapshot_link")
-from ..monitoring.snapshots import AnswerQualitySnapshot, RetrievalDriftSnapshot
-from ..schemas.evaluation_result_schema import EvaluationReport
-from .schemas import DPOBatch
+from .snapshots import AnswerQualitySnapshot, RetrievalDriftSnapshot
+from agentic_core.utils.schemas.evaluation_result_schema import EvaluationReport
+from agentic_core.utils.schemas.schemas import DPOBatch
 
 _emit_applies_guardrail("p0", "proposer_bridge", "p0_governance")
 _emit_reads_policy_state("p0", "proposer_bridge", "policy_binding")

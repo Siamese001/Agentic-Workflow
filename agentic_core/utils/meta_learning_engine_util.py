@@ -83,7 +83,7 @@ _emit_captures_evaluation_metric("p4", "meta_learning_engine_util", "eval_metric
 _emit_stores_embedding("p4", "meta_learning_engine_util", "embedding_store")
 _emit_updates_meta_learning_state("p4", "meta_learning_engine_util", "meta_learning")
 _emit_links_execution_to_snapshot("p4", "meta_learning_engine_util", "exec_snapshot_link")
-from agentic_core.utils.schemas.meta_learning_storage_util import MetaLearningStorage
+from agentic_core.utils.meta_learning_storage_util import MetaLearningStorage
 
 _emit_applies_guardrail("p0", "meta_learning_engine_util", "p0_governance")
 _emit_reads_policy_state("p0", "meta_learning_engine_util", "policy_binding")

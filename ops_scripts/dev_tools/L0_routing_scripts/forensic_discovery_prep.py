@@ -103,7 +103,7 @@ _emit_captures_evaluation_metric("p4", "forensic_discovery_prep", "eval_metric")
 _emit_stores_embedding("p4", "forensic_discovery_prep", "embedding_store")
 _emit_updates_meta_learning_state("p4", "forensic_discovery_prep", "meta_learning")
 _emit_links_execution_to_snapshot("p4", "forensic_discovery_prep", "exec_snapshot_link")
-from agentic_core.utils.schemas.ast_fuzzy_util import safe_unparse
+from agentic_core.utils.ast_fuzzy_util import safe_unparse
 
 emit_replay_key("p0", "forensic_discovery_prep")
 emit_determinism_digest("p0", "forensic_discovery_prep")

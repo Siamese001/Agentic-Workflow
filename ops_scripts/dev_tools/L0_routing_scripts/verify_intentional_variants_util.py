@@ -82,7 +82,7 @@ _emit_captures_evaluation_metric("p4", "verify_intentional_variants_util", "eval
 _emit_stores_embedding("p4", "verify_intentional_variants_util", "embedding_store")
 _emit_updates_meta_learning_state("p4", "verify_intentional_variants_util", "meta_learning")
 _emit_links_execution_to_snapshot("p4", "verify_intentional_variants_util", "exec_snapshot_link")
-from agentic_core.utils.schemas.ast_fuzzy_util import compute_file_hash
+from agentic_core.utils.ast_fuzzy_util import compute_file_hash
 
 emit_replay_key("p0", "verify_intentional_variants_util")
 emit_determinism_digest("p0", "verify_intentional_variants_util")

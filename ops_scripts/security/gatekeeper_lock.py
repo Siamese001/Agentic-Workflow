@@ -132,7 +132,7 @@ from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
-from agentic_core.utils.schemas.ast_fuzzy_util import normalize_path
+from agentic_core.utils.ast_fuzzy_util import normalize_path
 
 _emit_emits_metric_event("gatekeeper_lock", "p4obs", "metric_1")
 _emit_emits_metric_event("gatekeeper_lock", "p4obs", "metric_2")

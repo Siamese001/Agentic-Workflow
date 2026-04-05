@@ -1,4 +1,4 @@
-"""Test apps_rfp services - comprehensive tests for key services."""
+"""Test consolidated services for apps_rfp."""
 
 import sys
 from pathlib import Path
@@ -12,7 +12,7 @@ sys.path.insert(0, str(REPO_ROOT))
 
 @pytest.mark.unit
 class TestRfpServices:
-    """Comprehensive tests for apps_rfp services."""
+    """Test apps_rfp services."""
 
     def test_capability_mapper_service_init(self):
         """Test CapabilityMapperService initialization."""

@@ -189,7 +189,7 @@ def detect_template_drift(registry_path: Path, base_dir: Path) -> tuple[list[dic
     Returns:
         Tuple of (synchronized_entries, drifted_entries)
     """
-    from agentic_core.utils.schemas.fs_util import calculate_file_hash
+    from agentic_core.utils.fs_util import calculate_file_hash
 
     registry = load_registry(registry_path)
     synchronized = []
@@ -270,7 +270,7 @@ def synchronize_registry_hashes(registry_path: Path, base_dir: Path) -> dict:
     Returns:
         Dict with synchronization statistics
     """
-    from agentic_core.utils.schemas.fs_util import calculate_file_hash
+    from agentic_core.utils.fs_util import calculate_file_hash
 
     registry = load_registry(registry_path)
     synchronized = []

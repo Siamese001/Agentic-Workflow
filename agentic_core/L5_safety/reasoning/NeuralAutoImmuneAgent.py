@@ -75,7 +75,7 @@ _emit_captures_evaluation_metric("p4", "NeuralAutoImmuneAgent", "eval_metric")
 _emit_stores_embedding("p4", "NeuralAutoImmuneAgent", "embedding_store")
 _emit_updates_meta_learning_state("p4", "NeuralAutoImmuneAgent", "meta_learning")
 _emit_links_execution_to_snapshot("p4", "NeuralAutoImmuneAgent", "exec_snapshot_link")
-from agentic_core.utils.schemas.timeout_decorator_util import timeout
+from agentic_core.utils.timeout_decorator_util import timeout
 
 emit_replay_key("p0", "NeuralAutoImmuneAgent")
 emit_determinism_digest("p0", "NeuralAutoImmuneAgent")

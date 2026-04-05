@@ -1,8 +1,7 @@
-"""Test apps_research services - comprehensive tests for key services."""
+"""Test consolidated services for apps_research."""
 
 import sys
 from pathlib import Path
-from tempfile import TemporaryDirectory
 from unittest.mock import patch, MagicMock
 
 import pytest
@@ -13,7 +12,7 @@ sys.path.insert(0, str(REPO_ROOT))
 
 @pytest.mark.unit
 class TestResearchServices:
-    """Comprehensive tests for apps_research services."""
+    """Test apps_research services."""
 
     def test_citation_manager_service_init(self):
         """Test CitationManagerService initialization."""

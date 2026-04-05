@@ -1,4 +1,4 @@
-"""Test apps_research outputs functionality."""
+"""Test consolidated outputs for apps_research."""
 
 import sys
 from pathlib import Path
@@ -19,11 +19,15 @@ class TestResearchOutputs:
         from apps_research.outputs.research_renderer import ResearchRenderer
 
         mock_report = MagicMock()
-        mock_report.model_dump.return_value = {"title": "Test Report"}
+        mock_report.topic = "Test Topic"
+        mock_report.mode = "comprehensive"
+        mock_report.status = "completed"
+        mock_report.quality_score = 0.85
+        mock_report.sections = []
 
         renderer = ResearchRenderer()
         json_output = renderer.render_json(mock_report)
-        assert "Test Report" in json_output
+        assert "Test Topic" in json_output
 
     def test_research_renderer_markdown(self):
         """Test ResearchRenderer Markdown output."""
@@ -58,6 +62,9 @@ class TestResearchOutputs:
         mock_section = MagicMock()
         mock_section.heading = "Test Section"
         mock_section.body = "Test content"
+        mock_section.word_count = 100
+        mock_section.sources = []
+        mock_section.claim_type = "fact"
 
         renderer = SectionRenderer()
         markdown = renderer.render_markdown(mock_section)

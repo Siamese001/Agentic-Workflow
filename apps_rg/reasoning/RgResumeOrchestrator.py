@@ -13,7 +13,7 @@ from typing import Any
 try:
     from agentic_core.base_agents.timeout_decorator import timeout
 except ImportError:
-    from agentic_core.utils.schemas.timeout_decorator_util import timeout
+    from agentic_core.utils.timeout_decorator_util import timeout
 from apps_rg.utils.repo_signal_service import RepoSignalService
 from apps_rg.utils.rg_agent_base_util import RGAgentBase
 

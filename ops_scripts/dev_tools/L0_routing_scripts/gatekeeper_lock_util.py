@@ -86,7 +86,7 @@ _emit_captures_evaluation_metric("p4", "gatekeeper_lock_util", "eval_metric")
 _emit_stores_embedding("p4", "gatekeeper_lock_util", "embedding_store")
 _emit_updates_meta_learning_state("p4", "gatekeeper_lock_util", "meta_learning")
 _emit_links_execution_to_snapshot("p4", "gatekeeper_lock_util", "exec_snapshot_link")
-from agentic_core.utils.schemas.ast_fuzzy_util import normalize_path
+from agentic_core.utils.ast_fuzzy_util import normalize_path
 
 emit_replay_key("p0", "gatekeeper_lock_util")
 emit_determinism_digest("p0", "gatekeeper_lock_util")

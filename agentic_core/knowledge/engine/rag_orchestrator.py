@@ -74,7 +74,7 @@ import json
 from pathlib import Path
 
 from agentic_core.L0_routing.config import AGENTIC_CORE_DIR
-from agentic_core.utils.schemas.timeout_decorator_util import timeout
+from agentic_core.utils.timeout_decorator_util import timeout
 
 try:
     from agentic_core.knowledge.document_loaders.csv_loader import CSVDocumentLoader

@@ -206,7 +206,7 @@ def get_canonical_path(duplicate_path: Path) -> tuple[Path, str | None]:
     Returns:
         Tuple of (canonical_path, matched_suffix)
     """
-    from agentic_core.utils.schemas.fs_util import remove_duplicate_suffix_path
+    from agentic_core.utils.fs_util import remove_duplicate_suffix_path
     return remove_duplicate_suffix_path(duplicate_path, PROBLEMATIC_SUFFIXES)
 
 def analyze_duplicates(duplicate_files: list[Path]) -> dict[str, list[tuple[Path, Path, str, bool]]]:

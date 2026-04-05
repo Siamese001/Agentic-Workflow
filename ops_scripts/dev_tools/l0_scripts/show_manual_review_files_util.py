@@ -74,7 +74,7 @@ _emit_captures_evaluation_metric("p4", "show_manual_review_files_util", "eval_me
 _emit_stores_embedding("p4", "show_manual_review_files_util", "embedding_store")
 _emit_updates_meta_learning_state("p4", "show_manual_review_files_util", "meta_learning")
 _emit_links_execution_to_snapshot("p4", "show_manual_review_files_util", "exec_snapshot_link")
-from agentic_core.utils.schemas.ast_fuzzy_util import compute_file_hash
+from agentic_core.utils.ast_fuzzy_util import compute_file_hash
 
 _emit_records_execution_trace("p0", "evidence", "show_manual_review_files_util")
 _emit_applies_guardrail("p0", "show_manual_review_files_util", "p0_governance")

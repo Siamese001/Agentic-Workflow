@@ -77,7 +77,7 @@ _emit_captures_evaluation_metric("p4", "dpo_batch_builder", "eval_metric")
 _emit_stores_embedding("p4", "dpo_batch_builder", "embedding_store")
 _emit_updates_meta_learning_state("p4", "dpo_batch_builder", "meta_learning")
 _emit_links_execution_to_snapshot("p4", "dpo_batch_builder", "exec_snapshot_link")
-from .schemas import DPOBatch, DPOPair, FeedbackExample
+from agentic_core.utils.schemas.schemas import DPOBatch, DPOPair, FeedbackExample
 
 _emit_applies_guardrail("p0", "dpo_batch_builder", "p0_governance")
 _emit_reads_policy_state("p0", "dpo_batch_builder", "policy_binding")
