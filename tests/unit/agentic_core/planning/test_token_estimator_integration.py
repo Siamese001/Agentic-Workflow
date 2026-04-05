@@ -30,17 +30,23 @@ class TestTokenEstimatorIntegration:
     def setup_method(self):
         """Setup test fixtures"""
         from agentic_core.planning.preflight_hook import PlanningPreflightHook
-        self.temp_dir = Path("/tmp/test_integration")
-        self.temp_dir.mkdir(exist_ok=True)
+        import tempfile
+        self.temp_dir = Path(tempfile.gettempdir()) / "test_integration"
+        self.temp_dir.mkdir(parents=True, exist_ok=True)
         self.budget_file = self.temp_dir / "integration_budget.json"
         self.hook = PlanningPreflightHook(budget_file=self.budget_file)
 
     def teardown_method(self):
         """Cleanup test fixtures"""
-        if self.budget_file.exists():
-            self.budget_file.unlink()
+        import shutil
+        import time
+        # Wait a moment for file handles to close (Windows)
+        time.sleep(0.1)
         if self.temp_dir.exists():
-            self.temp_dir.rmdir()
+            try:
+                shutil.rmtree(self.temp_dir, ignore_errors=True)
+            except (OSError, PermissionError):
+                pass  # Ignore cleanup errors on Windows
 
     def test_real_planning_scenario_feature_development(self):
         """Test a realistic feature development planning scenario"""
