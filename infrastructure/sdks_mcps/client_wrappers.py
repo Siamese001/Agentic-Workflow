@@ -1,6 +1,6 @@
-"""Client wrappers stub — re-exports from data.sdks_mcps package __init__."""
+"""Client wrappers stub — re-exports from infrastructure.sdks_mcps package __init__."""
 
-from data.sdks_mcps import (  # noqa: F401
+from infrastructure.sdks_mcps import (  # noqa: F401
     AnthropicClient,
     AnthropicConfig,
     OpenAIClient,
