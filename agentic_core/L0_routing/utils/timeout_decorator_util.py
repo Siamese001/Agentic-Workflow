@@ -5,7 +5,7 @@ DEPRECATED: Import from agentic_core.utils.timeout_decorator_util instead.
 
 This module re-exports symbols from the canonical location for backward
 compatibility with existing code. New code should import directly from:
-    from agentic_core.utils.timeout_decorator_util import timeout
+    from agentic_core.utils.schemas.timeout_decorator_util import timeout
 
 Canonical location: agentic_core/base_agents/timeout_decorator.py
 """
@@ -111,7 +111,7 @@ from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
-from agentic_core.utils.timeout_decorator_util import TimeoutError, timeout
+from agentic_core.utils.schemas.timeout_decorator_util import TimeoutError, timeout
 
 _emit_emits_metric_event("timeout_decorator_util", "p4obs", "metric_1")
 _emit_emits_metric_event("timeout_decorator_util", "p4obs", "metric_2")

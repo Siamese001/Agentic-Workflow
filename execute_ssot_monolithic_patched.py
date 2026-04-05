@@ -1247,7 +1247,7 @@ try:
 except ImportError:
     pass
 try:
-    from agentic_core.utils.decorators_util import HEAL_RESULT_SCHEMA, standard_heal
+    from agentic_core.utils.schemas.decorators_util import HEAL_RESULT_SCHEMA, standard_heal
 except ImportError:
 
     def standard_heal(func):

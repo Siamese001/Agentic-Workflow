@@ -135,7 +135,7 @@ from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_writes_through,
 )
 from agentic_core.runtime.shared_runtime import log_event
-from agentic_core.utils.decorators_compat_util import standard_heal
+from agentic_core.utils.schemas.decorators_compat_util import standard_heal
 
 _emit_emits_metric_event("ChaosEngineeringAgent", "p4obs", "metric_1")
 _emit_emits_metric_event("ChaosEngineeringAgent", "p4obs", "metric_2")

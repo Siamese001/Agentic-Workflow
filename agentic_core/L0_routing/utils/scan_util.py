@@ -369,7 +369,7 @@ def audit_rglob_usage(project_root: Path) -> dict:
     Returns:
         Dict with audit results
     """
-    from agentic_core.utils.ssot_discovery_validator import get_python_files
+    from agentic_core.utils.schemas.ssot_discovery_validator import get_python_files
 
     files = get_python_files(project_root)
 

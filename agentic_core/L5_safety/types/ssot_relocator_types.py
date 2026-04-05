@@ -507,7 +507,7 @@ class SSOTRelocator:
         else:
             try:
                 _wg.ensure_dir(target)
-                from agentic_core.utils.ssot_discovery_validator import get_data_files, get_python_files
+                from agentic_core.utils.schemas.ssot_discovery_validator import get_data_files, get_python_files
 
                 all_items = list(get_python_files(source)) + list(get_data_files(source))
                 for item in all_items:

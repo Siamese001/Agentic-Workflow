@@ -249,7 +249,7 @@ def _build_approved_name_index() -> dict[str, list[Path]]:
         folder_path = REPO / folder
         if not folder_path.exists():
             continue
-        from agentic_core.utils.ssot_discovery_validator import get_python_files
+        from agentic_core.utils.schemas.ssot_discovery_validator import get_python_files
         for f in get_python_files(folder_path):
             if 'review_pending' in str(f):
                 continue
@@ -292,7 +292,7 @@ def _categorize_files(pending_files: list[Path], approved_by_name: dict[str, lis
 def main() -> None:
     """Main entry point for review pending merge."""
     approved_by_name: Any = _build_approved_name_index()
-    from agentic_core.utils.ssot_discovery_validator import get_python_files
+    from agentic_core.utils.schemas.ssot_discovery_validator import get_python_files
     pending_files: Any = list(get_python_files(REVIEW_PENDING))
     _categorize_files(pending_files, approved_by_name)
     pending_has_more_code: Any = categories['has_more_code']

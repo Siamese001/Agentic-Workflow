@@ -223,7 +223,7 @@ def main():
             continue
 
         # Phase 6.9: Use ssot_discovery instead of rglob
-        from agentic_core.utils.ssot_discovery_validator import get_python_files
+        from agentic_core.utils.schemas.ssot_discovery_validator import get_python_files
 
         py_files = list(get_python_files(root_path))
 

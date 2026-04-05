@@ -81,7 +81,7 @@ _emit_captures_evaluation_metric("p4", "runtime_state_digest", "eval_metric")
 _emit_stores_embedding("p4", "runtime_state_digest", "embedding_store")
 _emit_updates_meta_learning_state("p4", "runtime_state_digest", "meta_learning")
 _emit_links_execution_to_snapshot("p4", "runtime_state_digest", "exec_snapshot_link")
-from agentic_core.utils.canonical_serializer_util import canonical_hash
+from agentic_core.utils.schemas.canonical_serializer_util import canonical_hash
 
 emit_replay_key("p0", "runtime_state_digest")
 emit_determinism_digest("p0", "runtime_state_digest")

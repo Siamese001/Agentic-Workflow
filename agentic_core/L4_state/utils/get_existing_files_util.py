@@ -193,7 +193,7 @@ def get_existing_files() -> Set[str]:
     for root in SOVEREIGN_ROOTS:
         root_path: Any = repo_root / root
         if root_path.exists():
-            from agentic_core.utils.ssot_discovery_validator import get_python_files
+            from agentic_core.utils.schemas.ssot_discovery_validator import get_python_files
 
             for py_file in get_python_files(root_path):
                 rel_path: Any = py_file.relative_to(repo_root)

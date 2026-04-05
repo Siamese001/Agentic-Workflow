@@ -74,10 +74,10 @@ _emit_captures_evaluation_metric("p4", "component_util", "eval_metric")
 _emit_stores_embedding("p4", "component_util", "embedding_store")
 _emit_updates_meta_learning_state("p4", "component_util", "meta_learning")
 _emit_links_execution_to_snapshot("p4", "component_util", "exec_snapshot_link")
-from agentic_core.utils.detection_protocol_util import DetectionSignalProtocol
-from agentic_core.utils.meta_learning_types_util import MetaLearningProtocol
-from agentic_core.utils.review_protocol_util import HumanReviewProtocol
-from agentic_core.utils.verification_types_util import VerificationGateProtocol
+from agentic_core.utils.schemas.detection_protocol_util import DetectionSignalProtocol
+from agentic_core.utils.schemas.meta_learning_types_util import MetaLearningProtocol
+from agentic_core.utils.schemas.review_protocol_util import HumanReviewProtocol
+from agentic_core.utils.schemas.verification_types_util import VerificationGateProtocol
 
 _emit_dispatches_healing_run("p1", "component_util", "L0")
 _emit_routes_through("p1", "component_util", "L0")

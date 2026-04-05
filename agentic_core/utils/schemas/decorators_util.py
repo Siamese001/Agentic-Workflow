@@ -2,7 +2,7 @@
 Canonical decorator implementations for agent standardization.
 
 This is the SSOT for agent decorators. All imports should use:
-    from agentic_core.utils.decorators_compat_util import standard_heal, HEAL_RESULT_SCHEMA
+    from agentic_core.utils.schemas.decorators_compat_util import standard_heal, HEAL_RESULT_SCHEMA
 
 DECORATORS:
     @standard_heal: Standardizes heal_repository() methods
@@ -89,7 +89,7 @@ _emit_captures_evaluation_metric("p4", "decorators_util", "eval_metric")
 _emit_stores_embedding("p4", "decorators_util", "embedding_store")
 _emit_updates_meta_learning_state("p4", "decorators_util", "meta_learning")
 _emit_links_execution_to_snapshot("p4", "decorators_util", "exec_snapshot_link")
-from agentic_core.utils.timeout_decorator_util import TimeoutError, timeout
+from agentic_core.utils.schemas.timeout_decorator_util import TimeoutError, timeout
 
 _emit_records_execution_trace("p0", "evidence", "decorators_util")
 _emit_applies_guardrail("p0", "decorators_util", "p0_governance")

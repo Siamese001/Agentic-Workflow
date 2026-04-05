@@ -198,7 +198,7 @@ def repository_list_files(directory: Any='.') -> Any:
             return 'Error: Cannot navigate up the directory tree.'
         from pathlib import Path
 
-        from agentic_core.utils.ssot_discovery_validator import get_python_files
+        from agentic_core.utils.schemas.ssot_discovery_validator import get_python_files
         return [str(f) for f in get_python_files(Path(directory))]
     # guardian: allow-silent-swallow
     except Exception as e:

@@ -250,7 +250,7 @@ def _ensure_utf8():
     """Ensure terminal supports UTF-8."""
     if sys.platform.startswith("win"):
         try:
-            from agentic_core.utils.security_util import safe_execute
+            from agentic_core.utils.schemas.security_util import safe_execute
 
             # Replace os.system with safe_execute for security
             safe_execute(["chcp", "65001"], capture_output=True, check=False)

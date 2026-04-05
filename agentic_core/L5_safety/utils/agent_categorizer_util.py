@@ -268,7 +268,7 @@ class AgentCategorizer:
         _seg_hash = _hashlib.sha256(f"{_trace_id}:AgentCategorizer.scan_folder".encode()).hexdigest()[:24]
         _emit_signs_execution_trace(_trace_id, _seg_hash, _seg_hash, 0)
 
-        from agentic_core.utils.ssot_discovery_validator import get_python_files
+        from agentic_core.utils.schemas.ssot_discovery_validator import get_python_files
 
         py_files = list(get_python_files(self.folder_path))
         for py_file in py_files:

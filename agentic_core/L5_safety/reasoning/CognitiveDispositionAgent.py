@@ -346,7 +346,7 @@ class CognitiveDispositionAgent(PromptRenderingMixin, SovereignBaseAgent):
                 - errors: Number of errors encountered
                 - skipped: Number of violations skipped
         """
-        from agentic_core.utils.decorators_compat_util import standard_heal
+        from agentic_core.utils.schemas.decorators_compat_util import standard_heal
 
         @standard_heal
         # guardian: allow-type-erasure -- standard_heal decorator normalizes violation dict for orchestration compatibility

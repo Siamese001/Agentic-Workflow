@@ -62,7 +62,7 @@ from agentic_core.runtime.lifecycle_trace_contract import (
     emit_determinism_digest,  # noqa: E402
     emit_replay_key,  # noqa: E402
 )
-from agentic_core.utils.providers import get_clock
+from agentic_core.utils.runners.providers import get_clock
 
 _emit_authorize_and_execute("p2", "forward_rolling_facade", "execution_auth")
 _emit_validates_capability("p2", "forward_rolling_facade", "capability_check")

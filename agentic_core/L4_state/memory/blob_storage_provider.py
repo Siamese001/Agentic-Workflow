@@ -268,7 +268,7 @@ class LocalDiskAdapter:
             str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, f"FilesystemBlobProvider.list_blobs:{prefix}"
         )
         blobs: Any = []
-        from agentic_core.utils.ssot_discovery_validator import get_data_files, get_python_files
+        from agentic_core.utils.schemas.ssot_discovery_validator import get_data_files, get_python_files
 
         all_files = list(get_python_files(self.base_path)) + list(get_data_files(self.base_path))
         for path in all_files:

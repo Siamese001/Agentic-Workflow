@@ -138,8 +138,8 @@ from agentic_core.prompt_governance.rendering.sovereign_prompt_renderer_validato
     get_sovereign_prompt_renderer,
 )
 from agentic_core.prompt_governance.version_registry.prompt_registry_config import registers_prompt
-from agentic_core.utils.decorators_compat_util import standard_heal
-from agentic_core.utils.timeout_decorator_util import timeout
+from agentic_core.utils.schemas.decorators_compat_util import standard_heal
+from agentic_core.utils.schemas.timeout_decorator_util import timeout
 
 _emit_emits_metric_event("RedTeamAgent", "p4obs", "metric_1")
 _emit_emits_metric_event("RedTeamAgent", "p4obs", "metric_2")

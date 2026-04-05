@@ -216,7 +216,7 @@ class RescueReviewer:
             path = self.root / folder
             if not path.exists():
                 continue
-            from agentic_core.utils.ssot_discovery_validator import get_python_files
+            from agentic_core.utils.schemas.ssot_discovery_validator import get_python_files
             for py_file in get_python_files(path):
                 try:
                     f_hash = hashlib.sha256(py_file.read_bytes()).hexdigest()
@@ -238,7 +238,7 @@ class RescueReviewer:
             CANON_SIGNALS,
             DEFAULT_CORE_HEALING_TERRITORY,
         )
-        from agentic_core.utils.ssot_discovery_validator import get_python_files
+        from agentic_core.utils.schemas.ssot_discovery_validator import get_python_files
         for arch_file in get_python_files(self.archive_path):
             rel: Any = arch_file.relative_to(self.archive_path)
             content: Any = arch_file.read_text(encoding='utf-8', errors='ignore')

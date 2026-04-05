@@ -72,7 +72,7 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     emit_determinism_digest,  # noqa: E402
     emit_replay_key,  # noqa: E402
 )
-from agentic_core.utils.security_util import safe_execute
+from agentic_core.utils.schemas.security_util import safe_execute
 
 _emit_records_execution_trace("p0", "evidence", "smart_discovery_util")
 _emit_applies_guardrail("p0", "smart_discovery_util", "p0_governance")
@@ -221,7 +221,7 @@ log = logging.getLogger("smart_discovery")
 def _scan_python_files() -> list[Path]:
     """Return list of all non-excluded .py files."""
     # Phase 6.7: Use ssot_discovery instead of rglob
-    from agentic_core.utils.ssot_discovery_validator import get_python_files
+    from agentic_core.utils.schemas.ssot_discovery_validator import get_python_files
 
     return list(get_python_files(PROJECT_ROOT))
 

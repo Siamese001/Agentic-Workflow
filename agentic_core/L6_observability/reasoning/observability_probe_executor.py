@@ -77,7 +77,7 @@ _emit_captures_evaluation_metric("p4", "observability_probe_executor", "eval_met
 _emit_stores_embedding("p4", "observability_probe_executor", "embedding_store")
 _emit_updates_meta_learning_state("p4", "observability_probe_executor", "meta_learning")
 _emit_links_execution_to_snapshot("p4", "observability_probe_executor", "exec_snapshot_link")
-from agentic_core.utils.decorators_compat_util import standard_heal
+from agentic_core.utils.schemas.decorators_compat_util import standard_heal
 
 emit_replay_key("p0", "observability_probe_executor")
 emit_determinism_digest("p0", "observability_probe_executor")

@@ -82,7 +82,7 @@ _emit_captures_evaluation_metric("p4", "verify_intentional_variants_util", "eval
 _emit_stores_embedding("p4", "verify_intentional_variants_util", "embedding_store")
 _emit_updates_meta_learning_state("p4", "verify_intentional_variants_util", "meta_learning")
 _emit_links_execution_to_snapshot("p4", "verify_intentional_variants_util", "exec_snapshot_link")
-from agentic_core.utils.ast_fuzzy_util import compute_file_hash
+from agentic_core.utils.schemas.ast_fuzzy_util import compute_file_hash
 
 emit_replay_key("p0", "verify_intentional_variants_util")
 emit_determinism_digest("p0", "verify_intentional_variants_util")
@@ -340,7 +340,7 @@ def scan_for_duplicates():
     exclude_dirs = GLOBAL_EXCLUDED_DIRS | SOVEREIGN_EXCLUDED_FOLDERS | DISCOVERY_EXCLUDED_TERRITORIES
 
     # Absolute Zero: Use ssot_discovery instead of rglob
-    from agentic_core.utils.ssot_discovery_validator import get_data_files, get_python_files
+    from agentic_core.utils.schemas.ssot_discovery_validator import get_data_files, get_python_files
 
     all_files = list(get_python_files(project_root)) + list(get_data_files(project_root))
     for file_path in all_files:

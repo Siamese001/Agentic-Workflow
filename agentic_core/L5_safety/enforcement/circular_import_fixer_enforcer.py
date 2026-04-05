@@ -215,7 +215,7 @@ def main() -> Any:
     print("=" * 80)
     print(f"Root: {agentic_core_root}")
     print()
-    from agentic_core.utils.ssot_discovery_validator import get_python_files
+    from agentic_core.utils.schemas.ssot_discovery_validator import get_python_files
 
     py_files: Any = list(get_python_files(agentic_core_root))
     print(f"Found {len(py_files)} Python files")

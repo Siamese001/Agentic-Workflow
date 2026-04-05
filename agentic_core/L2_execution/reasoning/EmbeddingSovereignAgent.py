@@ -140,8 +140,8 @@ def _make_execution_context(payload, target: str):
 
 
 from agentic_core.config.core.sovereign_config import get_sovereign_config
-from agentic_core.utils.decorators_compat_util import standard_heal
-from agentic_core.utils.timeout_decorator_util import timeout
+from agentic_core.utils.schemas.decorators_compat_util import standard_heal
+from agentic_core.utils.schemas.timeout_decorator_util import timeout
 from data.sdks_mcps.client_wrappers import create_vertex_client
 
 Logger = logging.getLogger(__name__)

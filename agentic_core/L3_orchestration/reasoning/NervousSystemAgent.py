@@ -74,7 +74,7 @@ _emit_captures_evaluation_metric("p4", "NervousSystemAgent", "eval_metric")
 _emit_stores_embedding("p4", "NervousSystemAgent", "embedding_store")
 _emit_updates_meta_learning_state("p4", "NervousSystemAgent", "meta_learning")
 _emit_links_execution_to_snapshot("p4", "NervousSystemAgent", "exec_snapshot_link")
-from agentic_core.utils.timeout_decorator_util import timeout
+from agentic_core.utils.schemas.timeout_decorator_util import timeout
 
 _emit_dispatches_healing_run("p1", "NervousSystemAgent", "L3")
 _emit_routes_through("p1", "NervousSystemAgent", "L3")

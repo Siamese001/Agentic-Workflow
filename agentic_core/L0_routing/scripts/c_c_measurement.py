@@ -57,7 +57,7 @@ from agentic_core.runtime.lifecycle_trace_contract import (
     emit_determinism_digest,
     emit_replay_key,
 )
-from agentic_core.utils.security_util import safe_execute
+from agentic_core.utils.schemas.security_util import safe_execute
 
 _emit_dispatches_healing_run("p1", "c_c_measurement", "L0")
 _emit_routes_through("p1", "c_c_measurement", "L0")

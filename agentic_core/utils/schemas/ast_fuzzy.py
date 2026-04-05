@@ -9,7 +9,7 @@ from __future__ import annotations
 
 import os
 
-from agentic_core.utils.ast_fuzzy_util import (  # noqa: F401
+from agentic_core.utils.schemas.ast_fuzzy_util import (  # noqa: F401
     ast_dump_hash,
     normalize_repo_path,
     parse_ast_safe,

@@ -397,7 +397,7 @@ def refactor_repository(dry_run: bool = False) -> dict[str, int]:
 
     # Scan all Python files
     # Operation Zero: Use ssot_discovery instead of rglob
-    from agentic_core.utils.ssot_discovery_validator import get_python_files
+    from agentic_core.utils.schemas.ssot_discovery_validator import get_python_files
 
     for py_file in get_python_files(PROJECT_ROOT):
         if should_exclude_path(py_file):

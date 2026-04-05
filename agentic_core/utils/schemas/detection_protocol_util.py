@@ -3,7 +3,7 @@ detection_protocol - canonical re-export shim.
 
 The implementation lives in agentic_core.runtime.config.detection_config.
 This module re-exports for callers using
-``from agentic_core.utils.detection_protocol_util import DetectionRequest, ...``.
+``from agentic_core.utils.schemas.detection_protocol_util import DetectionRequest, ...``.
 """
 
 from agentic_core.runtime.config.detection_config import (  # noqa: F401

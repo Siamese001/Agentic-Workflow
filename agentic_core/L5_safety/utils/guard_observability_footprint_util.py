@@ -236,7 +236,7 @@ def validate_observability_footprint(target_dir: str) -> tuple[float, list[str]]
     """
     issues = []
     total_files = 0
-    from agentic_core.utils.ssot_discovery_validator import get_python_files
+    from agentic_core.utils.schemas.ssot_discovery_validator import get_python_files
 
     for path in get_python_files(Path(target_dir)):
         if TESTS_DIR in str(path) or "__pycache__" in str(path):

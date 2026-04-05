@@ -5,7 +5,7 @@ This module provides validation and discovery for report files, ensuring all rep
 are stored in the canonical SSOT location: docs/reports/
 
 USAGE:
-    from agentic_core.utils.report_location_validator_types_util import (
+    from agentic_core.utils.schemas.report_location_validator_types_util import (
         ReportLocationValidator,
         validate_report_location,
         get_misplaced_reports,

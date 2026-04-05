@@ -52,7 +52,7 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     emit_determinism_digest,  # noqa: E402
     emit_replay_key,  # noqa: E402
 )
-from agentic_core.utils.security_util import safe_git_execute
+from agentic_core.utils.schemas.security_util import safe_git_execute
 
 _emit_records_execution_trace("p0", "evidence", "generate_blueprint_metrics_util")
 _emit_applies_guardrail("p0", "generate_blueprint_metrics_util", "p0_governance")
@@ -225,7 +225,7 @@ def main():
 
     # Find blueprint agent files
     # Phase 6.9: Use ssot_discovery instead of glob
-    from agentic_core.utils.ssot_discovery_validator import get_agent_files
+    from agentic_core.utils.schemas.ssot_discovery_validator import get_agent_files
 
     blueprint_agents = list(get_agent_files(blueprint_dir))
 

@@ -7,7 +7,7 @@ Canonical location: agentic_core/utils/decorators.py
 
 from __future__ import annotations
 
-from agentic_core.utils.decorators_util import (  # noqa: F401
+from agentic_core.utils.schemas.decorators_util import (  # noqa: F401
     HEAL_RESULT_SCHEMA,
     F,
     standard_heal,

@@ -81,7 +81,7 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     emit_determinism_digest,  # noqa: E402
     emit_replay_key,  # noqa: E402
 )
-from agentic_core.utils.security_util import safe_execute
+from agentic_core.utils.schemas.security_util import safe_execute
 
 _emit_emits_metric_event("generate_agent_table_simple_util", "p4obs", "metric_1")
 _emit_emits_metric_event("generate_agent_table_simple_util", "p4obs", "metric_2")

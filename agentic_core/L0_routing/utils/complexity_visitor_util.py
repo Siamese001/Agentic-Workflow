@@ -87,7 +87,7 @@ from agentic_core.runtime.lifecycle_trace_contract import (
 )
 
 try:
-    from agentic_core.utils.ssot_discovery_validator import get_python_files
+    from agentic_core.utils.schemas.ssot_discovery_validator import get_python_files
 
     SSOT_AVAILABLE = True
 except ImportError:  # guardian: allow-silent-swallow

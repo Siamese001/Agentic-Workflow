@@ -300,7 +300,7 @@ class SSOTScanner:
 
         # Find all *Agent.py files
         # Operation Zero: Use ssot_discovery instead of glob
-        from agentic_core.utils.ssot_discovery_validator import get_agent_files
+        from agentic_core.utils.schemas.ssot_discovery_validator import get_agent_files
 
         agent_files = list(get_agent_files(self.project_root))
 

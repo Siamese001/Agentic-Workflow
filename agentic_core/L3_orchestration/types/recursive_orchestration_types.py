@@ -88,8 +88,8 @@ _emit_captures_evaluation_metric("p4", "recursive_orchestration_types", "eval_me
 _emit_stores_embedding("p4", "recursive_orchestration_types", "embedding_store")
 _emit_updates_meta_learning_state("p4", "recursive_orchestration_types", "meta_learning")
 _emit_links_execution_to_snapshot("p4", "recursive_orchestration_types", "exec_snapshot_link")
-from agentic_core.utils.decorators_compat_util import standard_heal
-from agentic_core.utils.timeout_decorator_util import timeout
+from agentic_core.utils.schemas.decorators_compat_util import standard_heal
+from agentic_core.utils.schemas.timeout_decorator_util import timeout
 
 emit_replay_key("p0", "recursive_orchestration_types")
 emit_determinism_digest("p0", "recursive_orchestration_types")

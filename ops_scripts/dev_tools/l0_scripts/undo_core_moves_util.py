@@ -186,7 +186,7 @@ def undo_core_moves() -> Any:
         core_path: Any = root / dir_name / 'core'
         if not core_path.exists():
             continue
-        from agentic_core.utils.ssot_discovery_validator import get_python_files
+        from agentic_core.utils.schemas.ssot_discovery_validator import get_python_files
         for py_file in get_python_files(core_path):
             if py_file.name == '__init__.py':
                 continue

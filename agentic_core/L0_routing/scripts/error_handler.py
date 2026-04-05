@@ -125,7 +125,7 @@ from agentic_core.runtime.lifecycle_trace_contract import (
     emit_determinism_digest,
     emit_replay_key,
 )
-from agentic_core.utils.providers import get_clock
+from agentic_core.utils.runners.providers import get_clock
 
 from .base_coordinator import WorkflowCoordinator, coordinator_registry
 from .execution import (

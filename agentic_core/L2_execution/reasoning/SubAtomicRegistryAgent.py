@@ -140,11 +140,11 @@ from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
-from agentic_core.utils.decorators_compat_util import standard_heal
+from agentic_core.utils.schemas.decorators_compat_util import standard_heal
 
 # guardian: allow-silent-degradation
 try:
-    from agentic_core.utils.decorators_compat_util import timeout
+    from agentic_core.utils.schemas.decorators_compat_util import timeout
 except ImportError:
 
     def timeout(seconds):  # type: ignore[misc]
@@ -511,7 +511,7 @@ class SubAtomicRegistryAgent(SovereignBaseAgent):
             str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, "SubAtomicRegistryAgent.extract_methods"
         )
         methods = []
-        from agentic_core.utils.ssot_discovery_validator import get_python_files
+        from agentic_core.utils.schemas.ssot_discovery_validator import get_python_files
 
         for py_file in get_python_files(self.root):
             if ARCHIVES_DIR in str(py_file):

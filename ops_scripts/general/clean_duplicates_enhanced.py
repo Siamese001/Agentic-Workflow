@@ -206,7 +206,7 @@ def aggressive_cleanup():
         pass
     from pathlib import Path
 
-    from agentic_core.utils.ssot_discovery_validator import get_python_files
+    from agentic_core.utils.schemas.ssot_discovery_validator import get_python_files
 
     search_path = Path(pattern.split("**")[0] if "**" in pattern else ".")
     for file in [str(f) for f in get_python_files(search_path)]:

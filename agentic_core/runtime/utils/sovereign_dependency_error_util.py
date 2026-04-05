@@ -441,7 +441,7 @@ class SubatomicHop:
 
     async def _check_past_failures(self, Task: str) -> str:
         """Check telemetry for past failures on similar tasks."""
-        from agentic_core.utils.state_util import check_past_failures
+        from agentic_core.utils.schemas.state_util import check_past_failures
 
         return check_past_failures(Task)
 

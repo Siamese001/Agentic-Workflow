@@ -76,23 +76,23 @@ _emit_captures_evaluation_metric("p4", "feature_flagged_agent_mixin", "eval_metr
 _emit_stores_embedding("p4", "feature_flagged_agent_mixin", "embedding_store")
 _emit_updates_meta_learning_state("p4", "feature_flagged_agent_mixin", "meta_learning")
 _emit_links_execution_to_snapshot("p4", "feature_flagged_agent_mixin", "exec_snapshot_link")
-from agentic_core.utils.detection_protocol_util import (
+from agentic_core.utils.schemas.detection_protocol_util import (
     DetectionResult,
     DetectionSignalProtocol,
     Severity,
 )
-from agentic_core.utils.meta_learning_types_util import (
+from agentic_core.utils.schemas.meta_learning_types_util import (
     LearningContext,
     LearningResult,
     MetaLearningProtocol,
 )
-from agentic_core.utils.review_protocol_util import (
+from agentic_core.utils.schemas.review_protocol_util import (
     HumanReviewProtocol,
     ReviewRequest,
     ReviewResult,
     ReviewStatus,
 )
-from agentic_core.utils.verification_types_util import (
+from agentic_core.utils.schemas.verification_types_util import (
     VerificationGateProtocol,
     VerificationRequest,
     VerificationResult,

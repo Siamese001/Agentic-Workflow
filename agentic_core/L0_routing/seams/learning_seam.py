@@ -81,7 +81,7 @@ _emit_captures_evaluation_metric("p4", "learning_seam", "eval_metric")
 _emit_stores_embedding("p4", "learning_seam", "embedding_store")
 _emit_updates_meta_learning_state("p4", "learning_seam", "meta_learning")
 _emit_links_execution_to_snapshot("p4", "learning_seam", "exec_snapshot_link")
-from agentic_core.utils.canonical_serializer_util import (
+from agentic_core.utils.schemas.canonical_serializer_util import (
     canonical_bytes,
 )
 

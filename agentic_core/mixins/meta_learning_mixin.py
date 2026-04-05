@@ -123,8 +123,8 @@ from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
-from agentic_core.utils.meta_learning_engine_util import MetaLearningEngine
-from agentic_core.utils.meta_learning_storage_util import MetaLearningStorage
+from agentic_core.utils.schemas.meta_learning_engine_util import MetaLearningEngine
+from agentic_core.utils.schemas.meta_learning_storage_util import MetaLearningStorage
 
 _emit_emits_metric_event("meta_learning_mixin", "p4obs", "metric_1")
 _emit_emits_metric_event("meta_learning_mixin", "p4obs", "metric_2")

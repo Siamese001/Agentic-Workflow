@@ -5,7 +5,7 @@ This module provides a single point of access to agent_discovery_full.json,
 eliminating the need for rglob scans across the codebase.
 
 USAGE:
-    from agentic_core.utils.ssot_discovery_validator import (
+    from agentic_core.utils.schemas.ssot_discovery_validator import (
         load_agent_discovery,
         get_agent_paths,
         get_agents_by_layer,

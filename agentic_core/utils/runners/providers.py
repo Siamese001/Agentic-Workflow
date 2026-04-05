@@ -19,14 +19,14 @@ ADG edges produced:
 
 Usage
 -----
-    from agentic_core.utils.providers import get_clock, get_random
+    from agentic_core.utils.runners.providers import get_clock, get_random
 
     ts = get_clock().now_iso()          # replaces datetime.now().isoformat()
     n  = get_random().randint(0, 100)   # replaces random.randint(0, 100)
 
 Injection (test)::
 
-    from agentic_core.utils.providers import set_clock, set_random, FrozenClock, SeededRandom
+    from agentic_core.utils.runners.providers import set_clock, set_random, FrozenClock, SeededRandom
     set_clock(FrozenClock("2026-01-01T00:00:00"))
     set_random(SeededRandom(seed=42))
 

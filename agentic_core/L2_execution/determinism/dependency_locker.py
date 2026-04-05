@@ -81,7 +81,7 @@ _emit_captures_evaluation_metric("p4", "dependency_locker", "eval_metric")
 _emit_stores_embedding("p4", "dependency_locker", "embedding_store")
 _emit_updates_meta_learning_state("p4", "dependency_locker", "meta_learning")
 _emit_links_execution_to_snapshot("p4", "dependency_locker", "exec_snapshot_link")
-from agentic_core.utils.canonical_json_util import CanonicalJSON
+from agentic_core.utils.schemas.canonical_json_util import CanonicalJSON
 
 emit_replay_key("p0", "dependency_locker")
 emit_determinism_digest("p0", "dependency_locker")

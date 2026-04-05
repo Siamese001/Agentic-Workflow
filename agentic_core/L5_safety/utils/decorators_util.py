@@ -5,7 +5,7 @@ DEPRECATED: Import from agentic_core.utils.decorators_util instead.
 
 This module re-exports symbols from the canonical location for backward
 compatibility with existing code. New code should import directly from:
-    from agentic_core.utils.decorators_util import standard_heal, HEAL_RESULT_SCHEMA
+    from agentic_core.utils.schemas.decorators_util import standard_heal, HEAL_RESULT_SCHEMA
 
 Canonical location: agentic_core/utils/decorators_util.py
 """
@@ -111,7 +111,7 @@ from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
-from agentic_core.utils.decorators_util import (  # noqa: F401
+from agentic_core.utils.schemas.decorators_util import (  # noqa: F401
     HEAL_RESULT_SCHEMA,
     standard_heal,
     standard_heal_async,

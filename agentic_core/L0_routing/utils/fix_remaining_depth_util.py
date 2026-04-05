@@ -200,7 +200,7 @@ def move_remaining() -> Any:
         stage.mkdir(exist_ok=True)
         assert_no_persistent_write("L0", "write_text")
         (stage / "__init__.py").write_text('"""Stage module."""\n')
-        from agentic_core.utils.ssot_discovery_validator import get_python_files
+        from agentic_core.utils.schemas.ssot_discovery_validator import get_python_files
 
         for f in get_python_files(knowledge_dir):
             if f.name != "__init__.py" and f.parent == knowledge_dir:
@@ -216,7 +216,7 @@ def move_remaining() -> Any:
         stage.mkdir(exist_ok=True)
         assert_no_persistent_write("L0", "write_text")
         (stage / "__init__.py").write_text('"""Stage module."""\n')
-        from agentic_core.utils.ssot_discovery_validator import get_python_files
+        from agentic_core.utils.schemas.ssot_discovery_validator import get_python_files
 
         for f in get_python_files(thought_nodes):
             if f.name != "__init__.py" and f.parent == thought_nodes:

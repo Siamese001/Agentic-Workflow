@@ -147,7 +147,7 @@ def trim_all_airlocks() -> Any:
     """Trim all heavy airlock files."""
     print("[*] TRIMMING HEAVY AIRLOCKS...")
     trimmed: Any = 0
-    from agentic_core.utils.ssot_discovery_validator import get_data_files
+    from agentic_core.utils.schemas.ssot_discovery_validator import get_data_files
 
     init_files = [f for f in get_data_files(CORE, extensions=[".py"]) if f.name == "__init__.py"]
     for init_file in init_files:

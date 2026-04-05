@@ -84,7 +84,7 @@ _emit_captures_evaluation_metric("p4", "hierarchy_compliance_healer", "eval_metr
 _emit_stores_embedding("p4", "hierarchy_compliance_healer", "embedding_store")
 _emit_updates_meta_learning_state("p4", "hierarchy_compliance_healer", "meta_learning")
 _emit_links_execution_to_snapshot("p4", "hierarchy_compliance_healer", "exec_snapshot_link")
-from agentic_core.utils.ast_fuzzy_util import parse_evidence as _parse_evidence
+from agentic_core.utils.schemas.ast_fuzzy_util import parse_evidence as _parse_evidence
 
 emit_replay_key("p0", "hierarchy_compliance_healer")
 emit_determinism_digest("p0", "hierarchy_compliance_healer")

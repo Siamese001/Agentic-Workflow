@@ -195,7 +195,7 @@ def audit_gravity() -> Any:
     _emit_records_execution_trace(_trace_id, LayerSegment.L0_ROUTING, "audit_gravity")
     print("[*] STARTING FINAL GRAVITY AUDIT...")
     leaks: Any = []
-    from agentic_core.utils.ssot_discovery_validator import get_python_files
+    from agentic_core.utils.schemas.ssot_discovery_validator import get_python_files
 
     for py_file in get_python_files(CORE):
         if py_file.name == "__init__.py" or "legacy" in str(py_file):

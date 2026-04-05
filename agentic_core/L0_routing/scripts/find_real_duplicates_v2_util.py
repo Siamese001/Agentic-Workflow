@@ -230,7 +230,7 @@ def infer_rationale(canonical: Path, duplicate: Path, project_root: Path) -> str
 def main():
     project_root = Path.cwd()
     print(f"[SCAN] Searching for agent files in {project_root}...")
-    from agentic_core.utils.ssot_discovery_validator import get_agent_files
+    from agentic_core.utils.schemas.ssot_discovery_validator import get_agent_files
 
     agent_files = [f for f in get_agent_files(project_root) if is_agent_file(f)]
     print(f"[SCAN] Found {len(agent_files)} agent files")

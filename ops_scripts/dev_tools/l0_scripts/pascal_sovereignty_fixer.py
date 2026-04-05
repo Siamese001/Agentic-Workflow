@@ -190,7 +190,7 @@ def get_python_files_fast(root: Path, _fn=None) -> list[Path]:
     before they enter the pipeline.
     """
     if _fn is None:
-        from agentic_core.utils.fs_util import get_python_files_fast as canonical_get_python_files
+        from agentic_core.utils.schemas.fs_util import get_python_files_fast as canonical_get_python_files
 
         _fn = canonical_get_python_files
 

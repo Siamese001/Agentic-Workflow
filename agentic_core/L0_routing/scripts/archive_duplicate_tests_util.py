@@ -188,7 +188,7 @@ def main():
     test_dir = Path(__file__).parent.parent / TESTS_DIR
     "Find all test files in directory."
     seen = {}
-    from agentic_core.utils.ssot_discovery_validator import get_python_files
+    from agentic_core.utils.schemas.ssot_discovery_validator import get_python_files
 
     for py_file in get_python_files(test_dir):
         if py_file.name.startswith("test_"):

@@ -134,7 +134,7 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
-from agentic_core.utils.project_root_util import get_project_root
+from agentic_core.utils.schemas.project_root_util import get_project_root
 
 _emit_emits_metric_event("intelligence_sentry", "p4obs", "metric_1")
 _emit_emits_metric_event("intelligence_sentry", "p4obs", "metric_2")

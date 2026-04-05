@@ -305,7 +305,7 @@ def main() -> Any:
     print(f"Target: {target_path}")
     print(f"Mode: {('DRY RUN' if args.dry_run else 'LIVE HEALING')}")
     print(f"{'=' * 70}\n")
-    from agentic_core.utils.ssot_discovery_validator import get_python_files
+    from agentic_core.utils.schemas.ssot_discovery_validator import get_python_files
 
     python_files: Any = list(get_python_files(target_path))
     print(f"[SCAN] Found {len(python_files)} Python files\n")

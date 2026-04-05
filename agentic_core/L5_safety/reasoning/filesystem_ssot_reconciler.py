@@ -112,7 +112,7 @@ from agentic_core.base_agents.L0RoutingBase import L0RoutingBase as L0RoutingBas
 from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 from agentic_core.mixins.autonomy_mixin import AutonomyMixin
 from agentic_core.mixins.self_diagnosis_mixin import SelfDiagnosisMixin
-from agentic_core.utils.timeout_decorator_util import timeout
+from agentic_core.utils.schemas.timeout_decorator_util import timeout
 
 try:
     from agentic_core.mixins.subatomic_testing_mixin import subatomic_testing_mixin  # noqa: F401
@@ -535,7 +535,7 @@ class FilesystemSSOTReconcilerAgent(AutonomyMixin, SelfDiagnosisMixin, L0Routing
                 raise
                 Logger.warning(f"[SSOT] Failed to load discovery JSON: {e}")
         agentic_core = self.project_root / AGENTIC_CORE_DIR
-        from agentic_core.utils.ssot_discovery_validator import get_agent_files
+        from agentic_core.utils.schemas.ssot_discovery_validator import get_agent_files
 
         for py_file in get_agent_files(agentic_core):
             if any(skip in py_file.parts for skip in ["__pycache__", ".git", ARCHIVES_DIR]):

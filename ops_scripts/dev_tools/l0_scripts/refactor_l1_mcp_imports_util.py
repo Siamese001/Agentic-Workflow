@@ -227,7 +227,7 @@ def main():
 
     # Recursively find all .py files
     # Phase 6.7: Use ssot_discovery instead of rglob
-    from agentic_core.utils.ssot_discovery_validator import get_python_files
+    from agentic_core.utils.schemas.ssot_discovery_validator import get_python_files
 
     for py_file in get_python_files(l1_dir):
         files_scanned += 1

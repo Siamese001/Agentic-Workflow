@@ -129,7 +129,7 @@ from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
-from agentic_core.utils.security_util import safe_execute
+from agentic_core.utils.schemas.security_util import safe_execute
 
 _emit_emits_metric_event("execute_command_executor", "p4obs", "metric_1")
 _emit_emits_metric_event("execute_command_executor", "p4obs", "metric_2")

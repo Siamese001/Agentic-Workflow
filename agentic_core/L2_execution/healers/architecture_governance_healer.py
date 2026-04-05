@@ -80,7 +80,7 @@ _emit_captures_evaluation_metric("p4", "architecture_governance_healer", "eval_m
 _emit_stores_embedding("p4", "architecture_governance_healer", "embedding_store")
 _emit_updates_meta_learning_state("p4", "architecture_governance_healer", "meta_learning")
 _emit_links_execution_to_snapshot("p4", "architecture_governance_healer", "exec_snapshot_link")
-from agentic_core.utils.ast_fuzzy_util import parse_evidence as _parse_evidence
+from agentic_core.utils.schemas.ast_fuzzy_util import parse_evidence as _parse_evidence
 
 emit_replay_key("p0", "architecture_governance_healer")
 emit_determinism_digest("p0", "architecture_governance_healer")

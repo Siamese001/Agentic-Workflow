@@ -233,7 +233,7 @@ class DeepWikiHealingStrategy:
             undocumented = []
             agentic_core_path = Path(AGENTIC_CORE_DIR)
             if agentic_core_path.exists():
-                from agentic_core.utils.ssot_discovery_validator import get_python_files
+                from agentic_core.utils.schemas.ssot_discovery_validator import get_python_files
 
                 for py_file in get_python_files(agentic_core_path):
                     rel_path = str(py_file.relative_to(Path.cwd()))

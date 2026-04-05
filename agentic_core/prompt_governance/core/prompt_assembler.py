@@ -337,7 +337,7 @@ class PromptAssembler:
         """Load custom XML templates from file."""
         template_dir = Path("./templates/prompts")
         template_dir.mkdir(parents=True, exist_ok=True)
-        from agentic_core.utils.ssot_discovery_validator import get_python_files
+        from agentic_core.utils.schemas.ssot_discovery_validator import get_python_files
 
         xml_files = list(get_python_files(template_dir, pattern="*.xml"))
         for file_path in xml_files:
