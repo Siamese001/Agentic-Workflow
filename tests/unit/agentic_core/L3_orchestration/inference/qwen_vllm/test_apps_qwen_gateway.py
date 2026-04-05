@@ -1,25 +1,27 @@
-"""Tests for apps_qwen gateway module."""
+"""Tests for Qwen vLLM gateway module."""
 from __future__ import annotations
 
 import unittest
 
 import pytest
 
-# Check if apps_qwen is available
+# Check if qwen_vllm is available
 try:
-    from apps_qwen import AppsQwenGateway, AppsQwenRequest, AppsQwenResponse
-    APPS_QWEN_AVAILABLE = True
+    from agentic_core.L3_orchestration.inference.qwen_vllm import QwenInferenceGateway, QwenInferenceRequest, QwenInferenceResponse
+    # Also import backward compatibility aliases
+    from agentic_core.L3_orchestration.inference.qwen_vllm import AppsQwenGateway, AppsQwenRequest, AppsQwenResponse
+    QWEN_VLLM_AVAILABLE = True
 except ImportError:
-    APPS_QWEN_AVAILABLE = False
+    QWEN_VLLM_AVAILABLE = False
 
 
-@pytest.mark.skipif(not APPS_QWEN_AVAILABLE, reason="apps_qwen modules not available")
-class TestAppsQwenGateway(unittest.TestCase):
-    """Test class for AppsQwenGateway."""
+@pytest.mark.skipif(not QWEN_VLLM_AVAILABLE, reason="qwen_vllm modules not available")
+class TestQwenInferenceGateway(unittest.TestCase):
+    """Test class for QwenInferenceGateway."""
 
-    def test_AppsQwenRequest_init(self):
-        """Test AppsQwenRequest initialization."""
-        instance = AppsQwenRequest(
+    def test_QwenInferenceRequest_init(self):
+        """Test QwenInferenceRequest initialization."""
+        instance = QwenInferenceRequest(
             app_name="test_app",
             prompt="Test prompt",
             confidence_threshold=0.7,

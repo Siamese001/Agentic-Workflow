@@ -15,14 +15,14 @@ import time
 from dataclasses import dataclass, field
 from typing import Any
 
-from apps_qwen import (
+from agentic_core.L3_orchestration.inference.qwen_vllm.engines import (
     CircuitBreakerConfig,
     HardenedVLLMClient,
     OptimizedVLLMClient,
     RetryConfig,
     VLLMRequest,
-    get_gpu_monitor,
 )
+from agentic_core.L3_orchestration.inference.qwen_vllm.tools import get_gpu_monitor
 
 logging.basicConfig(
     level=logging.INFO,

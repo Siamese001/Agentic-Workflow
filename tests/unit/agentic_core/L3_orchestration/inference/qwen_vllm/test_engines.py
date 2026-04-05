@@ -1,9 +1,9 @@
-"""Tests for apps_qwen engine components."""
+"""Tests for Qwen vLLM engine components."""
 
 import pytest
 from unittest.mock import Mock, patch, MagicMock
 
-from apps_qwen.engines.optimized_vllm_client import (
+from agentic_core.L3_orchestration.inference.qwen_vllm.engines import (
     OptimizedVLLMClient,
     VLLMRequest,
     VLLMResponse,

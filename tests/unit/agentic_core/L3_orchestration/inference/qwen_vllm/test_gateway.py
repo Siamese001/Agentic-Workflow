@@ -1,21 +1,21 @@
-"""Tests for apps_qwen gateway orchestration."""
+"""Tests for Qwen vLLM gateway orchestration."""
 
 import pytest
 from unittest.mock import Mock, patch, AsyncMock
 
-from apps_qwen.reasoning.apps_qwen_gateway import (
-    AppsQwenGateway,
-    AppsQwenRequest,
-    AppsQwenResponse,
+from agentic_core.L3_orchestration.inference.qwen_vllm.reasoning import (
+    QwenInferenceGateway,
+    QwenInferenceRequest,
+    QwenInferenceResponse,
 )
 
 
-class TestAppsQwenRequest:
-    """Test AppsQwenRequest dataclass."""
+class TestQwenInferenceRequest:
+    """Test QwenInferenceRequest dataclass."""
 
     def test_request_creation(self):
         """Test creating an AppsQwen request."""
-        request = AppsQwenRequest(
+        request = QwenInferenceRequest(
             app_name="test_app",
             prompt="Test prompt",
             max_tokens=100,
@@ -27,12 +27,12 @@ class TestAppsQwenRequest:
         assert request.temperature == 0.1
 
 
-class TestAppsQwenResponse:
-    """Test AppsQwenResponse dataclass."""
+class TestQwenInferenceResponse:
+    """Test QwenInferenceResponse dataclass."""
 
     def test_response_creation(self):
         """Test creating an AppsQwen response."""
-        response = AppsQwenResponse(
+        response = QwenInferenceResponse(
             success=True,
             response="Test response",
             confidence=0.95,
@@ -47,7 +47,7 @@ class TestAppsQwenResponse:
 
     def test_response_creation_failure(self):
         """Test creating a failed AppsQwen response."""
-        response = AppsQwenResponse(
+        response = QwenInferenceResponse(
             success=False,
             response=None,
             confidence=0.0,
@@ -60,19 +60,19 @@ class TestAppsQwenResponse:
         assert response.error_message == "Inference failed"
 
 
-class TestAppsQwenGateway:
-    """Test AppsQwenGateway with mocked dependencies."""
+class TestQwenInferenceGateway:
+    """Test QwenInferenceGateway with mocked dependencies."""
 
     def test_gateway_initialization(self):
         """Test gateway initialization."""
-        gateway = AppsQwenGateway()
+        gateway = QwenInferenceGateway()
         assert gateway is not None
         assert gateway.model_id == "Qwen/Qwen2.5-14B-Instruct-AWQ"
         assert gateway.base_url == "http://localhost:8000/v1"
 
     def test_gateway_initialization_with_params(self):
         """Test gateway initialization with custom parameters."""
-        gateway = AppsQwenGateway(
+        gateway = QwenInferenceGateway(
             model_id="custom_model",
             base_url="http://localhost:9000/v1",
             max_concurrent=16,
@@ -86,7 +86,7 @@ class TestAppsQwenGateway:
     def test_request_validation(self):
         """Test request validation logic."""
         # Test that request accepts empty string (dataclass has no validation)
-        request = AppsQwenRequest(
+        request = QwenInferenceRequest(
             app_name="test",
             prompt="",
             max_tokens=100,

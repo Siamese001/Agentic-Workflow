@@ -1,9 +1,9 @@
-"""Tests for apps_qwen tools."""
+"""Tests for Qwen vLLM tools."""
 
 import pytest
 from unittest.mock import Mock, patch
 
-from apps_qwen.tools.gpu_memory_monitor import (
+from agentic_core.L3_orchestration.inference.qwen_vllm.tools import (
     GPUMemoryMonitor,
     GPUMemoryInfo,
     GPURecommendation,
