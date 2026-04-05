@@ -611,9 +611,21 @@ def write_all_artifacts(
     snap_path = out_dir / f"adg_snapshot{suffix}.json"
     snap_path.write_text(json.dumps(snap_dict, sort_keys=True, indent=2), encoding="utf-8")
 
-    # --- Tier 2: SQLite index (primary store, replaces adg_full.json) ---
+    # --- Tier 2: SQLite index + split planes — single normalizer pass ---
+    from agentic_core.adg.artifact.SplitArtifact import (
+        _FILE_GRAPH_RELS,
+        _GOVERNANCE_GRAPH_RELS,
+        _SYMBOL_GRAPH_RELS,
+    )
+
     normalizer = ArtifactNormalizer()
-    ng_full = normalizer.normalize(artifact)
+    ng_full, ng_file, ng_sym, ng_gov = normalizer.normalize_with_planes(
+        artifact,
+        file_rels=_FILE_GRAPH_RELS,
+        symbol_rels=_SYMBOL_GRAPH_RELS,
+        governance_rels=_GOVERNANCE_GRAPH_RELS,
+    )
+
     sqlite_path = out_dir / f"adg_indexed{suffix}.sqlite"
     if write_sqlite:
         _write_sqlite(ng_full, sqlite_path)
@@ -624,10 +636,9 @@ def write_all_artifacts(
     governance_graph_path = out_dir / f"adg_governance_graph{suffix}.json"
 
     if write_split_planes:
-        planes = split_artifact(artifact)
-        planes.file_graph.write(file_graph_path, indent=None)
-        planes.symbol_graph.write(symbol_graph_path, indent=None)
-        planes.governance_graph.write(governance_graph_path, indent=None)
+        ng_file.write(file_graph_path, indent=None)
+        ng_sym.write(symbol_graph_path, indent=None)
+        ng_gov.write(governance_graph_path, indent=None)
 
     # --- Create LATEST symlinks for easy discovery ---
     if create_latest_symlinks and ts:

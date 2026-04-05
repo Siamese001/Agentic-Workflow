@@ -278,6 +278,9 @@ def generate_full_adg(
     workers: int | None = None,
     cpu_affinity: bool = False,
     batch_size: int = 100,
+    enable_zip: bool = False,
+    enable_reports: bool = False,
+    enable_analysis: bool = False,
 ) -> None:
     """Generate full ADG and write all artifact tiers.
 
@@ -289,8 +292,32 @@ def generate_full_adg(
         workers: Number of worker processes (None = auto-detect)
         cpu_affinity: Enable CPU affinity pinning (AMD-optimized)
         batch_size: Batch size for parallel file/edge operations
+        enable_zip: Write a zip archive of all artifacts (default off — use for CI/release)
+        enable_reports: Generate all 8 standardized reports (default off — use for CI/release)
+        enable_analysis: Run score_edges + route_violations analytics (default off in local mode)
+
+    Execution modes:
+        Local (default): core artifacts only, no zip, no reports, no analytics (~saves ~7s)
+        Full (CI/release): set enable_zip=True, enable_reports=True, or ADG_MODE=full env var
     """
+    _adg_mode = os.environ.get("ADG_MODE", "").strip().lower()
+    if _adg_mode == "full":
+        enable_zip = True
+        enable_reports = True
+        enable_analysis = True
     import time as _time
+
+    # --- Startup mode banner (visible before any work begins) ---
+    _execution_mode = "full" if (enable_zip and enable_reports) else "local"
+    if _execution_mode == "full" and not enable_analysis:
+        enable_analysis = True
+    _omitted_artifacts: list[str] = []
+    print(
+        f"[ADG] Mode: {_execution_mode.upper()}  "
+        f"zip={'ON' if enable_zip else 'OFF'}  "
+        f"reports={'ON' if enable_reports else 'OFF'}"
+        + ("  (use --full or ADG_MODE=full for full-fidelity output)" if _execution_mode == "local" else "")
+    )
 
     _adg_start = _time.time()
 
@@ -394,36 +421,43 @@ def generate_full_adg(
     OwnershipRegistry.from_scan_result(result)
 
     # --- E9: Confidence (CPU-optimized batch scoring) ---
-    if parallel:
-        _e9_start = _time.time()
-        edge_list = list(result.edges)
-        edge_batch_processor = BatchProcessor(
-            processor_func=lambda e: e,
-            batch_size=batch_size,
-            max_workers=workers,
-        )
-        scored_edges = score_edges(edge_list)
-        print(f"[ADG] E9 edge scoring: {len(edge_list)} edges in {_time.time() - _e9_start:.2f}s (parallel)")
+    if enable_analysis:
+        if parallel:
+            _e9_start = _time.time()
+            edge_list = list(result.edges)
+            edge_batch_processor = BatchProcessor(
+                processor_func=lambda e: e,
+                batch_size=batch_size,
+                max_workers=workers,
+            )
+            scored_edges = score_edges(edge_list)
+            print(f"[ADG] E9 edge scoring: {len(edge_list)} edges in {_time.time() - _e9_start:.2f}s (parallel)")
+        else:
+            scored_edges = score_edges(list(result.edges))
+        conf_summary = confidence_summary(scored_edges)
+
+        # Persist confidence summary for L0 routing confidence monitor
+        try:
+            from system_learning.adapters.system_learning_memory_bridge import get_sl_memory_bridge
+
+            bridge = get_sl_memory_bridge()
+            bridge.persist_adg_confidence_summary(conf_summary, ts)
+        except Exception:
+            # System learning unavailable - continue without persistence
+            pass
     else:
-        scored_edges = score_edges(list(result.edges))
-    conf_summary = confidence_summary(scored_edges)
-
-    # Persist confidence summary for L0 routing confidence monitor
-    try:
-        from system_learning.adapters.system_learning_memory_bridge import get_sl_memory_bridge
-
-        bridge = get_sl_memory_bridge()
-        bridge.persist_adg_confidence_summary(conf_summary, ts)
-    except Exception:
-        # System learning unavailable - continue without persistence
-        pass
+        conf_summary = {"average_confidence": "n/a", "confidence_tiers": {"high": "n/a", "low": "n/a"}}
+        _omitted_artifacts.append("score_edges + confidence_summary (use --full or ADG_MODE=full)")
 
     # --- E10: Repair routing ---
-    violation_edges = [
-        e for e in result.edges if e.relation_type in ("violates", "dynamic_exec", "invokes_provider")
-    ]
-    repair_routes = route_violations(violation_edges)
-    routing_summary = repair_routing_summary(repair_routes)
+    if enable_analysis:
+        violation_edges = [
+            e for e in result.edges if e.relation_type in ("violates", "dynamic_exec", "invokes_provider")
+        ]
+        repair_routes = route_violations(violation_edges)
+        routing_summary = repair_routing_summary(repair_routes)
+    else:
+        routing_summary = {"total_routes": "n/a", "by_severity": "n/a"}
 
     # --- E5: Impact prediction ---
     violation_sources = [
@@ -483,28 +517,38 @@ def generate_full_adg(
         and _infer_ownership(getattr(e, "resolved_path", "")).criticality == "high"
     )
     print(f"      E8 ownership: {len(result.modules)} modules  high_criticality={owned_high}")
-    print(
-        f"      E9 confidence: avg={conf_summary['average_confidence']}  "
-        f"high={conf_summary['confidence_tiers']['high']}  low={conf_summary['confidence_tiers']['low']}"
-    )
-    print(
-        f"      E10 repair routes: {routing_summary['total_routes']} routes  by_severity={routing_summary['by_severity']}"
-    )
+    if enable_analysis:
+        print(
+            f"      E9 confidence: avg={conf_summary['average_confidence']}  "
+            f"high={conf_summary['confidence_tiers']['high']}  low={conf_summary['confidence_tiers']['low']}"
+        )
+        print(
+            f"      E10 repair routes: {routing_summary['total_routes']} routes  by_severity={routing_summary['by_severity']}"
+        )
+    else:
+        print("      E9 confidence: skipped (use --full or ADG_MODE=full)")
+        print("      E10 repair routes: skipped (use --full or ADG_MODE=full)")
 
     # --- Memory MCP persistence ---
     _persist_adg_to_memory(result, artifact, snapshot, graph_diff, routing_summary, ts)
 
     # --- Wave 6: Generate standardized reports ---
-    closure_report = _generate_standardized_reports(
-        adg_artifacts_dir,
-        ts,
-        artifact,
-        result=result,
-        repo_root=ROOT,
-        enable_determinism_probe=os.environ.get("ADG_ENABLE_DETERMINISM_PROBE", "1").strip().lower()
-        not in ("0", "false", "no"),
-    )
-    # --- Create zip archive of all 6 artifacts + 4 Wave 6 reports ---
+    if enable_reports:
+        closure_report = _generate_standardized_reports(
+            adg_artifacts_dir,
+            ts,
+            artifact,
+            result=result,
+            repo_root=ROOT,
+            enable_determinism_probe=os.environ.get("ADG_ENABLE_DETERMINISM_PROBE", "1").strip().lower()
+            not in ("0", "false", "no"),
+        )
+    else:
+        closure_report = None
+        _omitted_artifacts.append("standardized_reports (8 JSON files)")
+        print("[ADG] Reports skipped (use --reports or ADG_MODE=full to generate)")
+
+    # --- Create zip archive of all 6 artifacts + Wave 6 reports (full mode only) ---
     artifact_files = [
         paths.snapshot,
         paths.sqlite,
@@ -532,16 +576,21 @@ def generate_full_adg(
         artifact_files.extend(existing_reports)
         print(f"[ADG] Adding {len(existing_reports)} reports to zip archive")
 
-    # --- Create zip archive ---    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation
-    try:
-        _create_zip_archive(adg_artifacts_dir, ts, artifact_files)
-        zip_created = True
-        print(f"[ADG] Zip creation successful for {ts}")
-    # guardian: allow-silent-swallow - acceptable exception handling
-    except RuntimeError as e:
-        print(f"[ADG] WARNING: Zip creation failed: {e}")
-        print("[ADG] Individual files will be archived using legacy path")
-        zip_created = False
+    # --- Create zip archive (full/CI mode only) ---
+    zip_created = False
+    if not enable_zip:
+        _omitted_artifacts.append("zip_archive (adg_<ts>.zip)")
+        print("[ADG] Zip skipped (use --zip or ADG_MODE=full to archive)")    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation    # guardian: Runtime errors should be prevented with proper validation
+    if enable_zip:
+        try:
+            _create_zip_archive(adg_artifacts_dir, ts, artifact_files)
+            zip_created = True
+            print(f"[ADG] Zip creation successful for {ts}")
+        # guardian: allow-silent-swallow - acceptable exception handling
+        except RuntimeError as e:
+            print(f"[ADG] WARNING: Zip creation failed: {e}")
+            print("[ADG] Individual files will be archived using legacy path")
+            zip_created = False
 
     # --- Archive old artifacts (moved before validation check) ---
     if archive_old:
@@ -576,6 +625,14 @@ def generate_full_adg(
 
     # --- CPU Optimization: Final metrics and cleanup ---
     _adg_elapsed = _time.time() - _adg_start
+
+    # --- Omitted-artifacts manifest (local mode transparency) ---
+    if _omitted_artifacts:
+        print(f"[ADG] OMITTED ({len(_omitted_artifacts)} artifact type(s) not produced in {_execution_mode.upper()} mode):")
+        for _item in _omitted_artifacts:
+            print(f"[ADG]   - {_item}")
+        print("[ADG] Re-run with --full or ADG_MODE=full to produce all artifacts.")
+
     print(f"[ADG] Total generation time: {_adg_elapsed:.2f}s")
     if parallel:
         cpu_metrics_end = optimizer.get_cpu_metrics()
@@ -2213,8 +2270,29 @@ def main() -> None:
     )
     parser.add_argument("--repair", action="store_true", help="Run repair orchestrator after ADG generation")
     parser.add_argument("--repair-dry-run", action="store_true", help="Show repairs without applying them")
+    parser.add_argument(
+        "--zip", action="store_true",
+        help="Create zip archive of all artifacts (default off for local runs)"
+    )
+    parser.add_argument(
+        "--reports", action="store_true",
+        help="Generate all 8 standardized reports (default off for local runs)"
+    )
+    parser.add_argument(
+        "--full", action="store_true",
+        help="Full fidelity mode: enable --zip, --reports, and --analysis (equivalent to ADG_MODE=full)"
+    )
+    parser.add_argument(
+        "--analysis", action="store_true",
+        help="Run score_edges + route_violations analytics (default off in local mode)"
+    )
 
     args = parser.parse_args()
+
+    if args.full:
+        args.zip = True
+        args.reports = True
+        args.analysis = True
 
     # Timestamp in US Eastern time, format MMDDYYYY_HHMM (military time)
     est = timezone(timedelta(hours=-4))  # EDT (UTC-4); DST active Mar-Nov in US Eastern
@@ -2237,6 +2315,9 @@ def main() -> None:
         workers=args.workers,
         cpu_affinity=args.cpu_affinity,
         batch_size=args.batch_size,
+        enable_zip=args.zip,
+        enable_reports=args.reports,
+        enable_analysis=args.analysis,
     )
 
     # Run repair orchestrator if requested

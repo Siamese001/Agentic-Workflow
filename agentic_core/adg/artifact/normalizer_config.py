@@ -450,6 +450,303 @@ class ArtifactNormalizer:
         ng.compute_digest()
         return ng
 
+    def normalize_with_planes(
+        self,
+        artifact: ADGArtifact,
+        file_rels: frozenset[str],
+        symbol_rels: frozenset[str],
+        governance_rels: frozenset[str],
+    ) -> tuple[NormalizedGraph, NormalizedGraph, NormalizedGraph, NormalizedGraph]:
+        """Single-pass fusion: normalize artifact AND split into three planes.
+
+        Returns (full_ng, file_ng, symbol_ng, governance_ng).
+
+        All four NormalizedGraphs share the same ``name_to_id`` mapping built
+        in one traversal of artifact.entities and artifact.relations.  This
+        avoids the duplicate full-artifact walk that separate
+        normalize() + split_artifact() calls would perform.
+
+        Parameters
+        ----------
+        artifact:
+            The ADGArtifact to normalize and split.
+        file_rels, symbol_rels, governance_rels:
+            Frozensets of relation_type strings defining each plane.
+            Together they must cover all edge types without overlap.
+        """
+        import uuid as _uuid  # noqa: PLC0415
+
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "ArtifactNormalizer.normalize_with_planes"
+        )
+
+        def _infer_precision_type(adg_name: str) -> str:
+            if "::expr_" in adg_name:
+                return "expression_unit"
+            if "::if_" in adg_name or "::for_" in adg_name or "::try_" in adg_name:
+                return "control_branch"
+            if "::block" in adg_name:
+                return "code_block"
+            return "symbol"
+
+        ts_map: dict[str, str] = getattr(artifact, "type_surface_map", {})
+
+        def _infer_enclosing_symbol(adg_name: str) -> str:
+            for tag in ("::if_L", "::for_L", "::try_L", "::block_L", "::expr_L"):
+                idx = adg_name.find(tag)
+                if idx != -1:
+                    return adg_name[:idx]
+            return ""
+
+        # --- Single shared name→id map for all four outputs ---
+        name_to_id: dict[str, int] = {}
+        nodes_full: dict[str, dict] = {}
+
+        for ent in sorted(artifact.entities, key=lambda e: e.adg_name):
+            if ent.adg_name not in name_to_id:
+                nid = len(name_to_id)
+                name_to_id[ent.adg_name] = nid
+                nodes_full[str(nid)] = {
+                    "n": ent.adg_name,
+                    "t": ent.entity_type,
+                    "l": ent.layer,
+                    "k": ent.identity_kind,
+                    "c": ent.confidence,
+                    "p": ent.resolved_path,
+                    "pt": _infer_precision_type(ent.adg_name),
+                    "lsid": 0,
+                    "ts": ts_map.get(ent.adg_name, ""),
+                    "es": _infer_enclosing_symbol(ent.adg_name),
+                }
+
+        for rel in artifact.relations:
+            for name in (rel.from_name, rel.to_name):
+                if name not in name_to_id:
+                    nid = len(name_to_id)
+                    name_to_id[name] = nid
+                    nodes_full[str(nid)] = {
+                        "n": name,
+                        "t": "symbol",
+                        "l": "",
+                        "k": "",
+                        "c": "",
+                        "p": "",
+                        "pt": _infer_precision_type(name),
+                        "lsid": 0,
+                        "ts": ts_map.get(name, ""),
+                        "es": _infer_enclosing_symbol(name),
+                    }
+
+        # --- Single pass over relations — partition edges, collect referenced names per plane ---
+        edges_full: list[dict] = []
+
+        # Accumulate plane edge raw tuples using global IDs; name sets for node assembly
+        _plane_raw: dict[str, list[dict]] = {"file": [], "sym": [], "gov": []}
+        _plane_refs: dict[str, set[str]] = {"file": set(), "sym": set(), "gov": set()}
+
+        for rel in artifact.relations:
+            sid = name_to_id[rel.from_name]
+            did = name_to_id[rel.to_name]
+            rt = rel.relation_type
+
+            # Full compact edge
+            e_full: dict = {
+                "s": sid,
+                "d": did,
+                "r": rt,
+                "k": rel.edge_kind,
+                "f": rel.source_file,
+                "ln": rel.line_no,
+            }
+            if rel.symbol:
+                e_full["sym"] = rel.symbol
+            if getattr(rel, "semantic_type", ""):
+                e_full["st"] = rel.semantic_type
+            if getattr(rel, "confidence", 1.0) != 1.0:
+                e_full["conf"] = rel.confidence
+            if getattr(rel, "source_span_start", 0):
+                e_full["sss"] = rel.source_span_start
+            if getattr(rel, "source_span_end", 0):
+                e_full["sse"] = rel.source_span_end
+            if getattr(rel, "source_span_line", 0):
+                e_full["ssl"] = rel.source_span_line
+            if getattr(rel, "source_span_column", 0):
+                e_full["ssc"] = rel.source_span_column
+            if getattr(rel, "target_span_start", 0):
+                e_full["tss"] = rel.target_span_start
+            if getattr(rel, "target_span_end", 0):
+                e_full["tse"] = rel.target_span_end
+            if getattr(rel, "target_span_line", 0):
+                e_full["tsl"] = rel.target_span_line
+            if getattr(rel, "target_span_column", 0):
+                e_full["tsc"] = rel.target_span_column
+            if getattr(rel, "dynamic_resolution", ""):
+                e_full["dr"] = rel.dynamic_resolution
+            edges_full.append(e_full)
+
+            # Plane compact edge (shared fields only — stored with global IDs, remapped later)
+            e_plane: dict = {
+                "s": sid, "d": did, "r": rt,
+                "k": rel.edge_kind, "f": rel.source_file, "ln": rel.line_no,
+            }
+            if rel.symbol:
+                e_plane["sym"] = rel.symbol
+
+            if rt in file_rels:
+                _plane_raw["file"].append(e_plane)
+                _plane_refs["file"].add(rel.from_name)
+                _plane_refs["file"].add(rel.to_name)
+            elif rt in symbol_rels:
+                _plane_raw["sym"].append(e_plane)
+                _plane_refs["sym"].add(rel.from_name)
+                _plane_refs["sym"].add(rel.to_name)
+            elif rt in governance_rels:
+                _plane_raw["gov"].append(e_plane)
+                _plane_refs["gov"].add(rel.from_name)
+                _plane_refs["gov"].add(rel.to_name)
+
+        # --- Build per-plane node dicts in _build_plane canonical order ---
+        # _build_plane order: sorted(entities that pass type filter) THEN sorted(dangling refs)
+        # file_graph has node_type_filter={"module"}; symbol/governance have None (all types).
+        from typing import Any as _Any
+        entity_lookup: dict[str, _Any] = {e.adg_name: e for e in artifact.entities}
+
+        def _build_plane_nodes(
+            referenced: set[str],
+            node_type_filter: set[str] | None,
+        ) -> dict[str, int]:
+            """Return name→local_id in _build_plane canonical order."""
+            local: dict[str, int] = {}
+
+            def _reg(name: str) -> None:
+                if name not in local:
+                    local[name] = len(local)
+
+            for ent in sorted(artifact.entities, key=lambda e: e.adg_name):
+                if node_type_filter and ent.entity_type not in node_type_filter:
+                    continue
+                _reg(ent.adg_name)
+
+            for name in sorted(referenced):
+                _reg(name)
+
+            return local
+
+        def _compact_plane_node(name: str) -> dict:
+            ent = entity_lookup.get(name)
+            if ent is not None:
+                return {
+                    "n": name,
+                    "t": ent.entity_type,
+                    "l": ent.layer,
+                    "k": ent.identity_kind,
+                    "c": ent.confidence,
+                    "p": ent.resolved_path,
+                }
+            return {"n": name, "t": "symbol", "l": "", "k": "", "c": "", "p": ""}
+
+        def _assemble_plane(
+            plane_key: str,
+            node_type_filter: set[str] | None,
+        ) -> tuple[dict[str, dict], list[dict]]:
+            local_map = _build_plane_nodes(_plane_refs[plane_key], node_type_filter)
+            local_nodes = {str(lid): _compact_plane_node(nm) for nm, lid in local_map.items()}
+            # Remap global IDs → local IDs in edges
+            global_to_local = {name_to_id[nm]: lid for nm, lid in local_map.items()}
+            local_edges: list[dict] = []
+            for e in _plane_raw[plane_key]:
+                le = dict(e)
+                le["s"] = global_to_local[e["s"]]
+                le["d"] = global_to_local[e["d"]]
+                local_edges.append(le)
+            return local_nodes, local_edges
+
+        nodes_file, edges_file = _assemble_plane("file", {"module"})
+        nodes_sym, edges_sym = _assemble_plane("sym", None)
+        nodes_gov, edges_gov = _assemble_plane("gov", None)
+
+        # --- Metrics for full graph ---
+        by_rel_full: dict[str, int] = {}
+        for e in edges_full:
+            by_rel_full[e["r"]] = by_rel_full.get(e["r"], 0) + 1
+
+        by_layer: dict[str, int] = {}
+        for node in nodes_full.values():
+            if node["t"] == "module" and node["l"]:
+                by_layer[node["l"]] = by_layer.get(node["l"], 0) + 1
+
+        meta_full = {
+            "total_nodes": len(nodes_full),
+            "total_edges": len(edges_full),
+            "module_count": sum(1 for n in nodes_full.values() if n["t"] == "module"),
+            "symbol_count": sum(1 for n in nodes_full.values() if n["t"] == "symbol"),
+            "by_relation_type": dict(sorted(by_rel_full.items())),
+            "by_layer": dict(sorted(by_layer.items())),
+            "blind_spots": artifact.blind_spots.to_dict() if artifact.blind_spots else {},
+            "identity_health": artifact.identity_health,
+            "structural_metrics": artifact.structural_metrics.to_dict(),
+        }
+
+        ng_full = NormalizedGraph(
+            commit_sha=artifact.commit_sha,
+            repo_state_hash=artifact.repo_state_hash,
+            scanner_digest=artifact.scanner_digest,
+            nodes=nodes_full,
+            edges=edges_full,
+            meta=meta_full,
+        )
+        ng_full.compute_digest()
+
+        # --- Helper to build a plane NormalizedGraph with plane-local IDs ---
+        # _build_plane assigns IDs 0,1,2,... scoped to each plane.  We must
+        # remap the global IDs accumulated above to plane-local sequential IDs
+        # so the resulting JSON — and therefore the digest — is identical to
+        # what split_artifact() would have produced.
+        def _make_plane_ng(
+            plane_nodes_global: dict[str, dict],
+            plane_edges_global: list[dict],
+            plane_name: str,
+        ) -> NormalizedGraph:
+            # Build global_id → local_id mapping in insertion order
+            global_to_local: dict[int, int] = {}
+            local_nodes: dict[str, dict] = {}
+            for gkey, node_dict in sorted(plane_nodes_global.items(), key=lambda kv: int(kv[0])):
+                local_id = len(global_to_local)
+                global_to_local[int(gkey)] = local_id
+                local_nodes[str(local_id)] = node_dict
+
+            local_edges: list[dict] = []
+            for e in plane_edges_global:
+                le = dict(e)
+                le["s"] = global_to_local[e["s"]]
+                le["d"] = global_to_local[e["d"]]
+                local_edges.append(le)
+
+            by_rel: dict[str, int] = {}
+            for e in local_edges:
+                by_rel[e["r"]] = by_rel.get(e["r"], 0) + 1
+            ng = NormalizedGraph(
+                commit_sha=artifact.commit_sha,
+                scanner_digest=artifact.scanner_digest,
+                nodes=local_nodes,
+                edges=local_edges,
+                meta={
+                    "plane": plane_name,
+                    "total_nodes": len(local_nodes),
+                    "total_edges": len(local_edges),
+                    "by_relation_type": dict(sorted(by_rel.items())),
+                },
+            )
+            ng.compute_digest()
+            return ng
+
+        ng_file = _make_plane_ng(nodes_file, edges_file, "file_graph")
+        ng_sym = _make_plane_ng(nodes_sym, edges_sym, "symbol_graph")
+        ng_gov = _make_plane_ng(nodes_gov, edges_gov, "governance_graph")
+
+        return ng_full, ng_file, ng_sym, ng_gov
+
     def denormalize(self, ng: NormalizedGraph) -> dict:
         """Reconstruct a verbose artifact dict from NormalizedGraph.
 
