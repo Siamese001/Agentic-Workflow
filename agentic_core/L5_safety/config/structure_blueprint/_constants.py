@@ -1228,7 +1228,6 @@ def build_sovereign_territories() -> dict[str, TerritoryDefinition]:
                     "agentic_core": {
                         "purpose": "Unit tests for agentic_core modules",
                         "subfolders": {
-                            "L0_maintenance": [],
                             "L0_routing": {
                                 "subfolders": {
                                     "artifacts": [], "capacity": [], "config": [],
