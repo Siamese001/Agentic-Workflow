@@ -1095,8 +1095,8 @@ def build_sovereign_territories() -> dict[str, TerritoryDefinition]:
                     "flows",
                     "snapshots",
                     "agentic_core",
-                    "apps_lic",
-                    "apps_rg",
+                    # apps_* folders are auto-discovered — any apps_* subfolder is valid here
+                    "apps_*",
                     "ops_scripts",
                 ],
             },
@@ -1419,8 +1419,8 @@ def build_sovereign_territories() -> dict[str, TerritoryDefinition]:
                     "missions": {"purpose": "High-level mission execution traces and runtime logs"},
                     ".migration": {"purpose": "Migration tracking artifacts"},
                     "MCP": {"purpose": "MCP server integration reports"},
-                    "apps_lic": {"purpose": "apps_lic domain-specific reports"},
-                    "apps_rg": {"purpose": "apps_rg domain-specific reports"},
+                    # apps_* wildcard — any apps_* domain report subfolder is valid
+                    "apps_*": {"purpose": "apps_* domain-specific reports (wildcard: apps_lic, apps_rg, etc.)"},
                     "misc": {"purpose": "Miscellaneous reports"},
                     "plans": {"purpose": "Planning documents and evidence packs"},
                     "verification": {"purpose": "Enforcement verification artifacts"},
@@ -1719,10 +1719,12 @@ MCP_CAPABILITIES: Final[Mapping[str, Mapping[str, bool | str]]] = {
     "semantic_cache": {"enabled": True, "path": "agentic_core.L2_execution.enforcement"},
 }
 
+# GRAVITY_CONFIG: downstream_domains uses apps_* wildcard.
+# Resolved at runtime by GRAVITY helpers that call _discover_apps_wildcard_folders().
 GRAVITY_CONFIG: Mapping[str, Any] = {
     "enabled": True,
     "UPSTREAM_SOVEREIGN_ROOTS": ["agentic_core"],
-    "downstream_domains": ["apps_rg", "apps_lic", "apps_shared", "tests"],
+    "downstream_domains": ["apps_*", "tests"],
     "exemptions": [],
 }
 

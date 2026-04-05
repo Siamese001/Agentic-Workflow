@@ -248,16 +248,11 @@ STANDARD_LAYER_STRUCTURE: Final[list[str]] = [
 
 # Territories with enforced SSOT structure requirements
 # Used by: FilesystemSSOTReconcilerAgent, FileClassificationAgent, HierarchyAgent, ArchitectureGovernorAgent
-ENFORCED_TERRITORIES: Final[frozenset[str]] = frozenset(
+# apps_* folders are auto-discovered via _discover_apps_wildcard_folders() (defined below) — no manual edits needed.
+# ENFORCED_TERRITORIES is finalized after _discover_apps_wildcard_folders is defined (search below).
+_ENFORCED_TERRITORIES_BASE: frozenset[str] = frozenset(
     {
         "agentic_core",
-        "apps_eval",
-        "apps_exec",
-        "apps_lic",
-        "apps_research",
-        "apps_rfp",
-        "apps_rg",
-        "apps_shared",
         "tests",
         "ops_scripts",
         "system_learning",
@@ -269,16 +264,11 @@ ENFORCED_TERRITORIES: Final[frozenset[str]] = frozenset(
 
 # Subset of enforced territories that contain Python code (excludes data/, docs/)
 # Used by: SystemArchitectAgent (circular dependency detection)
-CODE_TERRITORIES: Final[frozenset[str]] = frozenset(
+# apps_* folders are auto-discovered — no manual edits needed.
+# CODE_TERRITORIES is finalized after _discover_apps_wildcard_folders is defined (search below).
+_CODE_TERRITORIES_BASE: frozenset[str] = frozenset(
     {
         "agentic_core",
-        "apps_eval",
-        "apps_exec",
-        "apps_lic",
-        "apps_research",
-        "apps_rfp",
-        "apps_rg",
-        "apps_shared",
         "tests",
         "ops_scripts",
         "system_learning",
@@ -494,6 +484,19 @@ def _discover_apps_wildcard_folders(repo_root: Path | None = None) -> frozenset[
         pass
     
     return frozenset(apps_folders)
+
+
+# Finalize ENFORCED_TERRITORIES and CODE_TERRITORIES now that _discover_apps_wildcard_folders is defined.
+# apps_* folders are auto-discovered — adding a new apps_* dir at repo root is sufficient.
+try:
+    ENFORCED_TERRITORIES: Final[frozenset[str]] = _ENFORCED_TERRITORIES_BASE | _discover_apps_wildcard_folders()
+except Exception:
+    ENFORCED_TERRITORIES = _ENFORCED_TERRITORIES_BASE  # type: ignore[misc]
+
+try:
+    CODE_TERRITORIES: Final[frozenset[str]] = _CODE_TERRITORIES_BASE | _discover_apps_wildcard_folders()
+except Exception:
+    CODE_TERRITORIES = _CODE_TERRITORIES_BASE  # type: ignore[misc]
 
 
 # Base mirror roots that are NOT dynamically discovered (stable)

@@ -24,6 +24,7 @@ from types import MappingProxyType
 
 from agentic_core.L0_routing.config.path_constants import AGENTIC_CORE_DIR
 from agentic_core.L2_execution.tools import write_gateway as _wg
+from agentic_core.L5_safety.config.structure_blueprint.ssot import CODE_TERRITORIES as _CODE_TERRITORIES
 from agentic_core.L5_safety.config.structure_blueprint.ssot import SOVEREIGN_EXCLUDED_FOLDERS
 from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     LayerSegment,
@@ -197,14 +198,10 @@ emit_determinism_digest("trace__verify", "_verify_policy_verify")
 ALLOWED_MODULES: frozenset[str] = frozenset(
     {"__future__", "typing", "types", "collections", "functools", "itertools", "dataclasses"}
 )
-SCAN_ROOTS: tuple[str, ...] = (
-    "agentic_core",
-    "apps_lic",
-    "apps_rg",
-    "apps_shared",
-    "artifacts",
-    "ops_scripts",
-    "tests",
+# SCAN_ROOTS: built from CODE_TERRITORIES (dynamic apps_* discovery) plus artifact roots.
+# Adding a new apps_* folder at repo root is sufficient — no manual edits needed here.
+SCAN_ROOTS: tuple[str, ...] = tuple(
+    sorted(_CODE_TERRITORIES | {"artifacts"})
 )
 SCAN_EXTENSIONS: tuple[str, ...] = (".py",)
 SCAN_EXCLUDES: frozenset[str] = SOVEREIGN_EXCLUDED_FOLDERS | frozenset({"dist", "build"})

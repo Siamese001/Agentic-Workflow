@@ -133,23 +133,31 @@ def build_snapshot(result: ScanResult) -> CanonicalSnapshot:
     The graph_hash is derived solely from the sorted canonical edge list,
     making it reproducible given identical source code regardless of scan
     order or Python version.
+
+    E4: Single-pass observer — edge tuples, node names, and relation counts
+    are all collected in one iteration over result.edges instead of three.
     """
     from agentic_core.adg.extraction.static_scanner import (
         _SCANNER_VERSION,
         _SCHEMA_VERSION,
     )
 
-    canonical_edges: list[tuple[str, str, str]] = sorted(
-        {(e.from_name, e.relation_type, e.to_name) for e in result.edges}
-    )
-    canonical_nodes: list[str] = sorted(
-        {e.from_name for e in result.edges} | {e.to_name for e in result.edges}
-    )
+    edge_set: set[tuple[str, str, str]] = set()
+    node_set: set[str] = set()
+    edge_counts: dict[str, int] = {}
+
+    for e in result.edges:
+        tup = (e.from_name, e.relation_type, e.to_name)
+        edge_set.add(tup)
+        node_set.add(e.from_name)
+        node_set.add(e.to_name)
+        edge_counts[e.relation_type] = edge_counts.get(e.relation_type, 0) + 1
+
+    canonical_edges: list[tuple[str, str, str]] = sorted(edge_set)
+    canonical_nodes: list[str] = sorted(node_set)
 
     edge_payload = json.dumps(canonical_edges, sort_keys=True, separators=(",", ":"))
     graph_hash = hashlib.sha256(edge_payload.encode()).hexdigest()
-
-    edge_counts = result.edge_counts_by_relation()
 
     return CanonicalSnapshot(
         graph_hash=graph_hash,
