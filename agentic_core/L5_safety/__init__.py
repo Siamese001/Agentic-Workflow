@@ -10,7 +10,7 @@ from typing import Any
 # Sovereignty assertion: This layer contains NO agents with execute() methods
 # Any agent classes belong in L2 (Execute) or L3 (Route) layers only
 # P2/L5 Safety Audit exports
-from agentic_core.L5_safety.audit.safety_audit_emitter import (
+from agentic_core.L5_safety.enforcement.audit.safety_audit_emitter import (
     DecisionContext,
     HumanReviewContext,
     SafetyContext,
@@ -23,7 +23,7 @@ from agentic_core.L5_safety.audit.safety_audit_emitter import (
     query_safety_audits,
     safety_audit_emitted,
 )
-from agentic_core.L5_safety.audit.safety_audit_registry import (
+from agentic_core.L5_safety.enforcement.audit.safety_audit_registry import (
     AuditQueryError,
     HumanReviewAuditError,
     HumanReviewAuditRecord,

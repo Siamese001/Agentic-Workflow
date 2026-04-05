@@ -45,7 +45,7 @@ import logging
 import uuid
 from typing import Any, Callable
 
-from agentic_core.L4_state.context.execution_context import (
+from agentic_core.L4_state.utils.context.execution_context import (
     ActionClass,
     ExecutionContext,
     GuardrailOutcome,

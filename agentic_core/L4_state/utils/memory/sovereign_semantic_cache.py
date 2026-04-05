@@ -210,7 +210,7 @@ class SovereignSemanticCache(SovereignBaseAgent):
         super().__init__()
         self.mission_id = mission_id
         self.engine = engine
-        from agentic_core.L4_state.memory.in_memory_vector_store import InMemoryVectorStore
+        from agentic_core.L4_state.utils.memory.in_memory_vector_store import InMemoryVectorStore
 
         self._vector_store: InMemoryVectorStore = InMemoryVectorStore()
         self.index_name = "canon-semantic-v1"

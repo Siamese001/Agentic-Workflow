@@ -51,7 +51,7 @@ try:
         GraphRetrievalEngine,
         RetrievalWithGraphIntegration,
     )
-    from agentic_core.L4_state.engines.meta_learning_feedback import (
+    from agentic_core.L4_state.reasoning.meta_learning_feedback import (
         CompletenessAnalyzer,
         CompletenessChangePackage,
         CompletenessRAGProposer,
@@ -59,12 +59,12 @@ try:
         FeedbackProposal,
         FeedbackTrigger,
     )
-    from agentic_core.L4_state.engines.parent_child_expansion import (
+    from agentic_core.L4_state.reasoning.parent_child_expansion import (
         ExpansionContext,
         L4ERetrievalIntegrator,
         ParentChildExpander,
     )
-    from agentic_core.L4_state.memory.chunk_manifest_registry import (
+    from agentic_core.L4_state.utils.memory.chunk_manifest_registry import (
         ChunkManifestRegistry,
         EnrichedChunkManifest,
     )

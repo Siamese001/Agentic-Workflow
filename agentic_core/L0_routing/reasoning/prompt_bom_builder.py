@@ -57,7 +57,7 @@ def _get_prompt_bom():
 # Self-bootstrap governance wiring
 def _get_version_store():
     """Lazy import to avoid circular dependencies."""
-    from agentic_core.L4_state.memory.prompt_version_store import get_version_store
+    from agentic_core.L4_state.utils.memory.prompt_version_store import get_version_store
     return get_version_store()
 
 

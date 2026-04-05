@@ -27,7 +27,7 @@ import json
 from typing import Sequence
 
 from agentic_core.L2_execution.types.l2_instruction_packet import InstructionPacket
-from agentic_core.L2_execution.UniversalWriteGateway import UniversalWriteGateway, get_write_gateway
+from agentic_core.L2_execution.enforcement.UniversalWriteGateway import UniversalWriteGateway, get_write_gateway
 
 
 def compute_replay_key(

@@ -81,7 +81,7 @@ except Exception as e:
 # Test 4: Semantic Cache Manager (No Mocks)
 print('\n[TEST 4] SEMANTIC CACHE MANAGER - REAL IMPLEMENTATION')
 try:
-    from agentic_core.L4_state.memory.semantic_cache_manager import SemanticCacheManager
+    from agentic_core.L4_state.utils.memory.semantic_cache_manager import SemanticCacheManager
 
     # Reset any existing instance
     SemanticCacheManager.reset_instance()
@@ -110,7 +110,7 @@ except Exception as e:
 # Test 5: End-to-End Cache Operations
 print('\n[TEST 5] END-TO-END CACHE OPERATIONS')
 try:
-    from agentic_core.L4_state.memory.semantic_cache_manager import SemanticCacheManager
+    from agentic_core.L4_state.utils.memory.semantic_cache_manager import SemanticCacheManager
 
     # Test learn and recall
     test_namespace = "test_agent"

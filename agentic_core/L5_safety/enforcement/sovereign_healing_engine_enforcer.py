@@ -453,7 +453,7 @@ class SovereignHealingEngine:
         if "Redis" in message:
             new_content = new_content.replace(
                 "import redis",
-                "# Sovereign healing: Use get_redis_client() from agentic_core.L4_state.caching.redis_mcp_client",
+                "# Sovereign healing: Use get_redis_client() from agentic_core.L4_state.cache.redis_mcp_client",
             )
             new_content = new_content.replace("redis.Redis(", "# get_redis_client().")
         if "Vector" in message or "pinecone" in message.lower():

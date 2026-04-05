@@ -268,7 +268,7 @@ class TestIntegrationSmoke(unittest.TestCase):
 
     def test_template_registry_import(self) -> None:
         """Test TemplateRegistry can be imported."""
-        from agentic_core.L4_state.memory.template_registry import TemplateRegistry
+        from agentic_core.L4_state.utils.memory.template_registry import TemplateRegistry
 
         registry = TemplateRegistry()
         self.assertIsNotNone(registry)

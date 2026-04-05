@@ -28,7 +28,7 @@ sys.path.insert(0, str(Path(__file__).parent.parent.parent.parent))
 # Check if retrieval layers are available
 try:
     from agentic_core.cache import get_hot_cache, reset_cache_singletons
-    from agentic_core.L4_state.engines.retrieval_layers import (
+    from agentic_core.L4_state.reasoning.retrieval_layers import (
         L1ExactCache,
         L2SemanticCache,
         L3SemanticRAG,

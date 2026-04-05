@@ -13,7 +13,7 @@ from pathlib import Path
 # Add project root to path for imports
 sys.path.insert(0, str(Path(__file__).parent.parent.parent))
 
-from agentic_core.L4_state.engines.retrieval_layers import RetrievalOrchestrator
+from agentic_core.L4_state.reasoning.retrieval_layers import RetrievalOrchestrator
 
 
 def print_banner():
@@ -159,7 +159,7 @@ def demonstrate_action_validation():
     print("✅ ACTION VALIDATION DEMONSTRATION")
     print("-" * 40)
 
-    from agentic_core.L4_state.engines.retrieval_layers import L4AgenticActions
+    from agentic_core.L4_state.reasoning.retrieval_layers import L4AgenticActions
 
     actions = L4AgenticActions()
 

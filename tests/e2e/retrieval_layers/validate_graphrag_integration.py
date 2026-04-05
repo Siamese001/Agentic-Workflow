@@ -49,7 +49,7 @@ def validate_imports() -> dict[str, bool]:
 
     # Pipeline D imports
     try:
-        from agentic_core.L4_state.engines.meta_learning_feedback import (
+        from agentic_core.L4_state.reasoning.meta_learning_feedback import (
             CompletenessAnalyzer,
             CompletenessRAGProposer,
             EvaluationRunner,
@@ -86,7 +86,7 @@ def validate_imports() -> dict[str, bool]:
 
     # Parent-child expansion
     try:
-        from agentic_core.L4_state.engines.parent_child_expansion import (
+        from agentic_core.L4_state.reasoning.parent_child_expansion import (
             ExpansionContext,
             L4ERetrievalIntegrator,
             ParentChildExpander,
@@ -173,7 +173,7 @@ def validate_pipeline_c_functionality() -> dict[str, bool]:
     results = {}
 
     try:
-        from agentic_core.L4_state.engines.parent_child_expansion import (
+        from agentic_core.L4_state.reasoning.parent_child_expansion import (
             ExpansionContext,
             ParentChildExpander,
         )
@@ -211,7 +211,7 @@ def validate_pipeline_d_functionality() -> dict[str, bool]:
     results = {}
 
     try:
-        from agentic_core.L4_state.engines.meta_learning_feedback import (
+        from agentic_core.L4_state.reasoning.meta_learning_feedback import (
             CompletenessAnalyzer,
             CompletenessRAGProposer,
             EvaluationRunner,

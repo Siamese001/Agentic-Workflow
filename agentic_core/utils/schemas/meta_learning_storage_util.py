@@ -205,7 +205,7 @@ class MetaLearningStorage:
             with cls._memory_lock:
                 if cls._memory is None:
                     try:
-                        from agentic_core.L4_state.memory.semantic_cache_manager import SemanticCacheManager
+                        from agentic_core.L4_state.utils.memory.semantic_cache_manager import SemanticCacheManager
 
                         cls._memory = SemanticCacheManager.get_instance()
                         Logger.debug(f"[{agent_name}] Connected to Hive Mind")
@@ -285,7 +285,7 @@ class MetaLearningStorage:
             with cls._graph_lock:
                 if cls._graph_bridge is None:
                     try:
-                        from agentic_core.L4_state.memory.graph_memory_bridge_types import GraphMemoryBridge
+                        from agentic_core.L4_state.utils.memory.graph_memory_bridge_types import GraphMemoryBridge
 
                         cls._graph_bridge = GraphMemoryBridge.get_instance()
                         Logger.debug(f"[{agent_name}] Connected to Graph Memory Bridge")

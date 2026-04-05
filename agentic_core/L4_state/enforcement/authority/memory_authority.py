@@ -36,7 +36,7 @@ from enum import Enum
 from typing import Any
 
 from agentic_core.L2_execution.utils.providers import get_clock
-from agentic_core.L4_state.authority.run_state_authority import (
+from agentic_core.L4_state.enforcement.authority.run_state_authority import (
     RunStateAuthority,
     get_run_state_authority,
 )

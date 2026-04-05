@@ -534,7 +534,7 @@ class GlobalCache:
         """Lazy-load SemanticCacheManager singleton for L2 delegation."""
         if self._hive is None:
             try:
-                from agentic_core.L4_state.memory.semantic_cache_manager import SemanticCacheManager
+                from agentic_core.L4_state.utils.memory.semantic_cache_manager import SemanticCacheManager
 
                 self._hive = SemanticCacheManager.get_instance()
             # guardian: allow-silent-swallow

@@ -331,7 +331,7 @@ class AirlockAssembler:
         emit_determinism_digest(_trace_id, f"path:{bom.path}")
 
         # 1. Load S0 from TemplateRegistry
-        from agentic_core.L4_state.memory.template_registry import get_template_registry
+        from agentic_core.L4_state.utils.memory.template_registry import get_template_registry
         registry = get_template_registry()
         s0_content = registry.get_s0(bom.system_version_hash)
 

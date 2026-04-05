@@ -328,7 +328,7 @@ class RetrievalDriftMonitor:
 
     def _persist(self, snapshot: RetrievalDriftSnapshot) -> None:
         try:
-            from agentic_core.L4_state.storage.persistent_store import create_artifact
+            from agentic_core.L4_state.utils.storage.persistent_store import create_artifact
 
             artifact = create_artifact(
                 kind="retrieval_drift_snapshot",
@@ -451,7 +451,7 @@ class EmbeddingDriftMonitor:
 
     def _persist(self, snapshot: EmbeddingHealthSnapshot) -> None:
         try:
-            from agentic_core.L4_state.storage.persistent_store import create_artifact
+            from agentic_core.L4_state.utils.storage.persistent_store import create_artifact
 
             artifact = create_artifact(
                 kind="embedding_health_snapshot",
@@ -578,7 +578,7 @@ class AnswerQualityMonitor:
 
     def _persist(self, snapshot: AnswerQualitySnapshot) -> None:
         try:
-            from agentic_core.L4_state.storage.persistent_store import create_artifact
+            from agentic_core.L4_state.utils.storage.persistent_store import create_artifact
 
             artifact = create_artifact(
                 kind="answer_quality_snapshot",

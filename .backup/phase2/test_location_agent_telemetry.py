@@ -23,7 +23,7 @@ def test_location_agent_telemetry():
         (root / "agentic_core" / "L4_state").mkdir()
 
         # Import RuntimeStateGuard directly to test telemetry
-        from agentic_core.L4_state.memory.runtime_state_guard import RuntimeStateGuard
+        from agentic_core.L4_state.utils.memory.runtime_state_guard import RuntimeStateGuard
 
         guard = RuntimeStateGuard(root)
 

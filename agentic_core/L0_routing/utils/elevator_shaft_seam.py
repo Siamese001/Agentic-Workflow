@@ -118,7 +118,7 @@ def load_context_jit(
 
     # Query semantic cache for relevant chunks
     try:
-        from agentic_core.L4_state.memory.semantic_cache_manager import (
+        from agentic_core.L4_state.utils.memory.semantic_cache_manager import (
             get_semantic_cache,
         )
         semantic_cache = get_semantic_cache()
@@ -128,7 +128,7 @@ def load_context_jit(
 
     # Query BM25 store for keyword matches
     try:
-        from agentic_core.L4_state.memory.bm25_store import get_bm25_store
+        from agentic_core.L4_state.utils.memory.bm25_store import get_bm25_store
         bm25_store = get_bm25_store()
         bm25_results = bm25_store.query(intent_class, k=5)
     except (ValueError, TypeError):
@@ -157,7 +157,7 @@ def load_context_jit(
 
     # Get AST snapshot if available
     try:
-        from agentic_core.L4_state.memory.ast_snapshot_store import (
+        from agentic_core.L4_state.utils.memory.ast_snapshot_store import (
             get_ast_snapshot_store,
         )
         ast_store = get_ast_snapshot_store()
@@ -167,7 +167,7 @@ def load_context_jit(
 
     # Get boundary refs if available
     try:
-        from agentic_core.L4_state.memory.boundary_store import get_boundary_store
+        from agentic_core.L4_state.utils.memory.boundary_store import get_boundary_store
         boundary_store = get_boundary_store()
         boundary_refs = boundary_store.get_refs_for_intent(intent_class)
     except (ValueError, TypeError):

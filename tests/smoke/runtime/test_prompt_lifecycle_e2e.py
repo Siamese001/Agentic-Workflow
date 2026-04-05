@@ -154,7 +154,7 @@ class TestIntegrationHealth(unittest.TestCase):
         from agentic_core.L0_routing.reasoning.prompt_bom_builder import (
             get_prompt_bom_builder,
         )
-        from agentic_core.L4_state.memory.template_registry import get_template_registry
+        from agentic_core.L4_state.utils.memory.template_registry import get_template_registry
 
         self.assertIsNotNone(get_prompt_bom_builder)
         self.assertIsNotNone(get_template_registry)

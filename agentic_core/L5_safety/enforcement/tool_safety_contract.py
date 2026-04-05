@@ -620,7 +620,7 @@ def _route_to_human_review(
 ) -> None:
     """Emit human review record for HUMAN_GATED / PRIVILEGED tools."""
     try:
-        from agentic_core.L5_safety.audit.human_review_queue import (  # noqa: PLC0415
+        from agentic_core.L5_safety.enforcement.audit.human_review_queue import (  # noqa: PLC0415
             HumanReviewQueue,
             PendingVerdict,
         )

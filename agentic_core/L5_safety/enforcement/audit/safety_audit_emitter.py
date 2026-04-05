@@ -19,7 +19,7 @@ import logging
 from dataclasses import dataclass
 from typing import Any
 
-from agentic_core.L5_safety.audit.safety_audit_registry import (
+from agentic_core.L5_safety.enforcement.audit.safety_audit_registry import (
     AuditQueryError,
     HumanReviewAuditError,
     HumanReviewAuditRecord,

@@ -158,7 +158,7 @@ def _get_uwg():
     import uuid as _uuid  # noqa: PLC0415
 
     _emit_applies_guardrail(str(_uuid.uuid4()), "_get_uwg", "p0_governance")
-    from agentic_core.L2_execution.UniversalWriteGateway import UniversalWriteGateway
+    from agentic_core.L2_execution.enforcement.UniversalWriteGateway import UniversalWriteGateway
 
     return UniversalWriteGateway.get_instance()
 

@@ -19,7 +19,7 @@ from agentic_core.cache.redis_cache_client import DeterministicRedisCache, get_h
 
 # Lazy import to avoid L_SL->L4 gravity violation
 def _get_cache_admission_gate():
-    from agentic_core.L4_state.memory.cache_admission_gate import (
+    from agentic_core.L4_state.utils.memory.cache_admission_gate import (
         CacheAdmissionDecision,
         CacheAdmissionGate,
     )

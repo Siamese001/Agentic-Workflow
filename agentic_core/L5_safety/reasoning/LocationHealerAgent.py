@@ -2741,7 +2741,7 @@ class LocationHealerAgent(SovereignBaseAgent):
                             )
 
                             if not hasattr(self, "state_guard"):
-                                from agentic_core.L4_state.memory.runtime_state_guard import (
+                                from agentic_core.L4_state.utils.memory.runtime_state_guard import (
                                     RuntimeStateGuard,
                                 )
 

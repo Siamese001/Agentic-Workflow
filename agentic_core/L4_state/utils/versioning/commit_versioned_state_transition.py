@@ -21,7 +21,7 @@ import logging
 from dataclasses import dataclass
 from typing import Any
 
-from agentic_core.L4_state.versioning.state_transition_registry import (
+from agentic_core.L4_state.utils.versioning.state_transition_registry import (
     ActorContext,
     SnapshotPolicy,
     StateConflictError,

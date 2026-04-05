@@ -18,7 +18,7 @@ def test_batch_performance_optimization():
 
     sys.path.insert(0, str(Path(__file__).parent.parent))
 
-    from agentic_core.L4_state.memory.runtime_state_guard import RuntimeStateGuard
+    from agentic_core.L4_state.utils.memory.runtime_state_guard import RuntimeStateGuard
 
     # Create temporary directory for test
     root = Path(tempfile.mkdtemp(prefix="test_batch_"))
@@ -62,7 +62,7 @@ def test_nested_batch_context():
 
     sys.path.insert(0, str(Path(__file__).parent.parent))
 
-    from agentic_core.L4_state.memory.runtime_state_guard import RuntimeStateGuard
+    from agentic_core.L4_state.utils.memory.runtime_state_guard import RuntimeStateGuard
 
     # Create temporary directory for test
     root = Path(tempfile.mkdtemp(prefix="test_nested_"))
@@ -112,7 +112,7 @@ def test_immediate_write_outside_batch():
 
     sys.path.insert(0, str(Path(__file__).parent.parent))
 
-    from agentic_core.L4_state.memory.runtime_state_guard import RuntimeStateGuard
+    from agentic_core.L4_state.utils.memory.runtime_state_guard import RuntimeStateGuard
 
     # Create temporary directory for test
     root = Path(tempfile.mkdtemp(prefix="test_immediate_"))

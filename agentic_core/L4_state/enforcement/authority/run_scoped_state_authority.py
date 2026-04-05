@@ -22,7 +22,7 @@ import uuid
 from dataclasses import dataclass
 from typing import Any
 
-from agentic_core.L4_state.versioning.commit_versioned_state_transition import (
+from agentic_core.L4_state.utils.versioning.commit_versioned_state_transition import (
     ActorContext,
     MutationPayload,
     SnapshotPolicy,
@@ -334,7 +334,7 @@ class RunScopedStateAuthority:
         P2/L4: Returns versioned state when state_namespace is provided.
         """
         if state_namespace:
-            from agentic_core.L4_state.versioning.commit_versioned_state_transition import (
+            from agentic_core.L4_state.utils.versioning.commit_versioned_state_transition import (
                 StateVersionMissingError,
                 UnversionedStateError,
                 read_versioned_state,

@@ -294,7 +294,7 @@ class ReplayEvaluationRunner:
     def _persist_delta(self, delta: DeltaReport) -> None:
         """Persist DeltaReport artifact to L4 state registry."""
         try:
-            from agentic_core.L4_state.storage.persistent_store import create_artifact
+            from agentic_core.L4_state.utils.storage.persistent_store import create_artifact
 
             artifact = create_artifact(
                 kind="evaluation_delta",

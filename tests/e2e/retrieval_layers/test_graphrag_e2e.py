@@ -44,7 +44,7 @@ def graphrag_indexer_imports():
 
 @pytest.fixture(scope="session")
 def chunk_registry_imports():
-    from agentic_core.L4_state.memory.chunk_manifest_registry import (
+    from agentic_core.L4_state.utils.memory.chunk_manifest_registry import (
         ChunkManifestRegistry,
         EnrichedChunkManifest,
     )
@@ -92,7 +92,7 @@ def retrieval_integration_imports():
 
 @pytest.fixture(scope="session")
 def parent_child_imports():
-    from agentic_core.L4_state.engines.parent_child_expansion import (
+    from agentic_core.L4_state.reasoning.parent_child_expansion import (
         ExpansionContext,
         L4ERetrievalIntegrator,
         ParentChildExpander,
@@ -106,7 +106,7 @@ def parent_child_imports():
 
 @pytest.fixture(scope="session")
 def meta_learning_imports():
-    from agentic_core.L4_state.engines.meta_learning_feedback import (
+    from agentic_core.L4_state.reasoning.meta_learning_feedback import (
         CompletenessAnalyzer,
         CompletenessChangePackage,
         CompletenessRAGProposer,

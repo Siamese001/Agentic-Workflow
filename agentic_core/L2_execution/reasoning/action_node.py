@@ -191,7 +191,7 @@ def _invoke_authorize_and_execute(execution_context, target_callable, capability
 def _make_execution_context(
     run_id: str, capability_token: str, policy_hash: str, payload: Any, target: str, action_class=None
 ):
-    from agentic_core.L4_state.context.execution_context import (  # noqa: PLC0415
+    from agentic_core.L4_state.utils.context.execution_context import (  # noqa: PLC0415
         ActionClass,
         ExecutionContext,
     )

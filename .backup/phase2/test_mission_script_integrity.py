@@ -64,7 +64,7 @@ def test_agent_initialization():
         project_root = Path(__file__).resolve().parent.parent
         sys.path.insert(0, str(project_root))
 
-        from agentic_core.L4_state.memory.runtime_state_guard import RuntimeStateGuard
+        from agentic_core.L4_state.utils.memory.runtime_state_guard import RuntimeStateGuard
         from agentic_core.L5_safety.reasoning.LocationAgent import LocationAgent
 
         # Initialize agents

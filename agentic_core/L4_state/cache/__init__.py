@@ -1,18 +1,9 @@
-"""L2 Execution Cache Module - GPTCache Integration
+"""
+L4 State Caching Module
 
-Provides spec-compliant L2 Semantic Cache using GPTCache.
+TOMBSTONED: SovereignRedisMCPClient and get_redis_client have been removed.
+Use agentic_core.cache.get_hot_cache() or agentic_core.cache.get_coordination_cache()
+for all Redis caching needs.
 """
 
-from agentic_core.L4_state.cache.gptcache_client import (
-    GPTCacheClient,
-    cache_response,
-    get_cached_response,
-    get_global_gptcache,
-)
-
-__all__ = [
-    "GPTCacheClient",
-    "cache_response",
-    "get_cached_response",
-    "get_global_gptcache",
-]
+__all__: list[str] = []

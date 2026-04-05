@@ -21,8 +21,8 @@ from agentic_core.L2_execution.enforcement.boundary_validator import (
     compute_boundary_diff,
     verify_mutation_replay_integrity,
 )
-from agentic_core.L4_state.commit.two_phase_coordinator import TwoPhaseCoordinator
-from agentic_core.L4_state.ledger.integrity_validator import append_with_hash, validate_ledger_chain
+from agentic_core.L4_state.utils.commit.two_phase_coordinator import TwoPhaseCoordinator
+from agentic_core.L4_state.utils.ledger.integrity_validator import append_with_hash, validate_ledger_chain
 from agentic_core.L5_safety.audit.human_review_queue import HumanReviewQueue, PendingVerdict
 from agentic_core.L5_safety.hitl.patch_validator import validate_patch
 from agentic_core.L5_safety.types.hardening_errors import (

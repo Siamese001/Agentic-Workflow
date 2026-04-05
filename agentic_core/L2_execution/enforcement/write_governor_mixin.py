@@ -18,7 +18,7 @@ import uuid
 from pathlib import Path
 from typing import Any
 
-from agentic_core.L2_execution.UniversalWriteGateway import (
+from agentic_core.L2_execution.enforcement.UniversalWriteGateway import (
     MutationRecord,
     SimulationResult,
     ToolNotAllowedError,

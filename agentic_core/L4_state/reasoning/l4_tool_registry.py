@@ -480,7 +480,7 @@ def _register_default_tools(registry: ToolRegistry) -> None:
     # 1. search_docs
     def search_docs(query: str, n_results: int = 5) -> dict[str, Any]:
         """Search documentation for relevant information."""
-        from agentic_core.L4_state.engines.retrieval_layers import L3SemanticRAG
+        from agentic_core.L4_state.reasoning.retrieval_layers import L3SemanticRAG
 
         l3 = L3SemanticRAG()
         results = l3.query_docs(query, n_results)
@@ -506,7 +506,7 @@ def _register_default_tools(registry: ToolRegistry) -> None:
     # 2. find_similar_traces
     def find_similar_traces(trace_id: str, n_results: int = 5) -> dict[str, Any]:
         """Find similar execution traces."""
-        from agentic_core.L4_state.engines.retrieval_layers import L3SemanticRAG
+        from agentic_core.L4_state.reasoning.retrieval_layers import L3SemanticRAG
 
         l3 = L3SemanticRAG()
         # Use trace_id as query to find similar
@@ -543,7 +543,7 @@ def _register_default_tools(registry: ToolRegistry) -> None:
         # Query architecture docs
         query = f"{component} architecture design pattern"
 
-        from agentic_core.L4_state.engines.retrieval_layers import L3SemanticRAG
+        from agentic_core.L4_state.reasoning.retrieval_layers import L3SemanticRAG
         l3 = L3SemanticRAG()
         results = l3.query_docs(query, 3)
 

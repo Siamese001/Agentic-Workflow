@@ -61,7 +61,7 @@ def verify_redis_connection(redis_client: Any | None = None) -> bool:
     """
     if redis_client is None:
         try:
-            from agentic_core.L4_state.caching.redis_adapter import get_redis_client
+            from agentic_core.L4_state.cache.redis_adapter import get_redis_client
             redis_client = get_redis_client()
         except ImportError:
             Logger.warning("Redis adapter not available")

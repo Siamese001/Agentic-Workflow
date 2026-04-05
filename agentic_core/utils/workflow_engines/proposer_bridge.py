@@ -431,7 +431,7 @@ class EvaluatorProposerBridge:
 
     def _persist(self, proposal: ImprovementProposal) -> None:
         try:
-            from agentic_core.L4_state.storage.persistent_store import create_artifact
+            from agentic_core.L4_state.utils.storage.persistent_store import create_artifact
 
             artifact = create_artifact(
                 kind="improvement_proposal",

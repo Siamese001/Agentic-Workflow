@@ -185,7 +185,7 @@ def benchmark_batch_vs_immediate():
     Benchmark: 1000 increments - batch vs immediate writes.
     Demonstrates dramatic reduction in disk I/O and time.
     """
-    from agentic_core.L4_state.memory.runtime_state_guard import RuntimeStateGuard
+    from agentic_core.L4_state.utils.memory.runtime_state_guard import RuntimeStateGuard
     num_increments = 1000
     root_immediate = Path(tempfile.mkdtemp(prefix='test_immediate_'))
     root_batch = Path(tempfile.mkdtemp(prefix='test_batch_'))
@@ -243,7 +243,7 @@ def demonstrate_location_agent_scenario():
     Demonstrate real-world LocationAgent scenario: scanning 500 files.
     Shows how batching prevents disk thrashing during validation scans.
     """
-    from agentic_core.L4_state.memory.runtime_state_guard import RuntimeStateGuard
+    from agentic_core.L4_state.utils.memory.runtime_state_guard import RuntimeStateGuard
     num_files = 500
     root = Path(tempfile.mkdtemp(prefix='test_location_scenario_'))
     try:

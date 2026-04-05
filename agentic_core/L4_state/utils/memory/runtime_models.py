@@ -1,7 +1,7 @@
 """Minimal shim: re-exports types required by prompt_assembler.py.
 
 Created by P2/W2.2 to unblock the import chain:
-  prompt_assembler.py → from agentic_core.L4_state.memory.runtime_models import InjectionMatch
+  prompt_assembler.py → from agentic_core.L4_state.utils.memory.runtime_models import InjectionMatch
 
 Only the attributes accessed at runtime are defined:
   InjectionMatch.injection        → InjectionPattern (has .priority, .template)

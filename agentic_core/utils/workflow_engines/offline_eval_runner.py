@@ -315,7 +315,7 @@ class OfflineEvaluationRunner:
     def _persist_snapshot(self, report: EvaluationReport) -> None:
         """Persist EvaluationSnapshot to L4 state registry."""
         try:
-            from agentic_core.L4_state.storage.persistent_store import create_artifact
+            from agentic_core.L4_state.utils.storage.persistent_store import create_artifact
 
             snapshot = EvaluationSnapshot(
                 timestamp=report.timestamp,

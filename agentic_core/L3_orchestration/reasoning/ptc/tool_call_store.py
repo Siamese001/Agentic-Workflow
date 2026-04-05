@@ -193,7 +193,7 @@ class ToolCallStore:
         Args:
             root_dir: Root directory for storage (defaults to repo root/docs/store)
         """
-        from agentic_core.L4_state.storage.filesystem_store import FileSystemStore
+        from agentic_core.L4_state.utils.storage.filesystem_store import FileSystemStore
 
         if root_dir is None:
             # Default to repo root/docs/store

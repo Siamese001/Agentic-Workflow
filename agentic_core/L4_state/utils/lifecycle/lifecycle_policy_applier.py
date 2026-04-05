@@ -27,7 +27,7 @@ import time
 from dataclasses import dataclass
 from typing import Any
 
-from agentic_core.L4_state.lifecycle.state_lifecycle import (
+from agentic_core.L4_state.utils.lifecycle.state_lifecycle import (
     LifecycleStatus,
     RetentionClass,
     StateLifecycleError,
@@ -454,7 +454,7 @@ def _create_default_policy(
     deletion_seconds: int,
 ) -> Any:
     """Create default lifecycle policy."""
-    from agentic_core.L4_state.lifecycle.state_lifecycle import LifecyclePolicy
+    from agentic_core.L4_state.utils.lifecycle.state_lifecycle import LifecyclePolicy
 
     policy = LifecyclePolicy.create(
         policy_id=policy_id,

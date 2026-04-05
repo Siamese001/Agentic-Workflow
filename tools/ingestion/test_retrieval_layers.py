@@ -10,7 +10,7 @@ from pathlib import Path
 # Add project root to path for imports
 sys.path.insert(0, str(Path(__file__).parent.parent.parent))
 
-from agentic_core.L4_state.engines.retrieval_layers import (
+from agentic_core.L4_state.reasoning.retrieval_layers import (
     L1ExactCache,
     L2SemanticCache,
     L3SemanticRAG,

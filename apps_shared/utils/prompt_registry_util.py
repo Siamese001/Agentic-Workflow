@@ -293,7 +293,7 @@ class PromptRegistry:
         Returns:
             Version hash from TemplateRegistry
         """
-        from agentic_core.L4_state.memory.template_registry import (
+        from agentic_core.L4_state.utils.memory.template_registry import (
             get_template_registry,
         )
         from agentic_core.prompt_governance.contracts import TemplateManifest

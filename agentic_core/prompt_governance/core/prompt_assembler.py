@@ -82,7 +82,7 @@ from typing import Any
 
 from pydantic import BaseModel
 
-from agentic_core.L4_state.memory.runtime_models import InjectionMatch
+from agentic_core.L4_state.utils.memory.runtime_models import InjectionMatch
 from agentic_core.runtime.lifecycle_trace_contract import (
     LayerSegment,
     _emit_agent_executes_agent,

@@ -180,7 +180,7 @@ class SovereignRAGManager(SovereignBaseAgent):
         self.embedder = None
         self.vector_store = None
         try:
-            from agentic_core.L4_state.memory.bm25_store import get_bm25_store
+            from agentic_core.L4_state.utils.memory.bm25_store import get_bm25_store
 
             self.bm25_store = get_bm25_store()
         # guardian: allow-silent-swallow

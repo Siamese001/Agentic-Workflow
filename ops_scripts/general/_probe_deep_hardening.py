@@ -89,7 +89,7 @@ _emit_links_execution_to_snapshot("p4", "_probe_deep_hardening", "exec_snapshot_
 sys.path.insert(0, 'c:/Git/Agentic-Workflow')
 # guardian: allow-global-mutation
 os.environ['HIVE_MIND_STRICT_MODE'] = 'false'
-from agentic_core.L4_state.memory.semantic_cache_manager import PII_Sanitizer, SemanticCacheManager
+from agentic_core.L4_state.utils.memory.semantic_cache_manager import PII_Sanitizer, SemanticCacheManager
 
 SemanticCacheManager.reset_instance()
 import apps_shared.enforcement.GlobalcacheStrategy as _mod

@@ -218,7 +218,7 @@ def query_similarity(query: str, top_k: int = 20, namespace: str = "") -> list[S
     if top_k > 20:
         top_k = 20
     try:
-        from agentic_core.L4_state.memory.sovereign_semantic_cache import SovereignSemanticCache
+        from agentic_core.L4_state.utils.memory.sovereign_semantic_cache import SovereignSemanticCache
 
         cache = SovereignSemanticCache()
         raw = cache.query(query, top_k=top_k, namespace=namespace)

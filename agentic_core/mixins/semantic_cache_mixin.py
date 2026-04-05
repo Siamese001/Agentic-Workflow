@@ -195,7 +195,7 @@ class SemanticCacheMixin:
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "SemanticCacheMixin.semantic_cache")
 
-        from agentic_core.L4_state.memory.semantic_cache_manager import SemanticCacheManager
+        from agentic_core.L4_state.utils.memory.semantic_cache_manager import SemanticCacheManager
 
         return SemanticCacheManager.get_instance()
 

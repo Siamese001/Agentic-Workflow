@@ -545,7 +545,7 @@ class StateVersionRegistry:
                 current,
             )
             # Import and call module-level conflict_detected function
-            from agentic_core.L4_state.versioning.commit_versioned_state_transition import (
+            from agentic_core.L4_state.utils.versioning.commit_versioned_state_transition import (
                 conflict_detected as emit_conflict_detected,
             )
 

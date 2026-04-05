@@ -270,7 +270,7 @@ class DPOBatchBuilder:
     def _persist(self, batch: DPOBatch) -> None:
         """Persist DPO batch artifact to L4 state registry."""
         try:
-            from agentic_core.L4_state.storage.persistent_store import create_artifact
+            from agentic_core.L4_state.utils.storage.persistent_store import create_artifact
 
             artifact = create_artifact(
                 kind="dpo_batch", logical_id=f"dpo_batch_{batch.batch_id[:8]}", payload=batch.to_dict()

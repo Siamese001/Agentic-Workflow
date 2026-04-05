@@ -77,7 +77,7 @@ from agentic_core.L2_execution.enforcement.key_source import (
     TestKeySource,
     inject_key_source,
 )
-from agentic_core.L2_execution.UniversalWriteGateway import reset_write_gateway
+from agentic_core.L2_execution.enforcement.UniversalWriteGateway import reset_write_gateway
 
 # REMOVED: _emit_emits_metric_event("conftest", "p4obs", "metric_1")
 # REMOVED: _emit_emits_metric_event("conftest", "p4obs", "metric_2")

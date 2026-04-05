@@ -1,9 +1,7 @@
-"""
-L4 Persistence Layer — Governed runtime persistence with state lifecycle governance.
+"""L4 Persistence Lifecycle module.
 
-This layer provides persistence, state management, and lifecycle governance.
-No orchestration, execution, or routing logic belongs in this layer.
-Only persistence contracts, state lifecycle, and governance are exported.
+Provides operational governance for the lifecycle of runtime state objects
+from creation through update, retention, expiration, archival, and deletion.
 """
 from enum import Enum
 
@@ -20,6 +18,12 @@ from agentic_core.L4_state.utils.lifecycle.lifecycle_policy_applier import (
     state_active,
     state_archived,
     state_deleted,
+)
+from agentic_core.L4_state.utils.lifecycle.lifecycle_policy_applier import (
+    get_state_lifecycle_registry as get_applier_registry,
+)
+from agentic_core.L4_state.utils.lifecycle.lifecycle_policy_applier import (
+    reset_state_lifecycle_registry as reset_applier_registry,
 )
 from agentic_core.L4_state.utils.lifecycle.state_lifecycle import (
     # Enum values for ADG scanner detection
@@ -79,6 +83,3 @@ __all__ = [
     "LONG_TERM",
     "PERMANENT",
 ]
-
-# Sovereignty assertion: This layer contains NO orchestration or execution logic
-# L4 may only persist governed state; orchestration belongs to L3, execution to L2

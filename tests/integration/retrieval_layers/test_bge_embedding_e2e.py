@@ -135,7 +135,7 @@ def test_semantic_cache_manager_embedding():
     """Test SemanticCacheManager uses BGE-m3 for vector storage."""
     print("\n=== Test 4: Semantic Cache Manager (Blue vs Blue) ===")
 
-    from agentic_core.L4_state.memory.semantic_cache_manager import SemanticCacheManager
+    from agentic_core.L4_state.utils.memory.semantic_cache_manager import SemanticCacheManager
 
     # Get singleton instance
     cache = SemanticCacheManager.get_instance()
@@ -162,7 +162,7 @@ def test_in_memory_vector_store_blue_vs_blue():
     import asyncio
 
     from agentic_core.L3_orchestration.healers.bmg_embedding_similarity import bmg_embed_text
-    from agentic_core.L4_state.memory.in_memory_vector_store import InMemoryVectorStore
+    from agentic_core.L4_state.utils.memory.in_memory_vector_store import InMemoryVectorStore
     from agentic_core.L4_state.types.memory_item_types import MemoryItem, MemoryQuery
 
     # Create store

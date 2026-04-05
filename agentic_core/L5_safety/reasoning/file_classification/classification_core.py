@@ -356,11 +356,70 @@ def _compute_content_scores(path: Path) -> dict[str, int]:
 
 
 def _compute_layer_affinity(path: Path) -> dict[str, float]:
-    """Compute layer affinity scores.
-
-    TODO: Extract implementation.
     """
-    return {}
+    Compute semantic layer affinity scores using AST analysis.
+
+    Analyzes:
+    1. Module/class docstrings for layer keywords
+    2. Class names for domain indicators
+    3. Method names for behavioral patterns
+    4. Import targets for dependency affinity
+
+    Returns:
+        Dict mapping layer names (L0-L6) to affinity scores (0.0-1.0).
+    """
+    from agentic_core.L0_routing.config import (
+        LAYER_KEYWORD_AFFINITY,
+    )
+
+    scores: dict[str, float] = dict.fromkeys(LAYER_KEYWORD_AFFINITY, 0.0)
+
+    try:
+        content = path.read_text(encoding="utf-8", errors="replace")
+        tree = ast.parse(content)
+    except (SyntaxError, OSError):
+        return scores
+
+    # Combine all text signals: module docstring + class names + method names + docstrings
+    text_signals: list[str] = []
+
+    # Module docstring
+    module_doc = ast.get_docstring(tree)
+    if module_doc:
+        text_signals.append(module_doc.lower())
+
+    for node in ast.walk(tree):
+        if isinstance(node, ast.ClassDef):
+            text_signals.append(node.name.lower())
+            class_doc = ast.get_docstring(node)
+            if class_doc:
+                text_signals.append(class_doc.lower())
+
+        elif isinstance(node, ast.FunctionDef | ast.AsyncFunctionDef):
+            text_signals.append(node.name.lower())
+
+        elif isinstance(node, ast.ImportFrom) and node.module:
+            text_signals.append(node.module.lower())
+
+    combined_text = " ".join(text_signals)
+
+    # Score each layer based on keyword matches
+    total_hits = 0
+    for layer, keywords in LAYER_KEYWORD_AFFINITY.items():
+        hits = 0
+        for keyword in keywords:
+            # Use word boundary-ish matching (keyword appears as substring)
+            count = combined_text.count(keyword.lower())
+            hits += count
+        scores[layer] = float(hits)
+        total_hits += hits
+
+    # Normalize to 0.0-1.0
+    if total_hits > 0:
+        for layer in scores:
+            scores[layer] = round(scores[layer] / total_hits, 3)
+
+    return scores
 
 
 def _load_adg_behavioral_profile(path: Path) -> tuple[float, list[str]]:

@@ -196,7 +196,7 @@ class GovernedPromptAdapter:
         If system_prompt is provided, it overrides the S0 from TemplateRegistry.
         """
         from agentic_core.L0_routing.reasoning.assembly_stage import AirlockAssembler
-        from agentic_core.L4_state.memory.template_registry import get_template_registry
+        from agentic_core.L4_state.utils.memory.template_registry import get_template_registry
 
         assembler = AirlockAssembler()
 
@@ -249,7 +249,7 @@ class GovernedPromptAdapter:
         mixins: tuple[str, ...],
     ) -> str:
         """Compose final system prompt from S0 + I0 mixins."""
-        from agentic_core.L4_state.memory.template_registry import get_template_registry
+        from agentic_core.L4_state.utils.memory.template_registry import get_template_registry
 
         registry = get_template_registry()
         parts = [base_s0]

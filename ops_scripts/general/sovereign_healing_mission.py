@@ -90,7 +90,7 @@ _emit_links_execution_to_snapshot("p4", "sovereign_healing_mission", "exec_snaps
 
 project_root = get_validated_project_root()
 
-from agentic_core.L4_state.memory.runtime_state_guard import RuntimeStateGuard
+from agentic_core.L4_state.utils.memory.runtime_state_guard import RuntimeStateGuard
 from agentic_core.L5_safety.reasoning.LocationHealerAgent import LocationHealerAgent
 from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,

@@ -275,7 +275,7 @@ class SovereignRagOrchestrator:
             self.embedder = None
             self.vector_store = None
         try:
-            from agentic_core.L4_state.memory.bm25_store import get_bm25_store
+            from agentic_core.L4_state.utils.memory.bm25_store import get_bm25_store
 
             self.Bm25Store = get_bm25_store()
         # guardian: allow-silent-swallow
