@@ -177,6 +177,51 @@ territories:
           reasoning: {purpose: "Decision agents"}
           enforcement: {purpose: "Guardrails"}
           utils: {purpose: "Helpers"}
+      # Cross-cutting infrastructure
+      mixins:
+        depth: 2
+        purpose: "Shared capability mixins for agent composition"
+        subfolders:
+          config: {purpose: "Mixin configuration"}
+          tracing: {purpose: "Tracing and observability mixins"}
+          safety: {purpose: "Safety and validation mixins"}
+          healing: {purpose: "Healing and recovery mixins"}
+          caching: {purpose: "Caching and performance mixins"}
+      patterns:
+        depth: 2
+        purpose: "Reasoning patterns (DEPRECATED: consolidate into L0/L1 types)"
+        volatile: true
+      planning:
+        depth: 2
+        purpose: "Planning utilities (primarily used by tools/CI, consider moving to tools/utils)"
+        subfolders:
+          workflows: {depth: 2, purpose: "Workflow definitions"}
+      seams:
+        depth: 2
+        purpose: "Integration contracts and protocol seams"
+        subfolders:
+          contracts: {depth: 2, purpose: "Contract definitions"}
+      # Other top-level directories
+      base_agents: {depth: 2, purpose: "Base agent classes"}
+      runtime: {depth: 2, purpose: "Runtime utilities and types"}
+      config: {depth: 2, purpose: "Framework configuration"}
+      utils: {depth: 2, purpose: "Framework utilities"}
+      types: {depth: 2, purpose: "Framework types"}
+      gateway: {depth: 2, purpose: "Gateway implementations"}
+      interfaces: {depth: 2, purpose: "Interface definitions"}
+      tracing: {depth: 2, purpose: "Tracing infrastructure"}
+      prompt_governance: {depth: 2, purpose: "Prompt governance"}
+      cache: {depth: 2, purpose: "Caching infrastructure"}
+      embeddings: {depth: 2, purpose: "Embedding infrastructure"}
+      knowledge: {depth: 2, purpose: "Knowledge base infrastructure"}
+      visualization: {depth: 2, purpose: "Visualization tools"}
+      evaluation: {depth: 2, purpose: "Evaluation infrastructure"}
+      cloud_native: {depth: 2, purpose: "Cloud-native patterns"}
+      case_memory: {depth: 2, purpose: "Case memory infrastructure"}
+      _compat: {depth: 2, purpose: "Compatibility shims"}
+      adg: {depth: 2, purpose: "ADG integration"}
+      agents: {depth: 2, purpose: "Agent registry"}
+      core: {depth: 2, purpose: "Core utilities"}
 
   apps_eval:
     depth: 2
