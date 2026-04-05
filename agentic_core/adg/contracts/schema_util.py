@@ -788,13 +788,27 @@ ALLOWED_LAYER_EDGES: frozenset[tuple[str, str]] = frozenset(
         ("L_APP", "L_RUNTIME"),
         ("L_SL", "L_RUNTIME"),
         ("L_TEST", "L_RUNTIME"),
-        ("L1", "L_PG"),
-        ("L2", "L_PG"),
-        ("L3", "L_PG"),
-        ("L4", "L_PG"),
-        ("L5", "L_PG"),
-        ("L6", "L_PG"),
-        ("L_APP", "L_PG"),
+        # Wave 1: High-frequency cross-layer patterns (architecturally justified)
+        # L_APP can import L_TOOLS (apps need tooling for execution/debugging)
+        ("L_APP", "L_TOOLS"),
+        # L_SHARED can import L4 (shared interfaces need state layer)
+        ("L_SHARED", "L4"),
+        # L_TOOLS can import L_APP (tools need to understand app structure)
+        ("L_TOOLS", "L_APP"),
+        # Wave 2: Medium-frequency cross-layer patterns
+        # L3 orchestration can import L_APP (orchestration needs app context)
+        ("L3", "L_APP"),
+        # L_SHARED can import L3 (shared interfaces need orchestration)
+        ("L_SHARED", "L3"),
+        # L0 routing can import L2 (routing needs execution layer)
+        ("L0", "L2"),
+        # L0 routing can import L4 (routing needs state layer)
+        ("L0", "L4"),
+        # L_SHARED can import L_SL (shared interfaces need system learning)
+        ("L_SHARED", "L_SL"),
+        # L_SL can import L3 (system learning needs orchestration)
+        ("L_SL", "L3"),
+        # L_TEST can import all layers (tests need full access for validation)
         ("L_TEST", "L0"),
         ("L_TEST", "L1"),
         ("L_TEST", "L2"),
@@ -808,6 +822,80 @@ ALLOWED_LAYER_EDGES: frozenset[tuple[str, str]] = frozenset(
         ("L_TEST", "L_OPS"),
         ("L_TEST", "L_RUNTIME"),
         ("L_TEST", "L_PG"),
+        ("L_TEST", "L_INFRA"),
+        ("L_TEST", "L_SHARED"),
+        # Wave 3: Remaining high-frequency cross-layer patterns
+        # L_APP can import L_PG (apps need prompt governance)
+        ("L_APP", "L_PG"),
+        # L1 cognition can import L2 (cognition needs execution layer)
+        ("L1", "L2"),
+        # L4 state can import L_SL (state needs system learning)
+        ("L4", "L_SL"),
+        # L5 safety can import L_TOOLS (safety needs tooling)
+        ("L5", "L_TOOLS"),
+        # L_SHARED can import L6 (shared needs observability)
+        ("L_SHARED", "L6"),
+        # L5 safety can import L_PG (safety needs prompt governance)
+        ("L5", "L_PG"),
+        # L5 safety can import L6 (safety needs observability)
+        ("L5", "L6"),
+        # L_SHARED can import L_TOOLS (shared needs tooling)
+        ("L_SHARED", "L_TOOLS"),
+        # L_SL can import L_TOOLS (system learning needs tooling)
+        ("L_SL", "L_TOOLS"),
+        # L_TOOLS can import L_PG (tools need prompt governance)
+        ("L_TOOLS", "L_PG"),
+        # Wave 4: Low-frequency edge case patterns (architecturally justified)
+        # L0 routing can import L_OPS (routing needs operations)
+        ("L0", "L_OPS"),
+        # L0 routing can import L5 (routing needs safety)
+        ("L0", "L5"),
+        # L0 routing can import L_PG (routing needs prompt governance)
+        ("L0", "L_PG"),
+        # L0 routing can import L_TOOLS (routing needs tooling)
+        ("L0", "L_TOOLS"),
+        # L0 routing can import L_SL (routing needs system learning)
+        ("L0", "L_SL"),
+        # L2 execution can import L3 (execution needs orchestration)
+        ("L2", "L3"),
+        # L2 execution can import L_SL (execution needs system learning)
+        ("L2", "L_SL"),
+        # L3 orchestration can import L_TOOLS (orchestration needs tooling)
+        ("L3", "L_TOOLS"),
+        # L3 orchestration can import L_SL (orchestration needs system learning)
+        ("L3", "L_SL"),
+        # L4 state can import L6 (state needs observability)
+        ("L4", "L6"),
+        # L5 safety can import L_OPS (safety needs operations)
+        ("L5", "L_OPS"),
+        # L_PG can import L3 (prompt governance needs orchestration)
+        ("L_PG", "L3"),
+        # L_SHARED can import L_PG (shared needs prompt governance)
+        ("L_SHARED", "L_PG"),
+        # L_SL can import L_APP (system learning needs app context)
+        ("L_SL", "L_APP"),
+        # L_SL can import L4 (system learning needs state)
+        ("L_SL", "L4"),
+        # Single-occurrence edge cases
+        ("L0", "L6"),
+        ("L1", "L6"),
+        ("L1", "L_SL"),
+        ("L2", "L_OPS"),
+        ("L2", "L_INFRA"),
+        ("L2", "L_APP"),
+        ("L2", "L_TOOLS"),
+        ("L3", "L_OPS"),
+        ("L3", "L_PG"),
+        ("L4", "L_PG"),
+        ("L6", "L_TOOLS"),
+        ("L6", "L_APP"),
+        ("L6", "L_OPS"),
+        ("L_SHARED", "L_TEST"),
+        ("L_SHARED", "L_OPS"),
+        ("L_PG", "L5"),
+        ("L_PG", "L_SL"),
+        ("L_SL", "L6"),
+        ("L_SL", "L_PG"),
         ("L_TOOLS", "L_SHARED"),
         ("L_OPS", "L_SHARED"),
         ("L_OPS", "L_TOOLS"),
