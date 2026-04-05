@@ -1,4 +1,4 @@
-"""Filesystem MCP client for P1 core routing."""
+"""Filesystem MCP client for L0 routing providers."""
 from __future__ import annotations
 
 from pathlib import Path

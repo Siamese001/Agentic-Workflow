@@ -1,4 +1,4 @@
-"""P1 core module for L0 routing."""
+"""P1 routing protocols and core types."""
 from __future__ import annotations
 
 from typing import Any, Protocol
@@ -47,17 +47,7 @@ class P1Core:
         return agent["status"] if agent else None
 
 
-# Import from submodule
-from agentic_core.L0_routing.P1_core.filesystem_mcp_client_1 import (
-    FilesystemMCPClient,
-    FilesystemMCPClientFactory,
-    get_filesystem_client,
-)
-
 __all__ = [
     "P1Core",
     "P1RoutingProtocol",
-    "FilesystemMCPClient",
-    "FilesystemMCPClientFactory",
-    "get_filesystem_client",
 ]

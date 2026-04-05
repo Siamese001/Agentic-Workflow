@@ -60,7 +60,7 @@ from agentic_core.L0_routing.optimization.routing_optimization import (
     # Dataclass field exports for ADG scanner detection
     routing_optimization_id,
 )
-from agentic_core.L0_routing.P1_core import P1Core, P1RoutingProtocol
+from agentic_core.L0_routing.types.p1_routing_protocol import P1Core, P1RoutingProtocol
 from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402

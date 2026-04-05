@@ -56,7 +56,7 @@ import uuid
 from datetime import datetime
 from typing import Any
 
-from agentic_core.L0_routing.P1_core.filesystem_mcp_client_1 import get_filesystem_client
+from agentic_core.L0_routing.providers.filesystem_mcp_client import get_filesystem_client
 from agentic_core.runtime.lifecycle_trace_contract import (
     LayerSegment,
     _emit_agent_executes_agent,

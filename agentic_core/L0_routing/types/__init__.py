@@ -4,6 +4,9 @@ from agentic_core.L0_routing.types.artifact_validators_types import (
     validate_result_artifact,
 )
 
+# Import P1 routing protocols
+from agentic_core.L0_routing.types.p1_routing_protocol import P1Core, P1RoutingProtocol
+
 # Import V15 exceptions from zero-dependency module (breaks circular import)
 from agentic_core.L0_routing.types.v15_exceptions import (
     V15EnforcementError,

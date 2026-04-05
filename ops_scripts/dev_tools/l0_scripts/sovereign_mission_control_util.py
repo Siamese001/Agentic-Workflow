@@ -91,7 +91,8 @@ repo_root: Any = Path(__file__).parent.parent
 sys.path.append(str(REPO_ROOT))
 from typing import Any
 
-from agentic_core.L0_routing.P1_core.sovereign_auditor_v3 import main_util as run_audit
+# TODO: sovereign_auditor_v3 module does not exist - import commented out
+# from agentic_core.L0_routing.P1_core.sovereign_auditor_v3 import main_util as run_audit
 from canon_validator_agentic_v2 import run_mission as run_healing
 
 from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
