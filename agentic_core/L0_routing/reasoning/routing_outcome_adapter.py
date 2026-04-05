@@ -21,7 +21,7 @@ import logging
 from typing import Any
 
 from agentic_core.L0_routing.reasoning.agentic_router import RoutingDecision
-from agentic_core.L0_routing.meta_control.meta_learning_bus import (
+from system_learning.meta_learning_bus import (
     MetaLearningBus,
     MetaLearningChangePackage,
 )

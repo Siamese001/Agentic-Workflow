@@ -369,7 +369,7 @@ def _fire_meta_learning_intake(state_mgr: "object", now_utc: int, repo_root: Pat
         except (ImportError, AttributeError, KeyError) as _adg_err:
             logging.debug("[MetaLearning] ADG behavioral score emission failed (non-fatal): %s", _adg_err)
         try:
-            from agentic_core.L0_routing.meta_control.meta_learning_bus import (
+            from system_learning.meta_learning_bus import (
                 get_process_bus as _get_proc_bus,
             )
             from system_learning.engines.bus_consumer import drain_and_apply as _drain_apply

@@ -23,7 +23,7 @@ from agentic_core.interfaces.spine import (
     PathRouter,
     ReEntryLoop,
 )
-from agentic_core.L0_routing.meta_control.meta_learning_bus import MetaLearningBus
+from system_learning.meta_learning_bus import MetaLearningBus
 from agentic_core.L2_execution.cid_registry import CIDRegistry
 from agentic_core.L2_execution.providers import get_clock
 from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (

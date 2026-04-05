@@ -13,7 +13,7 @@ from collections.abc import Callable
 from pathlib import Path
 from typing import Any
 
-from agentic_core.L0_routing.meta_control.meta_apply import (
+from system_learning.meta_apply import (
     _atomic_write_json,
     _config_path,
     _rollback_path,

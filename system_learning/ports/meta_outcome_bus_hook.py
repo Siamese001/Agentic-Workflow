@@ -86,7 +86,7 @@ _emit_updates_meta_learning_state("p4", "meta_outcome_bus_hook", "meta_learning"
 _emit_links_execution_to_snapshot("p4", "meta_outcome_bus_hook", "exec_snapshot_link")
 
 if TYPE_CHECKING:
-    from agentic_core.L0_routing.meta_control.meta_learning_bus import MetaLearningBus
+    from system_learning.meta_learning_bus import MetaLearningBus
     from agentic_core.L2_execution.healers.healing_tier_dispatcher import InvocationRecord
     from agentic_core.L2_execution.healers.healing_tier_types import HealingDecision, HealingInput
 from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
@@ -234,7 +234,7 @@ class DefaultMetaOutcomeBusHook:
         if self._bus is None:
             return
         try:
-            from agentic_core.L0_routing.meta_control.meta_learning_bus import MetaLearningChangePackage
+            from system_learning.meta_learning_bus import MetaLearningChangePackage
 
             package = MetaLearningChangePackage.create(
                 trace_id=healing_input.trace_id,
