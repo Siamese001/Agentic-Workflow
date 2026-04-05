@@ -9,9 +9,15 @@ from agentic_core.cache.redis_cache_client import DeterministicRedisCache
 # Module aliases for tests
 late_chunking = True
 redis_cache_client = True
+redis_mcp = True
 
 # Class aliases for tests
 RedisCacheClient = DeterministicRedisCache
+
+# Stub validation functions
+def validate_late_chunking() -> bool:
+    """Stub validation function."""
+    return True
 
 
 # Stub classes for apps_lic ADG tests
