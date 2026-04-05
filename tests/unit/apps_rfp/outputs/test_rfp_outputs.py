@@ -59,9 +59,12 @@ class TestRfpOutputs:
         from apps_rfp.outputs.section_renderer import SectionRenderer
 
         mock_section = MagicMock()
-        mock_section.bedy = "Test Section"
+        mock_section.heading = "Test Section"
+        mock_section.body = "Test content"
         mock_section.word_count = 100
-        mock_section.content = "Test content"
+        mock_section.is_deterministic = True
+        mock_section.assumptions = []
+        mock_section.evidence = []
 
         renderer = SectionRenderer()
         markdown = renderer.render_markdown(mock_section)

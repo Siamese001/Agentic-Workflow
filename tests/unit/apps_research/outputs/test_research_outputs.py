@@ -19,11 +19,7 @@ class TestResearchOutputs:
         from apps_research.outputs.research_renderer import ResearchRenderer
 
         mock_report = MagicMock()
-        mock_report.topic = "Test Topic"
-        mock_report.mode = "comprehensive"
-        mock_report.status = "completed"
-        mock_report.quality_score = 0.85
-        mock_report.sections = []
+        mock_report.model_dump = MagicMock(return_value={"topic": "Test Topic", "mode": "comprehensive"})
 
         renderer = ResearchRenderer()
         json_output = renderer.render_json(mock_report)
