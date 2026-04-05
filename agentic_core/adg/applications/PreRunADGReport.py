@@ -320,7 +320,7 @@ def build_pre_run_report(
 
 def _count_layer_violations_in_scope(result: ScanResult, impacted_modules: list[str]) -> int:
     """Count import edges among impacted_modules that violate layer rules."""
-    from agentic_core.adg.schema_util import ALLOWED_LAYER_EDGES, module_path_to_layer
+    from agentic_core.adg.contracts.schema_util import ALLOWED_LAYER_EDGES, module_path_to_layer
 
     impacted_set = set(impacted_modules)
     count = 0

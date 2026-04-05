@@ -333,7 +333,7 @@ def cmd_blast_radius(module_path: str, result: ScanResult, repo_root: Path) -> d
 
 def cmd_territory(module_path: str) -> dict:
     """Return layer, territory, and allowed edges for a module path."""
-    from agentic_core.adg.schema_util import ALLOWED_LAYER_EDGES, module_path_to_layer
+    from agentic_core.adg.contracts.schema_util import ALLOWED_LAYER_EDGES, module_path_to_layer
 
     norm_path = module_path.replace("\\", "/")
     layer = module_path_to_layer(norm_path)
@@ -371,7 +371,7 @@ def cmd_agents_for(base_class: str, result: ScanResult) -> dict:
         else:
             module_path = ""
             class_name = adg_name
-        from agentic_core.adg.schema_util import module_path_to_layer
+        from agentic_core.adg.contracts.schema_util import module_path_to_layer
 
         enriched.append(
             {
@@ -392,7 +392,7 @@ def cmd_agents_for(base_class: str, result: ScanResult) -> dict:
 def cmd_config_reads(module_path: str, result: ScanResult) -> dict:
     """Return config/env symbols read by a given module."""
     from agentic_core.adg.runtime.query_engine import ADGRuntimeQueryEngine
-    from agentic_core.adg.schema_util import canonical_name
+    from agentic_core.adg.contracts.schema_util import canonical_name
 
     engine = ADGRuntimeQueryEngine(result)
     norm_path = module_path.replace("\\", "/")

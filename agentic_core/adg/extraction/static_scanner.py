@@ -72,7 +72,7 @@ from agentic_core.adg.extraction.visitors import (
     # L4 waves visitors
     _UWGIngressGateVisitor,
 )
-from agentic_core.adg.schema_util import (
+from agentic_core.adg.contracts.schema_util import (
     canonical_name,
     module_path_to_layer,
 )
@@ -1121,7 +1121,7 @@ def _emit_layer_violation_edges(result: ScanResult) -> list[Edge]:
     importing the to-symbol's layer.  Deduplicates on (from_module, from_layer, to_layer).
     Skips lazy imports (inside function bodies, TYPE_CHECKING guards, optional_import blocks).
     """
-    from agentic_core.adg.schema_util import ALLOWED_LAYER_EDGES
+    from agentic_core.adg.contracts.schema_util import ALLOWED_LAYER_EDGES
 
     _SKIP_EDGE_KINDS = frozenset(
         {"lazy_import", "type_checking_import", "optional_import", "version_guard_import"},
@@ -2300,7 +2300,7 @@ class ADGStaticScanner:
         manifest.edge_counts_by_graph = result.edge_counts_by_relation()
         manifest.syntax_error_count = syntax_error_count
         # S4: unknown layer count
-        from agentic_core.adg.schema_util import module_path_to_layer
+        from agentic_core.adg.contracts.schema_util import module_path_to_layer
 
         manifest.unknown_layer_count = sum(1 for m in modules_seen if module_path_to_layer(m) == "L_UNKNOWN")
         # dynamic exec count

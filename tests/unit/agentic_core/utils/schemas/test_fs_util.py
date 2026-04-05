@@ -3,4 +3,6 @@ from __future__ import annotations
 
 
 def test_module_importable():
-        """Module fs_util must be importable."""
+    """Module fs_util must be importable."""
+    from agentic_core.utils.schemas import fs_util
+    assert fs_util is not None

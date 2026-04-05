@@ -17,7 +17,7 @@ class _P4StateTelemetryVisitor(BaseStructuralVisitor):
     def visit_Call(self, node: ast.Call) -> None:
         """Extract P4 state, telemetry & learning edges."""
         from agentic_core.adg.extraction.static_scanner import Edge as _Edge
-        from agentic_core.adg.schema_util import (
+        from agentic_core.adg.contracts.schema_util import (
             P4_LEARNING_SYMBOLS,
             P4_STATE_SYMBOLS,
             P4_TELEMETRY_SYMBOLS,
@@ -81,7 +81,7 @@ class _P4ObservabilityGovernanceVisitor(BaseStructuralVisitor):
     def visit_Call(self, node: ast.Call) -> None:
         """Extract P4 observability & governance edges."""
         from agentic_core.adg.extraction.static_scanner import Edge as _Edge
-        from agentic_core.adg.schema_util import (
+        from agentic_core.adg.contracts.schema_util import (
             CAPTURES_RUNTIME_ANOMALY_SYMBOLS,
             EMITS_METRIC_EVENT_SYMBOLS,
             LINKS_INCIDENT_TRACE_SYMBOLS,
@@ -197,7 +197,7 @@ class _RetrievalWiringVisitor(BaseStructuralVisitor):
     def visit_Call(self, node: ast.Call) -> None:
         """Extract retrieval wiring edges."""
         from agentic_core.adg.extraction.static_scanner import Edge as _Edge
-        from agentic_core.adg.schema_util import (
+        from agentic_core.adg.contracts.schema_util import (
             L1_RETRIEVAL_SYMBOLS,
             L2_RETRIEVAL_SYMBOLS,
             L3_RETRIEVAL_SYMBOLS,

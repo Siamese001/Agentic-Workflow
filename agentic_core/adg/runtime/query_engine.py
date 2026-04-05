@@ -225,7 +225,7 @@ class ADGRuntimeQueryEngine:
         self._build_indexes()
 
     def _build_indexes(self) -> None:
-        from agentic_core.adg.schema_util import module_path_to_layer
+        from agentic_core.adg.contracts.schema_util import module_path_to_layer
 
         _module_prefix = "ADG::Module::"
         _symbol_prefix = "ADG::Symbol::"
@@ -301,7 +301,7 @@ class ADGRuntimeQueryEngine:
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "ADGRuntimeQueryEngine.compute_blast_radius")
 
-        from agentic_core.adg.schema_util import canonical_name
+        from agentic_core.adg.contracts.schema_util import canonical_name
 
         frontier: list[tuple[str, int]] = []
         for f in changed_files:
@@ -323,7 +323,7 @@ class ADGRuntimeQueryEngine:
 
     def validate_import_path(self, from_mod: str, to_mod: str) -> DependencyPath:
         """R1: Validate whether an import between two modules is allowed by layer rules."""
-        from agentic_core.adg.schema_util import ALLOWED_LAYER_EDGES, module_path_to_layer
+        from agentic_core.adg.contracts.schema_util import ALLOWED_LAYER_EDGES, module_path_to_layer
 
         from_layer = module_path_to_layer(from_mod.replace("\\", "/"))
         to_layer = module_path_to_layer(to_mod.replace("\\", "/"))

@@ -62,7 +62,7 @@ class _AttributeVisitor(BaseStructuralVisitor):
     def __init__(self, ctx: VisitorContext) -> None:
         super().__init__(ctx)
         # Import from schema_util at runtime to avoid circular imports
-        from agentic_core.adg.schema_util import CONFIG_READ_SYMBOLS
+        from agentic_core.adg.contracts.schema_util import CONFIG_READ_SYMBOLS
         self._config_symbols = CONFIG_READ_SYMBOLS
 
     def visit_Attribute(self, node: ast.Attribute) -> None:

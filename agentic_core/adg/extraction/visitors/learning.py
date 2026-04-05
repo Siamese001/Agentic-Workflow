@@ -17,7 +17,7 @@ class _L5ValidationProofVisitor(BaseStructuralVisitor):
     def visit_Call(self, node: ast.Call) -> None:
         """Extract L5 validation proof edges."""
         from agentic_core.adg.extraction.static_scanner import Edge as _Edge
-        from agentic_core.adg.schema_util import (
+        from agentic_core.adg.contracts.schema_util import (
             L5_VALIDATION_SYMBOLS,
             canonical_name,
         )
@@ -55,7 +55,7 @@ class _LearningProvenanceVisitor(BaseStructuralVisitor):
     def visit_Call(self, node: ast.Call) -> None:
         """Extract learning provenance edges."""
         from agentic_core.adg.extraction.static_scanner import Edge as _Edge
-        from agentic_core.adg.schema_util import (
+        from agentic_core.adg.contracts.schema_util import (
             LEARNING_PIPELINE_SYMBOLS,
             PROMPT_PROVENANCE_SYMBOLS,
             canonical_name,
@@ -106,7 +106,7 @@ class _P3LearningMaturityVisitor(BaseStructuralVisitor):
     def visit_Call(self, node: ast.Call) -> None:
         """Extract P3 learning maturity edges."""
         from agentic_core.adg.extraction.static_scanner import Edge as _Edge
-        from agentic_core.adg.schema_util import (
+        from agentic_core.adg.contracts.schema_util import (
             CAPTURES_PATTERN_SYMBOLS,
             FEEDS_META_LEARNING_SYMBOLS,
             IMPROVES_AGENT_POLICY_SYMBOLS,

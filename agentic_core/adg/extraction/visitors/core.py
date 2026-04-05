@@ -23,7 +23,7 @@ class _CallVisitor(BaseStructuralVisitor):
     def __init__(self, ctx: VisitorContext) -> None:
         super().__init__(ctx)
         # Import symbols at runtime to avoid circular imports
-        from agentic_core.adg.schema_util import (
+        from agentic_core.adg.contracts.schema_util import (
             EMBEDDING_SYMBOLS,
             NETWORK_SYMBOLS,
             PROVIDER_SDK_SYMBOLS,
@@ -49,7 +49,7 @@ class _CallVisitor(BaseStructuralVisitor):
             edge_kind, relation = self._classify_call(sym)
             if edge_kind:
                 from agentic_core.adg.extraction.static_scanner import Edge as _Edge
-                from agentic_core.adg.schema_util import canonical_name
+                from agentic_core.adg.contracts.schema_util import canonical_name
 
                 to_name = canonical_name("Symbol", sym)
                 self.edges.append(
@@ -117,7 +117,7 @@ class _AntipatternVisitor(BaseStructuralVisitor):
 
     def __init__(self, ctx: VisitorContext) -> None:
         super().__init__(ctx)
-        from agentic_core.adg.schema_util import BROAD_EXCEPTION_TYPES
+        from agentic_core.adg.contracts.schema_util import BROAD_EXCEPTION_TYPES
         self._broad_exceptions = BROAD_EXCEPTION_TYPES
         self._antipatterns: list[tuple[int, str, str]] = []  # (line_no, category, symbol)
 
@@ -215,7 +215,7 @@ class _AntipatternVisitor(BaseStructuralVisitor):
     def extract_edges(self) -> list[Edge]:
         """Convert antipattern detections to edges."""
         from agentic_core.adg.extraction.static_scanner import Edge as _Edge
-        from agentic_core.adg.schema_util import canonical_name
+        from agentic_core.adg.contracts.schema_util import canonical_name
 
         for line_no, category, symbol in self._antipatterns:
             self.edges.append(

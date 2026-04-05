@@ -32,7 +32,7 @@ import logging
 from dataclasses import dataclass, field
 from pathlib import Path
 
-from agentic_core.adg.schema_util import canonical_name
+from agentic_core.adg.contracts.schema_util import canonical_name
 from agentic_core.runtime.lifecycle_trace_contract import (
     LayerSegment,
     _emit_agent_executes_agent,

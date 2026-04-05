@@ -98,7 +98,7 @@ _emit_links_execution_to_snapshot("p4", "guardian_prioritizer", "exec_snapshot_l
 if TYPE_CHECKING:
     from agentic_core.adg.extraction.static_scanner import ScanResult
 
-from agentic_core.adg.schema_util import (
+from agentic_core.adg.contracts.schema_util import (
     ALLOWED_LAYER_EDGES,
     EMBEDDING_SYMBOLS,
     PROVIDER_SDK_SYMBOLS,

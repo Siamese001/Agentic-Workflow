@@ -346,7 +346,7 @@ class IdentityNormalizer:
         return record
 
     def _resolve(self, raw_name: str) -> IdentityRecord:
-        from agentic_core.adg.schema_util import canonical_name
+        from agentic_core.adg.contracts.schema_util import canonical_name
 
         parts = raw_name.split(".")
         top_level = parts[0] if parts else ""

@@ -46,7 +46,7 @@ class _MutationTransportVisitor(BaseRuntimeVisitor):
     def visit_Call(self, node: ast.Call) -> None:
         """Extract mutation transport edges from call expressions."""
         from agentic_core.adg.extraction.static_scanner import Edge as _Edge
-        from agentic_core.adg.schema_util import (
+        from agentic_core.adg.contracts.schema_util import (
             MUTATION_TRANSPORT_CLASSES,
             RFC6902_DIFF_SYMBOLS,
             canonical_name,
@@ -123,7 +123,7 @@ class _ExecutionProofVisitor(BaseRuntimeVisitor):
     def visit_Call(self, node: ast.Call) -> None:
         """Extract execution proof edges from call expressions."""
         from agentic_core.adg.extraction.static_scanner import Edge as _Edge
-        from agentic_core.adg.schema_util import (
+        from agentic_core.adg.contracts.schema_util import (
             EXECUTION_TRACE_CLASSES,
             REPLAY_KEY_METHODS,
             canonical_name,
@@ -205,7 +205,7 @@ class _PathControlVisitor(BaseRuntimeVisitor):
     def visit_Call(self, node: ast.Call) -> None:
         """Extract path control edges from call expressions."""
         from agentic_core.adg.extraction.static_scanner import Edge as _Edge
-        from agentic_core.adg.schema_util import PATH_CONTROL_CLASSES, PATH_REROUTE_METHODS, canonical_name
+        from agentic_core.adg.contracts.schema_util import PATH_CONTROL_CLASSES, PATH_REROUTE_METHODS, canonical_name
 
         sym = self._get_call_symbol(node.func)
         tail = sym.split(".")[-1] if sym else ""

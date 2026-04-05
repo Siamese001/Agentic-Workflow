@@ -140,7 +140,7 @@ from agentic_core.adg.extraction.static_scanner import (
     _repo_relative,
     _TypeSurfaceCollector,
 )
-from agentic_core.adg.schema_util import canonical_name
+from agentic_core.adg.contracts.schema_util import canonical_name
 from agentic_core.L2_execution.optimization.async_file_ops import (
     BufferedFileWriter,
 )

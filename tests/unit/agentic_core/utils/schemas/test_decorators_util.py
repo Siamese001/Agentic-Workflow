@@ -3,4 +3,6 @@ from __future__ import annotations
 
 
 def test_module_importable():
-        """Module decorators_util must be importable."""
+    """Module decorators_util must be importable."""
+    from agentic_core.utils.schemas import decorators_util
+    assert decorators_util is not None

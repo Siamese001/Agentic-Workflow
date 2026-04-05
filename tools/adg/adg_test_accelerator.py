@@ -45,7 +45,7 @@ _logger = logging.getLogger(__name__)
 from agentic_core.adg.analysis.hotspot_index_types import HotspotIndex
 from agentic_core.adg.analysis.test_gap_types import detect_test_gaps
 from agentic_core.adg.extraction.static_scanner import ADGStaticScanner, ScanResult
-from agentic_core.adg.schema_util import module_path_to_layer
+from agentic_core.adg.contracts.schema_util import module_path_to_layer
 
 # Constants
 DEFAULT_MAX_DEPTH = 4

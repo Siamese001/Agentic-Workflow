@@ -396,7 +396,7 @@ class PlacementAdvisor:
             LayerSegment.L3_ORCHESTRATION,
             f"PlacementAdvisor.suggest_placement:{kind}/{name}",
         )
-        from agentic_core.adg.schema_util import ALLOWED_LAYER_EDGES, module_path_to_layer
+        from agentic_core.adg.contracts.schema_util import ALLOWED_LAYER_EDGES, module_path_to_layer
 
         self._build_deps()
         kind_lower = kind.lower().replace("-", "_").replace(" ", "_")
@@ -449,7 +449,7 @@ class PlacementAdvisor:
 
     def get_file_context(self, file_path: str) -> FileContext:
         """Get structural context for an existing file."""
-        from agentic_core.adg.schema_util import module_path_to_layer
+        from agentic_core.adg.contracts.schema_util import module_path_to_layer
         from tools.test_coverage_mapper import TestCoverageMapper
 
         self._build_deps()
@@ -530,7 +530,7 @@ class PlacementAdvisor:
 
     def get_symbol_context(self, qualified_name: str) -> FileContext:
         """Get structural context for a qualified symbol name."""
-        from agentic_core.adg.schema_util import module_path_to_layer
+        from agentic_core.adg.contracts.schema_util import module_path_to_layer
 
         self._build_deps()
         adg = _SYMBOL_PREFIX + qualified_name

@@ -12,7 +12,7 @@ from dataclasses import dataclass, field
 from typing import TYPE_CHECKING
 
 from agentic_core.adg.client.InMemoryStore import ADGMCPClient
-from agentic_core.adg.schema_util import (
+from agentic_core.adg.contracts.schema_util import (
     GATEWAY_ALLOWLIST,
     PROVIDER_SDK_SYMBOLS,
     canonical_name,

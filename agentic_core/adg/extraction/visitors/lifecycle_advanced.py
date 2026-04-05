@@ -58,7 +58,7 @@ class _PromptSlotVisitor(BaseStructuralVisitor):
     def visit_Call(self, node: ast.Call) -> None:
         """Extract prompt slot edges from call expressions."""
         from agentic_core.adg.extraction.static_scanner import Edge as _Edge
-        from agentic_core.adg.schema_util import canonical_name
+        from agentic_core.adg.contracts.schema_util import canonical_name
 
         func_sym = self._sym(node.func)
         func_tail = func_sym.split(".")[-1] if func_sym else ""
@@ -72,7 +72,7 @@ class _PromptSlotVisitor(BaseStructuralVisitor):
 
     def _handle_assembler(self, node: ast.Call, _Edge, canonical_name) -> None:
         """Emit generates_prompt for each recognised slot kwarg."""
-        from agentic_core.adg.schema_util import PROMPT_FIELD_TO_SLOT
+        from agentic_core.adg.contracts.schema_util import PROMPT_FIELD_TO_SLOT
 
         for kw in node.keywords:
             slot = PROMPT_FIELD_TO_SLOT.get(kw.arg or "")
@@ -167,7 +167,7 @@ class _ExecutionTraceVisitor(BaseRuntimeVisitor):
     def visit_Call(self, node: ast.Call) -> None:
         """Extract execution trace edges from call expressions."""
         from agentic_core.adg.extraction.static_scanner import Edge as _Edge
-        from agentic_core.adg.schema_util import canonical_name
+        from agentic_core.adg.contracts.schema_util import canonical_name
 
         func_sym = self._sym(node.func)
         func_tail = func_sym.split(".")[-1] if func_sym else ""
@@ -226,7 +226,7 @@ class _HealerValidatorVisitor(BaseRuntimeVisitor):
     def visit_ClassDef(self, node: ast.ClassDef) -> None:
         """Extract healer/validator inheritance edges."""
         from agentic_core.adg.extraction.static_scanner import Edge as _Edge
-        from agentic_core.adg.schema_util import HEALER_BASE_CLASSES, VALIDATOR_BASE_CLASSES, canonical_name
+        from agentic_core.adg.contracts.schema_util import HEALER_BASE_CLASSES, VALIDATOR_BASE_CLASSES, canonical_name
 
         for base in node.bases:
             base_name = self._sym(base)
@@ -262,7 +262,7 @@ class _HealerValidatorVisitor(BaseRuntimeVisitor):
     def visit_Call(self, node: ast.Call) -> None:
         """Extract healing orchestration edges from call expressions."""
         from agentic_core.adg.extraction.static_scanner import Edge as _Edge
-        from agentic_core.adg.schema_util import HEALER_METHOD_NAMES, canonical_name
+        from agentic_core.adg.contracts.schema_util import HEALER_METHOD_NAMES, canonical_name
 
         sym = self._sym(node.func)
         tail = sym.split(".")[-1] if sym else ""
@@ -334,7 +334,7 @@ class _EmbeddingPipelineVisitor(BaseRuntimeVisitor):
     def visit_Call(self, node: ast.Call) -> None:
         """Extract embedding pipeline edges from call expressions."""
         from agentic_core.adg.extraction.static_scanner import Edge as _Edge
-        from agentic_core.adg.schema_util import (
+        from agentic_core.adg.contracts.schema_util import (
             EMBEDDING_PIPELINE_SYMBOLS,
             EMBEDDING_SYMBOLS,
             RETRIEVAL_SYMBOLS,
@@ -393,7 +393,7 @@ class _HITLVisitor(BaseRuntimeVisitor):
     def visit_Call(self, node: ast.Call) -> None:
         """Extract HITL confidence and escalation edges from call expressions."""
         from agentic_core.adg.extraction.static_scanner import Edge as _Edge
-        from agentic_core.adg.schema_util import (
+        from agentic_core.adg.contracts.schema_util import (
             CONFIDENCE_SCORING_CLASSES,
             HITL_ESCALATION_METHODS,
             canonical_name,

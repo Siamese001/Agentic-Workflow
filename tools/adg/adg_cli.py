@@ -758,7 +758,7 @@ def cmd_neighbors(file_path: str, repo_root: Path) -> int:
         if edge.from_name == adg and edge.to_name.startswith(_MODULE_PREFIX):
             dependencies.append(edge.to_name[len(_MODULE_PREFIX) :])
 
-    from agentic_core.adg.schema_util import module_path_to_layer
+    from agentic_core.adg.contracts.schema_util import module_path_to_layer
 
     _out(
         {
@@ -782,7 +782,7 @@ def cmd_neighbors(file_path: str, repo_root: Path) -> int:
 def cmd_ownership(symbol_or_file: str, repo_root: Path) -> int:
     """Return territory and layer ownership for a symbol or file."""
     from agentic_core.adg.applications.placement_advisor_types import _infer_territory
-    from agentic_core.adg.schema_util import ALLOWED_LAYER_EDGES, module_path_to_layer
+    from agentic_core.adg.contracts.schema_util import ALLOWED_LAYER_EDGES, module_path_to_layer
 
     norm = symbol_or_file.replace("\\", "/")
     result = _load_scan(repo_root)
@@ -1029,13 +1029,13 @@ def cmd_guardian_scope(
 ) -> int:
     """Produce ADG-prioritized guardian execution scope."""
     from agentic_core.adg.applications.guardian_prioritizer import GuardianPrioritizer
-    from agentic_core.adg.schema_util import module_path_to_layer
+    from agentic_core.adg.contracts.schema_util import module_path_to_layer
 
     result = _load_scan(repo_root)
     prioritizer = GuardianPrioritizer(result)
 
     if file_path:
-        from agentic_core.adg.schema_util import module_path_to_layer
+        from agentic_core.adg.contracts.schema_util import module_path_to_layer
         from tools.change_impact_engine import ChangeImpactEngine
 
         norm_path = file_path.replace("\\", "/")
@@ -1225,7 +1225,7 @@ def cmd_execution_impact(file_path: str, repo_root: Path) -> int:
 
 def cmd_safe_healing_scope(symbol_name: str, repo_root: Path) -> int:
     """Return safe healing scope for a symbol (modules that may be safely touched)."""
-    from agentic_core.adg.schema_util import module_path_to_layer
+    from agentic_core.adg.contracts.schema_util import module_path_to_layer
     from tools.change_impact_engine import ChangeImpactEngine
 
     result = _load_scan(repo_root)
@@ -1257,7 +1257,7 @@ def cmd_safe_healing_scope(symbol_name: str, repo_root: Path) -> int:
 
     # Safe scope = modules in same layer or lower (no upward blast)
     parent_layer = module_path_to_layer(parent_path)
-    from agentic_core.adg.schema_util import ALLOWED_LAYER_EDGES
+    from agentic_core.adg.contracts.schema_util import ALLOWED_LAYER_EDGES
 
     safe_scope: list[str] = []
     risky_scope: list[str] = []
@@ -1293,7 +1293,7 @@ def cmd_safe_healing_scope(symbol_name: str, repo_root: Path) -> int:
 
 def cmd_healing_radius(symbol_name: str, repo_root: Path) -> int:
     """Return full transitive healing radius (blast radius) for a symbol."""
-    from agentic_core.adg.schema_util import module_path_to_layer
+    from agentic_core.adg.contracts.schema_util import module_path_to_layer
     from tools.change_impact_engine import ChangeImpactEngine
 
     result = _load_scan(repo_root)

@@ -30,7 +30,7 @@ class _GovernancePlaneVisitor(BaseStructuralVisitor):
     def visit_ClassDef(self, node: ast.ClassDef) -> None:
         """Extract governance edges from class inheritance."""
         from agentic_core.adg.extraction.static_scanner import Edge as _Edge
-        from agentic_core.adg.schema_util import GOVERNANCE_WRITE_SYMBOLS, canonical_name
+        from agentic_core.adg.contracts.schema_util import GOVERNANCE_WRITE_SYMBOLS, canonical_name
 
         for base in node.bases:
             sym = self._extract_symbol(base)
@@ -54,7 +54,7 @@ class _GovernancePlaneVisitor(BaseStructuralVisitor):
     def visit_Call(self, node: ast.Call) -> None:
         """Extract governance edges from function calls."""
         from agentic_core.adg.extraction.static_scanner import Edge as _Edge
-        from agentic_core.adg.schema_util import (
+        from agentic_core.adg.contracts.schema_util import (
             GOVERNANCE_READ_SYMBOLS,
             GOVERNANCE_ROUTE_SYMBOLS,
             GOVERNANCE_WRITE_SYMBOLS,
@@ -147,7 +147,7 @@ class _SafetyEnforcementVisitor(BaseStructuralVisitor):
     def visit_Call(self, node: ast.Call) -> None:
         """Extract safety enforcement edges from call expressions."""
         from agentic_core.adg.extraction.static_scanner import Edge as _Edge
-        from agentic_core.adg.schema_util import GUARDRAIL_CLASS_NAMES, POLICY_HASH_METHODS, canonical_name
+        from agentic_core.adg.contracts.schema_util import GUARDRAIL_CLASS_NAMES, POLICY_HASH_METHODS, canonical_name
 
         sym = self._sym(node.func)
         tail = sym.split(".")[-1] if sym else ""
@@ -229,7 +229,7 @@ class _SandboxAirlockVisitor(BaseStructuralVisitor):
 
     def visit_Call(self, node: ast.Call) -> None:
         """Extract sandbox airlock edges from call expressions."""
-        from agentic_core.adg.schema_util import (
+        from agentic_core.adg.contracts.schema_util import (
             CAPABILITY_TOKEN_CLASSES,
             SANDBOX_ENVELOPE_CLASSES,
             WORK_CONTRACT_METHODS,
@@ -249,7 +249,7 @@ class _SandboxAirlockVisitor(BaseStructuralVisitor):
     def _emit(self, relation: str, edge_kind: str, sym: str, line_no: int) -> None:
         """Emit a sandbox airlock edge."""
         from agentic_core.adg.extraction.static_scanner import Edge as _Edge
-        from agentic_core.adg.schema_util import canonical_name
+        from agentic_core.adg.contracts.schema_util import canonical_name
         self.edges.append(
             _Edge(
                 from_name=self._module_adg_name,
@@ -293,7 +293,7 @@ class _CapabilityBudgetVisitor(BaseStructuralVisitor):
     def visit_Call(self, node: ast.Call) -> None:
         """Extract capability budget edges from call expressions."""
         from agentic_core.adg.extraction.static_scanner import Edge as _Edge
-        from agentic_core.adg.schema_util import TOOL_BUDGET_CLASSES, canonical_name
+        from agentic_core.adg.contracts.schema_util import TOOL_BUDGET_CLASSES, canonical_name
 
         sym = self._get_call_symbol(node.func)
         tail = sym.split(".")[-1] if sym else ""
@@ -315,7 +315,7 @@ class _CapabilityBudgetVisitor(BaseStructuralVisitor):
     def visit_Raise(self, node: ast.Raise) -> None:
         """Extract exceeds_budget edges from raise statements."""
         from agentic_core.adg.extraction.static_scanner import Edge as _Edge
-        from agentic_core.adg.schema_util import BUDGET_EXCEEDED_EXCEPTIONS, canonical_name
+        from agentic_core.adg.contracts.schema_util import BUDGET_EXCEEDED_EXCEPTIONS, canonical_name
 
         if node.exc is None:
             self.generic_visit(node)

@@ -45,7 +45,7 @@ class _UWGIngressGateVisitor(BaseStructuralVisitor):
     def visit_Call(self, node: ast.Call) -> None:
         """Extract UWG ingress gate edges from call expressions."""
         from agentic_core.adg.extraction.static_scanner import Edge as _Edge
-        from agentic_core.adg.schema_util import (
+        from agentic_core.adg.contracts.schema_util import (
             UWG_BLAST_RADIUS_SYMBOLS,
             UWG_CHECKS_CAPABILITY_SET_SYMBOLS,
             UWG_CHECKS_POLICY_HASH_SYMBOLS,
@@ -144,7 +144,7 @@ class _MutationRecordAssemblyVisitor(BaseStructuralVisitor):
     def visit_Call(self, node: ast.Call) -> None:
         """Extract mutation record assembly edges from call expressions."""
         from agentic_core.adg.extraction.static_scanner import Edge as _Edge
-        from agentic_core.adg.schema_util import (
+        from agentic_core.adg.contracts.schema_util import (
             EXECUTION_TRACE_PACKAGE_SYMBOLS,
             HMAC_SEAL_SYMBOLS,
             MUTATION_DIFF_SYMBOLS,
@@ -247,7 +247,7 @@ class _AuthoritativeCommitVisitor(BaseStructuralVisitor):
     def visit_Call(self, node: ast.Call) -> None:
         """Extract authoritative commit edges from call expressions."""
         from agentic_core.adg.extraction.static_scanner import Edge as _Edge
-        from agentic_core.adg.schema_util import (
+        from agentic_core.adg.contracts.schema_util import (
             CLAIMS_WRITE_LOCK_SYMBOLS,
             DURABLE_COMMIT_SYMBOLS,
             HASH_CHAIN_APPEND_SYMBOLS,
@@ -400,7 +400,7 @@ class _OutboundReadBridgeVisitor(BaseStructuralVisitor):
     def visit_Call(self, node: ast.Call) -> None:
         """Extract outbound read bridge edges from call expressions."""
         from agentic_core.adg.extraction.static_scanner import Edge as _Edge
-        from agentic_core.adg.schema_util import (
+        from agentic_core.adg.contracts.schema_util import (
             L0_RECEIVES_POLICY_HASH_SYMBOLS,
             L3_READS_L4_SURFACE_SYMBOLS,
             L5_READS_L4_SURFACE_SYMBOLS,

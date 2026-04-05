@@ -126,7 +126,7 @@ class _ExecutionSemanticVisitor(BaseRuntimeVisitor):
         sym = f"{self._rel}::{self._current_function}"
         if self._current_class:
             sym = f"{self._rel}::{self._current_class}.{self._current_function}"
-        from agentic_core.adg.schema_util import canonical_name
+        from agentic_core.adg.contracts.schema_util import canonical_name
         return canonical_name("Symbol", sym)
 
     @staticmethod
@@ -353,7 +353,7 @@ class _EvalSpineVisitor(BaseRuntimeVisitor):
     def visit_Call(self, node: ast.Call) -> None:
         """Extract evaluation spine edges from call expressions."""
         from agentic_core.adg.extraction.static_scanner import Edge as _Edge
-        from agentic_core.adg.schema_util import (
+        from agentic_core.adg.contracts.schema_util import (
             DPO_BATCH_CLASSES,
             DRIFT_ALERT_METHODS,
             EVAL_METRIC_CLASSES,

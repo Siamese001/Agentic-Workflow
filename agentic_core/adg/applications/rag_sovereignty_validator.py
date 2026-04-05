@@ -23,7 +23,7 @@ from dataclasses import dataclass, field
 from typing import TYPE_CHECKING
 
 from agentic_core.adg.client.InMemoryStore import ADGMCPClient
-from agentic_core.adg.schema_util import canonical_name
+from agentic_core.adg.contracts.schema_util import canonical_name
 from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402

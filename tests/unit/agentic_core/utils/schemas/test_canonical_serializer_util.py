@@ -3,4 +3,6 @@ from __future__ import annotations
 
 
 def test_module_importable():
-        """Module canonical_serializer_util must be importable."""
+    """Module canonical_serializer_util must be importable."""
+    from agentic_core.utils.schemas import canonical_serializer_util
+    assert canonical_serializer_util is not None

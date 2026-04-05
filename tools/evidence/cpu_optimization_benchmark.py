@@ -285,7 +285,7 @@ def benchmark_d_lru_cache_layer() -> BenchmarkResult:
         description="1.5M calls to module_path_to_layer: lru_cache vs uncached",
     )
 
-    from agentic_core.adg.schema_util import LAYER_PREFIXES
+    from agentic_core.adg.contracts.schema_util import LAYER_PREFIXES
 
     # Simulate the uncached version
     def _uncached_module_path_to_layer(rel_path: str) -> str:
@@ -309,7 +309,7 @@ def benchmark_d_lru_cache_layer() -> BenchmarkResult:
         paths.append(f"{ld}/module_{i % 200}.py")
 
     # Cached version (from schema_util)
-    from agentic_core.adg.schema_util import module_path_to_layer
+    from agentic_core.adg.contracts.schema_util import module_path_to_layer
     # Clear cache for fair measurement
     module_path_to_layer.cache_clear()
 

@@ -23,7 +23,7 @@ class _DynamicExecutionVisitor(BaseStructuralVisitor):
 
     def __init__(self, ctx: VisitorContext) -> None:
         super().__init__(ctx)
-        from agentic_core.adg.schema_util import DYNAMIC_EXEC_SYMBOLS
+        from agentic_core.adg.contracts.schema_util import DYNAMIC_EXEC_SYMBOLS
         self._dynamic_symbols = DYNAMIC_EXEC_SYMBOLS
 
     def visit_Call(self, node: ast.Call) -> None:
@@ -121,7 +121,7 @@ class _ImportVisitor(BaseStructuralVisitor):
         is_from_import: bool = False,
     ) -> Edge:
         """Create an import edge."""
-        from agentic_core.adg.schema_util import canonical_name
+        from agentic_core.adg.contracts.schema_util import canonical_name
 
         to_name = canonical_name("Symbol", module_name)
         edge_kind = "import"
@@ -180,7 +180,7 @@ class _InternalCallGraphVisitor(BaseStructuralVisitor):
                     self.generic_visit(node)
                     return
 
-                from agentic_core.adg.schema_util import canonical_name
+                from agentic_core.adg.contracts.schema_util import canonical_name
                 to_name = canonical_name("Symbol", full_sym)
 
                 # Import here to avoid circular dependency

@@ -16,9 +16,9 @@ __all__ = [
 
 def __getattr__(name: str):
     if name == "schema":
-        from agentic_core.adg import schema_util
+        from agentic_core.adg.contracts import schema_util
         return schema_util
     if name in ("ADG_NS", "EdgeKind", "EntityType", "RelationType", "canonical_name"):
-        from agentic_core.adg.schema_util import ADG_NS, EdgeKind, EntityType, RelationType, canonical_name
+        from agentic_core.adg.contracts.schema_util import ADG_NS, EdgeKind, EntityType, RelationType, canonical_name
         return locals()[name]
     raise AttributeError(f"module {__name__!r} has no attribute {name!r}")

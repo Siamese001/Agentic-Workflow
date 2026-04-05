@@ -37,7 +37,7 @@ import json
 from dataclasses import dataclass, field
 from typing import TYPE_CHECKING, Literal
 
-from agentic_core.adg.schema_util import PROMPT_SLOT_AUTHORITY, PROMPT_SLOT_TYPES
+from agentic_core.adg.contracts.schema_util import PROMPT_SLOT_AUTHORITY, PROMPT_SLOT_TYPES
 from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402

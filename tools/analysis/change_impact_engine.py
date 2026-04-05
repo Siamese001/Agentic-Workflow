@@ -347,7 +347,7 @@ class ChangeImpactEngine:
     def _build_module_layers(self) -> dict[str, str]:
         if self._module_layers is not None:
             return self._module_layers
-        from agentic_core.adg.schema_util import module_path_to_layer
+        from agentic_core.adg.contracts.schema_util import module_path_to_layer
 
         layers: dict[str, str] = {}
         for mod_path in self._result.modules:
@@ -409,7 +409,7 @@ class ChangeImpactEngine:
         """
         import hashlib
 
-        from agentic_core.adg.schema_util import canonical_name
+        from agentic_core.adg.contracts.schema_util import canonical_name
 
         # Normalize paths
         norm_changed = [f.replace("\\", "/") for f in changed_files]
@@ -442,7 +442,7 @@ class ChangeImpactEngine:
 
         # Scope widening events (modules from different layers than changed files)
         scope_widening: list[str] = []
-        from agentic_core.adg.schema_util import module_path_to_layer
+        from agentic_core.adg.contracts.schema_util import module_path_to_layer
 
         changed_layers = {module_path_to_layer(p) for p in norm_changed if p in module_set}
         for rel in impacted_rel:

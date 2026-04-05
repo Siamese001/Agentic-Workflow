@@ -29,7 +29,7 @@ import json
 from dataclasses import dataclass, field
 from typing import TYPE_CHECKING
 
-from agentic_core.adg.schema_util import (
+from agentic_core.adg.contracts.schema_util import (
     L1_WRITE_ALLOWLIST,
     LAYER_AUTHORITY_FORBIDDEN,
     module_path_to_layer,
