@@ -193,7 +193,7 @@ def build_pipeline_config(*, proposal_only: bool = True) -> Any:
     initial bootstrap.  All validation gates are enabled.
     """
     from system_learning.pipelines.meta_learning_pipeline import PipelineConfig
-    from system_learning.validators.dampening import CooldownPolicy, SampleSizePolicy
+    from system_learning.constraints.dampening import CooldownPolicy, SampleSizePolicy
     from system_learning.validators.oscillation_detector import OscillationPolicy
     from system_learning.validators.shadow_evaluator import ShadowThresholds
 

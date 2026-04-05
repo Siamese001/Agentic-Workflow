@@ -79,7 +79,7 @@ _emit_stores_embedding("p4", "rag_optimizer", "embedding_store")
 _emit_updates_meta_learning_state("p4", "rag_optimizer", "meta_learning")
 _emit_links_execution_to_snapshot("p4", "rag_optimizer", "exec_snapshot_link")
 from system_learning.constraints.delta_enforcer import validate_surface_change
-from system_learning.validators.dampening import (
+from system_learning.constraints.dampening import (
     CooldownPolicy,
     DampeningViolation,
     SampleSizePolicy,

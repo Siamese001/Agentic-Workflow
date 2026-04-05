@@ -185,7 +185,7 @@ from system_learning.fingerprinting.engine import FailureFingerprinter
 from system_learning.invariants.freeze_gate import FreezeStateReader
 from system_learning.snapshots.snapshot_factory import create_snapshot
 from system_learning.types.snapshot_types import MetaLearningSnapshot
-from system_learning.validators.dampening import CooldownPolicy, SampleSizePolicy
+from system_learning.constraints.dampening import CooldownPolicy, SampleSizePolicy
 from system_learning.validators.oscillation_detector import OscillationPolicy
 from system_learning.validators.shadow_evaluator import ShadowThresholds
 
@@ -1042,7 +1042,7 @@ def run_pipeline(
             proposals.append(dpo_proposal)
         except (ImportError, AttributeError, ValueError) as e:
             print(f"DPO batch processing failed: {e}")
-    from system_learning.validators.dampening import assert_cooldown_ok, assert_min_sample_size
+    from system_learning.constraints.dampening import assert_cooldown_ok, assert_min_sample_size
     from system_learning.validators.oscillation_detector import compute_freeze_decision
     from system_learning.validators.replay_validator import replay_validate
     from system_learning.validators.shadow_evaluator import evaluate_shadow

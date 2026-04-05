@@ -126,7 +126,7 @@ from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
-from system_learning.validators.dampening import (
+from system_learning.constraints.dampening import (
     CooldownPolicy,
     CooldownViolation,
     SampleSizePolicy,

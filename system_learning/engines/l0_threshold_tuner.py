@@ -78,7 +78,7 @@ _emit_captures_evaluation_metric("p4", "l0_threshold_tuner", "eval_metric")
 _emit_stores_embedding("p4", "l0_threshold_tuner", "embedding_store")
 _emit_updates_meta_learning_state("p4", "l0_threshold_tuner", "meta_learning")
 _emit_links_execution_to_snapshot("p4", "l0_threshold_tuner", "exec_snapshot_link")
-from system_learning.validators.dampening import (
+from system_learning.constraints.dampening import (
     CooldownPolicy,
     CooldownViolation,
     SampleSizePolicy,
@@ -398,12 +398,12 @@ class L0ProposerAdapter:
 
         # Normalise cooldown / sample to our policy types
         if cooldown is None:
-            from system_learning.validators.dampening import CooldownPolicy
+            from system_learning.constraints.dampening import CooldownPolicy
             # guardian: allow-magic-config
             cooldown = CooldownPolicy(min_seconds_between_updates=3600)
 
         if sample is None:
-            from system_learning.validators.dampening import SampleSizePolicy
+            from system_learning.constraints.dampening import SampleSizePolicy
             # guardian: allow-magic-config
             sample = SampleSizePolicy(min_observations=10)
 
