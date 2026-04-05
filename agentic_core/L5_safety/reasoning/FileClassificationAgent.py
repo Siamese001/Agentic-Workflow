@@ -4,7 +4,7 @@ from agentic_core.L5_safety.config.structure_blueprint.ssot import (
     GLOBAL_EXCLUDED_DIRS,
     SOVEREIGN_EXCLUDED_FOLDERS,
 )
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,
     # noqa: E402,
@@ -196,6 +196,22 @@ except ImportError:  # guardian: allow-silent-swallow
         return func
 
 
+# Import extracted functions from file_classification subpackage
+from agentic_core.L5_safety.reasoning.file_classification.classification_core import (
+    _detect_filename_tag_conflicts,
+    _detect_script_patterns,
+    _detect_test_patterns,
+    _detect_type_patterns,
+)
+from agentic_core.L5_safety.reasoning.file_classification.naming_policy import (
+    normalize_filename,
+)
+from agentic_core.L5_safety.reasoning.file_classification.validation_rules import (
+    check_domain_root_purity,
+    check_fake_config,
+)
+
+
 # Safety Gates (WAVE 1.1–3.2): collision prevention, blast radius, mass action, wave execution
 # Logger for healing operations
 import logging
@@ -210,7 +226,7 @@ from agentic_core.L5_safety.utils.fca_safety_gates_util import (
     detect_agent_lineage,
     run_all_safety_gates,
 )
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+from agentic_core.runtime.lifecycle_trace_contract import (
     LayerSegment,
     _emit_agent_executes_agent,
     _emit_captures_pattern,
@@ -286,7 +302,7 @@ _emit_writes_through("p1", "FileClassificationAgent", "write_through_2")
 _emit_validated_by_safety_plane("p1", "FileClassificationAgent", "safety_validation")
 _emit_invokes_eval("p1", "FileClassificationAgent", "eval_call")
 _emit_proposal_commits_routing("p1", "FileClassificationAgent", "routing_commit")
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import emit_determinism_digest
+from agentic_core.runtime.lifecycle_trace_contract import emit_determinism_digest
 
 emit_determinism_digest("trace_FileClassificationAgent", "FileClassificationAgent_dispatch_entry")
 emit_determinism_digest("trace_FileClassificationAgent", "FileClassificationAgent_dispatch_exit")
@@ -2048,52 +2064,9 @@ class FileClassificationHealerAgent(*BASE_CLASSES):
         """
         Smart normalization that fixes root cause naming violations.
 
-        Fixes:
-        1. Stuttering acronyms: s_s_o_t_ → ssot_ (naive CamelCase split)
-        2. Multiple underscores: ___ → _ (unsanitized concatenation)
-        3. Leading underscores: _cc_visitor → cc_visitor (legacy convention)
-
-        Args:
-            name: The filename (with or without .py extension)
-
-        Returns:
-            Normalized filename with root cause violations corrected.
-
-        Examples:
-            - "s_s_o_t_consolidation_analyzer.py" → "ssot_consolidation_analyzer.py"
-            - "setup___init___util.py" → "setup_init_util.py"
-            - "_cc_visitor.py" → "cc_visitor.py"
+        Delegates to file_classification.naming_policy.normalize_filename().
         """
-        # Exempt __init__.py entirely — it's a Python convention
-        if name == "__init__.py" or name == "__init__":
-            return name
-
-        # Separate extension
-        stem = name
-        ext = ""
-        if name.endswith(".py"):
-            stem = name[:-3]
-            ext = ".py"
-
-        # 1. Fix stuttering acronyms: collapse runs of single-char_single-char segments
-        # Matches sequences like a_b_c_d and collapses to abcd
-        # Uses iterative approach to catch overlapping patterns
-        prev = None
-        while prev != stem:
-            prev = stem
-            stem = re.sub(r"\b([a-z])_([a-z])_([a-z])_([a-z])\b", r"\1\2\3\4", stem)
-            stem = re.sub(r"\b([a-z])_([a-z])_([a-z])_([a-z])(?=_)", r"\1\2\3\4", stem)
-
-        # 2. Fix multiple underscores: collapse __ or ___ to single _
-        stem = re.sub(r"_{2,}", "_", stem)
-
-        # 3. Fix leading underscores
-        stem = stem.lstrip("_")
-
-        # 4. Fix trailing underscores
-        stem = stem.rstrip("_")
-
-        return f"{stem}{ext}" if stem else name  # Fallback to original if empty
+        return normalize_filename(name)
 
     def _check_forbidden_patterns(self, filename: str) -> list[dict[str, str]]:
         """
