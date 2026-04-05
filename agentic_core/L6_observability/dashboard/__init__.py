@@ -11,6 +11,17 @@ from agentic_core.L6_observability.dashboard.dashboard_aggregate import (
     DashboardSnapshot,
     HealthFlag,
 )
+from agentic_core.L6_observability.dashboard.analytics_dashboard import (
+    AnalyticsDashboard,
+    ChartData,
+    DashboardConfig,
+    DashboardWidget,
+    get_dashboard_data,
+    get_dashboard_summary,
+    get_global_dashboard,
+    start_analytics_dashboard,
+    stop_analytics_dashboard,
+)
 from agentic_core.L6_observability.dashboard.dashboard_orchestrator import (
     DashboardPolicy,
     TelemetryWindow,
@@ -28,7 +39,7 @@ from agentic_core.L6_observability.dashboard.dashboard_orchestrator import (
     reset_dashboard_registry,
     snapshot_persisted,
 )
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,

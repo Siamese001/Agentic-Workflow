@@ -27,7 +27,7 @@ from agentic_core.L6_observability.dashboard.dashboard_aggregate import (
     get_dashboard_registry,
     reset_dashboard_registry,
 )
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -72,7 +72,7 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 
 record_execution_trace("dashboard_orchestrator", "dashboard_orchestrator_trace")
 
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
     _emit_emits_metric_event,
@@ -230,7 +230,7 @@ def aggregate_runtime_observability(
     Raises:
         DashboardAggregateError: If aggregation fails (Gate E)
     """
-    from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (  # noqa: PLC0415
+    from agentic_core.runtime.lifecycle_trace_contract import (  # noqa: PLC0415
         LayerSegment,
         _emit_records_execution_trace,
     )

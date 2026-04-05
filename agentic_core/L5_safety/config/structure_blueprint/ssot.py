@@ -1416,7 +1416,6 @@ FLAT_DIRECTORIES: Final[frozenset[str]] = frozenset(
     {
         "cache",  # deduplicated 2026-04-05 — core/ removed, now flat
         "config",  # deduplicated 2026-04-05 — core/ removed, now flat
-        "dashboard",  # deduplicated 2026-04-05 — core/ removed, now flat
         "embeddings",  # deduplicated 2026-04-05 — core/ removed, now flat
         "gateway",  # deduplicated 2026-04-05 — core/ removed, now flat
         "interfaces",  # deduplicated 2026-04-05 — core/ removed, now flat
