@@ -1,5 +1,5 @@
 {
-  "runtime_adg_1775323392_72d7660e": {
+  "runtime_adg_1775348335_7dd20872": {
     "component_distribution": {
       "CognitivePlane": 1,
       "DAGEngine": 1,
@@ -12,7 +12,7 @@
     },
     "error_patterns": [],
     "extraction_metadata": {
-      "timestamp": 1775323392,
+      "timestamp": 1775348335,
       "total_nodes": 8
     },
     "layer_distribution": {
@@ -34,44 +34,44 @@
     "timing_patterns": {
       "fast_operations": [
         {
-          "component": "Tool.route_request",
-          "duration_ms": 0.0,
-          "node_id": "1e65c96e86b6a1be"
-        },
-        {
-          "component": "CognitivePlane",
-          "duration_ms": 0.0,
-          "node_id": "29fc3918226e1548"
-        },
-        {
-          "component": "NervousSystem",
-          "duration_ms": 1.505,
-          "node_id": "2a088b58062715b8"
-        },
-        {
           "component": "DAGEngine",
           "duration_ms": 0.0,
-          "node_id": "52e5ed9bf7036db5"
-        },
-        {
-          "component": "Tool.execute_action",
-          "duration_ms": 0.0,
-          "node_id": "ad42c817223ab6b8"
+          "node_id": "0420c8512602ac7d"
         },
         {
           "component": "Tool.read_state",
-          "duration_ms": 1.505,
-          "node_id": "bed28ad2ffe0db80"
+          "duration_ms": 0.0,
+          "node_id": "04f5694e3c97277b"
         },
         {
-          "component": "Tool.validate_safety",
+          "component": "Tool.route_request",
           "duration_ms": 0.0,
-          "node_id": "2d0fa64a883a9fad"
+          "node_id": "07b545ae1c737e69"
         },
         {
           "component": "Tool.record_metric",
           "duration_ms": 0.0,
-          "node_id": "9497c364fbd76ace"
+          "node_id": "1bb98479065732aa"
+        },
+        {
+          "component": "Tool.validate_safety",
+          "duration_ms": 0.0,
+          "node_id": "7321fb339ee51d3b"
+        },
+        {
+          "component": "NervousSystem",
+          "duration_ms": 0.0,
+          "node_id": "82f1fca03302c86c"
+        },
+        {
+          "component": "Tool.execute_action",
+          "duration_ms": 0.0,
+          "node_id": "b2ff74f546f6df9e"
+        },
+        {
+          "component": "CognitivePlane",
+          "duration_ms": 0.0,
+          "node_id": "df07cfcb895caa92"
         }
       ],
       "slow_operations": []
