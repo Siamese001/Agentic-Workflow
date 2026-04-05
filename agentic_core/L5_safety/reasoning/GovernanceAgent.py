@@ -512,7 +512,7 @@ class GovernanceAgent(SovereignBaseAgent):
         # guardian: allow-silent-degradation - Optional structure blueprint
         except ImportError as e:
             raise ImportError(f"Required dependency missing: {e}")
-            from agentic_core.config.core.registry_config import SOVEREIGN_REGISTRY
+            from agentic_core.config.registry_config import SOVEREIGN_REGISTRY
 
             ROOT_PROTECTED_FILES = frozenset()
         self.ALLOWED_ROOT_FILES = ROOT_PROTECTED_FILES

@@ -2,7 +2,7 @@ from typing import Any
 
 from pydantic import BaseModel, Field, field_validator
 
-from agentic_core.config.core.base_entity_config import BaseEntity
+from agentic_core.config.base_entity_config import BaseEntity
 from agentic_core.runtime.lifecycle_trace_contract import (
     LayerSegment,
     _emit_agent_executes_agent,

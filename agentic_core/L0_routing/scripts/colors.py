@@ -664,7 +664,7 @@ def main():
             sys.exit(1)
         return
     if args.preflight_only or args.hygiene or args.full_hygiene:
-        from agentic_core.config.core.hygiene_registry_config import CORE_HYGIENE_AGENTS, MANDATORY_PREFLIGHT
+        from agentic_core.config.hygiene_registry_config import CORE_HYGIENE_AGENTS, MANDATORY_PREFLIGHT
         from agentic_core.L0_routing.seams.safety_validators_seam import load_healing_strategy
 
         Orchestrator = _get_orchestrator_class()

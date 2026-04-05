@@ -90,7 +90,7 @@ from datetime import datetime
 from pathlib import Path
 from typing import Any
 
-from agentic_core.config.core.hygiene_registry_config import CORE_HYGIENE_AGENTS
+from agentic_core.config.hygiene_registry_config import CORE_HYGIENE_AGENTS
 from agentic_core.runtime.lifecycle_trace_contract import (
     LayerSegment,
     _emit_agent_executes_agent,

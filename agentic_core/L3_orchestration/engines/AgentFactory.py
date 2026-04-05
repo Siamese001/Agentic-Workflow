@@ -98,7 +98,7 @@ except ImportError:  # guardian: allow-silent-swallow
     L2ExecutionBase = None
 MockL2ExecutionBase = None
 try:
-    from agentic_core.config.core.sovereign_config_1 import OrchestratorConfig  # noqa: F401
+    from agentic_core.config.sovereign_config_1 import OrchestratorConfig  # noqa: F401
 except ImportError:
     config = {}
 try:

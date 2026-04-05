@@ -96,7 +96,7 @@ _emit_links_execution_to_snapshot("p4", "git_kraken_healing_strategy", "exec_sna
 import logging
 from typing import Any
 
-from agentic_core.config.core.sovereign_config import get_sovereign_config
+from agentic_core.config.sovereign_config import get_sovereign_config
 from agentic_core.runtime.lifecycle_trace_contract import (
     LayerSegment,
     _emit_agent_executes_agent,

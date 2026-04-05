@@ -14,7 +14,7 @@ from dataclasses import dataclass, field
 from typing import Any
 
 # Import from YAML SSOT
-from agentic_core.config.core.token_budget_loader import DEFAULT_TOKEN_BUDGET
+from agentic_core.config.token_budget_loader import DEFAULT_TOKEN_BUDGET
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)

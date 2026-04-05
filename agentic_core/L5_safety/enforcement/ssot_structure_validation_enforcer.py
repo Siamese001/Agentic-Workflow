@@ -25,7 +25,7 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Final
 
-from agentic_core.config.core.registry_config import SOVEREIGN_REGISTRY
+from agentic_core.config.registry_config import SOVEREIGN_REGISTRY
 from agentic_core.L5_safety.config.structure_blueprint import (
     AGENTIC_CORE_DIR,
     L4_APPROVED_FOLDERS,

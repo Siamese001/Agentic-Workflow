@@ -5,7 +5,7 @@ ConfigMixin - Unified configuration Access for Agents
 [PHASE 6 MIGRATION] Provides access to SovereignConfigManager.
 """
 
-from agentic_core.config.core.sovereign_config import (
+from agentic_core.config.sovereign_config import (
     SovereignConfigManager,
     get_sovereign_config,
 )

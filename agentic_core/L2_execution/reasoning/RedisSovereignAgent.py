@@ -100,7 +100,7 @@ from typing import Any
 import redis
 from redis.connection import ConnectionPool
 
-from agentic_core.config.core.env_loader import get_env
+from agentic_core.config.env_loader import get_env
 from agentic_core.L2_execution.utils.providers import get_clock
 from agentic_core.runtime.lifecycle_trace_contract import (
     LayerSegment,

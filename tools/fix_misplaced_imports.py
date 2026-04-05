@@ -16,7 +16,7 @@ def fix_file(filepath: Path, dry_run: bool = True) -> dict:
     original_content = content
     
     # Pattern to find imports inside class definitions (indented)
-    # These are lines like:     from agentic_core.config.core.constants_config import ...
+    # These are lines like:     from agentic_core.config.constants_config import ...
     indented_import_pattern = r'^(\s+)from agentic_core\.config\.core\.constants_config import .+$'
     
     lines = content.split('\n')

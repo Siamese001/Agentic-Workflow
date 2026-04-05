@@ -194,7 +194,7 @@ else:
 print("=" * 60)
 print("Running registry_config import test")
 try:
-    from agentic_core.config.core.registry_config import SOVEREIGN_REGISTRY
+    from agentic_core.config.registry_config import SOVEREIGN_REGISTRY
     print(f"  [OK] SOVEREIGN_REGISTRY: {len(SOVEREIGN_REGISTRY)} entries")
 except Exception as e:
     print(f"  [FAIL] {e}")

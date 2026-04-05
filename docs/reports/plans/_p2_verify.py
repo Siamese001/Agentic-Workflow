@@ -16,7 +16,7 @@ except ImportError:
 
 # Test 2: registry_config builds SOVEREIGN_REGISTRY without SOVEREIGN_TERRITORIES
 try:
-    from agentic_core.config.core.registry_config import SOVEREIGN_REGISTRY
+    from agentic_core.config.registry_config import SOVEREIGN_REGISTRY
     entry = list(SOVEREIGN_REGISTRY.items())[0]
     print(f'[OK] SOVEREIGN_REGISTRY built: {len(SOVEREIGN_REGISTRY)} entries, sample key={entry[0]}')
 except Exception as e:

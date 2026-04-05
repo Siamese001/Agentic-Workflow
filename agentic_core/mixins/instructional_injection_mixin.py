@@ -13,7 +13,7 @@ import os
 from dataclasses import field
 from typing import Any
 
-from agentic_core.config.core.injection_layer_config import (
+from agentic_core.config.injection_layer_config import (
     INSTRUCTIONAL_PATTERNS,
     InjectionLayer,
     InstructionalPattern,

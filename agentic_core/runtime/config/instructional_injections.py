@@ -6,7 +6,7 @@ maintaining agentic_core boundary integrity.
 
 import logging
 
-from agentic_core.config.core.injection_layer_config import InjectionLayer, InstructionalPattern
+from agentic_core.config.injection_layer_config import InjectionLayer, InstructionalPattern
 from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
@@ -184,7 +184,7 @@ def get_instructional_injections() -> list[InstructionalPattern]:
         FileNotFoundError: If YAML corpus not found.
         YamlValidationError: If YAML validation fails.
     """
-    from agentic_core.config.core.yaml_injection_loader import get_yaml_loader
+    from agentic_core.config.yaml_injection_loader import get_yaml_loader
 
     yaml_loader = get_yaml_loader()
     all_patterns = yaml_loader.load_all_patterns()

@@ -272,7 +272,7 @@ class PromptInjectionLoader:
     def _load_instructional_injections_from_yaml(self) -> None:
         """Load instructional injections from YAML corpus."""
         try:
-            from agentic_core.config.core.yaml_injection_loader import get_yaml_loader
+            from agentic_core.config.yaml_injection_loader import get_yaml_loader
         except ImportError as e:
             raise ImportError("YAML loader not available") from e
 

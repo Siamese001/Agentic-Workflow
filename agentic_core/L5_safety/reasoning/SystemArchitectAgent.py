@@ -289,7 +289,7 @@ class SystemArchitectAgent(SovereignBaseAgent):
         Reuses centralized hierarchy validation to prevent drift.
         """
         violations: Any = []
-        from agentic_core.config.core.registry_config import SOVEREIGN_REGISTRY
+        from agentic_core.config.registry_config import SOVEREIGN_REGISTRY
         from agentic_core.L5_safety.config.structure_blueprint import CORE_SUBFOLDER_MAP as _CSM
 
         def validate_canonical_hierarchy(proj_root):

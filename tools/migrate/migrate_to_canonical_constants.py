@@ -3,7 +3,7 @@
 Constants Migration Script
 
 Migrates duplicated constants (MAX_RETRIES, DEFAULT_SLEEP, etc.) from inline
-definitions to canonical SSOT imports from agentic_core.config.core.constants_config
+definitions to canonical SSOT imports from agentic_core.config.constants_config
 
 Usage:
     python tools/migrate_to_canonical_constants.py --check          # Dry run, show what would change
@@ -33,7 +33,7 @@ CANONICAL_CONSTANTS = [
 CONSTANT_PATTERN = re.compile(rf'^({"|".join(CANONICAL_CONSTANTS)})\s*=\s*[^#\n]+', re.MULTILINE)
 
 # Import statement to add
-CANONICAL_IMPORT = "from agentic_core.config.core.constants_config import "
+CANONICAL_IMPORT = "from agentic_core.config.constants_config import "
 
 
 def find_constant_definitions(filepath: Path) -> List[Tuple[int, str, str]]:
@@ -57,7 +57,7 @@ def find_constant_definitions(filepath: Path) -> List[Tuple[int, str, str]]:
 
 def has_canonical_import(content: str) -> bool:
     """Check if file already imports from canonical module."""
-    return 'from agentic_core.config.core.constants_config import' in content
+    return 'from agentic_core.config.constants_config import' in content
 
 
 def migrate_file(filepath: Path, dry_run: bool = True) -> dict:
