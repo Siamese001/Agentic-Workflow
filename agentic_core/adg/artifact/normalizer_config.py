@@ -245,12 +245,17 @@ class NormalizedGraph:
             _trace_id, LayerSegment.L3_ORCHESTRATION, "NormalizedGraph.compute_digest"
         )
 
-        payload = json.dumps(
-            {"nodes": self.nodes, "edges": self.edges},
-            sort_keys=True,
-            separators=(",", ":"),
-        )
-        self.artifact_digest = hashlib.sha256(payload.encode("utf-8")).hexdigest()
+        # D2a: Canonical-stream hash — avoids building a 450 MB+ JSON string.
+        # Streams sorted node keys and edge canonical fields directly into sha256.
+        h = hashlib.sha256()
+        for k in sorted(self.nodes.keys(), key=lambda x: int(x)):
+            node = self.nodes[k]
+            h.update(("%s|%s|%s\n" % (k, node.get("n", ""), node.get("t", ""))).encode("utf-8"))
+        for e in self.edges:
+            h.update(
+                ("%s|%s|%s|%s\n" % (e["s"], e["d"], e["r"], e.get("k", ""))).encode("utf-8")
+            )
+        self.artifact_digest = h.hexdigest()
         return self.artifact_digest
 
     def to_dict(self) -> dict:

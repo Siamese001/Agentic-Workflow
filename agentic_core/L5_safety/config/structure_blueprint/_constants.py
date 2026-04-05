@@ -1082,10 +1082,10 @@ def build_sovereign_territories() -> dict[str, TerritoryDefinition]:
         "depth": 2,
         "purpose": "Universal test suites organized by Type then Domain.",
         "subfolders": {
-            "_config": {"purpose": "Test-suite configuration (conftest helpers, marker registries)"},
+            "_config": {"purpose": "Test-suite configuration (conftest helpers, marker registries, shared fixtures)"},
             "adg": {"purpose": "ADG-specific tests and graph validation checks"},
             "architecture": {
-                "purpose": "Structural invariant tests — AST-based, no filesystem mutations",
+                "purpose": "Structural invariant tests — AST-based, no filesystem mutations; includes sovereignty/SSOT pipeline protocol and mirror contract baselines",
             },
             "ci": {"purpose": "CI and compliance gate tests"},
             "e2e": {
@@ -1098,12 +1098,16 @@ def build_sovereign_territories() -> dict[str, TerritoryDefinition]:
                     # apps_* folders are auto-discovered — any apps_* subfolder is valid here
                     "apps_*",
                     "ops_scripts",
+                    "data",
                 ],
             },
             "evaluation": {"purpose": "Evaluation pipeline and scoring tests"},
-            "governance": {"purpose": "Governance policy and lifecycle tests"},
+            "governance": {"purpose": "Governance policy, lifecycle, determinism, migration robustness, and state isolation tests"},
             "guardian": {
-                "purpose": "Architectural compliance validation (Red Shield validation gate)",
+                "purpose": "Architectural compliance validation (Red Shield validation gate); includes quarantine manifest and negative-test fixtures",
+                "subfolders": {
+                    "fixtures": {"purpose": "Synthetic fixture agents for guardian negative tests (AST-parsed only, never imported at runtime)"},
+                },
                 "constitutional_rules": [
                     "Guardian tests are COMPLEMENTARY to unit/e2e tests, NOT replacements",
                     "Guardian validates architectural compliance, NOT functional correctness",
@@ -1112,7 +1116,9 @@ def build_sovereign_territories() -> dict[str, TerritoryDefinition]:
                     "Guardian tests NEVER delete files based on filename patterns",
                 ],
             },
+            "helpers": {"purpose": "Shared test utility library (assertions, filesystem builders, repo scaffolding)"},
             "infrastructure": {"purpose": "Infrastructure-layer verification tests"},
+            "knowledge": {"purpose": "Tests for knowledge/ territory (intake, RAG, retrieval)"},
             "integration": {
                 "purpose": "Component interaction tests mirroring source structure",
                 "mirror_source": True,
