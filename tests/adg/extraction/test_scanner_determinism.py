@@ -22,7 +22,7 @@ from pathlib import Path
 
 import pytest
 
-REPO_ROOT = Path(__file__).resolve().parents[6]
+REPO_ROOT = Path(__file__).resolve().parents[3]
 
 _PROBE_SCRIPT = textwrap.dedent(
     r"""

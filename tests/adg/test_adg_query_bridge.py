@@ -16,7 +16,7 @@ from unittest.mock import Mock
 import pytest
 
 # Add tools/adg to path for importing
-_repo_root = Path(__file__).resolve().parents[4]
+_repo_root = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(_repo_root / "tools" / "adg"))
 
 from adg_query_bridge import ADGQueryBridge, FileMatch, Node, Violation

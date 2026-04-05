@@ -13,7 +13,7 @@ from unittest.mock import patch
 import pytest
 
 # Add tools/adg to path for importing
-_repo_root = Path(__file__).resolve().parents[4]
+_repo_root = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(_repo_root / "tools" / "adg"))
 
 from hollow_file_cleanup import (
