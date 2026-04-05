@@ -1875,27 +1875,9 @@ class FileClassificationHealerAgent(*BASE_CLASSES):
         """
         Detect conflicting classification tags in a filename.
 
-        Uses COMPOUND_SUFFIX_CONFLICTS from blueprint config to match specific
-        compound suffix patterns (e.g., "_agent_types", "_config_script") that
-        indicate two classification tags in one filename.
-
-        Returns empty set if clean, or the set of conflicting tags if found.
-        Does NOT flag domain words (e.g., "agents" in "find_misnamed_agents_util.py").
+        Delegates to file_classification.classification_core._detect_filename_tag_conflicts().
         """
-        from agentic_core.L5_safety.config.structure_blueprint import (
-            COMPOUND_SUFFIX_CONFLICTS,
-        )
-
-        stem = path.stem  # filename without .py
-        detected_tags: set[str] = set()
-
-        for pattern, tag_a, tag_b, _example in COMPOUND_SUFFIX_CONFLICTS:
-            if re.search(pattern, stem):
-                detected_tags.add(tag_a)
-                detected_tags.add(tag_b)
-                return detected_tags
-
-        return set()
+        return _detect_filename_tag_conflicts(path)
 
     # ========================================================================
     # ENHANCED AST-BASED DETECTION METHODS
@@ -3646,190 +3628,25 @@ class FileClassificationHealerAgent(*BASE_CLASSES):
         """
         Enhanced test detection using AST analysis.
 
-        Detects:
-        - Classes inheriting from unittest.TestCase
-        - pytest fixtures and test functions
-        - Test methods (starting with test_)
-        - Mock/patch usage
+        Delegates to file_classification.classification_core._detect_test_patterns().
         """
-        indicators = {"is_test": False}
-
-        # Check for unittest imports
-        has_unittest = False
-        has_pytest = False
-        test_methods = 0
-        fixtures = 0
-
-        for node in ast.walk(tree):
-            # Check imports
-            if isinstance(node, ast.Import):
-                for alias in node.names:
-                    if alias.name == "unittest":
-                        has_unittest = True
-                    elif alias.name == "pytest":
-                        has_pytest = True
-            elif isinstance(node, ast.ImportFrom):
-                if node.module and ("unittest" in node.module or "pytest" in node.module):
-                    has_unittest = has_unittest or "unittest" in node.module
-                    has_pytest = has_pytest or "pytest" in node.module
-
-            # Check classes
-            elif isinstance(node, ast.ClassDef):
-                # Check unittest.TestCase inheritance
-                for base in node.bases:
-                    if isinstance(base, ast.Name) and base.id == "TestCase":
-                        indicators["is_test"] = True
-                    elif isinstance(base, ast.Attribute) and base.attr == "TestCase":
-                        indicators["is_test"] = True
-
-                # Count test methods
-                for item in node.body:
-                    if isinstance(item, ast.FunctionDef | ast.AsyncFunctionDef):
-                        if item.name.startswith("test_"):
-                            test_methods += 1
-
-            # Check functions
-            elif isinstance(node, ast.FunctionDef | ast.AsyncFunctionDef):
-                # Check for pytest fixtures
-                for decorator in node.decorator_list:
-                    if isinstance(decorator, ast.Name) and decorator.id == "fixture":
-                        fixtures += 1
-                    elif isinstance(decorator, ast.Attribute) and decorator.attr == "fixture":
-                        fixtures += 1
-
-                # Check test functions at module level
-                if node.name.startswith("test_"):
-                    indicators["is_test"] = True
-
-        # Determine if test file based on patterns
-        if has_unittest or has_pytest or test_methods > 0 or fixtures > 0:
-            indicators["is_test"] = True
-
-        return indicators
+        return _detect_test_patterns(tree, path)
 
     def _detect_script_patterns(self, tree: ast.AST, path: Path) -> dict[str, bool]:
         """
         Enhanced script detection using AST analysis.
 
-        Detects:
-        - if __name__ == "__main__" patterns
-        - argparse or click usage
-        - Direct execution patterns
-        - Script-like function names (main, run, execute, start)
+        Delegates to file_classification.classification_core._detect_script_patterns().
         """
-        indicators = {"is_script": False}
-
-        has_main_guard = False
-        has_argparse = False
-        has_click = False
-        script_functions = 0
-
-        for node in ast.walk(tree):
-            # Check imports
-            if isinstance(node, ast.Import):
-                for alias in node.names:
-                    if alias.name in ("argparse", "click", "sys", "os"):
-                        if alias.name == "argparse":
-                            has_argparse = True
-                        elif alias.name == "click":
-                            has_click = True
-
-            # Check for if __name__ == "__main__"
-            elif isinstance(node, ast.If):
-                if (
-                    isinstance(node.test, ast.Compare)
-                    and len(node.test.ops) == 1
-                    and isinstance(node.test.ops[0], ast.Eq)
-                ):
-                    left = node.test.left
-                    comparators = node.test.comparators
-                    if (
-                        isinstance(left, ast.Name)
-                        and left.id == "__name__"
-                        and len(comparators) == 1
-                        and isinstance(comparators[0], ast.Constant)
-                        and comparators[0].value == "__main__"
-                    ):
-                        has_main_guard = True
-
-            # Check functions
-            elif isinstance(node, ast.FunctionDef | ast.AsyncFunctionDef):
-                script_names = {"main", "run", "execute", "start", "cli", "script"}
-                if node.name in script_names:
-                    script_functions += 1
-
-        # Determine if script based on patterns
-        if has_main_guard or has_argparse or has_click or script_functions > 0:
-            indicators["is_script"] = True
-
-        return indicators
+        return _detect_script_patterns(tree, path)
 
     def _detect_type_patterns(self, tree: ast.AST, path: Path) -> dict[str, bool]:
         """
         Enhanced type collection detection using AST analysis.
 
-        Detects:
-        - Multiple enum classes
-        - TypeVar usage
-        - Protocol definitions
-        - Abstract base classes
-        - Data model patterns
+        Delegates to file_classification.classification_core._detect_type_patterns().
         """
-        indicators = {"is_types": False}
-
-        enum_count = 0
-        typevar_count = 0
-        protocol_count = 0
-        dataclass_count = 0
-        model_count = 0
-
-        for node in ast.walk(tree):
-            # Check classes
-            if isinstance(node, ast.ClassDef):
-                # Check enum inheritance
-                for base in node.bases:
-                    if isinstance(base, ast.Name):
-                        if base.id == "Enum":
-                            enum_count += 1
-                        elif base.id == "Protocol":
-                            protocol_count += 1
-                        elif base.id in ("ABC", "abstractmethod"):
-                            indicators["is_types"] = True
-                    elif isinstance(base, ast.Attribute):
-                        if base.attr == "Enum":
-                            enum_count += 1
-                        elif base.attr == "Protocol":
-                            protocol_count += 1
-
-                # Check dataclass decorators
-                for decorator in node.decorator_list:
-                    if isinstance(decorator, ast.Name) and decorator.id == "dataclass":
-                        dataclass_count += 1
-                    elif isinstance(decorator, ast.Call):
-                        if isinstance(decorator.func, ast.Name) and decorator.func.id == "dataclass":
-                            dataclass_count += 1
-
-                # Check model naming patterns
-                if any(suffix in node.name for suffix in ("Model", "Schema", "DTO", "Type")):
-                    model_count += 1
-
-            # Check TypeVar usage
-            elif isinstance(node, ast.Assign):
-                for target in node.targets:
-                    if isinstance(target, ast.Name) and "TypeVar" in str(node.value):
-                        typevar_count += 1
-
-        # Determine if type collection based on patterns
-        if (
-            enum_count > 1
-            or typevar_count > 0
-            or protocol_count > 0
-            or dataclass_count > 1
-            or model_count > 1
-        ):
-            indicators["is_types"] = True
-
-        return indicators
+        return _detect_type_patterns(tree, path)
 
     def _fuzzy_match_name_or_content(self, name: str, path: Path, content: str, patterns: list[str]) -> bool:
         """
@@ -4673,7 +4490,7 @@ class FileClassificationHealerAgent(*BASE_CLASSES):
             # [HARDENED] Verify final rename succeeded
             if not dest.exists():
                 print(f"  [ERROR] Failed to move temp to {dest_name}")
-                # Attempt rollback: restore from temp    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging
+                # Attempt rollback: restore from temp
                 if temp.exists():
                     _wg.rename_path(temp, src)
                     print(f"  [ROLLBACK] Restored {src.name} from temp")
@@ -4682,7 +4499,7 @@ class FileClassificationHealerAgent(*BASE_CLASSES):
                 print("  [WARNING] Temp file still exists after rename - cleaning up")
                 try:
                     _wg.remove_file(temp)
-                except OSError as e:    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging    # guardian: Add error context logging
+                except OSError as e:
                     self.logger.debug(f"Failed to cleanup temp file {temp.name}: {e}")
                     # Best effort cleanup - continue anyway
 
@@ -4700,113 +4517,31 @@ class FileClassificationHealerAgent(*BASE_CLASSES):
         """
         Detect files ending in _config.py that contain active logic (classes with methods).
 
-        A genuine config file should only contain constants, dataclasses, or simple assignments.
-        If it has class definitions with non-trivial methods (beyond __init__), it's a
-        misnamed utility masquerading as config.
-
-        Also classifies Verifier/Guardian/Lock classes as UTILITY unless they inherit
-        from SovereignBaseAgent.
-
-        Args:
-            path: File path being checked
-            content: File content as string
-
-        Returns:
-            Violation dict with 'type', 'message', 'suggested_suffix' or None if clean.
-        """    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime
-        stem = path.stem
-
-        # Only check *_config.py files
-        if not stem.endswith("_config"):  # guardian: allow-config-with-logic
+        Delegates to file_classification.validation_rules.check_fake_config().
+        """
+        violation = check_fake_config(path, content)
+        if violation is None:
             return None
-
-        try:
-            tree = ast.parse(content)
-        except SyntaxError:    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime    # guardian: Syntax errors should be caught at parser level, not runtime
-            return None
-
-        for node in ast.walk(tree):
-            if not isinstance(node, ast.ClassDef):  # guardian: allow-config-with-logic
-                continue
-
-            # Skip pure dataclasses — they're legitimate config containers
-            is_dataclass = any(
-                (isinstance(d, ast.Name) and d.id == "dataclass")
-                or (isinstance(d, ast.Attribute) and d.attr == "dataclass")
-                for d in node.decorator_list
-            )
-            if is_dataclass:  # guardian: allow-config-with-logic
-                continue
-
-            # Check for non-trivial methods (beyond __init__, __repr__, __str__)
-            trivial_methods = {"__init__", "__repr__", "__str__", "__post_init__"}
-            active_methods = [
-                item.name
-                for item in node.body
-                if isinstance(item, (ast.FunctionDef, ast.AsyncFunctionDef))
-                and item.name not in trivial_methods
-            ]
-            if active_methods:  # guardian: allow-config-with-logic
-                return {
-                    "type": "MISNAMED_UTILITY",
-                    "message": (
-                        f"{path.name} contains class '{node.name}' with active methods "
-                        f"{active_methods[:3]}. This is a utility, not a config file."
-                    ),
-                    "suggested_suffix": "_util.py",
-                }
-
-        return None
+        return {
+            "type": violation.type,
+            "message": violation.message,
+            "suggested_suffix": violation.suggested_fix,
+        }
 
     def check_domain_root_purity(self, path: Path) -> dict[str, str] | None:
         """
         Enforce the Leaf Node Rule: domain roots must NOT contain logic files.
 
-        Domain directories like knowledge/, semantic_memory/ must only contain
-        sub-directories. Python files (except __init__.py) at the root level
-        are violations that must be moved into appropriate sub-directories.
-
-        Also enforces snake_case naming within knowledge/ domain.
-
-        Args:
-            path: File path being checked
-
-        Returns:
-            Violation dict or None if clean.
+        Delegates to file_classification.validation_rules.check_domain_root_purity().
         """
-        # Domain roots that enforce the leaf node rule
-        domain_roots = {"knowledge", "semantic_memory"}
-
-        parts = path.parts
-        if path.name == "__init__.py":
+        violation = check_domain_root_purity(path)
+        if violation is None:
             return None
-
-        for i, part in enumerate(parts):
-            if part in domain_roots and i + 1 < len(parts):
-                # Check if this file is directly in the domain root (not a subfolder)
-                if parts[i + 1] == path.name:
-                    return {
-                        "type": "LEAF_NODE_VIOLATION",
-                        "message": (
-                            f"{path.name} is in {part}/ root. "
-                            f"Domain roots must only contain sub-directories (Leaf Node Rule)."
-                        ),
-                        "suggested_destination": f"agentic_core/{part}/engine/",
-                    }
-
-        # Check PascalCase in knowledge domain
-        if "knowledge" in parts and path.suffix == ".py":
-            if any(c.isupper() for c in path.stem):
-                return {
-                    "type": "KNOWLEDGE_PASCAL_CASE",
-                    "message": (
-                        f"{path.name} uses PascalCase in knowledge/ domain. "
-                        f"Must be snake_case per naming convention."
-                    ),
-                    "suggested_destination": "Rename to snake_case",
-                }
-
-        return None
+        return {
+            "type": violation.type,
+            "message": violation.message,
+            "suggested_destination": violation.suggested_fix,
+        }
 
     def check_base_agents_purity(self, path: Path) -> dict[str, str] | None:
         """
