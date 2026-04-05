@@ -210,3 +210,11 @@ class ADGService:
             },
             backend_used="sqlite",
         )
+
+    def close(self) -> None:
+        """Close all backend connections and release resources."""
+        if self._sqlite:
+            self._sqlite.close()
+        if self._redis:
+            self._redis.close()
+        logger.info("ADGService closed all connections")

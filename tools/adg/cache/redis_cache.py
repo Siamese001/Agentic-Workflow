@@ -145,3 +145,15 @@ class RedisCache:
                     break
         except Exception as e:
             logger.warning(f"Redis clear_snapshot failed: {e}")
+
+    def close(self) -> None:
+        """Close Redis connection."""
+        if self._client:
+            try:
+                self._client.close()
+                logger.info("Redis connection closed")
+            except Exception as e:
+                logger.error(f"Error closing Redis connection: {e}")
+            finally:
+                self._client = None
+                self._available = False

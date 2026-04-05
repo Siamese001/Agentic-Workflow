@@ -8,8 +8,10 @@ This server follows the hardened design:
 
 from __future__ import annotations
 
+import atexit
 import logging
 import os
+import signal
 from typing import Any
 
 from mcp.server.fastmcp import FastMCP
@@ -42,6 +44,22 @@ def _init_service() -> ADGService:
         _log.info("ADGService ready: %s", _service.health().mode)
 
     return _service
+
+
+def _shutdown_service() -> None:
+    """Gracefully shutdown ADGService and release all connections."""
+    global _service
+    if _service:
+        _log.info("Shutting down ADGService...")
+        _service.close()
+        _service = None
+        _log.info("ADGService shutdown complete")
+
+
+# Register shutdown handlers
+atexit.register(_shutdown_service)
+signal.signal(signal.SIGTERM, lambda sig, frame: _shutdown_service())
+signal.signal(signal.SIGINT, lambda sig, frame: _shutdown_service())
 
 
 # ---------------------------------------------------------------------------

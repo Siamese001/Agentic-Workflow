@@ -122,3 +122,16 @@ class SQLiteBackend:
             # Table or column may not exist
             logger.debug(f"get_violations query failed: {e}")
             return []
+
+    def close(self) -> None:
+        """Close SQLite connection and release file locks."""
+        if self._conn:
+            try:
+                # Checkpoint WAL to release locks before closing
+                self._conn.execute("PRAGMA wal_checkpoint(TRUNCATE)")
+                self._conn.close()
+                logger.info(f"Closed SQLite connection to {self._sqlite_path}")
+            except Exception as e:
+                logger.error(f"Error closing SQLite connection: {e}")
+            finally:
+                self._conn = None

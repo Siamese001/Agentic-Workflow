@@ -764,11 +764,30 @@ ALLOWED_LAYER_EDGES: frozenset[tuple[str, str]] = frozenset(
         ("L_RUNTIME", "L_SHARED"),
         ("L_PG", "L_SHARED"),
         ("L_TEST", "L_SHARED"),
+        # L_TOOLS can import L_RUNTIME for lifecycle_trace_contract (validation/testing)
+        ("L_TOOLS", "L_RUNTIME"),
+        # L2 execution layer can access L4 state (execution requires state)
+        ("L2", "L4"),
+        # L2 execution layer can access L6 observability (execution telemetry)
+        ("L2", "L6"),
+        # L3 orchestration can access L6 (orchestration telemetry)
+        ("L3", "L6"),
+        # L5 safety can access L_SL (safety requires learning)
+        ("L5", "L_SL"),
+        # L6 observability can access L_SL (observability requires learning)
+        ("L6", "L_SL"),
+        # L_RUNTIME lifecycle infrastructure can be imported from all layers
+        # (lifecycle_trace_contract, execution_trace, healer_exceptions)
+        ("L0", "L_RUNTIME"),
+        ("L1", "L_RUNTIME"),
+        ("L2", "L_RUNTIME"),
         ("L3", "L_RUNTIME"),
         ("L4", "L_RUNTIME"),
         ("L5", "L_RUNTIME"),
         ("L6", "L_RUNTIME"),
         ("L_APP", "L_RUNTIME"),
+        ("L_SL", "L_RUNTIME"),
+        ("L_TEST", "L_RUNTIME"),
         ("L1", "L_PG"),
         ("L2", "L_PG"),
         ("L3", "L_PG"),

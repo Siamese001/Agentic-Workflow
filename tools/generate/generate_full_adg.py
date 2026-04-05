@@ -996,6 +996,15 @@ def _archive_old_artifacts(adg_dir: Path, current_ts: str, keep_runs: int = 1) -
                         file_size = 0
                     # guardian: allow-silent-swallow - acceptable exception handling
                     try:
+                        # For SQLite files, try to close WAL checkpoint before deletion
+                        if file_path.suffix == ".sqlite":
+                            try:
+                                import sqlite3
+                                temp_conn = sqlite3.connect(str(file_path))
+                                temp_conn.execute("PRAGMA wal_checkpoint(TRUNCATE)")
+                                temp_conn.close()
+                            except Exception:
+                                pass  # Best-effort cleanup
                         file_path.unlink()
                     except OSError as e:
                         print(f"[ADG] Archive: failed to remove {file_path.name}: {e}")
@@ -1012,6 +1021,19 @@ def _archive_old_artifacts(adg_dir: Path, current_ts: str, keep_runs: int = 1) -
                     try:
                         file_size = file_path.stat().st_size
                         bytes_original += file_size
+                    except OSError:
+                        file_size = 0
+                    # guardian: allow-silent-swallow - acceptable exception handling
+                    try:
+                        # For SQLite files, try to close WAL checkpoint before deletion
+                        if file_path.suffix == ".sqlite":
+                            try:
+                                import sqlite3
+                                temp_conn = sqlite3.connect(str(file_path))
+                                temp_conn.execute("PRAGMA wal_checkpoint(TRUNCATE)")
+                                temp_conn.close()
+                            except Exception:
+                                pass  # Best-effort cleanup
                         file_path.unlink()
                         archived_count += 1
                     except OSError as e:

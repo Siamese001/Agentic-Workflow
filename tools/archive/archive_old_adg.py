@@ -27,6 +27,7 @@ from __future__ import annotations
 import argparse
 import gzip
 import logging
+import os
 import shutil
 from collections import defaultdict
 from datetime import datetime, timedelta
@@ -195,7 +196,8 @@ def identify_runs_to_archive(runs: dict[str, list[Path]], keep_runs: int) -> lis
     return sorted(to_archive, key=_parse_timestamp)
 
 
-def archive_run(ts: str, files: list[Path], compress: bool, dry_run: bool) -> dict:
+def archive_run(ts: str, files: list[Path], compress: bool, dry_run: bool,
+                active_timestamp: str | None = None) -> dict:
     """Archive a single ADG run.
 
     Args:
@@ -203,9 +205,10 @@ def archive_run(ts: str, files: list[Path], compress: bool, dry_run: bool) -> di
         files: List of artifact paths for this run
         compress: Whether to compress archived files
         dry_run: If True, only show what would be done
+        active_timestamp: Timestamp of the currently active ADG (files with this timestamp are skipped)
 
     Returns:
-        Dict with statistics: files_archived, bytes_saved, etc.
+        Dict with statistics: files_archived, bytes_saved, files_skipped, etc.
     """
     archive_dir = _get_archive_month_dir(ts)
 
@@ -214,6 +217,8 @@ def archive_run(ts: str, files: list[Path], compress: bool, dry_run: bool) -> di
         "files_archived": 0,
         "bytes_original": 0,
         "bytes_archived": 0,
+        "files_skipped": 0,
+        "skip_reasons": [],
     }
 
     if not dry_run:
@@ -221,6 +226,22 @@ def archive_run(ts: str, files: list[Path], compress: bool, dry_run: bool) -> di
 
     for file_path in files:
         if not file_path.exists():
+            continue
+
+        # Check if file belongs to active ADG
+        if active_timestamp and active_timestamp in file_path.name:
+            reason = f"active ADG database ({active_timestamp})"
+            stats["files_skipped"] += 1
+            stats["skip_reasons"].append(f"{file_path.name}: {reason}")
+            logger.info("Skipping %s: %s", file_path.name, reason)
+            continue
+
+        # Check if file is locked
+        if _is_file_locked(file_path):
+            reason = "file locked by another process"
+            stats["files_skipped"] += 1
+            stats["skip_reasons"].append(f"{file_path.name}: {reason}")
+            logger.warning("Skipping %s: %s", file_path.name, reason)
             continue
 
         original_size = file_path.stat().st_size
@@ -306,6 +327,62 @@ def format_bytes(bytes_count: float) -> str:
     return f"{bytes_count:.1f} TB"
 
 
+def _is_file_locked(file_path: Path) -> bool:
+    """Check if a file is locked by another process.
+
+    On Windows, attempts to open the file exclusively.
+    On Unix, checks if the file has associated WAL files (SQLite indicator).
+
+    Args:
+        file_path: Path to the file to check
+
+    Returns:
+        True if file is locked, False otherwise
+    """
+    if not file_path.exists():
+        return False
+
+    # Check for SQLite WAL files (indicates active connection)
+    if file_path.suffix == ".sqlite":
+        wal_file = file_path.with_suffix(".sqlite-wal")
+        shm_file = file_path.with_suffix(".sqlite-shm")
+        if wal_file.exists() or shm_file.exists():
+            return True
+
+    # On Windows, try to open the file exclusively
+    if os.name == "nt":
+        try:
+            # Try to open file in exclusive read mode
+            open(file_path, "rb", buffering=0).close()
+            return False
+        except (PermissionError, OSError) as e:
+            logger.debug("File locked: %s - %s", file_path.name, e)
+            return True
+
+    # On Unix, we can't reliably detect locks without additional tools
+    # Fall back to WAL file check above
+    return False
+
+
+def _get_active_adg_timestamp() -> str | None:
+    """Get the timestamp of the currently active ADG database.
+
+    Reads the ADG snapshot metadata to identify the active database.
+
+    Returns:
+        Timestamp string (e.g., "04052026_1842") or None if not found
+    """
+    # Check for snapshot files to identify latest ADG
+    snapshot_files = list(ADG_DIR.glob("adg_snapshot_*.json"))
+    if not snapshot_files:
+        return None
+
+    # Get the most recent snapshot
+    latest_snapshot = max(snapshot_files, key=lambda p: p.stat().st_mtime)
+    ts = _extract_timestamp(latest_snapshot.name)
+    return ts
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(description="Archive old ADG artifacts")
     parser.add_argument(
@@ -360,6 +437,13 @@ def main() -> None:
     # Identify runs to archive
     to_archive = identify_runs_to_archive(runs, args.keep_runs)
 
+    # Get active ADG timestamp to skip locked files
+    active_timestamp = _get_active_adg_timestamp()
+    if active_timestamp:
+        print(f"[ADG Archive] Active ADG timestamp: {active_timestamp}")
+        print("[ADG Archive] Files with this timestamp will be skipped")
+        print()
+
     if not to_archive:
         print(f"[ADG Archive] All runs are within retention policy (keep {args.keep_runs} runs)")
         print("[ADG Archive] Nothing to archive")
@@ -370,32 +454,42 @@ def main() -> None:
     print()
 
     # Archive each run
-    total_stats = {
+    total_stats: dict[str, Any] = {
         "runs_archived": 0,
         "files_archived": 0,
         "bytes_original": 0,
         "bytes_archived": 0,
+        "files_skipped": 0,
+        "skip_reasons": [],
     }
 
     for ts in to_archive:
         files = runs[ts]
         print(f"[ADG Archive] Archiving run {ts} ({len(files)} files)...")
 
-        stats = archive_run(ts, files, compress, dry_run)
+        stats = archive_run(ts, files, compress, dry_run, active_timestamp)
 
         total_stats["runs_archived"] += 1
         total_stats["files_archived"] += stats["files_archived"]
         total_stats["bytes_original"] += stats["bytes_original"]
         total_stats["bytes_archived"] += stats["bytes_archived"]
+        total_stats["files_skipped"] += stats["files_skipped"]
+        total_stats["skip_reasons"].extend(stats["skip_reasons"])
 
         archive_dir = _get_archive_month_dir(ts)
         print(f"    → {archive_dir.relative_to(ROOT)}")
-        print(f"    → {stats['files_archived']} files, {format_bytes(stats['bytes_original'])} → {format_bytes(stats['bytes_archived'])}")
+        if stats["files_skipped"] > 0:
+            print(f"    → {stats['files_archived']} files archived, {stats['files_skipped']} files skipped (locked or active)")
+            print(f"    → {format_bytes(stats['bytes_original'])} → {format_bytes(stats['bytes_archived'])}")
+        else:
+            print(f"    → {stats['files_archived']} files, {format_bytes(stats['bytes_original'])} → {format_bytes(stats['bytes_archived'])}")
 
     print()
     print("[ADG Archive] Summary:")
     print(f"    Runs archived: {total_stats['runs_archived']}")
     print(f"    Files archived: {total_stats['files_archived']}")
+    if total_stats["files_skipped"] > 0:
+        print(f"    Files skipped: {total_stats['files_skipped']}")
     print(f"    Original size: {format_bytes(total_stats['bytes_original'])}")
     print(f"    Archived size: {format_bytes(total_stats['bytes_archived'])}")
 
@@ -403,6 +497,13 @@ def main() -> None:
         savings = total_stats['bytes_original'] - total_stats['bytes_archived']
         pct = (savings / total_stats['bytes_original'] * 100) if total_stats['bytes_original'] > 0 else 0
         print(f"    Space saved: {format_bytes(savings)} ({pct:.1f}%)")
+
+    # Show skip reasons if any files were skipped
+    if total_stats["skip_reasons"]:
+        print()
+        print("[ADG Archive] Skipped files (reasons):")
+        for reason in total_stats["skip_reasons"]:
+            print(f"    - {reason}")
 
     # Cleanup old archives if requested
     if args.cleanup_old:
