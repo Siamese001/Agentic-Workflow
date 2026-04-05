@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from typing import Any, Protocol
 
-from agentic_core.case_memory.memory_card import MemoryCard
+from agentic_core.case_memory.core.memory_card import MemoryCard
 
 
 class BridgeProtocol(Protocol):

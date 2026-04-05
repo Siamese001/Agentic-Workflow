@@ -110,7 +110,7 @@ class _FakeBridge:
 class TestCaseLibrary:
     def _lib(self):
         """Return CaseLibrary with fake bridge."""
-        from agentic_core.case_memory.case_library import CaseLibrary
+        from agentic_core.case_memory.core.case_library import CaseLibrary
         bridge = _FakeBridge()
         return CaseLibrary(bridge=bridge), bridge
 
@@ -164,14 +164,14 @@ class TestCaseLibrary:
 class TestGraphNeighborhoodMemory:
     def _mem(self):
         """Return GraphNeighborhoodMemory with fake bridge."""
-        from agentic_core.case_memory.graph_neighborhood_memory import GraphNeighborhoodMemory
+        from agentic_core.case_memory.core.graph_neighborhood_memory import GraphNeighborhoodMemory
         bridge = _FakeBridge()
         return GraphNeighborhoodMemory(bridge=bridge), bridge
 
     def _card(self, name="ADG::Module::foo", layer="L2"):
         """Create a test memory card."""
 
-        from agentic_core.case_memory.memory_card import MemoryCard
+        from agentic_core.case_memory.core.memory_card import MemoryCard
 
         return MemoryCard(
             adg_entity_name=name,
