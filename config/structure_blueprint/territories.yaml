@@ -7,6 +7,11 @@ last_updated: "2026-04-05"
 # - This is a known architectural pattern: framework code depends on operational SSOT utilities
 # - ops_scripts/dev_tools/ contains 1,052 utility scripts for SSOT management, not framework logic
 
+# NOTE: Backward Compatibility Wrappers
+# - apps_qwen is now a backward compatibility wrapper that re-exports from agentic_core/L3_orchestration/inference/qwen_vllm
+# - This wrapper will be removed in a future version after all importers have been updated
+# - New code should import directly from agentic_core.L3_orchestration.inference.qwen_vllm
+
 territories:
   config:
     depth: 2
@@ -132,6 +137,18 @@ territories:
           reasoning: {purpose: "Decision agents"}
           enforcement: {purpose: "Guardrails"}
           utils: {purpose: "Helpers"}
+          inference:
+            depth: 2
+            purpose: "Inference service integrations (vLLM, etc.)"
+            subfolders:
+              qwen_vllm:
+                depth: 2
+                purpose: "Qwen vLLM inference service"
+                subfolders:
+                  config: {depth: 2, purpose: "Configuration and telemetry"}
+                  engines: {depth: 2, purpose: "vLLM client implementations"}
+                  reasoning: {depth: 2, purpose: "Gateway and orchestration"}
+                  tools: {depth: 2, purpose: "GPU monitoring utilities"}
       L4_state:
         depth: 2
         purpose: "Memory, embeddings, retrieval"
@@ -196,16 +213,6 @@ territories:
       tests: {depth: 2, purpose: "Test suite"}
       tools: {depth: 2, purpose: "Utility tools"}
       utils: {depth: 2, purpose: "Helper utilities"}
-
-  apps_qwen:
-    depth: 2
-    purpose: "Qwen vLLM inference application"
-    subfolders:
-      config: {depth: 2, purpose: "Configuration and telemetry"}
-      engines: {depth: 2, purpose: "vLLM client implementations"}
-      reasoning: {depth: 2, purpose: "Gateway and orchestration"}
-      tools: {depth: 2, purpose: "GPU monitoring utilities"}
-      tests: {depth: 2, purpose: "Test suite"}
 
   apps_underwriting_ai:
     depth: 2
