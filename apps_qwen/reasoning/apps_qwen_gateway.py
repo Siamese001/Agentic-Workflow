@@ -11,7 +11,7 @@ import time
 from dataclasses import dataclass
 from typing import Any
 
-from apps_qwen.optimized_vllm_client import (
+from apps_qwen.engines.optimized_vllm_client import (
     OptimizedVLLMClient,
     VLLMRequest,
     VLLMResponse,

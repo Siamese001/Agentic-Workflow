@@ -24,10 +24,10 @@ Usage:
 from __future__ import annotations
 
 # Configuration
-from apps_qwen.apps_qwen_config import AppsQwenConfig
+from apps_qwen.config.apps_qwen_config import AppsQwenConfig
 
 # Core gateway and request/response types
-from apps_qwen.apps_qwen_gateway import (
+from apps_qwen.reasoning.apps_qwen_gateway import (
     AppsQwenGateway,
     AppsQwenRequest,
     AppsQwenResponse,
@@ -36,10 +36,10 @@ from apps_qwen.apps_qwen_gateway import (
 )
 
 # Telemetry
-from apps_qwen.apps_qwen_telemetry import apps_qwen_telemetry
+from apps_qwen.config.apps_qwen_telemetry import apps_qwen_telemetry
 
 # GPU memory monitoring
-from apps_qwen.gpu_memory_monitor import (
+from apps_qwen.tools.gpu_memory_monitor import (
     GPUMemoryInfo,
     GPUMemoryMonitor,
     GPURecommendation,
@@ -48,7 +48,7 @@ from apps_qwen.gpu_memory_monitor import (
 )
 
 # Hardened vLLM client
-from apps_qwen.hardened_vllm_client import (
+from apps_qwen.engines.hardened_vllm_client import (
     CircuitBreaker,
     CircuitBreakerConfig,
     CircuitBreakerOpenError,
@@ -59,7 +59,7 @@ from apps_qwen.hardened_vllm_client import (
 )
 
 # Optimized vLLM client
-from apps_qwen.optimized_vllm_client import (
+from apps_qwen.engines.optimized_vllm_client import (
     OptimizedVLLMClient,
     VLLMRequest,
     VLLMResponse,

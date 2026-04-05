@@ -178,6 +178,25 @@ territories:
       engines: {depth: 2, purpose: "Execution engines"}
       reasoning: {depth: 2, purpose: "Decision agents"}
 
+  apps_qwen:
+    depth: 2
+    purpose: "Qwen vLLM inference application"
+    subfolders:
+      config: {depth: 2, purpose: "Configuration and telemetry"}
+      engines: {depth: 2, purpose: "vLLM client implementations"}
+      reasoning: {depth: 2, purpose: "Gateway and orchestration"}
+      tools: {depth: 2, purpose: "GPU monitoring utilities"}
+
+  apps_underwriting_ai:
+    depth: 2
+    purpose: "Underwriting AI application"
+    subfolders:
+      config: {depth: 2, purpose: "Configuration"}
+      engines: {depth: 2, purpose: "Execution engines"}
+      reasoning: {depth: 2, purpose: "Decision agents"}
+      types: {depth: 2, purpose: "Data models and parsers"}
+      validators: {depth: 2, purpose: "Validation logic"}
+
   apps_lic:
     depth: 2
     purpose: "License management application"

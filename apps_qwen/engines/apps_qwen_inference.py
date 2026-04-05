@@ -10,7 +10,7 @@ import logging
 import time
 from typing import Any
 
-from apps_qwen.apps_qwen_config import (
+from apps_qwen.config.apps_qwen_config import (
     AppsQwenModelConfig,
     AppsQwenPromptConfig,
 )
