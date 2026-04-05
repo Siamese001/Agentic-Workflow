@@ -302,29 +302,40 @@ def predict_impact(
     # (dotted form). We build a map: module_path → set of modules that use it.
     changed_norm = {f.replace("\\", "/") for f in changed_files}
 
-    # Build dot-form index of all known module paths for prefix matching
+    # Build dot-form index of all known module paths for prefix matching.
+    # Precompute every dot-prefix of every module so that symbol → module
+    # resolution is a single O(1) dict lookup per prefix length, not an
+    # O(depth * parts) string-split+join loop.
     module_dot_forms: dict[str, str] = {}  # dot.form -> slash/form
+    modules_set: set[str] = set(result.modules)
     for m in result.modules:
         dot = m.replace("/", ".").removesuffix(".py")
         module_dot_forms[dot] = m
+        # Also index every strict prefix so "a.b.c.ClassName" resolves to "a/b/c.py"
+        parts = dot.split(".")
+        for length in range(len(parts) - 1, 0, -1):
+            prefix = ".".join(parts[:length])
+            if prefix not in module_dot_forms:
+                module_dot_forms[prefix] = m
 
     # reverse_dep[M] = set of modules that import something from M
     reverse_dep: dict[str, set[str]] = {}
     for from_mod, imported_syms in module_imports.items():
         for sym in imported_syms:
             # sym is like "agentic_core.L2_execution.UniversalWriteGateway.ClassName"
-            # Match against module dot forms (longest prefix first)
+            # Use precomputed prefix dict: scan from longest prefix to shortest.
             sym_dot = sym.replace("/", ".")
+            parts = sym_dot.split(".")
             matched: str | None = None
-            for length in range(len(sym_dot.split(".")), 0, -1):
-                candidate = ".".join(sym_dot.split(".")[:length])
+            for length in range(len(parts), 0, -1):
+                candidate = ".".join(parts[:length])
                 if candidate in module_dot_forms:
                     matched = module_dot_forms[candidate]
                     break
             if matched is None:
-                # Also try direct slash path match
+                # Fallback: direct slash path match
                 slash_sym = sym.replace(".", "/")
-                if slash_sym in set(result.modules):
+                if slash_sym in modules_set:
                     matched = slash_sym
             if matched is not None:
                 reverse_dep.setdefault(matched, set()).add(from_mod)

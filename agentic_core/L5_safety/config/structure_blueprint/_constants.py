@@ -1222,36 +1222,12 @@ def build_sovereign_territories() -> dict[str, TerritoryDefinition]:
                             "utils": [],
                         },
                     },
-                    "apps_lic": {
-                        "purpose": "Unit tests for apps_lic modules",
-                        "subfolders": {
-                            "config": [],
-                            "engines": [],
-                            "enforcement": [],
-                            "reasoning": [],
-                            "scripts": [],
-                            "tools": [],
-                            "types": [],
-                            "utils": [],
-                            "validators": [],
-                        },
-                    },
-                    "apps_rg": {
-                        "purpose": "Unit tests for apps_rg modules",
-                        "subfolders": {
-                            "config": [],
-                            "engines": [],
-                            "enforcement": [],
-                            "reasoning": [],
-                            "scripts": [],
-                            "tools": [],
-                            "types": [],
-                            "utils": [],
-                            "validators": [],
-                        },
-                    },
-                    "apps_shared": {
-                        "purpose": "Unit tests for apps_shared modules",
+                    # apps_* wildcard — covers all apps_lic, apps_rg, apps_shared,
+                    # apps_eval, apps_exec, apps_research, apps_rfp.
+                    # Each mirrors the same LCD subfolder structure.
+                    "apps_*": {
+                        "purpose": "Unit tests for any apps_* domain (apps_lic, apps_rg, apps_shared, apps_eval, apps_exec, apps_research, apps_rfp)",
+                        "wildcard": True,
                         "subfolders": {
                             "config": [],
                             "engines": [],

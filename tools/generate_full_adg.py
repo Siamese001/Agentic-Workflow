@@ -1591,7 +1591,7 @@ def _create_zip_archive(adg_dir: Path, ts: str, artifact_paths: list[Path]) -> P
     repo_root = adg_dir.parents[1]
 
     try:
-        with zipfile.ZipFile(zip_path, "w", zipfile.ZIP_DEFLATED, compresslevel=9) as zf:
+        with zipfile.ZipFile(zip_path, "w", zipfile.ZIP_DEFLATED, compresslevel=1) as zf:
             # Add ADG artifacts with validation
             missing_artifacts = []
             for artifact_path in artifact_paths:
