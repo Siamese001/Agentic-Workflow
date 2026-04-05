@@ -83,7 +83,7 @@ def _get_guardian_decision():
 
 
 from agentic_core.agents.types.agent_registry import get_profile, registry_digest
-from agentic_core.L0_routing.artifacts.deterministic_routing_gateway import get_routing_gateway
+from agentic_core.L0_routing.reasoning.deterministic_routing_gateway import get_routing_gateway
 from agentic_core.L0_routing.types.crypto_trust_types import HashMismatchTracker
 from agentic_core.L0_routing.types.determinism_contracts_types import (
     create_boundary_snapshot,

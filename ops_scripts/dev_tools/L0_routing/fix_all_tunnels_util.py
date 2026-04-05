@@ -94,7 +94,7 @@ from typing import Any
 from agentic_core.L0_routing.config import AGENTIC_CORE_DIR
 from agentic_core.L0_routing.config.path_constants import DEPTH_RULES, SOVEREIGN_EXCLUDED_FOLDERS
 from agentic_core.L0_routing.enforcement.mutation_prohibition import assert_no_persistent_write
-from agentic_core.L0_routing.utils.ssot_discovery_util import get_python_files
+from ops_scripts.dev_tools.L0_routing.ssot_discovery_util import get_python_files
 from agentic_core.runtime.lifecycle_trace_contract import (
     LayerSegment,
     _emit_agent_executes_agent,

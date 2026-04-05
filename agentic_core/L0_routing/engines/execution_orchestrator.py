@@ -101,7 +101,7 @@ Logger = logging.getLogger(__name__)
 
 
 def _get_routing_gateway():
-    from agentic_core.L0_routing.artifacts.deterministic_routing_gateway import (
+    from agentic_core.L0_routing.reasoning.deterministic_routing_gateway import (
         get_routing_gateway,  # noqa: PLC0415
     )
 

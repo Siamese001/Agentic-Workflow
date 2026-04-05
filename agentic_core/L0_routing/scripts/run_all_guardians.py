@@ -36,7 +36,7 @@ from agentic_core.L0_routing.types.guardian_registry_types import (
     GuardianSpec,
     get_guardian_specs,
 )
-from agentic_core.L0_routing.utils.project_root_util import get_validated_project_root
+from ops_scripts.dev_tools.L0_routing.project_root_util import get_validated_project_root
 from agentic_core.runtime.lifecycle_trace_contract import (
     LayerSegment,
     _emit_agent_executes_agent,

@@ -14,22 +14,22 @@ from pathlib import Path
 from typing import Any
 
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
-from agentic_core.L0_routing.utils.ssot_folder_cleanup_util import (
+from ops_scripts.dev_tools.L0_routing.ssot_folder_cleanup_util import (
     CleanupStats,
 )
-from agentic_core.L0_routing.utils.ssot_folder_cleanup_util import (
+from ops_scripts.dev_tools.L0_routing.ssot_folder_cleanup_util import (
     cleanup_repository as _cleanup_repository,
 )
-from agentic_core.L0_routing.utils.ssot_folder_cleanup_util import (
+from ops_scripts.dev_tools.L0_routing.ssot_folder_cleanup_util import (
     delete_empty_folders as _delete_empty_folders,
 )
-from agentic_core.L0_routing.utils.ssot_folder_cleanup_util import (
+from ops_scripts.dev_tools.L0_routing.ssot_folder_cleanup_util import (
     find_non_approved_files as _find_non_approved_files,
 )
-from agentic_core.L0_routing.utils.ssot_folder_cleanup_util import (
+from ops_scripts.dev_tools.L0_routing.ssot_folder_cleanup_util import (
     move_file_to_ssot as _move_file_to_ssot,
 )
-from agentic_core.L0_routing.utils.ssot_folder_cleanup_util import (
+from ops_scripts.dev_tools.L0_routing.ssot_folder_cleanup_util import (
     update_imports_for_moved_file as _update_imports,
 )
 
@@ -97,12 +97,12 @@ class SSOTFolderCleanupAgent(SovereignBaseAgent):
 
     def is_path_ssot_approved(self, path: Path) -> bool:
         """Check if a path is in an SSOT-approved location."""
-        from agentic_core.L0_routing.utils.ssot_folder_cleanup_util import is_path_ssot_approved
+        from ops_scripts.dev_tools.L0_routing.ssot_folder_cleanup_util import is_path_ssot_approved
 
         return is_path_ssot_approved(path, self.project_root)
 
     def triage_file(self, file_path: Path) -> dict[str, Any]:
         """Determine where a file should go."""
-        from agentic_core.L0_routing.utils.ssot_folder_cleanup_util import triage_file
+        from ops_scripts.dev_tools.L0_routing.ssot_folder_cleanup_util import triage_file
 
         return triage_file(file_path, self.project_root)

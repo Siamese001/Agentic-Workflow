@@ -39,7 +39,7 @@ from pathlib import Path
 from typing import Any
 
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
-from agentic_core.L0_routing.artifacts.deterministic_routing_gateway import get_routing_gateway
+from agentic_core.L0_routing.reasoning.deterministic_routing_gateway import get_routing_gateway
 from agentic_core.L0_routing.config import (
     AGENTIC_CORE_DIR,
     APPS_LIC_DIR,
@@ -50,7 +50,7 @@ from agentic_core.L0_routing.config import (
 from agentic_core.L0_routing.config.path_constants import DEFAULT_TIMEOUT
 from agentic_core.L0_routing.enforcement.runtime_guard import runtime_guard
 from agentic_core.L0_routing.types.guardian_contract_types import is_v15_enforced
-from agentic_core.L0_routing.utils.ssot_discovery_util import get_agent_paths
+from ops_scripts.dev_tools.L0_routing.ssot_discovery_util import get_agent_paths
 from agentic_core.L2_execution.determinism.execution_proof_emitter import ExecutionProofEmitter
 from agentic_core.L3_orchestration.contracts.orchestration_handoff_contract import emit_agent_executes_agent
 from agentic_core.L3_orchestration.reasoning.UnifiedAgent import (

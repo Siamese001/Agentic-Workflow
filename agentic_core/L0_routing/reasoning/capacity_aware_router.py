@@ -20,7 +20,7 @@ from __future__ import annotations
 import logging
 from dataclasses import dataclass
 
-from agentic_core.L0_routing.capacity.capacity_snapshot import (
+from agentic_core.L0_routing.reasoning.capacity_snapshot import (
     CapacityDecisionReason,
     CapacitySnapshot,
     RouteCapacityMetrics,

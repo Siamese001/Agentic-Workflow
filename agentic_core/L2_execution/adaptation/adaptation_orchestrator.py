@@ -23,7 +23,7 @@ import uuid
 from dataclasses import dataclass
 from typing import Any
 
-from agentic_core.L0_routing.artifacts.deterministic_routing_gateway import get_routing_gateway
+from agentic_core.L0_routing.reasoning.deterministic_routing_gateway import get_routing_gateway
 from agentic_core.L2_execution.adaptation.execution_adaptation import (
     ExecutionAdaptationError,
     ExecutionAdaptationRecord,

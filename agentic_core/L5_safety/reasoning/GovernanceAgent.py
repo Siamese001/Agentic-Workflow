@@ -4,7 +4,7 @@ from __future__ import annotations
 import importlib
 
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
-from agentic_core.L0_routing.utils.ssot_discovery_util import get_python_files
+from ops_scripts.dev_tools.L0_routing.ssot_discovery_util import get_python_files
 from agentic_core.L2_execution.tools import write_gateway as _wg
 from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_agent_executes_agent,

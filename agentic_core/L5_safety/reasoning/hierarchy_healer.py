@@ -688,7 +688,7 @@ class HierarchyHealerAgent(SovereignBaseAgent):
 
         # Use existing depth enforcement logic but specifically for apps scope
         # This will trigger _heal_depth_violation which handles flattening
-        from agentic_core.L0_routing.utils.ssot_discovery_util import get_python_files
+        from ops_scripts.dev_tools.L0_routing.ssot_discovery_util import get_python_files
 
         for py_file in get_python_files(root_path):
             rel = py_file.relative_to(self.project_root)
@@ -796,7 +796,7 @@ class HierarchyHealerAgent(SovereignBaseAgent):
         bad_path = agentic_core_path / bad_layer_l2
 
         # Phase 4.1: Use ssot_discovery instead of rglob
-        from agentic_core.L0_routing.utils.ssot_discovery_util import get_python_files
+        from ops_scripts.dev_tools.L0_routing.ssot_discovery_util import get_python_files
 
         for py_file in get_python_files(bad_path):
             if py_file.name in ALLOWED_DUPLICATE_FILENAMES:
@@ -936,7 +936,7 @@ class HierarchyHealerAgent(SovereignBaseAgent):
             bad_path = layer_l2_path / bad_territory_l3
 
             # Phase 4.1: Use ssot_discovery instead of rglob
-            from agentic_core.L0_routing.utils.ssot_discovery_util import get_python_files
+            from ops_scripts.dev_tools.L0_routing.ssot_discovery_util import get_python_files
 
             for py_file in get_python_files(bad_path):
                 if py_file.name in ALLOWED_DUPLICATE_FILENAMES:
@@ -1135,7 +1135,7 @@ class HierarchyHealerAgent(SovereignBaseAgent):
         expected_depth = DEPTH_RULES.get(root_key, 2)
         archived, violations = 0, 0
         # Phase 6.5: Use ssot_discovery instead of rglob
-        from agentic_core.L0_routing.utils.ssot_discovery_util import get_data_files, get_python_files
+        from ops_scripts.dev_tools.L0_routing.ssot_discovery_util import get_data_files, get_python_files
 
         all_files = list(get_python_files(self.project_root)) + list(
             get_data_files(self.project_root, extensions=[".json", ".md", ".yaml", ".yml"]),
@@ -1280,7 +1280,7 @@ class HierarchyHealerAgent(SovereignBaseAgent):
         violations = 0
 
         # Phase 6.5: Use ssot_discovery instead of rglob
-        from agentic_core.L0_routing.utils.ssot_discovery_util import get_data_files
+        from ops_scripts.dev_tools.L0_routing.ssot_discovery_util import get_data_files
 
         target_exts = [".json", ".md", ".yaml", ".yml", ".toml", ".txt"]
         for file_path in get_data_files(self.project_root, extensions=target_exts):
@@ -2026,7 +2026,7 @@ class HierarchyHealerAgent(SovereignBaseAgent):
         Logger.info(f"HierarchyAgent: Merging {folder_name}/ -> {ssot_target}/")
 
         # Phase 6.5: Use ssot_discovery instead of rglob
-        from agentic_core.L0_routing.utils.ssot_discovery_util import get_data_files, get_python_files
+        from ops_scripts.dev_tools.L0_routing.ssot_discovery_util import get_data_files, get_python_files
 
         # Iterate through all files in root folder
         all_files = list(get_python_files(root_folder)) + list(

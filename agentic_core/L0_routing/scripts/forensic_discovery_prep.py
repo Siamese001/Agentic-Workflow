@@ -230,8 +230,8 @@ try:
         FORENSIC_DISCOVERY_SCRIPT,
     )
     from agentic_core.L0_routing.utils.path_util import validate_path_within_project
-    from agentic_core.L0_routing.utils.project_root_util import get_validated_project_root
-    from agentic_core.L0_routing.utils.ssot_discovery_util import load_agent_discovery
+    from ops_scripts.dev_tools.L0_routing.project_root_util import get_validated_project_root
+    from ops_scripts.dev_tools.L0_routing.ssot_discovery_util import load_agent_discovery
 except ImportError:  # guardian: allow-silent-swallow
     print("CRITICAL: SSOT imports failed. Ensure PYTHONPATH includes project root.", file=sys.stderr)
     sys.exit(1)

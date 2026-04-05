@@ -66,7 +66,7 @@ def _get_agent_registry():
     from agentic_core.runtime.utils.discovery_util import AgentRegistry
     return AgentRegistry
 
-from agentic_core.L0_routing.utils.manifest_guardian_util import ManifestGuardian
+from ops_scripts.dev_tools.L0_routing.manifest_guardian_util import ManifestGuardian
 
 
 # compliance_gate_validator not found - create placeholder

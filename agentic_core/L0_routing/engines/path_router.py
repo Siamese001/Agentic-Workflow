@@ -112,7 +112,7 @@ def _get_routing_gateway():
     import uuid as _uuid  # noqa: PLC0415
 
     _emit_applies_guardrail(str(_uuid.uuid4()), "_get_routing_gateway", "p0_governance")
-    from agentic_core.L0_routing.artifacts.deterministic_routing_gateway import (
+    from agentic_core.L0_routing.reasoning.deterministic_routing_gateway import (
         get_routing_gateway,  # noqa: PLC0415
     )
 

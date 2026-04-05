@@ -211,7 +211,7 @@ def flatten_scripts() -> Any:
         print("[!] Scripts directory not found")
         return
     # Phase 6.9: Use ssot_discovery instead of rglob
-    from agentic_core.L0_routing.utils.ssot_discovery_util import get_python_files
+    from ops_scripts.dev_tools.L0_routing.ssot_discovery_util import get_python_files
 
     for py_file in get_python_files(SCRIPTS_DIR):
         rel_path: Any = py_file.relative_to(CORE)

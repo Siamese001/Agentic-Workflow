@@ -13,7 +13,7 @@ from collections.abc import Awaitable, Callable
 from dataclasses import dataclass, field
 from typing import TYPE_CHECKING, Any
 
-from agentic_core.L0_routing.capacity.capacity_aware_router import (
+from agentic_core.L0_routing.reasoning.capacity_aware_router import (
     RoutingCapacityContext,
     RoutingCapacityError,
     RoutingPolicyContext,
@@ -163,7 +163,7 @@ def _get_perf_emitter() -> tuple[Any, Any, Any]:
 
 
 def _get_routing_gateway():
-    from agentic_core.L0_routing.artifacts.deterministic_routing_gateway import (
+    from agentic_core.L0_routing.reasoning.deterministic_routing_gateway import (
         get_routing_gateway,  # noqa: PLC0415
     )
 

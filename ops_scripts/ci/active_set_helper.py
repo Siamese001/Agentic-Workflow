@@ -214,7 +214,7 @@ def get_active_set(project_root: Path) -> ActiveSetResult:
         # guardian: allow-global-mutation
         sys.path.insert(0, str(project_root))
     from agentic_core.L0_routing.scripts.full_agent_discovery import perform_deep_integrity_scan
-    from agentic_core.L0_routing.utils.ssot_discovery_util import load_agent_discovery
+    from ops_scripts.dev_tools.L0_routing.ssot_discovery_util import load_agent_discovery
     raw = load_agent_discovery(project_root, force_reload=True)
     verified, stats = perform_deep_integrity_scan(raw, project_root)
     agent_ids = tuple(sorted(a.get('canonical_class', '') or a.get('class_name', '') for a in verified))

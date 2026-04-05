@@ -20,7 +20,7 @@ import logging
 import uuid
 from dataclasses import dataclass
 
-from agentic_core.L0_routing.artifacts.deterministic_routing_gateway import (
+from agentic_core.L0_routing.reasoning.deterministic_routing_gateway import (
     DeterministicRoutingGateway,
     RoutingArtifact,
     get_routing_gateway,

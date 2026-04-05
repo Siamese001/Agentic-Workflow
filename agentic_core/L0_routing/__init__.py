@@ -7,7 +7,7 @@ Provides routing, capacity governance, and policy enforcement for request routin
 
 # P1 Core exports
 # P3/L0 Routing Capacity Governance exports
-from agentic_core.L0_routing.capacity.capacity_aware_router import (
+from agentic_core.L0_routing.reasoning.capacity_aware_router import (
     RoutingCapacityContext,
     RoutingPolicyContext,
     capacity_aware_routing,
@@ -17,7 +17,7 @@ from agentic_core.L0_routing.capacity.capacity_aware_router import (
     query_capacity_snapshots,
     route_chosen_with_capacity,
 )
-from agentic_core.L0_routing.capacity.capacity_snapshot import (
+from agentic_core.L0_routing.reasoning.capacity_snapshot import (
     CapacityDecisionReason,
     CapacitySnapshot,
     RouteCapacityMetrics,
