@@ -105,7 +105,7 @@ import ast
 from pathlib import Path
 
 try:
-    from agentic_core.L0_routing.scripts.full_agent_discovery import (
+    from ops_scripts.dev_tools.L0_routing_scripts.full_agent_discovery import (
         AGENTIC_CORE_DIR,
         ARCHIVES_DIR,
     )

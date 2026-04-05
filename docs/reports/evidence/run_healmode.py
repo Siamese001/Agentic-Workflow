@@ -27,7 +27,7 @@ log.write("AGENTIC_ALLOW_MUTATION_FOR_TESTS=1\n")
 log.write("---\n")
 log.flush()
 
-from agentic_core.L0_routing.scripts.execute_ssot import _legacy_main
+from ops_scripts.dev_tools.L0_routing_scripts.execute_ssot import _legacy_main
 
 ec = "OK"
 code = 0

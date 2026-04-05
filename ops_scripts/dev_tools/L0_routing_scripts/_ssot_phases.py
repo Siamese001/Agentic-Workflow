@@ -33,12 +33,12 @@ from agentic_core.L0_routing.config.path_constants import (
     APPS_RG_DIR,
     APPS_SHARED_DIR,
 )
-from agentic_core.L0_routing.scripts._ssot_routing import AutonomousDecisionEngine, SovereignDecisionEngine
-from agentic_core.L0_routing.scripts._ssot_types import (
+from ops_scripts.dev_tools.L0_routing_scripts._ssot_routing import AutonomousDecisionEngine, SovereignDecisionEngine
+from ops_scripts.dev_tools.L0_routing_scripts._ssot_types import (
     ASTCodeQualityValidator,
     HealContext,
 )
-from agentic_core.L0_routing.scripts._ssot_validation_artifacts import _record_healing_action
+from ops_scripts.dev_tools.L0_routing_scripts._ssot_validation_artifacts import _record_healing_action
 from agentic_core.runtime.lifecycle_trace_contract import (
     LayerSegment,
     _emit_agent_executes_agent,
@@ -331,7 +331,7 @@ class RuntimeStateManager:
         if self._persistence_disabled:
             return
         try:
-            from agentic_core.L0_routing.scripts.runtime_state_digest import (
+            from ops_scripts.dev_tools.L0_routing_scripts.runtime_state_digest import (
                 DIGEST_SCHEMA_VERSION,
                 compute_runtime_state_digest,
             )

@@ -170,7 +170,7 @@ _emit_invokes_eval("p1", "emoji_fixer", "eval_call")
 _emit_proposal_commits_routing("p1", "emoji_fixer", "routing_commit")
 
 try:
-    from agentic_core.L0_routing.scripts.full_agent_discovery import (
+    from ops_scripts.dev_tools.L0_routing_scripts.full_agent_discovery import (
         AGENTIC_CORE_DIR,
         APPS_SHARED_DIR,
         get_python_files,

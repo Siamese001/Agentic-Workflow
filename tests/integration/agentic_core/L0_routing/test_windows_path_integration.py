@@ -51,7 +51,7 @@ class TestAgentDiscoveryWindowsPaths:
 
     def test_path_normalization_in_agent_discovery(self, tmp_path):
         """Test that agent discovery normalizes paths consistently."""
-        from agentic_core.L0_routing.scripts.full_agent_discovery import (
+        from ops_scripts.dev_tools.L0_routing_scripts.full_agent_discovery import (
             get_structured_agent_paths,
         )
 
@@ -137,7 +137,7 @@ class TestAgentDiscoveryPathHandling:
 
     def test_perform_deep_integrity_scan_handles_paths(self, tmp_path):
         """Test perform_deep_integrity_scan handles agent paths correctly."""
-        from agentic_core.L0_routing.scripts.full_agent_discovery import (
+        from ops_scripts.dev_tools.L0_routing_scripts.full_agent_discovery import (
             perform_deep_integrity_scan,
         )
         from agentic_core.L0_routing.utils.path_util import get_validated_project_root

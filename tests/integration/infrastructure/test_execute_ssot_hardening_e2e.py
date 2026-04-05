@@ -27,7 +27,7 @@ class TestExecuteSsotRetrievalHardening:
 
     def test_l1_exact_cache_hit_performance(self):
         """L1 cache hit should be O(1) and fast."""
-        from agentic_core.L0_routing.scripts.execute_ssot import (
+        from ops_scripts.dev_tools.L0_routing_scripts.execute_ssot import (
             _L1_EXACT_CACHE,
             _retrieve_execution_context,
             _store_in_retrieval_cache,
@@ -50,7 +50,7 @@ class TestExecuteSsotRetrievalHardening:
 
     def test_l2_semantic_cache_storage(self):
         """L2 semantic cache stores and retrieves correctly."""
-        from agentic_core.L0_routing.scripts.execute_ssot import (
+        from ops_scripts.dev_tools.L0_routing_scripts.execute_ssot import (
             _L2_SEMANTIC_CACHE,
             _store_in_retrieval_cache,
         )
@@ -72,7 +72,7 @@ class TestExecuteSsotRetrievalHardening:
 
     def test_l5_fallback_no_exceptions(self):
         """L5 fallback should never raise exceptions."""
-        from agentic_core.L0_routing.scripts.execute_ssot import (
+        from ops_scripts.dev_tools.L0_routing_scripts.execute_ssot import (
             _L1_EXACT_CACHE,
             _L2_SEMANTIC_CACHE,
             _retrieve_execution_context,
@@ -99,7 +99,7 @@ class TestExecuteSsotRetrievalHardening:
 
     def test_retrieval_telemetry_consistency(self):
         """Retrieval telemetry should be consistent."""
-        from agentic_core.L0_routing.scripts.execute_ssot import _get_retrieval_telemetry
+        from ops_scripts.dev_tools.L0_routing_scripts.execute_ssot import _get_retrieval_telemetry
 
         # Call multiple times
         telemetry1 = _get_retrieval_telemetry()
@@ -118,7 +118,7 @@ class TestExecuteSsotSystemLearningHardening:
     def test_healing_aggregator_determinism(self):
         """HealingOutcomeAggregator must be deterministic."""
         # Import must succeed - no skip allowed
-        from agentic_core.L0_routing.scripts.execute_ssot import HealingOutcomeAggregator
+        from ops_scripts.dev_tools.L0_routing_scripts.execute_ssot import HealingOutcomeAggregator
 
         from system_learning.types.healing_outcome_types import HealingOutcomeEvent
 
@@ -144,7 +144,7 @@ class TestExecuteSsotSystemLearningHardening:
     def test_intake_adapter_required_fields(self):
         """Intake adapter requires all mandatory fields."""
         # Import must succeed - no skip allowed
-        from agentic_core.L0_routing.scripts.execute_ssot import (
+        from ops_scripts.dev_tools.L0_routing_scripts.execute_ssot import (
             HealingOutcomeAggregator,
             HealingOutcomeEvent,
             HealingOutcomeIntakeAdapter,
@@ -182,7 +182,7 @@ class TestExecuteSsotSystemLearningHardening:
 
     def test_meta_learning_error_hierarchy(self):
         """MetaLearningError should be proper Exception subclass."""
-        from agentic_core.L0_routing.scripts.execute_ssot import MetaLearningError
+        from ops_scripts.dev_tools.L0_routing_scripts.execute_ssot import MetaLearningError
 
         # Can be caught as Exception
         try:
@@ -196,7 +196,7 @@ class TestExecuteSsotSystemLearningHardening:
 
     def test_meta_learning_result_structure(self):
         """MetaLearningResult has correct structure."""
-        from agentic_core.L0_routing.scripts.execute_ssot import MetaLearningResult
+        from ops_scripts.dev_tools.L0_routing_scripts.execute_ssot import MetaLearningResult
 
         result = MetaLearningResult(
             proposals=("prop1", "prop2"),
@@ -219,7 +219,7 @@ class TestExecuteSsotL6ObservabilityHardening:
 
     def test_workflow_outcome_adapter_registration(self):
         """WorkflowOutcomeSLAdapter should be registered at module load."""
-        from agentic_core.L0_routing.scripts.execute_ssot import (
+        from ops_scripts.dev_tools.L0_routing_scripts.execute_ssot import (
             _WORKFLOW_OUTCOME_ADAPTER_AVAILABLE,
             _register_workflow_outcome_adapter,
         )
@@ -230,7 +230,7 @@ class TestExecuteSsotL6ObservabilityHardening:
 
     def test_emit_workflow_outcome_structure(self):
         """_emit_workflow_outcome accepts correct parameters."""
-        from agentic_core.L0_routing.scripts.execute_ssot import _emit_workflow_outcome
+        from ops_scripts.dev_tools.L0_routing_scripts.execute_ssot import _emit_workflow_outcome
 
         # Should not raise with valid params (may skip if adapter unavailable)
         try:
@@ -254,7 +254,7 @@ class TestExecuteSsotL6ObservabilityHardening:
         """execute_contracted has correct signature."""
         import inspect
 
-        from agentic_core.L0_routing.scripts.execute_ssot import execute_contracted
+        from ops_scripts.dev_tools.L0_routing_scripts.execute_ssot import execute_contracted
 
         sig = inspect.signature(execute_contracted)
         params = list(sig.parameters.keys())
@@ -265,7 +265,7 @@ class TestExecuteSsotL6ObservabilityHardening:
 
     def test_output_contract_availability_flag(self):
         """_OUTPUT_CONTRACT_AVAILABLE is boolean."""
-        from agentic_core.L0_routing.scripts.execute_ssot import _OUTPUT_CONTRACT_AVAILABLE
+        from ops_scripts.dev_tools.L0_routing_scripts.execute_ssot import _OUTPUT_CONTRACT_AVAILABLE
 
         assert isinstance(_OUTPUT_CONTRACT_AVAILABLE, bool)
 
@@ -275,7 +275,7 @@ class TestExecuteSsotLifecycleEmittersHardening:
 
     def test_all_p0_emitters_callable(self):
         """All P0 governance emitters must be callable."""
-        from agentic_core.L0_routing.scripts.execute_ssot import (
+        from ops_scripts.dev_tools.L0_routing_scripts.execute_ssot import (
             _emit_applies_guardrail,
             _emit_reads_policy_state,
             _emit_signs_execution_trace,
@@ -294,7 +294,7 @@ class TestExecuteSsotLifecycleEmittersHardening:
 
     def test_all_p1_emitters_callable(self):
         """All P1 orchestration emitters must be callable."""
-        from agentic_core.L0_routing.scripts.execute_ssot import (
+        from ops_scripts.dev_tools.L0_routing_scripts.execute_ssot import (
             _emit_checks_agent_registry,
             _emit_pulls_context,
             _emit_routes_through,
@@ -311,7 +311,7 @@ class TestExecuteSsotLifecycleEmittersHardening:
 
     def test_all_p2_emitters_callable(self):
         """All P2 execution emitters must be callable."""
-        from agentic_core.L0_routing.scripts.execute_ssot import (
+        from ops_scripts.dev_tools.L0_routing_scripts.execute_ssot import (
             _emit_authorize_and_execute,
             _emit_validates_capability,
             _emit_writes_via_uwg,
@@ -328,7 +328,7 @@ class TestExecuteSsotLifecycleEmittersHardening:
 
     def test_all_p3_learning_emitters_callable(self):
         """All P3 learning maturity emitters must be callable."""
-        from agentic_core.L0_routing.scripts.execute_ssot import (
+        from ops_scripts.dev_tools.L0_routing_scripts.execute_ssot import (
             _emit_captures_pattern,
             _emit_feeds_meta_learning,
             _emit_improves_agent_policy,
@@ -351,7 +351,7 @@ class TestExecuteSsotLifecycleEmittersHardening:
 
     def test_all_p4_observability_emitters_callable(self):
         """All P4 observability emitters must be callable."""
-        from agentic_core.L0_routing.scripts.execute_ssot import (
+        from ops_scripts.dev_tools.L0_routing_scripts.execute_ssot import (
             _emit_captures_runtime_anomaly,
             _emit_emits_metric_event,
             _emit_links_incident_trace,
@@ -380,7 +380,7 @@ class TestExecuteSsotIntegrationHardening:
 
     def test_retrieval_to_meta_learning_flow(self):
         """Full flow: retrieval context → meta-learning pipeline."""
-        from agentic_core.L0_routing.scripts.execute_ssot import (
+        from ops_scripts.dev_tools.L0_routing_scripts.execute_ssot import (
             _L1_EXACT_CACHE,
             MetaLearningResult,
             _fire_meta_learning_intake_required,
@@ -485,7 +485,7 @@ class TestExecuteSsotFailureModesHardening:
 
     def test_empty_healing_actions_returns_empty_result(self):
         """Empty healing actions should return empty MetaLearningResult."""
-        from agentic_core.L0_routing.scripts.execute_ssot_meta import (
+        from ops_scripts.dev_tools.L0_routing_scripts.execute_ssot_meta import (
             MetaLearningResult,
             _fire_meta_learning_intake_required,
         )
@@ -501,7 +501,7 @@ class TestExecuteSsotFailureModesHardening:
 
     def test_invalid_query_handling(self):
         """Invalid queries should not crash retrieval."""
-        from agentic_core.L0_routing.scripts.execute_ssot_retrieval import _retrieve_execution_context
+        from ops_scripts.dev_tools.L0_routing_scripts.execute_ssot_retrieval import _retrieve_execution_context
 
         invalid_queries = [
             None,
@@ -519,7 +519,7 @@ class TestExecuteSsotFailureModesHardening:
 
     def test_cache_corruption_recovery(self):
         """Cache should handle corrupted entries gracefully."""
-        from agentic_core.L0_routing.scripts.execute_ssot_retrieval import (
+        from ops_scripts.dev_tools.L0_routing_scripts.execute_ssot_retrieval import (
             _L1_EXACT_CACHE,
             _retrieve_execution_context,
         )

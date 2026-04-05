@@ -183,7 +183,7 @@ _emit_updates_meta_learning_state("p4", "replay_guard_mixin", "meta_learning")
 _emit_links_execution_to_snapshot("p4", "replay_guard_mixin", "exec_snapshot_link")
 
 if TYPE_CHECKING:
-    from agentic_core.L0_routing.scripts.execution_context import ExecutionContext
+    from ops_scripts.dev_tools.L0_routing_scripts.execution_context import ExecutionContext
 _logger = logging.getLogger(__name__)
 
 

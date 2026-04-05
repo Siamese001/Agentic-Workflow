@@ -174,7 +174,7 @@ _emit_invokes_eval("p1", "fix_testing_observability_util", "eval_call")
 _emit_proposal_commits_routing("p1", "fix_testing_observability_util", "routing_commit")
 
 try:
-    from agentic_core.L0_routing.scripts.full_agent_discovery import AGENT_DISCOVERY_JSON
+    from ops_scripts.dev_tools.L0_routing_scripts.full_agent_discovery import AGENT_DISCOVERY_JSON
 except ImportError:  # guardian: allow-silent-swallow
     AGENT_DISCOVERY_JSON = "agent_discovery_full.json"
 PROJECT_ROOT = Path(__file__).resolve().parent.parent

@@ -310,7 +310,7 @@ def run_verification():
         # Test that the patched module can be imported
         # guardian: allow-global-mutation
         sys.path.insert(0, str(project_root))
-        from agentic_core.L0_routing.scripts.execute_ssot import (
+        from ops_scripts.dev_tools.L0_routing_scripts.execute_ssot import (
             AutonomousDecisionEngine,
         )
 

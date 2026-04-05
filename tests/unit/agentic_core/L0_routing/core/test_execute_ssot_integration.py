@@ -175,7 +175,7 @@ class TestExecuteSsotMetaLearningIntakeReal:
         """Verify all modular imports work correctly."""
         from pathlib import Path
 
-        from agentic_core.L0_routing.scripts.execute_ssot_meta import (
+        from ops_scripts.dev_tools.L0_routing_scripts.execute_ssot_meta import (
             MetaLearningResult,
             _fire_meta_learning_intake_required,
         )
@@ -193,7 +193,7 @@ class TestExecuteSsotMetaLearningIntakeReal:
 
     def test_meta_learning_result_rejects_negative_records(self):
         """Verify MetaLearningResult rejects negative records_persisted (GAP FIX G5)."""
-        from agentic_core.L0_routing.scripts.execute_ssot_meta import (
+        from ops_scripts.dev_tools.L0_routing_scripts.execute_ssot_meta import (
             MetaLearningResult,
             _fire_meta_learning_intake_required,
         )
@@ -210,7 +210,7 @@ class TestExecuteSsotMetaLearningIntakeReal:
 
     def test_meta_learning_intake_rejects_invalid_timestamp(self):
         """Verify _fire_meta_learning_intake_required rejects invalid timestamp (GAP FIX G1)."""
-        from agentic_core.L0_routing.scripts.execute_ssot_meta import (
+        from ops_scripts.dev_tools.L0_routing_scripts.execute_ssot_meta import (
             _fire_meta_learning_intake_required,
             MetaLearningError,
         )
@@ -229,7 +229,7 @@ class TestExecuteSsotMetaLearningIntakeReal:
 
     def test_meta_learning_intake_handles_non_dict_actions(self):
         """Verify _fire_meta_learning_intake_required handles non-dict actions gracefully (GAP FIX G5)."""
-        from agentic_core.L0_routing.scripts.execute_ssot_meta import (
+        from ops_scripts.dev_tools.L0_routing_scripts.execute_ssot_meta import (
             _fire_meta_learning_intake_required,
             MetaLearningResult,
         )
@@ -253,7 +253,7 @@ class TestExecuteSsotMetaLearningIntakeReal:
 
     def test_meta_learning_error_exception_exists(self):
         """Verify MetaLearningError exception class exists and is usable (GAP FIX G6)."""
-        from agentic_core.L0_routing.scripts.execute_ssot_meta import MetaLearningError
+        from ops_scripts.dev_tools.L0_routing_scripts.execute_ssot_meta import MetaLearningError
 
         # Verify it's an Exception subclass
         assert issubclass(MetaLearningError, Exception)
@@ -285,7 +285,7 @@ class TestExecuteSsotRetrievalHooks:
 
     def test_store_in_retrieval_cache_invalid_type_raises(self):
         """Verify invalid cache_type raises ValueError (GAP FIX for silent failure)."""
-        from agentic_core.L0_routing.scripts.execute_ssot_retrieval import _store_in_retrieval_cache
+        from ops_scripts.dev_tools.L0_routing_scripts.execute_ssot_retrieval import _store_in_retrieval_cache
 
         with pytest.raises(ValueError, match="Invalid cache_type") as exc_info:
             _store_in_retrieval_cache("query", {}, 1234567890, cache_type="INVALID")
@@ -295,7 +295,7 @@ class TestExecuteSsotRetrievalHooks:
 
     def test_store_in_retrieval_cache_empty_query_raises(self):
         """Verify empty query string raises ValueError (GAP FIX G3)."""
-        from agentic_core.L0_routing.scripts.execute_ssot_retrieval import _store_in_retrieval_cache
+        from ops_scripts.dev_tools.L0_routing_scripts.execute_ssot_retrieval import _store_in_retrieval_cache
 
         with pytest.raises(ValueError, match="Query cannot be empty"):
             _store_in_retrieval_cache("", {}, 1234567890, cache_type="L1")
@@ -305,7 +305,7 @@ class TestExecuteSsotRetrievalHooks:
 
     def test_cache_entry_negative_age_treated_as_expired(self):
         """Verify negative age (clock skew) is treated as expired (GAP FIX G1)."""
-        from agentic_core.L0_routing.scripts.execute_ssot_retrieval import (
+        from ops_scripts.dev_tools.L0_routing_scripts.execute_ssot_retrieval import (
             _is_cache_entry_valid,
             _store_in_retrieval_cache,
             _L1_EXACT_CACHE,
@@ -329,7 +329,7 @@ class TestExecuteSsotRetrievalHooks:
 
     def test_store_in_retrieval_cache_valid_types_work(self):
         """Verify valid cache_type values work correctly."""
-        from agentic_core.L0_routing.scripts.execute_ssot_retrieval import (
+        from ops_scripts.dev_tools.L0_routing_scripts.execute_ssot_retrieval import (
             _store_in_retrieval_cache,
             _L1_EXACT_CACHE,
             _L2_SEMANTIC_CACHE,
@@ -349,7 +349,7 @@ class TestExecuteSsotRetrievalHooks:
 
     def test_cache_enforces_max_size_boundary(self):
         """Verify cache enforces MAX_CACHE_SIZE boundary (GAP FIX G10)."""
-        from agentic_core.L0_routing.scripts.execute_ssot_retrieval import (
+        from ops_scripts.dev_tools.L0_routing_scripts.execute_ssot_retrieval import (
             _store_in_retrieval_cache,
             _L1_EXACT_CACHE,
             MAX_CACHE_SIZE,
@@ -380,7 +380,7 @@ class TestExecuteSsotRetrievalHooks:
 
     def test_clear_retrieval_cache_clears_all(self):
         """Verify _clear_retrieval_cache clears both L1 and L2 caches (GAP FIX G2)."""
-        from agentic_core.L0_routing.scripts.execute_ssot_retrieval import (
+        from ops_scripts.dev_tools.L0_routing_scripts.execute_ssot_retrieval import (
             _store_in_retrieval_cache,
             _clear_retrieval_cache,
             _L1_EXACT_CACHE,
@@ -407,7 +407,7 @@ class TestExecuteSsotRetrievalHooks:
 
     def test_get_cache_stats_returns_correct_counts(self):
         """Verify _get_cache_stats returns correct L1 and L2 counts (GAP FIX G3)."""
-        from agentic_core.L0_routing.scripts.execute_ssot_retrieval import (
+        from ops_scripts.dev_tools.L0_routing_scripts.execute_ssot_retrieval import (
             _store_in_retrieval_cache,
             _get_cache_stats,
             _clear_retrieval_cache,
@@ -435,7 +435,7 @@ class TestExecuteSsotRetrievalHooks:
 
     def test_retrieve_execution_context_rejects_empty_query(self):
         """Verify _retrieve_execution_context rejects empty query (GAP FIX G4)."""
-        from agentic_core.L0_routing.scripts.execute_ssot_retrieval import (
+        from ops_scripts.dev_tools.L0_routing_scripts.execute_ssot_retrieval import (
             _retrieve_execution_context,
         )
 

@@ -93,7 +93,7 @@ _emit_links_execution_to_snapshot("p4", "maintenance_generate_hooks_util", "exec
 project_root = Path(__file__).resolve().parent.parent.parent
 # guardian: allow-global-mutation
 sys.path.insert(0, str(project_root))
-from agentic_core.L0_routing.scripts.generate_hooks import generate_sovereign_list, sync_pre_commit
+from ops_scripts.dev_tools.L0_routing_scripts.generate_hooks import generate_sovereign_list, sync_pre_commit
 
 from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,

@@ -211,7 +211,7 @@ def _run_guardians(
 
     _trace_id = str(_uuid.uuid4())
     _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "_run_guardians")
-    from agentic_core.L0_routing.scripts.run_all_guardians import run_all_guardians
+    from ops_scripts.dev_tools.L0_routing_scripts.run_all_guardians import run_all_guardians
 
     result = run_all_guardians(
         repo_root=repo_root,

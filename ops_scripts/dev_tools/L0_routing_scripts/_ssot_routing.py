@@ -20,7 +20,7 @@ from agentic_core.L0_routing.config.path_constants import (
     SSOT_SCORE_THRESHOLD_DET as _SCORE_DET,
     SSOT_SCORE_THRESHOLD_QWEN as _SCORE_QWEN,
 )
-from agentic_core.L0_routing.scripts._ssot_types import (
+from ops_scripts.dev_tools.L0_routing_scripts._ssot_types import (
     _QWEN_DISALLOWED,
     _STRUCTURAL_CLASS,
     ConfidenceScore,

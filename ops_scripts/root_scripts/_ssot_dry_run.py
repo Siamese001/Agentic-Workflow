@@ -231,7 +231,7 @@ for territory in TERRITORIES:
 
     # Reset FCA stats by creating fresh module state
     try:
-        from agentic_core.L0_routing.scripts.execute_ssot import (
+        from ops_scripts.dev_tools.L0_routing_scripts.execute_ssot import (
             _configure_logging,
             _legacy_main,
             _maybe_force_utf8_console,

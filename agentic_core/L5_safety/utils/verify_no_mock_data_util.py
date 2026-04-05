@@ -170,7 +170,7 @@ _emit_invokes_eval("p1", "verify_no_mock_data_util", "eval_call")
 _emit_proposal_commits_routing("p1", "verify_no_mock_data_util", "routing_commit")
 
 try:
-    from agentic_core.L0_routing.scripts.full_agent_discovery import DASHBOARD_DIR, get_validated_project_root
+    from ops_scripts.dev_tools.L0_routing_scripts.full_agent_discovery import DASHBOARD_DIR, get_validated_project_root
 except ImportError as e:
             raise ImportError(f"Required dependency missing: {e}")  # guardian: allow-silent-swallow
     DASHBOARD_DIR = "docs/dashboards"

@@ -309,7 +309,7 @@ class HybridRetriever:
             str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, "HybridRetrieverConfig.rebuild_from_ingestion"
         )
         try:
-            from agentic_core.L0_routing.scripts.sovereign_ingestion_mission import (
+            from ops_scripts.dev_tools.L0_routing_scripts.sovereign_ingestion_mission import (
                 load_latest_ingested_chunks,
             )
 

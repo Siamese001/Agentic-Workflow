@@ -213,7 +213,7 @@ def get_active_set(project_root: Path) -> ActiveSetResult:
     if str(project_root) not in sys.path:
         # guardian: allow-global-mutation
         sys.path.insert(0, str(project_root))
-    from agentic_core.L0_routing.scripts.full_agent_discovery import perform_deep_integrity_scan
+    from ops_scripts.dev_tools.L0_routing_scripts.full_agent_discovery import perform_deep_integrity_scan
     from ops_scripts.dev_tools.L0_routing.ssot_discovery_util import load_agent_discovery
     raw = load_agent_discovery(project_root, force_reload=True)
     verified, stats = perform_deep_integrity_scan(raw, project_root)

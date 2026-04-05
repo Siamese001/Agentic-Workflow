@@ -51,7 +51,7 @@ _log("AGENTIC_ALLOW_MUTATION_FOR_TESTS=1")
 _log("---")
 
 # Import after env setup
-from agentic_core.L0_routing.scripts.execute_ssot import _legacy_main  # noqa: E402
+from ops_scripts.dev_tools.L0_routing_scripts.execute_ssot import _legacy_main  # noqa: E402
 
 exit_status = "OK"
 exit_code = 0

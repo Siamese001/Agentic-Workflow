@@ -47,7 +47,7 @@ def fix_file_imports(file_path: Path) -> bool:
             "from agentic_core.L2_execution.P3_engines.": "from agentic_core.L2_execution.reasoning.",
             "from agentic_core.L5_safety.P1_core.": "from agentic_core.L5_safety.enforcement.",
             "from agentic_core.L5_safety.policy.": "from agentic_core.L5_safety.enforcement.",
-            "from agentic_core.shared.constants import": "from agentic_core.L0_routing.scripts.canon_validator_config_1 import",
+            "from agentic_core.shared.constants import": "from ops_scripts.dev_tools.L0_routing_scripts.canon_validator_config_1 import",
             "import agentic_core.base": "import agentic_core.L2_execution.reasoning.base",
             "import agentic_core.L2_execution.reasoning.": "import agentic_core.L2_execution.reasoning.",
             "import agentic_core.L2_execution.P2_tools.": "import agentic_core.L2_execution.reasoning.",
