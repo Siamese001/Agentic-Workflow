@@ -1141,10 +1141,6 @@ def build_sovereign_territories() -> dict[str, TerritoryDefinition]:
                 "subfolders": {},
                 "forbidden_zones": ["misc", "temp", "old", "deprecated", "archive", "scratch"],
             },
-            "integration_full_deps": {
-                "purpose": "Integration tests requiring full dependency stack (heavy imports, external services)",
-                "exclude_from_depth_rules": True,
-            },
             "knowledge": {"purpose": "Tests for knowledge/ territory (intake, RAG, retrieval)"},
             "ops_scripts": {
                 "purpose": "Tests for ops_scripts territory and CI hooks",
