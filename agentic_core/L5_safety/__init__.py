@@ -33,7 +33,7 @@ from agentic_core.L5_safety.enforcement.audit.safety_audit_registry import (
     get_safety_audit_registry,
     reset_safety_audit_registry,
 )
-from agentic_core.L5_safety.escalation.escalation_orchestrator import (
+from agentic_core.L5_safety.enforcement.escalation.escalation_orchestrator import (
     GovernedAction,
     escalate_for_human_review,
     escalates_to_human,
@@ -44,15 +44,15 @@ from agentic_core.L5_safety.escalation.escalation_orchestrator import (
     record_reviewer_outcome,
     reviewer_outcome_recorded,
 )
-from agentic_core.L5_safety.escalation.escalation_orchestrator import (
+from agentic_core.L5_safety.enforcement.escalation.escalation_orchestrator import (
     SafetyContext as EscalationSafetyContext,
 )
-from agentic_core.L5_safety.escalation.escalation_orchestrator import (
+from agentic_core.L5_safety.enforcement.escalation.escalation_orchestrator import (
     TraceContext as EscalationTraceContext,
 )
 
 # P3/L5 Human Safety Escalation exports
-from agentic_core.L5_safety.escalation.human_escalation import (
+from agentic_core.L5_safety.enforcement.escalation.human_escalation import (
     APPROVED,
     DEFERRED,
     DENIED,

@@ -18,7 +18,7 @@ from agentic_core.L0_routing.config.path_constants import (
 from agentic_core.L5_safety.config.structure_blueprint.classification import (
     CLASSIFICATION_SUFFIX_PATTERNS,
 )
-from agentic_core.L5_safety.core_kernel.classification_kernel import FileType
+from agentic_core.L5_safety.reasoning.core_kernel.classification_kernel import FileType
 
 from .models import ClassificationResult
 

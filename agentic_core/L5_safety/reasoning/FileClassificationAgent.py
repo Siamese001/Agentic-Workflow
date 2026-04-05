@@ -168,7 +168,7 @@ from agentic_core.L0_routing.config.path_constants import (
 )
 
 # SSOT: Import FileType and ExecutionMode helpers from the zero-dependency classification kernel
-from agentic_core.L5_safety.core_kernel.classification_kernel import (
+from agentic_core.L5_safety.reasoning.core_kernel.classification_kernel import (
     FileType,  # noqa: E402
     classify_execution_mode,
 )
@@ -1485,7 +1485,7 @@ class FileClassificationHealerAgent(*BASE_CLASSES):
           - confidence set to 1.0 (structural classification is deterministic)
           - execution_mode promoted to REASONING when adg_behavioral_score > 0.7
         """
-        from agentic_core.L5_safety.core_kernel.classification_kernel import classify_execution_mode
+        from agentic_core.L5_safety.reasoning.core_kernel.classification_kernel import classify_execution_mode
 
         file_type = self.classify_file(path)
         execution_mode, reasoning_signals = classify_execution_mode(path)
