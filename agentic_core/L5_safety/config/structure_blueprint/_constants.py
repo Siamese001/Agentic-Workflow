@@ -1112,6 +1112,7 @@ def build_sovereign_territories() -> dict[str, TerritoryDefinition]:
                 "subfolders": {
                     "agentic_core": [],
                     "data": [],
+                    "meta_learning_e2e": [],
                     "retrieval_layers": [],
                     # apps_* folders are auto-discovered — any apps_* subfolder is valid here
                     "apps_*": [],
@@ -1138,7 +1139,13 @@ def build_sovereign_territories() -> dict[str, TerritoryDefinition]:
                 "purpose": "Component interaction tests mirroring source structure",
                 "mirror_source": True,
                 "exclude_from_depth_rules": True,
-                "subfolders": {},
+                "subfolders": {
+                    "agentic_core": [],
+                    "apps_exec": [],
+                    "apps_shared": [],
+                    "infrastructure": [],
+                    "retrieval_layers": [],
+                },
                 "forbidden_zones": ["misc", "temp", "old", "deprecated", "archive", "scratch"],
             },
             "knowledge": {"purpose": "Tests for knowledge/ territory (intake, RAG, retrieval)"},
@@ -1354,6 +1361,7 @@ def build_sovereign_territories() -> dict[str, TerritoryDefinition]:
             "hooks",
             "simulations",
             "general",
+            "verification",
         ],
         "subfolders": {
             "ci": {"purpose": "CI validation and agent-check scripts"},
@@ -1364,6 +1372,7 @@ def build_sovereign_territories() -> dict[str, TerritoryDefinition]:
             "hooks": {"purpose": "Pre-commit and validation hooks"},
             "simulations": {"purpose": "Dry-run and simulation runners"},
             "general": {"purpose": "General-purpose analysis and discovery scripts"},
+            "verification": {"purpose": "Verification and validation scripts (migrated from scripts/)"},
         },
     }
 
@@ -1639,7 +1648,7 @@ ROOT_WHITELIST: Final[frozenset[str]] = frozenset(SOVEREIGN_TERRITORIES.keys())
 
 import os as _os
 
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,
     _emit_authorize_and_execute,
