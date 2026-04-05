@@ -12,6 +12,3 @@ sys.path.insert(0, str(REPO_ROOT))
 @pytest.mark.unit
 class TestLlmJudgeGeminiE2ENovel:
     """Test LLM judge Gemini e2e novel functionality."""
-
-
-

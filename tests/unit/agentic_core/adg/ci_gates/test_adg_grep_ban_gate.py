@@ -13,7 +13,3 @@ sys.path.insert(0, str(REPO_ROOT))
 @pytest.mark.unit
 class TestAdgGrepBanGate:
     """Test ADG grep ban gate functionality."""
-
-
-
-

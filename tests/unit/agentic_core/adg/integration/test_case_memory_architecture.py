@@ -282,4 +282,3 @@ class TestNewCacheKeyBuilders:
 
     def _h(self, s="a"):
         return s * 64
-

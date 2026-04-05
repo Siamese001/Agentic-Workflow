@@ -12,6 +12,3 @@ sys.path.insert(0, str(REPO_ROOT))
 @pytest.mark.unit
 class TestDriftRatchetGate:
     """Test drift ratchet gate functionality."""
-
-
-

@@ -324,6 +324,32 @@ def get_workspace_cache() -> DeterministicRedisCache:
     return DeterministicRedisCache(db=DB_WORKSPACE)
 
 
+def check_redis_health() -> dict:
+    """Check Redis connection health.
+
+    Returns:
+        Dict with status, connected flag, and any error message
+    """
+    try:
+        cache = get_hot_cache()
+        client = cache._get_client()
+        if client is None:
+            return {"status": "unhealthy", "connected": False, "error": "No Redis client"}
+        client.ping()
+        return {"status": "healthy", "connected": True, "error": None}
+    except Exception as e:
+        return {"status": "unhealthy", "connected": False, "error": str(e)}
+
+
+def reset_cache_singletons() -> None:
+    """Reset all cache singleton instances.
+
+    This is useful for testing and when needing to clear all cached connections.
+    """
+    global _hot_cache
+    _hot_cache = None
+
+
 # P0/P1/P2/P3/P4 governance wiring
 
 _emit_applies_guardrail("p0", "redis_cache_client", "p0_governance")

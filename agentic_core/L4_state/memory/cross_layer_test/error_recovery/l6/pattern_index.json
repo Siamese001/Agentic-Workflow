@@ -1,5 +1,5 @@
 {
-  "runtime_adg_1775353243_e1b9e88e": {
+  "runtime_adg_1775399861_8b264f4e": {
     "component_distribution": {
       "NervousSystem": 1,
       "Tool.failing_tool": 1
@@ -8,16 +8,16 @@
       {
         "component": "NervousSystem",
         "layer": "L3_Orche",
-        "node_id": "2aa4857e8101e89a"
+        "node_id": "2cf638b5e8da359c"
       },
       {
         "component": "Tool.failing_tool",
         "layer": "L2_Execu",
-        "node_id": "34a9af4125ece845"
+        "node_id": "51dde4d5796f8768"
       }
     ],
     "extraction_metadata": {
-      "timestamp": 1775353243,
+      "timestamp": 1775399861,
       "total_nodes": 2
     },
     "layer_distribution": {
@@ -37,13 +37,13 @@
       "fast_operations": [
         {
           "component": "NervousSystem",
-          "duration_ms": 0.0,
-          "node_id": "2aa4857e8101e89a"
+          "duration_ms": 1.529,
+          "node_id": "2cf638b5e8da359c"
         },
         {
           "component": "Tool.failing_tool",
           "duration_ms": 0.0,
-          "node_id": "34a9af4125ece845"
+          "node_id": "51dde4d5796f8768"
         }
       ],
       "slow_operations": []

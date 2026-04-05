@@ -12,6 +12,3 @@ sys.path.insert(0, str(REPO_ROOT))
 @pytest.mark.unit
 class TestAdgTypeCheck:
     """Test ADG type check functionality."""
-
-
-

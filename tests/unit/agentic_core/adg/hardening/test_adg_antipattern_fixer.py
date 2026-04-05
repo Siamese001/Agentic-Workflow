@@ -13,12 +13,3 @@ sys.path.insert(0, str(REPO_ROOT))
 @pytest.mark.unit
 class TestAdgAntipatternFixer:
     """Test ADG antipattern fixer functionality."""
-
-
-
-
-
-
-
-
-

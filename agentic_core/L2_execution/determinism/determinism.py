@@ -15,7 +15,7 @@ import json
 import os
 from pathlib import Path
 
-from agentic_core.agents.agent_registry import AGENT_REGISTRY, registry_digest
+from agentic_core.agents.types.agent_registry import get_profile, registry_digest
 from agentic_core.L0_routing.config import (
     AGENTIC_CORE_DIR,
     APPS_LIC_DIR,

@@ -565,6 +565,3 @@ class TestProductionSmoke:
 
 class TestFixtureFactory:
     """Verify the test fixture factory itself produces valid databases."""
-
-
-

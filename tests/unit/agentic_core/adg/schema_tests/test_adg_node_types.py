@@ -13,6 +13,3 @@ sys.path.insert(0, str(REPO_ROOT))
 @pytest.mark.unit
 class TestAdgNodeTypes:
     """Test ADG node types functionality."""
-
-
-

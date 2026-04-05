@@ -12,11 +12,3 @@ sys.path.insert(0, str(REPO_ROOT))
 @pytest.mark.unit
 class TestAdgAcceleratorHardening:
     """Test ADG accelerator hardening functionality."""
-
-
-
-
-
-
-
-

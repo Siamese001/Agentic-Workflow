@@ -1,11 +1,11 @@
 {
-  "runtime_adg_1775353244_23294f98": {
+  "runtime_adg_1775399861_b711b5fa": {
     "duration_ms": 2000,
     "edge_count": 5,
-    "file_path": "agentic_core\\L4_state\\memory\\runtime_adg_test\\pattern_test\\runtime_adg_1775353244_23294f98.json",
+    "file_path": "agentic_core\\L4_state\\memory\\runtime_adg_test\\pattern_test\\runtime_adg_1775399861_b711b5fa.json",
     "mission": "pattern-test",
     "node_count": 3,
-    "timestamp": 1775353244,
+    "timestamp": 1775399861,
     "trace_id": "trace-patterns"
   }
 }

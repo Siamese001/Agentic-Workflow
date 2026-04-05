@@ -13,6 +13,3 @@ sys.path.insert(0, str(REPO_ROOT))
 @pytest.mark.unit
 class TestAdgMissingEdges:
     """Test ADG missing edges functionality."""
-
-
-

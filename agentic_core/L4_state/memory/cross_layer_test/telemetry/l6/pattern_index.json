@@ -1,5 +1,5 @@
 {
-  "runtime_adg_1775353243_7e827da8": {
+  "runtime_adg_1775399861_94992e10": {
     "component_distribution": {
       "NervousSystem": 1,
       "Tool.layer_L0_op": 1,
@@ -9,7 +9,7 @@
     },
     "error_patterns": [],
     "extraction_metadata": {
-      "timestamp": 1775353243,
+      "timestamp": 1775399861,
       "total_nodes": 5
     },
     "layer_distribution": {
@@ -28,29 +28,29 @@
     "timing_patterns": {
       "fast_operations": [
         {
-          "component": "Tool.layer_L1_op",
+          "component": "Tool.layer_L0_op",
           "duration_ms": 0.0,
-          "node_id": "026530cdd50b612b"
+          "node_id": "1742df52665fa83e"
         },
         {
           "component": "NervousSystem",
-          "duration_ms": 0.633,
-          "node_id": "4d23bed52a04f77a"
+          "duration_ms": 1.003,
+          "node_id": "ccd5612c7c8ef5a8"
+        },
+        {
+          "component": "Tool.layer_L1_op",
+          "duration_ms": 1.003,
+          "node_id": "ff1a620cba3a2f89"
         },
         {
           "component": "Tool.layer_L3_op",
           "duration_ms": 0.0,
-          "node_id": "5987baf13aa725cb"
-        },
-        {
-          "component": "Tool.layer_L0_op",
-          "duration_ms": 0.0,
-          "node_id": "dd533730fbb91133"
+          "node_id": "56664125a51eabdb"
         },
         {
           "component": "Tool.layer_L2_op",
           "duration_ms": 0.0,
-          "node_id": "f70ae8c026784184"
+          "node_id": "b9c193cea9ec1c04"
         }
       ],
       "slow_operations": []

@@ -78,18 +78,12 @@ from agentic_core.adg.schema_util import (
 )
 from agentic_core.L0_routing.config.path_constants import (
     AGENTIC_CORE_DIR,
-    APPS_EVAL_DIR,
-    APPS_EXEC_DIR,
-    APPS_LIC_DIR,
-    APPS_RESEARCH_DIR,
-    APPS_RFP_DIR,
-    APPS_RG_DIR,
-    APPS_SHARED_DIR,
     INFRASTRUCTURE_DIR,
     OPS_SCRIPTS_DIR,
     SYSTEM_LEARNING_DIR,
     TESTS_DIR,
     TOOLS_DIR,
+    get_apps_directories,
 )
 from agentic_core.L5_safety.config.structure_blueprint.ssot import SOVEREIGN_EXCLUDED_FOLDERS
 from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
@@ -293,16 +287,13 @@ _emit_validated_by_safety_plane("p1", "static_scanner", "safety_validation")
 
 logger = logging.getLogger(__name__)
 
+# Dynamically discover all apps_* directories + agentic_core
+# This ensures new apps_* directories are automatically included in scans
+_APPS_SCAN_ROOTS: tuple[str, ...] = tuple(get_apps_directories())
+
 _STRUCTURAL_SCAN_ROOTS: tuple[str, ...] = (
     AGENTIC_CORE_DIR,
-    APPS_EVAL_DIR,
-    APPS_EXEC_DIR,
-    APPS_LIC_DIR,
-    APPS_RESEARCH_DIR,
-    APPS_RFP_DIR,
-    APPS_RG_DIR,
-    APPS_SHARED_DIR,
-)
+) + _APPS_SCAN_ROOTS
 
 _NON_STRUCTURAL_SCAN_ROOTS: tuple[str, ...] = (
     INFRASTRUCTURE_DIR,

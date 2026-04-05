@@ -674,18 +674,25 @@ def _compute_pipeline_digest(targets: "list[str]") -> str:
         _policy_file = Path(__file__).resolve().parents[1] / "policy" / "v15_policy_pack.json"
         if _policy_file.exists():
             _policy_hash = _h.sha256(_policy_file.read_bytes()).hexdigest()
-        else:
-            _policy_hash = _h.sha256(b"policy:file-not-found").hexdigest()
-    except (OSError, ImportError, AttributeError):
-        _policy_hash = _h.sha256(b"policy:load-failed").hexdigest()
-    try:
-        from agentic_core.agents.agent_registry import registry_digest as _rd
 
-        _reg_bytes = _j.dumps(_rd(), sort_keys=True, separators=(",", ":"), ensure_ascii=True).encode("utf-8")
-        _registry_hash = _h.sha256(_reg_bytes).hexdigest()
-    except (ImportError, AttributeError, TypeError):
-        _registry_hash = _h.sha256(b"registry:fallback").hexdigest()
-    _config_hash = _hcs(_gcs())
+_reg_bytes = _j.dumps(_rd(), sort_keys=True, separators=(",", ":"), ensure_ascii=True).encode("utf-8")
+_registry_hash = _h.sha256(_reg_bytes).hexdigest()
+except (ImportError, AttributeError, TypeError):
+_registry_hash = _h.sha256(b"registry:fallback").hexdigest()
+_config_hash = _hcs(_gcs())
+_transcript_bytes = _j.dumps(
+sorted(str(t) for t in targets), sort_keys=True, separators=(",", ":"), ensure_ascii=True
+).encode("utf-8")
+_transcript_hash = _h.sha256(_transcript_bytes).hexdigest()
+_dep_lock_hash = _h.sha256(b"dependency-lock:stable").hexdigest()
+_emitter = _DE()
+return _emitter.compute(
+policy_hash=_policy_hash,
+registry_hash=_registry_hash,
+config_surface_hash=_config_hash,
+transcript_hash=_transcript_hash,
+dependency_lock_hash=_dep_lock_hash,
+)
     _transcript_bytes = _j.dumps(
         sorted(str(t) for t in targets), sort_keys=True, separators=(",", ":"), ensure_ascii=True
     ).encode("utf-8")

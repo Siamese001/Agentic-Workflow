@@ -18,7 +18,7 @@ import hashlib
 import logging
 from typing import TYPE_CHECKING
 
-from agentic_core.agents.agent_registry import get_execution_profile
+from agentic_core.agents.types.agent_registry import get_profile, registry_digest
 from agentic_core.L2_execution.healers.healing_tier_config import (
     HEALING_CONFIDENCE_X,
     HEALING_CONFIDENCE_Y,

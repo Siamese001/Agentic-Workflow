@@ -213,7 +213,7 @@ class ADGBackedAgentRegistry:
     def get_execution_profile(self, agent_id: str) -> Any:
         """Backward-compatible: delegate to existing AGENT_REGISTRY dict."""
         try:
-            from agentic_core.agents.agent_registry import AGENT_REGISTRY
+            from agentic_core.agents.types.agent_registry import get_profile, registry_digest, AGENT_REGISTRY
 
             return AGENT_REGISTRY.get(agent_id)
         # guardian: allow-silent-swallow - optional dependency
