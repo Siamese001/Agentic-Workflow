@@ -176,7 +176,7 @@ from agentic_core.L5_safety.reasoning.core_kernel.classification_kernel import (
 # Optional: Import SovereignBaseAgent if available for full integration
 try:
     from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
-    from agentic_core.mixins.atomic_execution_mixin import atomic_execution_mixin  # noqa: F401
+    from agentic_core.mixins.atomic_execution_mixin import AtomicExecutionMixin  # noqa: F401
     from agentic_core.utils.schemas.decorators_compat_util import standard_heal
 
     HAS_SOVEREIGN_BASE = True

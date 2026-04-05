@@ -394,3 +394,7 @@ class RedisCacheMixin:
             "redis_enabled": self.redis_enabled,
             "redis_connected": self._redis_client is not None,
         }
+
+
+# Backwards compatibility alias
+redis_cache_mixin = RedisCacheMixin

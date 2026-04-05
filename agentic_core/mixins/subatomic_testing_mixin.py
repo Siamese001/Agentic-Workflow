@@ -322,4 +322,7 @@ class L2SelfTestingMixin(SubatomicTestingMixin, MCPHardenedMixin):
     pass
 
 
+# Backwards compatibility alias
+subatomic_testing_mixin = SubatomicTestingMixin
+
 __all__ = ["SubatomicTestingMixin", "L2SelfTestingMixin"]
