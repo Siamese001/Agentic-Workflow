@@ -457,7 +457,7 @@ def generate_full_adg(
         repair_routes = route_violations(violation_edges)
         routing_summary = repair_routing_summary(repair_routes)
     else:
-        routing_summary = {"total_routes": "n/a", "by_severity": "n/a"}
+        routing_summary = {"total_routes": 0, "by_severity": {}}
 
     # --- E5: Impact prediction ---
     violation_sources = [

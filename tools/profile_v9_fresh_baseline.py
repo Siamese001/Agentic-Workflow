@@ -83,7 +83,10 @@ def run_fresh(mode: str, enable_zip: bool, enable_reports: bool, enable_analysis
         script_path.write_text(script)
 
         env = os.environ.copy()
-        env["PYTHONHASHSEED"] = "0"  # fixed seed for reproducibility
+        env["PYTHONHASHSEED"] = "0"          # fixed seed for reproducibility
+        env["ADG_SKIP_REDIS"] = "1"          # no Redis during profiling
+        env["ADG_SKIP_GIT"] = "1"            # no auto-commit during profiling
+        env["ADG_SKIP_SELF_TEST"] = "1"      # no self-test overhead
 
         print(f"  Spawning fresh process [{mode}]...")
         t_wall_start = time.perf_counter()
