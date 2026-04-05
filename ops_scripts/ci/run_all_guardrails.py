@@ -12,7 +12,7 @@ Exit codes:
     1 - One or more guardrails failed
     2 - Timeout or critical error
 """
-from agentic_core.L0_routing.providers.clock_provider import ClockProvider as clock_provider
+from agentic_core.L0_routing.utils.clock_provider import ClockProvider as clock_provider
 from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402

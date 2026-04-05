@@ -17,7 +17,7 @@ from dataclasses import dataclass, field
 from datetime import datetime, timedelta, timezone
 from typing import Any
 
-from agentic_core.L0_routing.providers.clock_provider import ClockProvider as clock_provider
+from agentic_core.L0_routing.utils.clock_provider import ClockProvider as clock_provider
 from agentic_core.L2_execution.enforcement.key_source import get_current_secret
 from agentic_core.runtime.lifecycle_trace_contract import (
     LayerSegment,

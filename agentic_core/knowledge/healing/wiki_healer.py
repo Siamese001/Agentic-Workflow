@@ -75,7 +75,7 @@ from pathlib import Path
 from typing import Any
 
 from agentic_core.L0_routing.config import AGENTIC_CORE_DIR
-from agentic_core.L0_routing.providers.filesystem_mcp_client import get_filesystem_client
+from agentic_core.L0_routing.utils.filesystem_mcp_client import get_filesystem_client
 from agentic_core.runtime.lifecycle_trace_contract import (
     LayerSegment,
     _emit_agent_executes_agent,

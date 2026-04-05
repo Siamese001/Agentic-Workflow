@@ -12,7 +12,7 @@ from dataclasses import dataclass
 from enum import Enum
 from typing import Any, Final
 
-from agentic_core.L0_routing.providers.clock_provider import ClockProvider as clock_provider
+from agentic_core.L0_routing.utils.clock_provider import ClockProvider as clock_provider
 from agentic_core.L5_safety.enforcement.eval_guard import get_eval_guard
 from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     LayerSegment,
