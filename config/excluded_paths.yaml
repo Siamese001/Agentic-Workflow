@@ -21,7 +21,6 @@ build_cache_dirs:
 # Version control directories
 version_control_dirs:
   - ".git"
-  - ".github"
   - ".svn"
   - ".hg"
 

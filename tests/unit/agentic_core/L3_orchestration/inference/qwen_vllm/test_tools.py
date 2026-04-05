@@ -55,3 +55,17 @@ class TestGPUMemoryMonitor:
         """Test monitor initialization."""
         monitor = GPUMemoryMonitor()
         assert monitor is not None
+        assert monitor.check_interval_sec == 5.0
+        assert monitor.min_batch_size == 1
+        assert monitor.max_batch_size == 16
+
+    def test_monitor_initialization_with_params(self):
+        """Test monitor initialization with custom parameters."""
+        monitor = GPUMemoryMonitor(
+            check_interval_sec=10.0,
+            min_batch_size=2,
+            max_batch_size=32,
+        )
+        assert monitor.check_interval_sec == 10.0
+        assert monitor.min_batch_size == 2
+        assert monitor.max_batch_size == 32

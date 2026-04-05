@@ -1,6 +1,6 @@
-"""Apps Qwen Inference Worker.
+"""Qwen vLLM Inference Worker.
 
-Lower-level inference worker for apps Qwen requests.
+Lower-level inference worker for Qwen requests in L3 orchestration.
 Handles actual communication with vLLM server.
 """
 
@@ -10,9 +10,9 @@ import logging
 import time
 from typing import Any
 
-from apps_qwen.config.apps_qwen_config import (
-    AppsQwenModelConfig,
-    AppsQwenPromptConfig,
+from agentic_core.L3_orchestration.inference.qwen_vllm.config import (
+    QwenModelConfig,
+    QwenPromptConfig,
 )
 from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_captures_execution_output,
@@ -23,25 +23,25 @@ from agentic_core.runtime.lifecycle_trace_contract import (
 logger = logging.getLogger(__name__)
 
 
-class AppsQwenInferenceWorker:
+class QwenInferenceWorker:
     """Worker for performing Qwen inference on behalf of apps.
 
     Separates inference logic from gateway for cleaner architecture.
     """
 
-    def __init__(self, model_config: AppsQwenModelConfig):
+    def __init__(self, model_config: QwenModelConfig):
         self.model_config = model_config
         self._emit_initialization_events()
 
     def _emit_initialization_events(self) -> None:
         """Emit initialization lifecycle events."""
-        _emit_records_execution_trace("apps_qwen_inference_worker", "L2_EXECUTION", "initialization")
+        _emit_records_execution_trace("qwen_inference_worker", "L3_ORCHESTRATION", "initialization")
 
     async def infer(
         self,
         prompt: str,
         app_name: str,
-        prompt_config: AppsQwenPromptConfig,
+        prompt_config: QwenPromptConfig,
         template_name: str | None = None
     ) -> dict[str, Any]:
         """Perform inference with formatted prompt.
@@ -104,7 +104,7 @@ class AppsQwenInferenceWorker:
     def _format_prompt(
         self,
         prompt: str,
-        prompt_config: AppsQwenPromptConfig,
+        prompt_config: QwenPromptConfig,
         template_name: str | None
     ) -> str:
         """Format prompt using app-specific template.
@@ -196,3 +196,7 @@ class AppsQwenInferenceWorker:
             "prompt_tokens": len(formatted_prompt.split()),
             "completion_tokens": len(response_text.split())
         }
+
+
+# Backward compatibility alias
+AppsQwenInferenceWorker = QwenInferenceWorker

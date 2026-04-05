@@ -76,3 +76,4 @@ class TestAppsQwenConfig:
         assert "complex_reasoning" in AppsQwenConfig.MODEL_CONFIGS
         config = AppsQwenConfig.MODEL_CONFIGS["complex_reasoning"]
         assert isinstance(config, AppsQwenModelConfig)
+        assert config.temperature == 0.2  # Complete validation with correct value

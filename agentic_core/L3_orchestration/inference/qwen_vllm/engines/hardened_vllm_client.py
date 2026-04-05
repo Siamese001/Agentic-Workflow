@@ -18,7 +18,7 @@ from dataclasses import dataclass, field
 from enum import Enum, auto
 from typing import Any, Callable
 
-from apps_qwen.engines.optimized_vllm_client import (
+from agentic_core.L3_orchestration.inference.qwen_vllm.engines.optimized_vllm_client import (
     OptimizedVLLMClient,
     VLLMRequest,
     VLLMResponse,

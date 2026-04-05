@@ -29,7 +29,7 @@ GITIGNORE_HEADER = """# Generated from config/excluded_paths.yaml
 
 def load_exclusions() -> tuple[set[str], set[str]]:
     """Load exclusions from YAML config."""
-    config_path = Path(__file__).parent.parent / "config" / "excluded_paths.yaml"
+    config_path = Path(__file__).parent.parent.parent / "config" / "excluded_paths.yaml"
 
     try:
         import yaml
@@ -91,7 +91,7 @@ def generate_gitignore_content(dirs: set[str], patterns: set[str]) -> str:
 
     # Categorize directories
     build_cache = {"__pycache__", ".pytest_cache", ".ruff_cache", ".mypy_cache", ".tox", "node_modules", "build", "dist", "_build", ".eggs"}
-    version_control = {".git", ".github", ".svn", ".hg"}
+    version_control = {".git", ".svn", ".hg"}
     virtual_env = {".venv", "venv", "venv_stable", "env", ".env", "Lib", "site-packages"}
     coverage = {"coverage_html", "htmlcov", ".coverage", ".test_artifacts", "test_artifacts", "reports"}
     archives = {"archives", "archive", "artifacts", ".sovereign_healing_backup", ".healing_backups", ".backup", ".gravity_state"}
@@ -142,7 +142,7 @@ def generate_gitignore_content(dirs: set[str], patterns: set[str]) -> str:
 
 def read_current_gitignore() -> str | None:
     """Read current .gitignore content."""
-    gitignore_path = Path(__file__).parent.parent / ".gitignore"
+    gitignore_path = Path(__file__).parent.parent.parent / ".gitignore"
     if gitignore_path.exists():
         return gitignore_path.read_text(encoding="utf-8")
     return None
@@ -150,7 +150,7 @@ def read_current_gitignore() -> str | None:
 
 def write_gitignore(content: str) -> None:
     """Write .gitignore file."""
-    gitignore_path = Path(__file__).parent.parent / ".gitignore"
+    gitignore_path = Path(__file__).parent.parent.parent / ".gitignore"
     gitignore_path.write_text(content, encoding="utf-8")
     print(f"Updated: {gitignore_path}")
 

@@ -21,8 +21,6 @@ from urllib.parse import urljoin
 import aiohttp
 import aiohttp.client_exceptions
 
-from agentic_core.L3_orchestration.healers.healing_tier_config import QWEN_GPU_MEM_UTIL
-
 logger = logging.getLogger(__name__)
 
 
@@ -401,7 +399,7 @@ class OptimizedVLLMClient:
             "cache_hit_rate": self._requests_cached / max(1, total),
             "avg_latency_ms": avg_latency,
             "cache_size": len(self._cache),
-            "gpu_memory_util": QWEN_GPU_MEM_UTIL,
+            "gpu_memory_util": 0.7,  # Default GPU memory utilization (70%)
         }
 
     async def health_check(self) -> dict[str, Any]:

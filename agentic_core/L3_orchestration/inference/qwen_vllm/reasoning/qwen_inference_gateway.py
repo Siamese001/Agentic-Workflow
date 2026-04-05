@@ -1,6 +1,6 @@
-"""Apps Qwen Gateway - L2 Execution Layer.
+"""Qwen vLLM Inference Gateway - L3 Orchestration Layer.
 
-Provides optimized Qwen v2.5 vLLM inference capabilities for applications layer.
+Provides optimized Qwen v2.5 vLLM inference capabilities for L3 orchestration.
 Uses connection pooling, batching, and caching for maximum throughput.
 """
 
@@ -11,12 +11,11 @@ import time
 from dataclasses import dataclass
 from typing import Any
 
-from apps_qwen.engines.optimized_vllm_client import (
+from agentic_core.L3_orchestration.inference.qwen_vllm.engines.optimized_vllm_client import (
     OptimizedVLLMClient,
     VLLMRequest,
     VLLMResponse,
 )
-from agentic_core.L3_orchestration.healers.healing_tier_config import QWEN_GPU_MEM_UTIL
 from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_evaluation_metric,
@@ -29,8 +28,8 @@ logger = logging.getLogger(__name__)
 
 
 @dataclass(frozen=True)
-class AppsQwenRequest:
-    """Request structure for apps Qwen inference."""
+class QwenInferenceRequest:
+    """Request structure for Qwen inference."""
     app_name: str
     prompt: str
     confidence_threshold: float = 0.7
@@ -40,8 +39,8 @@ class AppsQwenRequest:
 
 
 @dataclass(frozen=True)
-class AppsQwenResponse:
-    """Response structure for apps Qwen inference."""
+class QwenInferenceResponse:
+    """Response structure for Qwen inference."""
     success: bool
     response: str | None
     confidence: float
@@ -52,8 +51,8 @@ class AppsQwenResponse:
     tokens_used: int = 0
 
 
-class AppsQwenGateway:
-    """Optimized gateway for apps Qwen inference.
+class QwenInferenceGateway:
+    """Optimized gateway for Qwen inference.
 
     Features:
     - Connection pooling with HTTP keep-alive
@@ -94,16 +93,16 @@ class AppsQwenGateway:
             )
             await self._vllm_client.start()
             self._initialized = True
-            logger.info("AppsQwenGateway initialized: model=%s, url=%s", self.model_id, self.base_url)
+            logger.info("QwenInferenceGateway initialized: model=%s, url=%s", self.model_id, self.base_url)
 
-    async def infer(self, request: AppsQwenRequest) -> AppsQwenResponse:
+    async def infer(self, request: QwenInferenceRequest) -> QwenInferenceResponse:
         """Perform Qwen inference for apps request.
 
         Args:
             request: Apps Qwen request with prompt and parameters
 
         Returns:
-            AppsQwenResponse with inference result
+            QwenInferenceResponse with inference result
         """
         start_time = time.time()
 
@@ -132,7 +131,7 @@ class AppsQwenGateway:
                     request.app_name, "apps_qwen_gateway", "inference_success"
                 )
 
-                return AppsQwenResponse(
+                return QwenInferenceResponse(
                     success=True,
                     response=vllm_response.text,
                     confidence=confidence,
@@ -146,7 +145,7 @@ class AppsQwenGateway:
                     request.app_name, "apps_qwen_gateway", "inference_error"
                 )
 
-                return AppsQwenResponse(
+                return QwenInferenceResponse(
                     success=False,
                     response=None,
                     confidence=0.0,
@@ -166,7 +165,7 @@ class AppsQwenGateway:
                 request.app_name, "apps_qwen_gateway", "inference_exception"
             )
 
-            return AppsQwenResponse(
+            return QwenInferenceResponse(
                 success=False,
                 response=None,
                 confidence=0.0,
@@ -180,7 +179,7 @@ class AppsQwenGateway:
     def _calculate_confidence(
         self,
         vllm_response: VLLMResponse,
-        request: AppsQwenRequest
+        request: QwenInferenceRequest
     ) -> float:
         """Calculate confidence score based on response characteristics.
 
@@ -218,15 +217,15 @@ class AppsQwenGateway:
 
     async def infer_batch(
         self,
-        requests: list[AppsQwenRequest]
-    ) -> list[AppsQwenResponse]:
+        requests: list[QwenInferenceRequest]
+    ) -> list[QwenInferenceResponse]:
         """Perform batch inference for multiple requests.
 
         Args:
-            requests: List of AppsQwenRequest
+            requests: List of QwenInferenceRequest
 
         Returns:
-            List of AppsQwenResponse (order preserved)
+            List of QwenInferenceResponse (order preserved)
         """
         await self._ensure_initialized()
 
@@ -244,11 +243,11 @@ class AppsQwenGateway:
         # Execute batch
         vllm_responses = await self._vllm_client.infer_batch(vllm_requests)
 
-        # Convert back to AppsQwenResponse
+        # Convert back to QwenInferenceResponse
         results = []
         for req, vllm_resp in zip(requests, vllm_responses):
             if isinstance(vllm_resp, Exception):
-                results.append(AppsQwenResponse(
+                results.append(QwenInferenceResponse(
                     success=False,
                     response=None,
                     confidence=0.0,
@@ -258,7 +257,7 @@ class AppsQwenGateway:
                 ))
             else:
                 confidence = self._calculate_confidence(vllm_resp, req)
-                results.append(AppsQwenResponse(
+                results.append(QwenInferenceResponse(
                     success=vllm_resp.success,
                     response=vllm_resp.text if vllm_resp.success else None,
                     confidence=confidence,
@@ -293,7 +292,7 @@ class AppsQwenGateway:
             "status": "healthy" if metrics else "degraded",
             "healthy": bool(metrics),
             "model_id": self.model_id,
-            "gpu_utilization": QWEN_GPU_MEM_UTIL,
+            "gpu_utilization": 0.7,  # Default GPU utilization (70%)
             "metrics": metrics,
             "timestamp": time.time(),
         }
@@ -317,9 +316,9 @@ class AppsQwenGateway:
         if self._vllm_client:
             await self._vllm_client.stop()
             self._initialized = False
-            logger.info("AppsQwenGateway closed")
+            logger.info("QwenInferenceGateway closed")
 
-    async def __aenter__(self) -> AppsQwenGateway:
+    async def __aenter__(self) -> QwenInferenceGateway:
         """Async context manager entry."""
         await self._ensure_initialized()
         return self
@@ -329,30 +328,45 @@ class AppsQwenGateway:
         await self.close()
 
 
-# Singleton instance for apps layer
-_apps_qwen_gateway: AppsQwenGateway | None = None
+# Singleton instance for L3 inference
+_qwen_inference_gateway: QwenInferenceGateway | None = None
 
 
-async def get_apps_qwen_gateway(
+async def get_qwen_inference_gateway(
     model_id: str = "Qwen/Qwen2.5-14B-Instruct-AWQ",
-) -> AppsQwenGateway:
-    """Get or create singleton AppsQwenGateway."""
-    global _apps_qwen_gateway
-    if _apps_qwen_gateway is None:
-        _apps_qwen_gateway = AppsQwenGateway(model_id=model_id)
-        await _apps_qwen_gateway._ensure_initialized()
-    return _apps_qwen_gateway
+) -> QwenInferenceGateway:
+    """Get or create singleton QwenInferenceGateway."""
+    global _qwen_inference_gateway
+    if _qwen_inference_gateway is None:
+        _qwen_inference_gateway = QwenInferenceGateway(model_id=model_id)
+        await _qwen_inference_gateway._ensure_initialized()
+    return _qwen_inference_gateway
 
 
-async def close_apps_qwen_gateway() -> None:
-    """Close singleton AppsQwenGateway."""
-    global _apps_qwen_gateway
-    if _apps_qwen_gateway:
-        await _apps_qwen_gateway.close()
-        _apps_qwen_gateway = None
+async def close_qwen_inference_gateway() -> None:
+    """Close singleton QwenInferenceGateway."""
+    global _qwen_inference_gateway
+    if _qwen_inference_gateway:
+        await _qwen_inference_gateway.close()
+        _qwen_inference_gateway = None
+
+
+# Backward compatibility aliases
+_apps_qwen_gateway = _qwen_inference_gateway
+get_apps_qwen_gateway = get_qwen_inference_gateway
+close_apps_qwen_gateway = close_qwen_inference_gateway
+AppsQwenGateway = QwenInferenceGateway
+AppsQwenRequest = QwenInferenceRequest
+AppsQwenResponse = QwenInferenceResponse
 
 
 __all__ = [
+    "QwenInferenceGateway",
+    "QwenInferenceRequest",
+    "QwenInferenceResponse",
+    "get_qwen_inference_gateway",
+    "close_qwen_inference_gateway",
+    # Backward compatibility
     "AppsQwenGateway",
     "AppsQwenRequest",
     "AppsQwenResponse",

@@ -1,6 +1,6 @@
-"""Apps Qwen Telemetry.
+"""Qwen vLLM Inference Telemetry.
 
-Telemetry and metrics collection for apps Qwen inference.
+Telemetry and metrics collection for Qwen inference in L3 orchestration.
 Separate from healing telemetry to maintain clean boundaries.
 """
 
@@ -16,7 +16,7 @@ from agentic_core.runtime.lifecycle_trace_contract import (
 
 
 @dataclass
-class AppsQwenMetric:
+class QwenInferenceMetric:
     """Single metric data point."""
     timestamp: float
     app_name: str
@@ -27,7 +27,7 @@ class AppsQwenMetric:
 
 
 @dataclass
-class AppsQwenSessionMetrics:
+class QwenSessionMetrics:
     """Metrics for a single inference session."""
     session_id: str
     app_name: str
@@ -42,15 +42,15 @@ class AppsQwenSessionMetrics:
     errors: list[str] = field(default_factory=list)
 
 
-class AppsQwenTelemetry:
-    """Telemetry collector for apps Qwen operations.
+class QwenInferenceTelemetry:
+    """Telemetry collector for Qwen inference operations.
 
     Tracks performance, usage, and error metrics across all apps.
     """
 
     def __init__(self):
-        self._metrics: list[AppsQwenMetric] = []
-        self._sessions: dict[str, AppsQwenSessionMetrics] = {}
+        self._metrics: list[QwenInferenceMetric] = []
+        self._sessions: dict[str, QwenSessionMetrics] = {}
 
     def start_session(self, app_name: str) -> str:
         """Start a new telemetry session.
@@ -63,7 +63,7 @@ class AppsQwenTelemetry:
         """
         session_id = f"{app_name}_{int(time.time() * 1000)}"
 
-        session = AppsQwenSessionMetrics(
+        session = QwenSessionMetrics(
             session_id=session_id,
             app_name=app_name,
             start_time=time.time()
@@ -71,11 +71,11 @@ class AppsQwenTelemetry:
 
         self._sessions[session_id] = session
 
-        _emit_records_telemetry_event(session_id, "apps_qwen_telemetry", "session_start")
+        _emit_records_telemetry_event(session_id, "qwen_inference_telemetry", "session_start")
 
         return session_id
 
-    def end_session(self, session_id: str) -> AppsQwenSessionMetrics | None:
+    def end_session(self, session_id: str) -> QwenSessionMetrics | None:
         """End a telemetry session and calculate final metrics.
 
         Args:
@@ -118,7 +118,7 @@ class AppsQwenTelemetry:
 
         self._sessions[session_id].total_requests += 1
 
-        metric = AppsQwenMetric(
+        metric = QwenInferenceMetric(
             timestamp=time.time(),
             app_name=app_name,
             model_id=model_id,
@@ -158,7 +158,7 @@ class AppsQwenTelemetry:
 
         # Record individual metrics
         metrics = [
-            AppsQwenMetric(
+            QwenInferenceMetric(
                 timestamp=time.time(),
                 app_name=app_name,
                 model_id=model_id,
@@ -166,7 +166,7 @@ class AppsQwenTelemetry:
                 value=latency_ms,
                 context={"session_id": session_id}
             ),
-            AppsQwenMetric(
+            QwenInferenceMetric(
                 timestamp=time.time(),
                 app_name=app_name,
                 model_id=model_id,
@@ -174,7 +174,7 @@ class AppsQwenTelemetry:
                 value=confidence,
                 context={"session_id": session_id}
             ),
-            AppsQwenMetric(
+            QwenInferenceMetric(
                 timestamp=time.time(),
                 app_name=app_name,
                 model_id=model_id,
@@ -188,8 +188,8 @@ class AppsQwenTelemetry:
             self._metrics.append(metric)
             _emit_captures_evaluation_metric(
                 session_id,
-                "apps_qwen_telemetry",
-                f"apps_qwen_{metric.metric_name}",
+                "qwen_inference_telemetry",
+                f"qwen_inference_{metric.metric_name}",
             )
 
     def record_request_error(
@@ -214,7 +214,7 @@ class AppsQwenTelemetry:
         session.failed_requests += 1
         session.errors.append(error_message)
 
-        metric = AppsQwenMetric(
+        metric = QwenInferenceMetric(
             timestamp=time.time(),
             app_name=app_name,
             model_id=model_id,
@@ -228,7 +228,7 @@ class AppsQwenTelemetry:
 
         self._metrics.append(metric)
 
-        _emit_records_telemetry_event(session_id, "apps_qwen_telemetry", "request_error")
+        _emit_records_telemetry_event(session_id, "qwen_inference_telemetry", "request_error")
 
     def get_session_summary(self, session_id: str) -> dict[str, float] | None:
         """Get summary metrics for a session.
@@ -295,5 +295,11 @@ class AppsQwenTelemetry:
         }
 
 
-# Global telemetry instance for apps layer
-apps_qwen_telemetry = AppsQwenTelemetry()
+# Global telemetry instance for L3 inference
+qwen_inference_telemetry = QwenInferenceTelemetry()
+
+# Backward compatibility aliases
+AppsQwenMetric = QwenInferenceMetric
+AppsQwenSessionMetrics = QwenSessionMetrics
+AppsQwenTelemetry = QwenInferenceTelemetry
+apps_qwen_telemetry = qwen_inference_telemetry

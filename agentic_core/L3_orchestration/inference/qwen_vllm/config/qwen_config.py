@@ -1,7 +1,7 @@
-"""Apps Qwen Configuration.
+"""Qwen vLLM Inference Configuration.
 
-Apps-specific configuration for Qwen v2.5 vLLM inference.
-Separate from healing tier configuration to maintain clean boundaries.
+Core configuration for Qwen v2.5 vLLM inference in agentic_core.
+Provides model configurations and prompt templates for L3 orchestration inference services.
 """
 # guardian: allow-config_with_logic - ADG violation exemption
 
@@ -17,8 +17,8 @@ from agentic_core.runtime.lifecycle_trace_contract import (
 
 
 @dataclass(frozen=True)
-class AppsQwenModelConfig:
-    """Configuration for Qwen model in apps context."""
+class QwenModelConfig:
+    """Configuration for Qwen model in inference context."""
     model_id: str
     max_tokens: int
     temperature: float
@@ -27,33 +27,33 @@ class AppsQwenModelConfig:
 
 
 @dataclass(frozen=True)
-class AppsQwenPromptConfig:
+class QwenPromptConfig:
     """Configuration for prompt templates by app."""
     app_name: str
     prompt_templates: dict[str, str]
     default_template: str
 
 
-class AppsQwenConfig:
-    """Central configuration manager for apps Qwen integration."""
+class QwenInferenceConfig:
+    """Central configuration manager for Qwen vLLM inference."""
 
     # Model configurations for different use cases
-    MODEL_CONFIGS: dict[str, AppsQwenModelConfig] = {
-        "fast_inference": AppsQwenModelConfig(
+    MODEL_CONFIGS: dict[str, QwenModelConfig] = {
+        "fast_inference": QwenModelConfig(
             model_id="Qwen/Qwen2.5-7B-Instruct",
             max_tokens=1024,
             temperature=0.1,
             confidence_threshold=0.6,
             timeout_seconds=30
         ),
-        "complex_reasoning": AppsQwenModelConfig(
+        "complex_reasoning": QwenModelConfig(
             model_id="Qwen/Qwen2.5-14B-Instruct-AWQ",
             max_tokens=2048,
             temperature=0.2,
             confidence_threshold=0.7,
             timeout_seconds=60
         ),
-        "evaluation": AppsQwenModelConfig(
+        "evaluation": QwenModelConfig(
             model_id="Qwen/Qwen2.5-7B-Instruct",
             max_tokens=1536,
             temperature=0.05,
@@ -63,8 +63,8 @@ class AppsQwenConfig:
     }
 
     # App-specific prompt configurations
-    APP_PROMPT_CONFIGS: dict[str, AppsQwenPromptConfig] = {
-        "apps_eval": AppsQwenPromptConfig(
+    APP_PROMPT_CONFIGS: dict[str, QwenPromptConfig] = {
+        "apps_eval": QwenPromptConfig(
             app_name="apps_eval",
             prompt_templates={
                 "code_review": "Please review this code for quality, security, and best practices:\n\n{code}",
@@ -74,7 +74,7 @@ class AppsQwenConfig:
             },
             default_template="code_review"
         ),
-        "apps_research": AppsQwenPromptConfig(
+        "apps_research": QwenPromptConfig(
             app_name="apps_research",
             prompt_templates={
                 "synthesis": "Synthesize these research findings into a coherent summary:\n\n{findings}",
@@ -83,7 +83,7 @@ class AppsQwenConfig:
             },
             default_template="synthesis"
         ),
-        "apps_rg": AppsQwenPromptConfig(
+        "apps_rg": QwenPromptConfig(
             app_name="apps_rg",
             prompt_templates={
                 "resume_analysis": "Analyze this resume for the given job requirements:\n\nResume: {resume}\n\nRequirements: {requirements}",
@@ -92,7 +92,7 @@ class AppsQwenConfig:
             },
             default_template="resume_analysis"
         ),
-        "apps_lic": AppsQwenPromptConfig(
+        "apps_lic": QwenPromptConfig(
             app_name="apps_lic",
             prompt_templates={
                 "lead_scoring": "Score this lead based on qualification and intent:\n\n{lead}",
@@ -104,7 +104,7 @@ class AppsQwenConfig:
     }
 
     @classmethod
-    def get_model_config(cls, use_case: str) -> AppsQwenModelConfig:
+    def get_model_config(cls, use_case: str) -> QwenModelConfig:
         """Get model configuration for specific use case.
 
         Args:
@@ -117,13 +117,13 @@ class AppsQwenConfig:
             ValueError: If use case not found
         """
         if use_case not in cls.MODEL_CONFIGS:
-            _emit_applies_guardrail("apps_qwen_config", "model_config_validation", "L2_EXECUTION")
+            _emit_applies_guardrail("qwen_inference_config", "model_config_validation", "L3_ORCHESTRATION")
             raise ValueError(f"Unknown use case: {use_case}")
 
         return cls.MODEL_CONFIGS[use_case]
 
     @classmethod
-    def get_prompt_config(cls, app_name: str) -> AppsQwenPromptConfig:
+    def get_prompt_config(cls, app_name: str) -> QwenPromptConfig:
         """Get prompt configuration for specific app.
 
         Args:
@@ -136,7 +136,7 @@ class AppsQwenConfig:
             ValueError: If app not found
         """
         if app_name not in cls.APP_PROMPT_CONFIGS:
-            _emit_applies_guardrail("apps_qwen_config", "prompt_config_validation", "L2_EXECUTION")
+            _emit_applies_guardrail("qwen_inference_config", "prompt_config_validation", "L3_ORCHESTRATION")
             raise ValueError(f"Unknown app: {app_name}")
 
         return cls.APP_PROMPT_CONFIGS[app_name]
@@ -148,7 +148,7 @@ class AppsQwenConfig:
         Returns:
             True if configuration is valid
         """
-        _emit_records_execution_trace("apps_qwen_config", "L2_EXECUTION", "validation")
+        _emit_records_execution_trace("qwen_inference_config", "L3_ORCHESTRATION", "validation")
 
         # Basic validation - all configs have required fields
         for name, config in cls.MODEL_CONFIGS.items():
@@ -160,3 +160,9 @@ class AppsQwenConfig:
                 return False
 
         return True
+
+
+# Backward compatibility aliases
+AppsQwenModelConfig = QwenModelConfig
+AppsQwenPromptConfig = QwenPromptConfig
+AppsQwenConfig = QwenInferenceConfig
