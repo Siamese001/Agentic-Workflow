@@ -48,7 +48,7 @@ coverage_dirs:
 archive_dirs:
   - "archives"
   - "archive"
-  - "artifacts"
+  # - "artifacts"  # Now an enforced territory per territories.yaml
   - ".sovereign_healing_backup"
   - ".healing_backups"
   - ".backup"
@@ -73,7 +73,7 @@ vendor_dirs:
 # Data and log directories (content, not code)
 data_dirs:
   - "data"
-  - "docs"
+  # - "docs"  # Now an enforced territory per territories.yaml
   - "logs"
   - "raw"
   - "shared"

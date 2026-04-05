@@ -30,62 +30,14 @@ territories:
     type: "documentation"
     purpose: "Project documentation"
     subfolders:
-      architecture:
+      reports:
         depth: 2
-        purpose: "Architecture documentation"
-        allowed_suffixes: [".md", ".txt"]
-      guides:
-        depth: 2
-        purpose: "User guides"
-        allowed_suffixes: [".md", ".txt"]
-      policies:
-        depth: 2
-        purpose: "Policy documentation"
-        allowed_suffixes: [".md", ".txt"]
-      specs:
-        depth: 2
-        purpose: "Specifications"
-        allowed_suffixes: [".md", ".txt"]
-      reference:
-        depth: 2
-        purpose: "Reference documentation"
-        allowed_suffixes: [".md", ".txt"]
-      svp:
-        depth: 2
-        purpose: "SVP documentation"
-        allowed_suffixes: [".md", ".txt"]
-      technical:
-        depth: 2
-        purpose: "Technical documentation"
-        allowed_suffixes: [".md", ".txt"]
-      testing:
-        depth: 2
-        purpose: "Testing documentation"
-        allowed_suffixes: [".md", ".txt"]
-      runbooks:
-        depth: 2
-        purpose: "Runbooks"
-        allowed_suffixes: [".md", ".txt"]
-      contracts:
-        depth: 2
-        purpose: "Contract documentation"
-        allowed_suffixes: [".md", ".txt"]
-      project:
-        depth: 2
-        purpose: "Project documentation"
-        allowed_suffixes: [".md", ".txt"]
-      rules:
-        depth: 2
-        purpose: "Rules documentation"
-        allowed_suffixes: [".md", ".txt"]
+        purpose: "Evidence and reports"
+        allowed_suffixes: [".md"]
       tools:
         depth: 2
         purpose: "Tools documentation"
-        allowed_suffixes: [".md", ".txt"]
-      monitoring:
-        depth: 2
-        purpose: "Monitoring documentation"
-        allowed_suffixes: [".md", ".txt"]
+        allowed_suffixes: [".md"]
     allowed_suffixes: [".md", ".txt"]
     forbidden_suffixes: [".py", ".json", ".yaml", ".log"]
 
@@ -94,34 +46,6 @@ territories:
     type: "data"
     purpose: "Data files and datasets"
     subfolders:
-      corpus:
-        depth: 2
-        purpose: "ML corpus data"
-        allowed_suffixes: [".jsonl", ".json", ".txt"]
-      external:
-        depth: 2
-        purpose: "External reference materials"
-        allowed_suffixes: [".md", ".txt", ".json"]
-      golden_state:
-        depth: 2
-        purpose: "Golden state datasets"
-        allowed_suffixes: [".json", ".jsonl", ".txt"]
-      processed:
-        depth: 2
-        purpose: "Processed data"
-        allowed_suffixes: [".json", ".jsonl", ".txt"]
-      prompt_governance:
-        depth: 2
-        purpose: "Prompt governance data"
-        allowed_suffixes: [".md", ".txt", ".json"]
-      rag_seeds:
-        depth: 2
-        purpose: "RAG seed data"
-        allowed_suffixes: [".txt", ".json", ".jsonl"]
-      raw:
-        depth: 2
-        purpose: "Raw data"
-        allowed_suffixes: [".json", ".jsonl", ".txt"]
       snapshots:
         depth: 2
         purpose: "Snapshot data"

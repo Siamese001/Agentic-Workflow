@@ -1,3 +1,0 @@
-ERROR: Direct invocation of execute_ssot.py is not supported.
-Use the entrypoint instead:
-  python -m agentic_core.L0_routing.scripts.execute_ssot_entrypoint --legacy
