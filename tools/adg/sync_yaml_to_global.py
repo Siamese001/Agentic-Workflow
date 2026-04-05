@@ -15,6 +15,8 @@ from __future__ import annotations
 import argparse
 import json
 import logging
+import os
+import re
 import shutil
 import sys
 from datetime import datetime
@@ -24,6 +26,30 @@ from typing import Any
 # Add repo root to path for imports
 REPO_ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(REPO_ROOT))
+
+def load_dotenv(env_path: Path) -> dict[str, str]:
+    """Load environment variables from .env file."""
+    env_vars = {}
+    if not env_path.exists():
+        return env_vars
+    try:
+        with open(env_path, encoding="utf-8") as f:
+            for line in f:
+                line = line.strip()
+                if line and not line.startswith("#") and "=" in line:
+                    key, _, value = line.partition("=")
+                    env_vars[key.strip()] = value.strip().strip('"').strip("'")
+    except OSError:
+        pass
+    return env_vars
+
+def substitute_env_vars(value: str, env_vars: dict[str, str]) -> str:
+    """Substitute ${VAR} patterns with values from env_vars."""
+    pattern = re.compile(r"\$\{(\w+)\}")
+    def replacer(match):
+        var_name = match.group(1)
+        return env_vars.get(var_name, match.group(0))
+    return pattern.sub(replacer, value)
 
 try:
     from agentic_core.config.mcp_loader import MCPLoader
@@ -36,6 +62,7 @@ except ImportError as e:
 YAML_CONFIG_PATH = REPO_ROOT / "config" / "mcp_servers.yaml"
 GLOBAL_CONFIG_PATH = Path.home() / ".codeium" / "windsurf" / "mcp_config.json"
 BACKUP_DIR = Path.home() / ".codeium" / "windsurf" / "backups"
+ENV_PATH = REPO_ROOT / ".env"
 
 logging.basicConfig(
     level=logging.INFO,
@@ -44,20 +71,21 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 
-def yaml_to_windsurf_json(yaml_config: Any) -> dict[str, Any]:
-    """Convert YAML config to Windsurf's expected JSON format.
+def yaml_to_windsurf_json(yaml_config: Any, env_vars: dict[str, str]) -> dict[str, Any]:
+    """
+    Convert YAML config to Windsurf's expected JSON format.
 
-    Windsurf expects:
-    {
-        "mcpServers": {
-            "server_name": {
-                "command": "...",
-                "args": [...],
-                "cwd": "...",
-                "env": {...}
-            }
-        }
-    }
+    This function takes a YAML config and converts it to the JSON format
+    expected by Windsurf. It also substitutes environment variables in the
+    config.
+
+    Args:
+        yaml_config (Any): The YAML config to convert.
+        env_vars (dict[str, str]): A dictionary of environment variables to
+            substitute in the config.
+
+    Returns:
+        dict[str, Any]: The converted JSON config.
     """
     windsurf_config: dict[str, Any] = {"mcpServers": {}}
 
@@ -65,7 +93,6 @@ def yaml_to_windsurf_json(yaml_config: Any) -> dict[str, Any]:
         if not server.enabled:
             continue
 
-        # Build server config
         server_config: dict[str, Any] = {
             "command": server.command,
             "args": server.args,
@@ -76,13 +103,19 @@ def yaml_to_windsurf_json(yaml_config: Any) -> dict[str, Any]:
             server_config["cwd"] = server.cwd
 
         if server.env:
-            # Filter out empty env vars (templates like ${VAR})
-            filtered_env = {
-                k: v for k, v in server.env.items()
-                if v and not v.startswith("${") and not v.endswith("}")
-            }
-            if filtered_env:
-                server_config["env"] = filtered_env
+            # Substitute ${VAR} patterns and filter unresolved
+            substituted_env = {}
+            for k, v in server.env.items():
+                if v and v.startswith("${") and v.endswith("}"):
+                    # Template - try to substitute
+                    substituted = substitute_env_vars(v, env_vars)
+                    if substituted != v:  # Successfully substituted
+                        substituted_env[k] = substituted
+                elif v and not v.startswith("${"):
+                    # Literal value
+                    substituted_env[k] = v
+            if substituted_env:
+                server_config["env"] = substituted_env
 
         windsurf_config["mcpServers"][server_name] = server_config
 
@@ -90,7 +123,7 @@ def yaml_to_windsurf_json(yaml_config: Any) -> dict[str, Any]:
 
 
 def load_global_config() -> dict[str, Any] | None:
-    """Load existing global config if present."""
+    # Load existing global config if present
     if not GLOBAL_CONFIG_PATH.exists():
         return None
 
@@ -103,7 +136,7 @@ def load_global_config() -> dict[str, Any] | None:
 
 
 def backup_global_config() -> Path | None:
-    """Create timestamped backup of global config."""
+    # Create timestamped backup of global config
     if not GLOBAL_CONFIG_PATH.exists():
         return None
 
@@ -121,7 +154,7 @@ def backup_global_config() -> Path | None:
 
 
 def write_global_config(config: dict[str, Any]) -> bool:
-    """Write config to global path."""
+    # Write config to global path
     try:
         GLOBAL_CONFIG_PATH.parent.mkdir(parents=True, exist_ok=True)
         with open(GLOBAL_CONFIG_PATH, "w", encoding="utf-8") as f:
@@ -133,7 +166,7 @@ def write_global_config(config: dict[str, Any]) -> bool:
 
 
 def configs_equal(config1: dict[str, Any], config2: dict[str, Any]) -> bool:
-    """Compare two configs for equality (ignoring formatting)."""
+    # Compare two configs for equality (ignoring formatting)
     return json.dumps(config1, sort_keys=True) == json.dumps(config2, sort_keys=True)
 
 
@@ -184,8 +217,13 @@ def main() -> int:
         logger.error(f"YAML validation error: {e}")
         return 1
 
+    # Load .env file for env var substitution
+    env_vars = load_dotenv(ENV_PATH)
+    if env_vars:
+        logger.debug(f"Loaded {len(env_vars)} env vars from {ENV_PATH}")
+
     # Convert to Windsurf format
-    new_global_config = yaml_to_windsurf_json(yaml_config)
+    new_global_config = yaml_to_windsurf_json(yaml_config, env_vars)
     logger.debug(f"Converted to {len(new_global_config['mcpServers'])} servers for Windsurf")
 
     # Load existing global config

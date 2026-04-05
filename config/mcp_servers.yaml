@@ -29,10 +29,9 @@ servers:
     enabled: true
     target_layer: "L0"
     description: "Git operations, issue tracking, and pull request management"
-    command: "npx"
+    command: "gk"
     args:
-      - "-y"
-      - "@gitkraken/mcp-server"
+      - "mcp"
     cwd: "C:\\Git\\Agentic-Workflow"
     capabilities:
       - git_operations
@@ -113,13 +112,12 @@ servers:
     enabled: true
     target_layer: "L0"
     description: "AST Dependency Graph operations via SQLite"
-    command: "python"
+    command: "C:\\Users\\amita\\AppData\\Local\\Programs\\Python\\Python312\\python.exe"
     args:
-      - "-m"
-      - "tools.adg.adg_mcp_server"
+      - "-c"
+      - "import sys; sys.path.insert(0, r'C:\\\\Git\\\\Agentic-Workflow'); __file__ = r'C:\\\\Git\\\\Agentic-Workflow\\\\tools\\\\adg\\\\mcp\\\\server.py'; exec(open(r'C:\\\\Git\\\\Agentic-Workflow\\\\tools\\\\adg\\\\mcp\\\\server.py', encoding='utf-8').read())"
     cwd: "C:\\Git\\Agentic-Workflow"
     env:
-      ADG_REDIS_URL: "redis://localhost:6379/0"
       ADG_DIR: "C:\\Git\\Agentic-Workflow\\artifacts\\adg"
       ADG_MCP_PAGE_SIZE: "500"
       ADG_MCP_CACHE_META_TTL: "5"
@@ -211,7 +209,7 @@ servers:
     command: "npx"
     args:
       - "-y"
-      - "@modelcontextprotocol/server-deepwiki"
+      - "@iflow-mcp/deepwiki-mcp"
     cwd: "C:\\Git\\Agentic-Workflow"
     capabilities:
       - repo_documentation
@@ -237,10 +235,10 @@ servers:
     enabled: true
     target_layer: "L2"
     description: "Advanced HTTP client with batch requests and connectivity testing"
-    command: "python"
+    command: "C:\\Users\\amita\\AppData\\Local\\Programs\\Python\\Python312\\python.exe"
     args:
-      - "-m"
-      - "tools.mcp.enhanced_http_server"
+      - "-c"
+      - "import sys; sys.path.insert(0, r'C:\\\\Git\\\\Agentic-Workflow'); __file__ = r'C:\\\\Git\\\\Agentic-Workflow\\\\tools\\\\mcp\\\\enhanced_http_server.py'; exec(open(r'C:\\\\Git\\\\Agentic-Workflow\\\\tools\\\\mcp\\\\enhanced_http_server.py', encoding='utf-8').read())"
     cwd: "C:\\Git\\Agentic-Workflow"
     capabilities:
       - http_requests
@@ -421,10 +419,10 @@ servers:
     enabled: true
     target_layer: "L4"
     description: "Vector database for embeddings and semantic search"
-    command: "python"
+    command: "C:\\Users\\amita\\AppData\\Local\\Programs\\Python\\Python312\\python.exe"
     args:
-      - "-m"
-      - "tools.mcp.vector_db_server"
+      - "-c"
+      - "import sys; sys.path.insert(0, r'C:\\\\Git\\\\Agentic-Workflow'); __file__ = r'C:\\\\Git\\\\Agentic-Workflow\\\\tools\\\\mcp\\\\vector_db_server.py'; exec(open(r'C:\\\\Git\\\\Agentic-Workflow\\\\tools\\\\mcp\\\\vector_db_server.py', encoding='utf-8').read())"
     cwd: "C:\\Git\\Agentic-Workflow"
     capabilities:
       - embeddings
