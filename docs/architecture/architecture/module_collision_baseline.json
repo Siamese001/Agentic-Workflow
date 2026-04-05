@@ -1,0 +1,434 @@
+{
+  "filename_collisions": {
+    "__main__": [
+      "tools/adg/__main__.py",
+      "tools/adg/accelerators/__main__.py"
+    ],
+    "adg_incremental_update": [
+      "tools/adg/accelerators/incremental/adg_incremental_update.py",
+      "tools/adg_incremental_update.py"
+    ],
+    "adg_test_accelerator": [
+      "tools/adg/accelerators/testing/adg_test_accelerator.py",
+      "tools/adg_test_accelerator.py"
+    ],
+    "adg_test_selector": [
+      "tools/adg/accelerators/testing/adg_test_selector.py",
+      "tools/adg/adg_test_selector.py"
+    ],
+    "analyze_inventory": [
+      "tools/analyze_inventory.py",
+      "tools/test_enforcement/analyze_inventory.py"
+    ],
+    "answer_correctness": [
+      "agentic_core/evaluation/metrics/answer_correctness.py",
+      "agentic_core/evaluation/retrieval/answer_correctness.py",
+      "agentic_core/utils/metrics/answer_correctness.py",
+      "agentic_core/utils/workflow_engines/answer_correctness.py"
+    ],
+    "answer_support": [
+      "agentic_core/evaluation/retrieval/answer_support.py",
+      "agentic_core/utils/workflow_engines/answer_support.py"
+    ],
+    "apps_engines_aliases": [
+      "agentic_core/evaluation/retrieval/apps_engines_aliases.py",
+      "agentic_core/utils/workflow_engines/apps_engines_aliases.py"
+    ],
+    "base": [
+      "agentic_core/evaluation/metrics/base.py",
+      "agentic_core/evaluation/retrieval/base.py",
+      "agentic_core/patterns/base.py",
+      "agentic_core/utils/metrics/base.py",
+      "agentic_core/utils/workflow_engines/base.py"
+    ],
+    "blast_radius": [
+      "agentic_core/L4_state/enforcement/blast_radius.py",
+      "agentic_core/adg/applications/blast_radius.py"
+    ],
+    "boundary_validator": [
+      "agentic_core/L2_execution/sandbox/boundary_validator.py",
+      "agentic_core/runtime/boundary_validator.py"
+    ],
+    "budget_enforcer": [
+      "agentic_core/L1_cognition/enforcement/budget_enforcer.py",
+      "agentic_core/L2_execution/enforcement/budget_enforcer.py"
+    ],
+    "bulkhead_manager": [
+      "apps_shared/enforcement/bulkhead_manager.py",
+      "apps_shared/reasoning/bulkhead_manager.py"
+    ],
+    "cache_key_builders": [
+      "agentic_core/L4_state/workflow_engines/cache_key_builders.py",
+      "agentic_core/cache/cache_key_builders.py"
+    ],
+    "canonical_store": [
+      "agentic_core/L4_state/memory/canonical_store.py",
+      "agentic_core/knowledge/canonical/canonical_store.py"
+    ],
+    "case_library": [
+      "agentic_core/L4_state/memory/case_library.py",
+      "agentic_core/case_memory/case_library.py"
+    ],
+    "circuit_breaker": [
+      "apps_shared/enforcement/circuit_breaker.py",
+      "apps_shared/reasoning/circuit_breaker.py"
+    ],
+    "classification": [
+      "agentic_core/L5_safety/config/structure_blueprint/classification.py",
+      "agentic_core/evaluation/metrics/classification.py"
+    ],
+    "codejanitoragent": [
+      "agentic_core/L5_safety/reasoning/CodeJanitorAgent.py",
+      "agentic_core/L5_safety/validators/CodeJanitorAgent.py"
+    ],
+    "completeness": [
+      "agentic_core/evaluation/retrieval/completeness.py",
+      "agentic_core/utils/workflow_engines/completeness.py"
+    ],
+    "completeness_feedback": [
+      "agentic_core/evaluation/retrieval/completeness_feedback.py",
+      "agentic_core/utils/workflow_engines/completeness_feedback.py"
+    ],
+    "completeness_metrics": [
+      "agentic_core/evaluation/retrieval/completeness_metrics.py",
+      "agentic_core/utils/workflow_engines/completeness_metrics.py"
+    ],
+    "completeness_monitors": [
+      "agentic_core/evaluation/monitoring/completeness_monitors.py",
+      "agentic_core/evaluation/retrieval/completeness_monitors.py",
+      "agentic_core/utils/monitoring/completeness_monitors.py",
+      "agentic_core/utils/workflow_engines/completeness_monitors.py"
+    ],
+    "completeness_reranker": [
+      "agentic_core/evaluation/retrieval/completeness_reranker.py",
+      "agentic_core/utils/workflow_engines/completeness_reranker.py"
+    ],
+    "completeness_scorer": [
+      "agentic_core/evaluation/retrieval/completeness_scorer.py",
+      "agentic_core/utils/workflow_engines/completeness_scorer.py"
+    ],
+    "complexity_analyzer_util": [
+      "agentic_core/L4_state/utils/complexity_analyzer_util.py",
+      "agentic_core/L5_safety/utils/complexity_analyzer_util.py"
+    ],
+    "config_file_cache": [
+      "agentic_core/L4_state/workflow_engines/config_file_cache.py",
+      "agentic_core/cache/config_file_cache.py"
+    ],
+    "credential_guard": [
+      "agentic_core/L5_safety/enforcement/credential_guard.py",
+      "agentic_core/L5_safety/enforcement/security/credential_guard.py"
+    ],
+    "dead_letter_queue": [
+      "apps_shared/enforcement/dead_letter_queue.py",
+      "apps_shared/reasoning/dead_letter_queue.py"
+    ],
+    "decorators_util": [
+      "agentic_core/L5_safety/utils/decorators_util.py",
+      "agentic_core/utils/decorators_util.py"
+    ],
+    "determinism": [
+      "agentic_core/L2_execution/determinism.py",
+      "agentic_core/interfaces/determinism.py"
+    ],
+    "determinism_types": [
+      "agentic_core/L0_routing/types/determinism_types.py",
+      "agentic_core/interfaces/determinism_types.py"
+    ],
+    "discovery_cache": [
+      "agentic_core/L4_state/workflow_engines/discovery_cache.py",
+      "agentic_core/cache/discovery_cache.py"
+    ],
+    "dpo_batch_builder": [
+      "agentic_core/evaluation/feedback/dpo_batch_builder.py",
+      "agentic_core/evaluation/retrieval/dpo_batch_builder.py",
+      "agentic_core/utils/workflow_engines/dpo_batch_builder.py"
+    ],
+    "drift_monitor": [
+      "agentic_core/evaluation/monitoring/drift_monitor.py",
+      "agentic_core/evaluation/retrieval/drift_monitor.py",
+      "agentic_core/utils/monitoring/drift_monitor.py",
+      "agentic_core/utils/workflow_engines/drift_monitor.py"
+    ],
+    "eval_spine": [
+      "agentic_core/adg/runtime/eval_spine.py",
+      "agentic_core/runtime/eval_spine.py"
+    ],
+    "evaluation_dataset_schema": [
+      "agentic_core/evaluation/retrieval/evaluation_dataset_schema.py",
+      "agentic_core/evaluation/schemas/evaluation_dataset_schema.py",
+      "agentic_core/utils/schemas/evaluation_dataset_schema.py",
+      "agentic_core/utils/workflow_engines/evaluation_dataset_schema.py"
+    ],
+    "evaluation_report_schema": [
+      "agentic_core/evaluation/retrieval/evaluation_report_schema.py",
+      "agentic_core/evaluation/schemas/evaluation_report_schema.py",
+      "agentic_core/utils/schemas/evaluation_report_schema.py",
+      "agentic_core/utils/workflow_engines/evaluation_report_schema.py"
+    ],
+    "evaluation_result_schema": [
+      "agentic_core/evaluation/retrieval/evaluation_result_schema.py",
+      "agentic_core/evaluation/schemas/evaluation_result_schema.py",
+      "agentic_core/utils/schemas/evaluation_result_schema.py",
+      "agentic_core/utils/workflow_engines/evaluation_result_schema.py"
+    ],
+    "event_bus": [
+      "apps_shared/enforcement/core/event_bus.py",
+      "apps_shared/reasoning/core/event_bus.py"
+    ],
+    "execution": [
+      "agentic_core/L0_routing/scripts/execution.py",
+      "agentic_core/interfaces/execution.py"
+    ],
+    "execution_context": [
+      "agentic_core/L0_routing/scripts/execution_context.py",
+      "agentic_core/L2_execution/context/execution_context.py"
+    ],
+    "execution_gateway": [
+      "agentic_core/L0_routing/enforcement/execution_gateway.py",
+      "agentic_core/L2_execution/engines/execution_gateway.py"
+    ],
+    "execution_trace_types": [
+      "agentic_core/L2_execution/types/execution_trace_types.py",
+      "agentic_core/L3_orchestration/types/execution_trace_types.py"
+    ],
+    "fusion": [
+      "agentic_core/evaluation/retrieval/fusion.py",
+      "agentic_core/utils/workflow_engines/fusion.py"
+    ],
+    "generate_full_adg": [
+      "tools/adg/accelerators/incremental/generate_full_adg.py",
+      "tools/generate_full_adg.py"
+    ],
+    "governance": [
+      "agentic_core/L5_safety/config/structure_blueprint/governance.py",
+      "agentic_core/adg/extraction/visitors/governance.py"
+    ],
+    "governanceagent": [
+      "agentic_core/L5_safety/reasoning/GovernanceAgent.py",
+      "agentic_core/L5_safety/validators/GovernanceAgent.py"
+    ],
+    "graph_neighborhood_memory": [
+      "agentic_core/L4_state/memory/graph_neighborhood_memory.py",
+      "agentic_core/case_memory/graph_neighborhood_memory.py"
+    ],
+    "gravity_validator": [
+      "agentic_core/L5_safety/reasoning/gravity_validator.py",
+      "agentic_core/L5_safety/validators/gravity_validator.py"
+    ],
+    "groundedness": [
+      "agentic_core/evaluation/metrics/groundedness.py",
+      "agentic_core/evaluation/retrieval/groundedness.py",
+      "agentic_core/utils/metrics/groundedness.py",
+      "agentic_core/utils/workflow_engines/groundedness.py"
+    ],
+    "hitl_graph": [
+      "agentic_core/L5_safety/hitl/hitl_graph.py",
+      "agentic_core/adg/runtime/hitl_graph.py"
+    ],
+    "human_decision_artifact_types": [
+      "agentic_core/L3_orchestration/types/human_decision_artifact_types.py",
+      "agentic_core/L5_safety/types/human_decision_artifact_types.py"
+    ],
+    "hygieneguardianagent": [
+      "agentic_core/L5_safety/reasoning/HygieneGuardianAgent.py",
+      "agentic_core/L5_safety/validators/HygieneGuardianAgent.py"
+    ],
+    "interfaces": [
+      "agentic_core/evaluation/retrieval/interfaces.py",
+      "agentic_core/utils/workflow_engines/interfaces.py"
+    ],
+    "late_chunking": [
+      "agentic_core/evaluation/retrieval/late_chunking.py",
+      "agentic_core/utils/workflow_engines/late_chunking.py"
+    ],
+    "main": [
+      "tools/archive/.windsurf/skills/agent-deletion-guard/main.py",
+      "tools/archive/.windsurf/skills/ci-grep-ban/main.py",
+      "tools/archive/.windsurf/skills/ci-guardian-comments/main.py",
+      "tools/archive/.windsurf/skills/ci-hollow-file/main.py",
+      "tools/archive/.windsurf/skills/ci-integration/main.py",
+      "tools/archive/.windsurf/skills/ci-layer-sovereignty/main.py",
+      "tools/archive/.windsurf/skills/ci-schema-validation/main.py",
+      "tools/archive/.windsurf/skills/guardian-exemption-validator/main.py",
+      "tools/archive/.windsurf/skills/hitl-decision-validator/main.py",
+      "tools/archive/.windsurf/skills/performance-monitor/main.py",
+      "tools/archive/.windsurf/skills/plan-validation/main.py",
+      "tools/archive/.windsurf/skills/powershell-guard/main.py",
+      "tools/archive/.windsurf/skills/pre-write-orchestrator/main.py",
+      "tools/archive/.windsurf/skills/repair-gate-validator/main.py",
+      "tools/archive/.windsurf/skills/skill-status-dashboard/main.py"
+    ],
+    "meta_learning_bridge": [
+      "agentic_core/L6_observability/engines/meta_learning_bridge.py",
+      "agentic_core/evaluation/retrieval/meta_learning_bridge.py",
+      "agentic_core/utils/workflow_engines/meta_learning_bridge.py"
+    ],
+    "mrr": [
+      "agentic_core/evaluation/metrics/mrr.py",
+      "agentic_core/evaluation/retrieval/mrr.py",
+      "agentic_core/utils/metrics/mrr.py",
+      "agentic_core/utils/workflow_engines/mrr.py"
+    ],
+    "ndcg": [
+      "agentic_core/evaluation/metrics/ndcg.py",
+      "agentic_core/evaluation/retrieval/ndcg.py",
+      "agentic_core/utils/metrics/ndcg.py",
+      "agentic_core/utils/workflow_engines/ndcg.py"
+    ],
+    "normalizer": [
+      "agentic_core/adg/artifact/normalizer.py",
+      "agentic_core/adg/identity/normalizer.py"
+    ],
+    "offline_eval_runner": [
+      "agentic_core/evaluation/retrieval/offline_eval_runner.py",
+      "agentic_core/evaluation/runners/offline_eval_runner.py",
+      "agentic_core/utils/runners/offline_eval_runner.py",
+      "agentic_core/utils/workflow_engines/offline_eval_runner.py"
+    ],
+    "orchestration": [
+      "agentic_core/adg/extraction/visitors/orchestration.py",
+      "agentic_core/interfaces/orchestration.py"
+    ],
+    "p0_batch_wirer": [
+      "tools/adg/accelerators/hardening/p0_batch_wirer.py",
+      "tools/p0_batch_wirer.py"
+    ],
+    "p1_batch_wire": [
+      "tools/adg/accelerators/hardening/p1_batch_wire.py",
+      "tools/p1_batch_wire.py"
+    ],
+    "parent_child": [
+      "agentic_core/evaluation/retrieval/parent_child.py",
+      "agentic_core/utils/workflow_engines/parent_child.py"
+    ],
+    "pascalsovereigntyagent": [
+      "agentic_core/L5_safety/reasoning/PascalSovereigntyAgent.py",
+      "agentic_core/L5_safety/validators/PascalSovereigntyAgent.py"
+    ],
+    "path_constants": [
+      "agentic_core/L0_routing/config/path_constants.py",
+      "agentic_core/interfaces/path_constants.py"
+    ],
+    "policies": [
+      "agentic_core/evaluation/chunking/policies.py",
+      "agentic_core/evaluation/retrieval/policies.py",
+      "agentic_core/utils/workflow_engines/policies.py"
+    ],
+    "policy_registry_cache": [
+      "agentic_core/L4_state/workflow_engines/policy_registry_cache.py",
+      "agentic_core/cache/policy_registry_cache.py"
+    ],
+    "precision_at_k": [
+      "agentic_core/evaluation/metrics/precision_at_k.py",
+      "agentic_core/evaluation/retrieval/precision_at_k.py",
+      "agentic_core/utils/metrics/precision_at_k.py",
+      "agentic_core/utils/workflow_engines/precision_at_k.py"
+    ],
+    "profiles": [
+      "agentic_core/evaluation/retrieval/profiles.py",
+      "agentic_core/utils/workflow_engines/profiles.py"
+    ],
+    "project_root_util": [
+      "agentic_core/L0_routing/utils/project_root_util.py",
+      "agentic_core/utils/project_root_util.py"
+    ],
+    "proposer_bridge": [
+      "agentic_core/evaluation/feedback/proposer_bridge.py",
+      "agentic_core/evaluation/retrieval/proposer_bridge.py",
+      "agentic_core/utils/workflow_engines/proposer_bridge.py"
+    ],
+    "providers": [
+      "agentic_core/L2_execution/providers.py",
+      "agentic_core/utils/providers.py"
+    ],
+    "proxy": [
+      "tools/adg/accelerators/hardening/proxy.py",
+      "tools/adg/accelerators/incremental/proxy.py",
+      "tools/adg/accelerators/testing/proxy.py"
+    ],
+    "recall_at_k": [
+      "agentic_core/evaluation/metrics/recall_at_k.py",
+      "agentic_core/evaluation/retrieval/recall_at_k.py",
+      "agentic_core/utils/metrics/recall_at_k.py",
+      "agentic_core/utils/workflow_engines/recall_at_k.py"
+    ],
+    "redis_cache_client": [
+      "agentic_core/L4_state/workflow_engines/redis_cache_client.py",
+      "agentic_core/cache/redis_cache_client.py"
+    ],
+    "replay_eval_runner": [
+      "agentic_core/evaluation/retrieval/replay_eval_runner.py",
+      "agentic_core/evaluation/runners/replay_eval_runner.py",
+      "agentic_core/utils/runners/replay_eval_runner.py",
+      "agentic_core/utils/workflow_engines/replay_eval_runner.py"
+    ],
+    "reranker": [
+      "agentic_core/evaluation/retrieval/reranker.py",
+      "agentic_core/utils/workflow_engines/reranker.py"
+    ],
+    "schema_validator_cache": [
+      "agentic_core/L4_state/workflow_engines/schema_validator_cache.py",
+      "agentic_core/cache/schema_validator_cache.py"
+    ],
+    "schemas": [
+      "agentic_core/evaluation/feedback/schemas.py",
+      "agentic_core/evaluation/retrieval/schemas.py",
+      "agentic_core/utils/workflow_engines/schemas.py"
+    ],
+    "sealed_interface_check_enforcer": [
+      "agentic_core/L5_safety/enforcement/sealed_interface_check_enforcer.py",
+      "agentic_core/enforcement/sealed_interface_check_enforcer.py",
+      "agentic_core/evaluation/retrieval/sealed_interface_check_enforcer.py",
+      "agentic_core/utils/workflow_engines/sealed_interface_check_enforcer.py"
+    ],
+    "shadow_eval_runner": [
+      "agentic_core/evaluation/monitoring/shadow_eval_runner.py",
+      "agentic_core/evaluation/retrieval/shadow_eval_runner.py",
+      "agentic_core/utils/monitoring/shadow_eval_runner.py",
+      "agentic_core/utils/workflow_engines/shadow_eval_runner.py"
+    ],
+    "snapshots": [
+      "agentic_core/evaluation/monitoring/snapshots.py",
+      "agentic_core/evaluation/retrieval/snapshots.py",
+      "agentic_core/utils/monitoring/snapshots.py",
+      "agentic_core/utils/workflow_engines/snapshots.py"
+    ],
+    "test_sequential_thinking_mcp": [
+      "tools/evidence/test_sequential_thinking_mcp.py",
+      "tools/test_sequential_thinking_mcp.py"
+    ],
+    "timeout_decorator_util": [
+      "agentic_core/L0_routing/utils/timeout_decorator_util.py",
+      "agentic_core/utils/timeout_decorator_util.py"
+    ],
+    "tool_embedding_cache": [
+      "agentic_core/L4_state/workflow_engines/tool_embedding_cache.py",
+      "agentic_core/cache/tool_embedding_cache.py"
+    ],
+    "trace_context": [
+      "agentic_core/L2_execution/trace_context.py",
+      "agentic_core/runtime/trace_context.py"
+    ],
+    "types": [
+      "agentic_core/L5_safety/config/structure_blueprint/enforcement/types.py",
+      "agentic_core/evaluation/judges/types.py"
+    ],
+    "validators": [
+      "agentic_core/evaluation/chunking/validators.py",
+      "agentic_core/evaluation/retrieval/validators.py",
+      "agentic_core/interfaces/validators.py",
+      "agentic_core/utils/workflow_engines/validators.py"
+    ],
+    "write_gateway": [
+      "agentic_core/L2_execution/tools/write_gateway.py",
+      "agentic_core/interfaces/write_gateway.py"
+    ]
+  },
+  "logical_import_path_collisions": {
+    "l2_execution.determinism": [
+      "agentic_core/L2_execution/determinism.py",
+      "agentic_core/L2_execution/determinism/__init__.py"
+    ]
+  }
+}

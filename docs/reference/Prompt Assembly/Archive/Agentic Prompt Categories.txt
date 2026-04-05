@@ -1,0 +1,10 @@
+TYPE,DEFINITION,SOURCE (SSOT),LAYER / STAGE,AUTHORITY LEVEL
+USER PROMPT (Intent),"Raw request or task from the end-user. Contains the ""What"" but not the ""How.""",Apps Layer (CLI/UI),L1 (Thinking),ZERO (Unprivileged Intent)
+INSTRUCTIONAL (The Books),"Identity and specialized manuals. Defines agent capabilities (e.g., HealMixin).",L4 State (Mixins),L0 -> L3 (Disseminated),GOVERNED (Capabilities)
+INJECTIONS (Role Fencing),Semantic fences applied during assembly to scope an agent's access to specific roles.,L4 / L5 (Policy),Assembly (Pre-L2),BINDING (Constraints)
+EXEMPLARS (Golden Context),"""Best-in-class"" few-shot examples that guide the agent toward a specific output style or logic.",L4 (GoldenContextMixin),L1 / L3 (Reasoning),GUIDING (Performance)
+DEPENDENCY (Context Widening),"Real-time context retrieved via RAG or the Elevator Shaft (facts, citations, external state).",L4 Knowledge Index,L0 / L2 (Runtime),INFORMATIONAL (Data)
+META-COGNITIVE (Internal Monologue),"Hidden ""Chain of Thought"" or ""Tree of Thought"" prompts that force internal reasoning before an answer.",L3 (Orchestration),L1 / L3 (Thinking),PRIVATE (Reasoning Only)
+SYNTHESIS (Pattern Analysis),Summarizes massive telemetry (L6) into actionable configuration proposals.,L4 (Historian/MetaLearning),Background (L4/Historian),ANALYTIC (Improvement)
+SYSTEM / STATE (The Rulebooks),"Mandatory safety rules and constitutions (e.g., Determinism or Budget hard-gates).",L4 / L5 SSOT,Assembly Gate,ABSOLUTE (Immutable)
+HEALING PROPOSAL (The Correction),A revised action plan generated after an L2 failure to correct a root cause.,L2.3 (Healer),L2.3 -> L5 (Loop),PROPOSED (Requires Re-Entry)

@@ -1,6 +1,6 @@
 # Generated from config/excluded_paths.yaml
 # Do not edit manually - run: python tools/generate_gitignore.py --write
-# Last generated: 2026-04-05T17:49:00
+# Last generated: 2026-04-05T17:57:00
 
 
 # Build & Cache
@@ -45,7 +45,7 @@
 .sovereign_healing_backup/
 /archive/
 /archives/
-# /artifacts/  # Now an enforced territory per territories.yaml
+/artifacts/
 
 # IDE & Editor
 .DS_Store/

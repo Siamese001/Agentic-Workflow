@@ -48,7 +48,7 @@ coverage_dirs:
 archive_dirs:
   - "archives"
   - "archive"
-  # - "artifacts"  # Now an enforced territory per territories.yaml
+  - "artifacts"
   - ".sovereign_healing_backup"
   - ".healing_backups"
   - ".backup"

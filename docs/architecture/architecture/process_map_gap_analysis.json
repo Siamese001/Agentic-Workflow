@@ -1,0 +1,5086 @@
+{
+  "total_functional_areas": 110,
+  "documented_areas": 16,
+  "missing_areas": 94,
+  "gaps": {
+    "pinecone": {
+      "file_count": 6,
+      "class_count": 4,
+      "function_count": 79,
+      "layers": [
+        "L0_routing",
+        "L5_safety"
+      ],
+      "in_process_map": false,
+      "sample_files": [
+        ".healing_backups\\location_violations\\deep_brain_harvester_util.py",
+        "agentic_core\\L0_routing\\scripts\\colors.py",
+        "agentic_core\\L5_safety\\utils\\verify_semantic_meta_learning_util.py",
+        "apps_shared\\utils\\etl_pipeline_util.py",
+        "ops_scripts\\general\\ast_analysis_scan.py"
+      ],
+      "sample_classes": [
+        "DepGraph",
+        "DeepBrainHarvester",
+        "Colors",
+        "ETLPipeline"
+      ]
+    },
+    "logging": {
+      "file_count": 1559,
+      "class_count": 3270,
+      "function_count": 12183,
+      "layers": [
+        "L0_routing",
+        "L1_cognition",
+        "L2_execution",
+        "L3_orchestration",
+        "L4_state",
+        "L5_safety",
+        "L6_observability"
+      ],
+      "in_process_map": false,
+      "sample_files": [
+        ".healing_backups\\location_violations\\AdjustSectionWeights.py",
+        ".healing_backups\\location_violations\\AdjustToneWeights.py",
+        ".healing_backups\\location_violations\\AggregateCampaignState.py",
+        ".healing_backups\\location_violations\\AllProvidersDownError.py",
+        ".healing_backups\\location_violations\\AssessContentRelevance.py"
+      ],
+      "sample_classes": [
+        "ImportTrace",
+        "CacheOpportunity",
+        "SemanticGap",
+        "ParseFailure",
+        "FileAnalysis"
+      ]
+    },
+    "pipeline": {
+      "file_count": 29,
+      "class_count": 113,
+      "function_count": 501,
+      "layers": [
+        "L0_routing",
+        "L2_execution",
+        "L3_orchestration"
+      ],
+      "in_process_map": false,
+      "sample_files": [
+        ".healing_backups\\location_violations\\DispatchResumeToolsAgent.py",
+        ".nox\\integration\\Lib\\site-packages\\pydantic\\experimental\\pipeline.py",
+        "agentic_core\\L0_routing\\scripts\\execute_ssot.py",
+        "agentic_core\\L2_execution\\protocol.py",
+        "agentic_core\\L3_orchestration\\engines\\sovereign_rag_orchestrator.py"
+      ],
+      "sample_classes": [
+        "ImportTrace",
+        "CacheOpportunity",
+        "SemanticGap",
+        "ParseFailure",
+        "FileAnalysis"
+      ]
+    },
+    "meta": {
+      "file_count": 64,
+      "class_count": 115,
+      "function_count": 953,
+      "layers": [
+        "L0_routing",
+        "L1_cognition",
+        "L2_execution",
+        "L4_state",
+        "L5_safety",
+        "L6_observability"
+      ],
+      "in_process_map": false,
+      "sample_files": [
+        ".healing_backups\\location_violations\\lic_agent_base_util.py",
+        ".healing_backups\\location_violations\\rg_agent_base_util.py",
+        ".nox\\integration\\Lib\\site-packages\\pip\\_vendor\\rich\\style.py",
+        ".nox\\integration\\Lib\\site-packages\\pip\\_vendor\\rich\\text.py",
+        "agentic_core\\L0_routing\\enforcement\\boundary_contracts.py"
+      ],
+      "sample_classes": [
+        "ImportTrace",
+        "CacheOpportunity",
+        "SemanticGap",
+        "ParseFailure",
+        "FileAnalysis"
+      ]
+    },
+    "learning": {
+      "file_count": 163,
+      "class_count": 283,
+      "function_count": 1413,
+      "layers": [
+        "L0_routing",
+        "L1_cognition",
+        "L2_execution",
+        "L4_state",
+        "L5_safety",
+        "L6_observability"
+      ],
+      "in_process_map": false,
+      "sample_files": [
+        ".healing_backups\\location_violations\\RgHealingOrchestrator.py",
+        ".healing_backups\\location_violations\\deep_brain_harvester_util.py",
+        ".healing_backups\\location_violations\\l0_threshold_tuner.py",
+        ".healing_backups\\location_violations\\l4_audit_reader.py",
+        ".healing_backups\\location_violations\\l4_version_store.py"
+      ],
+      "sample_classes": [
+        "ImportTrace",
+        "CacheOpportunity",
+        "SemanticGap",
+        "ParseFailure",
+        "FileAnalysis"
+      ]
+    },
+    "healing": {
+      "file_count": 469,
+      "class_count": 856,
+      "function_count": 2923,
+      "layers": [
+        "L0_routing",
+        "L1_cognition",
+        "L2_execution",
+        "L3_orchestration",
+        "L4_state",
+        "L5_safety",
+        "L6_observability"
+      ],
+      "in_process_map": false,
+      "sample_files": [
+        ".healing_backups\\location_violations\\ContentQualityAgent.py",
+        ".healing_backups\\location_violations\\LicHealingOrchestrator.py",
+        ".healing_backups\\location_violations\\LicHealingOrchestrator_1.py",
+        ".healing_backups\\location_violations\\LicHealingOrchestrator_2.py",
+        ".healing_backups\\location_violations\\PIISanitizerSpecialistAgent_util.py"
+      ],
+      "sample_classes": [
+        "AchievementPrioritizerEngine",
+        "AchievementPrioritizerEngine",
+        "AchievementPrioritizerEngine",
+        "AnthropicConfig",
+        "AnthropicClient"
+      ]
+    },
+    "routing": {
+      "file_count": 351,
+      "class_count": 595,
+      "function_count": 3318,
+      "layers": [
+        "L0_routing",
+        "L1_cognition",
+        "L2_execution",
+        "L3_orchestration",
+        "L4_state",
+        "L5_safety",
+        "L6_observability"
+      ],
+      "in_process_map": false,
+      "sample_files": [
+        ".healing_backups\\location_violations\\AllProvidersDownError.py",
+        ".healing_backups\\location_violations\\HOPPipelineExecutor.py",
+        ".healing_backups\\location_violations\\HOPPipelineExecutor_1.py",
+        ".healing_backups\\location_violations\\HOPPipelineExecutor_2.py",
+        ".healing_backups\\location_violations\\_assertions.py"
+      ],
+      "sample_classes": [
+        "ImportTrace",
+        "CacheOpportunity",
+        "SemanticGap",
+        "ParseFailure",
+        "FileAnalysis"
+      ]
+    },
+    "safety": {
+      "file_count": 343,
+      "class_count": 667,
+      "function_count": 3091,
+      "layers": [
+        "L0_routing",
+        "L1_cognition",
+        "L2_execution",
+        "L3_orchestration",
+        "L4_state",
+        "L5_safety",
+        "L6_observability"
+      ],
+      "in_process_map": false,
+      "sample_files": [
+        ".healing_backups\\location_violations\\GovernanceShieldAgent.py",
+        ".healing_backups\\location_violations\\GovernanceShieldAgent_1.py",
+        ".healing_backups\\location_violations\\GovernanceShieldAgent_2.py",
+        ".healing_backups\\location_violations\\SafetyExecutor.py",
+        ".healing_backups\\location_violations\\__init__.py"
+      ],
+      "sample_classes": [
+        "ImportTrace",
+        "CacheOpportunity",
+        "SemanticGap",
+        "ParseFailure",
+        "FileAnalysis"
+      ]
+    },
+    "governance": {
+      "file_count": 63,
+      "class_count": 130,
+      "function_count": 590,
+      "layers": [
+        "L0_routing",
+        "L2_execution",
+        "L3_orchestration",
+        "L5_safety"
+      ],
+      "in_process_map": false,
+      "sample_files": [
+        ".healing_backups\\location_violations\\ExecutiveStrategyAgent.py",
+        ".healing_backups\\location_violations\\ExecutiveStrategyAgent_1.py",
+        ".healing_backups\\location_violations\\ExecutiveStrategyAgent_2.py",
+        ".healing_backups\\location_violations\\GovernanceShieldAgent.py",
+        ".healing_backups\\location_violations\\GovernanceShieldAgent_1.py"
+      ],
+      "sample_classes": [
+        "ImportTrace",
+        "CacheOpportunity",
+        "SemanticGap",
+        "ParseFailure",
+        "FileAnalysis"
+      ]
+    },
+    "state": {
+      "file_count": 156,
+      "class_count": 588,
+      "function_count": 2433,
+      "layers": [
+        "L0_routing",
+        "L1_cognition",
+        "L2_execution",
+        "L3_orchestration",
+        "L4_state",
+        "L5_safety",
+        "L6_observability"
+      ],
+      "in_process_map": false,
+      "sample_files": [
+        ".healing_backups\\location_violations\\state_checkpoint_types.py",
+        ".healing_backups\\naming_violations\\l3_efficiency_tuner.py",
+        ".healing_backups\\naming_violations\\l3_efficiency_tuner_1.py",
+        ".nox\\integration\\Lib\\site-packages\\colorama\\initialise.py",
+        ".nox\\integration\\Lib\\site-packages\\pip\\_vendor\\pkg_resources\\__init__.py"
+      ],
+      "sample_classes": [
+        "ImportTrace",
+        "CacheOpportunity",
+        "SemanticGap",
+        "ParseFailure",
+        "FileAnalysis"
+      ]
+    },
+    "embedding": {
+      "file_count": 60,
+      "class_count": 171,
+      "function_count": 710,
+      "layers": [
+        "L0_routing",
+        "L1_cognition",
+        "L2_execution",
+        "L3_orchestration",
+        "L4_state"
+      ],
+      "in_process_map": false,
+      "sample_files": [
+        ".healing_backups\\location_violations\\deep_brain_harvester_util.py",
+        ".healing_backups\\location_violations\\embedding_allowlist.py",
+        ".healing_backups\\location_violations\\embedding_factory.py",
+        ".healing_backups\\location_violations\\w1_negative_control.py",
+        ".healing_backups\\location_violations\\w1_strong_negative_control.py"
+      ],
+      "sample_classes": [
+        "ImportTrace",
+        "CacheOpportunity",
+        "SemanticGap",
+        "ParseFailure",
+        "FileAnalysis"
+      ]
+    },
+    "orchestration": {
+      "file_count": 84,
+      "class_count": 201,
+      "function_count": 1100,
+      "layers": [
+        "L0_routing",
+        "L1_cognition",
+        "L2_execution",
+        "L3_orchestration",
+        "L4_state",
+        "L5_safety"
+      ],
+      "in_process_map": false,
+      "sample_files": [
+        ".healing_backups\\location_violations\\capture_golden.py",
+        ".healing_backups\\location_violations\\capture_golden_1.py",
+        ".healing_backups\\location_violations\\run_phase11_ptc_evidence.py",
+        ".healing_backups\\location_violations\\run_phase11_ptc_evidence_1.py",
+        ".healing_backups\\location_violations\\run_phase11_ptc_evidence_2.py"
+      ],
+      "sample_classes": [
+        "ImportTrace",
+        "CacheOpportunity",
+        "SemanticGap",
+        "ParseFailure",
+        "FileAnalysis"
+      ]
+    },
+    "rag": {
+      "file_count": 27,
+      "class_count": 196,
+      "function_count": 353,
+      "layers": [
+        "L3_orchestration",
+        "L4_state"
+      ],
+      "in_process_map": false,
+      "sample_files": [
+        ".healing_backups\\location_violations\\DispatchResumeToolsAgent.py",
+        ".healing_backups\\location_violations\\callable_report.py",
+        ".healing_backups\\location_violations\\callable_report_1.py",
+        ".healing_backups\\location_violations\\callable_report_2.py",
+        "agentic_core\\L3_orchestration\\engines\\sovereign_rag_orchestrator.py"
+      ],
+      "sample_classes": [
+        "ImportTrace",
+        "CacheOpportunity",
+        "SemanticGap",
+        "ParseFailure",
+        "FileAnalysis"
+      ]
+    },
+    "prompt": {
+      "file_count": 117,
+      "class_count": 427,
+      "function_count": 1178,
+      "layers": [
+        "L0_routing",
+        "L1_cognition",
+        "L2_execution",
+        "L3_orchestration",
+        "L4_state",
+        "L5_safety"
+      ],
+      "in_process_map": false,
+      "sample_files": [
+        ".healing_backups\\location_violations\\ExecutiveStrategyAgent.py",
+        ".healing_backups\\location_violations\\ExecutiveStrategyAgent_1.py",
+        ".healing_backups\\location_violations\\ExecutiveStrategyAgent_2.py",
+        ".healing_backups\\location_violations\\HeadlineOutputAgent.py",
+        ".healing_backups\\location_violations\\OutreachMessageAgent.py"
+      ],
+      "sample_classes": [
+        "ImportTrace",
+        "CacheOpportunity",
+        "SemanticGap",
+        "ParseFailure",
+        "FileAnalysis"
+      ]
+    },
+    "cache": {
+      "file_count": 196,
+      "class_count": 440,
+      "function_count": 3272,
+      "layers": [
+        "L0_routing",
+        "L1_cognition",
+        "L2_execution",
+        "L3_orchestration",
+        "L4_state",
+        "L5_safety",
+        "L6_observability"
+      ],
+      "in_process_map": false,
+      "sample_files": [
+        ".healing_backups\\location_violations\\LicHealingOrchestrator.py",
+        ".healing_backups\\location_violations\\LicHealingOrchestrator_1.py",
+        ".healing_backups\\location_violations\\LicHealingOrchestrator_2.py",
+        ".healing_backups\\location_violations\\RgHealingOrchestrator.py",
+        ".healing_backups\\location_violations\\RgReflectionAgent.py"
+      ],
+      "sample_classes": [
+        "ImportTrace",
+        "CacheOpportunity",
+        "SemanticGap",
+        "ParseFailure",
+        "FileAnalysis"
+      ]
+    },
+    "execution": {
+      "file_count": 344,
+      "class_count": 768,
+      "function_count": 3537,
+      "layers": [
+        "L0_routing",
+        "L1_cognition",
+        "L2_execution",
+        "L3_orchestration",
+        "L4_state",
+        "L5_safety",
+        "L6_observability"
+      ],
+      "in_process_map": false,
+      "sample_files": [
+        ".healing_backups\\location_violations\\RgReflectionAgent.py",
+        ".healing_backups\\location_violations\\agent_registry.py",
+        ".healing_backups\\location_violations\\agent_registry_1.py",
+        ".healing_backups\\location_violations\\agent_registry_2.py",
+        ".healing_backups\\location_violations\\agent_registry_3.py"
+      ],
+      "sample_classes": [
+        "ImportTrace",
+        "CacheOpportunity",
+        "SemanticGap",
+        "ParseFailure",
+        "FileAnalysis"
+      ]
+    },
+    "limit": {
+      "file_count": 30,
+      "class_count": 78,
+      "function_count": 571,
+      "layers": [
+        "L0_routing",
+        "L1_cognition",
+        "L3_orchestration",
+        "L4_state"
+      ],
+      "in_process_map": false,
+      "sample_files": [
+        ".healing_backups\\location_violations\\action_call_generator_types.py",
+        ".healing_backups\\location_violations\\anthropic_client.py",
+        ".healing_backups\\location_violations\\anthropic_client_1.py",
+        ".healing_backups\\location_violations\\anthropic_client_2.py",
+        ".healing_backups\\location_violations\\lic_agent_base_util.py"
+      ],
+      "sample_classes": [
+        "RouteType",
+        "CtaConfig",
+        "CtaResult",
+        "ActionCallGenerator",
+        "AnthropicConfig"
+      ]
+    },
+    "capability": {
+      "file_count": 127,
+      "class_count": 160,
+      "function_count": 781,
+      "layers": [
+        "L0_routing",
+        "L1_cognition",
+        "L2_execution",
+        "L3_orchestration",
+        "L5_safety"
+      ],
+      "in_process_map": false,
+      "sample_files": [
+        ".healing_backups\\location_violations\\HOPPipelineExecutor.py",
+        ".healing_backups\\location_violations\\HOPPipelineExecutor_1.py",
+        ".healing_backups\\location_violations\\HOPPipelineExecutor_2.py",
+        ".healing_backups\\location_violations\\LICValidationExecutor.py",
+        ".healing_backups\\location_violations\\LICValidationExecutor_1.py"
+      ],
+      "sample_classes": [
+        "DagRuntimeInspectorAgent",
+        "DagRuntimeInspectorAgent",
+        "DagRuntimeInspectorAgent",
+        "SignatureVerifierAgent",
+        "SignatureVerifierAgent"
+      ]
+    },
+    "timeout": {
+      "file_count": 120,
+      "class_count": 472,
+      "function_count": 1712,
+      "layers": [
+        "L0_routing",
+        "L2_execution",
+        "L3_orchestration",
+        "L4_state",
+        "L5_safety"
+      ],
+      "in_process_map": false,
+      "sample_files": [
+        ".healing_backups\\location_violations\\DispatchOutreachToolsAgent.py",
+        ".healing_backups\\location_violations\\DispatchOutreachToolsAgent_1.py",
+        ".healing_backups\\location_violations\\DispatchOutreachToolsAgent_2.py",
+        ".healing_backups\\location_violations\\DispatchResumeToolsAgent.py",
+        ".healing_backups\\location_violations\\RgResumeOrchestrator.py"
+      ],
+      "sample_classes": [
+        "DependencyDiplomatAgent",
+        "DependencyDiplomatAgent",
+        "DependencyDiplomatAgent",
+        "GlobalComplianceAggregatorAgent",
+        "GlobalComplianceAggregatorAgent"
+      ]
+    },
+    "trace": {
+      "file_count": 114,
+      "class_count": 496,
+      "function_count": 1385,
+      "layers": [
+        "L0_routing",
+        "L1_cognition",
+        "L2_execution",
+        "L3_orchestration",
+        "L4_state",
+        "L5_safety",
+        "L6_observability"
+      ],
+      "in_process_map": false,
+      "sample_files": [
+        ".healing_backups\\location_violations\\SovereignContext.py",
+        ".healing_backups\\location_violations\\TraceRegistry.py",
+        ".healing_backups\\location_violations\\agentic_core_L6_observability_reasoning_DeadlockDetectorAgent.py",
+        ".healing_backups\\location_violations\\agentic_core_L6_observability_reasoning_DeadlockDetectorAgent_1.py",
+        ".healing_backups\\location_violations\\agentic_core_L6_observability_reasoning_DeadlockDetectorAgent_2.py"
+      ],
+      "sample_classes": [
+        "TaskMonitor",
+        "DeadlockDetectorAgent",
+        "TaskMonitor",
+        "DeadlockDetectorAgent",
+        "TaskMonitor"
+      ]
+    },
+    "monitoring": {
+      "file_count": 8,
+      "class_count": 24,
+      "function_count": 142,
+      "layers": [],
+      "in_process_map": false,
+      "sample_files": [
+        ".healing_backups\\location_violations\\agentic_core_L6_observability_reasoning_DeadlockDetectorAgent.py",
+        ".healing_backups\\location_violations\\agentic_core_L6_observability_reasoning_DeadlockDetectorAgent_1.py",
+        ".healing_backups\\location_violations\\agentic_core_L6_observability_reasoning_DeadlockDetectorAgent_2.py",
+        ".nox\\integration\\Lib\\site-packages\\pluggy\\_manager.py",
+        "agentic_core\\utils\\workflow_engines\\proposer_bridge.py"
+      ],
+      "sample_classes": [
+        "TaskMonitor",
+        "DeadlockDetectorAgent",
+        "TaskMonitor",
+        "DeadlockDetectorAgent",
+        "TaskMonitor"
+      ]
+    },
+    "synthesis": {
+      "file_count": 6,
+      "class_count": 5,
+      "function_count": 51,
+      "layers": [
+        "L0_routing"
+      ],
+      "in_process_map": false,
+      "sample_files": [
+        ".healing_backups\\location_violations\\agentic_core_L6_observability_reasoning_DebateSynthesisAgent.py",
+        ".healing_backups\\location_violations\\agentic_core_L6_observability_reasoning_DebateSynthesisAgent_1.py",
+        ".healing_backups\\location_violations\\agentic_core_L6_observability_reasoning_DebateSynthesisAgent_2.py",
+        "agentic_core\\L0_routing\\scripts\\core_synthesis_executor.py",
+        "apps_shared\\validators\\resume_prompts_validator.py"
+      ],
+      "sample_classes": [
+        "DebateSynthesisAgent",
+        "DebateSynthesisAgent",
+        "DebateSynthesisAgent",
+        "CoreSynthesisExecutor",
+        "DebateSynthesisAgent"
+      ]
+    },
+    "audit": {
+      "file_count": 123,
+      "class_count": 224,
+      "function_count": 1265,
+      "layers": [
+        "L0_routing",
+        "L2_execution",
+        "L3_orchestration",
+        "L4_state",
+        "L5_safety"
+      ],
+      "in_process_map": false,
+      "sample_files": [
+        ".healing_backups\\location_violations\\ExecutiveStrategyAgent.py",
+        ".healing_backups\\location_violations\\ExecutiveStrategyAgent_1.py",
+        ".healing_backups\\location_violations\\ExecutiveStrategyAgent_2.py",
+        ".healing_backups\\location_violations\\GovernanceShieldAgent.py",
+        ".healing_backups\\location_violations\\GovernanceShieldAgent_1.py"
+      ],
+      "sample_classes": [
+        "RuntimeTelemetryAgent",
+        "MockSovereignAgent",
+        "RuntimeTelemetryAgent",
+        "MockSovereignAgent",
+        "RuntimeTelemetryAgent"
+      ]
+    },
+    "anthropic": {
+      "file_count": 36,
+      "class_count": 97,
+      "function_count": 391,
+      "layers": [
+        "L2_execution"
+      ],
+      "in_process_map": false,
+      "sample_files": [
+        ".healing_backups\\location_violations\\HardenedanthropicexecutorStrategy.py",
+        ".healing_backups\\location_violations\\HardenedanthropicexecutorStrategy_1.py",
+        ".healing_backups\\location_violations\\HardenedanthropicexecutorStrategy_2.py",
+        ".healing_backups\\location_violations\\__init___20.py",
+        ".healing_backups\\location_violations\\__init___66.py"
+      ],
+      "sample_classes": [
+        "AgentConfig",
+        "AgentMessage",
+        "AgentResponse",
+        "AgentExecutor",
+        "AnthropicConfig"
+      ]
+    },
+    "openai": {
+      "file_count": 33,
+      "class_count": 112,
+      "function_count": 359,
+      "layers": [
+        "L2_execution"
+      ],
+      "in_process_map": false,
+      "sample_files": [
+        ".healing_backups\\location_violations\\AllProvidersDownError.py",
+        ".healing_backups\\location_violations\\HardenedopenaiexecutorStrategy.py",
+        ".healing_backups\\location_violations\\__init___20.py",
+        ".healing_backups\\location_violations\\__init___66.py",
+        ".healing_backups\\location_violations\\__init___75.py"
+      ],
+      "sample_classes": [
+        "AgentConfig",
+        "AgentMessage",
+        "AgentResponse",
+        "AgentExecutor",
+        "AllProvidersDownError"
+      ]
+    },
+    "gateway": {
+      "file_count": 162,
+      "class_count": 302,
+      "function_count": 1886,
+      "layers": [
+        "L0_routing",
+        "L2_execution",
+        "L3_orchestration",
+        "L4_state",
+        "L5_safety",
+        "L6_observability"
+      ],
+      "in_process_map": false,
+      "sample_files": [
+        ".healing_backups\\location_violations\\GeminiLLMClient.py",
+        ".healing_backups\\location_violations\\HardenedanthropicexecutorStrategy.py",
+        ".healing_backups\\location_violations\\HardenedanthropicexecutorStrategy_1.py",
+        ".healing_backups\\location_violations\\HardenedanthropicexecutorStrategy_2.py",
+        ".healing_backups\\location_violations\\HardenedopenaiexecutorStrategy.py"
+      ],
+      "sample_classes": [
+        "GeminiLLMClient",
+        "HardenedAnthropicConfig",
+        "HardenedAnthropicExecutor",
+        "HardenedAnthropicConfig",
+        "HardenedAnthropicExecutor"
+      ]
+    },
+    "llm": {
+      "file_count": 46,
+      "class_count": 236,
+      "function_count": 672,
+      "layers": [
+        "L0_routing",
+        "L1_cognition",
+        "L2_execution",
+        "L3_orchestration",
+        "L5_safety"
+      ],
+      "in_process_map": false,
+      "sample_files": [
+        ".healing_backups\\location_violations\\HardenedanthropicexecutorStrategy.py",
+        ".healing_backups\\location_violations\\HardenedanthropicexecutorStrategy_1.py",
+        ".healing_backups\\location_violations\\HardenedanthropicexecutorStrategy_2.py",
+        ".healing_backups\\location_violations\\HardenedopenaiexecutorStrategy.py",
+        ".healing_backups\\location_violations\\__init___18.py"
+      ],
+      "sample_classes": [
+        "HardenedAnthropicConfig",
+        "HardenedAnthropicExecutor",
+        "HardenedAnthropicConfig",
+        "HardenedAnthropicExecutor",
+        "HardenedAnthropicConfig"
+      ]
+    },
+    "enforcement": {
+      "file_count": 207,
+      "class_count": 528,
+      "function_count": 2257,
+      "layers": [
+        "L0_routing",
+        "L2_execution",
+        "L3_orchestration",
+        "L4_state",
+        "L5_safety",
+        "L6_observability"
+      ],
+      "in_process_map": false,
+      "sample_files": [
+        ".healing_backups\\location_violations\\__init__.py",
+        ".healing_backups\\location_violations\\__init___15.py",
+        ".healing_backups\\location_violations\\__init___22.py",
+        ".healing_backups\\location_violations\\agent_registry.py",
+        ".healing_backups\\location_violations\\agent_registry_2.py"
+      ],
+      "sample_classes": [
+        "FallbackContext",
+        "CallableReport",
+        "FallbackContext",
+        "CallableReport",
+        "FallbackContext"
+      ]
+    },
+    "registry": {
+      "file_count": 153,
+      "class_count": 306,
+      "function_count": 1534,
+      "layers": [
+        "L0_routing",
+        "L2_execution",
+        "L3_orchestration",
+        "L4_state",
+        "L5_safety",
+        "L6_observability"
+      ],
+      "in_process_map": false,
+      "sample_files": [
+        ".healing_backups\\location_violations\\HOPPipelineExecutor.py",
+        ".healing_backups\\location_violations\\HOPPipelineExecutor_1.py",
+        ".healing_backups\\location_violations\\HOPPipelineExecutor_2.py",
+        ".healing_backups\\location_violations\\_assertions.py",
+        ".healing_backups\\location_violations\\_contract_gate_ssot.py"
+      ],
+      "sample_classes": [
+        "HOPPipelineExecutor",
+        "HOPPipelineExecutor",
+        "HOPPipelineExecutor",
+        "HopCheckpoint",
+        "ResumeOrchestratorEngine"
+      ]
+    },
+    "circuit": {
+      "file_count": 28,
+      "class_count": 245,
+      "function_count": 389,
+      "layers": [
+        "L2_execution",
+        "L3_orchestration",
+        "L5_safety",
+        "L6_observability"
+      ],
+      "in_process_map": false,
+      "sample_files": [
+        ".healing_backups\\location_violations\\AllProvidersDownError.py",
+        "agentic_core\\L2_execution\\healers\\qwen_circuit_breaker.py",
+        "agentic_core\\L2_execution\\healers\\qwen_health.py",
+        "agentic_core\\L2_execution\\types\\vllm_gateway_integration_types.py",
+        "agentic_core\\L3_orchestration\\engines\\autonomous_execution_engine.py"
+      ],
+      "sample_classes": [
+        "AllProvidersDownError",
+        "HardenedRouter",
+        "CircuitState",
+        "CircuitStats",
+        "CircuitBreakerMixin"
+      ]
+    },
+    "health": {
+      "file_count": 52,
+      "class_count": 102,
+      "function_count": 671,
+      "layers": [
+        "L0_routing",
+        "L1_cognition",
+        "L2_execution",
+        "L3_orchestration",
+        "L4_state",
+        "L5_safety",
+        "L6_observability"
+      ],
+      "in_process_map": false,
+      "sample_files": [
+        ".healing_backups\\location_violations\\AllProvidersDownError.py",
+        ".healing_backups\\location_violations\\LicHealingOrchestrator.py",
+        ".healing_backups\\location_violations\\LicHealingOrchestrator_1.py",
+        ".healing_backups\\location_violations\\LicHealingOrchestrator_2.py",
+        ".healing_backups\\location_violations\\audit_dashboard_ssot_flow_util.py"
+      ],
+      "sample_classes": [
+        "AllProvidersDownError",
+        "HardenedRouter",
+        "L1HealthBenchmark",
+        "LicHealingOrchestrator",
+        "LicHealingOrchestrator"
+      ]
+    },
+    "event": {
+      "file_count": 45,
+      "class_count": 267,
+      "function_count": 739,
+      "layers": [
+        "L0_routing",
+        "L1_cognition",
+        "L3_orchestration",
+        "L4_state",
+        "L5_safety",
+        "L6_observability"
+      ],
+      "in_process_map": false,
+      "sample_files": [
+        ".healing_backups\\location_violations\\AllProvidersDownError.py",
+        ".nox\\integration\\Lib\\site-packages\\pip\\_vendor\\rich\\live.py",
+        ".nox\\integration\\Lib\\site-packages\\pip\\_vendor\\rich\\progress.py",
+        "agentic_core\\L0_routing\\enforcement\\mutation_prohibition.py",
+        "agentic_core\\L0_routing\\enforcement\\vigilance_routing.py"
+      ],
+      "sample_classes": [
+        "AllProvidersDownError",
+        "HardenedRouter",
+        "_RefreshThread",
+        "Live",
+        "_TrackThread"
+      ]
+    },
+    "backoff": {
+      "file_count": 15,
+      "class_count": 34,
+      "function_count": 245,
+      "layers": [
+        "L5_safety"
+      ],
+      "in_process_map": false,
+      "sample_files": [
+        ".healing_backups\\location_violations\\anthropic_client.py",
+        ".healing_backups\\location_violations\\anthropic_client_1.py",
+        ".healing_backups\\location_violations\\anthropic_client_2.py",
+        ".healing_backups\\location_violations\\openai_client.py",
+        ".healing_backups\\location_violations\\openai_client_1.py"
+      ],
+      "sample_classes": [
+        "AnthropicConfig",
+        "AnthropicClient",
+        "AnthropicConfig",
+        "AnthropicClient",
+        "AnthropicConfig"
+      ]
+    },
+    "stream": {
+      "file_count": 27,
+      "class_count": 136,
+      "function_count": 971,
+      "layers": [],
+      "in_process_map": false,
+      "sample_files": [
+        ".healing_backups\\location_violations\\anthropic_client.py",
+        ".healing_backups\\location_violations\\anthropic_client_1.py",
+        ".healing_backups\\location_violations\\anthropic_client_2.py",
+        ".healing_backups\\location_violations\\openai_client.py",
+        ".healing_backups\\location_violations\\openai_client_1.py"
+      ],
+      "sample_classes": [
+        "AnthropicConfig",
+        "AnthropicClient",
+        "AnthropicConfig",
+        "AnthropicClient",
+        "AnthropicConfig"
+      ]
+    },
+    "tool": {
+      "file_count": 74,
+      "class_count": 179,
+      "function_count": 832,
+      "layers": [
+        "L0_routing",
+        "L2_execution",
+        "L3_orchestration",
+        "L4_state",
+        "L5_safety",
+        "L6_observability"
+      ],
+      "in_process_map": false,
+      "sample_files": [
+        ".healing_backups\\location_violations\\DispatchResumeToolsAgent.py",
+        ".healing_backups\\location_violations\\anthropic_client.py",
+        ".healing_backups\\location_violations\\anthropic_client_1.py",
+        ".healing_backups\\location_violations\\anthropic_client_2.py",
+        ".healing_backups\\location_violations\\message_route_types.py"
+      ],
+      "sample_classes": [
+        "AnthropicConfig",
+        "AnthropicClient",
+        "AnthropicConfig",
+        "AnthropicClient",
+        "AnthropicConfig"
+      ]
+    },
+    "validation": {
+      "file_count": 102,
+      "class_count": 398,
+      "function_count": 1314,
+      "layers": [
+        "L0_routing",
+        "L2_execution",
+        "L3_orchestration",
+        "L4_state",
+        "L5_safety",
+        "L6_observability"
+      ],
+      "in_process_map": false,
+      "sample_files": [
+        ".healing_backups\\location_violations\\LICValidationExecutor.py",
+        ".healing_backups\\location_violations\\LICValidationExecutor_1.py",
+        ".healing_backups\\location_violations\\LICValidationExecutor_2.py",
+        ".healing_backups\\location_violations\\ValidatorAgent.py",
+        ".healing_backups\\location_violations\\apps_lic_engines_CampaignBalanceAgent.py"
+      ],
+      "sample_classes": [
+        "CampaignBalanceAgent",
+        "CampaignBalanceAgent",
+        "CampaignBalanceAgent",
+        "DeliverabilityAgent",
+        "DeliverabilityAgent"
+      ]
+    },
+    "confidence": {
+      "file_count": 85,
+      "class_count": 280,
+      "function_count": 1128,
+      "layers": [
+        "L0_routing",
+        "L1_cognition",
+        "L2_execution",
+        "L4_state",
+        "L5_safety"
+      ],
+      "in_process_map": false,
+      "sample_files": [
+        ".healing_backups\\location_violations\\AssessContentRelevance.py",
+        ".healing_backups\\location_violations\\AssessContentRisk.py",
+        ".healing_backups\\location_violations\\AssessMessageRelevance.py",
+        ".healing_backups\\location_violations\\CalibrateEngagementScore.py",
+        ".healing_backups\\location_violations\\CalibrateFitScore.py"
+      ],
+      "sample_classes": [
+        "HOP2ResearchAgent",
+        "HOP2ResearchAgent",
+        "HOP2ResearchAgent",
+        "OutreachEngineContext",
+        "OutreachAgent"
+      ]
+    },
+    "rate": {
+      "file_count": 46,
+      "class_count": 212,
+      "function_count": 801,
+      "layers": [
+        "L0_routing",
+        "L1_cognition",
+        "L2_execution",
+        "L5_safety"
+      ],
+      "in_process_map": false,
+      "sample_files": [
+        ".healing_backups\\location_violations\\OutreachLearningAgent.py",
+        ".healing_backups\\location_violations\\OutreachLearningAgent_1.py",
+        ".healing_backups\\location_violations\\OutreachLearningAgent_2.py",
+        ".healing_backups\\location_violations\\app_content_validator_agent_types.py",
+        ".healing_backups\\location_violations\\apps_lic_engines_OutreachLearningAgent.py"
+      ],
+      "sample_classes": [
+        "OutreachEngineContext",
+        "OutreachAgent",
+        "HealerMixin",
+        "OutreachConfidenceLevel",
+        "OutreachLearningExample"
+      ]
+    },
+    "replay": {
+      "file_count": 53,
+      "class_count": 150,
+      "function_count": 516,
+      "layers": [
+        "L0_routing",
+        "L2_execution",
+        "L3_orchestration",
+        "L4_state",
+        "L6_observability"
+      ],
+      "in_process_map": false,
+      "sample_files": [
+        ".healing_backups\\location_violations\\architectural_invariants.py",
+        ".healing_backups\\location_violations\\embedding_factory.py",
+        "agentic_core\\L0_routing\\enforcement\\crypto_trust_contracts.py",
+        "agentic_core\\L0_routing\\enforcement\\trace_id_generator.py",
+        "agentic_core\\L2_execution\\enforcement\\SovereignLLMGateway.py"
+      ],
+      "sample_classes": [
+        "EmbeddingDisabledError",
+        "EmbeddingSovereigntyViolationError",
+        "EmbeddingClient",
+        "OpenAIEmbeddingClient",
+        "ReplayGuardMixin"
+      ]
+    },
+    "manifest": {
+      "file_count": 69,
+      "class_count": 182,
+      "function_count": 1188,
+      "layers": [
+        "L0_routing",
+        "L2_execution",
+        "L3_orchestration",
+        "L5_safety",
+        "L6_observability"
+      ],
+      "in_process_map": false,
+      "sample_files": [
+        ".healing_backups\\location_violations\\assemble.py",
+        ".healing_backups\\location_violations\\assemble_1.py",
+        ".healing_backups\\location_violations\\assemble_2.py",
+        ".healing_backups\\location_violations\\finalize_architecture_safe_util.py",
+        ".healing_backups\\location_violations\\finalize_architecture_safe_util_1.py"
+      ],
+      "sample_classes": [
+        "MCPHardenedMixin",
+        "MCPHardenedMixin",
+        "HealerMixin",
+        "ManifestManager",
+        "MigrationExecutor"
+      ]
+    },
+    "guard": {
+      "file_count": 64,
+      "class_count": 164,
+      "function_count": 940,
+      "layers": [
+        "L0_routing",
+        "L1_cognition",
+        "L2_execution",
+        "L3_orchestration",
+        "L4_state",
+        "L5_safety"
+      ],
+      "in_process_map": false,
+      "sample_files": [
+        ".healing_backups\\location_violations\\_discover_debt.py",
+        ".healing_backups\\location_violations\\_discover_debt_1.py",
+        ".healing_backups\\location_violations\\audit_status.py",
+        ".healing_backups\\location_violations\\audit_status_1.py",
+        ".healing_backups\\location_violations\\audit_status_2.py"
+      ],
+      "sample_classes": [
+        "AuditStatus",
+        "SovereignReport",
+        "AuditStatus",
+        "SovereignReport",
+        "AuditStatus"
+      ]
+    },
+    "compliance": {
+      "file_count": 70,
+      "class_count": 208,
+      "function_count": 995,
+      "layers": [
+        "L0_routing",
+        "L2_execution",
+        "L3_orchestration",
+        "L5_safety",
+        "L6_observability"
+      ],
+      "in_process_map": false,
+      "sample_files": [
+        ".healing_backups\\location_violations\\OutreachSignalRouterAgent.py",
+        ".healing_backups\\location_violations\\OutreachSignalRouterAgent_1.py",
+        ".healing_backups\\location_violations\\OutreachSignalRouterAgent_2.py",
+        ".healing_backups\\location_violations\\base.py",
+        ".healing_backups\\location_violations\\callable_report.py"
+      ],
+      "sample_classes": [
+        "GuardianTestBase",
+        "AgentTestMixin",
+        "ValidationResult",
+        "FallbackContext",
+        "CallableReport"
+      ]
+    },
+    "snapshot": {
+      "file_count": 64,
+      "class_count": 214,
+      "function_count": 831,
+      "layers": [
+        "L0_routing",
+        "L2_execution",
+        "L3_orchestration",
+        "L4_state",
+        "L6_observability"
+      ],
+      "in_process_map": false,
+      "sample_files": [
+        ".healing_backups\\location_violations\\ImmutableStagingBuffer.py",
+        ".healing_backups\\location_violations\\base_rg_engine.py",
+        ".healing_backups\\location_violations\\base_rg_engine_1.py",
+        ".healing_backups\\location_violations\\base_rg_engine_2.py",
+        ".healing_backups\\location_violations\\capture_golden.py"
+      ],
+      "sample_classes": [
+        "MCPHardenedMixin",
+        "HealerMixin",
+        "BaseRGEngine",
+        "MCPHardenedMixin",
+        "HealerMixin"
+      ]
+    },
+    "budget": {
+      "file_count": 38,
+      "class_count": 311,
+      "function_count": 637,
+      "layers": [
+        "L0_routing",
+        "L2_execution",
+        "L3_orchestration",
+        "L5_safety"
+      ],
+      "in_process_map": false,
+      "sample_files": [
+        ".healing_backups\\location_violations\\HardenedanthropicexecutorStrategy.py",
+        ".healing_backups\\location_violations\\HardenedanthropicexecutorStrategy_1.py",
+        ".healing_backups\\location_violations\\HardenedanthropicexecutorStrategy_2.py",
+        ".healing_backups\\location_violations\\HardenedopenaiexecutorStrategy.py",
+        ".healing_backups\\location_violations\\budget_auditor_util.py"
+      ],
+      "sample_classes": [
+        "BudgetAuditor",
+        "BudgetAuditor",
+        "BudgetAuditor",
+        "HardenedAnthropicConfig",
+        "HardenedAnthropicExecutor"
+      ]
+    },
+    "sovereign": {
+      "file_count": 102,
+      "class_count": 281,
+      "function_count": 1398,
+      "layers": [
+        "L0_routing",
+        "L1_cognition",
+        "L2_execution",
+        "L3_orchestration",
+        "L5_safety"
+      ],
+      "in_process_map": false,
+      "sample_files": [
+        ".healing_backups\\location_violations\\__init___17.py",
+        ".healing_backups\\location_violations\\__init___24.py",
+        ".healing_backups\\location_violations\\__init___32.py",
+        ".healing_backups\\location_violations\\_discover_debt.py",
+        ".healing_backups\\location_violations\\_discover_debt_1.py"
+      ],
+      "sample_classes": [
+        "FallbackContext",
+        "CallableReport",
+        "FallbackContext",
+        "CallableReport",
+        "FallbackContext"
+      ]
+    },
+    "injection": {
+      "file_count": 45,
+      "class_count": 274,
+      "function_count": 573,
+      "layers": [
+        "L2_execution",
+        "L3_orchestration",
+        "L5_safety",
+        "L6_observability"
+      ],
+      "in_process_map": false,
+      "sample_files": [
+        ".healing_backups\\location_violations\\dashboard_verifier.py",
+        ".healing_backups\\location_violations\\dashboard_verifier_1.py",
+        ".healing_backups\\location_violations\\dashboard_verifier_2.py",
+        "agentic_core\\L2_execution\\enforcement\\SovereignLLMGateway.py",
+        "agentic_core\\L3_orchestration\\engines\\sub_atomic_engine_impl.py"
+      ],
+      "sample_classes": [
+        "DashboardVerifier",
+        "DashboardVerifier",
+        "DashboardVerifier",
+        "InstructionalInjectionMixin",
+        "InjectionLayer"
+      ]
+    },
+    "policy": {
+      "file_count": 92,
+      "class_count": 452,
+      "function_count": 1372,
+      "layers": [
+        "L0_routing",
+        "L2_execution",
+        "L4_state",
+        "L5_safety"
+      ],
+      "in_process_map": false,
+      "sample_files": [
+        ".healing_backups\\location_violations\\ValidatorAgent.py",
+        ".healing_backups\\location_violations\\enforce_execution_policy.py",
+        ".healing_backups\\location_violations\\l4_state_writer.py",
+        ".healing_backups\\location_violations\\retry_policy_config.py",
+        ".healing_backups\\location_violations\\retry_policy_config_1.py"
+      ],
+      "sample_classes": [
+        "SimpleChangePackage",
+        "L4StateWriter",
+        "DefaultL4StateWriter",
+        "NoOpL4StateWriter",
+        "RetryStrategy"
+      ]
+    },
+    "token": {
+      "file_count": 324,
+      "class_count": 906,
+      "function_count": 1450,
+      "layers": [
+        "L0_routing",
+        "L2_execution"
+      ],
+      "in_process_map": false,
+      "sample_files": [
+        ".healing_backups\\location_violations\\HardenedanthropicexecutorStrategy.py",
+        ".healing_backups\\location_violations\\HardenedanthropicexecutorStrategy_1.py",
+        ".healing_backups\\location_violations\\HardenedanthropicexecutorStrategy_2.py",
+        ".healing_backups\\location_violations\\HardenedopenaiexecutorStrategy.py",
+        ".nox\\integration\\Lib\\site-packages\\packaging\\_tokenizer.py"
+      ],
+      "sample_classes": [
+        "HardenedAnthropicConfig",
+        "HardenedAnthropicExecutor",
+        "HardenedAnthropicConfig",
+        "HardenedAnthropicExecutor",
+        "HardenedAnthropicConfig"
+      ]
+    },
+    "threshold": {
+      "file_count": 37,
+      "class_count": 79,
+      "function_count": 507,
+      "layers": [
+        "L0_routing",
+        "L1_cognition",
+        "L2_execution",
+        "L3_orchestration",
+        "L5_safety"
+      ],
+      "in_process_map": false,
+      "sample_files": [
+        ".healing_backups\\location_violations\\l0_threshold_tuner.py",
+        ".healing_backups\\naming_violations\\l0_threshold_tuner.py",
+        ".healing_backups\\naming_violations\\l0_threshold_tuner_1.py",
+        ".healing_backups\\naming_violations\\l0_threshold_tuner_2.py",
+        ".healing_backups\\naming_violations\\l0_threshold_tuner_3.py"
+      ],
+      "sample_classes": [
+        "L0ThresholdChangePackage",
+        "L0ThresholdChangePackage",
+        "L0ThresholdChangePackage",
+        "L0ThresholdChangePackage",
+        "L0ProposerAdapter"
+      ]
+    },
+    "drift": {
+      "file_count": 27,
+      "class_count": 105,
+      "function_count": 409,
+      "layers": [
+        "L0_routing",
+        "L2_execution",
+        "L5_safety",
+        "L6_observability"
+      ],
+      "in_process_map": false,
+      "sample_files": [
+        ".healing_backups\\location_violations\\l4_state_writer.py",
+        ".healing_backups\\naming_violations\\l1_meta_adapter.py",
+        ".healing_backups\\naming_violations\\l1_meta_adapter_1.py",
+        ".healing_backups\\naming_violations\\l4_state_writer_2.py",
+        ".healing_backups\\naming_violations\\l4_state_writer_3.py"
+      ],
+      "sample_classes": [
+        "SimpleChangePackage",
+        "L4StateWriter",
+        "DefaultL4StateWriter",
+        "NoOpL4StateWriter",
+        "L1TelemetryEvent"
+      ]
+    },
+    "detection": {
+      "file_count": 35,
+      "class_count": 73,
+      "function_count": 414,
+      "layers": [
+        "L0_routing",
+        "L2_execution",
+        "L4_state",
+        "L5_safety",
+        "L6_observability"
+      ],
+      "in_process_map": false,
+      "sample_files": [
+        ".healing_backups\\location_violations\\l4_state_writer.py",
+        ".healing_backups\\naming_violations\\l4_state_writer.py",
+        ".healing_backups\\naming_violations\\l4_state_writer_1.py",
+        ".healing_backups\\naming_violations\\l4_state_writer_2.py",
+        ".healing_backups\\naming_violations\\l4_state_writer_3.py"
+      ],
+      "sample_classes": [
+        "SimpleChangePackage",
+        "L4StateWriter",
+        "DefaultL4StateWriter",
+        "NoOpL4StateWriter",
+        "SimpleChangePackage"
+      ]
+    },
+    "retrieval": {
+      "file_count": 43,
+      "class_count": 168,
+      "function_count": 591,
+      "layers": [
+        "L0_routing",
+        "L3_orchestration",
+        "L4_state"
+      ],
+      "in_process_map": false,
+      "sample_files": [
+        ".healing_backups\\location_violations\\l4_state_writer.py",
+        ".healing_backups\\naming_violations\\l4_registries.py",
+        ".healing_backups\\naming_violations\\l4_registries_1.py",
+        ".healing_backups\\naming_violations\\l4_state_writer_2.py",
+        ".healing_backups\\naming_violations\\l4_state_writer_3.py"
+      ],
+      "sample_classes": [
+        "SimpleChangePackage",
+        "L4StateWriter",
+        "DefaultL4StateWriter",
+        "NoOpL4StateWriter",
+        "ChunkManifest"
+      ]
+    },
+    "rollback": {
+      "file_count": 45,
+      "class_count": 229,
+      "function_count": 736,
+      "layers": [
+        "L0_routing",
+        "L2_execution",
+        "L3_orchestration",
+        "L4_state",
+        "L5_safety"
+      ],
+      "in_process_map": false,
+      "sample_files": [
+        ".healing_backups\\location_violations\\OutreachSignalRouterAgent.py",
+        ".healing_backups\\location_violations\\OutreachSignalRouterAgent_1.py",
+        ".healing_backups\\location_violations\\OutreachSignalRouterAgent_2.py",
+        ".healing_backups\\location_violations\\PromptTemplate.py",
+        ".healing_backups\\location_violations\\PromptTemplate_2.py"
+      ],
+      "sample_classes": [
+        "VersionStoreError",
+        "VersionAlreadyExists",
+        "VersionNotFound",
+        "ParentVersionNotFound",
+        "InvalidActivationTarget"
+      ]
+    },
+    "cosine": {
+      "file_count": 10,
+      "class_count": 56,
+      "function_count": 235,
+      "layers": [
+        "L0_routing",
+        "L2_execution"
+      ],
+      "in_process_map": false,
+      "sample_files": [
+        ".healing_backups\\location_violations\\LicCodeInterpreter.py",
+        ".healing_backups\\location_violations\\LicCodeInterpreter_1.py",
+        ".healing_backups\\location_violations\\LicCodeInterpreter_2.py",
+        "agentic_core\\L0_routing\\scripts\\execute_ssot.py",
+        "agentic_core\\L2_execution\\healers\\bmg_embedding_similarity.py"
+      ],
+      "sample_classes": [
+        "ScoredCandidate",
+        "ScoringCriteria",
+        "SimilarityResult",
+        "KeywordExtractionResult",
+        "LICCodeInterpreter"
+      ]
+    },
+    "recovery": {
+      "file_count": 16,
+      "class_count": 34,
+      "function_count": 162,
+      "layers": [
+        "L4_state",
+        "L5_safety"
+      ],
+      "in_process_map": false,
+      "sample_files": [
+        ".healing_backups\\location_violations\\LicHealingOrchestrator.py",
+        ".healing_backups\\location_violations\\LicHealingOrchestrator_1.py",
+        ".healing_backups\\location_violations\\LicHealingOrchestrator_2.py",
+        "agentic_core\\L4_state\\reasoning\\CheckpointManager.py",
+        "agentic_core\\L5_safety\\enforcement\\error_recovery_guardrail.py"
+      ],
+      "sample_classes": [
+        "LicHealingOrchestrator",
+        "LicHealingOrchestrator",
+        "LicHealingOrchestrator",
+        "CircuitState",
+        "CircuitStats"
+      ]
+    },
+    "isolation": {
+      "file_count": 13,
+      "class_count": 19,
+      "function_count": 303,
+      "layers": [
+        "L1_cognition",
+        "L5_safety"
+      ],
+      "in_process_map": false,
+      "sample_files": [
+        ".healing_backups\\location_violations\\lic_agent_base_util.py",
+        ".healing_backups\\location_violations\\rg_agent_base_util.py",
+        "agentic_core\\L1_cognition\\utils\\guardrails_util.py",
+        "agentic_core\\L5_safety\\reasoning\\LocationValidatorAgent.py",
+        "agentic_core\\prompt_governance\\security\\validators\\output_schema_validator.py"
+      ],
+      "sample_classes": [
+        "MetaLearningMixin",
+        "HealerMixin",
+        "LICAgentBase",
+        "RGAgentBase",
+        "CacheGuardrails"
+      ]
+    },
+    "chromadb": {
+      "file_count": 3,
+      "class_count": 12,
+      "function_count": 46,
+      "layers": [
+        "L4_state"
+      ],
+      "in_process_map": false,
+      "sample_files": [
+        ".healing_backups\\location_violations\\lic_vector_memory_types.py",
+        "agentic_core\\L4_state\\memory\\in_memory_vector_cache.py",
+        "apps_lic\\types\\lic_vector_memory_types.py"
+      ],
+      "sample_classes": [
+        "VectorDocument",
+        "QueryResult",
+        "MemoryStats",
+        "LICVectorMemory",
+        "MockVectorMemory"
+      ]
+    },
+    "workflow": {
+      "file_count": 11,
+      "class_count": 168,
+      "function_count": 215,
+      "layers": [
+        "L3_orchestration"
+      ],
+      "in_process_map": false,
+      "sample_files": [
+        ".healing_backups\\location_violations\\local_workflow_loader.py",
+        "agentic_core\\L3_orchestration\\engines\\coordinator_capability_orchestrator.py",
+        "agentic_core\\L3_orchestration\\types\\workflow_loader_types.py",
+        "agentic_core\\base_agents\\L3OrchestrationBase.py",
+        "apps_rg\\tools\\local_workflow_loader.py"
+      ],
+      "sample_classes": [
+        "LocalWorkflowLoader",
+        "execute_resume_generation",
+        "L3OrchestrationBase",
+        "CoordinatorCapability",
+        "WorkflowCoordinator"
+      ]
+    },
+    "template": {
+      "file_count": 42,
+      "class_count": 254,
+      "function_count": 645,
+      "layers": [
+        "L1_cognition",
+        "L2_execution",
+        "L4_state",
+        "L5_safety",
+        "L6_observability"
+      ],
+      "in_process_map": false,
+      "sample_files": [
+        ".healing_backups\\location_violations\\OutreachMessageAgent.py",
+        ".healing_backups\\location_violations\\OutreachMessageAgent_1.py",
+        ".healing_backups\\location_violations\\OutreachMessageAgent_2.py",
+        ".healing_backups\\location_violations\\ResumeAssemblyAgent.py",
+        ".healing_backups\\location_violations\\recipient_archetype_types.py"
+      ],
+      "sample_classes": [
+        "OutreachTemplateError",
+        "OutreachMessageAgent",
+        "OutreachTemplateError",
+        "OutreachMessageAgent",
+        "OutreachTemplateError"
+      ]
+    },
+    "anomaly": {
+      "file_count": 3,
+      "class_count": 5,
+      "function_count": 35,
+      "layers": [
+        "L4_state",
+        "L5_safety"
+      ],
+      "in_process_map": false,
+      "sample_files": [
+        ".healing_backups\\location_violations\\repo_builder.py",
+        "agentic_core\\L4_state\\reasoning\\CachedStateLedger.py",
+        "agentic_core\\L5_safety\\types\\file_health_score_types.py"
+      ],
+      "sample_classes": [
+        "RepoBuilder",
+        "CachedStateLedger",
+        "FileHealthScore",
+        "HealingLease",
+        "AtomicBlackboard"
+      ]
+    },
+    "gemini": {
+      "file_count": 12,
+      "class_count": 28,
+      "function_count": 126,
+      "layers": [
+        "L2_execution",
+        "L5_safety"
+      ],
+      "in_process_map": false,
+      "sample_files": [
+        ".healing_backups\\location_violations\\ResumeGenerator.py",
+        "agentic_core\\L2_execution\\healers\\healing_provider_adapters.py",
+        "agentic_core\\L2_execution\\healers\\healing_tier_dispatcher.py",
+        "agentic_core\\L2_execution\\tools\\job_analyzer_impl.py",
+        "agentic_core\\L2_execution\\types\\vllm_backpressure_types.py"
+      ],
+      "sample_classes": [
+        "ResumeGenerator",
+        "OOMRetryableError",
+        "OOMEscalatedError",
+        "QwenInvokerAdapter",
+        "GeminiInvokerAdapter"
+      ]
+    },
+    "ledger": {
+      "file_count": 7,
+      "class_count": 16,
+      "function_count": 111,
+      "layers": [
+        "L2_execution",
+        "L5_safety"
+      ],
+      "in_process_map": false,
+      "sample_files": [
+        ".healing_backups\\location_violations\\rg_sovereign_auditor.py",
+        "agentic_core\\L2_execution\\UniversalWriteGateway.py",
+        "agentic_core\\L5_safety\\enforcement\\archival_gatekeeper_gate.py",
+        "apps_rg\\scripts\\rg_sovereign_auditor.py",
+        "apps_shared\\validators\\fact_ledger_validator.py"
+      ],
+      "sample_classes": [
+        "RGSovereignAuditor",
+        "ToolNotAllowedError",
+        "MutationRecord",
+        "SimulationResult",
+        "UniversalWriteGateway"
+      ]
+    },
+    "migration": {
+      "file_count": 33,
+      "class_count": 123,
+      "function_count": 500,
+      "layers": [
+        "L0_routing",
+        "L5_safety",
+        "L6_observability"
+      ],
+      "in_process_map": false,
+      "sample_files": [
+        ".healing_backups\\location_violations\\rg_sovereign_auditor.py",
+        ".healing_backups\\location_violations\\stack_modernization_agent_types.py",
+        ".nox\\integration\\Lib\\site-packages\\pydantic\\__init__.py",
+        ".nox\\integration\\Lib\\site-packages\\pydantic\\_migration.py",
+        ".nox\\integration\\Lib\\site-packages\\pydantic\\class_validators.py"
+      ],
+      "sample_classes": [
+        "RGSovereignAuditor",
+        "LegacyDiagnostic",
+        "MigrationThesis",
+        "StackModernizationAgent",
+        "ConfigDict"
+      ]
+    },
+    "persistence": {
+      "file_count": 3,
+      "class_count": 0,
+      "function_count": 36,
+      "layers": [],
+      "in_process_map": false,
+      "sample_files": [
+        ".healing_backups\\location_violations\\run_phase3_integration.py",
+        ".healing_backups\\location_violations\\run_phase3_integration_1.py",
+        ".healing_backups\\location_violations\\run_phase3_integration_2.py"
+      ],
+      "sample_classes": []
+    },
+    "airlock": {
+      "file_count": 5,
+      "class_count": 7,
+      "function_count": 31,
+      "layers": [
+        "L5_safety"
+      ],
+      "in_process_map": false,
+      "sample_files": [
+        ".healing_backups\\location_violations\\SovereignContext.py",
+        "agentic_core\\L5_safety\\enforcement\\airlock_trimmer_enforcer.py",
+        "agentic_core\\L5_safety\\enforcement\\final_airlock_trimmer_enforcer.py",
+        "agentic_core\\runtime\\utils\\runtime_bootstrapper_util.py",
+        "apps_rg\\types\\SovereignContext.py"
+      ],
+      "sample_classes": [
+        "SimpleBuffer",
+        "SimpleTrace",
+        "SovereignContext",
+        "runtime_bootstrapper",
+        "SimpleBuffer"
+      ]
+    },
+    "checkpoint": {
+      "file_count": 16,
+      "class_count": 200,
+      "function_count": 321,
+      "layers": [
+        "L0_routing",
+        "L3_orchestration",
+        "L4_state",
+        "L5_safety"
+      ],
+      "in_process_map": false,
+      "sample_files": [
+        ".healing_backups\\location_violations\\state_checkpoint_types.py",
+        "agentic_core\\L0_routing\\scripts\\colors.py",
+        "agentic_core\\L3_orchestration\\engines\\autonomous_execution_engine.py",
+        "agentic_core\\L4_state\\memory\\verifiable_checkpoint_manager.py",
+        "agentic_core\\L4_state\\reasoning\\CheckpointManager.py"
+      ],
+      "sample_classes": [
+        "StateCheckpoint",
+        "StateValidationResult",
+        "LICStateManager",
+        "StateValidator",
+        "Colors"
+      ]
+    },
+    "assembly": {
+      "file_count": 13,
+      "class_count": 11,
+      "function_count": 31,
+      "layers": [
+        "L0_routing",
+        "L3_orchestration"
+      ],
+      "in_process_map": false,
+      "sample_files": [
+        ".healing_backups\\location_violations\\validate_assembly.py",
+        ".healing_backups\\location_violations\\validate_assembly_1.py",
+        ".healing_backups\\location_violations\\validate_assembly_2.py",
+        "agentic_core\\L0_routing\\engines\\path_router.py",
+        "agentic_core\\L3_orchestration\\engines\\deterministic_orchestrator.py"
+      ],
+      "sample_classes": [
+        "OrchestrationResult",
+        "IOrchestrator",
+        "Path",
+        "PathRouter",
+        "RouteMode"
+      ]
+    },
+    "evaluation": {
+      "file_count": 19,
+      "class_count": 62,
+      "function_count": 231,
+      "layers": [],
+      "in_process_map": false,
+      "sample_files": [
+        ".healing_backups\\naming_violations\\l4_registries.py",
+        ".healing_backups\\naming_violations\\l4_registries_1.py",
+        "agentic_core\\evaluation\\__init__.py",
+        "agentic_core\\utils\\workflow_engines\\answer_support.py",
+        "agentic_core\\utils\\workflow_engines\\completeness.py"
+      ],
+      "sample_classes": [
+        "ChunkManifest",
+        "ParentChildLink",
+        "RetrievalEvaluationRecord",
+        "ContextCompletenessSnapshot",
+        "ChunkManifestRegistry"
+      ]
+    },
+    "tracing": {
+      "file_count": 6,
+      "class_count": 23,
+      "function_count": 75,
+      "layers": [],
+      "in_process_map": false,
+      "sample_files": [
+        ".nox\\integration\\Lib\\site-packages\\pluggy\\_manager.py",
+        "agentic_core\\base_agents\\LightweightBase.py",
+        "agentic_core\\mixins\\infrastructure_mixin.py",
+        "agentic_core\\mixins\\ssot_mixin_stack.py",
+        "agentic_core\\mixins\\tracing_mixin.py"
+      ],
+      "sample_classes": [
+        "PluginValidationError",
+        "DistFacade",
+        "PluginManager",
+        "LightweightAgentBase",
+        "InfrastructureMixin"
+      ]
+    },
+    "deprecation": {
+      "file_count": 8,
+      "class_count": 27,
+      "function_count": 190,
+      "layers": [],
+      "in_process_map": false,
+      "sample_files": [
+        ".nox\\integration\\Lib\\site-packages\\pip\\_internal\\build_env.py",
+        ".nox\\integration\\Lib\\site-packages\\pip\\_internal\\cli\\main.py",
+        ".nox\\integration\\Lib\\site-packages\\pip\\_internal\\locations\\__init__.py",
+        ".nox\\integration\\Lib\\site-packages\\pip\\_internal\\metadata\\__init__.py",
+        ".nox\\integration\\Lib\\site-packages\\pip\\_internal\\models\\link.py"
+      ],
+      "sample_classes": [
+        "_FromFieldInfoInputs",
+        "_FieldInfoInputs",
+        "_FieldInfoAsDict",
+        "FieldInfo",
+        "_EmptyKwargs"
+      ]
+    },
+    "upgrade": {
+      "file_count": 2,
+      "class_count": 2,
+      "function_count": 24,
+      "layers": [],
+      "in_process_map": false,
+      "sample_files": [
+        ".nox\\integration\\Lib\\site-packages\\pip\\_internal\\resolution\\legacy\\resolver.py",
+        ".nox\\integration\\Lib\\site-packages\\pip\\_internal\\resolution\\resolvelib\\provider.py"
+      ],
+      "sample_classes": [
+        "Resolver",
+        "PipProvider"
+      ]
+    },
+    "preference": {
+      "file_count": 3,
+      "class_count": 5,
+      "function_count": 35,
+      "layers": [],
+      "in_process_map": false,
+      "sample_files": [
+        ".nox\\integration\\Lib\\site-packages\\pip\\_internal\\resolution\\resolvelib\\provider.py",
+        ".nox\\integration\\Lib\\site-packages\\pip\\_vendor\\resolvelib\\providers.py",
+        ".nox\\integration\\Lib\\site-packages\\pip\\_vendor\\resolvelib\\resolvers\\resolution.py"
+      ],
+      "sample_classes": [
+        "PipProvider",
+        "Preference",
+        "AbstractProvider",
+        "Resolution",
+        "Resolver"
+      ]
+    },
+    "queue": {
+      "file_count": 15,
+      "class_count": 53,
+      "function_count": 268,
+      "layers": [
+        "L0_routing",
+        "L2_execution",
+        "L3_orchestration",
+        "L5_safety"
+      ],
+      "in_process_map": false,
+      "sample_files": [
+        ".nox\\integration\\Lib\\site-packages\\pip\\_vendor\\distlib\\compat.py",
+        ".nox\\integration\\Lib\\site-packages\\pip\\_vendor\\urllib3\\connectionpool.py",
+        ".nox\\integration\\Lib\\site-packages\\pip\\_vendor\\urllib3\\util\\queue.py",
+        "agentic_core\\L0_routing\\utils\\component_util.py",
+        "agentic_core\\L2_execution\\types\\vllm_gateway_adapter_types.py"
+      ],
+      "sample_classes": [
+        "CertificateError",
+        "Container",
+        "ZipExtFile",
+        "ZipFile",
+        "ChainMap"
+      ]
+    },
+    "redis": {
+      "file_count": 42,
+      "class_count": 87,
+      "function_count": 500,
+      "layers": [
+        "L0_routing",
+        "L1_cognition",
+        "L2_execution",
+        "L3_orchestration",
+        "L4_state",
+        "L5_safety",
+        "L6_observability"
+      ],
+      "in_process_map": false,
+      "sample_files": [
+        ".nox\\integration\\Lib\\site-packages\\pip\\_vendor\\cachecontrol\\caches\\__init__.py",
+        ".nox\\integration\\Lib\\site-packages\\pip\\_vendor\\cachecontrol\\caches\\redis_cache.py",
+        "agentic_core\\L0_routing\\scripts\\colors.py",
+        "agentic_core\\L0_routing\\scripts\\execute_ssot.py",
+        "agentic_core\\L0_routing\\seams\\redis_decision_cache.py"
+      ],
+      "sample_classes": [
+        "RedisCache",
+        "CircuitBreaker",
+        "RedisCacheMixin",
+        "SovereignConfigManager",
+        "Colors"
+      ]
+    },
+    "feedback": {
+      "file_count": 12,
+      "class_count": 41,
+      "function_count": 202,
+      "layers": [
+        "L3_orchestration",
+        "L4_state"
+      ],
+      "in_process_map": false,
+      "sample_files": [
+        "agentic_core\\L3_orchestration\\reasoning\\DomainPlannerAgent.py",
+        "agentic_core\\L4_state\\memory\\semantic_cache_manager.py",
+        "agentic_core\\base_agents\\SovereignBaseAgent.py",
+        "agentic_core\\mixins\\meta_learning_mixin.py",
+        "agentic_core\\mixins\\semantic_cache_mixin.py"
+      ],
+      "sample_classes": [
+        "SovereignBaseAgent",
+        "MetaLearningMixin",
+        "SemanticCacheMixin",
+        "MetaLearningStorage",
+        "SubatomicTestingMixin"
+      ]
+    },
+    "escalation": {
+      "file_count": 9,
+      "class_count": 20,
+      "function_count": 97,
+      "layers": [
+        "L0_routing",
+        "L2_execution",
+        "L5_safety"
+      ],
+      "in_process_map": false,
+      "sample_files": [
+        "agentic_core\\L0_routing\\scripts\\run_guardian_escalation_determinism.py",
+        "agentic_core\\L2_execution\\heal_result_adapter.py",
+        "agentic_core\\L5_safety\\enforcement\\governance\\agent_heal_audit.py",
+        "agentic_core\\L5_safety\\types\\heal_llm_seam_types.py",
+        "agentic_core\\L5_safety\\types\\heal_policy_types.py"
+      ],
+      "sample_classes": [
+        "SovereignBaseAgent",
+        "HealSeamBypassError",
+        "HealLlmRequest",
+        "PolicyDecisionRecord",
+        "HealBudgetExceededError"
+      ]
+    },
+    "determinism": {
+      "file_count": 77,
+      "class_count": 253,
+      "function_count": 1056,
+      "layers": [
+        "L0_routing",
+        "L2_execution",
+        "L3_orchestration",
+        "L5_safety",
+        "L6_observability"
+      ],
+      "in_process_map": false,
+      "sample_files": [
+        "agentic_core\\L0_routing\\enforcement\\execution_gateway.py",
+        "agentic_core\\L0_routing\\enforcement\\governance_contracts.py",
+        "agentic_core\\L0_routing\\enforcement\\trace_id_generator.py",
+        "agentic_core\\L0_routing\\meta_control\\config_store.py",
+        "agentic_core\\L0_routing\\meta_control\\config_store_types.py"
+      ],
+      "sample_classes": [
+        "SovereignBaseAgent",
+        "CircuitState",
+        "RetryPolicy",
+        "CircuitBreakerConfig",
+        "ToolHealth"
+      ]
+    },
+    "tier": {
+      "file_count": 40,
+      "class_count": 117,
+      "function_count": 517,
+      "layers": [
+        "L0_routing",
+        "L2_execution",
+        "L3_orchestration",
+        "L5_safety",
+        "L6_observability"
+      ],
+      "in_process_map": false,
+      "sample_files": [
+        "agentic_core\\L0_routing\\engines\\reasoning_policy_engine.py",
+        "agentic_core\\L0_routing\\scripts\\colors.py",
+        "agentic_core\\L0_routing\\scripts\\execute_ssot.py",
+        "agentic_core\\L0_routing\\types\\routing_contracts_types.py",
+        "agentic_core\\L2_execution\\healers\\healing_provider_adapters.py"
+      ],
+      "sample_classes": [
+        "IOrchestratorProtocol",
+        "IHealable",
+        "ITieredAgent",
+        "Colors",
+        "RequestStructureFeatures"
+      ]
+    },
+    "rollout": {
+      "file_count": 8,
+      "class_count": 11,
+      "function_count": 78,
+      "layers": [
+        "L0_routing",
+        "L3_orchestration"
+      ],
+      "in_process_map": false,
+      "sample_files": [
+        "agentic_core\\L0_routing\\meta_control\\meta_apply.py",
+        "agentic_core\\L0_routing\\meta_control\\meta_apply_ops.py",
+        "agentic_core\\L0_routing\\scripts\\forward_rolling_facade.py",
+        "agentic_core\\L3_orchestration\\types\\forward_rolling_types.py",
+        "agentic_core\\interfaces\\meta_control.py"
+      ],
+      "sample_classes": [
+        "ForwardRollingResult",
+        "OptimizationMetrics",
+        "ForwardRollingFacade",
+        "ExecutionMode",
+        "RolloutStage"
+      ]
+    },
+    "breaker": {
+      "file_count": 27,
+      "class_count": 104,
+      "function_count": 290,
+      "layers": [
+        "L2_execution",
+        "L3_orchestration",
+        "L4_state",
+        "L5_safety",
+        "L6_observability"
+      ],
+      "in_process_map": false,
+      "sample_files": [
+        "agentic_core\\L2_execution\\healers\\qwen_health.py",
+        "agentic_core\\L2_execution\\types\\vllm_gateway_integration_types.py",
+        "agentic_core\\L3_orchestration\\engines\\autonomous_execution_engine.py",
+        "agentic_core\\L4_state\\utils\\circuit_breaker_util.py",
+        "agentic_core\\L5_safety\\enforcement\\AdapterBase.py"
+      ],
+      "sample_classes": [
+        "CircuitState",
+        "CircuitStats",
+        "CircuitBreakerMixin",
+        "CircuitOpenError",
+        "TokenLimitError"
+      ]
+    },
+    "permission": {
+      "file_count": 4,
+      "class_count": 18,
+      "function_count": 59,
+      "layers": [
+        "L2_execution",
+        "L3_orchestration",
+        "L5_safety"
+      ],
+      "in_process_map": false,
+      "sample_files": [
+        "agentic_core\\L2_execution\\UniversalWriteGateway.py",
+        "agentic_core\\L2_execution\\types\\mcp_tool_types.py",
+        "agentic_core\\L3_orchestration\\types\\permission_scope_types.py",
+        "agentic_core\\L5_safety\\reasoning\\SecurityManagerAgent.py"
+      ],
+      "sample_classes": [
+        "ToolNotAllowedError",
+        "MutationRecord",
+        "SimulationResult",
+        "UniversalWriteGateway",
+        "MCPTool"
+      ]
+    },
+    "rca": {
+      "file_count": 7,
+      "class_count": 49,
+      "function_count": 79,
+      "layers": [],
+      "in_process_map": false,
+      "sample_files": [
+        "agentic_core\\mixins\\cognitive_recovery_mixin.py",
+        "archives\\healing_backups\\location\\20260302_194622\\import_fixes\\system_learning\\pipelines\\meta_learning_pipeline.py",
+        "archives\\healing_backups\\location\\20260303_063143\\import_fixes\\system_learning\\pipelines\\meta_learning_pipeline.py",
+        "ops_scripts\\dev_tools\\l0_scripts\\rca_table_rendering_util.py",
+        "system_learning\\engines\\rca_engine.py"
+      ],
+      "sample_classes": [
+        "CognitiveRecoveryMixin",
+        "PipelineError",
+        "ValidationError",
+        "PipelineConfig",
+        "AuditStore"
+      ]
+    },
+    "feature": {
+      "file_count": 9,
+      "class_count": 23,
+      "function_count": 118,
+      "layers": [
+        "L0_routing",
+        "L2_execution",
+        "L3_orchestration",
+        "L5_safety"
+      ],
+      "in_process_map": false,
+      "sample_files": [
+        "agentic_core\\L0_routing\\scripts\\forward_rolling_facade.py",
+        "agentic_core\\L0_routing\\utils\\component_util.py",
+        "agentic_core\\L2_execution\\utils\\text_similarity_util.py",
+        "agentic_core\\L3_orchestration\\types\\forward_rolling_types.py",
+        "agentic_core\\L5_safety\\validators\\migration_helper_validator.py"
+      ],
+      "sample_classes": [
+        "DomainAgentMixin",
+        "RGDomainMixin",
+        "LICDomainMixin",
+        "FeatureFlaggedAgentMixin",
+        "SSOTMixinStack"
+      ]
+    },
+    "flag": {
+      "file_count": 10,
+      "class_count": 36,
+      "function_count": 228,
+      "layers": [
+        "L0_routing",
+        "L3_orchestration",
+        "L5_safety"
+      ],
+      "in_process_map": false,
+      "sample_files": [
+        "agentic_core\\L0_routing\\scripts\\execute_ssot.py",
+        "agentic_core\\L0_routing\\scripts\\execute_ssot_entrypoint.py",
+        "agentic_core\\L0_routing\\scripts\\forward_rolling_facade.py",
+        "agentic_core\\L3_orchestration\\types\\forward_rolling_types.py",
+        "agentic_core\\L5_safety\\validators\\migration_helper_validator.py"
+      ],
+      "sample_classes": [
+        "FeatureFlaggedAgentMixin",
+        "SSOTFeatureFlagMixin",
+        "SSOTMixinStack",
+        "tqdm",
+        "IHealerProtocol"
+      ]
+    },
+    "canary": {
+      "file_count": 2,
+      "class_count": 2,
+      "function_count": 20,
+      "layers": [
+        "L0_routing",
+        "L5_safety"
+      ],
+      "in_process_map": false,
+      "sample_files": [
+        "agentic_core\\L0_routing\\meta_control\\meta_apply_ops.py",
+        "agentic_core\\L5_safety\\enforcement\\canary_token_defense_strategy.py"
+      ],
+      "sample_classes": [
+        "CanaryToken",
+        "CanaryDefense"
+      ]
+    },
+    "fence": {
+      "file_count": 10,
+      "class_count": 21,
+      "function_count": 194,
+      "layers": [
+        "L0_routing",
+        "L5_safety"
+      ],
+      "in_process_map": false,
+      "sample_files": [
+        "agentic_core\\L0_routing\\scripts\\execute_ssot.py",
+        "agentic_core\\L0_routing\\scripts\\execute_ssot_entrypoint.py",
+        "agentic_core\\L5_safety\\enforcement\\structural_namespace_fence_enforcer.py",
+        "archives\\healing_backups\\location\\20260301_180837\\import_fixes\\tools\\evidence\\e2e_gemini_qwen_runner.py",
+        "archives\\healing_backups\\location\\20260307_033424\\import_fixes\\tools\\evidence\\e2e_gemini_qwen_runner.py"
+      ],
+      "sample_classes": [
+        "tqdm",
+        "IHealerProtocol",
+        "LegacyAgentAdapter",
+        "ConfidenceScore",
+        "FailureType"
+      ]
+    },
+    "dag": {
+      "file_count": 4,
+      "class_count": 16,
+      "function_count": 70,
+      "layers": [
+        "L0_routing",
+        "L3_orchestration"
+      ],
+      "in_process_map": false,
+      "sample_files": [
+        "agentic_core\\L0_routing\\scripts\\forward_rolling_facade.py",
+        "agentic_core\\L3_orchestration\\engines\\recursive_orchestrator.py",
+        "agentic_core\\L3_orchestration\\reasoning\\DagEngineAgent.py",
+        "apps_shared\\utils\\open_telemetry_tracing_adapter_util.py"
+      ],
+      "sample_classes": [
+        "ForwardRollingResult",
+        "OptimizationMetrics",
+        "ForwardRollingFacade",
+        "TaskStatus",
+        "RetryContext"
+      ]
+    },
+    "reward": {
+      "file_count": 2,
+      "class_count": 8,
+      "function_count": 26,
+      "layers": [
+        "L1_cognition"
+      ],
+      "in_process_map": false,
+      "sample_files": [
+        "agentic_core\\L1_cognition\\engines\\CognitiveNode.py",
+        "agentic_core\\L1_cognition\\engines\\episodic_manager.py"
+      ],
+      "sample_classes": [
+        "CognitiveResult",
+        "PerceptionNode",
+        "ReasoningNode",
+        "PlanningCoordinator",
+        "ActionNode"
+      ]
+    },
+    "transcript": {
+      "file_count": 2,
+      "class_count": 4,
+      "function_count": 20,
+      "layers": [
+        "L2_execution"
+      ],
+      "in_process_map": false,
+      "sample_files": [
+        "agentic_core\\L2_execution\\enforcement\\transcript_freezer.py",
+        "agentic_core\\L2_execution\\types\\execution_trace_types.py"
+      ],
+      "sample_classes": [
+        "TranscriptMutationViolation",
+        "FrozenTranscript",
+        "ExecutionTrace",
+        "ExecutionTraceBuilder"
+      ]
+    },
+    "quota": {
+      "file_count": 1,
+      "class_count": 4,
+      "function_count": 8,
+      "layers": [
+        "L5_safety"
+      ],
+      "in_process_map": false,
+      "sample_files": [
+        "agentic_core\\L5_safety\\types\\resource_management_types.py"
+      ],
+      "sample_classes": [
+        "ResourceType",
+        "ResourceQuota",
+        "ResourceCheckResult",
+        "ResourceManagementGuardrail"
+      ]
+    },
+    "dpo": {
+      "file_count": 8,
+      "class_count": 12,
+      "function_count": 31,
+      "layers": [
+        "L6_observability"
+      ],
+      "in_process_map": false,
+      "sample_files": [
+        "agentic_core\\L6_observability\\engines\\dpo_pair_generator.py",
+        "agentic_core\\L6_observability\\engines\\hitl_dpo_pair_generator.py",
+        "archives\\gatekeeper\\2026-03-07\\agentic_core\\evaluation\\feedback\\__init__.py",
+        "system_learning\\config\\embedding_storage_layout.py",
+        "system_learning\\engines\\embedding_corpus_extraction.py"
+      ],
+      "sample_classes": [
+        "BoundingViolation",
+        "DPOPair",
+        "BoundedDPOPair",
+        "DPOBoundingPolicy",
+        "DPOPairGenerator"
+      ]
+    },
+    "liveness": {
+      "file_count": 1,
+      "class_count": 6,
+      "function_count": 26,
+      "layers": [],
+      "in_process_map": false,
+      "sample_files": [
+        "apps_shared\\utils\\health_check_types_util.py"
+      ],
+      "sample_classes": [
+        "HealthStatus",
+        "CheckResult",
+        "HealthReport",
+        "HealthChecker",
+        "CommonChecks"
+      ]
+    },
+    "readiness": {
+      "file_count": 1,
+      "class_count": 6,
+      "function_count": 26,
+      "layers": [],
+      "in_process_map": false,
+      "sample_files": [
+        "apps_shared\\utils\\health_check_types_util.py"
+      ],
+      "sample_classes": [
+        "HealthStatus",
+        "CheckResult",
+        "HealthReport",
+        "HealthChecker",
+        "CommonChecks"
+      ]
+    },
+    "rlhf": {
+      "file_count": 4,
+      "class_count": 45,
+      "function_count": 72,
+      "layers": [],
+      "in_process_map": false,
+      "sample_files": [
+        "archives\\healing_backups\\location\\20260302_194622\\import_fixes\\system_learning\\pipelines\\meta_learning_pipeline.py",
+        "archives\\healing_backups\\location\\20260303_063143\\import_fixes\\system_learning\\pipelines\\meta_learning_pipeline.py",
+        "system_learning\\pipelines\\meta_learning_pipeline.py",
+        "system_learning\\pipelines\\pipeline_factory.py"
+      ],
+      "sample_classes": [
+        "PipelineError",
+        "ValidationError",
+        "PipelineConfig",
+        "AuditStore",
+        "TelemetryStore"
+      ]
+    }
+  },
+  "all_areas": {
+    "pinecone": {
+      "file_count": 6,
+      "class_count": 4,
+      "function_count": 79,
+      "layers": [
+        "L0_routing",
+        "L5_safety"
+      ],
+      "in_process_map": false,
+      "sample_files": [
+        ".healing_backups\\location_violations\\deep_brain_harvester_util.py",
+        "agentic_core\\L0_routing\\scripts\\colors.py",
+        "agentic_core\\L5_safety\\utils\\verify_semantic_meta_learning_util.py",
+        "apps_shared\\utils\\etl_pipeline_util.py",
+        "ops_scripts\\general\\ast_analysis_scan.py"
+      ],
+      "sample_classes": [
+        "DepGraph",
+        "DeepBrainHarvester",
+        "Colors",
+        "ETLPipeline"
+      ]
+    },
+    "logging": {
+      "file_count": 1559,
+      "class_count": 3270,
+      "function_count": 12183,
+      "layers": [
+        "L0_routing",
+        "L1_cognition",
+        "L2_execution",
+        "L3_orchestration",
+        "L4_state",
+        "L5_safety",
+        "L6_observability"
+      ],
+      "in_process_map": false,
+      "sample_files": [
+        ".healing_backups\\location_violations\\AdjustSectionWeights.py",
+        ".healing_backups\\location_violations\\AdjustToneWeights.py",
+        ".healing_backups\\location_violations\\AggregateCampaignState.py",
+        ".healing_backups\\location_violations\\AllProvidersDownError.py",
+        ".healing_backups\\location_violations\\AssessContentRelevance.py"
+      ],
+      "sample_classes": [
+        "ImportTrace",
+        "CacheOpportunity",
+        "SemanticGap",
+        "ParseFailure",
+        "FileAnalysis"
+      ]
+    },
+    "pipeline": {
+      "file_count": 29,
+      "class_count": 113,
+      "function_count": 501,
+      "layers": [
+        "L0_routing",
+        "L2_execution",
+        "L3_orchestration"
+      ],
+      "in_process_map": false,
+      "sample_files": [
+        ".healing_backups\\location_violations\\DispatchResumeToolsAgent.py",
+        ".nox\\integration\\Lib\\site-packages\\pydantic\\experimental\\pipeline.py",
+        "agentic_core\\L0_routing\\scripts\\execute_ssot.py",
+        "agentic_core\\L2_execution\\protocol.py",
+        "agentic_core\\L3_orchestration\\engines\\sovereign_rag_orchestrator.py"
+      ],
+      "sample_classes": [
+        "ImportTrace",
+        "CacheOpportunity",
+        "SemanticGap",
+        "ParseFailure",
+        "FileAnalysis"
+      ]
+    },
+    "meta": {
+      "file_count": 64,
+      "class_count": 115,
+      "function_count": 953,
+      "layers": [
+        "L0_routing",
+        "L1_cognition",
+        "L2_execution",
+        "L4_state",
+        "L5_safety",
+        "L6_observability"
+      ],
+      "in_process_map": false,
+      "sample_files": [
+        ".healing_backups\\location_violations\\lic_agent_base_util.py",
+        ".healing_backups\\location_violations\\rg_agent_base_util.py",
+        ".nox\\integration\\Lib\\site-packages\\pip\\_vendor\\rich\\style.py",
+        ".nox\\integration\\Lib\\site-packages\\pip\\_vendor\\rich\\text.py",
+        "agentic_core\\L0_routing\\enforcement\\boundary_contracts.py"
+      ],
+      "sample_classes": [
+        "ImportTrace",
+        "CacheOpportunity",
+        "SemanticGap",
+        "ParseFailure",
+        "FileAnalysis"
+      ]
+    },
+    "learning": {
+      "file_count": 163,
+      "class_count": 283,
+      "function_count": 1413,
+      "layers": [
+        "L0_routing",
+        "L1_cognition",
+        "L2_execution",
+        "L4_state",
+        "L5_safety",
+        "L6_observability"
+      ],
+      "in_process_map": false,
+      "sample_files": [
+        ".healing_backups\\location_violations\\RgHealingOrchestrator.py",
+        ".healing_backups\\location_violations\\deep_brain_harvester_util.py",
+        ".healing_backups\\location_violations\\l0_threshold_tuner.py",
+        ".healing_backups\\location_violations\\l4_audit_reader.py",
+        ".healing_backups\\location_violations\\l4_version_store.py"
+      ],
+      "sample_classes": [
+        "ImportTrace",
+        "CacheOpportunity",
+        "SemanticGap",
+        "ParseFailure",
+        "FileAnalysis"
+      ]
+    },
+    "healing": {
+      "file_count": 469,
+      "class_count": 856,
+      "function_count": 2923,
+      "layers": [
+        "L0_routing",
+        "L1_cognition",
+        "L2_execution",
+        "L3_orchestration",
+        "L4_state",
+        "L5_safety",
+        "L6_observability"
+      ],
+      "in_process_map": false,
+      "sample_files": [
+        ".healing_backups\\location_violations\\ContentQualityAgent.py",
+        ".healing_backups\\location_violations\\LicHealingOrchestrator.py",
+        ".healing_backups\\location_violations\\LicHealingOrchestrator_1.py",
+        ".healing_backups\\location_violations\\LicHealingOrchestrator_2.py",
+        ".healing_backups\\location_violations\\PIISanitizerSpecialistAgent_util.py"
+      ],
+      "sample_classes": [
+        "AchievementPrioritizerEngine",
+        "AchievementPrioritizerEngine",
+        "AchievementPrioritizerEngine",
+        "AnthropicConfig",
+        "AnthropicClient"
+      ]
+    },
+    "routing": {
+      "file_count": 351,
+      "class_count": 595,
+      "function_count": 3318,
+      "layers": [
+        "L0_routing",
+        "L1_cognition",
+        "L2_execution",
+        "L3_orchestration",
+        "L4_state",
+        "L5_safety",
+        "L6_observability"
+      ],
+      "in_process_map": false,
+      "sample_files": [
+        ".healing_backups\\location_violations\\AllProvidersDownError.py",
+        ".healing_backups\\location_violations\\HOPPipelineExecutor.py",
+        ".healing_backups\\location_violations\\HOPPipelineExecutor_1.py",
+        ".healing_backups\\location_violations\\HOPPipelineExecutor_2.py",
+        ".healing_backups\\location_violations\\_assertions.py"
+      ],
+      "sample_classes": [
+        "ImportTrace",
+        "CacheOpportunity",
+        "SemanticGap",
+        "ParseFailure",
+        "FileAnalysis"
+      ]
+    },
+    "safety": {
+      "file_count": 343,
+      "class_count": 667,
+      "function_count": 3091,
+      "layers": [
+        "L0_routing",
+        "L1_cognition",
+        "L2_execution",
+        "L3_orchestration",
+        "L4_state",
+        "L5_safety",
+        "L6_observability"
+      ],
+      "in_process_map": false,
+      "sample_files": [
+        ".healing_backups\\location_violations\\GovernanceShieldAgent.py",
+        ".healing_backups\\location_violations\\GovernanceShieldAgent_1.py",
+        ".healing_backups\\location_violations\\GovernanceShieldAgent_2.py",
+        ".healing_backups\\location_violations\\SafetyExecutor.py",
+        ".healing_backups\\location_violations\\__init__.py"
+      ],
+      "sample_classes": [
+        "ImportTrace",
+        "CacheOpportunity",
+        "SemanticGap",
+        "ParseFailure",
+        "FileAnalysis"
+      ]
+    },
+    "governance": {
+      "file_count": 63,
+      "class_count": 130,
+      "function_count": 590,
+      "layers": [
+        "L0_routing",
+        "L2_execution",
+        "L3_orchestration",
+        "L5_safety"
+      ],
+      "in_process_map": false,
+      "sample_files": [
+        ".healing_backups\\location_violations\\ExecutiveStrategyAgent.py",
+        ".healing_backups\\location_violations\\ExecutiveStrategyAgent_1.py",
+        ".healing_backups\\location_violations\\ExecutiveStrategyAgent_2.py",
+        ".healing_backups\\location_violations\\GovernanceShieldAgent.py",
+        ".healing_backups\\location_violations\\GovernanceShieldAgent_1.py"
+      ],
+      "sample_classes": [
+        "ImportTrace",
+        "CacheOpportunity",
+        "SemanticGap",
+        "ParseFailure",
+        "FileAnalysis"
+      ]
+    },
+    "state": {
+      "file_count": 156,
+      "class_count": 588,
+      "function_count": 2433,
+      "layers": [
+        "L0_routing",
+        "L1_cognition",
+        "L2_execution",
+        "L3_orchestration",
+        "L4_state",
+        "L5_safety",
+        "L6_observability"
+      ],
+      "in_process_map": false,
+      "sample_files": [
+        ".healing_backups\\location_violations\\state_checkpoint_types.py",
+        ".healing_backups\\naming_violations\\l3_efficiency_tuner.py",
+        ".healing_backups\\naming_violations\\l3_efficiency_tuner_1.py",
+        ".nox\\integration\\Lib\\site-packages\\colorama\\initialise.py",
+        ".nox\\integration\\Lib\\site-packages\\pip\\_vendor\\pkg_resources\\__init__.py"
+      ],
+      "sample_classes": [
+        "ImportTrace",
+        "CacheOpportunity",
+        "SemanticGap",
+        "ParseFailure",
+        "FileAnalysis"
+      ]
+    },
+    "embedding": {
+      "file_count": 60,
+      "class_count": 171,
+      "function_count": 710,
+      "layers": [
+        "L0_routing",
+        "L1_cognition",
+        "L2_execution",
+        "L3_orchestration",
+        "L4_state"
+      ],
+      "in_process_map": false,
+      "sample_files": [
+        ".healing_backups\\location_violations\\deep_brain_harvester_util.py",
+        ".healing_backups\\location_violations\\embedding_allowlist.py",
+        ".healing_backups\\location_violations\\embedding_factory.py",
+        ".healing_backups\\location_violations\\w1_negative_control.py",
+        ".healing_backups\\location_violations\\w1_strong_negative_control.py"
+      ],
+      "sample_classes": [
+        "ImportTrace",
+        "CacheOpportunity",
+        "SemanticGap",
+        "ParseFailure",
+        "FileAnalysis"
+      ]
+    },
+    "observability": {
+      "file_count": 66,
+      "class_count": 216,
+      "function_count": 917,
+      "layers": [
+        "L0_routing",
+        "L1_cognition",
+        "L3_orchestration",
+        "L4_state",
+        "L5_safety",
+        "L6_observability"
+      ],
+      "in_process_map": true,
+      "sample_files": [
+        ".healing_backups\\location_violations\\AllProvidersDownError.py",
+        ".healing_backups\\location_violations\\HardenedanthropicexecutorStrategy.py",
+        ".healing_backups\\location_violations\\HardenedanthropicexecutorStrategy_1.py",
+        ".healing_backups\\location_violations\\HardenedanthropicexecutorStrategy_2.py",
+        ".healing_backups\\location_violations\\HardenedopenaiexecutorStrategy.py"
+      ],
+      "sample_classes": [
+        "ImportTrace",
+        "CacheOpportunity",
+        "SemanticGap",
+        "ParseFailure",
+        "FileAnalysis"
+      ]
+    },
+    "orchestration": {
+      "file_count": 84,
+      "class_count": 201,
+      "function_count": 1100,
+      "layers": [
+        "L0_routing",
+        "L1_cognition",
+        "L2_execution",
+        "L3_orchestration",
+        "L4_state",
+        "L5_safety"
+      ],
+      "in_process_map": false,
+      "sample_files": [
+        ".healing_backups\\location_violations\\capture_golden.py",
+        ".healing_backups\\location_violations\\capture_golden_1.py",
+        ".healing_backups\\location_violations\\run_phase11_ptc_evidence.py",
+        ".healing_backups\\location_violations\\run_phase11_ptc_evidence_1.py",
+        ".healing_backups\\location_violations\\run_phase11_ptc_evidence_2.py"
+      ],
+      "sample_classes": [
+        "ImportTrace",
+        "CacheOpportunity",
+        "SemanticGap",
+        "ParseFailure",
+        "FileAnalysis"
+      ]
+    },
+    "rag": {
+      "file_count": 27,
+      "class_count": 196,
+      "function_count": 353,
+      "layers": [
+        "L3_orchestration",
+        "L4_state"
+      ],
+      "in_process_map": false,
+      "sample_files": [
+        ".healing_backups\\location_violations\\DispatchResumeToolsAgent.py",
+        ".healing_backups\\location_violations\\callable_report.py",
+        ".healing_backups\\location_violations\\callable_report_1.py",
+        ".healing_backups\\location_violations\\callable_report_2.py",
+        "agentic_core\\L3_orchestration\\engines\\sovereign_rag_orchestrator.py"
+      ],
+      "sample_classes": [
+        "ImportTrace",
+        "CacheOpportunity",
+        "SemanticGap",
+        "ParseFailure",
+        "FileAnalysis"
+      ]
+    },
+    "prompt": {
+      "file_count": 117,
+      "class_count": 427,
+      "function_count": 1178,
+      "layers": [
+        "L0_routing",
+        "L1_cognition",
+        "L2_execution",
+        "L3_orchestration",
+        "L4_state",
+        "L5_safety"
+      ],
+      "in_process_map": false,
+      "sample_files": [
+        ".healing_backups\\location_violations\\ExecutiveStrategyAgent.py",
+        ".healing_backups\\location_violations\\ExecutiveStrategyAgent_1.py",
+        ".healing_backups\\location_violations\\ExecutiveStrategyAgent_2.py",
+        ".healing_backups\\location_violations\\HeadlineOutputAgent.py",
+        ".healing_backups\\location_violations\\OutreachMessageAgent.py"
+      ],
+      "sample_classes": [
+        "ImportTrace",
+        "CacheOpportunity",
+        "SemanticGap",
+        "ParseFailure",
+        "FileAnalysis"
+      ]
+    },
+    "cache": {
+      "file_count": 196,
+      "class_count": 440,
+      "function_count": 3272,
+      "layers": [
+        "L0_routing",
+        "L1_cognition",
+        "L2_execution",
+        "L3_orchestration",
+        "L4_state",
+        "L5_safety",
+        "L6_observability"
+      ],
+      "in_process_map": false,
+      "sample_files": [
+        ".healing_backups\\location_violations\\LicHealingOrchestrator.py",
+        ".healing_backups\\location_violations\\LicHealingOrchestrator_1.py",
+        ".healing_backups\\location_violations\\LicHealingOrchestrator_2.py",
+        ".healing_backups\\location_violations\\RgHealingOrchestrator.py",
+        ".healing_backups\\location_violations\\RgReflectionAgent.py"
+      ],
+      "sample_classes": [
+        "ImportTrace",
+        "CacheOpportunity",
+        "SemanticGap",
+        "ParseFailure",
+        "FileAnalysis"
+      ]
+    },
+    "execution": {
+      "file_count": 344,
+      "class_count": 768,
+      "function_count": 3537,
+      "layers": [
+        "L0_routing",
+        "L1_cognition",
+        "L2_execution",
+        "L3_orchestration",
+        "L4_state",
+        "L5_safety",
+        "L6_observability"
+      ],
+      "in_process_map": false,
+      "sample_files": [
+        ".healing_backups\\location_violations\\RgReflectionAgent.py",
+        ".healing_backups\\location_violations\\agent_registry.py",
+        ".healing_backups\\location_violations\\agent_registry_1.py",
+        ".healing_backups\\location_violations\\agent_registry_2.py",
+        ".healing_backups\\location_violations\\agent_registry_3.py"
+      ],
+      "sample_classes": [
+        "ImportTrace",
+        "CacheOpportunity",
+        "SemanticGap",
+        "ParseFailure",
+        "FileAnalysis"
+      ]
+    },
+    "limit": {
+      "file_count": 30,
+      "class_count": 78,
+      "function_count": 571,
+      "layers": [
+        "L0_routing",
+        "L1_cognition",
+        "L3_orchestration",
+        "L4_state"
+      ],
+      "in_process_map": false,
+      "sample_files": [
+        ".healing_backups\\location_violations\\action_call_generator_types.py",
+        ".healing_backups\\location_violations\\anthropic_client.py",
+        ".healing_backups\\location_violations\\anthropic_client_1.py",
+        ".healing_backups\\location_violations\\anthropic_client_2.py",
+        ".healing_backups\\location_violations\\lic_agent_base_util.py"
+      ],
+      "sample_classes": [
+        "RouteType",
+        "CtaConfig",
+        "CtaResult",
+        "ActionCallGenerator",
+        "AnthropicConfig"
+      ]
+    },
+    "capability": {
+      "file_count": 127,
+      "class_count": 160,
+      "function_count": 781,
+      "layers": [
+        "L0_routing",
+        "L1_cognition",
+        "L2_execution",
+        "L3_orchestration",
+        "L5_safety"
+      ],
+      "in_process_map": false,
+      "sample_files": [
+        ".healing_backups\\location_violations\\HOPPipelineExecutor.py",
+        ".healing_backups\\location_violations\\HOPPipelineExecutor_1.py",
+        ".healing_backups\\location_violations\\HOPPipelineExecutor_2.py",
+        ".healing_backups\\location_violations\\LICValidationExecutor.py",
+        ".healing_backups\\location_violations\\LICValidationExecutor_1.py"
+      ],
+      "sample_classes": [
+        "DagRuntimeInspectorAgent",
+        "DagRuntimeInspectorAgent",
+        "DagRuntimeInspectorAgent",
+        "SignatureVerifierAgent",
+        "SignatureVerifierAgent"
+      ]
+    },
+    "timeout": {
+      "file_count": 120,
+      "class_count": 472,
+      "function_count": 1712,
+      "layers": [
+        "L0_routing",
+        "L2_execution",
+        "L3_orchestration",
+        "L4_state",
+        "L5_safety"
+      ],
+      "in_process_map": false,
+      "sample_files": [
+        ".healing_backups\\location_violations\\DispatchOutreachToolsAgent.py",
+        ".healing_backups\\location_violations\\DispatchOutreachToolsAgent_1.py",
+        ".healing_backups\\location_violations\\DispatchOutreachToolsAgent_2.py",
+        ".healing_backups\\location_violations\\DispatchResumeToolsAgent.py",
+        ".healing_backups\\location_violations\\RgResumeOrchestrator.py"
+      ],
+      "sample_classes": [
+        "DependencyDiplomatAgent",
+        "DependencyDiplomatAgent",
+        "DependencyDiplomatAgent",
+        "GlobalComplianceAggregatorAgent",
+        "GlobalComplianceAggregatorAgent"
+      ]
+    },
+    "trace": {
+      "file_count": 114,
+      "class_count": 496,
+      "function_count": 1385,
+      "layers": [
+        "L0_routing",
+        "L1_cognition",
+        "L2_execution",
+        "L3_orchestration",
+        "L4_state",
+        "L5_safety",
+        "L6_observability"
+      ],
+      "in_process_map": false,
+      "sample_files": [
+        ".healing_backups\\location_violations\\SovereignContext.py",
+        ".healing_backups\\location_violations\\TraceRegistry.py",
+        ".healing_backups\\location_violations\\agentic_core_L6_observability_reasoning_DeadlockDetectorAgent.py",
+        ".healing_backups\\location_violations\\agentic_core_L6_observability_reasoning_DeadlockDetectorAgent_1.py",
+        ".healing_backups\\location_violations\\agentic_core_L6_observability_reasoning_DeadlockDetectorAgent_2.py"
+      ],
+      "sample_classes": [
+        "TaskMonitor",
+        "DeadlockDetectorAgent",
+        "TaskMonitor",
+        "DeadlockDetectorAgent",
+        "TaskMonitor"
+      ]
+    },
+    "monitoring": {
+      "file_count": 8,
+      "class_count": 24,
+      "function_count": 142,
+      "layers": [],
+      "in_process_map": false,
+      "sample_files": [
+        ".healing_backups\\location_violations\\agentic_core_L6_observability_reasoning_DeadlockDetectorAgent.py",
+        ".healing_backups\\location_violations\\agentic_core_L6_observability_reasoning_DeadlockDetectorAgent_1.py",
+        ".healing_backups\\location_violations\\agentic_core_L6_observability_reasoning_DeadlockDetectorAgent_2.py",
+        ".nox\\integration\\Lib\\site-packages\\pluggy\\_manager.py",
+        "agentic_core\\utils\\workflow_engines\\proposer_bridge.py"
+      ],
+      "sample_classes": [
+        "TaskMonitor",
+        "DeadlockDetectorAgent",
+        "TaskMonitor",
+        "DeadlockDetectorAgent",
+        "TaskMonitor"
+      ]
+    },
+    "synthesis": {
+      "file_count": 6,
+      "class_count": 5,
+      "function_count": 51,
+      "layers": [
+        "L0_routing"
+      ],
+      "in_process_map": false,
+      "sample_files": [
+        ".healing_backups\\location_violations\\agentic_core_L6_observability_reasoning_DebateSynthesisAgent.py",
+        ".healing_backups\\location_violations\\agentic_core_L6_observability_reasoning_DebateSynthesisAgent_1.py",
+        ".healing_backups\\location_violations\\agentic_core_L6_observability_reasoning_DebateSynthesisAgent_2.py",
+        "agentic_core\\L0_routing\\scripts\\core_synthesis_executor.py",
+        "apps_shared\\validators\\resume_prompts_validator.py"
+      ],
+      "sample_classes": [
+        "DebateSynthesisAgent",
+        "DebateSynthesisAgent",
+        "DebateSynthesisAgent",
+        "CoreSynthesisExecutor",
+        "DebateSynthesisAgent"
+      ]
+    },
+    "audit": {
+      "file_count": 123,
+      "class_count": 224,
+      "function_count": 1265,
+      "layers": [
+        "L0_routing",
+        "L2_execution",
+        "L3_orchestration",
+        "L4_state",
+        "L5_safety"
+      ],
+      "in_process_map": false,
+      "sample_files": [
+        ".healing_backups\\location_violations\\ExecutiveStrategyAgent.py",
+        ".healing_backups\\location_violations\\ExecutiveStrategyAgent_1.py",
+        ".healing_backups\\location_violations\\ExecutiveStrategyAgent_2.py",
+        ".healing_backups\\location_violations\\GovernanceShieldAgent.py",
+        ".healing_backups\\location_violations\\GovernanceShieldAgent_1.py"
+      ],
+      "sample_classes": [
+        "RuntimeTelemetryAgent",
+        "MockSovereignAgent",
+        "RuntimeTelemetryAgent",
+        "MockSovereignAgent",
+        "RuntimeTelemetryAgent"
+      ]
+    },
+    "anthropic": {
+      "file_count": 36,
+      "class_count": 97,
+      "function_count": 391,
+      "layers": [
+        "L2_execution"
+      ],
+      "in_process_map": false,
+      "sample_files": [
+        ".healing_backups\\location_violations\\HardenedanthropicexecutorStrategy.py",
+        ".healing_backups\\location_violations\\HardenedanthropicexecutorStrategy_1.py",
+        ".healing_backups\\location_violations\\HardenedanthropicexecutorStrategy_2.py",
+        ".healing_backups\\location_violations\\__init___20.py",
+        ".healing_backups\\location_violations\\__init___66.py"
+      ],
+      "sample_classes": [
+        "AgentConfig",
+        "AgentMessage",
+        "AgentResponse",
+        "AgentExecutor",
+        "AnthropicConfig"
+      ]
+    },
+    "retry": {
+      "file_count": 46,
+      "class_count": 303,
+      "function_count": 805,
+      "layers": [
+        "L0_routing",
+        "L2_execution",
+        "L3_orchestration",
+        "L5_safety"
+      ],
+      "in_process_map": true,
+      "sample_files": [
+        ".healing_backups\\location_violations\\ValidatorAgent.py",
+        ".healing_backups\\location_violations\\agent_executor_util.py",
+        ".healing_backups\\location_violations\\retry_policy_config.py",
+        ".healing_backups\\location_violations\\retry_policy_config_1.py",
+        ".healing_backups\\location_violations\\retry_policy_config_2.py"
+      ],
+      "sample_classes": [
+        "AgentConfig",
+        "AgentMessage",
+        "AgentResponse",
+        "AgentExecutor",
+        "RetryStrategy"
+      ]
+    },
+    "openai": {
+      "file_count": 33,
+      "class_count": 112,
+      "function_count": 359,
+      "layers": [
+        "L2_execution"
+      ],
+      "in_process_map": false,
+      "sample_files": [
+        ".healing_backups\\location_violations\\AllProvidersDownError.py",
+        ".healing_backups\\location_violations\\HardenedopenaiexecutorStrategy.py",
+        ".healing_backups\\location_violations\\__init___20.py",
+        ".healing_backups\\location_violations\\__init___66.py",
+        ".healing_backups\\location_violations\\__init___75.py"
+      ],
+      "sample_classes": [
+        "AgentConfig",
+        "AgentMessage",
+        "AgentResponse",
+        "AgentExecutor",
+        "AllProvidersDownError"
+      ]
+    },
+    "gateway": {
+      "file_count": 162,
+      "class_count": 302,
+      "function_count": 1886,
+      "layers": [
+        "L0_routing",
+        "L2_execution",
+        "L3_orchestration",
+        "L4_state",
+        "L5_safety",
+        "L6_observability"
+      ],
+      "in_process_map": false,
+      "sample_files": [
+        ".healing_backups\\location_violations\\GeminiLLMClient.py",
+        ".healing_backups\\location_violations\\HardenedanthropicexecutorStrategy.py",
+        ".healing_backups\\location_violations\\HardenedanthropicexecutorStrategy_1.py",
+        ".healing_backups\\location_violations\\HardenedanthropicexecutorStrategy_2.py",
+        ".healing_backups\\location_violations\\HardenedopenaiexecutorStrategy.py"
+      ],
+      "sample_classes": [
+        "GeminiLLMClient",
+        "HardenedAnthropicConfig",
+        "HardenedAnthropicExecutor",
+        "HardenedAnthropicConfig",
+        "HardenedAnthropicExecutor"
+      ]
+    },
+    "llm": {
+      "file_count": 46,
+      "class_count": 236,
+      "function_count": 672,
+      "layers": [
+        "L0_routing",
+        "L1_cognition",
+        "L2_execution",
+        "L3_orchestration",
+        "L5_safety"
+      ],
+      "in_process_map": false,
+      "sample_files": [
+        ".healing_backups\\location_violations\\HardenedanthropicexecutorStrategy.py",
+        ".healing_backups\\location_violations\\HardenedanthropicexecutorStrategy_1.py",
+        ".healing_backups\\location_violations\\HardenedanthropicexecutorStrategy_2.py",
+        ".healing_backups\\location_violations\\HardenedopenaiexecutorStrategy.py",
+        ".healing_backups\\location_violations\\__init___18.py"
+      ],
+      "sample_classes": [
+        "HardenedAnthropicConfig",
+        "HardenedAnthropicExecutor",
+        "HardenedAnthropicConfig",
+        "HardenedAnthropicExecutor",
+        "HardenedAnthropicConfig"
+      ]
+    },
+    "enforcement": {
+      "file_count": 207,
+      "class_count": 528,
+      "function_count": 2257,
+      "layers": [
+        "L0_routing",
+        "L2_execution",
+        "L3_orchestration",
+        "L4_state",
+        "L5_safety",
+        "L6_observability"
+      ],
+      "in_process_map": false,
+      "sample_files": [
+        ".healing_backups\\location_violations\\__init__.py",
+        ".healing_backups\\location_violations\\__init___15.py",
+        ".healing_backups\\location_violations\\__init___22.py",
+        ".healing_backups\\location_violations\\agent_registry.py",
+        ".healing_backups\\location_violations\\agent_registry_2.py"
+      ],
+      "sample_classes": [
+        "FallbackContext",
+        "CallableReport",
+        "FallbackContext",
+        "CallableReport",
+        "FallbackContext"
+      ]
+    },
+    "registry": {
+      "file_count": 153,
+      "class_count": 306,
+      "function_count": 1534,
+      "layers": [
+        "L0_routing",
+        "L2_execution",
+        "L3_orchestration",
+        "L4_state",
+        "L5_safety",
+        "L6_observability"
+      ],
+      "in_process_map": false,
+      "sample_files": [
+        ".healing_backups\\location_violations\\HOPPipelineExecutor.py",
+        ".healing_backups\\location_violations\\HOPPipelineExecutor_1.py",
+        ".healing_backups\\location_violations\\HOPPipelineExecutor_2.py",
+        ".healing_backups\\location_violations\\_assertions.py",
+        ".healing_backups\\location_violations\\_contract_gate_ssot.py"
+      ],
+      "sample_classes": [
+        "HOPPipelineExecutor",
+        "HOPPipelineExecutor",
+        "HOPPipelineExecutor",
+        "HopCheckpoint",
+        "ResumeOrchestratorEngine"
+      ]
+    },
+    "circuit": {
+      "file_count": 28,
+      "class_count": 245,
+      "function_count": 389,
+      "layers": [
+        "L2_execution",
+        "L3_orchestration",
+        "L5_safety",
+        "L6_observability"
+      ],
+      "in_process_map": false,
+      "sample_files": [
+        ".healing_backups\\location_violations\\AllProvidersDownError.py",
+        "agentic_core\\L2_execution\\healers\\qwen_circuit_breaker.py",
+        "agentic_core\\L2_execution\\healers\\qwen_health.py",
+        "agentic_core\\L2_execution\\types\\vllm_gateway_integration_types.py",
+        "agentic_core\\L3_orchestration\\engines\\autonomous_execution_engine.py"
+      ],
+      "sample_classes": [
+        "AllProvidersDownError",
+        "HardenedRouter",
+        "CircuitState",
+        "CircuitStats",
+        "CircuitBreakerMixin"
+      ]
+    },
+    "health": {
+      "file_count": 52,
+      "class_count": 102,
+      "function_count": 671,
+      "layers": [
+        "L0_routing",
+        "L1_cognition",
+        "L2_execution",
+        "L3_orchestration",
+        "L4_state",
+        "L5_safety",
+        "L6_observability"
+      ],
+      "in_process_map": false,
+      "sample_files": [
+        ".healing_backups\\location_violations\\AllProvidersDownError.py",
+        ".healing_backups\\location_violations\\LicHealingOrchestrator.py",
+        ".healing_backups\\location_violations\\LicHealingOrchestrator_1.py",
+        ".healing_backups\\location_violations\\LicHealingOrchestrator_2.py",
+        ".healing_backups\\location_violations\\audit_dashboard_ssot_flow_util.py"
+      ],
+      "sample_classes": [
+        "AllProvidersDownError",
+        "HardenedRouter",
+        "L1HealthBenchmark",
+        "LicHealingOrchestrator",
+        "LicHealingOrchestrator"
+      ]
+    },
+    "schema": {
+      "file_count": 133,
+      "class_count": 531,
+      "function_count": 2496,
+      "layers": [
+        "L0_routing",
+        "L2_execution",
+        "L3_orchestration",
+        "L4_state",
+        "L5_safety"
+      ],
+      "in_process_map": true,
+      "sample_files": [
+        ".healing_backups\\location_violations\\AllProvidersDownError.py",
+        ".healing_backups\\location_violations\\ContentQualityAgent.py",
+        ".healing_backups\\location_violations\\ValidatorAgent.py",
+        ".healing_backups\\location_violations\\audit_dashboard_ssot_flow_util.py",
+        ".healing_backups\\location_violations\\audit_dashboard_ssot_flow_util_1.py"
+      ],
+      "sample_classes": [
+        "AllProvidersDownError",
+        "HardenedRouter",
+        "AuditStatus",
+        "SovereignReport",
+        "AuditStatus"
+      ]
+    },
+    "event": {
+      "file_count": 45,
+      "class_count": 267,
+      "function_count": 739,
+      "layers": [
+        "L0_routing",
+        "L1_cognition",
+        "L3_orchestration",
+        "L4_state",
+        "L5_safety",
+        "L6_observability"
+      ],
+      "in_process_map": false,
+      "sample_files": [
+        ".healing_backups\\location_violations\\AllProvidersDownError.py",
+        ".nox\\integration\\Lib\\site-packages\\pip\\_vendor\\rich\\live.py",
+        ".nox\\integration\\Lib\\site-packages\\pip\\_vendor\\rich\\progress.py",
+        "agentic_core\\L0_routing\\enforcement\\mutation_prohibition.py",
+        "agentic_core\\L0_routing\\enforcement\\vigilance_routing.py"
+      ],
+      "sample_classes": [
+        "AllProvidersDownError",
+        "HardenedRouter",
+        "_RefreshThread",
+        "Live",
+        "_TrackThread"
+      ]
+    },
+    "backoff": {
+      "file_count": 15,
+      "class_count": 34,
+      "function_count": 245,
+      "layers": [
+        "L5_safety"
+      ],
+      "in_process_map": false,
+      "sample_files": [
+        ".healing_backups\\location_violations\\anthropic_client.py",
+        ".healing_backups\\location_violations\\anthropic_client_1.py",
+        ".healing_backups\\location_violations\\anthropic_client_2.py",
+        ".healing_backups\\location_violations\\openai_client.py",
+        ".healing_backups\\location_violations\\openai_client_1.py"
+      ],
+      "sample_classes": [
+        "AnthropicConfig",
+        "AnthropicClient",
+        "AnthropicConfig",
+        "AnthropicClient",
+        "AnthropicConfig"
+      ]
+    },
+    "stream": {
+      "file_count": 27,
+      "class_count": 136,
+      "function_count": 971,
+      "layers": [],
+      "in_process_map": false,
+      "sample_files": [
+        ".healing_backups\\location_violations\\anthropic_client.py",
+        ".healing_backups\\location_violations\\anthropic_client_1.py",
+        ".healing_backups\\location_violations\\anthropic_client_2.py",
+        ".healing_backups\\location_violations\\openai_client.py",
+        ".healing_backups\\location_violations\\openai_client_1.py"
+      ],
+      "sample_classes": [
+        "AnthropicConfig",
+        "AnthropicClient",
+        "AnthropicConfig",
+        "AnthropicClient",
+        "AnthropicConfig"
+      ]
+    },
+    "tool": {
+      "file_count": 74,
+      "class_count": 179,
+      "function_count": 832,
+      "layers": [
+        "L0_routing",
+        "L2_execution",
+        "L3_orchestration",
+        "L4_state",
+        "L5_safety",
+        "L6_observability"
+      ],
+      "in_process_map": false,
+      "sample_files": [
+        ".healing_backups\\location_violations\\DispatchResumeToolsAgent.py",
+        ".healing_backups\\location_violations\\anthropic_client.py",
+        ".healing_backups\\location_violations\\anthropic_client_1.py",
+        ".healing_backups\\location_violations\\anthropic_client_2.py",
+        ".healing_backups\\location_violations\\message_route_types.py"
+      ],
+      "sample_classes": [
+        "AnthropicConfig",
+        "AnthropicClient",
+        "AnthropicConfig",
+        "AnthropicClient",
+        "AnthropicConfig"
+      ]
+    },
+    "validation": {
+      "file_count": 102,
+      "class_count": 398,
+      "function_count": 1314,
+      "layers": [
+        "L0_routing",
+        "L2_execution",
+        "L3_orchestration",
+        "L4_state",
+        "L5_safety",
+        "L6_observability"
+      ],
+      "in_process_map": false,
+      "sample_files": [
+        ".healing_backups\\location_violations\\LICValidationExecutor.py",
+        ".healing_backups\\location_violations\\LICValidationExecutor_1.py",
+        ".healing_backups\\location_violations\\LICValidationExecutor_2.py",
+        ".healing_backups\\location_violations\\ValidatorAgent.py",
+        ".healing_backups\\location_violations\\apps_lic_engines_CampaignBalanceAgent.py"
+      ],
+      "sample_classes": [
+        "CampaignBalanceAgent",
+        "CampaignBalanceAgent",
+        "CampaignBalanceAgent",
+        "DeliverabilityAgent",
+        "DeliverabilityAgent"
+      ]
+    },
+    "vector": {
+      "file_count": 25,
+      "class_count": 81,
+      "function_count": 438,
+      "layers": [
+        "L0_routing",
+        "L1_cognition",
+        "L2_execution",
+        "L4_state",
+        "L5_safety"
+      ],
+      "in_process_map": true,
+      "sample_files": [
+        ".healing_backups\\location_violations\\apps_lic_engines_Hop2ResearchAgent.py",
+        ".healing_backups\\location_violations\\apps_lic_engines_Hop2ResearchAgent_1.py",
+        ".healing_backups\\location_violations\\apps_lic_engines_Hop2ResearchAgent_2.py",
+        ".healing_backups\\location_violations\\lic_vector_memory_types.py",
+        "agentic_core\\L0_routing\\scripts\\execute_ssot.py"
+      ],
+      "sample_classes": [
+        "HOP2ResearchAgent",
+        "HOP2ResearchAgent",
+        "HOP2ResearchAgent",
+        "VectorDocument",
+        "QueryResult"
+      ]
+    },
+    "confidence": {
+      "file_count": 85,
+      "class_count": 280,
+      "function_count": 1128,
+      "layers": [
+        "L0_routing",
+        "L1_cognition",
+        "L2_execution",
+        "L4_state",
+        "L5_safety"
+      ],
+      "in_process_map": false,
+      "sample_files": [
+        ".healing_backups\\location_violations\\AssessContentRelevance.py",
+        ".healing_backups\\location_violations\\AssessContentRisk.py",
+        ".healing_backups\\location_violations\\AssessMessageRelevance.py",
+        ".healing_backups\\location_violations\\CalibrateEngagementScore.py",
+        ".healing_backups\\location_violations\\CalibrateFitScore.py"
+      ],
+      "sample_classes": [
+        "HOP2ResearchAgent",
+        "HOP2ResearchAgent",
+        "HOP2ResearchAgent",
+        "OutreachEngineContext",
+        "OutreachAgent"
+      ]
+    },
+    "metrics": {
+      "file_count": 101,
+      "class_count": 467,
+      "function_count": 1352,
+      "layers": [
+        "L0_routing",
+        "L1_cognition",
+        "L2_execution",
+        "L3_orchestration",
+        "L4_state",
+        "L5_safety",
+        "L6_observability"
+      ],
+      "in_process_map": true,
+      "sample_files": [
+        ".healing_backups\\location_violations\\PIISanitizerSpecialistAgent_util.py",
+        ".healing_backups\\location_violations\\apps_lic_engines_HOP3SenderGroundingAgent.py",
+        ".healing_backups\\location_violations\\apps_lic_engines_HOP3SenderGroundingAgent_1.py",
+        ".healing_backups\\location_violations\\apps_lic_engines_HOP3SenderGroundingAgent_2.py",
+        ".healing_backups\\location_violations\\budget_auditor_util.py"
+      ],
+      "sample_classes": [
+        "HOP3SenderGroundingAgent",
+        "HOP3SenderGroundingAgent",
+        "HOP3SenderGroundingAgent",
+        "BudgetAuditor",
+        "BudgetAuditor"
+      ]
+    },
+    "rate": {
+      "file_count": 46,
+      "class_count": 212,
+      "function_count": 801,
+      "layers": [
+        "L0_routing",
+        "L1_cognition",
+        "L2_execution",
+        "L5_safety"
+      ],
+      "in_process_map": false,
+      "sample_files": [
+        ".healing_backups\\location_violations\\OutreachLearningAgent.py",
+        ".healing_backups\\location_violations\\OutreachLearningAgent_1.py",
+        ".healing_backups\\location_violations\\OutreachLearningAgent_2.py",
+        ".healing_backups\\location_violations\\app_content_validator_agent_types.py",
+        ".healing_backups\\location_violations\\apps_lic_engines_OutreachLearningAgent.py"
+      ],
+      "sample_classes": [
+        "OutreachEngineContext",
+        "OutreachAgent",
+        "HealerMixin",
+        "OutreachConfidenceLevel",
+        "OutreachLearningExample"
+      ]
+    },
+    "replay": {
+      "file_count": 53,
+      "class_count": 150,
+      "function_count": 516,
+      "layers": [
+        "L0_routing",
+        "L2_execution",
+        "L3_orchestration",
+        "L4_state",
+        "L6_observability"
+      ],
+      "in_process_map": false,
+      "sample_files": [
+        ".healing_backups\\location_violations\\architectural_invariants.py",
+        ".healing_backups\\location_violations\\embedding_factory.py",
+        "agentic_core\\L0_routing\\enforcement\\crypto_trust_contracts.py",
+        "agentic_core\\L0_routing\\enforcement\\trace_id_generator.py",
+        "agentic_core\\L2_execution\\enforcement\\SovereignLLMGateway.py"
+      ],
+      "sample_classes": [
+        "EmbeddingDisabledError",
+        "EmbeddingSovereigntyViolationError",
+        "EmbeddingClient",
+        "OpenAIEmbeddingClient",
+        "ReplayGuardMixin"
+      ]
+    },
+    "manifest": {
+      "file_count": 69,
+      "class_count": 182,
+      "function_count": 1188,
+      "layers": [
+        "L0_routing",
+        "L2_execution",
+        "L3_orchestration",
+        "L5_safety",
+        "L6_observability"
+      ],
+      "in_process_map": false,
+      "sample_files": [
+        ".healing_backups\\location_violations\\assemble.py",
+        ".healing_backups\\location_violations\\assemble_1.py",
+        ".healing_backups\\location_violations\\assemble_2.py",
+        ".healing_backups\\location_violations\\finalize_architecture_safe_util.py",
+        ".healing_backups\\location_violations\\finalize_architecture_safe_util_1.py"
+      ],
+      "sample_classes": [
+        "MCPHardenedMixin",
+        "MCPHardenedMixin",
+        "HealerMixin",
+        "ManifestManager",
+        "MigrationExecutor"
+      ]
+    },
+    "mcp": {
+      "file_count": 74,
+      "class_count": 196,
+      "function_count": 590,
+      "layers": [
+        "L0_routing",
+        "L2_execution",
+        "L3_orchestration",
+        "L4_state",
+        "L5_safety"
+      ],
+      "in_process_map": true,
+      "sample_files": [
+        ".healing_backups\\location_violations\\ImmutableStagingBuffer.py",
+        ".healing_backups\\location_violations\\OutreachSignalRouterAgent.py",
+        ".healing_backups\\location_violations\\OutreachSignalRouterAgent_1.py",
+        ".healing_backups\\location_violations\\OutreachSignalRouterAgent_2.py",
+        ".healing_backups\\location_violations\\TraceRegistry.py"
+      ],
+      "sample_classes": [
+        "MCPHardenedMixin",
+        "HealerMixin",
+        "BaseRGEngine",
+        "MCPHardenedMixin",
+        "HealerMixin"
+      ]
+    },
+    "guard": {
+      "file_count": 64,
+      "class_count": 164,
+      "function_count": 940,
+      "layers": [
+        "L0_routing",
+        "L1_cognition",
+        "L2_execution",
+        "L3_orchestration",
+        "L4_state",
+        "L5_safety"
+      ],
+      "in_process_map": false,
+      "sample_files": [
+        ".healing_backups\\location_violations\\_discover_debt.py",
+        ".healing_backups\\location_violations\\_discover_debt_1.py",
+        ".healing_backups\\location_violations\\audit_status.py",
+        ".healing_backups\\location_violations\\audit_status_1.py",
+        ".healing_backups\\location_violations\\audit_status_2.py"
+      ],
+      "sample_classes": [
+        "AuditStatus",
+        "SovereignReport",
+        "AuditStatus",
+        "SovereignReport",
+        "AuditStatus"
+      ]
+    },
+    "compliance": {
+      "file_count": 70,
+      "class_count": 208,
+      "function_count": 995,
+      "layers": [
+        "L0_routing",
+        "L2_execution",
+        "L3_orchestration",
+        "L5_safety",
+        "L6_observability"
+      ],
+      "in_process_map": false,
+      "sample_files": [
+        ".healing_backups\\location_violations\\OutreachSignalRouterAgent.py",
+        ".healing_backups\\location_violations\\OutreachSignalRouterAgent_1.py",
+        ".healing_backups\\location_violations\\OutreachSignalRouterAgent_2.py",
+        ".healing_backups\\location_violations\\base.py",
+        ".healing_backups\\location_violations\\callable_report.py"
+      ],
+      "sample_classes": [
+        "GuardianTestBase",
+        "AgentTestMixin",
+        "ValidationResult",
+        "FallbackContext",
+        "CallableReport"
+      ]
+    },
+    "snapshot": {
+      "file_count": 64,
+      "class_count": 214,
+      "function_count": 831,
+      "layers": [
+        "L0_routing",
+        "L2_execution",
+        "L3_orchestration",
+        "L4_state",
+        "L6_observability"
+      ],
+      "in_process_map": false,
+      "sample_files": [
+        ".healing_backups\\location_violations\\ImmutableStagingBuffer.py",
+        ".healing_backups\\location_violations\\base_rg_engine.py",
+        ".healing_backups\\location_violations\\base_rg_engine_1.py",
+        ".healing_backups\\location_violations\\base_rg_engine_2.py",
+        ".healing_backups\\location_violations\\capture_golden.py"
+      ],
+      "sample_classes": [
+        "MCPHardenedMixin",
+        "HealerMixin",
+        "BaseRGEngine",
+        "MCPHardenedMixin",
+        "HealerMixin"
+      ]
+    },
+    "budget": {
+      "file_count": 38,
+      "class_count": 311,
+      "function_count": 637,
+      "layers": [
+        "L0_routing",
+        "L2_execution",
+        "L3_orchestration",
+        "L5_safety"
+      ],
+      "in_process_map": false,
+      "sample_files": [
+        ".healing_backups\\location_violations\\HardenedanthropicexecutorStrategy.py",
+        ".healing_backups\\location_violations\\HardenedanthropicexecutorStrategy_1.py",
+        ".healing_backups\\location_violations\\HardenedanthropicexecutorStrategy_2.py",
+        ".healing_backups\\location_violations\\HardenedopenaiexecutorStrategy.py",
+        ".healing_backups\\location_violations\\budget_auditor_util.py"
+      ],
+      "sample_classes": [
+        "BudgetAuditor",
+        "BudgetAuditor",
+        "BudgetAuditor",
+        "HardenedAnthropicConfig",
+        "HardenedAnthropicExecutor"
+      ]
+    },
+    "sovereign": {
+      "file_count": 102,
+      "class_count": 281,
+      "function_count": 1398,
+      "layers": [
+        "L0_routing",
+        "L1_cognition",
+        "L2_execution",
+        "L3_orchestration",
+        "L5_safety"
+      ],
+      "in_process_map": false,
+      "sample_files": [
+        ".healing_backups\\location_violations\\__init___17.py",
+        ".healing_backups\\location_violations\\__init___24.py",
+        ".healing_backups\\location_violations\\__init___32.py",
+        ".healing_backups\\location_violations\\_discover_debt.py",
+        ".healing_backups\\location_violations\\_discover_debt_1.py"
+      ],
+      "sample_classes": [
+        "FallbackContext",
+        "CallableReport",
+        "FallbackContext",
+        "CallableReport",
+        "FallbackContext"
+      ]
+    },
+    "injection": {
+      "file_count": 45,
+      "class_count": 274,
+      "function_count": 573,
+      "layers": [
+        "L2_execution",
+        "L3_orchestration",
+        "L5_safety",
+        "L6_observability"
+      ],
+      "in_process_map": false,
+      "sample_files": [
+        ".healing_backups\\location_violations\\dashboard_verifier.py",
+        ".healing_backups\\location_violations\\dashboard_verifier_1.py",
+        ".healing_backups\\location_violations\\dashboard_verifier_2.py",
+        "agentic_core\\L2_execution\\enforcement\\SovereignLLMGateway.py",
+        "agentic_core\\L3_orchestration\\engines\\sub_atomic_engine_impl.py"
+      ],
+      "sample_classes": [
+        "DashboardVerifier",
+        "DashboardVerifier",
+        "DashboardVerifier",
+        "InstructionalInjectionMixin",
+        "InjectionLayer"
+      ]
+    },
+    "policy": {
+      "file_count": 92,
+      "class_count": 452,
+      "function_count": 1372,
+      "layers": [
+        "L0_routing",
+        "L2_execution",
+        "L4_state",
+        "L5_safety"
+      ],
+      "in_process_map": false,
+      "sample_files": [
+        ".healing_backups\\location_violations\\ValidatorAgent.py",
+        ".healing_backups\\location_violations\\enforce_execution_policy.py",
+        ".healing_backups\\location_violations\\l4_state_writer.py",
+        ".healing_backups\\location_violations\\retry_policy_config.py",
+        ".healing_backups\\location_violations\\retry_policy_config_1.py"
+      ],
+      "sample_classes": [
+        "SimpleChangePackage",
+        "L4StateWriter",
+        "DefaultL4StateWriter",
+        "NoOpL4StateWriter",
+        "RetryStrategy"
+      ]
+    },
+    "token": {
+      "file_count": 324,
+      "class_count": 906,
+      "function_count": 1450,
+      "layers": [
+        "L0_routing",
+        "L2_execution"
+      ],
+      "in_process_map": false,
+      "sample_files": [
+        ".healing_backups\\location_violations\\HardenedanthropicexecutorStrategy.py",
+        ".healing_backups\\location_violations\\HardenedanthropicexecutorStrategy_1.py",
+        ".healing_backups\\location_violations\\HardenedanthropicexecutorStrategy_2.py",
+        ".healing_backups\\location_violations\\HardenedopenaiexecutorStrategy.py",
+        ".nox\\integration\\Lib\\site-packages\\packaging\\_tokenizer.py"
+      ],
+      "sample_classes": [
+        "HardenedAnthropicConfig",
+        "HardenedAnthropicExecutor",
+        "HardenedAnthropicConfig",
+        "HardenedAnthropicExecutor",
+        "HardenedAnthropicConfig"
+      ]
+    },
+    "threshold": {
+      "file_count": 37,
+      "class_count": 79,
+      "function_count": 507,
+      "layers": [
+        "L0_routing",
+        "L1_cognition",
+        "L2_execution",
+        "L3_orchestration",
+        "L5_safety"
+      ],
+      "in_process_map": false,
+      "sample_files": [
+        ".healing_backups\\location_violations\\l0_threshold_tuner.py",
+        ".healing_backups\\naming_violations\\l0_threshold_tuner.py",
+        ".healing_backups\\naming_violations\\l0_threshold_tuner_1.py",
+        ".healing_backups\\naming_violations\\l0_threshold_tuner_2.py",
+        ".healing_backups\\naming_violations\\l0_threshold_tuner_3.py"
+      ],
+      "sample_classes": [
+        "L0ThresholdChangePackage",
+        "L0ThresholdChangePackage",
+        "L0ThresholdChangePackage",
+        "L0ThresholdChangePackage",
+        "L0ProposerAdapter"
+      ]
+    },
+    "drift": {
+      "file_count": 27,
+      "class_count": 105,
+      "function_count": 409,
+      "layers": [
+        "L0_routing",
+        "L2_execution",
+        "L5_safety",
+        "L6_observability"
+      ],
+      "in_process_map": false,
+      "sample_files": [
+        ".healing_backups\\location_violations\\l4_state_writer.py",
+        ".healing_backups\\naming_violations\\l1_meta_adapter.py",
+        ".healing_backups\\naming_violations\\l1_meta_adapter_1.py",
+        ".healing_backups\\naming_violations\\l4_state_writer_2.py",
+        ".healing_backups\\naming_violations\\l4_state_writer_3.py"
+      ],
+      "sample_classes": [
+        "SimpleChangePackage",
+        "L4StateWriter",
+        "DefaultL4StateWriter",
+        "NoOpL4StateWriter",
+        "L1TelemetryEvent"
+      ]
+    },
+    "detection": {
+      "file_count": 35,
+      "class_count": 73,
+      "function_count": 414,
+      "layers": [
+        "L0_routing",
+        "L2_execution",
+        "L4_state",
+        "L5_safety",
+        "L6_observability"
+      ],
+      "in_process_map": false,
+      "sample_files": [
+        ".healing_backups\\location_violations\\l4_state_writer.py",
+        ".healing_backups\\naming_violations\\l4_state_writer.py",
+        ".healing_backups\\naming_violations\\l4_state_writer_1.py",
+        ".healing_backups\\naming_violations\\l4_state_writer_2.py",
+        ".healing_backups\\naming_violations\\l4_state_writer_3.py"
+      ],
+      "sample_classes": [
+        "SimpleChangePackage",
+        "L4StateWriter",
+        "DefaultL4StateWriter",
+        "NoOpL4StateWriter",
+        "SimpleChangePackage"
+      ]
+    },
+    "version": {
+      "file_count": 151,
+      "class_count": 528,
+      "function_count": 3160,
+      "layers": [
+        "L0_routing",
+        "L2_execution",
+        "L3_orchestration",
+        "L4_state",
+        "L5_safety"
+      ],
+      "in_process_map": true,
+      "sample_files": [
+        ".healing_backups\\location_violations\\PromptTemplate.py",
+        ".healing_backups\\location_violations\\PromptTemplate_2.py",
+        ".healing_backups\\location_violations\\PromptTemplate_3.py",
+        ".healing_backups\\location_violations\\__init___19.py",
+        ".healing_backups\\location_violations\\__init___65.py"
+      ],
+      "sample_classes": [
+        "SimpleChangePackage",
+        "L4StateWriter",
+        "DefaultL4StateWriter",
+        "NoOpL4StateWriter",
+        "VersionStoreError"
+      ]
+    },
+    "retrieval": {
+      "file_count": 43,
+      "class_count": 168,
+      "function_count": 591,
+      "layers": [
+        "L0_routing",
+        "L3_orchestration",
+        "L4_state"
+      ],
+      "in_process_map": false,
+      "sample_files": [
+        ".healing_backups\\location_violations\\l4_state_writer.py",
+        ".healing_backups\\naming_violations\\l4_registries.py",
+        ".healing_backups\\naming_violations\\l4_registries_1.py",
+        ".healing_backups\\naming_violations\\l4_state_writer_2.py",
+        ".healing_backups\\naming_violations\\l4_state_writer_3.py"
+      ],
+      "sample_classes": [
+        "SimpleChangePackage",
+        "L4StateWriter",
+        "DefaultL4StateWriter",
+        "NoOpL4StateWriter",
+        "ChunkManifest"
+      ]
+    },
+    "rollback": {
+      "file_count": 45,
+      "class_count": 229,
+      "function_count": 736,
+      "layers": [
+        "L0_routing",
+        "L2_execution",
+        "L3_orchestration",
+        "L4_state",
+        "L5_safety"
+      ],
+      "in_process_map": false,
+      "sample_files": [
+        ".healing_backups\\location_violations\\OutreachSignalRouterAgent.py",
+        ".healing_backups\\location_violations\\OutreachSignalRouterAgent_1.py",
+        ".healing_backups\\location_violations\\OutreachSignalRouterAgent_2.py",
+        ".healing_backups\\location_violations\\PromptTemplate.py",
+        ".healing_backups\\location_violations\\PromptTemplate_2.py"
+      ],
+      "sample_classes": [
+        "VersionStoreError",
+        "VersionAlreadyExists",
+        "VersionNotFound",
+        "ParentVersionNotFound",
+        "InvalidActivationTarget"
+      ]
+    },
+    "cosine": {
+      "file_count": 10,
+      "class_count": 56,
+      "function_count": 235,
+      "layers": [
+        "L0_routing",
+        "L2_execution"
+      ],
+      "in_process_map": false,
+      "sample_files": [
+        ".healing_backups\\location_violations\\LicCodeInterpreter.py",
+        ".healing_backups\\location_violations\\LicCodeInterpreter_1.py",
+        ".healing_backups\\location_violations\\LicCodeInterpreter_2.py",
+        "agentic_core\\L0_routing\\scripts\\execute_ssot.py",
+        "agentic_core\\L2_execution\\healers\\bmg_embedding_similarity.py"
+      ],
+      "sample_classes": [
+        "ScoredCandidate",
+        "ScoringCriteria",
+        "SimilarityResult",
+        "KeywordExtractionResult",
+        "LICCodeInterpreter"
+      ]
+    },
+    "recovery": {
+      "file_count": 16,
+      "class_count": 34,
+      "function_count": 162,
+      "layers": [
+        "L4_state",
+        "L5_safety"
+      ],
+      "in_process_map": false,
+      "sample_files": [
+        ".healing_backups\\location_violations\\LicHealingOrchestrator.py",
+        ".healing_backups\\location_violations\\LicHealingOrchestrator_1.py",
+        ".healing_backups\\location_violations\\LicHealingOrchestrator_2.py",
+        "agentic_core\\L4_state\\reasoning\\CheckpointManager.py",
+        "agentic_core\\L5_safety\\enforcement\\error_recovery_guardrail.py"
+      ],
+      "sample_classes": [
+        "LicHealingOrchestrator",
+        "LicHealingOrchestrator",
+        "LicHealingOrchestrator",
+        "CircuitState",
+        "CircuitStats"
+      ]
+    },
+    "isolation": {
+      "file_count": 13,
+      "class_count": 19,
+      "function_count": 303,
+      "layers": [
+        "L1_cognition",
+        "L5_safety"
+      ],
+      "in_process_map": false,
+      "sample_files": [
+        ".healing_backups\\location_violations\\lic_agent_base_util.py",
+        ".healing_backups\\location_violations\\rg_agent_base_util.py",
+        "agentic_core\\L1_cognition\\utils\\guardrails_util.py",
+        "agentic_core\\L5_safety\\reasoning\\LocationValidatorAgent.py",
+        "agentic_core\\prompt_governance\\security\\validators\\output_schema_validator.py"
+      ],
+      "sample_classes": [
+        "MetaLearningMixin",
+        "HealerMixin",
+        "LICAgentBase",
+        "RGAgentBase",
+        "CacheGuardrails"
+      ]
+    },
+    "chromadb": {
+      "file_count": 3,
+      "class_count": 12,
+      "function_count": 46,
+      "layers": [
+        "L4_state"
+      ],
+      "in_process_map": false,
+      "sample_files": [
+        ".healing_backups\\location_violations\\lic_vector_memory_types.py",
+        "agentic_core\\L4_state\\memory\\in_memory_vector_cache.py",
+        "apps_lic\\types\\lic_vector_memory_types.py"
+      ],
+      "sample_classes": [
+        "VectorDocument",
+        "QueryResult",
+        "MemoryStats",
+        "LICVectorMemory",
+        "MockVectorMemory"
+      ]
+    },
+    "workflow": {
+      "file_count": 11,
+      "class_count": 168,
+      "function_count": 215,
+      "layers": [
+        "L3_orchestration"
+      ],
+      "in_process_map": false,
+      "sample_files": [
+        ".healing_backups\\location_violations\\local_workflow_loader.py",
+        "agentic_core\\L3_orchestration\\engines\\coordinator_capability_orchestrator.py",
+        "agentic_core\\L3_orchestration\\types\\workflow_loader_types.py",
+        "agentic_core\\base_agents\\L3OrchestrationBase.py",
+        "apps_rg\\tools\\local_workflow_loader.py"
+      ],
+      "sample_classes": [
+        "LocalWorkflowLoader",
+        "execute_resume_generation",
+        "L3OrchestrationBase",
+        "CoordinatorCapability",
+        "WorkflowCoordinator"
+      ]
+    },
+    "semantic": {
+      "file_count": 52,
+      "class_count": 187,
+      "function_count": 938,
+      "layers": [
+        "L0_routing",
+        "L1_cognition",
+        "L2_execution",
+        "L3_orchestration",
+        "L4_state",
+        "L5_safety",
+        "L6_observability"
+      ],
+      "in_process_map": true,
+      "sample_files": [
+        ".healing_backups\\location_violations\\mcp_mocks.py",
+        "agentic_core\\L0_routing\\meta_control\\config_store_types.py",
+        "agentic_core\\L0_routing\\meta_control\\meta_apply.py",
+        "agentic_core\\L0_routing\\meta_control\\meta_apply_ops.py",
+        "agentic_core\\L0_routing\\scripts\\execute_ssot.py"
+      ],
+      "sample_classes": [
+        "SimilarityResult",
+        "SemanticCacheMixin",
+        "MetaLearningStorage",
+        "SovereignRagOrchestrator",
+        "_BGEEmbedder"
+      ]
+    },
+    "template": {
+      "file_count": 42,
+      "class_count": 254,
+      "function_count": 645,
+      "layers": [
+        "L1_cognition",
+        "L2_execution",
+        "L4_state",
+        "L5_safety",
+        "L6_observability"
+      ],
+      "in_process_map": false,
+      "sample_files": [
+        ".healing_backups\\location_violations\\OutreachMessageAgent.py",
+        ".healing_backups\\location_violations\\OutreachMessageAgent_1.py",
+        ".healing_backups\\location_violations\\OutreachMessageAgent_2.py",
+        ".healing_backups\\location_violations\\ResumeAssemblyAgent.py",
+        ".healing_backups\\location_violations\\recipient_archetype_types.py"
+      ],
+      "sample_classes": [
+        "OutreachTemplateError",
+        "OutreachMessageAgent",
+        "OutreachTemplateError",
+        "OutreachMessageAgent",
+        "OutreachTemplateError"
+      ]
+    },
+    "telemetry": {
+      "file_count": 38,
+      "class_count": 109,
+      "function_count": 329,
+      "layers": [
+        "L0_routing",
+        "L3_orchestration",
+        "L4_state",
+        "L5_safety",
+        "L6_observability"
+      ],
+      "in_process_map": true,
+      "sample_files": [
+        ".healing_backups\\location_violations\\PersonaPlannerValidator.py",
+        ".healing_backups\\location_violations\\resume_analysis_plan_types.py",
+        ".healing_backups\\naming_violations\\l1_meta_adapter.py",
+        ".healing_backups\\naming_violations\\l1_meta_adapter_1.py",
+        "agentic_core\\L0_routing\\engines\\shadow_router_classifier.py"
+      ],
+      "sample_classes": [
+        "PersonaPlan",
+        "PersonaPlanner",
+        "ResumeAnalysisPlan",
+        "ResumeSectionConfig",
+        "ResumeProcessingPlan"
+      ]
+    },
+    "anomaly": {
+      "file_count": 3,
+      "class_count": 5,
+      "function_count": 35,
+      "layers": [
+        "L4_state",
+        "L5_safety"
+      ],
+      "in_process_map": false,
+      "sample_files": [
+        ".healing_backups\\location_violations\\repo_builder.py",
+        "agentic_core\\L4_state\\reasoning\\CachedStateLedger.py",
+        "agentic_core\\L5_safety\\types\\file_health_score_types.py"
+      ],
+      "sample_classes": [
+        "RepoBuilder",
+        "CachedStateLedger",
+        "FileHealthScore",
+        "HealingLease",
+        "AtomicBlackboard"
+      ]
+    },
+    "gemini": {
+      "file_count": 12,
+      "class_count": 28,
+      "function_count": 126,
+      "layers": [
+        "L2_execution",
+        "L5_safety"
+      ],
+      "in_process_map": false,
+      "sample_files": [
+        ".healing_backups\\location_violations\\ResumeGenerator.py",
+        "agentic_core\\L2_execution\\healers\\healing_provider_adapters.py",
+        "agentic_core\\L2_execution\\healers\\healing_tier_dispatcher.py",
+        "agentic_core\\L2_execution\\tools\\job_analyzer_impl.py",
+        "agentic_core\\L2_execution\\types\\vllm_backpressure_types.py"
+      ],
+      "sample_classes": [
+        "ResumeGenerator",
+        "OOMRetryableError",
+        "OOMEscalatedError",
+        "QwenInvokerAdapter",
+        "GeminiInvokerAdapter"
+      ]
+    },
+    "ledger": {
+      "file_count": 7,
+      "class_count": 16,
+      "function_count": 111,
+      "layers": [
+        "L2_execution",
+        "L5_safety"
+      ],
+      "in_process_map": false,
+      "sample_files": [
+        ".healing_backups\\location_violations\\rg_sovereign_auditor.py",
+        "agentic_core\\L2_execution\\UniversalWriteGateway.py",
+        "agentic_core\\L5_safety\\enforcement\\archival_gatekeeper_gate.py",
+        "apps_rg\\scripts\\rg_sovereign_auditor.py",
+        "apps_shared\\validators\\fact_ledger_validator.py"
+      ],
+      "sample_classes": [
+        "RGSovereignAuditor",
+        "ToolNotAllowedError",
+        "MutationRecord",
+        "SimulationResult",
+        "UniversalWriteGateway"
+      ]
+    },
+    "migration": {
+      "file_count": 33,
+      "class_count": 123,
+      "function_count": 500,
+      "layers": [
+        "L0_routing",
+        "L5_safety",
+        "L6_observability"
+      ],
+      "in_process_map": false,
+      "sample_files": [
+        ".healing_backups\\location_violations\\rg_sovereign_auditor.py",
+        ".healing_backups\\location_violations\\stack_modernization_agent_types.py",
+        ".nox\\integration\\Lib\\site-packages\\pydantic\\__init__.py",
+        ".nox\\integration\\Lib\\site-packages\\pydantic\\_migration.py",
+        ".nox\\integration\\Lib\\site-packages\\pydantic\\class_validators.py"
+      ],
+      "sample_classes": [
+        "RGSovereignAuditor",
+        "LegacyDiagnostic",
+        "MigrationThesis",
+        "StackModernizationAgent",
+        "ConfigDict"
+      ]
+    },
+    "persistence": {
+      "file_count": 3,
+      "class_count": 0,
+      "function_count": 36,
+      "layers": [],
+      "in_process_map": false,
+      "sample_files": [
+        ".healing_backups\\location_violations\\run_phase3_integration.py",
+        ".healing_backups\\location_violations\\run_phase3_integration_1.py",
+        ".healing_backups\\location_violations\\run_phase3_integration_2.py"
+      ],
+      "sample_classes": []
+    },
+    "airlock": {
+      "file_count": 5,
+      "class_count": 7,
+      "function_count": 31,
+      "layers": [
+        "L5_safety"
+      ],
+      "in_process_map": false,
+      "sample_files": [
+        ".healing_backups\\location_violations\\SovereignContext.py",
+        "agentic_core\\L5_safety\\enforcement\\airlock_trimmer_enforcer.py",
+        "agentic_core\\L5_safety\\enforcement\\final_airlock_trimmer_enforcer.py",
+        "agentic_core\\runtime\\utils\\runtime_bootstrapper_util.py",
+        "apps_rg\\types\\SovereignContext.py"
+      ],
+      "sample_classes": [
+        "SimpleBuffer",
+        "SimpleTrace",
+        "SovereignContext",
+        "runtime_bootstrapper",
+        "SimpleBuffer"
+      ]
+    },
+    "checkpoint": {
+      "file_count": 16,
+      "class_count": 200,
+      "function_count": 321,
+      "layers": [
+        "L0_routing",
+        "L3_orchestration",
+        "L4_state",
+        "L5_safety"
+      ],
+      "in_process_map": false,
+      "sample_files": [
+        ".healing_backups\\location_violations\\state_checkpoint_types.py",
+        "agentic_core\\L0_routing\\scripts\\colors.py",
+        "agentic_core\\L3_orchestration\\engines\\autonomous_execution_engine.py",
+        "agentic_core\\L4_state\\memory\\verifiable_checkpoint_manager.py",
+        "agentic_core\\L4_state\\reasoning\\CheckpointManager.py"
+      ],
+      "sample_classes": [
+        "StateCheckpoint",
+        "StateValidationResult",
+        "LICStateManager",
+        "StateValidator",
+        "Colors"
+      ]
+    },
+    "assembly": {
+      "file_count": 13,
+      "class_count": 11,
+      "function_count": 31,
+      "layers": [
+        "L0_routing",
+        "L3_orchestration"
+      ],
+      "in_process_map": false,
+      "sample_files": [
+        ".healing_backups\\location_violations\\validate_assembly.py",
+        ".healing_backups\\location_violations\\validate_assembly_1.py",
+        ".healing_backups\\location_violations\\validate_assembly_2.py",
+        "agentic_core\\L0_routing\\engines\\path_router.py",
+        "agentic_core\\L3_orchestration\\engines\\deterministic_orchestrator.py"
+      ],
+      "sample_classes": [
+        "OrchestrationResult",
+        "IOrchestrator",
+        "Path",
+        "PathRouter",
+        "RouteMode"
+      ]
+    },
+    "sandbox": {
+      "file_count": 16,
+      "class_count": 35,
+      "function_count": 129,
+      "layers": [
+        "L2_execution",
+        "L5_safety"
+      ],
+      "in_process_map": true,
+      "sample_files": [
+        ".healing_backups\\location_violations\\_sandbox_repo.py",
+        ".nox\\integration\\Lib\\site-packages\\pip\\_vendor\\urllib3\\contrib\\_appengine_environ.py",
+        "agentic_core\\L2_execution\\enforcement\\boundary_verifier.py",
+        "agentic_core\\L2_execution\\enforcement\\budget_enforcer.py",
+        "agentic_core\\L2_execution\\enforcement\\sovereign_sandbox_isolation.py"
+      ],
+      "sample_classes": [
+        "IBlackboardLeaseVerifier",
+        "SandboxViolationError",
+        "HealingLeaseError",
+        "PreservationViolationError",
+        "MetaLearningClientMixin"
+      ]
+    },
+    "evaluation": {
+      "file_count": 19,
+      "class_count": 62,
+      "function_count": 231,
+      "layers": [],
+      "in_process_map": false,
+      "sample_files": [
+        ".healing_backups\\naming_violations\\l4_registries.py",
+        ".healing_backups\\naming_violations\\l4_registries_1.py",
+        "agentic_core\\evaluation\\__init__.py",
+        "agentic_core\\utils\\workflow_engines\\answer_support.py",
+        "agentic_core\\utils\\workflow_engines\\completeness.py"
+      ],
+      "sample_classes": [
+        "ChunkManifest",
+        "ParentChildLink",
+        "RetrievalEvaluationRecord",
+        "ContextCompletenessSnapshot",
+        "ChunkManifestRegistry"
+      ]
+    },
+    "tracing": {
+      "file_count": 6,
+      "class_count": 23,
+      "function_count": 75,
+      "layers": [],
+      "in_process_map": false,
+      "sample_files": [
+        ".nox\\integration\\Lib\\site-packages\\pluggy\\_manager.py",
+        "agentic_core\\base_agents\\LightweightBase.py",
+        "agentic_core\\mixins\\infrastructure_mixin.py",
+        "agentic_core\\mixins\\ssot_mixin_stack.py",
+        "agentic_core\\mixins\\tracing_mixin.py"
+      ],
+      "sample_classes": [
+        "PluginValidationError",
+        "DistFacade",
+        "PluginManager",
+        "LightweightAgentBase",
+        "InfrastructureMixin"
+      ]
+    },
+    "deprecation": {
+      "file_count": 8,
+      "class_count": 27,
+      "function_count": 190,
+      "layers": [],
+      "in_process_map": false,
+      "sample_files": [
+        ".nox\\integration\\Lib\\site-packages\\pip\\_internal\\build_env.py",
+        ".nox\\integration\\Lib\\site-packages\\pip\\_internal\\cli\\main.py",
+        ".nox\\integration\\Lib\\site-packages\\pip\\_internal\\locations\\__init__.py",
+        ".nox\\integration\\Lib\\site-packages\\pip\\_internal\\metadata\\__init__.py",
+        ".nox\\integration\\Lib\\site-packages\\pip\\_internal\\models\\link.py"
+      ],
+      "sample_classes": [
+        "_FromFieldInfoInputs",
+        "_FieldInfoInputs",
+        "_FieldInfoAsDict",
+        "FieldInfo",
+        "_EmptyKwargs"
+      ]
+    },
+    "upgrade": {
+      "file_count": 2,
+      "class_count": 2,
+      "function_count": 24,
+      "layers": [],
+      "in_process_map": false,
+      "sample_files": [
+        ".nox\\integration\\Lib\\site-packages\\pip\\_internal\\resolution\\legacy\\resolver.py",
+        ".nox\\integration\\Lib\\site-packages\\pip\\_internal\\resolution\\resolvelib\\provider.py"
+      ],
+      "sample_classes": [
+        "Resolver",
+        "PipProvider"
+      ]
+    },
+    "preference": {
+      "file_count": 3,
+      "class_count": 5,
+      "function_count": 35,
+      "layers": [],
+      "in_process_map": false,
+      "sample_files": [
+        ".nox\\integration\\Lib\\site-packages\\pip\\_internal\\resolution\\resolvelib\\provider.py",
+        ".nox\\integration\\Lib\\site-packages\\pip\\_vendor\\resolvelib\\providers.py",
+        ".nox\\integration\\Lib\\site-packages\\pip\\_vendor\\resolvelib\\resolvers\\resolution.py"
+      ],
+      "sample_classes": [
+        "PipProvider",
+        "Preference",
+        "AbstractProvider",
+        "Resolution",
+        "Resolver"
+      ]
+    },
+    "queue": {
+      "file_count": 15,
+      "class_count": 53,
+      "function_count": 268,
+      "layers": [
+        "L0_routing",
+        "L2_execution",
+        "L3_orchestration",
+        "L5_safety"
+      ],
+      "in_process_map": false,
+      "sample_files": [
+        ".nox\\integration\\Lib\\site-packages\\pip\\_vendor\\distlib\\compat.py",
+        ".nox\\integration\\Lib\\site-packages\\pip\\_vendor\\urllib3\\connectionpool.py",
+        ".nox\\integration\\Lib\\site-packages\\pip\\_vendor\\urllib3\\util\\queue.py",
+        "agentic_core\\L0_routing\\utils\\component_util.py",
+        "agentic_core\\L2_execution\\types\\vllm_gateway_adapter_types.py"
+      ],
+      "sample_classes": [
+        "CertificateError",
+        "Container",
+        "ZipExtFile",
+        "ZipFile",
+        "ChainMap"
+      ]
+    },
+    "redis": {
+      "file_count": 42,
+      "class_count": 87,
+      "function_count": 500,
+      "layers": [
+        "L0_routing",
+        "L1_cognition",
+        "L2_execution",
+        "L3_orchestration",
+        "L4_state",
+        "L5_safety",
+        "L6_observability"
+      ],
+      "in_process_map": false,
+      "sample_files": [
+        ".nox\\integration\\Lib\\site-packages\\pip\\_vendor\\cachecontrol\\caches\\__init__.py",
+        ".nox\\integration\\Lib\\site-packages\\pip\\_vendor\\cachecontrol\\caches\\redis_cache.py",
+        "agentic_core\\L0_routing\\scripts\\colors.py",
+        "agentic_core\\L0_routing\\scripts\\execute_ssot.py",
+        "agentic_core\\L0_routing\\seams\\redis_decision_cache.py"
+      ],
+      "sample_classes": [
+        "RedisCache",
+        "CircuitBreaker",
+        "RedisCacheMixin",
+        "SovereignConfigManager",
+        "Colors"
+      ]
+    },
+    "alert": {
+      "file_count": 6,
+      "class_count": 18,
+      "function_count": 128,
+      "layers": [
+        "L3_orchestration",
+        "L5_safety",
+        "L6_observability"
+      ],
+      "in_process_map": true,
+      "sample_files": [
+        ".nox\\integration\\Lib\\site-packages\\pip\\_vendor\\urllib3\\contrib\\_securetransport\\low_level.py",
+        ".nox\\integration\\Lib\\site-packages\\pip\\_vendor\\urllib3\\contrib\\securetransport.py",
+        "agentic_core\\L3_orchestration\\types\\recursion_monitor_types.py",
+        "agentic_core\\L5_safety\\reasoning\\BenchmarkingAgent.py",
+        "agentic_core\\L6_observability\\engines\\drift_detector.py"
+      ],
+      "sample_classes": [
+        "WrappedSocket",
+        "SecureTransportContext",
+        "HealthStatus",
+        "AlertSeverity",
+        "Alert"
+      ]
+    },
+    "feedback": {
+      "file_count": 12,
+      "class_count": 41,
+      "function_count": 202,
+      "layers": [
+        "L3_orchestration",
+        "L4_state"
+      ],
+      "in_process_map": false,
+      "sample_files": [
+        "agentic_core\\L3_orchestration\\reasoning\\DomainPlannerAgent.py",
+        "agentic_core\\L4_state\\memory\\semantic_cache_manager.py",
+        "agentic_core\\base_agents\\SovereignBaseAgent.py",
+        "agentic_core\\mixins\\meta_learning_mixin.py",
+        "agentic_core\\mixins\\semantic_cache_mixin.py"
+      ],
+      "sample_classes": [
+        "SovereignBaseAgent",
+        "MetaLearningMixin",
+        "SemanticCacheMixin",
+        "MetaLearningStorage",
+        "SubatomicTestingMixin"
+      ]
+    },
+    "escalation": {
+      "file_count": 9,
+      "class_count": 20,
+      "function_count": 97,
+      "layers": [
+        "L0_routing",
+        "L2_execution",
+        "L5_safety"
+      ],
+      "in_process_map": false,
+      "sample_files": [
+        "agentic_core\\L0_routing\\scripts\\run_guardian_escalation_determinism.py",
+        "agentic_core\\L2_execution\\heal_result_adapter.py",
+        "agentic_core\\L5_safety\\enforcement\\governance\\agent_heal_audit.py",
+        "agentic_core\\L5_safety\\types\\heal_llm_seam_types.py",
+        "agentic_core\\L5_safety\\types\\heal_policy_types.py"
+      ],
+      "sample_classes": [
+        "SovereignBaseAgent",
+        "HealSeamBypassError",
+        "HealLlmRequest",
+        "PolicyDecisionRecord",
+        "HealBudgetExceededError"
+      ]
+    },
+    "determinism": {
+      "file_count": 77,
+      "class_count": 253,
+      "function_count": 1056,
+      "layers": [
+        "L0_routing",
+        "L2_execution",
+        "L3_orchestration",
+        "L5_safety",
+        "L6_observability"
+      ],
+      "in_process_map": false,
+      "sample_files": [
+        "agentic_core\\L0_routing\\enforcement\\execution_gateway.py",
+        "agentic_core\\L0_routing\\enforcement\\governance_contracts.py",
+        "agentic_core\\L0_routing\\enforcement\\trace_id_generator.py",
+        "agentic_core\\L0_routing\\meta_control\\config_store.py",
+        "agentic_core\\L0_routing\\meta_control\\config_store_types.py"
+      ],
+      "sample_classes": [
+        "SovereignBaseAgent",
+        "CircuitState",
+        "RetryPolicy",
+        "CircuitBreakerConfig",
+        "ToolHealth"
+      ]
+    },
+    "tier": {
+      "file_count": 40,
+      "class_count": 117,
+      "function_count": 517,
+      "layers": [
+        "L0_routing",
+        "L2_execution",
+        "L3_orchestration",
+        "L5_safety",
+        "L6_observability"
+      ],
+      "in_process_map": false,
+      "sample_files": [
+        "agentic_core\\L0_routing\\engines\\reasoning_policy_engine.py",
+        "agentic_core\\L0_routing\\scripts\\colors.py",
+        "agentic_core\\L0_routing\\scripts\\execute_ssot.py",
+        "agentic_core\\L0_routing\\types\\routing_contracts_types.py",
+        "agentic_core\\L2_execution\\healers\\healing_provider_adapters.py"
+      ],
+      "sample_classes": [
+        "IOrchestratorProtocol",
+        "IHealable",
+        "ITieredAgent",
+        "Colors",
+        "RequestStructureFeatures"
+      ]
+    },
+    "rollout": {
+      "file_count": 8,
+      "class_count": 11,
+      "function_count": 78,
+      "layers": [
+        "L0_routing",
+        "L3_orchestration"
+      ],
+      "in_process_map": false,
+      "sample_files": [
+        "agentic_core\\L0_routing\\meta_control\\meta_apply.py",
+        "agentic_core\\L0_routing\\meta_control\\meta_apply_ops.py",
+        "agentic_core\\L0_routing\\scripts\\forward_rolling_facade.py",
+        "agentic_core\\L3_orchestration\\types\\forward_rolling_types.py",
+        "agentic_core\\interfaces\\meta_control.py"
+      ],
+      "sample_classes": [
+        "ForwardRollingResult",
+        "OptimizationMetrics",
+        "ForwardRollingFacade",
+        "ExecutionMode",
+        "RolloutStage"
+      ]
+    },
+    "breaker": {
+      "file_count": 27,
+      "class_count": 104,
+      "function_count": 290,
+      "layers": [
+        "L2_execution",
+        "L3_orchestration",
+        "L4_state",
+        "L5_safety",
+        "L6_observability"
+      ],
+      "in_process_map": false,
+      "sample_files": [
+        "agentic_core\\L2_execution\\healers\\qwen_health.py",
+        "agentic_core\\L2_execution\\types\\vllm_gateway_integration_types.py",
+        "agentic_core\\L3_orchestration\\engines\\autonomous_execution_engine.py",
+        "agentic_core\\L4_state\\utils\\circuit_breaker_util.py",
+        "agentic_core\\L5_safety\\enforcement\\AdapterBase.py"
+      ],
+      "sample_classes": [
+        "CircuitState",
+        "CircuitStats",
+        "CircuitBreakerMixin",
+        "CircuitOpenError",
+        "TokenLimitError"
+      ]
+    },
+    "permission": {
+      "file_count": 4,
+      "class_count": 18,
+      "function_count": 59,
+      "layers": [
+        "L2_execution",
+        "L3_orchestration",
+        "L5_safety"
+      ],
+      "in_process_map": false,
+      "sample_files": [
+        "agentic_core\\L2_execution\\UniversalWriteGateway.py",
+        "agentic_core\\L2_execution\\types\\mcp_tool_types.py",
+        "agentic_core\\L3_orchestration\\types\\permission_scope_types.py",
+        "agentic_core\\L5_safety\\reasoning\\SecurityManagerAgent.py"
+      ],
+      "sample_classes": [
+        "ToolNotAllowedError",
+        "MutationRecord",
+        "SimulationResult",
+        "UniversalWriteGateway",
+        "MCPTool"
+      ]
+    },
+    "rca": {
+      "file_count": 7,
+      "class_count": 49,
+      "function_count": 79,
+      "layers": [],
+      "in_process_map": false,
+      "sample_files": [
+        "agentic_core\\mixins\\cognitive_recovery_mixin.py",
+        "archives\\healing_backups\\location\\20260302_194622\\import_fixes\\system_learning\\pipelines\\meta_learning_pipeline.py",
+        "archives\\healing_backups\\location\\20260303_063143\\import_fixes\\system_learning\\pipelines\\meta_learning_pipeline.py",
+        "ops_scripts\\dev_tools\\l0_scripts\\rca_table_rendering_util.py",
+        "system_learning\\engines\\rca_engine.py"
+      ],
+      "sample_classes": [
+        "CognitiveRecoveryMixin",
+        "PipelineError",
+        "ValidationError",
+        "PipelineConfig",
+        "AuditStore"
+      ]
+    },
+    "feature": {
+      "file_count": 9,
+      "class_count": 23,
+      "function_count": 118,
+      "layers": [
+        "L0_routing",
+        "L2_execution",
+        "L3_orchestration",
+        "L5_safety"
+      ],
+      "in_process_map": false,
+      "sample_files": [
+        "agentic_core\\L0_routing\\scripts\\forward_rolling_facade.py",
+        "agentic_core\\L0_routing\\utils\\component_util.py",
+        "agentic_core\\L2_execution\\utils\\text_similarity_util.py",
+        "agentic_core\\L3_orchestration\\types\\forward_rolling_types.py",
+        "agentic_core\\L5_safety\\validators\\migration_helper_validator.py"
+      ],
+      "sample_classes": [
+        "DomainAgentMixin",
+        "RGDomainMixin",
+        "LICDomainMixin",
+        "FeatureFlaggedAgentMixin",
+        "SSOTMixinStack"
+      ]
+    },
+    "flag": {
+      "file_count": 10,
+      "class_count": 36,
+      "function_count": 228,
+      "layers": [
+        "L0_routing",
+        "L3_orchestration",
+        "L5_safety"
+      ],
+      "in_process_map": false,
+      "sample_files": [
+        "agentic_core\\L0_routing\\scripts\\execute_ssot.py",
+        "agentic_core\\L0_routing\\scripts\\execute_ssot_entrypoint.py",
+        "agentic_core\\L0_routing\\scripts\\forward_rolling_facade.py",
+        "agentic_core\\L3_orchestration\\types\\forward_rolling_types.py",
+        "agentic_core\\L5_safety\\validators\\migration_helper_validator.py"
+      ],
+      "sample_classes": [
+        "FeatureFlaggedAgentMixin",
+        "SSOTFeatureFlagMixin",
+        "SSOTMixinStack",
+        "tqdm",
+        "IHealerProtocol"
+      ]
+    },
+    "fusion": {
+      "file_count": 6,
+      "class_count": 13,
+      "function_count": 47,
+      "layers": [
+        "L2_execution"
+      ],
+      "in_process_map": true,
+      "sample_files": [
+        "agentic_core\\L2_execution\\config\\hybrid_retriever_config.py",
+        "agentic_core\\knowledge\\engine\\rag_orchestrator.py",
+        "agentic_core\\utils\\workflow_engines\\profiles.py",
+        "apps_shared\\utils\\graph_rag_fusion_util.py",
+        "apps_shared\\utils\\titanium_rag_pipeline_util.py"
+      ],
+      "sample_classes": [
+        "SovereignRagOrchestrator",
+        "_BGEEmbedder",
+        "_InMemVectorStore",
+        "ASTAwareTokenizer",
+        "RetrievalResult"
+      ]
+    },
+    "canary": {
+      "file_count": 2,
+      "class_count": 2,
+      "function_count": 20,
+      "layers": [
+        "L0_routing",
+        "L5_safety"
+      ],
+      "in_process_map": false,
+      "sample_files": [
+        "agentic_core\\L0_routing\\meta_control\\meta_apply_ops.py",
+        "agentic_core\\L5_safety\\enforcement\\canary_token_defense_strategy.py"
+      ],
+      "sample_classes": [
+        "CanaryToken",
+        "CanaryDefense"
+      ]
+    },
+    "fence": {
+      "file_count": 10,
+      "class_count": 21,
+      "function_count": 194,
+      "layers": [
+        "L0_routing",
+        "L5_safety"
+      ],
+      "in_process_map": false,
+      "sample_files": [
+        "agentic_core\\L0_routing\\scripts\\execute_ssot.py",
+        "agentic_core\\L0_routing\\scripts\\execute_ssot_entrypoint.py",
+        "agentic_core\\L5_safety\\enforcement\\structural_namespace_fence_enforcer.py",
+        "archives\\healing_backups\\location\\20260301_180837\\import_fixes\\tools\\evidence\\e2e_gemini_qwen_runner.py",
+        "archives\\healing_backups\\location\\20260307_033424\\import_fixes\\tools\\evidence\\e2e_gemini_qwen_runner.py"
+      ],
+      "sample_classes": [
+        "tqdm",
+        "IHealerProtocol",
+        "LegacyAgentAdapter",
+        "ConfidenceScore",
+        "FailureType"
+      ]
+    },
+    "faiss": {
+      "file_count": 13,
+      "class_count": 42,
+      "function_count": 229,
+      "layers": [
+        "L0_routing",
+        "L1_cognition",
+        "L4_state"
+      ],
+      "in_process_map": true,
+      "sample_files": [
+        "agentic_core\\L0_routing\\scripts\\execute_ssot.py",
+        "agentic_core\\L1_cognition\\engines\\meta_client.py",
+        "agentic_core\\L1_cognition\\memory\\healing_memory_retriever.py",
+        "agentic_core\\L4_state\\memory\\in_memory_vector_store.py",
+        "ops_scripts\\ci\\_final_verify.py"
+      ],
+      "sample_classes": [
+        "tqdm",
+        "IHealerProtocol",
+        "LegacyAgentAdapter",
+        "ConfidenceScore",
+        "FailureType"
+      ]
+    },
+    "dag": {
+      "file_count": 4,
+      "class_count": 16,
+      "function_count": 70,
+      "layers": [
+        "L0_routing",
+        "L3_orchestration"
+      ],
+      "in_process_map": false,
+      "sample_files": [
+        "agentic_core\\L0_routing\\scripts\\forward_rolling_facade.py",
+        "agentic_core\\L3_orchestration\\engines\\recursive_orchestrator.py",
+        "agentic_core\\L3_orchestration\\reasoning\\DagEngineAgent.py",
+        "apps_shared\\utils\\open_telemetry_tracing_adapter_util.py"
+      ],
+      "sample_classes": [
+        "ForwardRollingResult",
+        "OptimizationMetrics",
+        "ForwardRollingFacade",
+        "TaskStatus",
+        "RetryContext"
+      ]
+    },
+    "reward": {
+      "file_count": 2,
+      "class_count": 8,
+      "function_count": 26,
+      "layers": [
+        "L1_cognition"
+      ],
+      "in_process_map": false,
+      "sample_files": [
+        "agentic_core\\L1_cognition\\engines\\CognitiveNode.py",
+        "agentic_core\\L1_cognition\\engines\\episodic_manager.py"
+      ],
+      "sample_classes": [
+        "CognitiveResult",
+        "PerceptionNode",
+        "ReasoningNode",
+        "PlanningCoordinator",
+        "ActionNode"
+      ]
+    },
+    "bm25": {
+      "file_count": 4,
+      "class_count": 7,
+      "function_count": 35,
+      "layers": [
+        "L2_execution",
+        "L4_state"
+      ],
+      "in_process_map": true,
+      "sample_files": [
+        "agentic_core\\L2_execution\\config\\hybrid_retriever_config.py",
+        "agentic_core\\L4_state\\memory\\bm25_store.py",
+        "apps_shared\\config\\refine_config_ranking_config.py",
+        "apps_shared\\enforcement\\RankingStrategy.py"
+      ],
+      "sample_classes": [
+        "ASTAwareTokenizer",
+        "RetrievalResult",
+        "HybridRetriever",
+        "Bm25Store",
+        "_Ranking"
+      ]
+    },
+    "firecracker": {
+      "file_count": 2,
+      "class_count": 5,
+      "function_count": 12,
+      "layers": [
+        "L2_execution"
+      ],
+      "in_process_map": true,
+      "sample_files": [
+        "agentic_core\\L2_execution\\enforcement\\firecracker_manager.py",
+        "agentic_core\\L2_execution\\types\\ephemeral_vm_types.py"
+      ],
+      "sample_classes": [
+        "FirecrackerManager",
+        "IsolationLevel",
+        "IsolationConfig",
+        "ExecutionResult",
+        "EphemeralVm"
+      ]
+    },
+    "transcript": {
+      "file_count": 2,
+      "class_count": 4,
+      "function_count": 20,
+      "layers": [
+        "L2_execution"
+      ],
+      "in_process_map": false,
+      "sample_files": [
+        "agentic_core\\L2_execution\\enforcement\\transcript_freezer.py",
+        "agentic_core\\L2_execution\\types\\execution_trace_types.py"
+      ],
+      "sample_classes": [
+        "TranscriptMutationViolation",
+        "FrozenTranscript",
+        "ExecutionTrace",
+        "ExecutionTraceBuilder"
+      ]
+    },
+    "quota": {
+      "file_count": 1,
+      "class_count": 4,
+      "function_count": 8,
+      "layers": [
+        "L5_safety"
+      ],
+      "in_process_map": false,
+      "sample_files": [
+        "agentic_core\\L5_safety\\types\\resource_management_types.py"
+      ],
+      "sample_classes": [
+        "ResourceType",
+        "ResourceQuota",
+        "ResourceCheckResult",
+        "ResourceManagementGuardrail"
+      ]
+    },
+    "dpo": {
+      "file_count": 8,
+      "class_count": 12,
+      "function_count": 31,
+      "layers": [
+        "L6_observability"
+      ],
+      "in_process_map": false,
+      "sample_files": [
+        "agentic_core\\L6_observability\\engines\\dpo_pair_generator.py",
+        "agentic_core\\L6_observability\\engines\\hitl_dpo_pair_generator.py",
+        "archives\\gatekeeper\\2026-03-07\\agentic_core\\evaluation\\feedback\\__init__.py",
+        "system_learning\\config\\embedding_storage_layout.py",
+        "system_learning\\engines\\embedding_corpus_extraction.py"
+      ],
+      "sample_classes": [
+        "BoundingViolation",
+        "DPOPair",
+        "BoundedDPOPair",
+        "DPOBoundingPolicy",
+        "DPOPairGenerator"
+      ]
+    },
+    "rerank": {
+      "file_count": 4,
+      "class_count": 11,
+      "function_count": 25,
+      "layers": [],
+      "in_process_map": true,
+      "sample_files": [
+        "agentic_core\\utils\\workflow_engines\\completeness_reranker.py",
+        "agentic_core\\utils\\workflow_engines\\interfaces.py",
+        "agentic_core\\utils\\workflow_engines\\reranker.py",
+        "apps_shared\\utils\\late_interaction_reranker_util.py"
+      ],
+      "sample_classes": [
+        "CompletenessRerankerConfig",
+        "CompletenessReranker",
+        "Document",
+        "IRetrieverLexical",
+        "IRetrieverVector"
+      ]
+    },
+    "liveness": {
+      "file_count": 1,
+      "class_count": 6,
+      "function_count": 26,
+      "layers": [],
+      "in_process_map": false,
+      "sample_files": [
+        "apps_shared\\utils\\health_check_types_util.py"
+      ],
+      "sample_classes": [
+        "HealthStatus",
+        "CheckResult",
+        "HealthReport",
+        "HealthChecker",
+        "CommonChecks"
+      ]
+    },
+    "readiness": {
+      "file_count": 1,
+      "class_count": 6,
+      "function_count": 26,
+      "layers": [],
+      "in_process_map": false,
+      "sample_files": [
+        "apps_shared\\utils\\health_check_types_util.py"
+      ],
+      "sample_classes": [
+        "HealthStatus",
+        "CheckResult",
+        "HealthReport",
+        "HealthChecker",
+        "CommonChecks"
+      ]
+    },
+    "rlhf": {
+      "file_count": 4,
+      "class_count": 45,
+      "function_count": 72,
+      "layers": [],
+      "in_process_map": false,
+      "sample_files": [
+        "archives\\healing_backups\\location\\20260302_194622\\import_fixes\\system_learning\\pipelines\\meta_learning_pipeline.py",
+        "archives\\healing_backups\\location\\20260303_063143\\import_fixes\\system_learning\\pipelines\\meta_learning_pipeline.py",
+        "system_learning\\pipelines\\meta_learning_pipeline.py",
+        "system_learning\\pipelines\\pipeline_factory.py"
+      ],
+      "sample_classes": [
+        "PipelineError",
+        "ValidationError",
+        "PipelineConfig",
+        "AuditStore",
+        "TelemetryStore"
+      ]
+    }
+  }
+}
