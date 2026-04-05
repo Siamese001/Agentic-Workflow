@@ -14,15 +14,15 @@ def fix_file(filepath: Path, dry_run: bool = True) -> dict:
     """Fix misplaced imports in a file."""
     content = filepath.read_text(encoding='utf-8')
     original_content = content
-    
+
     # Pattern to find imports inside class definitions (indented)
     # These are lines like:     from agentic_core.config.constants_config import ...
     indented_import_pattern = r'^(\s+)from agentic_core\.config\.core\.constants_config import .+$'
-    
+
     lines = content.split('\n')
     imports_to_move = []
     other_lines = []
-    
+
     for line in lines:
         match = re.match(indented_import_pattern, line)
         if match:
@@ -31,31 +31,31 @@ def fix_file(filepath: Path, dry_run: bool = True) -> dict:
             imports_to_move.append(import_line)
         else:
             other_lines.append(line)
-    
+
     if not imports_to_move:
         return {'file': str(filepath), 'changed': False, 'imports_moved': 0}
-    
+
     # Find where to insert imports (after other imports, before code)
     insert_idx = 0
     for i, line in enumerate(other_lines):
         if line.startswith('import ') or line.startswith('from '):
             insert_idx = i + 1
-    
+
     # Insert the imports
     for import_line in reversed(imports_to_move):
         other_lines.insert(insert_idx, import_line)
-    
+
     content = '\n'.join(other_lines)
-    
+
     result = {
         'file': str(filepath),
         'changed': content != original_content,
         'imports_moved': len(imports_to_move),
     }
-    
+
     if not dry_run and result['changed']:
         filepath.write_text(content, encoding='utf-8')
-    
+
     return result
 
 
@@ -95,7 +95,7 @@ def main():
         'agentic_core/runtime/config/signal_quality_config.py',
         'agentic_core/runtime/config/validation_severity_config.py',
     ]
-    
+
     total_fixed = 0
     for file_path in files_to_fix:
         filepath = Path(file_path)
@@ -106,7 +106,7 @@ def main():
                 total_fixed += 1
         else:
             print(f"File not found: {filepath}")
-    
+
     print(f"\nFixed {total_fixed} files")
 
 

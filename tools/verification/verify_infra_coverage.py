@@ -15,24 +15,24 @@ cursor = conn.cursor()
 
 # Count infrastructure modules
 cursor.execute("""
-    SELECT COUNT(*) FROM nodes 
-    WHERE entity_type = 'module' 
+    SELECT COUNT(*) FROM nodes
+    WHERE entity_type = 'module'
     AND resolved_path LIKE 'infrastructure/%'
 """)
 module_count = cursor.fetchone()[0]
 
 # Count infrastructure symbols
 cursor.execute("""
-    SELECT COUNT(*) FROM nodes 
-    WHERE entity_type = 'symbol' 
+    SELECT COUNT(*) FROM nodes
+    WHERE entity_type = 'symbol'
     AND resolved_path LIKE 'infrastructure/%'
 """)
 symbol_count = cursor.fetchone()[0]
 
 # Get layer assignment
 cursor.execute("""
-    SELECT layer, COUNT(*) FROM nodes 
-    WHERE entity_type = 'module' 
+    SELECT layer, COUNT(*) FROM nodes
+    WHERE entity_type = 'module'
     AND resolved_path LIKE 'infrastructure/%'
     GROUP BY layer
 """)
@@ -40,8 +40,8 @@ layer_info = cursor.fetchall()
 
 # List infrastructure modules
 cursor.execute("""
-    SELECT resolved_path FROM nodes 
-    WHERE entity_type = 'module' 
+    SELECT resolved_path FROM nodes
+    WHERE entity_type = 'module'
     AND resolved_path LIKE 'infrastructure/%'
     ORDER BY resolved_path
 """)

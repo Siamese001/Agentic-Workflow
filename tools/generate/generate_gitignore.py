@@ -30,20 +30,20 @@ GITIGNORE_HEADER = """# Generated from config/excluded_paths.yaml
 def load_exclusions() -> tuple[set[str], set[str]]:
     """Load exclusions from YAML config."""
     config_path = Path(__file__).parent.parent / "config" / "excluded_paths.yaml"
-    
+
     try:
         import yaml
     except ImportError:
         print("Error: PyYAML required (pip install pyyaml)")
         sys.exit(1)
-    
+
     if not config_path.exists():
         print(f"Error: Config not found: {config_path}")
         sys.exit(1)
-    
+
     with open(config_path, "r", encoding="utf-8") as f:
         data = yaml.safe_load(f)
-    
+
     # Collect directory exclusions
     all_dirs: set[str] = set()
     categories = [
@@ -57,24 +57,24 @@ def load_exclusions() -> tuple[set[str], set[str]]:
         "data_dirs",
         "special_dirs",
     ]
-    
+
     for category in categories:
         dirs = data.get(category, [])
         if isinstance(dirs, list):
             all_dirs.update(dirs)
-    
+
     # File patterns
     file_patterns = set(data.get("file_patterns", []))
-    
+
     return all_dirs, file_patterns
 
 
 def generate_gitignore_content(dirs: set[str], patterns: set[str]) -> str:
     """Generate .gitignore content from exclusions."""
     from datetime import datetime
-    
+
     lines = [GITIGNORE_HEADER.format(timestamp=datetime.now().isoformat())]
-    
+
     # Group by category for readability
     groups = {
         "Build & Cache": [],
@@ -88,7 +88,7 @@ def generate_gitignore_content(dirs: set[str], patterns: set[str]) -> str:
         "Other": [],
         "File Patterns": [],
     }
-    
+
     # Categorize directories
     build_cache = {"__pycache__", ".pytest_cache", ".ruff_cache", ".mypy_cache", ".tox", "node_modules", "build", "dist", "_build", ".eggs"}
     version_control = {".git", ".github", ".svn", ".hg"}
@@ -98,7 +98,7 @@ def generate_gitignore_content(dirs: set[str], patterns: set[str]) -> str:
     ide = {".idea", ".vscode", ".windsurf", ".DS_Store"}
     vendor = {"google", "gapic", "pip", "dist-info", "licenses", "src"}
     data = {"data", "docs", "logs", "raw", "shared"}
-    
+
     for d in sorted(dirs):
         if d in build_cache:
             groups["Build & Cache"].append(d)
@@ -118,10 +118,10 @@ def generate_gitignore_content(dirs: set[str], patterns: set[str]) -> str:
             groups["Data & Logs"].append(d)
         else:
             groups["Other"].append(d)
-    
+
     # Add file patterns to their group
     groups["File Patterns"] = sorted(patterns)
-    
+
     # Generate content
     for group_name, entries in groups.items():
         if not entries:
@@ -136,7 +136,7 @@ def generate_gitignore_content(dirs: set[str], patterns: set[str]) -> str:
             else:
                 lines.append(entry)
         lines.append("")
-    
+
     return "\n".join(lines)
 
 
@@ -160,15 +160,15 @@ def check_sync() -> bool:
     dirs, patterns = load_exclusions()
     generated = generate_gitignore_content(dirs, patterns)
     current = read_current_gitignore()
-    
+
     if current is None:
         print("Error: .gitignore does not exist")
         return False
-    
+
     # Compare (ignore timestamp in header)
     generated_lines = generated.split("\n")[3:]  # Skip header
     current_lines = current.split("\n")[3:] if current.startswith("# Generated") else current.split("\n")
-    
+
     if generated_lines == current_lines:
         print("✅ .gitignore is in sync with config/excluded_paths.yaml")
         return True
@@ -182,18 +182,18 @@ def main(argv: Sequence[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description="Generate .gitignore from YAML config")
     parser.add_argument("--write", action="store_true", help="Write .gitignore file")
     parser.add_argument("--check", action="store_true", help="Check if .gitignore is in sync (CI mode)")
-    
+
     args = parser.parse_args(argv)
-    
+
     if args.check:
         return 0 if check_sync() else 1
-    
+
     if args.write:
         dirs, patterns = load_exclusions()
         content = generate_gitignore_content(dirs, patterns)
         write_gitignore(content)
         return 0
-    
+
     # Default: print to stdout
     dirs, patterns = load_exclusions()
     content = generate_gitignore_content(dirs, patterns)
