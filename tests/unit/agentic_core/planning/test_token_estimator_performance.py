@@ -34,7 +34,9 @@ class TestTokenEstimatorPerformance:
         """Setup test fixtures"""
         from agentic_core.planning.preflight_hook import PlanningPreflightHook
         import tempfile
-        self.temp_dir = Path(tempfile.gettempdir()) / "test_performance"
+        import uuid
+        # Use unique temp directory per test to avoid parallel execution conflicts
+        self.temp_dir = Path(tempfile.gettempdir()) / f"test_performance_{uuid.uuid4().hex[:8]}"
         self.temp_dir.mkdir(parents=True, exist_ok=True)
         self.budget_file = self.temp_dir / "performance_budget.json"
         self.hook = PlanningPreflightHook(budget_file=self.budget_file)

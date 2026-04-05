@@ -51,11 +51,13 @@ class TestTokenEstimatorStressTests:
         """Setup test fixtures"""
         from agentic_core.planning.preflight_hook import PlanningPreflightHook
         from agentic_core.planning.token_estimator import ContextWindowEstimator, TokenBudget
+        import tempfile
+        import uuid
 
         self.estimator = ContextWindowEstimator()
         self.budget = TokenBudget()
-        import tempfile
-        self.temp_dir = Path(tempfile.gettempdir()) / "test_stress"
+        # Use unique temp directory per test to avoid parallel execution conflicts
+        self.temp_dir = Path(tempfile.gettempdir()) / f"test_stress_{uuid.uuid4().hex[:8]}"
         self.temp_dir.mkdir(parents=True, exist_ok=True)
         self.budget_file = self.temp_dir / "stress_test_budget.json"
         self.hook = PlanningPreflightHook(budget_file=self.budget_file)
