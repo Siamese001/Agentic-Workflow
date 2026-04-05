@@ -30,7 +30,7 @@ except ImportError:
 
 
 try:
-    from apps_qwen import (
+    from agentic_core.L3_orchestration.inference.qwen_vllm import (
         AppsQwenGateway,
         AppsQwenRequest,
         apps_qwen_telemetry,

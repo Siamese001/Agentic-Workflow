@@ -23,13 +23,13 @@ from typing import Any
 
 # guardian: allow-silent-degradation -- Qwen vLLM is optional for execution planning; graceful fallback to manual planning
 try:
-    from apps_qwen import (
+    from agentic_core.L3_orchestration.inference.qwen_vllm import (
         AppsQwenGateway,
         AppsQwenInferenceWorker,
         AppsQwenRequest,
         apps_qwen_telemetry,
     )
-    from apps_qwen.apps_qwen_config import (
+    from agentic_core.L3_orchestration.inference.qwen_vllm.config import (
         AppsQwenModelConfig,
         AppsQwenPromptConfig,
     )

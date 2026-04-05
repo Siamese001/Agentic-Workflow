@@ -19,13 +19,13 @@ from apps_rg.utils.rg_agent_base_util import RGAgentBase
 
 # guardian: allow-silent-degradation -- Qwen vLLM is optional for resume generation; graceful fallback to manual templates
 try:
-    from apps_qwen import (
+    from agentic_core.L3_orchestration.inference.qwen_vllm import (
         AppsQwenGateway,
         AppsQwenInferenceWorker,
         AppsQwenRequest,
         apps_qwen_telemetry,
     )
-    from apps_qwen.apps_qwen_config import (
+    from agentic_core.L3_orchestration.inference.qwen_vllm.config import (
         AppsQwenConfig,
         AppsQwenModelConfig,
         AppsQwenPromptConfig,
