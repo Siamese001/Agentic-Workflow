@@ -314,17 +314,25 @@ class TestPlanningPreflightHook:
     def setup_method(self):
         """Setup test fixtures"""
         from agentic_core.planning.preflight_hook import PlanningPreflightHook
-        self.temp_dir = Path("/tmp/test_token_budget")
-        self.temp_dir.mkdir(exist_ok=True)
+        import tempfile
+        import uuid
+        # Use unique temp directory per test to avoid parallel execution conflicts
+        self.temp_dir = Path(tempfile.gettempdir()) / f"test_token_budget_{uuid.uuid4().hex[:8]}"
+        self.temp_dir.mkdir(parents=True, exist_ok=True)
         self.budget_file = self.temp_dir / "test_budget.json"
         self.hook = PlanningPreflightHook(budget_file=self.budget_file)
 
     def teardown_method(self):
         """Cleanup test fixtures"""
-        if self.budget_file.exists():
-            self.budget_file.unlink()
+        import shutil
+        import time
+        # Wait a moment for file handles to close (Windows)
+        time.sleep(0.1)
         if self.temp_dir.exists():
-            self.temp_dir.rmdir()
+            try:
+                shutil.rmtree(self.temp_dir, ignore_errors=True)
+            except (OSError, PermissionError):
+                pass  # Ignore cleanup errors on Windows
 
     def test_preflight_check_success(self):
         """Test successful preflight check"""
@@ -440,17 +448,25 @@ class TestTokenBudgetDecorator:
     def setup_method(self):
         """Setup test fixtures"""
         from agentic_core.planning.preflight_hook import PlanningPreflightHook
-        self.temp_dir = Path("/tmp/test_decorator")
-        self.temp_dir.mkdir(exist_ok=True)
+        import tempfile
+        import uuid
+        # Use unique temp directory per test to avoid parallel execution conflicts
+        self.temp_dir = Path(tempfile.gettempdir()) / f"test_decorator_{uuid.uuid4().hex[:8]}"
+        self.temp_dir.mkdir(parents=True, exist_ok=True)
         self.budget_file = self.temp_dir / "test_decorator.json"
         self.hook = PlanningPreflightHook(budget_file=self.budget_file)
 
     def teardown_method(self):
         """Cleanup test fixtures"""
-        if self.budget_file.exists():
-            self.budget_file.unlink()
+        import shutil
+        import time
+        # Wait a moment for file handles to close (Windows)
+        time.sleep(0.1)
         if self.temp_dir.exists():
-            self.temp_dir.rmdir()
+            try:
+                shutil.rmtree(self.temp_dir, ignore_errors=True)
+            except (OSError, PermissionError):
+                pass  # Ignore cleanup errors on Windows
 
     def test_decorator_success(self):
         """Test decorator with successful execution"""
