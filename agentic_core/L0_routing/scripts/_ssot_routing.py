@@ -11,20 +11,13 @@ import re
 import uuid
 from typing import Any
 
-from agentic_core.L0_routing.config.path_constants import AGENTIC_CORE_DIR, DEFAULT_TIMEOUT
-from agentic_core.L0_routing.config.ssot_tier_constants import (
+from agentic_core.L0_routing.config.path_constants import (
+    AGENTIC_CORE_DIR,
+    DEFAULT_TIMEOUT,
     HEALING_CONFIDENCE_X as _CONF_X,
-)
-from agentic_core.L0_routing.config.ssot_tier_constants import (
     HEALING_CONFIDENCE_Y as _CONF_Y,
-)
-from agentic_core.L0_routing.config.ssot_tier_constants import (
     QWEN_14B_MODEL_ID as _QWEN_14B_MODEL_ID,
-)
-from agentic_core.L0_routing.config.ssot_tier_constants import (
     SSOT_SCORE_THRESHOLD_DET as _SCORE_DET,
-)
-from agentic_core.L0_routing.config.ssot_tier_constants import (
     SSOT_SCORE_THRESHOLD_QWEN as _SCORE_QWEN,
 )
 from agentic_core.L0_routing.scripts._ssot_types import (

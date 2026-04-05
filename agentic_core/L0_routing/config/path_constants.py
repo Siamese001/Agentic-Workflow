@@ -120,7 +120,30 @@ SSOT_SCORE_THRESHOLD_DET: int = 13  # S <= 13  → DETERMINISTIC
 SSOT_SCORE_THRESHOLD_QWEN: int = 26  # S <= 26  → QWEN; S > 26 → GEMINI
 
 # Qwen 14B model identifier
-QWEN_14B_MODEL_ID: str = "Qwen/Qwen2.5-14B-Instruct-GPTQ-Int4"
+QWEN_14B_MODEL_ID: Final[str] = "qwen/qwen-14b-chat"
+
+# Architecture layer constants - SSOT for layer naming
+AGENTIC_CORE_LAYERS: Final[list[str]] = [
+    "L0_routing",
+    "L1_cognition",
+    "L2_execution",
+    "L3_orchestration",
+    "L4_state",
+    "L5_safety",
+    "L6_observability",
+]
+
+# Application package constants - SSOT for app package naming
+APPS_PACKAGES: Final[list[str]] = [
+    "apps_lic",
+    "apps_rg",
+    "apps_eval",
+    "apps_exec",
+    "apps_research",
+    "apps_rfp",
+    "apps_shared",
+    "apps_underwriting_ai",
+]
 
 # ============================================================================
 # PROJECT ROOT DETECTION
@@ -666,6 +689,8 @@ __all__ = [
     "SSOT_SCORE_THRESHOLD_DET",
     "SSOT_SCORE_THRESHOLD_QWEN",
     "QWEN_14B_MODEL_ID",
+    "AGENTIC_CORE_LAYERS",
+    "APPS_PACKAGES",
     "TOOLS_DIR",
     "VARIABLE_DEPTH_SUBFOLDERS",
     "get_all_apps_paths",

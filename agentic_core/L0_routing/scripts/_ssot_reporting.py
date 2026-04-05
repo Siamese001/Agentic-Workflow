@@ -10,10 +10,8 @@ from collections import Counter
 from pathlib import Path
 from typing import TYPE_CHECKING, Any
 
-from agentic_core.L0_routing.config.ssot_tier_constants import (
+from agentic_core.L0_routing.config.path_constants import (
     HEALING_CONFIDENCE_X as _CONF_X,
-)
-from agentic_core.L0_routing.config.ssot_tier_constants import (
     HEALING_CONFIDENCE_Y as _CONF_Y,
 )
 from agentic_core.runtime.lifecycle_trace_contract import (

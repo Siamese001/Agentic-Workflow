@@ -22,7 +22,7 @@ from dataclasses import dataclass, field
 from typing import Any
 
 # Import SSOT constants for layer and app package names
-from agentic_core.L0_routing.config.ssot_tier_constants import (
+from agentic_core.L0_routing.config.path_constants import (
     AGENTIC_CORE_LAYERS,
     APPS_PACKAGES,
 )
