@@ -1421,6 +1421,8 @@ FLAT_DIRECTORIES: Final[frozenset[str]] = frozenset(
         "gateway",  # deduplicated 2026-04-05 — core/ removed, now flat
         "interfaces",  # deduplicated 2026-04-05 — core/ removed, now flat
         "mixins",  # contracts/ dissolved 2026-02-08 — all files flat
+        "monitoring",  # deduplicated 2026-04-05 — core/ removed, now flat
+        "patterns",  # deduplicated 2026-04-05 — core/ removed, now flat
         "planning",  # deduplicated 2026-04-05 — core/ removed, now flat
         "base_agents",  # Strict identity only — flat by constitution
     },

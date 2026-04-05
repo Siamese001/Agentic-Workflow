@@ -1,4 +1,30 @@
-"""Shim: re-exports from canonical location for backward compatibility."""
-import sys as _sys, types as _types, importlib as _il
-_p = _types.ModuleType(__name__); _sys.modules[__name__] = _p
-_c = _il.import_module('agentic_core.patterns.core.base'); _sys.modules[__name__] = _c; _p.__dict__.update(_c.__dict__)
+"""Base protocol for reasoning patterns.
+
+Defines the BaseReasoningPattern ABC used by ReActStrategy and AgentEngine.
+"""
+
+from __future__ import annotations
+
+from abc import ABC, abstractmethod
+from typing import Any
+
+
+class BaseReasoningPattern(ABC):
+    """Abstract base for all reasoning strategy patterns.
+
+    Implementors decide the next (action, params) tuple given the current
+    AgentState and available ToolRegistry.
+    """
+
+    @abstractmethod
+    async def plan(self, state: Any, tools: Any) -> tuple[str, dict[str, Any]]:
+        """Decide the next action.
+
+        Args:
+            state: Current AgentState.
+            tools: Available ToolRegistry.
+
+        Returns:
+            (action_name, action_params) tuple.
+        """
+        ...
