@@ -120,7 +120,7 @@ class AnalyticsDashboard:
 
         try:
             # Enhanced observability
-            from agentic_core.monitoring.enhanced_observability import get_global_observability
+            from agentic_core.L6_observability.enhanced_observability import get_global_observability
             self._observability_system = get_global_observability()
 
         except ImportError:

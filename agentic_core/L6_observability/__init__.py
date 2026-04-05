@@ -114,6 +114,17 @@ from agentic_core.L6_observability.performance.performance_registry import (
     get_performance_registry,
     reset_performance_registry,
 )
+
+# Enhanced Observability System
+from agentic_core.L6_observability.enhanced_observability import (
+    Alert,
+    AlertSeverity,
+    EnhancedObservability,
+    HealthCheck,
+    HealthStatus,
+    SystemHealth,
+    SystemMetric,
+)
 from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
@@ -271,6 +282,14 @@ __all__ = [
     "median_latency_by_stage",
     "p95_latency_by_stage",
     "degraded_component_flags",
+    # Enhanced Observability System
+    "EnhancedObservability",
+    "Alert",
+    "AlertSeverity",
+    "HealthCheck",
+    "HealthStatus",
+    "SystemHealth",
+    "SystemMetric",
     # MCP Drift Store exports
     "MCPL6ObservabilityStore",
     "MCPL6PersistenceConfig",

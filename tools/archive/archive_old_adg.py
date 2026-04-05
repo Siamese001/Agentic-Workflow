@@ -33,46 +33,6 @@ from datetime import datetime, timedelta
 from pathlib import Path
 from typing import Any
 
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-    _emit_pulls_context,
-    _emit_reads_through,
-    _emit_validated_by_safety_plane,
-    _emit_writes_through,
-    emit_determinism_digest,
-)
-
-_emit_writes_through("p1", "archive_old_adg", "uwg_governed_write")
-_emit_writes_through("p1", "archive_old_adg", "uwg_governed_write_2")
-_emit_pulls_context("p1", "archive_old_adg", "context_retrieval")
-_emit_pulls_context("p1", "archive_old_adg", "context_retrieval_2")
-emit_determinism_digest("trace_archive_old_adg", "archive_old_adg_dispatch")
-emit_determinism_digest("trace_archive_old_adg", "archive_old_adg_complete")
-_emit_validated_by_safety_plane("p1", "archive_old_adg", "safety_validation")
-_emit_reads_through("l4", "archive_old_adg", "urg_read_1")
-_emit_reads_through("l4", "archive_old_adg", "urg_read_2")
-_emit_reads_through("l4", "archive_old_adg", "urg_read_3")
-_emit_reads_through("l4", "archive_old_adg", "urg_read_4")
-_emit_reads_through("l4", "archive_old_adg", "urg_read_5")
-_emit_reads_through("l4", "archive_old_adg", "urg_read_6")
-_emit_reads_through("l4", "archive_old_adg", "urg_read_7")
-_emit_reads_through("l4", "archive_old_adg", "urg_read_8")
-_emit_reads_through("l4", "archive_old_adg", "urg_read_9")
-_emit_reads_through("l4", "archive_old_adg", "urg_read_10")
-_emit_reads_through("l4", "archive_old_adg", "urg_read_11")
-_emit_reads_through("l4", "archive_old_adg", "urg_read_12")
-_emit_reads_through("l4", "archive_old_adg", "urg_read_13")
-_emit_reads_through("l4", "archive_old_adg", "urg_read_14")
-_emit_reads_through("l4", "archive_old_adg", "urg_read_15")
-_emit_reads_through("l4", "archive_old_adg", "urg_read_16")
-_emit_reads_through("l4", "archive_old_adg", "urg_read_17")
-_emit_reads_through("l4", "archive_old_adg", "urg_read_18")
-_emit_reads_through("l4", "archive_old_adg", "urg_read_19")
-_emit_reads_through("l4", "archive_old_adg", "urg_read_20")
-_emit_reads_through("l4", "archive_old_adg", "urg_read_21")
-_emit_reads_through("l4", "archive_old_adg", "urg_read_22")
-_emit_reads_through("l4", "archive_old_adg", "urg_read_23")
-_emit_reads_through("l4", "archive_old_adg", "urg_read_24")
-
 logger = logging.getLogger(__name__)
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -187,7 +147,10 @@ def discover_runs() -> dict[str, list[Path]]:
     runs: dict[str, list[Path]] = defaultdict(list)
     seen_files: set[Path] = set()
 
-    for pattern in ["adg_*.json", "adg_*.sqlite", "adg_*.md", "adg_repair_*.json"]:
+    for pattern in ["adg_*.json", "adg_*.sqlite", "adg_*.md", "adg_repair_*.json",
+                    "*_report_*.json", "test_surface_coverage_*.json", "*_log_*.json",
+                    "execution_impact_*.json", "repair_log_*.json", "scan_result_cache.json",
+                    "adg_*.zip"]:
         for path in ADG_DIR.glob(pattern):
             # Skip LATEST files
             if "LATEST" in path.name:

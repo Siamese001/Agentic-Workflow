@@ -211,7 +211,7 @@ MODULAR_EXTENSIONS: frozenset[str] = frozenset(
         "agentic_core.L0_routing.seams.c0_context_retriever",
         "agentic_core.L2_execution.healers.healing_tier_config",
         "agentic_core.L2_execution.healers.healing_tier_dispatcher",
-        "agentic_core.monitoring",
+        "agentic_core.L6_observability.enhanced_observability",
         "agentic_core.telemetry",
     }
 )
