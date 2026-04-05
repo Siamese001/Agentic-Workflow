@@ -7,7 +7,6 @@ from __future__ import annotations
 
 from unittest.mock import MagicMock, patch
 
-
 from apps_lic.reasoning.HOPPipelineExecutor import HOPPipelineExecutor
 
 

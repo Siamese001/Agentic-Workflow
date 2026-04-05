@@ -7,12 +7,12 @@ import time
 import pytest
 
 from agentic_core.L2_execution.enforcement.SovereignLLMGateway import (
+    REASONING_PATH_TABLE,
     CircuitBreaker,
     CircuitBreakerOpenError,
     GatewayError,
     ProviderConfig,
     ProviderType,
-    REASONING_PATH_TABLE,
     ReasoningPath,
     SignatureVerificationError,
     SovereignLLMGateway,
@@ -387,7 +387,7 @@ class TestReasoningPathStructure:
 
     def test_path_estimated_latency_positive(self):
         """Validation: all paths have positive latency estimates."""
-        for tier, path in REASONING_PATH_TABLE.items():
+        for _tier, path in REASONING_PATH_TABLE.items():
             assert path.estimated_latency_ms > 0
 
     def test_simple_paths_no_tot(self):
@@ -416,7 +416,7 @@ class TestGatewayPathSelectionIntegration:
         # Request deep path but with 1000ms budget (deep is 6000ms)
         result = gateway.select_reasoning_path(
             complexity_tier="deep",
-            latency_budget_ms=1000
+            latency_budget_ms=1000,
         )
         # Should fall back to a path within budget
         assert result.path.estimated_latency_ms <= 1000

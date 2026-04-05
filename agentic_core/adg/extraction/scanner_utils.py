@@ -10,6 +10,7 @@ Contains:
 from __future__ import annotations
 
 import ast
+from pathlib import Path
 
 
 def canonical_name(kind: str, path: str) -> str:
@@ -17,7 +18,7 @@ def canonical_name(kind: str, path: str) -> str:
     # Avoid circular import - inline the logic
     if "::" in path:
         return path
-    clean_path = path.replace("/", ".").replace("\\", ".")
+    clean_path = str(Path(path).as_posix()).replace("/", ".")
     return f"ADG::{kind}::{clean_path}"
 
 
@@ -168,7 +169,7 @@ class _TypeSurfaceCollector(ast.NodeVisitor):
         self.type_map: dict[str, str] = {}
         self._class_stack: list[str] = []
         self._func_stack: list[str] = []
-        self._base = source_file.replace("/", ".").replace("\\", ".").removesuffix(".py")
+        self._base = str(Path(source_file).as_posix()).replace("/", ".").removesuffix(".py")
 
     def _symbol(self, name: str) -> str:
         parts = [self._base] + self._class_stack + self._func_stack + [name]

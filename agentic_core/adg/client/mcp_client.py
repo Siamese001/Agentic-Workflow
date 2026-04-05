@@ -60,7 +60,6 @@ _emit_applies_guardrail("p0", "mcp_client", "p0_governance")
 _emit_reads_policy_state("p0", "mcp_client", "policy_binding")
 _emit_snapshots_state("p0", "mcp_client", "state_snapshot")
 from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-from agentic_core.config.core.constants_config import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, MAX_DEPTH, MAX_RETRIES, THRESHOLD
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
@@ -98,6 +97,7 @@ from agentic_core.config.core.constants_config import BATCH_SIZE, BUFFER_SIZE, D
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from agentic_core.config.core.constants_config import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, MAX_DEPTH, MAX_RETRIES, THRESHOLD
 
 _emit_emits_metric_event("mcp_client", "p4obs", "metric_1")
 _emit_emits_metric_event("mcp_client", "p4obs", "metric_2")

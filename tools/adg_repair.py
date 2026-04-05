@@ -113,7 +113,8 @@ def cmd_analyze(args: argparse.Namespace) -> int:
         print("\nDetailed Deficiencies:")
         print("=" * 60)
         for d in deficiencies[:20]:  # Show first 20
-            print(f"\n  [{d['category'].upper()}] {d['issue_type']}")
+            category_str = d['category'].value if hasattr(d['category'], 'value') else str(d['category'])
+            print(f"\n  [{category_str.upper()}] {d['issue_type']}")
             print(f"  File: {d['file_path']}")
             print(f"  Description: {d['description']}")
             if d.get('suggested_fix'):
@@ -174,7 +175,7 @@ def cmd_repair(args: argparse.Namespace) -> int:
     orchestrator.print_summary()
 
     # Return appropriate exit code
-    if result.fixes_failed > 0:
+    if result.failed_fixes > 0:
         return 2  # Some fixes failed
     if result.fixes_blocked > 0 and not args.dry_run:
         return 3  # Some fixes require human attention

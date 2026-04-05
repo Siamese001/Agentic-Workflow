@@ -56,7 +56,6 @@ _emit_applies_guardrail("p0", "registry_config", "p0_governance")
 _emit_reads_policy_state("p0", "registry_config", "policy_binding")
 _emit_snapshots_state("p0", "registry_config", "state_snapshot")
 from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-from agentic_core.config.core.constants_config import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
@@ -94,6 +93,7 @@ from agentic_core.config.core.constants_config import BATCH_SIZE, BUFFER_SIZE, D
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from agentic_core.config.core.constants_config import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
 
 _emit_emits_metric_event("registry_config", "p4obs", "metric_1")
 _emit_emits_metric_event("registry_config", "p4obs", "metric_2")

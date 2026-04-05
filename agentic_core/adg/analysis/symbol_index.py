@@ -269,7 +269,7 @@ class SymbolIndex:
             if not adg_name.startswith(_MODULE_PREFIX):
                 continue
             rel = adg_name[len(_MODULE_PREFIX) :]
-            dotted = rel.replace("/", ".").replace("\\", ".")
+            dotted = str(Path(rel).as_posix()).replace("/", ".")
             if dotted.endswith(".py"):
                 dotted = dotted[:-3]
             if dotted.endswith(".__init__"):

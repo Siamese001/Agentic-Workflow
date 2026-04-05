@@ -103,7 +103,6 @@ _emit_stores_embedding("p4", "healing_tier_config", "embedding_store")
 _emit_updates_meta_learning_state("p4", "healing_tier_config", "meta_learning")
 _emit_links_execution_to_snapshot("p4", "healing_tier_config", "exec_snapshot_link")
 from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-from agentic_core.config.core.constants_config import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
@@ -139,6 +138,7 @@ from agentic_core.config.core.constants_config import BATCH_SIZE, BUFFER_SIZE, D
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from agentic_core.config.core.constants_config import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
 
 _emit_emits_metric_event("healing_tier_config", "p4obs", "metric_1")
 _emit_emits_metric_event("healing_tier_config", "p4obs", "metric_2")

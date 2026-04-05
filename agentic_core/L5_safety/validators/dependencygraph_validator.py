@@ -281,7 +281,7 @@ class DependencyGraph:
 
     def get_impact_radius(self, file_path: str) -> list[str]:
         """Calculates which files depend on the given path."""
-        module_name = file_path.replace("/", ".").replace("\\", ".").replace(".py", "")
+        module_name = str(Path(file_path).as_posix()).replace("/", ".").replace(".py", "")
         impacted = set()
         if module_name in self.reverse_graph:
             impacted.update(self.reverse_graph[module_name])

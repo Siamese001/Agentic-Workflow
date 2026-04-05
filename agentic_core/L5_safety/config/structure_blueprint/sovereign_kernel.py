@@ -234,7 +234,7 @@ def is_kernel_component(module_path: str) -> bool:
 
     _trace_id = str(_uuid.uuid4())
     _emit_records_execution_trace(_trace_id, LayerSegment.L5_POLICY, "is_kernel_component")
-    normalized = module_path.replace("/", ".").replace("\\", ".")
+    normalized = module_path.replace("/", ".")
     for kernel_path in SOVEREIGN_KERNEL_COMPONENTS:
         if normalized == kernel_path or normalized.startswith(kernel_path + "."):
             return True
@@ -243,7 +243,7 @@ def is_kernel_component(module_path: str) -> bool:
 
 def is_modular_extension(module_path: str) -> bool:
     """Check if a given module path is a modular extension."""
-    normalized = module_path.replace("/", ".").replace("\\", ".")
+    normalized = module_path.replace("/", ".")
     for ext_path in MODULAR_EXTENSIONS:
         if normalized == ext_path or normalized.startswith(ext_path + "."):
             return True

@@ -286,7 +286,7 @@ class ToxicDependencyAuditor(SovereignBaseAgent):
         """Maps file path to standard dot-notation module name."""
         try:
             rel_path = file_path.relative_to(self.root)
-            return str(rel_path).replace(".py", "").replace("/", ".").replace("\\", ".")
+            return str(rel_path.as_posix()).replace("/", ".").replace(".py", "")
         except ValueError:
             return ""
 

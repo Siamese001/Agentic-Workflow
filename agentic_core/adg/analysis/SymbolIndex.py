@@ -22,6 +22,7 @@ Usage::
 from __future__ import annotations
 
 from dataclasses import dataclass, field
+from pathlib import Path
 from typing import TYPE_CHECKING
 
 from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
@@ -270,7 +271,7 @@ class SymbolIndex:
             if not adg_name.startswith(_MODULE_PREFIX):
                 continue
             rel = adg_name[len(_MODULE_PREFIX) :]
-            dotted = rel.replace("/", ".").replace("\\", ".")
+            dotted = str(Path(rel).as_posix()).replace("/", ".")
             if dotted.endswith(".py"):
                 dotted = dotted[:-3]
             if dotted.endswith(".__init__"):

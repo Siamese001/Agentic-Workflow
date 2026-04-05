@@ -187,7 +187,7 @@ class ResumeOrchestrator:
                     "profile_hash": self.profile_hash,
                     "adg_node_count": getattr(self.reasoning_profile, 'adg_node_count', 0),
                     "adg_edge_count": getattr(self.reasoning_profile, 'adg_edge_count', 0),
-                }
+                },
             )
         else:
             self.complexity_tier = "moderate"  # default
