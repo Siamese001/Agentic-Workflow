@@ -3,7 +3,7 @@ from __future__ import annotations
 import asyncio
 
 from agentic_core.L2_execution.utils import get_clock
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -95,7 +95,7 @@ from typing import Any
 # from agentic_core.L0_routing.P1_core.sovereign_auditor_v3 import main_util as run_audit
 from canon_validator_agentic_v2 import run_mission as run_healing
 
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,

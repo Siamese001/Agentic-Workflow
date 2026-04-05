@@ -54,7 +54,7 @@ from agentic_core.L0_routing.config.path_constants import (
     MAX_RETRIES,
     THRESHOLD,
 )
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import _emit_reads_through
+from agentic_core.runtime.lifecycle_trace_contract import _emit_reads_through
 
 ROOT = pathlib.Path(__file__).resolve().parents[2]
 SCAN_DIRS = [TESTS_DIR]

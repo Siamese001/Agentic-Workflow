@@ -12,7 +12,7 @@ import traceback
 from pathlib import Path
 
 from agentic_core.L0_routing.config.path_constants import LAYER_ROOTS
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -90,7 +90,7 @@ sys.path.insert(0, str(PROJECT_ROOT))
 # Monkey-patch PreFlightValidator to skip Windows registry check
 import agentic_core.L0_routing.scripts.execute_ssot as execute_ssot_mod
 
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,

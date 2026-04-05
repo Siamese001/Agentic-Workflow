@@ -378,7 +378,7 @@ _BMG_HELPER = '''\
             return [m["metadata"] for m in results.get("matches", [])]
         except Exception as exc:  # noqa: BLE001
             import logging
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import _emit_reads_through
+from agentic_core.runtime.lifecycle_trace_contract import _emit_reads_through
             logging.getLogger(__name__).warning("BMG retrieval failed: %s", exc)
             return []
 '''

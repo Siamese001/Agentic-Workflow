@@ -24,7 +24,7 @@ import os
 import sys
 from pathlib import Path
 
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_applies_guardrail,  # noqa: E402
     _emit_reads_policy_state,  # noqa: E402
     _emit_records_execution_trace,  # noqa: E402
@@ -78,7 +78,7 @@ from agentic_core.L5_safety.config.structure_blueprint.ssot import (
 )
 from agentic_core.L5_safety.validators.anti_pattern_scanner_validator import AntiPatternScanner
 from agentic_core.L5_safety.validators.base_detector_validator import EnforcementLevel
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_authorize_and_execute,
     _emit_blocks_direct_write,

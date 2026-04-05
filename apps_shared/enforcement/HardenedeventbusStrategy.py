@@ -18,7 +18,7 @@ MAX_RETRIES = 3
 THRESHOLD = 0.95
 
 from agentic_core.L0_routing.config.path_constants import DEFAULT_TIMEOUT
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+from agentic_core.runtime.lifecycle_trace_contract import (
     LayerSegment,
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
@@ -89,7 +89,7 @@ from .retry_policy import RetryConfig, get_retry_executor
 
 _emit_applies_guardrail("p0", "HardenedeventbusStrategy", "p0_governance")
 _emit_snapshots_state("p0", "HardenedeventbusStrategy", "state_snapshot")
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,

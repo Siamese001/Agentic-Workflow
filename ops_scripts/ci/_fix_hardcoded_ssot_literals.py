@@ -106,7 +106,7 @@ from agentic_core.L5_safety.config.structure_blueprint.ssot import (
     SOVEREIGN_EXCLUDED_FOLDERS,
     TESTS_UNIT_DIR,
 )
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import _emit_reads_through
+from agentic_core.runtime.lifecycle_trace_contract import _emit_reads_through
 
 _PC = 'agentic_core.L0_routing.config.path_constants'
 _SSOT = 'agentic_core.L5_safety.config.structure_blueprint.ssot'

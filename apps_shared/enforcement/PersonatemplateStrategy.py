@@ -1,5 +1,5 @@
 """Functional Persona Templates - Clean prompts without legacy K-node references.
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
+from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 This module provides sanitized prompt templates that use functional personas
 instead of numbered nodes. All references to K.X have been eliminated.

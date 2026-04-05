@@ -17,7 +17,7 @@ from agentic_core.L0_routing.config import (
 )
 from agentic_core.L0_routing.config.path_constants import TOOLS_DIR
 from agentic_core.L5_safety.config.structure_blueprint.ssot import SOVEREIGN_EXCLUDED_FOLDERS
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+from agentic_core.runtime.lifecycle_trace_contract import (
     LayerSegment,
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
@@ -64,7 +64,7 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 _emit_applies_guardrail("p0", "migration_executor", "p0_governance")
 _emit_reads_policy_state("p0", "migration_executor", "policy_binding")
 _emit_snapshots_state("p0", "migration_executor", "state_snapshot")
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,

@@ -97,7 +97,7 @@ from agentic_core.L0_routing.config.path_constants import (
     AGENTIC_CORE_DIR,
     OPS_SCRIPTS_DIR,
 )
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import _emit_reads_through
+from agentic_core.runtime.lifecycle_trace_contract import _emit_reads_through
 
 # Directories to scan (relative to repo root)
 SCAN_ROOTS = (AGENTIC_CORE_DIR, OPS_SCRIPTS_DIR)

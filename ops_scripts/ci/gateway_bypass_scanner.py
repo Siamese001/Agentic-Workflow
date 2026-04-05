@@ -15,7 +15,7 @@ from agentic_core.L0_routing.config.path_constants import (
     MAX_RETRIES,
     THRESHOLD,
 )
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import _emit_reads_through
+from agentic_core.runtime.lifecycle_trace_contract import _emit_reads_through
 
 _emit_reads_through("l4", "gateway_bypass_scanner", "urg_read_1")
 _emit_reads_through("l4", "gateway_bypass_scanner", "urg_read_2")

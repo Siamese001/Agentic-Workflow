@@ -50,7 +50,7 @@ from agentic_core.L0_routing.config.path_constants import (
     MAX_RETRIES,
     THRESHOLD,
 )
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import _emit_reads_through
+from agentic_core.runtime.lifecycle_trace_contract import _emit_reads_through
 
 GOVERNANCE_REQUIREMENTS: dict[str, dict[str, dict[str, str]]] = {'.pre-commit-config.yaml': {'excluded_patterns': {'description': 'Exclude patterns must have architectural rationale', 'pattern': '^\\s*exclude:\\s*\\(', 'policy_file': 'docs/rules/governance.md', 'required_section': 'Third-Party Code Exclusions'}}, 'pytest.ini': {'authoritative_suite_policy': {'description': 'pytest.ini scope changes must have documented policy (authoritative suite + reversibility)', 'pattern': '^\\s*(testpaths|addopts)\\s*=', 'policy_file': 'docs/rules/governance.md', 'required_section': 'Pytest Authoritative Suite'}}, 'ops_scripts/ci/check_anti_patterns.py': {'baseline_protection': {'description': 'Baseline write protection must be implemented', 'pattern': 'ALLOW_LANDMINE_BASELINE_WRITE', 'policy_file': 'docs/rules/governance.md', 'required_section': 'Baseline Write Protection'}}}
 MANUAL_HOOK_REQUIRED_FIELDS = ['### Rationale', '### Scope', '### Reversibility', '### Owner', '### Sunset Criteria']

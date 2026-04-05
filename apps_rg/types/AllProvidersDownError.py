@@ -12,7 +12,7 @@ from typing import Any
 from apps_shared.utils.Provider import Provider
 
 from agentic_core.interfaces.observability import CircuitBreakerState, SystemTelemetry
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+from agentic_core.runtime.lifecycle_trace_contract import (
     LayerSegment,
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
@@ -86,7 +86,7 @@ from .schema import DEFAULT_ROUTING_CONFIGS, RouteConfig, RoutingTier
 _emit_applies_guardrail("p0", "AllProvidersDownError", "p0_governance")
 _emit_reads_policy_state("p0", "AllProvidersDownError", "policy_binding")
 _emit_snapshots_state("p0", "AllProvidersDownError", "state_snapshot")
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,

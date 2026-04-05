@@ -19,7 +19,7 @@ import os
 import sqlite3
 import sys
 
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+from agentic_core.runtime.lifecycle_trace_contract import (
     emit_determinism_digest,
     record_execution_trace,
 )

@@ -16,7 +16,7 @@ from agentic_core.L0_routing.config.path_constants import (
     MAX_RETRIES,
     THRESHOLD,
 )
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -92,7 +92,7 @@ project_root = Path(__file__).parent.parent
 sys.path.insert(0, str(project_root))
 from agentic_core.L5_safety.reasoning.PascalSovereigntyAgent import PascalSovereigntyAgent
 from agentic_core.L5_safety.reasoning.root_hygiene_healer import RootHygieneAgent
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,

@@ -6,7 +6,7 @@ from __future__ import annotations
 import uuid
 from typing import TYPE_CHECKING
 
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+from agentic_core.runtime.lifecycle_trace_contract import (
     LayerSegment,
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402

@@ -34,7 +34,7 @@ def get_config_loader():
 def load_agent_config(agent_id: str) -> ConfigLoadResult:
     return ConfigLoadResult(success=True, config={"agent_id": agent_id})
 
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+from agentic_core.runtime.lifecycle_trace_contract import (
     LayerSegment,
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
@@ -81,7 +81,7 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 _emit_applies_guardrail("p0", "unified_config_helper_util", "p0_governance")
 _emit_reads_policy_state("p0", "unified_config_helper_util", "policy_binding")
 _emit_snapshots_state("p0", "unified_config_helper_util", "state_snapshot")
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,

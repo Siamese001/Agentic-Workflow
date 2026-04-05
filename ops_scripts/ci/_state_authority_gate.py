@@ -62,7 +62,7 @@ import glob
 import sqlite3
 import sys
 
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import _emit_reads_through
+from agentic_core.runtime.lifecycle_trace_contract import _emit_reads_through
 
 NON_TEST = (
     "AND source_file NOT LIKE '%test%' "
