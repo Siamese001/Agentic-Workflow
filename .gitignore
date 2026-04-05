@@ -1,337 +1,85 @@
-# ##############################################################################
-# .gitignore — FINAL 2025: SOVEREIGN REPOSITORY PROTECTION
-# ##############################################################################
-
-# NEVER commit large or ephemeral data
-
-# [CANON VALIDATOR] Sovereign purge artifacts — do not remove
-# Auto-generated on 2025-12-29 by canon validator
-*.archived
-
-# ChromaDB artifacts (large vector database files)
-artifacts/chromadb/
-# ChromaDB metadata (not the full 2.9GB)
-!artifacts/chromadb/collection_metadata.json
-!artifacts/chromadb/seed_urls_snapshot.txt
-*.sqlite3
-*.bin
-*.pickle
-
-data/cache/
-data/tmp/
-data/**/*.bin
-# [REFACTOR 2026-02-05] Healing backups folder (replaces archives/)
-archives/
-# Runtime append-only healing event log (grows on every test run)
-artifacts/healing/healing_events.jsonl
-# Runtime CI lane gate result (timing changes on every test run)
-artifacts/adg_ci_lane_gate_result.json
-# ADG artifacts (all except README.md - store on Google Drive, not GitHub)
-artifacts/adg/*.sqlite
-artifacts/adg/*.json
-artifacts/adg/*.zip
-artifacts/adg/*.tar.gz
-artifacts/adg/cache/
-# Allow README.md to be tracked
-!artifacts/adg/README.md
-# ADG LATEST symlinks/copies (auto-generated, point to timestamped artifacts)
-artifacts/adg/adg_LATEST*.sqlite
-artifacts/adg/adg_LATEST*.json
-# SQLite WAL/SHM temp files (never commit these)
-*.sqlite-shm
-*.sqlite-wal
-# ADG archive directory (compressed backups - local only)
-artifacts/adg/_archive/
-
-# ADG determinism manifests (small verification files)
-!artifacts/adg/*_determinism_manifest.json
-
-# Memory knowledge graph (SQLite DB — local only, rebuilt via mem_import_adg_context)
-artifacts/memory/
-# Generated one-off patch scripts
-tools/_patch_evidence.py
-.healing_backups/
-*.zip
-*.tar.gz
-*.lfs
-*.DS_Store
-
-# ADG variant directories (all contain large SQLite files - exclude from LFS)
-artifacts/adg_clean/
-artifacts/adg_truly_clean/
-artifacts/adg_runtime/
-
-models/*.pkl
-
-# [NEURAL LINK] SENSITIVE DATA
-.env
-.env.*
-!.env.example
+# Generated from config/excluded_paths.yaml
+# Do not edit manually - run: python tools/generate_gitignore.py --write
+# Last generated: 2026-04-05T10:00:57.224533
 
 
-# Python artifacts
-__pycache__/
-*.pyc
-*.pyo
+# Build & Cache
+.eggs/
 .mypy_cache/
 .pytest_cache/
-.pytest_tmp/
 .ruff_cache/
-.nox/
-.hypothesis/
+.tox/
+/__pycache__/
+/_build/
+/build/
+/dist/
+/node_modules/
 
-# Virtual environments
+# Version Control
+.git/
+.github/
+.hg/
+.svn/
+
+# Virtual Environments
+.env/
 .venv/
-.venv_gate/
-.venv_final/
-.venv_verify/
-venv/
-env/
+/Lib/
+/env/
+/site-packages/
+/venv/
+/venv_stable/
 
-# Build artifacts
-*.egg-info/
-
-# Generated analysis and technical docs
-# docs/ - REMOVED: docs/ is now tracked
-# docs/technical/ moved to docs/reference/ (SSOT-compliant)
-docs/reference/
-docs/reference/_archive/
-
-# Chroma DB noise - transient execution artifacts, do not embed
-docs/reports/
-docs/evidence/
-docs/generated/
-docs/quarantine_artifacts/
-docs/plans/
-docs/metrics/
-docs/specs/*.json
-
-# Artifacts noise - transient execution outputs, do not embed
-artifacts/collection*.txt
-artifacts/collection*.json
-artifacts/test_*.txt
-artifacts/test_*.json
-artifacts/unit*.txt
-artifacts/plans_*.txt
-artifacts/wave*.json
-artifacts/analysis/
-artifacts/ci/
-artifacts/dedup/
-artifacts/evidence/
-artifacts/fca_safety_gates/
-artifacts/gptcache*/
-artifacts/healing/
-artifacts/hitl/
-artifacts/import_health/
-artifacts/logs/
-artifacts/manifests/
-artifacts/migration/
-artifacts/monitoring/
-artifacts/observability/
-artifacts/outputs/
-artifacts/rollback/
-artifacts/runtime_adg/
-artifacts/security/
-artifacts/windsurf/
-artifacts/xml/
-artifacts/governance/*.json
-artifacts/discovery/*.json
-artifacts/consolidation/*.json
-artifacts/guardian_*.txt
-artifacts/guardian_*.json
-
-# data/ noise - transient/generated data, do not embed
-data/corpus/
-data/freeze_reports/
-data/golden_state/
-data/logs/
-data/manifests/*.sha256
-data/manifests/sdks_mcps_manifest.json
-data/output/
-data/processed/
-data/raw/
-data/snapshots/
-
-# IDE and OS noise
-.vscode/
-.idea/
-Thumbs.db
-
-# Logs and outputs
-*.log
-outputs/
-artifacts/security/credential_scan_report.json
-artifacts/governance/docs_structure_report.json
-artifacts/governance/artifacts_guard_report.json
-artifacts/governance/logs_guard_report.json
-artifacts/governance/cache_guard_report.json
-cache/               # Unauthorized root folder - strictly ignored
-
-# Temp extraction folders
-temp_*/              # Automated sprawl - strictly ignored
-tmp*                 # Cascade/temp subprocess temp files
-_temp_cmd*           # Temporary command files (any directory)
-_out_*               # Phase execution output files (any directory)
-_typed_*             # Typed output files (any directory)
-_typed_emitted_*     # Typed emitted output files (any directory)
-_rebuild_*           # Rebuild script files (any directory)
-_selfcheck_*         # Self-check script files (any directory)
-_run_*               # Run script files (any directory)
-_capture_*           # Capture script files (any directory)
-_make_*              # Make/build script files (any directory)
-.tmp/                # Temporary directory - strictly ignored
-
-# Runtime state artifacts
-runtime_state*.json  # Agentic framework execution telemetry
-temp_complete_rules*.md # Temporary documentation artifacts
-
-# Bypass audit log (security artifact)
-artifacts/bypass_audit.jsonl
-
-# Guardian test output files
-guardian_*.txt       # Guardian framework test output
-guardian_*.json      # Guardian framework JSON results
-
-# Debug and temporary files
-*.debug.log          # Pytest and other debug logs
-pytestdebug.log      # Pytest debug output
-pytest_quick.ini     # Temporary pytest configuration
-phase*_violation_analysis.py # One-time analysis scripts
-
-# Temporary analysis files
-.tmp_*sites.txt      # Import sites analysis artifacts
-*_sites.txt          # Site analysis files
-.tmp_*.txt           # General temporary files
-
-# [SSOT VIOLATION FIX] Legacy healing backup folder - deprecated
-# Now using .healing_backups/ as the canonical backup location
-.sovereign_healing_backup/
-
-# [L6 PHYSICS] ARCHITECTURAL NOISE
-0[0-9]_*/            # Numbered migration folders (Forbidden Root Folders)
-core/                # Unauthorized sprawl directory
-
-# Test coverage output
-coverage_html/
-
-# Guardian test artifacts
-guardian_report.txt
+# Coverage & Test Output
+.coverage/
 .test_artifacts/
+/coverage_html/
+/htmlcov/
+/reports/
+/test_artifacts/
 
-# Agent discovery artifacts (auto-generated)
-agent_discovery_full.manifest.json
-.backup/guardian_tests/
-
-# Generated gate evidence (Phase-1/2/4 CI artifacts)
-v15_d_evidence_p1.json
-v15_d_evidence_p2.json
-v15_p2_evidence_temp.json
-v15_d_inventory_p4.json
-
-# Guardian report JSON (auto-generated by gate runners)
-**/guardian_report.json
-
-# Import resolution guardian report (generated on every run)
-artifacts/import_health/import_health_report.json
-
-# Machine-local integrity seals (non-portable)
-**/.core_golden_seal
-
-# Runtime logs (any layer)
-**/logs/
-
-# Windsurf plans scratch scripts (temporary, auto-generated)
-.windsurf/plans/*.py
-
-# Windsurf evidence artifacts (temporary, auto-generated)
-artifacts/windsurf/*.txt
-artifacts/windsurf/*.out
-artifacts/windsurf/*.typed
-artifacts/windsurf/*.emitted
-artifacts/windsurf/*_commit.*
-artifacts/windsurf/*_acceptance.*
-artifacts/windsurf/*_det*
-artifacts/windsurf/*_neg*
-
-# Generated tool call store
-docs/store/
-
-# Root README (auto-generated / user-local)
- /README.md
-
-# Root-level noise - generated outputs, temp files, one-off scripts
-validation_output*.json
-violation_audit.json
-runtime_state.json
-remaining_placeholders.json
-faiss.index
-dummy.sqlite
-nonexistent.sqlite
-wave*_batch*.txt
-sequential_thinking_*.json
-test_*.json
-mcp_*.json
-*.sqlite
-
-# One-off diagnostic/profiling scripts (root level only)
-/test_*.py
-/debug_*.py
-/check_*.py
-/fix_*.py
-/add_*.py
-/analyze_*.py
-/convert_wave_*.py
-/mcp_*.py
-/adg_*.py
-/probe_*.py
-/rca_*.py
-/profile_*.py
-/ingest_*.py
-/upgrade_to_*.py
-/wave*.py
-/demo_*.py
-/generate_*.py
-/gravity_*.py
-/edge_*.py
-/simple_debug.py
-/cleanup_tests.py
-/batch_fix_*.py
-/categorize_*.py
-/recalculate_*.py
-/verify_*.py
-/test_cache_*.py
-/test_layer_*.py
-/test_mcp_*.py
-/test_adg_*.py
-/test_semantic_*.py
-/test_template_*.py
-/test_token_*.py
-/test_visualization_*.py
-/test_vllm_*.py
-/test_workflow_*.py
-/test_rag_*.py
-/test_runtime_*.py
-/test_sequential_*.py
-/test_rigor_*.py
-/test_production_*.py
-/test_fix.py
-/test_sample.py
-
-# Tools noise - debug scripts and one-off fixes
-tools/__dbg_*.py
-tools/_*.py
-tools/wave*_*.py
-tools/fix_*.py
-tools/convert_*.py
-tools/validate_*.py
-tools/evidence/
-
-# Reports directory
-reports/
-
-# Eval/RFP outputs
-eval/
-rfp/test_output/
-
-# Backup directory
+# Archives & Backups
 .backup/
+.gravity_state/
+.healing_backups/
+.sovereign_healing_backup/
+/archive/
+/archives/
+/artifacts/
+
+# IDE & Editor
+.DS_Store/
+.idea/
+.vscode/
+.windsurf/
+
+# Vendor Packages
+/dist-info/
+/gapic/
+/google/
+/licenses/
+/pip/
+/src/
+
+# Data & Logs
+/data/
+/docs/
+/logs/
+/raw/
+/shared/
+
+# Other
+.hypothesis/
+/_compat/
+
+# File Patterns
+*.dll
+*.egg-info
+*.log
+*.pyc
+*.pyd
+*.pyo
+*.so
+*.tmp
+.coverage.*/
+/Thumbs.db/

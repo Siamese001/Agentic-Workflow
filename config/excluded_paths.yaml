@@ -1,0 +1,97 @@
+# Excluded Paths Configuration
+# SSOT for scanner and .gitignore exclusions
+# Version: 1.0.0
+# Last updated: 2026-04-05
+
+version: "1.0.0"
+
+# Build and cache directories
+build_cache_dirs:
+  - "__pycache__"
+  - ".pytest_cache"
+  - ".ruff_cache"
+  - ".mypy_cache"
+  - ".tox"
+  - "node_modules"
+  - "build"
+  - "dist"
+  - "_build"
+  - ".eggs"
+
+# Version control directories
+version_control_dirs:
+  - ".git"
+  - ".github"
+  - ".svn"
+  - ".hg"
+
+# Virtual environment directories
+virtual_env_dirs:
+  - ".venv"
+  - "venv"
+  - "venv_stable"
+  - "env"
+  - ".env"
+  - "Lib"
+  - "site-packages"
+
+# Coverage and test output directories
+coverage_dirs:
+  - "coverage_html"
+  - "htmlcov"
+  - ".coverage"
+  - ".test_artifacts"
+  - "test_artifacts"
+  - "reports"
+
+# Archive and backup directories
+archive_dirs:
+  - "archives"
+  - "archive"
+  - "artifacts"
+  - ".sovereign_healing_backup"
+  - ".healing_backups"
+  - ".backup"
+  - ".gravity_state"
+
+# IDE and editor directories
+ide_dirs:
+  - ".idea"
+  - ".vscode"
+  - ".windsurf"
+  - ".DS_Store"
+
+# Vendor/package directories (not our code)
+vendor_dirs:
+  - "google"
+  - "gapic"
+  - "pip"
+  - "dist-info"
+  - "licenses"
+  - "src"  # Often used for vendored packages
+
+# Data and log directories (content, not code)
+data_dirs:
+  - "data"
+  - "docs"
+  - "logs"
+  - "raw"
+  - "shared"
+
+# Special exclusions
+special_dirs:
+  - "_compat"  # Compatibility shims - re-exports only
+  - ".hypothesis"  # Hypothesis test database
+
+# File patterns to exclude (glob-style)
+file_patterns:
+  - "*.pyc"
+  - "*.pyo"
+  - "*.pyd"
+  - "*.so"
+  - "*.dll"
+  - "*.egg-info"
+  - ".coverage.*"
+  - "*.log"
+  - "*.tmp"
+  - "Thumbs.db"  # Windows thumbnail cache (file, not directory)
