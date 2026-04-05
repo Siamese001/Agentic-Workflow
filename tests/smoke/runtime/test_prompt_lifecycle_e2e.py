@@ -135,11 +135,10 @@ class TestIntegrationHealth(unittest.TestCase):
             "agentic_core.prompt_governance.contracts.prompt_bom_types",
             "agentic_core.prompt_governance.contracts.compiled_artifact_types",
             "agentic_core.prompt_governance.contracts.template_manifest_types",
-            "agentic_core.L0_routing.types.instruction_packet_types",
-            "agentic_core.L0_routing.engines.prompt_bom_builder",
-            "agentic_core.L0_routing.engines.assembly_stage",
+            "agentic_core.L0_routing.reasoning.prompt_bom_builder",
+            "agentic_core.L0_routing.reasoning.assembly_stage",
             "agentic_core.L4_state.memory.template_registry",
-            "agentic_core.L0_routing.seams.elevator_shaft_seam",
+            "agentic_core.L0_routing.utils.elevator_shaft_seam",
         ]
 
         for module_name in modules:

@@ -63,7 +63,7 @@ from agentic_core.runtime.lifecycle_trace_contract import (
     emit_replay_key,
 )
 
-from ..engines.assembly_stage import GovernedPayload
+from .assembly_stage import GovernedPayload
 
 from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_agent_executes_agent,

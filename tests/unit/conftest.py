@@ -284,53 +284,8 @@ def _install_l3_orchestration_compat_shims() -> None:
 
 def _install_l0_routing_scripts_compat_shims() -> None:
     """Provide lightweight shims for legacy package-root imports from scripts."""
-    import agentic_core.L0_routing.scripts as scripts_pkg
-
-    scripts_tests_root = Path(__file__).parent / _AGENTIC_CORE_DIR / "L0_routing" / "scripts"
-    if not scripts_tests_root.exists():
-        return
-
-    import_pattern = re.compile(r"^\s*from\s+agentic_core\.L0_routing\.scripts\s+import\s+(.+)$", re.MULTILINE)
-
-    def _make_callable(name: str):
-        def _stub(*_args, **_kwargs):
-            return True
-
-        _stub.__name__ = name
-        return _stub
-
-    def _make_class(name: str):
-        def _init(_self, *_args, **_kwargs):
-            return None
-
-        def _instance_getattr(_self, _attr):
-            return _make_callable(_attr)
-
-        return type(
-            name,
-            (),
-            {
-                "__init__": _init,
-                "__getattr__": _instance_getattr,
-            },
-        )
-
-    for test_file in scripts_tests_root.rglob("*.py"):
-        try:
-            content = test_file.read_text(encoding="utf-8")
-        except OSError:
-            continue
-        for match in import_pattern.findall(content):
-            for raw_name in match.split(","):
-                name = raw_name.strip()
-                if not name or hasattr(scripts_pkg, name):
-                    continue
-                if name.startswith("validate_"):
-                    setattr(scripts_pkg, name, _make_callable(name))
-                elif name[0].isupper():
-                    setattr(scripts_pkg, name, _make_class(name))
-                else:
-                    setattr(scripts_pkg, name, _make_callable(name))
+    # Scripts moved to ops_scripts/dev_tools/L0_routing_scripts - no longer needed
+    return
 
 
 _install_l0_routing_compat_shims()

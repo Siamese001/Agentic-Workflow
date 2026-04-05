@@ -182,7 +182,7 @@ class TestElevatorShaftSeam:
         """Test seam returns deterministic empty dict."""
         from agentic_core.L0_routing.utils.elevator_shaft_seam import load_context_jit
 
-        result = load_context_jit("test_intent")
+        result = load_context_jit("test_trace_id", "test_intent")
 
         assert result == {}
         assert isinstance(result, dict)
@@ -191,7 +191,7 @@ class TestElevatorShaftSeam:
         """Test seam contains no forbidden imports."""
         import ast
 
-        seam_file = "agentic_core/L0_routing/seams/elevator_shaft_seam.py"
+        seam_file = "agentic_core/L0_routing/utils/elevator_shaft_seam.py"
 
         # Read and parse the seam file
         with open(seam_file, encoding="utf-8") as f:
@@ -218,7 +218,7 @@ class TestElevatorShaftSeam:
         """Test seam contains no routing decision logic."""
         import ast
 
-        seam_file = "agentic_core/L0_routing/seams/elevator_shaft_seam.py"
+        seam_file = "agentic_core/L0_routing/utils/elevator_shaft_seam.py"
 
         with open(seam_file, encoding="utf-8") as f:
             content = f.read()
