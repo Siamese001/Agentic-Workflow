@@ -1296,7 +1296,6 @@ def build_sovereign_territories() -> dict[str, TerritoryDefinition]:
                             "agents": [],
                             "base_agents": [],
                             "cache": [],
-                            "case_memory": [],
                             "cloud_native": [],
                             "config": [],
                             "core": [],
