@@ -9,7 +9,7 @@ from __future__ import annotations
 from datetime import datetime
 
 from agentic_core.L1_cognition.config.graphrag_config import get_config
-from agentic_core.L1_cognition.engines.search_fusion_engine import SearchFusionEngine
+from agentic_core.L1_cognition.reasoning.search_fusion_engine import SearchFusionEngine
 from agentic_core.L1_cognition.types.rag_types import (
     ContextItem,
     RAGConfig,

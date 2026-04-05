@@ -33,24 +33,24 @@ import logging
 import time
 from typing import Any, Callable
 
-from agentic_core.L1_cognition.context.reasoning_context import (
+from agentic_core.L1_cognition.reasoning.reasoning_context import (
     ReasoningContext,
     ReasoningTraceArtifact,
     ReasoningTranscript,
 )
-from agentic_core.L1_cognition.evaluation.reasoning_evaluation import (
+from agentic_core.L1_cognition.reasoning.reasoning_evaluation import (
     OrphanReasoningEvaluationError,
     ReasoningEvaluationOutcome,
     ReasoningEvaluationRubric,
     evaluate_reasoning_step_from_trace,
 )
-from agentic_core.L1_cognition.knowledge.knowledge_orchestrator import (
+from agentic_core.L1_cognition.reasoning.knowledge_orchestrator import (
     EvaluationResult,
     ReasoningContext,
     ReasoningTrace,
     capture_simple_reasoning_pattern,
 )
-from agentic_core.L1_cognition.planning.plan_creator import (
+from agentic_core.L1_cognition.reasoning.plan_creator import (
     CheckpointResult,
     PlanningPolicy,
     ReasoningPlanContext,

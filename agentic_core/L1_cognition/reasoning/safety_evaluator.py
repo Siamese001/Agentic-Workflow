@@ -10,8 +10,8 @@ from datetime import datetime
 from typing import Any
 
 from agentic_core.L1_cognition.config.graphrag_config import get_config
-from agentic_core.L1_cognition.engines.constitutional_rules_engine import ConstitutionalRulesEngine
-from agentic_core.L1_cognition.engines.content_filter import ContentFilterEngine
+from agentic_core.L1_cognition.reasoning.constitutional_rules_engine import ConstitutionalRulesEngine
+from agentic_core.L1_cognition.reasoning.content_filter import ContentFilterEngine
 from agentic_core.L1_cognition.types.guardrail_types import (
     GuardrailAction,
     GuardrailConfig,

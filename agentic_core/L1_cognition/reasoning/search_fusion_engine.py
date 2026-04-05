@@ -13,9 +13,9 @@ if TYPE_CHECKING:
     from agentic_core.L4_state.types.graph_store_types import IGraphStore
 
 from agentic_core.L1_cognition.config.graphrag_config import get_config
-from agentic_core.L1_cognition.engines.drift_search_engine import create_drift_search_engine
-from agentic_core.L1_cognition.engines.global_search_engine import create_global_search_engine
-from agentic_core.L1_cognition.engines.local_search_engine import create_local_search_engine
+from agentic_core.L1_cognition.reasoning.drift_search_engine import create_drift_search_engine
+from agentic_core.L1_cognition.reasoning.global_search_engine import create_global_search_engine
+from agentic_core.L1_cognition.reasoning.local_search_engine import create_local_search_engine
 from agentic_core.L1_cognition.types.search_types import (
     DRIFTSearchConfig,
     FusionConfig,

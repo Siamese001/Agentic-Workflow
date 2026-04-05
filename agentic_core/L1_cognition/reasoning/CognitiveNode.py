@@ -117,7 +117,7 @@ def _invoke_reason_and_record(ctx, prompt, retrieved, fn, **kw):
 
 
 def _make_reasoning_context(run_id: str, policy_hash: str, prompt: str, model_id: str, clock_tick: float):
-    from agentic_core.L1_cognition.context.reasoning_context_builder import (
+    from agentic_core.L1_cognition.reasoning.reasoning_context_builder import (
         build_reasoning_context,  # noqa: PLC0415
     )
 
@@ -320,7 +320,7 @@ class CognitiveNode:
         except ImportError:
             self.meta_learner = None
         try:
-            from agentic_core.L1_cognition.memory.SemanticMemory import SemanticMemory
+            from agentic_core.L1_cognition.reasoning.SemanticMemory import SemanticMemory
 
             self.semantic_memory = SemanticMemory()
         except ImportError:

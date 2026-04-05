@@ -26,7 +26,7 @@ from typing import Any, Final
 
 from agentic_core.L0_routing.config import APPS_LIC_DIR
 from agentic_core.L0_routing.config.path_constants import APPS_LIC_DIR
-from agentic_core.L1_cognition.engines.meta_client import (
+from agentic_core.L1_cognition.reasoning.meta_client import (
     MetaLearningClient,
     get_meta_learning_client,
 )

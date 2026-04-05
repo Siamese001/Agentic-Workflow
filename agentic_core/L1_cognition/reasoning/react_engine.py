@@ -4,7 +4,7 @@ Re-exports ReActEngine, ReActTrace, ReActStep, and create_react_engine from
 the existing implementation in react_config.py so callers can import from
 the correct layer path:
 
-    from agentic_core.L1_cognition.engines.react_engine import ReActEngine
+    from agentic_core.L1_cognition.reasoning.react_engine import ReActEngine
 
 The original react_config.py is kept intact (no deletion) to avoid breaking
 any existing imports.

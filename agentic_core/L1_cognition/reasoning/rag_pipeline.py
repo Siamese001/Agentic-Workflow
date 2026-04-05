@@ -11,9 +11,9 @@ from datetime import datetime
 from typing import Any
 
 from agentic_core.L1_cognition.config.graphrag_config import get_config
-from agentic_core.L1_cognition.engines.context_assembler import create_context_assembler
-from agentic_core.L1_cognition.engines.prompt_template_manager import create_prompt_template_manager
-from agentic_core.L1_cognition.engines.search_fusion_engine import SearchFusionEngine
+from agentic_core.L1_cognition.reasoning.context_assembler import create_context_assembler
+from agentic_core.L1_cognition.reasoning.prompt_template_manager import create_prompt_template_manager
+from agentic_core.L1_cognition.reasoning.search_fusion_engine import SearchFusionEngine
 from agentic_core.L1_cognition.types.rag_types import (
     GenerationResult,
     RAGConfig,

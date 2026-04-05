@@ -134,7 +134,7 @@ class ReActStrategy(BaseReasoningPattern):
         model_id: str = "default",
         prompt_template_id: str = "default_react_v1",
     ) -> None:
-        from agentic_core.L1_cognition.engines.react_engine import ReActEngine
+        from agentic_core.L1_cognition.reasoning.react_engine import ReActEngine
 
         self._engine = ReActEngine(
             max_steps=max_steps,

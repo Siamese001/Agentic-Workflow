@@ -174,7 +174,7 @@ def build_reasoning_context(
     Returns:
         Frozen, fully-hashed ReasoningContext.
     """
-    from agentic_core.L1_cognition.context.reasoning_context import ReasoningContext  # noqa: PLC0415
+    from agentic_core.L1_cognition.reasoning.reasoning_context import ReasoningContext  # noqa: PLC0415
 
     # 1. Extract routing_contract_id
     routing_contract_id = ""

@@ -6,7 +6,7 @@ Only cognitive interfaces, reasoning engines, and telemetry are exported.
 """
 
 # Cognitive interfaces and reasoning
-from agentic_core.L1_cognition.knowledge.knowledge_orchestrator import (
+from agentic_core.L1_cognition.reasoning.knowledge_orchestrator import (
     EvaluationResult,
     ReasoningContext,
     ReasoningTrace,
@@ -24,7 +24,7 @@ from agentic_core.L1_cognition.knowledge.knowledge_orchestrator import (
 )
 
 # P4/L1 Reasoning Knowledge Base exports
-from agentic_core.L1_cognition.knowledge.reasoning_knowledge import (
+from agentic_core.L1_cognition.reasoning.reasoning_knowledge import (
     ReasoningKnowledgeError,
     ReasoningKnowledgeRecord,
     get_reasoning_knowledge_registry,
@@ -39,7 +39,7 @@ from agentic_core.L1_cognition.knowledge.reasoning_knowledge import (
     reuse_count,
     validation_status,
 )
-from agentic_core.L1_cognition.planning.plan_creator import (
+from agentic_core.L1_cognition.reasoning.plan_creator import (
     PlanningPolicy,
     ReasoningPlanContext,
     create_reasoning_plan,
@@ -55,7 +55,7 @@ from agentic_core.L1_cognition.planning.plan_creator import (
 )
 
 # P3/L1 Multi-Step Reasoning Planning exports
-from agentic_core.L1_cognition.planning.reasoning_plan import (
+from agentic_core.L1_cognition.reasoning.reasoning_plan import (
     CheckpointResult,
     PlanCheckpoint,
     PlanRevision,

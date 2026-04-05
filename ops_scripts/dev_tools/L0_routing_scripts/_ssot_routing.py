@@ -421,7 +421,7 @@ class SovereignDecisionEngine:
                 return 1
             mat = _np.array(recent, dtype=_np.float32)
             if mat.ndim == 2 and mat.shape[1] != q.shape[0]:
-                from agentic_core.L1_cognition.memory.healing_memory_retriever import (
+                from agentic_core.L1_cognition.reasoning.healing_memory_retriever import (
                     VectorSourceMismatchError,
                 )
 
@@ -437,7 +437,7 @@ class SovereignDecisionEngine:
                 return 2
             return 3
         except (ImportError, AttributeError, ValueError, RuntimeError) as _exc:
-            from agentic_core.L1_cognition.memory.healing_memory_retriever import (
+            from agentic_core.L1_cognition.reasoning.healing_memory_retriever import (
                 VectorSourceMismatchError as _VSME,
             )
 
@@ -469,7 +469,7 @@ class SovereignDecisionEngine:
             failure_type = ft
         if self._healing_memory_retriever is not None:
             try:
-                from agentic_core.L1_cognition.memory.healing_memory_retriever import (
+                from agentic_core.L1_cognition.reasoning.healing_memory_retriever import (
                     SovereigntyError as _SovereigntyError,
                 )
 
@@ -488,7 +488,7 @@ class SovereignDecisionEngine:
                         _advisory[0].advisory_only,
                     )
             except (ImportError, AttributeError, ValueError) as _exc:
-                from agentic_core.L1_cognition.memory.healing_memory_retriever import SovereigntyError as _SE
+                from agentic_core.L1_cognition.reasoning.healing_memory_retriever import SovereigntyError as _SE
 
                 if isinstance(_exc, _SE):
                     raise

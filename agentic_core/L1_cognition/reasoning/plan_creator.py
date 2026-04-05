@@ -21,7 +21,7 @@ import logging
 from dataclasses import dataclass
 from typing import Any
 
-from agentic_core.L1_cognition.planning.reasoning_plan import (
+from agentic_core.L1_cognition.reasoning.reasoning_plan import (
     CheckpointResult,
     PlanCheckpoint,
     PlanRevision,

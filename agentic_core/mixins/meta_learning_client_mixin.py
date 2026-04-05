@@ -236,7 +236,7 @@ class MetaLearningClientMixin:
         """Ensure MetaLearningClient is initialized (lazy loading)."""
         if MetaLearningClientMixin._ml_client is None:
             try:
-                from agentic_core.L1_cognition.engines.meta_client import (
+                from agentic_core.L1_cognition.reasoning.meta_client import (
                     get_meta_learning_client,
                 )
 
@@ -251,7 +251,7 @@ class MetaLearningClientMixin:
         """Ensure HealingMemoryEmbedder is initialized (lazy loading)."""
         if MetaLearningClientMixin._ml_embedder is None:
             try:
-                from agentic_core.L1_cognition.engines.memory_embedder import (
+                from agentic_core.L1_cognition.reasoning.memory_embedder import (
                     get_healing_memory_embedder,
                 )
 
