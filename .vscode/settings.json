@@ -8,6 +8,7 @@
     "python.testing.autoTestDiscoverOnSaveEnabled": true,
     "python.pythonPath": "C:\\Users\\amita\\AppData\\Local\\Programs\\Python\\Python312\\python.exe",
     "python.testing.autoDiscoverEnabled": true,
+    "python.testing.filter": "",
     "python.analysis.exclude": [
         "**/archives/**",
         "**/archives/healing_backups/**",
