@@ -26,7 +26,7 @@ from agentic_core.L0_routing.reasoning.capacity_snapshot import (
     get_capacity_registry,
     reset_capacity_registry,
 )
-from agentic_core.L0_routing.optimization.optimization_orchestrator import (
+from agentic_core.L0_routing.reasoning.optimization_orchestrator import (
     OptimizationWindow,
     PolicyContext,
     RoutingHistory,
@@ -43,7 +43,7 @@ from agentic_core.L0_routing.optimization.optimization_orchestrator import (
 )
 
 # P4/L0 Routing Optimization exports
-from agentic_core.L0_routing.optimization.routing_optimization import (
+from agentic_core.L0_routing.reasoning.routing_optimization import (
     RoutingOptimizationError,
     RoutingOptimizationRecord,
     cost_estimate,

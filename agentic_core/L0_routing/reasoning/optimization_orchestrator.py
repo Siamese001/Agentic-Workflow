@@ -24,7 +24,7 @@ from dataclasses import dataclass
 from typing import Any
 
 from agentic_core.L0_routing.reasoning.deterministic_routing_gateway import get_routing_gateway
-from agentic_core.L0_routing.optimization.routing_optimization import (
+from agentic_core.L0_routing.reasoning.routing_optimization import (
     RoutingOptimizationRecord,
     get_routing_optimization_registry,
 )
